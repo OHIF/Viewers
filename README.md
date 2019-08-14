@@ -1,8 +1,8 @@
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 <div align="center">
-  <h1>ohif-viewer</h1>
-  <p><strong>ohif-viewer</strong> is a zero-footprint medical image viewer provided by the <a href="http://ohif.org/">Open Health Imaging Foundation (OHIF)</a>. It is a configurable and extensible progressive web application with out-of-the-box support for image archives which support <a href="https://www.dicomstandard.org/dicomweb/">DICOMweb</a>.</p>
+  <h1>OHIF Medical Imaging Viewer</h1>
+  <p><strong>The OHIF Viewer</strong> is a zero-footprint medical image viewer provided by the <a href="http://ohif.org/">Open Health Imaging Foundation (OHIF)</a>. It is a configurable and extensible progressive web application with out-of-the-box support for image archives which support <a href="https://www.dicomstandard.org/dicomweb/">DICOMweb</a>.</p>
 </div>
 
 
@@ -19,233 +19,175 @@
 
 <hr />
 
-[![CircleCI][circleci-image]][circleci-url]
-[![codecov][codecov-image]][codecov-url]
-[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors)
-[![code style: prettier][prettier-image]][prettier-url]
-[![semantic-release][semantic-image]][semantic-url]
-
 [![NPM version][npm-version-image]][npm-url]
 [![NPM downloads][npm-downloads-image]][npm-url]
 [![Pulls][docker-pulls-img]][docker-image-url]
 [![MIT License][license-image]][license-url]
-<!-- markdownlint-enable -->
-<!-- prettier-ignore-end -->
 
-> ATTENTION: If you are looking for Version 1 (the Meteor Version) of this
-> repository, it lives on
-> [the `v1.x` branch](https://github.com/OHIF/Viewers/tree/v1.x)
+[![Netlify Status][netlify-image]][netlify-url]
+[![CircleCI][circleci-image]][circleci-url]
+[![codecov][codecov-image]][codecov-url]
+[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors)
 
-## Why?
+## What?
 
-Building a web based medical imaging viewer from scratch is time intensive, hard
-to get right, and expensive. Instead of re-inventing the wheel, you can use the
-OHIF Viewer as a rock solid platform to build on top of. The Viewer is a
-[React][react-url] [Progressive Web Application][pwa-url] that can be embedded
-in existing applications via it's [packaged source
-(ohif-viewer)][ohif-viewer-url] or hosted stand-alone. The Viewer exposes
-[configuration][configuration-url] and [extensions][extensions-url] to support
-workflow customization and advanced functionality at common integration points.
+The OHIF Medical Imaging Viewer is for viewing medical images. It can retrieve and load images from most sources and formats; render sets in 2D, 3D, and reconstructed representations; allows for the manipulation, annotation, and serialization of observations; supports internationalization, OpenID Connect, offline use, hotkeys, and many more features.
 
-If you're interested in using the OHIF Viewer, but you're not sure it supports
-your use case [check out our docs](https://docs.ohif.org/). Still not sure, or
-you would like to propose new features? Don't hesitate to
-[create an issue](https://github.com/OHIF/Viewers/issues) or open a pull
-request.
+Almost everything offers some degree of customization and configuration. If it doesn't support something you need, we accept pull requests and have an ever improving Extension System.
 
-## Getting Started
+## Why Choose Us
 
-This readme is specific to testing and developing locally. If you're more
-interested in production deployment strategies,
-[you can check out our documentation on publishing](https://docs.ohif.org/).
+### Community & Experience
 
-Want to play around before you dig in?
-[Check out our LIVE Demo](https://viewer.ohif.org/)
+The OHIF Viewer is a collaborative effort that has served as the basis for many active, production, and FDA Cleared medical imaging viewers. It benefits from our extensive community's collective experience, and from the sponsored contributions of individuals, research groups, and commercial organizations.
 
-### Setup
+### Built to Adapt
 
-_Requirements:_
+...
 
-- [NodeJS & NPM](https://nodejs.org/en/download/)
-- [Yarn](https://yarnpkg.com/lang/en/docs/install/)
 
-_Steps:_
+### Support
 
-1. Fork this repository
-2. Clone your forked repository (your `origin`)
+...
 
-- `git clone git@github.com:YOUR_GITHUB_USERNAME/Viewers.git`
+## Quick Start Deployment
 
-3. Add `OHIF/Viewers` as a `remote` repository (the `upstream`)
+> This is only one of many ways to configure and deploy the OHIF Viewer. To learn more about your options, and how to choose the best one for your requirements, check out [our deployment recipes and documentation](https://docs.ohif.org/deployment/).
 
-- `git remote add upstream git@github.com:OHIF/Viewers.git`
+The fastest and easiest way to get started is to include the OHIF Viewer with a script tag. In practice, this is as simple as:
 
-### Developing Locally
-
-In your cloned repository's root folder, run:
+- Including the following dependencies with script tags:
+   - [React](https://unpkg.com/react@16/umd/react.production.min.js)
+   - [React Dom](https://unpkg.com/react-dom@16/umd/react-dom.production.min.js)
+   - The [OHIF Viewer](https://unpkg.com/ohif-viewer@0.19.5/dist/index.umd.js)
+- Have an element with an ID of `root` on the page
+- Configure the OHIF Viewer at `window.config`:
 
 ```js
-// Restore dependencies
+window.config = {
+  routerBasename: "/",
+  servers: {
+    dicomWeb: [
+      {
+        name: "DCM4CHEE",
+        qidoRoot: "https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs",
+        wadoRoot: "https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs",
+        qidoSupportsIncludeField: true,
+        imageRendering: "wadors",
+        thumbnailRendering: "wadors"
+      }
+    ]
+  }
+};
+```
+
+- Install the viewer: `window.OHIFStandaloneViewer.installViewer(window.config);`
+
+This exact setup is demonstrated in this [CodeSandbox](https://codesandbox.io/s/ohif-viewer-script-tag-usage-c4u4t) and in our [Embedding The Viewer](https://docs.ohif.org/deployment/recipes/embedded-viewer.html) deployment recipe.
+
+## Developing
+
+### Requirements
+
+- [Yarn 1.17.3+](https://yarnpkg.com/en/docs/install)
+- [Node 8+](https://nodejs.org/en/)
+- Yarn Workspaces should be enabled on your machine:
+  - `yarn config set workspaces-experimental true`
+
+### Getting Started
+
+1. [Fork this repository][how-to-fork]
+2. [Clone your forked repository][how-to-clone]
+   - `git clone https://github.com/YOUR-USERNAME/Viewers.git`
+3. Navigate to the cloned project's directory
+4. Add this repo as a `remote` named `upstream`
+   - `git remote add upstream https://github.com/OHIF/Viewers.git`
+5. `yarn install` to restore dependencies and link projects
+
+#### To Develop
+
+_From this repository's root directory:_
+
+```bash
+# Enable Yarn Workspaces
+yarn config set workspaces-experimental true
+
+# Restore dependencies
 yarn install
-
-// Stands up local server to host Viewer.
-// Viewer connects to our public cloud PACS by default
-yarn start
 ```
 
-For more advanced local development scenarios, like using your own locally
-hosted PACS and test data,
-[check out our Essential: Getting Started](https://docs.ohif.org/essentials/getting-started.html)
-guide.
+## Commands
 
-### E2E Tests
+These commands are available from the root directory. Each project directory also supports a number of commands that can be found in their respective `README.md` and `project.json` files.
 
-Using [Cypress](https://www.cypress.io/) to create End-to-End tests and check whether the application flow is performing correctly, ensuring that the integrated components are working as expected.
+| Yarn Commands        | Description                                                   |
+| -------------------- | ------------------------------------------------------------- |
+| **Develop**          |                                                               |
+| `dev` or `start`     | Default development experience for Viewer                     |
+| `dev:project <package-name>` | Replace with `core`, `ui`, `i18n`, `cornerstone`, `vtk`, etc. |
+| `test:unit`          | Jest multi-project test runner; overall coverage              |
+| **Deploy**           |                                                               |
+| `build`*             | Builds production output for our PWA Viewer                   |
+| `build:package`*             | Builds production `commonjs` output for our Viewer                 |
+| `build:package-all`*     | Builds commonjs bundles for all projects                      |
 
-#### Why Cypress?
 
-Cypress is a next generation front end testing tool built for the modern web.
-With Cypress is easy to set up, write, run and debug tests
+\* - For more information on our different builds, check out our [Deploy Docs][deployment-docs]
 
-It allow us to write different types of tests:
+## Projects
 
-- End-to-End tests
-- Integration tests
-- Unit tets
+The OHIF Medical Image Viewing Platform is maintained as a
+[`monorepo`][monorepo]. This means that this repository, instead of containing a
+single project, contains many projects. If you explore our project structure,
+you'll see the following:
 
-All tests must be in `./cypress/integration` folder.
-
-Commands to run the tests:
-
-```js
-// Open Cypress Dashboard that provides insight into what happened when your tests ran
-yarn run cy
-
-// Run all tests using Electron browser headless
-yarn run cy:run
-
-// Run all tests in CI mode
-yarn run cy:run:ci
+```bash
+.
+├── extensions              #
+│   ├── _example            # Skeleton of example extension
+│   ├── cornerstone         # 2D images w/ Cornerstone.js
+│   ├── dicom-html          # Structured Reports as HTML in viewport
+│   ├── dicom-microscopy    # Whole slide microscopy viewing
+│   ├── dicom-pdf           # View DICOM wrapped PDFs in viewport
+│   └── vtk                 # MPR and Volume support w/ VTK.js
+│
+├── platform                #
+│   ├── core                # Business Logic
+│   ├── i18n                # Internationalization Support
+│   ├── ui                  # React component library
+│   └── viewer              # Connects platform and extension projects
+│
+├── ...                     # misc. shared configuration
+├── lerna.json              # MonoRepo (Lerna) settings
+├── package.json            # Shared devDependencies and commands
+└── README.md               # This file
 ```
 
-### Contributing
+Want to better understand why and how we've structured this repository? Read
+more about it in our [Architecture Documentation][ohif-architecture].
 
-> Large portions of the Viewer's functionality are maintained in other
-> repositories. To get a better understanding of the Viewer's architecture and
-> "where things live", read
-> [our docs on the Viewer's architecture](https://docs.ohif.org/advanced/architecture.html#diagram)
+### Platform
 
-It is notoriously difficult to setup multiple dependent repositories for
-end-to-end testing and development. That's why we recommend writing and running
-unit tests when adding and modifying features. This allows us to program in
-isolation without a complex setup, and has the added benefit of producing
-well-tested business logic.
+These projects comprise the
 
-1. Clone this repository
-2. Navigate to the project directory, and `yarn install`
-3. To begin making changes, `yarn run dev`
-4. To commit changes, run `yarn run cm`
+| Name                            | Description | Links |
+| ------------------------------- | ----------- | ----- |
+| [@ohif/core][platform-core]     |             | NPM   |
+| [@ohif/i18n][platform-i18n]     |             | NPM   |
+| [@ohif/viewer][platform-viewer] |             | NPM   |
+| [@ohif/ui][platform-ui]         |             | NPM   |
 
-When creating tests, place the test file "next to" the file you're testing.
-[For example](https://github.com/OHIF/Viewers/blob/master/src/utils/index.test.js):
+### Extensions
 
-```js
-// File
-index.js
+This is a list of Extensions maintained by the OHIF Core team. It's possible to customize and configure these extensions, and you can even create your own. You can [read more about extensions here][ohif-extensions].
 
-// Test for file
-index.test.js
-```
-
-As you add and modify code, `jest` will watch for uncommitted changes and run
-your tests, reporting the results to your terminal. Make a pull request with
-your changes to `master`, and a core team member will review your work. If you
-have any questions, please don't hesitate to reach out via a GitHub issue.
-
-## Issues
-
-_Looking to contribute? Look for the [Good First Issue][good-first-issue]
-label._
-
-### 🐛 Bugs
-
-Please file an issue for bugs, missing documentation, or unexpected behavior.
-
-[**See Bugs**][bugs]
-
-### 💡 Feature Requests
-
-Please file an issue to suggest new features. Vote on feature requests by adding
-a 👍. This helps maintainers prioritize what to work on.
-
-[**See Feature Requests**][requests-feature]
-
-### ❓ Questions
-
-For questions related to using the library, please visit our support community,
-or file an issue on GitHub.
-
-[Google Group][google-group]
-
-## Roadmap
-
-If you want to know what's planned for the very near future,
-[check out our roadmap](https://ohif.canny.io/). The best way to influence when
-and what is worked on is to contribute to the conversation by creating GitHub
-issues, and contributing code through pull requests. OHIF's high level
-priorities for the near future are:
-
-- Feature parity with version 1
-- Extension and configuration improvements with key integration partners
-- Continued Developer Experience Improvements
-- Segmentation Tools, and improved VTK.js support
-
-More granular information will make it's way to the backlog as these items
-become scoped for development by core maintainers.
-
-> Don't hesitate to ask questions, propose features, or create pull requests.
-> We're here, we're listening, and we're ready to build the best open source
-> medical imaging viewer on the web.
-
-#### Roadmap Generously Powered by Canny.io
-
-<a href="https://ohif.canny.io/">
-  <img height="30" src="docs/latest/assets/img/canny-full.png" />
-</a>
-
-## Contributors
-
-Thanks goes to these wonderful people
-([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore -->
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/swederik"><img src="https://avatars3.githubusercontent.com/u/607793?v=4" width="100px;" alt="Erik Ziegler"/><br /><sub><b>Erik Ziegler</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=swederik" title="Code">💻</a> <a href="#infra-swederik" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
-    <td align="center"><a href="https://github.com/evren217"><img src="https://avatars1.githubusercontent.com/u/4920551?v=4" width="100px;" alt="Evren Ozkan"/><br /><sub><b>Evren Ozkan</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=evren217" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/galelis"><img src="https://avatars3.githubusercontent.com/u/2378326?v=4" width="100px;" alt="Gustavo André Lelis"/><br /><sub><b>Gustavo André Lelis</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=galelis" title="Code">💻</a></td>
-    <td align="center"><a href="http://dannyrb.com/"><img src="https://avatars1.githubusercontent.com/u/5797588?v=4" width="100px;" alt="Danny Brown"/><br /><sub><b>Danny Brown</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=dannyrb" title="Code">💻</a> <a href="#infra-dannyrb" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
-    <td align="center"><a href="https://github.com/all-contributors/all-contributors-bot"><img src="https://avatars3.githubusercontent.com/u/46843839?v=4" width="100px;" alt="allcontributors[bot]"/><br /><sub><b>allcontributors[bot]</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=allcontributors" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://www.linkedin.com/in/siliconvalleynextgeneration/"><img src="https://avatars0.githubusercontent.com/u/1230575?v=4" width="100px;" alt="Esref Durna"/><br /><sub><b>Esref Durna</b></sub></a><br /><a href="#question-EsrefDurna" title="Answering Questions">💬</a></td>
-    <td align="center"><a href="https://github.com/diego0020"><img src="https://avatars3.githubusercontent.com/u/7297450?v=4" width="100px;" alt="diego0020"/><br /><sub><b>diego0020</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=diego0020" title="Code">💻</a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://github.com/dlwire"><img src="https://avatars3.githubusercontent.com/u/1167291?v=4" width="100px;" alt="David Wire"/><br /><sub><b>David Wire</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=dlwire" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/jfmedeiros1820"><img src="https://avatars1.githubusercontent.com/u/2211708?v=4" width="100px;" alt="João Felipe de Medeiros Moreira"/><br /><sub><b>João Felipe de Medeiros Moreira</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=jfmedeiros1820" title="Tests">⚠️</a></td>
-    <td align="center"><a href="http://egor.lezhn.in"><img src="https://avatars0.githubusercontent.com/u/878990?v=4" width="100px;" alt="Egor Lezhnin"/><br /><sub><b>Egor Lezhnin</b></sub></a><br /><a href="https://github.com/OHIF/Viewers/commits?author=pavertomato" title="Code">💻</a></td>
-  </tr>
-</table>
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the
-[all-contributors](https://github.com/all-contributors/all-contributors)
-specification. Contributions of any kind welcome!
-
-## License
-
-MIT © [OHIF](https://github.com/OHIF)
+| Name                                                           | Description | Links |
+| -------------------------------------------------------------- | ----------- | ----- |
+| [@ohif/extension-cornestone][extension-cornerstone]            |             | NPM   |
+| [@ohif/extension-dicom-html][extension-dicom-html]             |             | NPM   |
+| [@ohif/extension-dicom-microscopy][extension-dicom-microscopy] |             | NPM   |
+| [@ohif/extension-dicom-pdf][extension-dicom-pdf]               |             | NPM   |
+| [@ohif/extension-vtk][extension-vtk]                           |             | NPM   |
 
 ## Acknowledgments
 
@@ -269,12 +211,20 @@ Cancer Institute, Informatics Technology for Cancer Research (ITCR) program,
 under a
 [grant to Dr. Gordon Harris at Massachusetts General Hospital (U24 CA199460)](https://projectreporter.nih.gov/project_info_description.cfm?aid=8971104).
 
+## License
+
+MIT © [OHIF](https://github.com/OHIF)
+
 <!--
-Links:
--->
+  Links
+  -->
 
 <!-- prettier-ignore-start -->
-<!-- ROW -->
+<!-- Badges -->
+[lerna-image]: https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg
+[lerna-url]: https://lerna.js.org/
+[netlify-image]: https://api.netlify.com/api/v1/badges/a5d369ab-18a6-41c3-bcde-83805205ac7f/deploy-status
+[netlify-url]: https://app.netlify.com/sites/ohif/deploys
 [all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
 [contributing-url]: https://github.com/OHIF/Viewers/blob/react/CONTRIBUTING.md
 [circleci-image]: https://circleci.com/gh/OHIF/Viewers.svg?style=svg
@@ -293,18 +243,27 @@ Links:
 [docker-image-url]: https://hub.docker.com/r/ohif/viewer
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
-<!-- DOCS -->
+<!-- Links -->
+[monorepo]: https://en.wikipedia.org/wiki/Monorepo
+[how-to-fork]: https://help.github.com/en/articles/fork-a-repo
+[how-to-clone]: https://help.github.com/en/articles/fork-a-repo#step-2-create-a-local-clone-of-your-fork
+[ohif-architecture]: https://docs.ohif.org/advanced/architecture.html
+[ohif-extensions]: https://docs.ohif.org/advanced/architecture.html
+[deployment-docs]: https://docs.ohif.org/deployment/
 [react-url]: https://reactjs.org/
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
 [ohif-viewer-url]: https://www.npmjs.com/package/ohif-viewer
 [configuration-url]: https://docs.ohif.org/essentials/configuration.html
 [extensions-url]: https://docs.ohif.org/advanced/extensions.html
-<!-- Misc. -->
-[react-viewer]: https://github.com/OHIF/Viewers/tree/react
-<!-- Issue Boilerplate -->
-[bugs]: https://github.com/OHIF/Viewers/labels/bug
-[requests-feature]: https://github.com/OHIF/Viewers/labels/enhancement
-[good-first-issue]: https://github.com/OHIF/Viewers/labels/good%20first%20issue
-[google-group]: https://groups.google.com/forum/#!forum/cornerstone-platform
-
+<!-- Platform -->
+[platform-core]: platform/core/README.md
+[platform-i18n]: platform/i18n/README.md
+[platform-ui]: platform/ui/README.md
+[platform-viewer]: platform/viewer/README.md
+<!-- Extensions -->
+[extension-cornerstone]: extensions/cornerstone/README.md
+[extension-dicom-html]: extensions/dicom-html/README.md
+[extension-dicom-microscopy]: extensions/dicom-microscopy/README.md
+[extension-dicom-pdf]: extensions/dicom-pdf/README.md
+[extension-vtk]: extensions/vtk/README.md
 <!-- prettier-ignore-end -->

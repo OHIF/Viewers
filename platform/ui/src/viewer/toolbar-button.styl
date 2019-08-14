@@ -1,0 +1,33 @@
+.toolbar-button
+  height: 48px;
+  color: var(--default-color);
+  float: left;
+  text-align: center;
+  padding: 0 10px;
+  cursor: pointer;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Chrome and Opera */
+
+  .toolbar-button-label
+    font-size: 12px;
+    font-weight: 500;
+
+  .expand-caret
+    width: 8px;
+    height: 8px;
+    transform: translate(2px, 2px);
+
+  svg
+    height: 21px;
+    width: 21px;
+    margin: 2px;
+
+  &:hover
+    color: var(--hover-color);
+
+  &.active, &:active
+    color: var(--active-color);

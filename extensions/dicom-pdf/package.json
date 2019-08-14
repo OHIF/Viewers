@@ -1,0 +1,42 @@
+{
+  "name": "@ohif/extension-dicom-pdf",
+  "version": "0.50.0-alpha.9",
+  "description": "OHIF extension for Dicom PDF",
+  "author": "OHIF",
+  "license": "MIT",
+  "repository": "OHIF/Viewers",
+  "main": "dist/index.umd.js",
+  "module": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev:dicom-pdf": "yarn run dev",
+    "build": "webpack --config .webpack/webpack.prod.js",
+    "build:package": "yarn run build",
+    "prepublishOnly": "yarn run build",
+    "start": "yarn run dev"
+  },
+  "peerDependencies": {
+    "@ohif/core": "^0.50.0-alpha.0",
+    "dicom-parser": "^1.8.3",
+    "prop-types": "^15.6.2",
+    "react": "^15.0.0 || ^16.0.0",
+    "react-dom": "^15.0.0 || ^16.0.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "classnames": "^2.2.6",
+    "lodash.isequal": "^4.5.0"
+  },
+  "gitHead": "a5baa9228c0eda0df880136bde4420d78e6f8706"
+}

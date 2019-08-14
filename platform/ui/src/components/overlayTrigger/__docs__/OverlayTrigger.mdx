@@ -1,0 +1,84 @@
+---
+name: Overlay Trigger
+menu: Components
+route: /components/overlay-trigger
+---
+
+import { Playground, Props } from 'docz'
+import { Tooltip } from './../../tooltip'
+import { OverlayTrigger } from './../index.js'
+
+# Overlay Trigger
+
+## Basic usage
+
+### On Hover
+
+<Playground>
+
+    <div style={{
+        display: 'flex',
+        justifyContent: 'space-between'
+    }}>
+        {
+        ['right', 'left', 'bottom', 'top'].map((placement) => {
+            return (
+                <React.Fragment key={`example-${placement}`}>
+                <OverlayTrigger
+                    key={`example-${placement}`}
+                    placement={placement}
+                    overlay={
+                    <Tooltip
+                        placement={placement}
+                        className='in'
+                        id={`tooltip-${placement}`}
+                    >
+                        Here I am!
+                    </Tooltip>
+                    }
+                >
+                    <button> Tooltip on {placement}</button>
+                </OverlayTrigger>
+                </React.Fragment>
+            )
+        })
+    }
+    </div>
+
+</Playground>
+
+### On Click
+
+<Playground>
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+    }}
+  >
+    {['right', 'left', 'bottom', 'top'].map(placement => {
+      return (
+        <OverlayTrigger
+          key={`example-${placement}`}
+          placement={placement}
+          trigger="click"
+          overlay={
+            <Tooltip
+              placement={placement}
+              className="in"
+              id={`tooltip-${placement}`}
+            >
+              Here I am!
+            </Tooltip>
+          }
+        >
+          <button> Tooltip on {placement}</button>
+        </OverlayTrigger>
+      )
+    })}
+  </div>
+</Playground>
+
+## API
+
+<Props of={OverlayTrigger} />
