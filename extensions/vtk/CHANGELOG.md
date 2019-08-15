@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.1...@ohif/extension-vtk@0.50.2) (2019-08-15)
+
+
+### Bug Fixes
+
+* Update vtk and viewport dependencies ([98c40bc](https://github.com/OHIF/Viewers/commit/98c40bc))
+
+
+
+
+
 ## [0.50.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.0-alpha.10...@ohif/extension-vtk@0.50.1) (2019-08-14)
 
 **Note:** Version bump only for package @ohif/extension-vtk
