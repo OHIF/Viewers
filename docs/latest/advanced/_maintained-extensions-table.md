@@ -36,7 +36,7 @@
                 <a href="">HTML</a>
             </td>
             <td>
-                Renders text and HTML content for <a href="https://github.com/OHIF/Viewers/blob/react/extensions/ohif-dicom-html-extension/src/OHIFDicomHtmlSopClassHandler.js#L7-L15">specific SopClassUIDs</a>.
+                Renders text and HTML content for <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-html/src/OHIFDicomHtmlSopClassHandler.js#L18">specific SopClassUIDs</a>.
             </td>
             <td>Viewport, SopClassHandler</td>
         </tr>
@@ -45,7 +45,7 @@
                 <a href="https://www.npmjs.com/package/ohif-dicom-pdf-extension">PDF</a>
             </td>
             <td>
-                Renders PDFs for a <a href="https://github.com/OHIF/Viewers/blob/react/extensions/ohif-dicom-pdf-extension/src/OHIFDicomPDFSopClassHandler.js#L8">specific SopClassUID</a>.
+                Renders PDFs for a <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-pdf/src/OHIFDicomPDFSopClassHandler.js#L8">specific SopClassUID</a>.
             </td>
             <td>Viewport, SopClassHandler</td>
         </tr>
@@ -54,7 +54,7 @@
                 <a href="https://www.npmjs.com/package/ohif-dicom-microscopy-extension">Microscopy</a>
             </td>
             <td>
-                Renders Microscopy images for a <a href="https://github.com/OHIF/Viewers/blob/react/extensions/ohif-dicom-microscopy-extension/src/DicomMicroscopySopClassHandler.js#L6">specific SopClassUID</a>.
+                Renders Microscopy images for a <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-microscopy/src/DicomMicroscopySopClassHandler.js#L9">specific SopClassUID</a>.
             </td>
             <td>Viewport, SopClassHandler</td>
         </tr>

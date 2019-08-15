@@ -9,9 +9,9 @@
 The configuration for our project is in the `/public/config` directory. Our
 build process knows which configuration file to use based on the
 `REACT_APP_CONFIG` environment variable. By default, its value is
-[`default.js`](https://github.com/OHIF/Viewers/blob/react/public/config/default.js).
+[`default.js`](https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/config/default.js).
 When we build, the `%REACT_APP_CONFIG%` value in
-our[`/public/index.html`](https://github.com/OHIF/Viewers/blob/react/public/index.html#L12-L15)
+our[`/public/index.html`](https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/index.html#L12-L15)
 file is substituted for the correct configuration file's name. This sets the
 `window.config` equal to our configuration file's value.
 

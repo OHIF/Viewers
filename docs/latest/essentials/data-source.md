@@ -60,7 +60,7 @@ _Upload your first Study:_
 #### Orthanc: Learn More
 
 You can see the `docker-compose.yml` file this command runs at
-[`<project-root>/docker/Nginx-Docker/`](#), and more on Orthanc for Docker in
+[`<project-root>/docker/Nginx-Docker/`](https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/Nginx-Orthanc/docker-compose.yml), and more on Orthanc for Docker in
 [Orthanc's documentation][orthanc-docker].
 
 ### Connecting to Orthanc

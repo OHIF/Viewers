@@ -11,7 +11,7 @@ control.
 Do not use this recipe to host sensitive medical data on the open web. Depending
 on your company's policies, this may be an appropriate setup on an internal
 network when protected with a server's basic authentication. For a more robust
-setup, check out our [user account control recpie](./user-account-control.md)
+setup, check out our [user account control recipe](./user-account-control.md)
 that builds on the lessons learned here.
 
 ## Overview
@@ -51,7 +51,7 @@ We can solve this one of two ways:
 
 This solution uses the first approach, but you can see an example of the second
 in the `docker-compose` bundled with this project for local development:
-[HERE](#)
+[HERE](https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/Nginx-Orthanc/docker-compose.yml)
 
 You can read more about CORS in this Medium article: [Understanding
 CORS][understanding-cors]
@@ -238,8 +238,8 @@ community members put together:
 [orthanc-docs]: http://book.orthanc-server.com/users/configuration.html#configuration
 [lua-resty-openidc-docs]: https://github.com/zmartzone/lua-resty-openidc
 <!-- SRC -->
-[config]: #
-[dockerfile]: #
-[config-nginx]: #
-[config-orthanc]: #
+[config]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/src/config.js
+[dockerfile]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/OpenResty-Orthanc/dockerfile
+[config-nginx]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/OpenResty-Orthanc/config/nginx.conf
+[config-orthanc]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/Nginx-Orthanc/config/orthanc.json
 <!-- prettier-ignore-end -->

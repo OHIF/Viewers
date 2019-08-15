@@ -281,9 +281,9 @@ community members put together:
 [orthanc-docs]: http://book.orthanc-server.com/users/configuration.html#configuration
 [lua-resty-openidc-docs]: https://github.com/zmartzone/lua-resty-openidc
 <!-- SRC -->
-[config]: #
-[dockerfile]: #
-[config-nginx]: #
-[config-orthanc]: #
-[config-keycloak]: #
+[config]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/src/config.js
+[dockerfile]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/OpenResty-Orthanc/dockerfile
+[config-nginx]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/OpenResty-Orthanc/config/nginx.conf
+[config-orthanc]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/Nginx-Orthanc/config/orthanc.json
+[config-keycloak]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/OpenResty-Orthanc-Keycloak/config/ohif-keycloak-realm.json
 <!-- prettier-ignore-end -->

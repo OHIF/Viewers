@@ -152,7 +152,7 @@ is used depends on:
 <center><i>An example of three Viewports</i></center>
 
 For a complete example implementation,
-[check out the OHIFCornerstoneViewport](https://github.com/OHIF/Viewers/blob/react/extensions/ohif-cornerstone-extension/src/OHIFCornerstoneViewport.js).
+[check out the OHIFCornerstoneViewport](https://github.com/OHIF/Viewers/blob/master/extensions/cornerstone/src/OHIFCornerstoneViewport.js).
 
 #### Toolbar
 
@@ -168,7 +168,7 @@ store.
 Toolbar components are rendered in the `ToolbarRow` component.
 
 For a complete example implementation,
-[check out the OHIFCornerstoneViewport's Toolbar Module](https://github.com/OHIF/Viewers/blob/react/extensions/ohif-cornerstone-extension/src/ToolbarModule.js).
+[check out the OHIFCornerstoneViewport's Toolbar Module](https://github.com/OHIF/Viewers/blob/master/extensions/cornerstone/src/toolbarModule.js).
 
 #### SopClassHandler
 
@@ -214,8 +214,8 @@ ExtensionManager.registerExtensions(store, extensions);
 
 A small number of powerful extensions for popular use cases are maintained by
 OHIF. They're co-located in the
-[`OHIF/Viewers`](https://github.com/OHIF/Viewers/tree/react/) repository, in the
-top level [`extensions/`](https://github.com/OHIF/Viewers/tree/react/extensions)
+[`OHIF/Viewers`](https://github.com/OHIF/Viewers/) repository, in the
+top level [`extensions/`](https://github.com/OHIF/Viewers/tree/master/extensions)
 directory.
 
 {% include "./_maintained-extensions-table.md" %}
@@ -225,6 +225,6 @@ directory.
 -->
 
 <!-- prettier-ignore-start -->
-[example-ext-src]: https://github.com/OHIF/Viewers/blob/master/extensions/_ohif-example-extension/src/index.js)
+[example-ext-src]: https://github.com/OHIF/Viewers/blob/master/extensions/_example/src/index.js
 [module-types]: https://github.com/OHIF/ohif-core/blob/43c08a29eff3fb646a0e83a03a236ddd84f4a6e8/src/plugins.js#L1-L6
 <!-- prettier-ignore-end -->

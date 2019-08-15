@@ -184,12 +184,12 @@ many possible configurations, so please don't feel limited to these setups.
 Please feel free to suggest or contribute your own recipes.
 
 - Script Include
-  - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)
+  - [Embedding the Viewer](https://github.com/OHIF/Viewers/blob/master/docs/latest/deployment/recipes/embedded-viewer.md)
 - Stand-Alone
-  - [Build for Production](deployment/recipes/build-for-production.md)
-  - [Static](deployment/recipes/static-assets.md)
-  - [Nginx + Image Archive](deployment/recipes/nginx--image-archive.md)
-  - [User Account Control](deployment/recipes/user-account-control.md)
+  - [Build for Production](https://github.com/OHIF/Viewers/blob/master/docs/latest/deployment/recipes/build-for-production.md)
+  - [Static](https://github.com/OHIF/Viewers/blob/master/docs/latest/deployment/recipes/static-assets.md)
+  - [Nginx + Image Archive](https://github.com/OHIF/Viewers/blob/master/docs/latest/deployment/recipes/nginx--image-archive.md)
+  - [User Account Control](https://github.com/OHIF/Viewers/blob/master/docs/latest/deployment/recipes/user-account-control.md)
 
 <!--
   Links
