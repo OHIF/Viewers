@@ -22,6 +22,7 @@ module.exports = {
   // https://babeljs.io/docs/en/options#babelrcroots
   babelrcRoots: ['./platform/*', './extensions/*'],
   plugins: [
+    'react-hot-loader/babel',
     'inline-react-svg',
     '@babel/plugin-proposal-class-properties',
     '@babel/plugin-proposal-object-rest-spread',
