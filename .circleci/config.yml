@@ -48,9 +48,9 @@ jobs:
             - ~/.cache ## Cache yarn and Cypress
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
-      # RUN TESTS
+      # RUN UNIT TESTS
       - run:
-          name: 'JavaScript Test Suite'
+          name: 'JavaScript Unit Test Suite'
           command: yarn run test:unit:ci
 
       # PLATFORM/VIEWER
@@ -292,6 +292,22 @@ workflows:
           yarn: true
           store_artifacts: true
           start: yarn run dev
+          wait-on: 'http://localhost:3000'
+          no-workspace: true # Don't persist workspace
+          working_directory: platform/viewer
+          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          post-steps:
+            - store_test_results:
+                path: cypress/results
+          requires:
+            - PR_UNIT_TESTS
+      - cypress/run:
+          pre-steps:
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
+          yarn: true
+          store_artifacts: true
+          build: yarn run build:package && cd platform/viewer && yarn run make-script-tag-example
+          start: yarn run start-server-script-tag
           wait-on: 'http://localhost:3000'
           no-workspace: true # Don't persist workspace
           working_directory: platform/viewer
