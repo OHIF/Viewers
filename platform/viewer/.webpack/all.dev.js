@@ -57,6 +57,7 @@ module.exports = (env, argv) => {
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
+      hot: true,
       open: true,
       port: 3000,
       historyApiFallback: {

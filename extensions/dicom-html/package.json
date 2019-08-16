@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-html",
-  "version": "0.50.0-alpha.10",
+  "version": "0.50.1",
   "description": "OHIF extension for rendering structured reports to HTML",
   "author": "OHIF",
   "license": "MIT",
@@ -8,8 +8,9 @@
   "main": "dist/index.umd.js",
   "module": "src/index.js",
   "engines": {
-    "node": ">=8",
-    "npm": ">=5"
+    "node": ">=10",
+    "npm": ">=6",
+    "yarn": ">=1.16.0"
   },
   "files": [
     "dist",
@@ -27,7 +28,7 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "^0.50.0-alpha.0",
+    "@ohif/core": "^0.50.0",
     "dcmjs": "^0.3.3",
     "prop-types": "^15.6.2",
     "react": "^15.0.0 || ^16.0.0",
