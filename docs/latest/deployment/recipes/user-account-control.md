@@ -125,10 +125,10 @@ likely want to update:
 The OHIF Viewer's configuration is imported from a static `.js` file and made
 available globally at `window.config`. The configuration we use is set to a
 specific file when we build the viewer, and determined by the env variable:
-`REACT_APP_CONFIG`. You can see where we set its value in the `dockerfile` for
+`APP_CONFIG`. You can see where we set its value in the `dockerfile` for
 this solution:
 
-`ENV REACT_APP_CONFIG=config/docker_openresty-orthanc-keycloak.js`
+`ENV APP_CONFIG=config/docker_openresty-orthanc-keycloak.js`
 
 You can find the configuration we're using here:
 `/public/config/docker_openresty-orthanc-keycloak.js`
