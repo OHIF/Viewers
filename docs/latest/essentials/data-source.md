@@ -87,16 +87,16 @@ is running the `dev:orthanc` script in our project's `package.json`. That script
 is:
 
 ```js
-cross-env PORT=5000 REACT_APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start
+cross-env PORT=5000 APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start
 ```
 
 - `cross-env` sets two environment variables
   - PORT: 5000
-  - REACT_APP_CONFIG: `config/docker_nginx-orthanc.js`
+  - APP_CONFIG: `config/docker_nginx-orthanc.js`
 - `react-scripts` runs it's `start` script. This is [the de-facto
   way][cra-start] to run a "Create React App" in development mode.
 
-The `REACT_APP_CONFIG` value tells our app which file to load on to
+The `APP_CONFIG` value tells our app which file to load on to
 `window.config`. By default, our app uses the file at
 `<project-root>/public/config/default.js`. Here is what that configuration looks
 like:
