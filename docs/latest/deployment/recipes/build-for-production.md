@@ -71,11 +71,11 @@ how to configure the project for your own imaging archive below.
 #### How it Works
 
 The configuration for our project is in the `/public/config` directory. Our
-build process knows which configuration file to use based on the
-`APP_CONFIG` environment variable. By default, its value is
-[`default.js`](https://github.com/OHIF/Viewers/blob/react/public/config/default.js).
+build process knows which configuration file to use based on the `APP_CONFIG`
+environment variable. By default, its value is
+[`default.js`](https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/config/default.js).
 When we build, the `%APP_CONFIG%` value in
-our[`/public/index.html`](https://github.com/OHIF/Viewers/blob/react/public/index.html#L12-L15)
+our[`/public/index.html`](https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/index.html)
 file is substituted for the correct configuration file's name. This sets
 the`window.config` equal to our configuration file's value.
 
@@ -104,12 +104,12 @@ window.config = {
       },
     ],
   },
-}
+};
 ```
 
 You can also create a new config file and specify its path relative to the build
-output's root by setting the `APP_CONFIG` environment variable. You can
-set the value of this environment variable a few different ways:
+output's root by setting the `APP_CONFIG` environment variable. You can set the
+value of this environment variable a few different ways:
 
 - [Add a temporary environment variable in your shell](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#adding-temporary-environment-variables-in-your-shell)
 - [Add environment specific variables in `.env` file(s)](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#adding-development-environment-variables-in-env)

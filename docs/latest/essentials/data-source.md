@@ -60,8 +60,8 @@ _Upload your first Study:_
 #### Orthanc: Learn More
 
 You can see the `docker-compose.yml` file this command runs at
-[`<project-root>/docker/Nginx-Docker/`](#), and more on Orthanc for Docker in
-[Orthanc's documentation][orthanc-docker].
+[`<project-root>/platform/viewer/.recipes/Nginx-Orthanc/`](https://github.com/OHIF/Viewers/tree/master/platform/viewer/.recipes/Nginx-Orthanc),
+and more on Orthanc for Docker in [Orthanc's documentation][orthanc-docker].
 
 ### Connecting to Orthanc
 
@@ -96,10 +96,9 @@ cross-env PORT=5000 APP_CONFIG=config/docker_nginx-orthanc.js react-scripts star
 - `react-scripts` runs it's `start` script. This is [the de-facto
   way][cra-start] to run a "Create React App" in development mode.
 
-The `APP_CONFIG` value tells our app which file to load on to
-`window.config`. By default, our app uses the file at
-`<project-root>/public/config/default.js`. Here is what that configuration looks
-like:
+The `APP_CONFIG` value tells our app which file to load on to `window.config`.
+By default, our app uses the file at `<project-root>/public/config/default.js`.
+Here is what that configuration looks like:
 
 ```js
 window.config = {
