@@ -8,18 +8,17 @@ Why do we write tests?
 
 - Increase confidance
 
-You're testing implementation details if:
-
-- Your test does something that the consumer of your code would never do.
-  - IE. Using a private function
-- A refactor can break your tests
-
 ## Kinds of Tests
 
-| Test Type | Speed                | Cost                                 |
-| --------- | -------------------- | ------------------------------------ |
-| Static    | :rocket: Instant     | :money_with_wings:                   |
-| Unit      | :airplane: Very Fast | :money_with_wings::money_with_wings: |
+Test's buy us confidence, but not all tests are created equal. Each kind of test
+has a different cost to write and maintain. More costly tests
+
+| Test Type   | Example                                                              | Speed            | Cost                                                                     |
+| ----------- | -------------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------ |
+| Static      | `addNumbers(1, '2')` was called with a `string`, `int` was expected. | :rocket: Instant | :money_with_wings:                                                       |
+| Unit        | `addNumbers(1, 2)` returns expected result `3`                       | :airplane: Fast  | :money_with_wings::money_with_wings:                                     |
+| Integration |                                                                      | :running: Okay   | :money_with_wings::money_with_wings::money_with_wings:                   |
+| End-to-end  | When I click "Sign In", the page navigates to the dashboard.         | :turtle: Slow    | :money_with_wings::money_with_wings::money_with_wings::money_with_wings: |
 
 ### Static Code Analysis
 
@@ -38,6 +37,19 @@ Static code analysis can't test business logic.
 
 ...
 
+#### What should be unit tested?
+
+Follow the top level exports. Anything that is exposed as public API should have
+unit tests. These are th
+
+#### What should NOT be unit tested?
+
+You're testing implementation details if:
+
+- Your test does something that the consumer of your code would never do.
+  - IE. Using a private function
+- A refactor can break your tests
+
 ### Integration Tests
 
 ...
@@ -49,9 +61,8 @@ Static code analysis can't test business logic.
 ## Further Reading
 
 - [Assert(js) Conf 2018 Talks][assert-js-talks]
-  - [Write tests. Not too many. Mostly integration.](https://www.youtube.com/watch?list=PLV5CVI1eNcJgNqzNwcs4UKrlJdhfDjshf) -
-    Kent C. Dodds
-  -
+  - [Write tests. Not too many. Mostly integration.][kent-talk] - Kent C. Dodds
+  - [I see your point, but…][gleb-talk] - Gleb Bahmutov
 
 <!--
   Links
@@ -60,7 +71,11 @@ Static code analysis can't test business logic.
 <!-- prettier-ignore-start -->
 [eslint-rules]: https://eslint.org/docs/rules/
 [typescript-docs]: https://www.typescriptlang.org/docs/home.html
+<!-- Talks -->
 [assert-js-talks]: https://www.youtube.com/playlist?list=PLZ66c9_z3umNSrKSb5cmpxdXZcIPNvKGw
+[kent-talk]: https://www.youtube.com/watch?list=PLV5CVI1eNcJgNqzNwcs4UKrlJdhfDjshf
+[gleb-talk]: https://www.youtube.com/watch?v=5FnalKRjpZk
+<!-- Images -->
 [testing-trophy]: https://twitter.com/kentcdodds/status/960723172591992832?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E960723172591992832&ref_url=https%3A%2F%2Fkentcdodds.com%2Fblog%2Fwrite-tests
 [aaron-square]: https://twitter.com/Carofine247/status/966727489274961920
 [gleb-pyramid]: https://twitter.com/Carofine247/status/966764532046684160/photo/3
