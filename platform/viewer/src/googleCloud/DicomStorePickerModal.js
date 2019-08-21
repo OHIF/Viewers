@@ -12,10 +12,15 @@ class DicomStorePickerModal extends Component {
     setServers: PropTypes.func.isRequired,
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func,
+    server: PropTypes.object,
   };
 
   static defaultProps = {
     isOpen: false,
+  };
+
+  setServer = () => {
+    if (this.props.server) this.props.setServers(this.props.server);
   };
 
   handleEvent = data => {
@@ -33,35 +38,62 @@ class DicomStorePickerModal extends Component {
         supportsFuzzyMatching: false,
       },
     ];
-
     this.props.setServers(servers);
   };
 
   render() {
-    return (
-      <Modal
-        show={this.props.isOpen}
-        onHide={this.props.onClose}
-        aria-labelledby="ModalHeader"
-        className="modal fade themed in"
-        backdrop={false}
-        size={'md'}
-        keyboard={true}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {this.props.t('Google Cloud Healthcare API')}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <DatasetSelector
-            setServers={this.handleEvent}
-            user={this.props.user}
-            url={this.props.url}
-          />
-        </Modal.Body>
-      </Modal>
-    );
+    if (this.props.server) {
+      return (
+        <Modal
+          show={this.props.isOpen}
+          onHide={this.props.onClose}
+          onEnter={this.setServer}
+          aria-labelledby="ModalHeader"
+          className="modal fade themed in"
+          backdrop={false}
+          size={'md'}
+          keyboard={true}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              {this.props.t('Google Cloud Healthcare API')}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <DatasetSelector
+              setServers={this.handleEvent}
+              user={this.props.user}
+              url={this.props.url}
+            />
+          </Modal.Body>
+        </Modal>
+      );
+    } else {
+      return (
+        <Modal
+          show={this.props.isOpen}
+          onHide={this.props.onClose}
+          aria-labelledby="ModalHeader"
+          className="modal fade themed in"
+          backdrop={false}
+          size={'md'}
+          keyboard={true}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              {this.props.t('Google Cloud Healthcare API')}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <DatasetSelector
+              setServers={this.handleEvent}
+              user={this.props.user}
+              url={this.props.url}
+            />
+          </Modal.Body>
+        </Modal>
+      );
+    }
   }
 }
 
