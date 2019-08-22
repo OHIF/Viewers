@@ -4,21 +4,19 @@
 > philosiphy. See something you want to discuss or think should be changed? Open
 > a PR and let's discuss.
 
-Why do we write tests?
-
-- Increase confidance
+Why do we write tests? The biggest and most important reason is _CONFIDANCE_.
 
 ## Kinds of Tests
 
 Test's buy us confidence, but not all tests are created equal. Each kind of test
 has a different cost to write and maintain. More costly tests
 
-| Test Type   | Example                                                              | Speed            | Cost                                                                     |
-| ----------- | -------------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------ |
-| Static      | `addNumbers(1, '2')` was called with a `string`, `int` was expected. | :rocket: Instant | :money_with_wings:                                                       |
-| Unit        | `addNumbers(1, 2)` returns expected result `3`                       | :airplane: Fast  | :money_with_wings::money_with_wings:                                     |
-| Integration |                                                                      | :running: Okay   | :money_with_wings::money_with_wings::money_with_wings:                   |
-| End-to-end  | When I click "Sign In", the page navigates to the dashboard.         | :turtle: Slow    | :money_with_wings::money_with_wings::money_with_wings::money_with_wings: |
+| Test Type   | Example                                                                                    | Speed            | Cost                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------ | ---------------- | ------------------------------------------------------------------------ |
+| Static      | `addNumbers(1, '2')` was called with a `string`, `int` was expected.                       | :rocket: Instant | :money_with_wings:                                                       |
+| Unit        | `addNumbers(1, 2)` returns expected result `3`                                             | :airplane: Fast  | :money_with_wings::money_with_wings:                                     |
+| Integration | When I Click "Sign In", the page navigates to the dashboard (with mocked network requests) | :running: Okay   | :money_with_wings::money_with_wings::money_with_wings:                   |
+| End-to-end  | When I click "Sign In", the page navigates to the dashboard (with no mocks)                | :turtle: Slow    | :money_with_wings::money_with_wings::money_with_wings::money_with_wings: |
 
 ### Static Code Analysis
 
@@ -37,12 +35,12 @@ Static code analysis can't test business logic.
 
 ...
 
-#### What should be unit tested?
+#### When should we unit test?
 
 Follow the top level exports. Anything that is exposed as public API should have
 unit tests. These are th
 
-#### What should NOT be unit tested?
+#### When should we avoid unit tests?
 
 You're testing implementation details if:
 
@@ -56,13 +54,27 @@ You're testing implementation details if:
 
 ### End-to-End Tests
 
-...
+These are the most expensive tests to write and maintain. Largely because, when
+they fail, they have the largest number of potential points of failure. So why
+do we write them? Because they also buy us the most confidance.
+
+We should reserve end-to-end tests for mission critical features. A good example
+is testing user authentication. If a user can't sign in to your application,
+it's an emergency. Having a high degree of confidance that users can always
+authenticate is very valuable.
+
+#### When should we test?
+
+Mission critical features and functionality. Unsure if we should have a test for
+feature `X` or scenario `Y`? Open an issue and let's discuss.
 
 ## Further Reading
 
 - [Assert(js) Conf 2018 Talks][assert-js-talks]
   - [Write tests. Not too many. Mostly integration.][kent-talk] - Kent C. Dodds
   - [I see your point, but…][gleb-talk] - Gleb Bahmutov
+- [Statc vs Unit vs Integration vs E2E Testing][kent-blog] - Kent C. Dodds
+  (Blog)
 
 <!--
   Links
@@ -75,6 +87,7 @@ You're testing implementation details if:
 [assert-js-talks]: https://www.youtube.com/playlist?list=PLZ66c9_z3umNSrKSb5cmpxdXZcIPNvKGw
 [kent-talk]: https://www.youtube.com/watch?list=PLV5CVI1eNcJgNqzNwcs4UKrlJdhfDjshf
 [gleb-talk]: https://www.youtube.com/watch?v=5FnalKRjpZk
+[kent-blog]: https://kentcdodds.com/blog/unit-vs-integration-vs-e2e-tests
 <!-- Images -->
 [testing-trophy]: https://twitter.com/kentcdodds/status/960723172591992832?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E960723172591992832&ref_url=https%3A%2F%2Fkentcdodds.com%2Fblog%2Fwrite-tests
 [aaron-square]: https://twitter.com/Carofine247/status/966727489274961920
