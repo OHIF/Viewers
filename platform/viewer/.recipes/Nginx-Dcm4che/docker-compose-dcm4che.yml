@@ -69,7 +69,7 @@ services:
     #   - orthanc
     environment:
       - NODE_ENV=production
-      - REACT_APP_CONFIG=config/local_dcm4chee
+      - APP_CONFIG=config/local_dcm4chee
     restart: always
     networks:
       - dcm4che_default

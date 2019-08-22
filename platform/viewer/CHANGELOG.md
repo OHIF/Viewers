@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.6](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.5...@ohif/viewer@0.50.6) (2019-08-22)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [0.50.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.4...@ohif/viewer@0.50.5) (2019-08-21)
+
+
+### Bug Fixes
+
+* **StandaloneRouting:** Promise rejection - added `return` ([#791](https://github.com/OHIF/Viewers/issues/791)) ([d09fb4e](https://github.com/OHIF/Viewers/commit/d09fb4e))
+
+
+
+
+
+## [0.50.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.3...@ohif/viewer@0.50.4) (2019-08-20)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [0.50.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.2...@ohif/viewer@0.50.3) (2019-08-15)
 
 **Note:** Version bump only for package @ohif/viewer
