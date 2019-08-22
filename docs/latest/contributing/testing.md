@@ -9,20 +9,20 @@ different. But do you know why we write tests? Do you know when to write one, or
 what kind of test to write? How do you know if a test is a _"good"_ test? This
 document's goal is to give you the tools you need to make those determinations.
 
-Okay. So why do we write tests? To increase our... :drum::
+Okay. So why do we write tests? To increase our... **CONFIDENCE**
 
-**CONFIDENCE**
+- If I do a large refactor, does everything still work?
+- If I changed some critical piece of code, is it safe to push to production?
 
-> I want to be confident that the code I'm writing... won't break the app that I
-> have running in production. So whatever I do, I want to make sure that the
-> kinds of tests I write bring me the most confidence possible and I need to be
-> cognizant of the trade-offs I'm making when testing. - Kent C. Dodds
+Gaining the confidence we need to answer these questions after every change is
+costly. Good tests allow us to answer them without manual regression testing.
+What and how we choose to test to build that confidence is nuanced.
 
 ## Kinds of Tests
 
 Test's buy us confidence, but not all tests are created equal. Each kind of test
 has a different cost to write and maintain. An expensive test is worth it if it
-gives us confidance that a payment is processed, but it may not be the best
+gives us confidence that a payment is processed, but it may not be the best
 choice for asserting an element's border color.
 
 | Test Type   | Example                                                                  | Speed            | Cost                                                                     |
@@ -31,6 +31,10 @@ choice for asserting an element's border color.
 | Unit        | `addNumbers(1, 2)` returns expected result `3`                           | :airplane: Fast  | :money_with_wings::money_with_wings:                                     |
 | Integration | Clicking "Sign In", navigates to the dashboard (mocked network requests) | :running: Okay   | :money_with_wings::money_with_wings::money_with_wings:                   |
 | End-to-end  | Clicking "Sign In", navigates to the dashboard (no mocks)                | :turtle: Slow    | :money_with_wings::money_with_wings::money_with_wings::money_with_wings: |
+
+- :rocket: Speed: How quickly tests run
+- :money_with_wings: Cost: Time to write, and to debug when broken (more points
+  of failure)
 
 ### Static Code Analysis
 
@@ -66,22 +70,20 @@ Where it falls short: That you're calling a dependency appropriately.
 
 ### Integration Tests
 
-Integration tests take things one step further. You
-
-Where it falls short: That you're passing the right data to your backend.
+We write integration tests to gain confidence that several units work together.
+Generally, we want to mock as little as possible for these tests. In practice,
+this means only mocking network requests.
 
 ### End-to-End Tests
 
 These are the most expensive tests to write and maintain. Largely because, when
 they fail, they have the largest number of potential points of failure. So why
-do we write them? Because they also buy us the most confidance.
+do we write them? Because they also buy us the most confidence.
 
 We should reserve end-to-end tests for mission critical features. A good example
 is testing user authentication. If a user can't sign in to your application,
-it's an emergency. Having a high degree of confidance that users can always
+it's an emergency. Having a high degree of confidence that users can always
 authenticate is very valuable.
-
-Where it falls short:
 
 #### When should we test?
 
@@ -90,11 +92,6 @@ functionality until unit tests catch up. Unsure if we should have a test for
 feature `X` or scenario `Y`? Open an issue and let's discuss.
 
 ## Further Reading
-
-Okay, so hopefully you have more confidance in your understanding of _why_ we
-test, and the trade-offs we weigh when determining what kind of test should be
-written. For the _how_, check out some of the links below, or read some of the
-existing tests in this repository.
 
 ### General
 
