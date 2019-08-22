@@ -4,7 +4,19 @@
 > philosiphy. See something you want to discuss or think should be changed? Open
 > a PR and let's discuss.
 
-Why do we write tests? The biggest and most important reason is _CONFIDANCE_.
+You're an engineer. You know how to write code, and writing tests isn't all that
+different. But do you know why we write tests? Do you know when to write one, or
+what kind of test to write? How do you know if a test is a _"good"_ test? This
+document's goal is to give you the tools you need to make those determiniations.
+
+Okay. So why do we write tests? To increase our... :drum::
+
+**CONFIDENCE**
+
+> I want to be confident that the code I'm writing... won't break the app that I
+> have running in production. So whatever I do, I want to make sure that the
+> kinds of tests I write bring me the most confidence possible and I need to be
+> cognizant of the trade-offs I'm making when testing. - Kent C. Dodds
 
 ## Kinds of Tests
 
