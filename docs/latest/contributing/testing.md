@@ -4,6 +4,8 @@
 > philosiphy. See something you want to discuss or think should be changed? Open
 > a PR and let's discuss.
 
+[![testing dorito][testing-dorito-img]][testing-dorito]
+
 You're an engineer. You know how to write code, and writing tests isn't all that
 different. But do you know why we write tests? Do you know when to write one, or
 what kind of test to write? How do you know if a test is a _"good"_ test? This
@@ -16,7 +18,7 @@ Okay. So why do we write tests? To increase our... **CONFIDENCE**
 
 Gaining the confidence we need to answer these questions after every change is
 costly. Good tests allow us to answer them without manual regression testing.
-What and how we choose to test to build that confidence is nuanced.
+What and how we choose to test to increase that confidence is nuanced.
 
 ## Kinds of Tests
 
@@ -27,8 +29,8 @@ choice for asserting an element's border color.
 
 | Test Type   | Example                                                                  | Speed            | Cost                                                                     |
 | ----------- | ------------------------------------------------------------------------ | ---------------- | ------------------------------------------------------------------------ |
-| Static      | `addNumbers(1, '2')` was called with a `string`, `int` was expected.     | :rocket: Instant | :money_with_wings:                                                       |
-| Unit        | `addNumbers(1, 2)` returns expected result `3`                           | :airplane: Fast  | :money_with_wings::money_with_wings:                                     |
+| Static      | `addNums(1, '2')` called with `string`, expected `int`.                  | :rocket: Instant | :money_with_wings:                                                       |
+| Unit        | `addNums(1, 2)` returns expected result `3`                              | :airplane: Fast  | :money_with_wings::money_with_wings:                                     |
 | Integration | Clicking "Sign In", navigates to the dashboard (mocked network requests) | :running: Okay   | :money_with_wings::money_with_wings::money_with_wings:                   |
 | End-to-end  | Clicking "Sign In", navigates to the dashboard (no mocks)                | :turtle: Slow    | :money_with_wings::money_with_wings::money_with_wings::money_with_wings: |
 
@@ -47,26 +49,32 @@ Example Tooling:
 - [ESLint][eslint-rules]
 - [TypeScript][typescript-docs] or [Flow][flow-org]
 
-Where it falls short: Can't test business logic.
-
 ### Unit Tests
 
-...
+The building blocks of our libraries and applications. For these, you'll often
+be testing a single function or method. Conceptually, this equates to:
 
-#### When should we unit test?
+_Pure Function Test:_
 
-Follow the top level exports. Anything that is exposed as public API should have
-unit tests. These are th
+- If I call `sum(2, 2)`, I expect the output to be `4`
 
-#### When should we avoid unit tests?
+_Side Effect Test:_
 
-You're testing implementation details if:
+- If I call `resetViewport(viewport)`, I expect `cornerstone.reset` to be called
+  with `viewport`
+
+#### When to use
+
+Anything that is exposed as public API should have unit tests.
+
+#### When to avoid
+
+You're actually testing implementation details. You're testing implementation
+details if:
 
 - Your test does something that the consumer of your code would never do.
   - IE. Using a private function
 - A refactor can break your tests
-
-Where it falls short: That you're calling a dependency appropriately.
 
 ### Integration Tests
 
@@ -74,22 +82,26 @@ We write integration tests to gain confidence that several units work together.
 Generally, we want to mock as little as possible for these tests. In practice,
 this means only mocking network requests.
 
+#### When to use
+
+...
+
 ### End-to-End Tests
 
 These are the most expensive tests to write and maintain. Largely because, when
 they fail, they have the largest number of potential points of failure. So why
 do we write them? Because they also buy us the most confidence.
 
-We should reserve end-to-end tests for mission critical features. A good example
-is testing user authentication. If a user can't sign in to your application,
-it's an emergency. Having a high degree of confidence that users can always
-authenticate is very valuable.
-
-#### When should we test?
+#### When to use
 
 Mission critical features and functionality, or to cover a large breadth of
 functionality until unit tests catch up. Unsure if we should have a test for
 feature `X` or scenario `Y`? Open an issue and let's discuss.
+
+## Summary
+
+- Does your test increase confidence?
+- Does the test type chosen balance the cost-to-confidence ratio?
 
 ## Further Reading
 
@@ -127,4 +139,5 @@ feature `X` or scenario `Y`? Open an issue and let's discuss.
 [gleb-pyramid]: https://twitter.com/Carofine247/status/966764532046684160/photo/3
 [testing-pyramid]: https://dojo.ministryoftesting.com/dojo/lessons/the-mobile-test-pyramid
 [testing-dorito]: https://twitter.com/denvercoder/status/960752578198843392
+[testing-dorito-img]: https://pbs.twimg.com/media/DVVHXycUMAAcN-F?format=jpg&name=4096x4096
 <!-- prettier-ignore-end -->
