@@ -26,7 +26,7 @@ class StandaloneRouting extends Component {
       const url = query.url;
 
       if (!url) {
-        reject(new Error("No URL was specified. Use ?url=$yourURL"));
+        return reject(new Error("No URL was specified. Use ?url=$yourURL"));
       }
 
       // Define a request to the server to retrieve the study data

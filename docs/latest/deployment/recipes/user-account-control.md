@@ -125,10 +125,10 @@ likely want to update:
 The OHIF Viewer's configuration is imported from a static `.js` file and made
 available globally at `window.config`. The configuration we use is set to a
 specific file when we build the viewer, and determined by the env variable:
-`REACT_APP_CONFIG`. You can see where we set its value in the `dockerfile` for
-this solution:
+`APP_CONFIG`. You can see where we set its value in the `dockerfile` for this
+solution:
 
-`ENV REACT_APP_CONFIG=config/docker_openresty-orthanc-keycloak.js`
+`ENV APP_CONFIG=config/docker_openresty-orthanc-keycloak.js`
 
 You can find the configuration we're using here:
 `/public/config/docker_openresty-orthanc-keycloak.js`
@@ -281,9 +281,9 @@ community members put together:
 [orthanc-docs]: http://book.orthanc-server.com/users/configuration.html#configuration
 [lua-resty-openidc-docs]: https://github.com/zmartzone/lua-resty-openidc
 <!-- SRC -->
-[config]: #
-[dockerfile]: #
-[config-nginx]: #
-[config-orthanc]: #
-[config-keycloak]: #
+[config]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/src/config.js
+[dockerfile]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/.recipes
+[config-nginx]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/.recipes
+[config-orthanc]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/.recipes
+[config-keycloak]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/.recipes
 <!-- prettier-ignore-end -->
