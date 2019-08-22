@@ -4,8 +4,6 @@
 > philosiphy. See something you want to discuss or think should be changed? Open
 > a PR and let's discuss.
 
-[![testing dorito][testing-dorito-img]][testing-dorito]
-
 You're an engineer. You know how to write code, and writing tests isn't all that
 different. But do you know why we write tests? Do you know when to write one, or
 what kind of test to write? How do you know if a test is a _"good"_ test? This
@@ -119,6 +117,10 @@ feature `X` or scenario `Y`? Open an issue and let's discuss.
   - Be sure to check out `Getting Started` and `Core Concepts`
 - [Best Practices](https://docs.cypress.io/guides/references/best-practices.html)
 - [Example Recipes](https://docs.cypress.io/examples/examples/recipes.html)
+
+## Testing Dorito
+
+[![testing dorito][testing-dorito-img]][testing-dorito]
 
 <!--
   Links
