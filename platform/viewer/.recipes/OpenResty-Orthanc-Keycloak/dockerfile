@@ -28,7 +28,7 @@ FROM node:11.2.0-slim as builder
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 
-ENV REACT_APP_CONFIG=config/docker_openresty-orthanc-keycloak.js
+ENV APP_CONFIG=config/docker_openresty-orthanc-keycloak.js
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
 COPY package.json /usr/src/app/package.json
