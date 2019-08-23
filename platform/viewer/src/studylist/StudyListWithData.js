@@ -209,23 +209,6 @@ class StudyListWithData extends Component {
         <ConnectedDicomStorePicker
           isOpen={this.state.modalComponentId === 'DicomStorePicker'}
           onClose={this.closeModals}
-          // server={[
-          //   {
-          //     name: 'prostateImages',
-          //     imageRendering: 'wadors',
-          //     thumbnailRendering: 'wadors',
-          //     qidoSupportsIncludeField: false,
-          //     type: 'dicomWeb',
-          //     qidoRoot:
-          //       'https://healthcare.googleapis.com/v1beta1/projects/dicomserver-249915/locations/northamerica-northeast1/datasets/medicalImages/dicomStores/prostateImages/dicomWeb',
-          //     wadoRoot:
-          //       'https://healthcare.googleapis.com/v1beta1/projects/dicomserver-249915/locations/northamerica-northeast1/datasets/medicalImages/dicomStores/prostateImages/dicomWeb',
-          //     wadoUriRoot:
-          //       'https://healthcare.googleapis.com/v1beta1/projects/dicomserver-249915/locations/northamerica-northeast1/datasets/medicalImages/dicomStores/prostateImages/dicomWeb',
-          //     active: true,
-          //     supportsFuzzyMatching: false,
-          //   },
-          // ]}
         />
       );
 
