@@ -18,8 +18,6 @@ import { StudyMetadataSource } from './StudyMetadataSource';
 import { StudyPrefetcher } from './StudyPrefetcher';
 import { TypeSafeCollection } from './TypeSafeCollection';
 
-//import { StudySummary } from './metadata/StudySummary';
-
 export {
   OHIFStudyMetadataSource,
   MetadataProvider,
@@ -27,7 +25,7 @@ export {
   HotkeysManager,
   ImageSet,
   StudyPrefetcher,
-  //StudyLoadingListener,
+  StudyLoadingListener,
   StackLoadingListener,
   DICOMFileLoadingListener,
   StudyMetadata,
