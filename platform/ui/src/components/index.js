@@ -14,6 +14,7 @@ import {
 } from './userPreferencesModal';
 
 import { CineDialog } from './cineDialog';
+import { DownloadScreenShot } from './downloadScreenShot';
 import { QuickSwitch } from './quickSwitch';
 import { RoundedButtonGroup } from './roundedButtonGroup';
 import { SelectTree } from './selectTree';
@@ -24,6 +25,7 @@ import { Tooltip } from './tooltip';
 
 export {
   CineDialog,
+  DownloadScreenShot,
   ExampleDropTarget,
   LayoutButton,
   LayoutChooser,

@@ -1,0 +1,39 @@
+---
+name: Download Screen Shot Dialog
+menu: Components
+route: /components/download-screen-shot
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { DownloadScreenShot } from './../index'
+import NameSpace from '../../../__docs__/NameSpace'
+
+# CINE Dialog
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{}}
+  >
+    {({ state, setState }) => (
+      <React.Fragment>
+        <div>
+          <pre>{JSON.stringify(state, null, 2)}</pre>
+        </div>
+        <div style={{ maxWidth: '300px', margin: '0 auto' }}>
+          <DownloadScreenShot />
+        </div>
+      </React.Fragment>
+    )}
+  </State>
+</Playground>
+
+## API
+
+<Props of={DownloadScreenShot} />
+
+## Translation Namespace
+
+<NameSpace name="DownloadScreenShot" />

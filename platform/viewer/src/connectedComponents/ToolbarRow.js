@@ -9,6 +9,7 @@ import {
 import { commandsManager, extensionManager } from './../App.js';
 
 import ConnectedCineDialog from './ConnectedCineDialog';
+import ConnectedDownloadScreenShot from './ConnectedDownloadScreenShot';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 import { MODULE_TYPES } from '@ohif/core';
@@ -43,6 +44,7 @@ class ToolbarRow extends Component {
       toolbarButtons: toolbarButtonDefinitions,
       activeButtons: [],
       isCineDialogOpen: false,
+      isDownloadScreenShotDialogOpen: false,
     };
 
     this._handleBuiltIn = _handleBuiltIn.bind(this);
@@ -110,6 +112,13 @@ class ToolbarRow extends Component {
       zIndex: 999,
     };
 
+    const downloadScreenShotContainerStyle = {
+      display: this.state.isDownloadScreenShotDialogOpen ? 'block' : 'none',
+      position: 'absolute',
+      top: '82px',
+      zIndex: 999,
+    };
+
     const onPress = (side, value) => {
       this.props.handleSidePanelChange(side, value);
     };
@@ -144,6 +153,9 @@ class ToolbarRow extends Component {
         </div>
         <div className="CineDialogContainer" style={cineDialogContainerStyle}>
           <ConnectedCineDialog />
+        </div>
+        <div className="DownloadScreenShotContainer" style={downloadScreenShotContainerStyle}>
+          <ConnectedDownloadScreenShot />
         </div>
       </>
     );
@@ -243,6 +255,12 @@ function _handleBuiltIn({ behavior } = {}) {
   if (behavior === 'CINE') {
     this.setState({
       isCineDialogOpen: !this.state.isCineDialogOpen,
+    });
+  }
+
+  if (behavior === 'DOWNLOAD_SCREEN_SHOT') {
+    this.setState({
+      isDownloadScreenShotDialogOpen: !this.state.isDownloadScreenShotDialogOpen,
     });
   }
 }
