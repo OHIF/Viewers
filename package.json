@@ -21,7 +21,7 @@
     "test": "yarn run test:unit && yarn run test:e2e:ci",
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
-    "test:e2e:ci": "cd platform/viewer && yarn run test:e2e:ci",
+    "test:e2e": "cd platform/viewer && yarn run test:e2e",
     "test:e2e:scriptTag": "cd platform/viewer && yarn run test:e2e:scriptTag",
     "see-changed": "lerna changed",
     "release": "yarn run lerna:version && yarn run lerna:publish",
