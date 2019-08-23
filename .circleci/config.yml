@@ -306,7 +306,7 @@ workflows:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
           yarn: true
           store_artifacts: true
-          build: yarn run build:package && cd platform/viewer
+          build: yarn run build:package
           start: yarn run start-server-script-tag
           wait-on: 'http://localhost:3000'
           no-workspace: true # Don't persist workspace

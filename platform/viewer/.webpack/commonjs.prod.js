@@ -2,11 +2,13 @@ const path = require('path');
 const merge = require('webpack-merge');
 const webpack = require('webpack');
 const webpackCommon = require('./../../../.webpack/webpack.common.js');
-//
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-// const
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
+const PUBLIC_DIR = path.join(__dirname, '../public');
 
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
@@ -66,6 +68,20 @@ module.exports = (env, argv) => {
       new webpack.ProgressPlugin(),
       // Clean output.path
       new CleanWebpackPlugin(),
+      // "Public" Folder
+      new CopyWebpackPlugin([
+        {
+          from: PUBLIC_DIR,
+          to: DIST_DIR,
+          toType: 'dir',
+          // Ignore our HtmlWebpackPlugin template file
+          ignore: ['index.html', '.DS_Store'],
+        },
+      ]),
+      new HtmlWebpackPlugin({
+        inject: false,
+        template: '../cypress/support/script-tag/index.html'
+      }),
     ],
   });
 };

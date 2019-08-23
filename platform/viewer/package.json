@@ -27,12 +27,10 @@
     "start": "yarn run dev",
     "orthanc:up": "docker-compose -f docker/Nginx-Orthanc/docker-compose.yml up",
     "test:e2e": "cypress open",
-    "make-script-tag-example": "rm -rf script-tag-test && mkdir script-tag-test && cp dist/index.umd.* script-tag-test && cp -R public/* script-tag-test && cp -R cypress/support/script-tag/* script-tag-test",
-    "start-server-script-tag": "yarn run make-script-tag-example && serve -l 3000 -s script-tag-test",
-    "test:e2e:scriptTag": "start-server-and-test start-server-script-tag http-get://localhost:3000/index.umd.js cy:run",
+    "start-server-script-tag": "serve -l 3000 -s dist",
+    "test:e2e:scriptTag": "start-server-and-test start-server-script-tag http-get://localhost:3000/index.umd.js cypress run",
     "test:unit": "jest --watchAll",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage",
-    "cy:run": "cypress run",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage"
   },
   "resolutions": {
     "browserslist": "4.6.2",
@@ -89,6 +87,7 @@
   "devDependencies": {
     "cypress": "^3.3.1",
     "gh-pages": "2.0.1",
+    "html-webpack-plugin": "^3.2.0",
     "identity-obj-proxy": "3.0.x",
     "lodash": "4.17.11",
     "lodash.clonedeep": "4.5.0"

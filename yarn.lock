@@ -3823,11 +3823,6 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
-base64-js@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.2.1.tgz#a91947da1f4a516ea38e5b4ec0ec3773675e0886"
-  integrity sha512-dwVUVIXsBZXwTuwnXI9RK8sBmgq09NDHzyR9SAph9eqk76gKK2JSQmZARC2zRC81JC2QTtxD0ARU5qTS25gIGw==
-
 base64-js@^1.0.2:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.3.1.tgz#58ece8cb75dd07e71ed08c736abc5fac4dbf8df1"
@@ -5899,6 +5894,16 @@ dcmjs@^0.4.7:
     loglevelnext "^3.0.0"
     ndarray "^1.0.18"
 
+dcmjs@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.5.1.tgz#9c069081213b9946196b8faf83b79602db2e7582"
+  integrity sha512-r6/S4tHqhPqsuwbuFmxpah31IeJPKtEOEm2Uf+FW3P68a9V4liVZzKmF7QzoI8sZWgBxmmwdtVr47JC1jHldJw==
+  dependencies:
+    "@babel/polyfill" "^7.2.5"
+    "@babel/runtime" "^7.3.1"
+    loglevelnext "^3.0.0"
+    ndarray "^1.0.18"
+
 debug@*, debug@4.1.1, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.1.1.tgz#3b72260255109c6b589cee050f1d516139664791"
@@ -6701,9 +6706,9 @@ ejs@^2.6.1:
   integrity sha512-PcW2a0tyTuPHz3tWyYqtK6r1fZ3gp+3Sop8Ph+ZYN81Ob5rwmbHEzaqs10N3BEsaGTkh/ooniXK+WwszGlc2+Q==
 
 electron-to-chromium@^1.3.122, electron-to-chromium@^1.3.191:
-  version "1.3.225"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.225.tgz#c6786475b5eb5f491ade01a78b82ba2c5bfdf72b"
-  integrity sha512-7W/L3jw7HYE+tUPbcVOGBmnSrlUmyZ/Uyg24QS7Vx0a9KodtNrN0r0Q/LyGHrcYMtw2rv7E49F/vTXwlV/fuaA==
+  version "1.3.237"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.237.tgz#39c5d1da59d6fd16ff705b97e772bb3b5dfda7e4"
+  integrity sha512-SPAFjDr/7iiVK2kgTluwxela6eaWjjFkS9rO/iYpB/KGXgccUom5YC7OIf19c8m8GGptWxLU0Em8xM64A/N7Fg==
 
 electron-to-chromium@^1.3.150:
   version "1.3.224"
@@ -12342,7 +12347,14 @@ node-pre-gyp@^0.12.0:
     semver "^5.3.0"
     tar "^4"
 
-node-releases@^1.1.13, node-releases@^1.1.23, node-releases@^1.1.25:
+node-releases@^1.1.13, node-releases@^1.1.25:
+  version "1.1.28"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.28.tgz#503c3c70d0e4732b84e7aaa2925fbdde10482d4a"
+  integrity sha512-AQw4emh6iSXnCpDiFe0phYcThiccmkNWMZnFZ+lDJjAP8J0m2fVd59duvUUyuTirQOhIAajTFkzG6FHCLBO59g==
+  dependencies:
+    semver "^5.3.0"
+
+node-releases@^1.1.23:
   version "1.1.27"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.27.tgz#b19ec8add2afe9a826a99dceccc516104c1edaf4"
   integrity sha512-9iXUqHKSGo6ph/tdXVbHFbhRVQln4ZDTIBJCzsa90HimnBYc5jw8RWYt4wBYFHehGyC3koIz5O4mb2fHrbPOuA==
@@ -14956,10 +14968,10 @@ react-transition-group@^4.1.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-vtkjs-viewport@0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.0.9.tgz#da79aa66f52dcd731bcc5abd2587cbb120a25331"
-  integrity sha512-VwRCY2DPxWMhix4v3PAtdENp3U1p+Z9nKf1Ch5+KWRKF6fWeA+B2glYKMYNpPnP4bULzVz9iwV+Zeojt3gEibA==
+react-vtkjs-viewport@0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.0.11.tgz#cedd993ca226502bf0417a3748a5b2f806522519"
+  integrity sha512-ttWw7bU/lL/nJuaaKdtAc8448vMJmlRQzpkpuP/J+3lTzIQbQPCPU40LqgONjr7LvL5++61N2GJ8m+PRgHyfxQ==
   dependencies:
     moment "^2.24.0"
 
@@ -18373,12 +18385,11 @@ void-elements@^2.0.1:
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
   integrity sha1-wGavtYK7HLQSjWDqkjkulNXp2+w=
 
-vtk.js@^8.11.0:
-  version "8.14.0"
-  resolved "https://registry.yarnpkg.com/vtk.js/-/vtk.js-8.14.0.tgz#c3be94c846a732a6f3e812a8a45a5dd3105939f2"
-  integrity sha512-/marh1LOJSxPYOc2j+GxiWUJt5EyFh9L2H+92vcgSn+AQ/FuaU7ovA2Q9BD0Sr2PJuIA7LlgxA6xOQzKHTJ1Yw==
+vtk.js@^9.5.0:
+  version "9.7.0"
+  resolved "https://registry.yarnpkg.com/vtk.js/-/vtk.js-9.7.0.tgz#763767607a958fba5c70754434612f3066bd96a0"
+  integrity sha512-4IJJr2slOY+W/GjUdjElg3ViJSt6IF+siIJ4FmqOYQeOdTKRVxVYb7dAYVOH3MyVz8Zs39DEwJHHhRK5hkjsjg==
   dependencies:
-    base64-js "1.2.1"
     blueimp-md5 "2.10.0"
     commander "2.11.0"
     gl-matrix "3.0.0"
