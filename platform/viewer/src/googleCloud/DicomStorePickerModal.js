@@ -19,6 +19,10 @@ class DicomStorePickerModal extends Component {
     isOpen: false,
   };
 
+  setServer = () => {
+    if (this.props.server) this.props.setServers(this.props.server);
+  };
+
   handleEvent = data => {
     const servers = [
       {
@@ -42,11 +46,6 @@ class DicomStorePickerModal extends Component {
       <Modal
         show={this.props.isOpen}
         onHide={this.props.onClose}
-        onEnter={
-          this.props.server
-            ? () => this.props.setServers(this.props.server)
-            : undefined
-        }
         aria-labelledby="ModalHeader"
         className="modal fade themed in"
         backdrop={false}
