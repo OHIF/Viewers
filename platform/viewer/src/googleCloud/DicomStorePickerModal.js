@@ -42,11 +42,11 @@ class DicomStorePickerModal extends Component {
       <Modal
         show={this.props.isOpen}
         onHide={this.props.onClose}
-        onEnter={
-          this.props.server
-            ? () => this.props.setServers(this.props.server)
-            : undefined
-        }
+        onEnter={() => {
+          if (this.props.server) {
+            this.props.setServers(this.props.server);
+          }
+        }}
         aria-labelledby="ModalHeader"
         className="modal fade themed in"
         backdrop={false}
