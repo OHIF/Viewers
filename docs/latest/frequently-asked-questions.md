@@ -37,8 +37,8 @@ Some tips for filing a new issue:
 At the moment we are in the process of defining our roadmap and will do our best
 to communicate this to the community. If your requested feature is on the
 roadmap, then it will most likely be built at some point. If it is not, you are
-welcome to build it yourself and [contribute it](../contributing.md). If you
-have resources and would like to fund the development of a feature, please
+welcome to build it yourself and [contribute it](contributing.md). If you have
+resources and would like to fund the development of a feature, please
 [contact us](http://www.ohif.org).
 
 ### Who should I contact about Academic Collaborations?

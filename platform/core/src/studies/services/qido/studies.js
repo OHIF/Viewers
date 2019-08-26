@@ -118,6 +118,10 @@ export default function Studies(server, filter) {
   };
 
   const dicomWeb = new api.DICOMwebClient(config);
+  server.qidoSupportsIncludeField =
+    server.qidoSupportsIncludeField === undefined
+      ? true
+      : server.qidoSupportsIncludeField;
   const queryParams = getQIDOQueryParams(
     filter,
     server.qidoSupportsIncludeField

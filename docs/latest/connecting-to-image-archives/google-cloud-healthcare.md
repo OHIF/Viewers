@@ -53,7 +53,7 @@ Images can even be transcoded on the fly if this is desired.
 ```bash
 cd OHIFViewer
 yarn install
-REACT_APP_CONFIG=config/google.js yarn run dev
+APP_CONFIG=config/google.js yarn run dev
 ```
 
 ## Running via Docker

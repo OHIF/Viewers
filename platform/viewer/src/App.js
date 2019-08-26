@@ -1,4 +1,7 @@
+import { hot } from 'react-hot-loader/root';
+
 import './config';
+
 // Polyfills
 // PWA Only?
 import 'core-js/features/array/flat';
@@ -194,5 +197,5 @@ function _makeAbsoluteIfNecessary(url, base_url) {
   return base_url + url;
 }
 
-export default App;
+export default hot(App);
 export { commandsManager, extensionManager, hotkeysManager };
