@@ -187,9 +187,8 @@ jobs:
             no\n" > ~/.ssh/config
       - run: git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
       - run: git config --global user.name "ohif-bot"
+      - run: yarn global add gitbook-cli
       - run: yarn global add gh-pages
-      - run: dir
-      - run: cd ~/repo && dir
       - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
       - run: ~/repo/.circleci/build-and-publish-docs.sh
       # - run:

@@ -8,7 +8,15 @@ yarn -v
 node -v
 
 echo 'Installing Gitbook CLI'
+yarn bin
 yarn global add gitbook-cli
+yarn global add gh-pages
+yarn list
+
+# export PATH="$(yarn global bin):$PATH"
+
+which gitbook
+which gh-pages
 
 echo 'Running Gitbook installation'
 
