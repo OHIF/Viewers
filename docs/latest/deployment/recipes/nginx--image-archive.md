@@ -11,7 +11,7 @@ control.
 Do not use this recipe to host sensitive medical data on the open web. Depending
 on your company's policies, this may be an appropriate setup on an internal
 network when protected with a server's basic authentication. For a more robust
-setup, check out our [user account control recpie](./user-account-control.md)
+setup, check out our [user account control recipe](./user-account-control.md)
 that builds on the lessons learned here.
 
 ## Overview
@@ -51,7 +51,7 @@ We can solve this one of two ways:
 
 This solution uses the first approach, but you can see an example of the second
 in the `docker-compose` bundled with this project for local development:
-[HERE](#)
+[HERE](https://github.com/OHIF/Viewers/blob/master/platform/viewer/.recipes/Nginx-Orthanc/docker-compose.yml)
 
 You can read more about CORS in this Medium article: [Understanding
 CORS][understanding-cors]
@@ -124,10 +124,10 @@ likely want to update:
 The OHIF Viewer's configuration is imported from a static `.js` file and made
 available globally at `window.config`. The configuration we use is set to a
 specific file when we build the viewer, and determined by the env variable:
-`REACT_APP_CONFIG`. You can see where we set its value in the `dockerfile` for
-this solution:
+`APP_CONFIG`. You can see where we set its value in the `dockerfile` for this
+solution:
 
-`ENV REACT_APP_CONFIG=config/docker_openresty-orthanc.js`
+`ENV APP_CONFIG=config/docker_openresty-orthanc.js`
 
 You can find the configuration we're using here:
 `/public/config/docker_openresty-orthanc.js`
