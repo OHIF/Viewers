@@ -188,12 +188,13 @@ jobs:
       - run: git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
       - run: git config --global user.name "ohif-bot"
       - run: yarn global add gh-pages
-      # - run: dir
-      # - run: cd ~/repo && dir
-      # - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
-      - run:
-          name: Generate & Publish Docs
-          command: yarn run docs:publish
+      - run: dir
+      - run: cd ~/repo && dir
+      - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
+      - run: ~/repo/.circleci/build-and-publish-docs.sh
+      # - run:
+      #     name: Generate & Publish Docs
+      #     command: yarn run docs:publish
 
   docker_publish:
     <<: *defaults
@@ -278,13 +279,6 @@ workflows:
   # PULL REQUESTS
   PR_CHECKS:
     jobs:
-      - docs_publish:
-          filters:
-            branches:
-              ignore:
-                - master
-                - feature/*
-                - hotfix/*
       - PR_UNIT_TESTS:
           filters:
             branches:
@@ -292,6 +286,9 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
+      - docs_publish:
+          requires:
+            - PR_UNIT_TESTS
       # Cypress job added by `cypress-io` orb
       - cypress/run:
           pre-steps:
