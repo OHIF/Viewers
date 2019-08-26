@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.3](https://github.com/OHIF/Viewers/compare/@ohif/core@0.50.2...@ohif/core@0.50.3) (2019-08-26)
+
+
+### Bug Fixes
+
+* **Studies:** Qidosupportsincludefield should be true by default ([#801](https://github.com/OHIF/Viewers/issues/801)) ([a88d865](https://github.com/OHIF/Viewers/commit/a88d865))
+
+
+
+
+
 ## [0.50.2](https://github.com/OHIF/Viewers/compare/@ohif/core@0.50.1...@ohif/core@0.50.2) (2019-08-22)
 
 **Note:** Version bump only for package @ohif/core
