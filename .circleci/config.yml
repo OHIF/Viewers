@@ -189,11 +189,8 @@ jobs:
       - run: git config --global user.name "ohif-bot"
       - run: yarn global add gh-pages
       - run:
-          name: Generate Docs
-          command: yarn run staticDeploy
-      - run:
-          name: Publish Docs
-          command: yarn run docs:publish
+          name: Generate & Publish Docs
+          command: .circleci/build-and-publish-docs.sh
 
   docker_publish:
     <<: *defaults
@@ -278,6 +275,7 @@ workflows:
   # PULL REQUESTS
   PR_CHECKS:
     jobs:
+      - docs_publish:
       - PR_UNIT_TESTS:
           filters:
             branches:
@@ -330,9 +328,9 @@ workflows:
           requires:
             - cypress/run
       # Update docs.ohif.org
-      # - docs_publish:
-      #     requires:
-      #       - cypress/run
+      - docs_publish:
+          requires:
+            - cypress/run
       # Update hub.docker.org
       # - docker_publish:
       #     requires:
