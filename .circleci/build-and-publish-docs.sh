@@ -14,8 +14,8 @@ yarn config set prefix ~/.yarn
 export PATH="$PATH:`yarn global bin`"
 # yarn global add gitbook-cli
 # yarn global add gh-pages
-npm i gitbook-cli -g
-npm i gh-pages -g
+# npm i gitbook-cli -g
+# npm i gh-pages -g
 # yarn list
 
 # export PATH="$(yarn global bin):$PATH"
@@ -69,6 +69,11 @@ cd ..
 
 echo "Done generating documentation output"
 echo 'PUBLISHING'
+
+git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+git config --global user.name "ohif-bot"
+git config user.email "danny.ri.brown+ohif-bot@gmail.com"
+git config user.name "ohif-bot"
 
 ./node_modules/.bin/gh-pages \
   --silent \
