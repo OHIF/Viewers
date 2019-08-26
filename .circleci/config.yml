@@ -275,7 +275,6 @@ workflows:
   # PULL REQUESTS
   PR_CHECKS:
     jobs:
-      - docs_publish:
       - PR_UNIT_TESTS:
           filters:
             branches:
@@ -283,6 +282,9 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
+      - docs_publish:
+          requires:
+            - PR_UNIT_TESTS
       # Cypress job added by `cypress-io` orb
       - cypress/run:
           pre-steps:
