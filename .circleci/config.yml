@@ -188,7 +188,8 @@ jobs:
       - run: git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
       - run: git config --global user.name "ohif-bot"
       - run: yarn global add gh-pages
-      - run: chmod +x .circleci/build-and-publish-docs.sh
+      - run: ls
+      - run: chmod +x ./.circleci/build-and-publish-docs.sh
       - run:
           name: Generate & Publish Docs
           command: .circleci/build-and-publish-docs.sh
