@@ -231,7 +231,6 @@ jobs:
           name: 'Build Demo Site, Upload SourceMaps, Send Deploy Notification'
           command: |
             npx lerna run build:viewer:demo --stream
-            # perl -i -pe 's#</head>#`cat .circleci/rollbar.html` #e' build/index.html
             # export FILE_1=$(find ./build/static/js -type f -name "2.*.js" -exec basename {} \;)
             # export FILE_MAIN=$(find ./build/static/js -type f -name "main.*.js" -exec basename {} \;)
             # export FILE_RUNTIME_MAIN=$(find ./build/static/js -type f -name "runtime~main.*.js" -exec basename {} \;)
@@ -254,18 +253,15 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Node Test
-          command: npx lerna run build:viewer:demo --stream
-      # - run:
-      #     name: Deploy latest version to viewer.ohif.org
-      #     command: |
-      #       # https://circleci.com/docs/2.0/google-auth/#authorization
-      #       echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
-      #       gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-      #       gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
-      #       # Remove all files in Storage Bucket; Push latest
-      #       gsutil -m rm gs://$GOOGLE_STORAGE_BUCKET/**
-      #       gsutil -m rsync -R platform/viewer/dist gs://$GOOGLE_STORAGE_BUCKET
+          name: Deploy latest version to viewer.ohif.org
+          command: |
+            # https://circleci.com/docs/2.0/google-auth/#authorization
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+            # Remove all files in Storage Bucket; Push latest
+            gsutil -m rm gs://$GOOGLE_STORAGE_BUCKET/**
+            gsutil -m rsync -R platform/viewer/dist gs://$GOOGLE_STORAGE_BUCKET
 
 workflows:
   version: 2
