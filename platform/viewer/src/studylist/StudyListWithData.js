@@ -32,6 +32,10 @@ class StudyListWithData extends Component {
 
   static defaultProps = {
     studyListFunctionsEnabled: true,
+    server:
+      window.config.enableGoogleCloudAdapter && window.config.oidc[0].server
+        ? window.config.oidc[0].server
+        : null,
   };
 
   static rowsPerPage = 25;
@@ -53,11 +57,15 @@ class StudyListWithData extends Component {
   componentDidMount() {
     // TODO: Avoid using timepoints here
     //const params = { studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={} };
+
     if (!this.props.server && window.config.enableGoogleCloudAdapter) {
       this.setState({
         modalComponentId: 'DicomStorePicker',
       });
     } else {
+      this.setState({
+        modalComponentId: null,
+      });
       this.searchForStudies({
         ...StudyListWithData.defaultSearchData,
         ...(this.props.filters || {}),
