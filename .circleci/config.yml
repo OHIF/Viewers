@@ -191,9 +191,6 @@ jobs:
       - run: yarn global add gh-pages
       - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
       - run: ~/repo/.circleci/build-and-publish-docs.sh
-      # - run:
-      #     name: Generate & Publish Docs
-      #     command: yarn run docs:publish
 
   docker_publish:
     <<: *defaults
@@ -259,18 +256,13 @@ jobs:
       - run:
           name: Deploy latest version to viewer.ohif.org
           command: |
-            # This file will exist if a new version was published by
-            # our `semantic-release` command in the previous job
-            #if [[ ! -e tmp/updated-version.txt ]]; then
-            #  exit 0
-            #else
-              echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
-              gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-              gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
-
-              gsutil -m rm gs://$GOOGLE_STORAGE_BUCKET/**
-              gsutil -m rsync -R build gs://$GOOGLE_STORAGE_BUCKET
-            #fi
+            # https://circleci.com/docs/2.0/google-auth/#authorization
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+            # Remove all files in Storage Bucket; Push latest
+            gsutil -m rm gs://$GOOGLE_STORAGE_BUCKET/**
+            gsutil -m rsync -R platform/viewer/dist gs://$GOOGLE_STORAGE_BUCKET
 
 workflows:
   version: 2
