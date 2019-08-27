@@ -8,11 +8,7 @@ yarn -v
 node -v
 
 echo 'Installing Gitbook CLI'
-
-yarn global bin
-yarn config get prefix
-yarn config set prefix ~/.yarn
-export PATH="$PATH:`yarn global bin`"
+yarn global add gitbook-cli
 
 echo 'Running Gitbook installation'
 
@@ -59,9 +55,8 @@ done
 cd ..
 
 echo "Done generating documentation output"
-echo 'STARTING PUBLISH'
+echo 'PUBLISHING'
 
-# WILL ALWAYS FAIL IF INITIATED FROM PR BRANCH
 ./node_modules/.bin/gh-pages \
   --silent \
   --repo https://$GITHUB_TOKEN@github.com/OHIF/Viewers.git \

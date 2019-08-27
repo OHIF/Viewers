@@ -13,6 +13,7 @@ const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 // Env Vars
+const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'index.html';
 const PUBLIC_URL = process.env.PUBLIC_URL || '';
 const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 
@@ -22,6 +23,8 @@ module.exports = (env, argv) => {
   return merge(commonConfig, {
     // https://webpack.js.org/configuration/mode/#mode-production
     mode: 'production',
+    // Out of memory -- Code Split
+    // devtool: 'source-map',
     stats: {
       colors: true,
       hash: true,
@@ -46,7 +49,12 @@ module.exports = (env, argv) => {
     // merging with this?
     plugins: [
       // Longer build. Let's report progress
-      new webpack.ProgressPlugin(),
+      new webpack.ProgressPlugin({
+        entries: false,
+        modules: false,
+        modulesCount: 500,
+        profile: true,
+      }),
       // Clean output.path
       new CleanWebpackPlugin(),
       // "Public" Folder
@@ -56,7 +64,13 @@ module.exports = (env, argv) => {
           to: DIST_DIR,
           toType: 'dir',
           // Ignore our HtmlWebpackPlugin template file
-          ignore: ['index.html', '.DS_Store'],
+          // Ignore our configuration files
+          ignore: ['config/*', 'html-templates/*', '.DS_Store'],
+        },
+        // Copy over and rename our target app config file
+        {
+          from: `${PUBLIC_DIR}/${APP_CONFIG}`,
+          to: `${DIST_DIR}/app-config.js`,
         },
       ]),
       new ExtractCssChunksPlugin({
@@ -69,11 +83,10 @@ module.exports = (env, argv) => {
        * This is the easiest way to inject custom configuration and extensions.
        */
       new HtmlWebpackPlugin({
-        template: `${PUBLIC_DIR}/index.html`,
+        template: `${PUBLIC_DIR}/html-templates/${HTML_TEMPLATE}`,
         filename: 'index.html',
         templateParameters: {
           PUBLIC_URL: PUBLIC_URL,
-          APP_CONFIG: APP_CONFIG,
         },
         // favicon: `${PUBLIC_DIR}/favicon.ico`,
       }),
