@@ -13,7 +13,6 @@ import metadata from './classes/metadata/';
 import object from './object.js';
 import redux from './redux/';
 import string from './string.js';
-//import './schema.js';
 import studies from './studies/';
 import ui from './ui';
 import user from './user.js';

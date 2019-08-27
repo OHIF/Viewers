@@ -13,9 +13,6 @@ node -v
 # should also symlink all projects appropriately
 yarn install --no-ignore-optional --pure-lockfile
 
-dir
-ls
-
 # Build && Move PWA Output
 yarn run build:ci
 mkdir -p ./.netlify/www/pwa
@@ -27,4 +24,4 @@ mv platform/viewer/dist/* .netlify/www/pwa -v
 echo 'Nothing left to see here. Go home, folks.'
 
 # Build using react-scripts
-# npx cross-env PUBLIC_URL=/demo REACT_APP_CONFIG=config/netlify.js react-scripts --max_old_space_size=4096 build
+# npx cross-env PUBLIC_URL=/demo APP_CONFIG=config/netlify.js react-scripts --max_old_space_size=4096 build

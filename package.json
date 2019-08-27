@@ -23,6 +23,7 @@
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
     "test:e2e:ci": "cd platform/viewer && yarn run test:e2e:ci",
     "see-changed": "lerna changed",
+    "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "release": "yarn run lerna:version && yarn run lerna:publish",
     "lerna:version": "npx lerna version prerelease --force-publish",
     "lerna:publish": "lerna publish from-package --canary --dist-tag canary"
@@ -71,7 +72,6 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-hot-loader": "^4.12.11",
-    "react-scripts": "^3.0.1",
     "redux-testkit": "^1.0.6",
     "shader-loader": "^1.3.1",
     "style-loader": "^1.0.0",
