@@ -11,8 +11,10 @@ exemptLabels:
   - 'Bug: Verified 🐛'
   - 'Task: CI/Tooling 🤖'
   - 'Task: Docs 📖'
+  - 'Task: Docs :book:'
   - 'Task: Refactor 🛠'
   - 'Task: Tests 🔬'
+  - 'PR: Awaiting Review 👀'
   - 'Triage 🏳️'
   - 'Announcement 🎉'
 # Label to use when marking an issue as stale
