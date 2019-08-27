@@ -338,4 +338,4 @@ workflows:
             - cypress/run
       - viewer_demo_publish:
           requires:
-            - build_demo_site
+            - viewer_demo_build
