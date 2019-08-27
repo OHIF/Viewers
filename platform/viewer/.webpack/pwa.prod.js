@@ -47,7 +47,12 @@ module.exports = (env, argv) => {
     // merging with this?
     plugins: [
       // Longer build. Let's report progress
-      new webpack.ProgressPlugin(),
+      new webpack.ProgressPlugin({
+        entries: false,
+        modules: false,
+        modulesCount: 500,
+        profile: true,
+      }),
       // Clean output.path
       new CleanWebpackPlugin(),
       // "Public" Folder
