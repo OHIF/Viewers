@@ -1,15 +1,15 @@
 ---
-name: Download Screen Shot Dialog
+name: Download Dialog
 menu: Components
-route: /components/download-screen-shot
+route: /components/download-dialog
 ---
 
 import { Playground, Props } from 'docz'
 import { State } from 'react-powerplug'
-import { DownloadScreenShot } from './../index'
+import { DownloadDialog } from './../index'
 import NameSpace from '../../../__docs__/NameSpace'
 
-# CINE Dialog
+# Download Dialog
 
 ## Basic usage
 
@@ -22,8 +22,8 @@ import NameSpace from '../../../__docs__/NameSpace'
         <div>
           <pre>{JSON.stringify(state, null, 2)}</pre>
         </div>
-        <div style={{ maxWidth: '300px', margin: '0 auto' }}>
-          <DownloadScreenShot />
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          <DownloadDialog />
         </div>
       </React.Fragment>
     )}
@@ -32,8 +32,8 @@ import NameSpace from '../../../__docs__/NameSpace'
 
 ## API
 
-<Props of={DownloadScreenShot} />
+<Props of={DownloadDialog} />
 
 ## Translation Namespace
 
-<NameSpace name="DownloadScreenShot" />
+<NameSpace name="DownloadDialog" />

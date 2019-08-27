@@ -22,6 +22,7 @@ class TextInput extends React.Component {
         value={this.state.value}
         onChange={this.handleChange}
         id={this.props.id}
+        {...this.props}
       />
     );
   }

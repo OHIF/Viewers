@@ -1,6 +1,6 @@
 import {
   CineDialog,
-  DownloadScreenShot,
+  DownloadDialog,
   ExampleDropTarget,
   LayoutButton,
   LayoutChooser,
@@ -40,7 +40,7 @@ export {
   ICONS,
   //
   CineDialog,
-  DownloadScreenShot,
+  DownloadDialog,
   Dropdown,
   ExpandableToolMenu,
   ExampleDropTarget,

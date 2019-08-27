@@ -31,6 +31,7 @@ const mapStateToProps = state => {
   };
 };
 
+
 const mapDispatchToProps = dispatch => {
   return {
     dispatchSetViewportSpecificData: (viewportIndex, data) => {

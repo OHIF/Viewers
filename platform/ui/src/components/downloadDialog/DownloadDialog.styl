@@ -1,0 +1,26 @@
+@import './../../design/styles/common/global.styl'
+@import './../../design/styles/common/form.styl'
+@import './../../design/styles/common/button.styl'
+
+.DownloadDialog
+  color: var(--text-secondary-color);
+  filter: drop-shadow(0 0 3px var(--ui-gray-darkest));
+  border: none
+  border-radius: 8px
+  width: inherit;
+  padding: 15px;
+
+  .row
+    margin: 15px 0;
+
+  .preview
+    border: var(--ui-gray-darkest) 1px solid;
+    max-height: 200px;
+
+    #preview-element, #download-element
+      width: 300px;
+      height: 200px;
+      margin: 0 auto;
+
+    #download-element
+      visibility: hidden

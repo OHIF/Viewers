@@ -60,9 +60,22 @@ button, input, select, textarea
   font-size: inherit;
   line-height: inherit;
 
+.container
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+
 .row
   margin-right: -15px;
   margin-left: -15px;
+
+.col
+  flex-basis: 0;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  max-width: 100%;
 
 .pull-left
   float: left!important;
