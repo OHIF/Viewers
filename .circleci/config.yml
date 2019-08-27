@@ -254,8 +254,8 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-        name: Node Test
-        command: npx lerna run build:viewer:demo --stream
+          name: Node Test
+          command: npx lerna run build:viewer:demo --stream
       # - run:
       #     name: Deploy latest version to viewer.ohif.org
       #     command: |
