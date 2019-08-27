@@ -64,7 +64,7 @@ module.exports = (env, argv) => {
           toType: 'dir',
           // Ignore our HtmlWebpackPlugin template file
           // Ignore our configuration files
-          ignore: ['index.html', 'config/*', 'html-templates/*', '.DS_Store'],
+          ignore: ['config/*', 'html-templates/*', '.DS_Store'],
         },
         // Copy over and rename our target app config file
         {
