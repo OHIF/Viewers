@@ -22,6 +22,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
             // Find babel.config.js in monorepo root
             // https://babeljs.io/docs/en/options#rootmode
             rootMode: 'upward',
+            envName: env,
             presets: [
               [
                 '@babel/preset-env',
