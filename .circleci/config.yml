@@ -221,7 +221,7 @@ jobs:
               docker push ohif/$IMAGE_NAME:latest
             fi
 
-  deploy_demo_site:
+  viewer_demo_build:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -244,7 +244,7 @@ jobs:
           root: ~/repo
           paths: .
 
-  demo_site_publish:
+  viewer_demo_publish:
     working_directory: ~/repo
     docker:
       - image: google/cloud-sdk
@@ -333,9 +333,9 @@ workflows:
       #     requires:
       #       - npm_publish
       # Update viewer.ohif.org
-      - build_demo_site:
+      - viewer_demo_build:
           requires:
             - cypress/run
-      - demo_site_publish:
+      - viewer_demo_publish:
           requires:
             - build_demo_site
