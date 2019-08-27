@@ -23,6 +23,7 @@
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
     "test:e2e:ci": "cd platform/viewer && yarn run test:e2e:ci",
     "see-changed": "lerna changed",
+    "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "release": "yarn run lerna:version && yarn run lerna:publish",
     "lerna:version": "npx lerna version prerelease --force-publish",
     "lerna:publish": "lerna publish from-package --canary --dist-tag canary"

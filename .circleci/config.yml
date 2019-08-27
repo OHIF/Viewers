@@ -187,13 +187,10 @@ jobs:
             no\n" > ~/.ssh/config
       - run: git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
       - run: git config --global user.name "ohif-bot"
+      - run: yarn global add gitbook-cli
       - run: yarn global add gh-pages
-      - run:
-          name: Generate Docs
-          command: yarn run staticDeploy
-      - run:
-          name: Publish Docs
-          command: yarn run docs:publish
+      - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
+      - run: ~/repo/.circleci/build-and-publish-docs.sh
 
   docker_publish:
     <<: *defaults
@@ -224,7 +221,7 @@ jobs:
               docker push ohif/$IMAGE_NAME:latest
             fi
 
-  deploy_demo_site:
+  viewer_demo_build:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -233,21 +230,21 @@ jobs:
       - run:
           name: 'Build Demo Site, Upload SourceMaps, Send Deploy Notification'
           command: |
-            yarn build:demo:ci
-            perl -i -pe 's#</head>#`cat .circleci/rollbar.html` #e' build/index.html
-            export FILE_1=$(find ./build/static/js -type f -name "2.*.js" -exec basename {} \;)
-            export FILE_MAIN=$(find ./build/static/js -type f -name "main.*.js" -exec basename {} \;)
-            export FILE_RUNTIME_MAIN=$(find ./build/static/js -type f -name "runtime~main.*.js" -exec basename {} \;)
-            curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_1.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_1
-            curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_MAIN
-            curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_RUNTIME_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_RUNTIME_MAIN
+            npx lerna run build:viewer:demo --stream
+            # perl -i -pe 's#</head>#`cat .circleci/rollbar.html` #e' build/index.html
+            # export FILE_1=$(find ./build/static/js -type f -name "2.*.js" -exec basename {} \;)
+            # export FILE_MAIN=$(find ./build/static/js -type f -name "main.*.js" -exec basename {} \;)
+            # export FILE_RUNTIME_MAIN=$(find ./build/static/js -type f -name "runtime~main.*.js" -exec basename {} \;)
+            # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_1.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_1
+            # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_MAIN
+            # curl https://api.rollbar.com/api/1/sourcemap -F source_map=@build/static/js/$FILE_RUNTIME_MAIN.map -F access_token=$ROLLBAR_TOKEN -F version=$CIRCLE_SHA1 -F minified_url=https://$GOOGLE_STORAGE_BUCKET/static/js/$FILE_RUNTIME_MAIN
             curl --request POST https://api.rollbar.com/api/1/deploy/ -F access_token=$ROLLBAR_TOKEN -F environment=$GOOGLE_STORAGE_BUCKET -F revision=$CIRCLE_SHA1 -F local_username=CircleCI
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
           paths: .
 
-  demo_site_publish:
+  viewer_demo_publish:
     working_directory: ~/repo
     docker:
       - image: google/cloud-sdk
@@ -257,20 +254,18 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Deploy latest version to viewer.ohif.org
-          command: |
-            # This file will exist if a new version was published by
-            # our `semantic-release` command in the previous job
-            #if [[ ! -e tmp/updated-version.txt ]]; then
-            #  exit 0
-            #else
-              echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
-              gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-              gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
-
-              gsutil -m rm gs://$GOOGLE_STORAGE_BUCKET/**
-              gsutil -m rsync -R build gs://$GOOGLE_STORAGE_BUCKET
-            #fi
+          name: Node Test
+          command: npx lerna run build:viewer:demo --stream
+      # - run:
+      #     name: Deploy latest version to viewer.ohif.org
+      #     command: |
+      #       # https://circleci.com/docs/2.0/google-auth/#authorization
+      #       echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+      #       gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+      #       gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+      #       # Remove all files in Storage Bucket; Push latest
+      #       gsutil -m rm gs://$GOOGLE_STORAGE_BUCKET/**
+      #       gsutil -m rsync -R platform/viewer/dist gs://$GOOGLE_STORAGE_BUCKET
 
 workflows:
   version: 2
@@ -330,17 +325,17 @@ workflows:
           requires:
             - cypress/run
       # Update docs.ohif.org
-      # - docs_publish:
-      #     requires:
-      #       - cypress/run
+      - docs_publish:
+          requires:
+            - cypress/run
       # Update hub.docker.org
       # - docker_publish:
       #     requires:
       #       - npm_publish
       # Update viewer.ohif.org
-      # - build_demo_site:
-      #     requires:
-      #       - cypress/run
-      # - demo_site_publish:
-      #     requires:
-      #       - build_demo_site
+      - viewer_demo_build:
+          requires:
+            - cypress/run
+      - viewer_demo_publish:
+          requires:
+            - viewer_demo_build
