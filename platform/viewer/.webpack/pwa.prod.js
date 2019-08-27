@@ -57,7 +57,7 @@ module.exports = (env, argv) => {
           to: DIST_DIR,
           toType: 'dir',
           // Ignore our HtmlWebpackPlugin template file
-          ignore: ['index.html', 'html-templates', '.DS_Store'],
+          ignore: ['index.html', 'html-templates/*', '.DS_Store'],
         },
       ]),
       new ExtractCssChunksPlugin({
