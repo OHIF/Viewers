@@ -62,7 +62,13 @@ module.exports = (env, argv) => {
           to: DIST_DIR,
           toType: 'dir',
           // Ignore our HtmlWebpackPlugin template file
-          ignore: ['index.html', 'html-templates/*', '.DS_Store'],
+          // Ignore our configuration files
+          ignore: ['index.html', 'config/*', 'html-templates/*', '.DS_Store'],
+        },
+        // Copy over and rename our target app config file
+        {
+          from: `${PUBLIC_DIR}/${APP_CONFIG}`,
+          to: `${DIST_DIR}/app-config.js`,
         },
       ]),
       new ExtractCssChunksPlugin({
@@ -79,7 +85,6 @@ module.exports = (env, argv) => {
         filename: 'index.html',
         templateParameters: {
           PUBLIC_URL: PUBLIC_URL,
-          APP_CONFIG: APP_CONFIG,
         },
         // favicon: `${PUBLIC_DIR}/favicon.ico`,
       }),
