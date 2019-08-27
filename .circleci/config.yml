@@ -285,9 +285,6 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
-      - docs_publish:
-          requires:
-            - PR_UNIT_TESTS
       # Cypress job added by `cypress-io` orb
       - cypress/run:
           pre-steps:
