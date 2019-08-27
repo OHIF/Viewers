@@ -187,13 +187,13 @@ jobs:
             no\n" > ~/.ssh/config
       - run: git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
       - run: git config --global user.name "ohif-bot"
+      - run: yarn global add gitbook-cli
       - run: yarn global add gh-pages
-      - run:
-          name: Generate Docs
-          command: yarn run staticDeploy
-      - run:
-          name: Publish Docs
-          command: yarn run docs:publish
+      - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
+      - run: ~/repo/.circleci/build-and-publish-docs.sh
+      # - run:
+      #     name: Generate & Publish Docs
+      #     command: yarn run docs:publish
 
   docker_publish:
     <<: *defaults
@@ -330,9 +330,9 @@ workflows:
           requires:
             - cypress/run
       # Update docs.ohif.org
-      # - docs_publish:
-      #     requires:
-      #       - cypress/run
+      - docs_publish:
+          requires:
+            - cypress/run
       # Update hub.docker.org
       # - docker_publish:
       #     requires:
