@@ -6,6 +6,8 @@ const webpackCommon = require('./../../../.webpack/webpack.common.js');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
+const TerserJSPlugin = require('terser-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const workboxPlugin = require('workbox-webpack-plugin');
 //
@@ -39,6 +41,7 @@ module.exports = (env, argv) => {
     optimization: {
       minimize: true,
       sideEffects: true,
+      minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
     },
     output: {
       path: DIST_DIR,
