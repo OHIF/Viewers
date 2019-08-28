@@ -23,6 +23,8 @@ module.exports = (env, argv) => {
   return merge(commonConfig, {
     // https://webpack.js.org/configuration/mode/#mode-production
     mode: 'production',
+    // Out of memory -- Code Split
+    // devtool: 'source-map',
     stats: {
       colors: true,
       hash: true,
@@ -47,7 +49,12 @@ module.exports = (env, argv) => {
     // merging with this?
     plugins: [
       // Longer build. Let's report progress
-      new webpack.ProgressPlugin(),
+      new webpack.ProgressPlugin({
+        entries: false,
+        modules: false,
+        modulesCount: 500,
+        profile: true,
+      }),
       // Clean output.path
       new CleanWebpackPlugin(),
       // "Public" Folder
@@ -57,7 +64,13 @@ module.exports = (env, argv) => {
           to: DIST_DIR,
           toType: 'dir',
           // Ignore our HtmlWebpackPlugin template file
-          ignore: ['index.html', 'html-templates/*', '.DS_Store'],
+          // Ignore our configuration files
+          ignore: ['config/*', 'html-templates/*', '.DS_Store'],
+        },
+        // Copy over and rename our target app config file
+        {
+          from: `${PUBLIC_DIR}/${APP_CONFIG}`,
+          to: `${DIST_DIR}/app-config.js`,
         },
       ]),
       new ExtractCssChunksPlugin({
@@ -74,7 +87,6 @@ module.exports = (env, argv) => {
         filename: 'index.html',
         templateParameters: {
           PUBLIC_URL: PUBLIC_URL,
-          APP_CONFIG: APP_CONFIG,
         },
         // favicon: `${PUBLIC_DIR}/favicon.ico`,
       }),
