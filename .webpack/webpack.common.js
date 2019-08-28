@@ -116,7 +116,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
         'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
         'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
-        'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || ''),
+        'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
       }),
     ],
     // Fix: https://github.com/webpack-contrib/css-loader/issues/447#issuecomment-285598881
