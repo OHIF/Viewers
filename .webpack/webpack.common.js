@@ -1,10 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
-// const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
 
 module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
   return {
+    mode: env.production ? 'production' : 'development',
     entry: {
       bundle: `${SRC_DIR}/index.js`,
     },
