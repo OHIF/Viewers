@@ -197,5 +197,8 @@ function _makeAbsoluteIfNecessary(url, base_url) {
   return base_url + url;
 }
 
-export default hot(App);
+// Only wrap/use hot if in dev
+const ExportedApp = process.env.NODE_ENV === 'development' ? hot(App) : App;
+
+export default ExportedApp;
 export { commandsManager, extensionManager, hotkeysManager };

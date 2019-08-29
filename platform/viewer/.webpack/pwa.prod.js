@@ -1,20 +1,24 @@
 const path = require('path');
 const merge = require('webpack-merge');
 const webpack = require('webpack');
-const webpackCommon = require('./../../../.webpack/webpack.common.js');
+const webpackCommon = require('./../../../.webpack/webpack.common-pwa.js');
 // Plugins
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
+const TerserJSPlugin = require('terser-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const workboxPlugin = require('workbox-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
 //
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 // Env Vars
 const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'index.html';
-const PUBLIC_URL = process.env.PUBLIC_URL || '';
+const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 
 module.exports = (env, argv) => {
@@ -39,15 +43,49 @@ module.exports = (env, argv) => {
     optimization: {
       minimize: true,
       sideEffects: true,
+      minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
     },
     output: {
       path: DIST_DIR,
       filename: '[name].bundle.[chunkhash].js',
     },
+    module: {
+      rules: [
+        {
+          test: /\.styl$/,
+          use: [
+            {
+              loader: ExtractCssChunksPlugin.loader,
+              options: {
+                hot: process.env.NODE_ENV === 'development',
+              },
+            },
+            { loader: 'css-loader' },
+            { loader: 'stylus-loader' },
+          ],
+        },
+        {
+          test: /\.(sa|sc|c)ss$/,
+          use: [
+            {
+              loader: ExtractCssChunksPlugin.loader,
+              options: {
+                hot: process.env.NODE_ENV === 'development',
+              },
+            },
+            'css-loader',
+            'postcss-loader',
+            // 'sass-loader',
+          ],
+        },
+      ],
+    },
     // TODO:
     // Do we need to rip anything out of the more generic common.js we're
     // merging with this?
     plugins: [
+      // Uncomment to generate bundle analyzer
+      // new BundleAnalyzerPlugin(),
       // Longer build. Let's report progress
       new webpack.ProgressPlugin({
         entries: false,
@@ -73,10 +111,11 @@ module.exports = (env, argv) => {
           to: `${DIST_DIR}/app-config.js`,
         },
       ]),
+      // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
       new ExtractCssChunksPlugin({
         filename: '[name].css',
         chunkFilename: '[id].css',
-        // hot: true /* only necessary if hot reloading not function*/
+        ignoreOrder: false, // Enable to remove warnings about conflicting order
       }),
       /**
        * This generates our index.html file from the specified template.
