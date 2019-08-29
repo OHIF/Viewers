@@ -48,6 +48,38 @@ module.exports = (env, argv) => {
     output: {
       path: DIST_DIR,
       filename: '[name].bundle.[chunkhash].js',
+      publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
+    },
+    module: {
+      rules: [
+        {
+          test: /\.styl$/,
+          use: [
+            {
+              loader: ExtractCssChunksPlugin.loader,
+              options: {
+                hot: process.env.NODE_ENV === 'development',
+              },
+            },
+            { loader: 'css-loader' },
+            { loader: 'stylus-loader' },
+          ],
+        },
+        {
+          test: /\.(sa|sc|c)ss$/,
+          use: [
+            {
+              loader: ExtractCssChunksPlugin.loader,
+              options: {
+                hot: process.env.NODE_ENV === 'development',
+              },
+            },
+            'css-loader',
+            'postcss-loader',
+            // 'sass-loader',
+          ],
+        },
+      ],
     },
     module: {
       rules: [
@@ -86,13 +118,6 @@ module.exports = (env, argv) => {
     plugins: [
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
-      // Longer build. Let's report progress
-      new webpack.ProgressPlugin({
-        entries: false,
-        modules: false,
-        modulesCount: 500,
-        profile: true,
-      }),
       // Clean output.path
       new CleanWebpackPlugin(),
       // "Public" Folder
