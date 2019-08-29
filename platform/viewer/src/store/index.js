@@ -1,10 +1,14 @@
-import { applyMiddleware, combineReducers, createStore } from "redux";
+import {
+  applyMiddleware,
+  combineReducers,
+  createStore,
+} from 'redux/es/redux.js';
 
 // import { createLogger } from 'redux-logger';
-import layoutReducers from "./layout/reducers.js";
-import { reducer as oidcReducer } from "redux-oidc";
-import { redux } from "@ohif/core";
-import thunkMiddleware from "redux-thunk";
+import layoutReducers from './layout/reducers.js';
+import { reducer as oidcReducer } from 'redux-oidc';
+import { redux } from '@ohif/core';
+import thunkMiddleware from 'redux-thunk';
 
 // Combine our ohif-core, ui, and oidc reducers
 // Set init data, using values found in localStorage
@@ -28,7 +32,7 @@ const store = createStore(
 // Update our cached preferences in localStorage
 store.subscribe(() => {
   localStorage.saveState({
-    preferences: store.getState().preferences
+    preferences: store.getState().preferences,
   });
 });
 
