@@ -20,7 +20,7 @@
     "build:package": "webpack --config .webpack/commonjs.prod.js --env.production",
     "build:viewer": "webpack --config .webpack/pwa.prod.js --env.production",
     "build:viewer:ci": "cross-env PUBLIC_URL=/pwa/ APP_CONFIG=config/netlify.js webpack --config .webpack/pwa.prod.js --env.production",
-    "build:viewer:demo": "cross-env PUBLIC_URL=/ APP_CONFIG=config/demo.js HTML_TEMPLATE=rollbar.html webpack --config .webpack/pwa.prod.js --env.production",
+    "build:viewer:demo": "cross-env APP_CONFIG=config/demo.js HTML_TEMPLATE=rollbar.html webpack --config .webpack/pwa.prod.js --env.production",
     "build:viewer:package": "yarn run build:package",
     "dev": "webpack-dev-server --config .webpack/all.dev.js -w",
     "dev:orthanc": "cross-env APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start",
