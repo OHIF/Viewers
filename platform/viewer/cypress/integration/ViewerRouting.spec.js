@@ -9,7 +9,7 @@ describe('ViewerRouting', () => {
   //   cy.get('.scrollable-study-thumbnails div.ThumbnailEntryContainer')
   //     .its('length')
   //     .should('be.gte', 2);
-  });
+  // });
 
   it('loads route with at least 2 thumbnails', () => {
     cy.get(
