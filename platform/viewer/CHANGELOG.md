@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.11...@ohif/viewer@0.50.12) (2019-08-29)
+
+
+### Bug Fixes
+
+* asset resolution when at non-root route ([#828](https://github.com/OHIF/Viewers/issues/828)) ([d48b617](https://github.com/OHIF/Viewers/commit/d48b617))
+
+
+
+
+
 ## [0.50.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.10...@ohif/viewer@0.50.11) (2019-08-29)
 
 **Note:** Version bump only for package @ohif/viewer
