@@ -81,6 +81,37 @@ module.exports = (env, argv) => {
         },
       ],
     },
+    module: {
+      rules: [
+        {
+          test: /\.styl$/,
+          use: [
+            {
+              loader: ExtractCssChunksPlugin.loader,
+              options: {
+                hot: process.env.NODE_ENV === 'development',
+              },
+            },
+            { loader: 'css-loader' },
+            { loader: 'stylus-loader' },
+          ],
+        },
+        {
+          test: /\.(sa|sc|c)ss$/,
+          use: [
+            {
+              loader: ExtractCssChunksPlugin.loader,
+              options: {
+                hot: process.env.NODE_ENV === 'development',
+              },
+            },
+            'css-loader',
+            'postcss-loader',
+            // 'sass-loader',
+          ],
+        },
+      ],
+    },
     // TODO:
     // Do we need to rip anything out of the more generic common.js we're
     // merging with this?
