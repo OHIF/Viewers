@@ -48,6 +48,7 @@ module.exports = (env, argv) => {
     output: {
       path: DIST_DIR,
       filename: '[name].bundle.[chunkhash].js',
+      publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
     },
     module: {
       rules: [
@@ -86,13 +87,6 @@ module.exports = (env, argv) => {
     plugins: [
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
-      // Longer build. Let's report progress
-      new webpack.ProgressPlugin({
-        entries: false,
-        modules: false,
-        modulesCount: 500,
-        profile: true,
-      }),
       // Clean output.path
       new CleanWebpackPlugin(),
       // "Public" Folder
