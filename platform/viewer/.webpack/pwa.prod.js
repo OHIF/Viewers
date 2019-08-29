@@ -84,8 +84,8 @@ module.exports = (env, argv) => {
     // Do we need to rip anything out of the more generic common.js we're
     // merging with this?
     plugins: [
-      //
-      new BundleAnalyzerPlugin(),
+      // Uncomment to generate bundle analyzer
+      // new BundleAnalyzerPlugin(),
       // Longer build. Let's report progress
       new webpack.ProgressPlugin({
         entries: false,
