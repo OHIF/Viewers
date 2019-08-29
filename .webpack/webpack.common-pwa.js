@@ -3,8 +3,11 @@ const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 
 module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
+  const safeEnv = env || {};
+  const mode = safeEnv.production ? 'production' : 'development';
+
   return {
-    mode: env.production ? 'production' : 'development',
+    mode,
     entry: {
       bundle: `${SRC_DIR}/index.js`,
     },
@@ -22,7 +25,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
             // Find babel.config.js in monorepo root
             // https://babeljs.io/docs/en/options#rootmode
             rootMode: 'upward',
-            envName: env.production ? 'production' : 'development',
+            envName: mode,
             presets: [
               [
                 '@babel/preset-env',
