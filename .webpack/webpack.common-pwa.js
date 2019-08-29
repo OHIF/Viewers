@@ -3,8 +3,8 @@ const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 
 module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
-  const safeEnv = env || {};
-  const mode = safeEnv.production ? 'production' : 'development';
+  const mode =
+    process.env.NODE_ENV === 'production' ? 'production' : 'development';
 
   return {
     mode,
@@ -86,7 +86,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
     },
     plugins: [
       new webpack.DefinePlugin({
-        'process.env.NODE_ENV': mode,
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
         'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
         'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
