@@ -46,36 +46,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
           },
         },
         /**
-         * Stylus to CSS
-         * CSS to CommonJS
-         * Style nodes from JS Strings
-         */
-        {
-          test: /\.styl$/,
-          use: [
-            { loader: 'style-loader' },
-            { loader: 'css-loader' },
-            { loader: 'stylus-loader' },
-          ],
-        },
-        {
-          test: /\.css$/,
-          use: [
-            'style-loader',
-            // ExtractCssChunks.loader,
-            { loader: 'css-loader', options: { importLoaders: 1 } },
-            {
-              loader: 'postcss-loader',
-              options: {
-                config: {
-                  path: './postcss.config.js',
-                },
-                plugins: () => [autoprefixer('last 2 version', 'ie >= 11')],
-              },
-            },
-          ],
-        },
-        /**
          * This allows us to include web workers in our bundle, and VTK.js
          * web workers in our bundle. While this increases bundle size, it
          * cuts down on the number of includes we need for `script tag` usage.
