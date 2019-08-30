@@ -11,8 +11,9 @@ class DownloadDialog extends PureComponent {
     super(props);
 
     this.state = {
-      width: '',
-      height: '',
+      isOpen: this.props.isOpen,
+      width: 3000,
+      height: 3000,
       fileName: '',
       fileType: 'png',
       showAnnotations: true,
@@ -25,10 +26,12 @@ class DownloadDialog extends PureComponent {
           key: 'png',
           value: 'png'
         }
-      ]
+      ],
+      previewElementRef: null
     };
+
     this.submitForm = this.submitForm.bind(this);
-    this.myRef = React.createRef();
+    this.onClose = this.onClose.bind(this);
   }
 
   submitForm(e) {
@@ -58,17 +61,47 @@ class DownloadDialog extends PureComponent {
     isOpen: PropTypes.bool.isRequired,
     toggleDownloadDialog: PropTypes.func.isRequired,
     takeAndDownloadSnapShot: PropTypes.func.isRequired,
-    cloneViewport: PropTypes.func.isRequired,
-    previewElementId: PropTypes.string.isRequired,
+    mountPreview: PropTypes.func.isRequired,
     onResize: PropTypes.func.isRequired,
     toggleAnnotations: PropTypes.func.isRequired,
+    forceRenderUpdate: PropTypes.func.isRequired,
+    setCacheReferences: PropTypes.func.isRequired,
+    cleanViewPortClone: PropTypes.func.isRequired,
   };
+
+  /**
+   * assignRef
+   * This way to pass trough a ref is needed to make a dom ref accessible on
+   * static method getDerivedStateFromProps, what will replace componentWillReceiveProps
+   * See https://fb.me/react-async-component-lifecycle-hooks for details.
+   * @param references dom element ref to cache on state
+   */
+  assignRef = references => {
+    // Control recalls, allowing this instance on state only once
+    if (this.props.updateHash === null && references !== null) {
+      this.setState({ previewElementRef: references,  });
+
+      this.props.setCacheReferences(
+        references,
+        this.props.activeEnabledElement,
+        this.props.forceRenderUpdate,
+        this.state.showAnnotations,
+      );
+
+      this.props.mountPreview();
+    }
+  };
+
+  onClose() {
+    this.props.cleanViewPortClone();
+    this.props.toggleDownloadDialog();
+  }
 
   render() {
     return (
       <Modal
         show={this.props.isOpen}
-        onHide={this.props.toggleDownloadDialog}
+        onHide={this.onClose}
         aria-labelledby="ModalHeader"
         className="DownloadDialog modal fade themed in"
         backdrop={false}
@@ -76,7 +109,7 @@ class DownloadDialog extends PureComponent {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Download</Modal.Title>
+          <Modal.Title>Download - Upd {this.props.updateHash}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={this.submitForm}>
@@ -129,7 +162,15 @@ class DownloadDialog extends PureComponent {
                     checked={this.state.showAnnotations}
                     onChange={e => {
                       this.setState({ showAnnotations: e.target.checked });
-                      this.props.toggleAnnotations(this.state.showAnnotations);
+
+                      this.props.setCacheReferences(
+                        this.state.previewElementRef,
+                        this.props.activeEnabledElement,
+                        this.props.forceRenderUpdate,
+                        e.target.checked
+                      );
+
+                      this.props.toggleAnnotations(e.target.checked, true);
                     }}
                   />
                 </label>
@@ -166,15 +207,14 @@ class DownloadDialog extends PureComponent {
                 <div className="col">
                   <div
                     className="preview-container"
-                    id={this.props.previewElementId}
-                    ref={this.myRef}
+                    ref={this.assignRef}
                   />
                 </div>
               </div>
 
               <div className="actions row">
                 <div className="action_cancel col">
-                  <button type="button" className="btn btn-danger" onClick={this.props.toggleDownloadDialog}>Cancel</button>
+                  <button type="button" className="btn btn-danger" onClick={this.onClose}>Cancel</button>
                 </div>
                 <div className="action_download col">
                   <button type="submit" className="btn btn-primary">Download</button>
@@ -187,12 +227,6 @@ class DownloadDialog extends PureComponent {
       </Modal>
     )
   }
-
-  componentWillReceiveProps(nextProps) {
-    console.log('Reloaded');
-    this.props.cloneViewport(this.myRef, nextProps.activeEnabledElement);
-  }
-
 
 }
 

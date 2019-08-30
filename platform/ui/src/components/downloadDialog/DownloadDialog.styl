@@ -17,10 +17,14 @@
     border: var(--ui-gray-darkest) 1px solid;
     max-height: 200px;
 
-    #preview-element, #download-element
+    #preview-element
       width: 300px;
       height: 200px;
       margin: 0 auto;
-
+      .ViewportOverlay
+        display: none !important;
     #download-element
-      visibility: hidden
+      border: none;
+
+#download-element
+  border: 1px solid green;

@@ -259,7 +259,16 @@ function _getVisibleToolbarButtons() {
 }
 
 /**
- * Toggle the Download Dialog Modal
+ * Toggles the Download Dialog Modal
+ */
+function forceRenderUpdate() {
+  this.setState({
+    forceRenderUpdate: !this.state.isDownloadScreenShotDialogOpen,
+  });
+}
+
+/**
+ * Toggles the Download Dialog Modal
  */
 function toggleDownloadDialog() {
   this.setState({

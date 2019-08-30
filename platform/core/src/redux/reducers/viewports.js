@@ -1,5 +1,6 @@
 import {
   CLEAR_VIEWPORT,
+  FORCE_VIEWPORT_UPDATE,
   SET_ACTIVE_SPECIFIC_DATA,
   SET_SPECIFIC_DATA,
   SET_VIEWPORT,
@@ -23,6 +24,7 @@ const defaultState = {
     ],
   },
   viewportSpecificData: {},
+  updateHash: null
 };
 
 /**
@@ -88,6 +90,10 @@ const viewports = (state = defaultState, action) => {
       } else {
         return defaultState;
       }
+    case FORCE_VIEWPORT_UPDATE:
+      return Object.assign({}, state, {
+        updateHash: new Date().getUTCMilliseconds().valueOf(),
+      });
 
     default:
       return state;

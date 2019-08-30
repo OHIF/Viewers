@@ -1,13 +1,38 @@
+import { element } from 'prop-types';
+
+const DOWNLOAD_ELEMENT_ID = 'download-element';
+const PREVIEW_ELEMENT_ID = 'preview-element';
+
 class DownloadViewportEngine {
   constructor() {
     this.$previewElement = null;
-    this.$downloadElement = null;
+    this.$downloadElement = document.createElement('div');
     this.$activeViewport = null;
-    this.clone = this.clone.bind(this);
+    this.reRenderActionCache = null;
+    this.showAnnotations = false;
+
+    this.availableTools = [
+      'LengthTool',
+      'WwwcTool',
+      'BidirectionalTool',
+      'AngleTool',
+      'StackScrollTool',
+      'BrushTool',
+      'FreehandMouseTool',
+      'EllipticalRoiTool',
+      'CircleRoiTool',
+      'RectangleRoiTool'
+    ];
+
+    this.updateHash = null;
+
+    this.mountPreview = this.mountPreview.bind(this);
     this.save = this.save.bind(this);
     this.setElementSize = this.setElementSize.bind(this);
     this.toggleAnnotations = this.toggleAnnotations.bind(this);
-    this.availableTools = ['length', 'Probe', 'SimpleAngle', 'ArrowAnnotate', 'EllipticalRoi', 'rectangleRoi'];
+    this.updateCache = this.updateCache.bind(this);
+    this.enableCornerstoneTools = this.enableCornerstoneTools.bind(this);
+    this.showPreview = this.showPreview.bind(this);
   }
 
   setElementSize(element, prop, value) {
@@ -18,81 +43,93 @@ class DownloadViewportEngine {
     canvas.style[prop] = `${value}px`;
   }
 
-  toggleAnnotations(showAnnotations) {
-    const action = (showAnnotations) ? 'Enabled' : 'Disabled';
+  toggleAnnotations(element) {
 
-    /// const availableTools = cornerstoneTools.getActiveToolsForElement(this.$activeViewport);
+    const action = (this.showAnnotations) ? 'add' : 'remove';
+    const state = (this.showAnnotations) ? 'Enabled' : 'Disabled';
+
+    console.log(action, state);
 
     this.availableTools.forEach(tool => {
-      console.log(tool);
-      cornerstoneTools[`setTool${action}ForElement`](this.$previewElement, tool);
-      cornerstoneTools[`setTool${action}ForElement`](this.$downloadElement, tool);
-      /*cornerstoneTools[tool][action](this.$previewElement);
-      cornerstoneTools[tool][action](this.$downloadElement);*/
+      const toolName = action === 'remove' ? tool.replace('Tool', '') : cornerstoneTools[tool];
+      cornerstoneTools[`${action}ToolForElement`](element, toolName, {});
+      cornerstoneTools[`setTool${state}ForElement`](element, tool.replace('Tool', ''));
     });
   }
 
-  clone(previewElemReference, activeViewport) {
+  updateCache(
+    previewElemReference = this.$previewElement,
+    activeViewport =  this.$activeViewport,
+    reRenderAction = this.reRenderActionCache,
+    showAnnotations = this.showAnnotations,
+  ){
+    this.$previewElement = previewElemReference;
+    this.$activeViewport = activeViewport;
+    this.reRenderActionCache = reRenderAction;
+    this.showAnnotations = showAnnotations;
+  }
 
+  enableCornerstoneTools(element = this.$downloadElement) {
+    const enabledElement = cornerstone.getEnabledElement(this.$activeViewport);
+    const isAlreadyEnabled = cornerstone.getEnabledElements().some(element => (element.element.id === 'preview-element'));
 
+    if (!isAlreadyEnabled) {
+      cornerstone.enable(element);
+    }
 
-    // Timeout and if to protect from React updates while element is still null
-    setTimeout(() => {
-      if (previewElemReference && previewElemReference.current) {
+    cornerstone.loadImage(enabledElement.image.imageId)
+      .then( image =>  {
+        cornerstone.displayImage(element, image);
+        cornerstone.resize(element, true);
 
-        console.log('cloning', activeViewport );
+        this.setElementSize(element, 'width', 300);
+        this.setElementSize(element, 'height', 200);
+        cornerstone.fitToWindow(element);
 
-        const enabledElement = cornerstone.getEnabledElement(activeViewport);
-        console.log(enabledElement);
+        this.availableTools.forEach(tool => {
+          cornerstoneTools[`addToolForElement`](element, cornerstoneTools[tool], {});
+          cornerstoneTools.setToolEnabled(tool.replace('Tool', ''));
+        });
+      });
+  }
 
-        // Caches the DOM elements
-        this.$previewElement = previewElemReference.current;
-        this.$downloadElement = document.createElement('div');
-        this.$activeViewport = activeViewport;
+  showPreview() {
+    // Adds a viewport clone on React Component via Dom
+    this.$downloadElement.setAttribute('id', PREVIEW_ELEMENT_ID);
+    this.$previewElement.appendChild(this.$downloadElement);
+  }
 
-        // Clones the real viewport, so changing width and height will not affect the original one
-        const clonedViewportForPreview = enabledElement.element.cloneNode(true);
+  clean() {
+    const elementToClean = document.getElementById(DOWNLOAD_ELEMENT_ID);
 
-        console.log(enabledElement);
-        this.$previewElement.appendChild(clonedViewportForPreview);
+    if (elementToClean) {
+      elementToClean.remove();
+    }
+  }
 
-        // Builds up a spare viewport, so the true resized image will be the canvas model for downloading
-        const clonedViewportForDownload = activeViewport.cloneNode(true);
-        this.$downloadElement.appendChild(clonedViewportForDownload);
-        this.$downloadElement.setAttribute('id', "download-element");
+  cloneDomElement() {
 
-        // Adds the hidden spare viewer, right before the true previewer
-        const parentNode = document.querySelector('.DownloadDialog .preview .col');
-        parentNode.appendChild(this.$downloadElement);
+    const thereIsADownloadElement = document.getElementById(DOWNLOAD_ELEMENT_ID);
 
-        // Enabling copies
-        cornerstone.enable(this.$previewElement);
-        cornerstone.enable(this.$downloadElement);
+    if (thereIsADownloadElement) {
+      return null;
+    }
 
-        cornerstone.resize(this.$previewElement, true);
-        cornerstone.resize(this.$downloadElement, true);
+    // Builds up a spare viewport, so the true resized image will be the canvas model for downloading
+    const clonedViewportForDownload = this.$activeViewport.cloneNode(true);
+    this.$downloadElement.appendChild(clonedViewportForDownload);
+    this.$downloadElement.setAttribute('id', DOWNLOAD_ELEMENT_ID);
 
-        cornerstone.loadImage(enabledElement.image.imageId)
-          .then( image =>  {
-            cornerstone.displayImage(this.$previewElement, image);
-            cornerstone.displayImage(this.$downloadElement, image);
+    // Adds the hidden spare viewer on body, away from React Updates
+    const parentNode = document.querySelector('body');
+    parentNode.appendChild(this.$downloadElement);
+  }
 
-            cornerstone.resize(this.$previewElement, true);
-            cornerstone.resize(this.$previewElement, true);
-
-            this.setElementSize(this.$previewElement, 'width', 300);
-            this.setElementSize(this.$previewElement, 'height', 200);
-
-            this.setElementSize(this.$downloadElement, 'width', 3000);
-            this.setElementSize(this.$downloadElement, 'height', 2000);
-
-            cornerstone.fitToWindow(this.$downloadElement);
-            cornerstone.fitToWindow(this.$previewElement);
-
-            this.toggleAnnotations(true);
-          });
-      }
-    }, 50);
+  mountPreview() {
+    this.cloneDomElement();
+    this.enableCornerstoneTools();
+    this.toggleAnnotations();
+    //this.showPreview();
   }
 
   save(formData) {
