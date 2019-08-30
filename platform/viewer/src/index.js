@@ -2,6 +2,12 @@
  * Entry point for development and production PWA builds.
  * Packaged (NPM) builds go through `index-umd.js`
  */
+
+// Polyfills
+// PWA Only?
+// import 'core-js';
+import 'regenerator-runtime/runtime';
+
 import App from './App.js';
 import React from 'react';
 import ReactDOM from 'react-dom';

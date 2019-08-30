@@ -27,7 +27,7 @@ module.exports = (env, argv) => {
   return merge(commonConfig, {
     // https://webpack.js.org/configuration/mode/#mode-production
     mode: 'production',
-    devtool: 'inline-source-map', // 'source-map',
+    devtool: false, // 'source-map',
     stats: {
       colors: true,
       hash: true,
@@ -40,8 +40,10 @@ module.exports = (env, argv) => {
       warnings: true,
     },
     optimization: {
-      minimize: true,
-      sideEffects: false,
+      // minimize: true,
+      // sideEffects: false,
+      minimize: false,
+      sideEffects: true,
       // minimizer: [
       //   new TerserJSPlugin({
       //     sourceMap: true,

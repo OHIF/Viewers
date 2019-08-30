@@ -19,7 +19,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
          */
         {
           test: /\.jsx?$/,
-          exclude: [/node_modules/, /packages\\extension/],
+          exclude: /node_modules/,
           loader: 'babel-loader',
           options: {
             // Find babel.config.js in monorepo root
@@ -32,10 +32,10 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
                 {
                   // Do not transform ES6 modules to another format.
                   // Webpack will take care of that.
-                  // modules: false,
-                  // targets: {
-                  //   ie: '11',
-                  // },
+                  modules: false,
+                  targets: {
+                    ie: '11',
+                  },
                   // https://babeljs.io/docs/en/babel-preset-env#usebuiltins
                   useBuiltIns: 'usage',
                   // https://babeljs.io/docs/en/babel-preset-env#corejs
