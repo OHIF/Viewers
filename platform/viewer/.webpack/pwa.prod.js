@@ -27,8 +27,7 @@ module.exports = (env, argv) => {
   return merge(commonConfig, {
     // https://webpack.js.org/configuration/mode/#mode-production
     mode: 'production',
-    // Out of memory -- Code Split
-    // devtool: 'source-map',
+    devtool: 'inline-source-map', // 'source-map',
     stats: {
       colors: true,
       hash: true,
@@ -42,8 +41,19 @@ module.exports = (env, argv) => {
     },
     optimization: {
       minimize: true,
-      sideEffects: true,
-      minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+      sideEffects: false,
+      // minimizer: [
+      //   new TerserJSPlugin({
+      //     sourceMap: true,
+      //     terserOptions: {
+      //       sourceMap: {
+      //         file: '[name].map',
+      //         url: 'https://my-host/[url]',
+      //       },
+      //     },
+      //   }),
+      //   new OptimizeCSSAssetsPlugin({}),
+      // ],
     },
     output: {
       path: DIST_DIR,
