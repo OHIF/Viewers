@@ -43,18 +43,23 @@ class DownloadViewportEngine {
     canvas.style[prop] = `${value}px`;
   }
 
-  toggleAnnotations(element) {
-
-    const action = (this.showAnnotations) ? 'add' : 'remove';
-    const state = (this.showAnnotations) ? 'Enabled' : 'Disabled';
-
-    console.log(action, state);
+  toggleAnnotations() {
+    const element = this.$downloadElement;
 
     this.availableTools.forEach(tool => {
-      const toolName = action === 'remove' ? tool.replace('Tool', '') : cornerstoneTools[tool];
-      cornerstoneTools[`${action}ToolForElement`](element, toolName, {});
-      cornerstoneTools[`setTool${state}ForElement`](element, tool.replace('Tool', ''));
+      if (this.showAnnotations) {
+        console.log('Adding annot...');
+        // cornerstoneTools.addToolForElement(element, cornerstoneTools[tool], {});
+        cornerstoneTools.setToolEnabledForElement(element, tool.replace('Tool', ''));
+      } else {
+        console.log('Removing annot...');
+        // cornerstoneTools.removeToolForElement(element, tool);
+        cornerstoneTools.setToolDisabledForElement(element, tool.replace('Tool', ''));
+      }
     });
+
+    // Why isnt here ? https://tools.cornerstonejs.org/api/#setViewport - See it with @Danny
+    cornerstoneTools.setViewport(element, this.$activeViewport);
   }
 
   updateCache(
@@ -94,7 +99,6 @@ class DownloadViewportEngine {
   }
 
   showPreview() {
-    // Adds a viewport clone on React Component via Dom
     this.$downloadElement.setAttribute('id', PREVIEW_ELEMENT_ID);
     this.$previewElement.appendChild(this.$downloadElement);
   }
