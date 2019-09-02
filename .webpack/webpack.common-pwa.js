@@ -1,9 +1,14 @@
 const path = require('path');
 const webpack = require('webpack');
+const excludeNodeModulesExcept = require('./excludeNodeModulesExcept.js');
 const aliases = require('./../aliases.config');
 const autoprefixer = require('autoprefixer');
 
 module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
+  if (!process.env.NODE_ENV) {
+    throw new Error('process.env.NODE_ENV not set');
+  }
+
   const mode =
     process.env.NODE_ENV === 'production' ? 'production' : 'development';
 
@@ -38,15 +43,21 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
           include: /vtk\.js[\/\\]Sources/,
           loader: 'shader-loader',
         },
-        /**
-         * JSX
-         */
-        // https://github.com/babel/babel-loader/issues/293
-        // https://github.com/babel/babel/issues/8309
-        // https://www.google.com/search?client=firefox-b-1-d&ei=ToloXbSUMYrN-gTHjrj4Ag&q=babel-loader+imported+node_module+not+transpiled+monorepo&oq=babel-loader+imported+node_module+not+transpiled+monorepo&gs_l=psy-ab.3..33i160l4.298586.299699..299935...0.2..0.258.1637.0j7j2......0....1..gws-wiz.......0i71j33i22i29i30j33i299j33i10.P32jcbsfHCw&ved=0ahUKEwi085rJxankAhWKpp4KHUcHDi8Q4dUDCAo&uact=5
         {
           test: /\.jsx?$/,
-          exclude: /node_modules/,
+          // These are packages that are not transpiled to our lowest supported
+          // JS version (currently ES5). Most of these leverage ES6+ features,
+          // that we need to transpile to a different syntax.
+          exclude: excludeNodeModulesExcept([
+            'vtk.js',
+            'dicomweb-client',
+            'react-dnd',
+            'dcmjs', // contains: loglevelnext
+            'loglevelnext',
+            // '@ohif/extension-dicom-microscopy' contains:
+            'dicom-microscopy-viewer',
+            'ol',
+          ]),
           loader: 'babel-loader',
           options: {
             // Find babel.config.js in monorepo root
