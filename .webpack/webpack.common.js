@@ -1,8 +1,13 @@
 const path = require('path');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
+const excludeNodeModulesExcept = require('./excludeNodeModulesExcept.js');
 
 module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
+  if (!process.env.NODE_ENV) {
+    throw new Error('process.env.NODE_ENV not set');
+  }
+
   const mode =
     process.env.NODE_ENV === 'production' ? 'production' : 'development';
 
@@ -14,36 +19,27 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
     context: SRC_DIR,
     module: {
       rules: [
-        /**
-         * JSX
-         */
         {
           test: /\.jsx?$/,
-          exclude: /node_modules/,
+          // These are packages that are not transpiled to our lowest supported
+          // JS version (currently ES5). Most of these leverage ES6+ features,
+          // that we need to transpile to a different syntax.
+          exclude: excludeNodeModulesExcept([
+            'vtk.js',
+            'dicomweb-client',
+            'react-dnd',
+            'dcmjs', // contains: loglevelnext
+            'loglevelnext',
+            // '@ohif/extension-dicom-microscopy' contains:
+            'dicom-microscopy-viewer',
+            'ol',
+          ]),
           loader: 'babel-loader',
           options: {
             // Find babel.config.js in monorepo root
             // https://babeljs.io/docs/en/options#rootmode
             rootMode: 'upward',
             envName: mode,
-            presets: [
-              [
-                '@babel/preset-env',
-                {
-                  // Do not transform ES6 modules to another format.
-                  // Webpack will take care of that.
-                  modules: false,
-                  targets: {
-                    ie: '11',
-                  },
-                  // https://babeljs.io/docs/en/babel-preset-env#usebuiltins
-                  useBuiltIns: 'usage',
-                  // https://babeljs.io/docs/en/babel-preset-env#corejs
-                  corejs: { version: 3, proposals: true },
-                },
-              ],
-              '@babel/preset-react',
-            ],
           },
         },
         /**
