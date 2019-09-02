@@ -3,9 +3,6 @@
  * Packaged (NPM) builds go through `index-umd.js`
  */
 
-// Polyfills
-// PWA Only?
-// import 'core-js';
 import 'regenerator-runtime/runtime';
 
 import App from './App.js';
