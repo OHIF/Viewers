@@ -16,6 +16,7 @@
     "dev:project": ".scripts/dev.sh",
     "build": "lerna run build:viewer --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
+    "build:demo": "lerna run build:viewer:demo --stream",
     "build:package": "lerna run build:viewer:package --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
     "test": "yarn run test:unit && yarn run test:e2e:ci",
