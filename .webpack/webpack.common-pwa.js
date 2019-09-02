@@ -53,49 +53,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
             // https://babeljs.io/docs/en/options#rootmode
             rootMode: 'upward',
             envName: mode,
-            presets: [
-              [
-                '@babel/preset-env',
-                {
-                  // Do not transform ES6 modules to another format.
-                  // Webpack will take care of that.
-                  modules: false,
-                  targets: {
-                    ie: '11',
-                  },
-                  shippedProposals: true,
-                  // https://babeljs.io/docs/en/babel-preset-env#usebuiltins
-                  useBuiltIns: 'usage',
-                  // https://babeljs.io/docs/en/babel-preset-env#corejs
-                  corejs: { version: 3, proposals: true },
-                },
-              ],
-              '@babel/preset-react',
-            ],
-            plugins: [
-              //'react-hot-loader/babel',
-              'inline-react-svg',
-              '@babel/plugin-proposal-class-properties',
-              '@babel/plugin-transform-arrow-functions',
-              '@babel/plugin-proposal-object-rest-spread',
-              '@babel/plugin-syntax-dynamic-import',
-              '@babel/plugin-transform-regenerator',
-              '@babel/plugin-transform-runtime',
-              [
-                'module-resolver',
-                {
-                  // https://github.com/tleunen/babel-plugin-module-resolver/issues/338
-                  // There seem to be a bug with module-resolver with a mono-repo setup:
-                  // It doesn't resolve paths correctly when using root/alias combo, so we
-                  // use this function instead.
-                  resolvePath(sourcePath, currentFile, opts) {
-                    // This will return undefined if aliases has no key for the sourcePath,
-                    // in which case module-resolver will fallback on its default behaviour.
-                    return aliases[sourcePath];
-                  },
-                },
-              ],
-            ],
           },
         },
       ],
