@@ -1,5 +1,3 @@
-import { element } from 'prop-types';
-
 const DOWNLOAD_ELEMENT_ID = 'download-element';
 const PREVIEW_ELEMENT_ID = 'preview-element';
 
@@ -11,6 +9,7 @@ class DownloadViewportEngine {
     this.reRenderActionCache = null;
     this.showAnnotations = false;
 
+    // TODO - Maybe there is a way to get all these tools dynamically?
     this.availableTools = [
       'LengthTool',
       'WwwcTool',
@@ -37,7 +36,6 @@ class DownloadViewportEngine {
 
   setElementSize(element, prop, value) {
     const resizingElement = element ? element : this.$downloadElement;
-
     resizingElement.style[prop] = `${value}px`;
     const canvas = resizingElement.querySelector('canvas');
     canvas.style[prop] = `${value}px`;
@@ -45,21 +43,13 @@ class DownloadViewportEngine {
 
   toggleAnnotations() {
     const element = this.$downloadElement;
-
     this.availableTools.forEach(tool => {
       if (this.showAnnotations) {
-        console.log('Adding annot...');
-        // cornerstoneTools.addToolForElement(element, cornerstoneTools[tool], {});
         cornerstoneTools.setToolEnabledForElement(element, tool.replace('Tool', ''));
       } else {
-        console.log('Removing annot...');
-        // cornerstoneTools.removeToolForElement(element, tool);
         cornerstoneTools.setToolDisabledForElement(element, tool.replace('Tool', ''));
       }
     });
-
-    // Why isnt here ? https://tools.cornerstonejs.org/api/#setViewport - See it with @Danny
-    cornerstoneTools.setViewport(element, this.$activeViewport);
   }
 
   updateCache(
@@ -92,8 +82,8 @@ class DownloadViewportEngine {
         cornerstone.fitToWindow(element);
 
         this.availableTools.forEach(tool => {
-          cornerstoneTools[`addToolForElement`](element, cornerstoneTools[tool], {});
-          cornerstoneTools.setToolEnabled(tool.replace('Tool', ''));
+          cornerstoneTools.addToolForElement(element, cornerstoneTools[tool], {});
+          cornerstoneTools.setToolEnabledForElement(element, tool.replace('Tool', ''));
         });
       });
   }
@@ -132,8 +122,7 @@ class DownloadViewportEngine {
   mountPreview() {
     this.cloneDomElement();
     this.enableCornerstoneTools();
-    this.toggleAnnotations();
-    //this.showPreview();
+    this.showPreview();
   }
 
   save(formData) {
