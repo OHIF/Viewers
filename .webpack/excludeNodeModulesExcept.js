@@ -1,4 +1,6 @@
-export default function excludeNodeModulesExcept(modules) {
+const path = require('path');
+
+function excludeNodeModulesExcept(modules) {
   var pathSep = path.sep;
   if (pathSep == '\\')
     // must be quoted for use in a regexp:
@@ -16,3 +18,5 @@ export default function excludeNodeModulesExcept(modules) {
     return false;
   };
 }
+
+module.exports = excludeNodeModulesExcept;
