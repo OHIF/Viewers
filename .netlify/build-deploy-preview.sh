@@ -13,9 +13,6 @@ node -v
 # should also symlink all projects appropriately
 yarn install --no-ignore-optional --pure-lockfile
 
-dir
-ls
-
 # Build && Move PWA Output
 yarn run build:ci
 mkdir -p ./.netlify/www/pwa

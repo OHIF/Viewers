@@ -19,7 +19,8 @@ const DIST_DIR = path.join(__dirname, '../dist');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 // Env Vars
-const PUBLIC_URL = process.env.PUBLIC_URL || '';
+const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'index.html';
+const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 
 module.exports = (env, argv) => {
@@ -42,16 +43,21 @@ module.exports = (env, argv) => {
           to: DIST_DIR,
           toType: 'dir',
           // Ignore our HtmlWebpackPlugin template file
-          ignore: ['index.html', '.DS_Store'],
+          // Ignore our configuration files
+          ignore: ['config/*', 'html-templates/*', '.DS_Store'],
+        },
+        // Copy over and rename our target app config file
+        {
+          from: `${PUBLIC_DIR}/${APP_CONFIG}`,
+          to: `${DIST_DIR}/app-config.js`,
         },
       ]),
       // Generate "index.html" w/ correct includes/imports
       new HtmlWebpackPlugin({
-        template: `${PUBLIC_DIR}/index.html`,
+        template: `${PUBLIC_DIR}/html-templates/${HTML_TEMPLATE}`,
         filename: 'index.html',
         templateParameters: {
           PUBLIC_URL: PUBLIC_URL,
-          APP_CONFIG: APP_CONFIG,
         },
       }),
     ],

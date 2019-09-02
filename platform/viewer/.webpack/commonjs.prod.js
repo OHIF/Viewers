@@ -62,8 +62,6 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
-      // Longer build. Let's report progress
-      new webpack.ProgressPlugin(),
       // Clean output.path
       new CleanWebpackPlugin(),
     ],

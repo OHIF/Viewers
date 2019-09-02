@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.11...@ohif/viewer@0.50.12) (2019-08-29)
+
+
+### Bug Fixes
+
+* asset resolution when at non-root route ([#828](https://github.com/OHIF/Viewers/issues/828)) ([d48b617](https://github.com/OHIF/Viewers/commit/d48b617))
+
+
+
+
+
+## [0.50.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.10...@ohif/viewer@0.50.11) (2019-08-29)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [0.50.10](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.9...@ohif/viewer@0.50.10) (2019-08-27)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [0.50.9](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.8...@ohif/viewer@0.50.9) (2019-08-27)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [0.50.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.7...@ohif/viewer@0.50.8) (2019-08-26)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [0.50.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.6...@ohif/viewer@0.50.7) (2019-08-22)
+
+
+### Bug Fixes
+
+* 🐛 Update for changes in ExpandableToolMenu props ([e09670a](https://github.com/OHIF/Viewers/commit/e09670a))
+
+
+
+
+
+## [0.50.6](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.5...@ohif/viewer@0.50.6) (2019-08-22)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [0.50.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.4...@ohif/viewer@0.50.5) (2019-08-21)
 
 

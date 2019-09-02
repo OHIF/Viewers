@@ -192,7 +192,7 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
       return (
         <ExpandableToolMenu
           key={button.id}
-          text={button.label}
+          label={button.label}
           icon={button.icon}
           buttons={childButtons}
           activeCommand={activeCommand}
