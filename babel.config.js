@@ -10,14 +10,7 @@ module.exports = {
       {
         // Do not transform ES6 modules to another format.
         // Webpack will take care of that.
-        // modules: false,
-        // targets: {
-        //   ie: '11',
-        // },
-        // https://babeljs.io/docs/en/babel-preset-env#usebuiltins
-        useBuiltIns: 'usage',
-        // https://babeljs.io/docs/en/babel-preset-env#corejs
-        corejs: { version: 3, proposals: true },
+        modules: false,
       },
     ],
     '@babel/preset-react',
