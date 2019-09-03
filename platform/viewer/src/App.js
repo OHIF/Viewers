@@ -31,12 +31,15 @@ import { OidcProvider } from 'redux-oidc';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
-import WhiteLabellingContext from './WhiteLabellingContext';
 import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import setupTools from './setupTools.js';
 import store from './store';
-import UserManagerContext from './UserManagerContext';
+
+// Contexts
+import WhiteLabellingContext from './context/WhiteLabellingContext';
+import UserManagerContext from './context/UserManagerContext';
+import AppContext from './context/AppContext';
 
 // ~~~~ APP SETUP
 initCornerstoneTools({
@@ -114,44 +117,53 @@ class App extends Component {
       );
     }
 
-    _initExtensions(this.props.extensions);
-    _initServers(this.props.servers);
+    this.appConfig = props || {};
+
+    _initExtensions(this.props.extensions, this.appConfig);
+    _initServers(this.appConfig.servers);
     initWebWorkers();
   }
 
   render() {
     const userManager = this.userManager;
+    const config = {
+      appConfig: this.appConfig,
+    };
 
     if (userManager) {
       return (
-        <Provider store={store}>
-          <I18nextProvider i18n={i18n}>
-            <OidcProvider store={store} userManager={userManager}>
-              <UserManagerContext.Provider value={userManager}>
-                <Router basename={this.props.routerBasename}>
-                  <WhiteLabellingContext.Provider
-                    value={this.props.whiteLabelling}
-                  >
-                    <OHIFStandaloneViewer userManager={userManager} />
-                  </WhiteLabellingContext.Provider>
-                </Router>
-              </UserManagerContext.Provider>
-            </OidcProvider>
-          </I18nextProvider>
-        </Provider>
+        <AppContext.Provider value={config}>
+          <Provider store={store}>
+            <I18nextProvider i18n={i18n}>
+              <OidcProvider store={store} userManager={userManager}>
+                <UserManagerContext.Provider value={userManager}>
+                  <Router basename={this.props.routerBasename}>
+                    <WhiteLabellingContext.Provider
+                      value={this.props.whiteLabelling}
+                    >
+                      <OHIFStandaloneViewer userManager={userManager} />
+                    </WhiteLabellingContext.Provider>
+                  </Router>
+                </UserManagerContext.Provider>
+              </OidcProvider>
+            </I18nextProvider>
+          </Provider>
+        </AppContext.Provider>
       );
     }
 
     return (
-      <Provider store={store}>
-        <I18nextProvider i18n={i18n}>
-          <Router basename={this.props.routerBasename}>
-            <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-              <OHIFStandaloneViewer />
-            </WhiteLabellingContext.Provider>
-          </Router>
-        </I18nextProvider>
-      </Provider>
+      <AppContext.Provider value={config}>
+        <Provider store={store}>
+          <I18nextProvider i18n={i18n}>
+            <Router basename={this.props.routerBasename}>
+              <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
+                <OHIFStandaloneViewer />
+              </WhiteLabellingContext.Provider>
+            </Router>
+          </I18nextProvider>
+        </Provider>
+      </AppContext.Provider>
     );
   }
 }
@@ -159,7 +171,7 @@ class App extends Component {
 /**
  * @param
  */
-function _initExtensions(extensions) {
+function _initExtensions(extensions, appConfig) {
   const defaultExtensions = [
     GenericViewerCommands,
     MeasurementsPanel,
@@ -169,8 +181,8 @@ function _initExtensions(extensions) {
   extensionManager.registerExtensions(mergedExtensions);
 
   // Must run after extension commands are registered
-  if (window.config.hotkeys) {
-    hotkeysManager.setHotkeys(window.config.hotkeys, true);
+  if (appConfig.hotkeys) {
+    hotkeysManager.setHotkeys(appConfig.hotkeys, true);
   }
 }
 

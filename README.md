@@ -82,6 +82,7 @@ window.config = {
 ```
 
 - Install the viewer: `window.OHIFStandaloneViewer.installViewer(window.config);`
+- React components use `Context`/`React hooks` to consume this configuration.
 
 This exact setup is demonstrated in this [CodeSandbox](https://codesandbox.io/s/ohif-viewer-script-tag-usage-c4u4t) and in our [Embedding The Viewer](https://docs.ohif.org/deployment/recipes/embedded-viewer.html) deployment recipe.
 

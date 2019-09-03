@@ -77,7 +77,7 @@ environment variable. By default, its value is
 When we build, the `%APP_CONFIG%` value in
 our[`/public/index.html`](https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/index.html)
 file is substituted for the correct configuration file's name. This sets
-the`window.config` equal to our configuration file's value.
+the`window.config` equal to our configuration file's value. React components use `Context`/`React hooks` to consume this configuration.
 
 #### How do I configure my project?
 

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, matchPath } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
@@ -20,6 +20,9 @@ import './OHIFStandaloneViewer.css';
 import './variables.css';
 import './theme-tide.css';
 
+// Contexts
+import AppContext from './context/AppContext';
+
 // Dynamic Import Routes (CodeSplitting)
 // const IHEInvokeImageDisplay = asyncComponent(() =>
 //   import('./routes/IHEInvokeImageDisplay.js')
@@ -37,6 +40,7 @@ import './theme-tide.css';
 const reload = () => window.location.reload();
 
 class OHIFStandaloneViewer extends Component {
+  static contextType = AppContext;
   state = {
     isLoading: false,
   };
@@ -63,7 +67,7 @@ class OHIFStandaloneViewer extends Component {
 
   render() {
     const { user, userManager } = this.props;
-
+    const { appConfig = {} } = this.context;
     const userNotLoggedIn = userManager && (!user || user.expired);
     if (userNotLoggedIn) {
       const pathname = this.props.location.pathname;
@@ -140,9 +144,7 @@ class OHIFStandaloneViewer extends Component {
     ];
 
     const showStudyList =
-      window.config && window.config.showStudyList !== undefined
-        ? window.config.showStudyList
-        : true;
+      appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
     if (showStudyList) {
       routes.push({
         path: '/studylist',
