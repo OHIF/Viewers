@@ -1,5 +1,3 @@
-import './configuration';
-
 import * as tools from './tools';
 
 import { MeasurementApi, TimepointApi } from './classes';

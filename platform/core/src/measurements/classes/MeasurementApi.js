@@ -5,9 +5,11 @@ import getDescription from '../lib/getDescription';
 import getImageIdForImagePath from '../lib/getImageIdForImagePath';
 import guid from '../../utils/guid';
 import studyMetadataManager from '../../utils/studyMetadataManager';
+import { measurementApiDefaultConfig } from '../configuration';
 
 const configuration = {
   measurementTools: [],
+  ...measurementApiDefaultConfig
 };
 
 export default class MeasurementApi {

@@ -10,7 +10,7 @@ import {
   disassociateStudy,
 } from './dataExchange';
 
-MeasurementApi.setConfiguration({
+export const measurementApiDefaultConfig = {
   measurementTools: [allTools],
   newLesions: [
     {
@@ -28,9 +28,9 @@ MeasurementApi.setConfiguration({
     retrieve: retrieveMeasurements,
     store: storeMeasurements,
   },
-});
+};
 
-TimepointApi.setConfiguration({
+export const timepointApiDefaultConfig = {
   dataExchange: {
     retrieve: retrieveTimepoints,
     store: storeTimepoints,
@@ -38,4 +38,4 @@ TimepointApi.setConfiguration({
     update: updateTimepoint,
     disassociate: disassociateStudy,
   },
-});
+};
