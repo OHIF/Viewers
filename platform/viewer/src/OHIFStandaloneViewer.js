@@ -1,4 +1,4 @@
-import React, { Component, useContext } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, matchPath } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
