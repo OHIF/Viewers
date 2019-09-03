@@ -12,7 +12,6 @@
 </div>
 <div align="center">
   <a href="https://docs.ohif.org/demo">Demo</a> |
-  <a href="https://ohif.canny.io/">Roadmap</a> |
   <a href="https://react.ohif.org/">Component Library</a>
 </div>
 
