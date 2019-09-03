@@ -8,6 +8,7 @@ yarn -v
 node -v
 
 echo 'Installing Gitbook CLI'
+
 yarn global bin
 yarn config get prefix
 yarn config set prefix ~/.yarn

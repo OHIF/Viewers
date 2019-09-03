@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.12...@ohif/viewer@0.50.13) (2019-09-03)
+
+
+### Bug Fixes
+
+* 🐛 Activating Pan and Zoom on right and middle click by def ([#841](https://github.com/OHIF/Viewers/issues/841)) ([7a9b477](https://github.com/OHIF/Viewers/commit/7a9b477))
+
+
+
+
+
+## [0.50.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.11...@ohif/viewer@0.50.12) (2019-08-29)
+
+
+### Bug Fixes
+
+* asset resolution when at non-root route ([#828](https://github.com/OHIF/Viewers/issues/828)) ([d48b617](https://github.com/OHIF/Viewers/commit/d48b617))
+
+
+
+
+
+## [0.50.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.10...@ohif/viewer@0.50.11) (2019-08-29)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [0.50.10](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.9...@ohif/viewer@0.50.10) (2019-08-27)
 
 **Note:** Version bump only for package @ohif/viewer
