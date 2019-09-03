@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-microscopy",
-  "version": "0.50.1",
+  "version": "0.50.2",
   "description": "OHIF extension for Dicom Microscopy",
   "author": "OHIF",
   "license": "MIT",
@@ -35,6 +35,6 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "classnames": "^2.2.6",
-    "dicom-microscopy-viewer": "^0.4.3"
+    "dicom-microscopy-viewer": "^0.6.1"
   }
 }
