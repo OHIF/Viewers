@@ -269,7 +269,6 @@ workflows:
   # PULL REQUESTS
   PR_CHECKS:
     jobs:
-      - docs_publish:
       - PR_UNIT_TESTS:
           filters:
             branches:
