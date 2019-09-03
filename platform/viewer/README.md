@@ -94,7 +94,9 @@ guide.
 
 ### E2E Tests
 
-Using [Cypress](https://www.cypress.io/) to create End-to-End tests and check whether the application flow is performing correctly, ensuring that the integrated components are working as expected.
+Using [Cypress](https://www.cypress.io/) to create End-to-End tests and check
+whether the application flow is performing correctly, ensuring that the
+integrated components are working as expected.
 
 #### Why Cypress?
 
