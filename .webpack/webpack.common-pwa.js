@@ -1,8 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept.js');
-const aliases = require('./../aliases.config');
-const autoprefixer = require('autoprefixer');
 
 module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
   if (!process.env.NODE_ENV) {
@@ -20,29 +18,6 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
     context: SRC_DIR,
     module: {
       rules: [
-        /**
-         * This allows us to include web workers in our bundle, and VTK.js
-         * web workers in our bundle. While this increases bundle size, it
-         * cuts down on the number of includes we need for `script tag` usage.
-         */
-        {
-          test: /\.worker\.js$/,
-          include: /vtk\.js[\/\\]Sources/,
-          use: [
-            {
-              loader: 'worker-loader',
-              options: { inline: true, fallback: false },
-            },
-          ],
-        },
-        /**
-         * This is exclusively used by `vtk.js` to bundle glsl files.
-         */
-        {
-          test: /\.glsl$/i,
-          include: /vtk\.js[\/\\]Sources/,
-          loader: 'shader-loader',
-        },
         {
           test: /\.jsx?$/,
           // These are packages that are not transpiled to our lowest supported
@@ -65,6 +40,29 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
             rootMode: 'upward',
             envName: mode,
           },
+        },
+        /**
+         * This allows us to include web workers in our bundle, and VTK.js
+         * web workers in our bundle. While this increases bundle size, it
+         * cuts down on the number of includes we need for `script tag` usage.
+         */
+        {
+          test: /\.worker\.js$/,
+          include: /vtk\.js[\/\\]Sources/,
+          use: [
+            {
+              loader: 'worker-loader',
+              options: { inline: true, fallback: false },
+            },
+          ],
+        },
+        /**
+         * This is exclusively used by `vtk.js` to bundle glsl files.
+         */
+        {
+          test: /\.glsl$/i,
+          include: /vtk\.js[\/\\]Sources/,
+          loader: 'shader-loader',
         },
       ],
     },

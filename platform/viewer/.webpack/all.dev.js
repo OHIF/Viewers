@@ -30,9 +30,8 @@ module.exports = (env, argv) => {
     // https://webpack.js.org/configuration/mode/#mode-development
     mode: 'development',
     output: {
-      path: DIST_DIR, // push to common?
+      path: DIST_DIR,
       publicPath: ASSET_PATH,
-      // filename: '[name].bundle.js',
     },
     plugins: [
       new webpack.HotModuleReplacementPlugin(),
