@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-microscopy@0.50.1...@ohif/extension-dicom-microscopy@0.50.2) (2019-09-03)
+
+
+### Bug Fixes
+
+* **dicom-microscopy:** Update dicom-microscopy-viewer to 0.6.1 to fix Google Cloud usage with WSI images ([#843](https://github.com/OHIF/Viewers/issues/843)) ([dbaf5c5](https://github.com/OHIF/Viewers/commit/dbaf5c5))
+
+
+
+
+
 ## [0.50.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-microscopy@0.50.0-alpha.10...@ohif/extension-dicom-microscopy@0.50.1) (2019-08-14)
 
 **Note:** Version bump only for package @ohif/extension-dicom-microscopy
