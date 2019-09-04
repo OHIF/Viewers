@@ -52,12 +52,13 @@ function addSegMetadataToCornerstoneToolState(
   }
 }
 
-function retrieveDicomData(wadoUri) {
-  // TODO: Authorization header depends on the server. If we ever have multiple servers
-  // we will need to figure out how / when to pass this information in.
-  return fetch(wadoUri, {
-    headers: OHIF.DICOMWeb.getAuthorizationHeader(),
-  }).then(response => response.arrayBuffer());
+function retrieveDicomData(imageId) {
+  if (!imageId) {
+    throw Error('ImageId for given segmentation storage is not valid');
+  }
+  return cornerstone.loadAndCacheImage(imageId).then(image => {
+    return image && image.data && image.data.byteArray.buffer;
+  });
 }
 
 async function handleSegmentationStorage(
@@ -73,8 +74,12 @@ async function handleSegmentationStorage(
     studyInstanceUid,
     displaySetInstanceUid
   );
-  const segWadoUri = displaySet.images[0].getData().wadouri;
-  const arrayBuffer = await retrieveDicomData(segWadoUri);
+
+  const imageInstace =
+    displaySet && displaySet.images && displaySet && displaySet.images[0];
+
+  const imageId = imageInstace && imageInstace.getImageId();
+  const arrayBuffer = await retrieveDicomData(imageId);
   const dicomData = dcmjs.data.DicomMessage.readFile(arrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
     dicomData.dict
