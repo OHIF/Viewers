@@ -49,19 +49,6 @@ module.exports = (env, argv) => {
     optimization: {
       minimize: isProdBuild,
       sideEffects: true,
-      //   // TODO: For more granular minimize
-      //   // minimizer: [
-      //   //   new TerserJSPlugin({
-      //   //     sourceMap: true,
-      //   //     terserOptions: {
-      //   //       sourceMap: {
-      //   //         file: '[name].map',
-      //   //         url: 'https://my-host/[url]',
-      //   //       },
-      //   //     },
-      //   //   }),
-      //   //   new OptimizeCSSAssetsPlugin({}),
-      //   // ],
     },
     module: {
       rules: [...extractStyleChunksRule(isProdBuild)],
@@ -126,6 +113,15 @@ module.exports = (env, argv) => {
 
   if (!isProdBuild) {
     mergedConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+
+    //
+    mergedConfig.optimization.minimizer = [
+      new TerserJSPlugin({
+        sourceMap: true,
+        parallel: true,
+      }),
+      new OptimizeCSSAssetsPlugin({}),
+    ];
   }
 
   return mergedConfig;
