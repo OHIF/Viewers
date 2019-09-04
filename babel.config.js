@@ -4,7 +4,7 @@ const path = require('path');
 // https://babeljs.io/docs/en/options#babelrcroots
 module.exports = {
   babelrcRoots: ['./platform/*', './extensions/*'],
-  plugins: ['inline-react-svg'],
+  plugins: ['inline-react-svg', '@babel/plugin-proposal-class-properties'],
   env: {
     test: {
       presets: [
@@ -18,7 +18,6 @@ module.exports = {
         '@babel/preset-react',
       ],
       plugins: [
-        '@babel/plugin-proposal-class-properties',
         '@babel/plugin-proposal-object-rest-spread',
         '@babel/plugin-syntax-dynamic-import',
         '@babel/plugin-transform-regenerator',
