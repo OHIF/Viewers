@@ -38,7 +38,9 @@
     --text-disabled-color: #878787;
 
     --input-background-color: #2c363f;
+    --input-placeholder-color--hover: #4d5a63;
     --input-placeholder-color: #d3d3d3;
+
 
     --table-hover-color: #2c363f;
     --table-text-primary-color: #ffffff;

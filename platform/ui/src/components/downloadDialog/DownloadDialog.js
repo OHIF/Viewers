@@ -1,10 +1,12 @@
-import './DownloadDialog.styl';
-
 import React, { PureComponent } from 'react';
-import { withTranslation } from '../../utils/LanguageProvider';
 import Modal from 'react-bootstrap-modal';
 import 'react-bootstrap-modal/lib/css/rbm-patch.css';
 import PropTypes from 'prop-types';
+import { TextInput, Select } from '@ohif/ui';
+
+import './DownloadDialog.styl';
+import { withTranslation } from '../../utils/LanguageProvider';
+
 
 class DownloadDialog extends PureComponent {
   constructor(props) {
@@ -52,7 +54,7 @@ class DownloadDialog extends PureComponent {
       return false;
     }
 
-    this.props.takeAndDownloadSnapShot(formData);
+    this.props.save(formData);
 
     return false;
   };
@@ -60,13 +62,11 @@ class DownloadDialog extends PureComponent {
   static propTypes = {
     isOpen: PropTypes.bool.isRequired,
     toggleDownloadDialog: PropTypes.func.isRequired,
-    takeAndDownloadSnapShot: PropTypes.func.isRequired,
+    save: PropTypes.func.isRequired,
     mountPreview: PropTypes.func.isRequired,
-    onResize: PropTypes.func.isRequired,
+    resize: PropTypes.func.isRequired,
     toggleAnnotations: PropTypes.func.isRequired,
-    forceRenderUpdate: PropTypes.func.isRequired,
     setCacheReferences: PropTypes.func.isRequired,
-    cleanViewPortClone: PropTypes.func.isRequired,
   };
 
   /**
@@ -77,14 +77,13 @@ class DownloadDialog extends PureComponent {
    * @param references dom element ref to cache on state
    */
   assignRef = references => {
-    // Control recalls, allowing this instance on state only once
-    if (this.props.updateHash === null && references !== null) {
-      this.setState({ previewElementRef: references,  });
+    if (references !== null) {
+
+      this.setState({ previewElementRef: references, });
 
       this.props.setCacheReferences(
         references,
         this.props.activeEnabledElement,
-        this.props.forceRenderUpdate,
         this.state.showAnnotations,
       );
 
@@ -93,7 +92,6 @@ class DownloadDialog extends PureComponent {
   };
 
   onClose() {
-    this.props.cleanViewPortClone();
     this.props.toggleDownloadDialog();
   }
 
@@ -109,114 +107,104 @@ class DownloadDialog extends PureComponent {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Download - Upd {this.props.updateHash}</Modal.Title>
+          <Modal.Title>Download High Quality Image</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={this.submitForm}>
             <div className="container">
 
-              <div className="row">
-                <div className="col">
-                  Please specify the dimensions, filename, and desired type for the output image.
-                </div>
+              <div className="title">
+                Please specify the dimensions, filename, and desired type for the output image.
               </div>
 
-              <div className="file-info row">
-                <div className="file-name col9">
-                  <input
-                    type="text"
-                    placeholder="File Name"
-                    value={this.state.fileName}
-                    onChange={e => {
-                      this.setState({ fileName: e.currentTarget.value })
-                    }}
-                    className="input-ohif"
-                    id="file-name"
-                  />
+              <div className="file-info-container">
+
+                <div className="col">
+                  <div className="sizes">
+                    <TextInput
+                      type="number"
+                      min="1"
+                      max="16384"
+                      value={this.state.width}
+                      label="Size (px)"
+                      onChange={e => {
+                        this.setState({ width: e.currentTarget.value });
+                        this.props.resize(null, 'width', this.state.width);
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="file-type col3">
-                  <select
-                    className="select-ohif"
-                    value={this.state.fileType}
-                    onChange={e => {
+
+                <div className="col">
+
+                  <div className="file-name">
+                    <TextInput
+                      type="text"
+                      value={this.state.fileName}
+                      onChange={e => {
+                        this.setState({ fileName: e.currentTarget.value })
+                      }}
+                      label="File Name"
+                      id="file-name"
+                    />
+                  </div>
+
+                  <div className="file-type">
+                    <Select
+                      value={this.state.fileType}
+                      onChange={e => {
                         this.setState({ fileType: e.currentTarget.value })
-                      }
-                    }
-                  >
-                    {this.state.fileTypeOptions.map(({ key, value }) => {
-                      return (
-                        <option key={key} value={value}>{key}</option>
-                      );
-                    })}
-                  </select>
+                      }}
+                      options={this.state.fileTypeOptions}
+                      label="File  Type "
+                    />
+                  </div>
+
                 </div>
-              </div>
 
-              <div className="show-annotations">
-                <label htmlFor="show-annotations" className="form-check-label">
-                  Show Annotations
-                  <input
-                    id="show-annotations"
-                    type="checkbox"
-                    className="form-check-input"
-                    checked={this.state.showAnnotations}
-                    onChange={e => {
-                      this.setState({ showAnnotations: e.target.checked });
-
-                      this.props.setCacheReferences(
-                        this.state.previewElementRef,
-                        this.props.activeEnabledElement,
-                        this.props.forceRenderUpdate,
-                        e.target.checked
-                      );
-
-                      this.props.toggleAnnotations(e.target.checked, true);
-                    }}
-                  />
-                </label>
-              </div>
-
-              <div className="sizes row">
-                <div className="sizes_width col">
-                  <input
-                    type="number"
-                    placeholder="Width"
-                    value={this.state.width}
-                    onChange={e => {
-                      this.setState({ width: e.currentTarget.value });
-                      this.props.onResize(null, 'width', this.state.width);
-                    }}
-                    className="input-ohif"
-                  />
-                </div>
-                <div className="sizes_height col">
-                  <input
-                    type="number"
-                    placeholder="Height"
-                    value={this.state.height}
-                    onChange={e => {
-                      this.setState({ height: e.currentTarget.value });
-                      this.props.onResize(null, 'height', this.state.width);
-                    }}
-                    className="input-ohif"
-                  />
-                </div>
-              </div>
-
-              <div className="preview row">
                 <div className="col">
-                  <div
-                    className="preview-container"
-                    ref={this.assignRef}
-                  />
+
+                  <div className="show-annotations">
+                    <label htmlFor="show-annotations" className="form-check-label">
+                      Show Annotations
+                      <input
+                        id="show-annotations"
+                        type="checkbox"
+                        className="form-check-input"
+                        checked={this.state.showAnnotations}
+                        onChange={e => {
+                          this.setState({ showAnnotations: e.target.checked });
+
+                          this.props.setCacheReferences(
+                            this.state.previewElementRef,
+                            this.props.activeEnabledElement,
+                            e.target.checked
+                          );
+
+                          this.props.toggleAnnotations(e.target.checked, true);
+                        }}
+                      />
+                    </label>
+                  </div>
+
                 </div>
+
               </div>
 
-              <div className="actions row">
-                <div className="action_cancel col">
+              <div className="preview">
+                <h4>Image Preview</h4>
+                <img
+                  className="preview-container"
+                  ref={this.assignRef}
+                  alt="Download Preview"
+                />
+              </div>
+
+              <div className="actions">
+                <div className="action-cancel">
                   <button type="button" className="btn btn-danger" onClick={this.onClose}>Cancel</button>
                 </div>
-                <div className="action_download col">
+                <div className="action-save">
                   <button type="submit" className="btn btn-primary">Download</button>
                 </div>
               </div>

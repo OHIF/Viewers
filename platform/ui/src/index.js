@@ -23,10 +23,20 @@ import {
   UserPreferences,
   UserPreferencesModal,
 } from './components';
-import { ICONS, Icon } from './elements';
+
+// Elements
+import {
+  ICONS,
+  Icon,
+  DropdownMenu as Dropdown,
+  Select,
+  Label,
+  Range,
+  TextArea,
+  TextInput,
+} from './elements';
 
 // Alias this for now as not all dependents are using strict versioning
-import { DropdownMenu as Dropdown } from './elements/form';
 import ExpandableToolMenu from './viewer/ExpandableToolMenu.js';
 import LayoutManager from './LayoutChooser/LayoutManager.js';
 import LayoutPanelDropTarget from './LayoutChooser/LayoutPanelDropTarget.js';
@@ -37,14 +47,20 @@ import ToolbarButton from './viewer/ToolbarButton.js';
 import ViewerbaseDragDropContext from './utils/viewerbaseDragDropContext.js';
 
 export {
+  // Elements
   ICONS,
-  //
+  Icon,
+  Dropdown,
+  Select,
+  Label,
+  Range,
+  TextInput,
+  TextArea,
+  // Components
   CineDialog,
   DownloadDialog,
-  Dropdown,
   ExpandableToolMenu,
   ExampleDropTarget,
-  Icon,
   LayoutButton,
   LayoutChooser,
   LayoutManager,

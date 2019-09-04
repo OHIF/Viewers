@@ -5,26 +5,60 @@
 .DownloadDialog
   color: var(--text-secondary-color);
   filter: drop-shadow(0 0 3px var(--ui-gray-darkest));
-  border: none
-  border-radius: 8px
+  border: none;
+  border-radius: 8px;
   width: inherit;
   padding: 15px;
 
-  .row
-    margin: 15px 0;
+  .title
+    margin: 0;
+
+  .file-info-container
+    display: flex;
+    flex-direction: row;
+    margin: 20px 0;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #16202b;
+
+    .col
+      flex-grow: 1;
+      .file-type
+        margin-top: 10px;
+        .select-ohif
+          margin-left: 9px;
 
   .preview
-    border: var(--ui-gray-darkest) 1px solid;
-    max-height: 200px;
+    display: flex;
+    flex-direction column;
+    justify-content: center;
+    height: 500px;
+    background-color: #16202b;
+    width: fit-content;
+    margin: 0 auto;
+    padding-bottom: 20px;
+    border-radius: 5px;
 
-    #preview-element
-      width: 300px;
-      height: 200px;
-      margin: 0 auto;
-      .ViewportOverlay
-        display: none !important;
-    #download-element
-      border: none;
+    h4
+      width: 100%;
+      text-align center;
+      font-size: 1.3em;
 
-#download-element
-  border: 1px solid green;
+    .preview-container
+      width: auto;
+      height: 100%;
+      object-fit contain;
+
+  .actions
+    display: flex;
+    height: 60px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    .action-cancel
+      margin: 0 20px;
+    .actions-save
+      margin: 0 0 0 10px;
+
+.modal-dialog
+  height: 100%;

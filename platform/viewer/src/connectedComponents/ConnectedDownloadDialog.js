@@ -5,21 +5,20 @@ import DownloadViewportEngine from '../lib/DownloadViewportEngine';
 
 const downloadEngine = new DownloadViewportEngine();
 
-const { setViewportSpecificData, forceViewportUpdate } = OHIF.redux.actions;
+const { setViewportSpecificData } = OHIF.redux.actions;
 
 const mapStateToProps = state => {
   const { viewportSpecificData, activeViewportIndex } = state.viewports;
-  const { dom } = viewportSpecificData[activeViewportIndex] || {};
+  const { dom: activeEnabledElement } = viewportSpecificData[activeViewportIndex] || {};
 
   return {
-    activeEnabledElement: dom,
+    activeEnabledElement,
     activeViewportIndex: state.viewports.activeViewportIndex,
-    takeAndDownloadSnapShot: downloadEngine.save,
+    save: downloadEngine.save,
     mountPreview:  downloadEngine.mountPreview,
     cleanViewPortClone: downloadEngine.clean,
-    onResize: downloadEngine.setElementSize,
+    resize: downloadEngine.resize,
     toggleAnnotations: downloadEngine.toggleAnnotations,
-    updateHash: state.viewports.updateHash,
     setCacheReferences: downloadEngine.updateCache,
   };
 };
@@ -28,9 +27,6 @@ const mapDispatchToProps = dispatch => {
   return {
     dispatchSetViewportSpecificData: (viewportIndex, data) => {
       dispatch(setViewportSpecificData(viewportIndex, data));
-    },
-    forceRenderUpdate: () => {
-      dispatch(forceViewportUpdate());
     },
   };
 };

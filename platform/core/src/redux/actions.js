@@ -10,7 +10,6 @@ import {
   SET_VIEWPORT_ACTIVE,
   SET_VIEWPORT_LAYOUT,
   SET_VIEWPORT_LAYOUT_AND_DATA,
-  FORCE_VIEWPORT_UPDATE
 } from './constants/ActionTypes.js';
 
 /**
@@ -41,11 +40,6 @@ export const setActiveViewportSpecificData = data => ({
   type: SET_ACTIVE_SPECIFIC_DATA,
   data,
 });
-export const forceViewportUpdate = data => ({
-  type: FORCE_VIEWPORT_UPDATE,
-  data,
-});
-
 
 /**
  * NOT-VIEWPORT
@@ -104,7 +98,6 @@ const actions = {
   setViewportActive,
   setViewportSpecificData,
   setViewportLayoutAndData,
-  forceViewportUpdate,
   setLayout,
   clearViewportSpecificData,
   setActiveViewportSpecificData,
