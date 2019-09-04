@@ -1,11 +1,3 @@
-/**
- * Notice that we're not extracting CSS or generating a service-worker. This
- * may create a slightly inconsistent experience, but should allow for faster/
- * easier development.
- *
- * We do still need to generate the "index.html" and copy over files from
- * "public/" so our `webpack-dev-server` can _serve_ them for us :+1:
- */
 // ~~ WebPack
 const path = require('path');
 const merge = require('webpack-merge');
@@ -34,14 +26,10 @@ const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
+  const isProdBuild = process.env.NODE_ENV === 'production';
 
-  const mode =
-    process.env.NODE_ENV === 'production' ? 'production' : 'development';
-  const hmrPlugin =
-    mode === 'development' ? new webpack.HotModuleReplacementPlugin() : [];
-
-  return merge(baseConfig, {
-    devtool: mode === 'production' ? 'source-map' : false,
+  const mergedConfig = merge(baseConfig, {
+    devtool: isProdBuild ? 'source-map' : false,
     output: {
       path: DIST_DIR,
       filename: '[name].bundle.[chunkhash].js',
@@ -59,7 +47,7 @@ module.exports = (env, argv) => {
       warnings: true,
     },
     optimization: {
-      minimize: false,
+      minimize: isProdBuild,
       sideEffects: true,
       //   // TODO: For more granular minimize
       //   // minimizer: [
@@ -76,14 +64,13 @@ module.exports = (env, argv) => {
       //   // ],
     },
     module: {
-      rules: [...extractStyleChunksRule(mode)],
+      rules: [...extractStyleChunksRule(isProdBuild)],
     },
     plugins: [
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
       // Clean output.path
       new CleanWebpackPlugin(),
-      hmrPlugin,
       // Copy "Public" Folder to Dist
       new CopyWebpackPlugin([
         {
@@ -131,4 +118,10 @@ module.exports = (env, argv) => {
       },
     },
   });
+
+  if (!isProdBuild) {
+    mergedConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
+  }
+
+  return mergedConfig;
 };

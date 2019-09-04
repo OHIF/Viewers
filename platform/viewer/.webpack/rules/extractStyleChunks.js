@@ -1,6 +1,6 @@
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
 
-function extractStyleChunks(mode) {
+function extractStyleChunks(isProdBuild) {
   return [
     {
       test: /\.styl$/,
@@ -8,7 +8,7 @@ function extractStyleChunks(mode) {
         {
           loader: ExtractCssChunksPlugin.loader,
           options: {
-            hot: mode === 'development',
+            hot: !isProdBuild,
           },
         },
         { loader: 'css-loader' },
@@ -21,7 +21,7 @@ function extractStyleChunks(mode) {
         {
           loader: ExtractCssChunksPlugin.loader,
           options: {
-            hot: mode === 'development',
+            hot: !isProdBuild,
           },
         },
         'css-loader',
