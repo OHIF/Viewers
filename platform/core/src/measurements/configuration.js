@@ -39,7 +39,4 @@ const timepointApiDefaultConfig = {
   },
 };
 
-export default {
-  measurementApiDefaultConfig,
-  timepointApiDefaultConfig,
-};
+export { measurementApiDefaultConfig, timepointApiDefaultConfig };
