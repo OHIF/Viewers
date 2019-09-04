@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.4...@ohif/extension-vtk@0.50.5) (2019-09-04)
+
+
+### Bug Fixes
+
+* measurementsAPI issue caused by production build ([#842](https://github.com/OHIF/Viewers/issues/842)) ([49d3439](https://github.com/OHIF/Viewers/commit/49d3439))
+
+
+
+
+
 ## [0.50.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.3...@ohif/extension-vtk@0.50.4) (2019-08-26)
 
 **Note:** Version bump only for package @ohif/extension-vtk
