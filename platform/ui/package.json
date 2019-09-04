@@ -23,7 +23,7 @@
     "dev": "docz dev",
     "dev:ui": "yarn run dev",
     "docs": "docz build",
-    "build": "webpack --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
     "test:unit": "jest --watchAll",
