@@ -1,8 +1,8 @@
-import * as dcmjs from "dcmjs";
+import * as dcmjs from 'dcmjs';
 
-import OHIF from "@ohif/core";
-import cornerstone from "cornerstone-core";
-import cornerstoneTools from "cornerstone-tools";
+import OHIF from '@ohif/core';
+import cornerstone from 'cornerstone-core';
+import cornerstoneTools from 'cornerstone-tools';
 
 const { StackManager } = OHIF.utils;
 
@@ -52,12 +52,13 @@ function addSegMetadataToCornerstoneToolState(
   }
 }
 
-function retrieveDicomData(wadoUri) {
-  // TODO: Authorization header depends on the server. If we ever have multiple servers
-  // we will need to figure out how / when to pass this information in.
-  return fetch(wadoUri, {
-    headers: OHIF.DICOMWeb.getAuthorizationHeader()
-  }).then(response => response.arrayBuffer());
+function retrieveDicomData(imageId) {
+  if (!imageId) {
+    throw Error('ImageId for given segmentation storage is not valid');
+  }
+  return cornerstone.loadAndCacheImage(imageId).then(image => {
+    return image && image.data && image.data.byteArray.buffer;
+  });
 }
 
 async function handleSegmentationStorage(
@@ -73,8 +74,12 @@ async function handleSegmentationStorage(
     studyInstanceUid,
     displaySetInstanceUid
   );
-  const segWadoUri = displaySet.images[0].getData().wadouri;
-  const arrayBuffer = await retrieveDicomData(segWadoUri);
+
+  const imageInstace =
+    displaySet && displaySet.images && displaySet && displaySet.images[0];
+
+  const imageId = imageInstace && imageInstace.getImageId();
+  const arrayBuffer = await retrieveDicomData(imageId);
   const dicomData = dcmjs.data.DicomMessage.readFile(arrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
     dicomData.dict
@@ -91,7 +96,7 @@ async function handleSegmentationStorage(
 
   if (displaySets.length > 1) {
     console.warn(
-      "More than one display set with the same seriesInstanceUid. This is not supported yet..."
+      'More than one display set with the same seriesInstanceUid. This is not supported yet...'
     );
   }
 
@@ -100,7 +105,7 @@ async function handleSegmentationStorage(
   const results = parseSeg(arrayBuffer, imageIds);
 
   if (!results) {
-    throw new Error("Fractional segmentations are not supported");
+    throw new Error('Fractional segmentations are not supported');
   }
 
   const { segMetadata, toolState } = results;
@@ -123,7 +128,7 @@ async function handleSegmentationStorage(
   return {
     studyInstanceUid,
     displaySetInstanceUid,
-    stack
+    stack,
   };
 }
 
