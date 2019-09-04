@@ -279,7 +279,8 @@ workflows:
       # Cypress job added by `cypress-io` orb
       - cypress/run:
           pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
+                add wait-on' # Use yarn latest
           yarn: true
           store_artifacts: true
           start: yarn run dev
@@ -303,7 +304,8 @@ workflows:
       # Cypress job added by `cypress-io` orb
       - cypress/run:
           pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
+                add wait-on' # Use yarn latest
           yarn: true
           record: true
           store_artifacts: true
