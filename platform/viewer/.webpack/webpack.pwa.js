@@ -111,9 +111,9 @@ module.exports = (env, argv) => {
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
       // gzip compression of everything served
-      compress: true,
-      http2: true,
       // Causes Cypress: `wait-on` issue in CI
+      // compress: true,
+      // http2: true,
       // https: true,
       hot: true,
       open: true,
