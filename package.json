@@ -16,12 +16,12 @@
     "dev:project": ".scripts/dev.sh",
     "build": "lerna run build:viewer --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
+    "build:demo": "lerna run build:viewer:demo --stream",
     "build:package": "lerna run build:viewer:package --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
-    "test": "yarn run test:unit && yarn run test:e2e:ci",
+    "test": "yarn run test:unit",
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
-    "test:e2e:ci": "cd platform/viewer && yarn run test:e2e:ci",
     "see-changed": "lerna changed",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "release": "yarn run lerna:version && yarn run lerna:publish",
@@ -35,8 +35,10 @@
   "devDependencies": {
     "@babel/core": "^7.5.0",
     "@babel/plugin-proposal-class-properties": "^7.5.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-arrow-functions": "^7.2.0",
+    "@babel/plugin-transform-regenerator": "^7.4.5",
     "@babel/plugin-transform-runtime": "^7.5.0",
     "@babel/preset-env": "^7.5.0",
     "@babel/preset-react": "^7.0.0",
@@ -91,11 +93,5 @@
   },
   "resolutions": {
     "**/@babel/runtime": "7.5.5"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  }
 }

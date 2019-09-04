@@ -1,6 +1,6 @@
 const merge = require('webpack-merge');
 const path = require('path');
-const webpackCommon = require('./../../../.webpack/webpack.common.js');
+const webpackCommon = require('./../../../.webpack/webpack.commonjs.js');
 const pkg = require('./../package.json');
 
 const ROOT_DIR = path.join(__dirname, './..');
@@ -11,8 +11,6 @@ module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
 
   return merge(commonConfig, {
-    // https://webpack.js.org/configuration/mode/#mode-production
-    mode: 'production',
     devtool: 'source-map',
     stats: {
       colors: true,

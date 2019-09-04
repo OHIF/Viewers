@@ -48,8 +48,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "react-vtkjs-viewport": "0.0.11",
-    "vtk.js": "^9.5.0"
+    "react-vtkjs-viewport": "0.0.11"
   },
   "devDependencies": {
     "@ohif/core": "^0.50.3",

@@ -60,8 +60,8 @@ Compiled successfully!
 
 You can now view ohif-viewer in the browser.
 
-  Local:            http://localhost:5000/
-  On Your Network:  http://10.74.20.83:5000/
+  Local:            http://localhost:3000/
+  On Your Network:  http://10.74.20.83:3000/
 
 Note that the development build is not optimized.
 To create a production build, use yarn build.
