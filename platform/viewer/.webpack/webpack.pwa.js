@@ -29,10 +29,10 @@ module.exports = (env, argv) => {
   const isProdBuild = process.env.NODE_ENV === 'production';
 
   const mergedConfig = merge(baseConfig, {
-    devtool: isProdBuild ? 'source-map' : false,
+    devtool: isProdBuild ? 'source-map' : 'cheap-module-eval-source-map',
     output: {
       path: DIST_DIR,
-      filename: '[name].bundle.[chunkhash].js',
+      filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
     },
     stats: {
@@ -110,6 +110,10 @@ module.exports = (env, argv) => {
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
+      // gzip compression of everything served
+      compress: true,
+      http2: true,
+      https: true,
       hot: true,
       open: true,
       port: 3000,
