@@ -5,13 +5,18 @@ function transpileJavaScript(mode) {
     mode === 'production'
       ? excludeNodeModulesExcept([
           'vtk.js',
-          'dicomweb-client',
+          // 'dicomweb-client',
+          // https://github.com/react-dnd/react-dnd/blob/master/babel.config.js
           'react-dnd',
-          'dcmjs', // contains: loglevelnext
-          'loglevelnext',
-          // '@ohif/extension-dicom-microscopy' contains:
-          'dicom-microscopy-viewer',
-          'ol',
+          // https://github.com/dcmjs-org/dcmjs/blob/master/.babelrc
+          // https://github.com/react-dnd/react-dnd/issues/1342
+          // 'dcmjs', // contains: loglevelnext
+          // https://github.com/shellscape/loglevelnext#browser-support
+          // 'loglevelnext',
+          // https://github.com/dcmjs-org/dicom-microscopy-viewer/issues/35
+          // 'dicom-microscopy-viewer',
+          // https://github.com/openlayers/openlayers#supported-browsers
+          // 'ol', --> Should be fine
         ])
       : excludeNodeModulesExcept([]);
 
