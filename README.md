@@ -11,8 +11,7 @@
   <a href="https://github.com/OHIF/Viewers/tree/master/docs/latest">Edit the docs</a>
 </div>
 <div align="center">
-  <a href="https://docs.ohif.org/demo">Demo</a> |
-  <a href="https://ohif.canny.io/">Roadmap</a> |
+  <a href="https://viewer.ohif.org/">Live Demo</a> |
   <a href="https://react.ohif.org/">Component Library</a>
 </div>
 
@@ -59,7 +58,7 @@ The fastest and easiest way to get started is to include the OHIF Viewer with a 
 - Including the following dependencies with script tags:
    - [React](https://unpkg.com/react@16/umd/react.production.min.js)
    - [React Dom](https://unpkg.com/react-dom@16/umd/react-dom.production.min.js)
-   - The [OHIF Viewer](https://unpkg.com/ohif-viewer@0.19.5/dist/index.umd.js)
+   - The [OHIF Viewer](https://unpkg.com/@ohif/viewer)
 - Have an element with an ID of `root` on the page
 - Configure the OHIF Viewer at `window.config`:
 
@@ -236,9 +235,9 @@ MIT © [OHIF](https://github.com/OHIF)
 [semantic-image]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
 [semantic-url]: https://github.com/semantic-release/semantic-release
 <!-- ROW -->
-[npm-url]: https://npmjs.org/package/ohif-viewer
-[npm-downloads-image]: https://img.shields.io/npm/dm/ohif-viewer.svg?style=flat-square
-[npm-version-image]: https://img.shields.io/npm/v/ohif-viewer.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/@ohif/viewer
+[npm-downloads-image]: https://img.shields.io/npm/dm/@ohif/viewer.svg?style=flat-square
+[npm-version-image]: https://img.shields.io/npm/v/@ohif/viewer.svg?style=flat-square
 [docker-pulls-img]: https://img.shields.io/docker/pulls/ohif/viewer.svg?style=flat-square
 [docker-image-url]: https://hub.docker.com/r/ohif/viewer
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
@@ -252,7 +251,7 @@ MIT © [OHIF](https://github.com/OHIF)
 [deployment-docs]: https://docs.ohif.org/deployment/
 [react-url]: https://reactjs.org/
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
-[ohif-viewer-url]: https://www.npmjs.com/package/ohif-viewer
+[ohif-viewer-url]: https://www.npmjs.com/package/@ohif/viewer
 [configuration-url]: https://docs.ohif.org/essentials/configuration.html
 [extensions-url]: https://docs.ohif.org/advanced/extensions.html
 <!-- Platform -->
