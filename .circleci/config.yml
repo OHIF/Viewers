@@ -230,6 +230,7 @@ jobs:
       - run:
           name: 'Build Demo Site'
           command: yarn run build:demo
+          no_output_timeout: 30m
       - run:
           name: 'Upload SourceMaps, Send Deploy Notification'
           command: |
