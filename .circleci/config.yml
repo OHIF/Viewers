@@ -284,7 +284,7 @@ workflows:
           yarn: true
           store_artifacts: true
           start: yarn run dev
-          wait-on: 'https://localhost:3000'
+          wait-on: 'http://localhost:3000'
           no-workspace: true # Don't persist workspace
           working_directory: platform/viewer
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
@@ -310,7 +310,7 @@ workflows:
           record: true
           store_artifacts: true
           start: yarn run dev
-          wait-on: 'https://localhost:3000'
+          wait-on: 'http://localhost:3000'
           working_directory: platform/viewer
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
           post-steps:
