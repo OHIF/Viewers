@@ -1,8 +1,10 @@
 import * as dcmjs from 'dcmjs';
+import { api } from 'dicomweb-client';
 
 import OHIF from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
+import DICOMWeb from '@ohif/core/src/DICOMWeb';
 
 const { StackManager } = OHIF.utils;
 
@@ -52,13 +54,42 @@ function addSegMetadataToCornerstoneToolState(
   }
 }
 
-function retrieveDicomData(imageId) {
+function retrieveDicomData(imageInstance) {
+  // Set frame value to null so we can create an imageId which will retrieve
+  // the entire instance
+  const imageId = imageInstance && imageInstance.getImageId(null);
+
   if (!imageId) {
     throw Error('ImageId for given segmentation storage is not valid');
   }
-  return cornerstone.loadAndCacheImage(imageId).then(image => {
-    return image && image.data && image.data.byteArray.buffer;
-  });
+
+  // If the imageID uses dicomfile, load from wadoUri file storage
+  if (imageId.startsWith('dicomfile:')) {
+    return cornerstone.loadAndCacheImage(imageId).then(image => {
+      return image && image.data && image.data.byteArray.buffer;
+    });
+  } else if (imageId.startsWith('wadors:')) {
+    debugger;
+
+    const config = {
+      url: imageInstance.getData().wadoRoot,
+      headers: OHIF.DICOMWeb.getAuthorizationHeader(),
+    };
+    const dicomWeb = new api.DICOMwebClient(config);
+
+    return dicomWeb.retrieveInstance({
+      studyInstanceUID: imageInstance.getStudyInstanceUID(),
+      seriesInstanceUID: imageInstance.getSeriesInstanceUID(),
+      sopInstanceUID: imageInstance.getSOPInstanceUID()
+    });
+  } else if (imageId.startsWith('wadouri:')) {
+    // Strip out the image loader specifier
+    imageId = imageId.substring(imageId.indexOf(':') + 1);
+  }
+
+  return fetch(imageId, {
+    headers: OHIF.DICOMWeb.getAuthorizationHeader()
+  }).then(response => response.arrayBuffer());
 }
 
 async function handleSegmentationStorage(
@@ -75,11 +106,10 @@ async function handleSegmentationStorage(
     displaySetInstanceUid
   );
 
-  const imageInstace =
+  const imageInstance =
     displaySet && displaySet.images && displaySet && displaySet.images[0];
 
-  const imageId = imageInstace && imageInstace.getImageId();
-  const arrayBuffer = await retrieveDicomData(imageId);
+  const arrayBuffer = await retrieveDicomData(imageInstance);
   const dicomData = dcmjs.data.DicomMessage.readFile(arrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
     dicomData.dict

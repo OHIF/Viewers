@@ -402,6 +402,7 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
         baseWadoRsUri: baseWadoRsUri,
         wadouri: WADOProxy.convertURL(wadouri, server),
         wadorsuri: WADOProxy.convertURL(wadorsuri, server),
+        wadoRoot: server.wadoRoot,
         imageRendering: server.imageRendering,
         thumbnailRendering: server.thumbnailRendering,
       };
