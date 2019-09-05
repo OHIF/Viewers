@@ -1,7 +1,7 @@
 <div class='row'>
 	<div class='column' style='text-align: right; padding: 0 20px'>
-		<strong>Looking for a Deploy Preview?</strong>
-		<a onclick="function redirect() { window.location.href='/demo/'; } redirect();">Deploy Preview for Viewer</a>
+		<strong>Looking for a Live Demo?</strong>
+		<a href="http://viewer.ohif.org/">Preview The OHIF Viewer</a>
 	</div>
 	<div class='column' style='text-align: left; padding: 0 20px'>
 		<a href="https://www.netlify.com">
@@ -33,7 +33,7 @@ yourself unable to extend the viewer for your purposes, please reach out via our
 [GitHub issues][gh-issues]. We are actively seeking feedback on ways to improve
 our integration and extension points.
 
-## Where to Next?
+## Where to next?
 
 Check out these helpful links:
 
