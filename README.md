@@ -29,7 +29,7 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors)
 <!-- prettier-ignore-end -->
 
-## What?
+## About
 
 The OHIF Medical Imaging Viewer is for viewing medical images. It can retrieve
 and load images from most sources and formats; render sets in 2D, 3D, and
