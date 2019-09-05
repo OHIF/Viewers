@@ -63,12 +63,13 @@ function retrieveDicomData(imageInstance) {
     throw Error('ImageId for given segmentation storage is not valid');
   }
 
-  // If the imageID uses dicomfile, load from wadoUri file storage
-  if (imageId.startsWith('dicomfile:')) {
+  const getDicomFileMethod = (imageId, imageInstance) => {
     return cornerstone.loadAndCacheImage(imageId).then(image => {
       return image && image.data && image.data.byteArray.buffer;
     });
-  } else if (imageId.startsWith('wadors:')) {
+  };
+
+  const getWadorsMethod = (imageId, imageInstance) => {
     const config = {
       url: imageInstance.getData().wadoRoot,
       headers: OHIF.DICOMWeb.getAuthorizationHeader(),
@@ -78,16 +79,40 @@ function retrieveDicomData(imageInstance) {
     return dicomWeb.retrieveInstance({
       studyInstanceUID: imageInstance.getStudyInstanceUID(),
       seriesInstanceUID: imageInstance.getSeriesInstanceUID(),
-      sopInstanceUID: imageInstance.getSOPInstanceUID()
+      sopInstanceUID: imageInstance.getSOPInstanceUID(),
     });
-  } else if (imageId.startsWith('wadouri:')) {
-    // Strip out the image loader specifier
-    imageId = imageId.substring(imageId.indexOf(':') + 1);
+  };
+
+  const getDefaultMethod = (imageId, imageInstance) => {
+    return fetch(imageId, {
+      headers: OHIF.DICOMWeb.getAuthorizationHeader(),
+    }).then(response => response.arrayBuffer());
+  };
+
+  const getLoaderType = imageId => {
+    const loaderRegExp = /^\w+\:/;
+    const loaderType = loaderRegExp.exec(imageId);
+
+    return (loaderRegExp.lastIndex === 0 && loaderType && loaderType[0]) || '';
+  };
+
+  let getDicomData = getDefaultMethod;
+  const loaderType = getLoaderType(imageId);
+
+  switch (loaderType) {
+    case 'dicomfile:':
+      getDicomData = getDicomFileMethod;
+      break;
+    case 'wadors:':
+      getDicomData = getWadorsMethod;
+      break;
+    case 'wadouri:':
+      // Strip out the image loader specifier
+      imageId = imageId.substring(imageId.indexOf(':') + 1);
+      break;
   }
 
-  return fetch(imageId, {
-    headers: OHIF.DICOMWeb.getAuthorizationHeader()
-  }).then(response => response.arrayBuffer());
+  return getDicomData(imageId, imageInstance);
 }
 
 async function handleSegmentationStorage(
