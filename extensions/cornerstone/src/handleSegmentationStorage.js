@@ -69,8 +69,6 @@ function retrieveDicomData(imageInstance) {
       return image && image.data && image.data.byteArray.buffer;
     });
   } else if (imageId.startsWith('wadors:')) {
-    debugger;
-
     const config = {
       url: imageInstance.getData().wadoRoot,
       headers: OHIF.DICOMWeb.getAuthorizationHeader(),
