@@ -35,10 +35,10 @@ For our purposes, we will be using `Orthanc`, but you can see a list of
 _Not sure if you have `docker` installed already? Try running `docker --version`
 in command prompt or terminal_
 
-> If you are using `Docker Toolbox` you need to change the _proxy_ parameter in
-> _package.json_ to http://192.168.99.100:8042 or the ip docker-machine ip
-> throws. This is the value [`react-scripts`][react-proxy] uses to proxy
-> requests
+> If you are using `Docker Toolbox` you need to change the _PROXY_DOMAIN_
+> parameter in _platform/viewer/package.json_ to http://192.168.99.100:8042 or
+> the ip docker-machine ip throws. This is the value [`WebPack`][webpack-proxy]
+> uses to proxy requests
 
 ### Running Orthanc
 
@@ -51,8 +51,9 @@ yarn run orthanc:up
 
 _Upload your first Study:_
 
-1. Navigate to [Orthanc's web interface](http://localhost:8899) at
-   `http://localhost:8899` in a web browser.
+1. Navigate to
+   [Orthanc's web interface](http://localhost:8042/app/explorer.html) at
+   `http://localhost:8042/app/explorer.html` in a web browser.
 2. In the top right corner, click "Upload"
 3. Click "Select files to upload..." and select one or more DICOM files
 4. Click "Start the upload"
@@ -60,17 +61,20 @@ _Upload your first Study:_
 #### Orthanc: Learn More
 
 You can see the `docker-compose.yml` file this command runs at
-[`<project-root>/platform/viewer/.recipes/Nginx-Orthanc/`](https://github.com/OHIF/Viewers/tree/master/platform/viewer/.recipes/Nginx-Orthanc),
-and more on Orthanc for Docker in [Orthanc's documentation][orthanc-docker].
+[`<project-root>/.docker/Nginx-Orthanc/`][orthanc-docker-compose], and more on
+Orthanc for Docker in [Orthanc's documentation][orthanc-docker].
 
 ### Connecting to Orthanc
 
 Now that we have a local Orthanc instance up and running, we need to configure
 our web application to connect to it. Open a new terminal window, navigate to
-this project's root directory, and run:
+this repository's root directory, and run:
 
 ```bash
-# If you haven't already, restore dependencies
+# If you haven't already, enable yarn workspaces
+yarn config set workspaces-experimental true
+
+# Restore dependencies
 yarn install
 
 # Run our dev command, but with the local orthanc config
@@ -87,18 +91,24 @@ is running the `dev:orthanc` script in our project's `package.json`. That script
 is:
 
 ```js
-cross-env PORT=5000 APP_CONFIG=config/docker_nginx-orthanc.js react-scripts start
+cross-env NODE_ENV=development PROXY_TARGET=/dicom-web PROXY_DOMAIN=http://localhost:8042 APP_CONFIG=config/docker_nginx-orthanc.js webpack-dev-server --config .webpack/webpack.pwa.js -w
 ```
 
-- `cross-env` sets two environment variables
-  - PORT: 5000
+- `cross-env` sets three environment variables
+  - PROXY_TARGET: `/dicom-web`
+  - PROXY_DOMAIN: `http://localhost:8042`
   - APP_CONFIG: `config/docker_nginx-orthanc.js`
-- `react-scripts` runs it's `start` script. This is [the de-facto
-  way][cra-start] to run a "Create React App" in development mode.
+- `webpack-dev-server` runs using the `.webpack/webpack.pwa.js` configuration
+  file. It will watch for changes and update as we develop.
+
+`PROXY_TARGET` and `PROXY_DOMAIN` tell our development server to proxy requests
+to `Orthanc`. This allows us to bypass CORS issues that normally occur when
+requesting resources that live at a different domain.
 
 The `APP_CONFIG` value tells our app which file to load on to `window.config`.
-By default, our app uses the file at `<project-root>/public/config/default.js`.
-Here is what that configuration looks like:
+By default, our app uses the file at
+`<project-root>/platform/viewer/public/config/default.js`. Here is what that
+configuration looks like:
 
 ```js
 window.config = {
@@ -145,8 +155,8 @@ _Feel free to make a Pull Request if you want to add to this list._
 [dcmjs-org]: https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado
 [dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
 [storescu]: http://support.dcmtk.org/docs/storescu.html
-[cra-start]: https://github.com/facebook/create-react-app#npm-start-or-yarn-start
-[react-proxy]: https://facebook.github.io/create-react-app/docs/proxying-api-requests-in-development#configuring-the-proxy-manually
+[webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy
+[orthanc-docker-compose]: https://github.com/OHIF/Viewers/tree/master/.docker/Nginx-Orthanc
 <!-- Archives -->
 [dcm4chee]: https://github.com/dcm4che/dcm4chee-arc-light
 [dcm4chee-docker]: https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker
