@@ -83,51 +83,25 @@ class App extends Component {
     extensions: [],
   };
 
+  _appConfig;
+  _userManager;
+
   constructor(props) {
     super(props);
 
-    if (this.props.oidc.length) {
-      const firstOpenIdClient = this.props.oidc[0];
+    this.appConfig = props;
+    const { servers, extensions, hotkeys, oidc } = props;
 
-      const { protocol, host } = window.location;
-      const { routerBasename } = this.props;
-      const baseUri = `${protocol}//${host}${routerBasename}`;
-
-      const redirect_uri = firstOpenIdClient.redirect_uri || '/callback';
-      const silent_redirect_uri =
-        firstOpenIdClient.silent_redirect_uri || '/silent-refresh.html';
-      const post_logout_redirect_uri =
-        firstOpenIdClient.post_logout_redirect_uri || '/';
-
-      const openIdConnectConfiguration = Object.assign({}, firstOpenIdClient, {
-        redirect_uri: _makeAbsoluteIfNecessary(redirect_uri, baseUri),
-        silent_redirect_uri: _makeAbsoluteIfNecessary(
-          silent_redirect_uri,
-          baseUri
-        ),
-        post_logout_redirect_uri: _makeAbsoluteIfNecessary(
-          post_logout_redirect_uri,
-          baseUri
-        ),
-      });
-
-      this.userManager = getUserManagerForOpenIdConnectClient(
-        store,
-        openIdConnectConfiguration
-      );
-    }
-
-    this.appConfig = props || {};
-
-    _initExtensions(this.props.extensions, this.appConfig);
-    _initServers(this.appConfig.servers);
+    this.initUserManager(oidc);
+    _initExtensions(extensions, hotkeys);
+    _initServers(servers);
     initWebWorkers();
   }
 
   render() {
-    const userManager = this.userManager;
+    const userManager = this._userManager;
     const config = {
-      appConfig: this.appConfig,
+      appConfig: this._appConfig,
     };
 
     if (userManager) {
@@ -166,12 +140,45 @@ class App extends Component {
       </AppContext.Provider>
     );
   }
+
+  initUserManager(oidc) {
+    if (oidc && !!oidc.length) {
+      const firstOpenIdClient = this.props.oidc[0];
+
+      const { protocol, host } = window.location;
+      const { routerBasename } = this.props;
+      const baseUri = `${protocol}//${host}${routerBasename}`;
+
+      const redirect_uri = firstOpenIdClient.redirect_uri || '/callback';
+      const silent_redirect_uri =
+        firstOpenIdClient.silent_redirect_uri || '/silent-refresh.html';
+      const post_logout_redirect_uri =
+        firstOpenIdClient.post_logout_redirect_uri || '/';
+
+      const openIdConnectConfiguration = Object.assign({}, firstOpenIdClient, {
+        redirect_uri: _makeAbsoluteIfNecessary(redirect_uri, baseUri),
+        silent_redirect_uri: _makeAbsoluteIfNecessary(
+          silent_redirect_uri,
+          baseUri
+        ),
+        post_logout_redirect_uri: _makeAbsoluteIfNecessary(
+          post_logout_redirect_uri,
+          baseUri
+        ),
+      });
+
+      this._userManager = getUserManagerForOpenIdConnectClient(
+        store,
+        openIdConnectConfiguration
+      );
+    }
+  }
 }
 
 /**
  * @param
  */
-function _initExtensions(extensions, appConfig) {
+function _initExtensions(extensions, hotkeys) {
   const defaultExtensions = [
     GenericViewerCommands,
     MeasurementsPanel,
@@ -181,8 +188,8 @@ function _initExtensions(extensions, appConfig) {
   extensionManager.registerExtensions(mergedExtensions);
 
   // Must run after extension commands are registered
-  if (appConfig.hotkeys) {
-    hotkeysManager.setHotkeys(appConfig.hotkeys, true);
+  if (hotkeys) {
+    hotkeysManager.setHotkeys(hotkeys, true);
   }
 }
 

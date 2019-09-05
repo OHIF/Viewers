@@ -209,7 +209,6 @@ class StudyListWithData extends Component {
     let healthCareApiButtons = null;
     let healthCareApiWindows = null;
 
-    // TODO: This should probably be a prop
     if (appConfig.enableGoogleCloudAdapter) {
       healthCareApiWindows = (
         <ConnectedDicomStorePicker
