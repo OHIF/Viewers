@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.21](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.20...@ohif/viewer@0.50.21) (2019-09-06)
+
+
+### Bug Fixes
+
+* viewer project should build output before publish ([94b625d](https://github.com/OHIF/Viewers/commit/94b625d))
+
+
+
+
+
 ## [0.50.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.19...@ohif/viewer@0.50.20) (2019-09-06)
 
 **Note:** Version bump only for package @ohif/viewer
