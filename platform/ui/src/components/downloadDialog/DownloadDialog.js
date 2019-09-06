@@ -92,6 +92,7 @@ class DownloadDialog extends PureComponent {
     toggleAnnotations: PropTypes.func.isRequired,
     setCacheReferences: PropTypes.func.isRequired,
     getInfo: PropTypes.func.isRequired,
+    resetSize: PropTypes.func.isRequired,
   };
 
   /**
@@ -144,6 +145,7 @@ class DownloadDialog extends PureComponent {
   onClose() {
     this.props.toggleDownloadDialog();
     this.props.toggleAnnotations(true);
+    this.props.resetSize();
   }
 
   render() {

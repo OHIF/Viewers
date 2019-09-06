@@ -9,6 +9,7 @@ class DownloadViewportEngine {
     this.mountPreview = this.mountPreview.bind(this);
     this.save = this.save.bind(this);
     this.resize = this.resize.bind(this);
+    this.resetSize = this.resetSize.bind(this);
     this.toggleAnnotations = this.toggleAnnotations.bind(this);
     this.updateCache = this.updateCache.bind(this);
     this.showBlobImage = this.showBlobImage.bind(this);
@@ -16,11 +17,23 @@ class DownloadViewportEngine {
   }
 
   resize(prop, value) {
-    const resizingElement = this.$activeViewport;
+    const resizingElement = cornerstone.getEnabledElement(this.$activeViewport).element;
     const resizingCanvas = resizingElement.querySelector('canvas');
 
     resizingElement.style[prop] = `${value}px`;
     resizingCanvas.style[prop]  = `${value}px`;
+    cornerstone.fitToWindow(this.$activeViewport);
+  }
+
+  resetSize() {
+    const resizingElement = cornerstone.getEnabledElement(this.$activeViewport).element;
+    const resizingCanvas = resizingElement.querySelector('canvas');
+
+    resizingElement.style.width = this.originalElementWidth;
+    resizingElement.style.height = this.originalElementHeigth;
+
+    resizingCanvas.style.width  = this.originalCanvasWidth;
+    resizingCanvas.style.height  = this.originalCanvasHeigth;
     cornerstone.fitToWindow(this.$activeViewport);
   }
 
@@ -59,6 +72,14 @@ class DownloadViewportEngine {
   ){
     this.$previewElement = previewElemReference;
     this.$activeViewport = activeViewport;
+
+    const originalElement = cornerstone.getEnabledElement(this.$activeViewport).element;
+    const originalCanvas = originalElement.querySelector('canvas');
+
+    this.originalElementWidth = originalElement.style.width;
+    this.originalElementHeigth = originalElement.style.height;
+    this.originalCanvasWidth = originalCanvas.style.width;
+    this.originalCanvasHeigth = originalCanvas.style.height;
   }
 
   showBlobImage(blob) {

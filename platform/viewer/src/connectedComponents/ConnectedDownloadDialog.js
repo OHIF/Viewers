@@ -21,6 +21,7 @@ const mapStateToProps = state => {
     toggleAnnotations: downloadEngine.toggleAnnotations,
     setCacheReferences: downloadEngine.updateCache,
     getInfo: downloadEngine.getInfo,
+    resetSize: downloadEngine.resetSize,
   };
 };
 
