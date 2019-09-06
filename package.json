@@ -28,7 +28,8 @@
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "release": "yarn run lerna:version && yarn run lerna:publish",
     "lerna:version": "npx lerna version prerelease --force-publish",
-    "lerna:publish": "lerna publish from-package --canary --dist-tag canary"
+    "lerna:publish": "lerna publish from-package --canary --dist-tag canary",
+    "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
