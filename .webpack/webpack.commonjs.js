@@ -1,3 +1,4 @@
+const merge = require('webpack-merge');
 const webpackBase = require('./webpack.base.js');
 const cssToJavaScriptRule = require('./rules/cssToJavaScript.js');
 const stylusToJavaScriptRule = require('./rules/stylusToJavaScript.js');

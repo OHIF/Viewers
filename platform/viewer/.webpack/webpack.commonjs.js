@@ -13,7 +13,7 @@ module.exports = (env, argv) => {
 
   return merge(commonConfig, {
     entry: {
-      bundle: `${SRC_DIR}/index-umd.js`,
+      app: `${SRC_DIR}/index-umd.js`,
     },
     devtool: 'source-map',
     stats: {

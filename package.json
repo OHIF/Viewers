@@ -12,13 +12,15 @@
   },
   "scripts": {
     "cm": "npx git-cz",
-    "dev": "lerna run dev:viewer --stream",
-    "dev:project": ".scripts/dev.sh",
     "build": "lerna run build:viewer --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package": "lerna run build:viewer:package --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
+    "dev": "lerna run dev:viewer --stream",
+    "dev:project": ".scripts/dev.sh",
+    "dev:orthanc": "lerna run dev:orthanc --stream",
+    "orthanc:up": "docker-compose -f .docker/Nginx-Orthanc/docker-compose.yml up",
     "test": "yarn run test:unit",
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
@@ -26,7 +28,8 @@
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "release": "yarn run lerna:version && yarn run lerna:publish",
     "lerna:version": "npx lerna version prerelease --force-publish",
-    "lerna:publish": "lerna publish from-package --canary --dist-tag canary"
+    "lerna:publish": "lerna publish from-package --canary --dist-tag canary",
+    "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",

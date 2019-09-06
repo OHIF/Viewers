@@ -188,7 +188,6 @@ Links:
 [docker-pulls-img]: https://img.shields.io/docker/pulls/ohif/viewer.svg?style=flat-square
 [docker-image-url]: https://hub.docker.com/r/ohif/viewer
 [all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
-[contributing-url]: https://github.com/OHIF/Viewers/blob/react/CONTRIBUTING.md
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
 <!-- DOCS -->
