@@ -12,13 +12,8 @@ include tags. Here's how it works:
 
 <ul>
   <li>
-    <a href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-      <code>bootstrap@3.3.7</code>
-    </a>
-  </li>
-  <li>
-    <a href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700|Sanchez&display=swap">
-      <code>Google Fonts, Sanchez & Roboto</code>
+    <a href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700&display=swap">
+      <code>Google Font: Roboto</code>
     </a>
   </li>
   <li>
@@ -32,15 +27,13 @@ include tags. Here's how it works:
     </a>
   </li>
   <li>
-    <a href="https://unpkg.com/ohif-viewer/dist/index.umd.js">
-      <code>ohif-viewer@latest</code>
+    <a href="https://unpkg.com/@ohif/viewer">
+      <code>@ohif/viewer@latest</code>
     </a>
   </li>
 </ul>
 
 <ol start="2">
-  <li>The <a href="">WADO Image Loader Codecs and Web Worker source code</a>
-  should be accessible from your server's root</li>
   <li>Create a JS Object to hold the OHIF Viewer's configuration. Here are some
    example values that would allow the viewer to hit our public PACS:</li>
 </ol>
@@ -74,7 +67,7 @@ window.config = {
 </li></ol>
 
 ```js
-// Made available by the `ohif-viewer` script included in step 1
+// Made available by the `@ohif/viewer` script included in step 1
 var Viewer = window.OHIFStandaloneViewer.App;
 var app = React.createElement(Viewer, window.config, null);
 
@@ -89,16 +82,20 @@ First, check out this fully functional [CodeSandbox][code-sandbox] example. If
 you're still having trouble, feel free to search or GitHub issues. Can't find
 anything related your problem? Create a new one.
 
-> When I include bootstrap, other styles on my page no longer work correctly.
-> What can I do?
+> My application's styles are impacting the OHIF Viewer's look and feel. What
+> can I do?
 
-When we include `bootsrap` (and the other dependencies), they are added
-globally. This has the potential of causing conflicts with other scripts and
-styles on the page. To prevent this, `embed` the viewer in a new/empty web page.
-Have that working? Good. Now `embed` that new page using an
+When you include stylesheets and scripts, they are added globally. This has the
+potential of causing conflicts with other scripts and styles on the page. To
+prevent this, `embed` the viewer in a new/empty web page. Have that working?
+Good. Now `embed` that new page using an
 [`<iframe>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe).
 
 This should produce the expected result while also protecting your page from any
 globally defined styles/scripts.
+
+<!--
+  LINKS
+  -->
 
 [code-sandbox]: https://codesandbox.io/s/ohif-viewer-script-tag-usage-b3st9

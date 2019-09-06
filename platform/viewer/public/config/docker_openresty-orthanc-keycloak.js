@@ -13,7 +13,6 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         // REQUIRED TAG:
-        // https://github.com/OHIF/ohif-core/blob/59e1e04b92be24aee5d4402445cb3dcedb746995/src/studies/retrieveStudyMetadata.js#L54
         // TODO: Remove tag after https://github.com/OHIF/ohif-core/pull/19 is merged and we bump version
         requestOptions: {
           // undefined to use JWT + Bearer auth
@@ -39,4 +38,4 @@ window.config = {
       post_logout_redirect_uri: '/logout-redirect.html',
     },
   ],
-}
+};
