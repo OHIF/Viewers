@@ -10,7 +10,15 @@ minimum, you may want to read the following documentation:
 - [Essentials: Getting Started](./essentials/getting-started.md)
 - [Advanced: Architecture](./advanced/architecture.md)
 
-### When changes impact multiple repositories
+Pull requests that are:
+
+- Small
+- [Well tested](./testing.md)
+- Decoupled
+
+Are much more likely to get reviewed and merged in a timely manner.
+
+## When changes impact multiple repositories
 
 While this can be tricky, we've tried to reduce how often this situation crops
 up this with our [recent switch to a monorepo][monorepo]. Our maintained
@@ -22,7 +30,7 @@ package outside of the monorepo is most common with extension development. Let's
 demonstrate how to accomplish this with two commonly forked extension
 dependencies:
 
-#### `cornerstone-tools`
+### `cornerstone-tools`
 
 On your local file system:
 
@@ -47,7 +55,12 @@ On your local file system:
 As you make changed to `cornerstone-tools`, and it's output is rebuilt, you
 should see the following behavior:
 
-<!-- Insert GIF here -->
+<div style="text-align: center;">
+  <a href="/assets/img/cornerstone-tools-link.gif">
+    <img src="/assets/img/cornerstone-tools-link.gif" alt="Example of linked cornerstone-tools package" style="margin: 0 auto; max-width: 500px;" />
+  </a>
+  <div><i>example of linked cornerstone-tools package</i></div>
+</div>
 
 If you wish to stop using your local package, run the following commands in the
 `ohif/viewers` repository root:
@@ -55,9 +68,27 @@ If you wish to stop using your local package, run the following commands in the
 - `yarn unlink cornerstone-tools`
 - `yarn install --force`
 
-#### `react-vtkjs-viewport`
+### `react-vtkjs-viewport`
 
-...
+On your local file system:
+
+```bash
+# code/my-projects/
+.
+├── ohif/react-vtkjs-viewport
+└── ohif/viewers
+```
+
+- Open a terminal/shell
+- Navigate to `ohif/react-vtkjs-viewport`
+  - `yarn install`
+  - [`yarn link`](https://yarnpkg.com/en/docs/cli/link)
+  - `yarn run start`
+- Open a new terminal/shell
+- Navigate to `ohif/viewers`.
+  - `yarn install`
+  - [`yarn link react-vtkjs-viewport`](https://yarnpkg.com/en/docs/cli/link)
+  - `yarn run dev`
 
 #### Other linkage notes
 
