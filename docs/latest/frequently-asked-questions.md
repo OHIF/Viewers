@@ -19,8 +19,8 @@ Follow the steps outlined in the [Bug Report Template][bug-report-template].
 At the moment we are in the process of defining our roadmap and will do our best
 to communicate this to the community. If your requested feature is on the
 roadmap, then it will most likely be built at some point. If it is not, you are
-welcome to build it yourself and [contribute it](contributing.md). If you have
-resources and would like to fund the development of a feature, please
+welcome to build it yourself and [contribute it](contributing/index.md). If you
+have resources and would like to fund the development of a feature, please
 [contact us](http://www.ohif.org) or work with community members that offer
 [consulting services][commercial-support].
 
