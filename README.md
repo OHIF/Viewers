@@ -119,8 +119,7 @@ window.config = {
 };
 ```
 
-- Install the viewer:
-  `window.OHIFStandaloneViewer.installViewer(window.config);`
+- Install the viewer: `window.OHIFStandaloneViewer.installViewer(window.config);`
 
 This exact setup is demonstrated in this
 [CodeSandbox](https://codesandbox.io/s/ohif-viewer-script-tag-usage-c4u4t) and
