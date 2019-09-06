@@ -122,21 +122,7 @@ likely want to update:
 
 #### OHIF Viewer
 
-The OHIF Viewer's configuration is imported from a static `.js` file and `AppContext` provider set up and make available its configuration. In order to consume it consider the following: 
-- For Class component: define property `static contextType = AppContext` and use it as:
-            
-        const { appConfig = {} } = this.context;
-
-- For other component type: use React hooks `useContext` to consume `AppContext` and use it as:
-
-        const { appConfig = {} } = useContext(AppContext);
-
-- For non React components: use global variable `window.config`
-
-The configuration we use is set to a
-specific file when we build the viewer, and determined by the env variable:
-`APP_CONFIG`. You can see where we set its value in the `dockerfile` for this
-solution:
+The OHIF Viewer's configuration is imported from a static `.js` file. The configuration we use is set to a specific file when we build the viewer, and determined by the env variable: `APP_CONFIG`. You can see where we set its value in the `dockerfile` for this solution:
 
 `ENV APP_CONFIG=config/docker_openresty-orthanc-keycloak.js`
 
