@@ -54,7 +54,7 @@ for a product built using the platform.
 If you have gone this route (or are going there), please let us know because we
 would be interested to hear about your experience.
 
-### Is The OHIF Viewer [HIPAA][hipaa] Compliant?
+### Is The OHIF Viewer [HIPAA][hipaa-def] Compliant?
 
 **NO.** The OHIF Viewer **DOES NOT** fulfill all of the criteria to become HIPAA
 Compliant. It is the users responsibility to ensure compliance with applicable
@@ -75,7 +75,7 @@ rules and regulations.
 <!-- OTHER -->
 [501k-clearance]: https://www.fda.gov/MedicalDevices/DeviceRegulationandGuidance/HowtoMarketYourDevice/PremarketSubmissions/PremarketNotification510k/
 [ce-marking]: https://ec.europa.eu/growth/single-market/ce-marking_en
-[hipaa]: https://en.wikipedia.org/wiki/Health_Insurance_Portability_and_Accountability_Act
+[hipaa-def]: https://en.wikipedia.org/wiki/Health_Insurance_Portability_and_Accountability_Act
 [new-issue]: https://github.com/OHIF/Viewers/issues/new/choose
 [bug-report-template]: https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Bug+Report+%3Abug%3A&template=---bug-report.md&title=
 <!-- prettier-ignore-end -->
