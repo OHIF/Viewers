@@ -17,13 +17,7 @@ yarn add --dev -W package-name
   project
 - Remove all-contributors bot; install CLI per project and add per project
   commands
-- Verify all have "dev:package-name" command
-  - Should we include `package.json` and `src` as output? (build from ESM)
-  - Should we remove `dev:package-name` commands and suggest navigating to
-    package root?
 - Fix broken peer dependencies?
-- Lingering core-js resolution issues when building for Viewer PWA (from project
-  directory)
 
 ## ORBS
 
@@ -34,20 +28,6 @@ yarn add --dev -W package-name
 - PR Comment: https://circleci.com/orbs/registry/orb/benjlevesque/pr-comment
 
 Debug Note: `http://localhost:3000/webpack-dev-server`
-
-NOTES:
-
-# bumps pre-release version of all packages if any changes
-
-- `npx lerna version prerelease`
-
-# Releases based on package.json differences from NPM
-
-- `npx lerna publish from-package --dist-tag canary`
-
-Use Env options to set config:
-
-- https://webpack.js.org/api/cli/#environment-options
 
 ## Bundling
 

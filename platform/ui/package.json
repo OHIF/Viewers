@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui",
-  "version": "0.50.1",
+  "version": "0.50.4",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -23,7 +23,7 @@
     "dev": "docz dev",
     "dev:ui": "yarn run dev",
     "docs": "docz build",
-    "build": "webpack --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
     "test:unit": "jest --watchAll",

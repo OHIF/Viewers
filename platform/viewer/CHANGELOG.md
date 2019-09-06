@@ -3,6 +3,79 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.19...@ohif/viewer@0.50.20) (2019-09-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [0.50.19](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.18...@ohif/viewer@0.50.19) (2019-09-06)
+
+
+### Bug Fixes
+
+* @ohif/viewer package build ([4aa7cbd](https://github.com/OHIF/Viewers/commit/4aa7cbd))
+
+
+
+
+
+## [0.50.18](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.17...@ohif/viewer@0.50.18) (2019-09-05)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [0.50.17](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.16...@ohif/viewer@0.50.17) (2019-09-04)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [0.50.16](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.15...@ohif/viewer@0.50.16) (2019-09-04)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [0.50.15](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.14...@ohif/viewer@0.50.15) (2019-09-04)
+
+
+### Bug Fixes
+
+* measurementsAPI issue caused by production build ([#842](https://github.com/OHIF/Viewers/issues/842)) ([49d3439](https://github.com/OHIF/Viewers/commit/49d3439))
+
+
+
+
+
+## [0.50.14](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.13...@ohif/viewer@0.50.14) (2019-09-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [0.50.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.12...@ohif/viewer@0.50.13) (2019-09-03)
+
+
+### Bug Fixes
+
+* 🐛 Activating Pan and Zoom on right and middle click by def ([#841](https://github.com/OHIF/Viewers/issues/841)) ([7a9b477](https://github.com/OHIF/Viewers/commit/7a9b477))
+
+
+
+
+
 ## [0.50.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.11...@ohif/viewer@0.50.12) (2019-08-29)
 
 

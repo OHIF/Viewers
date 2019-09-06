@@ -228,9 +228,12 @@ jobs:
           at: ~/repo
       # Build & Test
       - run:
-          name: 'Build Demo Site, Upload SourceMaps, Send Deploy Notification'
+          name: 'Build Demo Site'
+          command: yarn run build:demo
+          no_output_timeout: 30m
+      - run:
+          name: 'Upload SourceMaps, Send Deploy Notification'
           command: |
-            npx lerna run build:viewer:demo --stream
             # export FILE_1=$(find ./build/static/js -type f -name "2.*.js" -exec basename {} \;)
             # export FILE_MAIN=$(find ./build/static/js -type f -name "main.*.js" -exec basename {} \;)
             # export FILE_RUNTIME_MAIN=$(find ./build/static/js -type f -name "runtime~main.*.js" -exec basename {} \;)
@@ -279,7 +282,8 @@ workflows:
       # Cypress job added by `cypress-io` orb
       - cypress/run:
           pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
+                add wait-on' # Use yarn latest
           yarn: true
           store_artifacts: true
           start: yarn run dev
@@ -303,7 +307,8 @@ workflows:
       # Cypress job added by `cypress-io` orb
       - cypress/run:
           pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
+                add wait-on' # Use yarn latest
           yarn: true
           record: true
           store_artifacts: true
