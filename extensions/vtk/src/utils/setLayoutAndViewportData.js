@@ -1,4 +1,4 @@
-import { redux } from "@ohif/core";
+import { redux } from '@ohif/core';
 
 const { setViewportLayoutAndData } = redux.actions;
 

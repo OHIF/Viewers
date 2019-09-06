@@ -35,10 +35,10 @@ Images can even be transcoded on the fly if this is desired.
   - Choose the "Web Application" type
   - Set up an
     [OAuth 2.0 Client ID](https://support.google.com/cloud/answer/6158849?hl=en)
-  - Add your domain (e.g. `http://localhost:5000`) to Authorized JavaScript
+  - Add your domain (e.g. `http://localhost:3000`) to Authorized JavaScript
     origins.
-  - Add your domain, plus `callback` (e.g.
-    `http://localhost:5000/callback`) to Authorized Redirect URIs.
+  - Add your domain, plus `callback` (e.g. `http://localhost:3000/callback`) to
+    Authorized Redirect URIs.
   - Save your Client ID for later.
 
 - (Optional): Enable Public Datasets that are being hosted by Google:
@@ -46,8 +46,8 @@ Images can even be transcoded on the fly if this is desired.
 
 ## Run the viewer with your OAuth Client ID
 
-1. Open the `config/google.js` file and change `YOURCLIENTID` to
-   your Client ID value.
+1. Open the `config/google.js` file and change `YOURCLIENTID` to your Client ID
+   value.
 1. Run the OHIF Viewer using the config/google.js configuration file
 
 ```bash
@@ -58,9 +58,9 @@ APP_CONFIG=config/google.js yarn run dev
 
 ## Running via Docker
 
-The OHIF Viewer Docker container can be connected to Google Cloud
-Healthcare by providing a Client ID at runtime. This is a very simple
-method to get up and running.
+The OHIF Viewer Docker container can be connected to Google Cloud Healthcare by
+providing a Client ID at runtime. This is a very simple method to get up and
+running.
 
 1. Install Docker (https://www.docker.com/)
 1. Run the Docker container, providing a Client ID as an environment variable.

@@ -45,7 +45,7 @@
 
 ---
 
-- [Contributing](contributing.md)
 - [FAQ](frequently-asked-questions.md)
-- [Roadmap](roadmap.md)
+- [Contributing](contributing/index.md)
+- [Browser Support](browser-support.md)
 - [Help](help.md)

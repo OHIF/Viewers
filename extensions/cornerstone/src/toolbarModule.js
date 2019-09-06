@@ -3,8 +3,6 @@
 // - Include SVG Source/Inline?
 // - By URL, or own component?
 
-// TODO: `ohif-core` toolbar builder?
-
 // What KINDS of toolbar buttons do we have...
 // - One's that dispatch commands
 // - One's that set tool's active

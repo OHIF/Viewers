@@ -2,12 +2,6 @@ import { hot } from 'react-hot-loader/root';
 
 import './config';
 
-// Polyfills
-// PWA Only?
-import 'core-js/features/array/flat';
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
-
 import {
   CommandsManager,
   ExtensionManager,

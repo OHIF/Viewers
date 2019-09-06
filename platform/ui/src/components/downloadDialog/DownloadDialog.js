@@ -3,10 +3,12 @@ import Modal from 'react-bootstrap-modal';
 import 'react-bootstrap-modal/lib/css/rbm-patch.css';
 import PropTypes from 'prop-types';
 import { TextInput, Select } from '@ohif/ui';
+import debounce from 'lodash.debounce';
 
 import './DownloadDialog.styl';
 import { withTranslation } from '../../utils/LanguageProvider';
 
+const MINIMUM_SIZE = 100;
 
 class DownloadDialog extends PureComponent {
   constructor(props) {
@@ -14,8 +16,8 @@ class DownloadDialog extends PureComponent {
 
     this.state = {
       isOpen: this.props.isOpen,
-      width: 3000,
-      height: 3000,
+      size: 0,
+      height: 0,
       fileName: '',
       fileType: 'png',
       showAnnotations: true,
@@ -34,6 +36,21 @@ class DownloadDialog extends PureComponent {
 
     this.submitForm = this.submitForm.bind(this);
     this.onClose = this.onClose.bind(this);
+    this.changeSize = this.changeSize.bind(this);
+    this.checkImageBoundaries = this.checkImageBoundaries.bind(this);
+
+    this.debouncedSizeChange = debounce(() => {
+      const isImageSizeBadlyConfigured = !this.checkImageBoundaries();
+
+      if (isImageSizeBadlyConfigured) {
+        alert(`Image out of boundaries, please review it. Minimum size is ${MINIMUM_SIZE}`);
+        return false;
+      }
+
+      this.props.resize('width', this.state.width);
+      this.props.resize('height', this.state.height);
+    }, 500);
+
   }
 
   submitForm(e) {
@@ -48,13 +65,20 @@ class DownloadDialog extends PureComponent {
     };
 
     const thereIsAnyEmpty = Object.values(formData).some(field => field === '');
+    const isImageSizeBadlyConfigured = !this.checkImageBoundaries();
 
     if (thereIsAnyEmpty) {
       alert('Please full fill all fields.');
       return false;
     }
 
+    if (isImageSizeBadlyConfigured) {
+      alert('Please review image size.');
+      return false;
+    }
+
     this.props.save(formData);
+    this.props.toggleAnnotations(true);
 
     return false;
   };
@@ -67,32 +91,59 @@ class DownloadDialog extends PureComponent {
     resize: PropTypes.func.isRequired,
     toggleAnnotations: PropTypes.func.isRequired,
     setCacheReferences: PropTypes.func.isRequired,
+    getInfo: PropTypes.func.isRequired,
   };
 
   /**
-   * assignRef
-   * This way to pass trough a ref is needed to make a dom ref accessible on
-   * static method getDerivedStateFromProps, what will replace componentWillReceiveProps
+   * mountAndAssignRef
+   * This 'eccentric' way to pass trough a ref to state is needed now that
+   * 'static' method getDerivedStateFromProps doesnt have access to the instance(this),
+   * different of the old way with componentWillReceiveProps
    * See https://fb.me/react-async-component-lifecycle-hooks for details.
-   * @param references dom element ref to cache on state
+   * @param references dom element ref to cache on Download Engine
    */
-  assignRef = references => {
+  mountAndAssignRef = async references => {
     if (references !== null) {
-
-      this.setState({ previewElementRef: references, });
-
-      this.props.setCacheReferences(
+      await this.props.setCacheReferences(
         references,
         this.props.activeEnabledElement,
         this.state.showAnnotations,
       );
 
+      this.setState({
+        previewElementRef: references,
+        ...this.props.getInfo(),
+        showAnnotations: true,
+      });
+
       this.props.mountPreview();
     }
   };
 
+  checkImageBoundaries() {
+    return (this.state.width >= MINIMUM_SIZE && this.state.height >= MINIMUM_SIZE);
+  }
+
+  changeSize(prop, e) {
+    e.persist();
+
+    let { value } = e.currentTarget;
+    value = value - this.state[prop];
+
+    const width = this.state.width + value;
+    const height = this.state.height + value;
+
+    this.setState({
+      width,
+      height
+    });
+
+    this.debouncedSizeChange();
+  }
+
   onClose() {
     this.props.toggleDownloadDialog();
+    this.props.toggleAnnotations(true);
   }
 
   render() {
@@ -107,14 +158,14 @@ class DownloadDialog extends PureComponent {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Download High Quality Image</Modal.Title>
+          <Modal.Title>{this.props.t('Download High Quality Image')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={this.submitForm}>
             <div className="container">
 
               <div className="title">
-                Please specify the dimensions, filename, and desired type for the output image.
+                {this.props.t('Please specify the dimensions, filename, and desired type for the output image.')}
               </div>
 
               <div className="file-info-container">
@@ -123,14 +174,21 @@ class DownloadDialog extends PureComponent {
                   <div className="sizes">
                     <TextInput
                       type="number"
-                      min="1"
+                      min={MINIMUM_SIZE}
                       max="16384"
                       value={this.state.width}
-                      label="Size (px)"
-                      onChange={e => {
-                        this.setState({ width: e.currentTarget.value });
-                        this.props.resize(null, 'width', this.state.width);
-                      }}
+                      label={this.props.t('Width (px)')}
+                      onChange={e => this.changeSize('width', e)}
+                    />
+                  </div>
+                  <div className="sizes">
+                    <TextInput
+                      type="number"
+                      min={MINIMUM_SIZE}
+                      max="16384"
+                      value={this.state.height}
+                      label={this.props.t('Height (px)')}
+                      onChange={ e => this.changeSize('height', e)}
                     />
                   </div>
                 </div>
@@ -144,7 +202,7 @@ class DownloadDialog extends PureComponent {
                       onChange={e => {
                         this.setState({ fileName: e.currentTarget.value })
                       }}
-                      label="File Name"
+                      label={this.props.t('File Name')}
                       id="file-name"
                     />
                   </div>
@@ -156,7 +214,7 @@ class DownloadDialog extends PureComponent {
                         this.setState({ fileType: e.currentTarget.value })
                       }}
                       options={this.state.fileTypeOptions}
-                      label="File  Type "
+                      label={this.props.t('File Type')}
                     />
                   </div>
 
@@ -166,7 +224,7 @@ class DownloadDialog extends PureComponent {
 
                   <div className="show-annotations">
                     <label htmlFor="show-annotations" className="form-check-label">
-                      Show Annotations
+                      {this.props.t('Show Annotations')}
                       <input
                         id="show-annotations"
                         type="checkbox"
@@ -174,13 +232,6 @@ class DownloadDialog extends PureComponent {
                         checked={this.state.showAnnotations}
                         onChange={e => {
                           this.setState({ showAnnotations: e.target.checked });
-
-                          this.props.setCacheReferences(
-                            this.state.previewElementRef,
-                            this.props.activeEnabledElement,
-                            e.target.checked
-                          );
-
                           this.props.toggleAnnotations(e.target.checked, true);
                         }}
                       />
@@ -192,20 +243,31 @@ class DownloadDialog extends PureComponent {
               </div>
 
               <div className="preview">
-                <h4>Image Preview</h4>
+                <h4> {this.props.t('Image Preview')}</h4>
                 <img
                   className="preview-container"
-                  ref={this.assignRef}
-                  alt="Download Preview"
+                  ref={this.mountAndAssignRef}
+                  alt={this.props.t('Image Preview')}
                 />
               </div>
 
               <div className="actions">
                 <div className="action-cancel">
-                  <button type="button" className="btn btn-danger" onClick={this.onClose}>Cancel</button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={this.onClose}
+                  >
+                    {this.props.t('Cancel')}
+                  </button>
                 </div>
                 <div className="action-save">
-                  <button type="submit" className="btn btn-primary">Download</button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                  >
+                    {this.props.t('Download')}
+                  </button>
                 </div>
               </div>
 

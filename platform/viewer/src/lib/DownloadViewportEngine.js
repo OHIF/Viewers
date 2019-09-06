@@ -4,6 +4,7 @@ class DownloadViewportEngine {
   constructor() {
     this.$previewElement = null;
     this.$activeViewport = null;
+    this.size = null;
 
     this.mountPreview = this.mountPreview.bind(this);
     this.save = this.save.bind(this);
@@ -11,31 +12,53 @@ class DownloadViewportEngine {
     this.toggleAnnotations = this.toggleAnnotations.bind(this);
     this.updateCache = this.updateCache.bind(this);
     this.showBlobImage = this.showBlobImage.bind(this);
+    this.getInfo = this.getInfo.bind(this);
   }
 
-  resize(element, prop, value) {
-    const resizingElement = element ? element : this.$downloadElement;
+  resize(prop, value) {
+    const resizingElement = this.$activeViewport;
+    const resizingCanvas = resizingElement.querySelector('canvas');
+
     resizingElement.style[prop] = `${value}px`;
-    const canvas = resizingElement.querySelector('canvas');
-    canvas.style[prop] = `${value}px`;
+    resizingCanvas.style[prop]  = `${value}px`;
+    cornerstone.fitToWindow(this.$activeViewport);
   }
 
-  toggleAnnotations() {
-    // TODO - How to deal with annotations with new method?
+  toggleAnnotations(toggle, reMountPreview = false) {
+    const availableTools = cornerstoneTools.store.state.tools.map(tool => tool.name);
+    const enabledElement = cornerstone.getEnabledElement(this.$activeViewport);
+    const { element } = enabledElement;
+
+    availableTools.forEach(tool => {
+      if (toggle) {
+        cornerstoneTools.setToolEnabledForElement(element, tool);
+      } else {
+        cornerstoneTools.setToolDisabledForElement(element, tool);
+      }
+    });
+
+    cornerstone.updateImage(this.$activeViewport, true);
+
+    if (reMountPreview) {
+      this.mountPreview();
+    }
   }
 
   getInfo() {
-
+    const element = cornerstone.getEnabledElement(this.$activeViewport);
+    return {
+      fileName: 'Image',
+      width: element.image.width || 0,
+      height: element.image.height || 0,
+    };
   }
 
-  updateCache(
+  async updateCache(
     previewElemReference = this.$previewElement,
-    activeViewport =  this.$activeViewport,
-    showAnnotations = this.showAnnotations,
+    activeViewport =  this.$activeViewport
   ){
     this.$previewElement = previewElemReference;
     this.$activeViewport = activeViewport;
-    this.showAnnotations = showAnnotations;
   }
 
   showBlobImage(blob) {

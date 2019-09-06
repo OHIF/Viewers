@@ -20,6 +20,7 @@ const mapStateToProps = state => {
     resize: downloadEngine.resize,
     toggleAnnotations: downloadEngine.toggleAnnotations,
     setCacheReferences: downloadEngine.updateCache,
+    getInfo: downloadEngine.getInfo,
   };
 };
 

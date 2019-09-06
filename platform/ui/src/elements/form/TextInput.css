@@ -5,6 +5,7 @@
 }
 
 .input-ohif-container .input-ohif {
+  display: inline-block;
   height: 40px;
   margin: 0 5px 20px 5px;
   padding: 0 20px;
@@ -14,7 +15,7 @@
   color: var(--input-placeholder-color);
   font-size: 10pt;
   font-weight: normal;
-  width: calc(100% - 10px);
+  width: auto !important;
   border-radius: 4px;
   transition: all 0.15s ease;
   placeholder-color: var(--input-placeholder-color);

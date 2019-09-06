@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "0.50.1",
+  "version": "0.50.5",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -20,9 +20,9 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "dev:cornerstone": "yarn run dev",
-    "build": "webpack --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
     "start": "yarn run dev"
