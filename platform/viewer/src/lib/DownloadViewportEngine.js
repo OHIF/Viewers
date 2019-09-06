@@ -24,6 +24,10 @@ class DownloadViewportEngine {
     // TODO - How to deal with annotations with new method?
   }
 
+  getInfo() {
+
+  }
+
   updateCache(
     previewElemReference = this.$previewElement,
     activeViewport =  this.$activeViewport,

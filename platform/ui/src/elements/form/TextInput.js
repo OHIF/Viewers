@@ -33,7 +33,7 @@ class TextInput extends React.Component {
           <input
             type={this.props.type}
             id={this.props.id}
-            className="input-ohif"
+            className="form-control input-ohif"
             {...this.props}
           />
         </label>
