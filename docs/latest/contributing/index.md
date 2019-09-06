@@ -38,17 +38,33 @@ On your local file system:
   - `npm install`
   - [`yarn link`](https://yarnpkg.com/en/docs/cli/link)
   - `npm run dev`
+- Open a new terminal/shell
 - Navigate to `ohif/viewers`.
   - `yarn install`
   - [`yarn link cornerstone-tools`](https://yarnpkg.com/en/docs/cli/link)
   - `yarn run dev`
 
-For example if you are working on `ohif-core` and would like to use your local
-version to debug a problem in `Viewers`, simply run yarn link inside of the
-`ohif-core` project.
+As you make changed to `cornerstone-tools`, and it's output is rebuilt, you
+should see the following behavior:
 
-- If you're experiencing issues with `yarn link`,
-  [try `yalc`](https://github.com/whitecolor/yalc)
+<!-- Insert GIF here -->
+
+If you wish to stop using your local package, run the following commands in the
+`ohif/viewers` repository root:
+
+- `yarn unlink cornerstone-tools`
+- `yarn install --force`
+
+#### `react-vtkjs-viewport`
+
+...
+
+#### Other linkage notes
+
+We're still working out some of the kinks with local package development as
+there are a lot of factors that can influence the behavior of our development
+server and bundler. If you encounter issues not addressed here, please don't
+hesitate to reach out on GitHub.
 
 ## Any guidance on submitting changes?
 
