@@ -145,8 +145,8 @@ becomes a new namespace automatically.
 - CineDialog: Translations for the toll tips inside the Cine Player Dialog
 - Common: all common jargons that can be reused like `t('$t(common:image)')`
 - Header: translations related to OHIF's Header Top Bar
-- MeasurementTable - Translations for the react-viewerbase Measurement Table
-- UserPreferencesModal - Translations for the react-viewerbase Preferences Modal
+- MeasurementTable - Translations for the `@ohif/ui` Measurement Table
+- UserPreferencesModal - Translations for the `@ohif/ui` Preferences Modal
 
 ### How to use another NameSpace inside the current NameSpace?
 

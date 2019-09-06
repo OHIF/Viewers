@@ -19,8 +19,8 @@ Follow the steps outlined in the [Bug Report Template][bug-report-template].
 At the moment we are in the process of defining our roadmap and will do our best
 to communicate this to the community. If your requested feature is on the
 roadmap, then it will most likely be built at some point. If it is not, you are
-welcome to build it yourself and [contribute it](contributing.md). If you have
-resources and would like to fund the development of a feature, please
+welcome to build it yourself and [contribute it](contributing/index.md). If you
+have resources and would like to fund the development of a feature, please
 [contact us](http://www.ohif.org) or work with community members that offer
 [consulting services][commercial-support].
 
@@ -54,7 +54,7 @@ for a product built using the platform.
 If you have gone this route (or are going there), please let us know because we
 would be interested to hear about your experience.
 
-### Is The OHIF Viewer [HIPAA][hipaa] Compliant?
+### Is The OHIF Viewer [HIPAA][hipaa-def] Compliant?
 
 **NO.** The OHIF Viewer **DOES NOT** fulfill all of the criteria to become HIPAA
 Compliant. It is the users responsibility to ensure compliance with applicable
@@ -75,7 +75,7 @@ rules and regulations.
 <!-- OTHER -->
 [501k-clearance]: https://www.fda.gov/MedicalDevices/DeviceRegulationandGuidance/HowtoMarketYourDevice/PremarketSubmissions/PremarketNotification510k/
 [ce-marking]: https://ec.europa.eu/growth/single-market/ce-marking_en
-[hipaa]: https://en.wikipedia.org/wiki/Health_Insurance_Portability_and_Accountability_Act
+[hipaa-def]: https://en.wikipedia.org/wiki/Health_Insurance_Portability_and_Accountability_Act
 [new-issue]: https://github.com/OHIF/Viewers/issues/new/choose
 [bug-report-template]: https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Bug+Report+%3Abug%3A&template=---bug-report.md&title=
 <!-- prettier-ignore-end -->

@@ -46,6 +46,6 @@
 ---
 
 - [FAQ](frequently-asked-questions.md)
-- [Contributing](contributing.md)
+- [Contributing](contributing/index.md)
 - [Browser Support](browser-support.md)
 - [Help](help.md)
