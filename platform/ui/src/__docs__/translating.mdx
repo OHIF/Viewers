@@ -36,9 +36,9 @@ export default withTranslation('MyNameSpace')(MyComponent);
 For further information about namespaces and how they work, please visit
 [OHIF Namespaces docs](https://docs.ohif.org/essentials/translating.html#namespaces).
 
-### How to get right the Name Space of a react-viewerbase component?
+### How to get right the Namespace of a `@ohif/ui` component?
 
-Check the component's page in this site, the NameSpace information should be on
+Check the component's page in this site, the Namespace information should be on
 the bottom line.
 
 Also, a nameSpace is defined when exporting a component, this information can be
@@ -50,10 +50,10 @@ E.g.
 export default withTranslation('TheNamespaceYouAreLookingFor')(TheComponentYouWantToUse);
 ```
 
-### How to use another NameSpace inside the current NameSpace?
+### How to use another Namespace inside the current Namespace?
 
 i18next provides a parsing feature able to get translations strings from any
-NameSpace, like this following example getting data from `InnerSpace` NameSpace:
+Namespace, like this following example getting data from `InnerSpace` Namespace:
 
 ```
 $t(InnerSpace:Reset)
@@ -64,8 +64,8 @@ export default withTranslation('OuterSpace')(TheComponent);
 
 ## I18next Provider
 
-**React Viewerbase** pass down the `t` function trough the custom
-[withTranslation HOC](https://github.com/OHIF/react-viewerbase/blob/master/src/utils/LanguageProvider.js).
+**@ohif/ui** pass down the `t` function trough the custom
+[withTranslation HOC](https://github.com/OHIF/Viewers/blob/master/platform/ui/src/utils/LanguageProvider.js).
 
 ---
 

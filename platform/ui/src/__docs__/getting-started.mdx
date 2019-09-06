@@ -11,20 +11,20 @@ route: /getting-started
 > possibility of introducing breaking changes. Please depend on an "exact"
 > version in your projects to prevent issues caused by loose versioning.
 
-Install `react-viewerbase` from npm:
+Install `@ohif/ui` from npm:
 
 ```shell
 // with npm
-npm i react-viewerbase --save-exact
+npm i @ohif/ui --save-exact
 
 // with yarn
-yarn add react-viewerbase --exact
+yarn add @ohif/ui --exact
 ```
 
 ## Usage
 
-There is some setup required for `react-viewerbase`. We are working to eliminate
-these requirements with the goal of providing ready to use components.
+There is some setup required for `@ohif/ui`. We are working to eliminate these
+requirements with the goal of providing ready to use components.
 
 ### External Dependencies
 
@@ -37,8 +37,8 @@ or the font you set for your theme:
 'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700|Sanchez&display=swap';
 ```
 
-React Viewerbase also looks for theme CSS variabled defined on `:root`. You can
-find a list of variables [on the theming page](/styling-and-theming)
+`@ohif/ui` also looks for theme CSS variabled defined on `:root`. You can find a
+list of variables [on the theming page](/styling-and-theming)
 
 ### Import & Use
 
@@ -46,7 +46,7 @@ You can use components in your React app:
 
 ```js
 import React, { Component } from 'react';
-import { LayoutButton } from 'react-viewerbase';
+import { LayoutButton } from '@ohif/ui';
 
 class Example extends Component {
   constructor(props) {

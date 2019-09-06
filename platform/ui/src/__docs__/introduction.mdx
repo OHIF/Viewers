@@ -3,14 +3,14 @@ name: Introduction
 route: /
 ---
 
-import { Playground, Props } from 'docz'
-import { State } from 'react-powerplug'
-import { TableList, TableListItem } from './../index.js'
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { TableList, TableListItem } from './../index.js';
 
 # Introduction
 
-**React Viewerbase is a collection of components and utilities** that power
-OHIF's [zero-footprint DICOM viewer](https://github.com/OHIF/Viewers)
+**@ohif/ui is a collection of components and utilities** that power OHIF's
+[zero-footprint DICOM viewer](https://github.com/OHIF/Viewers)
 ([demo][demo-url]). We maintain them as a separate component library to:
 
 - Decouple presentation from business logic
@@ -25,11 +25,11 @@ OHIF's [zero-footprint DICOM viewer](https://github.com/OHIF/Viewers)
 > version in your projects to prevent issues caused by loose versioning.
 
 ```js
-// Add 'react-viewerbase' as a dependency
-yarn add react-viewerbase
+// Add '@ohif/ui' as a dependency
+yarn add @ohif/ui
 
 // Import and use components
-import { TableList } from 'react-viewerbase'
+import { TableList } from '@ohif/ui'
 ```
 
 <Playground>
@@ -56,7 +56,7 @@ import { TableList } from 'react-viewerbase'
             >
               <label>{item.label}</label>
             </TableListItem>
-          )
+          );
         })}
       </TableList>
     )}
