@@ -1,26 +1,47 @@
 # Contributing
 
-## I would like to contribute code - how do I do this?
+## How can I help?
 
-Fork the repository, make your change and submit a pull request.
+Fork the repository, make your change and submit a pull request. If you would
+like to discuss the changes you intend to make to clarify where or how they
+should be implemented, please don't hesitate to create a new issue. At a
+minimum, you may want to read the following documentation:
 
-- The OHIF Viewer consists of code from three different repositories. Make sure
-  your change is modifying the appropriate one:
-  - `ohif-core`: Business Logic
-  - `react-viewerbase`: Reusable React Component Library
-  - `Viewers`: The glue, PWA, and primary extension point
-- At a minimum, you may want to read the following documentation:
-  - [Essentials: Getting Started](./essentials/getting-started.md)
-  - [Advanced: Architecture](./advanced/architecture.md)
+- [Essentials: Getting Started](./essentials/getting-started.md)
+- [Advanced: Architecture](./advanced/architecture.md)
 
 ### When changes impact multiple repositories
 
-This is a particularly tricky scenario. We don't want to publish code in one
-repository, just so we can test and complete the other half of its requirements
-in another. Thankfully, there are a couple of ways you can test unpublished
-dependent changes locally before publishing:
+While this can be tricky, we've tried to reduce how often this situation crops
+up this with our [recent switch to a monorepo][monorepo]. Our maintained
+extensions, ui components, internationalization library, and business logic can
+all be developed by simply running `yarn run dev` from the repository root.
 
-- [Use `yarn link`](https://yarnpkg.com/en/docs/cli/link)
+Testing the viewer with locally developed, unpublished package changes from a
+package outside of the monorepo is most common with extension development. Let's
+demonstrate how to accomplish this with two commonly forked extension
+dependencies:
+
+#### `cornerstone-tools`
+
+On your local file system:
+
+```bash
+# code/my-projects/
+.
+├── cornerstonejs/cornerstone-tools
+└── ohif/viewers
+```
+
+- Open a terminal/shell
+- Navigate to `cornerstonejs/cornerstone-tools`
+  - `npm install`
+  - [`yarn link`](https://yarnpkg.com/en/docs/cli/link)
+  - `npm run dev`
+- Navigate to `ohif/viewers`.
+  - `yarn install`
+  - [`yarn link cornerstone-tools`](https://yarnpkg.com/en/docs/cli/link)
+  - `yarn run dev`
 
 For example if you are working on `ohif-core` and would like to use your local
 version to debug a problem in `Viewers`, simply run yarn link inside of the
@@ -28,30 +49,6 @@ version to debug a problem in `Viewers`, simply run yarn link inside of the
 
 - If you're experiencing issues with `yarn link`,
   [try `yalc`](https://github.com/whitecolor/yalc)
-
-Yalc provides an improved workflow as we add more and more dependent packages
-that are "in-progress". This comes into play as we begin working on extensions
-and their dependencies.
-
-```js
-// Install yalc for the first time
-yarn global add yalc
-
-// EXAMPLE: using an in-development version of ohif-core w/ Viewers locally
-// 1. Navigate to ohif-core's project root
-yarn install
-yalc publish
-
-// 2. Run the following after each change to ohif-core
-yarn build
-yalc push .
-
-// 3. Use the local package in our Viewers project. Navigate to the Viewers
-//    Project root.
-yarn install
-yalc add ohif-core
-yarn run dev
-```
 
 ## Any guidance on submitting changes?
 
@@ -96,8 +93,7 @@ https://deploy-preview-237--ohif.netlify.com/contributing.html
   -->
 
 <!-- prettier-ignore-start -->
-
 [example-url]: https://deploy-preview-237--ohif.netlify.com/viewer/?url=https://s3.eu-central-1.amazonaws.com/ohif-viewer/sampleDICOM.json
 [pr-237]: https://github.com/OHIF/Viewers/pull/237
-
+[monorepo]: https://github.com/OHIF/Viewers/issues/768
 <!-- prettier-ignore-end -->
