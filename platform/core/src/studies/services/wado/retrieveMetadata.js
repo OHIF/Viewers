@@ -30,10 +30,10 @@ const paletteColorCache = {
   count: 0,
   maxAge: 24 * 60 * 60 * 1000, // 24h cache?
   entries: {},
-  isValidUID: function(paletteUID) {
+  isValidUID: function (paletteUID) {
     return typeof paletteUID === 'string' && paletteUID.length > 0;
   },
-  get: function(paletteUID) {
+  get: function (paletteUID) {
     let entry = null;
     if (this.entries.hasOwnProperty(paletteUID)) {
       entry = this.entries[paletteUID];
@@ -47,7 +47,7 @@ const paletteColorCache = {
     }
     return entry;
   },
-  add: function(entry) {
+  add: function (entry) {
     if (this.isValidUID(entry.uid)) {
       let paletteUID = entry.uid;
       if (this.entries.hasOwnProperty(paletteUID) !== true) {
@@ -96,7 +96,7 @@ function buildInstanceWadoRsUri(
 ) {
   return `${
     server.wadoRoot
-  }/studies/${studyInstanceUid}/series/${seriesInstanceUid}/instances/${sopInstanceUid}`;
+    }/studies/${studyInstanceUid}/series/${seriesInstanceUid}/instances/${sopInstanceUid}`;
 }
 
 function buildInstanceFrameWadoRsUri(
@@ -314,7 +314,7 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
   const seriesMap = {};
 
   await Promise.all(
-    resultData.map(async function(instance) {
+    resultData.map(async function (instance) {
       const seriesInstanceUid = DICOMWeb.getString(instance['0020000E']);
       let series = seriesMap[seriesInstanceUid];
 
@@ -461,9 +461,56 @@ async function RetrieveMetadata(server, studyInstanceUid) {
     studyInstanceUID: studyInstanceUid,
   };
 
+  setTimeout(function () {
+    xLoader(server, studyInstanceUid).then(function (result) {
+      result.forEach(item => {
+        console.log('Oops!', item);
+        item.promise.then(instances => {
+          console.log(`Ahá! ${performance.now()}`, instances);
+        })
+      });
+    });
+  }, 2000);
+
   return dicomWeb.retrieveStudyMetadata(options).then(result => {
     return resultDataToStudyMetadata(server, studyInstanceUid, result);
   });
+}
+
+function xLoader(server, studyInstanceUid) {
+  const dicomWeb = new api.DICOMwebClient({
+    url: server.wadoRoot,
+    headers: DICOMWeb.getAuthorizationHeader(server),
+  });
+  return dicomWeb.searchForSeries({
+    studyInstanceUID: studyInstanceUid,
+    queryParams: {
+      includefield: '0002000E'
+    }
+  }).then(
+    seriesList => seriesList.map(makeSeriesLoadDescriptor.bind(null, dicomWeb))
+  )
+}
+
+function makeSeriesLoadDescriptor(dicomWeb, series) {
+  const studyInstanceUID = DICOMWeb.getString(series['0020000D']);
+  const seriesInstanceUID = DICOMWeb.getString(series['0020000E']);
+  return {
+    id: `${studyInstanceUID}/${seriesInstanceUID}`,
+    metadata: {
+      studyInstanceUid: studyInstanceUID,
+      seriesInstanceUid: seriesInstanceUID,
+      seriesDescription: DICOMWeb.getString(series['0008103E']),
+      modality: DICOMWeb.getString(series['00080060']),
+      seriesNumber: DICOMWeb.getNumber(series['00200011']),
+      seriesDate: DICOMWeb.getString(series['00080021']),
+      seriesTime: DICOMWeb.getString(series['00080031']),
+    },
+    promise: dicomWeb.retrieveSeriesMetadata({
+      studyInstanceUID,
+      seriesInstanceUID
+    })
+  };
 }
 
 export default RetrieveMetadata;
