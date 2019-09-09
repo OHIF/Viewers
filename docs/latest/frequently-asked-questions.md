@@ -1,45 +1,28 @@
 # Frequently Asked Questions
 
-## How do I file a bug?
+## Index
 
-We accept and triage bug reports through Github primarily.
+- [Report a bug][report-bug]
+- [Request a feature][new-feature]
+- [Commercial Support & Consulting][commercial-support]
+- [Academic collaborations][academic]
+- [FDA Clearance or CE Marking][fda-clearance]
+- [HIPAA Compliance][hipaa]
 
-- [Create a Github account](https://github.com/join)
-- Search the current [Issue List](https://github.com/OHIF/Viewers/issues) to
-  ensure you are not creating a duplicate issue.
-  - If your issue already exists, post a comment to show us that this issue also
-    affects you.
-- If no prior issue exists,
-  [Create a New Issue](https://github.com/OHIF/Viewers/issues/new) on the
-  repository.
+### How do I report a bug?
 
-Some tips for filing a new issue:
-
-- **Make sure your issue is reproducible**: If we try to reproduce your issue
-  given your provided steps and we cannot reproduce it, we will not be able to
-  fix it. _Nobody wants to spend time guessing how to reproduce your issue!_
-  Before filing, please reproduce your issue more than once and clearly describe
-  the steps taken.
-- **If you are reporting a user interface issue, provide screenshots**: A
-  picture is worth a thousand words. If your issue concerns the UI, screenshots
-  will help us identify the issue dramatically faster since it can be extremely
-  challenging to describe UI bugs with text. _You should still clearly describe
-  the steps that you took to produce the issue_.
-- **Include platform & environment**: Your operating system, web browser, and
-  web browser version are highly relevant for many bugs. Please provide these
-  with all bug reports.
-- **Include expected and actual result**: Tell us what you expected to happen,
-  and what actually happened. If you don't do this, we might not consider it a
-  bug.
+Navigate to our [GitHub Repository][new-issue], and submit a new bug report.
+Follow the steps outlined in the [Bug Report Template][bug-report-template].
 
 ### How can I request a new feature?
 
 At the moment we are in the process of defining our roadmap and will do our best
 to communicate this to the community. If your requested feature is on the
 roadmap, then it will most likely be built at some point. If it is not, you are
-welcome to build it yourself and [contribute it](contributing.md). If you have
-resources and would like to fund the development of a feature, please
-[contact us](http://www.ohif.org).
+welcome to build it yourself and [contribute it](contributing/index.md). If you
+have resources and would like to fund the development of a feature, please
+[contact us](http://www.ohif.org) or work with community members that offer
+[consulting services][commercial-support].
 
 ### Who should I contact about Academic Collaborations?
 
@@ -49,7 +32,7 @@ collaborators. We are always happy to hear about new groups interested in using
 the OHIF framework, and may be able to provide development support if the
 proposed collaboration has an impact on cancer research.
 
-### Do you offer commercial support?
+### Does OHIF offer commercial support?
 
 The Open Health Imaging Foundation does not offer commercial support, however,
 some community members do offer consulting services. The following contacts may
@@ -60,36 +43,39 @@ be useful:
 **Please file a Pull Request if you wish to add your name or organization to
 this list.**
 
-### I emailed my question to you directly and you did not respond. Why not?
+### Does The OHIF Viewer have [510(k) Clearance][501k-clearance] from the U.S. F.D.A or [CE Marking][ce-marking] from the European Commission?
 
-Emailing developers directly is not a shortcut to faster support. Please file
-your issues and questions on Github so that everyone can benefit from the
-discussion and solutions.
-
-### Do your Viewers have [510(k) Clearance][501k-clearance] from the U.S. F.D.A or [CE Marking][ce-marking] from the European Commission?
-
-**NO.** The OHIF Viewer, Lesion Tracker, and Standalone Viewer, **NOT** F.D.A.
-cleared or CE Marked. It is the users responsibility to ensure compliance with
-applicable rules and regulations. The
+**NO.** The OHIF Viewer is **NOT** F.D.A. cleared or CE Marked. It is the users
+responsibility to ensure compliance with applicable rules and regulations. The
 [License](https://github.com/OHIF/Viewers/blob/master/LICENSE) for the OHIF
-Framework does not prevent your company or group from seeking F.D.A. clearance
-for a product built using the framework.
+Platform does not prevent your company or group from seeking F.D.A. clearance
+for a product built using the platform.
 
 If you have gone this route (or are going there), please let us know because we
 would be interested to hear about your experience.
 
-### Are your Viewers [HIPAA][hipaa] Compliant?
+### Is The OHIF Viewer [HIPAA][hipaa-def] Compliant?
 
-**NO.** The OHIF Viewer, Lesion Tracker, and Standalone Viewer **DO NOT**
-fulfill all of the criteria to become HIPAA Compliant. It is the users
-responsibility to ensure compliance with applicable rules and regulations.
+**NO.** The OHIF Viewer **DOES NOT** fulfill all of the criteria to become HIPAA
+Compliant. It is the users responsibility to ensure compliance with applicable
+rules and regulations.
 
 <!--
   Links
   -->
 
 <!-- prettier-ignore-start -->
+<!-- INDEX -->
+[report-bug]: #how-do-i-report-a-bug
+[new-feature]: #how-can-i-request-a-new-feature
+[commercial-support]: #does-ohif-offer-commercial-support
+[academic]: #who-should-i-contact-about-academic-collaborations
+[fda-clearance]: #does-the-ohif-viewer-have-510k-clearance-from-the-us-fda-or-ce-marking-from-the-european-commission
+[hipaa]: #is-the-ohif-viewer-hipaa-compliant
+<!-- OTHER -->
 [501k-clearance]: https://www.fda.gov/MedicalDevices/DeviceRegulationandGuidance/HowtoMarketYourDevice/PremarketSubmissions/PremarketNotification510k/
 [ce-marking]: https://ec.europa.eu/growth/single-market/ce-marking_en
-[hipaa]: https://en.wikipedia.org/wiki/Health_Insurance_Portability_and_Accountability_Act
+[hipaa-def]: https://en.wikipedia.org/wiki/Health_Insurance_Portability_and_Accountability_Act
+[new-issue]: https://github.com/OHIF/Viewers/issues/new/choose
+[bug-report-template]: https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Bug+Report+%3Abug%3A&template=---bug-report.md&title=
 <!-- prettier-ignore-end -->

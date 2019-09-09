@@ -1,6 +1,9 @@
 import log from '../../log';
+import { timepointApiDefaultConfig } from './../configuration.js';
 
-const configuration = {};
+const configuration = {
+  ...timepointApiDefaultConfig,
+};
 
 const TIMEPOINT_TYPE_NAMES = {
   prebaseline: 'Pre-Baseline',

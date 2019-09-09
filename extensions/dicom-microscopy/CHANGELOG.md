@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-microscopy@0.50.3...@ohif/extension-dicom-microscopy@0.50.4) (2019-09-04)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+## [0.50.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-microscopy@0.50.2...@ohif/extension-dicom-microscopy@0.50.3) (2019-09-04)
+
+
+### Bug Fixes
+
+* measurementsAPI issue caused by production build ([#842](https://github.com/OHIF/Viewers/issues/842)) ([49d3439](https://github.com/OHIF/Viewers/commit/49d3439))
+
+
+
+
+
 ## [0.50.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-microscopy@0.50.1...@ohif/extension-dicom-microscopy@0.50.2) (2019-09-03)
 
 

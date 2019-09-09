@@ -11,8 +11,7 @@
   <a href="https://github.com/OHIF/Viewers/tree/master/docs/latest">Edit the docs</a>
 </div>
 <div align="center">
-  <a href="https://docs.ohif.org/demo">Demo</a> |
-  <a href="https://ohif.canny.io/">Roadmap</a> |
+  <a href="https://viewer.ohif.org/">Live Demo</a> |
   <a href="https://react.ohif.org/">Component Library</a>
 </div>
 
@@ -28,62 +27,106 @@
 [![CircleCI][circleci-image]][circleci-url]
 [![codecov][codecov-image]][codecov-url]
 [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors)
+<!-- prettier-ignore-end -->
 
-## What?
+## About
 
-The OHIF Medical Imaging Viewer is for viewing medical images. It can retrieve and load images from most sources and formats; render sets in 2D, 3D, and reconstructed representations; allows for the manipulation, annotation, and serialization of observations; supports internationalization, OpenID Connect, offline use, hotkeys, and many more features.
+The OHIF Medical Imaging Viewer is for viewing medical images. It can retrieve
+and load images from most sources and formats; render sets in 2D, 3D, and
+reconstructed representations; allows for the manipulation, annotation, and
+serialization of observations; supports internationalization, OpenID Connect,
+offline use, hotkeys, and many more features.
 
-Almost everything offers some degree of customization and configuration. If it doesn't support something you need, we accept pull requests and have an ever improving Extension System.
+Almost everything offers some degree of customization and configuration. If it
+doesn't support something you need, we accept pull requests and have an ever
+improving Extension System.
 
 ## Why Choose Us
 
 ### Community & Experience
 
-The OHIF Viewer is a collaborative effort that has served as the basis for many active, production, and FDA Cleared medical imaging viewers. It benefits from our extensive community's collective experience, and from the sponsored contributions of individuals, research groups, and commercial organizations.
+The OHIF Viewer is a collaborative effort that has served as the basis for many
+active, production, and FDA Cleared medical imaging viewers. It benefits from
+our extensive community's collective experience, and from the sponsored
+contributions of individuals, research groups, and commercial organizations.
 
 ### Built to Adapt
 
-...
+After more than 5-years of integrating with many companies and organizations,
+The OHIF Viewer has been rebuilt from the ground up to better address the
+varying workflow and configuration needs of its many users. All of the Viewer's
+core features are built using it's own extension system. The same extensibility
+that allows us to offer:
 
+- 2D and 3D medical image viewing
+- Multiplanar Reconstruction (MPR)
+- Maximum Intensity Project (MIP)
+- Whole slide microscopy viewing
+- PDF and Dicom Structured Report rendering
+- User Access Control (UAC)
+- Context specific toolbar and side panel content
+- and many others
+
+Can be leveraged by you to customize the viewer for your workflow, and to add
+any new functionality you may need (and wish to maintain privately without
+forking).
 
 ### Support
 
-...
+We offer support through
+[GitHub Issues](https://github.com/OHIF/Viewers/issues/new/choose). You can:
+
+- [Report a Bug 🐛](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Report+%3Abug%3A&template=---bug-report.md)
+- [Request a Feature 🚀](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Request+%3Ahand%3A&template=---feature-request.md)
+- [Ask a Question 🤗](https://github.com/OHIF/Viewers/issues/new?assignees=&labels=Community%3A+Question+%3Aquestion%3A&template=---support-question.md)
+
+For commercial support, academic collaberations, and answers to common
+questions; please read our
+[documented FAQ](https://docs.ohif.org/frequently-asked-questions.html#does-ohif-offer-commercial-support).
 
 ## Quick Start Deployment
 
-> This is only one of many ways to configure and deploy the OHIF Viewer. To learn more about your options, and how to choose the best one for your requirements, check out [our deployment recipes and documentation](https://docs.ohif.org/deployment/).
+> This is only one of many ways to configure and deploy the OHIF Viewer. To
+> learn more about your options, and how to choose the best one for your
+> requirements, check out
+> [our deployment recipes and documentation](https://docs.ohif.org/deployment/).
 
-The fastest and easiest way to get started is to include the OHIF Viewer with a script tag. In practice, this is as simple as:
+The fastest and easiest way to get started is to include the OHIF Viewer with a
+script tag. In practice, this is as simple as:
 
 - Including the following dependencies with script tags:
-   - [React](https://unpkg.com/react@16/umd/react.production.min.js)
-   - [React Dom](https://unpkg.com/react-dom@16/umd/react-dom.production.min.js)
-   - The [OHIF Viewer](https://unpkg.com/ohif-viewer@0.19.5/dist/index.umd.js)
+  - [React](https://unpkg.com/react@16/umd/react.production.min.js)
+  - [React Dom](https://unpkg.com/react-dom@16/umd/react-dom.production.min.js)
+  - The [OHIF Viewer](https://unpkg.com/@ohif/viewer)
 - Have an element with an ID of `root` on the page
 - Configure the OHIF Viewer at `window.config`:
 
 ```js
 window.config = {
-  routerBasename: "/",
+  routerBasename: '/',
   servers: {
     dicomWeb: [
       {
-        name: "DCM4CHEE",
-        qidoRoot: "https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs",
-        wadoRoot: "https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs",
+        name: 'DCM4CHEE',
+        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         qidoSupportsIncludeField: true,
-        imageRendering: "wadors",
-        thumbnailRendering: "wadors"
-      }
-    ]
-  }
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+      },
+    ],
+  },
 };
 ```
 
-- Install the viewer: `window.OHIFStandaloneViewer.installViewer(window.config);`
+- Install the viewer:
+  `window.OHIFStandaloneViewer.installViewer(window.config);`
 
-This exact setup is demonstrated in this [CodeSandbox](https://codesandbox.io/s/ohif-viewer-script-tag-usage-c4u4t) and in our [Embedding The Viewer](https://docs.ohif.org/deployment/recipes/embedded-viewer.html) deployment recipe.
+This exact setup is demonstrated in this
+[CodeSandbox](https://codesandbox.io/s/ohif-viewer-script-tag-usage-c4u4t) and
+in our
+[Embedding The Viewer](https://docs.ohif.org/deployment/recipes/embedded-viewer.html)
+deployment recipe.
 
 ## Developing
 
@@ -118,21 +161,23 @@ yarn install
 
 ## Commands
 
-These commands are available from the root directory. Each project directory also supports a number of commands that can be found in their respective `README.md` and `project.json` files.
+These commands are available from the root directory. Each project directory
+also supports a number of commands that can be found in their respective
+`README.md` and `project.json` files.
 
-| Yarn Commands        | Description                                                   |
-| -------------------- | ------------------------------------------------------------- |
-| **Develop**          |                                                               |
-| `dev` or `start`     | Default development experience for Viewer                     |
+| Yarn Commands                | Description                                                   |
+| ---------------------------- | ------------------------------------------------------------- |
+| **Develop**                  |                                                               |
+| `dev` or `start`             | Default development experience for Viewer                     |
 | `dev:project <package-name>` | Replace with `core`, `ui`, `i18n`, `cornerstone`, `vtk`, etc. |
-| `test:unit`          | Jest multi-project test runner; overall coverage              |
-| **Deploy**           |                                                               |
-| `build`*             | Builds production output for our PWA Viewer                   |
-| `build:package`*             | Builds production `commonjs` output for our Viewer                 |
-| `build:package-all`*     | Builds commonjs bundles for all projects                      |
+| `test:unit`                  | Jest multi-project test runner; overall coverage              |
+| **Deploy**                   |                                                               |
+| `build`\*                    | Builds production output for our PWA Viewer                   |
+| `build:package`\*            | Builds production `commonjs` output for our Viewer            |
+| `build:package-all`\*        | Builds commonjs bundles for all projects                      |
 
-
-\* - For more information on our different builds, check out our [Deploy Docs][deployment-docs]
+\* - For more information on our different builds, check out our [Deploy
+Docs][deployment-docs]
 
 ## Projects
 
@@ -170,24 +215,26 @@ more about it in our [Architecture Documentation][ohif-architecture].
 
 These projects comprise the
 
-| Name                            | Description | Links |
-| ------------------------------- | ----------- | ----- |
-| [@ohif/core][platform-core]     |             | NPM   |
-| [@ohif/i18n][platform-i18n]     |             | NPM   |
-| [@ohif/viewer][platform-viewer] |             | NPM   |
-| [@ohif/ui][platform-ui]         |             | NPM   |
+| Name                            | Description                                                                                          | Links             |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------- |
+| [@ohif/core][platform-core]     | Business logic and classes that model the data, services, and extensions that are framework agnostic | [NPM][core-npm]   |
+| [@ohif/i18n][platform-i18n]     | Language files and small API for wrapping component/ui text for translations                         | [NPM][i18n-npm]   |
+| [@ohif/viewer][platform-viewer] | The OHIF Viewer. Where we consume and configure all platform library's and extensions                | [NPM][viewer-npm] |
+| [@ohif/ui][platform-ui]         | Reusable React components we consume and compose to build our Viewer's UI                            | [NPM][ui-npm]     |
 
 ### Extensions
 
-This is a list of Extensions maintained by the OHIF Core team. It's possible to customize and configure these extensions, and you can even create your own. You can [read more about extensions here][ohif-extensions].
+This is a list of Extensions maintained by the OHIF Core team. It's possible to
+customize and configure these extensions, and you can even create your own. You
+can [read more about extensions here][ohif-extensions].
 
-| Name                                                           | Description | Links |
-| -------------------------------------------------------------- | ----------- | ----- |
-| [@ohif/extension-cornestone][extension-cornerstone]            |             | NPM   |
-| [@ohif/extension-dicom-html][extension-dicom-html]             |             | NPM   |
-| [@ohif/extension-dicom-microscopy][extension-dicom-microscopy] |             | NPM   |
-| [@ohif/extension-dicom-pdf][extension-dicom-pdf]               |             | NPM   |
-| [@ohif/extension-vtk][extension-vtk]                           |             | NPM   |
+| Name                                                           | Description                                             | Links                  |
+| -------------------------------------------------------------- | ------------------------------------------------------- | ---------------------- |
+| [@ohif/extension-cornestone][extension-cornerstone]            | 2D image viewing, annotation, and segementation tools   | [NPM][cornerstone-npm] |
+| [@ohif/extension-dicom-html][extension-dicom-html]             | Support for viewing DICOM SR as rendered HTML           | [NPM][html-npm]        |
+| [@ohif/extension-dicom-microscopy][extension-dicom-microscopy] | Whole slide microscopy viewing                          | [NPM][microscopy-npm]  |
+| [@ohif/extension-dicom-pdf][extension-dicom-pdf]               | View DICOM wrapped PDFs in a viewport                   | [NPM][pdf-npm]         |
+| [@ohif/extension-vtk][extension-vtk]                           | Volume rendering, reconstruction, and 3D visualizations | [NPM][vtk-npm]         |
 
 ## Acknowledgments
 
@@ -226,19 +273,18 @@ MIT © [OHIF](https://github.com/OHIF)
 [netlify-image]: https://api.netlify.com/api/v1/badges/a5d369ab-18a6-41c3-bcde-83805205ac7f/deploy-status
 [netlify-url]: https://app.netlify.com/sites/ohif/deploys
 [all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
-[contributing-url]: https://github.com/OHIF/Viewers/blob/react/CONTRIBUTING.md
 [circleci-image]: https://circleci.com/gh/OHIF/Viewers.svg?style=svg
 [circleci-url]: https://circleci.com/gh/OHIF/Viewers
-[codecov-image]: https://codecov.io/gh/OHIF/Viewers/branch/react/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/OHIF/Viewers/branch/react
+[codecov-image]: https://codecov.io/gh/OHIF/Viewers/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/OHIF/Viewers/branch/master
 [prettier-image]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square
 [prettier-url]: https://github.com/prettier/prettier
 [semantic-image]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
 [semantic-url]: https://github.com/semantic-release/semantic-release
 <!-- ROW -->
-[npm-url]: https://npmjs.org/package/ohif-viewer
-[npm-downloads-image]: https://img.shields.io/npm/dm/ohif-viewer.svg?style=flat-square
-[npm-version-image]: https://img.shields.io/npm/v/ohif-viewer.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/@ohif/viewer
+[npm-downloads-image]: https://img.shields.io/npm/dm/@ohif/viewer.svg?style=flat-square
+[npm-version-image]: https://img.shields.io/npm/v/@ohif/viewer.svg?style=flat-square
 [docker-pulls-img]: https://img.shields.io/docker/pulls/ohif/viewer.svg?style=flat-square
 [docker-image-url]: https://hub.docker.com/r/ohif/viewer
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
@@ -252,18 +298,27 @@ MIT © [OHIF](https://github.com/OHIF)
 [deployment-docs]: https://docs.ohif.org/deployment/
 [react-url]: https://reactjs.org/
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
-[ohif-viewer-url]: https://www.npmjs.com/package/ohif-viewer
+[ohif-viewer-url]: https://www.npmjs.com/package/@ohif/viewer
 [configuration-url]: https://docs.ohif.org/essentials/configuration.html
 [extensions-url]: https://docs.ohif.org/advanced/extensions.html
 <!-- Platform -->
 [platform-core]: platform/core/README.md
+[core-npm]: https://www.npmjs.com/package/@ohif/core
 [platform-i18n]: platform/i18n/README.md
+[i18n-npm]: https://www.npmjs.com/package/@ohif/i18n
 [platform-ui]: platform/ui/README.md
+[ui-npm]: https://www.npmjs.com/package/@ohif/ui
 [platform-viewer]: platform/viewer/README.md
+[viewer-npm]: https://www.npmjs.com/package/@ohif/viewer
 <!-- Extensions -->
 [extension-cornerstone]: extensions/cornerstone/README.md
+[cornerstone-npm]: https://www.npmjs.com/package/@ohif/extension-cornerstone
 [extension-dicom-html]: extensions/dicom-html/README.md
+[html-npm]: https://www.npmjs.com/package/@ohif/extension-dicom-html
 [extension-dicom-microscopy]: extensions/dicom-microscopy/README.md
+[microscopy-npm]: https://www.npmjs.com/package/@ohif/extension-dicom-microscopy
 [extension-dicom-pdf]: extensions/dicom-pdf/README.md
+[pdf-npm]: https://www.npmjs.com/package/@ohif/extension-dicom-pdf
 [extension-vtk]: extensions/vtk/README.md
+[vtk-npm]: https://www.npmjs.com/package/@ohif/extension-vtk
 <!-- prettier-ignore-end -->
