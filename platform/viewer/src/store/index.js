@@ -11,7 +11,7 @@ import { reducer as oidcReducer } from 'redux-oidc';
 import { redux } from '@ohif/core';
 import thunkMiddleware from 'redux-thunk';
 
-// Combine our ohif-core, ui, and oidc reducers
+// Combine our @ohif/core, ui, and oidc reducers
 // Set init data, using values found in localStorage
 const { reducers, localStorage } = redux;
 const middleware = [thunkMiddleware];

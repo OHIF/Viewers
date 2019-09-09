@@ -122,11 +122,7 @@ likely want to update:
 
 #### OHIF Viewer
 
-The OHIF Viewer's configuration is imported from a static `.js` file and made
-available globally at `window.config`. The configuration we use is set to a
-specific file when we build the viewer, and determined by the env variable:
-`APP_CONFIG`. You can see where we set its value in the `dockerfile` for this
-solution:
+The OHIF Viewer's configuration is imported from a static `.js` file. The configuration we use is set to a specific file when we build the viewer, and determined by the env variable: `APP_CONFIG`. You can see where we set its value in the `dockerfile` for this solution:
 
 `ENV APP_CONFIG=config/docker_openresty-orthanc-keycloak.js`
 
