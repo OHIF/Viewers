@@ -119,7 +119,6 @@ class ToolbarRow extends Component {
       display: this.state.isDownloadScreenShotDialogOpen ? 'block' : 'none',
       position: 'absolute',
       top: '82px',
-      left: '600px',
       zIndex: 1001,
     };
 
