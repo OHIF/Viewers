@@ -104,7 +104,6 @@ async function handleSegmentationStorage(
   }
 
   const { labelmapBuffer, segMetadata, segmentsOnFrame } = results;
-
   const { setters } = cornerstoneTools.getModule('segmentation');
 
   setters.labelmap3DByFirstImageId(
