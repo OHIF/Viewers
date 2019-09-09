@@ -1,3 +1,5 @@
+import { DragSimulator } from "../helpers/DragSimulator.js";
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -23,3 +25,17 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('openStudy', (patientName) => {
+    cy.visit('/');
+    cy.get('#patientName')
+      .type(patientName);
+    cy.get('.studylistStudy > .patientName')
+      .contains(patientName)
+      .click();
+  }
+);
+
+Cypress.Commands.add('drag', {prevSubject: 'element',},
+  (...args) => DragSimulator.simulate(...args)
+);
