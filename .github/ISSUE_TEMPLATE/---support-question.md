@@ -2,13 +2,13 @@
 name: "\U0001F917 Support Question"
 about: "I have a question \U0001F4AC"
 title: ''
-labels: question
+labels: 'Community: Question :question:'
 assignees: ''
 ---
 
-We are a small team with limited resources. Your question is much more likely to
-be answered if it is
-[a good question](https://stackoverflow.com/help/how-to-ask)
+> :hand: We are a small team with limited resources. Your question is much more
+> likely to be answered if it is
+> [a good question](https://stackoverflow.com/help/how-to-ask)
 
 **Description**
 

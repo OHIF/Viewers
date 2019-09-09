@@ -1,4 +1,3 @@
-import { TimepointApi, MeasurementApi } from './classes';
 import { allTools } from './toolGroups/allTools';
 import {
   retrieveMeasurements,
@@ -10,7 +9,7 @@ import {
   disassociateStudy,
 } from './dataExchange';
 
-MeasurementApi.setConfiguration({
+const measurementApiDefaultConfig = {
   measurementTools: [allTools],
   newLesions: [
     {
@@ -28,9 +27,9 @@ MeasurementApi.setConfiguration({
     retrieve: retrieveMeasurements,
     store: storeMeasurements,
   },
-});
+};
 
-TimepointApi.setConfiguration({
+const timepointApiDefaultConfig = {
   dataExchange: {
     retrieve: retrieveTimepoints,
     store: storeTimepoints,
@@ -38,4 +37,6 @@ TimepointApi.setConfiguration({
     update: updateTimepoint,
     disassociate: disassociateStudy,
   },
-});
+};
+
+export { measurementApiDefaultConfig, timepointApiDefaultConfig };

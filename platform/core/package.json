@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "0.50.3",
+  "version": "0.50.5",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -23,7 +23,7 @@
   "scripts": {
     "dev": "jest --watchAll",
     "dev:core": "yarn run dev",
-    "build": "webpack --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
     "start": "yarn run dev",

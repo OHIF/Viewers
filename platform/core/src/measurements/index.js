@@ -1,9 +1,6 @@
-import './configuration';
-
 import * as tools from './tools';
 
 import { MeasurementApi, TimepointApi } from './classes';
-
 import { ConformanceCriteria } from './conformance';
 import MeasurementHandlers from './measurementHandlers';
 import getDescription from './lib/getDescription';

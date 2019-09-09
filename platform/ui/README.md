@@ -49,8 +49,8 @@ yarn add @ohif/ui --exact
 ## Usage
 
 ```jsx
-import React, { Component } from "react";
-import { LayoutButton } from "@ohif/ui";
+import React, { Component } from 'react';
+import { LayoutButton } from '@ohif/ui';
 
 class Example extends Component {
   constructor(props) {
@@ -58,10 +58,10 @@ class Example extends Component {
 
     this.state = {
       selectedCell: {
-        className: "hover",
+        className: 'hover',
         col: 1,
-        row: 1
-      }
+        row: 1,
+      },
     };
   }
 
@@ -117,10 +117,9 @@ Links:
 
 <!-- prettier-ignore-start -->
 [all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
-[contributing-url]: https://github.com/OHIF/react-viewerbase/blob/master/CONTRIBUTING.md
-[npm-url]: https://npmjs.org/package/react-viewerbase
-[npm-downloads-image]: https://img.shields.io/npm/dm/react-viewerbase.svg?style=flat-square
-[npm-version-image]: https://img.shields.io/npm/v/react-viewerbase.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/@ohif/ui
+[npm-downloads-image]: https://img.shields.io/npm/dm/@ohif/ui.svg?style=flat-square
+[npm-version-image]: https://img.shields.io/npm/v/@ohif/ui.svg?style=flat-square
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
 <!-- prettier-ignore-end -->

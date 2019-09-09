@@ -12,7 +12,6 @@
 </div>
 <div align="center">
   <a href="https://docs.ohif.org/demo">Demo</a> |
-  <a href="https://ohif.canny.io/">Roadmap</a> |
   <a href="https://react.ohif.org/">Component Library</a>
 </div>
 
@@ -95,7 +94,9 @@ guide.
 
 ### E2E Tests
 
-Using [Cypress](https://www.cypress.io/) to create End-to-End tests and check whether the application flow is performing correctly, ensuring that the integrated components are working as expected.
+Using [Cypress](https://www.cypress.io/) to create End-to-End tests and check
+whether the application flow is performing correctly, ensuring that the
+integrated components are working as expected.
 
 #### Why Cypress?
 
@@ -146,42 +147,16 @@ When creating tests, place the test file "next to" the file you're testing.
 
 ```js
 // File
-index.js
+index.js;
 
 // Test for file
-index.test.js
+index.test.js;
 ```
 
 As you add and modify code, `jest` will watch for uncommitted changes and run
 your tests, reporting the results to your terminal. Make a pull request with
 your changes to `master`, and a core team member will review your work. If you
 have any questions, please don't hesitate to reach out via a GitHub issue.
-
-## Roadmap
-
-If you want to know what's planned for the very near future,
-[check out our roadmap](https://ohif.canny.io/). The best way to influence when
-and what is worked on is to contribute to the conversation by creating GitHub
-issues, and contributing code through pull requests. OHIF's high level
-priorities for the near future are:
-
-- Feature parity with version 1
-- Extension and configuration improvements with key integration partners
-- Continued Developer Experience Improvements
-- Segmentation Tools, and improved VTK.js support
-
-More granular information will make it's way to the backlog as these items
-become scoped for development by core maintainers.
-
-> Don't hesitate to ask questions, propose features, or create pull requests.
-> We're here, we're listening, and we're ready to build the best open source
-> medical imaging viewer on the web.
-
-#### Roadmap Generously Powered by Canny.io
-
-<a href="https://ohif.canny.io/">
-  <img height="30" src="docs/latest/assets/img/canny-full.png" />
-</a>
 
 ## Contributors
 
@@ -213,7 +188,6 @@ Links:
 [docker-pulls-img]: https://img.shields.io/docker/pulls/ohif/viewer.svg?style=flat-square
 [docker-image-url]: https://hub.docker.com/r/ohif/viewer
 [all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
-[contributing-url]: https://github.com/OHIF/Viewers/blob/react/CONTRIBUTING.md
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
 <!-- DOCS -->

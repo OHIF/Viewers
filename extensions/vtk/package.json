@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-vtk",
-  "version": "0.50.4",
+  "version": "0.50.7",
   "description": "OHIF extension for VTK.js",
   "author": "OHIF",
   "license": "MIT",
@@ -21,9 +21,9 @@
     "yarn": ">=1.16.0"
   },
   "scripts": {
-    "dev": "webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --debug --output-pathinfo",
     "dev:dicom-vtk": "yarn run dev",
-    "build": "webpack --config .webpack/webpack.prod.js",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
     "start": "yarn run dev"
@@ -48,12 +48,11 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "react-vtkjs-viewport": "0.0.11",
-    "vtk.js": "^9.5.0"
+    "react-vtkjs-viewport": "0.0.11"
   },
   "devDependencies": {
-    "@ohif/core": "^0.50.3",
-    "@ohif/ui": "^0.50.1",
+    "@ohif/core": "^0.50.5",
+    "@ohif/ui": "^0.50.4",
     "cornerstone-tools": "^3.13.0",
     "cornerstone-wado-image-loader": "^3.0.0",
     "dcmjs": "^0.5.1",

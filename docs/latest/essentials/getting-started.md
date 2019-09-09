@@ -24,8 +24,7 @@ graphic that illustrates this setup][triangular-workflow].
 Alternatively, if you intend to use the OHIF Viewer as a starting point, and you
 aren't as concerned with syncing updates, then follow these steps:
 
-1. Navigate to the [OHIF/Viewers/tree/react][ohif-viewers-react-repo] repository
-   and branch
+1. Navigate to the [OHIF/Viewers][ohif-viewers] repository
 2. Click `Clone or download`, and then `Download ZIP`
 3. Use the contents of the `.zip` file as a starting point for your viewer
 
@@ -39,6 +38,8 @@ aren't as concerned with syncing updates, then follow these steps:
 
 - [Node.js & NPM](https://nodejs.org/en/)
 - [Yarn](https://yarnpkg.com/en/)
+- Yarn workspaces should be enabled:
+  - `yarn config set workspaces-experimental true`
 
 ### Kick the tires
 
@@ -50,21 +51,18 @@ following commands:
 yarn install
 
 # Start local development server
-yarn start
+yarn run dev
 ```
 
 You should see the following output:
 
 ```bash
-Compiled successfully!
+@ohif/viewer: i ｢wds｣: Project is running at http://localhost:3000/
+@ohif/viewer: i ｢wds｣: webpack output is served from /
+@ohif/viewer: i ｢wds｣: Content not from webpack is served from D:\code\ohif\Viewers\platform\viewer
+@ohif/viewer: i ｢wds｣: 404s will fallback to /index.html
 
-You can now view ohif-viewer in the browser.
-
-  Local:            http://localhost:5000/
-  On Your Network:  http://10.74.20.83:5000/
-
-Note that the development build is not optimized.
-To create a production build, use yarn build.
+# And a list of all generated files
 ```
 
 ### 🎉 Celebrate 🎉
@@ -81,15 +79,17 @@ To create a production build, use yarn build.
 
 ```bash
 # Build static assets to host a PWA
-yarn run build:web
+yarn run build
 
-# Build packaged output
+# Build packaged output (script-tag use)
 yarn run build:package
 ```
 
 ## Next Steps
 
-...
+Take a look at the sidebar. Depending on how you intend to use The OHIF Viewer,
+different topics may be more pertinent than others. At a minimum, reading "The
+Essentials" and the deployment recipes should be a good starting point.
 
 ## Troubleshooting
 
@@ -111,5 +111,5 @@ yarn run build:package
 [sync-changes]: https://help.github.com/en/articles/syncing-a-fork
 [triangular-workflow]: https://github.blog/2015-07-29-git-2-5-including-multiple-worktrees-and-triangular-workflows/#improved-support-for-triangular-workflows
 [ohif-viewers-repo]: https://github.com/OHIF/Viewers
-[ohif-viewers-react-repo]: https://github.com/OHIF/Viewers/tree/react
+[ohif-viewers]: https://github.com/OHIF/Viewers
 <!-- prettier-ignore-end -->
