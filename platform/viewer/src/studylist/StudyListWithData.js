@@ -36,10 +36,10 @@ class StudyListWithData extends Component {
 
   static defaultProps = {
     studyListFunctionsEnabled: true,
-    server:
-      window.config.enableGoogleCloudAdapter && window.config.oidc[0].server
-        ? window.config.oidc[0].server
-        : null,
+    // server:
+    //   window.config.enableGoogleCloudAdapter && window.config.oidc[0].server
+    //     ? window.config.oidc[0].server
+    //     : null,
   };
 
   static rowsPerPage = 25;
