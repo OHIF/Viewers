@@ -1,6 +1,8 @@
 /**
  * Entry point index.js for UMD packaging
  */
+import 'regenerator-runtime/runtime';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.js';
