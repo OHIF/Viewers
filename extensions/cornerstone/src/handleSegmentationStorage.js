@@ -1,8 +1,8 @@
-import * as dcmjs from "dcmjs";
+import * as dcmjs from 'dcmjs';
 
-import OHIF from "@ohif/core";
-import cornerstone from "cornerstone-core";
-import cornerstoneTools from "cornerstone-tools";
+import OHIF from '@ohif/core';
+import cornerstone from 'cornerstone-core';
+import cornerstoneTools from 'cornerstone-tools';
 
 const { StackManager } = OHIF.utils;
 
@@ -56,7 +56,7 @@ function retrieveDicomData(wadoUri) {
   // TODO: Authorization header depends on the server. If we ever have multiple servers
   // we will need to figure out how / when to pass this information in.
   return fetch(wadoUri, {
-    headers: OHIF.DICOMWeb.getAuthorizationHeader()
+    headers: OHIF.DICOMWeb.getAuthorizationHeader(),
   }).then(response => response.arrayBuffer());
 }
 
@@ -91,7 +91,7 @@ async function handleSegmentationStorage(
 
   if (displaySets.length > 1) {
     console.warn(
-      "More than one display set with the same seriesInstanceUid. This is not supported yet..."
+      'More than one display set with the same seriesInstanceUid. This is not supported yet...'
     );
   }
 
@@ -100,17 +100,20 @@ async function handleSegmentationStorage(
   const results = parseSeg(arrayBuffer, imageIds);
 
   if (!results) {
-    throw new Error("Fractional segmentations are not supported");
+    throw new Error('Fractional segmentations are not supported');
   }
 
-  const { segMetadata, toolState } = results;
+  const { labelmapBuffer, segMetadata, segmentsOnFrame } = results;
 
-  segMetadata.seriesInstanceUid = seriesInstanceUid;
+  const { setters } = cornerstoneTools.getModule('segmentation');
 
-  addSegMetadataToCornerstoneToolState(
+  setters.labelmap3DByFirstImageId(
+    imageIds[0],
+    labelmapBuffer,
+    0, // TODO -> Can define a color LUT based on colors in the SEG later.
     segMetadata,
-    toolState,
-    displaySetInstanceUid
+    imageIds.length,
+    segmentsOnFrame
   );
 
   const cachedStack = StackManager.findOrCreateStack(
@@ -123,7 +126,7 @@ async function handleSegmentationStorage(
   return {
     studyInstanceUid,
     displaySetInstanceUid,
-    stack
+    stack,
   };
 }
 
