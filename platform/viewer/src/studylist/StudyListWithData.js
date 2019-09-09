@@ -10,10 +10,14 @@ import moment from 'moment';
 import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';
 import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
 import filesToStudies from '../lib/filesToStudies.js';
-import UserManagerContext from '../UserManagerContext';
-import WhiteLabellingContext from '../WhiteLabellingContext';
+
+// Contexts
+import UserManagerContext from '../context/UserManagerContext';
+import WhiteLabellingContext from '../context/WhiteLabellingContext';
+import AppContext from '../context/AppContext';
 
 class StudyListWithData extends Component {
+  static contextType = AppContext;
   state = {
     searchData: {},
     studies: [],
@@ -51,9 +55,10 @@ class StudyListWithData extends Component {
   };
 
   componentDidMount() {
+    const { appConfig = {} } = this.context;
     // TODO: Avoid using timepoints here
     //const params = { studyInstanceUids, seriesInstanceUids, timepointId, timepointsFilter={} };
-    if (!this.props.server && window.config.enableGoogleCloudAdapter) {
+    if (!this.props.server && appConfig.enableGoogleCloudAdapter) {
       this.setState({
         modalComponentId: 'DicomStorePicker',
       });
@@ -184,6 +189,7 @@ class StudyListWithData extends Component {
   };
 
   render() {
+    const { appConfig = {} } = this.context;
     const onDrop = async acceptedFiles => {
       try {
         const studies = await filesToStudies(acceptedFiles);
@@ -203,8 +209,7 @@ class StudyListWithData extends Component {
     let healthCareApiButtons = null;
     let healthCareApiWindows = null;
 
-    // TODO: This should probably be a prop
-    if (window.config.enableGoogleCloudAdapter) {
+    if (appConfig.enableGoogleCloudAdapter) {
       healthCareApiWindows = (
         <ConnectedDicomStorePicker
           isOpen={this.state.modalComponentId === 'DicomStorePicker'}
