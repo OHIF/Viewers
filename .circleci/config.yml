@@ -279,17 +279,34 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
-      # Cypress job added by `cypress-io` orb
+      # E2E tests against PWA usage (dev)
       - cypress/run:
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
           store_artifacts: true
-          start: yarn run dev
+          build: yarn run build
+          start: yarn run test:e2e:dist
           wait-on: 'http://localhost:3000'
           no-workspace: true # Don't persist workspace
-          working_directory: platform/viewer
+          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          post-steps:
+            - store_test_results:
+                path: cypress/results
+          requires:
+            - PR_UNIT_TESTS
+      # E2E Tests against script-tag usage
+      - cypress/run:
+          pre-steps:
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
+                add wait-on' # Use yarn latest
+          yarn: true
+          store_artifacts: true
+          build: yarn run build:package
+          start: yarn run test:e2e:dist
+          wait-on: 'http://localhost:3000'
+          no-workspace: true # Don't persist workspace
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
           post-steps:
             - store_test_results:
