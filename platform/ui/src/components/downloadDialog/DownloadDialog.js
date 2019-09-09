@@ -8,8 +8,6 @@ import debounce from 'lodash.debounce';
 import './DownloadDialog.styl';
 import { withTranslation } from '../../utils/LanguageProvider';
 
-const MINIMUM_SIZE = 100;
-
 class DownloadDialog extends PureComponent {
   constructor(props) {
     super(props);
@@ -31,7 +29,8 @@ class DownloadDialog extends PureComponent {
           value: 'png'
         }
       ],
-      previewElementRef: null
+      previewElementRef: null,
+      MINIMUM_SIZE: 100,
     };
 
     this.submitForm = this.submitForm.bind(this);
@@ -40,13 +39,6 @@ class DownloadDialog extends PureComponent {
     this.checkImageBoundaries = this.checkImageBoundaries.bind(this);
 
     this.debouncedSizeChange = debounce(() => {
-      const isImageSizeBadlyConfigured = !this.checkImageBoundaries();
-
-      if (isImageSizeBadlyConfigured) {
-        alert(`Image out of boundaries, please review it. Minimum size is ${MINIMUM_SIZE}`);
-        return false;
-      }
-
       this.props.resize('width', this.state.width);
       this.props.resize('height', this.state.height);
     }, 500);
@@ -122,7 +114,7 @@ class DownloadDialog extends PureComponent {
   };
 
   checkImageBoundaries() {
-    return (this.state.width >= MINIMUM_SIZE && this.state.height >= MINIMUM_SIZE);
+    return (this.state.width >= this.state.MINIMUM_SIZE && this.state.height >= this.state.MINIMUM_SIZE);
   }
 
   changeSize(prop, e) {
@@ -173,21 +165,19 @@ class DownloadDialog extends PureComponent {
               <div className="file-info-container">
 
                 <div className="col">
-                  <div className="sizes">
+                  <div className="width">
                     <TextInput
                       type="number"
-                      min={MINIMUM_SIZE}
-                      max="16384"
+                      min={this.state.MINIMUM_SIZE}
                       value={this.state.width}
                       label={this.props.t('Width (px)')}
                       onChange={e => this.changeSize('width', e)}
                     />
                   </div>
-                  <div className="sizes">
+                  <div className="height">
                     <TextInput
                       type="number"
-                      min={MINIMUM_SIZE}
-                      max="16384"
+                      min={this.state.MINIMUM_SIZE}
                       value={this.state.height}
                       label={this.props.t('Height (px)')}
                       onChange={ e => this.changeSize('height', e)}
