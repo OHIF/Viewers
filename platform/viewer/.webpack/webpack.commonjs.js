@@ -33,7 +33,7 @@ module.exports = (env, argv) => {
     },
     output: {
       path: DIST_DIR,
-      library: 'ohifViewer',
+      library: 'OHIFViewer',
       libraryTarget: 'umd',
       filename: 'index.umd.js',
     },
