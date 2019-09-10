@@ -306,10 +306,10 @@ workflows:
           requires:
             - UNIT_TESTS
       # Update NPM
-      # - NPM_PUBLISH:
-      #     requires:
-      #       - cypress/run-1
-      #       - cypress/run-2
+      - NPM_PUBLISH:
+          requires:
+            - 'E2E: Script Tag-1'
+            - 'E2E: PWA-1'
       # - DOCS_PUBLISH:
       #     requires:
       #       - cypress/run-1
