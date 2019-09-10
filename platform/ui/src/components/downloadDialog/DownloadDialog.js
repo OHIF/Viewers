@@ -158,7 +158,7 @@ class DownloadDialog extends PureComponent {
         className="DownloadDialog modal fade themed in"
         backdrop={false}
         large={true}
-        keyboard={false}
+        keyboard={true}
       >
         <Modal.Header closeButton>
           <Modal.Title>{this.props.t('Download High Quality Image')}</Modal.Title>
