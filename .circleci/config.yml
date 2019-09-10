@@ -310,17 +310,17 @@ workflows:
           requires:
             - 'E2E: Script Tag'
             - 'E2E: PWA'
-      # - DOCS_PUBLISH:
-      #     requires:
-      #       - cypress/run-1
-      #       - cypress/run-2
-      # - VIEWER_DEMO_BUILD:
-      #     requires:
-      #       - cypress/run-1
-      #       - cypress/run-2
-      # - VIEWER_DEMO_PUBLISH:
-      #     requires:
-      #       - VIEWER_DEMO_BUILD
+      - DOCS_PUBLISH:
+          requires:
+            - 'E2E: Script Tag'
+            - 'E2E: PWA'
+      - VIEWER_DEMO_BUILD:
+          requires:
+            - 'E2E: Script Tag'
+            - 'E2E: PWA'
+      - VIEWER_DEMO_PUBLISH:
+          requires:
+            - VIEWER_DEMO_BUILD
       # Update hub.docker.org
       # - DOCKER_PUBLISH:
       #     requires:
