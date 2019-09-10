@@ -49,7 +49,7 @@ window.config = {
 };
 ```
 
-<ol start="5"><li>
+<ol start="3"><li>
   Render the viewer in the web page's target <code>div</code>
 </li></ol>
 
@@ -66,7 +66,46 @@ window.OHIFViewer.installViewer(
 );
 ```
 
-#### Tips & Tricks
+## Add Extensions
+
+The UMD (packaged for script tag use) is a "light weight" build that only
+contains the core extensions required for the platform to function. At this
+time, that includes:
+
+- `@ohif/extension-cornerstone` (external)
+- Measurements Panel
+- Study Browser
+- Generic Viewer Commands
+
+It's possible to add other extensions at runtime. For example, out of the box,
+the OHIF Viewer does not support whole slide microscopy in a helpful way. You
+can see how an `SM` modality study is displayed WITHOUT any support from
+extensions:
+
+- Study Without Extension: [Demo][whole-slide-base-demo] |
+  [Source][code-sandbox]
+- Study WITH Extension: [Demo][whole-slide-ext-demo] |
+  [Source][ext-code-sandbox]
+
+This only requires us to include a single script tag, and add it using the
+`extensions` key to our config:
+
+```html
+<script
+  src="https://unpkg.com/@ohif/extension-dicom-microscopy@0.50.5/dist/index.umd.js"
+  crossorigin
+></script>
+
+<!-- --->
+<script>
+  window.config = {
+    // ...
+    extensions: [OHIFExtDicomMicroscopy],
+  };
+</script>
+```
+
+#### FAQ
 
 > I'm having trouble getting this to work. Where can I go for help?
 
@@ -99,4 +138,9 @@ conflict issues.
   LINKS
   -->
 
+<!-- prettier-ignore-start -->
 [code-sandbox]: https://codesandbox.io/s/ohif-script-tag-v103-iniiu
+[whole-slide-base-demo]: https://iniiu.csb.app/viewer/1.2.392.200140.2.1.1.1.2.799008771.2020.1519719354.757
+[ext-code-sandbox]: https://codesandbox.io/s/ohif-script-tag-v103-runtime-extensions-34bw5
+[whole-slide-ext-demo]: https://34bw5.csb.app/viewer/1.2.392.200140.2.1.1.1.2.799008771.2448.1519719572.518
+<!-- prettier-ignore-end -->
