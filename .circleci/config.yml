@@ -308,8 +308,8 @@ workflows:
       # Update NPM
       - NPM_PUBLISH:
           requires:
-            - 'E2E: Script Tag-1'
-            - 'E2E: PWA-1'
+            - 'E2E: Script Tag'
+            - 'E2E: PWA'
       # - DOCS_PUBLISH:
       #     requires:
       #       - cypress/run-1
