@@ -17,16 +17,6 @@ include tags. Here's how it works:
     </a>
   </li>
   <li>
-    <a href="https://unpkg.com/react@16/umd/react.production.min.js">
-      <code>react@16.8.6</code>
-    </a>
-  </li>
-  <li>
-    <a href="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js">
-      <code>react-dom@16.8.6</code>
-    </a>
-  </li>
-  <li>
     <a href="https://unpkg.com/@ohif/viewer">
       <code>@ohif/viewer@latest</code>
     </a>
@@ -53,9 +43,6 @@ window.config = {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
-        requestOptions: {
-          requestFromBrowser: true,
-        },
       },
     ],
   },
@@ -68,10 +55,15 @@ window.config = {
 
 ```js
 // Made available by the `@ohif/viewer` script included in step 1
-var Viewer = window.OHIFStandaloneViewer.App;
-var app = React.createElement(Viewer, window.config, null);
-
-ReactDOM.render(app, document.getElementById('ohif-viewer-target'));
+var containerId = 'id-of-div-to-render-component-to';
+var componentRenderedOrUpdatedCallback = function() {
+  console.log('OHIF Viewer rendered/updated');
+};
+window.OHIFViewer.installViewer(
+  window.config,
+  containerId,
+  componentRenderedOrUpdatedCallback
+);
 ```
 
 #### Tips & Tricks
@@ -94,8 +86,17 @@ Good. Now `embed` that new page using an
 This should produce the expected result while also protecting your page from any
 globally defined styles/scripts.
 
+> We're trying to embed the OHIF Viewer into an existing React App, but seeing
+> react-dom and react conflicts. What can we do?
+
+`installViewer` is a convenience method that pulls in some dependencies that may
+not be compatible with existing `react` apps. `@ohif/viewer` also exports `App`
+which is a react component that takes the `configuration` outlined above as
+props. You can use it as a reusable component, and to avoid `react` version
+conflict issues.
+
 <!--
   LINKS
   -->
 
-[code-sandbox]: https://codesandbox.io/s/ohif-viewer-script-tag-usage-b3st9
+[code-sandbox]: https://codesandbox.io/s/ohif-script-tag-v103-iniiu

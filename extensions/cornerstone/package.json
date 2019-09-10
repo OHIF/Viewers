@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -38,8 +38,8 @@
     "dicom-parser": "^1.8.3",
     "hammerjs": "^2.0.8",
     "prop-types": "^15.6.2",
-    "react": "^15.0.0 || ^16.0.0",
-    "react-dom": "^15.0.0 || ^16.0.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "react-redux": "^6.0.0",
     "react-resize-detector": "^3.4.0",
     "redux": "^4.0.1"
