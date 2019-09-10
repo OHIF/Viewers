@@ -29,8 +29,9 @@ module.exports = (env, argv) => {
     },
     output: {
       path: ROOT_DIR,
-      library: 'ohifExtensionDicomHtml',
+      library: 'OHIFExtDicomHtml',
       libraryTarget: 'umd',
+      libraryExport: 'default',
       filename: pkg.main,
     },
   });
