@@ -1,7 +1,7 @@
 import createImageFromEnabledElementAsync from './createImageFromEnabledElementAsync';
 
 /**
- * @exports @public @function
+ * @exports @public @class
  */
 class DownloadViewportEngine {
   constructor() {
@@ -9,7 +9,10 @@ class DownloadViewportEngine {
     this.$activeViewport = null;
     this.$activeElement = null;
     this.$activeCanvas = null;
-    this.size = null;
+    this.originalElementWidth = null;
+    this.originalElementHeigth = null;
+    this.originalCanvasWidth = null;
+    this.originalCanvasHeigth = null;
 
     this.mountPreview = this.mountPreview.bind(this);
     this.save = this.save.bind(this);
@@ -24,11 +27,12 @@ class DownloadViewportEngine {
   /**
    * resize the original viewport before saving, according to user's preferences
    * @param {string} prop the css style prop about to be changed
-   * @param {string} value the value to be applied on the css prop
+   * @param {number} value the value to be applied on the css prop
    */
-  resize(prop, value) {
+  resize(prop, value = 0) {
     this.$activeElement.style[prop] = `${value}px`;
     this.$activeCanvas.style[prop]  = `${value}px`;
+
     cornerstone.resize(this.$activeViewport, true);
     cornerstone.fitToWindow(this.$activeViewport);
     cornerstone.updateImage(this.$activeViewport, true);
@@ -58,12 +62,12 @@ class DownloadViewportEngine {
    */
   toggleAnnotations(toggle, reMountPreview = false) {
     const availableTools = cornerstoneTools.store.state.tools.map(tool => tool.name);
-    const enabledElement = cornerstone.getEnabledElement(this.$activeViewport);
-    const { element } = enabledElement;
+    const element = this.$activeElement;
 
     availableTools.forEach(tool => {
       if (toggle) {
         cornerstoneTools.setToolEnabledForElement(element, tool);
+        cornerstone.enable(this.$activeElement);
       } else {
         cornerstoneTools.setToolDisabledForElement(element, tool);
       }
@@ -78,14 +82,22 @@ class DownloadViewportEngine {
 
   /**
    * getInfo - get All information related to the image used on the modal state
-   * @returns {{fileName: string, width: (*|number), height: (*|number)}}
+   * @returns {{width: (*|number), height: (*|number)}}
    */
   getInfo() {
     const element = cornerstone.getEnabledElement(this.$activeViewport);
+    let aspectRatio = 0;
+
+    try {
+      aspectRatio = element.image.width / element.image.height;
+    } catch (e) {
+      console.log(e);
+    }
+
     return {
-      fileName: 'Image',
       width: element.image.width || 0,
       height: element.image.height || 0,
+      aspectRatio,
     };
   }
 

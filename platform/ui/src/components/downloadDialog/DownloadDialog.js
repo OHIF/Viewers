@@ -16,7 +16,8 @@ class DownloadDialog extends PureComponent {
       isOpen: this.props.isOpen,
       size: 0,
       height: 0,
-      fileName: '',
+      aspectRatio: 0,
+      fileName: 'Image',
       fileType: 'png',
       showAnnotations: true,
       fileTypeOptions: [
@@ -120,18 +121,26 @@ class DownloadDialog extends PureComponent {
   changeSize(prop, e) {
     e.persist();
 
-    let { value } = e.currentTarget;
-    value = value - this.state[prop];
+    const { value } = e.currentTarget;
+    let width;
+    let height;
 
-    const width = this.state.width + value;
-    const height = this.state.height + value;
+    if (prop === 'width') {
+      width = value;
+      height = Math.round(( value / this.state.aspectRatio ));
+    }
+
+    if (prop === 'height') {
+      height = value;
+      width = Math.round(( value * this.state.aspectRatio ))
+    }
 
     this.setState({
       width,
       height
     });
 
-    this.debouncedSizeChange();
+    this.debouncedSizeChange(prop, value);
   }
 
   onClose() {
@@ -186,7 +195,6 @@ class DownloadDialog extends PureComponent {
                 </div>
 
                 <div className="col">
-
                   <div className="file-name">
                     <TextInput
                       type="text"
@@ -198,7 +206,6 @@ class DownloadDialog extends PureComponent {
                       id="file-name"
                     />
                   </div>
-
                   <div className="file-type">
                     <Select
                       value={this.state.fileType}
@@ -209,11 +216,9 @@ class DownloadDialog extends PureComponent {
                       label={this.props.t('File Type')}
                     />
                   </div>
-
                 </div>
 
                 <div className="col">
-
                   <div className="show-annotations">
                     <label htmlFor="show-annotations" className="form-check-label">
                       {this.props.t('Show Annotations')}
@@ -229,7 +234,6 @@ class DownloadDialog extends PureComponent {
                       />
                     </label>
                   </div>
-
                 </div>
 
               </div>
