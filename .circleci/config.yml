@@ -308,7 +308,8 @@ workflows:
       # Update NPM
       - NPM_PUBLISH:
           requires:
-            - cypress/run
+            - cypress/run-1
+            - cypress/run-2
       # Update hub.docker.org
       # - DOCKER_PUBLISH:
       #     requires:
@@ -317,10 +318,12 @@ workflows:
       # Update docs.ohif.org
       - DOCS_PUBLISH:
           requires:
-            - cypress/run
+            - cypress/run-1
+            - cypress/run-2
       - VIEWER_DEMO_BUILD:
           requires:
-            - cypress/run
+            - cypress/run-1
+            - cypress/run-2
       - VIEWER_DEMO_PUBLISH:
           requires:
             - VIEWER_DEMO_BUILD
