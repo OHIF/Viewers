@@ -47,6 +47,10 @@ jobs:
           paths:
             - ~/.cache ## Cache yarn and Cypress
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      # Persist :+1:
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
 
   UNIT_TESTS:
     <<: *defaults
