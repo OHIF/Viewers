@@ -306,24 +306,24 @@ workflows:
           requires:
             - UNIT_TESTS
       # Update NPM
-      - NPM_PUBLISH:
-          requires:
-            - cypress/run-1
-            - cypress/run-2
+      # - NPM_PUBLISH:
+      #     requires:
+      #       - cypress/run-1
+      #       - cypress/run-2
+      # - DOCS_PUBLISH:
+      #     requires:
+      #       - cypress/run-1
+      #       - cypress/run-2
+      # - VIEWER_DEMO_BUILD:
+      #     requires:
+      #       - cypress/run-1
+      #       - cypress/run-2
+      # - VIEWER_DEMO_PUBLISH:
+      #     requires:
+      #       - VIEWER_DEMO_BUILD
       # Update hub.docker.org
       # - DOCKER_PUBLISH:
       #     requires:
       #       - NPM_PUBLISH
       # Update viewer.ohif.org
       # Update docs.ohif.org
-      - DOCS_PUBLISH:
-          requires:
-            - cypress/run-1
-            - cypress/run-2
-      - VIEWER_DEMO_BUILD:
-          requires:
-            - cypress/run-1
-            - cypress/run-2
-      - VIEWER_DEMO_PUBLISH:
-          requires:
-            - VIEWER_DEMO_BUILD
