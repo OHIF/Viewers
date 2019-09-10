@@ -14,11 +14,10 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         requestOptions: {
-          requestFromBrowser: true,
           auth: 'admin:admin',
         },
       },
     ],
   },
   studyListFunctionsEnabled: true,
-}
+};
