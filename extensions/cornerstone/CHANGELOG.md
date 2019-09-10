@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.0.0...@ohif/extension-cornerstone@1.0.1) (2019-09-10)
+
+
+### Bug Fixes
+
+* simplify runtime-extension usage ([ac5dbda](https://github.com/OHIF/Viewers/commit/ac5dbda))
+
+
+
+
+
 # [1.0.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@0.50.5...@ohif/extension-cornerstone@1.0.0) (2019-09-09)
 
 
