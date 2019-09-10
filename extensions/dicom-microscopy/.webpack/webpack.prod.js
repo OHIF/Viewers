@@ -29,8 +29,9 @@ module.exports = (env, argv) => {
     },
     output: {
       path: ROOT_DIR,
-      library: 'ohifExtensionDicomMicroscopy',
+      library: 'OHIFExtDicomMicroscopy',
       libraryTarget: 'umd',
+      libraryExport: 'default',
       filename: pkg.main,
     },
   });

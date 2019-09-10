@@ -11,9 +11,6 @@ window.config = {
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
-        requestOptions: {
-          requestFromBrowser: true,
-        },
       },
     ],
   },

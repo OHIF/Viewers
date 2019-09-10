@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-html",
-  "version": "0.50.5",
+  "version": "0.50.6",
   "description": "OHIF extension for rendering structured reports to HTML",
   "author": "OHIF",
   "license": "MIT",
@@ -31,8 +31,8 @@
     "@ohif/core": "^0.50.0",
     "dcmjs": "^0.6.0",
     "prop-types": "^15.6.2",
-    "react": "^15.0.0 || ^16.0.0",
-    "react-dom": "^15.0.0 || ^16.0.0"
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5"
