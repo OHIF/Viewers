@@ -186,6 +186,15 @@ const definitions = [
         type: TOOLBAR_BUTTON_TYPES.COMMAND,
         commandName: 'clearAnnotations',
       },
+      {
+        id: 'Bidirectional',
+        label: 'Bidirectional',
+        icon: 'arrows-alt-h',
+        //
+        type: TOOLBAR_BUTTON_TYPES.COMMAND,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Bidirectional' },
+      },
     ],
   },
 ];
