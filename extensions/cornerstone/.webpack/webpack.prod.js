@@ -29,8 +29,9 @@ module.exports = (env, argv) => {
     },
     output: {
       path: ROOT_DIR,
-      library: 'ohifExtensionCornerstone',
+      library: 'OHIFExtCornerstone',
       libraryTarget: 'umd',
+      libraryExport: 'default',
       filename: pkg.main,
     },
   });

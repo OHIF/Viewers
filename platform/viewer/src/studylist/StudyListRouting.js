@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import queryString from 'query-string';
 import ConnectedStudyList from './ConnectedStudyList';
+
+// Contexts
+import AppContext from '../context/AppContext';
 
 // TODO: Move to @ohif/ui
 
@@ -22,16 +25,20 @@ function getFilters({ search }) {
 }
 
 function StudyListRouting({ location }) {
+  const { appConfig = {} } = useContext(AppContext);
+
   const filters = location ? getFilters(location) : undefined;
 
   let studyListFunctionsEnabled = false;
-  if (window.config && window.config.studyListFunctionsEnabled) {
-    studyListFunctionsEnabled = window.config.studyListFunctionsEnabled;
+  if (appConfig.studyListFunctionsEnabled) {
+    studyListFunctionsEnabled = appConfig.studyListFunctionsEnabled;
   }
-  return <ConnectedStudyList
-    filters={filters}
-    studyListFunctionsEnabled={studyListFunctionsEnabled}
-  />;
+  return (
+    <ConnectedStudyList
+      filters={filters}
+      studyListFunctionsEnabled={studyListFunctionsEnabled}
+    />
+  );
 }
 
 StudyListRouting.propTypes = {
