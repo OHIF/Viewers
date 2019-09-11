@@ -186,6 +186,15 @@ const definitions = [
         type: TOOLBAR_BUTTON_TYPES.COMMAND,
         commandName: 'clearAnnotations',
       },
+      {
+        id: 'ArrowAnnotate',
+        label: 'Arrow Annotate',
+        icon: 'measure-non-target',
+        //
+        type: TOOLBAR_BUTTON_TYPES.COMMAND,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'ArrowAnnotate' },
+      },
     ],
   },
 ];
