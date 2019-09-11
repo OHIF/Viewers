@@ -49,7 +49,7 @@ window.config = {
 };
 ```
 
-<ol start="5"><li>
+<ol start="3"><li>
   Render the viewer in the web page's target <code>div</code>
 </li></ol>
 
@@ -66,7 +66,41 @@ window.OHIFViewer.installViewer(
 );
 ```
 
-#### Tips & Tricks
+You can see a live example of this recipe in [this CodeSandbox][code-sandbox].
+
+## Add Extensions
+
+The UMD build of the OHIF Viewer is a "light weight" build that only contains
+the core extensions required for basic 2D image viewing. It's possible to add
+other extensions at runtime.
+
+This only requires us to include a single script tag, and add it using the
+`extensions` key to our config. In this practical example, we register our
+popular whole slide microscopy extension:
+
+```html
+<script
+  src="https://unpkg.com/@ohif/extension-dicom-microscopy@0.50.5/dist/index.umd.js"
+  crossorigin
+></script>
+
+<!-- --->
+<script>
+  window.config = {
+    // ...
+    extensions: [OHIFExtDicomMicroscopy],
+  };
+</script>
+```
+
+You can see an example of a slide microscopy study in the viewer [with the
+extension enabled here][whole-slide-ext-demo] ([source code][ext-code-sandbox])
+and [without it here][whole-slide-base-demo] ([source code][code-sandbox]).
+
+You can read more about extensions and how to create your own in our
+[extensions guide](/advanced/extensions.md).
+
+#### FAQ
 
 > I'm having trouble getting this to work. Where can I go for help?
 
@@ -99,4 +133,9 @@ conflict issues.
   LINKS
   -->
 
+<!-- prettier-ignore-start -->
 [code-sandbox]: https://codesandbox.io/s/ohif-script-tag-v103-iniiu
+[whole-slide-base-demo]: https://iniiu.csb.app/viewer/1.2.392.200140.2.1.1.1.2.799008771.2020.1519719354.757
+[ext-code-sandbox]: https://codesandbox.io/s/ohif-script-tag-v103-runtime-extensions-34bw5
+[whole-slide-ext-demo]: https://34bw5.csb.app/viewer/1.2.392.200140.2.1.1.1.2.799008771.2448.1519719572.518
+<!-- prettier-ignore-end -->
