@@ -195,6 +195,15 @@ const definitions = [
         commandName: 'setToolActive',
         commandOptions: { toolName: 'ArrowAnnotate' },
       },
+      {
+        id: 'Eraser',
+        label: 'Eraser',
+        icon: 'eraser',
+        //
+        type: TOOLBAR_BUTTON_TYPES.COMMAND,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Eraser' },
+      },
     ],
   },
 ];
