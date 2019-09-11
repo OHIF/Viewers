@@ -68,24 +68,9 @@ window.OHIFViewer.installViewer(
 
 ## Add Extensions
 
-The UMD (packaged for script tag use) is a "light weight" build that only
-contains the core extensions required for the platform to function. At this
-time, that includes:
-
-- `@ohif/extension-cornerstone` (external)
-- Measurements Panel
-- Study Browser
-- Generic Viewer Commands
-
-It's possible to add other extensions at runtime. For example, out of the box,
-the OHIF Viewer does not support whole slide microscopy in a helpful way. You
-can see how an `SM` modality study is displayed WITHOUT any support from
-extensions:
-
-- Study Without Extension: [Demo][whole-slide-base-demo] |
-  [Source][code-sandbox]
-- Study WITH Extension: [Demo][whole-slide-ext-demo] |
-  [Source][ext-code-sandbox]
+The UMD build of the OHIF Viewer is a "light weight" build that only contains
+the core extensions required for basic 2D image viewing. It's possible to add
+other extensions at runtime.
 
 This only requires us to include a single script tag, and add it using the
 `extensions` key to our config:
@@ -104,6 +89,13 @@ This only requires us to include a single script tag, and add it using the
   };
 </script>
 ```
+
+You can see an example of the viewer [with the extension enabled
+here][whole-slide-ext-demo] ([source code][ext-code-sandbox]) and [without it
+here][whole-slide-base-demo] ([source code][code-sandbox]).
+
+You can read more about extensions and how to create your own in our
+[extensions guide](/advanced/extensions.md)
 
 #### FAQ
 
