@@ -66,6 +66,8 @@ window.OHIFViewer.installViewer(
 );
 ```
 
+You can see a live example of this recipe in [this CodeSandbox][code-sandbox].
+
 ## Add Extensions
 
 The UMD build of the OHIF Viewer is a "light weight" build that only contains
@@ -73,7 +75,8 @@ the core extensions required for basic 2D image viewing. It's possible to add
 other extensions at runtime.
 
 This only requires us to include a single script tag, and add it using the
-`extensions` key to our config:
+`extensions` key to our config. In this practical example, we register our
+popular whole slide microscopy extension:
 
 ```html
 <script
@@ -90,12 +93,12 @@ This only requires us to include a single script tag, and add it using the
 </script>
 ```
 
-You can see an example of the viewer [with the extension enabled
-here][whole-slide-ext-demo] ([source code][ext-code-sandbox]) and [without it
-here][whole-slide-base-demo] ([source code][code-sandbox]).
+You can see an example of a slide microscopy study in the viewer [with the
+extension enabled here][whole-slide-ext-demo] ([source code][ext-code-sandbox])
+and [without it here][whole-slide-base-demo] ([source code][code-sandbox]).
 
 You can read more about extensions and how to create your own in our
-[extensions guide](/advanced/extensions.md)
+[extensions guide](/advanced/extensions.md).
 
 #### FAQ
 
