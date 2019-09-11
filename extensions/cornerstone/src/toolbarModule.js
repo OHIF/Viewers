@@ -189,7 +189,7 @@ const definitions = [
       {
         id: 'Bidirectional',
         label: 'Bidirectional',
-        icon: 'arrows-alt-h',
+        icon: 'measure-target',
         //
         type: TOOLBAR_BUTTON_TYPES.COMMAND,
         commandName: 'setToolActive',
