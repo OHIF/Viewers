@@ -129,6 +129,7 @@ export class StudyMetadata extends Metadata {
         );
 
         if (displaySet) {
+          displaySet.sopClassModule = true;
           displaySets.push(displaySet);
 
           return;
@@ -214,7 +215,7 @@ export class StudyMetadata extends Metadata {
    * @returns {boolean} True on success, false on failure.
    */
   addDisplaySet(displaySet) {
-    if (displaySet instanceof ImageSet) {
+    if (displaySet instanceof ImageSet || displaySet.sopClassModule) {
       this._displaySets.push(displaySet);
       return true;
     }

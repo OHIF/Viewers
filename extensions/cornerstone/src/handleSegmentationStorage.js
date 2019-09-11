@@ -5,6 +5,7 @@ import OHIF from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import DICOMWeb from '@ohif/core/src/DICOMWeb';
+import DicomLoaderService from '../../../platform/viewer/src/lib/dicomLoaderService';
 
 const { StackManager } = OHIF.utils;
 
@@ -54,67 +55,6 @@ function addSegMetadataToCornerstoneToolState(
   }
 }
 
-function retrieveDicomData(imageInstance) {
-  // Set frame value to null so we can create an imageId which will retrieve
-  // the entire instance
-  const imageId = imageInstance && imageInstance.getImageId(null);
-
-  if (!imageId) {
-    throw Error('ImageId for given segmentation storage is not valid');
-  }
-
-  const getDicomFileMethod = (imageId, imageInstance) => {
-    return cornerstone.loadAndCacheImage(imageId).then(image => {
-      return image && image.data && image.data.byteArray.buffer;
-    });
-  };
-
-  const getWadorsMethod = (imageId, imageInstance) => {
-    const config = {
-      url: imageInstance.getData().wadoRoot,
-      headers: OHIF.DICOMWeb.getAuthorizationHeader(),
-    };
-    const dicomWeb = new api.DICOMwebClient(config);
-
-    return dicomWeb.retrieveInstance({
-      studyInstanceUID: imageInstance.getStudyInstanceUID(),
-      seriesInstanceUID: imageInstance.getSeriesInstanceUID(),
-      sopInstanceUID: imageInstance.getSOPInstanceUID(),
-    });
-  };
-
-  const getDefaultMethod = (imageId, imageInstance) => {
-    return fetch(imageId, {
-      headers: OHIF.DICOMWeb.getAuthorizationHeader(),
-    }).then(response => response.arrayBuffer());
-  };
-
-  const getLoaderType = imageId => {
-    const loaderRegExp = /^\w+\:/;
-    const loaderType = loaderRegExp.exec(imageId);
-
-    return (loaderRegExp.lastIndex === 0 && loaderType && loaderType[0]) || '';
-  };
-
-  let getDicomData = getDefaultMethod;
-  const loaderType = getLoaderType(imageId);
-
-  switch (loaderType) {
-    case 'dicomfile:':
-      getDicomData = getDicomFileMethod;
-      break;
-    case 'wadors:':
-      getDicomData = getWadorsMethod;
-      break;
-    case 'wadouri:':
-      // Strip out the image loader specifier
-      imageId = imageId.substring(imageId.indexOf(':') + 1);
-      break;
-  }
-
-  return getDicomData(imageId, imageInstance);
-}
-
 async function handleSegmentationStorage(
   studies,
   studyInstanceUid,
@@ -129,10 +69,10 @@ async function handleSegmentationStorage(
     displaySetInstanceUid
   );
 
-  const imageInstance =
-    displaySet && displaySet.images && displaySet && displaySet.images[0];
-
-  const arrayBuffer = await retrieveDicomData(imageInstance);
+  const arrayBuffer = await DicomLoaderService.getDicomData(
+    displaySet,
+    studies
+  );
   const dicomData = dcmjs.data.DicomMessage.readFile(arrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
     dicomData.dict
