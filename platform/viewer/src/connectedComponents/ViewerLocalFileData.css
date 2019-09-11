@@ -13,3 +13,8 @@
 .drag-drop-instructions h4 {
   color: var(--text-secondary-color);
 }
+
+.link-dialog {
+  color: var(--active-color);
+  cursor: pointer;
+}
