@@ -120,6 +120,7 @@ async function handleSegmentationStorage(
     referenceDisplaySet
   );
   const stack = Object.assign({}, cachedStack);
+
   stack.currentImageIdIndex = 0;
 
   return {
