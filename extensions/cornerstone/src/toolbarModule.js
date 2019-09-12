@@ -71,7 +71,7 @@ const definitions = [
   },
   {
     id: 'ArrowAnnotate',
-    label: 'Arrow Annotate',
+    label: 'Annotate',
     icon: 'measure-non-target',
     //
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
