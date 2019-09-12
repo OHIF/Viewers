@@ -69,7 +69,7 @@ async function handleSegmentationStorage(
     displaySetInstanceUid
   );
 
-  const arrayBuffer = await DicomLoaderService.getDicomData(
+  const arrayBuffer = await DicomLoaderService.findDicomDataPromise(
     displaySet,
     studies
   );

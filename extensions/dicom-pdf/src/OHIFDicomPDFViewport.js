@@ -40,7 +40,7 @@ class OHIFDicomPDFViewport extends Component {
       authorizationHeaders,
     } = displaySet;
 
-    DicomLoaderService.getDicomData(displaySet, studies).then(
+    DicomLoaderService.findDicomDataPromise(displaySet, studies).then(
       data => {
         const byteArray = new Uint8Array(data);
         this.setState({
