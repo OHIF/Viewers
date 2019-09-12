@@ -35,7 +35,7 @@ can be used with Vue, React, Vanilla JS, or any number of other frameworks.
 
 The documentation for this library is sparse. The best way to get started is to
 look at its
-[top level exports](https://github.com/OHIF/ohif-core/blob/master/src/index.js),
+[top level exports](https://github.com/OHIF/Viewers/blob/master/platform/core/src/index.js),
 and explore the source code of features that interest you. If you want to see
 how we use this library, you can check out [our viewer
 implementation][react-viewer].
@@ -57,12 +57,12 @@ yarn add @ohif/core --exact
 ### Usage
 
 Usage is dependent on the feature(s) you want to leverage. The bulk of
-`ohif-core`'s features are "pure" and can be imported and used in place.
+`@ohif/core`'s features are "pure" and can be imported and used in place.
 
 _Example: retrieving study metadata from a server_
 
 ```js
-import { studies } from "@ohif/core";
+import { studies } from '@ohif/core';
 
 const studiesMetadata = await studies.retrieveStudiesMetadata(
   server, // Object
@@ -125,11 +125,10 @@ Links:
 
 <!-- prettier-ignore-start -->
 <!-- ROW -->
-[npm-url]: https://npmjs.org/package/ohif-core
-[npm-downloads-image]: https://img.shields.io/npm/dm/ohif-core.svg?style=flat-square
-[npm-version-image]: https://img.shields.io/npm/v/ohif-core.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/@ohif/core
+[npm-downloads-image]: https://img.shields.io/npm/dm/@ohif/core.svg?style=flat-square
+[npm-version-image]: https://img.shields.io/npm/v/@ohif/core.svg?style=flat-square
 [all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
-[contributing-url]: https://github.com/OHIF/ohif-core/blob/master/CONTRIBUTING.md
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
 <!-- Misc. -->

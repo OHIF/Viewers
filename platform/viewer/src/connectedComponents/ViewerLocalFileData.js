@@ -12,6 +12,44 @@ import { withTranslation } from 'react-i18next';
 const { OHIFStudyMetadata } = metadata;
 const { studyMetadataManager, updateMetaDataManager } = utils;
 
+const dropZoneLinkDialog = (onDrop, i18n, dir) => {
+  return (
+    <Dropzone onDrop={onDrop} noDrag>
+      {({ getRootProps, getInputProps }) => (
+        <span {...getRootProps()} className="link-dialog">
+          {dir ? (
+            <span>
+              {i18n('Load folders')}
+              <input
+                {...getInputProps()}
+                webkitdirectory="true"
+                mozdirectory="true"
+              />
+            </span>
+          ) : (
+            <span>
+              {i18n('Load files')}
+              <input {...getInputProps()} />
+            </span>
+          )}
+        </span>
+      )}
+    </Dropzone>
+  );
+};
+
+const linksDialogMessage = (onDrop, i18n) => {
+  return (
+    <>
+      {i18n('Or click to ')}
+      {dropZoneLinkDialog(onDrop, i18n)}
+      {i18n(' or ')}
+      {dropZoneLinkDialog(onDrop, i18n, true)}
+      {i18n(' from dialog')}
+    </>
+  );
+};
+
 class ViewerLocalFileData extends Component {
   static propTypes = {
     studies: PropTypes.array,
@@ -73,7 +111,7 @@ class ViewerLocalFileData extends Component {
     }
 
     return (
-      <Dropzone onDrop={onDrop}>
+      <Dropzone onDrop={onDrop} noClick>
         {({ getRootProps, getInputProps }) => (
           <div {...getRootProps()} style={{ width: '100%', height: '100%' }}>
             {this.state.studies ? (
@@ -96,15 +134,10 @@ class ViewerLocalFileData extends Component {
                           'Drag and Drop DICOM files here to load them in the Viewer'
                         )}
                       </h3>
-                      <h4>
-                        {this.props.t(
-                          "Or click to load the browser's file selector"
-                        )}
-                      </h4>
+                      <h4>{linksDialogMessage(onDrop, this.props.t)}</h4>
                     </>
                   )}
                 </div>
-                <input {...getInputProps()} style={{ display: 'none' }} />
               </div>
             )}
           </div>

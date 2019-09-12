@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.7](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@0.50.6...@ohif/extension-dicom-html@0.50.7) (2019-09-12)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [0.50.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@0.50.5...@ohif/extension-dicom-html@0.50.6) (2019-09-10)
+
+
+### Bug Fixes
+
+* simplify runtime-extension usage ([ac5dbda](https://github.com/OHIF/Viewers/commit/ac5dbda))
+
+
+
+
+
+## [0.50.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@0.50.4...@ohif/extension-dicom-html@0.50.5) (2019-09-09)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [0.50.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@0.50.3...@ohif/extension-dicom-html@0.50.4) (2019-09-06)
+
+
+### Bug Fixes
+
+* set NODE_ENV for production build ([9120db4](https://github.com/OHIF/Viewers/commit/9120db4))
+
+
+
+
+
 ## [0.50.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@0.50.2...@ohif/extension-dicom-html@0.50.3) (2019-09-04)
 
 **Note:** Version bump only for package @ohif/extension-dicom-html

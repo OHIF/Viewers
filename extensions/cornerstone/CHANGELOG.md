@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.1.0...@ohif/extension-cornerstone@1.1.1) (2019-09-12)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [1.1.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.0.1...@ohif/extension-cornerstone@1.1.0) (2019-09-12)
+
+
+### Features
+
+* **BidirectionalTool:** Add BidrectionalTool to "more" menu ([#911](https://github.com/OHIF/Viewers/issues/911)) ([e40cbae](https://github.com/OHIF/Viewers/commit/e40cbae))
+* **EraserTool:** add eraserTool to @ohif/extension-cornerstone ([#912](https://github.com/OHIF/Viewers/issues/912)) ([698d274](https://github.com/OHIF/Viewers/commit/698d274))
+
+
+
+
+
+## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.0.0...@ohif/extension-cornerstone@1.0.1) (2019-09-10)
+
+
+### Bug Fixes
+
+* simplify runtime-extension usage ([ac5dbda](https://github.com/OHIF/Viewers/commit/ac5dbda))
+
+
+
+
+
+# [1.0.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@0.50.5...@ohif/extension-cornerstone@1.0.0) (2019-09-09)
+
+
+### Features
+
+* 🎸 Upgraded to cornerstoneTools 4.0 ([86adb51](https://github.com/OHIF/Viewers/commit/86adb51))
+
+
+### BREAKING CHANGES
+
+* n
+
+
+
+
+
+## [0.50.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@0.50.4...@ohif/extension-cornerstone@0.50.5) (2019-09-06)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 ## [0.50.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@0.50.3...@ohif/extension-cornerstone@0.50.4) (2019-09-04)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone

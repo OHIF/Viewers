@@ -4,16 +4,21 @@ const webpackCommon = require('./../../../.webpack/webpack.commonjs.js');
 //
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const fontsToJavaScriptRule = require('./rules/fontsToJavaScript.js');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 // const
 const SRC_DIR = path.join(__dirname, '../src');
 const DIST_DIR = path.join(__dirname, '../dist');
+const PUBLIC_DIR = path.join(__dirname, '../public');
+// ~~ Env Vars
+const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'script-tag.html';
+const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
 
   return merge(commonConfig, {
     entry: {
-      bundle: `${SRC_DIR}/index-umd.js`,
+      app: `${SRC_DIR}/index-umd.js`,
     },
     devtool: 'source-map',
     stats: {
@@ -33,7 +38,7 @@ module.exports = (env, argv) => {
     },
     output: {
       path: DIST_DIR,
-      library: 'ohifViewer',
+      library: 'OHIFViewer',
       libraryTarget: 'umd',
       filename: 'index.umd.js',
     },
@@ -43,6 +48,12 @@ module.exports = (env, argv) => {
     plugins: [
       // Clean output.path
       new CleanWebpackPlugin(),
+      // Generate "index.html" w/ correct includes/imports
+      new HtmlWebpackPlugin({
+        inject: false,
+        template: `${PUBLIC_DIR}/html-templates/${HTML_TEMPLATE}`,
+        filename: 'index.html',
+      }),
     ],
   });
 };

@@ -3,7 +3,7 @@
 # TOML Reference:
 # https://www.netlify.com/docs/netlify-toml-reference/
 #
-# We use Netlify for deploy previews and deploy previews only.
+# We use Netlify for deploy previews and for publishing docs (gh-pages branch).
 # https://viewer.ohif.org is created using a different process that is
 # managed by CircleCI and deployed to our Google Hosting
 #
@@ -39,25 +39,6 @@
   base = ""
   publish = ".netlify/www/"
   command = "yarn config set workspaces-experimental true && chmod +x .netlify/build-deploy-preview.sh && .netlify/build-deploy-preview.sh"
-
-# Redirects and headers are GLOBAL for all builds – they do not get scoped to
-# contexts no matter where you define them in the file.
-# For context-specific rules, use _headers or _redirects files, which are
-# PER-DEPLOY.
-# The following redirect is intended for use with most SPAs that handle
-# routing internally.
-# By default, redirects won't be applied if there's a file with the same
-# path as the one defined in the `from` property. Setting `force` to `true`
-# will make the redirect rule take precedence over any existing files.
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/pwa/*"
-  to = "/pwa/index.html"
-  status = 200
 
 [[headers]]
   # Define which paths this specific [[headers]] block will cover.

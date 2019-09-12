@@ -11,13 +11,17 @@ import { AboutModal } from '@ohif/ui';
 import { hotkeysManager } from './../../App.js';
 import { withTranslation } from 'react-i18next';
 
+// Context
+import AppContext from './../../context/AppContext';
+
 class Header extends Component {
+  static contextType = AppContext;
   static propTypes = {
     home: PropTypes.bool.isRequired,
     location: PropTypes.object.isRequired,
     children: PropTypes.node,
     t: PropTypes.func.isRequired,
-    userManager: PropTypes.object
+    userManager: PropTypes.object,
   };
 
   static defaultProps = {
@@ -63,10 +67,10 @@ class Header extends Component {
     if (this.props.user && this.props.userManager) {
       this.options.push({
         title: t('Logout'),
-          icon: { name: 'power-off' },
-          onClick: () => {
-            this.props.userManager.signoutRedirect();
-          },
+        icon: { name: 'power-off' },
+        onClick: () => {
+          this.props.userManager.signoutRedirect();
+        },
       });
     }
 
@@ -82,10 +86,9 @@ class Header extends Component {
 
   render() {
     const { t } = this.props;
+    const { appConfig = {} } = this.context;
     const showStudyList =
-      window.config.showStudyList !== undefined
-        ? window.config.showStudyList
-        : true;
+      appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
     return (
       <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
         <div className="header-left-box">
