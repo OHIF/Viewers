@@ -266,8 +266,6 @@ const DICOMFileLoader = new (class extends FileLoader {
   }
 })();
 
-
-
 class FileLoaderService extends FileLoader {
   fileType;
   loader;
@@ -344,7 +342,7 @@ class FileLoaderService extends FileLoader {
     } else if (fileType === 'application/dicom' || fileType === '') {
       return DICOMFileLoader;
     } else {
-      throw new Error('Unknow file type');
+      throw new Error('Unknown file type');
     }
   }
 }

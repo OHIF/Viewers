@@ -42,9 +42,9 @@ class OHIFDicomPDFViewport extends Component {
 
     DicomLoaderService.getDicomData(displaySet, studies).then(
       data => {
-        var byteArrayData = new Uint8Array(data);
+        const byteArray = new Uint8Array(data);
         this.setState({
-          byteArray: byteArrayData,
+          byteArray: byteArray,
         });
       },
       error => {

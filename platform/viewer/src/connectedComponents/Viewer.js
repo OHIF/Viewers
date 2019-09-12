@@ -342,7 +342,7 @@ const _mapStudiesToThumbnails = function(studies) {
         seriesDescription,
         seriesNumber,
         instanceNumber,
-        numImageFrames = 0,
+        numImageFrames,
       } = displaySet;
 
       let imageId;
