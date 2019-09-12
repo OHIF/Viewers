@@ -3,7 +3,7 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { api } from 'dicomweb-client';
 import OHIF from '@ohif/core';
 
-const getImageId = (studies, studyIndex) => {
+const getImageIdByIndex = (studies, studyIndex) => {
   const study = studies[studyIndex];
   const { seriesList = [] } = study;
   const { instances = [] } = seriesList[0] || {};
@@ -12,6 +12,12 @@ const getImageId = (studies, studyIndex) => {
   if (instance) {
     return instance.getImageId();
   }
+};
+
+const getImageIdByDataset = dataset => {
+  const imageInstance = dataset && dataset.images && dataset.images[0];
+  const imageId = imageInstance && imageInstance.getImageId(null);
+  return imageId;
 };
 
 const fetchIt = (url, headers) => {
@@ -55,35 +61,36 @@ const getImageLoaderType = imageId => {
   );
 };
 const DicomLoaderService = new (class {
+  getDataByImage(dataset) {
+    // look into dataset first
+    const imageId = getImageIdByDataset(dataset);
+    if (imageId) {
+      return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
+    }
+  }
+
   getLocalData(dataset, studies) {
     if (dataset && dataset.localFile) {
-      const imageId = getImageId(studies, dataset.studyIndex);
+      const imageId = getImageIdByIndex(studies, dataset.studyIndex);
       if (imageId) {
         return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
       }
     }
   }
 
-  getDataByImageType(dataset, studies) {
-    // look into dataset first
-    const imageInstance = dataset && dataset.images && dataset.images[0];
+  getDataByImageType(dataset) {
+    const imageId = getImageIdByDataset(dataset);
 
-    if (imageInstance) {
-      const imageId = imageInstance.getImageId(null);
-
-      if (!imageId) {
-        return;
-      }
-
-      let getDicomData = fetchIt;
+    if (imageId) {
+      let getDicomDataMethod = fetchIt;
       const loaderType = getImageLoaderType(imageId);
 
       switch (loaderType) {
         case 'dicomfile':
-          getDicomData = cornerstoneRetriever;
+          getDicomDataMethod = cornerstoneRetriever;
           break;
         case 'wadors':
-          getDicomData = wadorsRetriever;
+          getDicomDataMethod = wadorsRetriever;
           break;
         case 'wadouri':
           // Strip out the image loader specifier
@@ -91,11 +98,11 @@ const DicomLoaderService = new (class {
           break;
       }
 
-      return getDicomData(imageId, imageInstance);
+      return getDicomDataMethod(imageId, imageInstance);
     }
   }
 
-  getDataByDatasetType(dataset, studies) {
+  getDataByDatasetType(dataset) {
     const { wadoUri, authorizationHeaders } = dataset;
 
     if (wadoUri) {
@@ -104,12 +111,13 @@ const DicomLoaderService = new (class {
   }
 
   *getLoaderIterator(dataset, studies) {
+    yield this.getDataByImage(dataset);
     yield this.getLocalData(dataset, studies);
-    yield this.getDataByImageType(dataset, studies);
-    yield this.getDataByDatasetType(dataset, studies);
+    yield this.getDataByImageType(dataset);
+    yield this.getDataByDatasetType(dataset);
   }
 
-  getDicomData(dataset, studies) {
+  findDicomDataPromise(dataset, studies) {
     const loaderIterator = this.getLoaderIterator(dataset, studies);
     // it returns first valid retriever method.
     for (const loader of loaderIterator) {

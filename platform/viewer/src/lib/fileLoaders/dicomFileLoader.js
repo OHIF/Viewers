@@ -1,78 +1,15 @@
-import cornerstone from 'cornerstone-core';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import * as dcmjs from 'dcmjs';
-import DicomLoaderService from './dicomLoaderService';
-
-class FileLoader {
-  fileType;
-  loadFile(file, imageId) {}
-  getDataset(image) {}
-  getStudies(dataset, imageId) {}
-}
-
-const PDFFileLoader = new (class extends FileLoader {
-  fileType = 'application/pdf';
-  loadFile(file, imageId) {
-    return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
-  }
-
-  getDataset(image) {
-    const dataset = {};
-    dataset.imageId = image.imageId;
-    return dataset;
-  }
-
-  getStudies(dataset, imageId) {
-    return this.getDefaultStudy(imageId);
-  }
-
-  getDefaultStudy(imageId) {
-    const study = {
-      studyInstanceUid: '',
-      studyDate: '',
-      studyTime: '',
-      accessionNumber: '',
-      referringPhysicianName: '',
-      patientName: '',
-      patientId: '',
-      patientBirthdate: '',
-      patientSex: '',
-      studyId: '',
-      studyDescription: '',
-      seriesList: [
-        {
-          seriesInstanceUid: '',
-          seriesDescription: '',
-          seriesNumber: '',
-          instances: [
-            {
-              sopInstanceUid: '',
-              sopClassUid: '1.2.840.10008.5.1.4.1.1.104.1',
-              rows: '',
-              columns: '',
-              numberOfFrames: 0,
-              instanceNumber: 1,
-              getImageId: () => imageId,
-              isLocalFile: true,
-            },
-          ],
-        },
-      ],
-    };
-
-    return study;
-  }
-})();
+import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import FileLoader from './fileLoader';
 
 const DICOMFileLoader = new (class extends FileLoader {
   fileType = 'application/dicom';
   loadFile(file, imageId) {
-    return cornerstone.loadAndCacheImage(imageId);
+    return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
   }
 
-  getDataset(image) {
-    const arrayBuffer = image.data.byteArray.buffer;
-    const dicomData = dcmjs.data.DicomMessage.readFile(arrayBuffer);
+  getDataset(image, imageId) {
+    const dicomData = dcmjs.data.DicomMessage.readFile(image);
     const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
       dicomData.dict
     );
@@ -80,7 +17,7 @@ const DICOMFileLoader = new (class extends FileLoader {
       dicomData.meta
     );
 
-    dataset.imageId = image.imageId;
+    dataset.imageId = image.imageId || imageId;
 
     return dataset;
   }
@@ -266,85 +203,4 @@ const DICOMFileLoader = new (class extends FileLoader {
   }
 })();
 
-class FileLoaderService extends FileLoader {
-  fileType;
-  loader;
-  constructor(file) {
-    super();
-    const fileType = file && file.type;
-    this.loader = this.getLoader(fileType);
-    this.fileType = this.loader.fileType;
-  }
-
-  static getDicomData(dataset, studies) {
-    return DicomLoaderService.getDicomData(dataset, studies);
-  }
-
-  static groupSeries(studies) {
-    const groupBy = (list, groupByKey, listKey) => {
-      let nonKeyCounter = 1;
-
-      return list.reduce((acc, obj) => {
-        let key = obj[groupByKey];
-        const list = obj[listKey];
-
-        // in case key not found, group it using counter
-        key = !!key ? key : '' + nonKeyCounter++;
-
-        if (!acc[key]) {
-          acc[key] = { ...obj };
-          acc[key][listKey] = [];
-        }
-
-        acc[key][listKey].push(...list);
-
-        return acc;
-      }, {});
-    };
-
-    const studiesGrouped = Object.values(
-      groupBy(studies, 'studyInstanceUid', 'seriesList')
-    );
-
-    const result = studiesGrouped.map(studyGroup => {
-      const seriesGrouped = groupBy(
-        studyGroup.seriesList,
-        'seriesInstanceUid',
-        'instances'
-      );
-      studyGroup.seriesList = Object.values(seriesGrouped);
-
-      return studyGroup;
-    });
-
-    return result;
-  }
-
-  addFile(file) {
-    return cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
-  }
-
-  loadFile(file, imageId) {
-    return this.loader.loadFile(file, imageId);
-  }
-
-  getDataset(image) {
-    return this.loader.getDataset(image);
-  }
-
-  getStudies(dataset, imageId) {
-    return this.loader.getStudies(dataset, imageId);
-  }
-
-  getLoader(fileType) {
-    if (fileType === 'application/pdf') {
-      return PDFFileLoader;
-    } else if (fileType === 'application/dicom' || fileType === '') {
-      return DICOMFileLoader;
-    } else {
-      throw new Error('Unknown file type');
-    }
-  }
-}
-
-export default FileLoaderService;
+export default DICOMFileLoader;
