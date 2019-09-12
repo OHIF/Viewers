@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.1.1...@ohif/extension-cornerstone@1.2.0) (2019-09-12)
+
+
+### Features
+
+* **Annotate:** Add annotate tool back to toolbar ([26be967](https://github.com/OHIF/Viewers/commit/26be967))
+
+
+
+
+
 ## [1.1.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.1.0...@ohif/extension-cornerstone@1.1.1) (2019-09-12)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
