@@ -187,6 +187,15 @@ const definitions = [
         commandName: 'clearAnnotations',
       },
       {
+        id: 'Bidirectional',
+        label: 'Bidirectional',
+        icon: 'measure-target',
+        //
+        type: TOOLBAR_BUTTON_TYPES.COMMAND,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Bidirectional' },
+      },
+      {
         id: 'Eraser',
         label: 'Eraser',
         icon: 'eraser',
