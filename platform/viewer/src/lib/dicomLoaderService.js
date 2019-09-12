@@ -7,9 +7,11 @@ const getImageId = (studies, studyIndex) => {
   const study = studies[studyIndex];
   const { seriesList = [] } = study;
   const { instances = [] } = seriesList[0] || {};
-  const instance = instances[0] || { getImageId: () => undefined };
+  const instance = instances[0];
 
-  return instance.getImageId();
+  if (instance) {
+    return instance.getImageId();
+  }
 };
 
 const fetchIt = (url, headers) => {
