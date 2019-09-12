@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.1.0...@ohif/extension-cornerstone@1.1.1) (2019-09-12)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [1.1.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.0.1...@ohif/extension-cornerstone@1.1.0) (2019-09-12)
+
+
+### Features
+
+* **BidirectionalTool:** Add BidrectionalTool to "more" menu ([#911](https://github.com/OHIF/Viewers/issues/911)) ([e40cbae](https://github.com/OHIF/Viewers/commit/e40cbae))
+* **EraserTool:** add eraserTool to @ohif/extension-cornerstone ([#912](https://github.com/OHIF/Viewers/issues/912)) ([698d274](https://github.com/OHIF/Viewers/commit/698d274))
+
+
+
+
+
 ## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.0.0...@ohif/extension-cornerstone@1.0.1) (2019-09-10)
 
 
