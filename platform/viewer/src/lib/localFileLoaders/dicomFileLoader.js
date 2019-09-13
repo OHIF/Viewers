@@ -17,189 +17,170 @@ const DICOMFileLoader = new (class extends FileLoader {
       dicomData.meta
     );
 
-    dataset.imageId = image.imageId || imageId;
+    dataset.imageId = imageId;
 
     return dataset;
   }
 
   getStudies(dataset, imageId) {
-    return this.datasetsToStudies([dataset]);
+    return this.getStudyFromDataset(dataset);
   }
 
-  datasetsToStudies(datasets) {
-    const processDataSet = (
-      uidsSet,
-      propUid,
-      _datasets,
-      cb,
-      _study,
-      sourceUID
-    ) => {
-      Array.from(uidsSet).forEach(uidElement => {
-        // find dataset
-        const filteredDatasets = _datasets.filter(
-          dataset => dataset[propUid] === uidElement
-        );
+  getStudyFromDataset(dataset = {}) {
+    const {
+      StudyInstanceUID,
+      StudyDate,
+      StudyTime,
+      AccessionNumber,
+      ReferringPhysicianName,
+      PatientName,
+      PatientID,
+      PatientBirthDate,
+      PatientSex,
+      StudyID,
+      StudyDescription,
+      /*
+      NumberOfStudyRelatedSeries,
+      NumberOfStudyRelatedInstances,
+      Modality,
+      ModalitiesInStudy,
+      */
+      SeriesInstanceUID,
+      SeriesDescription,
+      SeriesNumber,
+      SOPInstanceUID,
+      SOPClassUID,
+      Rows,
+      Columns,
+      NumberOfFrames,
+      InstanceNumber,
+      imageId,
+      /*ImageType,
+        Modality,
+        InstanceNumber,
+        ImagePositionPatient,
+        ImageOrientationPatient,
+        FrameOfReferenceUID,
+        SliceLocation,
+        SamplesPerPixel,
+        PhotometricInterpretation,
+        PlanarConfiguration,
+        PixelSpacing,
+        PixelAspectRatio,
+        BitsAllocated,
+        BitsStored,
+        HighBit,
+        PixelRepresentation,
+        SmallestPixelValue,
+        LargestPixelValue,
+        WindowCenter,
+        WindowWidth,
+        RescaleIntercept,
+        RescaleSlope,
+        RescaleType,
+        Laterality,
+        ViewPosition,
+        AcquisitionDateTime,
+        FrameIncrementPointer,
+        FrameTime,
+        FrameTimeVector,
+        SliceThickness,
+        SpacingBetweenSlices,
+        LossyImageCompression,
+        DerivationDescription,
+        LossyImageCompressionRatio,
+        LossyImageCompressionMethod,
+        EchoNumber,
+        ContrastBolusAgent,
+        */
+    } = dataset;
 
-        cb(filteredDatasets, _datasets, _study, uidElement, sourceUID);
-      });
+    const instance = {
+      sopInstanceUid: SOPInstanceUID,
+      sopClassUid: SOPClassUID,
+      rows: Rows,
+      columns: Columns,
+      numberOfFrames: NumberOfFrames,
+      instanceNumber: InstanceNumber,
+      getImageId: () => imageId,
+      /*
+        TODO: in case necessary to uncoment this block, double check every property
+        imageType: ImageType || DICOMWeb.getString(dataset['00080008']),
+        modality: Modality || DICOMWeb.getString(dataset['00080060']),
+        instanceNumber: InstanceNumber || DICOMWeb.getNumber(dataset['00200013']),
+        imagePositionPatient: ImagePositionPatient || DICOMWeb.getString(dataset['00200032']),
+        imageOrientationPatient: ImageOrientationPatient || DICOMWeb.getString(dataset['00200037']),
+        frameOfReferenceUID: FrameOfReferenceUID || DICOMWeb.getString(dataset['00200052']),
+        sliceLocation: SliceLocation || DICOMWeb.getNumber(dataset['00201041']),
+        samplesPerPixel: SamplesPerPixel || DICOMWeb.getNumber(dataset['00280002']),
+        photometricInterpretation: PhotometricInterpretation || DICOMWeb.getString(dataset['00280004']),
+        planarConfiguration: PlanarConfiguration || DICOMWeb.getNumber(dataset['00280006']),
+        pixelSpacing: PixelSpacing || DICOMWeb.getString(dataset['00280030']),
+        pixelAspectRatio: PixelAspectRatio || DICOMWeb.getString(dataset['00280034']),
+        bitsAllocated: BitsAllocated || DICOMWeb.getNumber(dataset['00280100']),
+        bitsStored: BitsStored || DICOMWeb.getNumber(dataset['00280101']),
+        highBit: HighBit || DICOMWeb.getNumber(dataset['00280102']),
+        pixelRepresentation: PixelRepresentation || DICOMWeb.getNumber(dataset['00280103']),
+        smallestPixelValue: SmallestPixelValue || DICOMWeb.getNumber(dataset['00280106']),
+        largestPixelValue: LargestPixelValue || DICOMWeb.getNumber(dataset['00280107']),
+        windowCenter: WindowCenter || DICOMWeb.getString(dataset['00281050']),
+        windowWidth: WindowWidth || DICOMWeb.getString(dataset['00281051']),
+        rescaleIntercept: RescaleIntercept || DICOMWeb.getNumber(dataset['00281052']),
+        rescaleSlope: RescaleSlope || DICOMWeb.getNumber(dataset['00281053']),
+        rescaleType: RescaleType || DICOMWeb.getNumber(dataset['00281054']),
+        sourceImageInstanceUid: getSourceImageInstanceUid(dataset),
+        laterality: Laterality || DICOMWeb.getString(dataset['00200062']),
+        viewPosition: ViewPosition || DICOMWeb.getString(dataset['00185101']),
+        acquisitionDateTime: AcquisitionDateTime || DICOMWeb.getString(dataset['0008002A']),
+        frameIncrementPointer: FrameIncrementPointer || getFrameIncrementPointer(dataset['00280009']),
+        frameTime: FrameTime || DICOMWeb.getNumber(dataset['00181063']),
+        frameTimeVector: FrameTimeVector || parseFloatArray(
+          DICOMWeb.getString(dataset['00181065'])
+        ),
+        sliceThickness: SliceThickness || DICOMWeb.getNumber(dataset['00180050']),
+        spacingBetweenSlices: SpacingBetweenSlices || DICOMWeb.getString(dataset['00180088']),
+        lossyImageCompression: LossyImageCompression || DICOMWeb.getString(dataset['00282110']),
+        derivationDescription: DerivationDescription || DICOMWeb.getString(dataset['00282111']),
+        lossyImageCompressionRatio: LossyImageCompressionRatio || DICOMWeb.getString(dataset['00282112']),
+        lossyImageCompressionMethod: LossyImageCompressionMethod || DICOMWeb.getString(dataset['00282114']),
+        echoNumber: EchoNumber || DICOMWeb.getString(dataset['00180086']),
+        contrastBolusAgent: ContrastBolusAgent || DICOMWeb.getString(dataset['00180010']),
+        radiopharmaceuticalInfo: getRadiopharmaceuticalInfo(dataset),
+        wadouri: WADOProxy.convertURL(wadouri, server),
+        wadorsuri: WADOProxy.convertURL(wadorsuri, server),*/
     };
 
-    const studyCb = (filteredDatasets, datasets, _study, studyUID) => {
-      const firstDataset = filteredDatasets[0];
-
-      const study = {
-        studyInstanceUid: firstDataset.StudyInstanceUID,
-        studyDate: firstDataset.StudyDate,
-        studyTime: firstDataset.StudyTime,
-        accessionNumber: firstDataset.AccessionNumber,
-        referringPhysicianName: firstDataset.ReferringPhysicianName,
-        patientName: firstDataset.PatientName,
-        patientId: firstDataset.PatientID,
-        patientBirthdate: firstDataset.PatientBirthDate,
-        patientSex: firstDataset.PatientSex,
-        studyId: firstDataset.StudyID,
-        studyDescription: firstDataset.StudyDescription,
-        //numberOfStudyRelatedSeries: DICOMWeb.getString(study['00201206']),
-        //numberOfStudyRelatedInstances: DICOMWeb.getString(study['00201208']),
-        // modality: DICOMWeb.getString(study['00080060']),
-        // modalitiesInStudy: DICOMWeb.getString(study['00080061']),
-        //modalities:
-        seriesList: [],
-      };
-
-      const SeriesInstanceUIDs = new Set();
-      datasets.forEach(ds => {
-        SeriesInstanceUIDs.add(ds.SeriesInstanceUID);
-      });
-      processDataSet(
-        SeriesInstanceUIDs,
-        'SeriesInstanceUID',
-        datasets,
-        seriesCb,
-        study,
-        studyUID
-      );
-      return study;
+    const series = {
+      seriesInstanceUid: SeriesInstanceUID,
+      seriesDescription: SeriesDescription,
+      seriesNumber: SeriesNumber,
+      instances: [instance],
     };
 
-    const seriesCb = (
-      filteredDatasets,
-      datasets,
-      study,
-      serieUID,
-      studyUID
-    ) => {
-      const SOPInstanceUIDs = new Set();
-
-      filteredDatasets.forEach(ds => {
-        SOPInstanceUIDs.add(ds.SOPInstanceUID);
-
-        study.seriesList.push({
-          seriesInstanceUid: ds.SeriesInstanceUID,
-          seriesDescription: ds.SeriesDescription,
-          seriesNumber: ds.SeriesNumber,
-          instances: [],
-        });
-      });
-
-      processDataSet(
-        SOPInstanceUIDs,
-        'SOPInstanceUID',
-        datasets,
-        instanceCb,
-        study,
-        serieUID
-      );
+    const study = {
+      studyInstanceUid: StudyInstanceUID,
+      studyDate: StudyDate,
+      studyTime: StudyTime,
+      accessionNumber: AccessionNumber,
+      referringPhysicianName: ReferringPhysicianName,
+      patientName: PatientName,
+      patientId: PatientID,
+      patientBirthdate: PatientBirthDate,
+      patientSex: PatientSex,
+      studyId: StudyID,
+      studyDescription: StudyDescription,
+      /*
+      TODO: in case necessary to uncomment this block, double check every property
+      numberOfStudyRelatedSeries: NumberOfStudyRelatedSeries || DICOMWeb.getString(dataset['00201206']),
+      numberOfStudyRelatedInstances: NumberOfStudyRelatedInstances || DICOMWeb.getString(dataset['00201208']),
+      modality: Modality || DICOMWeb.getString(dataset['00080060']),
+      modalitiesInStudy: ModalitiesInStudy || DICOMWeb.getString(dataset['00080061']),
+      modalities:
+      */
+      seriesList: [series],
     };
 
-    const instanceCb = (
-      filteredDatasets,
-      datasets,
-      study,
-      instanceUID,
-      seriesUID
-    ) => {
-      const instance = filteredDatasets.find(
-        a => a.SOPInstanceUID === instanceUID
-      );
-      const series = study.seriesList.find(
-        a => a.seriesInstanceUid === seriesUID
-      );
-
-      series.instances.push({
-        sopInstanceUid: instance.SOPInstanceUID,
-        sopClassUid: instance.SOPClassUID,
-        rows: instance.Rows,
-        columns: instance.Columns,
-        numberOfFrames: instance.NumberOfFrames,
-        instanceNumber: instance.InstanceNumber,
-        getImageId: () => instance.imageId, // TODO: Change getImageId to check for instance.imageId property first.
-        /*imageType: DICOMWeb.getString(instance['00080008']),
-          modality: DICOMWeb.getString(instance['00080060']),
-          instanceNumber: DICOMWeb.getNumber(instance['00200013']),
-          imagePositionPatient: DICOMWeb.getString(instance['00200032']),
-          imageOrientationPatient: DICOMWeb.getString(instance['00200037']),
-          frameOfReferenceUID: DICOMWeb.getString(instance['00200052']),
-          sliceLocation: DICOMWeb.getNumber(instance['00201041']),
-          samplesPerPixel: DICOMWeb.getNumber(instance['00280002']),
-          photometricInterpretation: DICOMWeb.getString(instance['00280004']),
-          planarConfiguration: DICOMWeb.getNumber(instance['00280006']),
-          pixelSpacing: DICOMWeb.getString(instance['00280030']),
-          pixelAspectRatio: DICOMWeb.getString(instance['00280034']),
-          bitsAllocated: DICOMWeb.getNumber(instance['00280100']),
-          bitsStored: DICOMWeb.getNumber(instance['00280101']),
-          highBit: DICOMWeb.getNumber(instance['00280102']),
-          pixelRepresentation: DICOMWeb.getNumber(instance['00280103']),
-          smallestPixelValue: DICOMWeb.getNumber(instance['00280106']),
-          largestPixelValue: DICOMWeb.getNumber(instance['00280107']),
-          windowCenter: DICOMWeb.getString(instance['00281050']),
-          windowWidth: DICOMWeb.getString(instance['00281051']),
-          rescaleIntercept: DICOMWeb.getNumber(instance['00281052']),
-          rescaleSlope: DICOMWeb.getNumber(instance['00281053']),
-          rescaleType: DICOMWeb.getNumber(instance['00281054']),
-          sourceImageInstanceUid: getSourceImageInstanceUid(instance),
-          laterality: DICOMWeb.getString(instance['00200062']),
-          viewPosition: DICOMWeb.getString(instance['00185101']),
-          acquisitionDateTime: DICOMWeb.getString(instance['0008002A']),
-          frameIncrementPointer: getFrameIncrementPointer(instance['00280009']),
-          frameTime: DICOMWeb.getNumber(instance['00181063']),
-          frameTimeVector: parseFloatArray(
-            DICOMWeb.getString(instance['00181065'])
-          ),
-          sliceThickness: DICOMWeb.getNumber(instance['00180050']),
-          spacingBetweenSlices: DICOMWeb.getString(instance['00180088']),
-          lossyImageCompression: DICOMWeb.getString(instance['00282110']),
-          derivationDescription: DICOMWeb.getString(instance['00282111']),
-          lossyImageCompressionRatio: DICOMWeb.getString(instance['00282112']),
-          lossyImageCompressionMethod: DICOMWeb.getString(instance['00282114']),
-          echoNumber: DICOMWeb.getString(instance['00180086']),
-          contrastBolusAgent: DICOMWeb.getString(instance['00180010']),
-          radiopharmaceuticalInfo: getRadiopharmaceuticalInfo(instance),
-          wadouri: WADOProxy.convertURL(wadouri, server),
-          wadorsuri: WADOProxy.convertURL(wadorsuri, server),*/
-      });
-    };
-
-    const StudyInstanceUIDs = new Set();
-    datasets.forEach(ds => {
-      StudyInstanceUIDs.add(ds.StudyInstanceUID || '');
-    });
-
-    const studies = [];
-    processDataSet(
-      StudyInstanceUIDs,
-      'StudyInstanceUID',
-      datasets,
-      (filteredDatasets, datasets, _study, sourceUID) => {
-        const study = studyCb(filteredDatasets, datasets, _study, sourceUID);
-        studies.push(study);
-      },
-      {},
-      undefined
-    );
-
-    return studies;
+    return study;
   }
 })();
 

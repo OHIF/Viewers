@@ -3,9 +3,8 @@ import PropTypes from 'prop-types';
 import OHIF from '@ohif/core';
 import OHIFComponentPlugin from './OHIFComponentPlugin.js';
 import DicomPDFViewport from './DicomPDFViewport';
-import DicomLoaderService from '@ohif/core/src/utils/dicomLoaderService';
 
-const { DICOMWeb } = OHIF;
+const { DicomLoaderService } = OHIF.utils;
 
 class OHIFDicomPDFViewport extends Component {
   static propTypes = {
