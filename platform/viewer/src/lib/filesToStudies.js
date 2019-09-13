@@ -1,4 +1,4 @@
-import FileLoaderService from './fileLoaders/fileLoaderService';
+import FileLoaderService from './localFileLoaders/fileLoaderService';
 
 const processFile = async file => {
   const fileLoaderService = new FileLoaderService(file);
