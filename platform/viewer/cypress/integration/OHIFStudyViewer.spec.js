@@ -1,12 +1,6 @@
 describe('OHIF Study Viewer Page', () => {
   
   before(() => {
-      // cy.visit('/');
-      // cy.get('#patientName')
-      //   .type("Dummy");
-      // cy.get('.studylistStudy > .patientName')
-      //   .contains("Dummy")
-      //   .click();
       cy.openStudy("MISTER^MR");
     });
   
@@ -17,13 +11,14 @@ describe('OHIF Study Viewer Page', () => {
     });
 
     it('drags and drop a series thumbnail into viewport', () => {
-      cy.wait(3000); 
-      cy.get('.ThumbnailEntryContainer:nth-child(2)')
-        .drag('.cornerstone-canvas');
-      cy.wait(1000); 
+      cy.get('.ThumbnailEntryContainer:nth-child(2)') //element to be dragged
+        .drag('.cornerstone-canvas'); //dropzone element
       
-      cy.get('div.ViewportOverlay > div.bottom-left.overlay-element > div')
-      .should('have.text','Ser: 2Img: 1 1/13512 x 512Loc: -17.60 mm Thick: 3.00 mm');
+      const overlaySeriesInformation = 'div.ViewportOverlay > div.bottom-left.overlay-element > div';
+      const expectedText = 'Ser: 2Img: 1 1/13512 x 512Loc: -17.60 mm Thick: 3.00 mm';
+        
+      cy.get(overlaySeriesInformation)
+        .should('have.text', expectedText);
     });
   
     
