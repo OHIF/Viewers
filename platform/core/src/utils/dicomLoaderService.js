@@ -3,8 +3,13 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { api } from 'dicomweb-client';
 import OHIF from '@ohif/core';
 
-const getImageIdByIndex = (studies, studyIndex) => {
-  const study = studies[studyIndex];
+const findImageId = (studies, displaySetInstanceUid) => {
+  const study = studies.find(study => {
+    const displaySet = study.displaySets.some(
+      displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
+    );
+    return displaySet;
+  });
   const { seriesList = [] } = study;
   const { instances = [] } = seriesList[0] || {};
   const instance = instances[0];
@@ -71,7 +76,7 @@ const DicomLoaderService = new (class {
 
   getLocalData(dataset, studies) {
     if (dataset && dataset.localFile) {
-      const imageId = getImageIdByIndex(studies, dataset.studyIndex);
+      const imageId = findImageId(studies, dataset.displaySetInstanceUid);
       if (imageId) {
         return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
       }

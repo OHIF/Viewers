@@ -1,13 +1,10 @@
 import * as dcmjs from 'dcmjs';
-import { api } from 'dicomweb-client';
 
 import OHIF from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import DICOMWeb from '@ohif/core/src/DICOMWeb';
-import DicomLoaderService from '@ohif/core/src/utils/dicomLoaderService';
 
-const { StackManager } = OHIF.utils;
+const { StackManager, DicomLoaderService } = OHIF.utils;
 
 function getDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
   const study = studies.find(

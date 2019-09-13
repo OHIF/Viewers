@@ -28,7 +28,7 @@ class ViewerLocalFileData extends Component {
     studyMetadataManager.purge();
 
     // Map studies to new format, update metadata manager?
-    const updatedStudies = studies.map((study, studyIndex) => {
+    const updatedStudies = studies.map(study => {
       const studyMetadata = new OHIFStudyMetadata(
         study,
         study.studyInstanceUid
@@ -43,7 +43,6 @@ class ViewerLocalFileData extends Component {
 
       studyMetadata.forEachDisplaySet(displayset => {
         displayset.localFile = true;
-        displayset.studyIndex = studyIndex;
       });
       // Updates WADO-RS metaDataManager
       updateMetaDataManager(study);
