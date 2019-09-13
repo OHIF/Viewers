@@ -17,7 +17,7 @@ if (Meteor.isClient){
             primary: ""
         },
         passwordOptions: {
-            showPasswordStrengthIndicator: false,
+            showPasswordStrengthIndicator: true,
             requireRegexValidation: true,
             //requireStrongPasswords: false
             passwordHistoryCount: 6,

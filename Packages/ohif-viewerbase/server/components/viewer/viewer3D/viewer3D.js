@@ -1,7 +1,6 @@
 import {Meteor} from 'meteor/meteor';
 import {OHIF} from 'meteor/ohif:core';
 import {HTTP} from 'meteor/http';
-//import {Servers} from 'meteor/ohif:servers/both/collections';
 import {Router} from 'meteor/iron:router';
 
 Router.route('/instance/:instanceUid', function () {
@@ -15,7 +14,6 @@ Router.route('/instance/:instanceUid', function () {
                 encoding: null
             }
         }, (error, result) => {
-            debugger;
             if (!error) {
                 response.writeHead(result.statusCode, result.headers);
                 response.end(result.content);
@@ -354,7 +352,6 @@ Meteor.methods({
                         }
                     });
 
-                debugger;
                 response.instances = JSON.parse(instances.content).map(instance => {
                     return `/instance/${instance}`;
                     // return `http://localhost:8042/instances/${instance}/file`;

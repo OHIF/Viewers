@@ -65,3 +65,9 @@ Template.toolbarSectionTools.events({
         });
     }
 });
+
+Template.toolbarSectionTools.helpers({
+    hasCustomTemplate: function (button) {
+        return button.template !== undefined;
+    }
+});

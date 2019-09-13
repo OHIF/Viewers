@@ -1,7 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 
 Meteor.startup(function () {
-    debugger;
     // Mail server settings
     var username = Meteor.settings && Meteor.settings.mailServerSettings && Meteor.settings.mailServerSettings.username || null;
     var password = Meteor.settings && Meteor.settings.mailServerSettings && Meteor.settings.mailServerSettings.password || null;
