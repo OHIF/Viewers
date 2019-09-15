@@ -6,7 +6,7 @@ import { OHIF } from 'meteor/ohif:core';
 Template.pipelineSelector.onCreated(function() {
 
     this.autorun(() => {
-        this.subscribe('pipelines-publication', {onReady: function () {
+        this.subscribe('pipelines.publication', Pipelines.find({}, {}).fetch(),{onReady: function () {
                 Template.pipelineSelector.__helpers.get('initInput')();
             }});
     });
@@ -15,12 +15,11 @@ Template.pipelineSelector.onCreated(function() {
 Template.pipelineSelector.helpers({
 
     initInput: function () {
-
+        Meteor.typeahead.destroy($('.typeahead'));
         Meteor.typeahead.inject();
     },
 
     pipelines: function() {
-
         return Pipelines.find({}, {}).fetch();
     },
 
@@ -38,11 +37,6 @@ Template.pipelineSelector.helpers({
 Template.pipelineSelector.events({
     'click label.fa.fa-cog'(event) {
         OHIF.ui.showDialog('pipelineInformationModal');
-    },
-
-    'click i.fa.fa-refresh'(event) {
-        Meteor.typeahead.destroy();
-        Meteor.typeahead.inject();
     }
 });
 

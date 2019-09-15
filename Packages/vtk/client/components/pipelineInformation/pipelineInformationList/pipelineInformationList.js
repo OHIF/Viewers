@@ -5,7 +5,7 @@ import { Pipelines } from 'meteor/gtajesgenga:vtk/both/collections';
 Template.pipelineInformationList.onCreated(function() {
 
     this.autorun(() => {
-        this.subscribe('pipelines-publication');
+        this.subscribe('pipelines.publication', Pipelines.find({}, {}).fetch());
     });
 
     const instance = Template.instance();
