@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.2...@ohif/viewer@1.1.3) (2019-09-16)
+
+
+### Bug Fixes
+
+* 🐛 Fix issue on not loading gcloud ([#919](https://github.com/OHIF/Viewers/issues/919)) ([f723546](https://github.com/OHIF/Viewers/commit/f723546))
+
+
+
+
+
 ## [1.1.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.1...@ohif/viewer@1.1.2) (2019-09-12)
 
 **Note:** Version bump only for package @ohif/viewer
