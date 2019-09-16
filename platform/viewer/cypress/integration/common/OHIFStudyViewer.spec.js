@@ -21,5 +21,28 @@ describe('OHIF Study Viewer Page', () => {
         .should('have.text', expectedText);
     });
 
+    it('checks if Series left panel can be hidden/displayed', ()=> {
+      const seriesButton = '.pull-left > .RoundedButtonGroup > .roundedButtonWrapper > .roundedButton';
+      const leftPanel = 'section.sidepanel.from-left';
+
+      cy.get(seriesButton).click(); 
+      cy.get(leftPanel).should('not.be.enabled')
+
+      cy.get(seriesButton).click();
+      cy.get(leftPanel).should('be.visible');
+    });
+
+    it('checks if Measurements right panel can be hidden/displayed', ()=> {
+      const measurementsButton = '.pull-right > .RoundedButtonGroup > .roundedButtonWrapper > .roundedButton';
+      const rightPanel = 'section.sidepanel.from-right';
+
+      cy.get(measurementsButton).click();
+      cy.get(rightPanel).should('be.visible');
+      
+      
+      cy.get(measurementsButton).click();
+      cy.get(rightPanel).should('not.be.enabled');
+    });
+
   });
   
