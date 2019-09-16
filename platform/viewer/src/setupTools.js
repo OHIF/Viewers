@@ -177,7 +177,7 @@ export default function setupTools(store) {
     { name: 'StackScroll', mouseButtonMasks: [1] },
     { name: 'Brush', mouseButtonMasks: [1] },
     {
-      name: 'FreehandMouse',
+      name: 'FreehandRoi',
       props: {
         configuration: {
           getMeasurementLocationCallback: toolLabellingFlowCallback,

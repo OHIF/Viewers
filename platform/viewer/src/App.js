@@ -25,12 +25,15 @@ import { OidcProvider } from 'redux-oidc';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
-import WhiteLabellingContext from './WhiteLabellingContext';
 import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import setupTools from './setupTools.js';
 import store from './store';
-import UserManagerContext from './UserManagerContext';
+
+// Contexts
+import WhiteLabellingContext from './context/WhiteLabellingContext';
+import UserManagerContext from './context/UserManagerContext';
+import AppContext from './context/AppContext';
 
 // ~~~~ APP SETUP
 initCornerstoneTools({
@@ -74,10 +77,66 @@ class App extends Component {
     extensions: [],
   };
 
+  _appConfig;
+  _userManager;
+
   constructor(props) {
     super(props);
 
-    if (this.props.oidc.length) {
+    this._appConfig = props;
+    const { servers, extensions, hotkeys, oidc } = props;
+
+    this.initUserManager(oidc);
+    _initExtensions(extensions, hotkeys);
+    _initServers(servers);
+    initWebWorkers();
+  }
+
+  render() {
+    const userManager = this._userManager;
+    const config = {
+      appConfig: this._appConfig,
+    };
+
+    if (userManager) {
+      return (
+        <AppContext.Provider value={config}>
+          <Provider store={store}>
+            <I18nextProvider i18n={i18n}>
+              <OidcProvider store={store} userManager={userManager}>
+                <UserManagerContext.Provider value={userManager}>
+                  <Router basename={this.props.routerBasename}>
+                    <WhiteLabellingContext.Provider
+                      value={this.props.whiteLabelling}
+                    >
+                      <OHIFStandaloneViewer userManager={userManager} />
+                    </WhiteLabellingContext.Provider>
+                  </Router>
+                </UserManagerContext.Provider>
+              </OidcProvider>
+            </I18nextProvider>
+          </Provider>
+        </AppContext.Provider>
+      );
+    }
+
+    return (
+      <AppContext.Provider value={config}>
+        <Provider store={store}>
+          <I18nextProvider i18n={i18n}>
+            <Router basename={this.props.routerBasename}>
+              <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
+                <OHIFStandaloneViewer />
+              </WhiteLabellingContext.Provider>
+            </Router>
+          </I18nextProvider>
+        </Provider>
+      </AppContext.Provider>
+    );
+  }
+
+  initUserManager(oidc) {
+    if (oidc && !!oidc.length) {
       const firstOpenIdClient = this.props.oidc[0];
 
       const { protocol, host } = window.location;
@@ -102,58 +161,18 @@ class App extends Component {
         ),
       });
 
-      this.userManager = getUserManagerForOpenIdConnectClient(
+      this._userManager = getUserManagerForOpenIdConnectClient(
         store,
         openIdConnectConfiguration
       );
     }
-
-    _initExtensions(this.props.extensions);
-    _initServers(this.props.servers);
-    initWebWorkers();
-  }
-
-  render() {
-    const userManager = this.userManager;
-
-    if (userManager) {
-      return (
-        <Provider store={store}>
-          <I18nextProvider i18n={i18n}>
-            <OidcProvider store={store} userManager={userManager}>
-              <UserManagerContext.Provider value={userManager}>
-                <Router basename={this.props.routerBasename}>
-                  <WhiteLabellingContext.Provider
-                    value={this.props.whiteLabelling}
-                  >
-                    <OHIFStandaloneViewer userManager={userManager} />
-                  </WhiteLabellingContext.Provider>
-                </Router>
-              </UserManagerContext.Provider>
-            </OidcProvider>
-          </I18nextProvider>
-        </Provider>
-      );
-    }
-
-    return (
-      <Provider store={store}>
-        <I18nextProvider i18n={i18n}>
-          <Router basename={this.props.routerBasename}>
-            <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-              <OHIFStandaloneViewer />
-            </WhiteLabellingContext.Provider>
-          </Router>
-        </I18nextProvider>
-      </Provider>
-    );
   }
 }
 
 /**
  * @param
  */
-function _initExtensions(extensions) {
+function _initExtensions(extensions, hotkeys) {
   const defaultExtensions = [
     GenericViewerCommands,
     MeasurementsPanel,
@@ -163,8 +182,8 @@ function _initExtensions(extensions) {
   extensionManager.registerExtensions(mergedExtensions);
 
   // Must run after extension commands are registered
-  if (window.config.hotkeys) {
-    hotkeysManager.setHotkeys(window.config.hotkeys, true);
+  if (hotkeys) {
+    hotkeysManager.setHotkeys(hotkeys, true);
   }
 }
 

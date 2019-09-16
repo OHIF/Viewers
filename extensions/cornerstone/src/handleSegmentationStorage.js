@@ -98,14 +98,16 @@ async function handleSegmentationStorage(
     throw new Error('Fractional segmentations are not supported');
   }
 
-  const { segMetadata, toolState } = results;
+  const { labelmapBuffer, segMetadata, segmentsOnFrame } = results;
+  const { setters } = cornerstoneTools.getModule('segmentation');
 
-  segMetadata.seriesInstanceUid = seriesInstanceUid;
-
-  addSegMetadataToCornerstoneToolState(
+  setters.labelmap3DByFirstImageId(
+    imageIds[0],
+    labelmapBuffer,
+    0, // TODO -> Can define a color LUT based on colors in the SEG later.
     segMetadata,
-    toolState,
-    displaySetInstanceUid
+    imageIds.length,
+    segmentsOnFrame
   );
 
   const cachedStack = StackManager.findOrCreateStack(
@@ -113,6 +115,7 @@ async function handleSegmentationStorage(
     referenceDisplaySet
   );
   const stack = Object.assign({}, cachedStack);
+
   stack.currentImageIdIndex = 0;
 
   return {

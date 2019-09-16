@@ -3,6 +3,118 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.2...@ohif/viewer@1.1.3) (2019-09-16)
+
+
+### Bug Fixes
+
+* 🐛 Fix issue on not loading gcloud ([#919](https://github.com/OHIF/Viewers/issues/919)) ([f723546](https://github.com/OHIF/Viewers/commit/f723546))
+
+
+
+
+
+## [1.1.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.1...@ohif/viewer@1.1.2) (2019-09-12)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.1.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.0...@ohif/viewer@1.1.1) (2019-09-12)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [1.1.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.0.5...@ohif/viewer@1.1.0) (2019-09-12)
+
+
+### Features
+
+* 🎸 Load local file or folder using native dialog ([#870](https://github.com/OHIF/Viewers/issues/870)) ([c221dd8](https://github.com/OHIF/Viewers/commit/c221dd8))
+
+
+
+
+
+## [1.0.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.0.4...@ohif/viewer@1.0.5) (2019-09-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.0.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.0.3...@ohif/viewer@1.0.4) (2019-09-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.0.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.0.2...@ohif/viewer@1.0.3) (2019-09-10)
+
+
+### Bug Fixes
+
+* on-brand library global name ([ababe63](https://github.com/OHIF/Viewers/commit/ababe63))
+* remove requestOptions when key is not needed ([32bc47d](https://github.com/OHIF/Viewers/commit/32bc47d))
+
+
+
+
+
+## [1.0.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.0.1...@ohif/viewer@1.0.2) (2019-09-09)
+
+
+### Bug Fixes
+
+* import regenerator-runtime for umd build ([bad987a](https://github.com/OHIF/Viewers/commit/bad987a))
+
+
+
+
+
+## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.0.0...@ohif/viewer@1.0.1) (2019-09-09)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [1.0.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.21...@ohif/viewer@1.0.0) (2019-09-06)
+
+
+### Code Refactoring
+
+* 💡 React components to consume appConfig using Context ([#852](https://github.com/OHIF/Viewers/issues/852)) ([7c4ee73](https://github.com/OHIF/Viewers/commit/7c4ee73)), closes [#725](https://github.com/OHIF/Viewers/issues/725) [#725](https://github.com/OHIF/Viewers/issues/725)
+
+
+### BREAKING CHANGES
+
+* #725
+
+
+
+
+
+## [0.50.21](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.20...@ohif/viewer@0.50.21) (2019-09-06)
+
+
+### Bug Fixes
+
+* viewer project should build output before publish ([94b625d](https://github.com/OHIF/Viewers/commit/94b625d))
+
+
+
+
+
 ## [0.50.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@0.50.19...@ohif/viewer@0.50.20) (2019-09-06)
 
 **Note:** Version bump only for package @ohif/viewer

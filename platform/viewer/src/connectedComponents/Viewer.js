@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import { MODULE_TYPES } from '@ohif/core';
 import OHIF from '@ohif/core';
 import moment from 'moment';
-import WhiteLabellingContext from '../WhiteLabellingContext.js';
 import ConnectedHeader from './ConnectedHeader.js';
 import ConnectedToolbarRow from './ConnectedToolbarRow.js';
 import ConnectedLabellingOverlay from './ConnectedLabellingOverlay';
@@ -13,7 +12,11 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
-import UserManagerContext from '../UserManagerContext';
+
+// Contexts
+import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
+import UserManagerContext from '../context/UserManagerContext';
+
 import './Viewer.css';
 /**
  * Inits OHIF Hanging Protocol's onReady.
