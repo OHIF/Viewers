@@ -83,7 +83,7 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.appConfig = props;
+    this._appConfig = props;
     const { servers, extensions, hotkeys, oidc } = props;
 
     this.initUserManager(oidc);
