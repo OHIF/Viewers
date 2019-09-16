@@ -17,16 +17,6 @@ include tags. Here's how it works:
     </a>
   </li>
   <li>
-    <a href="https://unpkg.com/react@16/umd/react.production.min.js">
-      <code>react@16.8.6</code>
-    </a>
-  </li>
-  <li>
-    <a href="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js">
-      <code>react-dom@16.8.6</code>
-    </a>
-  </li>
-  <li>
     <a href="https://unpkg.com/@ohif/viewer">
       <code>@ohif/viewer@latest</code>
     </a>
@@ -53,28 +43,64 @@ window.config = {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
-        requestOptions: {
-          requestFromBrowser: true,
-        },
       },
     ],
   },
 };
 ```
 
-<ol start="5"><li>
+<ol start="3"><li>
   Render the viewer in the web page's target <code>div</code>
 </li></ol>
 
 ```js
 // Made available by the `@ohif/viewer` script included in step 1
-var Viewer = window.OHIFStandaloneViewer.App;
-var app = React.createElement(Viewer, window.config, null);
-
-ReactDOM.render(app, document.getElementById('ohif-viewer-target'));
+var containerId = 'id-of-div-to-render-component-to';
+var componentRenderedOrUpdatedCallback = function() {
+  console.log('OHIF Viewer rendered/updated');
+};
+window.OHIFViewer.installViewer(
+  window.config,
+  containerId,
+  componentRenderedOrUpdatedCallback
+);
 ```
 
-#### Tips & Tricks
+You can see a live example of this recipe in [this CodeSandbox][code-sandbox].
+
+## Add Extensions
+
+The UMD build of the OHIF Viewer is a "light weight" build that only contains
+the core extensions required for basic 2D image viewing. It's possible to add
+other extensions at runtime.
+
+This only requires us to include a single script tag, and add it using the
+`extensions` key to our config. In this practical example, we register our
+popular whole slide microscopy extension:
+
+```html
+<script
+  src="https://unpkg.com/@ohif/extension-dicom-microscopy@0.50.5/dist/index.umd.js"
+  crossorigin
+></script>
+
+<!-- --->
+<script>
+  window.config = {
+    // ...
+    extensions: [OHIFExtDicomMicroscopy],
+  };
+</script>
+```
+
+You can see an example of a slide microscopy study in the viewer [with the
+extension enabled here][whole-slide-ext-demo] ([source code][ext-code-sandbox])
+and [without it here][whole-slide-base-demo] ([source code][code-sandbox]).
+
+You can read more about extensions and how to create your own in our
+[extensions guide](/advanced/extensions.md).
+
+#### FAQ
 
 > I'm having trouble getting this to work. Where can I go for help?
 
@@ -94,8 +120,22 @@ Good. Now `embed` that new page using an
 This should produce the expected result while also protecting your page from any
 globally defined styles/scripts.
 
+> We're trying to embed the OHIF Viewer into an existing React App, but seeing
+> react-dom and react conflicts. What can we do?
+
+`installViewer` is a convenience method that pulls in some dependencies that may
+not be compatible with existing `react` apps. `@ohif/viewer` also exports `App`
+which is a react component that takes the `configuration` outlined above as
+props. You can use it as a reusable component, and to avoid `react` version
+conflict issues.
+
 <!--
   LINKS
   -->
 
-[code-sandbox]: https://codesandbox.io/s/ohif-viewer-script-tag-usage-b3st9
+<!-- prettier-ignore-start -->
+[code-sandbox]: https://codesandbox.io/s/viewer-script-tag-tprch
+[whole-slide-base-demo]: https://tprch.csb.app/viewer/1.2.392.200140.2.1.1.1.2.799008771.2020.1519719354.757
+[ext-code-sandbox]: https://codesandbox.io/s/viewer-script-tag-microscopy-extension-44unk
+[whole-slide-ext-demo]: https://44unk.csb.app/viewer/1.2.392.200140.2.1.1.1.2.799008771.2448.1519719572.518
+<!-- prettier-ignore-end -->

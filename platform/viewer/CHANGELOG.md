@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.1...@ohif/viewer@1.1.2) (2019-09-12)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.1.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.0...@ohif/viewer@1.1.1) (2019-09-12)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [1.1.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.0.5...@ohif/viewer@1.1.0) (2019-09-12)
+
+
+### Features
+
+* 🎸 Load local file or folder using native dialog ([#870](https://github.com/OHIF/Viewers/issues/870)) ([c221dd8](https://github.com/OHIF/Viewers/commit/c221dd8))
+
+
+
+
+
+## [1.0.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.0.4...@ohif/viewer@1.0.5) (2019-09-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.0.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.0.3...@ohif/viewer@1.0.4) (2019-09-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.0.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.0.2...@ohif/viewer@1.0.3) (2019-09-10)
+
+
+### Bug Fixes
+
+* on-brand library global name ([ababe63](https://github.com/OHIF/Viewers/commit/ababe63))
+* remove requestOptions when key is not needed ([32bc47d](https://github.com/OHIF/Viewers/commit/32bc47d))
+
+
+
+
+
 ## [1.0.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.0.1...@ohif/viewer@1.0.2) (2019-09-09)
 
 
