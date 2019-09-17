@@ -228,7 +228,8 @@ export class StudyMetadata extends Metadata {
   setDisplaySets(displaySets) {
     if (Array.isArray(displaySets) && displaySets.length > 0) {
       displaySets.forEach(displaySet => this.addDisplaySet(displaySet));
-      this.sortDisplaySets();
+      // @TODO Reenable after fix
+      // this.sortDisplaySets();
     }
   }
 
