@@ -16,6 +16,9 @@ const seriesLoadQueueProto = makePubSub({
   dequeue() {
     return dequeue(this);
   },
+  size() {
+    return size(this);
+  },
 });
 
 function enqueue(queue, seriesId) {
@@ -39,6 +42,10 @@ function dequeue(queue) {
     );
     return promise;
   }
+}
+
+function size(queue) {
+  return queue[SERIES_IDS].length;
 }
 
 function isValidId(subject) {

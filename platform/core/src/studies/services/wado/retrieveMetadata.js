@@ -4,6 +4,9 @@ import DICOMWeb from '../../../DICOMWeb/';
 import { makePubSub } from '../../../lib/pubSub';
 import { makeSeriesLoadQueue } from './seriesLoadQueue';
 
+// @TODO: Tie this to actual viewer config
+const CONFIG_LAZY_LOAD = true;
+
 const WADOProxy = {
   convertURL: (url, server) => {
     // TODO: Remove all WADOProxy stuff from this file
@@ -458,22 +461,20 @@ async function createStudyFromInstanceList(server, instanceList) {
  * @returns {Promise}
  */
 async function RetrieveMetadata(server, studyInstanceUid) {
-  const config = {
+  return (CONFIG_LAZY_LOAD ? lazyLoadStudyMetadata : loadStudyMetadata)(
+    server,
+    studyInstanceUid
+  );
+}
+
+async function loadStudyMetadata(server, studyInstanceUID) {
+  const dicomWeb = new api.DICOMwebClient({
     url: server.wadoRoot,
     headers: DICOMWeb.getAuthorizationHeader(server),
-  };
-  const dicomWeb = new api.DICOMwebClient(config);
-  const options = {
-    studyInstanceUID: studyInstanceUid,
-  };
-
-  setTimeout(async function() {
-    window.oops = await lazyLoadStudyMetadata(server, studyInstanceUid);
-  }, 2000);
-
-  return dicomWeb.retrieveStudyMetadata(options).then(result => {
-    return createStudyFromInstanceList(server, result);
   });
+  return dicomWeb
+    .retrieveStudyMetadata({ studyInstanceUID })
+    .then(result => createStudyFromInstanceList(server, result));
 }
 
 async function lazyLoadStudyMetadata(server, studyInstanceUid) {
