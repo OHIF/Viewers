@@ -3,7 +3,7 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { api } from 'dicomweb-client';
 import OHIF from '@ohif/core';
 
-const findImageId = (studies, displaySetInstanceUid) => {
+const findImageIdOnStudies = (studies, displaySetInstanceUid) => {
   const study = studies.find(study => {
     const displaySet = study.displaySets.some(
       displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
@@ -19,8 +19,11 @@ const findImageId = (studies, displaySetInstanceUid) => {
   }
 };
 
-const getImageIdByDataset = dataset => {
-  const imageInstance = dataset && dataset.images && dataset.images[0];
+const getImageInstance = dataset => {
+  return dataset && dataset.images && dataset.images[0];
+};
+
+const getImageInstanceId = imageInstance => {
   const imageId = imageInstance && imageInstance.getImageId(null);
   return imageId;
 };
@@ -66,17 +69,17 @@ const getImageLoaderType = imageId => {
   );
 };
 const DicomLoaderService = new (class {
-  getDataByImage(dataset) {
-    // look into dataset first
-    const imageId = getImageIdByDataset(dataset);
-    if (imageId) {
-      return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
-    }
-  }
-
   getLocalData(dataset, studies) {
     if (dataset && dataset.localFile) {
-      const imageId = findImageId(studies, dataset.displaySetInstanceUid);
+      // Use referenced imageInstance
+      const imageInstance = getImageInstance(dataset);
+      let imageId = getImageInstanceId(imageInstance);
+
+      // or Try to get it from studies
+      if (!imageId) {
+        imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUid);
+      }
+
       if (imageId) {
         return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
       }
@@ -84,9 +87,10 @@ const DicomLoaderService = new (class {
   }
 
   getDataByImageType(dataset) {
-    const imageId = getImageIdByDataset(dataset);
+    const imageInstance = getImageInstance(dataset);
 
-    if (imageId) {
+    if (imageInstance) {
+      const imageId = getImageInstanceId(imageInstance);
       let getDicomDataMethod = fetchIt;
       const loaderType = getImageLoaderType(imageId);
 
@@ -116,7 +120,6 @@ const DicomLoaderService = new (class {
   }
 
   *getLoaderIterator(dataset, studies) {
-    yield this.getDataByImage(dataset);
     yield this.getLocalData(dataset, studies);
     yield this.getDataByImageType(dataset);
     yield this.getDataByDatasetType(dataset);
