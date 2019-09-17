@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.13...@ohif/extension-vtk@0.50.14) (2019-09-17)
+
+
+### Bug Fixes
+
+* bump cornerstone-tools version in peerDeps ([4afc88c](https://github.com/OHIF/Viewers/commit/4afc88c))
+
+
+
+
+
 ## [0.50.13](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.12...@ohif/extension-vtk@0.50.13) (2019-09-12)
 
 **Note:** Version bump only for package @ohif/extension-vtk

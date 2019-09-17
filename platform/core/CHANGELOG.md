@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.9](https://github.com/OHIF/Viewers/compare/@ohif/core@0.50.8...@ohif/core@0.50.9) (2019-09-17)
+
+
+### Bug Fixes
+
+* bump cornerstone-tools version in peerDeps ([4afc88c](https://github.com/OHIF/Viewers/commit/4afc88c))
+
+
+
+
+
 ## [0.50.8](https://github.com/OHIF/Viewers/compare/@ohif/core@0.50.7...@ohif/core@0.50.8) (2019-09-10)
 
 **Note:** Version bump only for package @ohif/core
