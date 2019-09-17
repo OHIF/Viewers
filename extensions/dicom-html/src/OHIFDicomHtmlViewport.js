@@ -1,72 +1,39 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import DicomHtmlViewport from './DicomHtmlViewport';
+import OHIF from '@ohif/core';
+const { DicomLoaderService } = OHIF.utils;
 
 class OHIFDicomHtmlViewport extends Component {
   static propTypes = {
     studies: PropTypes.object,
     displaySet: PropTypes.object,
-    viewportIndex: PropTypes.number
+    viewportIndex: PropTypes.number,
   };
 
   state = {
     byteArray: null,
-    error: null
+    error: null,
   };
 
   componentDidMount() {
-    const { displaySet } = this.props.viewportData;
-    const {
-      studyInstanceUid,
-      seriesInstanceUid,
-      sopInstanceUid,
-      wadoRoot,
-      wadoUri,
-      authorizationHeaders
-    } = displaySet;
+    const { displaySet, studies } = this.props.viewportData;
 
-    this.retrieveDicomData(
-      studyInstanceUid,
-      seriesInstanceUid,
-      sopInstanceUid,
-      wadoRoot,
-      wadoUri,
-      authorizationHeaders
-    ).then(
-      byteArray => {
+    DicomLoaderService.findDicomDataPromise(displaySet, studies).then(
+      data => {
+        const byteArray = new Uint8Array(data);
         this.setState({
-          byteArray
+          byteArray: byteArray,
         });
       },
       error => {
         this.setState({
-          error
+          error,
         });
 
         throw new Error(error);
       }
     );
-  }
-
-  retrieveDicomData(
-    studyInstanceUid,
-    seriesInstanceUid,
-    sopInstanceUid,
-    wadoRoot,
-    wadoUri,
-    authorizationHeaders
-  ) {
-    // TODO: Passing in a lot of data we aren't using
-
-    // TODO: Authorization header depends on the server. If we ever have multiple servers
-    // we will need to figure out how / when to pass this information in.
-    return fetch(wadoUri, {
-      headers: authorizationHeaders
-    })
-      .then(response => response.arrayBuffer())
-      .then(arraybuffer => {
-        return new Uint8Array(arraybuffer);
-      });
   }
 
   render() {

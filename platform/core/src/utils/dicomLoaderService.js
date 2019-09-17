@@ -2,6 +2,7 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { api } from 'dicomweb-client';
 import OHIF from '@ohif/core';
+import { of } from 'rxjs';
 
 const findImageIdOnStudies = (studies, displaySetInstanceUid) => {
   const study = studies.find(study => {
@@ -19,6 +20,13 @@ const findImageIdOnStudies = (studies, displaySetInstanceUid) => {
   }
 };
 
+const someInvalidStrings = strings => {
+  const stringsArray = Array.isArray(strings) ? strings : [strings];
+  const emptyString = string => !string;
+  let invalid = stringsArray.some(emptyString);
+  return invalid;
+};
+
 const getImageInstance = dataset => {
   return dataset && dataset.images && dataset.images[0];
 };
@@ -28,31 +36,33 @@ const getImageInstanceId = imageInstance => {
   return imageId;
 };
 
-const fetchIt = (url, headers) => {
+const fetchIt = (url, headers = OHIF.DICOMWeb.getAuthorizationHeader()) => {
   return fetch(url, headers).then(response => response.arrayBuffer());
 };
 
-const cornerstoneRetriever = (imageId, imageInstance) => {
+const cornerstoneRetriever = imageId => {
   return cornerstone.loadAndCacheImage(imageId).then(image => {
     return image && image.data && image.data.byteArray.buffer;
   });
 };
 
 const wadorsRetriever = (
-  imageId,
-  imageInstance,
+  url,
+  studyInstanceUID,
+  seriesInstanceUID,
+  sopInstanceUID,
   headers = OHIF.DICOMWeb.getAuthorizationHeader()
 ) => {
   const config = {
-    url: imageInstance.getData().wadoRoot,
+    url,
     headers,
   };
   const dicomWeb = new api.DICOMwebClient(config);
 
   return dicomWeb.retrieveInstance({
-    studyInstanceUID: imageInstance.getStudyInstanceUID(),
-    seriesInstanceUID: imageInstance.getSeriesInstanceUID(),
-    sopInstanceUID: imageInstance.getSOPInstanceUID(),
+    studyInstanceUID,
+    seriesInstanceUID,
+    sopInstanceUID,
   });
 };
 
@@ -68,6 +78,7 @@ const getImageLoaderType = imageId => {
     ''
   );
 };
+
 const DicomLoaderService = new (class {
   getLocalData(dataset, studies) {
     if (dataset && dataset.localFile) {
@@ -76,11 +87,11 @@ const DicomLoaderService = new (class {
       let imageId = getImageInstanceId(imageInstance);
 
       // or Try to get it from studies
-      if (!imageId) {
+      if (someInvalidStrings(imageId)) {
         imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUid);
       }
 
-      if (imageId) {
+      if (!someInvalidStrings(imageId)) {
         return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
       }
     }
@@ -96,25 +107,65 @@ const DicomLoaderService = new (class {
 
       switch (loaderType) {
         case 'dicomfile':
-          getDicomDataMethod = cornerstoneRetriever;
+          getDicomDataMethod = cornerstoneRetriever.bind(this, imageId);
           break;
         case 'wadors':
-          getDicomDataMethod = wadorsRetriever;
+          const url = imageInstance.getData().wadoRoot;
+          const studyInstanceUID = imageInstance.getStudyInstanceUID();
+          const seriesInstanceUID = imageInstance.getSeriesInstanceUID();
+          const sopInstanceUID = imageInstance.getSOPInstanceUID();
+          const invalidParams = someInvalidStrings([
+            url,
+            studyInstanceUID,
+            seriesInstanceUID,
+            sopInstanceUID,
+          ]);
+          if (invalidParams) {
+            return;
+          }
+
+          getDicomDataMethod = wadorsRetriever.bind(
+            this,
+            url,
+            studyInstanceUID,
+            seriesInstanceUID,
+            sopInstanceUID
+          );
           break;
         case 'wadouri':
           // Strip out the image loader specifier
           imageId = imageId.substring(imageId.indexOf(':') + 1);
+
+          if (someInvalidStrings(imageId)) {
+            return;
+          }
+          getDicomDataMethod = fetchIt.bind(this, imageId);
           break;
       }
 
-      return getDicomDataMethod(imageId, imageInstance);
+      return getDicomDataMethod();
     }
   }
 
   getDataByDatasetType(dataset) {
-    const { wadoUri, authorizationHeaders } = dataset;
-
-    if (wadoUri) {
+    const {
+      studyInstanceUid,
+      seriesInstanceUid,
+      sopInstanceUid,
+      authorizationHeaders,
+      wadoRoot,
+      wadoUri,
+    } = dataset;
+    // Retrieve wadors or just try to fetch wadouri
+    if (!someInvalidStrings(wadoRoot)) {
+      return wadorsRetriever(
+        wadoRoot,
+        studyInstanceUid,
+        seriesInstanceUid,
+        sopInstanceUid,
+        authorizationHeaders
+      );
+    } else if (!someInvalidStrings(wadoUri)) {
       return fetchIt(wadoUri, { headers: authorizationHeaders });
     }
   }
