@@ -234,13 +234,16 @@ workflows:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
-          store_artifacts: true
+          store_artifacts: false
           working_directory: platform/viewer
           build: yarn run build
           start: yarn run test:e2e:dist
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
+          post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
           requires:
             - UNIT_TESTS
       # E2E: script-tag
@@ -250,13 +253,16 @@ workflows:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
-          store_artifacts: true
+          store_artifacts: false
           working_directory: platform/viewer
           build: yarn run build:package
           start: yarn run test:e2e:dist
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
+          post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
           requires:
             - UNIT_TESTS
 
@@ -286,6 +292,8 @@ workflows:
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
             - store_test_results:
                 path: cypress/results
           requires:
@@ -297,7 +305,7 @@ workflows:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
-          store_artifacts: true
+          store_artifacts: false
           working_directory: platform/viewer
           build: yarn run build:package
           start: yarn run test:e2e:dist
@@ -305,6 +313,8 @@ workflows:
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
             - store_test_results:
                 path: cypress/results
           requires:
