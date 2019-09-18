@@ -9,14 +9,19 @@ const DICOMFileLoader = new (class extends FileLoader {
   }
 
   getDataset(image, imageId) {
-    const dicomData = dcmjs.data.DicomMessage.readFile(image);
-    const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
-      dicomData.dict
-    );
-    dataset._meta = dcmjs.data.DicomMetaDictionary.namifyDataset(
-      dicomData.meta
-    );
-
+    let dataset = {};
+    try {
+      const dicomData = dcmjs.data.DicomMessage.readFile(image);
+      dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
+        dicomData.dict
+      );
+      dataset._meta = dcmjs.data.DicomMetaDictionary.namifyDataset(
+        dicomData.meta
+      );
+    } catch (e) {
+      console.log('Error on getting dicom file dataset. It defaults to empty');
+    }
+    // Set imageId on dataset to be consumed later on
     dataset.imageId = imageId;
 
     return dataset;
@@ -102,7 +107,7 @@ const DICOMFileLoader = new (class extends FileLoader {
       columns: Columns,
       numberOfFrames: NumberOfFrames,
       instanceNumber: InstanceNumber,
-      getImageId: () => imageId,
+      url: imageId,
       /*
         TODO: in case necessary to uncoment this block, double check every property
         imageType: ImageType || DICOMWeb.getString(dataset['00080008']),
