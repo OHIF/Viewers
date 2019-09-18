@@ -2,7 +2,16 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { api } from 'dicomweb-client';
 import OHIF from '@ohif/core';
-import { of } from 'rxjs';
+
+const getImageId = imageObj => {
+  if (!imageObj) {
+    return;
+  }
+
+  return typeof imageObj.getImageId === 'function'
+    ? imageObj.getImageId()
+    : imageObj.url;
+};
 
 const findImageIdOnStudies = (studies, displaySetInstanceUid) => {
   const study = studies.find(study => {
@@ -15,9 +24,7 @@ const findImageIdOnStudies = (studies, displaySetInstanceUid) => {
   const { instances = [] } = seriesList[0] || {};
   const instance = instances[0];
 
-  if (instance) {
-    return instance.getImageId();
-  }
+  return getImageId(instance);
 };
 
 const someInvalidStrings = strings => {
@@ -32,8 +39,7 @@ const getImageInstance = dataset => {
 };
 
 const getImageInstanceId = imageInstance => {
-  const imageId = imageInstance && imageInstance.getImageId(null);
-  return imageId;
+  return getImageId(imageInstance);
 };
 
 const fetchIt = (url, headers = OHIF.DICOMWeb.getAuthorizationHeader()) => {
