@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.15](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.14...@ohif/extension-vtk@0.50.15) (2019-09-19)
+
+
+### Bug Fixes
+
+* Bump VTK viewport dependency ([#929](https://github.com/OHIF/Viewers/issues/929)) ([66a0aad](https://github.com/OHIF/Viewers/commit/66a0aad))
+* Stop adding empty labelmap to VTK Viewports for now. Wait until paint tools are implemented ([#926](https://github.com/OHIF/Viewers/issues/926)) ([7f642a0](https://github.com/OHIF/Viewers/commit/7f642a0))
+
+
+
+
+
 ## [0.50.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.13...@ohif/extension-vtk@0.50.14) (2019-09-17)
 
 
