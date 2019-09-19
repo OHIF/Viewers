@@ -5839,6 +5839,11 @@ date-fns@^1.27.2:
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
   integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
 
+date-fns@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.2.1.tgz#b3f79cf56760af106050c686f4c72586a3383ee9"
+  integrity sha512-4V1i5CnTinjBvJpXTq7sDHD4NY6JPcl15112IeSNNLUWQOQ+kIuCvRGOFZMQZNvkadw8F9QTyZxz59rIRU6K+w==
+
 date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
@@ -14933,12 +14938,12 @@ react-transition-group@^4.1.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-vtkjs-viewport@0.0.11:
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.0.11.tgz#cedd993ca226502bf0417a3748a5b2f806522519"
-  integrity sha512-ttWw7bU/lL/nJuaaKdtAc8448vMJmlRQzpkpuP/J+3lTzIQbQPCPU40LqgONjr7LvL5++61N2GJ8m+PRgHyfxQ==
+react-vtkjs-viewport@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.1.0.tgz#a00b114b635ff95a82ae1227d70c248e4cafddf4"
+  integrity sha512-0gnRfntpV6ZBNvZOHzjHapFeJajO8nfkSvO5SNUu41bkyXxqYcJwZvb3EWbd04V1RnA0AnKRoR/KL+I09Os7gg==
   dependencies:
-    moment "^2.24.0"
+    date-fns "^2.2.1"
 
 react-with-direction@1.3.0:
   version "1.3.0"
