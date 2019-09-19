@@ -236,7 +236,7 @@ workflows:
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: yarn run build
+          build: yarn run build:e2e
           start: yarn run test:e2e:dist
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
@@ -286,7 +286,7 @@ workflows:
           record: true
           store_artifacts: true
           working_directory: platform/viewer
-          build: yarn run build
+          build: yarn run build:e2e
           start: yarn run test:e2e:dist
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
