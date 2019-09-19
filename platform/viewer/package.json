@@ -1,6 +1,6 @@
 {
   "name": "@ohif/viewer",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -18,7 +18,7 @@
   "proxy": "http://localhost:8042",
   "scripts": {
     "build:package": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.commonjs.js",
-    "build:viewer": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js",
+    "build:viewer": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js --progress",
     "build:viewer:ci": "cross-env NODE_ENV=production PUBLIC_URL=/pwa/ APP_CONFIG=config/netlify.js node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js",
     "build:viewer:demo": "cross-env NODE_ENV=production APP_CONFIG=config/demo.js HTML_TEMPLATE=rollbar.html node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --progress --config .webpack/webpack.pwa.js",
     "build:viewer:package": "yarn run build:package",
