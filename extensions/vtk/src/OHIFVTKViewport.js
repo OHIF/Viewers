@@ -238,9 +238,11 @@ class OHIFVTKViewport extends Component {
       frameIndex
     );
 
-    if (!labelmap) {
+    // TODO: Temporarily disabling this since it is not yet
+    // being used and hurts performance significantly.
+    /*if (!labelmap) {
       labelmap = createLabelMapImageData(data);
-    }
+    }*/
 
     const volumeActor = this.getOrCreateVolume(data, displaySetInstanceUid);
 
