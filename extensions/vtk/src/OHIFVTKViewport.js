@@ -189,6 +189,11 @@ class OHIFVTKViewport extends Component {
     volumeActor.setMapper(volumeMapper);
     volumeMapper.setInputData(data);
 
+    const range = data.getPointData().getScalars().getRange();
+
+    // TODO: For PET we might want to just set this to 0-5 SUV
+    volumeActor.getProperty().getRGBTransferFunction(0).setRange(range[0], range[1]);
+
     // TODO: Should look into implementing autoAdjustSampleDistance in vtk
     const sampleDistance =
       1.2 *
