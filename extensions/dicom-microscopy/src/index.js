@@ -1,5 +1,11 @@
+import asyncComponent from './asyncComponent.js';
 import DicomMicroscopySopClassHandler from './DicomMicroscopySopClassHandler.js';
-import DicomMicroscopyViewport from './DicomMicroscopyViewport.js';
+
+const DicomMicroscopyViewport = asyncComponent(() =>
+  import(
+    /* webpackChunkName: "DicomMicroscopyViewport" */ './DicomMicroscopyViewport.js'
+  )
+);
 
 export default {
   /**

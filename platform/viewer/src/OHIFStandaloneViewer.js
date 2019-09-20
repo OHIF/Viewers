@@ -7,13 +7,7 @@ import { CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
 import { ViewerbaseDragDropContext } from '@ohif/ui';
 import { SignoutCallbackComponent } from 'redux-oidc';
-// import asyncComponent from './components/AsyncComponent.js'
-import IHEInvokeImageDisplay from './routes/IHEInvokeImageDisplay.js';
-import ViewerRouting from './routes/ViewerRouting.js';
-import ViewerLocalFileData from './connectedComponents/ViewerLocalFileData.js';
-import StudyListRouting from './studylist/StudyListRouting.js';
-import StandaloneRouting from './routes/StandaloneRouting.js';
-import CallbackPage from './routes/CallbackPage.js';
+import asyncComponent from './components/AsyncComponent.js';
 import NotFound from './routes/NotFound.js';
 import { Bar, Container } from './components/LoadingBar/';
 import './OHIFStandaloneViewer.css';
@@ -24,18 +18,32 @@ import './theme-tide.css';
 import AppContext from './context/AppContext';
 
 // Dynamic Import Routes (CodeSplitting)
-// const IHEInvokeImageDisplay = asyncComponent(() =>
-//   import('./routes/IHEInvokeImageDisplay.js')
-// )
-// const ViewerRouting = asyncComponent(() => import('./routes/ViewerRouting.js'))
-// const StudyListRouting = asyncComponent(() =>
-//   import('./studylist/StudyListRouting.js')
-// )
-// const StandaloneRouting = asyncComponent(() =>
-//   import('./routes/StandaloneRouting.js')
-// )
-// const CallbackPage = asyncComponent(() => import('./CallbackPage.js'))
-//
+const IHEInvokeImageDisplay = asyncComponent(() =>
+  import(
+    /* webpackChunkName: "IHEInvokeImageDisplay" */ './routes/IHEInvokeImageDisplay.js'
+  )
+);
+const ViewerRouting = asyncComponent(() =>
+  import(/* webpackChunkName: "ViewerRouting" */ './routes/ViewerRouting.js')
+);
+const StudyListRouting = asyncComponent(() =>
+  import(
+    /* webpackChunkName: "StudyListRouting" */ './studylist/StudyListRouting.js'
+  )
+);
+const StandaloneRouting = asyncComponent(() =>
+  import(
+    /* webpackChunkName: "StandaloneRouting" */ './routes/StandaloneRouting.js'
+  )
+);
+const CallbackPage = asyncComponent(() =>
+  import(/* webpackChunkName: "CallbackPage" */ './routes/CallbackPage.js')
+);
+const ViewerLocalFileData = asyncComponent(() =>
+  import(
+    /* webpackChunkName: "ViewerLocalFileData" */ './connectedComponents/ViewerLocalFileData.js'
+  )
+);
 
 const reload = () => window.location.reload();
 
@@ -188,10 +196,14 @@ class OHIFStandaloneViewer extends Component {
                   classNames="fade"
                   unmountOnExit
                   onEnter={() => {
-                    this.setState({ isLoading: true });
+                    this.setState({
+                      isLoading: true,
+                    });
                   }}
                   onEntered={() => {
-                    this.setState({ isLoading: false });
+                    this.setState({
+                      isLoading: false,
+                    });
                   }}
                 >
                   {match === null ? (
