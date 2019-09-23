@@ -1,7 +1,7 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { api } from 'dicomweb-client';
-import OHIF from '@ohif/core';
+import DICOMWeb from '../DICOMWeb';
 
 const getImageId = imageObj => {
   if (!imageObj) {
@@ -42,7 +42,7 @@ const getImageInstanceId = imageInstance => {
   return getImageId(imageInstance);
 };
 
-const fetchIt = (url, headers = OHIF.DICOMWeb.getAuthorizationHeader()) => {
+const fetchIt = (url, headers = DICOMWeb.getAuthorizationHeader()) => {
   return fetch(url, headers).then(response => response.arrayBuffer());
 };
 
@@ -57,7 +57,7 @@ const wadorsRetriever = (
   studyInstanceUID,
   seriesInstanceUID,
   sopInstanceUID,
-  headers = OHIF.DICOMWeb.getAuthorizationHeader()
+  headers = DICOMWeb.getAuthorizationHeader()
 ) => {
   const config = {
     url,
