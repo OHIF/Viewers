@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ExpandableToolMenu } from 'react-viewerbase';
+import {ExpandableToolMenu, ToolbarButton} from 'react-viewerbase';
 import './PluginSwitch.css';
+import {commandsManager} from "../App";
 
 class PluginSwitch extends Component {
   static propTypes = {
@@ -12,9 +13,13 @@ class PluginSwitch extends Component {
 
   render() {
     return (
-      <div className="PluginSwitch">
-        <ExpandableToolMenu buttons={this.props.buttons} text={'View'} />
-      </div>
+
+        <ToolbarButton
+            key= "2dmpr"
+            label= '2D MPR'
+            icon= 'cube'
+            onClick= {() => { commandsManager.runCommand('mpr2d'); }}
+        />
     );
   }
 }
