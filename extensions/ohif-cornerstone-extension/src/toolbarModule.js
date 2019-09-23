@@ -19,6 +19,8 @@
 // setToolActive commands should receive the button event that triggered
 // so we can do the "bind to this button" magic
 
+import { commandsManager } from '../../../src/App';
+
 const TOOLBAR_BUTTON_TYPES = {
   COMMAND: 'command',
   SET_TOOL_ACTIVE: 'setToolActive',
@@ -97,6 +99,13 @@ const definitions = [
     options: {
       behavior: 'CINE',
     },
+  },
+  {
+    id: '2dmpr',
+    label: '2D MPR',
+    icon: 'cube',
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'mpr2d',
   },
   {
     id: 'More',
