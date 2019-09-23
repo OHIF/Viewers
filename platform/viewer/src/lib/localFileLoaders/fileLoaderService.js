@@ -72,10 +72,9 @@ class FileLoaderService extends FileLoader {
   getLoader(fileType) {
     if (fileType === 'application/pdf') {
       return PDFFileLoader;
-    } else if (fileType === 'application/dicom' || fileType === '') {
-      return DICOMFileLoader;
     } else {
-      throw new Error('Unknown file type');
+      // Default to dicom loader
+      return DICOMFileLoader;
     }
   }
 }
