@@ -38,48 +38,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
 
   // TODO: Do not display certain options if the current display set
   // cannot be displayed using these view types
-  const buttons = [
-    /*{
-      text: 'Acquired',
-      type: 'command',
-      icon: 'bars',
-      active: false,
-      onClick: () => {
-        console.warn('Original Acquisition');
-
-        const layoutData = setSingleLayoutData(
-          layout.viewports,
-          activeViewportIndex,
-          { plugin: 'cornerstone' }
-        );
-
-        setLayout({ viewports: layoutData });
-      },
-    },
-    {
-      text: 'Axial',
-      icon: 'cube',
-      active: false,
-      onClick: () => {
-        commandsManager.runCommand('axial');
-      },
-    },
-    {
-      text: 'Sagittal',
-      icon: 'cube',
-      active: false,
-      onClick: () => {
-        commandsManager.runCommand('sagittal');
-      },
-    },
-    {
-      text: 'Coronal',
-      icon: 'cube',
-      active: false,
-      onClick: () => {
-        commandsManager.runCommand('coronal');
-      },
-    },*/
+  const button =
     {
       label: "2D MPR",
       icon: "cube",
@@ -87,10 +46,10 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
         commandsManager.runCommand("mpr2d");
       }
     }
-  ];
+  ;
 
   return {
-    buttons
+    button
   };
 };
 
