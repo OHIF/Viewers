@@ -60,8 +60,8 @@ const DICOMFileLoader = new (class extends FileLoader {
       NumberOfFrames,
       InstanceNumber,
       imageId,
+      Modality,
       /*ImageType,
-        Modality,
         InstanceNumber,
         ImagePositionPatient,
         ImageOrientationPatient,
@@ -108,10 +108,10 @@ const DICOMFileLoader = new (class extends FileLoader {
       numberOfFrames: NumberOfFrames,
       instanceNumber: InstanceNumber,
       url: imageId,
+      modality: Modality,
       /*
         TODO: in case necessary to uncoment this block, double check every property
         imageType: ImageType || DICOMWeb.getString(dataset['00080008']),
-        modality: Modality || DICOMWeb.getString(dataset['00080060']),
         instanceNumber: InstanceNumber || DICOMWeb.getNumber(dataset['00200013']),
         imagePositionPatient: ImagePositionPatient || DICOMWeb.getString(dataset['00200032']),
         imageOrientationPatient: ImageOrientationPatient || DICOMWeb.getString(dataset['00200037']),
