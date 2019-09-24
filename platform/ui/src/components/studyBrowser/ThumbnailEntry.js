@@ -99,13 +99,13 @@ class ThumbnailEntry extends Component {
 
   onClick = () => {
     if (this.props.onClick) {
-      this.props.onClick();
+      this.props.onClick(this.props);
     }
   };
 
   onDoubleClick = () => {
     if (this.props.onDoubleClick) {
-      this.props.onDoubleClick();
+      this.props.onDoubleClick(this.props);
     }
   };
 }

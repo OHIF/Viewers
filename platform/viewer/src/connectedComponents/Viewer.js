@@ -294,7 +294,10 @@ class Viewer extends Component {
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
-              <ConnectedStudyBrowser studies={this.state.thumbnails} />
+              <ConnectedStudyBrowser
+                studiesThumbnails={this.state.thumbnails}
+                studies={this.props.studies}
+              />
             )}
           </SidePanel>
 
