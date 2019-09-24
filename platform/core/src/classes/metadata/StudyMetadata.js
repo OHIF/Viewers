@@ -204,11 +204,11 @@ export class StudyMetadata extends Metadata {
         )
     );
 
-    return displaySets;
+    return sortDisplaySetList(displaySets);
   }
 
   sortDisplaySets() {
-    this._displaySets.sort(_sortBySeriesNumber);
+    sortDisplaySetList(this._displaySets);
   }
 
   createAndAddDisplaySetsForSeries(sopClassHandlerModules, series) {
@@ -228,8 +228,7 @@ export class StudyMetadata extends Metadata {
   setDisplaySets(displaySets) {
     if (Array.isArray(displaySets) && displaySets.length > 0) {
       displaySets.forEach(displaySet => this.addDisplaySet(displaySet));
-      // @TODO Reenable after fix
-      // this.sortDisplaySets();
+      this.sortDisplaySets();
     }
   }
 
@@ -684,9 +683,13 @@ function _getDisplaySetFromSopClassModule(
  * @param {*} a - DisplaySet
  * @param {*} b - DisplaySet
  */
-function _sortBySeriesNumber(a, b) {
+function sortBySeriesNumber(a, b) {
   const seriesNumberAIsGreaterOrUndefined =
     a.seriesNumber > b.seriesNumber || (!a.seriesNumber && b.seriesNumber);
 
   return seriesNumberAIsGreaterOrUndefined ? 1 : -1;
+}
+
+function sortDisplaySetList(list) {
+  return list.sort(sortBySeriesNumber);
 }
