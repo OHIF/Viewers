@@ -158,7 +158,6 @@ export class StudyMetadata extends Metadata {
           displaySet = makeDisplaySet(series, [instance]);
           displaySet.setAttributes({
             sopClassUids,
-            isClip: true,
             seriesInstanceUid: series.getSeriesInstanceUID(),
             studyInstanceUid: study.getStudyInstanceUID(), // Include the study instance Uid for drag/drop purposes
             numImageFrames: instance.getRawValue('x00280008'), // Override the default value of instances.length

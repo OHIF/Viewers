@@ -12,7 +12,7 @@ class StudyBrowser extends Component {
 
   static propTypes = {
     studies: PropTypes.array.isRequired,
-    supportsDragAndDrop: PropTypes.bool.isRequired,
+    supportsDragAndDrop: PropTypes.bool,
     onThumbnailClick: PropTypes.func,
     onThumbnailDoubleClick: PropTypes.func,
   };
@@ -22,6 +22,7 @@ class StudyBrowser extends Component {
 
     const thumbnails = studies.map((study, studyIndex) => {
       return study.thumbnails.map((thumb, thumbIndex) => {
+        // Wouldn't this be per entry?
         if (this.props.supportsDragAndDrop) {
           return (
             <ThumbnailEntryDragSource

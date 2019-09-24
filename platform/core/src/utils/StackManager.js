@@ -62,7 +62,6 @@ function createAndAddStack(
     displaySetInstanceUid: displaySet.displaySetInstanceUid,
     imageIds,
     frameRate: displaySet.frameRate,
-    isClip: displaySet.isClip,
   };
 
   stackMap[displaySet.displaySetInstanceUid] = stack;

@@ -1,7 +1,6 @@
 import './LayoutManager.css';
 
 import React, { Component } from 'react';
-
 import LayoutPanelDropTarget from './LayoutPanelDropTarget.js';
 import PropTypes from 'prop-types';
 
@@ -32,7 +31,6 @@ export class LayoutManager extends Component {
       ],
     },
     activeViewportIndex: 0,
-    supportsDragAndDrop: true,
     availablePlugins: {
       defaultViewportPlugin,
     },
@@ -41,7 +39,6 @@ export class LayoutManager extends Component {
 
   static propTypes = {
     viewportData: PropTypes.array.isRequired,
-    supportsDragAndDrop: PropTypes.bool.isRequired,
     activeViewportIndex: PropTypes.number.isRequired,
     layout: PropTypes.object.isRequired,
     availablePlugins: PropTypes.object.isRequired,
@@ -56,51 +53,26 @@ export class LayoutManager extends Component {
     }
   };
 
-  getPluginComponent = plugin => {
-    const pluginComponent = this.props.availablePlugins[
-      plugin || this.props.defaultPlugin
-    ];
+  getViewportComponent(viewportName = this.props.defaultPlugin) {
+    const ViewportComponent = this.props.availablePlugins[viewportName];
 
-    if (!pluginComponent) {
+    if (!ViewportComponent) {
       throw new Error(
-        `No Viewport Plugin available for plugin ${plugin}. Available plugins: ${JSON.stringify(
+        `No Viewport available with name: ${viewportName}. Available viewport's: ${JSON.stringify(
           this.props.availablePlugins
         )}`
       );
     }
 
-    return pluginComponent;
-  };
-
-  getChildComponent(plugin, data, viewportIndex, children) {
-    if (data.displaySet) {
-      const PluginComponent = this.getPluginComponent(plugin);
-
-      return (
-        <PluginComponent
-          viewportData={data}
-          viewportIndex={viewportIndex}
-          children={[children]}
-        />
-      );
-    }
-
-    return <EmptyViewport />;
+    return ViewportComponent;
   }
 
-  getContent(childComponent, supportsDragAndDrop, viewportIndex) {
-    if (supportsDragAndDrop) {
-      return (
-        <LayoutPanelDropTarget
-          onDrop={this.onDrop}
-          viewportIndex={viewportIndex}
-        >
-          {childComponent}
-        </LayoutPanelDropTarget>
-      );
-    }
-
-    return <div className="LayoutPanel">{childComponent}</div>;
+  getContent(ViewportComponent, viewportIndex) {
+    return (
+      <LayoutPanelDropTarget onDrop={this.onDrop} viewportIndex={viewportIndex}>
+        {ViewportComponent}
+      </LayoutPanelDropTarget>
+    );
   }
 
   render() {
@@ -108,14 +80,10 @@ export class LayoutManager extends Component {
       return '';
     }
 
-    const { supportsDragAndDrop, studies, viewportData } = this.props;
+    const { studies, viewportData } = this.props;
     const viewports = this.props.layout.viewports;
     const viewportElements = viewports.map((layout, viewportIndex) => {
       const displaySet = viewportData[viewportIndex];
-      const data = {
-        displaySet,
-        studies,
-      };
 
       // Use whichever plugin is currently in use in the panel
       // unless nothing is specified. If nothing is specified
@@ -131,15 +99,20 @@ export class LayoutManager extends Component {
         plugin = displaySet.plugin;
       }
 
-      const childComponent = this.getChildComponent(
-        plugin,
-        data,
-        viewportIndex,
-        this.props.children
+      const ViewportComponent = displaySet
+        ? this.getViewportComponent(plugin)
+        : EmptyViewport;
+      const ViewportComponentWithProps = (
+        <ViewportComponent
+          studies={studies}
+          displaySet={displaySet}
+          viewportIndex={viewportIndex}
+          children={[this.props.children]}
+        />
       );
+
       const content = this.getContent(
-        childComponent,
-        supportsDragAndDrop,
+        ViewportComponentWithProps,
         viewportIndex
       );
 
