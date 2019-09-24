@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.51.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.51.0...@ohif/ui@0.51.1) (2019-09-19)
+
+
+### Bug Fixes
+
+* Use HTML5Backend for drag-drop if the device does not support touch ([#927](https://github.com/OHIF/Viewers/issues/927)) ([6fdac4d](https://github.com/OHIF/Viewers/commit/6fdac4d))
+
+
+
+
+
 # [0.51.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.50.4...@ohif/ui@0.51.0) (2019-09-12)
 
 

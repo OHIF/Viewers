@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.18](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.17...@ohif/extension-vtk@0.50.18) (2019-09-23)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.50.17](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.16...@ohif/extension-vtk@0.50.17) (2019-09-19)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.50.16](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.15...@ohif/extension-vtk@0.50.16) (2019-09-19)
+
+
+### Bug Fixes
+
+* Set transfer function range to data range when loading volumes in VTK ([#930](https://github.com/OHIF/Viewers/issues/930)) ([2341b32](https://github.com/OHIF/Viewers/commit/2341b32))
+
+
+
+
+
+## [0.50.15](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.14...@ohif/extension-vtk@0.50.15) (2019-09-19)
+
+
+### Bug Fixes
+
+* Bump VTK viewport dependency ([#929](https://github.com/OHIF/Viewers/issues/929)) ([66a0aad](https://github.com/OHIF/Viewers/commit/66a0aad))
+* Stop adding empty labelmap to VTK Viewports for now. Wait until paint tools are implemented ([#926](https://github.com/OHIF/Viewers/issues/926)) ([7f642a0](https://github.com/OHIF/Viewers/commit/7f642a0))
+
+
+
+
+
+## [0.50.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.13...@ohif/extension-vtk@0.50.14) (2019-09-17)
+
+
+### Bug Fixes
+
+* bump cornerstone-tools version in peerDeps ([4afc88c](https://github.com/OHIF/Viewers/commit/4afc88c))
+
+
+
+
+
 ## [0.50.13](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.12...@ohif/extension-vtk@0.50.13) (2019-09-12)
 
 **Note:** Version bump only for package @ohif/extension-vtk
