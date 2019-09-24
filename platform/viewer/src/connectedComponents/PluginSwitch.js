@@ -5,7 +5,7 @@ import './PluginSwitch.css';
 
 class PluginSwitch extends Component {
   static propTypes = {
-    button: PropTypes.any,
+    mpr: PropTypes.func,
   };
 
   static defaultProps = {};
@@ -15,7 +15,7 @@ class PluginSwitch extends Component {
       <div className="PluginSwitch">
         <ToolbarButton       label = "2D MPR"
                              icon = "cube"
-                             onClick = {this.props.button.onClick} />
+                             onClick = {this.props.mpr} />
       </div>
     );
   }

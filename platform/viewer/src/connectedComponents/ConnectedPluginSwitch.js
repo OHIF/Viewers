@@ -38,18 +38,13 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
 
   // TODO: Do not display certain options if the current display set
   // cannot be displayed using these view types
-  const button =
-    {
-      label: "2D MPR",
-      icon: "cube",
-      onClick: () => {
+  const mpr = () => {
         commandsManager.runCommand("mpr2d");
       }
-    }
   ;
 
   return {
-    button
+    mpr
   };
 };
 
