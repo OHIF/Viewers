@@ -1,3 +1,4 @@
+import SlabThicknessToolbarComponent from './SlabThicknessToolbarComponent';
 const TOOLBAR_BUTTON_TYPES = {
   COMMAND: 'command',
   SET_TOOL_ACTIVE: 'setToolActive',
@@ -31,6 +32,7 @@ const definitions = [
     commandName: 'enableRotateTool',
     commandOptions: {},
   },
+  /*
   {
     id: 'setBlendModeToComposite',
     label: 'Disable MIP',
@@ -67,6 +69,46 @@ const definitions = [
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
     commandName: 'decreaseSlabThickness',
     commandOptions: {},
+  },
+  */
+  {
+    id: 'changeSlabThickness',
+    label: 'Slab Thickness',
+    icon: 'soft-tissue',
+    CustomComponent: SlabThicknessToolbarComponent,
+    commandName: 'setSlabThickness',
+    actionButton: {
+      id: 'setSlabThickness',
+      label: 'slider',
+      grouped: false,
+      //
+      type: TOOLBAR_BUTTON_TYPES.COMMAND,
+      commandName: 'setSlabThickness',
+      enabledOn: ['setBlendModeToMaximumIntensity'],
+      commandOptions: {},
+    },
+    buttons: [
+      {
+        id: 'setBlendModeToMaximumIntensity',
+        label: 'MIP',
+        icon: 'soft-tissue',
+        grouped: true,
+        //
+        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+        commandName: 'setBlendModeToMaximumIntensity',
+        commandOptions: {},
+      },
+      {
+        id: 'setBlendModeToComposite',
+        label: 'OFF',
+        icon: 'times',
+        grouped: true,
+        //
+        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+        commandName: 'setBlendModeToComposite',
+        commandOptions: {},
+      },
+    ],
   },
 ];
 

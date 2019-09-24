@@ -178,7 +178,7 @@ function _getCustomButtonComponent(button, activeButtons) {
     return (
       <CustomComponent
         parentContext={parentContext}
-        toolbarClickCallback={_handleToolbarButtonClick}
+        toolbarClickCallback={_handleToolbarButtonClick.bind(this)}
         button={button}
         key={button.id}
         activeButtons={activeButtons}

@@ -108,16 +108,10 @@ class ExpandableToolMenu extends React.Component {
   };
 
   render() {
-    return (
-      <OverlayTrigger
-        key="menu-button"
-        trigger="click"
-        placement="bottom"
-        rootClose={true}
-        handleHide={this.onOverlayHide}
-        onClick={this.onExpandableToolClick}
-        overlay={this.toolbarMenuOverlay()}
-      >
+    const childrenToolbarComponent = this.props && this.props.children;
+
+    const getToolBarButton = () => {
+      return (
         <ToolbarButton
           key="menu-button"
           type="tool"
@@ -128,6 +122,35 @@ class ExpandableToolMenu extends React.Component {
           isExpandable={true}
           isExpanded={this.state.isExpanded}
         />
+      );
+    };
+
+    const getChildrenCloned = childrenToolbarComponent => {
+      const isActive = this.isActive();
+      const isExpanded = this.state.isExpanded;
+      const label = this.props.label;
+      const cloned = React.Children.map(childrenToolbarComponent, child =>
+        React.cloneElement(child, { isActive, isExpanded, label })
+      );
+
+      return <div>{cloned}</div>;
+    };
+
+    const toolbarComponent = childrenToolbarComponent
+      ? getChildrenCloned(childrenToolbarComponent)
+      : getToolBarButton();
+
+    return (
+      <OverlayTrigger
+        key="menu-button"
+        trigger="click"
+        placement="bottom"
+        rootClose={true}
+        handleHide={this.onOverlayHide}
+        onClick={this.onExpandableToolClick}
+        overlay={this.toolbarMenuOverlay()}
+      >
+        {toolbarComponent}
       </OverlayTrigger>
     );
   }
