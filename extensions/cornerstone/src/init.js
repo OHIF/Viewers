@@ -30,6 +30,7 @@ export default function init(configuration) {
     ZoomTool,
     WwwcTool,
     MagnifyTool,
+    StackScrollTool,
     StackScrollMouseWheelTool,
     // Touch
     PanMultiTouchTool,
@@ -52,6 +53,7 @@ export default function init(configuration) {
     ZoomTool,
     WwwcTool,
     MagnifyTool,
+    StackScrollTool,
     StackScrollMouseWheelTool,
     // Touch
     PanMultiTouchTool,
