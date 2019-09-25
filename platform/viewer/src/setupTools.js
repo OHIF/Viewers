@@ -141,92 +141,6 @@ function getResetLabellingAndContextMenu(store) {
 
 export default function setupTools(store) {
   const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
-  const availableTools = [
-    { name: 'Pan', mouseButtonMasks: [1, 4] },
-    { name: 'Zoom', mouseButtonMasks: [1, 2] },
-    { name: 'Wwwc', mouseButtonMasks: [1] },
-    { name: 'Magnify' },
-    { name: 'WwwcRegion' },
-    {
-      name: 'Bidirectional',
-      props: {
-        configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
-      },
-      mouseButtonMasks: [1],
-    },
-    {
-      name: 'Length',
-      props: {
-        configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
-      },
-      mouseButtonMasks: [1],
-    },
-    {
-      name: 'Angle',
-      props: {
-        configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
-      },
-      mouseButtonMasks: [1],
-    },
-    { name: 'StackScroll', mouseButtonMasks: [1] },
-    { name: 'Brush', mouseButtonMasks: [1] },
-    {
-      name: 'FreehandRoi',
-      props: {
-        configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
-      },
-      mouseButtonMasks: [1],
-    },
-    {
-      name: 'EllipticalRoi',
-      props: {
-        configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
-      },
-      mouseButtonMasks: [1],
-    },
-    {
-      name: 'CircleRoi',
-      props: {
-        configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
-      },
-      mouseButtonMasks: [1],
-    },
-    {
-      name: 'RectangleRoi',
-      props: {
-        configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
-      },
-      mouseButtonMasks: [1],
-    },
-    { name: 'DragProbe' },
-    { name: 'PanMultiTouch' },
-    { name: 'ZoomTouchPinch' },
-    { name: 'StackScrollMouseWheel' },
-    { name: 'StackScrollMultiTouch' },
-    { name: 'Eraser' },
-    {
-      name: 'ArrowAnnotate',
-      props: {
-        configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
-      },
-    },
-  ];
 
   const onRightClick = getOnRightClickCallback(store);
   const onTouchPress = getOnTouchPressCallback(store);
@@ -234,7 +148,6 @@ export default function setupTools(store) {
   const onMouseClick = getResetLabellingAndContextMenu(store);
   const onTouchStart = getResetLabellingAndContextMenu(store);
   const toolAction = OHIF.redux.actions.setExtensionData('cornerstone', {
-    availableTools,
     onNewImage,
     onRightClick,
     onTouchPress,
