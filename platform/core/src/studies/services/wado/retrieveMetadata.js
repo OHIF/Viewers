@@ -4,8 +4,7 @@ import DICOMWeb from '../../../DICOMWeb/';
 import { makePubSub } from '../../../lib/pubSub';
 import { makeSeriesLoadQueue } from './seriesLoadQueue';
 
-// @TODO: Tie this to actual viewer config
-const CONFIG_LAZY_LOAD = true;
+const INFO = Symbol('INFO');
 
 const WADOProxy = {
   convertURL: (url, server) => {
@@ -281,9 +280,9 @@ async function makeSOPInstance(server, study, instance) {
 
   if (!series) {
     series = {
+      seriesInstanceUid,
       seriesDescription: DICOMWeb.getString(instance['0008103E']),
       modality: DICOMWeb.getString(instance['00080060']),
-      seriesInstanceUid: seriesInstanceUid,
       seriesNumber: DICOMWeb.getNumber(instance['00200011']),
       seriesDate: DICOMWeb.getString(instance['00080021']),
       seriesTime: DICOMWeb.getString(instance['00080031']),
@@ -461,10 +460,9 @@ async function createStudyFromInstanceList(server, instanceList) {
  * @returns {Promise}
  */
 async function RetrieveMetadata(server, studyInstanceUid) {
-  return (CONFIG_LAZY_LOAD ? lazyLoadStudyMetadata : loadStudyMetadata)(
-    server,
-    studyInstanceUid
-  );
+  return (server.enableStudyLazyLoad
+    ? lazyLoadStudyMetadata
+    : loadStudyMetadata)(server, studyInstanceUid);
 }
 
 async function loadStudyMetadata(server, studyInstanceUID) {
@@ -536,8 +534,27 @@ async function searchStudySeries(server, studyInstanceUID) {
   });
   const seriesList = await dicomWeb.searchForSeries({ studyInstanceUID });
   return Array.isArray(seriesList) && seriesList.length > 0
-    ? seriesList.map(series => DICOMWeb.getString(series['0020000E']))
+    ? seriesList
+        .sort(seriesSortingCriteria)
+        .map(series => getSeriesInfo(series).seriesInstanceUid)
     : null;
+}
+
+function seriesSortingCriteria(a, b) {
+  return getSeriesInfo(a).seriesNumber - getSeriesInfo(b).seriesNumber;
+}
+
+function getSeriesInfo(series) {
+  let info = series[INFO];
+  if (!info) {
+    info = Object.freeze({
+      modality: DICOMWeb.getString(series['00080060']),
+      seriesInstanceUid: DICOMWeb.getString(series['0020000E']),
+      seriesNumber: DICOMWeb.getNumber(series['00200011']),
+    });
+    series[INFO] = info;
+  }
+  return info;
 }
 
 export default RetrieveMetadata;
