@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { StudyBrowser } from '@ohif/ui';
 import cloneDeep from 'lodash.clonedeep';
 
-const { setViewportSpecificData } = OHIF.redux.actions;
+const { setActiveViewportSpecificData } = OHIF.redux.actions;
 
 // TODO
 // - Determine in which display set is active from Redux (activeViewportIndex and layout viewportData)
@@ -13,7 +13,7 @@ const mapStateToProps = (state, ownProps) => {
   // we can try to update the component state so that the thumbnail
   // progress bar is updated
   const stackLoadingProgressMap = state.loading.progress;
-  const studiesWithLoadingData = cloneDeep(ownProps.studiesThumbnails);
+  const studiesWithLoadingData = cloneDeep(ownProps.studies);
 
   studiesWithLoadingData.forEach(study => {
     study.thumbnails.forEach(data => {
@@ -31,48 +31,18 @@ const mapStateToProps = (state, ownProps) => {
   });
 
   return {
-    activeViewportIndex: state.viewports.activeViewportIndex,
     studies: studiesWithLoadingData,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    setViewportSpecificData: (viewportIndex, data) => {
-      dispatch(setViewportSpecificData(viewportIndex, data));
-    },
-  };
-};
-
-const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
-  const findDisplaySet = (studies, studyInstanceUid, displaySetInstanceUid) => {
-    const study = studies.find(study => {
-      return study.studyInstanceUid === studyInstanceUid;
-    });
-
-    if (!study) {
-      return;
-    }
-
-    return study.displaySets.find(displaySet => {
-      return displaySet.displaySetInstanceUid === displaySetInstanceUid;
-    });
-  };
-
-  const { studies, activeViewportIndex } = propsFromState;
-
-  return {
-    studies,
     onThumbnailClick: ({ studyInstanceUid, displaySetInstanceUid }) => {
-      const displaySet = findDisplaySet(
-        ownProps.studies,
-        studyInstanceUid,
-        displaySetInstanceUid
-      );
-
-      propsFromDispatch.setViewportSpecificData(
-        activeViewportIndex,
-        displaySet
+      dispatch(
+        setActiveViewportSpecificData({
+          studyInstanceUid,
+          displaySetInstanceUid,
+        })
       );
     },
   };
@@ -80,8 +50,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
 
 const ConnectedStudyBrowser = connect(
   mapStateToProps,
-  mapDispatchToProps,
-  mergeProps
+  mapDispatchToProps
 )(StudyBrowser);
 
 export default ConnectedStudyBrowser;
