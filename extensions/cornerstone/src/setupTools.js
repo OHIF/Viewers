@@ -147,13 +147,4 @@ export default function setupTools(store) {
   const onNewImage = getResetLabellingAndContextMenu(store);
   const onMouseClick = getResetLabellingAndContextMenu(store);
   const onTouchStart = getResetLabellingAndContextMenu(store);
-  const toolAction = OHIF.redux.actions.setExtensionData('cornerstone', {
-    onNewImage,
-    onRightClick,
-    onTouchPress,
-    onTouchStart,
-    onMouseClick,
-  });
-
-  store.dispatch(toolAction);
 }
