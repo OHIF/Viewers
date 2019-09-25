@@ -118,7 +118,7 @@ const StackManager = {
     return stackMap[displaySetInstanceUid];
   },
   /**
-   * Find a stack or reate one if it has not been created yet
+   * Find a stack or create one if it has not been created yet
    * @param study The study who's metadata will be added
    * @param displaySet The set of images to make the stack from
    * @return {Array} Array with image IDs

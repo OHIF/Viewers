@@ -1,4 +1,4 @@
-import { LayoutManager } from '@ohif/ui';
+import { LayoutManager } from './../components/LayoutManager.js';
 import { MODULE_TYPES } from '@ohif/core';
 import { connect } from 'react-redux';
 import { extensionManager } from './../App.js';
