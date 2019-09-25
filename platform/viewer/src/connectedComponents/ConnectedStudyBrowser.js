@@ -59,17 +59,19 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
     });
   };
 
+  const { studies, activeViewportIndex } = propsFromState;
+
   return {
-    ...propsFromState,
-    onThumbnailClick: data => {
+    studies,
+    onThumbnailClick: ({ studyInstanceUid, displaySetInstanceUid }) => {
       const displaySet = findDisplaySet(
         ownProps.studies,
-        data.studyInstanceUid,
-        data.displaySetInstanceUid
+        studyInstanceUid,
+        displaySetInstanceUid
       );
 
       propsFromDispatch.setViewportSpecificData(
-        propsFromState.activeViewportIndex,
+        activeViewportIndex,
         displaySet
       );
     },
