@@ -37,10 +37,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onThumbnailClick: ({ studyInstanceUid, displaySetInstanceUid }) => {
+    onThumbnailClick: displaySetInstanceUid => {
       dispatch(
         setActiveViewportSpecificData({
-          studyInstanceUid,
           displaySetInstanceUid,
         })
       );

@@ -77,9 +77,6 @@ const viewports = (state = defaultState, action) => {
       currentData = cloneDeep(state.viewportSpecificData[viewportIndex]) || {};
       viewportSpecificData = cloneDeep(state.viewportSpecificData);
       viewportSpecificData[viewportIndex] = merge({}, currentData, action.data);
-      if (action.data && !action.data.sopInstanceUid) {
-        delete viewportSpecificData[viewportIndex].sopInstanceUid;
-      }
 
       return Object.assign({}, state, { viewportSpecificData });
     }

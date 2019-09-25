@@ -97,23 +97,15 @@ class ThumbnailEntry extends Component {
     );
   }
 
-  getCallbackData() {
-    const { studyInstanceUid, displaySetInstanceUid } = this.props;
-    return {
-      studyInstanceUid,
-      displaySetInstanceUid,
-    };
-  }
-
   onClick = () => {
     if (this.props.onClick) {
-      this.props.onClick(this.getCallbackData());
+      this.props.onClick(this.props.displaySetInstanceUid);
     }
   };
 
   onDoubleClick = () => {
     if (this.props.onDoubleClick) {
-      this.props.onDoubleClick(this.getCallbackData());
+      this.props.onDoubleClick(this.props.displaySetInstanceUid);
     }
   };
 }
