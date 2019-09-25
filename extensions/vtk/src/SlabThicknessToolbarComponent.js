@@ -46,9 +46,8 @@ export default class SlabThicknessToolbarComponent extends Component {
     parentContext: PropTypes.object.isRequired,
     toolbarClickCallback: PropTypes.func.isRequired,
     button: PropTypes.object.isRequired,
-    key: PropTypes.string.isRequired,
     activeButtons: PropTypes.array.isRequired,
-    isActive: PropTypes.bool.isRequired,
+    isActive: PropTypes.bool,
   };
 
   constructor() {
