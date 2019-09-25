@@ -1,8 +1,11 @@
 import './LayoutManager.css';
 
 import React, { Component } from 'react';
+import OHIF from '@ohif/core';
 import LayoutPanelDropTarget from './LayoutPanelDropTarget.js';
 import PropTypes from 'prop-types';
+
+const { StackManager } = OHIF.utils;
 
 function defaultViewportPlugin(props) {
   return <div>{JSON.stringify(props)}</div>;
@@ -99,16 +102,56 @@ export class LayoutManager extends Component {
         plugin = displaySet.plugin;
       }
 
+      // ~~ EXPERIMENTAL
+      // Find using displaySet
+      const study = studies.find(
+        study => study.studyInstanceUid === displaySet.studyInstanceUid
+      );
+      const studyDisplaySet = study.displaySets.find(set => {
+        return set.displaySetInstanceUid === displaySet.displaySetInstanceUid;
+      });
+
+      // Get stack from Stack Manager
+      const storedStack = StackManager.findOrCreateStack(
+        study,
+        studyDisplaySet
+      );
+      const {
+        studyInstanceUid,
+        displaySetInstanceUid,
+        imageIds,
+        frameRate,
+      } = storedStack;
+      console.log(storedStack);
+
+      let childrenWithProps = null;
+
+      // TODO: Does it make more sense to use Context?
+      if (this.props.children && this.props.children.length) {
+        childrenWithProps = this.props.children.map((child, index) => {
+          return React.cloneElement(child, {
+            viewportIndex: this.props.viewportIndex,
+            key: index,
+          });
+        });
+      }
+      // ~~ EXPERIMENTAL
+
       const ViewportComponent = displaySet
         ? this.getViewportComponent(plugin)
         : EmptyViewport;
       const ViewportComponentWithProps = (
-        <ViewportComponent
-          studies={studies}
-          displaySet={displaySet}
-          viewportIndex={viewportIndex}
-          children={[this.props.children]}
-        />
+        <>
+          <ViewportComponent
+            tools={[]} // TODO: Fix
+            imageIds={imageIds}
+            frameRate={frameRate}
+            // We shouldn't need this?
+            // Used in `ConnectedCornerstoneViewport`
+            viewportIndex={viewportIndex}
+          />
+          {childrenWithProps}
+        </>
       );
 
       const content = this.getContent(
