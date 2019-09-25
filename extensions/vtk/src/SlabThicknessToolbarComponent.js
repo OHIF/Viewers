@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Range, Icon, ExpandableToolMenu } from '@ohif/ui';
 
 import './slab-thickness-toolbar-button.styl';
+
+const SLIDER = {
+  MIN: 0.1,
+  MAX: 1000,
+  STEP: 0.1,
+};
 
 const ToolbarLabel = props => {
   const { label, isExpanded } = props;
@@ -26,7 +33,7 @@ const ToolbarSlider = props => {
         value={value}
         min={min}
         max={max}
-        step={0.1}
+        step={SLIDER.STEP}
         onChange={onChange}
         id="toolbar-slider"
       />
@@ -34,12 +41,16 @@ const ToolbarSlider = props => {
   );
 };
 
-const SLIDER = {
-  MIN: 0.1,
-  MAX: 1000,
-};
-
 export default class SlabThicknessToolbarComponent extends Component {
+  static propTypes = {
+    parentContext: PropTypes.object.isRequired,
+    toolbarClickCallback: PropTypes.func.isRequired,
+    button: PropTypes.object.isRequired,
+    key: PropTypes.string.isRequired,
+    activeButtons: PropTypes.array.isRequired,
+    isActive: PropTypes.bool.isRequired,
+  };
+
   constructor() {
     super();
     this.state = {
@@ -48,6 +59,39 @@ export default class SlabThicknessToolbarComponent extends Component {
       sliderMax: SLIDER.MAX,
       operation: undefined,
     };
+  }
+
+  applySlabThickness() {
+    const { value } = this.state;
+    const { toolbarClickCallback, button } = this.props;
+    const { actionButton } = button;
+
+    const isOperationEnabled = button => {
+      const { enabledOn = [] } = button;
+      const { id: currentOpId = '' } = this.state.operation || {};
+
+      return enabledOn.some(opId => currentOpId && opId == currentOpId);
+    };
+
+    const generateOperation = (operation, value) => {
+      // Combine slider value into slider operation
+      const generatedOperation = { ...operation };
+      generatedOperation.commandOptions = {
+        ...operation.commandOptions,
+        slabThickness: value,
+      };
+
+      return generatedOperation;
+    };
+
+    if (
+      toolbarClickCallback &&
+      actionButton &&
+      isOperationEnabled(actionButton)
+    ) {
+      const operation = generateOperation(actionButton, value);
+      toolbarClickCallback(operation, event);
+    }
   }
 
   onChangeOperation(button, event, props) {
@@ -70,36 +114,6 @@ export default class SlabThicknessToolbarComponent extends Component {
     }
   }
 
-  applySlabThickness() {
-    const { value } = this.state;
-    const { toolbarClickCallback, button } = this.props;
-    const { actionButton } = button;
-
-    const isOperationEnabled = button => {
-      const { enabledOn = [] } = button;
-      const { id: currentOpId = '' } = this.state.operation || {};
-      return enabledOn.some(opId => currentOpId && opId == currentOpId);
-    };
-
-    const generateOperation = (operation, value) => {
-      // Combine slider value into slider operation
-      const generatedOperation = { ...operation };
-      generatedOperation.commandOptions = {
-        ...operation.commandOptions,
-        slabThickness: value,
-      };
-    };
-
-    if (
-      toolbarClickCallback &&
-      actionButton &&
-      isOperationEnabled(actionButton)
-    ) {
-      const operation = generateOperation(actionButton, value);
-      toolbarClickCallback(operation, event);
-    }
-  }
-
   onChangeSlider(event) {
     const value = Number(event.target.value);
 
@@ -110,22 +124,17 @@ export default class SlabThicknessToolbarComponent extends Component {
     }
   }
 
-  getLabel() {
-    const { isActive, labelWhenActive, button } = this.props;
-    return isActive && labelWhenActive ? labelWhenActive : button.label;
+  bindButtonsListeners(button) {
+    return button.buttons.map(childButton => {
+      childButton.onClick = this.onChangeOperation.bind(this, childButton);
+      return childButton;
+    });
   }
 
   getClassNames() {
     const { isActive, className } = this.props;
     return classnames('toolbar-button', 'slab-thickness', className, {
       active: isActive,
-    });
-  }
-
-  bindButtonsListeners(button) {
-    return button.buttons.map(childButton => {
-      childButton.onClick = this.onChangeOperation.bind(this, childButton);
-      return childButton;
     });
   }
 
@@ -141,11 +150,10 @@ export default class SlabThicknessToolbarComponent extends Component {
   }
 
   render() {
-    const { value = 0.1 } = this.state;
+    const { value = SLIDER.MIN } = this.state;
 
     const className = this.getClassNames();
     const { button, activeButtons } = this.props;
-    const label = this.getLabel();
     const expandableButtons = this.bindButtonsListeners(button);
     const activeCommand = this.getActiveCommand(button, activeButtons);
 
