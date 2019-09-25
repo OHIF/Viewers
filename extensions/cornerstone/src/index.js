@@ -1,4 +1,4 @@
-import OHIFCornerstoneViewport from './OHIFCornerstoneViewport.js';
+import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport.js';
 import commandsModule from './commandsModule.js';
 import toolbarModule from './toolbarModule.js';
 
@@ -12,7 +12,7 @@ export default {
   id: 'cornerstone',
 
   getViewportModule() {
-    return OHIFCornerstoneViewport;
+    return ConnectedCornerstoneViewport;
   },
   getToolbarModule() {
     return toolbarModule;
