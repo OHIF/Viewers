@@ -9,7 +9,8 @@ import ConnectedHeader from './ConnectedHeader.js';
 import ConnectedToolbarRow from './ConnectedToolbarRow.js';
 import ConnectedLabellingOverlay from './ConnectedLabellingOverlay';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
-import ConnectedViewerMain from './ConnectedViewerMain.js';
+import ConnectedViewportLayout from './ConnectedViewportLayout.js';
+import ConnectedToolContextMenu from './ConnectedToolContextMenu.js';
 import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
 
@@ -18,51 +19,15 @@ import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
 import UserManagerContext from '../context/UserManagerContext';
 
 import './Viewer.css';
-/**
- * Inits OHIF Hanging Protocol's onReady.
- * It waits for OHIF Hanging Protocol to be ready to instantiate the ProtocolEngine
- * Hanging Protocol will use OHIF LayoutManager to render viewports properly
- */
-/*const initHangingProtocol = () => {
-    // When Hanging Protocol is ready
-    HP.ProtocolStore.onReady(() => {
-
-        // Gets all StudyMetadata objects: necessary for Hanging Protocol to access study metadata
-        const studyMetadataList = OHIF.viewer.StudyMetadataList.all();
-
-        // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
-        const studyMetadataSource = new OHIF.studies.classes.OHIFStudyMetadataSource();
-
-        // Get prior studies map
-        const studyPriorsMap = OHIF.studylist.functions.getStudyPriorsMap(studyMetadataList);
-
-        // Creates Protocol Engine object with required arguments
-        const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, studyPriorsMap, studyMetadataSource);
-
-        // Sets up Hanging Protocol engine
-        HP.setEngine(ProtocolEngine);
-    });
-};*/
-
-/*const viewportUtils = OHIF.viewerbase.viewportUtils;
-
-OHIF.viewer.functionList = {
-    toggleCineDialog: viewportUtils.toggleCineDialog,
-    toggleCinePlay: viewportUtils.toggleCinePlay,
-    clearTools: viewportUtils.clearTools,
-    resetViewport: viewportUtils.resetViewport,
-    invert: viewportUtils.invert
-};*/
 
 class Viewer extends Component {
   static propTypes = {
+    layout: PropTypes.object,
     studies: PropTypes.array,
     studyInstanceUids: PropTypes.array,
     onTimepointsUpdated: PropTypes.func,
     onMeasurementsUpdated: PropTypes.func,
-    // window.store.getState().viewports.viewportSpecificData
     viewports: PropTypes.object.isRequired,
-    // window.store.getState().viewports.activeViewportIndex
     activeViewportIndex: PropTypes.number.isRequired,
   };
 
@@ -84,6 +49,9 @@ class Viewer extends Component {
         disassociate: this.disassociateStudy,
       },
     });
+
+    ////////
+    this.cachedComputedLayout = {};
   }
 
   state = {
@@ -92,6 +60,7 @@ class Viewer extends Component {
     selectedRightSidePanel: '',
     selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
     thumbnails: [],
+    computedLayout: [],
   };
 
   retrieveMeasurements = (patientId, timepointIds) => {
@@ -190,30 +159,134 @@ class Viewer extends Component {
 
     if (studies) {
       const patientId = studies[0] && studies[0].patientId;
+      const computedLayout = this.computeLayout(studies);
 
       timepointApi.retrieveTimepoints({ patientId });
       measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
 
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
+        computedLayout,
       });
     }
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.studies !== prevProps.studies) {
-      const { studies } = this.props;
+    const { studies, layout } = this.props;
+
+    if (studies !== prevProps.studies || layout !== prevProps.layout) {
       const patientId = studies[0] && studies[0].patientId;
       const currentTimepointId = this.currentTimepointId;
+      const computedLayout = this.computeLayout(studies);
 
       this.timepointApi.retrieveTimepoints({ patientId });
       this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
 
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
+        computedLayout,
       });
     }
   }
+
+  componentWillUnmount() {
+    // Clear the entire viewport specific data
+    const { viewportSpecificData } = this.props;
+    Object.keys(viewportSpecificData).forEach(viewportIndex => {
+      this.props.clearViewportSpecificData(viewportIndex);
+    });
+  }
+
+  //////////////////////
+  computeLayout = studies => {
+    const computedLayout = [];
+    const layout = this.props.layout;
+    const viewportSpecificData = this.props.viewportSpecificData;
+    // activeViewportIndex
+
+    console.log('PROPS: ', this.props);
+
+    for (let i = 0; i < layout.viewports.length; i++) {
+      const viewportInLayout = layout.viewports[i];
+      let displaySet = viewportSpecificData[i];
+
+      // Use the cached display set in viewport if the new one is empty
+      if (displaySet && !displaySet.displaySetInstanceUid) {
+        displaySet = this.cachedComputedLayout[i];
+      }
+
+      if (
+        displaySet &&
+        displaySet.studyInstanceUid &&
+        displaySet.displaySetInstanceUid
+      ) {
+        computedLayout.push({
+          studyInstanceUid: displaySet.studyInstanceUid,
+          displaySetInstanceUid: displaySet.displaySetInstanceUid,
+        });
+      } else {
+        // If the viewport is empty, get one available in study
+        // This is how we grab "next available"
+        const allDisplaySets = [];
+
+        studies.forEach(study => {
+          study.displaySets.forEach(dSet => {
+            allDisplaySets.push({
+              displaySetInstanceUid: dSet.displaySetInstanceUid,
+              studyInstanceUid: dSet.studyInstanceUid,
+              plugin: dSet.plugin || 'cornerstone',
+            });
+          });
+        });
+
+        const firstDisplaySetNotInViewport = allDisplaySets.find(
+          ds =>
+            !computedLayout.some(
+              v => v.displaySetInstanceUid === ds.displaySetInstanceUid
+            )
+        );
+        computedLayout.push({
+          height: viewportInLayout.height,
+          width: viewportInLayout.width,
+          studyInstanceUid: firstDisplaySetNotInViewport.studyInstanceUid,
+          displaySetInstanceUid:
+            firstDisplaySetNotInViewport.displaySetInstanceUid,
+          plugin:
+            viewportInLayout.plugin || firstDisplaySetNotInViewport.plugin,
+        });
+      }
+    }
+
+    // Why?
+    this.cachedComputedLayout = computedLayout;
+
+    return computedLayout;
+  };
+
+  setViewportData = ({ viewportIndex, item }) => {
+    const displaySet = this.findDisplaySet(
+      this.props.studies,
+      item.studyInstanceUid,
+      item.displaySetInstanceUid
+    );
+
+    this.props.setViewportSpecificData(viewportIndex, displaySet);
+  };
+
+  findDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
+    const study = studies.find(study => {
+      return study.studyInstanceUid === studyInstanceUid;
+    });
+
+    if (!study) {
+      return;
+    }
+
+    return study.displaySets.find(displaySet => {
+      return displaySet.displaySetInstanceUid === displaySetInstanceUid;
+    });
+  }
+  ///////
 
   render() {
     let VisiblePanelLeft, VisiblePanelRight;
@@ -299,8 +372,18 @@ class Viewer extends Component {
           </SidePanel>
 
           {/* MAIN */}
-          <div className={classNames('main-content')}>
-            <ConnectedViewerMain studies={this.props.studies} />
+          <div className={classNames('main-content', 'viewer-main')}>
+            {/* <ConnectedViewerMain studies={this.props.studies} /> */}
+            {this.state.computedLayout && (
+              <ConnectedViewportLayout
+                studies={this.props.studies}
+                layout={this.state.computedLayout}
+                setViewportData={this.setViewportData}
+              >
+                {/* Children to add to each viewport that support children */}
+                <ConnectedToolContextMenu />
+              </ConnectedViewportLayout>
+            )}
           </div>
 
           {/* RIGHT */}

@@ -28,6 +28,8 @@ const mapDispatchToProps = dispatch => {
         viewports,
       };
 
+      console.log('CONNECTED-LAYOUT-BUTTON', layout, selectedCell);
+
       dispatch(setLayout(layout));
     },
   };

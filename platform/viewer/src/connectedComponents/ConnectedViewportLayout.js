@@ -1,4 +1,4 @@
-import { LayoutManager } from './../components/LayoutManager.js';
+import ViewportLayout from './../components/ViewportLayout';
 import { MODULE_TYPES } from '@ohif/core';
 import { connect } from 'react-redux';
 import { extensionManager } from './../App.js';
@@ -19,7 +19,6 @@ const mapStateToProps = state => {
   }
 
   return {
-    layout: state.viewports.layout,
     activeViewportIndex: state.viewports.activeViewportIndex,
     // TODO: rename `availableViewportModules`
     availablePlugins: availableViewportModules,
@@ -28,9 +27,9 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedLayoutManager = connect(
+const ConnectedViewportLayout = connect(
   mapStateToProps,
   null
-)(LayoutManager);
+)(ViewportLayout);
 
-export default ConnectedLayoutManager;
+export default ConnectedViewportLayout;

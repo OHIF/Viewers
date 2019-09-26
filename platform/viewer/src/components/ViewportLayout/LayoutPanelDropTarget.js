@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { DropTarget } from 'react-dnd';
+import { DropTarget } from 'react-dnd'; // todo: maybe missing from this lib?
 import './LayoutPanelDropTarget.css';
 
 // Drag sources and drop targets only interact

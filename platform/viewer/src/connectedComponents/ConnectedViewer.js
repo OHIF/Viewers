@@ -1,13 +1,17 @@
-import { connect } from "react-redux";
-import Viewer from "./Viewer.js";
-import OHIF from "@ohif/core";
+import { connect } from 'react-redux';
+import Viewer from './Viewer.js';
+import OHIF from '@ohif/core';
 
 const { setTimepoints, setMeasurements } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
+  const { activeViewportIndex, layout, viewportSpecificData } = state.viewports;
+
   return {
-    viewports: state.viewports.viewportSpecificData,
-    activeViewportIndex: state.viewports.activeViewportIndex
+    layout,
+    viewportSpecificData,
+    activeViewportIndex,
+    viewports: state.viewports,
   };
 };
 
@@ -18,7 +22,7 @@ const mapDispatchToProps = dispatch => {
     },
     onMeasurementsUpdated: measurements => {
       dispatch(setMeasurements(measurements));
-    }
+    },
   };
 };
 

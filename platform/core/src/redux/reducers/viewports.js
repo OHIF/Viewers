@@ -16,7 +16,6 @@ const defaultState = {
   layout: {
     viewports: [
       {
-        // plugin: 'cornerstone',
         height: '100%',
         width: '100%',
       },
@@ -34,6 +33,7 @@ const defaultState = {
  * @param {Object} [action.viewportSpecificData]
  */
 const viewports = (state = defaultState, action) => {
+  console.log('~~~~ VIEWPORTS REDUCER');
   let currentData;
   let viewportSpecificData;
   let useActiveViewport = false;

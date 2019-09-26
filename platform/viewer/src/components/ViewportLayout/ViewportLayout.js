@@ -1,49 +1,37 @@
-import './LayoutManager.css';
+import './ViewportLayout.css';
 
 import React, { Component } from 'react';
 import OHIF from '@ohif/core';
 import LayoutPanelDropTarget from './LayoutPanelDropTarget.js';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
+//
+import EmptyViewport from './EmptyViewport.js';
+import DefaultViewport from './DefaultViewport.js';
 
 const { StackManager } = OHIF.utils;
 
-function defaultViewportPlugin(props) {
-  return <div>{JSON.stringify(props)}</div>;
-}
-
-function EmptyViewport() {
-  return (
-    <div className="EmptyViewport">
-      <p>Please drag a stack here to view images.</p>
-    </div>
-  );
-}
-
-export class LayoutManager extends Component {
-  static className = 'LayoutManager';
+export class ViewportLayout extends Component {
+  static className = 'ViewportLayout';
   static defaultProps = {
-    viewportData: [],
-    layout: {
-      viewports: [
-        {
-          top: 0,
-          left: 0,
-          height: '100%',
-          width: '100%',
-        },
-      ],
-    },
     activeViewportIndex: 0,
     availablePlugins: {
-      defaultViewportPlugin,
+      DefaultViewport,
     },
-    defaultPlugin: 'defaultViewportPlugin',
+    defaultPlugin: 'DefaultViewport',
   };
 
   static propTypes = {
-    viewportData: PropTypes.array.isRequired,
     activeViewportIndex: PropTypes.number.isRequired,
-    layout: PropTypes.object.isRequired,
+    layout: PropTypes.arrayOf(
+      PropTypes.shape({
+        height: PropTypes.string,
+        width: PropTypes.string,
+        studyInstanceUid: PropTypes.string,
+        displaySetInstanceUid: PropTypes.string,
+        plugin: PropTypes.string,
+      })
+    ),
     availablePlugins: PropTypes.object.isRequired,
     setViewportData: PropTypes.func,
     studies: PropTypes.array,
@@ -70,24 +58,16 @@ export class LayoutManager extends Component {
     return ViewportComponent;
   }
 
-  getContent(ViewportComponent, viewportIndex) {
-    return (
-      <LayoutPanelDropTarget onDrop={this.onDrop} viewportIndex={viewportIndex}>
-        {ViewportComponent}
-      </LayoutPanelDropTarget>
-    );
-  }
-
   render() {
-    if (!this.props.viewportData.length) {
+    const { studies, layout } = this.props;
+
+    if (!layout.length) {
       return '';
     }
 
-    const { studies, viewportData } = this.props;
-    const viewports = this.props.layout.viewports;
-    const viewportElements = viewports.map((layout, viewportIndex) => {
-      const displaySet = viewportData[viewportIndex];
+    console.log('VPL:', layout);
 
+    const magic = layout.map((viewport, viewportIndex) => {
       // Use whichever plugin is currently in use in the panel
       // unless nothing is specified. If nothing is specified
       // and the display set has a plugin specified, use that.
@@ -97,32 +77,29 @@ export class LayoutManager extends Component {
       // - When updating a panel, ensure that the currently enabled plugin
       // in the viewport is capable of rendering this display set. If not
       // then use the most capable available plugin
-      let plugin = layout.plugin;
-      if (!layout.plugin && displaySet && displaySet.plugin) {
-        plugin = displaySet.plugin;
-      }
-
+      const plugin = viewport.plugin;
       // ~~ EXPERIMENTAL
       // Find using displaySet
       const study = studies.find(
-        study => study.studyInstanceUid === displaySet.studyInstanceUid
+        study => study.studyInstanceUid === viewport.studyInstanceUid
       );
       const studyDisplaySet = study.displaySets.find(set => {
-        return set.displaySetInstanceUid === displaySet.displaySetInstanceUid;
+        return set.displaySetInstanceUid === viewport.displaySetInstanceUid;
       });
 
       // Get stack from Stack Manager
-      const storedStack = StackManager.findOrCreateStack(
-        study,
-        studyDisplaySet
-      );
+      const storedStack =
+        StackManager.findOrCreateStack(
+          study,
+          studyDisplaySet // TODO: Study contains this display set. Why do we need to pass both? Should just take displaySetInstanceUid?
+        ) || {};
       const {
         studyInstanceUid,
         displaySetInstanceUid,
         imageIds,
         frameRate,
       } = storedStack;
-      console.log(storedStack);
+      console.log('storedStack: ', storedStack);
 
       let childrenWithProps = null;
 
@@ -137,12 +114,23 @@ export class LayoutManager extends Component {
       }
       // ~~ EXPERIMENTAL
 
-      const ViewportComponent = displaySet
+      const ViewportComponent = imageIds
         ? this.getViewportComponent(plugin)
         : EmptyViewport;
-      const ViewportComponentWithProps = (
-        <>
+      const classes = ['viewport-container', ViewportLayout.className];
+      if (this.props.activeViewportIndex === viewportIndex) {
+        classes.push('active');
+      }
+
+      return (
+        <LayoutPanelDropTarget
+          onDrop={this.onDrop}
+          viewportIndex={viewportIndex}
+          className={classNames(...classes)}
+          key={viewportIndex}
+        >
           <ViewportComponent
+            // Different "Viewport Types"? Feels too rigid to lock all into these props
             tools={[]} // TODO: Fix
             imageIds={imageIds}
             frameRate={frameRate}
@@ -151,28 +139,14 @@ export class LayoutManager extends Component {
             viewportIndex={viewportIndex}
           />
           {childrenWithProps}
-        </>
-      );
-
-      const content = this.getContent(
-        ViewportComponentWithProps,
-        viewportIndex
-      );
-
-      let className = 'viewport-container';
-      if (this.props.activeViewportIndex === viewportIndex) {
-        className += ' active';
-      }
-
-      return (
-        <div key={viewportIndex} className={className} style={{ ...layout }}>
-          {content}
-        </div>
+        </LayoutPanelDropTarget>
       );
     });
 
-    return <div className={LayoutManager.className}>{viewportElements}</div>;
+    console.log(magic);
+
+    return magic;
   }
 }
 
-export default LayoutManager;
+export default ViewportLayout;

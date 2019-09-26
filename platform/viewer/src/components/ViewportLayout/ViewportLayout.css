@@ -8,7 +8,7 @@
   border: var(--viewport-border-thickness) solid var(--active-color);
 }
 
-.EmptyViewport {
+.empty-viewport {
   display: flex;
   justify-content: center;
   align-items: center;
