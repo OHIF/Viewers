@@ -344,6 +344,21 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
         },
       });
     },
+    saveToSR: () => {
+      const successHandler = () => {
+        alert('Success');
+      };
+
+      const errorHandler = data => {
+        alert('Error saving');
+      };
+
+      const measurementApi = OHIF.measurements.MeasurementApi.Instance;
+      const promise = measurementApi.storeMeasurements();
+      promise.then(successHandler).catch(errorHandler);
+
+      return promise;
+    },
   };
 };
 

@@ -24,6 +24,7 @@ class MeasurementTable extends Component {
     selectedMeasurementNumber: PropTypes.number,
     overwallWarnings: PropTypes.object,
     t: PropTypes.func,
+    saveToSR: PropTypes.func,
   };
 
   static defaultProps = {
@@ -75,6 +76,11 @@ class MeasurementTable extends Component {
         <ScrollableArea>
           <div>{this.getMeasurementsGroups()}</div>
         </ScrollableArea>
+        <div className="measurementTableFooter">
+          <button onClick={this.props.saveToSR} className="saveBtn">
+            SAVE
+          </button>
+        </div>
       </div>
     );
   }
