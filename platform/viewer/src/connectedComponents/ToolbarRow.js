@@ -153,32 +153,19 @@ class ToolbarRow extends Component {
 function _getCustomButtonComponent(button, activeButtons) {
   const CustomComponent = button.CustomComponent;
 
-  function isFunctionalComponent(Component) {
-    return (
-      typeof Component === 'function' &&
-      !(Component.prototype && Component.prototype.isReactComponent)
-    );
+  function isValidComponent(Component) {
+    return (typeof Component === 'function');
   }
 
-  function isClassComponent(Component) {
-    return !!(
-      typeof Component === 'function' &&
-      Component.prototype &&
-      Component.prototype.isReactComponent
-    );
-  }
   // Check if its a valid customComponent. Later on an CustomToolbarComponent interface could be implemented.
-  if (
-    isClassComponent(CustomComponent) ||
-    isFunctionalComponent(CustomComponent)
-  ) {
+  if (isValidComponent(CustomComponent)) {
     const parentContext = this;
     const isActive = activeButtons.includes(button.id);
 
     return (
       <CustomComponent
         parentContext={parentContext}
-        toolbarClickCallback={_handleToolbarButtonClick}
+        toolbarClickCallback={_handleToolbarButtonClick.bind(this)}
         button={button}
         key={button.id}
         activeButtons={activeButtons}
@@ -231,17 +218,20 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
   const _this = this;
   return toolbarButtons
     .map(button => {
-      let getButtonComponentMethod = _getDefaultButtonComponent;
 
-      if (button.CustomComponent) {
-        getButtonComponentMethod = _getCustomButtonComponent;
-      } else if (button.buttons && button.buttons.length) {
-        getButtonComponentMethod = _getExpandableButtonComponent;
+      const hasCustomComponent = button.CustomComponent;
+      const hasNestedButtonDefinitions = button.buttons && button.buttons.length;
+
+      if (hasCustomComponent) {
+        return _getCustomButtonComponent.call(_this, button, activeButtons);
       }
 
-      return getButtonComponentMethod.call(_this, button, activeButtons);
-    })
-    .filter(component => !!component);
+      if (hasNestedButtonDefinitions) {
+        return _getExpandableButtonComponent.call(_this, button, activeButtons);
+      }
+
+      return _getDefaultButtonComponent.call(_this, button, activeButtons);
+    });
 }
 
 /**
