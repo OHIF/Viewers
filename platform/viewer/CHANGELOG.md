@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.12...@ohif/viewer@1.1.13) (2019-09-26)
+
+
+### Bug Fixes
+
+* Add some code splitting for PWA build ([#937](https://github.com/OHIF/Viewers/issues/937)) ([8938035](https://github.com/OHIF/Viewers/commit/8938035))
+
+
+
+
+
 ## [1.1.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.11...@ohif/viewer@1.1.12) (2019-09-26)
 
 **Note:** Version bump only for package @ohif/viewer
