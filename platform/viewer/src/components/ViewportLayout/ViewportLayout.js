@@ -127,6 +127,7 @@ export class ViewportLayout extends Component {
           onDrop={this.onDrop}
           viewportIndex={viewportIndex}
           className={classNames(...classes)}
+          style={{ height: viewport.height, width: viewport.width }}
           key={viewportIndex}
         >
           <ViewportComponent
@@ -143,7 +144,7 @@ export class ViewportLayout extends Component {
       );
     });
 
-    console.log(magic);
+    console.log('MAGIC: ', magic);
 
     return magic;
   }

@@ -31,8 +31,6 @@ const divTarget = {
 // TODO: Find out why we can't move this into the Example app instead.
 // It looks like the context isn't properly shared.
 class LayoutPanelDropTarget extends Component {
-  static className = 'LayoutPanelDropTarget';
-
   static defaultProps = {
     isOver: false,
     canDrop: false,
@@ -43,13 +41,14 @@ class LayoutPanelDropTarget extends Component {
     canDrop: PropTypes.bool.isRequired,
     isOver: PropTypes.bool.isRequired,
     viewportComponent: PropTypes.object,
+    style: PropTypes.object,
   };
 
   render() {
-    const { canDrop, isOver, connectDropTarget } = this.props;
+    const { canDrop, isOver, connectDropTarget, style } = this.props;
     const isActive = canDrop && isOver;
 
-    let className = LayoutPanelDropTarget.className;
+    let className = 'viewport-drop-target';
 
     if (isActive) {
       className += ' hovered';
@@ -58,7 +57,9 @@ class LayoutPanelDropTarget extends Component {
     }
 
     return connectDropTarget(
-      <div className={className}>{this.props.children}</div>
+      <div className={className} style={style}>
+        {this.props.children}
+      </div>
     );
   }
 }

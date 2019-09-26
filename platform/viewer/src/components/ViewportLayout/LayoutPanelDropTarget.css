@@ -1,12 +1,10 @@
-.LayoutPanelDropTarget {
-  width: 100%;
-  height: 100%;
-
+.viewport-drop-target {
   opacity: 1;
+  float: left; /* Should be married to viewport-container */
   transition: 0.3s all ease;
 }
 
-.LayoutPanelDropTarget.hovered {
+.viewport-drop-target.hovered {
   opacity: 0.5;
   cursor: copy;
 }

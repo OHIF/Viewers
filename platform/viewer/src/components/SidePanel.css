@@ -30,11 +30,3 @@
   margin-right: 0;
   margin-left: 0;
 }
-
-.main-content {
-  flex: 1;
-  height: 100%;
-  overflow: hidden;
-  transition: var(--sidepanel-transition);
-  width: 100%;
-}

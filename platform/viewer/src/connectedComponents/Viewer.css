@@ -19,13 +19,11 @@
   font-size: 30px;
 }
 
-.viewer-main {
-  width: 100%;
+.main-content {
+  flex: 1;
   height: 100%;
-  transition: all 0.3s ease;
-}
-
-.viewer-main > div {
   width: 100%;
-  height: 100%;
+  overflow: hidden;
+  transition: var(--sidepanel-transition);
+  /* transition: all 0.3s ease; */
 }

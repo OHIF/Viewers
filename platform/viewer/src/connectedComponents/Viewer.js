@@ -221,8 +221,11 @@ class Viewer extends Component {
         displaySet.displaySetInstanceUid
       ) {
         computedLayout.push({
+          height: viewportInLayout.height,
+          width: viewportInLayout.width,
           studyInstanceUid: displaySet.studyInstanceUid,
           displaySetInstanceUid: displaySet.displaySetInstanceUid,
+          plugin: viewportInLayout.plugin,
         });
       } else {
         // If the viewport is empty, get one available in study
@@ -372,7 +375,7 @@ class Viewer extends Component {
           </SidePanel>
 
           {/* MAIN */}
-          <div className={classNames('main-content', 'viewer-main')}>
+          <div className={classNames('main-content')}>
             {/* <ConnectedViewerMain studies={this.props.studies} /> */}
             {this.state.computedLayout && (
               <ConnectedViewportLayout
