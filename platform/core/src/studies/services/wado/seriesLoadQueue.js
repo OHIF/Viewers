@@ -1,3 +1,9 @@
+/**
+ * Module: seriesLoadQueue.js
+ * This module represents a queue of series from a given study to be loaded.
+ * It also implements the pub/sub interfaece.
+ */
+
 import { api } from 'dicomweb-client';
 import { makePubSub } from '../../../lib/pubSub';
 
@@ -52,6 +58,12 @@ function isValidId(subject) {
   return typeof subject === 'string' && subject.length > 0;
 }
 
+/**
+ * Creates a series load queue instance for the given study instance UID
+ * @param {api.DICOMwebClient} dicomWebClient The instance of the DICOMWebClient instance which will be used to load the series metadata.
+ * @param {string} studyId The Study Instance UID from which the series will be loaded
+ * @param {string} givenSeriesIds A list of Series Instance UIDs which will be added to the load queue;
+ */
 function makeSeriesLoadQueue(dicomWebClient, studyId, givenSeriesIds) {
   if (
     dicomWebClient instanceof api.DICOMwebClient &&

@@ -1,3 +1,9 @@
+/**
+ * Module: pubSub.js
+ * This module aims to provide a simple means to create regular/plain
+ * JavaScript objects that support the pub/sub interface;
+ */
+
 const TOPICS_MAP = Symbol('PubSubTopicsMap');
 
 const pubSubProto = {
@@ -30,7 +36,7 @@ function publish(source, topic, data) {
   const listeners = getTopicListeners(source, topic).slice();
   const count = listeners.length;
   for (let i = 0; i < count; ++i) {
-    notifyListener(listeners[i], data, source);
+    notifyListener(listeners[i], data, source, topic);
   }
 }
 
@@ -53,9 +59,9 @@ function getTopicsMap(source) {
   return topicsMap;
 }
 
-function notifyListener(listener, data, source) {
+function notifyListener(listener, data, source, topic) {
   if (typeof listener === 'function') {
-    listener.call(source, data, source);
+    listener.call(source, data, source, topic);
   }
 }
 
