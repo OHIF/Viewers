@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.14...@ohif/viewer@1.2.0) (2019-09-26)
+
+
+### Features
+
+* 🎸 React custom component on toolbar button ([#935](https://github.com/OHIF/Viewers/issues/935)) ([a90605c](https://github.com/OHIF/Viewers/commit/a90605c))
+
+
+
+
+
 ## [1.1.14](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.13...@ohif/viewer@1.1.14) (2019-09-26)
 
 
