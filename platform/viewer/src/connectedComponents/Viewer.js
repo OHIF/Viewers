@@ -12,6 +12,7 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
+import DICOMSR from '../lib/DICOMSR';
 
 // Contexts
 import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
@@ -70,8 +71,8 @@ class Viewer extends Component {
     super(props);
     OHIF.measurements.MeasurementApi.setConfiguration({
       dataExchange: {
-        retrieve: this.retrieveMeasurements,
-        store: this.storeMeasurements,
+        retrieve: DICOMSR.retrieveMeasurements,
+        store: DICOMSR.storeMeasurements,
       },
     });
 
@@ -92,18 +93,6 @@ class Viewer extends Component {
     selectedRightSidePanel: '',
     selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
     thumbnails: [],
-  };
-
-  retrieveMeasurements = (patientId, timepointIds) => {
-    OHIF.log.info('retrieveMeasurements');
-    // TODO: Retrieve the measurements from the latest available SR
-    return Promise.resolve();
-  };
-
-  storeMeasurements = (measurementData, timepointIds) => {
-    OHIF.log.info('storeMeasurements');
-    // TODO: Store the measurements into a new SR sent to the active server
-    return Promise.resolve();
   };
 
   retrieveTimepoints = filter => {
