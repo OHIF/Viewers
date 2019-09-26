@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.14](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.13...@ohif/viewer@1.1.14) (2019-09-26)
+
+
+### Bug Fixes
+
+* 🐛 Set series into active viewport by clicking on thumbnail ([#945](https://github.com/OHIF/Viewers/issues/945)) ([5551f81](https://github.com/OHIF/Viewers/commit/5551f81)), closes [#895](https://github.com/OHIF/Viewers/issues/895) [#895](https://github.com/OHIF/Viewers/issues/895)
+
+
+
+
+
 ## [1.1.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.12...@ohif/viewer@1.1.13) (2019-09-26)
 
 
