@@ -12,7 +12,7 @@ const getAllDisplaySets = () => {
   let allDisplaySets = [];
 
   allStudies.forEach(study => {
-    allDisplaySets = allDisplaySets.concat(study.displaySets);
+    allDisplaySets = allDisplaySets.concat(study.getDisplaySets());
   });
 
   return allDisplaySets;

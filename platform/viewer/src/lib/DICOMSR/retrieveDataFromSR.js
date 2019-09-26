@@ -1,8 +1,5 @@
 import * as dcmjs from 'dcmjs';
-import OHIF from '@ohif/core';
 import { getAllDisplaySets, getInstanceMetadata } from './srUtils';
-
-export default retrieveDataFromSR;
 
 const retrieveDataFromSR = Part10SRArrayBuffer => {
   const allDisplaySets = getAllDisplaySets();
@@ -34,7 +31,7 @@ const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
         displaySets,
         measurement.sopInstanceUid
       );
-      const imageId = OHIF.viewerbase.getImageId(instanceMetadata);
+      const imageId = instanceMetadata.getImageId();
       if (!imageId) {
         return;
       }
@@ -70,3 +67,5 @@ const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
 
   return measurementData;
 };
+
+export default retrieveDataFromSR;

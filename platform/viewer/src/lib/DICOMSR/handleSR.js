@@ -5,10 +5,12 @@ import retrieveDataFromMeasurements from './retrieveDataFromMeasurements';
 
 import { api } from 'dicomweb-client';
 
-const retrieveMeasurementFromSR = async (series, server) => {
+const retrieveMeasurementFromSR = async series => {
+  // TODO: Find a way to get the server and get the wadoRoot url
+  const url = 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs';
   const config = {
-    url: server.wadoRoot,
-    headers: DICOMWeb.getAuthorizationHeader(),
+    url,
+    headers: OHIF.DICOMWeb.getAuthorizationHeader(),
   };
 
   const dicomWeb = new api.DICOMwebClient(config);
@@ -23,7 +25,7 @@ const retrieveMeasurementFromSR = async (series, server) => {
   return dicomWeb.retrieveInstance(options).then(retrieveDataFromSR);
 };
 
-const stowSRFromMeasurements = async (measurements, server) => {
+const stowSRFromMeasurements = async measurements => {
   const dataset = retrieveDataFromMeasurements(measurements);
   const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -43,8 +45,10 @@ const stowSRFromMeasurements = async (measurements, server) => {
 
   const part10Buffer = dicomDict.write();
 
+  // TODO: Find a way to get the server and get the wadoRoot url
+  const url = 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs';
   const config = {
-    url: server.wadoRoot,
+    url,
     headers: OHIF.DICOMWeb.getAuthorizationHeader(),
   };
 

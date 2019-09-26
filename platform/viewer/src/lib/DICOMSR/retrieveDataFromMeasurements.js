@@ -1,8 +1,6 @@
 import * as dcmjs from 'dcmjs';
 import OHIF from '@ohif/core';
 
-export default retrieveDataFromMeasurements;
-
 const retrieveDataFromMeasurements = measurements => {
   const { MeasurementReport } = dcmjs.adapters.Cornerstone;
   const { getImageIdForImagePath } = OHIF.viewerbase;
@@ -32,3 +30,5 @@ const retrieveDataFromMeasurements = measurements => {
 
   return report.dataset;
 };
+
+export default retrieveDataFromMeasurements;
