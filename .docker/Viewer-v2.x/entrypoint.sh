@@ -7,11 +7,11 @@ if [ ! -z "$CLIENT_ID" ]
   	echo $CLIENT_ID
   	echo "Updating config..."
 
-  	# - Use SED to replace the CLIENT_ID that is currently in public/config/google.js
-	sed -i -e "s/YOURCLIENTID.apps.googleusercontent.com/$CLIENT_ID/g" /usr/share/nginx/html/config/google.js
+  	# - Use SED to replace the CLIENT_ID that is currently in google.js
+	sed -i -e "s/YOURCLIENTID.apps.googleusercontent.com/$CLIENT_ID/g" /usr/share/nginx/html/google.js
 
-	# - Copy public/config/google.js to overwrite public/config/default.js
-	cp /usr/share/nginx/html/config/google.js /usr/share/nginx/html/config/default.js
+	# - Copy google.js to overwrite app-config.js
+	cp /usr/share/nginx/html/google.js /usr/share/nginx/html/app-config.js
 fi
 
 echo "Starting Nginx to serve the OHIF Viewer..."
