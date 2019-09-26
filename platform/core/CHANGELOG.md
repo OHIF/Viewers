@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.10](https://github.com/OHIF/Viewers/compare/@ohif/core@0.50.9...@ohif/core@0.50.10) (2019-09-23)
+
+
+### Bug Fixes
+
+* Avoid using variable name "module" ([#942](https://github.com/OHIF/Viewers/issues/942)) ([72427fe](https://github.com/OHIF/Viewers/commit/72427fe)), closes [#940](https://github.com/OHIF/Viewers/issues/940)
+
+
+
+
+
 ## [0.50.9](https://github.com/OHIF/Viewers/compare/@ohif/core@0.50.8...@ohif/core@0.50.9) (2019-09-17)
 
 
