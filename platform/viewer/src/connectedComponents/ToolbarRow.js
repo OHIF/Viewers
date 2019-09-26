@@ -152,13 +152,10 @@ class ToolbarRow extends Component {
 
 function _getCustomButtonComponent(button, activeButtons) {
   const CustomComponent = button.CustomComponent;
-
-  function isValidComponent(Component) {
-    return (typeof Component === 'function');
-  }
+  const isValidComponent = typeof CustomComponent === 'function';
 
   // Check if its a valid customComponent. Later on an CustomToolbarComponent interface could be implemented.
-  if (isValidComponent(CustomComponent)) {
+  if (isValidComponent) {
     const parentContext = this;
     const isActive = activeButtons.includes(button.id);
 
@@ -216,22 +213,20 @@ function _getDefaultButtonComponent(button, activeButtons) {
  */
 function _getButtonComponents(toolbarButtons, activeButtons) {
   const _this = this;
-  return toolbarButtons
-    .map(button => {
+  return toolbarButtons.map(button => {
+    const hasCustomComponent = button.CustomComponent;
+    const hasNestedButtonDefinitions = button.buttons && button.buttons.length;
 
-      const hasCustomComponent = button.CustomComponent;
-      const hasNestedButtonDefinitions = button.buttons && button.buttons.length;
+    if (hasCustomComponent) {
+      return _getCustomButtonComponent.call(_this, button, activeButtons);
+    }
 
-      if (hasCustomComponent) {
-        return _getCustomButtonComponent.call(_this, button, activeButtons);
-      }
+    if (hasNestedButtonDefinitions) {
+      return _getExpandableButtonComponent.call(_this, button, activeButtons);
+    }
 
-      if (hasNestedButtonDefinitions) {
-        return _getExpandableButtonComponent.call(_this, button, activeButtons);
-      }
-
-      return _getDefaultButtonComponent.call(_this, button, activeButtons);
-    });
+    return _getDefaultButtonComponent.call(_this, button, activeButtons);
+  });
 }
 
 /**
