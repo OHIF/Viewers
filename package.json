@@ -90,7 +90,7 @@
     "stylelint-config-recommended": "^2.2.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
-    "terser-webpack-plugin": "^1.4.1",
+    "terser-webpack-plugin": "^2.1.0",
     "webpack": "^4.35.2",
     "webpack-cli": "^3.3.5",
     "webpack-dev-server": "^3.7.2",
@@ -98,6 +98,17 @@
     "webpack-merge": "^4.2.1",
     "workbox-webpack-plugin": "^4.3.1",
     "worker-loader": "^2.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,json,css}": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "resolutions": {
     "**/@babel/runtime": "7.5.5"
