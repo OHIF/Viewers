@@ -1,4 +1,5 @@
 import {
+  Checkbox,
   CineDialog,
   ExampleDropTarget,
   LayoutButton,
@@ -25,7 +26,7 @@ import {
 import { ICONS, Icon } from './elements';
 
 // Alias this for now as not all dependents are using strict versioning
-import { DropdownMenu as Dropdown, Range } from './elements/form';
+import { DropdownMenu as Dropdown, Range, Select } from './elements/form';
 import ExpandableToolMenu from './viewer/ExpandableToolMenu.js';
 import LayoutManager from './LayoutChooser/LayoutManager.js';
 import LayoutPanelDropTarget from './LayoutChooser/LayoutPanelDropTarget.js';
@@ -38,6 +39,7 @@ import ViewerbaseDragDropContext from './utils/viewerbaseDragDropContext.js';
 export {
   ICONS,
   //
+  Checkbox,
   CineDialog,
   Dropdown,
   ExpandableToolMenu,
@@ -56,6 +58,7 @@ export {
   Range,
   RoundedButtonGroup,
   ScrollableArea,
+  Select,
   SelectTree,
   SimpleDialog,
   StudyBrowser,

@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Range, Icon, ExpandableToolMenu } from '@ohif/ui';
+import { Range, Checkbox, Select } from '@ohif/ui';
 
 import './slab-thickness-toolbar-button.styl';
 
@@ -12,14 +12,10 @@ const SLIDER = {
 };
 
 const ToolbarLabel = props => {
-  const { label, isExpanded } = props;
+  const { label } = props;
   return (
     <div className="toolbar-button-label">
       {label}
-      <Icon
-        name={isExpanded ? 'caret-up' : 'caret-down'}
-        className="expand-caret"
-      />
     </div>
   );
 };
@@ -41,137 +37,149 @@ const ToolbarSlider = props => {
   );
 };
 
-export default class SlabThicknessToolbarComponent extends Component {
-  static propTypes = {
-    parentContext: PropTypes.object.isRequired,
-    toolbarClickCallback: PropTypes.func.isRequired,
-    button: PropTypes.object.isRequired,
-    activeButtons: PropTypes.array.isRequired,
-    isActive: PropTypes.bool,
+const _getSelectOptions = (button) => {
+  return button.operationButtons.map(button => {
+    return {
+      key: button.label,
+      value: button.id
+    }
+  });
+};
+
+const _getClassNames = (isActive, className) => {
+  return classnames('toolbar-button', 'slab-thickness', className, {
+    active: isActive,
+  });
+}
+
+const _applySlabThickness = (value, modeChecked, toolbarClickCallback, button) => {
+
+  if (!modeChecked || !toolbarClickCallback) {
+    return;
+  }
+
+  const { actionButton } = button;
+
+  const generateOperation = (operation, value) => {
+    // Combine slider value into slider operation
+    const generatedOperation = { ...operation };
+    generatedOperation.commandOptions = {
+      ...operation.commandOptions,
+      slabThickness: value,
+    };
+
+    return generatedOperation;
   };
 
-  constructor() {
-    super();
-    this.state = {
-      value: SLIDER.MAX,
-      sliderMin: SLIDER.MIN,
-      sliderMax: SLIDER.MAX,
-      operation: undefined,
-    };
+  const operation = generateOperation(actionButton, value);
+  toolbarClickCallback(operation, event);
+};
+
+const _applyModeOperation = (operation, modeChecked, toolbarClickCallback, button) => {
+  // in case modeChecked has not being triggered by user yet
+  if (typeof modeChecked !== 'boolean') {
+    return;
   }
 
-  applySlabThickness() {
-    const { value } = this.state;
-    const { toolbarClickCallback, button } = this.props;
-    const { actionButton } = button;
+  const { deactivateButton } = button;
 
-    const isOperationEnabled = button => {
-      const { enabledOn = [] } = button;
-      const { id: currentOpId = '' } = this.state.operation || {};
+  const _operation = modeChecked ? operation : deactivateButton;
+  if (toolbarClickCallback && _operation) {
+    toolbarClickCallback(_operation);
+  }
+};
 
-      return enabledOn.some(opId => currentOpId && opId == currentOpId);
-    };
+const _getInitialState = (currentSelectedOption) => {
+  return {
+    value: SLIDER.MAX,
+    sliderMin: SLIDER.MIN,
+    sliderMax: SLIDER.MAX,
+    modeChecked: undefined,
+    operation: currentSelectedOption
+  };
+};
 
-    const generateOperation = (operation, value) => {
-      // Combine slider value into slider operation
-      const generatedOperation = { ...operation };
-      generatedOperation.commandOptions = {
-        ...operation.commandOptions,
-        slabThickness: value,
-      };
+const INITIAL_OPTION_INDEX = 0;
+const _getInitialtSelectedOption = (button = {}) => {
+  return button.operationButtons && button.operationButtons[INITIAL_OPTION_INDEX];
+};
 
-      return generatedOperation;
-    };
+function SlabThicknessToolbarComponent({ parentContext, toolbarClickCallback, button, activeButtons, isActive, className }) {
+  const currentSelectedOption = _getInitialtSelectedOption(button);
+  const [state, setState] = useState(_getInitialState(currentSelectedOption));
+  const { label, operationButtons } = button;
+  const _className = _getClassNames(isActive, className);
+  const selectOptions = _getSelectOptions(button);
+  function onChangeSelect(selectedValue) {
+    // find select value
+    const operation = operationButtons.find(button => button.id === selectedValue);
 
-    if (
-      toolbarClickCallback &&
-      actionButton &&
-      isOperationEnabled(actionButton)
-    ) {
-      const operation = generateOperation(actionButton, value);
-      toolbarClickCallback(operation, event);
+    if (operation === state.operation) {
+      return;
     }
+
+    setState({ ...state, operation });
   }
 
-  onChangeOperation(button, event, props) {
-    const { id: currentOpId = '' } = this.state.operation || {};
-    const { id: nextOpId = '' } = props || {};
-
-    if (currentOpId !== nextOpId) {
-      this.setState(
-        {
-          operation: props,
-        },
-        () => {
-          const { toolbarClickCallback } = this.props;
-          if (toolbarClickCallback) {
-            toolbarClickCallback(button, event);
-          }
-          this.applySlabThickness();
-        }
-      );
-    }
+  function onChangeCheckbox(checked) {
+    setState({ ...state, modeChecked: checked });
   }
 
-  onChangeSlider(event) {
+  function onChangeSlider(event) {
     const value = Number(event.target.value);
 
-    if (value !== this.state.value) {
-      this.setState({ value }, () => {
-        this.applySlabThickness();
-      });
+    if (value !== state.value) {
+      setState({ ...state, value });
     }
   }
 
-  bindButtonsListeners(button) {
-    return button.buttons.map(childButton => {
-      childButton.onClick = this.onChangeOperation.bind(this, childButton);
-      return childButton;
-    });
-  }
+  useEffect(() => {
+    _applyModeOperation(state.operation, state.modeChecked, toolbarClickCallback, button);
+    _applySlabThickness(state.value, state.modeChecked, toolbarClickCallback, button);
+  }, [state.modeChecked]);
 
-  getClassNames() {
-    const { isActive, className } = this.props;
-    return classnames('toolbar-button', 'slab-thickness', className, {
-      active: isActive,
-    });
-  }
+  useEffect(() => {
+    _applySlabThickness(state.value, state.modeChecked, toolbarClickCallback, button);
+  }, [state.operation, state.value]);
 
-  getActiveCommand(button, activeButtons) {
-    let activeCommand;
-    button.buttons.forEach(childButton => {
-      if (activeButtons.indexOf(childButton.id) > -1) {
-        activeCommand = childButton.id;
-      }
-    });
-
-    return activeCommand;
-  }
-
-  render() {
-    const { value = SLIDER.MIN } = this.state;
-
-    const className = this.getClassNames();
-    const { button, activeButtons } = this.props;
-    const expandableButtons = this.bindButtonsListeners(button);
-    const activeCommand = this.getActiveCommand(button, activeButtons);
-
-    return (
-      <div className={className}>
+  return (
+    <div className={_className}>
+      <div className='container'>
         <ToolbarSlider
-          value={value}
-          min={this.state.sliderMin}
-          max={this.state.sliderMax}
-          onChange={this.onChangeSlider.bind(this)}
+          value={state.value}
+          min={state.sliderMin}
+          max={state.sliderMax}
+          onChange={onChangeSlider}
         />
-        <ExpandableToolMenu
-          {...button}
-          buttons={expandableButtons}
-          activeCommand={activeCommand}
-        >
-          <ToolbarLabel key="tool-bar-label" />
-        </ExpandableToolMenu>
+        <ToolbarLabel key="toolbar-label" label={label} />
       </div>
-    );
-  }
+      <div className='controller'>
+        <Checkbox
+          label='mode'
+          checked={state.modeChecked}
+          onChange={onChangeCheckbox}
+        >
+        </Checkbox>
+        <Select
+          key='toolbar-select'
+          options={selectOptions}
+          value={selectOptions[INITIAL_OPTION_INDEX].value}
+          onChange={onChangeSelect}
+        >
+        </Select>
+      </div>
+    </div>
+  );
+
 }
+
+SlabThicknessToolbarComponent.propTypes = {
+  parentContext: PropTypes.object.isRequired,
+  toolbarClickCallback: PropTypes.func.isRequired,
+  button: PropTypes.object.isRequired,
+  activeButtons: PropTypes.array.isRequired,
+  isActive: PropTypes.bool,
+  className: PropTypes.string,
+};
+
+export default SlabThicknessToolbarComponent;

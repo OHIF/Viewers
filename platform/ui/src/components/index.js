@@ -13,6 +13,7 @@ import {
   UserPreferencesModal,
 } from './userPreferencesModal';
 
+import { Checkbox } from './checkbox';
 import { CineDialog } from './cineDialog';
 import { QuickSwitch } from './quickSwitch';
 import { RoundedButtonGroup } from './roundedButtonGroup';
@@ -23,6 +24,7 @@ import { ToolbarSection } from './toolbarSection';
 import { Tooltip } from './tooltip';
 
 export {
+  Checkbox,
   CineDialog,
   ExampleDropTarget,
   LayoutButton,

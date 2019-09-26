@@ -6,6 +6,7 @@ export class Checkbox extends Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
     checked: PropTypes.bool,
+    onChange: PropTypes.func,
   };
 
   constructor(props) {
@@ -14,7 +15,9 @@ export class Checkbox extends Component {
   }
 
   handleChange(e) {
-    this.setState({ checked: e.target.checked });
+    const checked = e.target.checked;
+    this.setState({ checked });
+    if (this.props.onChange) this.props.onChange(checked);
   }
 
   render() {

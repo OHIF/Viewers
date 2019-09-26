@@ -80,34 +80,24 @@ const definitions = [
     actionButton: {
       id: 'setSlabThickness',
       label: 'slider',
-      grouped: false,
-      //
       type: TOOLBAR_BUTTON_TYPES.COMMAND,
       commandName: 'setSlabThickness',
-      enabledOn: ['setBlendModeToMaximumIntensity'],
       commandOptions: {},
     },
-    buttons: [
+    deactivateButton: {
+      id: 'setBlendModeToComposite',
+      type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+      commandName: 'setBlendModeToComposite',
+      commandOptions: {},
+    },
+    operationButtons: [
       {
         id: 'setBlendModeToMaximumIntensity',
         label: 'MIP',
-        icon: 'soft-tissue',
-        grouped: true,
-        //
         type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
         commandName: 'setBlendModeToMaximumIntensity',
         commandOptions: {},
-      },
-      {
-        id: 'setBlendModeToComposite',
-        label: 'OFF',
-        icon: 'times',
-        grouped: true,
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setBlendModeToComposite',
-        commandOptions: {},
-      },
+      }
     ],
   },
 ];
