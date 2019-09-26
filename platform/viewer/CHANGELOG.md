@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.2.0...@ohif/viewer@1.2.1) (2019-09-26)
+
+
+### Bug Fixes
+
+* google cloud support w/ docker (via env var) ([#958](https://github.com/OHIF/Viewers/issues/958)) ([e375a4a](https://github.com/OHIF/Viewers/commit/e375a4a))
+
+
+
+
+
 # [1.2.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.14...@ohif/viewer@1.2.0) (2019-09-26)
 
 
