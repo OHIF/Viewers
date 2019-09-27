@@ -7,6 +7,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.js';
 
+import './fonts/fonts.css';
+
 function installViewer(props, containerId = 'root', callback) {
   const container = document.getElementById(containerId);
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.2.1...@ohif/extension-cornerstone@1.2.2) (2019-09-26)
+
+
+### Bug Fixes
+
+* Add some code splitting for PWA build ([#937](https://github.com/OHIF/Viewers/issues/937)) ([8938035](https://github.com/OHIF/Viewers/commit/8938035))
+
+
+
+
+
 ## [1.2.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.2.0...@ohif/extension-cornerstone@1.2.1) (2019-09-17)
 
 
