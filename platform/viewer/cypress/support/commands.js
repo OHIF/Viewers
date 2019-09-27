@@ -30,9 +30,14 @@ Cypress.Commands.add('openStudy', (patientName) => {
     cy.visit('/');
     cy.get('#patientName')
       .type(patientName);
-    cy.get('.studylistStudy > .patientName')
-      .contains(patientName)
-      .click();
+
+    const patientResult = '.studylistStudy > .patientName';
+
+    cy.get(patientResult)
+      .then({ timeout: 5000 }, ($patientResult) => {
+        cy.contains(patientName)
+        .click();
+      })
   }
 );
 
