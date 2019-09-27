@@ -1,4 +1,5 @@
-import SlabThicknessToolbarComponent from './SlabThicknessToolbarComponent';
+import SlabThicknessToolbarComponent from './toolbarComponents/SlabThicknessToolbarComponent';
+
 const TOOLBAR_BUTTON_TYPES = {
   COMMAND: 'command',
   SET_TOOL_ACTIVE: 'setToolActive',
@@ -97,7 +98,7 @@ const definitions = [
         type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
         commandName: 'setBlendModeToMaximumIntensity',
         commandOptions: {},
-      }
+      },
     ],
   },
 ];

@@ -18,6 +18,7 @@ const { BlendMode } = Constants;
 // TODO: Put this somewhere else
 let apis = {};
 let currentSlabThickness = 0.1;
+let defaultSlabThickness = 0.1;
 
 function getCrosshairCallbackForIndex(index) {
   return ({ worldPos }) => {
@@ -117,6 +118,7 @@ function switchMPRInteractors(api, istyle) {
   let currentSlabThickness;
   if (currentIStyle.getSlabThickness && istyle.getSlabThickness) {
     currentSlabThickness = currentIStyle.getSlabThickness();
+    defaultSlabThickness = currentSlabThickness;
   }
 
   renderWindow.getInteractor().setInteractorStyle(istyle);
@@ -214,9 +216,15 @@ const actions = {
   setBlendModeToComposite: () => {
     apis.forEach(api => {
       const renderWindow = api.genericRenderWindow.getRenderWindow();
+      const istyle = renderWindow.getInteractor().getInteractorStyle();
+
       const mapper = api.volumes[0].getMapper();
       if (mapper.setBlendModeToComposite) {
         mapper.setBlendModeToComposite();
+      }
+
+      if (istyle.setSlabThickness) {
+        istyle.setSlabThickness(defaultSlabThickness);
       }
       renderWindow.render();
     });
