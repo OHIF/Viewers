@@ -133,7 +133,8 @@ function getSourceImageInstanceUid(instance) {
   if (
     SourceImageSequence &&
     SourceImageSequence.Value &&
-    SourceImageSequence.Value.length
+    SourceImageSequence.Value.length &&
+    SourceImageSequence.Value[0]['00081155'].Value
   ) {
     return SourceImageSequence.Value[0]['00081155'].Value[0];
   }
@@ -293,7 +294,6 @@ async function resultDataToStudyMetadata(server, studyInstanceUid, resultData) {
   // TODO: Pass a reference ID to the server instead of including the URLs here
   const studyData = {
     seriesList: [],
-    studyInstanceUid,
     wadoUriRoot: server.wadoUriRoot,
     wadoRoot: server.wadoRoot,
     qidoRoot: server.qidoRoot,
