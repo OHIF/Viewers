@@ -1,8 +1,6 @@
 import { api } from 'dicomweb-client';
 import log from '../../../log';
 import DICOMWeb from '../../../DICOMWeb/';
-import { makePubSub } from '../../../lib/pubSub';
-import { makeSeriesLoadQueue } from './seriesLoadQueue';
 
 const INFO = Symbol('INFO');
 
@@ -401,34 +399,45 @@ async function makeSOPInstance(server, study, instance) {
   return sopInstance;
 }
 
-function createStudy(server, anInstance) {
+/**
+ * Create a plain JS object that describes a study (a study descriptor object)
+ * @param {Object} server Object with server configuration paramenters
+ * @param {Object} aSopInstance a SOP Instance from which study information will be added
+ */
+function createStudy(server, aSopInstance) {
   // TODO: Pass a reference ID to the server instead of including the URLs here
-  return makePubSub({
+  return {
     seriesList: [],
     seriesMap: Object.create(null),
-    seriesLoadQueue: null,
+    seriesLoader: null,
     wadoUriRoot: server.wadoUriRoot,
     wadoRoot: server.wadoRoot,
     qidoRoot: server.qidoRoot,
-    patientName: DICOMWeb.getName(anInstance['00100010']),
-    patientId: DICOMWeb.getString(anInstance['00100020']),
-    patientAge: DICOMWeb.getNumber(anInstance['00101010']),
-    patientSize: DICOMWeb.getNumber(anInstance['00101020']),
-    patientWeight: DICOMWeb.getNumber(anInstance['00101030']),
-    accessionNumber: DICOMWeb.getString(anInstance['00080050']),
-    studyDate: DICOMWeb.getString(anInstance['00080020']),
-    modalities: DICOMWeb.getString(anInstance['00080061']),
-    studyDescription: DICOMWeb.getString(anInstance['00081030']),
-    imageCount: DICOMWeb.getString(anInstance['00201208']),
-    studyInstanceUid: DICOMWeb.getString(anInstance['0020000D']),
-    institutionName: DICOMWeb.getString(anInstance['00080080']),
-  });
+    patientName: DICOMWeb.getName(aSopInstance['00100010']),
+    patientId: DICOMWeb.getString(aSopInstance['00100020']),
+    patientAge: DICOMWeb.getNumber(aSopInstance['00101010']),
+    patientSize: DICOMWeb.getNumber(aSopInstance['00101020']),
+    patientWeight: DICOMWeb.getNumber(aSopInstance['00101030']),
+    accessionNumber: DICOMWeb.getString(aSopInstance['00080050']),
+    studyDate: DICOMWeb.getString(aSopInstance['00080020']),
+    modalities: DICOMWeb.getString(aSopInstance['00080061']),
+    studyDescription: DICOMWeb.getString(aSopInstance['00081030']),
+    imageCount: DICOMWeb.getString(aSopInstance['00201208']),
+    studyInstanceUid: DICOMWeb.getString(aSopInstance['0020000D']),
+    institutionName: DICOMWeb.getString(aSopInstance['00080080']),
+  };
 }
 
-function addInstancesToStudy(server, study, instanceList) {
+/**
+ * Add a list of SOP Instances to a given study object descriptor
+ * @param {Object} server Object with server configuration paramenters
+ * @param {Object} study The study descriptor to which the given SOP instances will be added
+ * @param {Array} sopInstanceList A list of SOP instance objects
+ */
+async function addInstancesToStudy(server, study, sopInstanceList) {
   return Promise.all(
-    instanceList.map(function(instance) {
-      return makeSOPInstance(server, study, instance);
+    sopInstanceList.map(function(sopInstance) {
+      return makeSOPInstance(server, study, sopInstance);
     })
   );
 }
@@ -438,28 +447,26 @@ function addInstancesToStudy(server, study, instanceList) {
  * Returns an object populated with study metadata, including the
  * series list.
  *
- * @param server
- * @param instanceList
+ * @param {Object} server Object with server configuration paramenters
+ * @param {Array} sopInstanceList List of SOP Instances that build up to the study
  * @resolves {{seriesList: Array, patientName: *, patientId: *, accessionNumber: *, studyDate: *, modalities: *, studyDescription: *, imageCount: *, studyInstanceUid: *}}
  */
-async function createStudyFromInstanceList(server, instanceList) {
-  if (Array.isArray(instanceList) && instanceList.length > 0) {
-    const anInstance = instanceList[0];
-    if (anInstance) {
-      const study = createStudy(server, anInstance);
-      await addInstancesToStudy(server, study, instanceList);
-      return study;
-    }
+async function createStudyFromSOPInstanceList(server, sopInstanceList) {
+  if (Array.isArray(sopInstanceList) && sopInstanceList.length > 0) {
+    const firstSopInstance = sopInstanceList[0];
+    const study = createStudy(server, firstSopInstance);
+    await addInstancesToStudy(server, study, sopInstanceList);
+    return study;
   }
-  return null;
+  throw new Error('Failed to create study out of provided SOP instance list');
 }
 
 /**
- * Retrieve Study MetaData from a DICOM server using a WADO call
- *
- * @param server
- * @param studyInstanceUid
- * @returns {Promise}
+ * Retrieve Study metadata from a DICOM server. If the server is configured to use lazy load, only the first series
+ * will be loaded and the property "studyLoader" will be set to let consumer load remaining series as needed
+ * @param {Object} server Object with server configuration paramenters
+ * @param {string} studyInstanceUid The Study Instance UID of the study which needs to be loaded
+ * @returns {Object} A study descriptor object
  */
 async function RetrieveMetadata(server, studyInstanceUid) {
   return (server.enableStudyLazyLoad
@@ -467,6 +474,11 @@ async function RetrieveMetadata(server, studyInstanceUid) {
     : loadStudyMetadata)(server, studyInstanceUid);
 }
 
+/**
+ *
+ * @param {*} server
+ * @param {*} studyInstanceUID
+ */
 async function loadStudyMetadata(server, studyInstanceUID) {
   const dicomWeb = new api.DICOMwebClient({
     url: server.wadoRoot,
@@ -474,72 +486,86 @@ async function loadStudyMetadata(server, studyInstanceUID) {
   });
   return dicomWeb
     .retrieveStudyMetadata({ studyInstanceUID })
-    .then(result => createStudyFromInstanceList(server, result));
+    .then(result => createStudyFromSOPInstanceList(server, result));
 }
 
 async function lazyLoadStudyMetadata(server, studyInstanceUid) {
-  const seriesIds = await searchStudySeries(server, studyInstanceUid);
-  if (seriesIds) {
-    const dicomWeb = new api.DICOMwebClient({
-      url: server.wadoRoot,
-      headers: DICOMWeb.getAuthorizationHeader(server),
-    });
-    const seriesLoadQueue = makeSeriesLoadQueue(
-      dicomWeb,
-      studyInstanceUid,
-      seriesIds
-    );
-    const firstSeries = await seriesLoadQueue.dequeue();
-    if (firstSeries && firstSeries.instances) {
-      const study = await createStudyFromInstanceList(
-        server,
-        firstSeries.instances
-      );
-      if (study) {
-        setQueueListeners(server, study, seriesLoadQueue);
-        return study;
-      }
-    }
+  const seriesInstanceUids = await searchStudySeries(server, studyInstanceUid);
+  const dicomWeb = new api.DICOMwebClient({
+    url: server.wadoRoot,
+    headers: DICOMWeb.getAuthorizationHeader(server),
+  });
+  const seriesLoader = makeSeriesLoader(
+    dicomWeb,
+    studyInstanceUid,
+    seriesInstanceUids
+  );
+  const firstSeries = await seriesLoader.next();
+  const study = await createStudyFromSOPInstanceList(
+    server,
+    firstSeries.sopInstances
+  );
+  if (seriesLoader.hasNext()) {
+    attachSeriesLoader(server, study, seriesLoader);
   }
-  return null;
+  return study;
 }
 
-function setQueueListeners(server, study, seriesLoadQueue) {
-  study.seriesLoadQueue = seriesLoadQueue;
-  // Series Loaded Event
-  seriesLoadQueue.subscribe(seriesLoadQueue.EVENT_SERIES_LOADED, function(
-    series
-  ) {
-    if (series && series.instances) {
-      addInstancesToStudy(server, study, series.instances).then(
-        function() {
-          study.publish(
-            'seriesAdded',
-            study.seriesMap[series.seriesInstanceUID]
-          );
-        },
-        function(error) {
-          log.error(
-            '[retrieveMetadata] failed to add instance to study on async series load',
-            error
-          );
-        }
-      );
-    }
+function attachSeriesLoader(server, study, seriesLoader) {
+  study.seriesLoader = Object.freeze({
+    hasNext() {
+      return seriesLoader.hasNext();
+    },
+    async next() {
+      const series = await seriesLoader.next();
+      await addInstancesToStudy(server, study, series.sopInstances);
+      return study.seriesMap[series.seriesInstanceUID];
+    },
   });
 }
 
+/**
+ * Creates an immutable series loader object which loads each series sequentially using the iterator interface
+ * @param {DICOMWebClient} dicomWebClient The DICOMWebClient instance to be used for series load
+ * @param {string} studyInstanceUID The Study Instance UID from which series will be loaded
+ * @param {Array} seriesInstanceUIDList A list of Series Instance UIDs
+ * @returns {Object} Returns an object which supports loading of instances from each of given Series Instance UID
+ */
+function makeSeriesLoader(
+  dicomWebClient,
+  studyInstanceUID,
+  seriesInstanceUIDList
+) {
+  return Object.freeze({
+    hasNext() {
+      return seriesInstanceUIDList.length > 0;
+    },
+    async next() {
+      const seriesInstanceUID = seriesInstanceUIDList.shift();
+      const sopInstances = await dicomWebClient.retrieveSeriesMetadata({
+        studyInstanceUID,
+        seriesInstanceUID,
+      });
+      return { studyInstanceUID, seriesInstanceUID, sopInstances };
+    },
+  });
+}
+
+/**
+ * Search series of a given study
+ * @param {Object} server Object with server configuration paramenters
+ * @param {string} studyInstanceUID The Study Instance UID to search series from;
+ * @returns {Arrays} A list of Series Instance UIDs
+ */
 async function searchStudySeries(server, studyInstanceUID) {
   const dicomWeb = new api.DICOMwebClient({
     url: server.qidoRoot,
     headers: DICOMWeb.getAuthorizationHeader(server),
   });
   const seriesList = await dicomWeb.searchForSeries({ studyInstanceUID });
-  return Array.isArray(seriesList) && seriesList.length > 0
-    ? seriesList
-        .sort(seriesSortingCriteria)
-        .map(series => getSeriesInfo(series).seriesInstanceUid)
-    : null;
+  return seriesList
+    .sort(seriesSortingCriteria)
+    .map(series => getSeriesInfo(series).seriesInstanceUid);
 }
 
 function seriesSortingCriteria(a, b) {

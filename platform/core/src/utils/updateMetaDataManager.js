@@ -70,6 +70,11 @@ const getWadoRsInstanceMetaData = (study, series, instance) => {
     .toJSON();
 };
 
+/**
+ * Update metadata manager with instances of a specifc series
+ * @param {Object} study A plain study descriptor object
+ * @param {Object} series A Series descriptor object contaning the instances to be added to the manager
+ */
 function updateMetaDataManagerForSeries(study, series) {
   series.instances.forEach(instance => {
     // Cache just images that are going to be loaded via WADO-RS
@@ -95,12 +100,15 @@ function updateMetaDataManagerForSeries(study, series) {
   });
 }
 
+/**
+ * Update metadata manager
+ * @param {Object} study A plain study descriptor object
+ * @param {string} [seriesInstanceUid] The Series Instance UID of the series to be added (Optional)
+ */
 export default function updateMetaDataManager(study, seriesInstanceUid) {
   if (seriesInstanceUid) {
     const series = study.seriesMap[seriesInstanceUid];
-    if (series) {
-      updateMetaDataManagerForSeries(study, series);
-    }
+    updateMetaDataManagerForSeries(study, series);
   } else {
     study.seriesList.forEach(series => {
       updateMetaDataManagerForSeries(study, series);

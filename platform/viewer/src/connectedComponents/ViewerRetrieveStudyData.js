@@ -18,32 +18,25 @@ class ViewerRetrieveStudyData extends Component {
 
   constructor(props) {
     super(props);
-    this.isReady = false;
     this.state = {
       studies: null,
       error: null,
     };
   }
 
-  triggerDataLoad() {
-    const { props } = this;
-    retrieveStudiesMetadata(
-      props.server,
-      props.studyInstanceUids,
-      props.seriesInstanceUids
-    ).then(
-      studies => {
-        if (this.isReady) {
-          this.setStudies(studies);
-        }
-      },
-      error => {
-        if (this.isReady) {
-          this.setState({ error: true });
-        }
-        log.error(error);
-      }
-    );
+  async loadStudies() {
+    try {
+      const { server, studyInstanceUids, seriesInstanceUids } = this.props;
+      const studies = await retrieveStudiesMetadata(
+        server,
+        studyInstanceUids,
+        seriesInstanceUids
+      );
+      this.setStudies(studies);
+    } catch (e) {
+      this.setState({ error: true });
+      log.error(e);
+    }
   }
 
   setStudies(givenStudies) {
@@ -66,51 +59,49 @@ class ViewerRetrieveStudyData extends Component {
         updateMetaDataManager(study);
         studyMetadataManager.add(studyMetadata);
         // Attempt to load remaning series if any
-        this._attemptToLoadRemainingSeries(study, studyMetadata);
+        this._attemptToLoadRemainingSeries(studyMetadata);
         return study;
       });
       this.setState({ studies });
     }
   }
 
-  _attemptToLoadRemainingSeries(study, studyMetadata) {
-    const { seriesLoadQueue } = study;
-    if (seriesLoadQueue) {
-      const view = this;
-      study.subscribe('seriesAdded', function seriesAddedHandler(series) {
-        if (view.isReady) {
-          const sopClassHandlerModules =
-            extensionManager.modules['sopClassHandlerModule'];
-          const seriesMetadata = new OHIFSeriesMetadata(series, study);
-          studyMetadata.addSeries(seriesMetadata);
-          studyMetadata.createAndAddDisplaySetsForSeries(
-            sopClassHandlerModules,
-            seriesMetadata
-          );
-          study.displaySets = studyMetadata.getDisplaySets();
-          updateMetaDataManager(study, series.seriesInstanceUid);
-          view.setState(function(state) {
-            return { studies: state.studies.slice() };
-          });
-        } else {
-          study.unsubscribe('seriesAdded', seriesAddedHandler);
-        }
-      });
-      while (seriesLoadQueue.size() > 0) {
-        seriesLoadQueue.dequeue();
-      }
+  _addSeriesToStudy(studyMetadata, series) {
+    const sopClassHandlerModules =
+      extensionManager.modules['sopClassHandlerModule'];
+    const study = studyMetadata.getData();
+    const seriesMetadata = new OHIFSeriesMetadata(series, study);
+    studyMetadata.addSeries(seriesMetadata);
+    studyMetadata.createAndAddDisplaySetsForSeries(
+      sopClassHandlerModules,
+      seriesMetadata
+    );
+    study.displaySets = studyMetadata.getDisplaySets();
+    updateMetaDataManager(study, series.seriesInstanceUid);
+    this.setState(function(state) {
+      return { studies: state.studies.slice() };
+    });
+  }
+
+  _attemptToLoadRemainingSeries(studyMetadata) {
+    const { seriesLoader } = studyMetadata.getData();
+    if (!seriesLoader) {
+      return;
+    }
+    while (seriesLoader.hasNext()) {
+      seriesLoader
+        .next()
+        .then(
+          series => void this._addSeriesToStudy(studyMetadata, series),
+          error => void log.error(error)
+        );
     }
   }
 
   componentDidMount() {
     // TODO: CLEAR THIS SOMEWHERE ELSE
     studyMetadataManager.purge();
-    this.isReady = true;
-    this.triggerDataLoad();
-  }
-
-  componentWillUnmount() {
-    this.isReady = false;
+    this.loadStudies();
   }
 
   render() {

@@ -89,6 +89,13 @@ export class StudyMetadata extends Metadata {
     return this._displaySets.slice();
   }
 
+  /**
+   * Split a series metadata object into display sets
+   * @param {Array} sopClassHandlerModules List of SOP Class Modules
+   * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
+   * @param {Array} [givenDisplaySets] An optional list to which the display sets will be appended
+   * @returns {Array} The list of display sets created for the given series object
+   */
   _createDisplaySetsForSeries(
     sopClassHandlerModules,
     series,
@@ -213,6 +220,12 @@ export class StudyMetadata extends Metadata {
     sortDisplaySetList(this._displaySets);
   }
 
+  /**
+   * Method to append display sets from a given series to the internal list of display sets
+   * @param {Array} sopClassHandlerModules A list of SOP Class Handler Modules
+   * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
+   * @returns {boolean} Returns true on success or false on failure (e.g., the series does not belong to this study)
+   */
   createAndAddDisplaySetsForSeries(sopClassHandlerModules, series) {
     if (this.containsSeries(series)) {
       this.setDisplaySets(
@@ -682,8 +695,17 @@ function _getDisplaySetFromSopClassModule(
 
 /**
  * Sort series primarily by modality (i.e., series with references to other
- * series like SEG, KO and PR are moved to the end of the list) and then by
- * series number;
+ * series like SEG, KO or PR are grouped in the end of the list) and then by
+ * series number:
+ *
+ *  --------
+ * | CT #3  |
+ * | CT #4  |
+ * | CT #5  |
+ *  --------
+ * | SEG #1 |
+ * | SEG #2 |
+ *  --------
  *
  * @param {*} a - DisplaySet
  * @param {*} b - DisplaySet
@@ -702,7 +724,7 @@ function seriesSortingCriteria(a, b) {
 }
 
 /**
- *
+ * Sort series by series number. Series with low
  * @param {*} a - DisplaySet
  * @param {*} b - DisplaySet
  */
@@ -713,6 +735,10 @@ function sortBySeriesNumber(a, b) {
   return seriesNumberAIsGreaterOrUndefined ? 1 : -1;
 }
 
+/**
+ * Sorts a list of display set objects
+ * @param {Array} list A list of display sets to be sorted
+ */
 function sortDisplaySetList(list) {
   return list.sort(seriesSortingCriteria);
 }
