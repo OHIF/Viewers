@@ -71,6 +71,12 @@ module.exports = (env, argv) => {
           // Ignore our configuration files
           ignore: ['config/*', 'html-templates/*', '.DS_Store'],
         },
+        // Short term solution to make sure GCloud config is available in output
+        // for our docker implementation
+        {
+          from: `${PUBLIC_DIR}/config/google.js`,
+          to: `${DIST_DIR}/google.js`,
+        },
         // Copy over and rename our target app config file
         {
           from: `${PUBLIC_DIR}/${APP_CONFIG}`,
@@ -96,6 +102,32 @@ module.exports = (env, argv) => {
         swDest: 'sw.js',
         clientsClaim: true,
         skipWaiting: true,
+        exclude: [
+          new RegExp('^https://fonts.googleapis.com/'),
+          new RegExp('^https://fonts.gstatic.com/'),
+        ],
+        runtimeCaching: [
+          {
+            urlPattern: new RegExp('^https://fonts.googleapis.com/'),
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
+            },
+          },
+          {
+            urlPattern: new RegExp('^https://fonts.gstatic.com/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+
+              // Only cache 30 images / one year.
+              expiration: {
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+                maxEntries: 30,
+              },
+            },
+          },
+        ],
       }),
     ],
     // https://webpack.js.org/configuration/dev-server/

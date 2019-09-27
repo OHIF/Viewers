@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const merge = require('webpack-merge');
 const webpackCommon = require('./../../../.webpack/webpack.commonjs.js');
@@ -54,6 +55,9 @@ module.exports = (env, argv) => {
         template: `${PUBLIC_DIR}/html-templates/${HTML_TEMPLATE}`,
         filename: 'index.html',
       }),
+      new webpack.optimize.LimitChunkCountPlugin({
+           maxChunks: 1
+       })
     ],
   });
 };
