@@ -9,6 +9,23 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Bug Fixes
 
 * 🐛 Add DicomLoaderService & FileLoaderService to fix SR, PDF, and SEG support in local file and WADO-RS-only use cases ([#862](https://github.com/OHIF/Viewers/issues/862)) ([e7e1a8a](https://github.com/OHIF/Viewers/commit/e7e1a8a)), closes [#838](https://github.com/OHIF/Viewers/issues/838)
+* version bump issue ([#962](https://github.com/OHIF/Viewers/issues/962)) ([c80ea17](https://github.com/OHIF/Viewers/commit/c80ea17))
+
+
+### BREAKING CHANGES
+
+* DICOM Seg
+
+
+
+
+
+# [2.0.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.2.2...@ohif/extension-cornerstone@2.0.0) (2019-09-27)
+
+
+### Bug Fixes
+
+* 🐛 Add DicomLoaderService & FileLoaderService to fix SR, PDF, and SEG support in local file and WADO-RS-only use cases ([#862](https://github.com/OHIF/Viewers/issues/862)) ([e7e1a8a](https://github.com/OHIF/Viewers/commit/e7e1a8a)), closes [#838](https://github.com/OHIF/Viewers/issues/838)
 
 
 ### BREAKING CHANGES
