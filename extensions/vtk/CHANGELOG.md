@@ -3,6 +3,72 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.21](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.20...@ohif/extension-vtk@0.50.21) (2019-09-27)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.50.20](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.19...@ohif/extension-vtk@0.50.20) (2019-09-26)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.50.19](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.18...@ohif/extension-vtk@0.50.19) (2019-09-26)
+
+
+### Bug Fixes
+
+* Add some code splitting for PWA build ([#937](https://github.com/OHIF/Viewers/issues/937)) ([8938035](https://github.com/OHIF/Viewers/commit/8938035))
+
+
+
+
+
+## [0.50.18](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.17...@ohif/extension-vtk@0.50.18) (2019-09-23)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.50.17](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.16...@ohif/extension-vtk@0.50.17) (2019-09-19)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.50.16](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.15...@ohif/extension-vtk@0.50.16) (2019-09-19)
+
+
+### Bug Fixes
+
+* Set transfer function range to data range when loading volumes in VTK ([#930](https://github.com/OHIF/Viewers/issues/930)) ([2341b32](https://github.com/OHIF/Viewers/commit/2341b32))
+
+
+
+
+
+## [0.50.15](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.14...@ohif/extension-vtk@0.50.15) (2019-09-19)
+
+
+### Bug Fixes
+
+* Bump VTK viewport dependency ([#929](https://github.com/OHIF/Viewers/issues/929)) ([66a0aad](https://github.com/OHIF/Viewers/commit/66a0aad))
+* Stop adding empty labelmap to VTK Viewports for now. Wait until paint tools are implemented ([#926](https://github.com/OHIF/Viewers/issues/926)) ([7f642a0](https://github.com/OHIF/Viewers/commit/7f642a0))
+
+
+
+
+
 ## [0.50.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.13...@ohif/extension-vtk@0.50.14) (2019-09-17)
 
 

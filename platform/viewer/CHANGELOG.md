@@ -3,6 +3,166 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.2.4...@ohif/viewer@1.2.5) (2019-09-27)
+
+
+### Bug Fixes
+
+* version bump issue ([#963](https://github.com/OHIF/Viewers/issues/963)) ([e607ed2](https://github.com/OHIF/Viewers/commit/e607ed2)), closes [#962](https://github.com/OHIF/Viewers/issues/962)
+
+
+
+
+
+# [2.0.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.2.3...@ohif/viewer@2.0.0) (2019-09-27)
+
+
+### Bug Fixes
+
+* 🐛 Add DicomLoaderService & FileLoaderService to fix SR, PDF, and SEG support in local file and WADO-RS-only use cases ([#862](https://github.com/OHIF/Viewers/issues/862)) ([e7e1a8a](https://github.com/OHIF/Viewers/commit/e7e1a8a)), closes [#838](https://github.com/OHIF/Viewers/issues/838)
+* version bump issue ([#962](https://github.com/OHIF/Viewers/issues/962)) ([c80ea17](https://github.com/OHIF/Viewers/commit/c80ea17))
+
+
+### BREAKING CHANGES
+
+* DICOM Seg
+
+
+
+
+
+# [2.0.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.2.3...@ohif/viewer@2.0.0) (2019-09-27)
+
+
+### Bug Fixes
+
+* 🐛 Add DicomLoaderService & FileLoaderService to fix SR, PDF, and SEG support in local file and WADO-RS-only use cases ([#862](https://github.com/OHIF/Viewers/issues/862)) ([e7e1a8a](https://github.com/OHIF/Viewers/commit/e7e1a8a)), closes [#838](https://github.com/OHIF/Viewers/issues/838)
+
+
+### BREAKING CHANGES
+
+* DICOM Seg
+
+
+
+
+
+## [1.2.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.2.2...@ohif/viewer@1.2.3) (2019-09-27)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.2.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.2.1...@ohif/viewer@1.2.2) (2019-09-27)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.2.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.2.0...@ohif/viewer@1.2.1) (2019-09-26)
+
+
+### Bug Fixes
+
+* google cloud support w/ docker (via env var) ([#958](https://github.com/OHIF/Viewers/issues/958)) ([e375a4a](https://github.com/OHIF/Viewers/commit/e375a4a))
+
+
+
+
+
+# [1.2.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.14...@ohif/viewer@1.2.0) (2019-09-26)
+
+
+### Features
+
+* 🎸 React custom component on toolbar button ([#935](https://github.com/OHIF/Viewers/issues/935)) ([a90605c](https://github.com/OHIF/Viewers/commit/a90605c))
+
+
+
+
+
+## [1.1.14](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.13...@ohif/viewer@1.1.14) (2019-09-26)
+
+
+### Bug Fixes
+
+* 🐛 Set series into active viewport by clicking on thumbnail ([#945](https://github.com/OHIF/Viewers/issues/945)) ([5551f81](https://github.com/OHIF/Viewers/commit/5551f81)), closes [#895](https://github.com/OHIF/Viewers/issues/895) [#895](https://github.com/OHIF/Viewers/issues/895)
+
+
+
+
+
+## [1.1.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.12...@ohif/viewer@1.1.13) (2019-09-26)
+
+
+### Bug Fixes
+
+* Add some code splitting for PWA build ([#937](https://github.com/OHIF/Viewers/issues/937)) ([8938035](https://github.com/OHIF/Viewers/commit/8938035))
+
+
+
+
+
+## [1.1.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.11...@ohif/viewer@1.1.12) (2019-09-26)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.1.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.10...@ohif/viewer@1.1.11) (2019-09-23)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.1.10](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.9...@ohif/viewer@1.1.10) (2019-09-19)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.1.9](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.8...@ohif/viewer@1.1.9) (2019-09-19)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.1.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.7...@ohif/viewer@1.1.8) (2019-09-19)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.1.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.6...@ohif/viewer@1.1.7) (2019-09-19)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.1.6](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.5...@ohif/viewer@1.1.6) (2019-09-19)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [1.1.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.1.4...@ohif/viewer@1.1.5) (2019-09-17)
 
 

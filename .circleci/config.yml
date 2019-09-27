@@ -149,13 +149,13 @@ jobs:
           command: |
             # This file will exist if a new version was published by
             # our `semantic-release` command in the previous job
-            if [[ ! -e tmp/updated-version.txt ]]; then
+            if [[ ! -e platform/viewer/success_version.txt ]]; then
               exit 0
             else
               # Remove npm config
               rm -f ./.npmrc
               # Set our version number using vars
-              export IMAGE_VERSION=$(cat tmp/updated-version.txt)
+              export IMAGE_VERSION=$(cat platform/viewer/success_version.txt)
               export IMAGE_VERSION_FULL=v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
               echo $IMAGE_VERSION
               echo $IMAGE_VERSION_FULL
@@ -236,7 +236,7 @@ workflows:
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: yarn run build
+          build: yarn run build:e2e
           start: yarn run test:e2e:dist
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
@@ -286,7 +286,7 @@ workflows:
           record: true
           store_artifacts: true
           working_directory: platform/viewer
-          build: yarn run build
+          build: yarn run build:e2e
           start: yarn run test:e2e:dist
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
@@ -324,6 +324,7 @@ workflows:
           requires:
             - 'E2E: Script Tag'
             - 'E2E: PWA'
+      # Update docs.ohif.org
       - DOCS_PUBLISH:
           requires:
             - 'E2E: Script Tag'
@@ -332,12 +333,11 @@ workflows:
           requires:
             - 'E2E: Script Tag'
             - 'E2E: PWA'
+      # Update viewer.ohif.org
       - VIEWER_DEMO_PUBLISH:
           requires:
             - VIEWER_DEMO_BUILD
       # Update hub.docker.org
-      # - DOCKER_PUBLISH:
-      #     requires:
-      #       - NPM_PUBLISH
-      # Update viewer.ohif.org
-      # Update docs.ohif.org
+      - DOCKER_PUBLISH:
+          requires:
+            - NPM_PUBLISH

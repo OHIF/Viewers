@@ -4,7 +4,7 @@ import OHIF from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 
-const { StackManager } = OHIF.utils;
+const { StackManager, DicomLoaderService } = OHIF.utils;
 
 function getDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
   const study = studies.find(
@@ -52,14 +52,6 @@ function addSegMetadataToCornerstoneToolState(
   }
 }
 
-function retrieveDicomData(wadoUri) {
-  // TODO: Authorization header depends on the server. If we ever have multiple servers
-  // we will need to figure out how / when to pass this information in.
-  return fetch(wadoUri, {
-    headers: OHIF.DICOMWeb.getAuthorizationHeader(),
-  }).then(response => response.arrayBuffer());
-}
-
 async function handleSegmentationStorage(
   studies,
   studyInstanceUid,
@@ -73,8 +65,11 @@ async function handleSegmentationStorage(
     studyInstanceUid,
     displaySetInstanceUid
   );
-  const segWadoUri = displaySet.images[0].getData().wadouri;
-  const arrayBuffer = await retrieveDicomData(segWadoUri);
+
+  const arrayBuffer = await DicomLoaderService.findDicomDataPromise(
+    displaySet,
+    studies
+  );
   const dicomData = dcmjs.data.DicomMessage.readFile(arrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
     dicomData.dict
