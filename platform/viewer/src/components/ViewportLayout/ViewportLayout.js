@@ -5,6 +5,7 @@ import OHIF from '@ohif/core';
 import LayoutPanelDropTarget from './LayoutPanelDropTarget.js';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { useDrop } from 'react-dnd';
 //
 import EmptyViewport from './EmptyViewport.js';
 import DefaultViewport from './DefaultViewport.js';
@@ -12,7 +13,6 @@ import DefaultViewport from './DefaultViewport.js';
 const { StackManager } = OHIF.utils;
 
 export class ViewportLayout extends Component {
-  static className = 'ViewportLayout';
   static defaultProps = {
     activeViewportIndex: 0,
     availablePlugins: {
@@ -39,6 +39,7 @@ export class ViewportLayout extends Component {
   };
 
   onDrop = ({ viewportIndex, item }) => {
+    console.log('DROPPED!');
     if (this.props.setViewportData) {
       this.props.setViewportData({ viewportIndex, item });
     }
@@ -117,20 +118,29 @@ export class ViewportLayout extends Component {
       const ViewportComponent = imageIds
         ? this.getViewportComponent(plugin)
         : EmptyViewport;
-      const classes = ['viewport-container', ViewportLayout.className];
+      const classes = ['viewport-container'];
       if (this.props.activeViewportIndex === viewportIndex) {
         classes.push('active');
       }
 
+      //////
+      // https://react-dnd.github.io/react-dnd/docs/api/use-drop
+      const [collectedProps, drop] = useDrop({
+        accept: 'thumbnail',
+        drop: this.onDrop,
+      });
+
       return (
-        <LayoutPanelDropTarget
-          onDrop={this.onDrop}
-          viewportIndex={viewportIndex}
-          className={classNames(...classes)}
-          style={{ height: viewport.height, width: viewport.width }}
-          key={viewportIndex}
-        >
+        // <LayoutPanelDropTarget
+        //   onDrop={this.onDrop}
+        //   viewportIndex={viewportIndex}
+        //   className={classNames(...classes)}
+        //   style={{ height: viewport.height, width: viewport.width }}
+        //   key={viewportIndex}
+        // >
+        <>
           <ViewportComponent
+            ref={drop}
             // Different "Viewport Types"? Feels too rigid to lock all into these props
             tools={[]} // TODO: Fix
             imageIds={imageIds}
@@ -138,9 +148,12 @@ export class ViewportLayout extends Component {
             // We shouldn't need this?
             // Used in `ConnectedCornerstoneViewport`
             viewportIndex={viewportIndex}
+            // height + width
+            style={{ height: viewport.height, width: viewport.width }}
           />
           {childrenWithProps}
-        </LayoutPanelDropTarget>
+        </>
+        // </LayoutPanelDropTarget>
       );
     });
 
