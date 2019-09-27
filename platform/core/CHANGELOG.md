@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0](https://github.com/OHIF/Viewers/compare/@ohif/core@0.50.10...@ohif/core@1.0.0) (2019-09-27)
+
+
+### Bug Fixes
+
+* 🐛 Add DicomLoaderService & FileLoaderService to fix SR, PDF, and SEG support in local file and WADO-RS-only use cases ([#862](https://github.com/OHIF/Viewers/issues/862)) ([e7e1a8a](https://github.com/OHIF/Viewers/commit/e7e1a8a)), closes [#838](https://github.com/OHIF/Viewers/issues/838)
+
+
+### BREAKING CHANGES
+
+* DICOM Seg
+
+
+
+
+
 ## [0.50.10](https://github.com/OHIF/Viewers/compare/@ohif/core@0.50.9...@ohif/core@0.50.10) (2019-09-23)
 
 
