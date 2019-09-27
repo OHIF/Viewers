@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: row;
   align-items: flex-end;
+  &:hover
+    color: var(--default-color);
   .container
     padding-right: 10px;
     .toolbar-slider-container
@@ -9,11 +11,16 @@
       width: 80px;
       margin: -7px 2px 2px 2px;
       font-size: 12px;
+      &:hover
+        color: var(--hover-color);
       input
-        margin-top: 5px;
-      .range::-webkit-slider-thumb
-        height: 15px;
-        margin-top: -6px;
+        height: 12px;
+        &::-moz-range-thumb
+          height: 15px;
+          margin-top: -6px;
+        &::-webkit-slider-thumb
+          height: 15px;
+          margin-top: -6px;
   .controller
     width: 55px;
     .ohif-check-container
@@ -21,6 +28,8 @@
       padding-left: 18px;
       .ohif-check-label
         text-transform: capitalize;
+        &:hover
+          color: var(--hover-color);
         .ohif-checkbox
           border-radius: 3px;
           background-color: white;

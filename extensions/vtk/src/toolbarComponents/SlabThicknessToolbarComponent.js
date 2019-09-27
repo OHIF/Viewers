@@ -96,7 +96,7 @@ const _applyModeOperation = (
 
 const _getInitialState = currentSelectedOption => {
   return {
-    value: SLIDER.MAX,
+    value: SLIDER.MIN,
     sliderMin: SLIDER.MIN,
     sliderMax: SLIDER.MAX,
     modeChecked: undefined,
