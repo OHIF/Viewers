@@ -36,7 +36,7 @@ function Thumbnail(props) {
   });
   const hasImage = imageSrc || imageId;
   const hasAltText = altImageText !== undefined;
-  const infoOnly = false; // TODO: Why always false?
+  const infoOnly = !seriesDescription;
 
   return (
     <div
@@ -48,14 +48,12 @@ function Thumbnail(props) {
     >
       {/* SHOW IMAGE */}
       {hasImage && (
-        <div className="p-x-1">
-          <ImageThumbnail
-            imageSrc={imageSrc}
-            imageId={imageId}
-            error={error}
-            stackPercentComplete={stackPercentComplete}
-          />
-        </div>
+        <ImageThumbnail
+          imageSrc={imageSrc}
+          imageId={imageId}
+          error={error}
+          stackPercentComplete={stackPercentComplete}
+        />
       )}
       {/* SHOW TEXT ALTERNATIVE */}
       {!hasImage && hasAltText && (
