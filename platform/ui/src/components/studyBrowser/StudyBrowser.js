@@ -28,7 +28,7 @@ function StudyBrowser(props) {
               return (
                 <Thumbnail
                   key={`${studyIndex}_${thumbIndex}`}
-                  id={`${studyIndex}_${thumbIndex}`}
+                  id={`${studyIndex}_${thumbIndex}`} // Unused?
                   // Study
                   studyInstanceUid={studyInstanceUid} // used by drop
                   // Thumb

@@ -103,7 +103,7 @@ export default class ImageThumbnail extends PureComponent {
     const renderIntoCanvas = this.props.imageId && !this.props.imageSrc;
 
     return (
-      <div className="ImageThumbnail">
+      <div className="image-thumbnail">
         <div className="image-thumbnail-canvas">
           {renderIntoCanvas ? (
             <canvas
