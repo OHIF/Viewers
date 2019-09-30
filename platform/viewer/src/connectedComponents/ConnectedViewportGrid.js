@@ -1,7 +1,9 @@
 import ViewportGrid from './../components/ViewportGrid';
-import { MODULE_TYPES } from '@ohif/core';
+import OHIF, { MODULE_TYPES } from '@ohif/core';
 import { connect } from 'react-redux';
 import { extensionManager } from './../App.js';
+
+const { setViewportActive } = OHIF.redux.actions;
 
 const mapStateToProps = state => {
   const availableViewportModules = {};
@@ -27,9 +29,17 @@ const mapStateToProps = state => {
   };
 };
 
+const mapDispatchToProps = dispatch => {
+  return {
+    setViewportActive: viewportIndex => {
+      dispatch(setViewportActive(viewportIndex));
+    },
+  };
+};
+
 const ConnectedViewportGrid = connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(ViewportGrid);
 
 export default ConnectedViewportGrid;

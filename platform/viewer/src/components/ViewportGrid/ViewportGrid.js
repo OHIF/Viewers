@@ -3,6 +3,7 @@ import './ViewportGrid.css';
 import React from 'react';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 //
 import ViewportPane from './ViewportPane.js';
 import EmptyViewport from './EmptyViewport.js';
@@ -13,6 +14,7 @@ const { StackManager } = OHIF.utils;
 const ViewportGrid = function(props) {
   const {
     setViewportData,
+    setViewportActive,
     defaultPlugin,
     availablePlugins,
     studies,
@@ -68,22 +70,17 @@ const ViewportGrid = function(props) {
     const viewportProps = displaySetStack
       ? { ...displaySetStack, children }
       : { children };
-
-    // ~~ EXPERIMENTAL
-
     const ViewportComponent = displaySetStack
       ? getViewportComponent(plugin)
       : EmptyViewport;
-    const classes = ['viewport-container'];
-    if (activeViewportIndex === viewportIndex) {
-      classes.push('active');
-    }
 
     return (
       <ViewportPane
         onDrop={setViewportData}
         viewportIndex={viewportIndex} // Needed by `setViewportData`
-        classNames={classes}
+        className={classNames('viewport-container', {
+          active: activeViewportIndex === viewportIndex,
+        })}
         key={viewportIndex}
       >
         <ViewportComponent
@@ -92,6 +89,11 @@ const ViewportGrid = function(props) {
           // We shouldn't need this?
           // Used in `ConnectedCornerstoneViewport`
           viewportIndex={viewportIndex}
+          setViewportActive={() => {
+            if (activeViewportIndex !== viewportIndex) {
+              setViewportActive(viewportIndex);
+            }
+          }}
         />
         {childrenWithProps}
       </ViewportPane>
@@ -117,6 +119,8 @@ const ViewportGrid = function(props) {
   );
 };
 
+const noop = () => {};
+
 ViewportGrid.propTypes = {
   activeViewportIndex: PropTypes.number.isRequired,
   numRows: PropTypes.number.isRequired,
@@ -130,6 +134,7 @@ ViewportGrid.propTypes = {
   ).isRequired,
   availablePlugins: PropTypes.object.isRequired,
   setViewportData: PropTypes.func,
+  setViewportActive: PropTypes.func, // Connected
   studies: PropTypes.array,
   children: PropTypes.node,
 };
@@ -139,6 +144,7 @@ ViewportGrid.defaultProps = {
   availablePlugins: {
     DefaultViewport,
   },
+  setViewportActive: noop,
   defaultPlugin: 'DefaultViewport',
 };
 
