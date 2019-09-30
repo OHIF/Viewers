@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 
 const getActiveViewportIndex = state => state.viewports.activeViewportIndex;
-const getLayoutViewports = state => state.viewports.layout.viewports;
+const getViewportPanes = state => state.viewports.viewportPanes;
 const getViewportSpecificData = state => state.viewports.viewportSpecificData;
 
 /**
@@ -9,10 +9,10 @@ const getViewportSpecificData = state => state.viewports.viewportSpecificData;
  * our redux state, and only update/recalculate when those values change.
  */
 export const getActiveContexts = createSelector(
-  [getActiveViewportIndex, getLayoutViewports, getViewportSpecificData],
-  (activeViewportIndex, layoutViewports, viewportSpecificData) => {
+  [getActiveViewportIndex, getViewportPanes, getViewportSpecificData],
+  (activeViewportIndex, viewportPanes, viewportSpecificData) => {
     const activeContexts = ['VIEWER'];
-    const activeLayoutViewport = layoutViewports[activeViewportIndex] || {};
+    const activeLayoutViewport = viewportPanes[activeViewportIndex] || {};
     const activeViewportSpecificData =
       viewportSpecificData[activeViewportIndex] || {};
     const activeViewportPluginName =
