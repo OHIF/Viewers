@@ -19,8 +19,11 @@ const defaultState = {
     {},
   ],
   activeViewportIndex: 0,
+  viewportSpecificData: {
+    // TODO: Kill this ASAP
+    // dom (cornerstone-extension)
+    // plugin (duplicated in viewportPlanes?)
   },
-  viewportSpecificData: {},
 };
 
 /**
