@@ -44,3 +44,36 @@ Cypress.Commands.add('openStudy', (patientName) => {
 Cypress.Commands.add('drag', {prevSubject: 'element',},
   (...args) => DragSimulator.simulate(...args)
 );
+
+// Command to perform two clicks into two different positions. Each position must be (x, y).
+// The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
+Cypress.Commands.add('addLine', (element, initPosition, finalPosition) =>  {
+
+  cy.get(element)
+    .click(initPosition[0], initPosition[1], { force: true })
+    .then(() =>{
+      cy.get(element)
+        .trigger('mousemove', { clientX: finalPosition[0], clientY: finalPosition[1] })
+        .click({ force: true })
+    })
+  
+});
+
+
+// Command to perform three clicks into three different positions. Each position must be (x, y).
+// The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
+Cypress.Commands.add('addAngle', (element, initPosition, midPosition, finalPosition) =>  {
+
+  cy.get(element)
+    .click(initPosition[0], initPosition[1], { force: true })
+    .then(() =>{
+      cy.get(element)
+        .trigger('mousemove', { clientX: midPosition[0], clientY: midPosition[1] })
+        .click(midPosition[0], midPosition[1], { force: true })
+    }).then(() =>{
+      cy.get(element)
+        .trigger('mousemove', { clientX: finalPosition[0], clientY: finalPosition[1] })
+        .click(finalPosition[0], finalPosition[1], { force: true })
+    })
+  
+});
