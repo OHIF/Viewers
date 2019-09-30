@@ -1,8 +1,4 @@
-import {
-  ExampleDropTarget,
-  StudyBrowser,
-  ThumbnailEntry,
-} from './studyBrowser';
+import { ExampleDropTarget, StudyBrowser, Thumbnail } from './studyBrowser';
 import { LayoutButton, LayoutChooser } from './layoutButton';
 import { MeasurementTable, MeasurementTableItem } from './measurementTable';
 import { Overlay, OverlayTrigger } from './overlayTrigger';
@@ -39,7 +35,7 @@ export {
   StudyList,
   TableList,
   TableListItem,
-  ThumbnailEntry,
+  Thumbnail,
   ToolbarSection,
   Tooltip,
   AboutModal,
