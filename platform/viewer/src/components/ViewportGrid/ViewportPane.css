@@ -1,6 +1,6 @@
 .viewport-drop-target {
   opacity: 1;
-  float: left; /* Should be married to viewport-container */
+  position: relative; /* Locks in Scrollbar */
   transition: 0.3s all ease;
 }
 

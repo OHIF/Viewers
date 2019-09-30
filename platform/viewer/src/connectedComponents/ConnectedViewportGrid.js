@@ -1,4 +1,4 @@
-import ViewportLayout from './../components/ViewportLayout';
+import ViewportGrid from './../components/ViewportGrid';
 import { MODULE_TYPES } from '@ohif/core';
 import { connect } from 'react-redux';
 import { extensionManager } from './../App.js';
@@ -27,9 +27,9 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedViewportLayout = connect(
+const ConnectedViewportGrid = connect(
   mapStateToProps,
   null
-)(ViewportLayout);
+)(ViewportGrid);
 
-export default ConnectedViewportLayout;
+export default ConnectedViewportGrid;
