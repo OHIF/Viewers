@@ -23,6 +23,7 @@ export default function init(configuration) {
   initCornerstoneTools({
     globalToolSyncEnabled: true,
     showSVGCursors: true,
+    autoResizeViewports: false,
   });
 
   const {
