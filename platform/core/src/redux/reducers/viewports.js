@@ -12,14 +12,13 @@ import cloneDeep from 'lodash.clonedeep';
 import merge from 'lodash.merge';
 
 const defaultState = {
+  numRows: 1,
+  numColumns: 1,
+  viewportPanes: [
+    // Initial layout is one empty viewport
+    {},
+  ],
   activeViewportIndex: 0,
-  layout: {
-    viewports: [
-      {
-        height: '100%',
-        width: '100%',
-      },
-    ],
   },
   viewportSpecificData: {},
 };
@@ -47,24 +46,45 @@ const viewports = (state = defaultState, action) => {
       return Object.assign({}, state, {
         activeViewportIndex: action.viewportIndex,
       });
+
+    // Currently, our layout supports a grid defined by number of rows,
+    // and number of columns. This creates a grid that our viewport panes
+    // snap to. In a future iteration, viewport panes could be updated to
+    // span multiple rows and/or columns.
     case SET_VIEWPORT_LAYOUT:
-      return Object.assign({}, state, { layout: action.layout });
-    case SET_VIEWPORT: {
-      const layout = cloneDeep(state.layout);
-      const hasPlugin = action.data && action.data.plugin;
+      const { numRows, numColumns } = action;
+      const numViewportPanes = numRows * numColumns;
+      const viewportPanes = cloneDeep(state.viewportPanes);
 
-      viewportSpecificData = cloneDeep(state.viewportSpecificData);
-      viewportSpecificData[action.viewportIndex] = merge(
-        {},
-        viewportSpecificData[action.viewportIndex],
-        action.data
-      );
-
-      if (hasPlugin) {
-        layout.viewports[action.viewportIndex].plugin = action.data.plugin;
+      // Add or Remove until correct length
+      while (viewportPanes.length < numViewportPanes) {
+        viewportPanes.push({});
+      }
+      while (viewportPanes.length > numViewportPanes) {
+        viewportPanes.pop();
       }
 
-      return Object.assign({}, state, { layout, viewportSpecificData });
+      return Object.assign({}, state, { numRows, numColumns, viewportPanes });
+    case SET_VIEWPORT: {
+      const { viewportIndex, data: updatedViewportSpecificData } = action;
+      const plugin = updatedViewportSpecificData.plugin;
+
+      // Updating
+      const viewportSpecificData = cloneDeep(state.viewportSpecificData);
+      const viewportPanes = cloneDeep(state.viewportPanes);
+
+      // Update specific instance of ViewportSpecificData
+      viewportSpecificData[viewportIndex] = merge(
+        {},
+        viewportSpecificData[viewportIndex],
+        updatedViewportSpecificData // dom, plugin
+      );
+
+      if (plugin) {
+        viewportPanes[viewportIndex].plugin = plugin;
+      }
+
+      return Object.assign({}, state, { viewportPanes, viewportSpecificData });
     }
     case SET_ACTIVE_SPECIFIC_DATA:
       useActiveViewport = true;

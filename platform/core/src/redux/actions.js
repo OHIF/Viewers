@@ -26,9 +26,10 @@ export const setViewportActive = viewportIndex => ({
   viewportIndex,
 });
 
-export const setLayout = layout => ({
+export const setLayout = ({ numRows, numColumns }) => ({
   type: SET_VIEWPORT_LAYOUT,
-  layout,
+  numRows,
+  numColumns,
 });
 
 export const clearViewportSpecificData = viewportIndex => ({
