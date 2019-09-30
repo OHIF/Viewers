@@ -9,7 +9,7 @@ import ConnectedHeader from './ConnectedHeader.js';
 import ConnectedToolbarRow from './ConnectedToolbarRow.js';
 import ConnectedLabellingOverlay from './ConnectedLabellingOverlay';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
-import ConnectedViewportLayout from './ConnectedViewportLayout.js';
+import ConnectedViewportGrid from './ConnectedViewportGrid.js';
 import ConnectedToolContextMenu from './ConnectedToolContextMenu.js';
 import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
@@ -22,12 +22,22 @@ import './Viewer.css';
 
 class Viewer extends Component {
   static propTypes = {
-    layout: PropTypes.object,
     studies: PropTypes.array,
     studyInstanceUids: PropTypes.array,
+    // These are measurements API. Probably shouldn't live in viewer?
     onTimepointsUpdated: PropTypes.func,
     onMeasurementsUpdated: PropTypes.func,
-    viewports: PropTypes.object.isRequired,
+    numRows: PropTypes.number.isRequired,
+    numColumns: PropTypes.number.isRequired,
+    viewportPanes: PropTypes.arrayOf(
+      PropTypes.shape({
+        plugin: PropTypes.string,
+        // FUTURE:
+        // order?
+        // columnSpan
+        // rowSpan
+      })
+    ).isRequired,
     activeViewportIndex: PropTypes.number.isRequired,
   };
 
@@ -50,8 +60,7 @@ class Viewer extends Component {
       },
     });
 
-    ////////
-    this.cachedComputedLayout = {};
+    this.cachedComputedViewportPanes = {};
   }
 
   state = {
@@ -60,7 +69,7 @@ class Viewer extends Component {
     selectedRightSidePanel: '',
     selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
     thumbnails: [],
-    computedLayout: [],
+    computedViewportPanes: [],
   };
 
   retrieveMeasurements = (patientId, timepointIds) => {
@@ -159,32 +168,42 @@ class Viewer extends Component {
 
     if (studies) {
       const patientId = studies[0] && studies[0].patientId;
-      const computedLayout = this.computeLayout(studies);
+      const computedViewportPanes = this.computeViewportPanes(studies);
 
       timepointApi.retrieveTimepoints({ patientId });
       measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
 
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
-        computedLayout,
+        computedViewportPanes,
       });
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { studies, layout } = this.props;
+    const { studies, numRows, numColumns, viewportPanes } = this.props;
+    const {
+      numRows: prevNumRows,
+      numColumns: prevNumColumns,
+      viewportPanes: prevViewportPanes, // May need a better equality check here
+    } = prevProps;
 
-    if (studies !== prevProps.studies || layout !== prevProps.layout) {
+    const layoutHasChanged =
+      numRows !== prevNumRows ||
+      numColumns !== prevNumColumns ||
+      viewportPanes !== prevViewportPanes;
+
+    if (studies !== prevProps.studies || layoutHasChanged) {
       const patientId = studies[0] && studies[0].patientId;
       const currentTimepointId = this.currentTimepointId;
-      const computedLayout = this.computeLayout(studies);
+      const computedViewportPanes = this.computeViewportPanes(studies);
 
       this.timepointApi.retrieveTimepoints({ patientId });
       this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
 
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
-        computedLayout,
+        computedViewportPanes,
       });
     }
   }
@@ -197,22 +216,23 @@ class Viewer extends Component {
     });
   }
 
-  //////////////////////
-  computeLayout = studies => {
-    const computedLayout = [];
-    const layout = this.props.layout;
-    const viewportSpecificData = this.props.viewportSpecificData;
+  /*
+   * computedViewportPanes should eventually be replaced by simplified/correct state
+   *   - Marrying viewportSpecificData and viewportPanes
+   *   - Until then, could use a "selector" instead of updating in component
+   */
+  computeViewportPanes = studies => {
+    const computedViewportPanes = [];
+    const { viewportPanes, viewportSpecificData } = this.props;
     // activeViewportIndex
 
-    console.log('PROPS: ', this.props);
-
-    for (let i = 0; i < layout.viewports.length; i++) {
-      const viewportInLayout = layout.viewports[i];
+    for (let i = 0; i < viewportPanes.length; i++) {
+      const viewportPane = viewportPanes[i];
       let displaySet = viewportSpecificData[i];
 
       // Use the cached display set in viewport if the new one is empty
       if (displaySet && !displaySet.displaySetInstanceUid) {
-        displaySet = this.cachedComputedLayout[i];
+        displaySet = this.cachedComputedViewportPanes[i];
       }
 
       if (
@@ -220,12 +240,10 @@ class Viewer extends Component {
         displaySet.studyInstanceUid &&
         displaySet.displaySetInstanceUid
       ) {
-        computedLayout.push({
-          height: viewportInLayout.height,
-          width: viewportInLayout.width,
+        computedViewportPanes.push({
           studyInstanceUid: displaySet.studyInstanceUid,
           displaySetInstanceUid: displaySet.displaySetInstanceUid,
-          plugin: viewportInLayout.plugin,
+          plugin: viewportPane.plugin,
         });
       } else {
         // If the viewport is empty, get one available in study
@@ -244,33 +262,39 @@ class Viewer extends Component {
 
         const firstDisplaySetNotInViewport = allDisplaySets.find(
           ds =>
-            !computedLayout.some(
+            !computedViewportPanes.some(
               v => v.displaySetInstanceUid === ds.displaySetInstanceUid
             )
         );
-        computedLayout.push({
-          height: viewportInLayout.height,
-          width: viewportInLayout.width,
-          studyInstanceUid: firstDisplaySetNotInViewport.studyInstanceUid,
-          displaySetInstanceUid:
-            firstDisplaySetNotInViewport.displaySetInstanceUid,
-          plugin:
-            viewportInLayout.plugin || firstDisplaySetNotInViewport.plugin,
-        });
+
+        if (firstDisplaySetNotInViewport) {
+          computedViewportPanes.push({
+            studyInstanceUid: firstDisplaySetNotInViewport.studyInstanceUid,
+            displaySetInstanceUid:
+              firstDisplaySetNotInViewport.displaySetInstanceUid,
+            plugin: viewportPane.plugin || firstDisplaySetNotInViewport.plugin,
+          });
+        } else {
+          computedViewportPanes.push(viewportPane);
+        }
       }
     }
 
-    // Why?
-    this.cachedComputedLayout = computedLayout;
+    // Reset our "cache"
+    this.cachedComputedViewportPanes = computedViewportPanes;
 
-    return computedLayout;
+    return computedViewportPanes;
   };
 
-  setViewportData = ({ viewportIndex, item }) => {
+  setViewportData = ({
+    viewportIndex,
+    studyInstanceUid,
+    displaySetInstanceUid,
+  }) => {
     const displaySet = this.findDisplaySet(
       this.props.studies,
-      item.studyInstanceUid,
-      item.displaySetInstanceUid
+      studyInstanceUid,
+      displaySetInstanceUid
     );
 
     this.props.setViewportSpecificData(viewportIndex, displaySet);
@@ -289,7 +313,6 @@ class Viewer extends Component {
       return displaySet.displaySetInstanceUid === displaySetInstanceUid;
     });
   }
-  ///////
 
   render() {
     let VisiblePanelLeft, VisiblePanelRight;
@@ -376,16 +399,17 @@ class Viewer extends Component {
 
           {/* MAIN */}
           <div className={classNames('main-content')}>
-            {/* <ConnectedViewerMain studies={this.props.studies} /> */}
-            {this.state.computedLayout && (
-              <ConnectedViewportLayout
+            {this.state.computedViewportPanes && (
+              <ConnectedViewportGrid
                 studies={this.props.studies}
-                layout={this.state.computedLayout}
+                numRows={this.props.numRows}
+                numColumns={this.props.numColumns}
+                viewportPanes={this.state.computedViewportPanes}
                 setViewportData={this.setViewportData}
               >
                 {/* Children to add to each viewport that support children */}
                 <ConnectedToolContextMenu />
-              </ConnectedViewportLayout>
+              </ConnectedViewportGrid>
             )}
           </div>
 
