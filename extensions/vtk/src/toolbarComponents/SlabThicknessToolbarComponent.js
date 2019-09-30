@@ -156,7 +156,7 @@ function SlabThicknessToolbarComponent({
       toolbarClickCallback,
       button
     );
-  }, [state.modeChecked]);
+  }, [state.modeChecked, state.operation]);
 
   useEffect(() => {
     _applySlabThickness(

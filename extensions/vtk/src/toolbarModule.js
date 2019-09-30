@@ -99,6 +99,20 @@ const definitions = [
         commandName: 'setBlendModeToMaximumIntensity',
         commandOptions: {},
       },
+      {
+        id: 'setBlendModeToMinimumIntensity',
+        label: 'MinIP',
+        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+        commandName: 'setBlendModeToMinimumIntensity',
+        commandOptions: {},
+      },
+      {
+        id: 'setBlendModeToAverageIntensity',
+        label: 'AvgIP',
+        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+        commandName: 'setBlendModeToAverageIntensity',
+        commandOptions: {},
+      },
     ],
   },
 ];
