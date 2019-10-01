@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.3.0...@ohif/viewer@1.3.1) (2019-10-01)
+
+
+### Bug Fixes
+
+* Exit MPR mode if Layout is changed ([#984](https://github.com/OHIF/Viewers/issues/984)) ([674ca9f](https://github.com/OHIF/Viewers/commit/674ca9f))
+
+
+
+
+
 # [1.3.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.2.8...@ohif/viewer@1.3.0) (2019-10-01)
 
 
