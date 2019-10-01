@@ -11,7 +11,7 @@ class Range extends React.Component {
 
   handleChange = event => {
     this.setState({ value: event.target.value });
-    if (this.props.onChange) this.props.onChange();
+    if (this.props.onChange) this.props.onChange(event);
   };
 
   render() {
@@ -21,6 +21,7 @@ class Range extends React.Component {
         value={this.state.value}
         min={this.props.min}
         max={this.props.max}
+        step={this.props.step || 1}
         onChange={this.handleChange}
         id={this.props.id}
         className="range"
