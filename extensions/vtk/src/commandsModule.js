@@ -2,6 +2,7 @@ import {
   vtkInteractorStyleMPRCrosshairs,
   vtkInteractorStyleMPRWindowLevel,
   vtkInteractorStyleMPRSlice,
+  vtkInteractorStyleMPRRotate,
   vtkSVGCrosshairsWidget,
   vtkSVGWidgetManager,
 } from 'react-vtkjs-viewport';
@@ -99,7 +100,7 @@ function _setView(api, sliceNormal, viewUp) {
   const camera = renderer.getActiveCamera();
   const istyle = renderWindow.getInteractor().getInteractorStyle();
   istyle.setSliceNormal(...sliceNormal);
-  camera.setViewUp(...viewUp);
+  istyle.setViewUp(...viewUp);
 
   renderWindow.render();
 }
@@ -110,9 +111,9 @@ function switchMPRInteractors(api, istyle) {
   const camera = renderer.getActiveCamera();
   const currentIStyle = renderWindow.getInteractor().getInteractorStyle();
 
-  let currentNormal;
-  if (currentIStyle.getSliceNormal && istyle.getSliceNormal) {
-    currentNormal = currentIStyle.getSliceNormal();
+  let currentViewport;
+  if (currentIStyle.getViewport && istyle.getViewport) {
+    currentViewport = currentIStyle.getViewport();
   }
 
   let currentSlabThickness;
@@ -126,11 +127,11 @@ function switchMPRInteractors(api, istyle) {
   // TODO: Not sure why this is required the second time this function is called
   istyle.setInteractor(renderWindow.getInteractor());
 
-  if (istyle.getVolumeMapper() !== api.volumes[0]) {
-    if (currentNormal) {
-      istyle.setSliceNormal(currentNormal);
-    }
+  if (currentViewport) {
+    istyle.setViewport(currentViewport);
+  }
 
+  if (istyle.getVolumeMapper() !== api.volumes[0]) {
     if (currentSlabThickness) {
       istyle.setSlabThickness(currentSlabThickness);
     }
@@ -163,7 +164,7 @@ const actions = {
   },
   enableRotateTool: () => {
     apis.forEach(api => {
-      const istyle = vtkInteractorStyleMPRSlice.newInstance();
+      const istyle = vtkInteractorStyleMPRRotate.newInstance();
 
       switchMPRInteractors(api, istyle);
     });
@@ -303,18 +304,18 @@ const actions = {
         case 0:
           //Axial
           istyle.setSliceNormal(0, 0, 1);
-          camera.setViewUp(0, -1, 0);
+          istyle.setViewUp(0, -1, 0);
 
           break;
         case 1:
           // sagittal
           istyle.setSliceNormal(1, 0, 0);
-          camera.setViewUp(0, 0, 1);
+          istyle.setViewUp(0, 0, 1);
           break;
         case 2:
           // Coronal
           istyle.setSliceNormal(0, 1, 0);
-          camera.setViewUp(0, 0, 1);
+          istyle.setViewUp(0, 0, 1);
           break;
       }
 
