@@ -89,7 +89,6 @@ class StudyList extends Component {
         studyDateFrom: this.defaultStartDate,
         studyDateTo: this.defaultEndDate,
       },
-      highlightedItem: '',
     };
 
     this.getChangeHandler = this.getChangeHandler.bind(this);
@@ -217,19 +216,11 @@ class StudyList extends Component {
     };
   }
 
-  onHighlightItem(studyItemUid) {
-    this.setState({ highlightedItem: studyItemUid });
-  }
-
-  renderTableRow(study) {
+  renderTableRow(study, rowIndex) {
     return (
       <tr
-        key={study.studyInstanceUid}
-        className={
-          this.state.highlightedItem === study.studyInstanceUid
-            ? 'studylistStudy noselect active'
-            : 'studylistStudy noselect'
-        }
+        key={`${study.studyInstanceUid}_${rowIndex}`}
+        className="studylistStudy noselect"
         onMouseDown={event => {
           // middle/wheel click
           if (event.button === 1) {
@@ -237,7 +228,6 @@ class StudyList extends Component {
           }
         }}
         onClick={() => {
-          this.onHighlightItem(study.studyInstanceUid);
           this.props.onSelectItem(study.studyInstanceUid);
         }}
       >
@@ -399,8 +389,8 @@ class StudyList extends Component {
               </tr>
             </thead>
             <tbody id="studyListData">
-              {this.props.studies.map(study => {
-                return this.renderTableRow(study);
+              {this.props.studies.map((study, rowIndex) => {
+                return this.renderTableRow(study, rowIndex);
               })}
             </tbody>
           </table>
