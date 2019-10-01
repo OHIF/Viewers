@@ -19,6 +19,7 @@ const { BlendMode } = Constants;
 // TODO: Put this somewhere else
 let apis = {};
 let currentSlabThickness = 0.1;
+let defaultSlabThickness = 0.1;
 
 function getCrosshairCallbackForIndex(index) {
   return ({ worldPos }) => {
@@ -118,6 +119,7 @@ function switchMPRInteractors(api, istyle) {
   let currentSlabThickness;
   if (currentIStyle.getSlabThickness && istyle.getSlabThickness) {
     currentSlabThickness = currentIStyle.getSlabThickness();
+    defaultSlabThickness = currentSlabThickness;
   }
 
   renderWindow.getInteractor().setInteractorStyle(istyle);
@@ -183,7 +185,7 @@ const actions = {
       switchMPRInteractors(api, istyle);
     });
   },
-  setSlabThickness: slabThickness => {
+  setSlabThickness: ({ slabThickness }) => {
     currentSlabThickness = slabThickness;
 
     apis.forEach(api => {
@@ -192,15 +194,6 @@ const actions = {
 
       if (istyle.setSlabThickness) {
         istyle.setSlabThickness(currentSlabThickness);
-
-        // TODO: Do this inside the interactors in a setSlabThickness function instead
-        const renderer = api.genericRenderWindow.getRenderer();
-        const camera = renderer.getActiveCamera();
-        const dist = camera.getDistance();
-        const near = dist - currentSlabThickness / 2;
-        const far = dist + currentSlabThickness / 2;
-
-        camera.setClippingRange(near, far);
       }
 
       renderWindow.render();
@@ -218,6 +211,32 @@ const actions = {
         istyle.setSlabThickness(currentSlabThickness);
       }
 
+      renderWindow.render();
+    });
+  },
+  setBlendModeToComposite: () => {
+    apis.forEach(api => {
+      const renderWindow = api.genericRenderWindow.getRenderWindow();
+      const istyle = renderWindow.getInteractor().getInteractorStyle();
+
+      const mapper = api.volumes[0].getMapper();
+      if (mapper.setBlendModeToComposite) {
+        mapper.setBlendModeToComposite();
+      }
+
+      if (istyle.setSlabThickness) {
+        istyle.setSlabThickness(defaultSlabThickness);
+      }
+      renderWindow.render();
+    });
+  },
+  setBlendModeToMaximumIntensity: () => {
+    apis.forEach(api => {
+      const renderWindow = api.genericRenderWindow.getRenderWindow();
+      const mapper = api.volumes[0].getMapper();
+      if (mapper.setBlendModeToMaximumIntensity) {
+        mapper.setBlendModeToMaximumIntensity();
+      }
       renderWindow.render();
     });
   },
@@ -339,12 +358,12 @@ const definitions = {
     options: {},
   },
   setBlendModeToComposite: {
-    commandFn: actions.setBlendMode,
+    commandFn: actions.setBlendModeToComposite,
     storeContexts: [],
     options: { blendMode: BlendMode.COMPOSITE_BLEND },
   },
   setBlendModeToMaximumIntensity: {
-    commandFn: actions.setBlendMode,
+    commandFn: actions.setBlendModeToMaximumIntensity,
     storeContexts: [],
     options: { blendMode: BlendMode.MAXIMUM_INTENSITY_BLEND },
   },

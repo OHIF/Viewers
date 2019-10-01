@@ -229,6 +229,7 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
   });
 }
 
+
 /**
  * A handy way for us to handle different button types. IE. firing commands for
  * buttons, or initiation built in behavior.

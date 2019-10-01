@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/core@1.0.0...@ohif/core@1.0.1) (2019-09-27)
+
+
+### Bug Fixes
+
+* Check for Value in 00081155 sequence (Few patient protocol images doesn't have this value) and removed a duplicate declaration ([#921](https://github.com/OHIF/Viewers/issues/921)) ([d0ec9cf](https://github.com/OHIF/Viewers/commit/d0ec9cf))
+
+
+
+
+
 # [1.0.0](https://github.com/OHIF/Viewers/compare/@ohif/core@0.50.10...@ohif/core@1.0.0) (2019-09-27)
 
 
