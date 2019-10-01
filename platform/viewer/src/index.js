@@ -22,10 +22,10 @@ import ReactDOM from 'react-dom';
  * `window.config.extensions`, or by using the exported `App` component, and passing
  * in your extensions as props.
  */
-import OHIFVTKExtension from '@ohif/extension-vtk';
+/*import OHIFVTKExtension from '@ohif/extension-vtk';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
-import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
+import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';*/
 
 // Default Settings
 let config = {};
@@ -36,10 +36,10 @@ const appDefaults = {
 if (window) {
   config = window.config || {};
   config.extensions = [
-    OHIFVTKExtension,
+    /*OHIFVTKExtension,
     OHIFDicomHtmlExtension,
     OHIFDicomMicroscopyExtension,
-    OHIFDicomPDFExtension,
+    OHIFDicomPDFExtension,*/
   ];
 }
 
