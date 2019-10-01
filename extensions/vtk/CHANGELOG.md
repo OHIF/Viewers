@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.51.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.51.0...@ohif/extension-vtk@0.51.1) (2019-10-01)
+
+
+### Bug Fixes
+
+* **rotate:** Use new MPR rotate in react-vtkjs-viewport 0.1.2 ([#964](https://github.com/OHIF/Viewers/issues/964)) ([8503cbc](https://github.com/OHIF/Viewers/commit/8503cbc))
+
+
+
+
+
 # [0.51.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.50.23...@ohif/extension-vtk@0.51.0) (2019-10-01)
 
 
