@@ -43,18 +43,6 @@ const ViewportGrid = function(props) {
     return '';
   }
 
-  let childrenWithProps = null;
-
-  // TODO: Does it make more sense to use Context?
-  if (children && children.length) {
-    childrenWithProps = children.map((child, index) => {
-      return React.cloneElement(child, {
-        viewportIndex: viewportIndex,
-        key: index,
-      });
-    });
-  }
-
   const magic = viewportPanes.map((viewportPane, viewportIndex) => {
     // TODO: Change this logic to:
     // - Plugins define how capable they are of displaying a SopClass
@@ -62,14 +50,20 @@ const ViewportGrid = function(props) {
     // in the viewport is capable of rendering this display set. If not
     // then use the most capable available plugin
     const { plugin, studyInstanceUid, displaySetInstanceUid } = viewportPane;
+    // TODO: Context menu + Others (shift to something ViewportGrid global?)
+    // TODO: Probably actually don't need one per element; or to use global state
+    const childrenWithProps = React.Children.map(children, (child, index) => {
+      return React.cloneElement(child, {
+        viewportIndex: viewportIndex,
+        key: index,
+      });
+    });
     const displaySetStack = _getDisplaySetStackFromStudies(
       studies,
       studyInstanceUid,
       displaySetInstanceUid
     );
-    const viewportProps = displaySetStack
-      ? { ...displaySetStack, children }
-      : { children };
+    const viewportProps = displaySetStack ? { ...displaySetStack } : {};
     const ViewportComponent = displaySetStack
       ? getViewportComponent(plugin)
       : EmptyViewport;

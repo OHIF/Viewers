@@ -166,8 +166,8 @@ class App extends Component {
 function _initExtensions(extensions, hotkeys) {
   const defaultExtensions = [
     GenericViewerCommands,
-    MeasurementsPanel,
     OHIFCornerstoneExtension,
+    MeasurementsPanel,
   ];
   const mergedExtensions = defaultExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
