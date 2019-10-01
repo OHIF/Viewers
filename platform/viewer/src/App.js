@@ -11,7 +11,6 @@ import {
 import React, { Component } from 'react';
 import {
   getUserManagerForOpenIdConnectClient,
-  initWebWorkers,
 } from './utils/index.js';
 
 import { I18nextProvider } from 'react-i18next';

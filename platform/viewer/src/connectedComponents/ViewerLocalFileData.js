@@ -3,11 +3,13 @@ import { metadata, utils } from '@ohif/core';
 
 import ConnectedViewer from './ConnectedViewer.js';
 import PropTypes from 'prop-types';
-import { extensionManager } from './../App.js';
 import Dropzone from 'react-dropzone';
+import { withTranslation } from 'react-i18next';
+
+import { extensionManager } from './../App.js';
+import '../imageLoaderConfig.js';
 import filesToStudies from '../lib/filesToStudies';
 import './ViewerLocalFileData.css';
-import { withTranslation } from 'react-i18next';
 
 const { OHIFStudyMetadata } = metadata;
 const { studyMetadataManager, updateMetaDataManager } = utils;

@@ -4,6 +4,7 @@ import { metadata, studies, utils } from "@ohif/core";
 import ConnectedViewer from "./ConnectedViewer.js";
 import PropTypes from "prop-types";
 import { extensionManager } from "./../App.js";
+import '../imageLoaderConfig.js';
 
 const { OHIFStudyMetadata } = metadata;
 const { retrieveStudiesMetadata } = studies;
