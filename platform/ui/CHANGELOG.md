@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.52.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.51.3...@ohif/ui@0.52.0) (2019-10-01)
+
+
+### Features
+
+* 🎸 MPR UI improvements. Added MinIP, AvgIP, slab thickness slider and mode toggle ([#947](https://github.com/OHIF/Viewers/issues/947)) ([c79c0c3](https://github.com/OHIF/Viewers/commit/c79c0c3))
+
+
+
+
+
 ## [0.51.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.51.2...@ohif/ui@0.51.3) (2019-10-01)
 
 
