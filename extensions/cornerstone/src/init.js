@@ -80,20 +80,4 @@ export default function init(configuration) {
   csTools.setToolActive('StackScrollMouseWheel', {}); // TODO: Empty options should not be required
   csTools.setToolActive('PanMultiTouch', { pointers: 2 }); // TODO: Better error if no options
   csTools.setToolActive('ZoomTouchPinch', {});
-
-  // const availableTools = [
-  //   {
-  //     name: 'Bidirectional',
-  //     props: {
-  //       configuration: {
-  //         getMeasurementLocationCallback: toolLabellingFlowCallback,
-  //       },
-  //   },
-  //     name: 'Length',
-  //     name: 'Angle',
-  //     name: 'FreehandRoi',
-  //     name: 'EllipticalRoi',
-  //     name: 'CircleRoi',
-  //     name: 'RectangleRoi',
-  //     name: 'ArrowAnnotate',
 }
