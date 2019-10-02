@@ -197,6 +197,7 @@ export class StudyMetadata extends Metadata {
 
     // TODO
     displaySets.sort(_sortBySeriesNumber);
+    displaySets.sort(_sortSegToEndOfList);
 
     return displaySets;
   }
@@ -659,4 +660,25 @@ function _sortBySeriesNumber(a, b) {
     a.seriesNumber > b.seriesNumber || (!a.seriesNumber && b.seriesNumber);
 
   return seriesNumberAIsGreaterOrUndefined ? 1 : -1;
+}
+
+/**
+ * Move Segmentation modality files to the end of the list of
+ * display sets. This is a workaround to prevent issues when
+ * the referenced dataset's metadata is not yet available.
+ *
+ * It will be removed once proper SEG ingestion is added.
+ *
+ * @param {*} a - DisplaySet
+ * @param {*} b - DisplaySet
+ */
+function _sortSegToEndOfList(a, b) {
+  const displaySetAIsSeg = a.modality === 'SEG';
+  const displaySetBIsSeg = b.modality === 'SEG';
+
+  if (displaySetAIsSeg && displaySetBIsSeg) {
+    return 0;
+  }
+
+  return displaySetAIsSeg ? 1 : -1;
 }
