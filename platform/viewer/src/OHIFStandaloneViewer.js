@@ -13,7 +13,6 @@ import { Bar, Container } from './components/LoadingBar/';
 import './OHIFStandaloneViewer.css';
 import './variables.css';
 import './theme-tide.css';
-
 // Contexts
 import AppContext from './context/AppContext';
 
@@ -26,6 +25,7 @@ const IHEInvokeImageDisplay = asyncComponent(() =>
 const ViewerRouting = asyncComponent(() =>
   import(/* webpackChunkName: "ViewerRouting" */ './routes/ViewerRouting.js')
 );
+
 const StudyListRouting = asyncComponent(() =>
   import(
     /* webpackChunkName: "StudyListRouting" */ './studylist/StudyListRouting.js'
@@ -46,7 +46,53 @@ const ViewerLocalFileData = asyncComponent(() =>
 );
 
 const reload = () => window.location.reload();
+const getRoutes = appConfig => {
+  const routes = [
+    {
+      path: '/local',
+      Component: ViewerLocalFileData,
+    },
+    {
+      path: '/viewer',
+      Component: StandaloneRouting,
+    },
+    {
+      path: [
+        '/viewer/:studyInstanceUids',
+        '/study/:studyInstanceUids/series/:seriesInstanceUids',
+      ],
+      Component: ViewerRouting,
+    },
+    {
+      path: '/IHEInvokeImageDisplay',
+      Component: IHEInvokeImageDisplay,
+    },
+  ];
 
+  const showStudyList =
+    appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
+
+  if (showStudyList) {
+    routes.push({
+      path: ['/studylist', '/'],
+      Component: StudyListRouting,
+    });
+  }
+
+  if (appConfig.enableGoogleCloudAdapter) {
+    const pathPart =
+      '/projects/:project/locations/:location/datasets/:dataset/dicomStores/:dicomstore/dicomWeb';
+    routes.push({
+      path: [
+        `${pathPart}/study/:studyInstanceUids`,
+        `${pathPart}/study/:studyInstanceUids/series/:seriesInstanceUids`,
+      ],
+      Component: ViewerRouting,
+    });
+  }
+
+  return routes;
+};
 class OHIFStandaloneViewer extends Component {
   static contextType = AppContext;
   state = {
@@ -128,41 +174,7 @@ class OHIFStandaloneViewer extends Component {
      *
      * See http://reactcommunity.org/react-transition-group/with-react-router/
      */
-    const routes = [
-      {
-        path: '/local',
-        Component: ViewerLocalFileData,
-      },
-      {
-        path: '/viewer',
-        Component: StandaloneRouting,
-      },
-      {
-        path: '/viewer/:studyInstanceUids',
-        Component: ViewerRouting,
-      },
-      {
-        path: '/study/:studyInstanceUids/series/:seriesInstanceUids',
-        Component: ViewerRouting,
-      },
-      {
-        path: '/IHEInvokeImageDisplay',
-        Component: IHEInvokeImageDisplay,
-      },
-    ];
-
-    const showStudyList =
-      appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
-    if (showStudyList) {
-      routes.push({
-        path: '/studylist',
-        Component: StudyListRouting,
-      });
-      routes.push({
-        path: '/',
-        Component: StudyListRouting,
-      });
-    }
+    const routes = getRoutes(appConfig);
 
     const currentPath = this.props.location.pathname;
     const noMatchingRoutes = !routes.find(r =>
