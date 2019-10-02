@@ -2,14 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ConnectedViewerRetrieveStudyData from '../connectedComponents/ConnectedViewerRetrieveStudyData';
 import useServer from '../customHooks/useServer';
+import OHIF from '@ohif/core';
+const { urlUtil: UrlUtil } = OHIF.utils;
+/**
+ * Get array of seriesUIDs from param or from queryString
+ * @param {*} seriesInstanceUids
+ * @param {*} location
+ */
+const getSeriesUIDS = (seriesInstanceUids, location) => {
+  const queryFilters = UrlUtil.queryString.getQueryFilters(location);
+  const querySeriesUIDs = queryFilters['seriesInstanceUid'];
+  const _seriesInstanceUids = seriesInstanceUids || querySeriesUIDs;
 
-const getUIDs = uids => {
-  if (uids && typeof uids === 'string') {
-    return uids.split(';');
-  }
+  return UrlUtil.paramString.parseParam(_seriesInstanceUids);
 };
 
-function ViewerRouting({ match }) {
+function ViewerRouting({ match: routeMatch, location: routeLocation }) {
   const {
     project,
     location,
@@ -17,11 +25,12 @@ function ViewerRouting({ match }) {
     dicomstore,
     studyInstanceUids,
     seriesInstanceUids,
-  } = match.params;
+  } = routeMatch.params;
+
   const server = useServer({ project, location, dataset, dicomstore });
 
-  const studyUIDs = getUIDs(studyInstanceUids);
-  const seriesUIDs = getUIDs(seriesInstanceUids);
+  const studyUIDs = UrlUtil.paramString.parseParam(studyInstanceUids);
+  const seriesUIDs = getSeriesUIDS(seriesInstanceUids, routeLocation);
 
   if (server && studyUIDs) {
     return (

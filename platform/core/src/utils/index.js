@@ -9,6 +9,7 @@ import studyMetadataManager from './studyMetadataManager';
 import updateMetaDataManager from './updateMetaDataManager.js';
 import writeScript from './writeScript.js';
 import DicomLoaderService from './dicomLoaderService.js';
+import * as urlUtil from './urlUtil';
 
 const utils = {
   guid,
@@ -23,6 +24,7 @@ const utils = {
   updateMetaDataManager,
   DICOMTagDescriptions,
   DicomLoaderService,
+  urlUtil,
 };
 
 export {
@@ -38,6 +40,7 @@ export {
   updateMetaDataManager,
   DICOMTagDescriptions,
   DicomLoaderService,
+  urlUtil,
 };
 
 export default utils;
