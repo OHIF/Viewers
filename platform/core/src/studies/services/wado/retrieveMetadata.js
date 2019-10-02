@@ -1,6 +1,6 @@
 import { api } from 'dicomweb-client';
-import log from '../../../log';
 import DICOMWeb from '../../../DICOMWeb/';
+import isLowPriorityModality from '../../../utils/isLowPriorityModality';
 
 const INFO = Symbol('INFO');
 
@@ -568,17 +568,38 @@ async function searchStudySeries(server, studyInstanceUID) {
     .map(series => getSeriesInfo(series).seriesInstanceUid);
 }
 
-function seriesSortingCriteria(a, b) {
-  return getSeriesInfo(a).seriesNumber - getSeriesInfo(b).seriesNumber;
+/**
+ * Series sorting criteria: series considered low priority are moved to the end
+ * of the list and series number is used to break ties
+ * @param {Object} firstSeries
+ * @param {Object} secondSeries
+ */
+function seriesSortingCriteria(firstSeries, secondSeries) {
+  const a = getSeriesInfo(firstSeries);
+  const b = getSeriesInfo(secondSeries);
+  if (!a.isLowPriority && b.isLowPriority) {
+    return -1;
+  }
+  if (a.isLowPriority && !b.isLowPriority) {
+    return 1;
+  }
+  return a.seriesNumber - b.seriesNumber;
 }
 
+/**
+ * Creates an object with processed series information and saves its reference
+ * inside the series object itself to simplify sorting
+ * @param {Object} series The raw series object
+ */
 function getSeriesInfo(series) {
   let info = series[INFO];
   if (!info) {
+    const modality = DICOMWeb.getString(series['00080060'], '').toUpperCase();
     info = Object.freeze({
-      modality: DICOMWeb.getString(series['00080060']),
+      modality,
+      isLowPriority: isLowPriorityModality(modality),
       seriesInstanceUid: DICOMWeb.getString(series['0020000E']),
-      seriesNumber: DICOMWeb.getNumber(series['00200011']),
+      seriesNumber: DICOMWeb.getNumber(series['00200011'], 0) || 0,
     });
     series[INFO] = info;
   }
