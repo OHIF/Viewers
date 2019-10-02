@@ -8,7 +8,7 @@ import {
 } from '@ohif/ui';
 import { commandsManager, extensionManager } from './../App.js';
 
-import ConnectedCineDialog from './ConnectedCineDialog';
+//import ConnectedCineDialog from './ConnectedCineDialog';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 import { MODULE_TYPES } from '@ohif/core';
@@ -143,7 +143,7 @@ class ToolbarRow extends Component {
           </div>
         </div>
         <div className="CineDialogContainer" style={cineDialogContainerStyle}>
-          <ConnectedCineDialog />
+          {/*<ConnectedCineDialog />*/}
         </div>
       </>
     );

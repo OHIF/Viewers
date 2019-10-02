@@ -32,7 +32,7 @@ module.exports = (env, argv) => {
   const hasProxy = PROXY_TARGET && PROXY_DOMAIN;
 
   const mergedConfig = merge(baseConfig, {
-    devtool: isProdBuild ? 'source-map' : 'cheap-module-eval-source-map',
+    devtool: 'cheap-module-eval-source-map',
     output: {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
@@ -52,13 +52,31 @@ module.exports = (env, argv) => {
     optimization: {
       minimize: isProdBuild,
       sideEffects: true,
+      splitChunks: {
+        chunks: 'all',
+        maxInitialRequests: Infinity,
+        cacheGroups: {
+          reactVendor: {
+            test: /[\\/]node_modules[\\/](react|react-dom|redux|redux-logger|redux-thunk|reselect|react-redux|react-dates|react-dnd|react-router|react-router-dom|react-transition-group|react-i18next|react-dropzone|react-resize-detector)[\\/]/,
+            name: "react-vendor"
+          },
+          platformVendor: {
+            test: /[\\/]node_modules[\\/](redux-oidc|oidc-client|moment|i18next|i18next-browser-languagedetector)[\\/]/,
+            name: "platform-vendor"
+          },
+          cornerstoneVendor: {
+            test: /[\\/]node_modules[\\/](cornerstone-core|cornerstone-math|cornerstone-tools|cornerstone-wado-image-loader|dcmjs|dicomParser|dicomweb-client|hammerjs)[\\/]/,
+            name: "cornerstone-vendor"
+          },
+        },
+      }
     },
     module: {
       rules: [...extractStyleChunksRule(isProdBuild)],
     },
     plugins: [
       // Uncomment to generate bundle analyzer
-      new BundleAnalyzerPlugin(),
+      // new BundleAnalyzerPlugin(),
       // Clean output.path
       new CleanWebpackPlugin(),
       // Copy "Public" Folder to Dist
