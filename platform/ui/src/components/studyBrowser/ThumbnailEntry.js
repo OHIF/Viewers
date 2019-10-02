@@ -54,8 +54,10 @@ class ThumbnailEntry extends Component {
       );
     } else if (this.props.altImageText) {
       contents = (
-        <div className={'alt-image-text p-x-1'}>
-          <h1>{this.props.altImageText}</h1>
+        <div className="p-x-1">
+          <div className="alt-image-text">
+            <h1>{this.props.altImageText}</h1>
+          </div>
         </div>
       );
     }
