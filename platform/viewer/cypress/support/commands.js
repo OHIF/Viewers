@@ -56,7 +56,6 @@ Cypress.Commands.add('addLine', (element, initPosition, finalPosition) =>  {
         .trigger('mousemove', { clientX: finalPosition[0], clientY: finalPosition[1] })
         .click({ force: true })
     })
-  
 });
 
 
@@ -75,5 +74,32 @@ Cypress.Commands.add('addAngle', (element, initPosition, midPosition, finalPosit
         .trigger('mousemove', { clientX: finalPosition[0], clientY: finalPosition[1] })
         .click(finalPosition[0], finalPosition[1], { force: true })
     })
-  
+});
+
+
+//Command to wait DICOM image to load into the viewport
+Cypress.Commands.add('waitDicomImage', (timeout = 10000) => {
+  // Give an alias to request
+  cy.server().route("GET", '/dcm4chee-arc/aets/DCM4CHEE/rs/studies/**').as('imageRequest')
+ 
+  // Wait for response.status to be 200
+  cy.wait('@imageRequest', {timeout:timeout}).its('status').should('be', 200) 
+  Cypress.on('uncaught:exception', (err, runnable) => {
+    cy.log('No Image Request was made.');
+    // returning false here prevents Cypress from failing the test
+    return false
+  })
+});
+
+
+//Command to reset the viewport changes throught the cornerstone method
+Cypress.Commands.add('resetViewport', () => {
+  let cornerstone;
+
+  cy.window()
+    .its('cornerstone')
+    .then((c) => {
+      cornerstone = c;
+      cornerstone.reset(cornerstone.getEnabledElements()[0].element)
+    });
 });
