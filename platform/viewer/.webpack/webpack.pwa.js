@@ -10,6 +10,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const PreloadWebpackPlugin = require("preload-webpack-plugin");
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -76,7 +77,7 @@ module.exports = (env, argv) => {
     },
     plugins: [
       // Uncomment to generate bundle analyzer
-      // new BundleAnalyzerPlugin(),
+      //new BundleAnalyzerPlugin(),
       // Clean output.path
       new CleanWebpackPlugin(),
       // Copy "Public" Folder to Dist
@@ -98,7 +99,7 @@ module.exports = (env, argv) => {
         // Copy over and rename our target app config file
         {
           from: `${PUBLIC_DIR}/${APP_CONFIG}`,
-          to: `${DIST_DIR}/app-config.js`,
+           to: `${DIST_DIR}/app-config.js`,
         },
       ]),
       // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
@@ -116,6 +117,7 @@ module.exports = (env, argv) => {
         },
         // favicon: `${PUBLIC_DIR}/favicon.ico`,
       }),
+      new PreloadWebpackPlugin(),
       new WorkboxPlugin.GenerateSW({
         swDest: 'sw.js',
         clientsClaim: true,

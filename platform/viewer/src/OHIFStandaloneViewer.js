@@ -18,32 +18,32 @@ import './theme-tide.css';
 import AppContext from './context/AppContext';
 
 // Dynamic Import Routes (CodeSplitting)
-const IHEInvokeImageDisplay = asyncComponent(() =>
+/*const IHEInvokeImageDisplay = asyncComponent(() =>
   import(
-    /* webpackChunkName: "IHEInvokeImageDisplay" */ './routes/IHEInvokeImageDisplay.js'
-  )
-);
-const ViewerRouting = asyncComponent(() =>
-  import(/* webpackChunkName: "ViewerRouting" */ './routes/ViewerRouting.js')
-);
+    /* webpackChunkName: "IHEInvokeImageDisplay"  './routes/IHEInvokeImageDisplay.js'
+/*  )
+);*/
+/*const ViewerRouting = asyncComponent(() =>
+  import(/* webpackChunkName: "ViewerRouting" './routes/ViewerRouting.js')
+/*);*/
 const StudyListRouting = asyncComponent(() =>
   import(
     /* webpackChunkName: "StudyListRouting" */ './studylist/StudyListRouting.js'
   )
 );
-const StandaloneRouting = asyncComponent(() =>
+/*const StandaloneRouting = asyncComponent(() =>
   import(
-    /* webpackChunkName: "StandaloneRouting" */ './routes/StandaloneRouting.js'
-  )
-);
+    /* webpackChunkName: "StandaloneRouting"  './routes/StandaloneRouting.js'
+  /*)*/
+/*);*/
 const CallbackPage = asyncComponent(() =>
   import(/* webpackChunkName: "CallbackPage" */ './routes/CallbackPage.js')
 );
-const ViewerLocalFileData = asyncComponent(() =>
+/*const ViewerLocalFileData = asyncComponent(() =>
   import(
-    /* webpackChunkName: "ViewerLocalFileData" */ './connectedComponents/ViewerLocalFileData.js'
-  )
-);
+    /* webpackChunkName: "ViewerLocalFileData"  './connectedComponents/ViewerLocalFileData.js'
+/*  )
+);*/
 
 const reload = () => window.location.reload();
 
@@ -129,7 +129,7 @@ class OHIFStandaloneViewer extends Component {
      * See http://reactcommunity.org/react-transition-group/with-react-router/
      */
     const routes = [
-      {
+      /*{
         path: '/local',
         Component: ViewerLocalFileData,
       },
@@ -148,7 +148,7 @@ class OHIFStandaloneViewer extends Component {
       {
         path: '/IHEInvokeImageDisplay',
         Component: IHEInvokeImageDisplay,
-      },
+      },*/
     ];
 
     const showStudyList =

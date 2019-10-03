@@ -18,7 +18,7 @@
   "proxy": "http://localhost:8042",
   "scripts": {
     "build:package": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.commonjs.js",
-    "build:viewer": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js --profile --json > webpack-stats.json",
+    "build:viewer": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js --progress",
     "build:viewer:e2e": "cross-env NODE_ENV=development node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js --progress",
     "build:viewer:ci": "cross-env NODE_ENV=production PUBLIC_URL=/pwa/ APP_CONFIG=config/netlify.js node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js",
     "build:viewer:demo": "cross-env NODE_ENV=production APP_CONFIG=config/demo.js HTML_TEMPLATE=rollbar.html node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --progress --config .webpack/webpack.pwa.js",
@@ -90,6 +90,7 @@
     "gh-pages": "2.0.1",
     "identity-obj-proxy": "3.0.x",
     "lodash": "4.17.11",
-    "lodash.clonedeep": "4.5.0"
+    "lodash.clonedeep": "4.5.0",
+    "preload-webpack-plugin": "^3.0.0-beta.4"
   }
 }
