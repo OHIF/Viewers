@@ -94,12 +94,9 @@ Cypress.Commands.add('waitDicomImage', (timeout = 10000) => {
 
 //Command to reset the viewport changes throught the cornerstone method
 Cypress.Commands.add('resetViewport', () => {
-  let cornerstone;
-
   cy.window()
     .its('cornerstone')
-    .then((c) => {
-      cornerstone = c;
-      cornerstone.reset(cornerstone.getEnabledElements()[0].element)
+    .then(($cornerstone) => {
+      $cornerstone.reset($cornerstone.getEnabledElements()[0].element)
     });
 });
