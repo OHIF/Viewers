@@ -2272,6 +2272,16 @@
     once "^1.4.0"
     universal-user-agent "^4.0.0"
 
+"@ohif/extension-cornerstone@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone/-/extension-cornerstone-2.0.0.tgz#b4ee3b594212502192cdd311a100354857280548"
+  integrity sha512-hvJ3t2GRcu906NiYpUWaJIB9ja/M/MKEYLy19t4XBFpqf4VqoezR2KJpZelmZjQscXGaDQeZgvr3DJO5Nva8Uw==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    classnames "^2.2.6"
+    lodash.throttle "^4.1.1"
+    react-cornerstone-viewport "0.1.30"
+
 "@ohif/i18n@^0.2.3":
   version "0.2.5"
   resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.2.5.tgz#2b92a78109823ce0f50dd590201d980a5fd64974"

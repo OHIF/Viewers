@@ -9,6 +9,7 @@ import {
 
 import setMPRLayout from './utils/setMPRLayout.js';
 import setViewportToVTK from './utils/setViewportToVTK.js';
+import vtkViewportSubscriptionManager from './utils/vtkViewportSubscriptionManager.js';
 import vtkCoordinate from 'vtk.js/Sources/Rendering/Core/Coordinate';
 import vtkMath from 'vtk.js/Sources/Common/Core/Math';
 import vtkMatrixBuilder from 'vtk.js/Sources/Common/Core/MatrixBuilder';
@@ -263,16 +264,19 @@ const actions = {
 
     apis = apiByViewport;
 
-    /*const rgbTransferFunction = apiByViewport[0].volumes[0]
+    const rgbTransferFunction = apiByViewport[0].volumes[0]
       .getProperty()
       .getRGBTransferFunction(0);
-    rgbTransferFunction.onModified(() => {
+
+    const onModifiedSubscription = rgbTransferFunction.onModified(() => {
       apiByViewport.forEach(a => {
         const renderWindow = a.genericRenderWindow.getRenderWindow();
 
         renderWindow.render();
       });
-    });*/
+    });
+
+    vtkViewportSubscriptionManager.pushSubscription(0, onModifiedSubscription);
 
     apiByViewport.forEach((api, index) => {
       const renderWindow = api.genericRenderWindow.getRenderWindow();
