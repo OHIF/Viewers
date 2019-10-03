@@ -25,7 +25,7 @@ class StudyBrowser extends Component {
         if (this.props.supportsDragAndDrop) {
           return (
             <ThumbnailEntryDragSource
-              key={`${studyIndex}_${thumbIndex}`}
+              key={thumb.displaySetInstanceUid}
               {...study}
               {...thumb}
               id={`${studyIndex}_${thumbIndex}`}
@@ -37,7 +37,7 @@ class StudyBrowser extends Component {
           return (
             <div className="ThumbnailEntryContainer">
               <ThumbnailEntry
-                key={`${studyIndex}_${thumbIndex}`}
+                key={thumb.displaySetInstanceUid}
                 {...study}
                 {...thumb}
                 id={`${studyIndex}_${thumbIndex}`}

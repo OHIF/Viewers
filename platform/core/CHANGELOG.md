@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.0.2...@ohif/core@1.1.0) (2019-10-03)
+
+
+### Features
+
+* Use QIDO + WADO to load series metadata individually rather than the entire study metadata at once ([#953](https://github.com/OHIF/Viewers/issues/953)) ([9e10c2b](https://github.com/OHIF/Viewers/commit/9e10c2b))
+
+
+
+
+
+## [1.0.2](https://github.com/OHIF/Viewers/compare/@ohif/core@1.0.1...@ohif/core@1.0.2) (2019-10-02)
+
+
+### Bug Fixes
+
+* Temporarily sort SEG files to the end of the display set list as a workaround for several metadata issues ([#987](https://github.com/OHIF/Viewers/issues/987)) ([b3b4c10](https://github.com/OHIF/Viewers/commit/b3b4c10))
+
+
+
+
+
 ## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/core@1.0.0...@ohif/core@1.0.1) (2019-09-27)
 
 
