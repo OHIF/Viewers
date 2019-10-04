@@ -33,5 +33,12 @@ module.exports = (env, argv) => {
       libraryTarget: 'umd',
       filename: pkg.main,
     },
+    externals: [
+      'cornerstone-core',
+      'cornerstone-tools',
+      'cornerstone-wado-image-loader',
+      'cornerstone-math',
+      'dicom-parser',
+    ],
   });
 };
