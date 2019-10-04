@@ -9,6 +9,7 @@ import { SeriesMetadata } from './SeriesMetadata';
 import { api } from 'dicomweb-client';
 // - createStacks
 import { isImage } from '../../utils/isImage';
+import isDisplaySetReconstructable from '../../utils/isDisplaySetReconstructable';
 import isLowPriorityModality from '../../utils/isLowPriorityModality';
 
 export class StudyMetadata extends Metadata {
@@ -619,6 +620,8 @@ const makeDisplaySet = (series, instances) => {
     'instanceNumber',
     imageSet.getImage(0).getRawValue('x00200013')
   );
+
+  imageSet.isReconstructable = isDisplaySetReconstructable(series, instances);
 
   return imageSet;
 };
