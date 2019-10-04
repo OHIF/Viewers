@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.5](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.50.4...@ohif/i18n@0.50.5) (2019-10-04)
+
+
+### Bug Fixes
+
+* CineDialog buttons label ([#998](https://github.com/OHIF/Viewers/issues/998)) ([4df624b](https://github.com/OHIF/Viewers/commit/4df624b))
+
+
+
+
+
 ## [0.50.4](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.50.3...@ohif/i18n@0.50.4) (2019-09-10)
 
 **Note:** Version bump only for package @ohif/i18n
