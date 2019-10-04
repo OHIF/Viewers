@@ -34,6 +34,7 @@ import store from './store';
 import WhiteLabellingContext from './context/WhiteLabellingContext';
 import UserManagerContext from './context/UserManagerContext';
 import AppContext from './context/AppContext';
+import SnackbarProvider from './context/Snackbar';
 
 // ~~~~ APP SETUP
 initCornerstoneTools({
@@ -109,7 +110,9 @@ class App extends Component {
                     <WhiteLabellingContext.Provider
                       value={this.props.whiteLabelling}
                     >
-                      <OHIFStandaloneViewer userManager={userManager} />
+                      <SnackbarProvider>
+                        <OHIFStandaloneViewer userManager={userManager} />
+                      </SnackbarProvider>
                     </WhiteLabellingContext.Provider>
                   </Router>
                 </UserManagerContext.Provider>
@@ -126,7 +129,9 @@ class App extends Component {
           <I18nextProvider i18n={i18n}>
             <Router basename={this.props.routerBasename}>
               <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-                <OHIFStandaloneViewer />
+                <SnackbarProvider>
+                  <OHIFStandaloneViewer />
+                </SnackbarProvider>
               </WhiteLabellingContext.Provider>
             </Router>
           </I18nextProvider>
