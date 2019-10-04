@@ -1,4 +1,6 @@
 import { DragSimulator } from "../helpers/DragSimulator.js";
+import { doesNotReject } from "assert";
+import { disconnect } from "cluster";
 
 // ***********************************************
 // This example commands.js shows you how to
@@ -31,9 +33,7 @@ Cypress.Commands.add('openStudy', (patientName) => {
     cy.get('#patientName')
       .type(patientName);
 
-    const patientResult = '.studylistStudy > .patientName';
-
-    cy.get(patientResult)
+    cy.get('.studylistStudy > .patientName').as('patientResult')
       .then({ timeout: 5000 }, ($patientResult) => {
         cy.contains(patientName)
         .click();
@@ -45,58 +45,101 @@ Cypress.Commands.add('drag', {prevSubject: 'element',},
   (...args) => DragSimulator.simulate(...args)
 );
 
-// Command to perform two clicks into two different positions. Each position must be (x, y).
-// The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
-Cypress.Commands.add('addLine', (element, initPosition, finalPosition) =>  {
+/**
+ * Command to perform two clicks into two different positions. Each position must be [x, y].
+ * The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
+ *
+ * @param {*} viewport - Selector for viewport we would like to interact with
+ * @param {number[]} firstClick - Click position [x, y]
+ * @param {number[]} secondClick - Click position [x, y]
+ */
+Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) =>  {
 
-  cy.get(element)
-    .click(initPosition[0], initPosition[1], { force: true })
-    .then(() =>{
-      cy.get(element)
-        .trigger('mousemove', { clientX: finalPosition[0], clientY: finalPosition[1] })
-        .click({ force: true })
-    })
+  cy.get(viewport).then(($viewport) => {
+    const [ x1, y1 ] = firstClick;
+    const [ x2, y2 ] = secondClick;
+
+    cy.wrap($viewport)
+      .click(x1, y1, {force: true})
+      .trigger('mousemove', {clientX:x2, clientY:y2})
+      .click(x2, y2, {force: true})
+  });
 });
 
 
-// Command to perform three clicks into three different positions. Each position must be (x, y).
-// The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
-Cypress.Commands.add('addAngle', (element, initPosition, midPosition, finalPosition) =>  {
+/**
+ * Command to perform three clicks into three different positions. Each position must be [x, y].
+ * The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
+ *
+ * @param {*} viewport - Selector for viewport we would like to interact with
+ * @param {number[]} firstClick - Click position [x, y]
+ * @param {number[]} secondClick - Click position [x, y]
+ * @param {number[]} thirdClick - Click position [x, y]
+ */
+Cypress.Commands.add('addAngle', (viewport, firstClick, secondClick, thirdClick) =>  {
 
-  cy.get(element)
-    .click(initPosition[0], initPosition[1], { force: true })
-    .then(() =>{
-      cy.get(element)
-        .trigger('mousemove', { clientX: midPosition[0], clientY: midPosition[1] })
-        .click(midPosition[0], midPosition[1], { force: true })
-    }).then(() =>{
-      cy.get(element)
-        .trigger('mousemove', { clientX: finalPosition[0], clientY: finalPosition[1] })
-        .click(finalPosition[0], finalPosition[1], { force: true })
-    })
+  cy.get(viewport).then(($viewport) => {
+    const [ x1, y1 ] = firstClick;
+    const [ x2, y2 ] = secondClick;
+    const [ x3, y3 ] = thirdClick;
+
+    cy.wrap($viewport)
+      .click(x1, y1, {force: true})
+      .trigger('mousemove', {clientX:x2, clientY:y2})
+      .click(x2, y2, {force: true})
+      .trigger('mousemove', {clientX:x3, clientY:y3})
+      .click(x3, y3, {force: true})
+  });
 });
 
 
 //Command to wait DICOM image to load into the viewport
 Cypress.Commands.add('waitDicomImage', (timeout = 10000) => {
-  // Give an alias to request
-  cy.server().route("GET", '/dcm4chee-arc/aets/DCM4CHEE/rs/studies/**').as('imageRequest')
- 
-  // Wait for response.status to be 200
-  cy.wait('@imageRequest', {timeout:timeout}).its('status').should('be', 200) 
-  Cypress.on('uncaught:exception', (err, runnable) => {
-    cy.log('No Image Request was made.');
-    // returning false here prevents Cypress from failing the test
-    return false
-  })
+  cy.window()
+    .its('cornerstone')
+    .then($cornerstone => {
+      return new Cypress.Promise(resolve => {
+            const onEvent = (renderedEvt) => {
+            const element = renderedEvt.detail.element;
+
+            element.removeEventListener('cornerstoneimagerendered', onEvent);
+            $cornerstone.events.removeEventListener('cornerstoneimagerendered', onEvent);
+              resolve();
+          }
+          const onEnabled = (enabledEvt) => {
+              const element = enabledEvt.detail.element;
+              
+                element.addEventListener('cornerstoneimagerendered', onEvent);
+          }
+          $cornerstone.events.addEventListener('cornerstoneelementenabled', onEnabled);
+    });
+  });
+
 });
 
 
 //Command to reset the viewport changes throught the cornerstone method
 Cypress.Commands.add('resetViewport', () => {
-  cy.window()
-    .its('cornerstone')
-    .then(($cornerstone) => {
-      $cornerstone.reset($cornerstone.getEnabledElements()[0].element)
-    });
+  cy.get('@resetBtn').click()
+});
+
+
+Cypress.Commands.add('imageZoomIn', () => {
+  cy.get('@zoomBtn').click();
+
+  //drags the mouse inside the viewport to be able to interact with series
+  cy.get('@viewport')
+  .trigger('mousedown', 'top', { which: 1 })
+  .trigger('mousemove', 'center', { which: 1 })
+  .trigger('mouseup');
+});
+
+Cypress.Commands.add('imageContrast', () => {
+  cy.get('@levelsBtn').click();
+
+  //drags the mouse inside the viewport to be able to interact with series
+  cy.get('@viewport')
+  .trigger('mousedown', 'center', { which: 1 })
+  .trigger('mousemove', 'top', { which: 1 })
+  .trigger('mouseup');
 });
