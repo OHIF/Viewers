@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.53.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.53.0...@ohif/ui@0.53.1) (2019-10-04)
+
+
+### Bug Fixes
+
+* Move Series Information to Separate Row ([#990](https://github.com/OHIF/Viewers/issues/990)) ([458d310](https://github.com/OHIF/Viewers/commit/458d310))
+
+
+
+
+
+# [0.53.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.52.0...@ohif/ui@0.53.0) (2019-10-03)
+
+
+### Features
+
+* Use QIDO + WADO to load series metadata individually rather than the entire study metadata at once ([#953](https://github.com/OHIF/Viewers/issues/953)) ([9e10c2b](https://github.com/OHIF/Viewers/commit/9e10c2b))
+
+
+
+
+
 # [0.52.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.51.3...@ohif/ui@0.52.0) (2019-10-01)
 
 
