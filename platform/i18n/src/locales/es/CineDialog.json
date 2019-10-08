@@ -1,5 +1,5 @@
 {
-  "Next image": " $t(Common:Image) $t(Common:Next)",
+  "Next image": "$t(Common:Image) $t(Common:Next)",
   "Play / Stop": "$t(Common:Play) / Stop",
   "Previous image": "$t(Common:Image) $t(Common:Previous)",
   "Skip to first image": "Ir a la primera $t(Common:Image)",
