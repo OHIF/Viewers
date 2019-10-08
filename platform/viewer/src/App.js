@@ -169,8 +169,9 @@ class App extends Component {
 function _initExtensions(extensions, hotkeys) {
   const defaultExtensions = [
     GenericViewerCommands,
-    MeasurementsPanel,
     OHIFCornerstoneExtension,
+    // WARNING: MUST BE REGISTERED _AFTER_ OHIFCORNERSTONEEXTENSION
+    MeasurementsPanel,
   ];
   const mergedExtensions = defaultExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
