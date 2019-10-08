@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.0...@ohif/extension-vtk@0.52.1) (2019-10-04)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+# [0.52.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.51.3...@ohif/extension-vtk@0.52.0) (2019-10-03)
+
+
+### Features
+
+* 🎸 Synced Window Leveling ([559b637](https://github.com/OHIF/Viewers/commit/559b637)), closes [#558](https://github.com/OHIF/Viewers/issues/558)
+
+
+
+
+
+## [0.51.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.51.2...@ohif/extension-vtk@0.51.3) (2019-10-03)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
 ## [0.51.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.51.1...@ohif/extension-vtk@0.51.2) (2019-10-02)
 
 **Note:** Version bump only for package @ohif/extension-vtk
