@@ -1,4 +1,4 @@
-.sbContainer {
+.sb-container {
   position: fixed;
   width: 420px;
   padding: 20px;
@@ -119,7 +119,7 @@
 .sb-message {
 }
 
-.sbItem {
+.sb-item {
   position: relative;
   transition: height 300ms ease;
   -webkit-animation: fadein 1s;
@@ -130,7 +130,7 @@
   overflow: hidden;
 }
 
-.sbHidden {
+.sb-hidden {
   padding: 0 !important;
   margin: 0 !important;
   height: 0 !important;

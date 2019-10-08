@@ -58,7 +58,7 @@ const SnackbarItem = ({ options, onClose }) => {
   return (
     <div
       style={styles[options.type]}
-      className={`${options.visible ? '' : 'sbHidden'} sbItem`}
+      className={`${options.visible ? '' : 'sb-hidden'} sb-item`}
     >
       <span className="sb-closeBtn" onClick={handleClose}>
         <span className="sb-closeIcon">x</span>
