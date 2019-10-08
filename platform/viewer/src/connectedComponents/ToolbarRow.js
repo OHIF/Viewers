@@ -247,4 +247,4 @@ function _handleBuiltIn({ behavior } = {}) {
   }
 }
 
-export default withSnackbar(withTranslation('Common')(ToolbarRow));
+export default withTranslation('Common')(ToolbarRow);
