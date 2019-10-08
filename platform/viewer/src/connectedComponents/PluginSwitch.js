@@ -34,7 +34,7 @@ class PluginSwitch extends Component {
 function _shouldRenderMpr2DButton() {
   const { viewportSpecificData, studies, activeViewportIndex } = this.props;
 
-  if (!viewportSpecificData[0]) {
+  if (!viewportSpecificData[activeViewportIndex]) {
     return;
   }
 
