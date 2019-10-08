@@ -32,22 +32,15 @@ class PluginSwitch extends Component {
 }
 
 function _shouldRenderMpr2DButton() {
-  const { viewportSpecificData, activeContexts, studies } = this.props;
+  const { viewportSpecificData, studies, activeViewportIndex } = this.props;
 
   if (!viewportSpecificData[0]) {
-    return false;
+    return;
   }
 
-  // Can only construct data which is displayed in these types of viewports.
-  const appropriateViewport =
-    activeContexts.includes('ACTIVE_VIEWPORT::CORNERSTONE') ||
-    activeContexts.includes('ACTIVE_VIEWPORT::VTK');
-
-  if (!appropriateViewport) {
-    return false;
-  }
-
-  const { displaySetInstanceUid, studyInstanceUid } = viewportSpecificData[0];
+  const { displaySetInstanceUid, studyInstanceUid } = viewportSpecificData[
+    activeViewportIndex
+  ];
 
   const displaySet = _getDisplaySet(
     studies,
@@ -55,10 +48,8 @@ function _shouldRenderMpr2DButton() {
     displaySetInstanceUid
   );
 
-  debugger;
-
   if (!displaySet) {
-    return false;
+    return;
   }
 
   return displaySet.isReconstructable;

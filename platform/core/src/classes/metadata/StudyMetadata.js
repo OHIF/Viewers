@@ -621,7 +621,15 @@ const makeDisplaySet = (series, instances) => {
     imageSet.getImage(0).getRawValue('x00200013')
   );
 
-  imageSet.isReconstructable = isDisplaySetReconstructable(series, instances);
+  const isReconstructable = isDisplaySetReconstructable(series, instances);
+
+  imageSet.isReconstructable = isReconstructable.value;
+
+  if (isReconstructable.missingFrames) {
+    // TODO -> This is currently unused, but may be used for reconstructing
+    // Volumes with gaps later on.
+    imageSet.missingFrames = isReconstructable.missingFrames;
+  }
 
   return imageSet;
 };

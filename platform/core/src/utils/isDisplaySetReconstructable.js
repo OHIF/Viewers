@@ -1,11 +1,36 @@
+/**
+ * Checks if a series is reconstructable to a 3D volume.
+ *
+ * @param {Object} series The `OHIFSeriesMetadata` object.
+ * @param {Object} instances The `OHIFInstanceMetadata` object
+ */
 export default function isDisplaySetReconstructable(series, instances) {
-  debugger;
-
   // Can't reconstruct if we only have one image.
-  if (instances.length === 1) {
-    return false;
+
+  const modality = series._data.modality; // TODO -> Is there a better way to get this?
+  const isMultiframe = instances[0].getRawValue('x00280008') > 1;
+
+  if (!constructableModalities.includes(modality)) {
+    return { value: false };
   }
 
+  if (!isMultiframe && instances.length === 1) {
+    return { values: false };
+  }
+
+  if (isMultiframe) {
+    return processMultiframe(instances[0]);
+  } else {
+    return processSingleframe(instances);
+  }
+}
+
+function processMultiframe(instance) {
+  //TODO: deal with multriframe checks! return true for now.
+  return { value: true };
+}
+
+function processSingleframe(instances) {
   const firstImage = instances[0];
   const firstImageRows = firstImage.getTagValue('x00280010');
   const firstImageColumns = firstImage.getTagValue('x00280011');
@@ -30,18 +55,15 @@ export default function isDisplaySetReconstructable(series, instances) {
       samplesPerPixel !== firstImageSamplesPerPixel ||
       imageOrientationPatient !== firstImageOrientationPatient
     ) {
-      return false;
+      return { value: false };
     }
   }
 
+  let missingFrames = 0;
+
   // Check if frame spacing is approximately equal within a tolerance.
-  // TODO: Can we really do this when missing slices are really common?
-  // - You probably still want to view the series if we have slices missing, but
-  // - its impossible to tell the difference between missing slices and a multi
-  // - slice thickness reconstruction (could check if the difference is a
-  // multiple of the first to second frame slice spacing, but that is degenerate with
-  // particular  )
-  // Slicer throws a warning and still lets you open the scan, maybe we should do the same.
+  // If spacing is on a uniform grid but we are missing frames,
+  // Allow reconstruction, but pass back the number of missing frames.
   if (instances.length > 2) {
     const firstIpp = _getImagePositionPatient(firstImage);
     const lastIpp = _getImagePositionPatient(instances[instances.length - 1]);
@@ -55,39 +77,59 @@ export default function isDisplaySetReconstructable(series, instances) {
       const ipp = _getImagePositionPatient(instance);
 
       const spacingBetweenFrames = _getPerpindicularDistance(ipp, previousIpp);
+      const spacingIssue = _getSpacingIssue(
+        spacingBetweenFrames,
+        averageSpacingBetweenFrames
+      );
 
-      if (
-        !_equalWithinTolerance(
-          spacingBetweenFrames,
-          averageSpacingBetweenFrames
-        )
-      ) {
-        return false;
+      if (spacingIssue) {
+        const issue = spacingIssue.issue;
+
+        if (issue === 'missing') {
+          missingFrames += spacingIssue.missingFrames;
+        } else if (issue === 'different') {
+          return { value: false };
+        }
       }
 
       previousIpp = ipp;
     }
   }
 
-  return true;
+  return { value: true, missingFrames };
 }
 
+// TODO: Is 10% a reasonable tolerance for spacing?
 const tolerance = 0.1;
 
-function _equalWithinTolerance(spacing, averageSpacing) {
-  return a < b * (1 + tolerance) && a > b * (1 - tolerance);
-  /*
+/**
+ * Checks for spacing issues.
+ *
+ * @param {number} spacing The spacing between two frames.
+ * @param {number} averageSpacing The average spacing between all frames.
+ *
+ * @returns {Object} An object containing the issue and extra information if necessary.
+ */
+function _getSpacingIssue(spacing, averageSpacing) {
   const equalWithinTolerance =
-    a < b * (1 + tolerance) && a > b * (1 - tolerance);
+    Math.abs(spacing - averageSpacing) < averageSpacing * tolerance;
 
   if (equalWithinTolerance) {
-    return true;
+    return;
   }
 
-  const multipleOfAverageSpacing = (spacing/averageSpacing);
+  const multipleOfAverageSpacing = spacing / averageSpacing;
 
-  return;
-  */
+  const numberOfSpacings = Math.round(multipleOfAverageSpacing);
+
+  const errorForEachSpacing =
+    Math.abs(spacing - numberOfSpacings * averageSpacing) / numberOfSpacings;
+
+  if (errorForEachSpacing < tolerance * averageSpacing) {
+    return { issue: 'missing', missingFrames: numberOfSpacings - 1 };
+  }
+
+  return { issue: 'different' };
 }
 
 function _getImagePositionPatient(instance) {
@@ -104,3 +146,5 @@ function _getPerpindicularDistance(a, b) {
       Math.pow(a[2] - b[2], 2)
   );
 }
+
+const constructableModalities = ['MR', 'CT', 'PT', 'NM'];

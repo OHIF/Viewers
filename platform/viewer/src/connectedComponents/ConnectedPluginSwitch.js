@@ -35,16 +35,10 @@ const mapDispatchToProps = dispatch => {
 }*/
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
-  const {
-    activeViewportIndex,
-    viewportSpecificData,
-    activeContexts,
-  } = propsFromState;
+  const { activeViewportIndex, viewportSpecificData } = propsFromState;
   const { studies } = ownProps;
   //const { setLayout } = propsFromDispatch;
 
-  // TODO: Do not display certain options if the current display set
-  // cannot be displayed using these view types
   const mpr = () => {
     commandsManager.runCommand('mpr2d');
   };
@@ -52,7 +46,6 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
     mpr,
     activeViewportIndex,
     viewportSpecificData,
-    activeContexts,
     studies,
   };
 };
