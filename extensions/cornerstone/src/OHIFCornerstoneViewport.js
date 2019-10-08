@@ -256,7 +256,7 @@ class OHIFCornerstoneViewport extends Component {
     const {
       imageIds,
       currentImageIdIndex,
-      frameRate = 0,
+      frameRate = 0, // Sometimes available here
     } = this.state.viewportData.stack;
 
     // TODO: Does it make more sense to use Context?
@@ -275,10 +275,10 @@ class OHIFCornerstoneViewport extends Component {
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
+          // Connected (From REDUX)
+          // isPlaying={false}
+          // frameRate={frameRate}
           isStackPrefetchEnabled={true}
-          isPlaying={false}
-          frameRate={frameRate}
-          // Connected
           // setViewportActive{() => {}}
           // onElementEnabled={() => {}}
           {...this.props.customProps}
