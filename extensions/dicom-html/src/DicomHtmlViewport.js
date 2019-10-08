@@ -30,7 +30,7 @@ function getValueString(data) {
       const {
         CodeMeaning,
         CodeValue,
-        CodingSchemeDesignator,
+        CodingSchemeDesignator
       } = data.ConceptNameCodeSequence;
 
       return `${CodeMeaning} (${CodeValue}, ${CodingSchemeDesignator})`;
@@ -75,7 +75,7 @@ function constructContentSequence(data, header) {
   }
 
   const result = {
-    items,
+    items
   };
 
   if (header) {
@@ -106,7 +106,9 @@ const { DicomMetaDictionary, DicomMessage } = dcmjs.data;
 function getMainData(data) {
   const root = [];
 
-  const patientValue = `${data.PatientName} (${data.PatientSex}, #${data.PatientID})`;
+  const patientValue = `${data.PatientName} (${data.PatientSex}, #${
+    data.PatientID
+  })`;
   root.push(getMainDataItem('Patient', patientValue));
 
   const studyValue = data.StudyDescription;
@@ -115,13 +117,15 @@ function getMainData(data) {
   const seriesValue = `${data.SeriesDescription} (#${data.SeriesNumber})`;
   root.push(getMainDataItem('Series', seriesValue));
 
-  const manufacturerValue = `${data.Manufacturer} (${data.ManufacturerModelName}, #${data.DeviceSerialNumber})`;
+  const manufacturerValue = `${data.Manufacturer} (${
+    data.ManufacturerModelName
+  }, #${data.DeviceSerialNumber})`;
 
   root.push(getMainDataItem('Manufacturer', manufacturerValue));
 
   const mainDataObjects = {
     CompletionFlag: 'Completion flag',
-    VerificationFlag: 'Verification flag',
+    VerificationFlag: 'Verification flag'
   };
 
   Object.keys(mainDataObjects).forEach(key => {
@@ -150,7 +154,7 @@ const getContentSequence = (data, level = 1) => {
     const {
       CodeMeaning,
       CodeValue,
-      CodingSchemeDesignator,
+      CodingSchemeDesignator
     } = data.ConceptNameCodeSequence;
 
     header = `${CodeMeaning} (${CodeValue} - ${CodingSchemeDesignator})`;
@@ -194,11 +198,11 @@ function getMainDataItem(key, value) {
 class DicomHtmlViewport extends Component {
   state = {
     content: null,
-    error: null,
+    error: null
   };
 
   static propTypes = {
-    byteArray: TypedArrayProp.uint8,
+    byteArray: TypedArrayProp.uint8
   };
 
   componentDidMount() {
@@ -221,7 +225,7 @@ class DicomHtmlViewport extends Component {
     );
 
     this.setState({
-      content,
+      content
     });
   }
 
