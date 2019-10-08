@@ -216,6 +216,7 @@ describe('OHIF Cornerstone Toolbar', () => {
           .wait(100)
           .click();
         
+
         let expectedText = 'Img: 1 1/26';  
         cy.get('@viewportInfoBottomLeft')
           .should('not.have.text', expectedText);
@@ -490,6 +491,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       //Close the measurements panel
       cy.get('@measurementsBtn')
         .click();
+
     });
 
   });

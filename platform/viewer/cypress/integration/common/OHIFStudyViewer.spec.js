@@ -41,6 +41,7 @@ describe('OHIF Study Viewer Page', () => {
       
       cy.get('@measurementsBtn').click();
       cy.get('@measurementsPanel').should('not.be.enabled');
+
     });
 
     it('checks if measurement item can be Relabeled under Measurements panel', () => {

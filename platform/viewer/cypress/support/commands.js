@@ -143,7 +143,6 @@ Cypress.Commands.add('resetViewport', () => {
   //Click on Clear button
   cy.get('.tooltip-inner > :nth-child(10)')
     .click();
-
 });
 
 
@@ -199,4 +198,5 @@ Cypress.Commands.add('addAngleMeasurement', () => {
   const midPos = [300, 410];
   const finalPos = [180, 450];
   cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
+
 });
