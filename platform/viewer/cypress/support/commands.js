@@ -1,6 +1,5 @@
 import { DragSimulator } from "../helpers/DragSimulator.js";
-import { doesNotReject } from "assert";
-import { disconnect } from "cluster";
+import { initCornerstoneToolsAliases, initCommonElementsAliases } from './aliases.js';
 
 // ***********************************************
 // This example commands.js shows you how to
@@ -28,6 +27,11 @@ import { disconnect } from "cluster";
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+/**
+ * Command to search for a patient name and open his/her study.
+ *
+ * @param {string} PatientName - Patient name that we would like to search for
+ */
 Cypress.Commands.add('openStudy', (patientName) => {
     cy.visit('/');
     cy.get('#patientName')
@@ -41,9 +45,17 @@ Cypress.Commands.add('openStudy', (patientName) => {
   }
 );
 
+
+/**
+ * Command to perform a drag and drop action. Before using this command, we must get the element that should be dragged first. 
+ * Example of usage: cy.get(element-to-be-dragged).drag(dropzone-element)
+ * 
+ * @param {*} element - Selector for element that we want to use as dropzone
+ */
 Cypress.Commands.add('drag', {prevSubject: 'element',},
   (...args) => DragSimulator.simulate(...args)
 );
+
 
 /**
  * Command to perform two clicks into two different positions. Each position must be [x, y].
@@ -118,13 +130,25 @@ Cypress.Commands.add('waitDicomImage', (timeout = 10000) => {
 });
 
 
-//Command to reset the viewport changes throught the cornerstone method
+//Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
-  cy.get('@resetBtn').click()
+  cy.initCornerstoneToolsAliases();
+  cy.get('@resetBtn').click();
+  //Click on More button
+  cy.get('@moreBtn')
+    .click();
+  //Verify if overlay is displayed
+  cy.get('.tooltip-toolbar-overlay')
+    .should('be.visible');  
+  //Click on Clear button
+  cy.get('.tooltip-inner > :nth-child(10)')
+    .click();
+
 });
 
 
 Cypress.Commands.add('imageZoomIn', () => {
+  cy.initCornerstoneToolsAliases();
   cy.get('@zoomBtn').click();
 
   //drags the mouse inside the viewport to be able to interact with series
@@ -135,6 +159,7 @@ Cypress.Commands.add('imageZoomIn', () => {
 });
 
 Cypress.Commands.add('imageContrast', () => {
+  cy.initCornerstoneToolsAliases();
   cy.get('@levelsBtn').click();
 
   //drags the mouse inside the viewport to be able to interact with series
@@ -142,4 +167,36 @@ Cypress.Commands.add('imageContrast', () => {
   .trigger('mousedown', 'center', { which: 1 })
   .trigger('mousemove', 'top', { which: 1 })
   .trigger('mouseup');
+});
+
+//Initialize aliases for Cornerstone tools buttons
+Cypress.Commands.add('initCornerstoneToolsAliases', () => {
+  initCornerstoneToolsAliases();
+});
+
+//Initialize aliases for Common page elements
+Cypress.Commands.add('initCommonElementsAliases', () => {
+  initCommonElementsAliases();
+});
+
+
+//Add measurements in the viewport
+Cypress.Commands.add('addLengthMeasurement', () => {
+  cy.initCornerstoneToolsAliases();
+  cy.get('@lengthBtn')
+  .click();
+  const firstClick = [150, 100];
+  const secondClick = [130, 170];
+  cy.addLine('.cornerstone-canvas', firstClick, secondClick);
+});
+
+//Add measurements in the viewport
+Cypress.Commands.add('addAngleMeasurement', () => {
+  cy.initCornerstoneToolsAliases();
+  cy.get('@angleBtn')
+  .click();
+  const initPos = [180, 390];
+  const midPos = [300, 410];
+  const finalPos = [180, 450];
+  cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
 });
