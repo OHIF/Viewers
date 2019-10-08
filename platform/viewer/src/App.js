@@ -15,7 +15,6 @@ import {
 } from './utils/index.js';
 
 import { I18nextProvider } from 'react-i18next';
-import initCornerstoneTools from './initCornerstoneTools.js';
 
 // ~~ EXTENSIONS
 import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
@@ -36,11 +35,6 @@ import UserManagerContext from './context/UserManagerContext';
 import AppContext from './context/AppContext';
 
 // ~~~~ APP SETUP
-initCornerstoneTools({
-  globalToolSyncEnabled: true,
-  showSVGCursors: true,
-});
-
 const commandsManagerConfig = {
   getAppState: () => store.getState(),
   getActiveContexts: () => getActiveContexts(store.getState()),
