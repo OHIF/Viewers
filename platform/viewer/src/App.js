@@ -26,7 +26,6 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
-import setupTools from './setupTools.js';
 import store from './store';
 
 // Contexts
@@ -43,9 +42,6 @@ const commandsManagerConfig = {
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
 const extensionManager = new ExtensionManager({ commandsManager });
-
-// CornerstoneTools and labeling/measurements?
-setupTools(store);
 // ~~~~ END APP SETUP
 
 // TODO[react] Use a provider when the whole tree is React
