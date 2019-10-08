@@ -34,7 +34,7 @@ import store from './store';
 import WhiteLabellingContext from './context/WhiteLabellingContext';
 import UserManagerContext from './context/UserManagerContext';
 import AppContext from './context/AppContext';
-import SnackbarProvider from './context/Snackbar';
+import SnackbarProvider from './context/SnackbarContext';
 
 // ~~~~ APP SETUP
 initCornerstoneTools({
