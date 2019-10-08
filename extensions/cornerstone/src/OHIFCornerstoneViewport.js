@@ -275,12 +275,12 @@ class OHIFCornerstoneViewport extends Component {
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
-          // Connected (From REDUX)
-          // isPlaying={false}
+          // ~~ Connected (From REDUX)
           // frameRate={frameRate}
-          isStackPrefetchEnabled={true}
-          // setViewportActive{() => {}}
+          // isPlaying={false}
+          // isStackPrefetchEnabled={true}
           // onElementEnabled={() => {}}
+          // setViewportActive{() => {}}
           {...this.props.customProps}
         />
         {childrenWithProps}
