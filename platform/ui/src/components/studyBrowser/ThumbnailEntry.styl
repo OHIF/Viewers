@@ -31,8 +31,6 @@
       color: var(--text-primary-color);
 
   .series-details
-    display: flex;
-    flex-direction: row;
     color: var(--text-primary-color);
     font-size: 14px
     line-height: 1.3em
@@ -43,9 +41,6 @@
     min-height: 36px
     position: relative
     word-wrap: break-word
-
-    .series-description
-        flex-grow: 1
 
     &.info-only
       .series-description
@@ -67,36 +62,33 @@
             float: none
             line-height: 25px
 
-          .value
-            margin-left: 0
-            width: auto
 
   .series-information
-    padding-right: 4px
-    max-width: 50px
+    display: flex
+    flex-direction: row
+    align-items: center
+
+    .item
+      flex: 1
+      text-align: center
 
     .item-frames .icon
       height: 18px
 
     .value
       color: var(--text-secondary-color);
-      display: inline-block
-      float: right
+      display: inline
       font-size: 12px
       margin-left: 4px
-      overflow: hidden
       text-overflow: ellipsis
       white-space: nowrap
-      width: calc(100% - 15px)
 
     .icon
       color: var(--active-color);
-      display: inline-block
-      float: left
+      display: inline
       font-size: 10px
       font-weight: 900
       text-align: right
-      width: 11px
 
       div
         background-color: var(--series-count-background-color);
