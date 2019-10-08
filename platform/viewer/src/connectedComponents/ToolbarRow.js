@@ -14,7 +14,6 @@ import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 import { MODULE_TYPES } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import { withSnackbar } from '../context/SnackbarContext';
 
 class ToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
@@ -120,14 +119,6 @@ class ToolbarRow extends Component {
     return (
       <>
         <div className="ToolbarRow">
-          <button
-            onClick={() => {
-              console.log('>>>>>>>>', this.props.snackbarContext);
-              this.props.snackbarContext.show({ message: 'test' });
-            }}
-          >
-            Notification
-          </button>
           <div className="pull-left m-t-1 p-y-1" style={{ padding: '10px' }}>
             <RoundedButtonGroup
               options={this.buttonGroups.left}
