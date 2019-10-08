@@ -7,14 +7,6 @@ const SnackbarContainer = () => {
   const { snackbarItems, hide } = useSnackbarContext();
 
   const renderItem = item => {
-    if (!item.title && !item.message && item.visible) {
-      console.warn(
-        'Snackbar cannot be rendered without required parameters: title | message'
-      );
-
-      return null;
-    }
-
     return <SnackbarItem key={item.itemId} options={item} onClose={hide} />;
   };
 

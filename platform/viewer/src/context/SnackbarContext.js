@@ -7,12 +7,12 @@ const SnackbarContext = createContext(null);
 export const useSnackbarContext = () => useContext(SnackbarContext);
 
 const SnackbarProvider = ({ children }) => {
-  const defaultOptions = {
+  const DEFAULT_OPTIONS = {
     visible: false,
     title: '',
     message: '',
     id: count,
-    duration: 4000,
+    duration: 5000,
     position: 'bottomRight',
     type: SnackbarTypes.INFO,
   };
@@ -21,8 +21,16 @@ const SnackbarProvider = ({ children }) => {
   const [snackbarItems, setSnackbarItems] = useState([]);
 
   const show = options => {
+    if (!options || (!options.title && !options.message)) {
+      console.warn(
+        'Snackbar cannot be rendered without required parameters: title | message'
+      );
+
+      return null;
+    }
+
     const newItem = {
-      ...defaultOptions,
+      ...DEFAULT_OPTIONS,
       ...options,
       id: count,
       visible: true,
@@ -53,16 +61,11 @@ const SnackbarProvider = ({ children }) => {
   };
 
   const hideAll = () => {
+    // reset count
     setCount(1);
-    setSnackbarItems(() => []);
-  };
 
-  // expose snackbar methods to window
-  console.log(snackbarItems);
-  window.snackbar = {
-    show,
-    hide,
-    hideAll,
+    // remove all items from array
+    setSnackbarItems(() => []);
   };
 
   return (
@@ -71,7 +74,6 @@ const SnackbarProvider = ({ children }) => {
       {children}
     </SnackbarContext.Provider>
   );
-  console.error(err);
 };
 
 /**

@@ -50,6 +50,18 @@
   margin: 10px 0 0;
 }
 
+.sb-topLeft .sb-item,
+.sb-topCenter .sb-item,
+.sb-topRight .sb-item {
+  margin: 10px 0 0;
+}
+
+.sb-bottomLeft .sb-item,
+.sb-bottomCenter .sb-item,
+.sb-bottomRight .sb-item {
+  margin: 0 0 10px;
+}
+
 .sb-closeBtn {
   height: 20px;
   opacity: 1;
@@ -117,6 +129,7 @@
 }
 
 .sb-message {
+  font-size: 14px;
 }
 
 .sb-item {
@@ -127,7 +140,15 @@
   -ms-animation: fadein 1s;
   -o-animation: fadein 1s;
   animation: fadein 1s;
+  padding: 20px;
+  color: white;
   overflow: hidden;
+  border-radius: 3px;
+}
+
+.sb-item a {
+  color: white;
+  text-decoration: underline;
 }
 
 .sb-hidden {
@@ -139,6 +160,19 @@
 }
 
 .sb-success {
+  background-color: rgba(94, 164, 0, 0.9);
+}
+
+.sb-error {
+  background-color: rgba(236, 61, 61, 0.9);
+}
+
+.sb-warning {
+  background-color: rgba(235, 173, 23, 0.9);
+}
+
+.sb-info {
+  background-color: rgba(54, 156, 199, 0.9);
 }
 
 @keyframes fadein {
