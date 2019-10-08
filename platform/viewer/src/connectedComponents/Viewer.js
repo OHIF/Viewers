@@ -59,8 +59,6 @@ class Viewer extends Component {
         disassociate: this.disassociateStudy,
       },
     });
-
-    this.cachedComputedViewportPanes = {};
   }
 
   state = {
@@ -69,7 +67,6 @@ class Viewer extends Component {
     selectedRightSidePanel: '',
     selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
     thumbnails: [],
-    computedViewportPanes: [],
   };
 
   retrieveMeasurements = (patientId, timepointIds) => {
@@ -168,14 +165,13 @@ class Viewer extends Component {
 
     if (studies) {
       const patientId = studies[0] && studies[0].patientId;
-      const computedViewportPanes = this.computeViewportPanes(studies);
+      this.fillEmptyViewportPanes(studies);
 
       timepointApi.retrieveTimepoints({ patientId });
       measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
 
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
-        computedViewportPanes,
       });
     }
   }
@@ -196,94 +192,129 @@ class Viewer extends Component {
     if (studies !== prevProps.studies || layoutHasChanged) {
       const patientId = studies[0] && studies[0].patientId;
       const currentTimepointId = this.currentTimepointId;
-      const computedViewportPanes = this.computeViewportPanes(studies);
+      this.fillEmptyViewportPanes(studies);
 
       this.timepointApi.retrieveTimepoints({ patientId });
       this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
 
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
-        computedViewportPanes,
       });
     }
   }
 
   componentWillUnmount() {
     // Clear the entire viewport specific data
-    const { viewportSpecificData } = this.props;
-    Object.keys(viewportSpecificData).forEach(viewportIndex => {
-      this.props.clearViewportSpecificData(viewportIndex);
-    });
+    const { viewportPanes } = this.props;
+    for (let i = 0; i < viewportPanes.length; i++) {
+      this.props.clearViewportSpecificData(i);
+    }
   }
 
   /*
-   * computedViewportPanes should eventually be replaced by simplified/correct state
-   *   - Marrying viewportSpecificData and viewportPanes
-   *   - Until then, could use a "selector" instead of updating in component
+   * fillEmptyViewportPanes should eventually be replaced by simplified/correct state
+   *   - Could use a "selector" instead of updating in component
    */
-  computeViewportPanes = studies => {
-    const computedViewportPanes = [];
-    const { viewportPanes, viewportSpecificData } = this.props;
-    // activeViewportIndex
+  fillEmptyViewportPanes = studies => {
+    const dirtyViewportPanes = [];
+    const { viewportPanes } = this.props;
 
-    for (let i = 0; i < viewportPanes.length; i++) {
-      const viewportPane = viewportPanes[i];
-      let displaySet = viewportSpecificData[i];
+    // If the viewport is empty, get one available in study
+    // This is how we grab "next available"
+    const allDisplaySets = [];
 
-      // Use the cached display set in viewport if the new one is empty
-      if (displaySet && !displaySet.displaySetInstanceUid) {
-        displaySet = this.cachedComputedViewportPanes[i];
-      }
+    studies.forEach(study => {
+      // console.log(study);
+      const studyWadoRoot = study.wadoRoot;
+      const studyWadoUri = study.wadoUriRoot;
 
-      if (
-        displaySet &&
-        displaySet.studyInstanceUid &&
-        displaySet.displaySetInstanceUid
-      ) {
-        computedViewportPanes.push({
-          studyInstanceUid: displaySet.studyInstanceUid,
-          displaySetInstanceUid: displaySet.displaySetInstanceUid,
-          plugin: viewportPane.plugin,
+      study.displaySets.forEach(dSet => {
+        console.log(dSet);
+        // dSet has a `dicomWebClient`....
+        allDisplaySets.push({
+          displaySetInstanceUid: dSet.displaySetInstanceUid,
+          studyInstanceUid: dSet.studyInstanceUid, // Could be multiple?
+          seriesInstanceUid: dSet.seriesInstanceUid,
+          plugin: dSet.plugin || 'cornerstone',
+          //
+          authorizationHeaders: dSet.authorizationHeaders,
+          // modality
+          // sopInstanceUid: dSet.sopInstanceUid
+          sopClassUids: dSet.sopClassUids,
+          // May not exist on display set (ever)
+          wadoRoot: dSet.wadoRoot || studyWadoRoot,
+          wadoUri: dSet.wadoUri || studyWadoUri,
         });
-      } else {
-        // If the viewport is empty, get one available in study
-        // This is how we grab "next available"
-        const allDisplaySets = [];
+      });
+    });
 
-        studies.forEach(study => {
-          study.displaySets.forEach(dSet => {
-            allDisplaySets.push({
-              displaySetInstanceUid: dSet.displaySetInstanceUid,
-              studyInstanceUid: dSet.studyInstanceUid,
-              plugin: dSet.plugin || 'cornerstone',
-            });
-          });
-        });
-
-        const firstDisplaySetNotInViewport = allDisplaySets.find(
-          ds =>
-            !computedViewportPanes.some(
-              v => v.displaySetInstanceUid === ds.displaySetInstanceUid
-            )
-        );
-
-        if (firstDisplaySetNotInViewport) {
-          computedViewportPanes.push({
-            studyInstanceUid: firstDisplaySetNotInViewport.studyInstanceUid,
-            displaySetInstanceUid:
-              firstDisplaySetNotInViewport.displaySetInstanceUid,
-            plugin: viewportPane.plugin || firstDisplaySetNotInViewport.plugin,
-          });
-        } else {
-          computedViewportPanes.push(viewportPane);
-        }
-      }
+    // No display sets to show
+    if (!allDisplaySets.length) {
+      return;
     }
 
-    // Reset our "cache"
-    this.cachedComputedViewportPanes = computedViewportPanes;
+    for (let i = 0; i < viewportPanes.length; i++) {
+      const viewportIndex = i;
+      const viewportPane = viewportPanes[i];
+      const isNonEmptyViewport =
+        viewportPane &&
+        viewportPane.studyInstanceUid &&
+        viewportPane.displaySetInstanceUid;
 
-    return computedViewportPanes;
+      if (isNonEmptyViewport) {
+        dirtyViewportPanes.push(undefined);
+        continue;
+      }
+
+      const foundDisplaySet =
+        // First unused display set
+        allDisplaySets.find(
+          ds =>
+            !viewportPanes.some(
+              v => v && v.displaySetInstanceUid === ds.displaySetInstanceUid
+            ) &&
+            !dirtyViewportPanes.some(
+              v => v && v.displaySetInstanceUid === ds.displaySetInstanceUid
+            )
+        ) ||
+        // Or last display set
+        allDisplaySets[allDisplaySets.length - 1];
+
+      if (!foundDisplaySet) {
+        dirtyViewportPanes.push(undefined);
+        continue;
+      }
+
+      const {
+        studyInstanceUid,
+        seriesInstanceUid,
+        displaySetInstanceUid,
+        plugin,
+        authorizationHeaders,
+        sopClassUids,
+        wadoRoot,
+        wadoUri,
+      } = foundDisplaySet;
+
+      dirtyViewportPanes.push({
+        viewportIndex,
+        studyInstanceUid,
+        seriesInstanceUid,
+        displaySetInstanceUid,
+        plugin: viewportPane.plugin || plugin,
+        authorizationHeaders,
+        sopClassUids,
+        wadoRoot,
+        wadoUri,
+      });
+    }
+
+    dirtyViewportPanes.forEach((vp, i) => {
+      if (vp) {
+        console.warn('UPDATE VP: ', vp);
+        this.props.updateViewport(i, vp);
+      }
+    });
   };
 
   setViewportData = ({
@@ -297,7 +328,8 @@ class Viewer extends Component {
       displaySetInstanceUid
     );
 
-    this.props.setViewportSpecificData(viewportIndex, displaySet);
+
+    this.props.updateViewport(viewportIndex, displaySet);
   };
 
   findDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
@@ -399,12 +431,12 @@ class Viewer extends Component {
 
           {/* MAIN */}
           <div className={classNames('main-content')}>
-            {this.state.computedViewportPanes && (
+            {this.props.viewportPanes && (
               <ConnectedViewportGrid
                 studies={this.props.studies}
                 numRows={this.props.numRows}
                 numColumns={this.props.numColumns}
-                viewportPanes={this.state.computedViewportPanes}
+                viewportPanes={this.props.viewportPanes}
                 setViewportData={this.setViewportData}
               >
                 {/* Children to add to each viewport that support children */}
