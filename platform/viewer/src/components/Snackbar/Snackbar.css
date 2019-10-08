@@ -1,0 +1,201 @@
+.sbContainer {
+  position: fixed;
+  width: 420px;
+  padding: 20px;
+  z-index: 9998;
+  box-sizing: border-box;
+  height: auto;
+}
+
+.sb-topLeft {
+  top: 0;
+  bottom: auto;
+  left: 0;
+  right: auto;
+}
+
+.sb-topCenter {
+  left: 50%;
+  top: 0;
+  bottom: auto;
+  transform: translateX(-50%);
+}
+
+.sb-topRight {
+  top: 0;
+  bottom: auto;
+  left: auto;
+  right: 0;
+}
+
+.sb-bottomLeft {
+  top: auto;
+  bottom: 0px;
+  left: 0px;
+  right: auto;
+}
+
+.sb-bottomCenter {
+  left: 50%;
+  bottom: 0;
+  top: auto;
+  transform: translateX(-50%);
+}
+
+.sb-bottomRight {
+  top: auto;
+  bottom: 0px;
+  left: auto;
+  right: 0px;
+  margin: 10px 0 0;
+}
+
+.sb-closeBtn {
+  height: 20px;
+  opacity: 1;
+  overflow: hidden;
+  padding: 2px;
+  text-align: center;
+  text-shadow: none;
+  width: 20px;
+  cursor: pointer;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 100%;
+}
+
+.sb-closeBtn:hover {
+  background: #fff;
+}
+
+.sb-closeIcon {
+  display: block;
+  font-size: 0;
+  height: 100%;
+  line-height: 0;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.sb-closeIcon:after,
+.sb-closeIcon:before {
+  content: ' ';
+  display: block;
+  height: 2px;
+  transition: all 0.3s ease;
+  width: 12px;
+  background-color: #222;
+  opacity: 1;
+  position: absolute;
+}
+
+.sb-closeIcon:before {
+  left: 4px;
+  top: 3px;
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  -webkit-transform-origin: 0px 50%;
+  transform-origin: 0px 50%;
+}
+
+.sb-closeIcon:after {
+  right: 3px;
+  top: 5px;
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  -webkit-transform-origin: calc(100% - 3px) 50%;
+  transform-origin: calc(100% - 3px) 50%;
+}
+
+.sb-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.sb-message {
+}
+
+.sbItem {
+  position: relative;
+  transition: height 300ms ease;
+  -webkit-animation: fadein 1s;
+  -moz-animation: fadein 1s;
+  -ms-animation: fadein 1s;
+  -o-animation: fadein 1s;
+  animation: fadein 1s;
+  overflow: hidden;
+}
+
+.sbHidden {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  transition: all 300ms ease;
+}
+
+.sb-success {
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    top: 30px;
+  }
+  to {
+    opacity: 1;
+    top: 0;
+  }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+  from {
+    opacity: 0;
+    top: 30px;
+  }
+  to {
+    opacity: 1;
+    top: 0;
+  }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+  from {
+    opacity: 0;
+    top: 30px;
+  }
+  to {
+    opacity: 1;
+    top: 0;
+  }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+  from {
+    opacity: 0;
+    top: 30px;
+  }
+  to {
+    opacity: 1;
+    top: 0;
+  }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+  from {
+    opacity: 0;
+    top: 30px;
+  }
+  to {
+    opacity: 1;
+    top: 0;
+  }
+}
