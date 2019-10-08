@@ -8,10 +8,8 @@ export const useSnackbarContext = () => useContext(SnackbarContext);
 
 const SnackbarProvider = ({ children }) => {
   const DEFAULT_OPTIONS = {
-    visible: false,
     title: '',
     message: '',
-    id: count,
     duration: 5000,
     position: 'bottomRight',
     type: SnackbarTypes.INFO,
@@ -66,6 +64,16 @@ const SnackbarProvider = ({ children }) => {
 
     // remove all items from array
     setSnackbarItems(() => []);
+  };
+
+  /**
+   * expose snackbar methods to window for debug purposes
+   * TODO: Check if it's really necessary
+   */
+  window.snackbar = {
+    show,
+    hide,
+    hideAll,
   };
 
   return (
