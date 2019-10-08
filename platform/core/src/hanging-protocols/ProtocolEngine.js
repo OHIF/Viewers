@@ -681,16 +681,16 @@ export default class ProtocolEngine {
 
     this.setLayout(layoutProps.rows, layoutProps.columns);
 
-    if (typeof this.options.setViewportSpecificData !== 'function') {
+    if (typeof this.options.updateViewport !== 'function') {
       log.error(
-        'Hanging Protocol Engine setViewportSpecificData callback is not defined'
+        'Hanging Protocol Engine updateViewport callback is not defined'
       );
       return;
     }
 
     // If viewportIndex is defined, then update only that viewport
     if (viewportIndex !== undefined && viewportData[viewportIndex]) {
-      this.options.setViewportSpecificData(
+      this.options.updateViewport(
         viewportIndex,
         viewportData[viewportIndex]
       );
@@ -699,7 +699,7 @@ export default class ProtocolEngine {
 
     // Update all viewports
     viewportData.forEach(viewportSpecificData => {
-      this.options.setViewportSpecificData(
+      this.options.updateViewport(
         viewportSpecificData.viewportIndex,
         viewportSpecificData
       );

@@ -1,12 +1,9 @@
-import setLayoutAndViewportData from './setLayoutAndViewportData.js';
-import setSingleLayoutData from './setSingleLayoutData.js';
-
 export default function setViewportToVTK(
-  displaySet,
+  viewportPane,
   viewportIndex,
-  layout,
-  viewportSpecificData
+  viewportPanes
 ) {
+  console.log('set viewport to vtk');
   return new Promise((resolve, reject) => {
     /*const currentData = layout.viewports[viewportIndex];
     if (currentData && currentData.plugin === 'vtk') {
@@ -23,17 +20,21 @@ export default function setViewportToVTK(
       },
     };
 
-    const updatedViewports = setSingleLayoutData(
-      layout.viewports,
-      viewportIndex,
-      data
-    );
+    console.warn('HELP!!!!!');
+    resolve();
 
-    const updatedViewportData = viewportSpecificData;
+    // const updatedViewports = setSingleLayoutData(
+    //   viewportPanes,
+    //   viewportIndex,
+    //   data
+    // );
 
-    setLayoutAndViewportData(
-      { viewports: updatedViewports },
-      updatedViewportData
-    );
+    // const updatedViewportData = viewportPane;
+
+    // TODO:
+    // setLayoutAndViewportData(
+    //   { viewports: updatedViewports },
+    //   updatedViewportData
+    // );
   });
 }

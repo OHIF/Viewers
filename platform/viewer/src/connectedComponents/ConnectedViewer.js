@@ -5,7 +5,7 @@ import OHIF from '@ohif/core';
 const {
   setTimepoints,
   setMeasurements,
-  setViewportSpecificData,
+  updateViewport,
   clearViewportSpecificData,
 } = OHIF.redux.actions;
 
@@ -38,8 +38,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(setMeasurements(measurements));
     },
     //
-    setViewportSpecificData: (viewportIndex, data) => {
-      dispatch(setViewportSpecificData(viewportIndex, data));
+    updateViewport: (viewportIndex, data) => {
+      dispatch(updateViewport(viewportIndex, data));
     },
     clearViewportSpecificData: () => {
       dispatch(clearViewportSpecificData());

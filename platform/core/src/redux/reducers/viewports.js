@@ -1,29 +1,25 @@
 import {
   CLEAR_VIEWPORT,
-  SET_ACTIVE_SPECIFIC_DATA,
-  SET_SPECIFIC_DATA,
-  SET_VIEWPORT,
   SET_VIEWPORT_ACTIVE,
   SET_VIEWPORT_LAYOUT,
-  SET_VIEWPORT_LAYOUT_AND_DATA,
+  UPDATE_VIEWPORT,
+  SET_VIEWPORT_LAYOUT_AND_VIEWPORT_PANES,
 } from './../constants/ActionTypes.js';
 
 import cloneDeep from 'lodash.clonedeep';
-import merge from 'lodash.merge';
 
 const defaultState = {
   numRows: 1,
   numColumns: 1,
   viewportPanes: [
     // Initial layout is one empty viewport
-    {},
+    {
+      // authorizationHeaders: object
+      // plugin: string
+      // wadoUri: string
+    },
   ],
   activeViewportIndex: 0,
-  viewportSpecificData: {
-    // TODO: Kill this ASAP
-    // dom (cornerstone-extension)
-    // plugin (duplicated in viewportPlanes?)
-  },
 };
 
 /**
@@ -31,20 +27,27 @@ const defaultState = {
  * @param {Object} action
  * @param {string} [action.type]
  * @param {number} [action.viewportIndex]
- * @param {Object} [action.layout]
- * @param {Object} [action.viewportSpecificData]
+
  */
 const viewports = (state = defaultState, action) => {
-  console.log('~~~~ VIEWPORTS REDUCER');
-  let currentData;
-  let viewportSpecificData;
-  let useActiveViewport = false;
+  // console.log(`~~~~ VIEWPORTS REDUCER: ${action.type}`);
+  // console.warn('STATE', state);
+  // console.warn('ACTION:', action);
   switch (action.type) {
-    case SET_VIEWPORT_LAYOUT_AND_DATA:
-      return Object.assign({}, state, {
-        viewportSpecificData: action.viewportSpecificData,
-        layout: action.layout,
-      });
+    case CLEAR_VIEWPORT:
+      const { viewportIndex } = action;
+      const viewportPanes = cloneDeep(state.viewportPanes);
+
+      // Clear Viewport
+      if (viewportIndex) {
+        viewportPanes[viewportIndex] = {};
+        return Object.assign({}, state, { viewportPanes });
+      }
+      // Clear ALL Viewports
+      else {
+        return defaultState;
+      }
+    // Update active viewport
     case SET_VIEWPORT_ACTIVE:
       return Object.assign({}, state, {
         activeViewportIndex: action.viewportIndex,
@@ -54,7 +57,9 @@ const viewports = (state = defaultState, action) => {
     // and number of columns. This creates a grid that our viewport panes
     // snap to. In a future iteration, viewport panes could be updated to
     // span multiple rows and/or columns.
-    case SET_VIEWPORT_LAYOUT:
+    //
+    // Number of rows, columns, and viewport panes
+    case SET_VIEWPORT_LAYOUT: {
       const { numRows, numColumns } = action;
       const numViewportPanes = numRows * numColumns;
       const viewportPanes = cloneDeep(state.viewportPanes);
@@ -68,50 +73,60 @@ const viewports = (state = defaultState, action) => {
       }
 
       return Object.assign({}, state, { numRows, numColumns, viewportPanes });
-    case SET_VIEWPORT: {
-      const { viewportIndex, data: updatedViewportSpecificData } = action;
-      const plugin = updatedViewportSpecificData.plugin;
+    }
+    // set single viewport
+    case UPDATE_VIEWPORT: {
+      const { viewportIndex, viewport } = action;
+      const {
+        // Ids
+        studyInstanceUid,
+        seriesInstanceUid,
+        displaySetInstanceUid,
+        sopInstanceUid,
+        sopClassUids,
+        // Request
+        authorizationHeaders,
+        wadoRoot,
+        wadoUri,
+        // Viewport
+        plugin,
+        frameIndex,
+      } = viewport;
 
       // Updating
-      const viewportSpecificData = cloneDeep(state.viewportSpecificData);
       const viewportPanes = cloneDeep(state.viewportPanes);
-
-      // Update specific instance of ViewportSpecificData
-      viewportSpecificData[viewportIndex] = merge(
+      viewportPanes[viewportIndex] = Object.assign(
         {},
-        viewportSpecificData[viewportIndex],
-        updatedViewportSpecificData // dom, plugin
+        viewportPanes[viewportIndex],
+        {
+          studyInstanceUid,
+          seriesInstanceUid,
+          displaySetInstanceUid,
+          sopInstanceUid,
+          sopClassUids,
+          //Request
+          authorizationHeaders,
+          wadoRoot,
+          wadoUri,
+          //
+          plugin,
+          frameIndex,
+        }
       );
 
-      if (plugin) {
-        viewportPanes[viewportIndex].plugin = plugin;
-      }
-
-      return Object.assign({}, state, { viewportPanes, viewportSpecificData });
+      return Object.assign({}, state, { viewportPanes });
     }
-    case SET_ACTIVE_SPECIFIC_DATA:
-      useActiveViewport = true;
-    // Allow fall-through
-    // eslint-disable-next-line
-    case SET_SPECIFIC_DATA: {
-      const viewportIndex = useActiveViewport
-        ? state.activeViewportIndex
-        : action.viewportIndex;
-      currentData = cloneDeep(state.viewportSpecificData[viewportIndex]) || {};
-      viewportSpecificData = cloneDeep(state.viewportSpecificData);
-      viewportSpecificData[viewportIndex] = merge({}, currentData, action.data);
+    case SET_VIEWPORT_LAYOUT_AND_VIEWPORT_PANES: {
+      const {
+        numRows,
+        numColumns,
+        viewportPanes: updatedViewportPanes,
+      } = action;
 
-      return Object.assign({}, state, { viewportSpecificData });
+      const viewportPanes = cloneDeep(updatedViewportPanes);
+
+      return Object.assign({}, state, { numRows, numColumns, viewportPanes });
     }
-    case CLEAR_VIEWPORT:
-      viewportSpecificData = cloneDeep(state.viewportSpecificData);
-      if (action.viewportIndex) {
-        viewportSpecificData[action.viewportIndex] = {};
-        return Object.assign({}, state, { viewportSpecificData });
-      } else {
-        return defaultState;
-      }
-
     default:
       return state;
   }

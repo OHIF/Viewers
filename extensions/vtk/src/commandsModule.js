@@ -63,9 +63,9 @@ function getCrosshairCallbackForIndex(index) {
 }
 
 async function _getActiveViewportVTKApi(viewports) {
-  const { layout, viewportSpecificData, activeViewportIndex } = viewports;
+  const { viewportPanes, activeViewportIndex } = viewports;
 
-  const currentData = layout.viewports[activeViewportIndex];
+  const currentData = viewportPanes[activeViewportIndex];
   if (currentData && currentData.plugin === 'vtk') {
     // TODO: I was storing/pulling this from Redux but ran into weird issues
     if (apis[activeViewportIndex]) {
@@ -73,16 +73,14 @@ async function _getActiveViewportVTKApi(viewports) {
     }
   }
 
-  const displaySet = viewportSpecificData[activeViewportIndex];
-
   let api;
   if (!api) {
+    console.log('no viewport; setViewportToVtk');
     try {
       api = await setViewportToVTK(
-        displaySet,
+        currentData,
         activeViewportIndex,
-        layout,
-        viewportSpecificData
+        viewportPanes
       );
     } catch (error) {
       throw new Error(error);
@@ -104,6 +102,7 @@ function _setView(api, sliceNormal, viewUp) {
 }
 
 function switchMPRInteractors(api, istyle) {
+  console.log('switch mpr interactors', api);
   const renderWindow = api.genericRenderWindow.getRenderWindow();
   const renderer = api.genericRenderWindow.getRenderer();
   const camera = renderer.getActiveCamera();
@@ -231,12 +230,14 @@ const actions = {
     });
   },
   mpr2d: async ({ viewports }) => {
-    const displaySet =
-      viewports.viewportSpecificData[viewports.activeViewportIndex];
+    console.log('mpr2d: ', viewports);
+    const viewportPane = viewports.viewportPanes[viewports.activeViewportIndex];
 
     let apiByViewport;
     try {
-      apiByViewport = await setMPRLayout(displaySet);
+      console.log('AWAIT O_O');
+      apiByViewport = await setMPRLayout(viewportPane);
+      console.log('WE HAVE RESOLVED!', apiByViewport);
     } catch (error) {
       throw new Error(error);
     }
@@ -255,6 +256,7 @@ const actions = {
     });*/
 
     apiByViewport.forEach((api, index) => {
+      console.log('API by viewport...', index);
       const renderWindow = api.genericRenderWindow.getRenderWindow();
       const renderer = api.genericRenderWindow.getRenderer();
       const camera = renderer.getActiveCamera();
@@ -299,7 +301,9 @@ const actions = {
           break;
       }
 
+      console.log('call render');
       renderWindow.render();
+      console.log('end render');
     });
   },
 };

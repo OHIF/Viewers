@@ -8,15 +8,15 @@ import cloneDeep from 'lodash.clonedeep';
 
 const toolImport = csTools.import;
 const scrollToIndex = toolImport('util/scrollToIndex');
-const { setViewportSpecificData } = OHIF.redux.actions;
+const { updateViewport } = OHIF.redux.actions;
 
 // Why do I need or care about any of this info?
 // A dispatch action should be able to pull this at the time of an event?
 // `isPlaying` and `cineFrameRate` might matter, but I think we can prop pass for those.
 const mapStateToProps = state => {
   // Get activeViewport's `cine` and `stack`
-  const { viewportSpecificData, activeViewportIndex } = state.viewports;
-  const { cine, dom } = viewportSpecificData[activeViewportIndex] || {};
+  const { viewportPanes, activeViewportIndex } = state.viewports;
+  const { cine, dom } = viewportPanes[activeViewportIndex] || {};
 
   const cineData = cine || {
     isPlaying: false,
@@ -33,8 +33,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    dispatchSetViewportSpecificData: (viewportIndex, data) => {
-      dispatch(setViewportSpecificData(viewportIndex, data));
+    dispatchUpdateViewport: (viewportIndex, data) => {
+      dispatch(updateViewport(viewportIndex, data));
     },
   };
 };
@@ -53,7 +53,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       const cine = cloneDeep(activeViewportCineData);
       cine.isPlaying = !cine.isPlaying;
 
-      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
+      propsFromDispatch.dispatchUpdateViewport(activeViewportIndex, {
         cine,
       });
     },
@@ -61,7 +61,7 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       const cine = cloneDeep(activeViewportCineData);
       cine.cineFrameRate = frameRate;
 
-      propsFromDispatch.dispatchSetViewportSpecificData(activeViewportIndex, {
+      propsFromDispatch.dispatchUpdateViewport(activeViewportIndex, {
         cine,
       });
     },

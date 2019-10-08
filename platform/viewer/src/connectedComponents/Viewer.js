@@ -328,6 +328,7 @@ class Viewer extends Component {
       displaySetInstanceUid
     );
 
+    console.warn('VIEWER::SET_VIEWPORT_DATA', displaySet);
 
     this.props.updateViewport(viewportIndex, displaySet);
   };

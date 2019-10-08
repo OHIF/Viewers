@@ -6,7 +6,7 @@ const scroll = cornerstoneTools.import('util/scroll');
 const actions = {
   rotateViewport: ({ viewports, rotation }) => {
     const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
+      viewports.viewportPanes,
       viewports.activeViewportIndex
     );
 
@@ -18,7 +18,7 @@ const actions = {
   },
   flipViewportHorizontal: ({ viewports }) => {
     const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
+      viewports.viewportPanes,
       viewports.activeViewportIndex
     );
 
@@ -30,7 +30,7 @@ const actions = {
   },
   flipViewportVertical: ({ viewports }) => {
     const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
+      viewports.viewportPanes,
       viewports.activeViewportIndex
     );
 
@@ -42,7 +42,7 @@ const actions = {
   },
   scaleViewport: ({ viewports, direction }) => {
     const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
+      viewports.viewportPanes,
       viewports.activeViewportIndex
     );
     const step = direction * 0.15;
@@ -59,7 +59,7 @@ const actions = {
   },
   resetViewport: ({ viewports }) => {
     const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
+      viewports.viewportPanes,
       viewports.activeViewportIndex
     );
 
@@ -69,7 +69,7 @@ const actions = {
   },
   invertViewport: ({ viewports }) => {
     const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
+      viewports.viewportPanes,
       viewports.activeViewportIndex
     );
 
@@ -93,7 +93,7 @@ const actions = {
   },
   clearAnnotations: ({ viewports }) => {
     const element = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
+      viewports.viewportPanes,
       viewports.activeViewportIndex
     );
     if (!element) {
@@ -148,7 +148,7 @@ const actions = {
   },
   nextImage: ({ viewports }) => {
     const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
+      viewports.viewportPanes,
       viewports.activeViewportIndex
     );
 
@@ -156,7 +156,7 @@ const actions = {
   },
   previousImage: ({ viewports }) => {
     const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
+      viewports.viewportPanes,
       viewports.activeViewportIndex
     );
 

@@ -1,61 +1,59 @@
-import setLayoutAndViewportData from './setLayoutAndViewportData.js';
-import setSingleLayoutData from './setSingleLayoutData.js';
+import setLayoutAndViewportPanes from './setLayoutAndViewportPanes.js';
 
-export default function setMPRLayout(displaySet) {
+/**
+ * Sets our redux layout and viewport panes.
+ * AfterCreation hook is called in `ConnectedVTKViewport` component
+ * to save a copy of VTK's God Object -- allows us to make viewport
+ * specific API calls.
+ *
+ * @export
+ * @param {*} viewportPane
+ * @returns
+ */
+export default function setMPRLayout(viewportPane) {
+  console.log('set mpr layout', viewportPane);
   return new Promise((resolve, reject) => {
-    let viewports = [];
-    const rows = 1;
-    const columns = 3;
-    const numViewports = rows * columns;
-    const viewportSpecificData = {};
-    for (let i = 0; i < numViewports; i++) {
-      viewports.push({
-        height: `${100 / rows}%`,
-        width: `${100 / columns}%`,
-      });
-
-      viewportSpecificData[i] = displaySet;
-      viewportSpecificData[i].plugin = 'vtk';
-    }
-    const layout = {
-      viewports,
-    };
-
-    const viewportIndices = [0, 1, 2];
-    let updatedViewports = layout.viewports;
-
-    const apis = [];
-    viewportIndices.forEach(viewportIndex => {
-      apis[viewportIndex] = null;
-      /*const currentData = layout.viewports[viewportIndex];
-      if (currentData && currentData.plugin === 'vtk') {
-        reject(new Error('Should not have reached this point??'));
-      }*/
-
-      const data = {
-        // plugin: 'vtk',
+    const apis = [null, null, null];
+    const viewportPaneCreator = index => {
+      return {
+        plugin: 'vtk',
         vtk: {
           mode: 'mpr', // TODO: not used
           afterCreation: api => {
-            apis[viewportIndex] = api;
+            apis[index] = api;
+            console.log(`API ${index} ADDED!`, api);
 
             if (apis.every(a => !!a)) {
+              console.log('resolving setMPRLayout...');
               resolve(apis);
             }
           },
         },
       };
+    };
 
-      updatedViewports = setSingleLayoutData(
-        updatedViewports,
-        viewportIndex,
-        data
-      );
-    });
-
-    setLayoutAndViewportData(
-      { viewports: updatedViewports },
-      viewportSpecificData
+    const vtkViewportPane1 = Object.assign(
+      {},
+      viewportPane,
+      viewportPaneCreator(0)
     );
+    const vtkViewportPane2 = Object.assign(
+      {},
+      viewportPane,
+      viewportPaneCreator(1)
+    );
+    const vtkViewportPane3 = Object.assign(
+      {},
+      viewportPane,
+      viewportPaneCreator(2)
+    );
+
+    const viewports = {
+      numRows: 1,
+      numColumns: 3,
+      viewportPanes: [vtkViewportPane1, vtkViewportPane2, vtkViewportPane3],
+    };
+
+    setLayoutAndViewportPanes(viewports);
   });
 }

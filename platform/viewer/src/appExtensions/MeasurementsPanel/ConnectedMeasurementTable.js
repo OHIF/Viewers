@@ -8,7 +8,7 @@ import cornerstone from 'cornerstone-core';
 import jumpToRowItem from './jumpToRowItem.js';
 import getMeasurementLocationCallback from './getMeasurementLocationCallback';
 
-const { setViewportSpecificData } = OHIF.redux.actions;
+const { updateViewport } = OHIF.redux.actions;
 const { MeasurementApi } = OHIF.measurements;
 
 function groupBy(list, props) {
@@ -243,7 +243,7 @@ const mapDispatchToProps = dispatch => {
       actionData.viewportSpecificData.forEach(viewportSpecificData => {
         const { viewportIndex, displaySet } = viewportSpecificData;
 
-        dispatch(setViewportSpecificData(viewportIndex, displaySet));
+        dispatch(updateViewport(viewportIndex, displaySet));
       });
 
       const { toolType, measurementNumber } = measurementData;

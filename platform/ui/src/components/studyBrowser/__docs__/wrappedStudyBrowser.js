@@ -12,8 +12,6 @@ import { ExampleDropTarget, StudyBrowser } from './../index.js';
 
 class StudyBrowserContainer extends Component {
   render() {
-    //const viewportData = [null, null, null, null];
-
     return (
       <React.Fragment>
         <ExampleDropTarget />

@@ -1,8 +1,8 @@
-import OHIF from "@ohif/core";
-import { View2D } from "react-vtkjs-viewport";
-import { connect } from "react-redux";
+import OHIF from '@ohif/core';
+import { View2D } from 'react-vtkjs-viewport';
+import { connect } from 'react-redux';
 
-const { setViewportActive, setViewportSpecificData } = OHIF.redux.actions;
+const { setViewportActive, updateViewport } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
   let dataFromStore;
@@ -14,17 +14,16 @@ const mapStateToProps = (state, ownProps) => {
   // If this is the active viewport, enable prefetching.
   const { viewportIndex } = ownProps;
   const isActive = viewportIndex === state.viewports.activeViewportIndex;
-  const viewportLayout = state.viewports.layout.viewports[viewportIndex];
-  const pluginDetails = viewportLayout.vtk || {};
+  const viewportPane = state.viewports.viewportPanes[viewportIndex];
+  const pluginDetails = viewportPane.vtk || {};
 
   return {
-    layout: state.viewports.layout,
     isActive,
-    ...pluginDetails,
+    ...pluginDetails, // Mode, afterCreation
     // Hopefully this doesn't break anything under the hood for this one
     // activeTool: activeButton && activeButton.command,
-    ...dataFromStore,
-    enableStackPrefetch: isActive
+    ...dataFromStore, // ????
+    enableStackPrefetch: isActive,
   };
 };
 
@@ -36,9 +35,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(setViewportActive(viewportIndex));
     },
 
-    setViewportSpecificData: data => {
-      dispatch(setViewportSpecificData(viewportIndex, data));
-    }
+    updateViewport: data => {
+      console.log('VTK:UPDATE_VIEWPORT_DATA', data)
+      dispatch(updateViewport(viewportIndex, data));
+    },
   };
 };
 
@@ -61,12 +61,12 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
      */
     onCreated: api => {
       // Store the API details for later
-      //setViewportSpecificData({ vtkApi: api });
+      //updateViewport({ vtkApi: api });
 
-      if (afterCreation && typeof afterCreation === "function") {
+      if (afterCreation && typeof afterCreation === 'function') {
         afterCreation(api);
       }
-    }
+    },
   };
   return props;
 };

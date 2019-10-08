@@ -1,60 +1,48 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import OHIF from "@ohif/core";
-import OHIFComponentPlugin from "./OHIFComponentPlugin.js";
-import DicomPDFViewport from "./DicomPDFViewport";
-
-const { DICOMWeb } = OHIF;
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import OHIFComponentPlugin from './OHIFComponentPlugin.js';
+import DicomPDFViewport from './DicomPDFViewport';
 
 class OHIFDicomPDFViewport extends Component {
   static propTypes = {
-    studies: PropTypes.object,
-    displaySet: PropTypes.object,
-    viewportIndex: PropTypes.number
+    authorizationHeaders: PropTypes.any,
+    wadoUri: PropTypes.string.isRequired,
   };
 
   state = {
     byteArray: null,
-    error: null
+    error: null,
   };
 
-  static id = "DicomPDFViewportPDF";
+  static id = 'DicomPDFViewportPDF';
 
   static init() {
-    console.log("DicomPDFViewport init()");
+    console.log('DicomPDFViewport init()');
   }
 
   static destroy() {
-    console.log("DicomPDFViewport destroy()");
+    console.log('DicomPDFViewport destroy()');
   }
 
   componentDidMount() {
-    const { displaySet } = this.props.viewportData;
-    const {
-      studyInstanceUid,
-      seriesInstanceUid,
-      sopInstanceUid,
-      wadoRoot,
-      wadoUri,
-      authorizationHeaders
-    } = displaySet;
+    const { wadoUri, authorizationHeaders } = this.props;
 
     this.retrieveDicomData(
-      studyInstanceUid,
-      seriesInstanceUid,
-      sopInstanceUid,
-      wadoRoot,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
       wadoUri,
       authorizationHeaders
     ).then(
       byteArray => {
         this.setState({
-          byteArray
+          byteArray,
         });
       },
       error => {
         this.setState({
-          error
+          error,
         });
 
         throw new Error(error);
@@ -75,7 +63,7 @@ class OHIFDicomPDFViewport extends Component {
     // TODO: Authorization header depends on the server. If we ever have multiple servers
     // we will need to figure out how / when to pass this information in.
     return fetch(wadoUri, {
-      headers: authorizationHeaders
+      headers: authorizationHeaders,
     })
       .then(response => response.arrayBuffer())
       .then(arraybuffer => {

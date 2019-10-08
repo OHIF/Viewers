@@ -1,96 +1,41 @@
-import OHIF from "@ohif/core";
-import PluginSwitch from "./PluginSwitch.js";
-import { commandsManager } from "./../App.js";
-import { connect } from "react-redux";
+import OHIF from '@ohif/core';
+import PluginSwitch from './PluginSwitch.js';
+import { commandsManager } from './../App.js';
+import { connect } from 'react-redux';
 
 const { setLayout } = OHIF.redux.actions;
 
 const mapStateToProps = state => {
-  const { activeViewportIndex, layout, viewportSpecificData } = state.viewports;
+  const { activeViewportIndex, viewportPanes } = state.viewports;
 
   return {
     activeViewportIndex,
-    viewportSpecificData,
-    layout
+    viewportPanes,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    setLayout: data => {
-      dispatch(setLayout(data));
-    }
+    setLayout: ({ numRows, numColumns }) => {
+      console.log('SET_LAYOUT');
+      dispatch(setLayout({ numRows, numColumns }));
+    },
   };
 };
 
-/*function setSingleLayoutData(originalArray, viewportIndex, data) {
-  const viewports = originalArray.slice();
-  const layoutData = Object.assign({}, viewports[viewportIndex], data);
-
-  viewports[viewportIndex] = layoutData;
-
-  return viewports;
-}*/
-
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
-  //const { activeViewportIndex, layout } = propsFromState;
-  //const { setLayout } = propsFromDispatch;
-
-  // TODO: Do not display certain options if the current display set
-  // cannot be displayed using these view types
   const buttons = [
-    /*{
-      text: 'Acquired',
-      type: 'command',
-      icon: 'bars',
-      active: false,
+    {
+      label: '2D MPR',
+      icon: 'cube',
       onClick: () => {
-        console.warn('Original Acquisition');
-
-        const layoutData = setSingleLayoutData(
-          layout.viewports,
-          activeViewportIndex,
-          { plugin: 'cornerstone' }
-        );
-
-        setLayout({ viewports: layoutData });
+        commandsManager.runCommand('mpr2d');
       },
     },
-    {
-      text: 'Axial',
-      icon: 'cube',
-      active: false,
-      onClick: () => {
-        commandsManager.runCommand('axial');
-      },
-    },
-    {
-      text: 'Sagittal',
-      icon: 'cube',
-      active: false,
-      onClick: () => {
-        commandsManager.runCommand('sagittal');
-      },
-    },
-    {
-      text: 'Coronal',
-      icon: 'cube',
-      active: false,
-      onClick: () => {
-        commandsManager.runCommand('coronal');
-      },
-    },*/
-    {
-      label: "2D MPR",
-      icon: "cube",
-      onClick: () => {
-        commandsManager.runCommand("mpr2d");
-      }
-    }
   ];
 
   return {
-    buttons
+    buttons,
   };
 };
 

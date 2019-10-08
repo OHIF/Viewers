@@ -148,7 +148,8 @@ export default function init(configuration) {
     element.addEventListener(csTools.EVENTS.TOUCH_PRESS, onTouchPress);
     element.addEventListener(csTools.EVENTS.MOUSE_CLICK, handleClick);
     element.addEventListener(csTools.EVENTS.TOUCH_START, onTouchStart);
-    element.addEventListener(cornerstone.EVENTS.NEW_IMAGE, onNewImage);
+    // TODO: This makes scrolling painfully slow
+    // element.addEventListener(cornerstone.EVENTS.NEW_IMAGE, onNewImage);
   }
 
   function elementDisabledHandler(evt) {
@@ -174,7 +175,7 @@ export default function init(configuration) {
     element.removeEventListener(csTools.EVENTS.TOUCH_PRESS, onTouchPress);
     element.removeEventListener(csTools.EVENTS.MOUSE_CLICK, handleClick);
     element.removeEventListener(csTools.EVENTS.TOUCH_START, onTouchStart);
-    element.removeEventListener(cornerstone.EVENTS.NEW_IMAGE, onNewImage);
+    // element.removeEventListener(cornerstone.EVENTS.NEW_IMAGE, onNewImage);
   }
 
   cornerstone.events.addEventListener(

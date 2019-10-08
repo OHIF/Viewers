@@ -6,11 +6,13 @@ const defaultState = {
 const ui = (state = defaultState, action) => {
   switch (action.type) {
     case 'SET_LABELLING_FLOW_DATA': {
+      console.log(`~~~~~~~ UI REDUCER: ${action.type}`);
       const labelling = Object.assign({}, action.labellingFlowData);
 
       return Object.assign({}, state, { labelling });
     }
     case 'SET_TOOL_CONTEXT_MENU_DATA': {
+      console.log(`~~~~~~~ UI REDUCER: ${action.type}`);
       const contextMenu = Object.assign({}, state.contextMenu);
 
       contextMenu[action.viewportIndex] = Object.assign(
@@ -21,6 +23,7 @@ const ui = (state = defaultState, action) => {
       return Object.assign({}, state, { contextMenu });
     }
     case 'RESET_LABELLING_AND_CONTEXT_MENU':
+      console.log(`~~~~~~~ UI REDUCER: ${action.type}`);
       return Object.assign({}, state, {
         labelling: defaultState.labelling,
         contextMenu: defaultState.contextMenu,

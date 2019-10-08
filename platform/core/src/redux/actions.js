@@ -4,21 +4,74 @@
 
 import {
   CLEAR_VIEWPORT,
-  SET_ACTIVE_SPECIFIC_DATA,
   SET_SERVERS,
-  SET_VIEWPORT,
+  UPDATE_VIEWPORT,
   SET_VIEWPORT_ACTIVE,
   SET_VIEWPORT_LAYOUT,
-  SET_VIEWPORT_LAYOUT_AND_DATA,
+  SET_VIEWPORT_LAYOUT_AND_VIEWPORT_PANES,
 } from './constants/ActionTypes.js';
 
 /**
  * VIEWPORT
  */
-export const setViewportSpecificData = (viewportIndex, data) => ({
-  type: SET_VIEWPORT,
+
+/**
+ *
+ * @param {number} viewportIndex
+ * @param {object} viewport
+ * @param {string} viewport.studyInstanceUid
+ * @param {string} viewport.seriesInstanceUid
+ * @param {string} viewport.displaySetInstanceUid
+ * @param {string} viewport.sopInstanceUid
+ * @param {string[]} viewport.sopClassUids
+ * @param {Object} viewport.authorizationHeaders
+ * @param {string} viewport.wadoRoot
+ * @param {string} viewport.wadoUri
+ * @param {string} viewport.plugin
+ * @param {number} viewport.frameIndex
+ */
+export const updateViewport = (
   viewportIndex,
-  data,
+  {
+    studyInstanceUid,
+    seriesInstanceUid,
+    displaySetInstanceUid,
+    sopInstanceUid,
+    sopClassUids,
+    authorizationHeaders,
+    wadoRoot,
+    wadoUri,
+    plugin, // ??
+    frameIndex, // ??
+  }
+) => ({
+  type: UPDATE_VIEWPORT,
+  viewportIndex,
+  viewport: {
+    // dom (cornerstone-extension)
+    // modality: "SR"
+    // images: derived?
+    // frameRate
+    // instanceNumber
+    // isMultiFrame: false
+    // ​numImageFrames: 398
+    // ​​seriesDate: "20140805"
+    // ​​seriesDescription: "CT Nk/Ch/Abd I+  2.0  B31f"
+    // ​​seriesNumber: 6
+    // ​​seriesTime: "124730.750000"
+    //uid: "133e4e93-3385-b154-55d2-d45133398e3c"
+    //
+    studyInstanceUid,
+    seriesInstanceUid,
+    displaySetInstanceUid,
+    sopInstanceUid,
+    sopClassUids,
+    authorizationHeaders,
+    wadoRoot, // "https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs"
+    wadoUri, // "https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado?requestType=WADO&studyUID=1.3.6.1.4.1.25403.345050719074.3824.20170125112931.11"
+    plugin,
+    frameIndex, // ??
+  },
 });
 
 export const setViewportActive = viewportIndex => ({
@@ -37,9 +90,15 @@ export const clearViewportSpecificData = viewportIndex => ({
   viewportIndex,
 });
 
-export const setActiveViewportSpecificData = data => ({
-  type: SET_ACTIVE_SPECIFIC_DATA,
-  data,
+export const setLayoutAndViewportPanes = ({
+  numRows,
+  numColumns,
+  viewportPanes,
+}) => ({
+  type: SET_VIEWPORT_LAYOUT_AND_VIEWPORT_PANES,
+  numRows,
+  numColumns,
+  viewportPanes,
 });
 
 /**
@@ -88,20 +147,13 @@ export const setServers = servers => ({
   servers,
 });
 
-export const setViewportLayoutAndData = (layout, viewportSpecificData) => ({
-  type: SET_VIEWPORT_LAYOUT_AND_DATA,
-  layout,
-  viewportSpecificData,
-});
-
 const actions = {
   // VIEWPORT
   setViewportActive,
-  setViewportSpecificData,
-  setViewportLayoutAndData,
+  setLayoutAndViewportPanes,
+  updateViewport,
   setLayout,
   clearViewportSpecificData,
-  setActiveViewportSpecificData,
   setStudyLoadingProgress,
   clearStudyLoadingProgress,
   setUserPreferences,

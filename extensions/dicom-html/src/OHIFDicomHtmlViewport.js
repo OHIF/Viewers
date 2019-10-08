@@ -4,26 +4,22 @@ import DicomHtmlViewport from './DicomHtmlViewport';
 
 class OHIFDicomHtmlViewport extends Component {
   static propTypes = {
-    studies: PropTypes.object,
-    displaySet: PropTypes.object,
-    viewportIndex: PropTypes.number
+    authorizationHeaders: PropTypes.object,
+    wadoUri: PropTypes.string.isRequired,
+    viewportIndex: PropTypes.number.isRequired,
   };
 
   state = {
     byteArray: null,
-    error: null
+    error: null,
   };
 
   componentDidMount() {
-    const { displaySet } = this.props.viewportData;
-    const {
-      studyInstanceUid,
-      seriesInstanceUid,
-      sopInstanceUid,
-      wadoRoot,
-      wadoUri,
-      authorizationHeaders
-    } = displaySet;
+    const { wadoUri, authorizationHeaders } = this.props;
+    const studyInstanceUid = undefined;
+    const seriesInstanceUid = undefined;
+    const sopInstanceUid = undefined;
+    const wadoRoot = undefined;
 
     this.retrieveDicomData(
       studyInstanceUid,
@@ -35,12 +31,12 @@ class OHIFDicomHtmlViewport extends Component {
     ).then(
       byteArray => {
         this.setState({
-          byteArray
+          byteArray,
         });
       },
       error => {
         this.setState({
-          error
+          error,
         });
 
         throw new Error(error);
@@ -61,7 +57,7 @@ class OHIFDicomHtmlViewport extends Component {
     // TODO: Authorization header depends on the server. If we ever have multiple servers
     // we will need to figure out how / when to pass this information in.
     return fetch(wadoUri, {
-      headers: authorizationHeaders
+      headers: authorizationHeaders,
     })
       .then(response => response.arrayBuffer())
       .then(arraybuffer => {
