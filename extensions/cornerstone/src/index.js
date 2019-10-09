@@ -18,6 +18,12 @@ export default {
    */
   id: 'cornerstone',
 
+  /**
+   *
+   *
+   * @param {object} [configuration={}]
+   * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
+   */
   preRegistration(configuration = {}) {
     init(configuration);
   },
