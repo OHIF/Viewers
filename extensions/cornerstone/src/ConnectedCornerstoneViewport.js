@@ -31,7 +31,6 @@ const mapStateToProps = (state, ownProps) => {
   // If this is the active viewport, enable prefetching.
   const { viewportIndex } = ownProps; //.viewportData;
   const isActive = viewportIndex === state.viewports.activeViewportIndex;
-  const isStackPrefetchEnabled = isActive;
   const viewportSpecificData =
     state.viewports.viewportSpecificData[viewportIndex] || {};
 
@@ -53,7 +52,7 @@ const mapStateToProps = (state, ownProps) => {
     // Currently justing using escape hatch + commands
     // activeTool: activeButton && activeButton.command,
     ...dataFromStore,
-    isStackPrefetchEnabled,
+    isStackPrefetchEnabled: isActive,
     isPlaying,
     frameRate,
     //stack: viewportSpecificData.stack,
