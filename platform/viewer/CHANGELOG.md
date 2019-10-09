@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.4.5...@ohif/viewer@1.5.0) (2019-10-09)
+
+
+### Features
+
+* Multiple fixes and implementation changes to react-cornerstone-viewport ([1cc94f3](https://github.com/OHIF/Viewers/commit/1cc94f3))
+
+
+
+
+
 ## [1.4.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.4.4...@ohif/viewer@1.4.5) (2019-10-09)
 
 **Note:** Version bump only for package @ohif/viewer
