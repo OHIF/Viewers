@@ -37,9 +37,8 @@ const mapDispatchToProps = dispatch => {
         viewports,
       };
 
-      const { row, col } = selectedCell;
-      const selectedCellIndex = (row * currentLayout.viewports.length + col) || 0;
-      if (selectedCellIndex < activeViewportIndex) {
+      const maxActiveIndex = rows * columns - 1;
+      if (activeViewportIndex > maxActiveIndex) {
         dispatch(setViewportActive(0));
       }
 
