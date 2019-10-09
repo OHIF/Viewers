@@ -234,7 +234,7 @@ class OHIFCornerstoneViewport extends Component {
     let childrenWithProps = null;
 
     if (!this.state.viewportData) {
-      return <></>;
+      return null;
     }
     const { viewportIndex } = this.props;
     const {
