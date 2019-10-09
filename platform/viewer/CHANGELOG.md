@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.5.0...@ohif/viewer@1.5.1) (2019-10-09)
+
+
+### Bug Fixes
+
+* 🐛 set current viewport as active when switching layouts ([#1018](https://github.com/OHIF/Viewers/issues/1018)) ([2a74355](https://github.com/OHIF/Viewers/commit/2a74355))
+
+
+
+
+
 # [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.4.5...@ohif/viewer@1.5.0) (2019-10-09)
 
 
