@@ -5,27 +5,31 @@ import initCornerstoneTools from './initCornerstoneTools.js';
 
 /**
  *
- *
- * @export
- * @param {*} configuration
+ * @param {object} configuration
+ * @param {Object|Array} configuration.csToolsConfig
  */
-export default function init(configuration) {
+export default function init(configuration = {}) {
+  const { csToolsConfig } = configuration;
   const { StackManager } = OHIF.utils;
   const metadataProvider = new OHIF.cornerstone.MetadataProvider();
 
+  // ~~ Set our MetadataProvider
   cornerstone.metaData.addProvider(
     metadataProvider.provider.bind(metadataProvider)
   );
 
   StackManager.setMetadataProvider(metadataProvider);
 
-  //
-  initCornerstoneTools({
+  // ~~
+  const defaultCsToolsConfig = csToolsConfig || {
     globalToolSyncEnabled: true,
     showSVGCursors: true,
     autoResizeViewports: false,
-  });
+  };
 
+  initCornerstoneTools(defaultCsToolsConfig);
+
+  // ~~ Toooools 🙌
   const {
     PanTool,
     ZoomTool,
