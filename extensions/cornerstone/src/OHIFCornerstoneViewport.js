@@ -240,7 +240,9 @@ class OHIFCornerstoneViewport extends Component {
     const {
       imageIds,
       currentImageIdIndex,
-      frameRate = 0, // Sometimes available here
+      // If this comes from the instance, would be a better default
+      // `FrameTime` in the instance
+      // frameRate = 0,
     } = this.state.viewportData.stack;
 
     // TODO: Does it make more sense to use Context?
