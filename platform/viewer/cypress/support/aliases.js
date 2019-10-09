@@ -1,5 +1,5 @@
 //Creating aliases for Cornerstone tools buttons
-export function initCornerstoneToolsAliases(){
+export function initCornerstoneToolsAliases() {
   cy.get('.ToolbarRow > :nth-child(2)').as('stackScrollBtn');
   cy.get('.ToolbarRow > :nth-child(3)').as('zoomBtn');
   cy.get('.ToolbarRow > :nth-child(4)').as('levelsBtn');
@@ -15,12 +15,20 @@ export function initCornerstoneToolsAliases(){
 }
 
 //Creating aliases for Common page elements
-export function initCommonElementsAliases(){
-  cy.get('.pull-right > .RoundedButtonGroup > .roundedButtonWrapper > .roundedButton').as('measurementsBtn');
+export function initCommonElementsAliases() {
+  cy.get(
+    '.pull-right > .RoundedButtonGroup > .roundedButtonWrapper > .roundedButton'
+  ).as('measurementsBtn');
   cy.get('.viewport-element').as('viewport');
   cy.get('section.sidepanel.from-right').as('measurementsPanel');
-  cy.get('.pull-left > .RoundedButtonGroup > .roundedButtonWrapper > .roundedButton').as('seriesBtn');
+  cy.get(
+    '.pull-left > .RoundedButtonGroup > .roundedButtonWrapper > .roundedButton'
+  ).as('seriesBtn');
   cy.get('section.sidepanel.from-left').as('seriesPanel');
-  cy.get('div.ViewportOverlay > div.bottom-left.overlay-element > div').as('viewportInfoBottomLeft');
-  cy.get('div.ViewportOverlay > div.bottom-right.overlay-element > div').as('viewportInfoBottomRight');
+  cy.get('div.ViewportOverlay > div.bottom-left.overlay-element > div').as(
+    'viewportInfoBottomLeft'
+  );
+  cy.get('div.ViewportOverlay > div.bottom-right.overlay-element > div').as(
+    'viewportInfoBottomRight'
+  );
 }
