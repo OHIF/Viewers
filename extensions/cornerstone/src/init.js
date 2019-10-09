@@ -45,9 +45,9 @@ export default function init(configuration) {
     FreehandRoiTool,
     EllipticalRoiTool,
     DragProbeTool,
+    RectangleRoiTool,
     // Segmentation
     BrushTool,
-    RectangleRoiTool,
   } = csTools;
   const tools = [
     PanTool,
@@ -68,9 +68,9 @@ export default function init(configuration) {
     FreehandRoiTool,
     EllipticalRoiTool,
     DragProbeTool,
+    RectangleRoiTool,
     // Segmentation
     BrushTool,
-    RectangleRoiTool,
   ];
 
   tools.forEach(tool => csTools.addTool(tool));
