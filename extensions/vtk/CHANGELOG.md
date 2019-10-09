@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.1...@ohif/extension-vtk@0.52.2) (2019-10-09)
+
+
+### Performance Improvements
+
+* 🎸 Update vtk viewport for faster image reconstruction ([#1016](https://github.com/OHIF/Viewers/issues/1016)) ([8513ad9](https://github.com/OHIF/Viewers/commit/8513ad9))
+
+
+
+
+
 ## [0.52.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.0...@ohif/extension-vtk@0.52.1) (2019-10-04)
 
 **Note:** Version bump only for package @ohif/extension-vtk
