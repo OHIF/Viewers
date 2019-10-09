@@ -14692,10 +14692,10 @@ react-cornerstone-viewport@0.1.30:
     moment "^2.23.0"
     stylus "^0.54.5"
 
-react-cornerstone-viewport@2:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.0.0.tgz#14cde2618d1f800b7f044574482b15a497ccd809"
-  integrity sha512-WZitEWBVw5MA20+KNtHxJzYu+HtnrpIjfny0BVixVxs4TbvaKe9vvCQPoSJvl+1f317Os4Bsns1278Qgx1Vl+Q==
+react-cornerstone-viewport@2.x.x:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.0.1.tgz#fa351bb26f3e8c38351560d5b59a4f4c801d0e7c"
+  integrity sha512-Ti/RQ6NbASKYGdNSKmSEIm6zwl2KTLrjZ9rx6UzNV/Yv3SRmvx5ETCMq8TwepkeT/jTBSQZVBCCXP4Y/tf1Smw==
   dependencies:
     classnames "^2.2.6"
     date-fns "^2.2.1"
