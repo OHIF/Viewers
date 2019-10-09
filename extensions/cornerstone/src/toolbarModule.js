@@ -74,7 +74,7 @@ const definitions = [
     label: 'Annotate',
     icon: 'measure-non-target',
     //
-    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
     commandOptions: { toolName: 'ArrowAnnotate' },
   },
@@ -200,7 +200,7 @@ const definitions = [
         label: 'Bidirectional',
         icon: 'measure-target',
         //
-        type: TOOLBAR_BUTTON_TYPES.COMMAND,
+        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
         commandName: 'setToolActive',
         commandOptions: { toolName: 'Bidirectional' },
       },
@@ -209,7 +209,7 @@ const definitions = [
         label: 'Eraser',
         icon: 'eraser',
         //
-        type: TOOLBAR_BUTTON_TYPES.COMMAND,
+        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
         commandName: 'setToolActive',
         commandOptions: { toolName: 'Eraser' },
       },
