@@ -12,8 +12,10 @@ const { studyMetadataManager, updateMetaDataManager } = utils;
 class ViewerRetrieveStudyData extends Component {
   static propTypes = {
     studyInstanceUids: PropTypes.array.isRequired,
-    seriesInstanceUids: PropTypes.array,
+    seriesInstanceUIDs: PropTypes.array,
+    sopInstanceUIDs: PropTypes.array,
     server: PropTypes.object,
+    clearViewportSpecificData: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -26,44 +28,116 @@ class ViewerRetrieveStudyData extends Component {
 
   async loadStudies() {
     try {
-      const { server, studyInstanceUids, seriesInstanceUids } = this.props;
+      const { server, studyInstanceUids, seriesInstanceUids, sopInstanceUIDs } = this.props;
+      const queryParamObj = {};
+      // Use the first, discard others
+      const seriesInstanceUID = seriesInstanceUids && seriesInstanceUids[0];
+      const sopInstanceUID = sopInstanceUIDs && sopInstanceUIDs[0];
+
+      if (seriesInstanceUID) {
+        queryParamObj.seriesInstanceUID = seriesInstanceUID;
+      }
+
+      if (sopInstanceUID) {
+        queryParamObj.sopInstanceUID = sopInstanceUID;
+      }
+
+
       const studies = await retrieveStudiesMetadata(
         server,
         studyInstanceUids,
-        seriesInstanceUids
+        queryParamObj
       );
-      this.setStudies(studies);
+
+      this.setStudies(studies, queryParamObj);
     } catch (e) {
       this.setState({ error: true });
       log.error(e);
     }
   }
 
-  setStudies(givenStudies) {
+  updateMetaDataManager(study, studyMetadata, series) {
+    updateMetaDataManager(study, series);
+
+    const { studyInstanceUID } = study;
+
+    if (!studyMetadataManager.get(studyInstanceUID)) {
+      studyMetadataManager.add(studyMetadata);
+    }
+  }
+
+  setStudies(givenStudies, queryParamObj = {}) {
     if (Array.isArray(givenStudies) && givenStudies.length > 0) {
-      const sopClassHandlerModules =
-        extensionManager.modules['sopClassHandlerModule'];
       // Map studies to new format, update metadata manager?
       const studies = givenStudies.map(study => {
         const studyMetadata = new OHIFStudyMetadata(
           study,
           study.studyInstanceUid
         );
-        if (!study.displaySets) {
-          study.displaySets = studyMetadata.createDisplaySets(
-            sopClassHandlerModules
-          );
-        }
-        studyMetadata.setDisplaySets(study.displaySets);
-        // Updates WADO-RS metaDataManager
-        updateMetaDataManager(study);
-        studyMetadataManager.add(studyMetadata);
+
+        this.updateStudyDisplaySets(study, studyMetadata, true);
+        this.updateMetaDataManager(study, studyMetadata);
+
         // Attempt to load remaning series if any
-        this._attemptToLoadRemainingSeries(studyMetadata);
+        this._loadRemainingSeries(studyMetadata, queryParamObj, study).then(this._studyDidLoad.bind(this, study, studyMetadata, queryParamObj));
+
         return study;
       });
       this.setState({ studies });
     }
+  }
+
+  updateStudyDisplaySets(study, studyMetadata, shouldSort) {
+    const sopClassHandlerModules =
+      extensionManager.modules['sopClassHandlerModule'];
+
+    if (!study.displaySets) {
+      study.displaySets = studyMetadata.createDisplaySets(
+        sopClassHandlerModules,
+        shouldSort
+      );
+    }
+
+    studyMetadata.setDisplaySets(study.displaySets, shouldSort);
+  }
+
+  promoteStudyDisplaySet(study, studyMetadata, queryParamsObj) {
+    let promoted = false;
+    const queryParamsLength = Object.keys(queryParamsObj).length;
+    const shouldPromoteToFront = queryParamsLength > 0;
+
+    if (shouldPromoteToFront) {
+      const promotedResponse = studyMetadata.promoteDisplaySetToFront(studyMetadata.getDisplaySets(), queryParamsObj);
+      study.displaySets = promotedResponse.displaySets;
+      promoted = promotedResponse.errors.length < queryParamsLength;
+
+      if (promotedResponse.errors.length) {
+        // toast message
+        alert(promotedResponse.errors.map(error => error.msg).join("\n"));
+      }
+    }
+
+    return promoted;
+  }
+
+  sortStudyDisplaySet(study, studyMetadata) {
+    studyMetadata.sortDisplaySets(study.displaySets);
+  }
+
+  _studyDidLoad(study, studyMetadata, queryParamsObj) {
+
+    this.sortStudyDisplaySet(study, studyMetadata);
+    const promoted = this.promoteStudyDisplaySet(study, studyMetadata, queryParamsObj);
+
+    // Clear viewport to allow new promoted one to be displayed
+    if (promoted) {
+      this.props.clearViewportSpecificData(0);
+    }
+
+    // Update studies to reflect latest changes
+    this.setState(function (state) {
+      return { studies: state.studies.slice() };
+    });
   }
 
   _addSeriesToStudy(studyMetadata, series) {
@@ -74,28 +148,29 @@ class ViewerRetrieveStudyData extends Component {
     studyMetadata.addSeries(seriesMetadata);
     studyMetadata.createAndAddDisplaySetsForSeries(
       sopClassHandlerModules,
-      seriesMetadata
+      seriesMetadata,
+      false
     );
     study.displaySets = studyMetadata.getDisplaySets();
-    updateMetaDataManager(study, series.seriesInstanceUid);
-    this.setState(function(state) {
-      return { studies: state.studies.slice() };
-    });
+    this.updateMetaDataManager(study, series.seriesInstanceUid);
   }
 
-  _attemptToLoadRemainingSeries(studyMetadata) {
+  _loadRemainingSeries(studyMetadata) {
     const { seriesLoader } = studyMetadata.getData();
     if (!seriesLoader) {
-      return;
+      return Promise.resolve();
     }
+    const promisesLoaders = [];
     while (seriesLoader.hasNext()) {
-      seriesLoader
+      promisesLoaders.push(seriesLoader
         .next()
         .then(
           series => void this._addSeriesToStudy(studyMetadata, series),
           error => void log.error(error)
-        );
+        ));
     }
+
+    return Promise.all(promisesLoaders);
   }
 
   componentDidMount() {

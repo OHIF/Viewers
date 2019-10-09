@@ -123,6 +123,7 @@ class OHIFStandaloneViewer extends Component {
     const { user, userManager } = this.props;
     const { appConfig = {} } = this.context;
     const userNotLoggedIn = userManager && (!user || user.expired);
+
     if (userNotLoggedIn) {
       const pathname = this.props.location.pathname;
 

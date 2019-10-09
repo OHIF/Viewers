@@ -6,16 +6,22 @@ import OHIF from '@ohif/core';
 const { urlUtil: UrlUtil } = OHIF.utils;
 /**
  * Get array of seriesUIDs from param or from queryString
- * @param {*} seriesInstanceUids
+ * @param {*} seriesInstanceUIDs
  * @param {*} location
  */
-const getSeriesUIDS = (seriesInstanceUids, location) => {
-  const queryFilters = UrlUtil.queryString.getQueryFilters(location);
-  const querySeriesUIDs = queryFilters['seriesInstanceUid'];
-  const _seriesInstanceUids = seriesInstanceUids || querySeriesUIDs;
+const getSeriesInstanceUIDs = (seriesInstanceUIDs, routeLocation) => {
+  const queryFilters = UrlUtil.queryString.getQueryFilters(routeLocation);
+  const querySeriesUIDs = queryFilters['SeriesInstanceUID'];
+  const _seriesInstanceUIDs = seriesInstanceUIDs || querySeriesUIDs;
 
-  return UrlUtil.paramString.parseParam(_seriesInstanceUids);
+  return UrlUtil.paramString.parseParam(_seriesInstanceUIDs);
 };
+
+const getSOPInstanceUIDs = (routeLocation) => {
+  const queryFilters = UrlUtil.queryString.getQueryFilters(routeLocation);
+  const SOPInstanceUid = queryFilters['SOPInstanceUid'];
+  return UrlUtil.paramString.parseParam(SOPInstanceUid);
+}
 
 function ViewerRouting({ match: routeMatch, location: routeLocation }) {
   const {
@@ -30,13 +36,15 @@ function ViewerRouting({ match: routeMatch, location: routeLocation }) {
   const server = useServer({ project, location, dataset, dicomstore });
 
   const studyUIDs = UrlUtil.paramString.parseParam(studyInstanceUids);
-  const seriesUIDs = getSeriesUIDS(seriesInstanceUids, routeLocation);
+  const seriesUIDs = getSeriesInstanceUIDs(seriesInstanceUids, routeLocation);
+  const sopInstanceUIDs = getSOPInstanceUIDs(routeLocation);
 
   if (server && studyUIDs) {
     return (
       <ConnectedViewerRetrieveStudyData
         studyInstanceUids={studyUIDs}
         seriesInstanceUids={seriesUIDs}
+        sopInstanceUIDs={sopInstanceUIDs}
       />
     );
   }

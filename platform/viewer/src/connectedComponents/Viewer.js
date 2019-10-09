@@ -57,7 +57,7 @@ OHIF.viewer.functionList = {
 class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.array,
-    studyInstanceUids: PropTypes.array,
+    studyInstanceUIDs: PropTypes.array,
     onTimepointsUpdated: PropTypes.func,
     onMeasurementsUpdated: PropTypes.func,
     // window.store.getState().viewports.viewportSpecificData
@@ -130,7 +130,7 @@ class Viewer extends Component {
       {
         timepointType: 'baseline',
         timepointId: 'TimepointId',
-        studyInstanceUids: this.props.studyInstanceUids,
+        studyInstanceUIDs: this.props.studyInstanceUIDs,
         patientId: filter.patientId,
         earliestDate,
         latestDate,
@@ -294,8 +294,8 @@ class Viewer extends Component {
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
-              <ConnectedStudyBrowser studies={this.state.thumbnails} />
-            )}
+                <ConnectedStudyBrowser studies={this.state.thumbnails} />
+              )}
           </SidePanel>
 
           {/* MAIN */}
@@ -332,7 +332,7 @@ export default Viewer;
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function(studies) {
+const _mapStudiesToThumbnails = function (studies) {
   return studies.map(study => {
     const { studyInstanceUid } = study;
 

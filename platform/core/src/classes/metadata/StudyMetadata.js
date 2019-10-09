@@ -71,7 +71,7 @@ export class StudyMetadata extends Metadata {
     Object.defineProperty(this, 'studyInstanceUID', {
       configurable: false,
       enumerable: false,
-      get: function() {
+      get: function () {
         return this.getStudyInstanceUID();
       },
     });
@@ -195,7 +195,7 @@ export class StudyMetadata extends Metadata {
    * @param {StudyMetadata} study The study instance metadata to be used
    * @returns {Array} An array of series to be placed in the Study Metadata
    */
-  createDisplaySets(sopClassHandlerModules) {
+  createDisplaySets(sopClassHandlerModules, shouldSort = true) {
     const displaySets = [];
     const anyDisplaySets = this.getSeriesCount();
 
@@ -213,11 +213,15 @@ export class StudyMetadata extends Metadata {
         )
     );
 
-    return sortDisplaySetList(displaySets);
+    if (!shouldSort) {
+      return displaySets;
+    } else {
+      return sortDisplaySetList(displaySets);
+    }
   }
 
-  sortDisplaySets() {
-    sortDisplaySetList(this._displaySets);
+  sortDisplaySets(displaySetsList = this._displaySets) {
+    sortDisplaySetList(displaySetsList);
   }
 
   /**
@@ -226,10 +230,10 @@ export class StudyMetadata extends Metadata {
    * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
    * @returns {boolean} Returns true on success or false on failure (e.g., the series does not belong to this study)
    */
-  createAndAddDisplaySetsForSeries(sopClassHandlerModules, series) {
+  createAndAddDisplaySetsForSeries(sopClassHandlerModules, series, shouldSort = true) {
     if (this.containsSeries(series)) {
       this.setDisplaySets(
-        this._createDisplaySetsForSeries(sopClassHandlerModules, series)
+        this._createDisplaySetsForSeries(sopClassHandlerModules, series), shouldSort
       );
       return true;
     }
@@ -240,10 +244,12 @@ export class StudyMetadata extends Metadata {
    * Set display sets
    * @param {Array} displaySets Array of display sets (ImageSet[])
    */
-  setDisplaySets(displaySets) {
+  setDisplaySets(displaySets, shouldSort = true) {
     if (Array.isArray(displaySets) && displaySets.length > 0) {
       displaySets.forEach(displaySet => this.addDisplaySet(displaySet));
-      this.sortDisplaySets();
+      if (shouldSort) {
+        this.sortDisplaySets();
+      }
     }
   }
 
@@ -558,6 +564,10 @@ export class StudyMetadata extends Metadata {
 
     return result.instance;
   }
+
+  promoteDisplaySetToFront(originalDisplaySets, queryParams, customLookup) {
+    return PromoteLookupFactory.promoteList(originalDisplaySets, queryParams);
+  }
 }
 
 /**
@@ -742,3 +752,92 @@ function sortBySeriesNumber(a, b) {
 function sortDisplaySetList(list) {
   return list.sort(seriesSortingCriteria);
 }
+
+const PromoteLookupFactory = new class {
+
+  constructor(customLookup) {
+    if (customLookup) {
+      this.customLookup = customLookup;
+    }
+  }
+
+  _seriesLookup(valueToCompare, displaySet) {
+    return displaySet.seriesInstanceUid === valueToCompare
+  }
+
+  _instanceLookup(valueToCompare, displaySet) {
+    const { images } = displaySet;
+    if (images && images.length) {
+      const index = images.findIndex(image => image.sopInstanceUID === valueToCompare
+      );
+
+      if (index >= 0) {
+        displaySet.frameIndex = index;
+        return true;
+      }
+      return false;
+    } else {
+      return displaySet.sopInstanceUid === valueToCompare;
+    }
+  }
+
+  promoteList(list, queryParams) {
+    const queueLookup = this.getQueueLookup(this.customLookup);
+    const errors = [];
+    let response = [...list];
+
+    while (queueLookup.length) {
+      const lookup = queueLookup.shift();
+      const {
+        paramName,
+        name,
+        lookupMethod,
+      } = lookup;
+
+      const value = paramName in queryParams && queryParams[paramName];
+      if (value) {
+
+        const index = response.findIndex(lookupMethod.bind(undefined, value));
+
+        if (index > 0) {
+          const first = response.splice(index, 1);
+          response = [...first, ...response];
+          break;
+        } else if (index !== 0) {
+          const error = this.createErrorObj(name, paramName, value);
+          errors.push(error);
+        }
+      }
+    }
+
+    return {
+      displaySets: response,
+      errors
+    }
+  }
+
+  getQueueLookup(customLookupMethod = []) {
+
+    const queueLookup = [
+      ...customLookupMethod,
+      {
+        lookupMethod: this._instanceLookup,
+        name: 'instance',
+        paramName: 'sopInstanceUID',
+      },
+      {
+        lookupMethod: this._seriesLookup,
+        name: 'series',
+        paramName: 'seriesInstanceUID',
+      }];
+
+    return queueLookup;
+  }
+
+  createErrorObj(name, param, value) {
+    return {
+      msg: `There is no ${name} for given query ${param}: ${value}`,
+      from: param
+    }
+  }
+}();

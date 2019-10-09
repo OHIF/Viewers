@@ -238,7 +238,7 @@ class OHIFCornerstoneViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUid !==
-        prevDisplaySet.displaySetInstanceUid ||
+      prevDisplaySet.displaySetInstanceUid ||
       displaySet.sopInstanceUid !== prevDisplaySet.sopInstanceUid ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
