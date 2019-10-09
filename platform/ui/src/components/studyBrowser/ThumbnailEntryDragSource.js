@@ -45,10 +45,7 @@ class ThumbnailEntryDragSource extends Component {
     const dropEffect = 'copy';
 
     return connectDragSource(
-      <div
-        className="ThumbnailEntryContainer"
-        data-cy="thumbnailEntryContainer"
-      >
+      <div className="ThumbnailEntryContainer" data-cy="thumbnail-list">
         <DragPreview {...this.props} />
         <ThumbnailEntry {...this.props} />
       </div>,
