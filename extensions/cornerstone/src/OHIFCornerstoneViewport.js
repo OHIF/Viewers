@@ -132,22 +132,6 @@ class OHIFCornerstoneViewport extends Component {
     return stack;
   }
 
-  static getViewportData = (
-    studies,
-    studyInstanceUid,
-    displaySetInstanceUid,
-    sopInstanceUid,
-    frameIndex
-  ) => {
-    return OHIFCornerstoneViewport.getCornerstoneStack(
-      studies,
-      studyInstanceUid,
-      displaySetInstanceUid,
-      sopInstanceUid,
-      frameIndex
-    );
-  };
-
   getViewportData = async (
     studies,
     studyInstanceUid,
@@ -172,7 +156,7 @@ class OHIFCornerstoneViewport extends Component {
         );
         break;
       default:
-        const stack = OHIFCornerstoneViewport.getViewportData(
+        const stack = OHIFCornerstoneViewport.getCornerstoneStack(
           studies,
           studyInstanceUid,
           displaySetInstanceUid,
