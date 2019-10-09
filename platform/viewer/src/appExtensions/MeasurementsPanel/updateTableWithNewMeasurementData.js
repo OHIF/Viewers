@@ -1,11 +1,11 @@
-import OHIF from "@ohif/core";
-import cornerstone from "cornerstone-core";
+import OHIF from '@ohif/core';
+import cornerstone from 'cornerstone-core';
 
 export default function updateTableWithNewMeasurementData({
   toolType,
   measurementNumber,
   location,
-  description
+  description,
 }) {
   // Update all measurements by measurement number
   const measurementApi = OHIF.measurements.MeasurementApi.Instance;
