@@ -26,6 +26,36 @@
   -webkit-background-clip: padding
   background-clip: padding-box
 
+  // Thumbnail Loading Indicator
+
+  .image-thumbnail-loading-indicator
+    position: absolute
+    left: 50%
+    top: 50%
+    margin: -22px 0 0 -22px
+    display: block
+    width: 44px
+    height: 44px
+
+    &:after
+      content: " "
+      display: block
+      width: 32px
+      height: 32px
+      margin: 1px
+      border-radius: 50%
+      border: 5px solid var(--ui-border-color-dark)
+      border-color: var(--ui-border-color-dark) transparent var(--ui-border-color-dark) transparent
+      animation: image-thumbnail-loading-indicator 1.2s linear infinite
+
+    @keyframes image-thumbnail-loading-indicator
+      0%
+        transform: rotate(0deg)
+      100%
+        transform: rotate(360deg)
+
+  // The End...
+
 .image-thumbnail-canvas
   height: 100%
   overflow: hidden
@@ -35,7 +65,6 @@
   img
     -webkit-user-drag: none
     pointer-events: none
-
 
 .thumbnailLoadingIndicator
   display: none

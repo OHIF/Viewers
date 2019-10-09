@@ -8,6 +8,7 @@ import sortBy from './sortBy.js';
 import studyMetadataManager from './studyMetadataManager';
 import updateMetaDataManager from './updateMetaDataManager.js';
 import writeScript from './writeScript.js';
+import DicomLoaderService from './dicomLoaderService.js';
 
 const utils = {
   guid,
@@ -21,6 +22,7 @@ const utils = {
   // Updates WADO-RS metaDataManager
   updateMetaDataManager,
   DICOMTagDescriptions,
+  DicomLoaderService,
 };
 
 export {
@@ -35,6 +37,7 @@ export {
   // Updates WADO-RS metaDataManager
   updateMetaDataManager,
   DICOMTagDescriptions,
+  DicomLoaderService,
 };
 
 export default utils;

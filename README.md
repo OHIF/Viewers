@@ -123,8 +123,7 @@ window.config = {
   `window.OHIFStandaloneViewer.installViewer(window.config);`
 
 This exact setup is demonstrated in this
-[CodeSandbox](https://codesandbox.io/s/ohif-viewer-script-tag-usage-c4u4t) and
-in our
+[CodeSandbox](https://codesandbox.io/s/viewer-script-tag-tprch) and in our
 [Embedding The Viewer](https://docs.ohif.org/deployment/recipes/embedded-viewer.html)
 deployment recipe.
 
@@ -133,7 +132,7 @@ deployment recipe.
 ### Requirements
 
 - [Yarn 1.17.3+](https://yarnpkg.com/en/docs/install)
-- [Node 8+](https://nodejs.org/en/)
+- [Node 10+](https://nodejs.org/en/)
 - Yarn Workspaces should be enabled on your machine:
   - `yarn config set workspaces-experimental true`
 

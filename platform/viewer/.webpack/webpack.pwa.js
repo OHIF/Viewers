@@ -71,6 +71,12 @@ module.exports = (env, argv) => {
           // Ignore our configuration files
           ignore: ['config/*', 'html-templates/*', '.DS_Store'],
         },
+        // Short term solution to make sure GCloud config is available in output
+        // for our docker implementation
+        {
+          from: `${PUBLIC_DIR}/config/google.js`,
+          to: `${DIST_DIR}/google.js`,
+        },
         // Copy over and rename our target app config file
         {
           from: `${PUBLIC_DIR}/${APP_CONFIG}`,
@@ -108,6 +114,8 @@ module.exports = (env, argv) => {
       hot: true,
       open: true,
       port: 3000,
+      host: '0.0.0.0',
+      public: 'http://localhost:' + 3000,
       historyApiFallback: {
         disableDotRule: true,
       },

@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
-import { api } from 'dicom-microscopy-viewer';
 import debounce from 'lodash.debounce';
-
-const microscopyViewer = api.VLWholeSlideMicroscopyImageViewer;
 
 class DicomMicroscopyViewport extends Component {
   state = {
@@ -56,8 +53,11 @@ class DicomMicroscopyViewport extends Component {
         }
         return Promise.all(promises);
       })
-      .then(metadata => {
+      .then(async metadata => {
         metadata = metadata.filter(m => m);
+
+        const { api } = await import(/* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer');
+        const microscopyViewer = api.VLWholeSlideMicroscopyImageViewer;
 
         this.viewer = new microscopyViewer({
           client: dicomWebClient,
