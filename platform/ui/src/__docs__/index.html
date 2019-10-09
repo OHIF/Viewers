@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="{{ lang }}">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="description" content="{{ description }}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>{{ title }}</title>
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="{{ description }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-   <!-- Latest compiled and minified CSS -->
-   <link rel="stylesheet" href="/public/docz.css">
-   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700|Sanchez&display=swap">
+  <title>{{ title }}</title>
 
-    <style>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="/public/docz.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700&display=swap">
+
+  <style>
     /* "Tide" theme */
     /* TODO:
     - Convert the other themes to CSS Variables
@@ -40,7 +41,7 @@
       --table-text-primary-color: #ffffff;
       --table-text-secondary-color: #91b9cd;
 
-      --large-numbers-color:#6FBDE2;
+      --large-numbers-color: #6FBDE2;
 
       --state-error: #FFCCCC;
       --state-error-border: #FFCCCC;
@@ -70,11 +71,13 @@
     body {
       font-family: 'Roboto', sans-serif !important;
     }
-    </style>
-    {{ head }}
-  </head>
-  <body>
-    <div id="root" />
-    {{ footer }}
-  </body>
+  </style>
+  {{ head }}
+</head>
+
+<body>
+  <div id="root" />
+  {{ footer }}
+</body>
+
 </html>
