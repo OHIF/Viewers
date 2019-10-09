@@ -2,7 +2,7 @@
  * Checks if a series is reconstructable to a 3D volume.
  *
  * @param {Object} series The `OHIFSeriesMetadata` object.
- * @param {Object} instances The `OHIFInstanceMetadata` object
+ * @param {Object[]} instances The `OHIFInstanceMetadata` object
  */
 export default function isDisplaySetReconstructable(series, instances) {
   // Can't reconstruct if we only have one image.
@@ -68,7 +68,7 @@ function processSingleframe(instances) {
     const firstIpp = _getImagePositionPatient(firstImage);
     const lastIpp = _getImagePositionPatient(instances[instances.length - 1]);
     const averageSpacingBetweenFrames =
-      _getPerpindicularDistance(firstIpp, lastIpp) / (instances.length - 1);
+      _getPerpendicularDistance(firstIpp, lastIpp) / (instances.length - 1);
 
     let previousIpp = firstIpp;
 
@@ -76,7 +76,7 @@ function processSingleframe(instances) {
       const instance = instances[i];
       const ipp = _getImagePositionPatient(instance);
 
-      const spacingBetweenFrames = _getPerpindicularDistance(ipp, previousIpp);
+      const spacingBetweenFrames = _getPerpendicularDistance(ipp, previousIpp);
       const spacingIssue = _getSpacingIssue(
         spacingBetweenFrames,
         averageSpacingBetweenFrames
@@ -85,9 +85,9 @@ function processSingleframe(instances) {
       if (spacingIssue) {
         const issue = spacingIssue.issue;
 
-        if (issue === 'missing') {
+        if (issue === reconstructionIssues.MISSING_FRAMES) {
           missingFrames += spacingIssue.missingFrames;
-        } else if (issue === 'different') {
+        } else if (issue === reconstructionIssues.IRREGULAR_SPACING) {
           return { value: false };
         }
       }
@@ -126,10 +126,13 @@ function _getSpacingIssue(spacing, averageSpacing) {
     Math.abs(spacing - numberOfSpacings * averageSpacing) / numberOfSpacings;
 
   if (errorForEachSpacing < tolerance * averageSpacing) {
-    return { issue: 'missing', missingFrames: numberOfSpacings - 1 };
+    return {
+      issue: reconstructionIssues.MISSING_FRAMES,
+      missingFrames: numberOfSpacings - 1,
+    };
   }
 
-  return { issue: 'different' };
+  return { issue: reconstructionIssues.IRREGULAR_SPACING };
 }
 
 function _getImagePositionPatient(instance) {
@@ -139,7 +142,7 @@ function _getImagePositionPatient(instance) {
     .map(element => Number(element));
 }
 
-function _getPerpindicularDistance(a, b) {
+function _getPerpendicularDistance(a, b) {
   return Math.sqrt(
     Math.pow(a[0] - b[0], 2) +
       Math.pow(a[1] - b[1], 2) +
@@ -148,3 +151,7 @@ function _getPerpindicularDistance(a, b) {
 }
 
 const constructableModalities = ['MR', 'CT', 'PT', 'NM'];
+const reconstructionIssues = {
+  MISSING_FRAMES: 'missingframes',
+  IRREGULAR_SPACING: 'irregularspacing',
+};
