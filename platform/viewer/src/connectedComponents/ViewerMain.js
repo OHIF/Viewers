@@ -124,11 +124,15 @@ class ViewerMain extends Component {
     return viewportData;
   };
 
-  setViewportData = ({ viewportIndex, item }) => {
+  setViewportData = ({
+    viewportIndex,
+    studyInstanceUid,
+    displaySetInstanceUid,
+  }) => {
     const displaySet = this.findDisplaySet(
       this.props.studies,
-      item.studyInstanceUid,
-      item.displaySetInstanceUid
+      studyInstanceUid,
+      displaySetInstanceUid
     );
 
     this.props.setViewportSpecificData(viewportIndex, displaySet);

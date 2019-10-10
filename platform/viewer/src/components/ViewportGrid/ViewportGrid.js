@@ -62,9 +62,16 @@ const ViewportGrid = function(props) {
 
     return (
       <ViewportPane
-        onDrop={({ viewportIndex, item }) => {
-          console.log('DROP:', viewportIndex, item);
-          setViewportData({ viewportIndex, item });
+        onDrop={({
+          viewportIndex,
+          studyInstanceUid,
+          displaySetInstanceUid,
+        }) => {
+          setViewportData({
+            viewportIndex,
+            studyInstanceUid,
+            displaySetInstanceUid,
+          });
         }}
         viewportIndex={viewportIndex} // Needed by `setViewportData`
         className={classNames('viewport-container', {
