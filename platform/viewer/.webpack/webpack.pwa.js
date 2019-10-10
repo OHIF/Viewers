@@ -131,14 +131,14 @@ module.exports = (env, argv) => {
 
   if (!isProdBuild) {
     mergedConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-
-    //
+  } else {
     mergedConfig.optimization.minimizer = [
       new TerserJSPlugin({
         sourceMap: true,
         parallel: true,
       }),
-      new OptimizeCSSAssetsPlugin({}),
+      // No bueno
+      // new OptimizeCSSAssetsPlugin({}),
     ];
   }
 
