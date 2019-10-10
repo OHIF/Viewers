@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.5.3...@ohif/viewer@1.5.4) (2019-10-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.5.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.5.2...@ohif/viewer@1.5.3) (2019-10-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.5.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.5.1...@ohif/viewer@1.5.2) (2019-10-10)
+
+
+### Bug Fixes
+
+* 🎸 switch ohif logo from text + font to SVG ([#1021](https://github.com/OHIF/Viewers/issues/1021)) ([e7de8be](https://github.com/OHIF/Viewers/commit/e7de8be))
+
+
+
+
+
+## [1.5.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.5.0...@ohif/viewer@1.5.1) (2019-10-09)
+
+
+### Bug Fixes
+
+* 🐛 set current viewport as active when switching layouts ([#1018](https://github.com/OHIF/Viewers/issues/1018)) ([2a74355](https://github.com/OHIF/Viewers/commit/2a74355))
+
+
+
+
+
 # [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.4.5...@ohif/viewer@1.5.0) (2019-10-09)
 
 
