@@ -25,11 +25,13 @@ const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
+const SKIP_MINIMIZE = process.env.SKIP_MINIMIZE;
 
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
   const isProdBuild = process.env.NODE_ENV === 'production';
   const hasProxy = PROXY_TARGET && PROXY_DOMAIN;
+  const skipMinimize = SKIP_MINIMIZE === 'true';
 
   const mergedConfig = merge(baseConfig, {
     devtool: isProdBuild ? 'source-map' : 'cheap-module-eval-source-map',
@@ -50,7 +52,7 @@ module.exports = (env, argv) => {
       warnings: true,
     },
     optimization: {
-      minimize: isProdBuild,
+      minimize: isProdBuild && !skipMinimize,
       sideEffects: true,
     },
     module: {
@@ -85,8 +87,8 @@ module.exports = (env, argv) => {
       ]),
       // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
       new ExtractCssChunksPlugin({
-        filename: '[name].css',
-        chunkFilename: '[id].css',
+        filename: isProdBuild ? '[name].[hash].css' : '[name].css',
+        chunkFilename: isProdBuild ? '[id].[hash].css' : '[id].css',
         ignoreOrder: false, // Enable to remove warnings about conflicting order
       }),
       // Generate "index.html" w/ correct includes/imports
@@ -129,14 +131,14 @@ module.exports = (env, argv) => {
 
   if (!isProdBuild) {
     mergedConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-
-    //
+  } else {
     mergedConfig.optimization.minimizer = [
       new TerserJSPlugin({
         sourceMap: true,
         parallel: true,
       }),
-      new OptimizeCSSAssetsPlugin({}),
+      // No bueno
+      // new OptimizeCSSAssetsPlugin({}),
     ];
   }
 

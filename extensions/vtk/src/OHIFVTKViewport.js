@@ -153,7 +153,7 @@ class OHIFVTKViewport extends Component {
     switch (sopClassUid) {
       case SOP_CLASSES.SEGMENTATION_STORAGE:
         throw new Error('Not yet implemented');
-
+      /*
         const data = handleSegmentationStorage(
           stack.imageIds,
           displaySetInstanceUid
@@ -168,10 +168,13 @@ class OHIFVTKViewport extends Component {
             labelmap: labelmapDataObject,
           };
         });
+        */
       default:
         imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid);
 
-        return loadImageData(imageDataObject).then(() => {
+        const loadImageDataPromise = loadImageData(imageDataObject);
+
+        return loadImageDataPromise.then(() => {
           return {
             data: imageDataObject.vtkImageData,
           };
@@ -265,7 +268,6 @@ class OHIFVTKViewport extends Component {
   }
 
   componentWillUnmount() {
-    console.log(this.props.viewportIndex);
     vtkViewportSubscriptionManager.unsubscribe(this.props.viewportIndex);
   }
 
