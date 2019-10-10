@@ -1,7 +1,7 @@
 describe('OHIF Study Viewer Page', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
-    cy.waitDicomImage();
+    cy.waitSeriesMetadata();
   });
 
   it('checks if series thumbnails are being displayed', () => {
