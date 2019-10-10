@@ -85,8 +85,8 @@ module.exports = (env, argv) => {
       ]),
       // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
       new ExtractCssChunksPlugin({
-        filename: '[name].css',
-        chunkFilename: '[id].css',
+        filename: isProdBuild ? '[name].[hash].css' : '[name].css',
+        chunkFilename: isProdBuild ? '[id].[hash].css' : '[id].css',
         ignoreOrder: false, // Enable to remove warnings about conflicting order
       }),
       // Generate "index.html" w/ correct includes/imports
