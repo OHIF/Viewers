@@ -25,11 +25,13 @@ const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
+const SKIP_MINIMIZE = process.env.SKIP_MINIMIZE;
 
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
   const isProdBuild = process.env.NODE_ENV === 'production';
   const hasProxy = PROXY_TARGET && PROXY_DOMAIN;
+  const skipMinimize = SKIP_MINIMIZE === 'true';
 
   const mergedConfig = merge(baseConfig, {
     devtool: isProdBuild ? 'source-map' : 'cheap-module-eval-source-map',
@@ -50,7 +52,7 @@ module.exports = (env, argv) => {
       warnings: true,
     },
     optimization: {
-      minimize: isProdBuild,
+      minimize: isProdBuild && !skipMinimize,
       sideEffects: true,
     },
     module: {
