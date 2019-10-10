@@ -1,5 +1,8 @@
 import asyncComponent from '../components/AsyncComponent.js';
 
+import OHIF from '@ohif/core';
+const { urlUtil: UrlUtil } = OHIF.utils;
+
 // Dynamic Import Routes (CodeSplitting)
 const IHEInvokeImageDisplay = asyncComponent(() =>
   import(
@@ -98,11 +101,11 @@ const parseViewerPath = (appConfig = {}, server = {}, params) => {
   const _paramsCopy = Object.assign({}, server, params);
 
   for (let key in _paramsCopy) {
-    const paramPattern = `\:${key}`;
-    const paramValue = _paramsCopy[key];
-    if (paramValue) {
-      viewerPath = viewerPath.replace(paramPattern, _paramsCopy[key]);
-    }
+    viewerPath = UrlUtil.paramString.replaceParam(
+      viewerPath,
+      key,
+      _paramsCopy[key]
+    );
   }
 
   return viewerPath;

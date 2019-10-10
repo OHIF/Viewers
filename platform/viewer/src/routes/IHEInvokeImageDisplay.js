@@ -1,29 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import queryString from 'query-string';
 import ConnectedViewerRetrieveStudyData from '../connectedComponents/ConnectedViewerRetrieveStudyData.js';
-
-function decodeStudyUids(studyUids) {
-  const decodedData = window.atob(studyUids);
-
-  return decodedData.split(';');
-}
-
-function getQueryParameters(location) {
-  if (location) {
-    return queryString.parse(location.search);
-  }
-
-  return {};
-}
+import OHIF from '@ohif/core';
+const { urlUtil: UrlUtil } = OHIF.utils;
 
 function IHEInvokeImageDisplay({ location }) {
   const {
     // patientID,
     requestType,
     studyUID,
-  } = getQueryParameters(location);
+  } = UrlUtil.parse(location.search);
 
   switch (requestType) {
     case 'STUDY':
@@ -36,7 +23,7 @@ function IHEInvokeImageDisplay({ location }) {
     case 'STUDYBASE64':
       return (
         <ConnectedViewerRetrieveStudyData
-          studyInstanceUids={decodeStudyUids(studyUID)}
+          studyInstanceUids={UrlUtil.paramString.parseParam(studyUID)}
         />
       );
 
