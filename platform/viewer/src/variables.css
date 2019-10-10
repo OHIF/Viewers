@@ -1,4 +1,5 @@
 /* Sizes */
+
 :root {
   --top-bar-height: 40px;
   --top-bar-expanded-height: 160px;
@@ -10,14 +11,8 @@
   --study-list-padding-medium-screen: 10px;
 }
 
-/* Fonts */
-/* Logo font should be SVG so we don't need to load an entire font */
-:root {
-  --logo-font-family: 'Sanchez';
-  --logo-font-weight: 300; /* Sanchez, 300 does not exist */
-}
-
 /* Transitions */
+
 :root {
   --transition-duration: 0.3s;
   --transition-effect: ease;
@@ -25,6 +20,7 @@
 }
 
 /* Thicknesses */
+
 :root {
   --viewport-border-thickness: 1px;
   --ui-border-thickness: 1px;
