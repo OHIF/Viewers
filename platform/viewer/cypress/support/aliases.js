@@ -32,3 +32,9 @@ export function initCommonElementsAliases() {
     'viewportInfoBottomRight'
   );
 }
+
+//Creating aliases for Routes
+export function initRouteAliases() {
+  cy.server();
+  cy.route('GET', '/dcm4chee-arc/**/series').as('getStudySeries');
+}

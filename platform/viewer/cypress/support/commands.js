@@ -2,6 +2,7 @@ import { DragSimulator } from '../helpers/DragSimulator.js';
 import {
   initCornerstoneToolsAliases,
   initCommonElementsAliases,
+  initRouteAliases,
 } from './aliases.js';
 
 // ***********************************************
@@ -36,9 +37,7 @@ import {
  * @param {string} PatientName - Patient name that we would like to search for
  */
 Cypress.Commands.add('openStudy', patientName => {
-  cy.server();
-  cy.route('GET', '/dcm4chee-arc/**/series').as('getStudySeries');
-
+  cy.initRouteAliases();
   cy.visit('/');
 
   cy.get('#patientName').type(patientName);
@@ -108,6 +107,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('waitSeriesMetadata', (seriesToWait = 1) => {
+  cy.initRouteAliases();
   cy.wait('@getStudySeries').then({ timeout: 10000 }, () => {
     cy.get('[data-cy=thumbnail-list]', { timeout: 10000 }).should($itemList => {
       expect($itemList.length >= seriesToWait).to.be.true;
@@ -194,6 +194,11 @@ Cypress.Commands.add('initCornerstoneToolsAliases', () => {
 //Initialize aliases for Common page elements
 Cypress.Commands.add('initCommonElementsAliases', () => {
   initCommonElementsAliases();
+});
+
+//Initialize aliases for Routes
+Cypress.Commands.add('initRouteAliases', () => {
+  initRouteAliases();
 });
 
 //Add measurements in the viewport
