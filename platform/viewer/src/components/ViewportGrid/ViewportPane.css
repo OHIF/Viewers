@@ -1,0 +1,10 @@
+.viewport-drop-target {
+  opacity: 1;
+  position: relative; /* Locks in Scrollbar */
+  transition: 0.3s all ease;
+}
+
+.viewport-drop-target.hovered {
+  opacity: 0.5;
+  cursor: copy;
+}
