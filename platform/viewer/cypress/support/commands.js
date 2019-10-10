@@ -94,25 +94,18 @@ Cypress.Commands.add(
   }
 );
 
-Cypress.Commands.add('waitSeriesMetadata', () => {
-  cy.wait('@getStudySeries').then({ timeout: 10000 }, async res => {
-    const series = await res.response.body;
-    const minSeriesToWait = 5;
-
+Cypress.Commands.add('waitSeriesMetadata', (seriesToWait = 1) => {
+  cy.wait('@getStudySeries').then({ timeout: 10000 }, () => {
     cy.get('[data-cy=thumbnail-list]', { timeout: 10000 }).should($itemList => {
-      /** The second condition below was necessary because the number of
-       * series in the study response is not the same number of thumbnails
-       * that are being displayed in the thumbnail list.
-       */
-      expect(
-        $itemList.length === series.length || $itemList.length > minSeriesToWait
-      ).to.be.true;
+      expect($itemList.length >= seriesToWait).to.be.true;
     });
   });
 });
 
 //Command to wait DICOM image to load into the viewport
 Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
+  cy.waitSeriesMetadata();
+
   cy.window()
     .its('cornerstone')
     .then({ timeout }, $cornerstone => {
