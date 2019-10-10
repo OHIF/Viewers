@@ -13,21 +13,25 @@ const getActiveServer = servers => {
   return servers && servers.servers && servers.servers.find(isActive);
 };
 
-const getServers = (appConfig, project, location, dataset, dicomstore) => {
-  let servers;
+const getServers = (appConfig, project, location, dataset, dicomStore) => {
+  let servers = [];
   if (appConfig.enableGoogleCloudAdapter) {
     const pathUrl = GoogleCloudApi.getUrlBaseDicomWeb(
       project,
       location,
       dataset,
-      dicomstore
+      dicomStore
     );
     const data = {
+      project,
+      location,
+      dataset,
+      dicomStore,
       wadoUriRoot: pathUrl,
       qidoRoot: pathUrl,
       wadoRoot: pathUrl,
     };
-    servers = GoogleCloudUtilServers.getServers(data, dicomstore);
+    servers = GoogleCloudUtilServers.getServers(data, dicomStore);
   }
 
   return servers;
@@ -39,9 +43,9 @@ const updateServer = (
   project,
   location,
   dataset,
-  dicomstore
+  dicomStore
 ) => {
-  const servers = getServers(appConfig, project, location, dataset, dicomstore);
+  const servers = getServers(appConfig, project, location, dataset, dicomStore);
 
   if (servers && servers.length) {
     const action = {
@@ -56,7 +60,7 @@ export default function useServer({
   project,
   location,
   dataset,
-  dicomstore,
+  dicomStore,
 } = {}) {
   // Hooks
   const servers = useSelector(state => state && state.servers);
@@ -66,7 +70,7 @@ export default function useServer({
   const server = getActiveServer(servers);
 
   if (!server) {
-    updateServer(appConfig, dispatch, project, location, dataset, dicomstore);
+    updateServer(appConfig, dispatch, project, location, dataset, dicomStore);
   } else {
     return server;
   }

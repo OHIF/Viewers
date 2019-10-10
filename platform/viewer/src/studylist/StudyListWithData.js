@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import { StudyList } from '@ohif/ui';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
+import * as RoutesUtil from '../routes/routesUtil';
 import moment from 'moment';
 import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';
 import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
@@ -175,7 +176,12 @@ class StudyListWithData extends Component {
   };
 
   onSelectItem = studyInstanceUID => {
-    this.props.history.push(`/viewer/${studyInstanceUID}`);
+    const { appConfig = {} } = this.context;
+    const { server } = this.props;
+    const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
+      studyInstanceUids: studyInstanceUID,
+    });
+    this.props.history.push(viewerPath);
   };
 
   onSearch = searchData => {

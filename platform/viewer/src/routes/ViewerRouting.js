@@ -9,16 +9,16 @@ const getUIDs = uids => {
   }
 };
 
-function ViewerRouting({ match }) {
+function ViewerRouting({ match: routeMatch, location: routeLocation }) {
   const {
     project,
     location,
     dataset,
-    dicomstore,
+    dicomStore,
     studyInstanceUids,
     seriesInstanceUids,
-  } = match.params;
-  const server = useServer({ project, location, dataset, dicomstore });
+  } = routeMatch.params;
+  const server = useServer({ project, location, dataset, dicomStore });
 
   const studyUIDs = getUIDs(studyInstanceUids);
   const seriesUIDs = getUIDs(seriesInstanceUids);
@@ -41,7 +41,7 @@ ViewerRouting.propTypes = {
       studyInstanceUids: PropTypes.string.isRequired,
       seriesInstanceUids: PropTypes.string,
       dataset: PropTypes.string,
-      dicomstore: PropTypes.string,
+      dicomStore: PropTypes.string,
       location: PropTypes.string,
       project: PropTypes.string,
     }),
