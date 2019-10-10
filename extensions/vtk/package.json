@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-vtk",
-  "version": "0.52.4",
+  "version": "0.52.5",
   "description": "OHIF extension for VTK.js",
   "author": "OHIF",
   "license": "MIT",
@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "react-vtkjs-viewport": "0.1.4"
+    "react-vtkjs-viewport": "^0.1.6"
   },
   "devDependencies": {
     "@ohif/core": "^1.2.0",
