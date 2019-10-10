@@ -5,6 +5,7 @@ describe('OHIF Cornerstone Toolbar', () => {
   });
 
   beforeEach(() => {
+    cy.initRouteAliases();
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
     //Following best practices, reset should be done before each test
@@ -79,11 +80,11 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'top', { which: 1 })
-      .trigger('mousemove', 'center', { which: 1 })
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
       .trigger('mouseup');
 
-    const expectedText = 'Zoom: 884%W: 820 L: 410Lossless / Uncompressed';
+    const expectedText = 'Zoom: 50%W: 820 L: 410Lossless / Uncompressed';
     cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
@@ -373,6 +374,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     //      .should('be.eq', 1);
     //  })
     cy.reload();
+    cy.initRouteAliases();
     cy.waitDicomImage();
   });
 
