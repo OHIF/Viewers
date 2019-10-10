@@ -98,14 +98,14 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'top', { which: 1 })
-      .trigger('mousemove', 'center', { which: 1 })
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
       .trigger('mouseup')
       .trigger('mousedown', 'center', { which: 1 })
       .trigger('mousemove', 'left', { which: 1 })
       .trigger('mouseup');
 
-    const expectedText = 'Zoom: 211%W: 544 L: 626Lossless / Uncompressed';
+    const expectedText = 'Zoom: 211%W: 544 L: 194Lossless / Uncompressed';
     cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
