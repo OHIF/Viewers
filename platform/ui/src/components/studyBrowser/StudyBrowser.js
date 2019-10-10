@@ -35,7 +35,7 @@ class StudyBrowser extends Component {
           );
         } else {
           return (
-            <div className="ThumbnailEntryContainer">
+            <div className="ThumbnailEntryContainer" data-cy="thumbnail-list">
               <ThumbnailEntry
                 key={thumb.displaySetInstanceUid}
                 {...study}

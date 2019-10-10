@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.3.0...@ohif/extension-cornerstone@1.3.1) (2019-10-09)
+
+
+### Bug Fixes
+
+* 🐛 set tools bidirectional, eraser and annotate command ([#1020](https://github.com/OHIF/Viewers/issues/1020)) ([a28984e](https://github.com/OHIF/Viewers/commit/a28984e))
+
+
+
+
+
+# [1.3.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.2.5...@ohif/extension-cornerstone@1.3.0) (2019-10-09)
+
+
+### Features
+
+* Multiple fixes and implementation changes to react-cornerstone-viewport ([1cc94f3](https://github.com/OHIF/Viewers/commit/1cc94f3))
+
+
+
+
+
 ## [1.2.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.2.4...@ohif/extension-cornerstone@1.2.5) (2019-09-27)
 
 

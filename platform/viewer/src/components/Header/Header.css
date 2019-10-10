@@ -4,7 +4,7 @@
 }
 
 .entry-header.header-big {
-  background: rgba(21,25,30,0.7);
+  background: rgba(21, 25, 30, 0.7);
   padding: 10px var(--study-list-padding);
   height: auto;
   display: inline-block;
@@ -32,7 +32,6 @@
   padding: 25px 0;
 }
 
-
 .header-logo-image {
   fill: transparent;
   height: 100%;
@@ -47,18 +46,9 @@
   height: 50px;
 }
 
-.header-logo-text {
-  display: inline-block;
-  font-family: var(--logo-font-family);
-  font-size: 14px;
-  font-weight: var(--logo-font-weight);
-  color: var(--text-primary-color);
-  line-height: 30px;
-}
-
 .entry-header.header-big .header-logo-text {
-  font-size: 30px;
-  line-height: 36px;
+  width: 474px;
+  height: auto;
 }
 
 .header-btn {
