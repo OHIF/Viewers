@@ -4,6 +4,8 @@ import setSingleLayoutData from './setSingleLayoutData.js';
 export default function setViewportToVTK(
   displaySet,
   viewportIndex,
+  numRows,
+  numColumns,
   layout,
   viewportSpecificData
 ) {
@@ -32,7 +34,11 @@ export default function setViewportToVTK(
     const updatedViewportData = viewportSpecificData;
 
     setLayoutAndViewportData(
-      { viewports: updatedViewports },
+      {
+        numRows,
+        numColumns,
+        viewports: updatedViewports,
+      },
       updatedViewportData
     );
   });

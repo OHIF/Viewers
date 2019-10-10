@@ -12,13 +12,13 @@ import cloneDeep from 'lodash.clonedeep';
 import merge from 'lodash.merge';
 
 const defaultState = {
+  numRows: 1,
+  numColumns: 1,
   activeViewportIndex: 0,
   layout: {
     viewports: [
       {
         // plugin: 'cornerstone',
-        height: '100%',
-        width: '100%',
       },
     ],
   },
@@ -38,17 +38,31 @@ const viewports = (state = defaultState, action) => {
   let viewportSpecificData;
   let useActiveViewport = false;
   switch (action.type) {
-    case SET_VIEWPORT_LAYOUT_AND_DATA:
-      return Object.assign({}, state, {
-        viewportSpecificData: action.viewportSpecificData,
-        layout: action.layout,
-      });
     case SET_VIEWPORT_ACTIVE:
       return Object.assign({}, state, {
         activeViewportIndex: action.viewportIndex,
       });
-    case SET_VIEWPORT_LAYOUT:
-      return Object.assign({}, state, { layout: action.layout });
+    case SET_VIEWPORT_LAYOUT: {
+      const { numRows, numColumns, viewports } = action;
+      const layout = {
+        viewports: [...viewports],
+      };
+
+      return Object.assign({}, state, { numRows, numColumns, layout });
+    }
+    case SET_VIEWPORT_LAYOUT_AND_DATA: {
+      const { numRows, numColumns, viewports, viewportSpecificData } = action;
+      const layout = {
+        viewports: [...viewports],
+      };
+
+      return Object.assign({}, state, {
+        numRows,
+        numColumns,
+        layout,
+        viewportSpecificData: cloneDeep(viewportSpecificData),
+      });
+    }
     case SET_VIEWPORT: {
       const layout = cloneDeep(state.layout);
       const hasPlugin = action.data && action.data.plugin;

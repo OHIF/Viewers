@@ -3,21 +3,21 @@ import setSingleLayoutData from './setSingleLayoutData.js';
 
 export default function setMPRLayout(displaySet) {
   return new Promise((resolve, reject) => {
-    let viewports = [];
-    const rows = 1;
-    const columns = 3;
-    const numViewports = rows * columns;
+    const viewports = [];
+    const numRows = 1;
+    const numColumns = 3;
+    const numViewports = numRows * numColumns;
     const viewportSpecificData = {};
-    for (let i = 0; i < numViewports; i++) {
-      viewports.push({
-        height: `${100 / rows}%`,
-        width: `${100 / columns}%`,
-      });
 
+    for (let i = 0; i < numViewports; i++) {
+      viewports.push({});
       viewportSpecificData[i] = displaySet;
       viewportSpecificData[i].plugin = 'vtk';
     }
+
     const layout = {
+      numRows,
+      numViewports,
       viewports,
     };
 
@@ -54,7 +54,11 @@ export default function setMPRLayout(displaySet) {
     });
 
     setLayoutAndViewportData(
-      { viewports: updatedViewports },
+      {
+        numRows,
+        numViewports,
+        viewports: updatedViewports,
+      },
       viewportSpecificData
     );
   });

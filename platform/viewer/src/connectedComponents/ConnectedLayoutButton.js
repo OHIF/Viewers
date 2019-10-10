@@ -7,7 +7,7 @@ const { setLayout, setViewportActive } = OHIF.redux.actions;
 const mapStateToProps = state => {
   return {
     currentLayout: state.viewports.layout,
-    activeViewportIndex: state.viewports.activeViewportIndex
+    activeViewportIndex: state.viewports.activeViewportIndex,
   };
 };
 
@@ -15,10 +15,11 @@ const mapDispatchToProps = dispatch => {
   return {
     // TODO: Change if layout switched becomes more complex
     onChange: (selectedCell, currentLayout, activeViewportIndex) => {
-      let viewports = [];
-      const rows = selectedCell.row + 1;
-      const columns = selectedCell.col + 1;
-      const numViewports = rows * columns;
+      const viewports = [];
+      const numRows = selectedCell.row + 1;
+      const numColumns = selectedCell.col + 1;
+      const numViewports = numRows * numColumns;
+
       for (let i = 0; i < numViewports; i++) {
         // Hacky way to allow users to exit MPR "mode"
         const viewport = currentLayout.viewports[i];
@@ -28,16 +29,16 @@ const mapDispatchToProps = dispatch => {
         }
 
         viewports.push({
-          height: `${100 / rows}%`,
-          width: `${100 / columns}%`,
           plugin,
         });
       }
       const layout = {
+        numRows,
+        numColumns,
         viewports,
       };
 
-      const maxActiveIndex = rows * columns - 1;
+      const maxActiveIndex = numViewports - 1;
       if (activeViewportIndex > maxActiveIndex) {
         dispatch(setViewportActive(0));
       }
@@ -52,9 +53,10 @@ const mergeProps = (propsFromState, propsFromDispatch) => {
   const { currentLayout, activeViewportIndex } = propsFromState;
 
   return {
-    onChange: selectedCell => onChangeFromDispatch(selectedCell, currentLayout, activeViewportIndex)
+    onChange: selectedCell =>
+      onChangeFromDispatch(selectedCell, currentLayout, activeViewportIndex),
   };
-}
+};
 
 const ConnectedLayoutButton = connect(
   mapStateToProps,
