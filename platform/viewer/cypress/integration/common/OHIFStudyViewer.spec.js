@@ -5,6 +5,7 @@ describe('OHIF Study Viewer Page', () => {
   });
 
   beforeEach(() => {
+    cy.initRouteAliases();
     cy.initCommonElementsAliases();
     //Following best practices, reset should be done before each test
     cy.resetViewport();
