@@ -1,7 +1,6 @@
 import {
   Checkbox,
   CineDialog,
-  ExampleDropTarget,
   LayoutButton,
   LayoutChooser,
   MeasurementTable,
@@ -41,7 +40,6 @@ export {
   CineDialog,
   Dropdown,
   ExpandableToolMenu,
-  ExampleDropTarget,
   Icon,
   LayoutButton,
   LayoutChooser,

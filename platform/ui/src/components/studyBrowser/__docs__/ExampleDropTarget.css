@@ -1,0 +1,30 @@
+.ExampleDropTarget {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+  min-height: 100px;
+
+  border: 2px dashed black;
+  padding: 20px;
+  transition: 0.2s all ease;
+}
+
+.ExampleDropTarget h4,
+.ExampleDropTarger p {
+  text-align: center;
+  word-break: break-word;
+}
+
+.ExampleDropTarget.can-drop {
+  border: 2px dashed #20a5d6;
+  background-color: #fafafa;
+  color: black;
+}
+
+.ExampleDropTarget.hovered {
+  border: 2px dashed #20a5d6;
+  background-color: black;
+  color: #91b9cd;
+  cursor: copy;
+}

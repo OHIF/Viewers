@@ -8,7 +8,8 @@ import {
   onThumbnailClick,
   onThumbnailDoubleClick,
 } from './exampleStudies.js';
-import { ExampleDropTarget, StudyBrowser } from './../index.js';
+import ExampleDropTarget from './ExampleDropTarget.js';
+import { StudyBrowser } from './../index.js';
 
 class StudyBrowserContainer extends Component {
   render() {
