@@ -6,13 +6,10 @@ describe('viewports reducer', () => {
   it('should return the initial state', () => {
     expect(reducer(undefined, {})).toEqual({
       activeViewportIndex: 0,
+      numRows: 1,
+      numColumns: 1,
       layout: {
-        viewports: [
-          {
-            height: '100%',
-            width: '100%',
-          },
-        ],
+        viewports: [{}],
       },
       viewportSpecificData: {},
     });
@@ -34,23 +31,25 @@ describe('viewports reducer', () => {
   it('should handle SET_VIEWPORT_LAYOUT', () => {
     const setViewportLayoutAction = {
       type: types.SET_VIEWPORT_LAYOUT,
-      layout: {
-        viewports: [
-          {
-            height: '100%',
-            width: '50%',
-          },
-          {
-            height: '100%',
-            width: '50%',
-          },
-        ],
-      },
+      numRows: 1,
+      numColumns: 2,
+      viewports: [
+        {
+          plugin: 'cornerstone',
+        },
+        {
+          plugin: 'vtk',
+        },
+      ],
     };
 
     const updatedState = reducer({}, setViewportLayoutAction);
 
-    expect(updatedState.layout).toEqual(setViewportLayoutAction.layout);
+    expect(updatedState.numRows).toEqual(setViewportLayoutAction.numRows);
+    expect(updatedState.numColumns).toEqual(setViewportLayoutAction.numColumns);
+    expect(updatedState.layout.viewports).toEqual(
+      setViewportLayoutAction.viewports
+    );
   });
 
   // If there were previous keys, this would have
