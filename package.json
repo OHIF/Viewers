@@ -28,6 +28,7 @@
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
     "test:e2e": "lerna run test:e2e --stream",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
+    "test:e2e:serve": "lerna run test:e2e:serve --stream",
     "see-changed": "lerna changed",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "release": "yarn run lerna:version && yarn run lerna:publish",
