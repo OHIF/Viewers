@@ -1,6 +1,6 @@
 import React, { useState, createContext, useContext } from 'react';
-import SnackbarContainer from '../components/Snackbar/SnackbarContainer';
-import SnackbarTypes from '../components/Snackbar/SnackbarTypes';
+import SnackbarContainer from '../../../ui/src/components/snackbar/SnackbarContainer';
+import SnackbarTypes from '../../../ui/src/components/snackbar/SnackbarTypes';
 
 const SnackbarContext = createContext(null);
 
@@ -11,6 +11,7 @@ const SnackbarProvider = ({ children }) => {
     title: '',
     message: '',
     duration: 5000,
+    autoClose: true,
     position: 'bottomRight',
     type: SnackbarTypes.INFO,
   };

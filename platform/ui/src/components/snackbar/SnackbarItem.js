@@ -6,9 +6,11 @@ const SnackbarItem = ({ options, onClose }) => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      handleClose();
-    }, options.duration);
+    if (options.autoClose) {
+      setTimeout(() => {
+        handleClose();
+      }, options.duration);
+    }
   }, []);
 
   return (
