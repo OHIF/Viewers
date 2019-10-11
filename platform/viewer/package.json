@@ -17,7 +17,7 @@
   },
   "proxy": "http://localhost:8042",
   "scripts": {
-    "build:package": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.commonjs.js",
+    "build:package": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.commonjs.js --progress",
     "build:viewer": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js --progress",
     "build:viewer:e2e": "cross-env NODE_ENV=development node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js --progress",
     "build:viewer:ci": "cross-env NODE_ENV=production PUBLIC_URL=/pwa/ APP_CONFIG=config/netlify.js SKIP_MINIMIZE=true node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js",
