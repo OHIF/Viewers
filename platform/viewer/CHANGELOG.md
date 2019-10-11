@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.6.0...@ohif/viewer@1.6.1) (2019-10-11)
+
+
+### Bug Fixes
+
+* Switch token storage back to localStorage because in-memory was annoying for end users ([#1030](https://github.com/OHIF/Viewers/issues/1030)) ([412fe4e](https://github.com/OHIF/Viewers/commit/412fe4e))
+
+
+
+
+
+# [1.6.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.5.4...@ohif/viewer@1.6.0) (2019-10-11)
+
+
+### Features
+
+* 🎸 Improve usability of Google Cloud adapter, including direct routes to studies ([#989](https://github.com/OHIF/Viewers/issues/989)) ([2bc361c](https://github.com/OHIF/Viewers/commit/2bc361c))
+
+
+
+
+
 ## [1.5.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.5.3...@ohif/viewer@1.5.4) (2019-10-10)
 
 **Note:** Version bump only for package @ohif/viewer

@@ -26,9 +26,34 @@ export const setViewportActive = viewportIndex => ({
   viewportIndex,
 });
 
-export const setLayout = layout => ({
+/**
+ * @param {object} layout
+ * @param {number} layout.numRows
+ * @param {number} layout.numColumns
+ * @param {array} layout.viewports
+ */
+export const setLayout = ({ numRows, numColumns, viewports }) => ({
   type: SET_VIEWPORT_LAYOUT,
-  layout,
+  numRows,
+  numColumns,
+  viewports,
+});
+
+/**
+ * @param {object} layout
+ * @param {number} layout.numRows
+ * @param {number} layout.numColumns
+ * @param {array} layout.viewports
+ */
+export const setViewportLayoutAndData = (
+  { numRows, numColumns, viewports },
+  viewportSpecificData
+) => ({
+  type: SET_VIEWPORT_LAYOUT_AND_DATA,
+  numRows,
+  numColumns,
+  viewports,
+  viewportSpecificData,
 });
 
 export const clearViewportSpecificData = viewportIndex => ({
@@ -85,12 +110,6 @@ export const setStudyData = (studyInstanceUid, data) => ({
 export const setServers = servers => ({
   type: SET_SERVERS,
   servers,
-});
-
-export const setViewportLayoutAndData = (layout, viewportSpecificData) => ({
-  type: SET_VIEWPORT_LAYOUT_AND_DATA,
-  layout,
-  viewportSpecificData,
 });
 
 const actions = {
