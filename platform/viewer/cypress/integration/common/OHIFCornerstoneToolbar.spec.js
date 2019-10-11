@@ -433,11 +433,15 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
 
     //Verify if measurement annotation was added into the measurements panel
-    cy.get('@measurementsBtn').click();
+    cy.get('@measurementsBtn')
+      .click()
+      .wait(1000);
     cy.get('.measurementItem')
       .its('length')
       .should('be.eq', 2);
-    cy.get('@measurementsBtn').click();
+    cy.get('@measurementsBtn')
+      .click()
+      .wait(1000);
 
     //Click More button
     cy.get('@moreBtn').click();
