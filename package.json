@@ -13,7 +13,6 @@
   "scripts": {
     "cm": "npx git-cz",
     "build": "lerna run build:viewer --stream",
-    "build:e2e": "lerna run build:viewer:e2e --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package": "lerna run build:viewer:package --stream",

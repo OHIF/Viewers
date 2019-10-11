@@ -151,7 +151,7 @@ jobs:
       - codecov/upload:
           file: '/home/circleci/repo/platform/core/coverage/reports'
           flags: 'core'
-      
+
       # Persist :+1:
       - persist_to_workspace: &persist_to_workspace
           root: ~/repo
@@ -204,7 +204,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - setup_remote_docker:
-         docker_layer_caching: false
+          docker_layer_caching: false
       - run:
           name: Build and push Docker image
           command: |
@@ -294,7 +294,7 @@ workflows:
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: yarn run build:e2e
+          build: npx cross-env QUICK_BUILD yarn run build
           start: yarn run test:e2e:serve
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
@@ -313,7 +313,7 @@ workflows:
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: yarn run build:package
+          build: npx cross-env QUICK_BUILD=true yarn run build:package
           start: yarn run test:e2e:serve
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
