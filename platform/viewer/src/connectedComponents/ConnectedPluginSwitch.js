@@ -1,9 +1,9 @@
-import OHIF from "@ohif/core";
-import PluginSwitch from "./PluginSwitch.js";
-import { commandsManager } from "./../App.js";
-import { connect } from "react-redux";
+// import OHIF from '@ohif/core';
+import PluginSwitch from './PluginSwitch.js';
+import { commandsManager } from './../App.js';
+import { connect } from 'react-redux';
 
-const { setLayout } = OHIF.redux.actions;
+// const { setLayout } = OHIF.redux.actions;
 
 const mapStateToProps = state => {
   const { activeViewportIndex, layout, viewportSpecificData } = state.viewports;
@@ -11,17 +11,17 @@ const mapStateToProps = state => {
   return {
     activeViewportIndex,
     viewportSpecificData,
-    layout
+    layout,
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setLayout: data => {
-      dispatch(setLayout(data));
-    }
-  };
-};
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     setLayout: data => {
+//       dispatch(setLayout(data));
+//     }
+//   };
+// };
 
 /*function setSingleLayoutData(originalArray, viewportIndex, data) {
   const viewports = originalArray.slice();
@@ -39,18 +39,16 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   // TODO: Do not display certain options if the current display set
   // cannot be displayed using these view types
   const mpr = () => {
-        commandsManager.runCommand("mpr2d");
-      }
-  ;
-
+    commandsManager.runCommand('mpr2d');
+  };
   return {
-    mpr
+    mpr,
   };
 };
 
 const ConnectedPluginSwitch = connect(
   mapStateToProps,
-  mapDispatchToProps,
+  null, // mapDispatchToProps
   mergeProps
 )(PluginSwitch);
 

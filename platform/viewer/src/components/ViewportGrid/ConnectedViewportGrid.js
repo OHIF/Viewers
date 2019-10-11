@@ -1,7 +1,7 @@
-import { LayoutManager } from '@ohif/ui';
+import ViewportGrid from './ViewportGrid.js';
 import { MODULE_TYPES } from '@ohif/core';
 import { connect } from 'react-redux';
-import { extensionManager } from './../App.js';
+import { extensionManager } from './../../App.js';
 
 const mapStateToProps = state => {
   const availableViewportModules = {};
@@ -18,9 +18,13 @@ const mapStateToProps = state => {
     defaultPlugin = viewportModules[0].extensionId;
   }
 
+  const { numRows, numColumns, layout, activeViewportIndex } = state.viewports;
+
   return {
-    layout: state.viewports.layout,
-    activeViewportIndex: state.viewports.activeViewportIndex,
+    numRows,
+    numColumns,
+    layout,
+    activeViewportIndex,
     // TODO: rename `availableViewportModules`
     availablePlugins: availableViewportModules,
     // TODO: rename `defaultViewportModule`
@@ -28,9 +32,9 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedLayoutManager = connect(
+const ConnectedViewportGrid = connect(
   mapStateToProps,
   null
-)(LayoutManager);
+)(ViewportGrid);
 
-export default ConnectedLayoutManager;
+export default ConnectedViewportGrid;

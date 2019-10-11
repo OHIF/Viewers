@@ -1,7 +1,6 @@
 import {
   Checkbox,
   CineDialog,
-  ExampleDropTarget,
   LayoutButton,
   LayoutChooser,
   MeasurementTable,
@@ -28,8 +27,6 @@ import { ICONS, Icon } from './elements';
 // Alias this for now as not all dependents are using strict versioning
 import { DropdownMenu as Dropdown, Range, Select } from './elements/form';
 import ExpandableToolMenu from './viewer/ExpandableToolMenu.js';
-import LayoutManager from './LayoutChooser/LayoutManager.js';
-import LayoutPanelDropTarget from './LayoutChooser/LayoutPanelDropTarget.js';
 import PlayClipButton from './viewer/PlayClipButton.js';
 import { ScrollableArea } from './ScrollableArea/ScrollableArea.js';
 import Toolbar from './viewer/Toolbar.js';
@@ -43,12 +40,9 @@ export {
   CineDialog,
   Dropdown,
   ExpandableToolMenu,
-  ExampleDropTarget,
   Icon,
   LayoutButton,
   LayoutChooser,
-  LayoutManager,
-  LayoutPanelDropTarget,
   MeasurementTable,
   MeasurementTableItem,
   Overlay,
