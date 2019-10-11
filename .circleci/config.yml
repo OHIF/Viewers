@@ -81,6 +81,12 @@ unit_tests_main: &unit_tests_main
       file: '/home/circleci/repo/platform/core/coverage/reports'
       flags: 'core'
 
+persist_to_workspace: &persist_to_workspace
+  # Persist :+1:
+  - persist_to_workspace:
+      root: ~/repo
+      paths: .
+
 jobs:
   UNIT_TESTS:
     <<: *defaults
@@ -91,11 +97,7 @@ jobs:
     <<: *defaults
     steps:
       <<: *unit_tests_main
-
-      # Persist :+1:
-      - persist_to_workspace:
-          root: ~/repo
-          paths: .
+      <<: *persist_to_workspace
 
   NPM_PUBLISH:
     <<: *defaults
