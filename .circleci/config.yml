@@ -35,10 +35,7 @@ jobs:
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-v1-{{ .Branch }}-
-            - yarn-packages-v1-
+            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
           command: yarn install --frozen-lockfile
@@ -46,7 +43,7 @@ jobs:
           name: Save Yarn Package Cache
           paths:
             - ~/.cache ## Cache yarn and Cypress
-          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: yarn-packages-{{ checksum "yarn.lock" }}
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
@@ -239,7 +236,7 @@ workflows:
           build: yarn run build:e2e
           start: yarn run test:e2e:dist
           wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
             - store_artifacts:
@@ -258,7 +255,7 @@ workflows:
           build: yarn run build:package
           start: yarn run test:e2e:dist
           wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
             - store_artifacts:
@@ -289,7 +286,7 @@ workflows:
           build: yarn run build:e2e
           start: yarn run test:e2e:dist
           wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
             - store_artifacts:
@@ -310,7 +307,7 @@ workflows:
           build: yarn run build:package
           start: yarn run test:e2e:dist
           wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
             - store_artifacts:
