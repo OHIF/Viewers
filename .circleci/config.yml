@@ -295,7 +295,7 @@ workflows:
           store_artifacts: false
           working_directory: platform/viewer
           build: yarn run build:e2e
-          start: yarn run test:e2e:dist
+          start: yarn run test:e2e:serve
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
@@ -342,7 +342,7 @@ workflows:
           store_artifacts: true
           working_directory: platform/viewer
           build: yarn run build:e2e
-          start: yarn run test:e2e:dist
+          start: yarn run test:e2e:serve
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
