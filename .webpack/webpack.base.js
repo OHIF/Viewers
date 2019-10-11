@@ -1,23 +1,46 @@
 const path = require('path');
 const webpack = require('webpack');
+// ~~ RULES
 const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
+// ~~ PLUGINS
+const TerserJSPlugin = require('terser-webpack-plugin');
+// ~~ ENV VARS
+const NODE_ENV = process.env.NODE_ENV;
+const QUICK_BUILD = process.env.QUICK_BUILD;
 
 module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
   if (!process.env.NODE_ENV) {
     throw new Error('process.env.NODE_ENV not set');
   }
 
-  const mode =
-    process.env.NODE_ENV === 'production' ? 'production' : 'development';
+  const mode = NODE_ENV === 'production' ? 'production' : 'development';
+  const isProdBuild = NODE_ENV === 'production';
+  const isQuickBuild = QUICK_BUILD === 'true';
 
-  return {
-    mode,
+  const config = {
+    mode: isProdBuild ? 'production' : 'development',
+    devtool: isProdBuild ? 'source-map' : 'cheap-module-eval-source-map',
     entry: {
       app: `${SRC_DIR}/index.js`,
     },
+    optimization: {
+      minimize: isProdBuild,
+      sideEffects: true,
+    },
     context: SRC_DIR,
+    stats: {
+      colors: true,
+      hash: true,
+      timings: true,
+      assets: true,
+      chunks: false,
+      chunkModules: false,
+      modules: false,
+      children: false,
+      warnings: true,
+    },
     module: {
       rules: [
         transpileJavaScriptRule(mode),
@@ -53,4 +76,23 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       fs: 'empty',
     },
   };
+
+  if (isProdBuild) {
+    config.optimization.minimizer = [
+      new TerserJSPlugin({
+        // Supports:
+        // source-map and inline-source-map
+        sourceMap: isProdBuild && !isQuickBuild,
+        parallel: true,
+        terserOptions: {},
+      }),
+    ];
+  }
+
+  if (isQuickBuild) {
+    config.optimization.minimize = false;
+    config.devtool = false;
+  }
+
+  return config;
 };
