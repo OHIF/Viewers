@@ -22,6 +22,11 @@ defaults: &defaults
         TERM: xterm # Enable colors in term
   working_directory: ~/repo
 
+# Persist :+1:
+persist_to_workspace: &persist_to_workspace
+  root: ~/repo
+  paths: .
+
 unit_tests_main: &unit_tests_main
   # Enable yarn workspaces
   - run: yarn config set workspaces-experimental true
@@ -80,12 +85,6 @@ unit_tests_main: &unit_tests_main
   - codecov/upload:
       file: '/home/circleci/repo/platform/core/coverage/reports'
       flags: 'core'
-
-persist_to_workspace: &persist_to_workspace
-  # Persist :+1:
-  - persist_to_workspace:
-      root: ~/repo
-      paths: .
 
 jobs:
   UNIT_TESTS:
