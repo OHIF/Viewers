@@ -18,7 +18,7 @@ export default function setMPRLayout(displaySet) {
     viewports.forEach((viewport, index) => {
       apis[index] = null;
       viewports[index] = Object.assign({}, viewports[index], {
-        plugin: 'vtk',
+        // plugin: 'vtk',
         vtk: {
           mode: 'mpr', // TODO: not used
           afterCreation: api => {
