@@ -17,7 +17,7 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: circleci/node:10.16.0
+    - image: circleci/node:12.9.1
       environment:
         TERM: xterm # Enable colors in term
   working_directory: ~/repo
@@ -26,6 +26,9 @@ jobs:
   UNIT_TESTS:
     <<: *defaults
     steps:
+      # Update yarn
+      - run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
+
       # Enable yarn workspaces
       - run: yarn config set workspaces-experimental true
 
@@ -87,6 +90,9 @@ jobs:
   UNIT_TESTS_PERSIST_WORKSPACE:
     <<: *defaults
     steps:
+      # Update yarn
+      - run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
+
       # Enable yarn workspaces
       - run: yarn config set workspaces-experimental true
 
