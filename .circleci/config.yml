@@ -294,7 +294,7 @@ workflows:
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD yarn run build
+          build: npx cross-env QUICK_BUILD=true yarn run build
           start: yarn run test:e2e:serve
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
