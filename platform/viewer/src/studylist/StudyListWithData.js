@@ -22,6 +22,7 @@ class StudyListWithData extends Component {
   state = {
     searchData: {},
     studies: [],
+    searchingStudies: false,
     error: null,
     modalComponentId: null,
   };
@@ -105,7 +106,10 @@ class StudyListWithData extends Component {
     // TODO: add sorting
     const promise = OHIF.studies.searchStudies(server, filter);
 
-    // Render the viewer when the data is ready
+    this.setState({
+      studies: [],
+      searchingStudies: true,
+    });
     promise
       .then(studies => {
         if (!studies) {
@@ -150,11 +154,13 @@ class StudyListWithData extends Component {
 
         this.setState({
           studies: sortedStudies,
+          searchingStudies: false,
         });
       })
       .catch(error => {
         this.setState({
           error: true,
+          searchingStudies: false,
         });
 
         throw new Error(error);
@@ -242,6 +248,7 @@ class StudyListWithData extends Component {
       <div className="paginationArea">
         {this.state.studies ? (
           <StudyList
+            loading={this.state.searchingStudies}
             studies={this.state.studies}
             studyListFunctionsEnabled={this.props.studyListFunctionsEnabled}
             onImport={this.onImport}

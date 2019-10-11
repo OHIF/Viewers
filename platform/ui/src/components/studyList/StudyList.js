@@ -16,6 +16,69 @@ import { withTranslation } from '../../utils/LanguageProvider';
 const today = moment();
 const lastWeek = moment().subtract(7, 'day');
 const lastMonth = moment().subtract(1, 'month');
+function getPaginationFragment(
+  props,
+  searchData,
+  nextPageCb,
+  prevPageCb,
+  changeRowsPerPageCb
+) {
+  return (
+    <PaginationArea
+      pageOptions={props.pageOptions}
+      currentPage={searchData.currentPage}
+      nextPageFunc={nextPageCb}
+      prevPageFunc={prevPageCb}
+      onRowsPerPageChange={changeRowsPerPageCb}
+      rowsPerPage={searchData.rowsPerPage}
+      recordCount={props.studies.length}
+    />
+  );
+}
+
+function getTableMeta(props) {
+  return {
+    patientName: {
+      displayText: props.t('PatientName'),
+      sort: 0,
+    },
+    patientId: {
+      displayText: props.t('MRN'),
+      sort: 0,
+    },
+    accessionNumber: {
+      displayText: props.t('AccessionNumber'),
+      sort: 0,
+    },
+    studyDate: {
+      displayText: props.t('StudyDate'),
+      inputType: 'date-range',
+      sort: 0,
+    },
+    modalities: {
+      displayText: props.t('Modality'),
+      sort: 0,
+    },
+    studyDescription: {
+      displayText: props.t('StudyDescription'),
+      sort: 0,
+    },
+  };
+}
+
+function getNoListFragment(studies, error, loading) {
+  if (loading) {
+    return (
+      <div className="loading">
+        <StudyListLoadingText />
+      </div>
+    );
+  } else if (error) {
+    return <div className="notFound">There was an error fetching studies</div>;
+  } else if (!studies.length) {
+    return <div className="notFound">No matching results</div>;
+  }
+}
 
 class StudyList extends Component {
   static propTypes = {
@@ -154,30 +217,6 @@ class StudyList extends Component {
     }
   }
 
-  renderNoMachingResults() {
-    if (!this.props.studies.length && !this.state.error) {
-      return <div className="notFound">No matching results</div>;
-    }
-  }
-
-  renderHasError() {
-    if (this.state.error) {
-      return (
-        <div className="notFound">There was an error fetching studies</div>
-      );
-    }
-  }
-
-  renderIsLoading() {
-    if (this.state.loading) {
-      return (
-        <div className="loading">
-          <StudyListLoadingText />
-        </div>
-      );
-    }
-  }
-
   nextPage(currentPage) {
     currentPage = currentPage + 1;
     this.delayedSearch.cancel();
@@ -221,10 +260,16 @@ class StudyList extends Component {
     this.setState({ highlightedItem: studyItemUid });
   }
 
-  renderTableRow(study) {
+  renderTableRow(study, index) {
+    const trKey = `trStudy${index}${study.studyInstanceUid}`;
+
+    if (!study) {
+      return;
+    }
+
     return (
       <tr
-        key={study.studyInstanceUid}
+        key={trKey}
         className={
           this.state.highlightedItem === study.studyInstanceUid
             ? 'studylistStudy noselect active'
@@ -241,47 +286,34 @@ class StudyList extends Component {
           this.props.onSelectItem(study.studyInstanceUid);
         }}
       >
-        <td className={study.patientName ? 'patientName' : 'emptyCell'}>
+        <td
+          key="tdPatientIdName"
+          className={study.patientName ? 'patientName' : 'emptyCell'}
+        >
           {study.patientName || `(${this.props.t('Empty')})`}
         </td>
 
-        <td className="patientId">{study.patientId}</td>
-        <td className="accessionNumber">{study.accessionNumber}</td>
-        <td className="studyDate">{study.studyDate}</td>
-        <td className="modalities">{study.modalities}</td>
-        <td className="studyDescription">{study.studyDescription}</td>
+        <td key="tdPatientId" className="patientId">
+          {study.patientId}
+        </td>
+        <td key="tdAccessionNum" className="accessionNumber">
+          {study.accessionNumber}
+        </td>
+        <td key="tdStudyDate" className="studyDate">
+          {study.studyDate}
+        </td>
+        <td key="tdModalities" className="modalities">
+          {study.modalities}
+        </td>
+        <td key="tdStudyDesc" className="studyDescription">
+          {study.studyDescription}
+        </td>
       </tr>
     );
   }
 
   render() {
-    const tableMeta = {
-      patientName: {
-        displayText: this.props.t('PatientName'),
-        sort: 0,
-      },
-      patientId: {
-        displayText: this.props.t('MRN'),
-        sort: 0,
-      },
-      accessionNumber: {
-        displayText: this.props.t('AccessionNumber'),
-        sort: 0,
-      },
-      studyDate: {
-        displayText: this.props.t('StudyDate'),
-        inputType: 'date-range',
-        sort: 0,
-      },
-      modalities: {
-        displayText: this.props.t('Modality'),
-        sort: 0,
-      },
-      studyDescription: {
-        displayText: this.props.t('StudyDescription'),
-        sort: 0,
-      },
-    };
+    const tableMeta = getTableMeta(this.props);
 
     // Apply sort
     const sortedFieldName = this.state.searchData.sortData.field;
@@ -294,6 +326,11 @@ class StudyList extends Component {
 
     // Sort Icons
     const sortIcons = ['sort', 'sort-up', 'sort-down'];
+    const noListFragment = getNoListFragment(
+      this.props.studies,
+      this.state.error,
+      this.props.loading
+    );
 
     return (
       <div className="StudyList">
@@ -399,25 +436,23 @@ class StudyList extends Component {
               </tr>
             </thead>
             <tbody id="studyListData">
-              {this.props.studies.map(study => {
-                return this.renderTableRow(study);
-              })}
+              {!noListFragment
+                ? this.props.studies.map((study, index) => {
+                    return this.renderTableRow(study, index);
+                  })
+                : null}
             </tbody>
           </table>
 
-          {this.renderIsLoading()}
-          {this.renderHasError()}
-          {this.renderNoMachingResults()}
-
-          <PaginationArea
-            pageOptions={this.props.pageOptions}
-            currentPage={this.state.searchData.currentPage}
-            nextPageFunc={this.nextPage}
-            prevPageFunc={this.prevPage}
-            onRowsPerPageChange={this.onRowsPerPageChange}
-            rowsPerPage={this.state.searchData.rowsPerPage}
-            recordCount={this.props.studies.length}
-          />
+          {noListFragment
+            ? noListFragment
+            : getPaginationFragment(
+                this.props,
+                this.state.searchData,
+                this.nextPage,
+                this.prevPage,
+                this.onRowsPerPageChange
+              )}
         </div>
       </div>
     );
