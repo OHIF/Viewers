@@ -1,5 +1,4 @@
 import setLayoutAndViewportData from './setLayoutAndViewportData.js';
-import setSingleLayoutData from './setSingleLayoutData.js';
 
 export default function setMPRLayout(displaySet) {
   return new Promise((resolve, reject) => {
@@ -15,49 +14,29 @@ export default function setMPRLayout(displaySet) {
       viewportSpecificData[i].plugin = 'vtk';
     }
 
-    const layout = {
-      numRows,
-      numViewports,
-      viewports,
-    };
-
-    const viewportIndices = [0, 1, 2];
-    let updatedViewports = layout.viewports;
-
     const apis = [];
-    viewportIndices.forEach(viewportIndex => {
-      apis[viewportIndex] = null;
-      /*const currentData = layout.viewports[viewportIndex];
-      if (currentData && currentData.plugin === 'vtk') {
-        reject(new Error('Should not have reached this point??'));
-      }*/
-
-      const data = {
-        // plugin: 'vtk',
+    viewports.forEach((viewport, index) => {
+      apis[index] = null;
+      viewports[index] = Object.assign({}, viewports[index], {
+        plugin: 'vtk',
         vtk: {
           mode: 'mpr', // TODO: not used
           afterCreation: api => {
-            apis[viewportIndex] = api;
+            apis[index] = api;
 
             if (apis.every(a => !!a)) {
               resolve(apis);
             }
           },
         },
-      };
-
-      updatedViewports = setSingleLayoutData(
-        updatedViewports,
-        viewportIndex,
-        data
-      );
+      });
     });
 
     setLayoutAndViewportData(
       {
         numRows,
-        viewports: updatedViewports,
         numColumns,
+        viewports,
       },
       viewportSpecificData
     );
