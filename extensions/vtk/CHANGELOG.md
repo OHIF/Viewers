@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.5...@ohif/extension-vtk@0.52.6) (2019-10-11)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
 ## [0.52.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.4...@ohif/extension-vtk@0.52.5) (2019-10-10)
 
 
