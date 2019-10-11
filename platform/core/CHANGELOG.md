@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.2.0...@ohif/core@1.3.0) (2019-10-11)
+
+
+### Features
+
+* 🎸 Improve usability of Google Cloud adapter, including direct routes to studies ([#989](https://github.com/OHIF/Viewers/issues/989)) ([2bc361c](https://github.com/OHIF/Viewers/commit/2bc361c))
+
+
+
+
+
 # [1.2.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.1.0...@ohif/core@1.2.0) (2019-10-09)
 
 
