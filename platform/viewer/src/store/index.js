@@ -13,7 +13,7 @@ import thunkMiddleware from 'redux-thunk';
 
 // Combine our @ohif/core, ui, and oidc reducers
 // Set init data, using values found in localStorage
-const { reducers, localStorage } = redux;
+const { reducers, localStorage, sessionStorage } = redux;
 const middleware = [thunkMiddleware];
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -21,9 +21,14 @@ reducers.ui = layoutReducers;
 reducers.oidc = oidcReducer;
 
 const rootReducer = combineReducers(reducers);
+const preloadedState = {
+  ...localStorage.loadState(),
+  ...sessionStorage.loadState(),
+};
+
 const store = createStore(
   rootReducer,
-  localStorage.loadState(), // preloadedState
+  preloadedState,
   composeEnhancers(applyMiddleware(...middleware))
 );
 
@@ -32,6 +37,9 @@ const store = createStore(
 store.subscribe(() => {
   localStorage.saveState({
     preferences: store.getState().preferences,
+  });
+  sessionStorage.saveState({
+    servers: store.getState().servers,
   });
 });
 
