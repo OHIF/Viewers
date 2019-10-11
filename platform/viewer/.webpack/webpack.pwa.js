@@ -25,35 +25,17 @@ const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
-const SKIP_MINIMIZE = process.env.SKIP_MINIMIZE;
 
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
   const isProdBuild = process.env.NODE_ENV === 'production';
   const hasProxy = PROXY_TARGET && PROXY_DOMAIN;
-  const skipMinimize = SKIP_MINIMIZE === 'true';
 
   const mergedConfig = merge(baseConfig, {
-    devtool: isProdBuild ? 'source-map' : 'cheap-module-eval-source-map',
     output: {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-    },
-    stats: {
-      colors: true,
-      hash: true,
-      timings: true,
-      assets: true,
-      chunks: false,
-      chunkModules: false,
-      modules: false,
-      children: false,
-      warnings: true,
-    },
-    optimization: {
-      minimize: isProdBuild && !skipMinimize,
-      sideEffects: true,
     },
     module: {
       rules: [...extractStyleChunksRule(isProdBuild)],
@@ -131,15 +113,6 @@ module.exports = (env, argv) => {
 
   if (!isProdBuild) {
     mergedConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-  } else {
-    mergedConfig.optimization.minimizer = [
-      new TerserJSPlugin({
-        sourceMap: true,
-        parallel: true,
-      }),
-      // No bueno
-      // new OptimizeCSSAssetsPlugin({}),
-    ];
   }
 
   return mergedConfig;
