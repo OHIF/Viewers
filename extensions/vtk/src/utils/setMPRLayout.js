@@ -56,8 +56,8 @@ export default function setMPRLayout(displaySet) {
     setLayoutAndViewportData(
       {
         numRows,
-        numViewports,
         viewports: updatedViewports,
+        numColumns,
       },
       viewportSpecificData
     );
