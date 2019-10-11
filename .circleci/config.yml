@@ -35,7 +35,9 @@ jobs:
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
+            # when lock file changes, use increasingly general patterns to restore cache
             - yarn-packages-{{ checksum "yarn.lock" }}
+            - yarn-packages-
       - run:
           name: Install Dependencies
           command: yarn install --frozen-lockfile
