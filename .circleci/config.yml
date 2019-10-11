@@ -142,8 +142,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
-      - setup_remote_docker:
-          docker_layer_caching: false
+#     - setup_remote_docker:
+#         docker_layer_caching: true
       - run:
           name: Build and push Docker image
           command: |
@@ -198,6 +198,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
+#     - setup_remote_docker:
+#         docker_layer_caching: true
       - run:
           name: Deploy latest version to viewer.ohif.org
           command: |
