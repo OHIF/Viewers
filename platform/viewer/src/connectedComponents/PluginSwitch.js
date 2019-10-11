@@ -13,9 +13,7 @@ class PluginSwitch extends Component {
   render() {
     return (
       <div className="PluginSwitch">
-        <ToolbarButton       label = "2D MPR"
-                             icon = "cube"
-                             onClick = {this.props.mpr} />
+        <ToolbarButton label="2D MPR" icon="cube" onClick={this.props.mpr} />
       </div>
     );
   }

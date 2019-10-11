@@ -8,44 +8,18 @@ import { connect } from 'react-redux';
 import { ViewerbaseDragDropContext } from '@ohif/ui';
 import { SignoutCallbackComponent } from 'redux-oidc';
 import asyncComponent from './components/AsyncComponent.js';
+import * as RoutesUtil from './routes/routesUtil';
+
 import NotFound from './routes/NotFound.js';
 import { Bar, Container } from './components/LoadingBar/';
 import './OHIFStandaloneViewer.css';
 import './variables.css';
 import './theme-tide.css';
-
 // Contexts
 import AppContext from './context/AppContext';
-
-// Dynamic Import Routes (CodeSplitting)
-const IHEInvokeImageDisplay = asyncComponent(() =>
-  import(
-    /* webpackChunkName: "IHEInvokeImageDisplay" */ './routes/IHEInvokeImageDisplay.js'
-  )
-);
-const ViewerRouting = asyncComponent(() =>
-  import(/* webpackChunkName: "ViewerRouting" */ './routes/ViewerRouting.js')
-);
-const StudyListRouting = asyncComponent(() =>
-  import(
-    /* webpackChunkName: "StudyListRouting" */ './studylist/StudyListRouting.js'
-  )
-);
-const StandaloneRouting = asyncComponent(() =>
-  import(
-    /* webpackChunkName: "StandaloneRouting" */ './routes/StandaloneRouting.js'
-  )
-);
 const CallbackPage = asyncComponent(() =>
   import(/* webpackChunkName: "CallbackPage" */ './routes/CallbackPage.js')
 );
-const ViewerLocalFileData = asyncComponent(() =>
-  import(
-    /* webpackChunkName: "ViewerLocalFileData" */ './connectedComponents/ViewerLocalFileData.js'
-  )
-);
-
-const reload = () => window.location.reload();
 
 class OHIFStandaloneViewer extends Component {
   static contextType = AppContext;
@@ -86,7 +60,11 @@ class OHIFStandaloneViewer extends Component {
 
       return (
         <Switch>
-          <Route exact path="/silent-refresh.html" onEnter={reload} />
+          <Route
+            exact
+            path="/silent-refresh.html"
+            onEnter={RoutesUtil.reload}
+          />
           <Route
             exact
             path="/logout-redirect"
@@ -128,41 +106,7 @@ class OHIFStandaloneViewer extends Component {
      *
      * See http://reactcommunity.org/react-transition-group/with-react-router/
      */
-    const routes = [
-      {
-        path: '/local',
-        Component: ViewerLocalFileData,
-      },
-      {
-        path: '/viewer',
-        Component: StandaloneRouting,
-      },
-      {
-        path: '/viewer/:studyInstanceUids',
-        Component: ViewerRouting,
-      },
-      {
-        path: '/study/:studyInstanceUids/series/:seriesInstanceUids',
-        Component: ViewerRouting,
-      },
-      {
-        path: '/IHEInvokeImageDisplay',
-        Component: IHEInvokeImageDisplay,
-      },
-    ];
-
-    const showStudyList =
-      appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
-    if (showStudyList) {
-      routes.push({
-        path: '/studylist',
-        Component: StudyListRouting,
-      });
-      routes.push({
-        path: '/',
-        Component: StudyListRouting,
-      });
-    }
+    const routes = RoutesUtil.getRoutes(appConfig);
 
     const currentPath = this.props.location.pathname;
     const noMatchingRoutes = !routes.find(r =>
@@ -184,8 +128,8 @@ class OHIFStandaloneViewer extends Component {
             </Container>
           )}
         </NProgress>
-        <Route exact path="/silent-refresh.html" onEnter={reload} />
-        <Route exact path="/logout-redirect.html" onEnter={reload} />
+        <Route exact path="/silent-refresh.html" onEnter={RoutesUtil.reload} />
+        <Route exact path="/logout-redirect.html" onEnter={RoutesUtil.reload} />
         {!noMatchingRoutes &&
           routes.map(({ path, Component }) => (
             <Route key={path} exact path={path}>
