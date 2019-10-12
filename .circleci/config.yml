@@ -260,9 +260,9 @@ jobs:
             # Set our version number using vars
             echo $CIRCLE_BUILD_NUM
             # Build our image, auth, and push
-            docker build --tag ohif/$IMAGE_NAME:PR_BUILD-$CIRCLE_BUILD_NUM
+            docker build --tag ohif/viewer:PR_BUILD-$CIRCLE_BUILD_NUM
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ohif/$IMAGE_NAME:PR_BUILD-$CIRCLE_BUILD_NUM
+            docker push ohif/viewer:PR_BUILD-$CIRCLE_BUILD_NUM
 
   VIEWER_DEMO_BUILD:
     <<: *defaults
@@ -368,6 +368,7 @@ workflows:
             - 'E2E: PWA'
       # Update hub.docker.org
       - DOCKER_PR_PUBLISH:
+          context: Docker Hub
           requires:
             - AWAIT_APPROVAL
 
