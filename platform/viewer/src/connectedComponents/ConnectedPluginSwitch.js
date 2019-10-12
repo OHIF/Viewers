@@ -35,11 +35,13 @@ const mapDispatchToProps = dispatch => {
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   //const { activeViewportIndex, layout } = propsFromState;
   //const { setLayout } = propsFromDispatch;
+  const { togglePlugSwitchStatus } = ownProps;
 
   // TODO: Do not display certain options if the current display set
   // cannot be displayed using these view types
   const mpr = () => {
         commandsManager.runCommand("mpr2d");
+        togglePlugSwitchStatus();
       }
   ;
 
