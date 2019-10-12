@@ -53,6 +53,7 @@ import measureTargetUn from './icons/measure-target-un.svg';
 import measureTemp from './icons/measure-temp.svg';
 import objectGroup from './icons/object-group.svg';
 import ohifLogo from './icons/ohif-logo.svg';
+import ohifTextLogo from './icons/ohif-text-logo.svg';
 import oval from './icons/oval.svg';
 import palette from './icons/palette.svg';
 import play from './icons/play.svg';
@@ -120,6 +121,7 @@ const ICONS = {
   'inline-edit': inlineEdit,
   list,
   'ohif-logo': ohifLogo,
+  'ohif-text-logo': ohifTextLogo,
   lock,
   play,
   database,

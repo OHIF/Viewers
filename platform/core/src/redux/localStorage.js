@@ -1,6 +1,8 @@
+const LocalStorageApi = window.localStorage;
+const localStorageKey = 'state';
 export const loadState = () => {
   try {
-    const serializedState = window.localStorage.getItem('state');
+    const serializedState = LocalStorageApi.getItem(localStorageKey);
     if (!serializedState) {
       return undefined;
     }
@@ -14,7 +16,7 @@ export const loadState = () => {
 export const saveState = state => {
   try {
     const serializedState = JSON.stringify(state);
-    localStorage.setItem('state', serializedState);
+    LocalStorageApi.setItem(localStorageKey, serializedState);
   } catch (e) {}
 };
 

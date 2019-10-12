@@ -22,6 +22,13 @@ class GoogleCloudApi {
     return this.urlBase + `/projects`;
   }
 
+  getUrlBaseDicomWeb(project, location, dataset, dicomStore) {
+    return (
+      this.urlBase +
+      `/projects/${project}/locations/${location}/datasets/${dataset}/dicomStores/${dicomStore}/dicomWeb`
+    );
+  }
+
   async doRequest(urlStr, config = {}, params = {}) {
     const url = new URL(urlStr);
     let data = null;

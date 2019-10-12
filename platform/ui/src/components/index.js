@@ -1,8 +1,4 @@
-import {
-  ExampleDropTarget,
-  StudyBrowser,
-  ThumbnailEntry,
-} from './studyBrowser';
+import { StudyBrowser, ThumbnailEntry } from './studyBrowser';
 import { LayoutButton, LayoutChooser } from './layoutButton';
 import { MeasurementTable, MeasurementTableItem } from './measurementTable';
 import { Overlay, OverlayTrigger } from './overlayTrigger';
@@ -26,7 +22,6 @@ import { Tooltip } from './tooltip';
 export {
   Checkbox,
   CineDialog,
-  ExampleDropTarget,
   LayoutButton,
   LayoutChooser,
   MeasurementTable,

@@ -15,7 +15,6 @@ import {
 } from './utils/index.js';
 
 import { I18nextProvider } from 'react-i18next';
-import initCornerstoneTools from './initCornerstoneTools.js';
 
 // ~~ EXTENSIONS
 import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
@@ -27,7 +26,6 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
-import setupTools from './setupTools.js';
 import store from './store';
 
 // Contexts
@@ -36,11 +34,6 @@ import UserManagerContext from './context/UserManagerContext';
 import AppContext from './context/AppContext';
 
 // ~~~~ APP SETUP
-initCornerstoneTools({
-  globalToolSyncEnabled: true,
-  showSVGCursors: true,
-});
-
 const commandsManagerConfig = {
   getAppState: () => store.getState(),
   getActiveContexts: () => getActiveContexts(store.getState()),
@@ -49,9 +42,6 @@ const commandsManagerConfig = {
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
 const extensionManager = new ExtensionManager({ commandsManager });
-
-// CornerstoneTools and labeling/measurements?
-setupTools(store);
 // ~~~~ END APP SETUP
 
 // TODO[react] Use a provider when the whole tree is React
@@ -175,8 +165,9 @@ class App extends Component {
 function _initExtensions(extensions, hotkeys) {
   const defaultExtensions = [
     GenericViewerCommands,
-    MeasurementsPanel,
     OHIFCornerstoneExtension,
+    // WARNING: MUST BE REGISTERED _AFTER_ OHIFCORNERSTONEEXTENSION
+    MeasurementsPanel,
   ];
   const mergedExtensions = defaultExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
