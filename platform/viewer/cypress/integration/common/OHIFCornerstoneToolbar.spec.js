@@ -7,7 +7,6 @@ describe('OHIF Cornerstone Toolbar', () => {
   beforeEach(() => {
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
-    //Following best practices, reset should be done before each test
     cy.resetViewport();
   });
 
@@ -361,19 +360,14 @@ describe('OHIF Cornerstone Toolbar', () => {
         .should('be.eq', 9);
     });
 
-    //Commented this to avoid throwing an wrong exception at the end of "Layout button" test
-    //this commented section should be uncommented once issue #999 is fixed. (https://github.com/OHIF/Viewers/issues/999)
-
     //verify if layout has changed to 1 viewport
-    //  cy.get('@layoutBtn').click();
-    //  cy.get('tbody > :nth-child(1) > :nth-child(1)').click();
-    //  cy.get('.viewport-container').then(($viewport) =>{
-    //    cy.wrap($viewport)
-    //      .its('length')
-    //      .should('be.eq', 1);
-    //  })
-    cy.reload();
-    cy.waitDicomImage();
+    cy.get('@layoutBtn').click();
+    cy.get('tbody > :nth-child(1) > :nth-child(1)').click();
+    cy.get('.viewport-container').then($viewport => {
+      cy.wrap($viewport)
+        .its('length')
+        .should('be.eq', 1);
+    });
   });
 
   it('checks if Clear tool will delete all measurements added in the viewport', () => {
@@ -432,10 +426,12 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn').click();
+    cy.get('@measurementsPanel').should('be.visible');
     cy.get('.measurementItem')
       .its('length')
       .should('be.eq', 2);
     cy.get('@measurementsBtn').click();
+    cy.get('@measurementsPanel').should('not.be.enabled');
 
     //Click More button
     cy.get('@moreBtn').click();

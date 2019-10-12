@@ -6,7 +6,6 @@ describe('OHIF Study Viewer Page', () => {
 
   beforeEach(() => {
     cy.initCommonElementsAliases();
-    //Following best practices, reset should be done before each test
     cy.resetViewport();
   });
 
@@ -62,8 +61,11 @@ describe('OHIF Study Viewer Page', () => {
     // Confirm Selection
     cy.get('.checkIconWrapper').click();
 
-    //Verify if 'Bone' label was added
+    // Verify if 'Bone' label was added
     cy.get('.measurementLocation').should('contain.text', 'Bone');
+    // Close panel
+    cy.get('@measurementsBtn').click();
+    cy.get('@measurementsPanel').should('not.be.enabled');
   });
 
   //TO-DO: Test case will fail due to issue #1013: https://github.com/OHIF/Viewers/issues/1013
@@ -89,5 +91,23 @@ describe('OHIF Study Viewer Page', () => {
   //   //Verify if descriptionText was added
   //   cy.get('.measurementLocation')
   //     .should('contain.text', descriptionText);
+  // });
+
+  // it('checks if measurement item can be deleted through the context menu on the viewport', () => {
+  //   cy.addLengthMeasurement(); //Adding measurement in the viewport
+
+  //   //Erase measurement #2 and Verify if it was removed from the measurements panel
+  //   const [x1, y1] = [150, 100];
+  //   cy.get('@viewport')
+  //     //.click(x1, y1, { force: true })
+  //     //.trigger('mousemove', { clientX: x1, clientY: y1 })
+  //     //.trigger('mousedown', { which: 3, clientX: x1, clientY: y1 });
+  //     // .first()
+  //     // .invoke('trigger', 'contextmenu');
+
+  //   // cy.wrap('@viewport').then(($viewport) => {
+  //   //   $viewport.contextmenu();
+  //   // })
+  //   //cy.get('.measurementItem').should('not.exist');
   // });
 });
