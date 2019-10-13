@@ -368,7 +368,7 @@ workflows:
             - 'E2E: PWA'
       # Update hub.docker.org
       - DOCKER_PR_PUBLISH:
-          context: 'Docker Hub'
+          context: test
           requires:
             - AWAIT_APPROVAL
 
