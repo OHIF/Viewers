@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'react-bootstrap-modal';
+import detect from 'browser-detect';
 import './AboutModal.styl';
 
 import 'react-bootstrap-modal/lib/css/rbm-patch.css';
@@ -18,14 +19,37 @@ export class AboutModal extends Component {
     onCancel: PropTypes.func,
   };
 
+  static capitalize = s =>
+    s.substr(0, 1).toUpperCase() + s.substr(1).toLowerCase();
+
+  static browser = detect();
+
   static itemsPreset = [
     {
       name: 'Repository URL',
       value: 'https://github.com/OHIF/Viewers/',
+      link: 'https://github.com/OHIF/Viewers/',
     },
     {
       name: 'Latest Master Commits',
       value: 'https://github.com/OHIF/Viewers/commits/master',
+      link: 'https://github.com/OHIF/Viewers/commits/master',
+    },
+    {
+      name: 'Version Number',
+      value: process.env.VERSION_NUMBER,
+    },
+    {
+      name: 'Build Number',
+      value: process.env.BUILD_NUMBER,
+    },
+    {
+      name: 'Browser',
+      value: `${this.capitalize(this.browser.name)} ${this.browser.version}`,
+    },
+    {
+      name: 'OS',
+      value: this.browser.os,
     },
   ];
 
@@ -38,9 +62,13 @@ export class AboutModal extends Component {
       <tr key={item.name}>
         <td>{item.name}</td>
         <td>
-          <a target="_blank" href={item.value}>
-            {item.value}
-          </a>
+          {item.link && (
+            <a target="_blank" href={item.link}>
+              {item.value}
+            </a>
+          )}
+
+          {!item.link && item.value}
         </td>
       </tr>
     );
@@ -69,6 +97,7 @@ export class AboutModal extends Component {
             >
               Visit the forum
             </a>
+            {` `}
             <a
               className="btn btn-default"
               target="_blank"
@@ -76,6 +105,7 @@ export class AboutModal extends Component {
             >
               Report an issue
             </a>
+            {` `}
             <a
               className="btn btn-default"
               target="_blank"

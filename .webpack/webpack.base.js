@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const PACKAGE = require('../platform/viewer/package.json');
 // ~~ RULES
 const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
@@ -68,6 +69,8 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
         'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
+        'process.env.VERSION_NUMBER': JSON.stringify(PACKAGE.version || ''),
+        'process.env.BUILD_NUMBER': JSON.stringify('0'), // TODO: GET BUILD NUMBER,
       }),
     ],
     // Fix: https://github.com/webpack-contrib/css-loader/issues/447#issuecomment-285598881
