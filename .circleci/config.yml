@@ -27,7 +27,8 @@ jobs:
     <<: *defaults
     steps:
       # Update yarn
-      - run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
+      - run: yarn -v
+      #- run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
 
       # Enable yarn workspaces
       - run: yarn config set workspaces-experimental true
@@ -46,7 +47,7 @@ jobs:
 
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
+          command: yarn install --frozen-lockfile --verbose
 
       - save_cache:
           name: Save Yarn Package Cache
@@ -91,7 +92,7 @@ jobs:
     <<: *defaults
     steps:
       # Update yarn
-      - run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
+      #- run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
 
       # Enable yarn workspaces
       - run: yarn config set workspaces-experimental true
@@ -110,7 +111,7 @@ jobs:
 
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
+          command: yarn install --frozen-lockfile --verbose
 
       - save_cache:
           name: Save Yarn Package Cache
