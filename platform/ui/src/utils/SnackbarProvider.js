@@ -1,6 +1,6 @@
 import React, { useState, createContext, useContext } from 'react';
-import SnackbarContainer from '../../../ui/src/components/snackbar/SnackbarContainer';
-import SnackbarTypes from '../../../ui/src/components/snackbar/SnackbarTypes';
+import SnackbarContainer from '../components/snackbar/SnackbarContainer';
+import SnackbarTypes from '../components/snackbar/SnackbarTypes';
 
 const SnackbarContext = createContext(null);
 

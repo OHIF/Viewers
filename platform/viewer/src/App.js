@@ -27,12 +27,12 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import store from './store';
+import { SnackbarProvider } from '@ohif/ui';
 
 // Contexts
 import WhiteLabellingContext from './context/WhiteLabellingContext';
 import UserManagerContext from './context/UserManagerContext';
 import AppContext from './context/AppContext';
-import SnackbarProvider from './context/SnackbarContext';
 
 // ~~~~ APP SETUP
 const commandsManagerConfig = {
