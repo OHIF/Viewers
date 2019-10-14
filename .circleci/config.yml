@@ -27,8 +27,7 @@ jobs:
     <<: *defaults
     steps:
       # Update yarn
-      - run: yarn -v
-      #- run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
+      - run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
 
       # Enable yarn workspaces
       - run: yarn config set workspaces-experimental true
@@ -92,7 +91,7 @@ jobs:
     <<: *defaults
     steps:
       # Update yarn
-      #- run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
+      - run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
 
       # Enable yarn workspaces
       - run: yarn config set workspaces-experimental true
