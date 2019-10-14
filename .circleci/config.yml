@@ -59,6 +59,8 @@ jobs:
       - run:
           name: 'JavaScript Test Suite'
           command: yarn run test:unit:ci
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
 
       # PLATFORM/VIEWER
       - run:

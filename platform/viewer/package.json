@@ -31,7 +31,7 @@
     "test:e2e:dist": "start-server-and-test test:e2e:serve http://localhost:3000 test:e2e:ci",
     "test:e2e:serve": "serve -n -l 3000 -s dist",
     "test:unit": "jest --watchAll",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --reporters=default --reporters=jest-junit",
     "prepublishOnly": "yarn run build:package",
     "postpublish": "node -p -e \"require('./package.json').version\" > success_version.txt"
   },
@@ -88,6 +88,7 @@
     "cypress": "^3.3.1",
     "gh-pages": "2.0.1",
     "identity-obj-proxy": "3.0.x",
+    "jest-junit": "^8.0.0",
     "lodash": "4.17.11",
     "lodash.clonedeep": "4.5.0"
   }
