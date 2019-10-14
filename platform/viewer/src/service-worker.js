@@ -3,9 +3,6 @@ importScripts(
   'https://storage.googleapis.com/workbox-cdn/releases/5.0.0-beta.1/workbox-sw.js'
 );
 
-// workbox.core.skipWaiting();
-workbox.core.clientsClaim();
-
 // Cache static assets that aren't precached
 workbox.routing.registerRoute(
   /\.(?:js|css)$/,
@@ -54,6 +51,7 @@ self.addEventListener('message', event => {
     switch (event.data.type) {
       case 'SKIP_WAITING':
         workbox.core.skipWaiting();
+        workbox.core.clientsClaim();
         break;
 
       default:
