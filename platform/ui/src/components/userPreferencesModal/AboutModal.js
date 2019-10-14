@@ -62,13 +62,13 @@ export class AboutModal extends Component {
       <tr key={item.name}>
         <td>{item.name}</td>
         <td>
-          {item.link && (
+          {item.link ? (
             <a target="_blank" href={item.link}>
               {item.value}
             </a>
+          ) : (
+            item.value
           )}
-
-          {!item.link && item.value}
         </td>
       </tr>
     );
