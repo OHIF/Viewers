@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- prettier-ignore-start -->
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -13,6 +12,9 @@
     <!-- Built with: https://polyfill.io/v3/url-builder/ -->
     <!-- Targets IE11 -->
     <script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CObject.values%2CArray.prototype.flat%2CObject.entries%2CSymbol%2CArray.prototype.includes%2CString.prototype.repeat%2CArray.prototype.find"></script>
+    <script type="text/javascript">
+      window.PUBLIC_URL = '<%= PUBLIC_URL %>';
+    </script>
     <script
       type="text/javascript"
       src="<%= PUBLIC_URL %>app-config.js"
@@ -21,7 +23,6 @@
       type="module"
       src="<%= PUBLIC_URL %>init-service-worker.js"
     ></script>
-    <!-- prettier-ignore-end -->
 
     <title>OHIF Viewer</title>
 
