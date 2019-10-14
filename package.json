@@ -13,7 +13,6 @@
   "scripts": {
     "cm": "npx git-cz",
     "build": "lerna run build:viewer --stream",
-    "build:e2e": "lerna run build:viewer:e2e --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package": "lerna run build:viewer:package --stream",
@@ -28,6 +27,7 @@
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
     "test:e2e": "lerna run test:e2e --stream",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
+    "test:e2e:serve": "lerna run test:e2e:serve --stream",
     "see-changed": "lerna changed",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "release": "yarn run lerna:version && yarn run lerna:publish",

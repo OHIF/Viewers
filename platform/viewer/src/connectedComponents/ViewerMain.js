@@ -1,7 +1,7 @@
 import './ViewerMain.css';
 
 import { Component } from 'react';
-import ConnectedLayoutManager from './ConnectedLayoutManager.js';
+import { ConnectedViewportGrid } from './../components/ViewportGrid/index.js';
 import ConnectedToolContextMenu from './ConnectedToolContextMenu.js';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -124,11 +124,15 @@ class ViewerMain extends Component {
     return viewportData;
   };
 
-  setViewportData = ({ viewportIndex, item }) => {
+  setViewportData = ({
+    viewportIndex,
+    studyInstanceUid,
+    displaySetInstanceUid,
+  }) => {
     const displaySet = this.findDisplaySet(
       this.props.studies,
-      item.studyInstanceUid,
-      item.displaySetInstanceUid
+      studyInstanceUid,
+      displaySetInstanceUid
     );
 
     this.props.setViewportSpecificData(viewportIndex, displaySet);
@@ -138,14 +142,14 @@ class ViewerMain extends Component {
     return (
       <div className="ViewerMain">
         {this.state.displaySets.length && (
-          <ConnectedLayoutManager
+          <ConnectedViewportGrid
             studies={this.props.studies}
             viewportData={this.getViewportData()}
             setViewportData={this.setViewportData}
           >
             {/* Children to add to each viewport that support children */}
             <ConnectedToolContextMenu />
-          </ConnectedLayoutManager>
+          </ConnectedViewportGrid>
         )}
       </div>
     );
