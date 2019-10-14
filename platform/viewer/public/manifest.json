@@ -1,8 +1,21 @@
 {
-  "short_name": "react-cornerstone-viewport",
-  "name": "react-cornerstone-viewport",
+  "short_name": "Viewer",
+  "name": "OHIF Viewer",
+  "icons": [
+    {
+      "src": "assets/icons-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "assets/icons-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
   "start_url": "./index.html",
+  "background_color": "#000000",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "scope": "",
+  "theme_color": "#20a5d6"
 }
