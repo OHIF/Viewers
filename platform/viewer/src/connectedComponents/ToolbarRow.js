@@ -14,7 +14,6 @@ import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 import { MODULE_TYPES } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
-import ConnectedExitPluginSwitch from './ConnectedExitPluginSwitch';
 
 class ToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
@@ -44,7 +43,6 @@ class ToolbarRow extends Component {
       toolbarButtons: toolbarButtonDefinitions,
       activeButtons: [],
       isCineDialogOpen: false,
-      isPlugSwitchOn: false
     };
 
     this._handleBuiltIn = _handleBuiltIn.bind(this);
@@ -98,10 +96,6 @@ class ToolbarRow extends Component {
     }
   }
 
-  togglePlugSwitchStatus = () => {
-    this.setState(prevState => ({isPlugSwitchOn: !prevState.isPlugSwitchOn}))
-  };
-
   render() {
     const buttonComponents = _getButtonComponents.call(
       this,
@@ -134,15 +128,7 @@ class ToolbarRow extends Component {
           </div>
           {buttonComponents}
           <ConnectedLayoutButton />
-          {this.state.isPlugSwitchOn ?
-            <ConnectedExitPluginSwitch
-              togglePlugSwitchStatus={this.togglePlugSwitchStatus}
-            />
-            :
-            <ConnectedPluginSwitch
-              togglePlugSwitchStatus={this.togglePlugSwitchStatus}
-            />
-          }
+          <ConnectedPluginSwitch/>
           <div
             className="pull-right m-t-1 rm-x-1"
             style={{ marginLeft: 'auto' }}

@@ -1,9 +1,16 @@
-// import OHIF from '@ohif/core';
+import OHIF from '@ohif/core';
+import React from 'react';
 import PluginSwitch from './PluginSwitch.js';
 import { commandsManager } from './../App.js';
 import { connect } from 'react-redux';
 
-// const { setLayout } = OHIF.redux.actions;
+const { setLayout } = OHIF.redux.actions;
+
+const ConnectedPluginSwitch = (props) => {
+  return (
+    <PluginSwitch {...props} />
+  )
+};
 
 const mapStateToProps = state => {
   const { activeViewportIndex, layout, viewportSpecificData } = state.viewports;
@@ -15,13 +22,13 @@ const mapStateToProps = state => {
   };
 };
 
-// const mapDispatchToProps = dispatch => {
-//   return {
-//     setLayout: data => {
-//       dispatch(setLayout(data));
-//     }
-//   };
-// };
+const mapDispatchToProps = dispatch => {
+  return {
+    setLayout: data => {
+      dispatch(setLayout(data));
+    }
+  };
+};
 
 /*function setSingleLayoutData(originalArray, viewportIndex, data) {
   const viewports = originalArray.slice();
@@ -34,24 +41,32 @@ const mapStateToProps = state => {
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   //const { activeViewportIndex, layout } = propsFromState;
-  //const { setLayout } = propsFromDispatch;
-  const { togglePlugSwitchStatus } = ownProps;
+  const { setLayout } = propsFromDispatch;
 
   // TODO: Do not display certain options if the current display set
   // cannot be displayed using these view types
   const mpr = () => {
         commandsManager.runCommand("mpr2d");
-        togglePlugSwitchStatus();
   };
+
+  const exitMpr = () => {
+    const layout = {
+      numRows: 1,
+      numColumns: 1,
+      viewports: [{ plugin: 'cornerstone' }],
+    };
+
+    setLayout(layout);
+  };
+
   return {
     mpr,
+    exitMpr
   };
 };
 
-const ConnectedPluginSwitch = connect(
+export default connect(
   mapStateToProps,
-  null, // mapDispatchToProps
+  mapDispatchToProps,
   mergeProps
-)(PluginSwitch);
-
-export default ConnectedPluginSwitch;
+)(ConnectedPluginSwitch);
