@@ -206,7 +206,119 @@ class Viewer extends Component {
       const patientId = studies[0] && studies[0].patientId;
       const currentTimepointId = this.currentTimepointId;
 
+      // Translate presentation state information into measurement/tool state
+      studies.forEach((study) => {
+      study.seriesList.forEach((series) => {
+        if (series.modality != "PR") {
+          return;
+        }
+
+        series.instances.forEach((instance) => {
+          instance.layers.forEach((layer) => {
+            layer.graphics.forEach((graphics) => {
+              layer.instanceUids.forEach((refInstUid) => {
+                var measFunc = () => { return {
+                    "_id": instance.sopInstanceUid,
+                    "color": "#2ba6d4", // TODO this should come from 0070,0067 if present
+                    "active": true,
+                    "visible": true,
+
+                    "imagePath": study.studyInstanceUid+"_"+instance.referencedSeries+"_"+refInstUid+"_0",
+                    "patientId": study.patientId,
+                    "seriesInstanceUid": instance.referencedSeries,
+                    "sopInstanceUid": refInstUid,
+                    "studyInstanceUid": study.studyInstanceUid,
+
+                    // Invalidating this right away so that the area and
+                    //  length is calculated by the viewer.
+                    "invalidated": true,
+                    "length": 0,
+                    "timepointId": "TimepointId",
+                    "unit": "",
+
+                    "userId": "",
+
+                    "cachedStats": {
+                      "area": 0,
+                      "max": 0,
+                      "mean": 0,
+                      "min": 0,
+                      "stdDev": 0,
+                      "variance": 0
+                    },
+
+                    "frameIndex": 0,
+                    "handles": {
+                      "initialRotation": 0,
+                      "textBox": {
+                        "active": false,
+                        "allowedOutsideImage": true,
+                        "boundingBox": {
+                          "height": 0,
+                          "left": 0,
+                          "top": 0,
+                          "width": 0
+                        },
+                        "drawnIndependently": true,
+                        "hasBoundingBox": true,
+                        "hasMoved": false,
+                        "movesIndependently": false,
+                        "x": 0,
+                        "y": 0
+                      }
+                    }
+                  };
+                };
+
+                // TODO rectangles, ellipses, points, text, freehand
+                if (graphics.type == "POLYLINE" && graphics.points.length == 4) {
+                  var m = measFunc();
+                  m.toolType = "Length";
+                  m.handles.start = {
+                    "active": false,
+                    "highlight": true,
+                    "x": graphics.points[0],
+                    "y": graphics.points[1]
+                  };
+                  m.handles.end = {
+                    "active": false,
+                    "highlight": true,
+                    "x": graphics.points[2],
+                    "y": graphics.points[3]
+                  };
+                  this.measurementApi.addMeasurement("Length", m);
+                } else if (graphics.type == "CIRCLE") {
+                  var m = measFunc();
+                  m.toolType = "CircleRoi";
+                  m.handles.start = {
+                    "active": false,
+                    "highlight": true,
+                    "x": graphics.points[0],
+                    "y": graphics.points[1]
+                  };
+                  m.handles.end = {
+                    "active": false,
+                    "highlight": true,
+                    "x": graphics.points[2],
+                    "y": graphics.points[3]
+                  };
+                  this.measurementApi.addMeasurement("CircleRoi", m);
+                }
+              });
+            });
+          });
+        });
+      });
+      });
+
       this.timepointApi.retrieveTimepoints({ patientId });
+
+      // Synchronize the new tool data
+      this.measurementApi.syncMeasurementsAndToolData();
+
+      // Let others know that the measurements are updated
+      this.measurementApi.onMeasurementsUpdated();
+
       this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
 
       this.setState({

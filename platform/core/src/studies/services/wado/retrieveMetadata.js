@@ -395,6 +395,72 @@ async function makeSOPInstance(server, study, instance) {
     }
   }
 
+  // Referenced series (Presentation States, such as GSPS, and Structured Reports)
+  const refSeriesSeq = DICOMWeb.getSequence(instance['00081115'], []);
+  refSeriesSeq.forEach((ref) => {
+    DICOMWeb.getSequence(ref['00081140'], []).forEach((inst) => {
+      const refInstance = DICOMWeb.getString(inst['00081155']);
+      if (refInstance) {
+        if (!sopInstance.referencedInstances) {
+          sopInstance.referencedInstances = [];
+        }
+
+        sopInstance.referencedInstances.push(refInstance);
+      }
+    });
+
+    const refSeries = DICOMWeb.getString(ref['0020000E']);
+    if (refSeries) {
+      if (!sopInstance.referencedSeries) {
+        sopInstance.referencedSeries = [];
+      }
+
+      sopInstance.referencedSeries = refSeries;
+    }
+  });
+
+  // GSPS (Grey Scale Soft-copy Presentation State) data
+  DICOMWeb.getSequence(instance['00700001'], []).forEach((layer) => {
+    const layerName = DICOMWeb.getString(layer['00700002']);
+    const instanceUids = [];
+    DICOMWeb.getSequence(layer['00081140'], []).forEach((instRef) => {
+      const instUid = DICOMWeb.getString(instRef['00081155']);
+      if (instUid) {
+        instanceUids.push(instUid);
+      }
+    });
+
+    // Skipping text object sequences since viewer has no
+    //  text tool.
+
+    const graphics = [];
+    DICOMWeb.getSequence(layer['00700009']).forEach((g) => {
+       if (DICOMWeb.getString(g['00700005']) != "PIXEL") {
+         // Only PIXEL coordinates are supported (not FRACTION)
+         return;
+       }
+       if (DICOMWeb.getString(g['00700024']) != "N") {
+         // There's no support for filled shapes in the viewer
+         return;
+       }
+
+       const type = DICOMWeb.getString(g['00700023']);
+       // No support for interpolated curve-lined support in the viewer
+       if (!['POINT', 'POLYLINE', /*'INTERPOLATED',*/ 'CIRCLE', 'ELLIPSE'].includes(type)) {
+         return;
+       }
+       const points = DICOMWeb.getNumbers(g['00700022']);
+
+       graphics.push({type, points});
+    });
+
+    if (!sopInstance.layers) {
+      sopInstance.layers = [];
+    }
+
+    sopInstance.layers.push({layerName, instanceUids, graphics});
+  });
+
   series.instances.push(sopInstance);
   return sopInstance;
 }
