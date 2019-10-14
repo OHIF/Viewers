@@ -36,37 +36,37 @@ function getPaginationFragment(
   );
 }
 
-function getTableMeta(props) {
+function getTableMeta(translate) {
   return {
     patientName: {
-      displayText: props.t('PatientName'),
+      displayText: translate('PatientName'),
       sort: 0,
     },
     patientId: {
-      displayText: props.t('MRN'),
+      displayText: translate('MRN'),
       sort: 0,
     },
     accessionNumber: {
-      displayText: props.t('AccessionNumber'),
+      displayText: translate('AccessionNumber'),
       sort: 0,
     },
     studyDate: {
-      displayText: props.t('StudyDate'),
+      displayText: translate('StudyDate'),
       inputType: 'date-range',
       sort: 0,
     },
     modalities: {
-      displayText: props.t('Modality'),
+      displayText: translate('Modality'),
       sort: 0,
     },
     studyDescription: {
-      displayText: props.t('StudyDescription'),
+      displayText: translate('StudyDescription'),
       sort: 0,
     },
   };
 }
 
-function getNoListFragment(studies, error, loading) {
+function getNoListFragment(translate, studies, error, loading) {
   if (loading) {
     return (
       <div className="loading">
@@ -74,9 +74,13 @@ function getNoListFragment(studies, error, loading) {
       </div>
     );
   } else if (error) {
-    return <div className="notFound">There was an error fetching studies</div>;
+    return (
+      <div className="notFound">
+        {translate('There was an error fetching studies')}
+      </div>
+    );
   } else if (!studies.length) {
-    return <div className="notFound">No matching results</div>;
+    return <div className="notFound">{translate('No matching results')}</div>;
   }
 }
 
@@ -313,7 +317,7 @@ class StudyList extends Component {
   }
 
   render() {
-    const tableMeta = getTableMeta(this.props);
+    const tableMeta = getTableMeta(this.props.t);
 
     // Apply sort
     const sortedFieldName = this.state.searchData.sortData.field;
@@ -327,6 +331,7 @@ class StudyList extends Component {
     // Sort Icons
     const sortIcons = ['sort', 'sort-up', 'sort-down'];
     const noListFragment = getNoListFragment(
+      this.props.t,
       this.props.studies,
       this.state.error,
       this.props.loading
