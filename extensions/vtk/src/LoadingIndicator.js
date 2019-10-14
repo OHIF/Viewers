@@ -35,7 +35,8 @@ class LoadingIndicator extends PureComponent {
           <div className="imageViewerLoadingIndicator loadingIndicator">
             <div className="indicatorContents">
               <p>
-                Loading... <i className="fa fa-spin fa-circle-o-notch fa-fw" />{' '}
+                Reformatting...{' '}
+                <i className="fa fa-spin fa-circle-o-notch fa-fw" />{' '}
                 {percComplete}
               </p>
             </div>

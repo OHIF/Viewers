@@ -3,7 +3,7 @@
 }
 
 .loadingIndicator {
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0);
   font-size: 18px;
   height: 100%;
   overflow: hidden;

@@ -311,6 +311,7 @@ const actions = {
           istyle.setViewUp(0, -1, 0);
 
           break;
+
         case 1:
           // sagittal
           istyle.setSliceNormal(1, 0, 0);

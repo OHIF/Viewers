@@ -172,13 +172,23 @@ class OHIFVTKViewport extends Component {
       default:
         imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid);
 
-        const loadImageDataPromise = loadImageData(imageDataObject);
+        //this.imageDataObject = imageDataObject;
 
+        loadImageData(imageDataObject);
+
+        this.imageDataObject = imageDataObject;
+
+        return {
+          data: imageDataObject.vtkImageData,
+        };
+
+      /*
         return loadImageDataPromise.then(() => {
           return {
             data: imageDataObject.vtkImageData,
           };
         });
+        */
     }
   };
 
@@ -221,7 +231,7 @@ class OHIFVTKViewport extends Component {
     return volumeActor;
   }
 
-  async setStateFromProps() {
+  setStateFromProps() {
     const { studies, displaySet } = this.props.viewportData;
     const {
       studyInstanceUid,
@@ -239,7 +249,7 @@ class OHIFVTKViewport extends Component {
 
     const sopClassUid = sopClassUids[0];
 
-    let { data, labelmap } = await this.getViewportData(
+    let { data, labelmap } = this.getViewportData(
       studies,
       studyInstanceUid,
       displaySetInstanceUid,
@@ -285,6 +295,46 @@ class OHIFVTKViewport extends Component {
     }
   }
 
+  onCreated(api) {
+    console.log(this.props.viewportIndex);
+
+    const {
+      isLoading,
+      insertPixelDataPromises,
+      vtkImageData,
+    } = this.imageDataObject;
+
+    const numberOfFrames = insertPixelDataPromises.length;
+    let numberProcessed = 0;
+
+    const rerenderFraction = numberOfFrames / 5;
+    let reRenderTarget = rerenderFraction;
+
+    // TODO -> Just do this higher up, call when loadImageData is first
+    // called and then do this once after all apis are made.
+    if (isLoading && this.props.viewportIndex === 0) {
+      insertPixelDataPromises.forEach(promise => {
+        promise.then(() => {
+          console.log('insertPixelData');
+          //throttledRender();
+
+          numberProcessed++;
+
+          if (numberProcessed > reRenderTarget) {
+            reRenderTarget += rerenderFraction;
+            vtkImageData.modified();
+          }
+        });
+      });
+    }
+
+    if (isLoading) {
+      Promise.all(insertPixelDataPromises).then(() => {
+        this.setState({ isLoaded: true });
+      });
+    }
+  }
+
   render() {
     let childrenWithProps = null;
 
@@ -300,23 +350,26 @@ class OHIFVTKViewport extends Component {
 
     const style = { width: '100%', height: '100%', position: 'relative' };
 
+    console.log('isLoaded: ' + this.state.isLoaded);
+
     return (
       <>
-        {this.state.volumes ? (
-          <ConnectedVTKViewport
-            volumes={this.state.volumes}
-            paintFilterLabelMapImageData={
-              this.state.paintFilterLabelMapImageData
-            }
-            paintFilterBackgroundImageData={
-              this.state.paintFilterBackgroundImageData
-            }
-            viewportIndex={this.props.viewportIndex}
-          />
-        ) : (
-          <div style={style}>
-            <LoadingIndicator />
-          </div>
+        <div style={style}>
+          {!this.state.isLoaded && <LoadingIndicator />}
+          {this.state.volumes && (
+            <ConnectedVTKViewport
+              volumes={this.state.volumes}
+              paintFilterLabelMapImageData={
+                this.state.paintFilterLabelMapImageData
+              }
+              paintFilterBackgroundImageData={
+                this.state.paintFilterBackgroundImageData
+              }
+              viewportIndex={this.props.viewportIndex}
+              onCreated={this.onCreated.bind(this)}
+            />
+          )}
+        </div>
         )}
         {childrenWithProps}
       </>
