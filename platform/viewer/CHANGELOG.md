@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.7.0...@ohif/viewer@1.8.0) (2019-10-14)
+
+
+### Features
+
+* Notification Service ([#1011](https://github.com/OHIF/Viewers/issues/1011)) ([92c8996](https://github.com/OHIF/Viewers/commit/92c8996))
+
+
+
+
+
 # [1.7.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.6.3...@ohif/viewer@1.7.0) (2019-10-14)
 
 
