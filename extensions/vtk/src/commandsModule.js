@@ -252,6 +252,7 @@ const actions = {
     });
   },
   mpr2d: async ({ viewports }) => {
+    // TODO push a lot of this backdoor logic lower down to the library level.
     const displaySet =
       viewports.viewportSpecificData[viewports.activeViewportIndex];
 
@@ -268,11 +269,33 @@ const actions = {
       .getProperty()
       .getRGBTransferFunction(0);
 
+    /*
+    const cornerstoneElement = cornerstone.getEnabledElement(displaySet.dom);
+
+    if (cornerstoneElement) {
+      const { windowWidth, windowCenter } = cornerstoneElement.viewport.voi;
+      const lower = windowCenter - windowWidth / 2.0;
+      const upper = windowCenter + windowWidth / 2.0;
+
+      rgbTransferFunction.setRange(lower, upper);
+
+      apiByViewport.forEach(api => {
+        api.updateVOI(windowWidth, windowCenter);
+      });
+    }
+    */
+
     const onModifiedSubscription = rgbTransferFunction.onModified(() => {
-      apiByViewport.forEach(a => {
-        const renderWindow = a.genericRenderWindow.getRenderWindow();
+      const range = rgbTransferFunction.getMappingRange();
+      const windowWidth = Math.abs(range[1] - range[0]);
+      const windowCenter = range[0] + windowWidth / 2;
+
+      apiByViewport.forEach(api => {
+        const renderWindow = api.genericRenderWindow.getRenderWindow();
 
         renderWindow.render();
+
+        api.updateVOI(windowWidth, windowCenter);
       });
     });
 

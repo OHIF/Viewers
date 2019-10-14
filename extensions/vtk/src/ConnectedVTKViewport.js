@@ -44,7 +44,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   const { afterCreation } = propsFromState;
-  const onCreatedFromProps = ownProps.onCreated;
 
   const props = {
     ...propsFromState,
@@ -63,10 +62,6 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
     onCreated: api => {
       // Store the API details for later
       //setViewportSpecificData({ vtkApi: api });
-
-      if (onCreatedFromProps && typeof onCreatedFromProps === 'function') {
-        onCreatedFromProps(api);
-      }
 
       if (afterCreation && typeof afterCreation === 'function') {
         afterCreation(api);

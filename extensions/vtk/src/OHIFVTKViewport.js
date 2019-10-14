@@ -172,53 +172,49 @@ class OHIFVTKViewport extends Component {
       default:
         imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid);
 
-        //this.imageDataObject = imageDataObject;
-
         loadImageData(imageDataObject);
 
-        this.imageDataObject = imageDataObject;
-
-        return {
-          data: imageDataObject.vtkImageData,
-        };
-
-      /*
-        return loadImageDataPromise.then(() => {
-          return {
-            data: imageDataObject.vtkImageData,
-          };
-        });
-        */
+        return imageDataObject;
     }
   };
 
-  getOrCreateVolume(data, displaySetInstanceUid) {
+  getOrCreateVolume(imageDataObject, displaySetInstanceUid) {
     if (volumeCache[displaySetInstanceUid]) {
       return volumeCache[displaySetInstanceUid];
+    }
+
+    const { vtkImageData, imageMetaData0 } = imageDataObject;
+
+    const { windowWidth, windowCenter, modality } = imageMetaData0;
+
+    let lower;
+    let upper;
+
+    if (modality === 'PT') {
+      // For PET just set the range to 0-5 SUV
+      lower = 0;
+      upper = 5;
+    } else {
+      lower = windowCenter - windowWidth / 2.0;
+      upper = windowCenter + windowWidth / 2.0;
     }
 
     const volumeActor = vtkVolume.newInstance();
     const volumeMapper = vtkVolumeMapper.newInstance();
 
     volumeActor.setMapper(volumeMapper);
-    volumeMapper.setInputData(data);
+    volumeMapper.setInputData(vtkImageData);
 
-    const range = data
-      .getPointData()
-      .getScalars()
-      .getRange();
-
-    // TODO: For PET we might want to just set this to 0-5 SUV
     volumeActor
       .getProperty()
       .getRGBTransferFunction(0)
-      .setRange(range[0], range[1]);
+      .setRange(lower, upper);
 
     // TODO: Should look into implementing autoAdjustSampleDistance in vtk
     const sampleDistance =
       1.2 *
       Math.sqrt(
-        data
+        vtkImageData
           .getSpacing()
           .map(v => v * v)
           .reduce((a, b) => a + b, 0)
@@ -249,7 +245,7 @@ class OHIFVTKViewport extends Component {
 
     const sopClassUid = sopClassUids[0];
 
-    let { data, labelmap } = this.getViewportData(
+    const imageDataObject = this.getViewportData(
       studies,
       studyInstanceUid,
       displaySetInstanceUid,
@@ -258,18 +254,24 @@ class OHIFVTKViewport extends Component {
       frameIndex
     );
 
+    this.imageDataObject = imageDataObject;
+    this.loadProgressively();
+
     // TODO: Temporarily disabling this since it is not yet
     // being used and hurts performance significantly.
     /*if (!labelmap) {
       labelmap = createLabelMapImageData(data);
     }*/
 
-    const volumeActor = this.getOrCreateVolume(data, displaySetInstanceUid);
+    const volumeActor = this.getOrCreateVolume(
+      imageDataObject,
+      displaySetInstanceUid
+    );
 
     this.setState({
       volumes: [volumeActor],
-      paintFilterBackgroundImageData: data,
-      paintFilterLabelMapImageData: labelmap,
+      paintFilterBackgroundImageData: imageDataObject.vtkImageData,
+      paintFilterLabelMapImageData: null, // TODO
     });
   }
 
@@ -295,9 +297,7 @@ class OHIFVTKViewport extends Component {
     }
   }
 
-  onCreated(api) {
-    console.log(this.props.viewportIndex);
-
+  loadProgressively() {
     const {
       isLoading,
       insertPixelDataPromises,
@@ -307,21 +307,29 @@ class OHIFVTKViewport extends Component {
     const numberOfFrames = insertPixelDataPromises.length;
     let numberProcessed = 0;
 
-    const rerenderFraction = numberOfFrames / 5;
-    let reRenderTarget = rerenderFraction;
+    const reRenderFraction = numberOfFrames / 5;
+    let reRenderTarget = reRenderFraction;
 
-    // TODO -> Just do this higher up, call when loadImageData is first
-    // called and then do this once after all apis are made.
-    if (isLoading && this.props.viewportIndex === 0) {
+    this.setState({ percentComplete: 0 });
+
+    if (isLoading) {
       insertPixelDataPromises.forEach(promise => {
         promise.then(() => {
-          console.log('insertPixelData');
-          //throttledRender();
-
           numberProcessed++;
 
-          if (numberProcessed > reRenderTarget) {
-            reRenderTarget += rerenderFraction;
+          this.setState({
+            percentComplete: Math.floor(
+              (numberProcessed * 100) / numberOfFrames
+            ),
+          });
+
+          // TODO -> Just do this higher up, call when loadImageData is first
+          // called and then do this once after all apis are made.
+          if (
+            this.props.viewportIndex === 0 &&
+            numberProcessed > reRenderTarget
+          ) {
+            reRenderTarget += reRenderFraction;
             vtkImageData.modified();
           }
         });
@@ -350,12 +358,12 @@ class OHIFVTKViewport extends Component {
 
     const style = { width: '100%', height: '100%', position: 'relative' };
 
-    console.log('isLoaded: ' + this.state.isLoaded);
-
     return (
       <>
         <div style={style}>
-          {!this.state.isLoaded && <LoadingIndicator />}
+          {!this.state.isLoaded && (
+            <LoadingIndicator percentComplete={this.state.percentComplete} />
+          )}
           {this.state.volumes && (
             <ConnectedVTKViewport
               volumes={this.state.volumes}
@@ -366,7 +374,6 @@ class OHIFVTKViewport extends Component {
                 this.state.paintFilterBackgroundImageData
               }
               viewportIndex={this.props.viewportIndex}
-              onCreated={this.onCreated.bind(this)}
             />
           )}
         </div>
