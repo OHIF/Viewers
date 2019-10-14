@@ -1,16 +1,19 @@
 import lib from 'query-string';
 
 const PARAM_SEPARATOR = ';';
+const PARAM_PATTERN_IDENTIFIER = ':';
 
 function toLowerCaseFirstLetter(word) {
   return word[0].toLowerCase() + word.slice(1);
 }
 const getFilters = (location = {}) => {
-  const {
-    search
-  } = location;
+  const { search } = location;
 
-  const searchParameters = lib.parse(search);
+  if (!search) {
+    return;
+  }
+
+  const searchParameters = parse(search);
   const filters = {};
 
   Object.entries(searchParameters).forEach(([key, value]) => {
@@ -18,24 +21,47 @@ const getFilters = (location = {}) => {
   });
 
   return filters;
-}
+};
 
-const parseParam = (paramStr) => {
-  if (paramStr && typeof paramStr === 'string') {
-    return paramStr.split(PARAM_SEPARATOR);
+const decode = (strToDecode = '') => {
+  try {
+    const decoded = window.atob(strToDecode);
+    return decoded;
+  } catch (e) {
+    return strToDecode;
   }
-}
+};
 
+const parse = toParse => {
+  if (toParse) {
+    return lib.parse(toParse);
+  }
+
+  return {};
+};
+const parseParam = paramStr => {
+  const _paramDecoded = decode(paramStr);
+  if (_paramDecoded && typeof _paramDecoded === 'string') {
+    return _paramDecoded.split(PARAM_SEPARATOR);
+  }
+};
+
+const replaceParam = (path = '', paramKey, paramValue) => {
+  const paramPattern = `${PARAM_PATTERN_IDENTIFIER}${paramKey}`;
+  if (paramValue) {
+    return path.replace(paramPattern, paramValue);
+  }
+
+  return path;
+};
 
 const queryString = {
-  getQueryFilters: getFilters
+  getQueryFilters: getFilters,
 };
 
 const paramString = {
-  parseParam: parseParam
+  parseParam: parseParam,
+  replaceParam: replaceParam,
 };
 
-export {
-  queryString,
-  paramString
-}
+export { parse, queryString, paramString };

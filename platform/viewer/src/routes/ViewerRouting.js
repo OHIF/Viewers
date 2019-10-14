@@ -4,17 +4,18 @@ import ConnectedViewerRetrieveStudyData from '../connectedComponents/ConnectedVi
 import useServer from '../customHooks/useServer';
 import OHIF from '@ohif/core';
 const { urlUtil: UrlUtil } = OHIF.utils;
+
 /**
  * Get array of seriesUIDs from param or from queryString
- * @param {*} seriesInstanceUids
+ * @param {*} seriesInstanceUIDs
  * @param {*} location
  */
-const getSeriesUIDS = (seriesInstanceUids, location) => {
-  const queryFilters = UrlUtil.queryString.getQueryFilters(location);
-  const querySeriesUIDs = queryFilters['seriesInstanceUid'];
-  const _seriesInstanceUids = seriesInstanceUids || querySeriesUIDs;
+const getSeriesInstanceUIDs = (seriesInstanceUIDs, routeLocation) => {
+  const queryFilters = UrlUtil.queryString.getQueryFilters(routeLocation);
+  const querySeriesUIDs = queryFilters && queryFilters['SeriesInstanceUID'];
+  const _seriesInstanceUIDs = seriesInstanceUIDs || querySeriesUIDs;
 
-  return UrlUtil.paramString.parseParam(_seriesInstanceUids);
+  return UrlUtil.paramString.parseParam(_seriesInstanceUIDs);
 };
 
 function ViewerRouting({ match: routeMatch, location: routeLocation }) {
@@ -22,15 +23,14 @@ function ViewerRouting({ match: routeMatch, location: routeLocation }) {
     project,
     location,
     dataset,
-    dicomstore,
+    dicomStore,
     studyInstanceUids,
     seriesInstanceUids,
   } = routeMatch.params;
-
-  const server = useServer({ project, location, dataset, dicomstore });
+  const server = useServer({ project, location, dataset, dicomStore });
 
   const studyUIDs = UrlUtil.paramString.parseParam(studyInstanceUids);
-  const seriesUIDs = getSeriesUIDS(seriesInstanceUids, routeLocation);
+  const seriesUIDs = getSeriesInstanceUIDs(seriesInstanceUids, routeLocation);
 
   if (server && studyUIDs) {
     return (
@@ -50,7 +50,7 @@ ViewerRouting.propTypes = {
       studyInstanceUids: PropTypes.string.isRequired,
       seriesInstanceUids: PropTypes.string,
       dataset: PropTypes.string,
-      dicomstore: PropTypes.string,
+      dicomStore: PropTypes.string,
       location: PropTypes.string,
       project: PropTypes.string,
     }),

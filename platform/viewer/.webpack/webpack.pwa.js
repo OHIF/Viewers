@@ -32,26 +32,10 @@ module.exports = (env, argv) => {
   const hasProxy = PROXY_TARGET && PROXY_DOMAIN;
 
   const mergedConfig = merge(baseConfig, {
-    devtool: isProdBuild ? 'source-map' : 'cheap-module-eval-source-map',
     output: {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
-    },
-    stats: {
-      colors: true,
-      hash: true,
-      timings: true,
-      assets: true,
-      chunks: false,
-      chunkModules: false,
-      modules: false,
-      children: false,
-      warnings: true,
-    },
-    optimization: {
-      minimize: isProdBuild,
-      sideEffects: true,
     },
     module: {
       rules: [...extractStyleChunksRule(isProdBuild)],
@@ -85,8 +69,8 @@ module.exports = (env, argv) => {
       ]),
       // https://github.com/faceyspacey/extract-css-chunks-webpack-plugin#webpack-4-standalone-installation
       new ExtractCssChunksPlugin({
-        filename: '[name].css',
-        chunkFilename: '[id].css',
+        filename: isProdBuild ? '[name].[hash].css' : '[name].css',
+        chunkFilename: isProdBuild ? '[id].[hash].css' : '[id].css',
         ignoreOrder: false, // Enable to remove warnings about conflicting order
       }),
       // Generate "index.html" w/ correct includes/imports
@@ -129,15 +113,6 @@ module.exports = (env, argv) => {
 
   if (!isProdBuild) {
     mergedConfig.plugins.push(new webpack.HotModuleReplacementPlugin());
-
-    //
-    mergedConfig.optimization.minimizer = [
-      new TerserJSPlugin({
-        sourceMap: true,
-        parallel: true,
-      }),
-      new OptimizeCSSAssetsPlugin({}),
-    ];
   }
 
   return mergedConfig;

@@ -1,6 +1,5 @@
 // https://github.com/maxmantz/redux-oidc/blob/master/docs/API.md
 import { loadUser, createUserManager } from 'redux-oidc';
-import { WebStorageStateStore, InMemoryWebStorage } from 'oidc-client';
 
 /**
  * Creates a userManager from oidcSettings;
@@ -21,17 +20,12 @@ export default function(store, oidcSettings) {
     return;
   }
 
-  // Do not store tokens in localStorage or sessionStorage
-  // https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/HTML5_Security_Cheat_Sheet.md#local-storage
-  const userStore = new WebStorageStateStore({ store: new InMemoryWebStorage() });
-
   const settings = {
     ...oidcSettings,
     automaticSilentRenew: true,
     revokeAccessTokenOnSignout: true,
     filterProtocolClaims: true,
     loadUserInfo: true,
-    userStore,
   };
 
   const userManager = createUserManager(settings);
