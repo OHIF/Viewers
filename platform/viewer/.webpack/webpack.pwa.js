@@ -1,3 +1,4 @@
+// https://developers.google.com/web/tools/workbox/guides/codelabs/webpack
 // ~~ WebPack
 const path = require('path');
 const merge = require('webpack-merge');
@@ -10,7 +11,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
+// const WorkboxPlugin = require('workbox-webpack-plugin');
+const { InjectManifest } = require('workbox-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 // ~~ Rules
@@ -82,10 +84,11 @@ module.exports = (env, argv) => {
         },
         // favicon: `${PUBLIC_DIR}/favicon.ico`,
       }),
-      new WorkboxPlugin.GenerateSW({
+      new InjectManifest({
         swDest: 'sw.js',
-        clientsClaim: true,
-        skipWaiting: true,
+        swSrc: path.join(SRC_DIR, 'service-worker.js'),
+        // Increase the limit to 4mb:
+        // maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
       }),
     ],
     // https://webpack.js.org/configuration/dev-server/
