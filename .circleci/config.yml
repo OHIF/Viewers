@@ -342,6 +342,8 @@ workflows:
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
+            - store_test_results:
+                path: cypress/results
           requires:
             - UNIT_TESTS
       # E2E: script-tag
@@ -365,6 +367,8 @@ workflows:
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
+            - store_test_results:
+                path: cypress/results
           requires:
             - UNIT_TESTS
 
