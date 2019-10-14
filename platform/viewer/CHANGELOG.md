@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.6.3...@ohif/viewer@1.7.0) (2019-10-14)
+
+
+### Features
+
+* Implement a 'Exit 2D MPR' button in the toolbar ([c99e0d8](https://github.com/OHIF/Viewers/commit/c99e0d8))
+
+
+
+
+
+## [1.6.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.6.2...@ohif/viewer@1.6.3) (2019-10-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [1.6.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.6.1...@ohif/viewer@1.6.2) (2019-10-11)
 
 **Note:** Version bump only for package @ohif/viewer
