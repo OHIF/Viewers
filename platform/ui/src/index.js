@@ -32,6 +32,10 @@ import { ScrollableArea } from './ScrollableArea/ScrollableArea.js';
 import Toolbar from './viewer/Toolbar.js';
 import ToolbarButton from './viewer/ToolbarButton.js';
 import ViewerbaseDragDropContext from './utils/viewerbaseDragDropContext.js';
+import SnackbarProvider, {
+  useSnackbarContext,
+  withSnackbar,
+} from './utils/SnackbarProvider';
 
 export {
   ICONS,
@@ -68,4 +72,7 @@ export {
   UserPreferences,
   UserPreferencesModal,
   ViewerbaseDragDropContext,
+  SnackbarProvider,
+  useSnackbarContext,
+  withSnackbar,
 };
