@@ -207,20 +207,21 @@ Cypress.Commands.add('initVTKToolsAliases', () => {
 });
 
 //Add measurements in the viewport
-Cypress.Commands.add('addLengthMeasurement', () => {
-  cy.initCornerstoneToolsAliases();
-  cy.get('@lengthBtn').click();
-  const firstClick = [150, 100];
-  const secondClick = [130, 170];
-  cy.addLine('.cornerstone-canvas', firstClick, secondClick);
-});
+Cypress.Commands.add(
+  'addLengthMeasurement',
+  (firstClick = [150, 100], secondClick = [130, 170]) => {
+    cy.initCornerstoneToolsAliases();
+    cy.get('@lengthBtn').click();
+    cy.addLine('@viewport', firstClick, secondClick);
+  }
+);
 
 //Add measurements in the viewport
-Cypress.Commands.add('addAngleMeasurement', () => {
-  cy.initCornerstoneToolsAliases();
-  cy.get('@angleBtn').click();
-  const initPos = [180, 390];
-  const midPos = [300, 410];
-  const finalPos = [180, 450];
-  cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
-});
+Cypress.Commands.add(
+  'addAngleMeasurement',
+  (initPos = [180, 390], midPos = [300, 410], finalPos = [180, 450]) => {
+    cy.initCornerstoneToolsAliases();
+    cy.get('@angleBtn').click();
+    cy.addAngle('@viewport', initPos, midPos, finalPos);
+  }
+);

@@ -147,7 +147,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Add annotation on the viewport
     const firstClick = [150, 100];
     const secondClick = [130, 170];
-    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
+    cy.addLine('@viewport', firstClick, secondClick);
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn')
@@ -175,7 +175,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     const initPos = [180, 390];
     const midPos = [300, 410];
     const finalPos = [180, 450];
-    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
+    cy.addAngle('@viewport', initPos, midPos, finalPos);
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn')
@@ -372,16 +372,8 @@ describe('OHIF Cornerstone Toolbar', () => {
 
   it('checks if Clear tool will delete all measurements added in the viewport', () => {
     //Add measurements in the viewport
-    cy.get('@lengthBtn').click();
-    const firstClick = [150, 100];
-    const secondClick = [130, 170];
-    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
-
-    cy.get('@angleBtn').click();
-    const initPos = [180, 390];
-    const midPos = [300, 410];
-    const finalPos = [180, 450];
-    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
+    cy.addLengthMeasurement();
+    cy.addAngleMeasurement();
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn').click();
@@ -413,16 +405,8 @@ describe('OHIF Cornerstone Toolbar', () => {
 
   it('checks if Eraser tool will remove the measurements added in the viewport', () => {
     //Add measurements in the viewport
-    cy.get('@lengthBtn').click();
-    const firstClick = [150, 100];
-    const secondClick = [130, 170];
-    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
-
-    cy.get('@angleBtn').click();
-    const initPos = [180, 390];
-    const midPos = [300, 410];
-    const finalPos = [180, 450];
-    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
+    cy.addLengthMeasurement();
+    cy.addAngleMeasurement();
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn').click();
@@ -439,14 +423,14 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('.tooltip-inner > :nth-child(12)').click();
 
     //Erase measurement #1 and Verify if it was removed from the measurements panel
-    const [x1, y1] = firstClick;
+    const [x1, y1] = [150, 100];
     cy.get('@viewport').click(x1, y1, { force: true });
     cy.get('.measurementItem')
       .its('length')
       .should('be.eq', 1);
 
     //Erase measurement #2 and Verify if it was removed from the measurements panel
-    const [x2, y2] = initPos;
+    const [x2, y2] = [180, 390];
     cy.get('@viewport').click(x2, y2, { force: true });
     cy.get('.measurementItem').should('not.exist');
   });
