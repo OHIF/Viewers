@@ -15079,7 +15079,7 @@ react-transition-group@^4.1.1:
     prop-types "^15.6.2"
 
 "react-vtkjs-viewport@file:extensions/vtk/.yalc/react-vtkjs-viewport":
-  version "0.0.12-f88853de"
+  version "0.0.12-47c51cf7"
   dependencies:
     date-fns "^2.2.1"
     gl-matrix "^3.1.0"
@@ -18557,8 +18557,10 @@ void-elements@^2.0.1:
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
   integrity sha1-wGavtYK7HLQSjWDqkjkulNXp2+w=
 
-"vtk.js@file:platform/viewer/.yalc/vtk.js":
-  version "0.0.0-semantically-release-0b4c8f91"
+vtk.js@^11.6.0:
+  version "11.6.0"
+  resolved "https://registry.yarnpkg.com/vtk.js/-/vtk.js-11.6.0.tgz#a30f95cfb138453890bd85f5bca88c53ed7c2775"
+  integrity sha512-emkpLZVsuaSPLrVsbaosdD5RQQmal4PPfVotDIWb58aBbswXYt4pliaY3EDFNW3nTsKPs9ttadM4f4n8fVWVbQ==
   dependencies:
     blueimp-md5 "2.10.0"
     commander "2.11.0"

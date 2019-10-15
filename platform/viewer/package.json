@@ -82,7 +82,7 @@
     "redux-oidc": "3.1.x",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "vtk.js": "file:.yalc/vtk.js"
+    "vtk.js": "^11.6.0"
   },
   "devDependencies": {
     "cypress": "^3.3.1",
