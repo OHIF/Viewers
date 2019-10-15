@@ -44,9 +44,6 @@ class PluginSwitch extends Component {
     const { label, icon } = this.state;
 
     // Render exit mpr if switched on, otherwise check if mpr button should be displayed.
-
-    debugger;
-
     const shouldRender =
       this.state.isPlugSwitchOn || _shouldRenderMpr2DButton.call(this);
 
