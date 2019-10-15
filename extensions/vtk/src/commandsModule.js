@@ -116,8 +116,6 @@ function _setView(api, sliceNormal, viewUp) {
 
 function switchMPRInteractors(api, istyle) {
   const renderWindow = api.genericRenderWindow.getRenderWindow();
-  const renderer = api.genericRenderWindow.getRenderer();
-  const camera = renderer.getActiveCamera();
   const currentIStyle = renderWindow.getInteractor().getInteractorStyle();
 
   let currentViewport;
@@ -131,10 +129,12 @@ function switchMPRInteractors(api, istyle) {
     defaultSlabThickness = currentSlabThickness;
   }
 
-  renderWindow.getInteractor().setInteractorStyle(istyle);
+  const interactor = renderWindow.getInteractor();
+
+  interactor.setInteractorStyle(istyle);
 
   // TODO: Not sure why this is required the second time this function is called
-  istyle.setInteractor(renderWindow.getInteractor());
+  istyle.setInteractor(interactor);
 
   if (currentViewport) {
     istyle.setViewport(currentViewport);
@@ -264,6 +264,29 @@ const actions = {
     const displaySet =
       viewports.viewportSpecificData[viewports.activeViewportIndex];
 
+    // TODO -> Clean this logic up a bit.
+    const cornerstoneElement = cornerstone.getEnabledElement(displaySet.dom);
+
+    let cornerstoneVOI;
+
+    if (cornerstoneElement) {
+      const imageId = cornerstoneElement.image.imageId;
+
+      const { modality } = cornerstone.metaData.get(
+        'generalSeriesModule',
+        imageId
+      );
+
+      if (modality !== 'PT') {
+        const { windowWidth, windowCenter } = cornerstoneElement.viewport.voi;
+
+        cornerstoneVOI = {
+          windowWidth,
+          windowCenter,
+        };
+      }
+    }
+
     let apiByViewport;
     try {
       apiByViewport = await setMPRLayout(displaySet);
@@ -277,11 +300,8 @@ const actions = {
       .getProperty()
       .getRGBTransferFunction(0);
 
-    /*
-    const cornerstoneElement = cornerstone.getEnabledElement(displaySet.dom);
-
-    if (cornerstoneElement) {
-      const { windowWidth, windowCenter } = cornerstoneElement.viewport.voi;
+    if (cornerstoneVOI) {
+      const { windowWidth, windowCenter } = cornerstoneVOI;
       const lower = windowCenter - windowWidth / 2.0;
       const upper = windowCenter + windowWidth / 2.0;
 
@@ -291,7 +311,6 @@ const actions = {
         api.updateVOI(windowWidth, windowCenter);
       });
     }
-    */
 
     const onModifiedSubscription = rgbTransferFunction.onModified(() => {
       const range = rgbTransferFunction.getMappingRange();
@@ -312,7 +331,6 @@ const actions = {
     apiByViewport.forEach((api, index) => {
       const renderWindow = api.genericRenderWindow.getRenderWindow();
       const renderer = api.genericRenderWindow.getRenderer();
-      const camera = renderer.getActiveCamera();
 
       const istyle = vtkInteractorStyleMPRCrosshairs.newInstance();
       renderWindow.getInteractor().setInteractorStyle(istyle);

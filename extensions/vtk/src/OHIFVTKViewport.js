@@ -172,7 +172,7 @@ class OHIFVTKViewport extends Component {
       default:
         imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid);
 
-        loadImageData(imageDataObject);
+        //loadImageData(imageDataObject);
 
         return imageDataObject;
     }
@@ -244,7 +244,6 @@ class OHIFVTKViewport extends Component {
     }
 
     const sopClassUid = sopClassUids[0];
-
     const imageDataObject = this.getViewportData(
       studies,
       studyInstanceUid,
@@ -255,7 +254,6 @@ class OHIFVTKViewport extends Component {
     );
 
     this.imageDataObject = imageDataObject;
-    this.loadProgressively();
 
     // TODO: Temporarily disabling this since it is not yet
     // being used and hurts performance significantly.
@@ -268,14 +266,37 @@ class OHIFVTKViewport extends Component {
       displaySetInstanceUid
     );
 
-    this.setState({
-      volumes: [volumeActor],
-      paintFilterBackgroundImageData: imageDataObject.vtkImageData,
-      paintFilterLabelMapImageData: null, // TODO
-    });
+    this.setState(
+      {
+        paintFilterBackgroundImageData: imageDataObject.vtkImageData,
+        paintFilterLabelMapImageData: null, // TODO
+        percentComplete: 0,
+      },
+      () => {}
+    );
+
+    this.setState(
+      {
+        paintFilterBackgroundImageData: imageDataObject.vtkImageData,
+        paintFilterLabelMapImageData: null, // TODO
+        percentComplete: 0,
+      },
+      () => {
+        requestAnimationFrame(() => {
+          this.loadProgressively();
+
+          setTimeout(() => {
+            this.setState({
+              volumes: [volumeActor],
+            });
+          }, 200);
+        });
+      }
+    );
   }
 
   componentDidMount() {
+    console.log('componentDidMount');
     this.setStateFromProps();
   }
 
@@ -298,6 +319,8 @@ class OHIFVTKViewport extends Component {
   }
 
   loadProgressively() {
+    loadImageData(this.imageDataObject);
+
     const {
       isLoading,
       insertPixelDataPromises,
@@ -310,18 +333,20 @@ class OHIFVTKViewport extends Component {
     const reRenderFraction = numberOfFrames / 5;
     let reRenderTarget = reRenderFraction;
 
-    this.setState({ percentComplete: 0 });
-
     if (isLoading) {
       insertPixelDataPromises.forEach(promise => {
         promise.then(() => {
           numberProcessed++;
 
-          this.setState({
-            percentComplete: Math.floor(
-              (numberProcessed * 100) / numberOfFrames
-            ),
-          });
+          const percentComplete = Math.floor(
+            (numberProcessed * 100) / numberOfFrames
+          );
+
+          if (percentComplete !== this.state.percentComplete) {
+            this.setState({
+              percentComplete,
+            });
+          }
 
           // TODO -> Just do this higher up, call when loadImageData is first
           // called and then do this once after all apis are made.
@@ -357,6 +382,9 @@ class OHIFVTKViewport extends Component {
     }
 
     const style = { width: '100%', height: '100%', position: 'relative' };
+
+    console.log('render!');
+    console.log(!this.state.isLoaded);
 
     return (
       <>
