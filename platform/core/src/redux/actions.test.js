@@ -94,19 +94,20 @@ describe('actions', () => {
     });
 
     it('should create an action to set the viewport layout', () => {
-      const layout = {
-        viewports: [
-          {
-            height: '100%',
-            width: '100%',
-          },
-        ],
-      };
+      const numRows = 1;
+      const numColumns = 2;
+      const viewports = [{ plugin: 'vtk' }, { plugin: 'vtk' }];
+
       const expectedAction = {
         type: types.SET_VIEWPORT_LAYOUT,
-        layout,
+        numRows,
+        numColumns,
+        viewports,
       };
-      expect(actions.setLayout(layout)).toEqual(expectedAction);
+
+      expect(actions.setLayout({ numRows, numColumns, viewports })).toEqual(
+        expectedAction
+      );
     });
   });
 });

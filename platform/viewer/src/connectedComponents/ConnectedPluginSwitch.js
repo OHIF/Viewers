@@ -1,10 +1,14 @@
 import OHIF from '@ohif/core';
+import React from 'react';
 import PluginSwitch from './PluginSwitch.js';
 import { commandsManager } from './../App.js';
 import { connect } from 'react-redux';
-import { getActiveContexts } from './../store/layout/selectors.js';
 
 const { setLayout } = OHIF.redux.actions;
+
+const ConnectedPluginSwitch = props => {
+  return <PluginSwitch {...props} />;
+};
 
 const mapStateToProps = state => {
   const { activeViewportIndex, layout, viewportSpecificData } = state.viewports;
@@ -13,7 +17,6 @@ const mapStateToProps = state => {
     activeViewportIndex,
     viewportSpecificData,
     layout,
-    activeContexts: getActiveContexts(state),
   };
 };
 
@@ -37,23 +40,33 @@ const mapDispatchToProps = dispatch => {
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   const { activeViewportIndex, viewportSpecificData } = propsFromState;
   const { studies } = ownProps;
-  //const { setLayout } = propsFromDispatch;
+  const { setLayout } = propsFromDispatch;
 
   const mpr = () => {
     commandsManager.runCommand('mpr2d');
   };
+
+  const exitMpr = () => {
+    const layout = {
+      numRows: 1,
+      numColumns: 1,
+      viewports: [{ plugin: 'cornerstone' }],
+    };
+
+    setLayout(layout);
+  };
+
   return {
     mpr,
+    exitMpr,
     activeViewportIndex,
     viewportSpecificData,
     studies,
   };
 };
 
-const ConnectedPluginSwitch = connect(
+export default connect(
   mapStateToProps,
   mapDispatchToProps,
   mergeProps
-)(PluginSwitch);
-
-export default ConnectedPluginSwitch;
+)(ConnectedPluginSwitch);

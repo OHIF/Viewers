@@ -6,23 +6,58 @@ import './PluginSwitch.css';
 class PluginSwitch extends Component {
   static propTypes = {
     mpr: PropTypes.func,
-    activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
     activeViewportIndex: PropTypes.number,
     viewportSpecificData: PropTypes.object,
     studies: PropTypes.array,
+    exitMpr: PropTypes.func,
   };
 
   static defaultProps = {};
+  constructor(props) {
+    super(props);
+    this.state = {
+      isPlugSwitchOn: false,
+      label: '2D MPR',
+      icon: 'cube',
+    };
+  }
+
+  handleClick = () => {
+    if (this.state.isPlugSwitchOn) {
+      this.setState({
+        isPlugSwitchOn: false,
+        label: '2D MPR',
+        icon: 'cube',
+      });
+      this.props.exitMpr();
+    } else {
+      this.setState({
+        isPlugSwitchOn: true,
+        label: 'Exit 2D MPR',
+        icon: 'times',
+      });
+      this.props.mpr();
+    }
+  };
 
   render() {
+    const { label, icon } = this.state;
+
+    // Render exit mpr if switched on, otherwise check if mpr button should be displayed.
+
+    debugger;
+
+    const shouldRender =
+      this.state.isPlugSwitchOn || _shouldRenderMpr2DButton.call(this);
+
     return (
       <>
-        {_shouldRenderMpr2DButton.call(this) && (
+        {shouldRender && (
           <div className="PluginSwitch">
             <ToolbarButton
-              label="2D MPR"
-              icon="cube"
-              onClick={this.props.mpr}
+              label={label}
+              icon={icon}
+              onClick={this.handleClick}
             />
           </div>
         )}

@@ -66,7 +66,13 @@ function getCrosshairCallbackForIndex(index) {
 }
 
 async function _getActiveViewportVTKApi(viewports) {
-  const { layout, viewportSpecificData, activeViewportIndex } = viewports;
+  const {
+    numRows,
+    numColumns,
+    layout,
+    viewportSpecificData,
+    activeViewportIndex,
+  } = viewports;
 
   const currentData = layout.viewports[activeViewportIndex];
   if (currentData && currentData.plugin === 'vtk') {
@@ -84,6 +90,8 @@ async function _getActiveViewportVTKApi(viewports) {
       api = await setViewportToVTK(
         displaySet,
         activeViewportIndex,
+        numRows,
+        numColumns,
         layout,
         viewportSpecificData
       );

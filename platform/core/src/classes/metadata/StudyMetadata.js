@@ -122,7 +122,7 @@ export class StudyMetadata extends Metadata {
       if (displaySet) {
         displaySet.sopClassModule = true;
         displaySets.push(displaySet);
-        return;
+        return displaySets;
       }
     }
 
