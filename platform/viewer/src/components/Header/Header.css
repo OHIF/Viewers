@@ -96,3 +96,27 @@
   color: #91b9cd;
   margin-right: 1rem;
 }
+
+.header-versionInfo {
+  display: inline-block;
+  color: black;
+  background: #9ccef9;
+  padding: 0px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.header-versionInfoHome {
+  display: block;
+  color: black;
+  position: absolute;
+  bottom: 16px;
+  right: 0;
+  background: #9ccef9;
+  padding: 0px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: bold;
+}
