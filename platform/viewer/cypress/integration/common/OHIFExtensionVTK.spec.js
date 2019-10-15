@@ -8,6 +8,7 @@ describe('OHIF VTK Extension', () => {
   beforeEach(() => {
     cy.get('.PluginSwitch > .toolbar-button')
       .as('twodmprBtn')
+      .should('be.visible')
       .click();
 
     cy.initVTKToolsAliases();

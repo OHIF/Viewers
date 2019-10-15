@@ -259,8 +259,8 @@ Cypress.Commands.add('isNotInViewport', element => {
  */
 Cypress.Commands.add('isInViewport', element => {
   cy.get(element, { timeout: 3000 }).should($el => {
-    const bottom = Cypress.$(cy.state('window')).height() - 50;
-    const right = Cypress.$(cy.state('window')).width() - 50;
+    const bottom = Cypress.$(cy.state('window')).height();
+    const right = Cypress.$(cy.state('window')).width();
 
     // If it's not visible, it's not in the viewport
     if ($el) {
