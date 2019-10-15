@@ -2,6 +2,7 @@ describe('OHIF Cornerstone Toolbar', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
     cy.waitDicomImage();
+    cy.expectMinimumThumbnails(1);
   });
 
   beforeEach(() => {
@@ -410,12 +411,12 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn').click();
-    cy.get('@measurementsPanel').should('be.visible');
+    cy.isInViewport('@measurementsPanel');
     cy.get('.measurementItem')
       .its('length')
       .should('be.eq', 2);
     cy.get('@measurementsBtn').click();
-    cy.get('@measurementsPanel').should('not.be.enabled');
+    cy.isNotInViewport('@measurementsPanel');
 
     //Click More button
     cy.get('@moreBtn').click();

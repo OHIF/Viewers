@@ -2,6 +2,7 @@ describe('OHIF VTK Extension', () => {
   before(() => {
     cy.openStudy('Dummy');
     cy.waitDicomImage();
+    cy.expectMinimumThumbnails(1);
   });
 
   beforeEach(() => {

@@ -1,7 +1,7 @@
 describe('OHIF HTML Extension', () => {
   before(() => {
     cy.openStudy('Dummy');
-    cy.waitSeriesMetadata(1);
+    cy.expectMinimumThumbnails(1);
   });
 
   it('checks if series thumbnails are being displayed', () => {
