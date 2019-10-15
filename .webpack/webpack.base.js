@@ -1,3 +1,6 @@
+// ~~ ENV
+const dotenv = require('dotenv');
+//
 const path = require('path');
 const webpack = require('webpack');
 const PACKAGE = require('../platform/viewer/package.json');
@@ -11,6 +14,9 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 const NODE_ENV = process.env.NODE_ENV;
 const QUICK_BUILD = process.env.QUICK_BUILD;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
+
+//
+dotenv.config();
 
 module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
   if (!process.env.NODE_ENV) {

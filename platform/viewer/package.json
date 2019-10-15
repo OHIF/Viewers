@@ -27,7 +27,7 @@
     "dev:viewer": "yarn run dev",
     "start": "yarn run dev",
     "test:e2e": "cypress open",
-    "test:e2e:ci": "cypress run",
+    "test:e2e:ci": "percy exec -- cypress run",
     "test:e2e:dist": "start-server-and-test test:e2e:serve http://localhost:3000 test:e2e:ci",
     "test:e2e:serve": "serve -n -l 3000 -s dist",
     "test:unit": "jest --watchAll",
