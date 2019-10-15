@@ -10,7 +10,6 @@ export function initCornerstoneToolsAliases() {
   cy.get('.ToolbarRow > :nth-child(9)').as('resetBtn');
   cy.get('.ToolbarRow > :nth-child(10)').as('cineBtn');
   cy.get('.expandableToolMenu').as('moreBtn');
-  cy.get('.PluginSwitch > .toolbar-button').as('twodmprBtn');
   cy.get('.btn-group > .toolbar-button').as('layoutBtn');
 }
 

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.9.0...@ohif/viewer@1.9.1) (2019-10-15)
+
+
+### Bug Fixes
+
+* 🐛 Remove debugger statement left in from last PR ([#1052](https://github.com/OHIF/Viewers/issues/1052)) ([d091cd6](https://github.com/OHIF/Viewers/commit/d091cd6))
+
+
+
+
+
+# [1.9.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.8.0...@ohif/viewer@1.9.0) (2019-10-15)
+
+
+### Features
+
+* 🎸 Only allow reconstruction of datasets that make sense ([#1010](https://github.com/OHIF/Viewers/issues/1010)) ([2d75e01](https://github.com/OHIF/Viewers/commit/2d75e01)), closes [#561](https://github.com/OHIF/Viewers/issues/561)
+
+
+
+
+
 # [1.8.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.7.0...@ohif/viewer@1.8.0) (2019-10-14)
 
 
