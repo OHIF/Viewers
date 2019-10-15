@@ -5,6 +5,8 @@ describe('OHIFStandaloneViewer', () => {
 
   it('loads route with at least 2 rows', () => {
     cy.screenshot();
+    cy.percySnapshot();
+
     cy.get('#studyListData tr')
       .its('length')
       .should('be.gt', 2);

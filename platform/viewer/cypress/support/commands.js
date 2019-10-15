@@ -1,3 +1,4 @@
+import '@percy/cypress';
 import { DragSimulator } from '../helpers/DragSimulator.js';
 import {
   initCornerstoneToolsAliases,
