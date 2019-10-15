@@ -1,6 +1,6 @@
 describe('OHIF VTK Extension', () => {
   before(() => {
-    cy.openStudy('MISTER^MR');
+    cy.openStudy('Dummy');
     cy.waitDicomImage();
   });
 
@@ -8,7 +8,9 @@ describe('OHIF VTK Extension', () => {
     cy.get('.PluginSwitch > .toolbar-button')
       .as('twodmprBtn')
       .click();
+
     cy.initVTKToolsAliases();
+    cy.wait(1000);
   });
 
   it('checks if VTK buttons are displayed on the toolbar', () => {
