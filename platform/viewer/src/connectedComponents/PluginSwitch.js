@@ -6,7 +6,10 @@ import './PluginSwitch.css';
 class PluginSwitch extends Component {
   static propTypes = {
     mpr: PropTypes.func,
-    exitMpr: PropTypes.func
+    activeViewportIndex: PropTypes.number,
+    viewportSpecificData: PropTypes.object,
+    studies: PropTypes.array,
+    exitMpr: PropTypes.func,
   };
 
   static defaultProps = {};
@@ -14,8 +17,8 @@ class PluginSwitch extends Component {
     super(props);
     this.state = {
       isPlugSwitchOn: false,
-      label: "2D MPR",
-      icon: "cube"
+      label: '2D MPR',
+      icon: 'cube',
     };
   }
 
@@ -23,15 +26,15 @@ class PluginSwitch extends Component {
     if (this.state.isPlugSwitchOn) {
       this.setState({
         isPlugSwitchOn: false,
-        label: "2D MPR",
-        icon: "cube"
+        label: '2D MPR',
+        icon: 'cube',
       });
       this.props.exitMpr();
     } else {
       this.setState({
         isPlugSwitchOn: true,
-        label: "Exit 2D MPR",
-        icon: "times"
+        label: 'Exit 2D MPR',
+        icon: 'times',
       });
       this.props.mpr();
     }
@@ -40,12 +43,67 @@ class PluginSwitch extends Component {
   render() {
     const { label, icon } = this.state;
 
+    // Render exit mpr if switched on, otherwise check if mpr button should be displayed.
+
+    debugger;
+
+    const shouldRender =
+      this.state.isPlugSwitchOn || _shouldRenderMpr2DButton.call(this);
+
     return (
-      <div className="PluginSwitch">
-        <ToolbarButton label={label} icon={icon} onClick={this.handleClick} />
-      </div>
+      <>
+        {shouldRender && (
+          <div className="PluginSwitch">
+            <ToolbarButton
+              label={label}
+              icon={icon}
+              onClick={this.handleClick}
+            />
+          </div>
+        )}
+      </>
     );
   }
+}
+
+function _shouldRenderMpr2DButton() {
+  const { viewportSpecificData, studies, activeViewportIndex } = this.props;
+
+  if (!viewportSpecificData[activeViewportIndex]) {
+    return;
+  }
+
+  const { displaySetInstanceUid, studyInstanceUid } = viewportSpecificData[
+    activeViewportIndex
+  ];
+
+  const displaySet = _getDisplaySet(
+    studies,
+    studyInstanceUid,
+    displaySetInstanceUid
+  );
+
+  if (!displaySet) {
+    return;
+  }
+
+  return displaySet.isReconstructable;
+}
+
+function _getDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
+  const study = studies.find(
+    study => study.studyInstanceUid === studyInstanceUid
+  );
+
+  if (!study) {
+    return;
+  }
+
+  const displaySet = study.displaySets.find(set => {
+    return set.displaySetInstanceUid === displaySetInstanceUid;
+  });
+
+  return displaySet;
 }
 
 export default PluginSwitch;
