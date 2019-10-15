@@ -15079,7 +15079,7 @@ react-transition-group@^4.1.1:
     prop-types "^15.6.2"
 
 "react-vtkjs-viewport@file:extensions/vtk/.yalc/react-vtkjs-viewport":
-  version "0.0.12-47c51cf7"
+  version "0.0.12-98dd622b"
   dependencies:
     date-fns "^2.2.1"
     gl-matrix "^3.1.0"

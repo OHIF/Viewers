@@ -287,12 +287,38 @@ const actions = {
       }
     }
 
+    const viewportProps = [
+      {
+        //Axial
+        orientation: {
+          sliceNormal: [0, 0, 1],
+          viewUp: [0, -1, 0],
+        },
+      },
+      {
+        // Sagital
+        orientation: {
+          sliceNormal: [1, 0, 0],
+          viewUp: [0, 0, 1],
+        },
+      },
+      {
+        // Coronal
+        orientation: {
+          sliceNormal: [0, 1, 0],
+          viewUp: [0, 0, 1],
+        },
+      },
+    ];
+
     let apiByViewport;
     try {
-      apiByViewport = await setMPRLayout(displaySet);
+      apiByViewport = await setMPRLayout(displaySet, viewportProps);
     } catch (error) {
       throw new Error(error);
     }
+
+    debugger;
 
     apis = apiByViewport;
 
@@ -352,26 +378,11 @@ const actions = {
         crosshairsWidget,
       };
 
-      switch (index) {
-        default:
-        case 0:
-          //Axial
-          istyle.setSliceNormal(0, 0, 1);
-          istyle.setViewUp(0, -1, 0);
+      const orientation = api.getOrientation();
 
-          break;
-
-        case 1:
-          // sagittal
-          istyle.setSliceNormal(1, 0, 0);
-          istyle.setViewUp(0, 0, 1);
-          break;
-        case 2:
-          // Coronal
-          istyle.setSliceNormal(0, 1, 0);
-          istyle.setViewUp(0, 0, 1);
-          break;
-      }
+      // TODO -> A 'set istyle' prope which will read the current istyle and transfer this info.
+      istyle.setSliceNormal(...orientation.sliceNormal);
+      istyle.setViewUp(...orientation.viewUp);
 
       renderWindow.render();
     });
