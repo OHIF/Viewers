@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.3.2...@ohif/core@1.4.0) (2019-10-15)
+
+
+### Features
+
+* 🎸 Only allow reconstruction of datasets that make sense ([#1010](https://github.com/OHIF/Viewers/issues/1010)) ([2d75e01](https://github.com/OHIF/Viewers/commit/2d75e01)), closes [#561](https://github.com/OHIF/Viewers/issues/561)
+
+
+
+
+
 ## [1.3.2](https://github.com/OHIF/Viewers/compare/@ohif/core@1.3.1...@ohif/core@1.3.2) (2019-10-14)
 
 
