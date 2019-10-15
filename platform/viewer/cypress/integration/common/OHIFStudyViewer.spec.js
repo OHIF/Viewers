@@ -10,6 +10,7 @@ describe('OHIF Study Viewer Page', () => {
   });
 
   it('checks if series thumbnails are being displayed', () => {
+    cy.screenshot();
     cy.get('.ThumbnailEntryContainer')
       .its('length')
       .should('be.gt', 1);

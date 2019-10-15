@@ -41,9 +41,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@moreBtn')
       .should('be.visible')
       .contains('More');
-    cy.get('@twodmprBtn')
-      .should('be.visible')
-      .contains('2D MPR');
     cy.get('@layoutBtn')
       .should('be.visible')
       .contains('Layout');

@@ -279,6 +279,7 @@ class Viewer extends Component {
 
             this.setState(updatedState);
           }}
+          studies={this.props.studies}
         />
 
         {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}

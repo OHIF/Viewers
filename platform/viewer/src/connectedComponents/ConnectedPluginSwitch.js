@@ -6,10 +6,8 @@ import { connect } from 'react-redux';
 
 const { setLayout } = OHIF.redux.actions;
 
-const ConnectedPluginSwitch = (props) => {
-  return (
-    <PluginSwitch {...props} />
-  )
+const ConnectedPluginSwitch = props => {
+  return <PluginSwitch {...props} />;
 };
 
 const mapStateToProps = state => {
@@ -26,7 +24,7 @@ const mapDispatchToProps = dispatch => {
   return {
     setLayout: data => {
       dispatch(setLayout(data));
-    }
+    },
   };
 };
 
@@ -40,13 +38,12 @@ const mapDispatchToProps = dispatch => {
 }*/
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
-  //const { activeViewportIndex, layout } = propsFromState;
+  const { activeViewportIndex, viewportSpecificData } = propsFromState;
+  const { studies } = ownProps;
   const { setLayout } = propsFromDispatch;
 
-  // TODO: Do not display certain options if the current display set
-  // cannot be displayed using these view types
   const mpr = () => {
-        commandsManager.runCommand("mpr2d");
+    commandsManager.runCommand('mpr2d');
   };
 
   const exitMpr = () => {
@@ -61,7 +58,10 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
 
   return {
     mpr,
-    exitMpr
+    exitMpr,
+    activeViewportIndex,
+    viewportSpecificData,
+    studies,
   };
 };
 
