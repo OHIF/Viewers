@@ -10,6 +10,7 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
 const QUICK_BUILD = process.env.QUICK_BUILD;
+const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
 
 module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
   if (!process.env.NODE_ENV) {
@@ -70,7 +71,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
         'process.env.VERSION_NUMBER': JSON.stringify(PACKAGE.version || ''),
-        'process.env.BUILD_NUMBER': JSON.stringify('0'), // TODO: GET BUILD NUMBER,
+        'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
       }),
     ],
     // Fix: https://github.com/webpack-contrib/css-loader/issues/447#issuecomment-285598881

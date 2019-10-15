@@ -41,7 +41,7 @@ export class AboutModal extends Component {
     },
     {
       name: 'Build Number',
-      value: process.env.BUILD_NUMBER,
+      value: process.env.BUILD_NUM,
     },
     {
       name: 'Browser',
