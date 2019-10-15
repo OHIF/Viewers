@@ -106,7 +106,7 @@ class Header extends Component {
               this.props.home ? 'header-versionInfoHome' : 'header-versionInfo'
             }`}
           >
-            v{process.env.VERSION_NUMBER}
+            v{process.env.VERSION_NUMBER} | b{process.env.BUILD_NUM}
           </span>
 
           {this.props.children}
