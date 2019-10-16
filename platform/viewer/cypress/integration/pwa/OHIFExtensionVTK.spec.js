@@ -17,7 +17,11 @@ describe('OHIF VTK Extension', () => {
     cy.get('.PluginSwitch > .toolbar-button')
       .as('twodmprBtn')
       .should('be.visible')
-      .click();
+      .then(btn => {
+        if (!btn.text().includes('Exit')) {
+          btn.click();
+        }
+      });
 
     cy.initVTKToolsAliases();
     cy.wait(1000);
