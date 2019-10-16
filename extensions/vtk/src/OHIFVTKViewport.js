@@ -211,14 +211,14 @@ class OHIFVTKViewport extends Component {
       .setRange(lower, upper);
 
     // TODO: Should look into implementing autoAdjustSampleDistance in vtk
-    const sampleDistance =
-      1.2 *
-      Math.sqrt(
-        vtkImageData
-          .getSpacing()
-          .map(v => v * v)
-          .reduce((a, b) => a + b, 0)
-      );
+    // Manually changing the sample distance here by a couple orders of
+    // Magnitude in either direction makes no difference.
+    // Also setting volumeMapper.setMaximumSamplesPerRay(10000)
+    // Prevents the warning of too many samples, but the resolution isn't improved.
+
+    const spacing = vtkImageData.getSpacing();
+    // https://github.com/Kitware/VTK/blob/6b559c65bb90614fb02eb6d1b9e3f0fca3fe4b0b/Rendering/VolumeOpenGL2/vtkSmartVolumeMapper.cxx#L344
+    const sampleDistance = (spacing[0] + spacing[1] + spacing[2]) / 6.0;
 
     volumeMapper.setSampleDistance(sampleDistance);
 
@@ -285,6 +285,10 @@ class OHIFVTKViewport extends Component {
         requestAnimationFrame(() => {
           this.loadProgressively();
 
+          // TODO: There must be a better way to do this.
+          // We do this so that if all the data is available the react-vtkjs-viewport
+          // Will render _something_ before the volumes are set and the volume
+          // Construction that happens in react-vtkjs-viewport locks up the CPU.
           setTimeout(() => {
             this.setState({
               volumes: [volumeActor],
@@ -296,7 +300,6 @@ class OHIFVTKViewport extends Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount');
     this.setStateFromProps();
   }
 
@@ -359,12 +362,12 @@ class OHIFVTKViewport extends Component {
           }
         });
       });
-    }
 
-    if (isLoading) {
       Promise.all(insertPixelDataPromises).then(() => {
         this.setState({ isLoaded: true });
       });
+    } else {
+      this.setState({ isLoaded: true });
     }
   }
 
@@ -382,9 +385,6 @@ class OHIFVTKViewport extends Component {
     }
 
     const style = { width: '100%', height: '100%', position: 'relative' };
-
-    console.log('render!');
-    console.log(!this.state.isLoaded);
 
     return (
       <>

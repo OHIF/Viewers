@@ -295,6 +295,7 @@ const actions = {
           viewUp: [0, -1, 0],
         },
       },
+
       {
         // Sagital
         orientation: {
@@ -317,8 +318,6 @@ const actions = {
     } catch (error) {
       throw new Error(error);
     }
-
-    debugger;
 
     apis = apiByViewport;
 
@@ -380,9 +379,8 @@ const actions = {
 
       const orientation = api.getOrientation();
 
-      // TODO -> A 'set istyle' prope which will read the current istyle and transfer this info.
-      istyle.setSliceNormal(...orientation.sliceNormal);
       istyle.setViewUp(...orientation.viewUp);
+      istyle.setSliceNormal(...orientation.sliceNormal);
 
       renderWindow.render();
     });

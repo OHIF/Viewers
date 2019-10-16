@@ -21,8 +21,6 @@ class LoadingIndicator extends PureComponent {
       percComplete = `${this.props.percentComplete}%`;
     }
 
-    console.log('LoadingIndicator gogo!');
-
     return (
       <React.Fragment>
         {this.props.error ? (
