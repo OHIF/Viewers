@@ -2,23 +2,19 @@
   height: 30px;
   text-decoration: none;
   text-decoration-color: none;
-
   display: flex;
+  align-items: center;
   color: var(--text-primary-color);
-  font-size: 14px;
-  font-weight: var(--logo-font-weight);
-  font-family: var(--logo-font-family);
 }
 
-.header-brand:hover,
-.header-brand:active,
-.header-band:visited {
+.header-brand:hover, .header-brand:active, .header-band:visited {
   color: var(--text-primary-color);
   text-decoration: none;
 }
 
 .header-logo-text {
-  line-height: 30px;
+  width: 224px;
+  height: auto;
   margin-left: 8px;
 }
 

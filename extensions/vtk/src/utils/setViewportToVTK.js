@@ -1,9 +1,10 @@
 import setLayoutAndViewportData from './setLayoutAndViewportData.js';
-import setSingleLayoutData from './setSingleLayoutData.js';
 
 export default function setViewportToVTK(
   displaySet,
   viewportIndex,
+  numRows,
+  numColumns,
   layout,
   viewportSpecificData
 ) {
@@ -13,7 +14,9 @@ export default function setViewportToVTK(
       reject(new Error('Should not have reached this point??'));
     }*/
 
-    const data = {
+    const viewports = layout.viewports.slice();
+
+    viewports[viewportIndex] = Object.assign({}, viewports[viewportIndex], {
       // plugin: 'vtk',
       vtk: {
         mode: 'mpr', // TODO: not used
@@ -21,18 +24,16 @@ export default function setViewportToVTK(
           resolve(api);
         },
       },
-    };
-
-    const updatedViewports = setSingleLayoutData(
-      layout.viewports,
-      viewportIndex,
-      data
-    );
+    });
 
     const updatedViewportData = viewportSpecificData;
 
     setLayoutAndViewportData(
-      { viewports: updatedViewports },
+      {
+        numRows,
+        numColumns,
+        viewports,
+      },
       updatedViewportData
     );
   });

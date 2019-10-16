@@ -12,7 +12,7 @@ function OHIFLogo() {
       href="http://ohif.org"
     >
       <Icon name="ohif-logo" className="header-logo-image" />
-      <div className="header-logo-text">Open Health Imaging Foundation</div>
+      <Icon name="ohif-text-logo" className="header-logo-text" />
     </a>
   );
 }

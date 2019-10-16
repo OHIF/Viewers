@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.50.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-microscopy@0.50.5...@ohif/extension-dicom-microscopy@0.50.6) (2019-09-26)
+
+
+### Bug Fixes
+
+* Add some code splitting for PWA build ([#937](https://github.com/OHIF/Viewers/issues/937)) ([8938035](https://github.com/OHIF/Viewers/commit/8938035))
+
+
+
+
+
+## [0.50.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-microscopy@0.50.4...@ohif/extension-dicom-microscopy@0.50.5) (2019-09-10)
+
+
+### Bug Fixes
+
+* simplify runtime-extension usage ([ac5dbda](https://github.com/OHIF/Viewers/commit/ac5dbda))
+
+
+
+
+
 ## [0.50.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-microscopy@0.50.3...@ohif/extension-dicom-microscopy@0.50.4) (2019-09-04)
 
 **Note:** Version bump only for package @ohif/extension-dicom-microscopy

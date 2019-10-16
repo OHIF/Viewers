@@ -2,6 +2,7 @@
   margin: 0;
   width: 100%;
   -webkit-appearance: none;
+  background-color: transparent;
 }
 
 .range:focus {

@@ -5,11 +5,16 @@ function getWADORSImageUrl(instance, frame) {
     return;
   }
 
-  // We need to sum 1 because WADO-RS frame number is 1-based
-  frame = frame ? parseInt(frame) + 1 : 1;
+  // Use null to obtain an imageId which represents the instance
+  if (frame === null) {
+    wadorsuri = wadorsuri.replace(/frames\/(\d+)/, '');
+  } else {
+    // We need to sum 1 because WADO-RS frame number is 1-based
+    frame = frame ? parseInt(frame) + 1 : 1;
 
-  // Replaces /frame/1 by /frame/{frame}
-  wadorsuri = wadorsuri.replace(/frames\/(\d+)/, `frames/${frame}`);
+    // Replaces /frame/1 by /frame/{frame}
+    wadorsuri = wadorsuri.replace(/frames\/(\d+)/, `frames/${frame}`);
+  }
 
   return wadorsuri;
 }

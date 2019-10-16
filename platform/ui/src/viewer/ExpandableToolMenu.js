@@ -108,16 +108,8 @@ class ExpandableToolMenu extends React.Component {
   };
 
   render() {
-    return (
-      <OverlayTrigger
-        key="menu-button"
-        trigger="click"
-        placement="bottom"
-        rootClose={true}
-        handleHide={this.onOverlayHide}
-        onClick={this.onExpandableToolClick}
-        overlay={this.toolbarMenuOverlay()}
-      >
+    const getToolBarButtonComponent = () => {
+      return (
         <ToolbarButton
           key="menu-button"
           type="tool"
@@ -128,6 +120,22 @@ class ExpandableToolMenu extends React.Component {
           isExpandable={true}
           isExpanded={this.state.isExpanded}
         />
+      );
+    };
+
+    const toolbarComponent = getToolBarButtonComponent();
+
+    return (
+      <OverlayTrigger
+        key="menu-button"
+        trigger="click"
+        placement="bottom"
+        rootClose={true}
+        handleHide={this.onOverlayHide}
+        onClick={this.onExpandableToolClick}
+        overlay={this.toolbarMenuOverlay()}
+      >
+        {toolbarComponent}
       </OverlayTrigger>
     );
   }

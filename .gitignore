@@ -21,6 +21,7 @@ npm-debug.log
 package-lock.json
 yarn-error.log
 .DS_Store
+.env
 
 # Common Example Data Directories
 sampledata/
@@ -28,7 +29,7 @@ example/deps/
 docker/dcm4che/dcm4che-arc
 
 # Cypress test results
-cypress/videos/
+videos/
 
 # Locize settings
 .locize

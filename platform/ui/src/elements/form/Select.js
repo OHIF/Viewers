@@ -11,8 +11,9 @@ class Select extends Component {
   }
 
   handleChange = event => {
-    this.setState({ value: event.target.value });
-    if (this.props.onChange) this.props.onChange();
+    const value = event.target.value;
+    this.setState({ value });
+    if (this.props.onChange) this.props.onChange(value);
   };
 
   render() {

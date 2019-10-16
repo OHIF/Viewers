@@ -11,9 +11,6 @@ describe('addServers', () => {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
-        requestOptions: {
-          requestFromBrowser: true,
-        },
       },
     ],
     oidc: [
@@ -52,7 +49,6 @@ describe('addServers', () => {
         name: 'DCM4CHEE',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         qidoSupportsIncludeField: true,
-        requestOptions: { requestFromBrowser: true },
         thumbnailRendering: 'wadors',
         type: 'dicomWeb',
         wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',

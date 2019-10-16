@@ -8,11 +8,13 @@ coverage:
   status:
     project:
       default:
-        threshold: 0.10%
+        threshold: 0.5%
       core:
         flags: core
+        threshold: 0.5%
       viewer:
         flags: viewer
+        threshold: 0.5%
     patch: off
 flags:
   core:

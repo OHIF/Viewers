@@ -31,7 +31,6 @@ import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 let config = {};
 const appDefaults = {
   routerBasename: '/',
-  relativeWebWorkerScriptsPath: '',
 };
 
 if (window) {

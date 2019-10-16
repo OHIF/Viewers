@@ -38,7 +38,6 @@ class ThumbnailEntry extends Component {
     let className = classnames('ThumbnailEntry noselect', {
       active: this.props.active,
     });
-    const infoOnly = false;
 
     let contents = null;
     if (this.props.imageSrc || this.props.imageId) {
@@ -54,8 +53,10 @@ class ThumbnailEntry extends Component {
       );
     } else if (this.props.altImageText) {
       contents = (
-        <div className={'alt-image-text p-x-1'}>
-          <h1>{this.props.altImageText}</h1>
+        <div className="p-x-1">
+          <div className="alt-image-text">
+            <h1>{this.props.altImageText}</h1>
+          </div>
         </div>
       );
     }
@@ -69,23 +70,23 @@ class ThumbnailEntry extends Component {
       >
         {contents}
         <div
-          className={infoOnly ? 'series-details info-only' : 'series-details'}
+          className="series-details"
         >
           <div className="series-description">
             {this.props.seriesDescription}
           </div>
           <div className="series-information">
-            <div className="item item-series clearfix">
+            <div className="item item-series">
               <div className="icon">S:</div>
               <div className="value">{this.props.seriesNumber}</div>
             </div>
             {hasInstanceNumber && (
-              <div className="item item-series clearfix">
+              <div className="item item-series">
                 <div className="icon">I:</div>
                 <div className="value">{this.props.instanceNumber}</div>
               </div>
             )}
-            <div className="item item-frames clearfix">
+            <div className="item item-frames">
               <div className="icon">
                 <div />
               </div>
@@ -99,13 +100,13 @@ class ThumbnailEntry extends Component {
 
   onClick = () => {
     if (this.props.onClick) {
-      this.props.onClick();
+      this.props.onClick(this.props.displaySetInstanceUid);
     }
   };
 
   onDoubleClick = () => {
     if (this.props.onDoubleClick) {
-      this.props.onDoubleClick();
+      this.props.onDoubleClick(this.props.displaySetInstanceUid);
     }
   };
 }

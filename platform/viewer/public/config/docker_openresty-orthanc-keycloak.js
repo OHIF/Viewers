@@ -14,11 +14,10 @@ window.config = {
         thumbnailRendering: 'wadors',
         // REQUIRED TAG:
         // TODO: Remove tag after https://github.com/OHIF/ohif-core/pull/19 is merged and we bump version
-        requestOptions: {
-          // undefined to use JWT + Bearer auth
-          // auth: 'orthanc:orthanc',
-          requestFromBrowser: true,
-        },
+        // requestOptions: {
+        // undefined to use JWT + Bearer auth
+        // auth: 'orthanc:orthanc',
+        // },
       },
     ],
   },

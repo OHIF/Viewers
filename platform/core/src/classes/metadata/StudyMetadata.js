@@ -8,7 +8,9 @@ import { SeriesMetadata } from './SeriesMetadata';
 // - createStacks
 import { api } from 'dicomweb-client';
 // - createStacks
-import { isImage } from './../../utils/isImage';
+import { isImage } from '../../utils/isImage';
+import isDisplaySetReconstructable from '../../utils/isDisplaySetReconstructable';
+import isLowPriorityModality from '../../utils/isLowPriorityModality';
 
 export class StudyMetadata extends Metadata {
   constructor(data, uid) {
@@ -89,6 +91,100 @@ export class StudyMetadata extends Metadata {
   }
 
   /**
+   * Split a series metadata object into display sets
+   * @param {Array} sopClassHandlerModules List of SOP Class Modules
+   * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
+   * @param {Array} [givenDisplaySets] An optional list to which the display sets will be appended
+   * @returns {Array} The list of display sets created for the given series object
+   */
+  _createDisplaySetsForSeries(
+    sopClassHandlerModules,
+    series,
+    givenDisplaySets
+  ) {
+    const study = this;
+    const displaySets = Array.isArray(givenDisplaySets) ? givenDisplaySets : [];
+    const anyInstances = series.getInstanceCount() > 0;
+
+    if (!anyInstances) {
+      return;
+    }
+
+    const sopClassUids = getSopClassUids(series);
+
+    if (sopClassHandlerModules && sopClassHandlerModules.length > 0) {
+      const displaySet = _getDisplaySetFromSopClassModule(
+        sopClassHandlerModules,
+        series,
+        study,
+        sopClassUids
+      );
+      if (displaySet) {
+        displaySet.sopClassModule = true;
+        displaySets.push(displaySet);
+        return displaySets;
+      }
+    }
+
+    // WE NEED A BETTER WAY TO NOTE THAT THIS IS THE DEFAULT BEHAVIOR FOR LOADING
+    // A DISPLAY SET IF THERE IS NO MATCHING SOP CLASS PLUGIN
+
+    // Search through the instances (InstanceMetadata object) of this series
+    // Split Multi-frame instances and Single-image modalities
+    // into their own specific display sets. Place the rest of each
+    // series into another display set.
+    const stackableInstances = [];
+    series.forEachInstance(instance => {
+      // All imaging modalities must have a valid value for sopClassUid (x00080016) or rows (x00280010)
+      if (
+        !isImage(instance.getRawValue('x00080016')) &&
+        !instance.getRawValue('x00280010')
+      ) {
+        return;
+      }
+
+      let displaySet;
+
+      if (isMultiFrame(instance)) {
+        displaySet = makeDisplaySet(series, [instance]);
+        displaySet.setAttributes({
+          sopClassUids,
+          isClip: true,
+          seriesInstanceUid: series.getSeriesInstanceUID(),
+          studyInstanceUid: study.getStudyInstanceUID(), // Include the study instance Uid for drag/drop purposes
+          numImageFrames: instance.getRawValue('x00280008'), // Override the default value of instances.length
+          instanceNumber: instance.getRawValue('x00200013'), // Include the instance number
+          acquisitionDatetime: instance.getRawValue('x0008002a'), // Include the acquisition datetime
+        });
+        displaySets.push(displaySet);
+      } else if (isSingleImageModality(instance.modality)) {
+        displaySet = makeDisplaySet(series, [instance]);
+        displaySet.setAttributes({
+          sopClassUids,
+          studyInstanceUid: study.getStudyInstanceUID(), // Include the study instance Uid
+          seriesInstanceUid: series.getSeriesInstanceUID(),
+          instanceNumber: instance.getRawValue('x00200013'), // Include the instance number
+          acquisitionDatetime: instance.getRawValue('x0008002a'), // Include the acquisition datetime
+        });
+        displaySets.push(displaySet);
+      } else {
+        stackableInstances.push(instance);
+      }
+    });
+
+    if (stackableInstances.length) {
+      const displaySet = makeDisplaySet(series, stackableInstances);
+      displaySet.setAttribute('studyInstanceUid', study.getStudyInstanceUID());
+      displaySet.setAttributes({
+        sopClassUids,
+      });
+      displaySets.push(displaySet);
+    }
+
+    return displaySets;
+  }
+
+  /**
    * Creates a set of series to be placed in the Study Metadata
    * The series that appear in the Study Metadata must represent
    * imaging modalities.
@@ -101,103 +197,44 @@ export class StudyMetadata extends Metadata {
    * @returns {Array} An array of series to be placed in the Study Metadata
    */
   createDisplaySets(sopClassHandlerModules) {
-    const study = this;
     const displaySets = [];
-    const anyDisplaySets = study.getSeriesCount();
-    const anySopClassHandlerModules =
-      sopClassHandlerModules && sopClassHandlerModules.length > 0;
+    const anyDisplaySets = this.getSeriesCount();
 
     if (!anyDisplaySets) {
       return displaySets;
     }
 
     // Loop through the series (SeriesMetadata)
-    this.forEachSeries(series => {
-      const anyInstances = series.getInstanceCount() > 0;
-      if (!anyInstances) {
-        return;
-      }
-
-      const sopClassUids = getSopClassUids(series);
-
-      if (anySopClassHandlerModules) {
-        const displaySet = _getDisplaySetFromSopClassModule(
+    this.forEachSeries(
+      series =>
+        void this._createDisplaySetsForSeries(
           sopClassHandlerModules,
           series,
-          study,
-          sopClassUids
-        );
+          displaySets
+        )
+    );
 
-        if (displaySet) {
-          displaySets.push(displaySet);
+    return sortDisplaySetList(displaySets);
+  }
 
-          return;
-        }
-      }
+  sortDisplaySets() {
+    sortDisplaySetList(this._displaySets);
+  }
 
-      // WE NEED A BETTER WAY TO NOTE THAT THIS IS THE DEFAULT BEHAVIOR FOR LOADING
-      // A DISPLAY SET IF THERE IS NO MATCHING SOP CLASS PLUGIN
-
-      // Search through the instances (InstanceMetadata object) of this series
-      // Split Multi-frame instances and Single-image modalities
-      // into their own specific display sets. Place the rest of each
-      // series into another display set.
-      const stackableInstances = [];
-      series.forEachInstance(instance => {
-        // All imaging modalities must have a valid value for sopClassUid (x00080016) or rows (x00280010)
-        if (
-          !isImage(instance.getRawValue('x00080016')) &&
-          !instance.getRawValue('x00280010')
-        ) {
-          return;
-        }
-
-        let displaySet;
-
-        if (isMultiFrame(instance)) {
-          displaySet = makeDisplaySet(series, [instance]);
-          displaySet.setAttributes({
-            sopClassUids,
-            isClip: true,
-            seriesInstanceUid: series.getSeriesInstanceUID(),
-            studyInstanceUid: study.getStudyInstanceUID(), // Include the study instance Uid for drag/drop purposes
-            numImageFrames: instance.getRawValue('x00280008'), // Override the default value of instances.length
-            instanceNumber: instance.getRawValue('x00200013'), // Include the instance number
-            acquisitionDatetime: instance.getRawValue('x0008002a'), // Include the acquisition datetime
-          });
-          displaySets.push(displaySet);
-        } else if (isSingleImageModality(instance.modality)) {
-          displaySet = makeDisplaySet(series, [instance]);
-          displaySet.setAttributes({
-            sopClassUids,
-            studyInstanceUid: study.getStudyInstanceUID(), // Include the study instance Uid
-            seriesInstanceUid: series.getSeriesInstanceUID(),
-            instanceNumber: instance.getRawValue('x00200013'), // Include the instance number
-            acquisitionDatetime: instance.getRawValue('x0008002a'), // Include the acquisition datetime
-          });
-          displaySets.push(displaySet);
-        } else {
-          stackableInstances.push(instance);
-        }
-      });
-
-      if (stackableInstances.length) {
-        const displaySet = makeDisplaySet(series, stackableInstances);
-        displaySet.setAttribute(
-          'studyInstanceUid',
-          study.getStudyInstanceUID()
-        );
-        displaySet.setAttributes({
-          sopClassUids,
-        });
-        displaySets.push(displaySet);
-      }
-    });
-
-    // TODO
-    displaySets.sort(_sortBySeriesNumber);
-
-    return displaySets;
+  /**
+   * Method to append display sets from a given series to the internal list of display sets
+   * @param {Array} sopClassHandlerModules A list of SOP Class Handler Modules
+   * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
+   * @returns {boolean} Returns true on success or false on failure (e.g., the series does not belong to this study)
+   */
+  createAndAddDisplaySetsForSeries(sopClassHandlerModules, series) {
+    if (this.containsSeries(series)) {
+      this.setDisplaySets(
+        this._createDisplaySetsForSeries(sopClassHandlerModules, series)
+      );
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -205,7 +242,10 @@ export class StudyMetadata extends Metadata {
    * @param {Array} displaySets Array of display sets (ImageSet[])
    */
   setDisplaySets(displaySets) {
-    displaySets.forEach(displaySet => this.addDisplaySet(displaySet));
+    if (Array.isArray(displaySets) && displaySets.length > 0) {
+      displaySets.forEach(displaySet => this.addDisplaySet(displaySet));
+      this.sortDisplaySets();
+    }
   }
 
   /**
@@ -214,7 +254,7 @@ export class StudyMetadata extends Metadata {
    * @returns {boolean} True on success, false on failure.
    */
   addDisplaySet(displaySet) {
-    if (displaySet instanceof ImageSet) {
+    if (displaySet instanceof ImageSet || displaySet.sopClassModule) {
       this._displaySets.push(displaySet);
       return true;
     }
@@ -317,6 +357,12 @@ export class StudyMetadata extends Metadata {
       });
     }
     return found;
+  }
+
+  containsSeries(series) {
+    return (
+      series instanceof SeriesMetadata && this._series.indexOf(series) >= 0
+    );
   }
 
   /**
@@ -575,6 +621,16 @@ const makeDisplaySet = (series, instances) => {
     imageSet.getImage(0).getRawValue('x00200013')
   );
 
+  const isReconstructable = isDisplaySetReconstructable(series, instances);
+
+  imageSet.isReconstructable = isReconstructable.value;
+
+  if (isReconstructable.missingFrames) {
+    // TODO -> This is currently unused, but may be used for reconstructing
+    // Volumes with gaps later on.
+    imageSet.missingFrames = isReconstructable.missingFrames;
+  }
+
   return imageSet;
 };
 
@@ -649,13 +705,51 @@ function _getDisplaySetFromSopClassModule(
 }
 
 /**
+ * Sort series primarily by modality (i.e., series with references to other
+ * series like SEG, KO or PR are grouped in the end of the list) and then by
+ * series number:
+ *
+ *  --------
+ * | CT #3  |
+ * | CT #4  |
+ * | CT #5  |
+ *  --------
+ * | SEG #1 |
+ * | SEG #2 |
+ *  --------
  *
  * @param {*} a - DisplaySet
  * @param {*} b - DisplaySet
  */
-function _sortBySeriesNumber(a, b) {
+
+function seriesSortingCriteria(a, b) {
+  const isLowPriorityA = isLowPriorityModality(a.modality);
+  const isLowPriorityB = isLowPriorityModality(b.modality);
+  if (!isLowPriorityA && isLowPriorityB) {
+    return -1;
+  }
+  if (isLowPriorityA && !isLowPriorityB) {
+    return 1;
+  }
+  return sortBySeriesNumber(a, b);
+}
+
+/**
+ * Sort series by series number. Series with low
+ * @param {*} a - DisplaySet
+ * @param {*} b - DisplaySet
+ */
+function sortBySeriesNumber(a, b) {
   const seriesNumberAIsGreaterOrUndefined =
     a.seriesNumber > b.seriesNumber || (!a.seriesNumber && b.seriesNumber);
 
   return seriesNumberAIsGreaterOrUndefined ? 1 : -1;
+}
+
+/**
+ * Sorts a list of display set objects
+ * @param {Array} list A list of display sets to be sorted
+ */
+function sortDisplaySetList(list) {
+  return list.sort(seriesSortingCriteria);
 }

@@ -1,5 +1,5 @@
 import cornerstoneTools from 'cornerstone-tools';
-import updateTableWithNewMeasurementData from './updateTableWithNewMeasurementData';
+import updateTableWithNewMeasurementData from './updateTableWithNewMeasurementData.js';
 
 export default function getMeasurementLocationCallback(
   eventData,

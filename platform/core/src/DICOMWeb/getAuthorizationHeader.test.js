@@ -7,10 +7,7 @@ describe('getAuthorizationHeader', () => {
   it('should return a HTTP Basic Auth when server contains requestOptions.auth', () => {
     const validServer = {
       requestOptions: {
-        auth: {
-          user: 'dummy_user',
-          password: 'dummy_password',
-        },
+        auth: 'dummy_user:dummy_password',
       },
     };
 
@@ -26,9 +23,7 @@ describe('getAuthorizationHeader', () => {
   it('should return a HTTP Basic Auth when server contains requestOptions.auth even though there is no password', () => {
     const validServerWithoutPassword = {
       requestOptions: {
-        auth: {
-          user: 'dummy_user',
-        },
+        auth: 'dummy_user',
       },
     };
 
@@ -43,22 +38,19 @@ describe('getAuthorizationHeader', () => {
     expect(authentication).toEqual(expectedAuthorizationHeader);
   });
 
-  it('should return a HTTP Basic Auth when server contains requestOptions.auth even though there is no username', () => {
-    const validServerWithoutPassword = {
+  it('should return a HTTP Basic Auth when server contains requestOptions.auth custom function', () => {
+    const validServerCustomAuth = {
       requestOptions: {
-        auth: {
-          user: 'dummy_user',
-        },
+        auth: options => `Basic ${options.token}`,
+        token: 'ZHVtbXlfdXNlcjpkdW1teV9wYXNzd29yZA==',
       },
     };
 
     const expectedAuthorizationHeader = {
-      Authorization: `Basic ${btoa(
-        validServerWithoutPassword.requestOptions.auth
-      )}`,
+      Authorization: `Basic ${validServerCustomAuth.requestOptions.token}`,
     };
 
-    const authentication = getAuthorizationHeader(validServerWithoutPassword);
+    const authentication = getAuthorizationHeader(validServerCustomAuth);
 
     expect(authentication).toEqual(expectedAuthorizationHeader);
   });

@@ -2,12 +2,14 @@ import {
   vtkInteractorStyleMPRCrosshairs,
   vtkInteractorStyleMPRWindowLevel,
   vtkInteractorStyleMPRSlice,
+  vtkInteractorStyleMPRRotate,
   vtkSVGCrosshairsWidget,
   vtkSVGWidgetManager,
 } from 'react-vtkjs-viewport';
 
 import setMPRLayout from './utils/setMPRLayout.js';
 import setViewportToVTK from './utils/setViewportToVTK.js';
+import vtkViewportSubscriptionManager from './utils/vtkViewportSubscriptionManager.js';
 import vtkCoordinate from 'vtk.js/Sources/Rendering/Core/Coordinate';
 import vtkMath from 'vtk.js/Sources/Common/Core/Math';
 import vtkMatrixBuilder from 'vtk.js/Sources/Common/Core/MatrixBuilder';
@@ -18,6 +20,7 @@ const { BlendMode } = Constants;
 // TODO: Put this somewhere else
 let apis = {};
 let currentSlabThickness = 0.1;
+let defaultSlabThickness = 0.1;
 
 function getCrosshairCallbackForIndex(index) {
   return ({ worldPos }) => {
@@ -63,7 +66,13 @@ function getCrosshairCallbackForIndex(index) {
 }
 
 async function _getActiveViewportVTKApi(viewports) {
-  const { layout, viewportSpecificData, activeViewportIndex } = viewports;
+  const {
+    numRows,
+    numColumns,
+    layout,
+    viewportSpecificData,
+    activeViewportIndex,
+  } = viewports;
 
   const currentData = layout.viewports[activeViewportIndex];
   if (currentData && currentData.plugin === 'vtk') {
@@ -81,6 +90,8 @@ async function _getActiveViewportVTKApi(viewports) {
       api = await setViewportToVTK(
         displaySet,
         activeViewportIndex,
+        numRows,
+        numColumns,
         layout,
         viewportSpecificData
       );
@@ -98,7 +109,7 @@ function _setView(api, sliceNormal, viewUp) {
   const camera = renderer.getActiveCamera();
   const istyle = renderWindow.getInteractor().getInteractorStyle();
   istyle.setSliceNormal(...sliceNormal);
-  camera.setViewUp(...viewUp);
+  istyle.setViewUp(...viewUp);
 
   renderWindow.render();
 }
@@ -109,14 +120,15 @@ function switchMPRInteractors(api, istyle) {
   const camera = renderer.getActiveCamera();
   const currentIStyle = renderWindow.getInteractor().getInteractorStyle();
 
-  let currentNormal;
-  if (currentIStyle.getSliceNormal && istyle.getSliceNormal) {
-    currentNormal = currentIStyle.getSliceNormal();
+  let currentViewport;
+  if (currentIStyle.getViewport && istyle.getViewport) {
+    currentViewport = currentIStyle.getViewport();
   }
 
   let currentSlabThickness;
   if (currentIStyle.getSlabThickness && istyle.getSlabThickness) {
     currentSlabThickness = currentIStyle.getSlabThickness();
+    defaultSlabThickness = currentSlabThickness;
   }
 
   renderWindow.getInteractor().setInteractorStyle(istyle);
@@ -124,11 +136,11 @@ function switchMPRInteractors(api, istyle) {
   // TODO: Not sure why this is required the second time this function is called
   istyle.setInteractor(renderWindow.getInteractor());
 
-  if (istyle.getVolumeMapper() !== api.volumes[0]) {
-    if (currentNormal) {
-      istyle.setSliceNormal(currentNormal);
-    }
+  if (currentViewport) {
+    istyle.setViewport(currentViewport);
+  }
 
+  if (istyle.getVolumeMapper() !== api.volumes[0]) {
     if (currentSlabThickness) {
       istyle.setSlabThickness(currentSlabThickness);
     }
@@ -161,7 +173,7 @@ const actions = {
   },
   enableRotateTool: () => {
     apis.forEach(api => {
-      const istyle = vtkInteractorStyleMPRSlice.newInstance();
+      const istyle = vtkInteractorStyleMPRRotate.newInstance();
 
       switchMPRInteractors(api, istyle);
     });
@@ -182,7 +194,7 @@ const actions = {
       switchMPRInteractors(api, istyle);
     });
   },
-  setSlabThickness: slabThickness => {
+  setSlabThickness: ({ slabThickness }) => {
     currentSlabThickness = slabThickness;
 
     apis.forEach(api => {
@@ -191,15 +203,6 @@ const actions = {
 
       if (istyle.setSlabThickness) {
         istyle.setSlabThickness(currentSlabThickness);
-
-        // TODO: Do this inside the interactors in a setSlabThickness function instead
-        const renderer = api.genericRenderWindow.getRenderer();
-        const camera = renderer.getActiveCamera();
-        const dist = camera.getDistance();
-        const near = dist - currentSlabThickness / 2;
-        const far = dist + currentSlabThickness / 2;
-
-        camera.setClippingRange(near, far);
       }
 
       renderWindow.render();
@@ -217,6 +220,32 @@ const actions = {
         istyle.setSlabThickness(currentSlabThickness);
       }
 
+      renderWindow.render();
+    });
+  },
+  setBlendModeToComposite: () => {
+    apis.forEach(api => {
+      const renderWindow = api.genericRenderWindow.getRenderWindow();
+      const istyle = renderWindow.getInteractor().getInteractorStyle();
+
+      const mapper = api.volumes[0].getMapper();
+      if (mapper.setBlendModeToComposite) {
+        mapper.setBlendModeToComposite();
+      }
+
+      if (istyle.setSlabThickness) {
+        istyle.setSlabThickness(defaultSlabThickness);
+      }
+      renderWindow.render();
+    });
+  },
+  setBlendModeToMaximumIntensity: () => {
+    apis.forEach(api => {
+      const renderWindow = api.genericRenderWindow.getRenderWindow();
+      const mapper = api.volumes[0].getMapper();
+      if (mapper.setBlendModeToMaximumIntensity) {
+        mapper.setBlendModeToMaximumIntensity();
+      }
       renderWindow.render();
     });
   },
@@ -243,16 +272,19 @@ const actions = {
 
     apis = apiByViewport;
 
-    /*const rgbTransferFunction = apiByViewport[0].volumes[0]
+    const rgbTransferFunction = apiByViewport[0].volumes[0]
       .getProperty()
       .getRGBTransferFunction(0);
-    rgbTransferFunction.onModified(() => {
+
+    const onModifiedSubscription = rgbTransferFunction.onModified(() => {
       apiByViewport.forEach(a => {
         const renderWindow = a.genericRenderWindow.getRenderWindow();
 
         renderWindow.render();
       });
-    });*/
+    });
+
+    vtkViewportSubscriptionManager.pushSubscription(0, onModifiedSubscription);
 
     apiByViewport.forEach((api, index) => {
       const renderWindow = api.genericRenderWindow.getRenderWindow();
@@ -284,18 +316,18 @@ const actions = {
         case 0:
           //Axial
           istyle.setSliceNormal(0, 0, 1);
-          camera.setViewUp(0, -1, 0);
+          istyle.setViewUp(0, -1, 0);
 
           break;
         case 1:
           // sagittal
           istyle.setSliceNormal(1, 0, 0);
-          camera.setViewUp(0, 0, 1);
+          istyle.setViewUp(0, 0, 1);
           break;
         case 2:
           // Coronal
           istyle.setSliceNormal(0, 1, 0);
-          camera.setViewUp(0, 0, 1);
+          istyle.setViewUp(0, 0, 1);
           break;
       }
 
@@ -338,12 +370,12 @@ const definitions = {
     options: {},
   },
   setBlendModeToComposite: {
-    commandFn: actions.setBlendMode,
+    commandFn: actions.setBlendModeToComposite,
     storeContexts: [],
     options: { blendMode: BlendMode.COMPOSITE_BLEND },
   },
   setBlendModeToMaximumIntensity: {
-    commandFn: actions.setBlendMode,
+    commandFn: actions.setBlendModeToMaximumIntensity,
     storeContexts: [],
     options: { blendMode: BlendMode.MAXIMUM_INTENSITY_BLEND },
   },

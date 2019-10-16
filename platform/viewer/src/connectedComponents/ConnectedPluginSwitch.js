@@ -1,9 +1,14 @@
-import OHIF from "@ohif/core";
-import PluginSwitch from "./PluginSwitch.js";
-import { commandsManager } from "./../App.js";
-import { connect } from "react-redux";
+import OHIF from '@ohif/core';
+import React from 'react';
+import PluginSwitch from './PluginSwitch.js';
+import { commandsManager } from './../App.js';
+import { connect } from 'react-redux';
 
 const { setLayout } = OHIF.redux.actions;
+
+const ConnectedPluginSwitch = props => {
+  return <PluginSwitch {...props} />;
+};
 
 const mapStateToProps = state => {
   const { activeViewportIndex, layout, viewportSpecificData } = state.viewports;
@@ -11,7 +16,7 @@ const mapStateToProps = state => {
   return {
     activeViewportIndex,
     viewportSpecificData,
-    layout
+    layout,
   };
 };
 
@@ -19,7 +24,7 @@ const mapDispatchToProps = dispatch => {
   return {
     setLayout: data => {
       dispatch(setLayout(data));
-    }
+    },
   };
 };
 
@@ -33,71 +38,35 @@ const mapDispatchToProps = dispatch => {
 }*/
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
-  //const { activeViewportIndex, layout } = propsFromState;
-  //const { setLayout } = propsFromDispatch;
+  const { activeViewportIndex, viewportSpecificData } = propsFromState;
+  const { studies } = ownProps;
+  const { setLayout } = propsFromDispatch;
 
-  // TODO: Do not display certain options if the current display set
-  // cannot be displayed using these view types
-  const buttons = [
-    /*{
-      text: 'Acquired',
-      type: 'command',
-      icon: 'bars',
-      active: false,
-      onClick: () => {
-        console.warn('Original Acquisition');
+  const mpr = () => {
+    commandsManager.runCommand('mpr2d');
+  };
 
-        const layoutData = setSingleLayoutData(
-          layout.viewports,
-          activeViewportIndex,
-          { plugin: 'cornerstone' }
-        );
+  const exitMpr = () => {
+    const layout = {
+      numRows: 1,
+      numColumns: 1,
+      viewports: [{ plugin: 'cornerstone' }],
+    };
 
-        setLayout({ viewports: layoutData });
-      },
-    },
-    {
-      text: 'Axial',
-      icon: 'cube',
-      active: false,
-      onClick: () => {
-        commandsManager.runCommand('axial');
-      },
-    },
-    {
-      text: 'Sagittal',
-      icon: 'cube',
-      active: false,
-      onClick: () => {
-        commandsManager.runCommand('sagittal');
-      },
-    },
-    {
-      text: 'Coronal',
-      icon: 'cube',
-      active: false,
-      onClick: () => {
-        commandsManager.runCommand('coronal');
-      },
-    },*/
-    {
-      label: "2D MPR",
-      icon: "cube",
-      onClick: () => {
-        commandsManager.runCommand("mpr2d");
-      }
-    }
-  ];
+    setLayout(layout);
+  };
 
   return {
-    buttons
+    mpr,
+    exitMpr,
+    activeViewportIndex,
+    viewportSpecificData,
+    studies,
   };
 };
 
-const ConnectedPluginSwitch = connect(
+export default connect(
   mapStateToProps,
   mapDispatchToProps,
   mergeProps
-)(PluginSwitch);
-
-export default ConnectedPluginSwitch;
+)(ConnectedPluginSwitch);

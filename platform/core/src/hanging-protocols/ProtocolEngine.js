@@ -504,12 +504,12 @@ export default class ProtocolEngine {
   /**
    * Sets the current layout
    *
-   * @param rows
-   * @param columns
+   * @param {number} numRows
+   * @param {number} numColumns
    */
-  setLayout(rows, columns) {
-    if (rows < 1 && columns < 1) {
-      log.error(`Invalid layout ${rows} x ${columns}`);
+  setLayout(numRows, numColumns) {
+    if (numRows < 1 && numColumns < 1) {
+      log.error(`Invalid layout ${numRows} x ${numColumns}`);
       return;
     }
 
@@ -519,16 +519,13 @@ export default class ProtocolEngine {
     }
 
     let viewports = [];
-    const numViewports = rows * columns;
+    const numViewports = numRows * numColumns;
 
     for (let i = 0; i < numViewports; i++) {
-      viewports.push({
-        height: `${100 / rows}%`,
-        width: `${100 / columns}%`,
-      });
+      viewports.push({});
     }
 
-    this.options.setLayout({ viewports });
+    this.options.setLayout({ numRows, numColumns, viewports });
   }
 
   /**
@@ -634,14 +631,10 @@ export default class ProtocolEngine {
         //console.log('renderedCallback for ' + element.id);
         customSettings.forEach(customSetting => {
           log.trace(
-            `ProtocolEngine::currentViewportData.renderedCallback Applying custom setting: ${
-              customSetting.id
-            }`
+            `ProtocolEngine::currentViewportData.renderedCallback Applying custom setting: ${customSetting.id}`
           );
           log.trace(
-            `ProtocolEngine::currentViewportData.renderedCallback with value: ${
-              customSetting.value
-            }`
+            `ProtocolEngine::currentViewportData.renderedCallback with value: ${customSetting.value}`
           );
 
           const setting = CustomViewportSettings[customSetting.id];
