@@ -1,6 +1,6 @@
 describe('OHIF VTK Extension', () => {
   before(() => {
-    cy.openStudy('Dummy');
+    cy.openStudy('Juno');
     cy.waitDicomImage();
     cy.expectMinimumThumbnails(1);
   });
@@ -10,7 +10,7 @@ describe('OHIF VTK Extension', () => {
     // This is a known bug; 2D MPR button does not show until viewport
     // has data from a drag-n-drop
     // Drag and drop first thumbnail into first viewport
-    cy.get('[data-cy="thumbnail-list"]:nth-child(1)').drag(
+    cy.get('[data-cy="thumbnail-list"]:nth-child(3)').drag(
       '.cornerstone-canvas'
     );
 
