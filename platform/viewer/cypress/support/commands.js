@@ -3,6 +3,8 @@ import { DragSimulator } from '../helpers/DragSimulator.js';
 import {
   initCornerstoneToolsAliases,
   initCommonElementsAliases,
+  initRouteAliases,
+  initVTKToolsAliases,
 } from './aliases.js';
 
 // ***********************************************
@@ -37,14 +39,19 @@ import {
  * @param {string} PatientName - Patient name that we would like to search for
  */
 Cypress.Commands.add('openStudy', patientName => {
+  cy.initRouteAliases();
   cy.visit('/');
   cy.get('#patientName').type(patientName);
 
-  cy.get('.studylistStudy > .patientName')
-    .as('patientResult')
-    .then({ timeout: 5000 }, $patientResult => {
-      cy.contains(patientName).click();
-    });
+  cy.get('.studylistStudy > .patientName', { timeout: 5000 })
+    .contains(patientName)
+    .click();
+
+  // cy.get('.studylistStudy > .patientName')
+  //   .as('patientResult')
+  //   .should({ timeout: 3000 }, () => {
+  //     cy.contains(patientName).click();
+  //   });
 });
 
 /**
@@ -103,6 +110,12 @@ Cypress.Commands.add(
     });
   }
 );
+
+Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
+  cy.get('[data-cy=thumbnail-list]', { timeout: 10000 }).should($itemList => {
+    expect($itemList.length >= seriesToWait).to.be.true;
+  });
+});
 
 //Command to wait DICOM image to load into the viewport
 Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
@@ -183,21 +196,82 @@ Cypress.Commands.add('initCommonElementsAliases', () => {
   initCommonElementsAliases();
 });
 
-//Add measurements in the viewport
-Cypress.Commands.add('addLengthMeasurement', () => {
-  cy.initCornerstoneToolsAliases();
-  cy.get('@lengthBtn').click();
-  const firstClick = [150, 100];
-  const secondClick = [130, 170];
-  cy.addLine('.cornerstone-canvas', firstClick, secondClick);
+//Initialize aliases for Routes
+Cypress.Commands.add('initRouteAliases', () => {
+  initRouteAliases();
+});
+
+//Initialize aliases for VTK tools
+Cypress.Commands.add('initVTKToolsAliases', () => {
+  initVTKToolsAliases();
 });
 
 //Add measurements in the viewport
-Cypress.Commands.add('addAngleMeasurement', () => {
-  cy.initCornerstoneToolsAliases();
-  cy.get('@angleBtn').click();
-  const initPos = [180, 390];
-  const midPos = [300, 410];
-  const finalPos = [180, 450];
-  cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
+Cypress.Commands.add(
+  'addLengthMeasurement',
+  (firstClick = [150, 100], secondClick = [130, 170]) => {
+    cy.initCornerstoneToolsAliases();
+    cy.get('@lengthBtn').click();
+    cy.addLine('@viewport', firstClick, secondClick);
+  }
+);
+
+//Add measurements in the viewport
+Cypress.Commands.add(
+  'addAngleMeasurement',
+  (initPos = [180, 390], midPos = [300, 410], finalPos = [180, 450]) => {
+    cy.initCornerstoneToolsAliases();
+    cy.get('@angleBtn').click();
+    cy.addAngle('@viewport', initPos, midPos, finalPos);
+  }
+);
+
+/**
+ * Tests if element is NOT in viewport, or does not exist in DOM
+ *
+ * @param {string} element - element selector string or alias
+ * @returns
+ */
+Cypress.Commands.add('isNotInViewport', element => {
+  cy.get(element, { timeout: 3000 }).should($el => {
+    const bottom = Cypress.$(cy.state('window')).height() - 50;
+    const right = Cypress.$(cy.state('window')).width() - 50;
+
+    // If it's not visible, it's not in the viewport
+    if ($el) {
+      const rect = $el[0].getBoundingClientRect();
+
+      // TODO: support leftOf, above
+      const isBeneath = rect.top >= bottom && rect.bottom >= bottom;
+      const isRightOf = rect.left >= right && rect.right >= right;
+      const isNotInViewport = isBeneath && isRightOf;
+
+      expect(isNotInViewport).to.be.true;
+    }
+  });
+});
+
+/**
+ * Tests if element is in viewport, or it does exist in DOM
+ *
+ * @param {string} element - element selector string or alias
+ * @returns
+ */
+Cypress.Commands.add('isInViewport', element => {
+  cy.get(element, { timeout: 3000 }).should($el => {
+    const bottom = Cypress.$(cy.state('window')).height();
+    const right = Cypress.$(cy.state('window')).width();
+
+    // If it's not visible, it's not in the viewport
+    if ($el) {
+      const rect = $el[0].getBoundingClientRect();
+
+      // TODO: support leftOf, above
+      const isBeneath = rect.top < bottom && rect.bottom < bottom;
+      const isRightOf = rect.left < right && rect.right < right;
+      const isInViewport = isBeneath && isRightOf;
+
+      expect(isInViewport).to.be.true;
+    }
+  });
 });
