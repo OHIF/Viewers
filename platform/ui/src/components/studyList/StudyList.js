@@ -442,7 +442,9 @@ class StudyList extends Component {
             </thead>
             <tbody id="studyListData">
               {!noListFragment
-                ? this.props.studies.map(this.renderTableRow(study, index))
+                ? this.props.studies.map((study, index) =>
+                    this.renderTableRow(study, index)
+                  )
                 : null}
             </tbody>
           </table>
