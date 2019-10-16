@@ -315,6 +315,7 @@ workflows:
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build:package
           start: yarn run test:e2e:serve
+          spec: 'cypress/integration/common/**/*'
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
@@ -344,6 +345,7 @@ workflows:
           build: npx cross-env QUICK_BUILD=true yarn run build
           start: yarn run test:e2e:serve
           wait-on: 'http://localhost:3000'
+          command: 'yarn run test:e2e:ci'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
@@ -364,6 +366,7 @@ workflows:
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build:package
           start: yarn run test:e2e:serve
+          spec: 'cypress/integration/common/**/*'
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace

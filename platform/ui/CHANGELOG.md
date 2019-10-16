@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.55.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.54.0...@ohif/ui@0.55.0) (2019-10-15)
+
+
+### Features
+
+* Add browser info and app version ([#1046](https://github.com/OHIF/Viewers/issues/1046)) ([c217b8b](https://github.com/OHIF/Viewers/commit/c217b8b))
+
+
+
+
+
 # [0.54.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.53.4...@ohif/ui@0.54.0) (2019-10-14)
 
 

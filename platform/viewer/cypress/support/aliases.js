@@ -10,7 +10,6 @@ export function initCornerstoneToolsAliases() {
   cy.get('.ToolbarRow > :nth-child(9)').as('resetBtn');
   cy.get('.ToolbarRow > :nth-child(10)').as('cineBtn');
   cy.get('.expandableToolMenu').as('moreBtn');
-  cy.get('.PluginSwitch > .toolbar-button').as('twodmprBtn');
   cy.get('.btn-group > .toolbar-button').as('layoutBtn');
 }
 
@@ -31,4 +30,22 @@ export function initCommonElementsAliases() {
   cy.get('div.ViewportOverlay > div.bottom-right.overlay-element > div').as(
     'viewportInfoBottomRight'
   );
+}
+
+//Creating aliases for Routes
+export function initRouteAliases() {
+  cy.server();
+  cy.route('GET', '/dcm4chee-arc/**/series').as('getStudySeries');
+}
+
+//Creating aliases for VTK tools buttons
+export function initVTKToolsAliases() {
+  cy.get('.PluginSwitch > .toolbar-button').as('twodmprBtn');
+  cy.get('.ToolbarRow > :nth-child(2)').as('crosshairsBtn');
+  cy.get('.ToolbarRow > :nth-child(3)').as('wwwcBtn');
+  cy.get('.ToolbarRow > :nth-child(4)').as('rotateBtn');
+  cy.get('.slab-thickness').as('slabSlider');
+  cy.get('.select-ohif').as('modeDropdown');
+  cy.get('.ohif-check-label').as('modeCheckbox');
+  cy.get('.btn-group > .toolbar-button').as('layoutBtn');
 }
