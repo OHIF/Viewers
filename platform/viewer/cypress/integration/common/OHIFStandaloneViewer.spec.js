@@ -1,6 +1,6 @@
 describe('OHIFStandaloneViewer', () => {
   beforeEach(() => {
-    cy.visit('/');
+    cy.openStudyList();
   });
 
   it('loads route with at least 2 rows', () => {

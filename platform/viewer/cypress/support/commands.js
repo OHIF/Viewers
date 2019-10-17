@@ -39,19 +39,24 @@ import {
  * @param {string} PatientName - Patient name that we would like to search for
  */
 Cypress.Commands.add('openStudy', patientName => {
-  cy.initRouteAliases();
-  cy.visit('/');
+  cy.openStudyList();
   cy.get('#patientName').type(patientName);
-
-  cy.get('.studylistStudy > .patientName', { timeout: 5000 })
-    .contains(patientName)
-    .click();
+  cy.wait('@getStudies');
+  cy.wait(1000);
+  cy.get('#studyListData .studylistStudy', { timeout: 5000 }).contains(patientName).
+    first().click();
 
   // cy.get('.studylistStudy > .patientName')
   //   .as('patientResult')
   //   .should({ timeout: 3000 }, () => {
   //     cy.contains(patientName).click();
   //   });
+});
+
+Cypress.Commands.add('openStudyList', patientName => {
+  cy.initRouteAliases();
+  cy.visit('/');
+  cy.wait('@getStudies');
 });
 
 /**
