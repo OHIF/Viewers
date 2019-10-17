@@ -45,6 +45,7 @@ Cypress.Commands.add('openStudy', patientName => {
 
   cy.get('.studylistStudy > .patientName', { timeout: 5000 })
     .contains(patientName)
+    .first()
     .click();
 
   // cy.get('.studylistStudy > .patientName')
@@ -66,6 +67,7 @@ Cypress.Commands.add('openStudyModality', modality => {
 
   cy.get('#studyListData > tr:nth-child(1)', { timeout: 5000 })
     .contains(modality)
+    .first()
     .click();
 });
 
