@@ -177,17 +177,38 @@ class StudyList extends Component {
 
   getBlurHandler(key) {
     return event => {
-      debugger;
       this.delayedSearch.cancel();
       this.setSearchData(key, event.target.value);
     };
+  }
+
+  // Should update state method.
+  // Used to prevent relying on shouldComponentUpdate React method or Pure component implementations of shallow comparison.
+  shouldUpdateStateValue(stateValue, stateValueToCompare) {
+    if (
+      typeof stateValue !== 'object' &&
+      typeof stateValue === typeof stateValueToCompare
+    ) {
+      return stateValue !== stateValueToCompare;
+    } else if (typeof stateValue === 'object') {
+      return (
+        Object.entries(stateValue).toString() !==
+        Object.entries(stateValueToCompare).toString()
+      );
+    } else {
+      return !!stateValue;
+    }
   }
 
   setSearchData(key, value) {
     const searchData = { ...this.state.searchData };
     searchData[key] = value;
 
-    this.setState({ searchData: searchData });
+    if (
+      this.shouldUpdateStateValue(searchData[key], this.state.searchData[key])
+    ) {
+      this.setState({ ...this.state, searchData });
+    }
   }
 
   setSearchDataBatch(keyValues) {
@@ -436,20 +457,16 @@ class StudyList extends Component {
                                   (this.state.focusedInput === 'endDate' ||
                                     preset)
                                 ) {
-                                  this.setSearchDataBatch(
-                                    {
-                                      studyDateFrom: startDate.toDate(),
-                                      studyDateTo: endDate.toDate(),
-                                    }
-                                  );
+                                  this.setSearchDataBatch({
+                                    studyDateFrom: startDate.toDate(),
+                                    studyDateTo: endDate.toDate(),
+                                  });
                                   this.setState({ focusedInput: false });
                                 } else if (!startDate && !endDate) {
-                                  this.setSearchDataBatch(
-                                    {
-                                      studyDateFrom: null,
-                                      studyDateTo: null,
-                                    }
-                                  );
+                                  this.setSearchDataBatch({
+                                    studyDateFrom: null,
+                                    studyDateTo: null,
+                                  });
                                 }
                               }}
                               focusedInput={this.state.focusedInput}
@@ -471,12 +488,12 @@ class StudyList extends Component {
           {noListFragment
             ? noListFragment
             : getPaginationFragment(
-              this.props,
-              this.state.searchData,
-              this.nextPage,
-              this.prevPage,
-              this.onRowsPerPageChange
-            )}
+                this.props,
+                this.state.searchData,
+                this.nextPage,
+                this.prevPage,
+                this.onRowsPerPageChange
+              )}
         </div>
       </div>
     );
