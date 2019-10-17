@@ -107,7 +107,6 @@ class StudyListWithData extends Component {
     const promise = OHIF.studies.searchStudies(server, filter);
 
     this.setState({
-      studies: [],
       searchingStudies: true,
     });
     promise

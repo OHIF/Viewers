@@ -177,25 +177,27 @@ class StudyList extends Component {
 
   getBlurHandler(key) {
     return event => {
+      debugger;
       this.delayedSearch.cancel();
-      this.setSearchData(key, event.target.value, this.search);
+      this.setSearchData(key, event.target.value);
     };
   }
 
-  setSearchData(key, value, callback) {
-    const searchData = this.state.searchData;
+  setSearchData(key, value) {
+    const searchData = { ...this.state.searchData };
     searchData[key] = value;
-    this.setState({ searchData }, callback);
+
+    this.setState({ searchData: searchData });
   }
 
-  setSearchDataBatch(keyValues, callback) {
-    const searchData = this.state.searchData;
+  setSearchDataBatch(keyValues) {
+    const searchData = { ...this.state.searchData };
 
     Object.keys(keyValues).forEach(key => {
       searchData[key] = keyValues[key];
     });
 
-    this.setState({ searchData }, callback);
+    this.setState({ searchData });
   }
 
   async onInputKeydown(event) {
@@ -205,7 +207,7 @@ class StudyList extends Component {
 
       this.delayedSearch.cancel();
       // reset the page because user is doing a new search
-      this.setSearchData('currentPage', 0, this.search);
+      this.setSearchData('currentPage', 0);
     }
   }
 
@@ -224,18 +226,18 @@ class StudyList extends Component {
   nextPage(currentPage) {
     currentPage = currentPage + 1;
     this.delayedSearch.cancel();
-    this.setSearchData('currentPage', currentPage, this.search);
+    this.setSearchData('currentPage', currentPage);
   }
 
   prevPage(currentPage) {
     currentPage = currentPage - 1;
     this.delayedSearch.cancel();
-    this.setSearchData('currentPage', currentPage, this.search);
+    this.setSearchData('currentPage', currentPage);
   }
 
   onRowsPerPageChange(rowsPerPage) {
     this.delayedSearch.cancel();
-    this.setSearchDataBatch({ rowsPerPage, currentPage: 0 }, this.search);
+    this.setSearchDataBatch({ rowsPerPage, currentPage: 0 });
   }
 
   onSortClick(field) {
@@ -256,7 +258,7 @@ class StudyList extends Component {
       }
 
       this.delayedSearch.cancel();
-      this.setSearchData('sortData', { field, order }, this.search);
+      this.setSearchData('sortData', { field, order });
     };
   }
 
@@ -264,12 +266,35 @@ class StudyList extends Component {
     this.setState({ highlightedItem: studyItemUid });
   }
 
-  renderTableRow(study, index) {
+  getTableRow(study, index) {
     const trKey = `trStudy${index}${study.studyInstanceUid}`;
 
     if (!study) {
       return;
     }
+
+    const getTableCell = (
+      study,
+      studyKey,
+      emptyValue = '',
+      emptyClass = ''
+    ) => {
+      const componentKey = `td${studyKey}`;
+      const isValidValue = study && typeof study[studyKey] === 'string';
+      let className = emptyClass;
+      let value = emptyValue;
+
+      if (isValidValue) {
+        className = studyKey;
+        value = study[studyKey];
+      }
+
+      return (
+        <td key={componentKey} className={className}>
+          {value}
+        </td>
+      );
+    };
 
     return (
       <tr
@@ -290,30 +315,31 @@ class StudyList extends Component {
           this.props.onSelectItem(study.studyInstanceUid);
         }}
       >
-        <td
-          key="tdPatientIdName"
-          className={study.patientName ? 'patientName' : 'emptyCell'}
-        >
-          {study.patientName || `(${this.props.t('Empty')})`}
-        </td>
-
-        <td key="tdPatientId" className="patientId">
-          {study.patientId}
-        </td>
-        <td key="tdAccessionNum" className="accessionNumber">
-          {study.accessionNumber}
-        </td>
-        <td key="tdStudyDate" className="studyDate">
-          {study.studyDate}
-        </td>
-        <td key="tdModalities" className="modalities">
-          {study.modalities}
-        </td>
-        <td key="tdStudyDesc" className="studyDescription">
-          {study.studyDescription}
-        </td>
+        {getTableCell(
+          study,
+          'patientName',
+          `(${this.props.t('Empty')})`,
+          'emptyCell'
+        )}
+        {getTableCell(study, 'patientId')}
+        {getTableCell(study, 'accessionNumber')}
+        {getTableCell(study, 'studyDate')}
+        {getTableCell(study, 'modalities')}
+        {getTableCell(study, 'studyDescription')}
       </tr>
     );
+  }
+
+  componentDidUpdate(previousProps, previousState) {
+    if (previousState.searchData !== this.state.searchData) {
+      this.search();
+    }
+  }
+
+  renderTableBody(noListFragment) {
+    return !noListFragment && this.props.studies
+      ? this.props.studies.map(this.getTableRow.bind(this))
+      : null;
   }
 
   render() {
@@ -334,8 +360,9 @@ class StudyList extends Component {
       this.props.t,
       this.props.studies,
       this.state.error,
-      this.props.loading
+      this.props.loading || this.state.loading
     );
+    const tableBody = this.renderTableBody(noListFragment);
 
     return (
       <div className="StudyList">
@@ -413,8 +440,7 @@ class StudyList extends Component {
                                     {
                                       studyDateFrom: startDate.toDate(),
                                       studyDateTo: endDate.toDate(),
-                                    },
-                                    this.search
+                                    }
                                   );
                                   this.setState({ focusedInput: false });
                                 } else if (!startDate && !endDate) {
@@ -422,8 +448,7 @@ class StudyList extends Component {
                                     {
                                       studyDateFrom: null,
                                       studyDateTo: null,
-                                    },
-                                    this.search
+                                    }
                                   );
                                 }
                               }}
@@ -440,24 +465,18 @@ class StudyList extends Component {
                 })}
               </tr>
             </thead>
-            <tbody id="studyListData">
-              {!noListFragment
-                ? this.props.studies.map((study, index) =>
-                    this.renderTableRow(study, index)
-                  )
-                : null}
-            </tbody>
+            <tbody id="studyListData">{tableBody}</tbody>
           </table>
 
           {noListFragment
             ? noListFragment
             : getPaginationFragment(
-                this.props,
-                this.state.searchData,
-                this.nextPage,
-                this.prevPage,
-                this.onRowsPerPageChange
-              )}
+              this.props,
+              this.state.searchData,
+              this.nextPage,
+              this.prevPage,
+              this.onRowsPerPageChange
+            )}
         </div>
       </div>
     );
