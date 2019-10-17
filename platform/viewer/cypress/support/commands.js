@@ -55,6 +55,21 @@ Cypress.Commands.add('openStudy', patientName => {
 });
 
 /**
+ * Command to search for a modality and open the study.
+ *
+ * @param {string} modality - Modality type that we would like to search for
+ */
+Cypress.Commands.add('openStudyModality', modality => {
+  cy.initRouteAliases();
+  cy.visit('/');
+  cy.get('#modalities').type(modality);
+
+  cy.get('#studyListData > tr:nth-child(1)', { timeout: 5000 })
+    .contains(modality)
+    .click();
+});
+
+/**
  * Command to perform a drag and drop action. Before using this command, we must get the element that should be dragged first.
  * Example of usage: cy.get(element-to-be-dragged).drag(dropzone-element)
  *
