@@ -149,13 +149,9 @@ class ViewerMain extends Component {
 
   render() {
     const { viewportSpecificData } = this.props;
-    const viewportData = [];
-
-    if (viewportSpecificData) {
-      Object.keys(viewportSpecificData).forEach((key, i) => {
-        viewportData[i] = viewportSpecificData[key];
-      });
-    }
+    const viewportData = viewportSpecificData
+      ? Object.values(viewportSpecificData)
+      : [];
 
     return (
       <div className="ViewerMain">
