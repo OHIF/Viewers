@@ -172,8 +172,6 @@ class OHIFVTKViewport extends Component {
       default:
         imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid);
 
-        //loadImageData(imageDataObject);
-
         return imageDataObject;
     }
   };
@@ -253,8 +251,6 @@ class OHIFVTKViewport extends Component {
       frameIndex
     );
 
-    this.imageDataObject = imageDataObject;
-
     // TODO: Temporarily disabling this since it is not yet
     // being used and hurts performance significantly.
     /*if (!labelmap) {
@@ -266,14 +262,11 @@ class OHIFVTKViewport extends Component {
       displaySetInstanceUid
     );
 
-    this.setState(
-      {
-        paintFilterBackgroundImageData: imageDataObject.vtkImageData,
-        paintFilterLabelMapImageData: null, // TODO
-        percentComplete: 0,
-      },
-      () => {}
-    );
+    this.setState({
+      paintFilterBackgroundImageData: imageDataObject.vtkImageData,
+      paintFilterLabelMapImageData: null, // TODO
+      percentComplete: 0,
+    });
 
     this.setState(
       {
@@ -282,19 +275,17 @@ class OHIFVTKViewport extends Component {
         percentComplete: 0,
       },
       () => {
-        requestAnimationFrame(() => {
-          this.loadProgressively();
+        this.loadProgressively(imageDataObject);
 
-          // TODO: There must be a better way to do this.
-          // We do this so that if all the data is available the react-vtkjs-viewport
-          // Will render _something_ before the volumes are set and the volume
-          // Construction that happens in react-vtkjs-viewport locks up the CPU.
-          setTimeout(() => {
-            this.setState({
-              volumes: [volumeActor],
-            });
-          }, 200);
-        });
+        // TODO: There must be a better way to do this.
+        // We do this so that if all the data is available the react-vtkjs-viewport
+        // Will render _something_ before the volumes are set and the volume
+        // Construction that happens in react-vtkjs-viewport locks up the CPU.
+        setTimeout(() => {
+          this.setState({
+            volumes: [volumeActor],
+          });
+        }, 200);
       }
     );
   }
@@ -321,54 +312,35 @@ class OHIFVTKViewport extends Component {
     }
   }
 
-  loadProgressively() {
-    loadImageData(this.imageDataObject);
+  loadProgressively(imageDataObject) {
+    loadImageData(imageDataObject);
 
-    const {
-      isLoading,
-      insertPixelDataPromises,
-      vtkImageData,
-    } = this.imageDataObject;
+    const { isLoading, insertPixelDataPromises } = imageDataObject;
 
     const numberOfFrames = insertPixelDataPromises.length;
-    let numberProcessed = 0;
 
-    const reRenderFraction = numberOfFrames / 5;
-    let reRenderTarget = reRenderFraction;
-
-    if (isLoading) {
-      insertPixelDataPromises.forEach(promise => {
-        promise.then(() => {
-          numberProcessed++;
-
-          const percentComplete = Math.floor(
-            (numberProcessed * 100) / numberOfFrames
-          );
-
-          if (percentComplete !== this.state.percentComplete) {
-            this.setState({
-              percentComplete,
-            });
-          }
-
-          // TODO -> Just do this higher up, call when loadImageData is first
-          // called and then do this once after all apis are made.
-          if (
-            this.props.viewportIndex === 0 &&
-            numberProcessed > reRenderTarget
-          ) {
-            reRenderTarget += reRenderFraction;
-            vtkImageData.modified();
-          }
-        });
-      });
-
-      Promise.all(insertPixelDataPromises).then(() => {
-        this.setState({ isLoaded: true });
-      });
-    } else {
+    if (!isLoading) {
       this.setState({ isLoaded: true });
+      return;
     }
+
+    insertPixelDataPromises.forEach(promise => {
+      promise.then(numberProcessed => {
+        const percentComplete = Math.floor(
+          (numberProcessed * 100) / numberOfFrames
+        );
+
+        if (percentComplete !== this.state.percentComplete) {
+          this.setState({
+            percentComplete,
+          });
+        }
+      });
+    });
+
+    Promise.all(insertPixelDataPromises).then(() => {
+      this.setState({ isLoaded: true });
+    });
   }
 
   render() {
