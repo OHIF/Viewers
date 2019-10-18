@@ -1,7 +1,7 @@
 describe('ViewerRouting', () => {
   beforeEach(() => {
     cy.visit('/');
-    cy.contains('Study List', { timeout: 5000 });
+    cy.contains('Study List');
     cy.get('#studyListData > :nth-child(1) > .patientId').click();
   });
 

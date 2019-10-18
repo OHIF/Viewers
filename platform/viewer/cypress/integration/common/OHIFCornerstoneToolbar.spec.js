@@ -2,7 +2,7 @@ describe('OHIF Cornerstone Toolbar', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
     cy.waitDicomImage();
-    cy.expectMinimumThumbnails(1);
+    cy.expectMinimumThumbnails(3);
   });
 
   beforeEach(() => {
@@ -14,39 +14,37 @@ describe('OHIF Cornerstone Toolbar', () => {
   it('checks if all primary buttons are being displayed', () => {
     cy.get('@stackScrollBtn')
       .should('be.visible')
-      .contains('Stack Scroll', { timeout: 5000 });
+      .contains('Stack Scroll');
     cy.get('@zoomBtn')
       .should('be.visible')
-      .contains('Zoom', { timeout: 5000 });
-    cy
-      .get('@levelsBtn')
+      .contains('Zoom');
+    cy.get('@levelsBtn')
       .should('be.visible')
-      .contains('Levels'),
-      { timeout: 5000 };
+      .contains('Levels');
     cy.get('@panBtn')
       .should('be.visible')
-      .contains('Pan', { timeout: 5000 });
+      .contains('Pan');
     cy.get('@lengthBtn')
       .should('be.visible')
-      .contains('Length', { timeout: 5000 });
+      .contains('Length');
     cy.get('@annotateBtn')
       .should('be.visible')
-      .contains('Annotate', { timeout: 5000 });
+      .contains('Annotate');
     cy.get('@angleBtn')
       .should('be.visible')
-      .contains('Angle', { timeout: 5000 });
+      .contains('Angle');
     cy.get('@resetBtn')
       .should('be.visible')
-      .contains('Reset', { timeout: 5000 });
+      .contains('Reset');
     cy.get('@cineBtn')
       .should('be.visible')
-      .contains('CINE', { timeout: 5000 });
+      .contains('CINE');
     cy.get('@moreBtn')
       .should('be.visible')
-      .contains('More', { timeout: 5000 });
+      .contains('More');
     cy.get('@layoutBtn')
       .should('be.visible')
-      .contains('Layout', { timeout: 5000 });
+      .contains('Layout');
   });
 
   it('checks if Stack Scroll tool will navigate across all series in the viewport', () => {
@@ -65,9 +63,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     const expectedText =
       'Ser: 1Img: 14 14/26256 x 256Loc: 0.00 mm Thick: 5.00 mm';
-    cy.get('@viewportInfoBottomLeft').should('have.text', expectedText, {
-      timeout: 5000,
-    });
+    cy.get('@viewportInfoBottomLeft').should('have.text', expectedText);
   });
 
   it('checks if Zoom tool will zoom in/out an image in the viewport', () => {
@@ -85,9 +81,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .trigger('mouseup');
 
     const expectedText = 'Zoom: 884%W: 820 L: 410Lossless / Uncompressed';
-    cy.get('@viewportInfoBottomRight').should('have.text', expectedText, {
-      timeout: 5000,
-    });
+    cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
   it('checks if Levels tool will change the contrast and brightness of an image in the viewport', () => {
@@ -108,9 +102,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .trigger('mouseup');
 
     const expectedText = 'Zoom: 211%W: 544 L: 626Lossless / Uncompressed';
-    cy.get('@viewportInfoBottomRight').should('have.text', expectedText, {
-      timeout: 5000,
-    });
+    cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
   it('checks if Pan tool will move the image inside the viewport', () => {
@@ -206,9 +198,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@resetBtn').click();
 
     const expectedText = 'Zoom: 211%W: 820 L: 410Lossless / Uncompressed';
-    cy.get('@viewportInfoBottomRight').should('have.text', expectedText, {
-      timeout: 5000,
-    });
+    cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
   it('checks if CINE tool will prompt a modal with working controls', () => {
@@ -218,12 +208,12 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Click on button
     cy.get('@cineBtn').click();
     //Vefiry if cine control overlay is being displayed
-    cy.get('.cine-controls', { timeout: 5000 })
+    cy.get('.cine-controls')
       .as('cineControls')
       .should('be.visible');
 
     //Test PLAY button
-    cy.get('[title="Play / Stop"]', { timeout: 5000 })
+    cy.get('[title="Play / Stop"]')
       .click()
       .wait(100)
       .click();
@@ -231,10 +221,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     let expectedText = 'Img: 1 1/26';
     cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
       'not.have.text',
-      expectedText,
-      {
-        timeout: 5000,
-      }
+      expectedText
     );
 
     //Test SKIP TO FIRST IMAGE button
@@ -243,8 +230,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .wait(1000);
     cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
       'contain.text',
-      expectedText,
-      { timeout: 5000 }
+      expectedText
     );
 
     //Test NEXT IMAGE button
@@ -254,8 +240,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     expectedText = 'Img: 2 2/26';
     cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
       'contain.text',
-      expectedText,
-      { timeout: 5000 }
+      expectedText
     );
 
     //Test SKIP TO LAST IMAGE button
@@ -265,8 +250,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     expectedText = 'Img: 27 26/26';
     cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
       'contain.text',
-      expectedText,
-      { timeout: 5000 }
+      expectedText
     );
 
     //Test PREVIOUS IMAGE button
@@ -276,8 +260,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     expectedText = 'Img: 26 25/26';
     cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
       'contain.text',
-      expectedText,
-      { timeout: 5000 }
+      expectedText
     );
 
     //Click on Cine button
@@ -312,7 +295,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .then($moreBtn => {
         cy.wrap($moreBtn)
           .should('have.class', 'active')
-          .contains(iconName, { timeout: 5000 });
+          .contains(iconName);
       });
 
     //Verify if overlay is hidden
@@ -460,9 +443,9 @@ describe('OHIF Cornerstone Toolbar', () => {
     //cy.isNotInViewport('@measurementsPanel'); //TO DO: check this intermittent behaviour
 
     //Click More button
-    cy.get('@moreBtn', { timeout: 5000 }).click();
+    cy.get('@moreBtn').click();
     //Click Eraser button
-    cy.get('.tooltip-inner > :nth-child(12)', { timeout: 5000 }).click();
+    cy.get('.tooltip-inner > :nth-child(12)').click();
 
     //Erase measurement #1 and Verify if it was removed from the measurements panel
     const [x1, y1] = [150, 100];

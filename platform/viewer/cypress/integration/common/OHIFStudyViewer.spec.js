@@ -2,7 +2,7 @@ describe('OHIF Study Viewer Page', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
     cy.waitDicomImage();
-    cy.expectMinimumThumbnails(1);
+    cy.expectMinimumThumbnails(5);
   });
 
   beforeEach(() => {
@@ -25,9 +25,7 @@ describe('OHIF Study Viewer Page', () => {
 
     const expectedText =
       'Ser: 2Img: 1 1/13512 x 512Loc: -17.60 mm Thick: 3.00 mm';
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText, {
-      timeout: 5000,
-    });
+    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
   });
 
   it('checks if Series left panel can be hidden/displayed', () => {
@@ -49,11 +47,11 @@ describe('OHIF Study Viewer Page', () => {
   it('checks if measurement item can be Relabeled under Measurements panel', () => {
     cy.addLengthMeasurement(); //Adding measurement in the viewport
     cy.get('@measurementsBtn').click();
-    cy.get('.measurementItem', { timeout: 10000 }).click();
+    cy.get('.measurementItem').click();
 
     // Click "Relabel"
     cy.get('.btnAction')
-      .contains('Relabel', { timeout: 10000 })
+      .contains('Relabel')
       .click();
 
     // Search for "Bone"
@@ -61,16 +59,14 @@ describe('OHIF Study Viewer Page', () => {
 
     // Select "Bone" Result
     cy.get('.treeInputs > .wrapperLabel')
-      .contains('Bone', { timeout: 10000 })
+      .contains('Bone')
       .click();
 
     // Confirm Selection
     cy.get('.checkIconWrapper').click();
 
     // Verify if 'Bone' label was added
-    cy.get('.measurementLocation').should('contain.text', 'Bone', {
-      timeout: 10000,
-    });
+    cy.get('.measurementLocation').should('contain.text', 'Bone');
     // Close panel
     cy.get('@measurementsBtn').click();
     cy.get('@measurementsPanel').should('not.be.enabled');
@@ -119,7 +115,7 @@ describe('OHIF Study Viewer Page', () => {
 
     //Click "Delete measurement"
     cy.get('.form-action')
-      .contains('Delete measurement', { timeout: 5000 })
+      .contains('Delete measurement')
       .click();
 
     //Open measurements menu
@@ -154,7 +150,7 @@ describe('OHIF Study Viewer Page', () => {
 
     // Click "Relabel"
     cy.get('.form-action')
-      .contains('Relabel', { timeout: 5000 })
+      .contains('Relabel')
       .click();
 
     // Search for "Brain"
@@ -162,7 +158,7 @@ describe('OHIF Study Viewer Page', () => {
 
     // Select "Brain" Result
     cy.get('.treeInputs > .wrapperLabel')
-      .contains('Brain', { timeout: 5000 })
+      .contains('Brain')
       .click();
 
     // Confirm Selection
@@ -183,7 +179,7 @@ describe('OHIF Study Viewer Page', () => {
 
     // Click "Description"
     cy.get('.form-action')
-      .contains('Add Description', { timeout: 5000 })
+      .contains('Add Description')
       .click();
 
     // Enter description text
@@ -198,12 +194,12 @@ describe('OHIF Study Viewer Page', () => {
 
     // Verify if label was added
     cy.get('.measurementLocation')
-      .should('contain.text', 'Brain', { timeout: 5000 })
+      .should('contain.text', 'Brain')
       .log('Relabel added with success');
 
     //Verify if descriptionText was added
     cy.get('.measurementLocation')
-      .should('contain.text', descriptionText, { timeout: 5000 })
+      .should('contain.text', descriptionText)
       .log('Description added with success');
 
     // Close panel

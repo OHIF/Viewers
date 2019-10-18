@@ -44,38 +44,15 @@ Cypress.Commands.add('openStudy', patientName => {
   cy.wrap(null).then(() => {
     return new Cypress.Promise((resolve, reject) => {
       cy.get('#patientName').type(patientName);
-      //    .wait(3000)
       setTimeout(() => {
-        cy.get('#studyListData', { timeout: 5000 })
-          .contains(patientName, { timeout: 5000 })
+        cy.get('#studyListData')
+          .contains(patientName)
           .first()
           .click();
         resolve();
-      }, 1000);
+      }, 2000);
     });
   });
-  // let waited = false;
-  // function getStudies() {
-  //   // return a promise that resolves after 1 second
-  //   return new Cypress.Promise((resolve, reject) => {
-  //     setTimeout(() => {
-  //       cy.get('#studyListData', { timeout: 5000 })
-  //         .contains(patientName)
-  //         .first()
-  //         .click();
-  //       waited = true;
-  //       resolve();
-  //     }, 1000);
-  //   });
-  // }
-
-  // cy.wrap(null).then(() => {
-  //   // return a promise to cy.then() that
-  //   // is awaited until it resolves
-  //   return getStudies().then(str => {
-  //     expect(waited).to.be.true;
-  //   });
-  // });
 });
 
 /**
@@ -90,10 +67,19 @@ Cypress.Commands.add('openStudyModality', modality => {
     .type(modality)
     .wait(2000);
 
-  cy.get('#studyListData', { timeout: 5000 })
-    .contains(modality, { timeout: 5000 })
+  cy.get('#studyListData')
+    .contains(modality)
     .first()
     .click();
+});
+
+/**
+ * Command to wait and check if a new page was loaded
+ *
+ * @param {string} url - part of the expected url. Default value is /viewer/
+ */
+Cypress.Commands.add('isPageLoaded', (url = '/viewer/') => {
+  return cy.location('pathname', { timeout: 60000 }).should('include', url);
 });
 
 /**
@@ -161,31 +147,35 @@ Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
 
 //Command to wait DICOM image to load into the viewport
 Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
-  cy.window()
-    .its('cornerstone')
-    .then({ timeout }, $cornerstone => {
-      return new Cypress.Promise(resolve => {
-        const onEvent = renderedEvt => {
-          const element = renderedEvt.detail.element;
+  const loaded = cy.isPageLoaded();
 
-          element.removeEventListener('cornerstoneimagerendered', onEvent);
-          $cornerstone.events.removeEventListener(
-            'cornerstoneimagerendered',
-            onEvent
+  if (loaded) {
+    cy.window()
+      .its('cornerstone')
+      .then({ timeout }, $cornerstone => {
+        return new Cypress.Promise(resolve => {
+          const onEvent = renderedEvt => {
+            const element = renderedEvt.detail.element;
+
+            element.removeEventListener('cornerstoneimagerendered', onEvent);
+            $cornerstone.events.removeEventListener(
+              'cornerstoneimagerendered',
+              onEvent
+            );
+            resolve();
+          };
+          const onEnabled = enabledEvt => {
+            const element = enabledEvt.detail.element;
+
+            element.addEventListener('cornerstoneimagerendered', onEvent);
+          };
+          $cornerstone.events.addEventListener(
+            'cornerstoneelementenabled',
+            onEnabled
           );
-          resolve();
-        };
-        const onEnabled = enabledEvt => {
-          const element = enabledEvt.detail.element;
-
-          element.addEventListener('cornerstoneimagerendered', onEvent);
-        };
-        $cornerstone.events.addEventListener(
-          'cornerstoneelementenabled',
-          onEnabled
-        );
+        });
       });
-    });
+  }
 });
 
 //Command to reset and clear all the changes made to the viewport

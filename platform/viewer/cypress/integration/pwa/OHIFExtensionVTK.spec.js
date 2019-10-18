@@ -14,7 +14,7 @@ describe('OHIF VTK Extension', () => {
       '.viewport-drop-target'
     );
 
-    cy.get('.PluginSwitch > .toolbar-button', { timeout: 10000 })
+    cy.get('.PluginSwitch > .toolbar-button')
       .as('twodmprBtn')
       .should('be.visible')
       .then(btn => {
@@ -33,22 +33,22 @@ describe('OHIF VTK Extension', () => {
 
     cy.get('@crosshairsBtn')
       .should('be.visible')
-      .contains('Crosshairs', { timeout: 5000 });
+      .contains('Crosshairs');
     cy.get('@wwwcBtn')
       .should('be.visible')
-      .contains('WWWC', { timeout: 5000 });
+      .contains('WWWC');
     cy.get('@rotateBtn')
       .should('be.visible')
-      .contains('Rotate', { timeout: 5000 });
+      .contains('Rotate');
     cy.get('@slabSlider')
       .should('be.visible')
-      .contains('Slab Thickness', { timeout: 5000 });
+      .contains('Slab Thickness');
     cy.get('@modeDropdown')
-      .should('be.visible', { timeout: 5000 })
-      .contains('MIP', { timeout: 5000 });
+      .should('be.visible')
+      .contains('MIP');
     cy.get('@modeCheckbox').should('be.visible');
     cy.get('@layoutBtn')
       .should('be.visible')
-      .contains('Layout', { timeout: 5000 });
+      .contains('Layout');
   });
 });

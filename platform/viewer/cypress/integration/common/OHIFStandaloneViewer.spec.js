@@ -7,7 +7,7 @@ describe('OHIFStandaloneViewer', () => {
     cy.screenshot();
     cy.percySnapshot();
 
-    cy.get('#studyListData tr', { timeout: 15000 })
+    cy.get('#studyListData tr')
       .its('length')
       .should('be.gt', 2);
   });
