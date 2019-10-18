@@ -116,8 +116,6 @@ function _setView(api, sliceNormal, viewUp) {
 
 function switchMPRInteractors(api, istyle) {
   const renderWindow = api.genericRenderWindow.getRenderWindow();
-  const renderer = api.genericRenderWindow.getRenderer();
-  const camera = renderer.getActiveCamera();
   const currentIStyle = renderWindow.getInteractor().getInteractorStyle();
 
   let currentViewport;
@@ -131,10 +129,12 @@ function switchMPRInteractors(api, istyle) {
     defaultSlabThickness = currentSlabThickness;
   }
 
-  renderWindow.getInteractor().setInteractorStyle(istyle);
+  const interactor = renderWindow.getInteractor();
+
+  interactor.setInteractorStyle(istyle);
 
   // TODO: Not sure why this is required the second time this function is called
-  istyle.setInteractor(renderWindow.getInteractor());
+  istyle.setInteractor(interactor);
 
   if (currentViewport) {
     istyle.setViewport(currentViewport);
@@ -260,12 +260,61 @@ const actions = {
     });
   },
   mpr2d: async ({ viewports }) => {
+    // TODO push a lot of this backdoor logic lower down to the library level.
     const displaySet =
       viewports.viewportSpecificData[viewports.activeViewportIndex];
 
+    // TODO -> Clean this logic up a bit.
+    const cornerstoneElement = cornerstone.getEnabledElement(displaySet.dom);
+
+    let cornerstoneVOI;
+
+    if (cornerstoneElement) {
+      const imageId = cornerstoneElement.image.imageId;
+
+      const { modality } = cornerstone.metaData.get(
+        'generalSeriesModule',
+        imageId
+      );
+
+      if (modality !== 'PT') {
+        const { windowWidth, windowCenter } = cornerstoneElement.viewport.voi;
+
+        cornerstoneVOI = {
+          windowWidth,
+          windowCenter,
+        };
+      }
+    }
+
+    const viewportProps = [
+      {
+        //Axial
+        orientation: {
+          sliceNormal: [0, 0, 1],
+          viewUp: [0, -1, 0],
+        },
+      },
+
+      {
+        // Sagital
+        orientation: {
+          sliceNormal: [1, 0, 0],
+          viewUp: [0, 0, 1],
+        },
+      },
+      {
+        // Coronal
+        orientation: {
+          sliceNormal: [0, 1, 0],
+          viewUp: [0, 0, 1],
+        },
+      },
+    ];
+
     let apiByViewport;
     try {
-      apiByViewport = await setMPRLayout(displaySet);
+      apiByViewport = await setMPRLayout(displaySet, viewportProps);
     } catch (error) {
       throw new Error(error);
     }
@@ -276,11 +325,29 @@ const actions = {
       .getProperty()
       .getRGBTransferFunction(0);
 
+    if (cornerstoneVOI) {
+      const { windowWidth, windowCenter } = cornerstoneVOI;
+      const lower = windowCenter - windowWidth / 2.0;
+      const upper = windowCenter + windowWidth / 2.0;
+
+      rgbTransferFunction.setRange(lower, upper);
+
+      apiByViewport.forEach(api => {
+        api.updateVOI(windowWidth, windowCenter);
+      });
+    }
+
     const onModifiedSubscription = rgbTransferFunction.onModified(() => {
-      apiByViewport.forEach(a => {
-        const renderWindow = a.genericRenderWindow.getRenderWindow();
+      const range = rgbTransferFunction.getMappingRange();
+      const windowWidth = Math.abs(range[1] - range[0]);
+      const windowCenter = range[0] + windowWidth / 2;
+
+      apiByViewport.forEach(api => {
+        const renderWindow = api.genericRenderWindow.getRenderWindow();
 
         renderWindow.render();
+
+        api.updateVOI(windowWidth, windowCenter);
       });
     });
 
@@ -289,7 +356,6 @@ const actions = {
     apiByViewport.forEach((api, index) => {
       const renderWindow = api.genericRenderWindow.getRenderWindow();
       const renderer = api.genericRenderWindow.getRenderer();
-      const camera = renderer.getActiveCamera();
 
       const istyle = vtkInteractorStyleMPRCrosshairs.newInstance();
       renderWindow.getInteractor().setInteractorStyle(istyle);
@@ -311,25 +377,10 @@ const actions = {
         crosshairsWidget,
       };
 
-      switch (index) {
-        default:
-        case 0:
-          //Axial
-          istyle.setSliceNormal(0, 0, 1);
-          istyle.setViewUp(0, -1, 0);
+      const orientation = api.getOrientation();
 
-          break;
-        case 1:
-          // sagittal
-          istyle.setSliceNormal(1, 0, 0);
-          istyle.setViewUp(0, 0, 1);
-          break;
-        case 2:
-          // Coronal
-          istyle.setSliceNormal(0, 1, 0);
-          istyle.setViewUp(0, 0, 1);
-          break;
-      }
+      istyle.setViewUp(...orientation.viewUp);
+      istyle.setSliceNormal(...orientation.sliceNormal);
 
       renderWindow.render();
     });

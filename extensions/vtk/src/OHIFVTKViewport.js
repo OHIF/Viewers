@@ -172,47 +172,51 @@ class OHIFVTKViewport extends Component {
       default:
         imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid);
 
-        const loadImageDataPromise = loadImageData(imageDataObject);
-
-        return loadImageDataPromise.then(() => {
-          return {
-            data: imageDataObject.vtkImageData,
-          };
-        });
+        return imageDataObject;
     }
   };
 
-  getOrCreateVolume(data, displaySetInstanceUid) {
+  getOrCreateVolume(imageDataObject, displaySetInstanceUid) {
     if (volumeCache[displaySetInstanceUid]) {
       return volumeCache[displaySetInstanceUid];
+    }
+
+    const { vtkImageData, imageMetaData0 } = imageDataObject;
+
+    const { windowWidth, windowCenter, modality } = imageMetaData0;
+
+    let lower;
+    let upper;
+
+    if (modality === 'PT') {
+      // For PET just set the range to 0-5 SUV
+      lower = 0;
+      upper = 5;
+    } else {
+      lower = windowCenter - windowWidth / 2.0;
+      upper = windowCenter + windowWidth / 2.0;
     }
 
     const volumeActor = vtkVolume.newInstance();
     const volumeMapper = vtkVolumeMapper.newInstance();
 
     volumeActor.setMapper(volumeMapper);
-    volumeMapper.setInputData(data);
+    volumeMapper.setInputData(vtkImageData);
 
-    const range = data
-      .getPointData()
-      .getScalars()
-      .getRange();
-
-    // TODO: For PET we might want to just set this to 0-5 SUV
     volumeActor
       .getProperty()
       .getRGBTransferFunction(0)
-      .setRange(range[0], range[1]);
+      .setRange(lower, upper);
 
     // TODO: Should look into implementing autoAdjustSampleDistance in vtk
-    const sampleDistance =
-      1.2 *
-      Math.sqrt(
-        data
-          .getSpacing()
-          .map(v => v * v)
-          .reduce((a, b) => a + b, 0)
-      );
+    // Manually changing the sample distance here by a couple orders of
+    // Magnitude in either direction makes no difference.
+    // Also setting volumeMapper.setMaximumSamplesPerRay(10000)
+    // Prevents the warning of too many samples, but the resolution isn't improved.
+
+    const spacing = vtkImageData.getSpacing();
+    // https://github.com/Kitware/VTK/blob/6b559c65bb90614fb02eb6d1b9e3f0fca3fe4b0b/Rendering/VolumeOpenGL2/vtkSmartVolumeMapper.cxx#L344
+    const sampleDistance = (spacing[0] + spacing[1] + spacing[2]) / 6.0;
 
     volumeMapper.setSampleDistance(sampleDistance);
 
@@ -221,7 +225,7 @@ class OHIFVTKViewport extends Component {
     return volumeActor;
   }
 
-  async setStateFromProps() {
+  setStateFromProps() {
     const { studies, displaySet } = this.props.viewportData;
     const {
       studyInstanceUid,
@@ -238,8 +242,7 @@ class OHIFVTKViewport extends Component {
     }
 
     const sopClassUid = sopClassUids[0];
-
-    let { data, labelmap } = await this.getViewportData(
+    const imageDataObject = this.getViewportData(
       studies,
       studyInstanceUid,
       displaySetInstanceUid,
@@ -254,13 +257,37 @@ class OHIFVTKViewport extends Component {
       labelmap = createLabelMapImageData(data);
     }*/
 
-    const volumeActor = this.getOrCreateVolume(data, displaySetInstanceUid);
+    const volumeActor = this.getOrCreateVolume(
+      imageDataObject,
+      displaySetInstanceUid
+    );
 
     this.setState({
-      volumes: [volumeActor],
-      paintFilterBackgroundImageData: data,
-      paintFilterLabelMapImageData: labelmap,
+      paintFilterBackgroundImageData: imageDataObject.vtkImageData,
+      paintFilterLabelMapImageData: null, // TODO
+      percentComplete: 0,
     });
+
+    this.setState(
+      {
+        paintFilterBackgroundImageData: imageDataObject.vtkImageData,
+        paintFilterLabelMapImageData: null, // TODO
+        percentComplete: 0,
+      },
+      () => {
+        this.loadProgressively(imageDataObject);
+
+        // TODO: There must be a better way to do this.
+        // We do this so that if all the data is available the react-vtkjs-viewport
+        // Will render _something_ before the volumes are set and the volume
+        // Construction that happens in react-vtkjs-viewport locks up the CPU.
+        setTimeout(() => {
+          this.setState({
+            volumes: [volumeActor],
+          });
+        }, 200);
+      }
+    );
   }
 
   componentDidMount() {
@@ -285,6 +312,37 @@ class OHIFVTKViewport extends Component {
     }
   }
 
+  loadProgressively(imageDataObject) {
+    loadImageData(imageDataObject);
+
+    const { isLoading, insertPixelDataPromises } = imageDataObject;
+
+    const numberOfFrames = insertPixelDataPromises.length;
+
+    if (!isLoading) {
+      this.setState({ isLoaded: true });
+      return;
+    }
+
+    insertPixelDataPromises.forEach(promise => {
+      promise.then(numberProcessed => {
+        const percentComplete = Math.floor(
+          (numberProcessed * 100) / numberOfFrames
+        );
+
+        if (percentComplete !== this.state.percentComplete) {
+          this.setState({
+            percentComplete,
+          });
+        }
+      });
+    });
+
+    Promise.all(insertPixelDataPromises).then(() => {
+      this.setState({ isLoaded: true });
+    });
+  }
+
   render() {
     let childrenWithProps = null;
 
@@ -302,21 +360,23 @@ class OHIFVTKViewport extends Component {
 
     return (
       <>
-        {this.state.volumes ? (
-          <ConnectedVTKViewport
-            volumes={this.state.volumes}
-            paintFilterLabelMapImageData={
-              this.state.paintFilterLabelMapImageData
-            }
-            paintFilterBackgroundImageData={
-              this.state.paintFilterBackgroundImageData
-            }
-            viewportIndex={this.props.viewportIndex}
-          />
-        ) : (
-          <div style={style}>
-            <LoadingIndicator />
-          </div>
+        <div style={style}>
+          {!this.state.isLoaded && (
+            <LoadingIndicator percentComplete={this.state.percentComplete} />
+          )}
+          {this.state.volumes && (
+            <ConnectedVTKViewport
+              volumes={this.state.volumes}
+              paintFilterLabelMapImageData={
+                this.state.paintFilterLabelMapImageData
+              }
+              paintFilterBackgroundImageData={
+                this.state.paintFilterBackgroundImageData
+              }
+              viewportIndex={this.props.viewportIndex}
+            />
+          )}
+        </div>
         )}
         {childrenWithProps}
       </>

@@ -15478,10 +15478,10 @@ react-transition-group@^4.1.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-vtkjs-viewport@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.1.6.tgz#d9bfb2c27c850c21c07c587405d0d3edcbd31d45"
-  integrity sha512-NO5Dx7MXnS6NTG+crIwcGlm1uBFYMTR/tXtLKfTfPwWNakazkqlUuhqpsw2dEcMqEB+v/RmAX6bzrArcjv4M4A==
+react-vtkjs-viewport@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.3.0.tgz#6aa09ce72d9e6f8396388a19222e1e7af230e270"
+  integrity sha512-LzaeUZR4h6BuePMOHZLPadfagnPM6SflSBRqALlBDe2Eii57uxp3lg6+9Qc74i36+H6u3/GwWLY2ftuVOkSDQw==
   dependencies:
     date-fns "^2.2.1"
     gl-matrix "^3.1.0"
@@ -19009,10 +19009,10 @@ void-elements@^2.0.1:
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
   integrity sha1-wGavtYK7HLQSjWDqkjkulNXp2+w=
 
-vtk.js@^11.0.1:
-  version "11.4.2"
-  resolved "https://registry.yarnpkg.com/vtk.js/-/vtk.js-11.4.2.tgz#6a967a4522a88704b6982a0d1356f24f77b09989"
-  integrity sha512-lr0GFZM5fGVUwM008KhxaSCB9dIeqKeD1ZZJQGcP+4rfcrPgC7Zp2L16kgQkj6rupPTseI+Nsk6UV5Dc8lJN4w==
+vtk.js@^11.6.0:
+  version "11.6.0"
+  resolved "https://registry.yarnpkg.com/vtk.js/-/vtk.js-11.6.0.tgz#a30f95cfb138453890bd85f5bca88c53ed7c2775"
+  integrity sha512-emkpLZVsuaSPLrVsbaosdD5RQQmal4PPfVotDIWb58aBbswXYt4pliaY3EDFNW3nTsKPs9ttadM4f4n8fVWVbQ==
   dependencies:
     blueimp-md5 "2.10.0"
     commander "2.11.0"
