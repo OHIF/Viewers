@@ -23,8 +23,8 @@ describe('OHIF VTK Extension', () => {
         }
       });
 
+    cy.wait(3000);
     cy.initVTKToolsAliases();
-    cy.wait(1000);
   });
 
   it('checks if VTK buttons are displayed on the toolbar', () => {
