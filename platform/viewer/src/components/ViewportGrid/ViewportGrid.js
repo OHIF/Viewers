@@ -32,6 +32,11 @@ const ViewportGrid = function(props) {
 
   const ViewportPanes = layout.viewports.map((layout, viewportIndex) => {
     const displaySet = viewportData[viewportIndex];
+
+    if (!displaySet) {
+      return null;
+    }
+
     const data = {
       displaySet,
       studies,
@@ -108,6 +113,9 @@ ViewportGrid.propTypes = {
   setViewportData: PropTypes.func.isRequired,
   studies: PropTypes.array,
   children: PropTypes.node,
+  defaultPlugin: PropTypes.string,
+  numRows: PropTypes.number,
+  numColumns: PropTypes.number,
 };
 
 ViewportGrid.defaultProps = {
