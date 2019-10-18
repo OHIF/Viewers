@@ -48,7 +48,7 @@ If everything worked as expected, you should have a new `dist/` directory in the
 project's folder. It should roughly resemble the following:
 
 ```bash
-dist/
+<root>platform/viewer/dist/
 ├── app-config.js
 ├── app.bundle.js
 ├── app.css

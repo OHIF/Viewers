@@ -25,6 +25,7 @@ class ToolbarRow extends Component {
     selectedRightSidePanel: PropTypes.string.isRequired,
     handleSidePanelChange: PropTypes.func,
     activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
+    studies: PropTypes.array,
   };
 
   constructor(props) {
@@ -128,7 +129,7 @@ class ToolbarRow extends Component {
           </div>
           {buttonComponents}
           <ConnectedLayoutButton />
-          <ConnectedPluginSwitch />
+          <ConnectedPluginSwitch studies={this.props.studies} />
           <div
             className="pull-right m-t-1 rm-x-1"
             style={{ marginLeft: 'auto' }}
@@ -228,7 +229,6 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
     return _getDefaultButtonComponent.call(_this, button, activeButtons);
   });
 }
-
 
 /**
  * A handy way for us to handle different button types. IE. firing commands for

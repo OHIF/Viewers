@@ -2,12 +2,12 @@ describe('OHIF Cornerstone Toolbar', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
     cy.waitDicomImage();
+    cy.expectMinimumThumbnails(1);
   });
 
   beforeEach(() => {
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
-    //Following best practices, reset should be done before each test
     cy.resetViewport();
   });
 
@@ -42,9 +42,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@moreBtn')
       .should('be.visible')
       .contains('More');
-    cy.get('@twodmprBtn')
-      .should('be.visible')
-      .contains('2D MPR');
     cy.get('@layoutBtn')
       .should('be.visible')
       .contains('Layout');
@@ -148,7 +145,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Add annotation on the viewport
     const firstClick = [150, 100];
     const secondClick = [130, 170];
-    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
+    cy.addLine('@viewport', firstClick, secondClick);
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn')
@@ -176,7 +173,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     const initPos = [180, 390];
     const midPos = [300, 410];
     const finalPos = [180, 450];
-    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
+    cy.addAngle('@viewport', initPos, midPos, finalPos);
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn')
@@ -361,33 +358,20 @@ describe('OHIF Cornerstone Toolbar', () => {
         .should('be.eq', 9);
     });
 
-    //Commented this to avoid throwing an wrong exception at the end of "Layout button" test
-    //this commented section should be uncommented once issue #999 is fixed. (https://github.com/OHIF/Viewers/issues/999)
-
     //verify if layout has changed to 1 viewport
-    //  cy.get('@layoutBtn').click();
-    //  cy.get('tbody > :nth-child(1) > :nth-child(1)').click();
-    //  cy.get('.viewport-container').then(($viewport) =>{
-    //    cy.wrap($viewport)
-    //      .its('length')
-    //      .should('be.eq', 1);
-    //  })
-    cy.reload();
-    cy.waitDicomImage();
+    cy.get('@layoutBtn').click();
+    cy.get('tbody > :nth-child(1) > :nth-child(1)').click();
+    cy.get('.viewport-container').then($viewport => {
+      cy.wrap($viewport)
+        .its('length')
+        .should('be.eq', 1);
+    });
   });
 
   it('checks if Clear tool will delete all measurements added in the viewport', () => {
     //Add measurements in the viewport
-    cy.get('@lengthBtn').click();
-    const firstClick = [150, 100];
-    const secondClick = [130, 170];
-    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
-
-    cy.get('@angleBtn').click();
-    const initPos = [180, 390];
-    const midPos = [300, 410];
-    const finalPos = [180, 450];
-    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
+    cy.addLengthMeasurement();
+    cy.addAngleMeasurement();
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn').click();
@@ -419,23 +403,18 @@ describe('OHIF Cornerstone Toolbar', () => {
 
   it('checks if Eraser tool will remove the measurements added in the viewport', () => {
     //Add measurements in the viewport
-    cy.get('@lengthBtn').click();
-    const firstClick = [150, 100];
-    const secondClick = [130, 170];
-    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
-
-    cy.get('@angleBtn').click();
-    const initPos = [180, 390];
-    const midPos = [300, 410];
-    const finalPos = [180, 450];
-    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
+    cy.addLengthMeasurement();
+    cy.addAngleMeasurement();
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn').click();
     cy.get('.measurementItem')
       .its('length')
       .should('be.eq', 2);
-    cy.get('@measurementsBtn').click();
+    cy.get('@measurementsBtn')
+      .click()
+      .wait(2000);
+    //cy.isNotInViewport('@measurementsPanel'); //TO DO: check this intermittent behaviour
 
     //Click More button
     cy.get('@moreBtn').click();
@@ -443,14 +422,14 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('.tooltip-inner > :nth-child(12)').click();
 
     //Erase measurement #1 and Verify if it was removed from the measurements panel
-    const [x1, y1] = firstClick;
+    const [x1, y1] = [150, 100];
     cy.get('@viewport').click(x1, y1, { force: true });
     cy.get('.measurementItem')
       .its('length')
       .should('be.eq', 1);
 
     //Erase measurement #2 and Verify if it was removed from the measurements panel
-    const [x2, y2] = initPos;
+    const [x2, y2] = [180, 390];
     cy.get('@viewport').click(x2, y2, { force: true });
     cy.get('.measurementItem').should('not.exist');
   });
