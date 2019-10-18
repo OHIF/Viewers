@@ -11,6 +11,7 @@ import { StudylistToolbar } from './StudyListToolbar.js';
 import { isInclusivelyBeforeDay } from 'react-dates';
 import moment from 'moment';
 import debounce from 'lodash.debounce';
+import isEqual from 'lodash.isequal';
 import { withTranslation } from '../../utils/LanguageProvider';
 
 const today = moment();
@@ -182,31 +183,11 @@ class StudyList extends Component {
     };
   }
 
-  // Should update state method.
-  // Used to prevent relying on shouldComponentUpdate React method or Pure component implementations of shallow comparison.
-  shouldUpdateStateValue(stateValue, stateValueToCompare) {
-    if (
-      typeof stateValue !== 'object' &&
-      typeof stateValue === typeof stateValueToCompare
-    ) {
-      return stateValue !== stateValueToCompare;
-    } else if (typeof stateValue === 'object') {
-      return (
-        Object.entries(stateValue).toString() !==
-        Object.entries(stateValueToCompare).toString()
-      );
-    } else {
-      return !!stateValue;
-    }
-  }
-
   setSearchData(key, value) {
     const searchData = { ...this.state.searchData };
     searchData[key] = value;
 
-    if (
-      this.shouldUpdateStateValue(searchData[key], this.state.searchData[key])
-    ) {
+    if (!isEqual(searchData[key], this.state.searchData[key])) {
       this.setState({ ...this.state, searchData });
     }
   }
@@ -352,7 +333,7 @@ class StudyList extends Component {
   }
 
   componentDidUpdate(previousProps, previousState) {
-    if (previousState.searchData !== this.state.searchData) {
+    if (!isEqual(previousState.searchData, this.state.searchData)) {
       this.search();
     }
   }
