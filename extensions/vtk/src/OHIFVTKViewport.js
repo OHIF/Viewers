@@ -11,7 +11,6 @@ import vtkDataArray from 'vtk.js/Sources/Common/Core/DataArray';
 import vtkImageData from 'vtk.js/Sources/Common/DataModel/ImageData';
 import vtkVolume from 'vtk.js/Sources/Rendering/Core/Volume';
 import vtkVolumeMapper from 'vtk.js/Sources/Rendering/Core/VolumeMapper';
-import vtkViewportSubscriptionManager from './utils/vtkViewportSubscriptionManager.js';
 
 const { StackManager } = OHIF.utils;
 
@@ -182,7 +181,6 @@ class OHIFVTKViewport extends Component {
     }
 
     const { vtkImageData, imageMetaData0 } = imageDataObject;
-
     const { windowWidth, windowCenter, modality } = imageMetaData0;
 
     let lower;
@@ -208,15 +206,10 @@ class OHIFVTKViewport extends Component {
       .getRGBTransferFunction(0)
       .setRange(lower, upper);
 
-    // TODO: Should look into implementing autoAdjustSampleDistance in vtk
-    // Manually changing the sample distance here by a couple orders of
-    // Magnitude in either direction makes no difference.
-    // Also setting volumeMapper.setMaximumSamplesPerRay(10000)
-    // Prevents the warning of too many samples, but the resolution isn't improved.
-
     const spacing = vtkImageData.getSpacing();
+    // Set the sample distance to half the mean length of one side. This is where the divide by 6 comes from.
     // https://github.com/Kitware/VTK/blob/6b559c65bb90614fb02eb6d1b9e3f0fca3fe4b0b/Rendering/VolumeOpenGL2/vtkSmartVolumeMapper.cxx#L344
-    const sampleDistance = (spacing[0] + spacing[1] + spacing[2]) / 6.0;
+    const sampleDistance = (spacing[0] + spacing[1] + spacing[2]) / 6;
 
     volumeMapper.setSampleDistance(sampleDistance);
 
@@ -250,6 +243,8 @@ class OHIFVTKViewport extends Component {
       sopInstanceUid,
       frameIndex
     );
+
+    this.imageDataObject = imageDataObject;
 
     // TODO: Temporarily disabling this since it is not yet
     // being used and hurts performance significantly.
@@ -292,10 +287,6 @@ class OHIFVTKViewport extends Component {
 
   componentDidMount() {
     this.setStateFromProps();
-  }
-
-  componentWillUnmount() {
-    vtkViewportSubscriptionManager.unsubscribe(this.props.viewportIndex);
   }
 
   componentDidUpdate(prevProps) {

@@ -4,7 +4,7 @@ export default function setMPRLayout(
   displaySet,
   viewportPropsArray,
   numRows = 1,
-  numColumns = 3
+  numColumns = 1
 ) {
   return new Promise((resolve, reject) => {
     const viewports = [];
