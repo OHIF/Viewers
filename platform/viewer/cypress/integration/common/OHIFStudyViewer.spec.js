@@ -25,7 +25,9 @@ describe('OHIF Study Viewer Page', () => {
 
     const expectedText =
       'Ser: 2Img: 1 1/13512 x 512Loc: -17.60 mm Thick: 3.00 mm';
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText, {
+      timeout: 5000,
+    });
   });
 
   it('checks if Series left panel can be hidden/displayed', () => {
@@ -47,11 +49,11 @@ describe('OHIF Study Viewer Page', () => {
   it('checks if measurement item can be Relabeled under Measurements panel', () => {
     cy.addLengthMeasurement(); //Adding measurement in the viewport
     cy.get('@measurementsBtn').click();
-    cy.get('.measurementItem').click();
+    cy.get('.measurementItem', { timeout: 10000 }).click();
 
     // Click "Relabel"
     cy.get('.btnAction')
-      .contains('Relabel')
+      .contains('Relabel', { timeout: 10000 })
       .click();
 
     // Search for "Bone"
@@ -59,14 +61,16 @@ describe('OHIF Study Viewer Page', () => {
 
     // Select "Bone" Result
     cy.get('.treeInputs > .wrapperLabel')
-      .contains('Bone')
+      .contains('Bone', { timeout: 10000 })
       .click();
 
     // Confirm Selection
     cy.get('.checkIconWrapper').click();
 
     // Verify if 'Bone' label was added
-    cy.get('.measurementLocation').should('contain.text', 'Bone');
+    cy.get('.measurementLocation').should('contain.text', 'Bone', {
+      timeout: 10000,
+    });
     // Close panel
     cy.get('@measurementsBtn').click();
     cy.get('@measurementsPanel').should('not.be.enabled');
@@ -115,7 +119,7 @@ describe('OHIF Study Viewer Page', () => {
 
     //Click "Delete measurement"
     cy.get('.form-action')
-      .contains('Delete measurement')
+      .contains('Delete measurement', { timeout: 5000 })
       .click();
 
     //Open measurements menu
@@ -150,7 +154,7 @@ describe('OHIF Study Viewer Page', () => {
 
     // Click "Relabel"
     cy.get('.form-action')
-      .contains('Relabel')
+      .contains('Relabel', { timeout: 5000 })
       .click();
 
     // Search for "Brain"
@@ -158,7 +162,7 @@ describe('OHIF Study Viewer Page', () => {
 
     // Select "Brain" Result
     cy.get('.treeInputs > .wrapperLabel')
-      .contains('Brain')
+      .contains('Brain', { timeout: 5000 })
       .click();
 
     // Confirm Selection
@@ -179,7 +183,7 @@ describe('OHIF Study Viewer Page', () => {
 
     // Click "Description"
     cy.get('.form-action')
-      .contains('Add Description')
+      .contains('Add Description', { timeout: 5000 })
       .click();
 
     // Enter description text
@@ -194,12 +198,12 @@ describe('OHIF Study Viewer Page', () => {
 
     // Verify if label was added
     cy.get('.measurementLocation')
-      .should('contain.text', 'Brain')
+      .should('contain.text', 'Brain', { timeout: 5000 })
       .log('Relabel added with success');
 
     //Verify if descriptionText was added
     cy.get('.measurementLocation')
-      .should('contain.text', descriptionText)
+      .should('contain.text', descriptionText, { timeout: 5000 })
       .log('Description added with success');
 
     // Close panel

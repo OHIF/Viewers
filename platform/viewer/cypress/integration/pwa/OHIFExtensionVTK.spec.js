@@ -2,7 +2,7 @@ describe('OHIF VTK Extension', () => {
   before(() => {
     cy.openStudy('Juno');
     cy.waitDicomImage();
-    cy.expectMinimumThumbnails(1);
+    cy.expectMinimumThumbnails(3);
   });
 
   beforeEach(() => {
@@ -11,10 +11,10 @@ describe('OHIF VTK Extension', () => {
     // has data from a drag-n-drop
     // Drag and drop first thumbnail into first viewport
     cy.get('[data-cy="thumbnail-list"]:nth-child(3)').drag(
-      '.cornerstone-canvas'
+      '.viewport-drop-target'
     );
 
-    cy.get('.PluginSwitch > .toolbar-button')
+    cy.get('.PluginSwitch > .toolbar-button', { timeout: 10000 })
       .as('twodmprBtn')
       .should('be.visible')
       .then(btn => {
@@ -33,22 +33,22 @@ describe('OHIF VTK Extension', () => {
 
     cy.get('@crosshairsBtn')
       .should('be.visible')
-      .contains('Crosshairs');
+      .contains('Crosshairs', { timeout: 5000 });
     cy.get('@wwwcBtn')
       .should('be.visible')
-      .contains('WWWC');
+      .contains('WWWC', { timeout: 5000 });
     cy.get('@rotateBtn')
       .should('be.visible')
-      .contains('Rotate');
+      .contains('Rotate', { timeout: 5000 });
     cy.get('@slabSlider')
       .should('be.visible')
-      .contains('Slab Thickness');
+      .contains('Slab Thickness', { timeout: 5000 });
     cy.get('@modeDropdown')
-      .should('be.visible')
-      .contains('MIP');
+      .should('be.visible', { timeout: 5000 })
+      .contains('MIP', { timeout: 5000 });
     cy.get('@modeCheckbox').should('be.visible');
     cy.get('@layoutBtn')
       .should('be.visible')
-      .contains('Layout');
+      .contains('Layout', { timeout: 5000 });
   });
 });
