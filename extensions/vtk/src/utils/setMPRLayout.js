@@ -12,7 +12,9 @@ export default function setMPRLayout(
 
     if (viewportPropsArray && viewportPropsArray.length !== numViewports) {
       reject(
-        'viewportProps is supplied but its length is not equal to numViewports'
+        new Error(
+          'viewportProps is supplied but its length is not equal to numViewports'
+        )
       );
     }
 

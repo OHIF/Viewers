@@ -202,7 +202,7 @@ const actions = {
     ];
 
     try {
-      apis = await setMPRLayout(displaySet, viewportProps, 3, 1);
+      apis = await setMPRLayout(displaySet, viewportProps, 1, 3);
     } catch (error) {
       throw new Error(error);
     }
