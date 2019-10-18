@@ -1,7 +1,7 @@
 import './LoadingIndicator.css';
 
 import React, { PureComponent } from 'react';
-
+import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 
 class LoadingIndicator extends PureComponent {
@@ -35,7 +35,8 @@ class LoadingIndicator extends PureComponent {
           <div className="imageViewerLoadingIndicator loadingIndicator">
             <div className="indicatorContents">
               <p>
-                Loading... <i className="fa fa-spin fa-circle-o-notch fa-fw" />{' '}
+                {this.props.t('Reformatting')}...
+                <i className="fa fa-spin fa-circle-o-notch fa-fw" />
                 {percComplete}
               </p>
             </div>
@@ -46,4 +47,4 @@ class LoadingIndicator extends PureComponent {
   }
 }
 
-export default LoadingIndicator;
+export default withTranslation('Common')(LoadingIndicator);
