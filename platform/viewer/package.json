@@ -1,6 +1,6 @@
 {
   "name": "@ohif/viewer",
-  "version": "1.10.1",
+  "version": "1.10.3",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -50,7 +50,7 @@
     "@ohif/extension-dicom-html": "^1.0.0",
     "@ohif/extension-dicom-microscopy": "^0.50.6",
     "@ohif/extension-dicom-pdf": "^1.0.0",
-    "@ohif/extension-vtk": "^0.52.11",
+    "@ohif/extension-vtk": "^0.52.13",
     "@ohif/i18n": "^0.51.0",
     "@ohif/ui": "^0.55.0",
     "@tanem/react-nprogress": "^1.1.25",
@@ -82,7 +82,7 @@
     "redux-oidc": "3.1.x",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "vtk.js": "^11.0.1"
+    "vtk.js": "^11.6.0"
   },
   "devDependencies": {
     "cypress": "^3.3.1",
