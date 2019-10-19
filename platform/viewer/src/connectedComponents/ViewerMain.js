@@ -22,6 +22,8 @@ class ViewerMain extends Component {
     this.state = {
       displaySets: [],
     };
+
+    this.cachedViewportData = {};
   }
 
   getDisplaySets(studies) {
@@ -63,74 +65,63 @@ class ViewerMain extends Component {
       this.setState({
         displaySets,
       });
-
-      this.fillEmptyViewportPanes();
     }
   }
 
   componentDidUpdate(prevProps) {
-    const prevViewportAmount = prevProps.layout.viewports.length;
-    const viewportAmount = this.props.layout.viewports.length;
-
-    if (
-      this.props.studies !== prevProps.studies ||
-      viewportAmount !== prevViewportAmount
-    ) {
+    if (this.props.studies !== prevProps.studies) {
       const displaySets = this.getDisplaySets(this.props.studies);
 
       this.setState({
         displaySets,
       });
-
-      this.fillEmptyViewportPanes();
     }
   }
 
-  fillEmptyViewportPanes = () => {
-    const dirtyViewportPanes = [];
+  getViewportData = () => {
+    const viewportData = [];
     const { layout, viewportSpecificData } = this.props;
-    const { displaySets } = this.state;
 
-    if (!displaySets || !displaySets.length) {
-      return;
-    }
+    for (
+      let viewportIndex = 0;
+      viewportIndex < layout.viewports.length;
+      viewportIndex++
+    ) {
+      let displaySet = viewportSpecificData[viewportIndex];
 
-    for (let i = 0; i < layout.viewports.length; i++) {
-      const viewportPane = viewportSpecificData[i];
-      const isNonEmptyViewport =
-        viewportPane &&
-        viewportPane.studyInstanceUid &&
-        viewportPane.displaySetInstanceUid;
-
-      if (isNonEmptyViewport) {
-        dirtyViewportPanes.push({
-          studyInstanceUid: viewportPane.studyInstanceUid,
-          displaySetInstanceUid: viewportPane.displaySetInstanceUid,
-        });
-
-        continue;
+      // Use the cached display set in viewport if the new one is empty
+      if (displaySet && !displaySet.displaySetInstanceUid) {
+        displaySet = this.cachedViewportData[viewportIndex];
       }
 
-      const foundDisplaySet =
-        displaySets.find(
+      if (
+        displaySet &&
+        displaySet.studyInstanceUid &&
+        displaySet.displaySetInstanceUid
+      ) {
+        // Get missing fields from original display set
+        const originalDisplaySet = this.findDisplaySet(
+          this.props.studies,
+          displaySet.studyInstanceUid,
+          displaySet.displaySetInstanceUid
+        );
+        viewportData.push(Object.assign({}, originalDisplaySet, displaySet));
+      } else {
+        // If the viewport is empty, get one available in study
+        const { displaySets } = this.state;
+        displaySet = displaySets.find(
           ds =>
-            !dirtyViewportPanes.some(
+            !viewportData.some(
               v => v.displaySetInstanceUid === ds.displaySetInstanceUid
             )
-        ) || displaySets[displaySets.length - 1];
-
-      dirtyViewportPanes.push(foundDisplaySet);
+        );
+        viewportData.push(Object.assign({}, displaySet));
+      }
     }
 
-    dirtyViewportPanes.forEach((vp, i) => {
-      if (vp && vp.studyInstanceUid) {
-        this.setViewportData({
-          viewportIndex: i,
-          studyInstanceUid: vp.studyInstanceUid,
-          displaySetInstanceUid: vp.displaySetInstanceUid,
-        });
-      }
-    });
+    this.cachedViewportData = viewportData;
+
+    return viewportData;
   };
 
   setViewportData = ({
@@ -148,17 +139,12 @@ class ViewerMain extends Component {
   };
 
   render() {
-    const { viewportSpecificData } = this.props;
-    const viewportData = viewportSpecificData
-      ? Object.values(viewportSpecificData)
-      : [];
-
     return (
       <div className="ViewerMain">
         {this.state.displaySets.length && (
           <ConnectedViewportGrid
             studies={this.props.studies}
-            viewportData={viewportData}
+            viewportData={this.getViewportData()}
             setViewportData={this.setViewportData}
           >
             {/* Children to add to each viewport that support children */}
