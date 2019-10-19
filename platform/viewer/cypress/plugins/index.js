@@ -23,6 +23,12 @@ module.exports = (on, config) => {
       // whatever you return here becomes the new args
       return args;
     }
+
+    if (browser.name === 'chromium') {
+      const newArgs = args.filter(arg => arg !== '--disable-gpu');
+      newArgs.push('--ignore-gpu-blacklist');
+      return newArgs;
+    }
   });
 
   on('task', percyHealthCheck);
