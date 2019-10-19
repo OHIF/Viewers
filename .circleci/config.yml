@@ -288,6 +288,7 @@ workflows:
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
+          executor: browsers-chrome76
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
@@ -307,6 +308,7 @@ workflows:
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
+          executor: browsers-chrome76
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
@@ -335,6 +337,7 @@ workflows:
       # E2E: PWA + Persist
       - cypress/run:
           name: 'E2E: PWA'
+          executor: browsers-chrome76
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
@@ -358,6 +361,7 @@ workflows:
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
+          executor: browsers-chrome76
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
