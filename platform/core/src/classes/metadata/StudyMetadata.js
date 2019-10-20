@@ -615,6 +615,21 @@ const makeDisplaySet = (series, instances) => {
     });
   }
 
+  // If MR series, sort the images by TemporalPositionIdentifier
+  if (imageSet.modality == 'MR') {
+    imageSet.sortBy((a, b) => {
+      // Sort by TemporalPositionIdentifier
+      if (a._instance.TemporalPositionIdentifier > b._instance.TemporalPositionIdentifier) return 1;
+      if (a._instance.TemporalPositionIdentifier < b._instance.TemporalPositionIdentifier) return -1;
+
+      // Sort by DiffusionBValue if defined (Diffusion series)
+      if (typeof(instance._instance.DiffusionBValue) != 'undefined') {
+        if (a._instance.DiffusionBValue > b._instance.DiffusionBValue) return 1;
+        if (a._instance.DiffusionBValue < b._instance.DiffusionBValue) return -1;
+      }
+    });
+  }
+
   // Include the first image instance number (after sorted)
   imageSet.setAttribute(
     'instanceNumber',

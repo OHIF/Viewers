@@ -355,6 +355,9 @@ async function makeSOPInstance(server, study, instance) {
     lossyImageCompressionMethod: DICOMWeb.getString(instance['00282114']),
     echoNumber: DICOMWeb.getString(instance['00180086']),
     contrastBolusAgent: DICOMWeb.getString(instance['00180010']),
+    // Get DiffusionBValue and TemporalPositionIdentifier for MR stack sorting
+    DiffusionBValue: DICOMWeb.getNumber(instance['00189087']),
+    TemporalPositionIdentifier: DICOMWeb.getNumber(instance['00200100']),
     radiopharmaceuticalInfo: getRadiopharmaceuticalInfo(instance),
     baseWadoRsUri: baseWadoRsUri,
     wadouri: WADOProxy.convertURL(wadouri, server),
