@@ -2,7 +2,7 @@ describe('OHIF Study Viewer Page', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
     cy.waitDicomImage();
-    cy.expectMinimumThumbnails(1);
+    cy.expectMinimumThumbnails(6);
   });
 
   beforeEach(() => {
@@ -14,13 +14,13 @@ describe('OHIF Study Viewer Page', () => {
     cy.screenshot();
     cy.percySnapshot();
 
-    cy.get('.ThumbnailEntryContainer')
+    cy.get('[data-cy="thumbnail-list"]')
       .its('length')
       .should('be.gt', 1);
   });
 
   it('drags and drop a series thumbnail into viewport', () => {
-    cy.get('.ThumbnailEntryContainer:nth-child(2)') //element to be dragged
+    cy.get('[data-cy="thumbnail-list"]:nth-child(2)') //element to be dragged
       .drag('.cornerstone-canvas'); //dropzone element
 
     const expectedText =
