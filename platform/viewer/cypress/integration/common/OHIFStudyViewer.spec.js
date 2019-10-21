@@ -2,7 +2,7 @@ describe('OHIF Study Viewer Page', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
     cy.waitDicomImage();
-    cy.expectMinimumThumbnails(5);
+    cy.expectMinimumThumbnails(6);
   });
 
   beforeEach(() => {
