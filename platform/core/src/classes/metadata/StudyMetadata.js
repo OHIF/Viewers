@@ -584,6 +584,57 @@ const isMultiFrame = instance => {
   return instance.getRawValue('x00280008') > 1;
 };
 
+const is4DSeries = instances => { // The goal here is to identify 4D series and the tags we'll use to sort them
+  // List tags used to identify and sort 4D series
+  const sortTagsList = [
+    'DiffusionBValue',
+    'TemporalPositionIdentifier',
+    // Shamelessly stolen from fedorov@github/MultiVolumeImporter/MultiVolumeImporterPlugin.py
+    'TriggerTime',
+    'EchoTime',
+    'FlipAngle',
+    'RepetitionTime',
+    'AcquisitionTime',
+    'SeriesTime',
+    'ContentTime',
+    // Siemens Somatom Cardiac CT 'ScanOptions' tag contains info on cardiac cycle
+    'CardiacCycle',
+    // GE Revolution CT uses 'NominalPercentageOfCardiacPhase' tag to identify cardiac cycle
+    'NominalPercentageOfCardiacPhase',
+    'SiemensBValue',
+    'GEBValue',
+    // Philips DWI
+    'PhilipsBValue',
+    // GE Revolution CT Kinematics protocol
+    'DeltaStartTime',
+    // From @JoaoSantinha in PR #1066
+    'SequenceName',
+    'MRDiffusionSequence',
+  ];
+
+  // Among those tags, identify those that have multiple values
+  var sortTags = Array(); // Declare an array to store tags to sort by
+  var sortTagsVal = Array(); // for debug purposes
+
+  sortTagsList.map(a => { // loop through the tag list
+    var testedTagValues = instances.map(b => b._instance[a]);
+    var tagsUniqueValues = [...new Set(testedTagValues)];
+    if (tagsUniqueValues.length > 1) { // If the tested tag has more than one value throughout the series..
+      sortTags.push(a); // Push to our new array
+      sortTagsVal.push(tagsUniqueValues); // debug
+    }
+  });
+  // If none of them do : return 0
+  if (sortTags.length === 0) return 0;
+
+  // Debug: report on tags for each series
+  console.log('%c4D series! Sorting tags:', 'color: black; background: #9ccef9; padding: 4px; font-weight: bold;');
+  sortTags.map((a, index) => console.log(a, sortTagsVal[index]));
+
+  // Return the array listing tags to sort by
+  return sortTags;
+};
+
 const makeDisplaySet = (series, instances) => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
@@ -601,6 +652,7 @@ const makeDisplaySet = (series, instances) => {
     frameRate: instance.getRawValue('x00181063'),
     modality: instance.getRawValue('x00080060'),
     isMultiFrame: isMultiFrame(instance),
+    is4DSeries: is4DSeries(instances), // we need all the instances to compute this one
   });
 
   // Sort the images in this series if needed
@@ -615,19 +667,15 @@ const makeDisplaySet = (series, instances) => {
     });
   }
 
-  // If MR series, sort the images by TemporalPositionIdentifier
-  if (imageSet.modality == 'MR') {
-    imageSet.sortBy((a, b) => {
-      // Sort by TemporalPositionIdentifier
-      if (a._instance.TemporalPositionIdentifier > b._instance.TemporalPositionIdentifier) return 1;
-      if (a._instance.TemporalPositionIdentifier < b._instance.TemporalPositionIdentifier) return -1;
-
-      // Sort by DiffusionBValue if defined (Diffusion series)
-      if (typeof(instance._instance.DiffusionBValue) != 'undefined') {
-        if (a._instance.DiffusionBValue > b._instance.DiffusionBValue) return 1;
-        if (a._instance.DiffusionBValue < b._instance.DiffusionBValue) return -1;
-      }
-    });
+  // If 4Dseries, sort according to identified tags
+  if (imageSet.is4DSeries) {
+      // Sort series by each tag in the array
+      imageSet.is4DSeries.map(c => {
+        imageSet.sortBy((a, b) => {
+          if (a._instance[c] > b._instance[c]) return 1;
+          if (a._instance[c] < b._instance[c]) return -1;
+        });
+      });
   }
 
   // Include the first image instance number (after sorted)
