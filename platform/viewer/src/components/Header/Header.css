@@ -120,3 +120,18 @@
   font-size: 12px;
   font-weight: bold;
 }
+
+@media only screen and (max-width: 768px) {
+  .entry-header.header-big {
+    padding: 0 15px;
+  }
+  .entry-header.header-big .header-logo-image {
+    margin: 0 10px 0 0;
+    width: 25px;
+    height: 25px;
+  }
+
+  .entry-header.header-big .header-logo-text {
+    width: 40%;
+  }
+}

@@ -2,12 +2,11 @@
 //  https://github.com/airbnb/react-dates#initialize
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
+import './CustomDateRangePicker.css';
 
 import React from 'react';
 import PropTypes from 'prop-types';
 import { DateRangePicker } from 'react-dates';
-
-import './CustomDateRangePicker.styl';
 
 export default class CustomDateRangePicker extends React.Component {
   static propTypes = {
@@ -85,15 +84,13 @@ export default class CustomDateRangePicker extends React.Component {
     } = this.props;
 
     return (
-      <div>
-        <DateRangePicker
-          {...dateRangePickerProps}
-          startDate={this.state.startDate}
-          endDate={this.state.endDate}
-          renderCalendarInfo={this.renderDatePresets}
-          onDatesChange={this.onDatesChange}
-        />
-      </div>
+      <DateRangePicker
+        {...dateRangePickerProps}
+        startDate={this.state.startDate}
+        endDate={this.state.endDate}
+        renderCalendarInfo={this.renderDatePresets}
+        onDatesChange={this.onDatesChange}
+      />
     );
   }
 }
