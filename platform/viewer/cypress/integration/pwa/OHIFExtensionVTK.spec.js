@@ -2,7 +2,7 @@ describe('OHIF VTK Extension', () => {
   before(() => {
     cy.openStudy('Juno');
     cy.waitDicomImage();
-    cy.expectMinimumThumbnails(3);
+    cy.expectMinimumThumbnails(7);
   });
 
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe('OHIF VTK Extension', () => {
           btn.click();
         }
       });
-
+    //wait VTK toolbar and images to be loaded
     cy.wait(3000);
     cy.initVTKToolsAliases();
   });
