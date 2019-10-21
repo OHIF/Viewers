@@ -55,11 +55,17 @@ const replaceParam = (path = '', paramKey, paramValue) => {
   return path;
 };
 
+const isValidPath = path => {
+  const paramPatternPiece = `/${PARAM_PATTERN_IDENTIFIER}`;
+  return path.indexOf(paramPatternPiece) < 0;
+};
+
 const queryString = {
   getQueryFilters: getFilters,
 };
 
 const paramString = {
+  isValidPath: isValidPath,
   parseParam: parseParam,
   replaceParam: replaceParam,
 };

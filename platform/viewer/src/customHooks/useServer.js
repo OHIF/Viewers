@@ -32,9 +32,20 @@ const getServers = (appConfig, project, location, dataset, dicomStore) => {
       wadoRoot: pathUrl,
     };
     servers = GoogleCloudUtilServers.getServers(data, dicomStore);
+    if (!isValidServer(servers[0], appConfig)) {
+      return;
+    }
   }
 
   return servers;
+};
+
+const isValidServer = (server, appConfig) => {
+  if (appConfig.enableGoogleCloudAdapter) {
+    return GoogleCloudUtilServers.isValidServer(server);
+  } else {
+    return !!server;
+  }
 };
 
 const updateServer = (
@@ -69,7 +80,7 @@ export default function useServer({
 
   const server = getActiveServer(servers);
 
-  if (!server) {
+  if (!isValidServer(server, appConfig)) {
     updateServer(appConfig, dispatch, project, location, dataset, dicomStore);
   } else {
     return server;

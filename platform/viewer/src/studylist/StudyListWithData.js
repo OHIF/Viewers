@@ -12,6 +12,7 @@ import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploa
 import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
 import filesToStudies from '../lib/filesToStudies.js';
 
+const { urlUtil: UrlUtil } = OHIF.utils;
 // Contexts
 import UserManagerContext from '../context/UserManagerContext';
 import WhiteLabellingContext from '../context/WhiteLabellingContext';
@@ -181,8 +182,26 @@ class StudyListWithData extends Component {
     const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
       studyInstanceUids: studyInstanceUID,
     });
-    this.props.history.push(viewerPath);
+
+    if (UrlUtil.paramString.isValidPath(viewerPath)) {
+      this.props.history.push(viewerPath);
+    }
   };
+
+  updateURL(modalOpened) {
+    if (!modalOpened) {
+      const { appConfig = {} } = this.context;
+      const { server } = this.props;
+      const listPath = RoutesUtil.parseStudyListPath(appConfig, server);
+
+      if (UrlUtil.paramString.isValidPath(listPath)) {
+        const { location = {} } = this.props.history;
+        if (location.pathname !== listPath) {
+          this.props.history.replace(listPath);
+        }
+      }
+    }
+  }
 
   onSearch = searchData => {
     this.searchForStudies(searchData);
@@ -216,9 +235,12 @@ class StudyListWithData extends Component {
     let healthCareApiWindows = null;
 
     if (appConfig.enableGoogleCloudAdapter) {
+      const modalOpened = this.state.modalComponentId === 'DicomStorePicker';
+      this.updateURL(modalOpened);
+
       healthCareApiWindows = (
         <ConnectedDicomStorePicker
-          isOpen={this.state.modalComponentId === 'DicomStorePicker'}
+          isOpen={modalOpened}
           onClose={this.closeModals}
         />
       );
