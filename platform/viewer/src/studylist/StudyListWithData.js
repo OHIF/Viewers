@@ -259,7 +259,7 @@ class StudyListWithData extends Component {
 
     const studyList = (
       <div className="paginationArea">
-        {this.state.studies ? (
+        {this.state.studies || this.state.searchingStudies ? (
           <StudyList
             loading={this.state.searchingStudies}
             studies={this.state.studies}

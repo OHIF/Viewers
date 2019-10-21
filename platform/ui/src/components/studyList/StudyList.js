@@ -365,14 +365,13 @@ class StudyList extends Component {
       this.props.loading || this.state.loading
     );
     const tableBody = this.renderTableBody(noListFragment);
+    const studiesNum = (this.props.studies && this.props.studies.length) || 0;
 
     return (
       <div className="StudyList">
         <div className="studyListToolbar clearfix">
           <div className="header pull-left">{this.props.t('StudyList')}</div>
-          <div className="studyCount pull-right">
-            {this.props.studies.length}
-          </div>
+          <div className="studyCount pull-right">{studiesNum}</div>
           <div className="pull-right">
             {this.props.studyListFunctionsEnabled ? (
               <StudylistToolbar onImport={this.props.onImport} />
