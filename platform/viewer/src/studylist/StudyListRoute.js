@@ -10,6 +10,7 @@ import {
   TablePagination,
   TableSearchFilter,
   useDebounce,
+  useMedia,
 } from '@ohif/ui';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import * as RoutesUtil from '../routes/routesUtil';
@@ -85,6 +86,8 @@ function StudyListRoute(props) {
           pageNumber,
           displaySize
         );
+
+        console.log('setting studies...', response);
 
         setStudies(response);
         setSearchStatus({ error: null, isSearchingForStudies: false });
@@ -217,48 +220,46 @@ function StudyListRoute(props) {
       <div className="table-head-background" />
       <div className="study-list-container">
         {/* STUDY LIST OR DROP ZONE? */}
-        {studies.length ? (
-          <StudyList
-            loading={searchStatus.isSearchingForStudies}
-            // Rows
-            studies={studies}
-            onSelectItem={studyInstanceUID => {
-              console.log(studyInstanceUID);
-            }}
-            // Table Header
-            sort={sort}
-            onSort={handleSort}
-            filterValues={filterValues}
-            onFilterChange={handleFilterChange}
-            // onImport={() => setActiveModalId('DicomFilesUploader')}
-          >
-            {studyListFunctionsEnabled ? (
-              <ConnectedDicomFilesUploader
-                isOpen={activeModalId === 'DicomFilesUploader'}
-                onClose={() => setActiveModalId(null)}
-              />
-            ) : null}
-            {healthCareApiButtons}
-            {healthCareApiWindows}
-          </StudyList>
-        ) : (
-          // /LOCAL??????
-          <Dropzone onDrop={onDrop}>
-            {({ getRootProps, getInputProps }) => (
-              <div {...getRootProps()} className={'drag-drop-instructions'}>
-                <h3>
-                  {t(
-                    'Drag and Drop DICOM files here to load them in the Viewer'
-                  )}
-                </h3>
-                <h4>{t("Or click to load the browser's file selector")}</h4>
-                <input {...getInputProps()} style={{ display: 'none' }} />
-              </div>
-            )}
-          </Dropzone>
-        )}
+        <StudyList
+          loading={searchStatus.isSearchingForStudies}
+          // Rows
+          studies={studies}
+          onSelectItem={studyInstanceUID => {
+            console.log(studyInstanceUID);
+          }}
+          // Table Header
+          sort={sort}
+          onSort={handleSort}
+          filterValues={filterValues}
+          onFilterChange={handleFilterChange}
+          // onImport={() => setActiveModalId('DicomFilesUploader')}
+        >
+          {studyListFunctionsEnabled ? (
+            <ConnectedDicomFilesUploader
+              isOpen={activeModalId === 'DicomFilesUploader'}
+              onClose={() => setActiveModalId(null)}
+            />
+          ) : null}
+          {healthCareApiButtons}
+          {healthCareApiWindows}
+        </StudyList>
+        {/* // /LOCAL??????
 
-        {/* PAGINATION FOOTER */}
+            TODO:This may not be the best place for this? */}
+        {/* // <Dropzone onDrop={onDrop}>
+          //   {({ getRootProps, getInputProps }) => (
+          //     <div {...getRootProps()} className={'drag-drop-instructions'}>
+          //       <h3>
+          //         {t(
+          //           'Drag and Drop DICOM files here to load them in the Viewer'
+          //         )}
+          //       </h3>
+          //       <h4>{t("Or click to load the browser's file selector")}</h4>
+          //       <input {...getInputProps()} style={{ display: 'none' }} />
+          //     </div>
+          //   )}
+          // </Dropzone> */}
+        }{/* PAGINATION FOOTER */}
         <TablePagination
           currentPage={pageNumber}
           nextPageFunc={() => setPageNumber(pageNumber + 1)}
@@ -305,24 +306,26 @@ async function getStudyList(
   displaySize
 ) {
   console.log(filters);
-  const defaultValues = {
-    currentPage: 0,
-    rowsPerPage: 25,
-    studyDateFrom: moment()
-      .subtract(25000, 'days')
-      .toDate(),
-    studyDateTo: new Date(),
-    sortData: {
-      field: 'patientName', // fieldName
-      order: 'desc', // direction
-    },
-  };
+  const {
+    allFields,
+    patientNameOrId,
+    accessionOrModalityOrDescription,
+  } = filters;
   const mergedInput = Object.assign(
     {},
-    defaultValues,
     {
       rowsPerPage,
       currentPage: pageNumber,
+      // Need to make sure we're getting these...
+      studyDateFrom: moment()
+        .subtract(25000, 'days')
+        .toDate(),
+      studyDateTo: new Date(),
+      // Not needed here...
+      sortData: {
+        field: 'patientName', // fieldName
+        order: 'desc', // direction
+      },
     },
     filters
   );
@@ -340,8 +343,11 @@ async function getStudyList(
     fuzzymatching: server.supportsFuzzyMatching === true,
   };
 
-  const studies =
-    (await OHIF.studies.searchStudies(server, mappedFilters)) || [];
+  const studies = await _fetchStudies(server, mappedFilters, displaySize, {
+    allFields,
+    patientNameOrId,
+    accessionOrModalityOrDescription,
+  });
 
   // Only the fields we use
   const mappedStudies = studies.map(study => {
@@ -402,6 +408,120 @@ async function getStudyList(
   });
 
   return sortedStudies;
+}
+
+/**
+ * We're forced to do this because DICOMWeb does not support "AND|OR" searches
+ * across multiple fields. This allows us to make multiple requests, remove
+ * duplicates, and return the result set as if it were supported
+ *
+ * @param {object} server
+ * @param {Object} filters
+ * @param {string} displaySize - small, medium, or large
+ * @param {string} multi.allFields
+ * @param {string} multi.patientNameOrId
+ * @param {string} multi.accessionOrModalityOrDescription
+ */
+async function _fetchStudies(
+  server,
+  filters,
+  displaySize,
+  { allFields, patientNameOrId, accessionOrModalityOrDescription }
+) {
+  let queryFiltersArray = [filters];
+
+  if (displaySize === 'small') {
+    const firstSet = _getQueryFiltersForValue(
+      filters,
+      [
+        'patientId',
+        'patientName',
+        'accessionNumber',
+        'studyDescription',
+        'modalitiesInStudy',
+      ],
+      allFields
+    );
+
+    if (firstSet.length) {
+      queryFiltersArray = firstSet;
+    }
+  } else if (displaySize === 'medium') {
+    const firstSet = _getQueryFiltersForValue(
+      filters,
+      ['patientId', 'patientName'],
+      patientNameOrId
+    );
+
+    const secondSet = _getQueryFiltersForValue(
+      filters,
+      ['accessionNumber', 'studyDescription', 'modalitiesInStudy'],
+      accessionOrModalityOrDescription
+    );
+
+    if (firstSet.length || secondSet.length) {
+      queryFiltersArray = firstSet.concat(secondSet);
+    }
+  }
+
+  const queryPromises = [];
+
+  queryFiltersArray.forEach(filter => {
+    const searchStudiesPromise = OHIF.studies.searchStudies(server, filter);
+    queryPromises.push(searchStudiesPromise);
+  });
+
+  const lotsOfStudies = await Promise.all(queryPromises);
+  console.log('lots', lotsOfStudies);
+  const studies = [];
+
+  // Flatten and dedupe
+  lotsOfStudies.forEach(arrayOfStudies => {
+    if (arrayOfStudies) {
+      arrayOfStudies.forEach(study => {
+        if (!studies.some(s => s.studyInstanceUid === study.studyInstanceUid)) {
+          studies.push(study);
+        }
+      });
+    }
+  });
+
+  console.log('flat', studies);
+
+  return studies;
+}
+
+/**
+ *
+ *
+ * @param {*} filters
+ * @param {*} fields - Array of string fields
+ * @param {*} value
+ */
+function _getQueryFiltersForValue(filters, fields, value) {
+  const queryFilters = [];
+
+  if (value === '' || !value) {
+    return queryFilters;
+  }
+
+  fields.forEach(field => {
+    const filter = Object.assign(
+      {
+        patientId: '',
+        patientName: '',
+        accessionNumber: '',
+        studyDescription: '',
+        modalitiesInStudy: '',
+      },
+      filters
+    );
+
+    filter[field] = value;
+    queryFilters.push(filter);
+  });
+
+  return queryFilters;
 }
 
 export default withRouter(withTranslation('Common')(StudyListRoute));
