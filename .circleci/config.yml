@@ -13,7 +13,7 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@1.10.0
+  cypress: cypress-io/cypress@1.11.0
 
 defaults: &defaults
   docker:
@@ -325,10 +325,13 @@ workflows:
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
+          record: false
           store_artifacts: false
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build
@@ -344,14 +347,18 @@ workflows:
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
+          record: false
           store_artifacts: false
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build:package
           start: yarn run test:e2e:serve
+          spec: 'cypress/integration/common/**/*'
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
@@ -382,16 +389,19 @@ workflows:
       # E2E: PWA + Persist
       - cypress/run:
           name: 'E2E: PWA'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
-          record: true
+          record: false
           store_artifacts: true
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build
           start: yarn run test:e2e:serve
           wait-on: 'http://localhost:3000'
+          command: 'yarn run test:e2e:ci'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
@@ -404,14 +414,18 @@ workflows:
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
+          record: false
           store_artifacts: false
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build:package
           start: yarn run test:e2e:serve
+          spec: 'cypress/integration/common/**/*'
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
