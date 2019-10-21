@@ -2,7 +2,7 @@ describe('OHIF Cornerstone Toolbar', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
     cy.waitDicomImage();
-    cy.expectMinimumThumbnails(1);
+    cy.expectMinimumThumbnails(3);
   });
 
   beforeEach(() => {
@@ -202,6 +202,9 @@ describe('OHIF Cornerstone Toolbar', () => {
   });
 
   it('checks if CINE tool will prompt a modal with working controls', () => {
+    cy.server();
+    cy.route('GET', '/**/studies/**/').as('studies');
+
     //Click on button
     cy.get('@cineBtn').click();
     //Vefiry if cine control overlay is being displayed
@@ -216,26 +219,49 @@ describe('OHIF Cornerstone Toolbar', () => {
       .click();
 
     let expectedText = 'Img: 1 1/26';
-    cy.get('@viewportInfoBottomLeft').should('not.have.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'not.have.text',
+      expectedText
+    );
 
     //Test SKIP TO FIRST IMAGE button
-    cy.get('[title="Skip to first Image"]').click();
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('[title="Skip to first Image"]')
+      .click()
+      .wait(1000);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Test NEXT IMAGE button
-    cy.get('[title="Next Image"]').click();
+    cy.get('[title="Next Image"]')
+      .click()
+      .wait(1000);
     expectedText = 'Img: 2 2/26';
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Test SKIP TO LAST IMAGE button
-    cy.get('[title="Skip to last Image"]').click();
+    cy.get('[title="Skip to last Image"]')
+      .click()
+      .wait(2000);
     expectedText = 'Img: 27 26/26';
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Test PREVIOUS IMAGE button
-    cy.get('[title="Previous Image"]').click();
+    cy.get('[title="Previous Image"]')
+      .click()
+      .wait(1000);
     expectedText = 'Img: 26 25/26';
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Click on Cine button
     cy.get('@cineBtn').click();
