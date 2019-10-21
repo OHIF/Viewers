@@ -23,6 +23,7 @@ import {
   UserPreferencesModal,
 } from './components';
 import { ICONS, Icon } from './elements';
+import { useDebounce, useMedia } from './hooks';
 
 // Alias this for now as not all dependents are using strict versioning
 import { DropdownMenu as Dropdown, Range, Select } from './elements/form';
@@ -75,4 +76,7 @@ export {
   SnackbarProvider,
   useSnackbarContext,
   withSnackbar,
+  // Hooks
+  useDebounce,
+  useMedia,
 };
