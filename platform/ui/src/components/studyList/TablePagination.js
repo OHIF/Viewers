@@ -90,17 +90,11 @@ class TablePagination extends PureComponent {
 
   render() {
     return (
-      <div name="paginationArea">
-        <div className="pagination-area">
-          <div className="row">
-            <div className="rows-dropdown">
-              {this.renderRowsPerPageDropdown()}
-            </div>
-            <div className="pagination-buttons">
-              <div className="form-inline form-group page-number pull-right">
-                {this.renderPaginationButtons()}
-              </div>
-            </div>
+      <div className="pagination-area">
+        <div className="rows-dropdown">{this.renderRowsPerPageDropdown()}</div>
+        <div className="pagination-buttons">
+          <div className="form-inline form-group page-number pull-right">
+            {this.renderPaginationButtons()}
           </div>
         </div>
       </div>
