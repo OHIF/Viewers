@@ -2,28 +2,32 @@
 
 /* Will edit everything selected including everything between a range of dates */
 .CalendarDay__selected_span {
-  background: #82e0aa;
-  color: white;
-  border: 1px solid dodgerblue;
+  background: var(--table-text-secondary-color);
+  color: #fff;
+  border-color: #e4e7e7;
 }
 
 /* Will edit selected date or the endpoints of a range of dates */
 .CalendarDay__selected {
-  background: dodgerblue;
-  color: white;
+  background: var(--table-text-secondary-color);
+  color: #fff;
+  border-color: #e4e7e7;
 }
 
 /* Will edit when hovered over. _span style also has this property */
 .CalendarDay__selected:hover {
-  background: orange;
-  color: white;
+  background: var(--table-text-secondary-color);
+  color: #fff;
+  border-color: #e4e7e7;
 }
 
 /* Will edit when the second date (end date) in a range of dates
 is not yet selected. Edits the dates between your mouse and said date */
 .CalendarDay__hovered_span:hover,
 .CalendarDay__hovered_span {
-  background: brown;
+  background: var(--table-text-secondary-color);
+  color: #fff;
+  border-color: #e4e7e7;
 }
 
 /* EXTERIOR INPUT STYLE */
@@ -66,69 +70,3 @@ is not yet selected. Edits the dates between your mouse and said date */
   font-size: 10pt;
   padding: 0;
 }
-
-/* // .CalendarDay__selected_span {
-//   background: var(--calendar-main-color);
-//   color: var(--calendar-day-color);
-//   border: 1px solid;
-//   border-color: var(--calendar-day-border-color);
-// }
-
-// .CalendarDay__default:hover {
-//   color: var(--calendar-main-color);
-// }
-
-// .CalendarDay__selected_span:active, .CalendarDay__selected_span:hover {
-//   background: var(--calendar-day-active-hover-background-color);
-//   border-color: var(--calendar-day-border-color);
-//   color: var(--calendar-day-color);
-// }
-
-// .CalendarDay__selected {
-//   background: var(--calendar-main-color);
-//   color: var(--calendar-day-color);
-//   border-color: var(--calendar-day-border-color);
-// }
-
-// .CalendarDay__selected:hover {
-//   background: var(--calendar-main-color);
-//   color: var(--calendar-day-color);
-//   border-color: var(--calendar-day-border-color);
-// }
-
-// .CalendarDay__hovered_span:hover,
-// .CalendarDay__hovered_span {
-//   background: var(--calendar-main-color);
-//   color: var(--calendar-day-color);
-//   border-color:var(--calendar-day-color);
-// }
-
-// .PresetDateRangePicker_panel: {
-//     padding: 0 22px 11px 22px;
-// }
-
-// .PresetDateRangePicker_button {
-//     position: relative;
-//     height: 100%;
-//     textAlign: center;
-//     background: none;
-//     border: 2px solid var(--calendar-main-color);
-//     color: var(--calendar-main-color);
-//     padding: 4px 12px;
-//     marginRight: 8;
-//     font: inherit;
-//     fontWeight: 700;
-//     lineHeight: normal;
-//     overflow: visible;
-//     boxSizing: border-box;
-//     cursor: pointer;
-
-//     :active: {
-//       outline: 0;
-//     }
-// }
-
-// .PresetDateRangePicker_button__selected: {
-//   color: var(--calendar-day-color);
-//   background: var(--calendar-main-color);
-// }; */
