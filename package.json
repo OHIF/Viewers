@@ -21,11 +21,14 @@
     "dev:project": ".scripts/dev.sh",
     "dev:orthanc": "lerna run dev:orthanc --stream",
     "orthanc:up": "docker-compose -f .docker/Nginx-Orthanc/docker-compose.yml up",
+    "start": "yarn run dev",
     "test": "yarn run test:unit",
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
     "test:e2e": "lerna run test:e2e --stream",
+    "test:e2e:ci": "lerna run test:e2e:ci --stream",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
+    "test:e2e:serve": "lerna run test:e2e:serve --stream",
     "see-changed": "lerna changed",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "release": "yarn run lerna:version && yarn run lerna:publish",
@@ -47,6 +50,7 @@
     "@babel/plugin-transform-runtime": "^7.5.0",
     "@babel/preset-env": "^7.5.0",
     "@babel/preset-react": "^7.0.0",
+    "@percy/cypress": "^2.2.0",
     "babel-eslint": "9.x",
     "babel-loader": "^8.0.6",
     "babel-plugin-inline-react-svg": "1.1.0",
@@ -55,6 +59,7 @@
     "copy-webpack-plugin": "^5.0.3",
     "cross-env": "^5.2.0",
     "css-loader": "^3.2.0",
+    "dotenv": "^8.1.0",
     "eslint": "5.16.0",
     "eslint-config-react-app": "^4.0.1",
     "eslint-plugin-flowtype": "2.x",
@@ -89,7 +94,7 @@
     "stylelint-config-recommended": "^2.2.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
-    "terser-webpack-plugin": "^1.4.1",
+    "terser-webpack-plugin": "^2.1.0",
     "webpack": "^4.35.2",
     "webpack-cli": "^3.3.5",
     "webpack-dev-server": "^3.7.2",
@@ -97,6 +102,17 @@
     "webpack-merge": "^4.2.1",
     "workbox-webpack-plugin": "^4.3.1",
     "worker-loader": "^2.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,json,css}": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "resolutions": {
     "**/@babel/runtime": "7.5.5"

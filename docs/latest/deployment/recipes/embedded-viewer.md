@@ -134,8 +134,8 @@ conflict issues.
   -->
 
 <!-- prettier-ignore-start -->
-[code-sandbox]: https://codesandbox.io/s/ohif-script-tag-v103-iniiu
-[whole-slide-base-demo]: https://iniiu.csb.app/viewer/1.2.392.200140.2.1.1.1.2.799008771.2020.1519719354.757
-[ext-code-sandbox]: https://codesandbox.io/s/ohif-script-tag-v103-runtime-extensions-34bw5
-[whole-slide-ext-demo]: https://34bw5.csb.app/viewer/1.2.392.200140.2.1.1.1.2.799008771.2448.1519719572.518
+[code-sandbox]: https://codesandbox.io/s/viewer-script-tag-tprch
+[whole-slide-base-demo]: https://tprch.csb.app/viewer/1.2.392.200140.2.1.1.1.2.799008771.2020.1519719354.757
+[ext-code-sandbox]: https://codesandbox.io/s/viewer-script-tag-microscopy-extension-44unk
+[whole-slide-ext-demo]: https://44unk.csb.app/viewer/1.2.392.200140.2.1.1.1.2.799008771.2448.1519719572.518
 <!-- prettier-ignore-end -->

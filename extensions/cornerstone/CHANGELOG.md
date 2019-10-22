@@ -3,6 +3,105 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.3.0...@ohif/extension-cornerstone@1.3.1) (2019-10-09)
+
+
+### Bug Fixes
+
+* 🐛 set tools bidirectional, eraser and annotate command ([#1020](https://github.com/OHIF/Viewers/issues/1020)) ([a28984e](https://github.com/OHIF/Viewers/commit/a28984e))
+
+
+
+
+
+# [1.3.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.2.5...@ohif/extension-cornerstone@1.3.0) (2019-10-09)
+
+
+### Features
+
+* Multiple fixes and implementation changes to react-cornerstone-viewport ([1cc94f3](https://github.com/OHIF/Viewers/commit/1cc94f3))
+
+
+
+
+
+## [1.2.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.2.4...@ohif/extension-cornerstone@1.2.5) (2019-09-27)
+
+
+### Bug Fixes
+
+* version bump issue ([#963](https://github.com/OHIF/Viewers/issues/963)) ([e607ed2](https://github.com/OHIF/Viewers/commit/e607ed2)), closes [#962](https://github.com/OHIF/Viewers/issues/962)
+
+
+
+
+
+# [2.0.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.2.2...@ohif/extension-cornerstone@2.0.0) (2019-09-27)
+
+
+### Bug Fixes
+
+* 🐛 Add DicomLoaderService & FileLoaderService to fix SR, PDF, and SEG support in local file and WADO-RS-only use cases ([#862](https://github.com/OHIF/Viewers/issues/862)) ([e7e1a8a](https://github.com/OHIF/Viewers/commit/e7e1a8a)), closes [#838](https://github.com/OHIF/Viewers/issues/838)
+* version bump issue ([#962](https://github.com/OHIF/Viewers/issues/962)) ([c80ea17](https://github.com/OHIF/Viewers/commit/c80ea17))
+
+
+### BREAKING CHANGES
+
+* DICOM Seg
+
+
+
+
+
+# [2.0.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.2.2...@ohif/extension-cornerstone@2.0.0) (2019-09-27)
+
+
+### Bug Fixes
+
+* 🐛 Add DicomLoaderService & FileLoaderService to fix SR, PDF, and SEG support in local file and WADO-RS-only use cases ([#862](https://github.com/OHIF/Viewers/issues/862)) ([e7e1a8a](https://github.com/OHIF/Viewers/commit/e7e1a8a)), closes [#838](https://github.com/OHIF/Viewers/issues/838)
+
+
+### BREAKING CHANGES
+
+* DICOM Seg
+
+
+
+
+
+## [1.2.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.2.1...@ohif/extension-cornerstone@1.2.2) (2019-09-26)
+
+
+### Bug Fixes
+
+* Add some code splitting for PWA build ([#937](https://github.com/OHIF/Viewers/issues/937)) ([8938035](https://github.com/OHIF/Viewers/commit/8938035))
+
+
+
+
+
+## [1.2.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.2.0...@ohif/extension-cornerstone@1.2.1) (2019-09-17)
+
+
+### Bug Fixes
+
+* bump cornerstone-tools version in peerDeps ([4afc88c](https://github.com/OHIF/Viewers/commit/4afc88c))
+
+
+
+
+
+# [1.2.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.1.1...@ohif/extension-cornerstone@1.2.0) (2019-09-12)
+
+
+### Features
+
+* **Annotate:** Add annotate tool back to toolbar ([26be967](https://github.com/OHIF/Viewers/commit/26be967))
+
+
+
+
+
 ## [1.1.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.1.0...@ohif/extension-cornerstone@1.1.1) (2019-09-12)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone

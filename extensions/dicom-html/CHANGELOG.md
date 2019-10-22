@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@0.50.8...@ohif/extension-dicom-html@1.0.0) (2019-09-27)
+
+
+### Bug Fixes
+
+* 🐛 Add DicomLoaderService & FileLoaderService to fix SR, PDF, and SEG support in local file and WADO-RS-only use cases ([#862](https://github.com/OHIF/Viewers/issues/862)) ([e7e1a8a](https://github.com/OHIF/Viewers/commit/e7e1a8a)), closes [#838](https://github.com/OHIF/Viewers/issues/838)
+
+
+### BREAKING CHANGES
+
+* DICOM Seg
+
+
+
+
+
+## [0.50.8](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@0.50.7...@ohif/extension-dicom-html@0.50.8) (2019-09-26)
+
+
+### Bug Fixes
+
+* Add some code splitting for PWA build ([#937](https://github.com/OHIF/Viewers/issues/937)) ([8938035](https://github.com/OHIF/Viewers/commit/8938035))
+
+
+
+
+
 ## [0.50.7](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@0.50.6...@ohif/extension-dicom-html@0.50.7) (2019-09-12)
 
 **Note:** Version bump only for package @ohif/extension-dicom-html

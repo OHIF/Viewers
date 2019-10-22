@@ -70,32 +70,48 @@ const getWadoRsInstanceMetaData = (study, series, instance) => {
     .toJSON();
 };
 
-export default function updateMetaDataManager(study) {
-  study.seriesList.forEach(series => {
-    series.instances.forEach(instance => {
-      // Cache just images that are going to be loaded via WADO-RS
-      if (
-        instance.imageRendering !== 'wadors' &&
-        instance.thumbnailRendering !== 'wadors'
-      ) {
-        return;
-      }
+/**
+ * Update metadata manager with instances of a specifc series
+ * @param {Object} study A plain study descriptor object
+ * @param {Object} series A Series descriptor object contaning the instances to be added to the manager
+ */
+function updateMetaDataManagerForSeries(study, series) {
+  series.instances.forEach(instance => {
+    // Cache just images that are going to be loaded via WADO-RS
+    if (
+      instance.imageRendering !== 'wadors' &&
+      instance.thumbnailRendering !== 'wadors'
+    ) {
+      return;
+    }
 
-      const metaData = getWadoRsInstanceMetaData(study, series, instance);
-      const numberOfFrames = instance.numberOfFrames || 1;
+    const metaData = getWadoRsInstanceMetaData(study, series, instance);
+    const numberOfFrames = instance.numberOfFrames || 1;
 
-      // We can share the same metaData with all frames because it doesn't have
-      // any frame specific data, such as frameNumber, pixelData, offset, etc.
-      // WADO-RS frame number is 1-based
-      for (let frameNumber = 0; frameNumber < numberOfFrames; frameNumber++) {
-        const imageId = getWADORSImageId(instance, frameNumber);
+    // We can share the same metaData with all frames because it doesn't have
+    // any frame specific data, such as frameNumber, pixelData, offset, etc.
+    // WADO-RS frame number is 1-based
+    for (let frameNumber = 0; frameNumber < numberOfFrames; frameNumber++) {
+      const imageId = getWADORSImageId(instance, frameNumber);
 
-        // TODO Drop dependency on this
-        cornerstoneWADOImageLoader.wadors.metaDataManager.add(
-          imageId,
-          metaData
-        );
-      }
-    });
+      // TODO Drop dependency on this
+      cornerstoneWADOImageLoader.wadors.metaDataManager.add(imageId, metaData);
+    }
   });
+}
+
+/**
+ * Update metadata manager
+ * @param {Object} study A plain study descriptor object
+ * @param {string} [seriesInstanceUid] The Series Instance UID of the series to be added (Optional)
+ */
+export default function updateMetaDataManager(study, seriesInstanceUid) {
+  if (seriesInstanceUid) {
+    const series = study.seriesMap[seriesInstanceUid];
+    updateMetaDataManagerForSeries(study, series);
+  } else {
+    study.seriesList.forEach(series => {
+      updateMetaDataManagerForSeries(study, series);
+    });
+  }
 }

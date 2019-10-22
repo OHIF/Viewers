@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import getMeasurementLocationCallback from '../lib/getMeasurementLocationCallback';
+// This whole component should live in the Measurements Extension :thinking:
+import getMeasurementLocationCallback from '../appExtensions/MeasurementsPanel/getMeasurementLocationCallback';
 
 import './ToolContextMenu.css';
 
@@ -97,12 +98,11 @@ function getNearbyToolData(element, coords, toolTypes) {
   return pointNearTool ? nearbyTool : undefined;
 }
 
-function getDropdownItems(eventData, isTouchEvent = false, availableTools) {
+function getDropdownItems(eventData, isTouchEvent = false) {
   const nearbyToolData = getNearbyToolData(
     eventData.element,
     eventData.currentPoints.canvas,
-    toolTypes,
-    availableTools
+    toolTypes
   );
 
   // Annotate tools for touch events already have a press handle to edit it, has a better UX for deleting it
@@ -148,7 +148,6 @@ class ToolContextMenu extends Component {
     isTouchEvent: PropTypes.bool.isRequired,
     eventData: PropTypes.object,
     onClose: PropTypes.func,
-    availableTools: PropTypes.array,
     visible: PropTypes.bool.isRequired,
   };
 
@@ -168,12 +167,8 @@ class ToolContextMenu extends Component {
       return null;
     }
 
-    const { isTouchEvent, eventData, availableTools } = this.props;
-    const dropdownItems = getDropdownItems(
-      eventData,
-      isTouchEvent,
-      availableTools
-    );
+    const { isTouchEvent, eventData } = this.props;
+    const dropdownItems = getDropdownItems(eventData, isTouchEvent);
 
     // Skip if there is no dropdown item
     if (!dropdownItems.length) {

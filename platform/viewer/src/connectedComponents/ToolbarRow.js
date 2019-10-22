@@ -27,6 +27,7 @@ class ToolbarRow extends Component {
     selectedRightSidePanel: PropTypes.string.isRequired,
     handleSidePanelChange: PropTypes.func,
     activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
+    studies: PropTypes.array,
   };
 
   constructor(props) {
@@ -140,7 +141,7 @@ class ToolbarRow extends Component {
           </div>
           {buttonComponents}
           <ConnectedLayoutButton />
-          <ConnectedPluginSwitch />
+          <ConnectedPluginSwitch studies={this.props.studies} />
           <div
             className="pull-right m-t-1 rm-x-1"
             style={{ marginLeft: 'auto' }}
@@ -168,45 +169,82 @@ class ToolbarRow extends Component {
   }
 }
 
+function _getCustomButtonComponent(button, activeButtons) {
+  const CustomComponent = button.CustomComponent;
+  const isValidComponent = typeof CustomComponent === 'function';
+
+  // Check if its a valid customComponent. Later on an CustomToolbarComponent interface could be implemented.
+  if (isValidComponent) {
+    const parentContext = this;
+    const isActive = activeButtons.includes(button.id);
+
+    return (
+      <CustomComponent
+        parentContext={parentContext}
+        toolbarClickCallback={_handleToolbarButtonClick.bind(this)}
+        button={button}
+        key={button.id}
+        activeButtons={activeButtons}
+        isActive={isActive}
+      />
+    );
+  }
+}
+
+function _getExpandableButtonComponent(button, activeButtons) {
+  // Iterate over button definitions and update `onClick` behavior
+  let activeCommand;
+  const childButtons = button.buttons.map(childButton => {
+    childButton.onClick = _handleToolbarButtonClick.bind(this, childButton);
+
+    if (activeButtons.indexOf(childButton.id) > -1) {
+      activeCommand = childButton.id;
+    }
+
+    return childButton;
+  });
+
+  return (
+    <ExpandableToolMenu
+      key={button.id}
+      label={button.label}
+      icon={button.icon}
+      buttons={childButtons}
+      activeCommand={activeCommand}
+    />
+  );
+}
+
+function _getDefaultButtonComponent(button, activeButtons) {
+  return (
+    <ToolbarButton
+      key={button.id}
+      label={button.label}
+      icon={button.icon}
+      onClick={_handleToolbarButtonClick.bind(this, button)}
+      isActive={activeButtons.includes(button.id)}
+    />
+  );
+}
 /**
  * Determine which extension buttons should be showing, if they're
  * active, and what their onClick behavior should be.
  */
 function _getButtonComponents(toolbarButtons, activeButtons) {
-  return toolbarButtons.map((button, index) => {
-    let activeCommand = undefined;
+  const _this = this;
+  return toolbarButtons.map(button => {
+    const hasCustomComponent = button.CustomComponent;
+    const hasNestedButtonDefinitions = button.buttons && button.buttons.length;
 
-    if (button.buttons && button.buttons.length) {
-      // Iterate over button definitions and update `onClick` behavior
-      const childButtons = button.buttons.map(childButton => {
-        childButton.onClick = _handleToolbarButtonClick.bind(this, childButton);
-
-        if (activeButtons.indexOf(childButton.id) > -1) {
-          activeCommand = childButton.id;
-        }
-
-        return childButton;
-      });
-
-      return (
-        <ExpandableToolMenu
-          key={button.id}
-          label={button.label}
-          icon={button.icon}
-          buttons={childButtons}
-          activeCommand={activeCommand}
-        />
-      );
+    if (hasCustomComponent) {
+      return _getCustomButtonComponent.call(_this, button, activeButtons);
     }
-    return (
-      <ToolbarButton
-        key={button.id}
-        label={button.label}
-        icon={button.icon}
-        onClick={_handleToolbarButtonClick.bind(this, button)}
-        isActive={activeButtons.includes(button.id)}
-      />
-    );
+
+    if (hasNestedButtonDefinitions) {
+      return _getExpandableButtonComponent.call(_this, button, activeButtons);
+    }
+
+    return _getDefaultButtonComponent.call(_this, button, activeButtons);
   });
 }
 

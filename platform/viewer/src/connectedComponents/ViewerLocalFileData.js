@@ -79,6 +79,9 @@ class ViewerLocalFileData extends Component {
         studyMetadata.createDisplaySets(sopClassHandlerModules);
       studyMetadata.setDisplaySets(study.displaySets);
 
+      studyMetadata.forEachDisplaySet(displayset => {
+        displayset.localFile = true;
+      });
       // Updates WADO-RS metaDataManager
       updateMetaDataManager(study);
 

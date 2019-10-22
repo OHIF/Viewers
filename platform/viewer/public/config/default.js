@@ -13,6 +13,7 @@ window.config = {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
       },
     ],
   },

@@ -6,15 +6,29 @@ export class Checkbox extends Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
     checked: PropTypes.bool,
+    onChange: PropTypes.func,
   };
 
   constructor(props) {
     super(props);
-    this.state = { checked: props.checked, label: props.label };
+    this.state = { checked: !!props.checked, label: props.label };
   }
 
   handleChange(e) {
-    this.setState({ checked: e.target.checked });
+    const checked = e.target.checked;
+    this.setState({ checked });
+    if (this.props.onChange) this.props.onChange(checked);
+  }
+
+  componentDidUpdate(props) {
+    const { checked = false, label } = props;
+
+    if (this.state.checked !== checked || this.state.label !== label) {
+      this.setState({
+        checked,
+        label,
+      });
+    }
   }
 
   render() {
@@ -32,9 +46,7 @@ export class Checkbox extends Component {
             <input
               type="checkbox"
               checked={this.state.checked}
-              onChange={e => {
-                this.handleChange(e);
-              }}
+              onChange={this.handleChange.bind(this)}
             />
             {checkbox}
             {this.state.label}

@@ -1,5 +1,11 @@
+import asyncComponent from './asyncComponent.js';
 import OHIFDicomHtmlSopClassHandler from './OHIFDicomHtmlSopClassHandler.js';
-import OHIFDicomHtmlViewport from './OHIFDicomHtmlViewport.js';
+
+const OHIFDicomHtmlViewport = asyncComponent(() =>
+  import(
+    /* webpackChunkName: "OHIFDicomHtmlViewport" */ './OHIFDicomHtmlViewport.js'
+  )
+);
 
 export default {
   /**
@@ -12,5 +18,5 @@ export default {
   },
   getSopClassHandlerModule() {
     return OHIFDicomHtmlSopClassHandler;
-  }
+  },
 };

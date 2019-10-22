@@ -1,6 +1,6 @@
 import RetrieveMetadata from './services/wado/retrieveMetadata.js';
 
-const module = 'RetrieveStudyMetadata';
+const moduleName = 'RetrieveStudyMetadata';
 // Cache for promises. Prevents unnecessary subsequent calls to the server
 const StudyMetaDataPromises = new Map();
 
@@ -17,11 +17,11 @@ export function retrieveStudyMetadata(server, studyInstanceUid) {
   // corresponding promise from the "StudyMetaDataPromises" map...
 
   if (!server) {
-    throw new Error(`${module}: Required 'server' parameter not provided.`);
+    throw new Error(`${moduleName}: Required 'server' parameter not provided.`);
   }
   if (!studyInstanceUid) {
     throw new Error(
-      `${module}: Required 'studyInstanceUid' parameter not provided.`
+      `${moduleName}: Required 'studyInstanceUid' parameter not provided.`
     );
   }
 

@@ -13,50 +13,111 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@1.10.0
+  cypress: cypress-io/cypress@1.11.0
 
 defaults: &defaults
   docker:
-    - image: circleci/node:10.16.0
+    - image: circleci/node:12.9.1
       environment:
         TERM: xterm # Enable colors in term
   working_directory: ~/repo
 
 jobs:
-  CHECKOUT:
+  UNIT_TESTS:
     <<: *defaults
     steps:
+      # Update yarn
+      - run: yarn -v
+      #- run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
+
       # Enable yarn workspaces
       - run: yarn config set workspaces-experimental true
+
       # Checkout code and ALL Git Tags
       - checkout:
           post:
             - git fetch --all
+
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
             # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-v1-{{ .Branch }}-
-            - yarn-packages-v1-
+            - yarn-packages-{{ checksum "yarn.lock" }}
+            - yarn-packages-
+
       - run:
           name: Install Dependencies
           command: yarn install --frozen-lockfile
+
       - save_cache:
           name: Save Yarn Package Cache
           paths:
             - ~/.cache ## Cache yarn and Cypress
-          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      # Persist :+1:
-      - persist_to_workspace:
-          root: ~/repo
-          paths: .
+          key: yarn-packages-{{ checksum "yarn.lock" }}
 
-  UNIT_TESTS:
+      # RUN TESTS
+      - run:
+          name: 'JavaScript Test Suite'
+          command: yarn run test:unit:ci
+
+      # PLATFORM/VIEWER
+      - run:
+          name: 'VIEWER: Combine report output'
+          command: |
+            viewerCov="/home/circleci/repo/platform/viewer/coverage"
+            touch "${viewerCov}/reports"
+            cat "${viewerCov}/clover.xml" >> "${viewerCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
+            cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
+      - codecov/upload:
+          file: '/home/circleci/repo/platform/viewer/coverage/reports'
+          flags: 'viewer'
+
+      # PLATFORM/CORE
+      - run:
+          name: 'CORE: Combine report output'
+          command: |
+            coreCov="/home/circleci/repo/platform/core/coverage"
+            touch "${coreCov}/reports"
+            cat "${coreCov}/clover.xml" >> "${coreCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
+            cat "${coreCov}/lcov.info" >> "${coreCov}/reports"
+            echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
+      - codecov/upload:
+          file: '/home/circleci/repo/platform/core/coverage/reports'
+          flags: 'core'
+
+  UNIT_TESTS_PERSIST_WORKSPACE:
     <<: *defaults
     steps:
-      - attach_workspace:
-          at: ~/repo
+      # Update yarn
+      #- run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
+
+      # Enable yarn workspaces
+      - run: yarn config set workspaces-experimental true
+
+      # Checkout code and ALL Git Tags
+      - checkout:
+          post:
+            - git fetch --all
+
+      - restore_cache:
+          name: Restore Yarn and Cypress Package Cache
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - yarn-packages-{{ checksum "yarn.lock" }}
+            - yarn-packages-
+
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+
+      - save_cache:
+          name: Save Yarn Package Cache
+          paths:
+            - ~/.cache ## Cache yarn and Cypress
+          key: yarn-packages-{{ checksum "yarn.lock" }}
 
       # RUN TESTS
       - run:
@@ -92,7 +153,7 @@ jobs:
           flags: 'core'
 
       # Persist :+1:
-      - persist_to_workspace:
+      - persist_to_workspace: &persist_to_workspace
           root: ~/repo
           paths: .
 
@@ -143,19 +204,19 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Build and push Docker image
           command: |
             # This file will exist if a new version was published by
             # our `semantic-release` command in the previous job
-            if [[ ! -e tmp/updated-version.txt ]]; then
+            if [[ ! -e platform/viewer/success_version.txt ]]; then
               exit 0
             else
               # Remove npm config
               rm -f ./.npmrc
               # Set our version number using vars
-              export IMAGE_VERSION=$(cat tmp/updated-version.txt)
+              export IMAGE_VERSION=$(cat platform/viewer/success_version.txt)
               export IMAGE_VERSION_FULL=v$IMAGE_VERSION.${CIRCLE_BUILD_NUM}
               echo $IMAGE_VERSION
               echo $IMAGE_VERSION_FULL
@@ -175,7 +236,7 @@ jobs:
       - run:
           name: 'Build Demo Site'
           command: yarn run build:demo
-          no_output_timeout: 30m
+          no_output_timeout: 45m
       - run:
           name: 'Upload SourceMaps, Send Deploy Notification'
           command: |
@@ -199,7 +260,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Deploy latest version to viewer.ohif.org
           command: |
@@ -217,103 +278,122 @@ workflows:
   # PULL REQUESTS
   PR_CHECKS:
     jobs:
-      - CHECKOUT:
+      - UNIT_TESTS:
           filters:
             branches:
               ignore:
                 - master
                 - feature/*
                 - hotfix/*
-      - UNIT_TESTS:
-          requires:
-            - CHECKOUT
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
-          store_artifacts: true
+          record: false
+          store_artifacts: false
           working_directory: platform/viewer
-          build: yarn run build
-          start: yarn run test:e2e:dist
+          build: npx cross-env QUICK_BUILD=true yarn run build
+          start: yarn run test:e2e:serve
           wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
+          post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
           requires:
             - UNIT_TESTS
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
-          store_artifacts: true
+          record: false
+          store_artifacts: false
           working_directory: platform/viewer
-          build: yarn run build:package
-          start: yarn run test:e2e:dist
+          build: npx cross-env QUICK_BUILD=true yarn run build:package
+          start: yarn run test:e2e:serve
+          spec: 'cypress/integration/common/**/*'
           wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
+          post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
           requires:
             - UNIT_TESTS
 
   # MERGE TO MASTER
   RELEASE:
     jobs:
-      - CHECKOUT:
+      - UNIT_TESTS_PERSIST_WORKSPACE:
           filters:
             branches:
               only: master
-      - UNIT_TESTS:
-          requires:
-            - CHECKOUT
       # E2E: PWA + Persist
       - cypress/run:
           name: 'E2E: PWA'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
-          record: true
+          record: false
           store_artifacts: true
           working_directory: platform/viewer
-          build: yarn run build
-          start: yarn run test:e2e:dist
+          build: npx cross-env QUICK_BUILD=true yarn run build
+          start: yarn run test:e2e:serve
           wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          command: 'yarn run test:e2e:ci'
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
             - store_test_results:
                 path: cypress/results
           requires:
-            - UNIT_TESTS
+            - UNIT_TESTS_PERSIST_WORKSPACE
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
-          store_artifacts: true
+          record: false
+          store_artifacts: false
           working_directory: platform/viewer
-          build: yarn run build:package
-          start: yarn run test:e2e:dist
+          build: npx cross-env QUICK_BUILD=true yarn run build:package
+          start: yarn run test:e2e:serve
+          spec: 'cypress/integration/common/**/*'
           wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
             - store_test_results:
                 path: cypress/results
           requires:
-            - UNIT_TESTS
+            - UNIT_TESTS_PERSIST_WORKSPACE
       # Update NPM
       - NPM_PUBLISH:
           requires:
             - 'E2E: Script Tag'
             - 'E2E: PWA'
+      # Update docs.ohif.org
       - DOCS_PUBLISH:
           requires:
             - 'E2E: Script Tag'
@@ -322,12 +402,11 @@ workflows:
           requires:
             - 'E2E: Script Tag'
             - 'E2E: PWA'
+      # Update viewer.ohif.org
       - VIEWER_DEMO_PUBLISH:
           requires:
             - VIEWER_DEMO_BUILD
       # Update hub.docker.org
-      # - DOCKER_PUBLISH:
-      #     requires:
-      #       - NPM_PUBLISH
-      # Update viewer.ohif.org
-      # Update docs.ohif.org
+      - DOCKER_PUBLISH:
+          requires:
+            - NPM_PUBLISH

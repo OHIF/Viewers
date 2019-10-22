@@ -26,6 +26,7 @@
 [![Netlify Status][netlify-image]][netlify-url]
 [![CircleCI][circleci-image]][circleci-url]
 [![codecov][codecov-image]][codecov-url]
+[![This project is using Percy.io for visual regression testing.][percy-image]](percy-url)
 [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors)
 <!-- prettier-ignore-end -->
 
@@ -123,8 +124,7 @@ window.config = {
   `window.OHIFStandaloneViewer.installViewer(window.config);`
 
 This exact setup is demonstrated in this
-[CodeSandbox](https://codesandbox.io/s/ohif-viewer-script-tag-usage-c4u4t) and
-in our
+[CodeSandbox](https://codesandbox.io/s/viewer-script-tag-tprch) and in our
 [Embedding The Viewer](https://docs.ohif.org/deployment/recipes/embedded-viewer.html)
 deployment recipe.
 
@@ -133,7 +133,7 @@ deployment recipe.
 ### Requirements
 
 - [Yarn 1.17.3+](https://yarnpkg.com/en/docs/install)
-- [Node 8+](https://nodejs.org/en/)
+- [Node 10+](https://nodejs.org/en/)
 - Yarn Workspaces should be enabled on your machine:
   - `yarn config set workspaces-experimental true`
 
@@ -289,6 +289,8 @@ MIT © [OHIF](https://github.com/OHIF)
 [docker-image-url]: https://hub.docker.com/r/ohif/viewer
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
+[percy-image]: https://percy.io/static/images/percy-badge.svg
+[percy-url]: https://percy.io/Open-Health-Imaging-Foundation/OHIF-Viewer
 <!-- Links -->
 [monorepo]: https://en.wikipedia.org/wiki/Monorepo
 [how-to-fork]: https://help.github.com/en/articles/fork-a-repo

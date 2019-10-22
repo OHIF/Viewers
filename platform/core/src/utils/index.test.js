@@ -14,6 +14,8 @@ describe('Top level exports', () => {
       // Updates WADO-RS metaDataManager
       'updateMetaDataManager',
       'DICOMTagDescriptions',
+      'DicomLoaderService',
+      'urlUtil'
     ].sort();
 
     const exports = Object.keys(utils.default).sort();

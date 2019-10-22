@@ -1,8 +1,4 @@
-import {
-  ExampleDropTarget,
-  StudyBrowser,
-  ThumbnailEntry,
-} from './studyBrowser';
+import { StudyBrowser, ThumbnailEntry } from './studyBrowser';
 import { LayoutButton, LayoutChooser } from './layoutButton';
 import { MeasurementTable, MeasurementTableItem } from './measurementTable';
 import { Overlay, OverlayTrigger } from './overlayTrigger';
@@ -13,6 +9,7 @@ import {
   UserPreferencesModal,
 } from './userPreferencesModal';
 
+import { Checkbox } from './checkbox';
 import { CineDialog } from './cineDialog';
 import { DownloadDialog } from './downloadDialog';
 import { QuickSwitch } from './quickSwitch';
@@ -24,9 +21,9 @@ import { ToolbarSection } from './toolbarSection';
 import { Tooltip } from './tooltip';
 
 export {
+  Checkbox,
   CineDialog,
   DownloadDialog,
-  ExampleDropTarget,
   LayoutButton,
   LayoutChooser,
   MeasurementTable,

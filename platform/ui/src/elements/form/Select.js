@@ -20,6 +20,12 @@ class Select extends Component {
     onChange: PropTypes.func,
   };
 
+  handleChange = event => {
+    const value = event.target.value;
+    this.setState({ value });
+    if (this.props.onChange) this.props.onChange(value);
+  };
+
   render() {
     return (
       <div className="select-ohif-container">

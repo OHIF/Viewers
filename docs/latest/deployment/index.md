@@ -205,5 +205,5 @@ Please feel free to suggest or contribute your own recipes.
 [host-static-assets]: https://www.netlify.com/blog/2016/05/18/9-reasons-your-site-should-be-static/
 [cors]: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 [code-flows]: https://medium.com/@darutk/diagrams-of-all-the-openid-connect-flows-6968e3990660
-[code-sandbox]: https://codesandbox.io/s/ohif-viewer-script-tag-usage-b3st9
+[code-sandbox]: https://codesandbox.io/s/viewer-script-tag-tprch
 <!-- prettier-ignore-end -->
