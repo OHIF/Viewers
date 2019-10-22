@@ -71,10 +71,11 @@ class ViewerMain extends Component {
   componentDidUpdate(prevProps) {
     const prevViewportAmount = prevProps.layout.viewports.length;
     const viewportAmount = this.props.layout.viewports.length;
+    const isVtk = this.props.layout.viewports.some(vp => !!vp.vtk);
 
     if (
       this.props.studies !== prevProps.studies ||
-      viewportAmount !== prevViewportAmount
+      (viewportAmount !== prevViewportAmount && !isVtk)
     ) {
       const displaySets = this.getDisplaySets(this.props.studies);
 
