@@ -24,7 +24,7 @@ import WhiteLabellingContext from '../context/WhiteLabellingContext';
 import AppContext from '../context/AppContext';
 
 function StudyListRoute(props) {
-  const { server, t, user, studyListFunctionsEnabled } = props;
+  const { history, server, t, user, studyListFunctionsEnabled } = props;
   // ~~ STATE
   const [sort, setSort] = useState({
     fieldName: 'patientName',
@@ -107,18 +107,6 @@ function StudyListRoute(props) {
   //     studies: null,
   //   });
   // }
-
-  // TODO: Navigate on Select
-  // onSelectItem = studyInstanceUID => {
-  //   const { appConfig = {} } = this.context;
-  //   const { server } = this.props;
-  //   const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-  //     studyInstanceUids: studyInstanceUID,
-  //   });
-  //   this.props.history.push(viewerPath);
-  // };
-
-  // static contextType = AppContext;
 
   const onDrop = async acceptedFiles => {
     try {
@@ -227,6 +215,10 @@ function StudyListRoute(props) {
           studies={studies}
           onSelectItem={studyInstanceUID => {
             console.log(studyInstanceUID);
+            const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
+              studyInstanceUids: studyInstanceUID,
+            });
+            history.push(viewerPath);
           }}
           // Table Header
           sort={sort}

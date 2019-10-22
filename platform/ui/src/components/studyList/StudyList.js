@@ -23,6 +23,7 @@ function StudyList(props) {
     onSort: handleSort,
     filterValues,
     onFilterChange: handleFilterChange,
+    onSelectItem: handleSelectItem,
     t,
   } = props;
 
@@ -131,6 +132,7 @@ function StudyList(props) {
         {studies.map((study, index) => (
           <TableRow
             key={`${study.studyInstanceUid}-${index}`}
+            onClick={studyInstanceUid => handleSelectItem(studyInstanceUid)}
             accessionNumber={study.accessionNumber || ''}
             modalities={study.modalities}
             patientId={study.patientId || ''}
@@ -182,11 +184,15 @@ function TableRow(props) {
     studyDate,
     studyDescription,
     studyInstanceUid,
+    onClick: handleClick,
     t,
   } = props;
 
   const largeRowTemplate = (
-    <tr className={classNames({ active: isHighlighted })}>
+    <tr
+      onClick={() => handleClick(studyInstanceUid)}
+      className={classNames({ active: isHighlighted })}
+    >
       <td className={classNames({ emptyCell: !patientName })}>
         {patientName || `(${t('Empty')})`}
       </td>
@@ -199,7 +205,10 @@ function TableRow(props) {
   );
 
   const mediumRowTemplate = (
-    <tr className={classNames({ active: isHighlighted })}>
+    <tr
+      onClick={() => handleClick(studyInstanceUid)}
+      className={classNames({ active: isHighlighted })}
+    >
       <td className={classNames({ emptyCell: !patientName })}>
         {patientName || `(${t('Empty')})`}
         <div style={{ color: '#60656f' }}>{patientId}</div>
@@ -262,7 +271,10 @@ function TableRow(props) {
   );
 
   const smallRowTemplate = (
-    <tr className={classNames({ active: isHighlighted })}>
+    <tr
+      onClick={() => handleClick(studyInstanceUid)}
+      className={classNames({ active: isHighlighted })}
+    >
       <td style={{ position: 'relative', overflow: 'hidden' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           {/* NAME AND ID */}
