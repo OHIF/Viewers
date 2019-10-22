@@ -367,12 +367,12 @@ workflows:
                 path: platform/viewer/cypress/screenshots
           requires:
             - UNIT_TESTS
+
+  PR_OPTIONAL_DOCKER_PUBLISH:
+    jobs:
       # https://circleci.com/docs/2.0/workflows/#holding-a-workflow-for-a-manual-approval
       - AWAIT_APPROVAL:
           type: approval
-          requires:
-            - 'E2E: Script Tag'
-            - 'E2E: PWA'
       # Update hub.docker.org
       - DOCKER_PR_PUBLISH:
           context: Docker Hub
