@@ -31,6 +31,8 @@ function StudyListRoute(props) {
     direction: 'desc',
   });
   const [filterValues, setFilterValues] = useState({
+    studyDateTo: null,
+    studyDateFrom: null,
     patientName: '',
     patientId: '',
     accessionNumber: '',
@@ -306,31 +308,24 @@ async function getStudyList(
   } = filters;
   const sortFieldName = sort.fieldName || 'patientName';
   const sortDirection = sort.direction || 'desc';
+  const studyDateFrom =
+    filters.studyDateFrom ||
+    moment()
+      .subtract(25000, 'days')
+      .toDate();
+  const studyDateTo = filters.studyDateTo || new Date();
 
-  const mergedInput = Object.assign(
-    {},
-    {
-      rowsPerPage,
-      currentPage: pageNumber,
-      // Need to make sure we're getting these...
-      studyDateFrom: moment()
-        .subtract(25000, 'days')
-        .toDate(),
-      studyDateTo: new Date(),
-    },
-    filters
-  );
   const mappedFilters = {
-    patientId: mergedInput.patientId,
-    patientName: mergedInput.patientName,
-    accessionNumber: mergedInput.accessionNumber,
-    studyDescription: mergedInput.studyDescription,
-    modalitiesInStudy: mergedInput.modalities,
+    patientId: filters.patientId,
+    patientName: filters.patientName,
+    accessionNumber: filters.accessionNumber,
+    studyDescription: filters.studyDescription,
+    modalitiesInStudy: filters.modalities,
     // NEVER CHANGE
-    studyDateFrom: mergedInput.studyDateFrom,
-    studyDateTo: mergedInput.studyDateTo,
-    limit: mergedInput.rowsPerPage,
-    offset: mergedInput.currentPage * mergedInput.rowsPerPage,
+    studyDateFrom,
+    studyDateTo,
+    limit: rowsPerPage,
+    offset: pageNumber * rowsPerPage,
     fuzzymatching: server.supportsFuzzyMatching === true,
   };
 

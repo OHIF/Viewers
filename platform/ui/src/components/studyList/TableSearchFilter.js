@@ -23,7 +23,9 @@ function TableSearchFilter(props) {
   const today = moment();
   const lastWeek = moment().subtract(7, 'day');
   const lastMonth = moment().subtract(1, 'month');
-  const defaultStartDate = moment().subtract(365 * 10, 'days'); // this.props.studyListDateFilterNumDays,
+  // TODO: Does this need to be preserved? Default sort could be nice for large data sources
+  // this.props.studyListDateFilterNumDays,
+  const defaultStartDate = moment().subtract(365 * 10, 'days');
   const defaultEndDate = today;
   const studyDatePresets = [
     {
@@ -42,10 +44,6 @@ function TableSearchFilter(props) {
       end: today,
     },
   ];
-
-  // this.state = {
-  //   loading: false,
-  //   error: false,
 
   return meta.map((field, i) => {
     const { displayText, fieldName, inputType } = field;
@@ -74,19 +72,14 @@ function TableSearchFilter(props) {
           // https://github.com/airbnb/react-dates
           <CustomDateRangePicker
             // Required
-            startDate={defaultStartDate}
+            startDate={null}
             startDateId="start-date"
-            endDate={defaultEndDate}
+            endDate={null}
             endDateId="end-date"
+            // TODO: We need a dynamic way to determine which fields values to update
             onDatesChange={({ startDate, endDate, preset = false }) => {
-              // Remove focus and search if...
-              // - endDate or preset was just changed
-              // - and startDate is set
-              // - and endDate is set
-              // If... startDate is null, and endDate is null...
-              // - clear and search
-              console.log(startDate, endDate, preset);
-              onValueChange(fieldName, `${startDate}|${endDate}|${preset}`);
+              onValueChange('studyDateTo', startDate);
+              onValueChange('studyDateFrom', endDate);
             }}
             focusedInput={focusedInput}
             onFocusChange={updatedVal => setFocusedInput(updatedVal)}
