@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.56.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.55.0...@ohif/ui@0.56.0) (2019-10-22)
+
+
+### Features
+
+* 🎸 Load spinner when selecting gcloud store. Add key on td ([#1034](https://github.com/OHIF/Viewers/issues/1034)) ([e62f403](https://github.com/OHIF/Viewers/commit/e62f403fe9e3df56713128e3d59045824b086d8d)), closes [#1057](https://github.com/OHIF/Viewers/issues/1057)
+
+
+
+
+
 # [0.55.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.54.0...@ohif/ui@0.55.0) (2019-10-15)
 
 
