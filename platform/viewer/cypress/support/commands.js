@@ -44,7 +44,8 @@ Cypress.Commands.add('openStudy', patientName => {
   cy.wait('@getStudies');
   cy.get('#studyListData .studylistStudy', { timeout: 5000 })
     .contains(patientName)
-    .first().click();
+    .first()
+    .click({ force: true });
 });
 
 /**
