@@ -9,6 +9,7 @@ import {
 import setMPRLayout from './utils/setMPRLayout.js';
 import setViewportToVTK from './utils/setViewportToVTK.js';
 import Constants from 'vtk.js/Sources/Rendering/Core/VolumeMapper/Constants.js';
+import throttle from 'lodash.throttle';
 
 const { BlendMode } = Constants;
 
@@ -102,15 +103,23 @@ const actions = {
     });
   },
   enableLevelTool: () => {
+    function updateVOI(apis, windowWidth, windowCenter) {
+      apis.forEach(api => {
+        api.updateVOI(windowWidth, windowCenter);
+      });
+    }
+
+    const throttledUpdateVOIs = throttle(updateVOI, 16, { trailing: true }); // ~ 60 fps
+
     const callbacks = {
       setOnLevelsChanged: ({ windowCenter, windowWidth }) => {
         apis.forEach(api => {
           const renderWindow = api.genericRenderWindow.getRenderWindow();
 
           renderWindow.render();
-
-          api.updateVOI(windowWidth, windowCenter);
         });
+
+        throttledUpdateVOIs(apis, windowWidth, windowCenter);
       },
     };
 
