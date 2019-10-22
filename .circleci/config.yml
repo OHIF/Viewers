@@ -13,7 +13,7 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@1.10.0
+  cypress: cypress-io/cypress@1.11.0
 
 defaults: &defaults
   docker:
@@ -288,10 +288,13 @@ workflows:
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
+          record: false
           store_artifacts: false
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build
@@ -307,10 +310,13 @@ workflows:
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
+          record: false
           store_artifacts: false
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build:package
@@ -335,11 +341,13 @@ workflows:
       # E2E: PWA + Persist
       - cypress/run:
           name: 'E2E: PWA'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
-          record: true
+          record: false
           store_artifacts: true
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build
@@ -358,10 +366,13 @@ workflows:
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
+          executor: cypress/browsers-chrome76
+          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
+          record: false
           store_artifacts: false
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build:package
