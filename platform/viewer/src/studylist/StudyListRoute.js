@@ -304,6 +304,9 @@ async function getStudyList(
     patientNameOrId,
     accessionOrModalityOrDescription,
   } = filters;
+  const sortFieldName = sort.fieldName || 'patientName';
+  const sortDirection = sort.direction || 'desc';
+
   const mergedInput = Object.assign(
     {},
     {
@@ -314,11 +317,6 @@ async function getStudyList(
         .subtract(25000, 'days')
         .toDate(),
       studyDateTo: new Date(),
-      // Not needed here...
-      sortData: {
-        field: 'patientName', // fieldName
-        order: 'desc', // direction
-      },
     },
     filters
   );
@@ -362,10 +360,27 @@ async function getStudyList(
     };
   });
 
-  console.log('raw: ', studies, mappedStudies);
+  const sortedStudies = _sortStudies(
+    mappedStudies,
+    sortFieldName,
+    sortDirection
+  );
 
-  const { field, order } = mergedInput.sortData;
-  const sortedStudies = mappedStudies.map(study => {
+  return sortedStudies;
+}
+
+/**
+ *
+ *
+ * @param {object[]} studies - Array of studies to sort
+ * @param {string} studies.studyDate - Date in 'MMM DD, YYYY' format
+ * @param {string} field - name of properties on study to sort by
+ * @param {string} order - 'asc' or 'desc'
+ * @returns
+ */
+function _sortStudies(studies, field, order) {
+  // Make sure our studyDate is in a valid format and create copy of studies array
+  const sortedStudies = studies.map(study => {
     if (!moment(study.studyDate, 'MMM DD, YYYY', true).isValid()) {
       study.studyDate = moment(study.studyDate, 'YYYYMMDD').format(
         'MMM DD, YYYY'
@@ -374,6 +389,7 @@ async function getStudyList(
     return study;
   });
 
+  // Sort by field
   sortedStudies.sort(function(a, b) {
     let fieldA = a[field];
     let fieldB = b[field];
@@ -381,6 +397,8 @@ async function getStudyList(
       fieldA = moment(fieldA).toISOString();
       fieldB = moment(fieldB).toISOString();
     }
+
+    // Order
     if (order === 'desc') {
       if (fieldA < fieldB) {
         return -1;
@@ -465,7 +483,6 @@ async function _fetchStudies(
   });
 
   const lotsOfStudies = await Promise.all(queryPromises);
-  console.log('lots', lotsOfStudies);
   const studies = [];
 
   // Flatten and dedupe
@@ -478,8 +495,6 @@ async function _fetchStudies(
       });
     }
   });
-
-  console.log('flat', studies);
 
   return studies;
 }
