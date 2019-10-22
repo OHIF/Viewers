@@ -22,6 +22,8 @@ class DicomStorePickerModal extends Component {
   handleEvent = data => {
     const servers = GoogleCloudUtilServers.getServers(data, data.dicomstore);
     this.props.setServers(servers);
+    // Force auto close
+    this.props.onClose();
   };
 
   render() {
