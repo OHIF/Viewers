@@ -278,14 +278,17 @@ StudyListRoute.defaultProps = {
 };
 
 /**
- *
+ * Not ideal, but we use displaySize to determine how the filters should be used
+ * to build the collection of promises we need to fetch a result set.
  *
  * @param {*} server
  * @param {*} filters
- * @param {*} sort
- * @param {number} rowsPerPage
- * @param {number} pageNumber
- * @param {*} displaySize
+ * @param {object} sort
+ * @param {string} sort.fieldName - field to sort by
+ * @param {string} sort.direction - direction to sort
+ * @param {number} rowsPerPage - Number of results to return
+ * @param {number} pageNumber - Used to determine results offset
+ * @param {string} displaySize - small, medium, large
  * @returns
  */
 async function getStudyList(
@@ -296,7 +299,6 @@ async function getStudyList(
   pageNumber,
   displaySize
 ) {
-  console.log(filters);
   const {
     allFields,
     patientNameOrId,
@@ -374,7 +376,14 @@ async function getStudyList(
     sortDirection
   );
 
-  return sortedStudies;
+  // Because we've merged multiple requests, we may have more than
+  // our rows per page. Let's `take` that number from our sorted array.
+  // This "might" cause paging issues.
+  const numToTake =
+    sortedStudies.length < rowsPerPage ? sortedStudies.length : rowsPerPage - 1;
+  const result = sortedStudies.slice(0, numToTake);
+
+  return result;
 }
 
 /**
