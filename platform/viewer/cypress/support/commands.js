@@ -41,9 +41,9 @@ import {
 Cypress.Commands.add('openStudy', patientName => {
   cy.initRouteAliases();
   cy.visit('/');
-  cy.get('#patientName').type(patientName);
+  cy.get('#filter-patientName').type(patientName);
 
-  cy.get('.studylistStudy > .patientName', { timeout: 5000 })
+  cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
     .contains(patientName)
     .click();
 
