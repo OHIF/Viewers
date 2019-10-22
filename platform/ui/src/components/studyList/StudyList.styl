@@ -208,9 +208,22 @@ table.table
     text-align: center
 
 @media only screen and (max-width: 768px)
-  .study-list-container
   .study-list-header
-    padding: 0 15px
+    padding: 0 16px;
+
+  .study-list-container
+    padding: 0;
+
+  .study-list-container > table.table > thead > tr > th
+    padding: 0 13px;
+
+  .study-list-container > table.table > tbody > tr > td
+    padding: 8px;
+
+  .study-list-container .filters label
+    padding: 8px;
+
+
 
 
 // @media only screen and (max-width: 1362px)

@@ -1,13 +1,14 @@
 import './StudyList.styl';
 
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
-import { useMedia } from '@ohif/ui'; // same project, doof
-//
+import { useMedia, TableSearchFilter } from '@ohif/ui'; // same project, doof
 import PropTypes from 'prop-types';
+import ColorHash from './internal/color-hash.js';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
-import { TableSearchFilter } from '@ohif/ui';
 import { withTranslation } from '../../utils/LanguageProvider';
+
+const colorHash = new ColorHash();
 
 /**
  *
@@ -206,7 +207,16 @@ function TableRow(props) {
       <td>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div>{accessionNumber}</div>
-          <div>{modalities}</div>
+          <div
+            style={{
+              backgroundColor: colorHash.hex(modalities),
+              borderRadius: '16px',
+              padding: '2px 8px 0px 8px',
+              fontWeight: 500,
+            }}
+          >
+            {modalities}
+          </div>
         </div>
         <pre>{studyDescription}</pre>
       </td>
@@ -216,17 +226,36 @@ function TableRow(props) {
 
   const smallRowTemplate = (
     <tr className={classNames({ active: isHighlighted })}>
-      <td className={classNames({ emptyCell: !patientName })}>
+      <td style={{ position: 'relative', overflow: 'hidden' }}>
         <div style={{ display: 'flex' }}>
-          <div style={{ width: '150px' }}>
-            {patientName || `(${t('Empty')})`}
+          <div
+            className={classNames({ emptyCell: !patientName })}
+            style={{ width: '150px', minWidth: '150px' }}
+          >
+            <div style={{ fontWeight: 500, paddingTop: '3px' }}>
+              {patientName || `(${t('Empty')})`}
+            </div>
             <div style={{ color: '#60656f' }}>{patientId}</div>
-            <div>{accessionNumber}</div>
-            <div>{studyDate}</div>
-            <div>{modalities}</div>
+            {/* <div>{accessionNumber}</div>
+            <div>{studyDate}</div> */}
           </div>
           <div style={{ paddingLeft: '35px' }}>
-            <pre>{studyDescription}</pre>
+            <pre style={{ whiteSpace: 'pre-wrap', margin: '26px 0 0 0' }}>
+              {studyDescription}
+            </pre>
+          </div>
+          <div
+            style={{
+              backgroundColor: colorHash.hex(modalities),
+              borderRadius: '16px',
+              padding: '2px 8px 0px 8px',
+              fontWeight: 500,
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+            }}
+          >
+            {modalities}
           </div>
         </div>
       </td>

@@ -101,14 +101,6 @@ class Header extends Component {
             </Link>
           )}
 
-          <span
-            className={`${
-              this.props.home ? 'header-versionInfoHome' : 'header-versionInfo'
-            }`}
-          >
-            v{process.env.VERSION_NUMBER}
-          </span>
-
           {this.props.children}
 
           {showStudyList && !this.props.home && (
