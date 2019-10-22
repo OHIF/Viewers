@@ -86,8 +86,6 @@ function StudyListRoute(props) {
           displaySize
         );
 
-        console.log('setting studies...', response);
-
         setStudies(response);
         setSearchStatus({ error: null, isSearchingForStudies: false });
       } catch (error) {
@@ -360,9 +358,19 @@ async function getStudyList(
     };
   });
 
+  // For our smaller displays, map our field name to a single
+  // field we can actually sort by.
+  const sortFieldNameMapping = {
+    allFields: 'patientName',
+    patientNameOrId: 'patientName',
+    accessionOrModalityOrDescription: 'modalities',
+  };
+  const mappedSortFieldName =
+    sortFieldNameMapping[sortFieldName] || sortFieldName;
+
   const sortedStudies = _sortStudies(
     mappedStudies,
-    sortFieldName,
+    mappedSortFieldName,
     sortDirection
   );
 
