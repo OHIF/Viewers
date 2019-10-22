@@ -97,6 +97,18 @@
   margin-right: 1rem;
 }
 
+.notification-bar {
+  display: none;
+  position: absolute;
+  height: 20px;
+  line-height: 20px;
+  width: 100%;
+  background-color: #91b9cd;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
+}
+
 @media only screen and (max-width: 768px) {
   .entry-header.header-big {
     padding: 0 15px;
@@ -109,5 +121,23 @@
 
   .entry-header.header-big .header-logo-text {
     width: 40%;
+  }
+
+  /* Account for notification bar height */
+  .entry-header.header-big .header-brand {
+    height: auto;
+    padding: 35px 0 10px 0;
+  }
+
+  .dd-menu {
+    margin-top: 20px;
+  }
+
+  /* Toggle Notification Bar */
+  .notification-bar {
+    display: block;
+  }
+  .header-menu .research-use {
+    display: none;
   }
 }
