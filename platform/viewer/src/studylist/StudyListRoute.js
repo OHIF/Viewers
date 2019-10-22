@@ -8,7 +8,6 @@ import {
   StudyList,
   PageToolbar,
   TablePagination,
-  TableSearchFilter,
   useDebounce,
   useMedia,
 } from '@ohif/ui';
@@ -207,7 +206,9 @@ function StudyListRoute(props) {
       </WhiteLabellingContext.Consumer>
       <div className="study-list-header">
         <div className="header">
-          <h1 style={{ fontWeight: 300 }}>{t('StudyList')}</h1>
+          <h1 style={{ fontWeight: 300, fontSize: '22px' }}>
+            {t('StudyList')}
+          </h1>
         </div>
         <div className="actions">
           <PageToolbar
