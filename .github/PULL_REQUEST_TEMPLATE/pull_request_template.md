@@ -14,7 +14,7 @@
 > 2. Using the [git-push-fork-to-upstream-branch][script] script
 > 3. Executing the manual approval step in the CI workflow
 
-- [] Request doccker publish of PR
+- [] Request docker publish of PR
 
 _Want to improve this process? Consider PR'ing the ability for reviewers to add
 a label to trigger this process._
