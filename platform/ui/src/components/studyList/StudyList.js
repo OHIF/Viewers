@@ -206,28 +206,66 @@ function TableRow(props) {
       </td>
       <td>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <div>{accessionNumber}</div>
+          {/* DESCRIPTION */}
           <div
+            className="hide-xs"
             style={{
-              backgroundColor: colorHash.hex(modalities),
-              borderRadius: '16px',
-              padding: '2px 8px 0px 8px',
-              fontWeight: 500,
+              whiteSpace: 'pre-wrap',
+              flexGrow: 1,
             }}
           >
-            {modalities}
+            {studyDescription}
+          </div>
+
+          {/* MODALITY & ACCESSION */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              minWidth: '80px',
+              maxWidth: '100px',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: colorHash.hex(modalities),
+                borderRadius: '16px',
+                padding: '2px 8px 0px 8px',
+                fontWeight: 500,
+                marginBottom: '4px',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+              }}
+              aria-label={modalities}
+              title={modalities}
+            >
+              {modalities}
+            </div>
+            <div
+              style={{
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+              }}
+              aria-label={accessionNumber}
+              title={accessionNumber}
+            >
+              {accessionNumber}
+            </div>
           </div>
         </div>
-        <pre>{studyDescription}</pre>
       </td>
-      <td>{studyDate}</td>
+      {/* DATE */}
+      <td style={{ textAlign: 'center' }}>{studyDate}</td>
     </tr>
   );
 
   const smallRowTemplate = (
     <tr className={classNames({ active: isHighlighted })}>
       <td style={{ position: 'relative', overflow: 'hidden' }}>
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          {/* NAME AND ID */}
           <div
             className={classNames({ emptyCell: !patientName })}
             style={{ width: '150px', minWidth: '150px' }}
@@ -236,26 +274,40 @@ function TableRow(props) {
               {patientName || `(${t('Empty')})`}
             </div>
             <div style={{ color: '#60656f' }}>{patientId}</div>
-            {/* <div>{accessionNumber}</div>
-            <div>{studyDate}</div> */}
           </div>
-          <div style={{ paddingLeft: '35px' }}>
-            <pre style={{ whiteSpace: 'pre-wrap', margin: '26px 0 0 0' }}>
-              {studyDescription}
-            </pre>
-          </div>
+
+          {/* DESCRIPTION */}
           <div
+            className="hide-xs"
             style={{
-              backgroundColor: colorHash.hex(modalities),
-              borderRadius: '16px',
-              padding: '2px 8px 0px 8px',
-              fontWeight: 500,
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
+              whiteSpace: 'pre-wrap',
+              flexGrow: 1,
+              paddingLeft: '35px',
             }}
           >
-            {modalities}
+            {studyDescription}
+          </div>
+
+          {/* MODALITY & DATE */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              minWidth: '80px',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: colorHash.hex(modalities),
+                borderRadius: '16px',
+                padding: '2px 8px 0px 8px',
+                fontWeight: 500,
+                marginBottom: '4px',
+              }}
+            >
+              {modalities}
+            </div>
+            <div>{studyDate}</div>
           </div>
         </div>
       </td>
