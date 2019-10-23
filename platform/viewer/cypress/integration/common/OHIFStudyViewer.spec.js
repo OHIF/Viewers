@@ -206,4 +206,85 @@ describe('OHIF Study Viewer Page', () => {
     cy.get('@measurementsBtn').click();
     cy.get('@measurementsPanel').should('not.be.enabled');
   });
+
+  it('scrolls series stack using scrollbar', () => {
+    // Workaround implemented based on Cypress issue:
+    // https://github.com/cypress-io/cypress/issues/1570#issuecomment-450966053
+    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+      window.HTMLInputElement.prototype,
+      'value'
+    ).set;
+
+    cy.get('input.imageSlider[type=range]').then($range => {
+      // get the DOM node
+      const range = $range[0];
+      // set the value manually
+      nativeInputValueSetter.call(range, 13);
+      // now dispatch the event
+      range.dispatchEvent(new Event('change', { value: 13, bubbles: true }));
+    });
+
+    const expectedText = 'Img: 13 13/13';
+    cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
+  });
+
+  //TO-DO: this test is blocked due to issue #1072: https://github.com/OHIF/Viewers/issues/1072
+  // Uncomment this once #1072 is fixed.
+  // it('performs single-click to load thumbnail in active viewport', () => {
+  //   cy.get('[data-cy="thumbnail-list"]:nth-child(3)').click();
+
+  //   const expectedText = 'Ser 3';
+  //   cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
+  // });
+
+  it('performs right click to zoom', () => {
+    //Right click on viewport
+    cy.get('@viewport')
+      .trigger('mousedown', 'top', { which: 3 })
+      .trigger('mousemove', 'center', { which: 3 })
+      .trigger('mouseup');
+
+    const expectedText = 'Zoom: 442%';
+    cy.get('@viewportInfoBottomRight').should('contains.text', expectedText);
+  });
+
+  it('performs middle click to pan', () => {
+    //Get image position from cornerstone and check if y axis was modified
+    let cornerstone;
+    let currentPan;
+
+    cy.window()
+      .its('cornerstone')
+      .then(c => {
+        cornerstone = c;
+        currentPan = () =>
+          cornerstone.getEnabledElements()[0].viewport.translation;
+      });
+
+    //pan image with middle click
+    cy.get('@viewport')
+      .trigger('mousedown', 'center', { which: 2 })
+      .trigger('mousemove', 'bottom', { which: 2 })
+      .trigger('mouseup', 'bottom')
+      .then(() => {
+        expect(currentPan().y > 0).to.eq(true);
+      });
+  });
+
+  it('opens About modal and verify the displayed information', () => {
+    cy.get('.dd-menu')
+      .as('options')
+      .click();
+    cy.get('.dd-item')
+      .as('aboutMenu')
+      .click();
+    cy.get('.modal-content')
+      .as('aboutOverlay')
+      .should('be.visible');
+
+    //TO DO:
+    //check button links
+    //check version number
+    //check repository url
+  });
 });
