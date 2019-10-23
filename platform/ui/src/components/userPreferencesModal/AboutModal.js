@@ -62,7 +62,7 @@ class AboutModal extends Component {
 
   renderTableRow(item) {
     return (
-      <tr key={item.name}>
+      <tr key={item.name} style={{ backgroundColor: 'transparent' }}>
         <td>{item.name}</td>
         <td>
           {item.link ? (
