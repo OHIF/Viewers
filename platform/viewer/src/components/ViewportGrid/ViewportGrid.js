@@ -114,8 +114,8 @@ ViewportGrid.propTypes = {
   studies: PropTypes.array,
   children: PropTypes.node,
   defaultPlugin: PropTypes.string,
-  numRows: PropTypes.number,
-  numColumns: PropTypes.number,
+  numRows: PropTypes.number.isRequired,
+  numColumns: PropTypes.number.isRequired,
 };
 
 ViewportGrid.defaultProps = {
