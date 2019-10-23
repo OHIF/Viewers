@@ -18,6 +18,7 @@ const colorHash = new ColorHash();
  */
 function StudyList(props) {
   const {
+    isLoading,
     studies,
     sort,
     onSort: handleSort,
@@ -129,26 +130,42 @@ function StudyList(props) {
         </tr>
       </thead>
       <tbody className="table-body" data-cy="study-list-results">
-        {studies.map((study, index) => (
-          <TableRow
-            key={`${study.studyInstanceUid}-${index}`}
-            onClick={studyInstanceUid => handleSelectItem(studyInstanceUid)}
-            accessionNumber={study.accessionNumber || ''}
-            modalities={study.modalities}
-            patientId={study.patientId || ''}
-            patientName={study.patientName || ''}
-            studyDate={study.studyDate}
-            studyDescription={study.studyDescription || ''}
-            studyInstanceUid={study.studyInstanceUid}
-            t={t}
-          />
-        ))}
+        {/* I'm not in love with this approach, but it's the quickest way for now
+         *
+         * - Display different content based on loading, empty, results state
+         *
+         * This is not ideal because it create a jump in focus. For loading especially,
+         * We should keep our current results visible while we load the new ones.
+         */}
+        {isLoading && (
+          <tr>
+            <td colspan={tableMeta.length}>
+              <StudyListLoadingText />
+            </td>
+          </tr>
+        )}
+        {!isLoading &&
+          studies.map((study, index) => (
+            <TableRow
+              key={`${study.studyInstanceUid}-${index}`}
+              onClick={studyInstanceUid => handleSelectItem(studyInstanceUid)}
+              accessionNumber={study.accessionNumber || ''}
+              modalities={study.modalities}
+              patientId={study.patientId || ''}
+              patientName={study.patientName || ''}
+              studyDate={study.studyDate}
+              studyDescription={study.studyDescription || ''}
+              studyInstanceUid={study.studyInstanceUid}
+              t={t}
+            />
+          ))}
       </tbody>
     </table>
   );
 }
 
 StudyList.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
   studies: PropTypes.array.isRequired,
   onSelectItem: PropTypes.func.isRequired,
   // ~~ SORT

@@ -1,5 +1,5 @@
-import { Icon } from './../../elements/Icon';
 import React from 'react';
+import { Icon } from './../../elements/Icon';
 import { withTranslation } from '../../utils/LanguageProvider';
 
 function StudyListLoadingText({ t: translate }) {

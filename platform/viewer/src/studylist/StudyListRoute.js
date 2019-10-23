@@ -210,7 +210,7 @@ function StudyListRoute(props) {
       <div className="study-list-container">
         {/* STUDY LIST OR DROP ZONE? */}
         <StudyList
-          loading={searchStatus.isSearchingForStudies}
+          isLoading={searchStatus.isSearchingForStudies}
           // Rows
           studies={studies}
           onSelectItem={studyInstanceUID => {
