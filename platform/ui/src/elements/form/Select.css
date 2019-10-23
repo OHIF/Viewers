@@ -1,5 +1,4 @@
 .select-ohif-container {
-
 }
 
 .select-ohif-container .select-ohif {
@@ -25,13 +24,12 @@
   display: none;
 }
 
-<<<<<<< HEAD
 .select-ohif-container .select-ohif-label {
   padding: 5px;
-=======
+}
+
 .select-ohif:focus {
   outline: none;
->>>>>>> dea0ceab5729e0210c75726bb6661f8bd1be3e11
 }
 
 .select-ohif-container .select-ohif option {

@@ -13,6 +13,10 @@
 
   .title
     margin: 0;
+    font-weight: bold;
+
+  .hidden
+    display: none;
 
   .file-info-container
     display: flex;
@@ -55,15 +59,20 @@
     background-color: #16202b;
     width: fit-content;
     margin: 0 auto;
-    padding-bottom: 20px;
+    padding: 10px;
     border-radius: 5px;
     @media screen and (max-width: 1023px)
       width: 100%;
+
+    .viewport-preview
+      max-height: 512px;
+      max-width: 512px;
 
     h4
       width: 100%;
       text-align center;
       font-size: 1.3em;
+      margin: 0 0 10px;
 
     .preview-container
       width: auto;
