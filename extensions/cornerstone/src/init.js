@@ -8,7 +8,8 @@ import initCornerstoneTools from './initCornerstoneTools.js';
  * @param {object} configuration
  * @param {Object|Array} configuration.csToolsConfig
  */
-export default function init(configuration = {}) {
+export default function init(services, configuration = {}) {
+  const { DialogService } = services;
   const { csToolsConfig } = configuration;
   const { StackManager } = OHIF.utils;
   const metadataProvider = new OHIF.cornerstone.MetadataProvider();
@@ -42,7 +43,6 @@ export default function init(configuration = {}) {
     ZoomTouchPinchTool,
     // Annotations
     EraserTool,
-    ArrowAnnotateTool,
     BidirectionalTool,
     LengthTool,
     AngleTool,
@@ -65,7 +65,6 @@ export default function init(configuration = {}) {
     ZoomTouchPinchTool,
     // Annotations
     EraserTool,
-    ArrowAnnotateTool,
     BidirectionalTool,
     LengthTool,
     AngleTool,
@@ -78,6 +77,22 @@ export default function init(configuration = {}) {
   ];
 
   tools.forEach(tool => csTools.addTool(tool));
+
+  csTools.addTool(csTools.ArrowAnnotateTool, {
+    configuration: {
+      getTextCallback: async () => {
+        alert('Trying to get text');
+        const getValueFromDialog = await DialogService.promptForInput(
+          'Message'
+        );
+        alert(getValueFromDialog);
+      },
+      changeTextCallback: () => {
+        alert('change text');
+      },
+    },
+  });
+
   csTools.setToolActive('Pan', { mouseButtonMask: 4 });
   csTools.setToolActive('Zoom', { mouseButtonMask: 2 });
   csTools.setToolActive('Wwwc', { mouseButtonMask: 1 });

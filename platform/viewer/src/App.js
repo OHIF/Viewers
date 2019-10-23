@@ -5,6 +5,7 @@ import './config';
 import {
   CommandsManager,
   ExtensionManager,
+  ServicesManager,
   HotkeysManager,
   utils,
 } from '@ohif/core';
@@ -27,7 +28,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import store from './store';
-import { SnackbarProvider } from '@ohif/ui';
+import { SnackbarProvider, useSnackbarContext } from '@ohif/ui';
 
 // Contexts
 import WhiteLabellingContext from './context/WhiteLabellingContext';
@@ -42,7 +43,11 @@ const commandsManagerConfig = {
 
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
-const extensionManager = new ExtensionManager({ commandsManager });
+const servicesManager = new ServicesManager();
+const extensionManager = new ExtensionManager({
+  commandsManager,
+  servicesManager,
+});
 // ~~~~ END APP SETUP
 
 // TODO[react] Use a provider when the whole tree is React
@@ -77,7 +82,11 @@ class App extends Component {
     this._appConfig = props;
     const { servers, extensions, hotkeys, oidc } = props;
 
+    console.log(useSnackbarContext);
+    const snackBar = useSnackbarContext;
+
     this.initUserManager(oidc);
+    _initServices([snackBar]); // We're not injecting this into Extensions yet
     _initExtensions(extensions, hotkeys);
     _initServers(servers);
     initWebWorkers();
@@ -101,6 +110,13 @@ class App extends Component {
                       value={this.props.whiteLabelling}
                     >
                       <SnackbarProvider>
+                        {/* PubSubBus.pushNotification('name of event', payloadOfInformation)
+                        PubSubBus.subscribeNotification('name of event', handler(data) => {
+
+                          const { show } = useSnackbarContext();
+                          show(data);
+
+                        }); */}
                         <OHIFStandaloneViewer userManager={userManager} />
                       </SnackbarProvider>
                     </WhiteLabellingContext.Provider>
@@ -164,6 +180,10 @@ class App extends Component {
   }
 }
 
+function _initServices(services) {
+  services.forEach(service => servicesManager.register(service));
+}
+
 /**
  * @param
  */
@@ -210,4 +230,4 @@ function _makeAbsoluteIfNecessary(url, base_url) {
 const ExportedApp = process.env.NODE_ENV === 'development' ? hot(App) : App;
 
 export default ExportedApp;
-export { commandsManager, extensionManager, hotkeysManager };
+export { commandsManager, extensionManager, hotkeysManager, servicesManager };

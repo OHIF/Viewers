@@ -2,12 +2,13 @@ import MODULE_TYPES from './MODULE_TYPES.js';
 import log from './../log.js';
 
 export default class ExtensionManager {
-  constructor({ commandsManager }) {
+  constructor({ commandsManager, servicesManager }) {
     this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
     //
     this._commandsManager = commandsManager;
+    this._servicesManager = servicesManager;
 
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
