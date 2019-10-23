@@ -306,7 +306,7 @@ jobs:
             gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
             gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
             # Remove all files in Storage Bucket; Push latest
-            gsutil -m rm gs://$GOOGLE_STORAGE_BUCKET/**
+            gsutil -m -f -r rm gs://$GOOGLE_STORAGE_BUCKET/**
             gsutil -m rsync -R platform/viewer/dist gs://$GOOGLE_STORAGE_BUCKET
 
 workflows:
