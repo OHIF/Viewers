@@ -375,7 +375,7 @@ async function getStudyList(
   // our rows per page. Let's `take` that number from our sorted array.
   // This "might" cause paging issues.
   const numToTake =
-    sortedStudies.length < rowsPerPage ? sortedStudies.length : rowsPerPage - 1;
+    sortedStudies.length < rowsPerPage ? sortedStudies.length : rowsPerPage;
   const result = sortedStudies.slice(0, numToTake);
 
   return result;
