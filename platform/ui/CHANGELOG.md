@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.56.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.55.0...@ohif/ui@0.56.0) (2019-10-22)
+
+
+### Features
+
+* 🎸 Load spinner when selecting gcloud store. Add key on td ([#1034](https://github.com/OHIF/Viewers/issues/1034)) ([e62f403](https://github.com/OHIF/Viewers/commit/e62f403fe9e3df56713128e3d59045824b086d8d)), closes [#1057](https://github.com/OHIF/Viewers/issues/1057)
+
+
+
+
+
+# [0.55.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.54.0...@ohif/ui@0.55.0) (2019-10-15)
+
+
+### Features
+
+* Add browser info and app version ([#1046](https://github.com/OHIF/Viewers/issues/1046)) ([c217b8b](https://github.com/OHIF/Viewers/commit/c217b8b))
+
+
+
+
+
+# [0.54.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.53.4...@ohif/ui@0.54.0) (2019-10-14)
+
+
+### Features
+
+* Notification Service ([#1011](https://github.com/OHIF/Viewers/issues/1011)) ([92c8996](https://github.com/OHIF/Viewers/commit/92c8996))
+
+
+
+
+
+## [0.53.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.53.3...@ohif/ui@0.53.4) (2019-10-11)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [0.53.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.53.2...@ohif/ui@0.53.3) (2019-10-10)
+
+
+### Bug Fixes
+
+* 🎸 switch ohif logo from text + font to SVG ([#1021](https://github.com/OHIF/Viewers/issues/1021)) ([e7de8be](https://github.com/OHIF/Viewers/commit/e7de8be))
+
+
+
+
+
+## [0.53.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.53.1...@ohif/ui@0.53.2) (2019-10-09)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
 ## [0.53.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.53.0...@ohif/ui@0.53.1) (2019-10-04)
 
 

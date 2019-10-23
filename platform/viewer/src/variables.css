@@ -1,5 +1,6 @@
-/* Sizes */
 :root {
+  /* Sizes */
+
   --top-bar-height: 40px;
   --top-bar-expanded-height: 160px;
   --toolbar-height: 78px;
@@ -8,24 +9,26 @@
   --right-sidepanel-menu-width: 323px;
   --study-list-padding: 8%;
   --study-list-padding-medium-screen: 10px;
-}
+  --snackbar-size: 344px;
 
-/* Fonts */
-/* Logo font should be SVG so we don't need to load an entire font */
-:root {
-  --logo-font-family: 'Sanchez';
-  --logo-font-weight: 300; /* Sanchez, 300 does not exist */
-}
+  /* Transitions */
 
-/* Transitions */
-:root {
   --transition-duration: 0.3s;
   --transition-effect: ease;
   --sidepanel-transition: all 0.3s ease;
-}
 
-/* Thicknesses */
-:root {
+  /* Thicknesses */
+
   --viewport-border-thickness: 1px;
   --ui-border-thickness: 1px;
+
+  /** Colors **/
+
+  --snackbar-success: rgba(94, 164, 0, 0.9);
+  --snackbar-error: rgba(236, 61, 61, 0.9);
+  --snackbar-warning: rgba(235, 173, 23, 0.9);
+  --snackbar-info: rgba(54, 156, 199, 0.9);
+
+  /** z-Index **/
+  --snackbar-zIndex: 10;
 }

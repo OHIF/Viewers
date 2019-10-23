@@ -469,7 +469,7 @@ async function createStudyFromSOPInstanceList(server, sopInstanceList) {
  * @returns {Object} A study descriptor object
  */
 async function RetrieveMetadata(server, studyInstanceUid, queryParams) {
-  return (server.enableStudyLazyLoad
+  return (server.enableStudyLazyLoad !== false
     ? lazyLoadStudyMetadata
     : loadStudyMetadata)(server, studyInstanceUid, queryParams);
 }

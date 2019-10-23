@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui",
-  "version": "0.53.1",
+  "version": "0.56.0",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -39,6 +39,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@ohif/i18n": "^0.2.3",
+    "browser-detect": "^0.2.28",
     "classnames": "2.2.6",
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",

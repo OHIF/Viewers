@@ -6,7 +6,9 @@ import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import { StudyList } from '@ohif/ui';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
+import * as RoutesUtil from '../routes/routesUtil';
 import moment from 'moment';
+import isEqual from 'lodash.isequal';
 import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';
 import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
 import filesToStudies from '../lib/filesToStudies.js';
@@ -19,8 +21,9 @@ import AppContext from '../context/AppContext';
 class StudyListWithData extends Component {
   static contextType = AppContext;
   state = {
-    searchData: {},
+    searchOutdated: true,
     studies: [],
+    searchingStudies: false,
     error: null,
     modalComponentId: null,
   };
@@ -61,6 +64,7 @@ class StudyListWithData extends Component {
     if (!this.props.server && appConfig.enableGoogleCloudAdapter) {
       this.setState({
         modalComponentId: 'DicomStorePicker',
+        searchOutdated: false,
       });
     } else {
       this.searchForStudies({
@@ -70,21 +74,33 @@ class StudyListWithData extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
-    if (!this.state.searchData && !this.state.studies) {
-      this.searchForStudies();
-    }
-    if (this.props.server !== prevProps.server) {
-      this.setState({
-        modalComponentId: null,
-        searchData: null,
-        studies: null,
-      });
+  componentDidUpdate(prevProps, prevState) {
+    const hasNewServer = !isEqual(this.props.server, prevProps.server);
+
+    const { searchOutdated, searchingStudies } = this.state;
+
+    if (!searchingStudies) {
+      if (hasNewServer) {
+        const { appConfig = {} } = this.context;
+
+        const newState = {
+          searchOutdated: true,
+          studies: null,
+        };
+        if (appConfig.enableGoogleCloudAdapter) {
+          newState.modalComponentId = null;
+        }
+        this.setState(newState);
+      }
+
+      if (searchOutdated) {
+        this.searchForStudies();
+      }
     }
   }
 
   searchForStudies = (searchData = StudyListWithData.defaultSearchData) => {
-    const { server } = this.props;
+    const { server = {} } = this.props;
     const filter = {
       patientId: searchData.patientId,
       patientName: searchData.patientName,
@@ -104,7 +120,9 @@ class StudyListWithData extends Component {
     // TODO: add sorting
     const promise = OHIF.studies.searchStudies(server, filter);
 
-    // Render the viewer when the data is ready
+    this.setState({
+      searchingStudies: true,
+    });
     promise
       .then(studies => {
         if (!studies) {
@@ -149,11 +167,15 @@ class StudyListWithData extends Component {
 
         this.setState({
           studies: sortedStudies,
+          searchingStudies: false,
+          searchOutdated: false,
         });
       })
       .catch(error => {
         this.setState({
           error: true,
+          searchingStudies: false,
+          searchOutdated: false,
         });
 
         throw new Error(error);
@@ -175,7 +197,12 @@ class StudyListWithData extends Component {
   };
 
   onSelectItem = studyInstanceUID => {
-    this.props.history.push(`/viewer/${studyInstanceUID}`);
+    const { appConfig = {} } = this.context;
+    const { server } = this.props;
+    const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
+      studyInstanceUids: studyInstanceUID,
+    });
+    this.props.history.push(viewerPath);
   };
 
   onSearch = searchData => {
@@ -202,8 +229,6 @@ class StudyListWithData extends Component {
 
     if (this.state.error) {
       return <div>Error: {JSON.stringify(this.state.error)}</div>;
-    } else if (this.state.studies === null && !this.state.modalComponentId) {
-      return <div>Loading...</div>;
     }
 
     let healthCareApiButtons = null;
@@ -234,8 +259,9 @@ class StudyListWithData extends Component {
 
     const studyList = (
       <div className="paginationArea">
-        {this.state.studies ? (
+        {this.state.studies || this.state.searchingStudies ? (
           <StudyList
+            loading={this.state.searchingStudies}
             studies={this.state.studies}
             studyListFunctionsEnabled={this.props.studyListFunctionsEnabled}
             onImport={this.onImport}

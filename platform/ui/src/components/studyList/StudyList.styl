@@ -82,9 +82,14 @@ placeholder-color(c)
   position: absolute
   z-index: 2
 
-  .loading-text
-    color: var(--table-text-secondary-color)
-    font-size: 30px
+  .loading
+    display: flex;
+    justify-content: center;
+
+    .loading-text
+      color: var(--table-text-secondary-color)
+      font-size: 30px
+      width: fit-content;
 
   .notFound
     color: var(--table-text-secondary-color)

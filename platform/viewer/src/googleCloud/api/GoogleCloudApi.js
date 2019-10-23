@@ -22,10 +22,10 @@ class GoogleCloudApi {
     return this.urlBase + `/projects`;
   }
 
-  getUrlBaseDicomWeb(project, location, dataset, dicomstore) {
+  getUrlBaseDicomWeb(project, location, dataset, dicomStore) {
     return (
       this.urlBase +
-      `/projects/${project}/locations/${location}/datasets/${dataset}/dicomStores/${dicomstore}/dicomWeb`
+      `/projects/${project}/locations/${location}/datasets/${dataset}/dicomStores/${dicomStore}/dicomWeb`
     );
   }
 
@@ -38,7 +38,7 @@ class GoogleCloudApi {
       const response = await fetch(url, { ...this.fetchConfig, config });
       try {
         data = await response.json();
-      } catch (err) {}
+      } catch (err) { }
       if (response.status >= 200 && response.status < 300 && data != null) {
         if (data.nextPageToken != null) {
           params.pageToken = data.nextPageToken;
