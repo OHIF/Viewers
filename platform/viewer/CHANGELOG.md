@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.11.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.2...@ohif/viewer@1.11.3) (2019-10-23)
+
+
+### Bug Fixes
+
+* 🐛 Switch to orhtographic view for 2D MPR ([#1074](https://github.com/OHIF/Viewers/issues/1074)) ([13d337a](https://github.com/OHIF/Viewers/commit/13d337aaabb8dadf6366c6262c5e47e7781edd08))
+
+
+
+
+
 ## [1.11.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.1...@ohif/viewer@1.11.2) (2019-10-23)
 
 **Note:** Version bump only for package @ohif/viewer
