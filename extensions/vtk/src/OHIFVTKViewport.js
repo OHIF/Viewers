@@ -213,6 +213,10 @@ class OHIFVTKViewport extends Component {
 
     volumeMapper.setSampleDistance(sampleDistance);
 
+    // Be generous to surpress warnings, as the logging really hurts performance.
+    // TODO: maybe we should auto adjust samples to 1000.
+    volumeMapper.setMaximumSamplesPerRay(4000);
+
     volumeCache[displaySetInstanceUid] = volumeActor;
 
     return volumeActor;
