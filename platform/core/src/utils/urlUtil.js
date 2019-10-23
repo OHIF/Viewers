@@ -6,7 +6,7 @@ const PARAM_PATTERN_IDENTIFIER = ':';
 function toLowerCaseFirstLetter(word) {
   return word[0].toLowerCase() + word.slice(1);
 }
-const getFilters = (location = {}) => {
+const getQueryFilters = (location = {}) => {
   const { search } = location;
 
   if (!search) {
@@ -61,13 +61,13 @@ const isValidPath = path => {
 };
 
 const queryString = {
-  getQueryFilters: getFilters,
+  getQueryFilters,
 };
 
 const paramString = {
-  isValidPath: isValidPath,
-  parseParam: parseParam,
-  replaceParam: replaceParam,
+  isValidPath,
+  parseParam,
+  replaceParam,
 };
 
 export { parse, queryString, paramString };
