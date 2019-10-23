@@ -37,7 +37,6 @@ import {
 } from './elements';
 
 // Alias this for now as not all dependents are using strict versioning
-import { DropdownMenu as Dropdown, Range, Select } from './elements/form';
 import ExpandableToolMenu from './viewer/ExpandableToolMenu.js';
 import PlayClipButton from './viewer/PlayClipButton.js';
 import { ScrollableArea } from './ScrollableArea/ScrollableArea.js';

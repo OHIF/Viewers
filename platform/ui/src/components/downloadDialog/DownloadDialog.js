@@ -1,281 +1,339 @@
-import React, { PureComponent } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap-modal';
-import 'react-bootstrap-modal/lib/css/rbm-patch.css';
-import PropTypes from 'prop-types';
-import { TextInput, Select } from '@ohif/ui';
-import debounce from 'lodash.debounce';
 
 import './DownloadDialog.styl';
+import { TextInput, Select } from '@ohif/ui';
 import { withTranslation } from '../../utils/LanguageProvider';
 
-class DownloadDialog extends PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isOpen: this.props.isOpen,
-      size: 0,
-      height: 0,
-      aspectRatio: 0,
-      fileName: 'Image',
-      fileType: 'png',
-      showAnnotations: true,
-      fileTypeOptions: [
-        {
-          key: 'jpg',
-          value: 'jpg'
-        },
-        {
-          key: 'png',
-          value: 'png'
-        }
-      ],
-      previewElementRef: null,
-      MINIMUM_SIZE: 100,
-    };
-
-    this.submitForm = this.submitForm.bind(this);
-    this.onClose = this.onClose.bind(this);
-    this.changeSize = this.changeSize.bind(this);
-    this.checkImageBoundaries = this.checkImageBoundaries.bind(this);
-
-    this.debouncedSizeChange = debounce(() => {
-      this.props.resize('width', this.state.width);
-      this.props.resize('height', this.state.height);
-    }, 500);
-
+const MINIMUM_SIZE = 100;
+const FILE_TYPE_OPTIONS = [
+  {
+    key: 'jpg',
+    value: 'jpg'
+  },
+  {
+    key: 'png',
+    value: 'png'
   }
+];
 
-  submitForm(e) {
-    e.preventDefault();
+const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => {
+  const [filename, setFilename] = useState('image');
+  const [fileType, setFileType] = useState('jpg');
+  const [height, setHeight] = useState(512);
+  const [width, setWidth] = useState(512);
+  const [showAnnotations, setShowAnnotations] = useState(true);
 
-    const formData = {
-      width: this.state.width,
-      height: this.state.height,
-      fileName: this.state.fileName,
-      fileType: this.state.fileType,
-      showAnnotations: this.state.showAnnotations,
-    };
+  const [keepAspect, setKeepAspect] = useState(true);
+  const [lastImage, setLastImage] = useState();
 
-    const thereIsAnyEmpty = Object.values(formData).some(field => field === '');
-    const isImageSizeBadlyConfigured = !this.checkImageBoundaries();
+  const [viewportElementHeight, setViewportElementHeight] = useState();
+  const [viewportElementWidth, setViewportElementWidth] = useState();
+  const [downloadCanvasHeight, setDownloadCanvasHeight] = useState();
+  const [downloadCanvasWidth, setDownloadCanvasWidth] = useState();
 
-    if (thereIsAnyEmpty) {
-      alert('Please full fill all fields.');
-      return false;
-    }
+  const [viewportPreviewSrc, setViewportPreviewSrc] = useState();
+  const [viewportPreviewHeight, setViewportPreviewHeight] = useState();
+  const [viewportPreviewWidth, setViewportPreviewWidth] = useState();
 
-    if (isImageSizeBadlyConfigured) {
-      alert('Please review image size.');
-      return false;
-    }
+  const [viewportElement, setViewportElement] = useState();
+  const [viewportPreview, setViewportPreview] = useState();
+  const [downloadCanvas, setDownloadCanvas] = useState();
 
-    this.props.save(formData);
-    this.props.toggleAnnotations(true);
+  const updateViewportPreview = () => {
+    viewportElement.addEventListener('cornerstoneimagerendered', function updateViewport(event) {
 
-    return false;
-  };
+      console.log('cornerstoneimagerendered', event);
 
-  static propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    toggleDownloadDialog: PropTypes.func.isRequired,
-    save: PropTypes.func.isRequired,
-    mountPreview: PropTypes.func.isRequired,
-    resize: PropTypes.func.isRequired,
-    toggleAnnotations: PropTypes.func.isRequired,
-    setCacheReferences: PropTypes.func.isRequired,
-    getInfo: PropTypes.func.isRequired,
-    resetSize: PropTypes.func.isRequired,
-  };
+      const enabledElement = cornerstone.getEnabledElement(event.target).element;
+      const type = 'image/' + fileType;
+      const dataUrl = downloadCanvas.toDataURL(type, 1);
 
-  /**
-   * mountAndAssignRef
-   * This 'eccentric' way to pass trough a ref to state is needed now that
-   * 'static' method getDerivedStateFromProps doesnt have access to the instance(this),
-   * different of the old way with componentWillReceiveProps
-   * See https://fb.me/react-async-component-lifecycle-hooks for details.
-   * @param references dom element ref to cache on Download Engine
-   */
-  mountAndAssignRef = async references => {
-    if (references !== null) {
-      await this.props.setCacheReferences(
-        references,
-        this.props.activeEnabledElement,
-        this.state.showAnnotations,
-      );
+      setViewportPreviewSrc(dataUrl);
 
-      this.setState({
-        previewElementRef: references,
-        ...this.props.getInfo(),
-        showAnnotations: true,
-      });
+      let newWidth = enabledElement.clientWidth;
+      let newHeight = enabledElement.clientHeight;
 
-      this.props.mountPreview();
-    }
-  };
+      /* Limit image preview max size to fit inside modal. */
+      if (newWidth > 512 || newHeight > 512) {
+        const multiplier = 512 / Math.max(newWidth, newHeight);
+        newHeight *= multiplier;
+        newWidth *= multiplier;
+      }
 
-  checkImageBoundaries() {
-    return (this.state.width >= this.state.MINIMUM_SIZE && this.state.height >= this.state.MINIMUM_SIZE);
-  }
+      setViewportPreviewHeight(newWidth);
+      setViewportPreviewWidth(newHeight);
 
-  changeSize(prop, e) {
-    e.persist();
-
-    const { value } = e.currentTarget;
-    let width;
-    let height;
-
-    if (prop === 'width') {
-      width = value;
-      height = Math.round(( value / this.state.aspectRatio ));
-    }
-
-    if (prop === 'height') {
-      height = value;
-      width = Math.round(( value * this.state.aspectRatio ))
-    }
-
-    this.setState({
-      width,
-      height
+      viewportElement.removeEventListener('cornerstoneimagerendered', updateViewport);
     });
+  };
 
-    this.debouncedSizeChange(prop, value);
+  const toggleAnnotations = toggle => {
+    cornerstoneTools.store.state.tools.forEach(({ name }) => {
+      if (toggle) {
+        cornerstoneTools.setToolEnabledForElement(viewportElement, name);
+      } else {
+        cornerstoneTools.setToolDisabledForElement(viewportElement, name);
+      }
+    });
+  };
+
+  /* viewportElement is the element that contains the canvas to be downloaded as image. */
+  useEffect(() => {
+    if (viewportElement) {
+      cornerstone.enable(viewportElement);
+    }
+  }, [viewportElement]);
+
+  /* Run on every change. */
+  useEffect(() => {
+    if (activeViewport) {
+      const enabledElement = cornerstone.getEnabledElement(activeViewport);
+
+      /* Copy current viewport. */
+      const viewport = Object.assign({}, enabledElement.viewport);
+      delete viewport.scale;
+      viewport.translation = {
+        x: 0,
+        y: 0
+      };
+
+      cornerstone.loadImage(enabledElement.image.imageId)
+        .then(image => {
+          setLastImage(image);
+
+          cornerstone.displayImage(viewportElement, image);
+          cornerstone.setViewport(viewportElement, viewport);
+          cornerstone.resize(viewportElement, true);
+
+          toggleAnnotations(showAnnotations);
+
+          const newWidth = Math.min(width || image.width, 16384);
+          const newHeight = Math.min(height || image.height, 16384);
+
+          setViewportElementHeight(newHeight);
+          setViewportElementWidth(newWidth);
+          setDownloadCanvasHeight(newHeight);
+          setDownloadCanvasWidth(newWidth);
+
+          cornerstone.fitToWindow(viewportElement);
+          updateViewportPreview();
+        });
+    }
+  }, [
+    viewportElement,
+    viewportElementHeight,
+    viewportElementWidth,
+    downloadCanvasHeight,
+    downloadCanvasWidth,
+    downloadCanvas,
+    showAnnotations,
+    height,
+    width,
+    viewportPreviewSrc,
+    viewportPreviewWidth,
+    viewportPreviewHeight
+  ]);
+
+  const onHeightChange = () => {
+    const newHeight = event.target.value;
+    setHeight(newHeight);
+
+    setViewportElementHeight(newHeight);
+    setDownloadCanvasHeight(newHeight);
+
+    if (keepAspect) {
+      const multiplier = newHeight / lastImage.height;
+      const newWidth = Math.round(lastImage.width * multiplier);
+
+      setWidth(newWidth);
+      setViewportElementWidth(newWidth);
+      setDownloadCanvasWidth(newWidth);
+    }
+  };
+
+  const onWidthChange = event => {
+    const newWidth = event.target.value;
+    setWidth(newWidth);
+
+    setViewportElementWidth(newWidth);
+    setDownloadCanvasWidth(newWidth);
+
+    if (keepAspect) {
+      const multiplier = newWidth / lastImage.width;
+      const newHeight = Math.round(lastImage.height * multiplier);
+
+      setHeight(newHeight);
+      setViewportElementHeight(newHeight);
+      setDownloadCanvasHeight(newHeight);
+    }
+  };
+
+  const onClose = () => {
+    toggleDownloadDialog();
+    toggleAnnotations(true);
   }
 
-  onClose() {
-    this.props.toggleDownloadDialog();
-    this.props.toggleAnnotations(true);
-    this.props.resetSize();
-  }
+  const downloadImage = () => {
+    const file = `${filename}.${fileType}`;
+    const mimetype = `image/${fileType}`;
 
-  render() {
-    return (
-      <Modal
-        show={this.props.isOpen}
-        onHide={this.onClose}
-        aria-labelledby="ModalHeader"
-        className="DownloadDialog modal fade themed in"
-        backdrop={false}
-        large={true}
-        keyboard={true}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>{this.props.t('Download High Quality Image')}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form onSubmit={this.submitForm}>
-            <div className="container">
+    // Handles JPEG images for IE11
+    if (downloadCanvas.msToBlob && fileType === 'jpeg') {
+      const image = downloadCanvas.toDataURL(mimetype, 1);
+      const blob = b64toBlob(image.replace('data:image/jpeg;base64,', ''), mimetype);
+      return window.navigator.msSaveBlob(blob, file);
+    }
 
-              <div className="title">
-                {this.props.t('Please specify the dimensions, filename, and desired type for the output image.')}
-              </div>
+    return cornerstoneTools.SaveAs(viewportElement, file, mimetype);
+  };
 
-              <div className="file-info-container">
+  return (
+    <Modal
+      show={isOpen}
+      onHide={onClose}
+      aria-labelledby="ModalHeader"
+      className="DownloadDialog modal fade themed in"
+      backdrop={false}
+      large={true}
+      keyboard={true}
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>
+          {t('Download High Quality Image')}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div>
 
-                <div className="col">
-                  <div className="width">
-                    <TextInput
-                      type="number"
-                      min={this.state.MINIMUM_SIZE}
-                      value={this.state.width}
-                      label={this.props.t('Width (px)')}
-                      onChange={e => this.changeSize('width', e)}
-                    />
-                  </div>
-                  <div className="height">
-                    <TextInput
-                      type="number"
-                      min={this.state.MINIMUM_SIZE}
-                      value={this.state.height}
-                      label={this.props.t('Height (px)')}
-                      onChange={ e => this.changeSize('height', e)}
-                    />
-                  </div>
-                </div>
+          <div className="title">
+            {t('Please specify the dimensions, filename, and desired type for the output image.')}
+          </div>
 
-                <div className="col">
-                  <div className="file-name">
-                    <TextInput
-                      type="text"
-                      value={this.state.fileName}
-                      onChange={e => {
-                        this.setState({ fileName: e.currentTarget.value })
-                      }}
-                      label={this.props.t('File Name')}
-                      id="file-name"
-                    />
-                  </div>
-                  <div className="file-type">
-                    <Select
-                      value={this.state.fileType}
-                      onChange={e => {
-                        this.setState({ fileType: e.currentTarget.value })
-                      }}
-                      options={this.state.fileTypeOptions}
-                      label={this.props.t('File Type')}
-                    />
-                  </div>
-                </div>
-
-                <div className="col">
-                  <div className="show-annotations">
-                    <label htmlFor="show-annotations" className="form-check-label">
-                      {this.props.t('Show Annotations')}
-                      <input
-                        id="show-annotations"
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={this.state.showAnnotations}
-                        onChange={e => {
-                          this.setState({ showAnnotations: e.target.checked });
-                          this.props.toggleAnnotations(e.target.checked, true);
-                        }}
-                      />
-                    </label>
-                  </div>
-                </div>
-
-              </div>
-
-              <div className="preview">
-                <h4> {this.props.t('Image Preview')}</h4>
-                <img
-                  className="preview-container"
-                  ref={this.mountAndAssignRef}
-                  alt={this.props.t('Image Preview')}
+          <div className="file-info-container">
+            <div className="col">
+              <div className="width">
+                <TextInput
+                  type="number"
+                  min={MINIMUM_SIZE}
+                  value={width}
+                  label={t('Width (px)')}
+                  onChange={onWidthChange}
                 />
               </div>
-
-              <div className="actions">
-                <div className="action-cancel">
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={this.onClose}
-                  >
-                    {this.props.t('Cancel')}
-                  </button>
-                </div>
-                <div className="action-save">
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                  >
-                    {this.props.t('Download')}
-                  </button>
-                </div>
+              <div className="height">
+                <TextInput
+                  type="number"
+                  min={MINIMUM_SIZE}
+                  value={height}
+                  label={t('Height (px)')}
+                  onChange={onHeightChange}
+                />
               </div>
-
             </div>
-          </form>
-        </Modal.Body>
-      </Modal>
-    )
+
+            <div className="col">
+              <div className="file-name">
+                <TextInput
+                  type="text"
+                  value={filename}
+                  onChange={event => setFilename(event.target.value)}
+                  label={t('File Name')}
+                  id="file-name"
+                />
+              </div>
+              <div className="file-type">
+                <Select
+                  value={fileType}
+                  onChange={event => setFileType(event.target.value)}
+                  options={FILE_TYPE_OPTIONS}
+                  label={t('File Type')}
+                />
+              </div>
+            </div>
+
+            <div className="col">
+              <div className="show-annotations">
+                <label htmlFor="show-annotations" className="form-check-label">
+                  {t('Show Annotations')}
+                  <input
+                    id="show-annotations"
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={showAnnotations}
+                    onChange={event => {
+                      setShowAnnotations(event.target.checked);
+                      toggleAnnotations(event.target.checked, true);
+                    }}
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{ height: viewportElementHeight, width: viewportElementWidth }}
+            ref={ref => setViewportElement(ref)}
+          >
+            <canvas
+              className="cornerstone-canvas"
+              style={{ height: downloadCanvasHeight, width: downloadCanvasWidth }}
+              ref={ref => setDownloadCanvas(ref)}
+            >
+            </canvas>
+          </div>
+
+          <div className="preview">
+            <h4> {t('Image Preview')}</h4>
+            <img
+              className="viewport-preview"
+              src={viewportPreviewSrc}
+              style={{ height: viewportPreviewHeight, width: viewportPreviewWidth }}
+              ref={ref => setViewportPreview(ref)}
+            />
+          </div>
+
+          <div className="actions">
+            <div className="action-cancel">
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={onClose}
+              >
+                {t('Cancel')}
+              </button>
+            </div>
+            <div className="action-save">
+              <button onClick={downloadImage} className="btn btn-primary">
+                {t('Download')}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal.Body>
+    </Modal>
+  );
+};
+
+/* Enabled JPEG images downloading on IE11. */
+const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
+  const byteCharacters = atob(b64Data);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
   }
 
-}
+  const blob = new Blob(byteArrays, { type: contentType });
+  return blob;
+};
 
-const connectedComponent = withTranslation('DownloadDialog')(DownloadDialog);
-export { connectedComponent as DownloadDialog };
-export default connectedComponent;
+export default withTranslation('DownloadDialog')(DownloadDialog);
