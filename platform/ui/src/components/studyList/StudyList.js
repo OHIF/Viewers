@@ -370,9 +370,6 @@ export { connectedComponent as StudyList };
 //     return <div className="notFound">{translate('No matching results')}</div>;
 //   }
 // }
-
-// class Bob {
-//   render() {
 //     // What we display if there are no results or an error
 //     // const noListFragment = getNoListFragment(
 //     //   this.props.t,
@@ -381,58 +378,6 @@ export { connectedComponent as StudyList };
 //     //   this.props.loading
 //     // );
 
-//     return (
-//       <div className="StudyList">
-//         {/* <div className="study-list-header">
-//           <div>
 //             {this.props.studyListFunctionsEnabled ? (
 //               <PageToolbar onImport={this.props.onImport} />
 //             ) : null}
-//             <span>{this.props.studies.length}</span>
-//           </div>
-//         </div>
-//         <div id="studyListContainer">
-//           {noListFragment
-//             ? noListFragment
-//             : getPaginationFragment(
-//                 this.props,
-//                 this.state.searchData,
-//                 this.nextPage,
-//                 this.prevPage,
-//                 this.onRowsPerPageChange
-//               )}
-//         </div> */}
-//       </div>
-//     );
-//   }
-// }
-
-//           onDatesChange={({
-//             startDate,
-//             endDate,
-//             preset = false,
-//           }) => {
-//             if (
-//               startDate &&
-//               endDate &&
-//               (this.state.focusedInput === 'endDate' ||
-//                 preset)
-//             ) {
-//               this.setSearchDataBatch(
-//                 {
-//                   studyDateFrom: startDate.toDate(),
-//                   studyDateTo: endDate.toDate(),
-//                 },
-//                 this.search
-//               );
-//               this.setState({ focusedInput: false });
-//             } else if (!startDate && !endDate) {
-//               this.setSearchDataBatch(
-//                 {
-//                   studyDateFrom: null,
-//                   studyDateTo: null,
-//                 },
-//                 this.search
-//               );
-//             }
-//           }}
