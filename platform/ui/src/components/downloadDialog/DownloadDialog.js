@@ -42,8 +42,6 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
 
   const updateViewportPreview = () => {
     viewportElement.addEventListener('cornerstoneimagerendered', function updateViewport(event) {
-      console.log('cornerstoneimagerendered', event);
-
       const enabledElement = cornerstone.getEnabledElement(event.target).element;
       const type = 'image/' + fileType;
       const dataUrl = downloadCanvas.toDataURL(type, 1);
@@ -82,6 +80,12 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
     if (viewportElement) {
       cornerstone.enable(viewportElement);
     }
+
+    return () => {
+      if (viewportElement) {
+        cornerstone.disable(viewportElement);
+      }
+    };
   }, [viewportElement]);
 
   /* Run on every change. */
@@ -110,8 +114,6 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
           const newWidth = Math.min(width || image.width, 16384);
           const newHeight = Math.min(height || image.height, 16384);
 
-          console.log('cornerstone.loadImage', newHeight, newWidth);
-
           setViewportElementHeight(newHeight);
           setViewportElementWidth(newWidth);
           setDownloadCanvasHeight(newHeight);
@@ -124,17 +126,9 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
   }, [
     activeViewport,
     viewportElement,
-    //viewportElementHeight,
-    //viewportElementWidth,
-    //downloadCanvasHeight,
-    //downloadCanvasWidth,
-    //downloadCanvas,
     showAnnotations,
     height,
-    width,
-    //viewportPreviewSrc,
-    //viewportPreviewWidth,
-    //viewportPreviewHeight
+    width
   ]);
 
   const onHeightChange = () => {
@@ -180,7 +174,7 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
     const file = `${filename}.${fileType}`;
     const mimetype = `image/${fileType}`;
 
-    // Handles JPEG images for IE11
+    /* Handles JPEG images for IE11 */
     if (downloadCanvas.msToBlob && fileType === 'jpeg') {
       const image = downloadCanvas.toDataURL(mimetype, 1);
       const blob = b64toBlob(image.replace('data:image/jpeg;base64,', ''), mimetype);
@@ -274,13 +268,21 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
           </div>
 
           <div
-            // className="hidden"
-            style={{ height: viewportElementHeight, width: viewportElementWidth, position: 'absolute', left: '9999px' }}
+            style={{
+              height: viewportElementHeight,
+              width: viewportElementWidth,
+              position: 'absolute',
+              left: '9999px'
+            }}
             ref={ref => setViewportElement(ref)}
           >
             <canvas
               className="cornerstone-canvas"
-              style={{ height: downloadCanvasHeight, width: downloadCanvasWidth, display: 'block' }}
+              style={{
+                height: downloadCanvasHeight,
+                width: downloadCanvasWidth,
+                display: 'block'
+              }}
               width={downloadCanvasWidth}
               height={downloadCanvasHeight}
               ref={ref => setDownloadCanvas(ref)}
@@ -293,7 +295,10 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
             <img
               className="viewport-preview"
               src={viewportPreviewSrc}
-              style={{ height: viewportPreviewHeight, width: viewportPreviewWidth }}
+              style={{
+                height: viewportPreviewHeight,
+                width: viewportPreviewWidth
+              }}
               ref={ref => setViewportPreview(ref)}
             />
           </div>
