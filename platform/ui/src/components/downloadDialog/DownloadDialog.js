@@ -86,7 +86,7 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
 
   /* Run on every change. */
   useEffect(() => {
-    if (activeViewport) {
+    if (activeViewport && viewportElement) {
       const enabledElement = cornerstone.getEnabledElement(activeViewport);
 
       /* Copy current viewport. */
@@ -122,18 +122,19 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
         });
     }
   }, [
+    activeViewport,
     viewportElement,
-    viewportElementHeight,
-    viewportElementWidth,
-    downloadCanvasHeight,
-    downloadCanvasWidth,
-    downloadCanvas,
+    //viewportElementHeight,
+    //viewportElementWidth,
+    //downloadCanvasHeight,
+    //downloadCanvasWidth,
+    //downloadCanvas,
     showAnnotations,
     height,
     width,
-    viewportPreviewSrc,
-    viewportPreviewWidth,
-    viewportPreviewHeight
+    //viewportPreviewSrc,
+    //viewportPreviewWidth,
+    //viewportPreviewHeight
   ]);
 
   const onHeightChange = () => {
@@ -256,7 +257,6 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
             <div className="col">
               <div className="show-annotations">
                 <label htmlFor="show-annotations" className="form-check-label">
-                  {t('Show Annotations')}
                   <input
                     id="show-annotations"
                     type="checkbox"
@@ -267,6 +267,7 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
                       toggleAnnotations(event.target.checked, true);
                     }}
                   />
+                  {t('Show Annotations')}
                 </label>
               </div>
             </div>
@@ -274,7 +275,7 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
 
           <div
             // className="hidden"
-            style={{ height: viewportElementHeight, width: viewportElementWidth }}
+            style={{ height: viewportElementHeight, width: viewportElementWidth, position: 'absolute', left: '9999px' }}
             ref={ref => setViewportElement(ref)}
           >
             <canvas

@@ -23,8 +23,11 @@
     flex-direction: row;
     margin: 20px 0;
     border-radius: 5px;
-    padding: 20px 10px 10px;
+    padding: 20px 10px 0;
     background-color: #16202b;
+
+    .form-control.input-ohif
+      padding: 6px 12px;
 
     @media screen and (max-width: 1023px)
       flex-direction: column;
@@ -47,9 +50,15 @@
             width: 100%!important;
 
       .show-annotations
+        font-weight: bold;
         line-height: 30px;
         input
+          margin-right: 7px;
           vertical-align: middle;
+        label
+          display: flex;
+          justify-content: center;
+          align-items: center;
 
   .preview
     display: flex;
