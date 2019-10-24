@@ -35,8 +35,8 @@ export function initCommonElementsAliases() {
 //Creating aliases for Routes
 export function initRouteAliases() {
   cy.server();
-  cy.route('GET', '/**/series/**').as('getStudySeries');
-  cy.route('GET', '/**/studies/**').as('getStudies');
+  cy.route('GET', '**/series**').as('getStudySeries');
+  cy.route('GET', '**/studies**').as('getStudies');
 }
 
 //Creating aliases for VTK tools buttons

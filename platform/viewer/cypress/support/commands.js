@@ -39,20 +39,13 @@ import {
  * @param {string} PatientName - Patient name that we would like to search for
  */
 Cypress.Commands.add('openStudy', patientName => {
-  cy.initRouteAliases();
-  cy.visit('/');
-  cy.wrap(null).then(() => {
-    return new Cypress.Promise((resolve, reject) => {
-      cy.get('#patientName').type(patientName);
-      setTimeout(() => {
-        cy.get('#studyListData')
-          .contains(patientName)
-          .first()
-          .click();
-        resolve();
-      }, 2000);
-    });
-  });
+  cy.openStudyList();
+  cy.get('#patientName').type(patientName);
+  cy.wait('@getStudies');
+  cy.get('#studyListData .studylistStudy', { timeout: 5000 })
+    .contains(patientName)
+    .first()
+    .click({ force: true });
 });
 
 /**
@@ -80,6 +73,12 @@ Cypress.Commands.add('openStudyModality', modality => {
  */
 Cypress.Commands.add('isPageLoaded', (url = '/viewer/') => {
   return cy.location('pathname', { timeout: 60000 }).should('include', url);
+});
+
+Cypress.Commands.add('openStudyList', patientName => {
+  cy.initRouteAliases();
+  cy.visit('/');
+  cy.wait('@getStudies');
 });
 
 /**

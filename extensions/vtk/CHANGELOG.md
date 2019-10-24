@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.16](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.15...@ohif/extension-vtk@0.52.16) (2019-10-23)
+
+
+### Bug Fixes
+
+* 🐛 Switch to orhtographic view for 2D MPR ([#1074](https://github.com/OHIF/Viewers/issues/1074)) ([13d337a](https://github.com/OHIF/Viewers/commit/13d337aaabb8dadf6366c6262c5e47e7781edd08))
+
+
+
+
+
+## [0.52.15](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.14...@ohif/extension-vtk@0.52.15) (2019-10-23)
+
+
+### Performance Improvements
+
+* ⚡️ Throttle UI refresh of synced WL value in vtk port ([#1070](https://github.com/OHIF/Viewers/issues/1070)) ([9d08e81](https://github.com/OHIF/Viewers/commit/9d08e81aa5def63a5e34f464aae099f7c29f0ac5))
+
+
+
+
+
+## [0.52.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.13...@ohif/extension-vtk@0.52.14) (2019-10-22)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
 ## [0.52.13](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.12...@ohif/extension-vtk@0.52.13) (2019-10-18)
 
 **Note:** Version bump only for package @ohif/extension-vtk
