@@ -312,10 +312,12 @@ Cypress.Commands.add('isInViewport', element => {
  *
  */
 Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
-  function convertCanvas(document) {
-    document
+  function convertCanvas(documentClone) {
+    documentClone
       .querySelectorAll('canvas')
       .forEach(selector => canvasToImage(selector));
+
+    return documentClone;
   }
 
   function canvasToImage(selectorOrEl) {
