@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.11.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.3...@ohif/viewer@1.11.4) (2019-10-23)
+
+
+### Bug Fixes
+
+* Revert "Revert "fix: MPR initialization"" ([#1065](https://github.com/OHIF/Viewers/issues/1065)) ([c680720](https://github.com/OHIF/Viewers/commit/c680720ce5ead58fdb399e3a356edac18093f5c0)), closes [#1062](https://github.com/OHIF/Viewers/issues/1062) [#1064](https://github.com/OHIF/Viewers/issues/1064)
+
+
+
+
+
+## [1.11.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.2...@ohif/viewer@1.11.3) (2019-10-23)
+
+
+### Bug Fixes
+
+* 🐛 Switch to orhtographic view for 2D MPR ([#1074](https://github.com/OHIF/Viewers/issues/1074)) ([13d337a](https://github.com/OHIF/Viewers/commit/13d337aaabb8dadf6366c6262c5e47e7781edd08))
+
+
+
+
+
+## [1.11.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.1...@ohif/viewer@1.11.2) (2019-10-23)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.11.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.0...@ohif/viewer@1.11.1) (2019-10-23)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [1.11.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.10.3...@ohif/viewer@1.11.0) (2019-10-22)
+
+
+### Bug Fixes
+
+* MPR initialization ([#1062](https://github.com/OHIF/Viewers/issues/1062)) ([b037394](https://github.com/OHIF/Viewers/commit/b03739428f72bb50bdabdd6f83b7af885057da69))
+
+
+### Features
+
+* 🎸 Load spinner when selecting gcloud store. Add key on td ([#1034](https://github.com/OHIF/Viewers/issues/1034)) ([e62f403](https://github.com/OHIF/Viewers/commit/e62f403fe9e3df56713128e3d59045824b086d8d)), closes [#1057](https://github.com/OHIF/Viewers/issues/1057)
+
+
+
+
+
 ## [1.10.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.10.2...@ohif/viewer@1.10.3) (2019-10-18)
 
 **Note:** Version bump only for package @ohif/viewer
