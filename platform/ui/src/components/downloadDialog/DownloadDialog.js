@@ -84,6 +84,9 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
       if (viewportElement) {
         cornerstone.disable(viewportElement);
       }
+
+      setHeight(DEFAULT_SIZE);
+      setWidth(DEFAULT_SIZE);
     };
   }, [viewportElement]);
 
