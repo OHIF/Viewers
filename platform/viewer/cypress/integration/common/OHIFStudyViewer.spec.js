@@ -1,5 +1,3 @@
-import { Youtube } from 'react-feather';
-
 describe('OHIF Study Viewer Page', function() {
   before(function() {
     cy.openStudy('MISTER^MR');
