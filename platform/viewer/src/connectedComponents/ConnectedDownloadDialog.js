@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import { DownloadDialog } from '@ohif/ui';
+import b64toBlob from '../lib/utils/b64toBlob';
 
 const MINIMUM_SIZE = 100;
 const DEFAULT_SIZE = 512;
@@ -9,23 +10,11 @@ const mapStateToProps = (state, ownProps) => {
   const { dom: activeEnabledElement } = viewportSpecificData[activeViewportIndex] || {};
 
   return {
-    onClose: ownProps.toggleDownloadDialog,
     minimumSize: MINIMUM_SIZE,
     defaultSize: DEFAULT_SIZE,
+    canvasClass: "cornerstone-canvas",
+    onClose: ownProps.toggleDownloadDialog,
     activeViewport: activeEnabledElement,
-    downloadBlob: (filename, fileType, viewportElement, downloadCanvas) => {
-      const file = `${filename}.${fileType}`;
-      const mimetype = `image/${fileType}`;
-
-      /* Handles JPEG images for IE11 */
-      if (downloadCanvas.msToBlob && fileType === 'jpeg') {
-        const image = downloadCanvas.toDataURL(mimetype, 1);
-        const blob = b64toBlob(image.replace('data:image/jpeg;base64,', ''), mimetype);
-        return window.navigator.msSaveBlob(blob, file);
-      }
-
-      return cornerstoneTools.SaveAs(viewportElement, file, mimetype);
-    },
     enableViewport: viewportElement => {
       if (viewportElement) {
         cornerstone.enable(viewportElement);
@@ -92,29 +81,21 @@ const mapStateToProps = (state, ownProps) => {
           cornerstoneTools.setToolDisabledForElement(viewportElement, name);
         }
       });
+    },
+    downloadBlob: (filename, fileType, viewportElement, downloadCanvas) => {
+      const file = `${filename}.${fileType}`;
+      const mimetype = `image/${fileType}`;
+
+      /* Handles JPEG images for IE11 */
+      if (downloadCanvas.msToBlob && fileType === 'jpeg') {
+        const image = downloadCanvas.toDataURL(mimetype, 1);
+        const blob = b64toBlob(image.replace('data:image/jpeg;base64,', ''), mimetype);
+        return window.navigator.msSaveBlob(blob, file);
+      }
+
+      return cornerstoneTools.SaveAs(viewportElement, file, mimetype);
     }
   }
-};
-
-/* Enabled JPEG images downloading on IE11. */
-const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
-  const byteCharacters = atob(b64Data);
-  const byteArrays = [];
-
-  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-    const byteNumbers = new Array(slice.length);
-    for (let i = 0; i < slice.length; i++) {
-      byteNumbers[i] = slice.charCodeAt(i);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-    byteArrays.push(byteArray);
-  }
-
-  const blob = new Blob(byteArrays, { type: contentType });
-  return blob;
 };
 
 const ConnectedDownloadDialog = connect(

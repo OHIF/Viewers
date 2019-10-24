@@ -28,7 +28,8 @@ const DownloadDialog = ({
   loadImage,
   downloadBlob,
   defaultSize,
-  minimumSize
+  minimumSize,
+  canvasClass
 }) => {
   const [filename, setFilename] = useState('image');
   const [fileType, setFileType] = useState('jpg');
@@ -228,7 +229,7 @@ const DownloadDialog = ({
           ref={ref => setViewportElement(ref)}
         >
           <canvas
-            className="cornerstone-canvas"
+            className={canvasClass}
             style={{
               height: downloadCanvasHeight,
               width: downloadCanvasWidth,
