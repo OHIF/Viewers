@@ -5,8 +5,6 @@ import './DownloadDialog.styl';
 import { TextInput, Select } from '@ohif/ui';
 import { withTranslation } from '../../utils/LanguageProvider';
 
-const MINIMUM_SIZE = 100;
-const DEFAULT_SIZE = 512;
 const FILE_TYPE_OPTIONS = [
   {
     key: 'jpg',
@@ -18,111 +16,84 @@ const FILE_TYPE_OPTIONS = [
   }
 ];
 
-const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => {
+const DownloadDialog = ({
+  t,
+  isOpen,
+  activeViewport,
+  onClose,
+  updateViewportPreview,
+  enableViewport,
+  disableViewport,
+  toggleAnnotations,
+  loadImage,
+  downloadBlob,
+  defaultSize,
+  minimumSize
+}) => {
   const [filename, setFilename] = useState('image');
   const [fileType, setFileType] = useState('jpg');
-  const [height, setHeight] = useState(DEFAULT_SIZE);
-  const [width, setWidth] = useState(DEFAULT_SIZE);
+
+  const [height, setHeight] = useState(defaultSize);
+  const [width, setWidth] = useState(defaultSize);
+
   const [showAnnotations, setShowAnnotations] = useState(true);
 
   const [keepAspect, setKeepAspect] = useState(true);
   const [lastImage, setLastImage] = useState();
 
-  const [viewportElementHeight, setViewportElementHeight] = useState(1);
-  const [viewportElementWidth, setViewportElementWidth] = useState(1);
-  const [downloadCanvasHeight, setDownloadCanvasHeight] = useState(1);
-  const [downloadCanvasWidth, setDownloadCanvasWidth] = useState(1);
-
-  const [viewportPreviewSrc, setViewportPreviewSrc] = useState();
-  const [viewportPreviewHeight, setViewportPreviewHeight] = useState(1);
-  const [viewportPreviewWidth, setViewportPreviewWidth] = useState(1);
-
   const [viewportElement, setViewportElement] = useState();
-  const [viewportPreview, setViewportPreview] = useState();
+  const [viewportElementHeight, setViewportElementHeight] = useState(minimumSize);
+  const [viewportElementWidth, setViewportElementWidth] = useState(minimumSize);
+
   const [downloadCanvas, setDownloadCanvas] = useState();
+  const [downloadCanvasHeight, setDownloadCanvasHeight] = useState(minimumSize);
+  const [downloadCanvasWidth, setDownloadCanvasWidth] = useState(minimumSize);
 
-  const updateViewportPreview = () => {
-    viewportElement.addEventListener('cornerstoneimagerendered', function updateViewport(event) {
-      const enabledElement = cornerstone.getEnabledElement(event.target).element;
-      const type = 'image/' + fileType;
-      const dataUrl = downloadCanvas.toDataURL(type, 1);
-
-      setViewportPreviewSrc(dataUrl);
-
-      let newWidth = enabledElement.offsetHeight;
-      let newHeight = enabledElement.offsetWidth;
-
-      if (newWidth > DEFAULT_SIZE || newHeight > DEFAULT_SIZE) {
-        const multiplier = DEFAULT_SIZE / Math.max(newWidth, newHeight);
-        newHeight *= multiplier;
-        newWidth *= multiplier;
-      }
-
-      setViewportPreviewHeight(newWidth);
-      setViewportPreviewWidth(newHeight);
-
-      viewportElement.removeEventListener('cornerstoneimagerendered', updateViewport);
-    });
-  };
-
-  const toggleAnnotations = toggle => {
-    cornerstoneTools.store.state.tools.forEach(({ name }) => {
-      if (toggle) {
-        cornerstoneTools.setToolEnabledForElement(viewportElement, name);
-      } else {
-        cornerstoneTools.setToolDisabledForElement(viewportElement, name);
-      }
-    });
-  };
+  const [viewportPreview, setViewportPreview] = useState();
+  const [viewportPreviewSrc, setViewportPreviewSrc] = useState();
+  const [viewportPreviewHeight, setViewportPreviewHeight] = useState(minimumSize);
+  const [viewportPreviewWidth, setViewportPreviewWidth] = useState(minimumSize);
 
   useEffect(() => {
-    if (viewportElement) {
-      cornerstone.enable(viewportElement);
-    }
+    enableViewport(viewportElement);
 
     return () => {
-      if (viewportElement) {
-        cornerstone.disable(viewportElement);
-      }
+      disableViewport(viewportElement);
 
-      setHeight(DEFAULT_SIZE);
-      setWidth(DEFAULT_SIZE);
+      setHeight(defaultSize);
+      setWidth(defaultSize);
     };
   }, [viewportElement]);
 
+  const loadAndUpdateViewports = async () => {
+    const {
+      image,
+      width: scaledWidth,
+      height: scaledHeight
+    } = await loadImage(activeViewport, viewportElement, width, height);
+
+    setLastImage(image);
+
+    toggleAnnotations(showAnnotations, viewportElement);
+
+    setViewportElementHeight(scaledHeight);
+    setViewportElementWidth(scaledWidth);
+    setDownloadCanvasHeight(scaledHeight);
+    setDownloadCanvasWidth(scaledWidth);
+
+    const {
+      dataUrl,
+      width: viewportElementWidth,
+      height: viewportElementHeight
+    } = await updateViewportPreview(viewportElement, downloadCanvas, fileType);
+
+    setViewportPreviewSrc(dataUrl);
+    setViewportPreviewHeight(viewportElementHeight);
+    setViewportPreviewWidth(viewportElementWidth);
+  };
+
   useEffect(() => {
-    if (activeViewport && viewportElement) {
-      const enabledElement = cornerstone.getEnabledElement(activeViewport);
-      const viewport = Object.assign({}, enabledElement.viewport);
-      delete viewport.scale;
-      viewport.translation = {
-        x: 0,
-        y: 0
-      };
-
-      cornerstone.loadImage(enabledElement.image.imageId)
-        .then(image => {
-          setLastImage(image);
-
-          cornerstone.displayImage(viewportElement, image);
-          cornerstone.setViewport(viewportElement, viewport);
-          cornerstone.resize(viewportElement, true);
-
-          toggleAnnotations(showAnnotations);
-
-          const MAX_TEXTURE_SIZE = 16384;
-          const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
-          const newHeight = Math.min(height || image.height, MAX_TEXTURE_SIZE);
-
-          setViewportElementHeight(newHeight);
-          setViewportElementWidth(newWidth);
-          setDownloadCanvasHeight(newHeight);
-          setDownloadCanvasWidth(newWidth);
-
-          cornerstone.fitToWindow(viewportElement);
-          updateViewportPreview();
-        });
-    }
+    loadAndUpdateViewports();
   }, [
     activeViewport,
     viewportElement,
@@ -165,23 +136,8 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
     }
   };
 
-  const onClose = () => {
-    toggleDownloadDialog();
-    toggleAnnotations(true);
-  }
-
   const downloadImage = () => {
-    const file = `${filename}.${fileType}`;
-    const mimetype = `image/${fileType}`;
-
-    /* Handles JPEG images for IE11 */
-    if (downloadCanvas.msToBlob && fileType === 'jpeg') {
-      const image = downloadCanvas.toDataURL(mimetype, 1);
-      const blob = b64toBlob(image.replace('data:image/jpeg;base64,', ''), mimetype);
-      return window.navigator.msSaveBlob(blob, file);
-    }
-
-    return cornerstoneTools.SaveAs(viewportElement, file, mimetype);
+    downloadBlob(filename, fileType, viewportElement, downloadCanvas);
   };
 
   return (
@@ -200,150 +156,123 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div>
+        <div className="title">
+          {t('Please specify the dimensions, filename, and desired type for the output image.')}
+        </div>
 
-          <div className="title">
-            {t('Please specify the dimensions, filename, and desired type for the output image.')}
-          </div>
-
-          <div className="file-info-container">
-            <div className="col">
-              <div className="width">
-                <TextInput
-                  type="number"
-                  min={MINIMUM_SIZE}
-                  value={width}
-                  label={t('Image width (px)')}
-                  onChange={onWidthChange}
-                />
-              </div>
-              <div className="height">
-                <TextInput
-                  type="number"
-                  min={MINIMUM_SIZE}
-                  value={height}
-                  label={t('Image height (px)')}
-                  onChange={onHeightChange}
-                />
-              </div>
+        <div className="file-info-container">
+          <div className="col">
+            <div className="width">
+              <TextInput
+                type="number"
+                min={minimumSize}
+                value={width}
+                label={t('Image width (px)')}
+                onChange={onWidthChange}
+              />
             </div>
-
-            <div className="col">
-              <div className="file-name">
-                <TextInput
-                  type="text"
-                  value={filename}
-                  onChange={event => setFilename(event.target.value)}
-                  label={t('File name')}
-                  id="file-name"
-                />
-              </div>
-              <div className="file-type">
-                <Select
-                  value={fileType}
-                  onChange={event => setFileType(event.target.value)}
-                  options={FILE_TYPE_OPTIONS}
-                  label={t('File type')}
-                />
-              </div>
-            </div>
-
-            <div className="col">
-              <div className="show-annotations">
-                <label htmlFor="show-annotations" className="form-check-label">
-                  <input
-                    id="show-annotations"
-                    type="checkbox"
-                    className="form-check-input"
-                    checked={showAnnotations}
-                    onChange={event => {
-                      setShowAnnotations(event.target.checked);
-                      toggleAnnotations(event.target.checked, true);
-                    }}
-                  />
-                  {t('Show Annotations')}
-                </label>
-              </div>
+            <div className="height">
+              <TextInput
+                type="number"
+                min={minimumSize}
+                value={height}
+                label={t('Image height (px)')}
+                onChange={onHeightChange}
+              />
             </div>
           </div>
 
-          <div
+          <div className="col">
+            <div className="file-name">
+              <TextInput
+                type="text"
+                value={filename}
+                onChange={event => setFilename(event.target.value)}
+                label={t('File name')}
+                id="file-name"
+              />
+            </div>
+            <div className="file-type">
+              <Select
+                value={fileType}
+                onChange={event => setFileType(event.target.value)}
+                options={FILE_TYPE_OPTIONS}
+                label={t('File type')}
+              />
+            </div>
+          </div>
+
+          <div className="col">
+            <div className="show-annotations">
+              <label htmlFor="show-annotations" className="form-check-label">
+                <input
+                  id="show-annotations"
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={showAnnotations}
+                  onChange={event => setShowAnnotations(event.target.checked)}
+                />
+                {t('Show Annotations')}
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            height: viewportElementHeight,
+            width: viewportElementWidth,
+            position: 'absolute',
+            left: '9999px'
+          }}
+          ref={ref => setViewportElement(ref)}
+        >
+          <canvas
+            className="cornerstone-canvas"
             style={{
-              height: viewportElementHeight,
-              width: viewportElementWidth,
-              position: 'absolute',
-              left: '9999px'
+              height: downloadCanvasHeight,
+              width: downloadCanvasWidth,
+              display: 'block'
             }}
-            ref={ref => setViewportElement(ref)}
+            width={downloadCanvasWidth}
+            height={downloadCanvasHeight}
+            ref={ref => setDownloadCanvas(ref)}
           >
-            <canvas
-              className="cornerstone-canvas"
-              style={{
-                height: downloadCanvasHeight,
-                width: downloadCanvasWidth,
-                display: 'block'
-              }}
-              width={downloadCanvasWidth}
-              height={downloadCanvasHeight}
-              ref={ref => setDownloadCanvas(ref)}
+          </canvas>
+        </div>
+
+        <div className="preview">
+          <h4> {t('Image Preview')}</h4>
+          <img
+            className="viewport-preview"
+            src={viewportPreviewSrc}
+            style={{
+              height: viewportPreviewHeight,
+              width: viewportPreviewWidth
+            }}
+            ref={ref => setViewportPreview(ref)}
+          />
+        </div>
+
+        <div className="actions">
+          <div className="action-cancel">
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={onClose}
             >
-            </canvas>
+              {t('Cancel')}
+            </button>
           </div>
-
-          <div className="preview">
-            <h4> {t('Image Preview')}</h4>
-            <img
-              className="viewport-preview"
-              src={viewportPreviewSrc}
-              style={{
-                height: viewportPreviewHeight,
-                width: viewportPreviewWidth
-              }}
-              ref={ref => setViewportPreview(ref)}
-            />
-          </div>
-
-          <div className="actions">
-            <div className="action-cancel">
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={onClose}
-              >
-                {t('Cancel')}
-              </button>
-            </div>
-            <div className="action-save">
-              <button onClick={downloadImage} className="btn btn-primary">
-                {t('Download')}
-              </button>
-            </div>
+          <div className="action-save">
+            <button onClick={downloadImage} className="btn btn-primary">
+              {t('Download')}
+            </button>
           </div>
         </div>
       </Modal.Body>
     </Modal>
   );
-};
-
-/* Enabled JPEG images downloading on IE11. */
-const b64toBlob = (b64Data, contentType = '', sliceSize = DEFAULT_SIZE) => {
-  const byteCharacters = atob(b64Data);
-  const byteArrays = [];
-
-  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-    const byteNumbers = new Array(slice.length);
-    for (let i = 0; i < slice.length; i++) {
-      byteNumbers[i] = slice.charCodeAt(i);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-    byteArrays.push(byteArray);
-  }
-
-  const blob = new Blob(byteArrays, { type: contentType });
-  return blob;
 };
 
 export default withTranslation('DownloadDialog')(DownloadDialog);
