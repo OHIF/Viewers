@@ -6,6 +6,7 @@ import { TextInput, Select } from '@ohif/ui';
 import { withTranslation } from '../../utils/LanguageProvider';
 
 const MINIMUM_SIZE = 100;
+const DEFAULT_SIZE = 512;
 const FILE_TYPE_OPTIONS = [
   {
     key: 'jpg',
@@ -20,8 +21,8 @@ const FILE_TYPE_OPTIONS = [
 const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => {
   const [filename, setFilename] = useState('image');
   const [fileType, setFileType] = useState('jpg');
-  const [height, setHeight] = useState(512);
-  const [width, setWidth] = useState(512);
+  const [height, setHeight] = useState(DEFAULT_SIZE);
+  const [width, setWidth] = useState(DEFAULT_SIZE);
   const [showAnnotations, setShowAnnotations] = useState(true);
 
   const [keepAspect, setKeepAspect] = useState(true);
@@ -51,9 +52,8 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
       let newWidth = enabledElement.offsetHeight;
       let newHeight = enabledElement.offsetWidth;
 
-      /* Limit image preview max size to fit inside modal. */
-      if (newWidth > 512 || newHeight > 512) {
-        const multiplier = 512 / Math.max(newWidth, newHeight);
+      if (newWidth > DEFAULT_SIZE || newHeight > DEFAULT_SIZE) {
+        const multiplier = DEFAULT_SIZE / Math.max(newWidth, newHeight);
         newHeight *= multiplier;
         newWidth *= multiplier;
       }
@@ -75,7 +75,6 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
     });
   };
 
-  /* viewportElement is the element that contains the canvas to be downloaded as image. */
   useEffect(() => {
     if (viewportElement) {
       cornerstone.enable(viewportElement);
@@ -88,12 +87,9 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
     };
   }, [viewportElement]);
 
-  /* Run on every change. */
   useEffect(() => {
     if (activeViewport && viewportElement) {
       const enabledElement = cornerstone.getEnabledElement(activeViewport);
-
-      /* Copy current viewport. */
       const viewport = Object.assign({}, enabledElement.viewport);
       delete viewport.scale;
       viewport.translation = {
@@ -111,8 +107,9 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
 
           toggleAnnotations(showAnnotations);
 
-          const newWidth = Math.min(width || image.width, 16384);
-          const newHeight = Math.min(height || image.height, 16384);
+          const MAX_TEXTURE_SIZE = 16384;
+          const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
+          const newHeight = Math.min(height || image.height, MAX_TEXTURE_SIZE);
 
           setViewportElementHeight(newHeight);
           setViewportElementWidth(newWidth);
@@ -213,7 +210,7 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
                   type="number"
                   min={MINIMUM_SIZE}
                   value={width}
-                  label={t('Width (px)')}
+                  label={t('Image width (px)')}
                   onChange={onWidthChange}
                 />
               </div>
@@ -222,7 +219,7 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
                   type="number"
                   min={MINIMUM_SIZE}
                   value={height}
-                  label={t('Height (px)')}
+                  label={t('Image height (px)')}
                   onChange={onHeightChange}
                 />
               </div>
@@ -234,7 +231,7 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
                   type="text"
                   value={filename}
                   onChange={event => setFilename(event.target.value)}
-                  label={t('File Name')}
+                  label={t('File name')}
                   id="file-name"
                 />
               </div>
@@ -243,7 +240,7 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
                   value={fileType}
                   onChange={event => setFileType(event.target.value)}
                   options={FILE_TYPE_OPTIONS}
-                  label={t('File Type')}
+                  label={t('File type')}
                 />
               </div>
             </div>
@@ -326,7 +323,7 @@ const DownloadDialog = ({ activeViewport, t, isOpen, toggleDownloadDialog }) => 
 };
 
 /* Enabled JPEG images downloading on IE11. */
-const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
+const b64toBlob = (b64Data, contentType = '', sliceSize = DEFAULT_SIZE) => {
   const byteCharacters = atob(b64Data);
   const byteArrays = [];
 
