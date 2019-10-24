@@ -21,6 +21,6 @@ describe('OHIF PDF Extension', () => {
       .should('be.eq', 1);
 
     cy.screenshot();
-    cy.percySnapshot();
+    cy.percyCanvasSnapshot('PDF Extension');
   });
 });

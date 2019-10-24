@@ -12,7 +12,7 @@ describe('OHIF Study Viewer Page', function() {
 
   it('checks if series thumbnails are being displayed', function() {
     cy.screenshot();
-    cy.percySnapshot();
+    cy.percyCanvasSnapshot('Series Thumbnails');
 
     cy.get('[data-cy="thumbnail-list"]')
       .its('length')
