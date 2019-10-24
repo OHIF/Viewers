@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+
+## [1.11.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.3...@ohif/viewer@1.11.4) (2019-10-23)
+
+
+### Bug Fixes
+
+* Revert "Revert "fix: MPR initialization"" ([#1065](https://github.com/OHIF/Viewers/issues/1065)) ([c680720](https://github.com/OHIF/Viewers/commit/c680720ce5ead58fdb399e3a356edac18093f5c0)), closes [#1062](https://github.com/OHIF/Viewers/issues/1062) [#1064](https://github.com/OHIF/Viewers/issues/1064)
+
 ## [1.11.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.2...@ohif/viewer@1.11.3) (2019-10-23)
 
 
