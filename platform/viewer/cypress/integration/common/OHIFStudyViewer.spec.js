@@ -253,6 +253,7 @@ describe('OHIF Study Viewer Page', () => {
     let cornerstone;
     let currentPan;
 
+    // TO DO: Replace the cornerstone pan check by Percy snapshop comparison
     cy.window()
       .its('cornerstone')
       .then(c => {
@@ -272,19 +273,60 @@ describe('OHIF Study Viewer Page', () => {
   });
 
   it('opens About modal and verify the displayed information', () => {
-    cy.get('.dd-menu')
-      .as('options')
-      .click();
-    cy.get('.dd-item')
-      .as('aboutMenu')
-      .click();
+    cy.get('[data-cy="options-menu"]').click();
+    cy.get('[data-cy="about-item-menu"]').click();
     cy.get('.modal-content')
       .as('aboutOverlay')
       .should('be.visible');
 
-    //TO DO:
-    //check button links
-    //check version number
+    //check buttons and links
+    cy.get('[data-cy="btn-visit-forum"]').then($btn => {
+      expect($btn).to.have.text('Visit the forum');
+
+      const href = $btn[0].href;
+      expect(href).to.contain(
+        'https://groups.google.com/forum/#!forum/cornerstone-platform'
+      );
+    });
+
+    cy.get('[data-cy="btn-report-issue"]').then($btn => {
+      expect($btn).to.have.text('Report an issue');
+
+      const href = $btn[0].href;
+      expect(href).to.contain(
+        'https://github.com/OHIF/Viewers/issues/new/choose'
+      );
+    });
+
+    cy.get('[data-cy="btn-more-details"]').then($btn => {
+      expect($btn).to.have.text('More details');
+
+      const href = $btn[0].href;
+      expect(href).to.contain('http://ohif.org');
+    });
+
+    // //check version number - TODO (callback is not working)
+    // let versionInfo;
+    // cy.get('[data-cy="version-number"]').then(version, function(callback) {
+    //   versionInfo = version[0].textContent;
+    //   cy.log(versionInfo);
+    //   callback(versionInfo);
+    // });
+
     //check repository url
+    cy.get('[data-cy="repository-url"]').should(
+      'contains.text',
+      'https://github.com/OHIF/Viewers/'
+    );
+
+    //close modal
+    cy.get('.close').click();
+    cy.get('@aboutOverlay').should('not.be.enabled');
+
+    // // check version number on header - TODO
+    // cy.get('[data-cy="header-version-info"]').should(
+    //   'contains.text',
+    //   versionInfo
+    // );
   });
 });
