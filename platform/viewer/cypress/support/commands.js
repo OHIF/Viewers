@@ -306,3 +306,32 @@ Cypress.Commands.add('isInViewport', element => {
     }
   });
 });
+
+/**
+ * Percy.io Canvas screenshot workaround
+ *
+ */
+Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
+  function convertCanvas(document) {
+    document
+      .querySelectorAll('canvas')
+      .forEach(selector => canvasToImage(selector));
+  }
+
+  function canvasToImage(selectorOrEl) {
+    let canvas =
+      typeof selectorOrEl === 'object'
+        ? selectorOrEl
+        : document.querySelector(selectorOrEl);
+    let image = document.createElement('img');
+    let canvasImageBase64 = canvas.toDataURL();
+
+    image.src = canvasImageBase64;
+    image.style = 'max-width: 100%';
+    canvas.setAttribute('data-percy-modified', true);
+    canvas.parentElement.appendChild(image);
+    canvas.style = 'display: none';
+  }
+
+  cy.percySnapshot(name, { ...options, domTransformation: convertCanvas });
+});
