@@ -31,39 +31,27 @@ class AboutModal extends Component {
         name: t('Repository URL'),
         value: 'https://github.com/OHIF/Viewers/',
         link: 'https://github.com/OHIF/Viewers/',
-        testId: 'repository-url',
-        testLabel: 'label-repository-url',
       },
       {
         name: t('Latest Master Commits'),
         value: 'https://github.com/OHIF/Viewers/commits/master',
         link: 'https://github.com/OHIF/Viewers/commits/master',
-        testId: 'master-commits-url',
-        testLabel: 'label-master-commits-url',
       },
       {
         name: 'Version Number',
         value: process.env.VERSION_NUMBER,
-        testId: 'version-number',
-        testLabel: 'label-version-number',
       },
       {
         name: t('Build Number'),
         value: process.env.BUILD_NUM,
-        testId: 'build-number',
-        testLabel: 'label-build-number',
       },
       {
         name: t('Browser'),
         value: `${capitalize(browser.name)} ${browser.version}`,
-        testId: 'browser',
-        testLabel: 'label-browser',
       },
       {
         name: t('OS'),
         value: browser.os,
-        testId: 'os',
-        testLabel: 'label-os',
       },
     ];
   }
@@ -75,8 +63,8 @@ class AboutModal extends Component {
   renderTableRow(item) {
     return (
       <tr key={item.name}>
-        <td data-cy={item.testLabel}>{item.name}</td>
-        <td data-cy={item.testId}>
+        <td>{item.name}</td>
+        <td>
           {item.link ? (
             <a target="_blank" href={item.link}>
               {item.value}
@@ -104,11 +92,10 @@ class AboutModal extends Component {
         <Modal.Header closeButton>
           <Modal.Title>{t('OHIF Viewer - About')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body data-cy="about-modal">
           <div className="btn-group">
             <a
               className="btn btn-default"
-              data-cy="btn-visit-forum"
               target="_blank"
               href="https://groups.google.com/forum/#!forum/cornerstone-platform"
             >
@@ -117,7 +104,6 @@ class AboutModal extends Component {
             {` `}
             <a
               className="btn btn-default"
-              data-cy="btn-report-issue"
               target="_blank"
               href="https://github.com/OHIF/Viewers/issues/new/choose"
             >
@@ -126,7 +112,6 @@ class AboutModal extends Component {
             {` `}
             <a
               className="btn btn-default"
-              data-cy="btn-more-details"
               target="_blank"
               href="http://ohif.org"
             >

@@ -280,50 +280,21 @@ describe('OHIF Study Viewer Page', function() {
       .should('be.visible');
 
     //check buttons and links
-    cy.get('[data-cy="btn-visit-forum"]').then($btn => {
-      expect($btn).to.have.text('Visit the forum');
-
-      const href = $btn[0].href;
-      expect(href).to.contain(
-        'https://groups.google.com/forum/#!forum/cornerstone-platform'
-      );
-    });
-
-    cy.get('[data-cy="btn-report-issue"]').then($btn => {
-      expect($btn).to.have.text('Report an issue');
-
-      const href = $btn[0].href;
-      expect(href).to.contain(
-        'https://github.com/OHIF/Viewers/issues/new/choose'
-      );
-    });
-
-    cy.get('[data-cy="btn-more-details"]').then($btn => {
-      expect($btn).to.have.text('More details');
-
-      const href = $btn[0].href;
-      expect(href).to.contain('http://ohif.org');
-    });
-
-    //check repository url
-    cy.get('[data-cy="repository-url"]').should(
-      'contains.text',
-      'https://github.com/OHIF/Viewers/'
-    );
+    cy.get('[data-cy="about-modal"]')
+      .should('contains.text', 'Visit the forum')
+      .and('contains.text', 'Report an issue')
+      .and('contains.text', 'https://github.com/OHIF/Viewers/');
 
     //check version number
-    cy.get('[data-cy="version-number"]').then($modalVersionNumber => {
-      const vNumber = $modalVersionNumber.text();
-
-      //close modal
-      cy.get('.close').click();
-      cy.get('@aboutOverlay').should('not.be.enabled');
-
-      // check version number on header
-      cy.get('[data-cy="header-version-info"]').should(
-        'contains.text',
-        vNumber
-      );
+    cy.get('[data-cy="about-modal"]').then($modal => {
+      cy.get('[data-cy="header-version-info"]').should($headerVersionNumber => {
+        $headerVersionNumber = $headerVersionNumber.text().substring(1);
+        expect($modal).to.contain($headerVersionNumber);
+      });
     });
+
+    //close modal
+    cy.get('.close').click();
+    cy.get('@aboutOverlay').should('not.be.enabled');
   });
 });
