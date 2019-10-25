@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.12.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.12.0...@ohif/viewer@1.12.1) (2019-10-25)
+
+
+### Bug Fixes
+
+* 🐛 Orthographic MPR fix ([#1092](https://github.com/OHIF/Viewers/issues/1092)) ([460e375](https://github.com/OHIF/Viewers/commit/460e375f0aa75d35f7a46b4d48e6cc706019956d))
+
+
+
+
+
 # [1.12.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.5...@ohif/viewer@1.12.0) (2019-10-25)
 
 
