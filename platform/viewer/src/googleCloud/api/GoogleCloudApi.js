@@ -29,6 +29,10 @@ class GoogleCloudApi {
     );
   }
 
+  getUrlPath(project, location, dataset, dicomStore) {
+    `/projects/${project}/locations/${location}/datasets/${dataset}/dicomStores/${dicomStore}`;
+  }
+
   async doRequest(urlStr, config = {}, params = {}) {
     const url = new URL(urlStr);
     let data = null;
