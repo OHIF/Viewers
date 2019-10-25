@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap-modal';
+import PropTypes from 'prop-types';
 
 import './DownloadDialog.styl';
 import { TextInput, Select } from '@ohif/ui';
@@ -8,12 +9,12 @@ import { withTranslation } from '../../utils/LanguageProvider';
 const FILE_TYPE_OPTIONS = [
   {
     key: 'jpg',
-    value: 'jpg'
+    value: 'jpg',
   },
   {
     key: 'png',
-    value: 'png'
-  }
+    value: 'png',
+  },
 ];
 
 const DownloadDialog = ({
@@ -29,7 +30,7 @@ const DownloadDialog = ({
   downloadBlob,
   defaultSize,
   minimumSize,
-  canvasClass
+  canvasClass,
 }) => {
   const [filename, setFilename] = useState('image');
   const [fileType, setFileType] = useState('jpg');
@@ -43,7 +44,9 @@ const DownloadDialog = ({
   const [lastImage, setLastImage] = useState();
 
   const [viewportElement, setViewportElement] = useState();
-  const [viewportElementHeight, setViewportElementHeight] = useState(minimumSize);
+  const [viewportElementHeight, setViewportElementHeight] = useState(
+    minimumSize
+  );
   const [viewportElementWidth, setViewportElementWidth] = useState(minimumSize);
 
   const [downloadCanvas, setDownloadCanvas] = useState();
@@ -52,7 +55,9 @@ const DownloadDialog = ({
 
   const [viewportPreview, setViewportPreview] = useState();
   const [viewportPreviewSrc, setViewportPreviewSrc] = useState();
-  const [viewportPreviewHeight, setViewportPreviewHeight] = useState(minimumSize);
+  const [viewportPreviewHeight, setViewportPreviewHeight] = useState(
+    minimumSize
+  );
   const [viewportPreviewWidth, setViewportPreviewWidth] = useState(minimumSize);
 
   useEffect(() => {
@@ -64,43 +69,52 @@ const DownloadDialog = ({
       setHeight(defaultSize);
       setWidth(defaultSize);
     };
-  }, [viewportElement]);
-
-  const loadAndUpdateViewports = async () => {
-    const {
-      image,
-      width: scaledWidth,
-      height: scaledHeight
-    } = await loadImage(activeViewport, viewportElement, width, height);
-
-    setLastImage(image);
-
-    toggleAnnotations(showAnnotations, viewportElement);
-
-    setViewportElementHeight(scaledHeight);
-    setViewportElementWidth(scaledWidth);
-    setDownloadCanvasHeight(scaledHeight);
-    setDownloadCanvasWidth(scaledWidth);
-
-    const {
-      dataUrl,
-      width: viewportElementWidth,
-      height: viewportElementHeight
-    } = await updateViewportPreview(viewportElement, downloadCanvas, fileType);
-
-    setViewportPreviewSrc(dataUrl);
-    setViewportPreviewHeight(viewportElementHeight);
-    setViewportPreviewWidth(viewportElementWidth);
-  };
+  }, [defaultSize, disableViewport, enableViewport, viewportElement]);
 
   useEffect(() => {
+    const loadAndUpdateViewports = async () => {
+      const {
+        image,
+        width: scaledWidth,
+        height: scaledHeight,
+      } = await loadImage(activeViewport, viewportElement, width, height);
+
+      setLastImage(image);
+
+      toggleAnnotations(showAnnotations, viewportElement);
+
+      setViewportElementHeight(scaledHeight);
+      setViewportElementWidth(scaledWidth);
+      setDownloadCanvasHeight(scaledHeight);
+      setDownloadCanvasWidth(scaledWidth);
+
+      const {
+        dataUrl,
+        width: viewportElementWidth,
+        height: viewportElementHeight,
+      } = await updateViewportPreview(
+        viewportElement,
+        downloadCanvas,
+        fileType
+      );
+
+      setViewportPreviewSrc(dataUrl);
+      setViewportPreviewHeight(viewportElementHeight);
+      setViewportPreviewWidth(viewportElementWidth);
+    };
+
     loadAndUpdateViewports();
   }, [
     activeViewport,
     viewportElement,
     showAnnotations,
     height,
-    width
+    width,
+    loadImage,
+    toggleAnnotations,
+    updateViewportPreview,
+    downloadCanvas,
+    fileType,
   ]);
 
   const onHeightChange = () => {
@@ -152,13 +166,13 @@ const DownloadDialog = ({
       keyboard={true}
     >
       <Modal.Header closeButton>
-        <Modal.Title>
-          {t('Download High Quality Image')}
-        </Modal.Title>
+        <Modal.Title>{t('Download High Quality Image')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="title">
-          {t('Please specify the dimensions, filename, and desired type for the output image.')}
+          {t(
+            'Please specify the dimensions, filename, and desired type for the output image.'
+          )}
         </div>
 
         <div className="file-info-container">
@@ -224,7 +238,7 @@ const DownloadDialog = ({
             height: viewportElementHeight,
             width: viewportElementWidth,
             position: 'absolute',
-            left: '9999px'
+            left: '9999px',
           }}
           ref={ref => setViewportElement(ref)}
         >
@@ -233,13 +247,12 @@ const DownloadDialog = ({
             style={{
               height: downloadCanvasHeight,
               width: downloadCanvasWidth,
-              display: 'block'
+              display: 'block',
             }}
             width={downloadCanvasWidth}
             height={downloadCanvasHeight}
             ref={ref => setDownloadCanvas(ref)}
-          >
-          </canvas>
+          ></canvas>
         </div>
 
         <div className="preview">
@@ -247,9 +260,10 @@ const DownloadDialog = ({
           <img
             className="viewport-preview"
             src={viewportPreviewSrc}
+            alt="Viewport Preview"
             style={{
               height: viewportPreviewHeight,
-              width: viewportPreviewWidth
+              width: viewportPreviewWidth,
             }}
             ref={ref => setViewportPreview(ref)}
           />
@@ -257,11 +271,7 @@ const DownloadDialog = ({
 
         <div className="actions">
           <div className="action-cancel">
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={onClose}
-            >
+            <button type="button" className="btn btn-danger" onClick={onClose}>
               {t('Cancel')}
             </button>
           </div>
@@ -274,6 +284,22 @@ const DownloadDialog = ({
       </Modal.Body>
     </Modal>
   );
+};
+
+DownloadDialog.propTypes = {
+  t: PropTypes.func.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  activeViewport: PropTypes.object,
+  onClose: PropTypes.func.isRequired,
+  updateViewportPreview: PropTypes.func.isRequired,
+  enableViewport: PropTypes.func.isRequired,
+  disableViewport: PropTypes.func.isRequired,
+  toggleAnnotations: PropTypes.func.isRequired,
+  loadImage: PropTypes.func.isRequired,
+  downloadBlob: PropTypes.func.isRequired,
+  defaultSize: PropTypes.number.isRequired,
+  minimumSize: PropTypes.number.isRequired,
+  canvasClass: PropTypes.string.isRequired,
 };
 
 export default withTranslation('DownloadDialog')(DownloadDialog);
