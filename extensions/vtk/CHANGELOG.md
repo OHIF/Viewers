@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.17](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.16...@ohif/extension-vtk@0.52.17) (2019-10-25)
+
+
+### Bug Fixes
+
+* 🐛 Fix crosshairs location when using MIP ([#1080](https://github.com/OHIF/Viewers/issues/1080)) ([b451ce4](https://github.com/OHIF/Viewers/commit/b451ce440796f13b0891739d2130e8ee71993d3d))
+
+
+
+
+
 ## [0.52.16](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.15...@ohif/extension-vtk@0.52.16) (2019-10-23)
 
 
