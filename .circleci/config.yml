@@ -59,7 +59,7 @@ jobs:
       - run:
           name: 'JavaScript Test Suite'
           command: |
-            mkdir -p ./test-results/junit
+            mkdir -p ~/test-results/junit
             yarn run test:unit:ci
           environment:
             JEST_JUNIT_OUTPUT: "~/test-results/junit/results.xml"
@@ -129,7 +129,7 @@ jobs:
       - run:
           name: 'JavaScript Test Suite'
           command: |
-            mkdir -p ./test-results/junit
+            mkdir -p ~/test-results/junit
             yarn run test:unit:ci
           environment:
             JEST_JUNIT_OUTPUT: "~/test-results/junit/results.xml"
@@ -355,7 +355,7 @@ workflows:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
             - store_test_results:
-                path: ~/cypress/results
+                path: platform/viewer/cypress/results
           requires:
             - UNIT_TESTS
       # E2E: script-tag
@@ -449,7 +449,7 @@ workflows:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
             - store_test_results:
-                path: ~/cypress/results
+                path: platform/viewer/cypress/results
           requires:
             - UNIT_TESTS_PERSIST_WORKSPACE
       # Update NPM
