@@ -61,15 +61,16 @@
   .preview
     display: flex;
     flex-direction column;
-    justify-content: center;
     height: fit-content;
     background-color: #16202b;
     width: fit-content;
-    margin: 0 auto;
     padding: 10px;
     border-radius: 5px;
+    align-self: center;
     @media screen and (max-width: 1023px)
       width: 100%;
+      justify-content: center;
+      align-items: center;
 
     .viewport-preview
       max-height: 512px;
@@ -100,3 +101,7 @@
 
 .modal-dialog
   height: 100%;
+
+  .modal-body
+    display: flex;
+    flex-direction: column;

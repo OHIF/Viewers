@@ -15,10 +15,9 @@
   color: var(--input-placeholder-color);
   font-size: 10pt;
   font-weight: normal;
-  width: auto !important;
+  width: auto;
   border-radius: 4px;
   transition: all 0.15s ease;
-  placeholder-color: var(--input-placeholder-color);
 }
 
 .input-ohif-container .input-ohif-label {
@@ -33,5 +32,3 @@
 .input-ohif-container .input-ohif.invisible {
   visibility: hidden;
 }
-
-

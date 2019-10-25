@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, createRef } from 'react';
 import Modal from 'react-bootstrap-modal';
 import PropTypes from 'prop-types';
 
@@ -17,6 +17,8 @@ const FILE_TYPE_OPTIONS = [
   },
 ];
 
+const DEFAULT_FILENAME = 'image';
+
 const DownloadDialog = ({
   t,
   isOpen,
@@ -32,7 +34,7 @@ const DownloadDialog = ({
   minimumSize,
   canvasClass,
 }) => {
-  const [filename, setFilename] = useState('image');
+  const [filename, setFilename] = useState(DEFAULT_FILENAME);
   const [fileType, setFileType] = useState('jpg');
 
   const [height, setHeight] = useState(defaultSize);
@@ -49,16 +51,17 @@ const DownloadDialog = ({
   );
   const [viewportElementWidth, setViewportElementWidth] = useState(minimumSize);
 
-  const [downloadCanvas, setDownloadCanvas] = useState();
-  const [downloadCanvasHeight, setDownloadCanvasHeight] = useState(minimumSize);
-  const [downloadCanvasWidth, setDownloadCanvasWidth] = useState(minimumSize);
+  const [downloadCanvas, setDownloadCanvas] = useState({
+    ref: createRef(),
+    width: minimumSize,
+    height: minimumSize,
+  });
 
-  const [viewportPreview, setViewportPreview] = useState();
-  const [viewportPreviewSrc, setViewportPreviewSrc] = useState();
-  const [viewportPreviewHeight, setViewportPreviewHeight] = useState(
-    minimumSize
-  );
-  const [viewportPreviewWidth, setViewportPreviewWidth] = useState(minimumSize);
+  const [viewportPreview, setViewportPreview] = useState({
+    src: null,
+    width: minimumSize,
+    height: minimumSize,
+  });
 
   useEffect(() => {
     enableViewport(viewportElement);
@@ -85,8 +88,12 @@ const DownloadDialog = ({
 
       setViewportElementHeight(scaledHeight);
       setViewportElementWidth(scaledWidth);
-      setDownloadCanvasHeight(scaledHeight);
-      setDownloadCanvasWidth(scaledWidth);
+
+      setDownloadCanvas(state => ({
+        ...state,
+        height: scaledHeight,
+        width: scaledWidth,
+      }));
 
       const {
         dataUrl,
@@ -94,13 +101,16 @@ const DownloadDialog = ({
         height: viewportElementHeight,
       } = await updateViewportPreview(
         viewportElement,
-        downloadCanvas,
+        downloadCanvas.ref.current,
         fileType
       );
 
-      setViewportPreviewSrc(dataUrl);
-      setViewportPreviewHeight(viewportElementHeight);
-      setViewportPreviewWidth(viewportElementWidth);
+      setViewportPreview(state => ({
+        ...state,
+        src: dataUrl,
+        width: viewportElementWidth,
+        height: viewportElementHeight,
+      }));
     };
 
     loadAndUpdateViewports();
@@ -113,8 +123,8 @@ const DownloadDialog = ({
     loadImage,
     toggleAnnotations,
     updateViewportPreview,
-    downloadCanvas,
     fileType,
+    downloadCanvas.ref,
   ]);
 
   const onHeightChange = () => {
@@ -122,7 +132,11 @@ const DownloadDialog = ({
     setHeight(newHeight);
 
     setViewportElementHeight(newHeight);
-    setDownloadCanvasHeight(newHeight);
+
+    setDownloadCanvas(state => ({
+      ...state,
+      height: newHeight,
+    }));
 
     if (keepAspect) {
       const multiplier = newHeight / lastImage.height;
@@ -130,7 +144,11 @@ const DownloadDialog = ({
 
       setWidth(newWidth);
       setViewportElementWidth(newWidth);
-      setDownloadCanvasWidth(newWidth);
+
+      setDownloadCanvas(state => ({
+        ...state,
+        width: newWidth,
+      }));
     }
   };
 
@@ -139,7 +157,11 @@ const DownloadDialog = ({
     setWidth(newWidth);
 
     setViewportElementWidth(newWidth);
-    setDownloadCanvasWidth(newWidth);
+
+    setDownloadCanvas(state => ({
+      ...state,
+      width: newWidth,
+    }));
 
     if (keepAspect) {
       const multiplier = newWidth / lastImage.width;
@@ -147,12 +169,21 @@ const DownloadDialog = ({
 
       setHeight(newHeight);
       setViewportElementHeight(newHeight);
-      setDownloadCanvasHeight(newHeight);
+
+      setDownloadCanvas(state => ({
+        ...state,
+        height: newHeight,
+      }));
     }
   };
 
   const downloadImage = () => {
-    downloadBlob(filename, fileType, viewportElement, downloadCanvas);
+    downloadBlob(
+      filename || DEFAULT_FILENAME,
+      fileType,
+      viewportElement,
+      downloadCanvas.ref.current
+    );
   };
 
   return (
@@ -245,13 +276,13 @@ const DownloadDialog = ({
           <canvas
             className={canvasClass}
             style={{
-              height: downloadCanvasHeight,
-              width: downloadCanvasWidth,
+              height: downloadCanvas.height,
+              width: downloadCanvas.width,
               display: 'block',
             }}
-            width={downloadCanvasWidth}
-            height={downloadCanvasHeight}
-            ref={ref => setDownloadCanvas(ref)}
+            width={downloadCanvas.width}
+            height={downloadCanvas.height}
+            ref={downloadCanvas.ref}
           ></canvas>
         </div>
 
@@ -259,13 +290,12 @@ const DownloadDialog = ({
           <h4> {t('Image Preview')}</h4>
           <img
             className="viewport-preview"
-            src={viewportPreviewSrc}
+            src={viewportPreview.src}
             alt="Viewport Preview"
             style={{
-              height: viewportPreviewHeight,
-              width: viewportPreviewWidth,
+              height: viewportPreview.height,
+              width: viewportPreview.width,
             }}
-            ref={ref => setViewportPreview(ref)}
           />
         </div>
 
