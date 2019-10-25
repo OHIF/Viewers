@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.4.0...@ohif/core@1.5.0) (2019-10-25)
+
+
+### Features
+
+* 🎸 Allow routes to load Google Cloud DICOM Stores in the Study List ([#1069](https://github.com/OHIF/Viewers/issues/1069)) ([21b586b](https://github.com/OHIF/Viewers/commit/21b586b08f3dde6613859712a9e0577dece564db))
+
+
+
+
+
 # [1.4.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.3.2...@ohif/core@1.4.0) (2019-10-15)
 
 
