@@ -2,7 +2,7 @@
   display: inline-block;
   font-size: 10pt;
   box-sizing: border-box;
-  width: auto !important;
+  width: auto;
   transition: all 0.15s ease;
   background-color: var(--input-background-color);
   line-height: 16px;
