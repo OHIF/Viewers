@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { extensionManager } from './../App.js';
 
 const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
-const { retrieveStudiesMetadata } = studies;
+const { retrieveStudiesMetadata, deleteStudyMetadataPromise } = studies;
 const { studyMetadataManager, updateMetaDataManager } = utils;
 
 class ViewerRetrieveStudyData extends Component {
@@ -18,6 +18,8 @@ class ViewerRetrieveStudyData extends Component {
 
   constructor(props) {
     super(props);
+    this.abortSeriesLoad = false;
+    this.seriesLoadStats = Object.create(null);
     this.state = {
       studies: null,
       error: null,
@@ -83,18 +85,56 @@ class ViewerRetrieveStudyData extends Component {
     });
   }
 
+  _handleSeriesLoadResult(error, studyMetadata, series) {
+    if (this.abortSeriesLoad) return;
+    const seriesLoadStats = this.seriesLoadStats[
+      studyMetadata.getStudyInstanceUID()
+    ];
+    if (!seriesLoadStats) return;
+    seriesLoadStats.count--;
+    if (error || !series) {
+      seriesLoadStats.errors++;
+      log.error(error || 'Bad Series');
+      return;
+    }
+    this._addSeriesToStudy(studyMetadata, series);
+  }
+
   _attemptToLoadRemainingSeries(studyMetadata) {
     const { seriesLoader } = studyMetadata.getData();
     if (!seriesLoader) {
       return;
     }
+    const seriesLoadStats = (this.seriesLoadStats[
+      studyMetadata.getStudyInstanceUID()
+    ] = {
+      errors: 0,
+      count: 0,
+    });
     while (seriesLoader.hasNext()) {
       seriesLoader
         .next()
         .then(
-          series => void this._addSeriesToStudy(studyMetadata, series),
-          error => void log.error(error)
+          series =>
+            void this._handleSeriesLoadResult(null, studyMetadata, series),
+          error => void this._handleSeriesLoadResult({ error }, null, null)
         );
+      seriesLoadStats.count++;
+    }
+  }
+
+  componentWillUnmount() {
+    this.abortSeriesLoad = true;
+    for (const studyInstanceUid in this.seriesLoadStats) {
+      const seriesLoadStats = this.seriesLoadStats[studyInstanceUid];
+      if (
+        seriesLoadStats &&
+        (seriesLoadStats.count > 0 || seriesLoadStats.errors > 0)
+      ) {
+        deleteStudyMetadataPromise(studyInstanceUid);
+        studyMetadataManager.remove(studyInstanceUid);
+        log.info(`Purging incomplete study data: ${studyInstanceUid}`);
+      }
     }
   }
 
