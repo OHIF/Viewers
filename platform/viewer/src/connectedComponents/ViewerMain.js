@@ -60,11 +60,12 @@ class ViewerMain extends Component {
     if (this.props.studies) {
       const displaySets = this.getDisplaySets(this.props.studies);
 
-      this.setState({
-        displaySets,
-      });
-
-      this.fillEmptyViewportPanes();
+      this.setState(
+        {
+          displaySets,
+        },
+        this.fillEmptyViewportPanes
+      );
     }
   }
 
