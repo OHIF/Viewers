@@ -3,16 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.12.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.5...@ohif/viewer@1.12.0) (2019-10-25)
+
+
+### Features
+
+* 🎸 Allow routes to load Google Cloud DICOM Stores in the Study List ([#1069](https://github.com/OHIF/Viewers/issues/1069)) ([21b586b](https://github.com/OHIF/Viewers/commit/21b586b08f3dde6613859712a9e0577dece564db))
+
+
+
+
+
+## [1.11.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.4...@ohif/viewer@1.11.5) (2019-10-24)
+
+**Note:** Version bump only for package @ohif/viewer
+
 ## [1.11.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.3...@ohif/viewer@1.11.4) (2019-10-23)
 
 
 ### Bug Fixes
 
 * Revert "Revert "fix: MPR initialization"" ([#1065](https://github.com/OHIF/Viewers/issues/1065)) ([c680720](https://github.com/OHIF/Viewers/commit/c680720ce5ead58fdb399e3a356edac18093f5c0)), closes [#1062](https://github.com/OHIF/Viewers/issues/1062) [#1064](https://github.com/OHIF/Viewers/issues/1064)
-
-
-
-
 
 ## [1.11.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.2...@ohif/viewer@1.11.3) (2019-10-23)
 
