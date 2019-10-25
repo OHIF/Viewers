@@ -4,7 +4,6 @@ import usePrevious from './usePrevious';
 
 import * as GoogleCloudUtilServers from '../googleCloud/utils/getServers';
 import { useSelector, useDispatch } from 'react-redux';
-import _ from 'lodash';
 import isEqual from 'lodash.isequal';
 
 // Contexts
@@ -92,9 +91,9 @@ const useServerFromUrl = (
 
   const newServer = urlBasedServers[0];
 
-  let exists = _.some(servers, server => {
-    return GoogleCloudUtilServers.isEqualServer(newServer, server);
-  });
+  let exists = servers.some(
+    GoogleCloudUtilServers.isEqualServer.bind(undefined, newServer)
+  );
 
   return !exists;
 };
