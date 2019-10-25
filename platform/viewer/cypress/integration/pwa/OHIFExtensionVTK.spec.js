@@ -29,7 +29,7 @@ describe('OHIF VTK Extension', () => {
 
   it('checks if VTK buttons are displayed on the toolbar', () => {
     cy.screenshot();
-    cy.percySnapshot();
+    cy.percyCanvasSnapshot('VTK Extension');
 
     cy.get('@crosshairsBtn')
       .should('be.visible')
