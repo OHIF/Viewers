@@ -58,7 +58,7 @@ jobs:
       - run:
           name: "JavaScript Linter"
           # yarn here makes sure we are using the local jest binary
-          command: yarn run eslint platform --format junit -o reports/junit/js-lint-results.xml
+          command: yarn run eslint platform/viewer --format junit -o reports/junit/js-lint-results.xml
 
       # RUN TESTS
       - run:
