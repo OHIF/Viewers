@@ -58,7 +58,8 @@ jobs:
       - run:
           name: "JavaScript Linter"
           # yarn here makes sure we are using the local jest binary
-          command: yarn run eslint platform/viewer/src --format junit -o reports/junit/js-lint-results.xml
+          # TODO: We can enable this to make the PR_CHECKS fail if ESLint fails
+          #command: yarn run eslint platform/viewer/src --format junit -o reports/junit/js-lint-results.xml
 
       # RUN TESTS
       - run:
