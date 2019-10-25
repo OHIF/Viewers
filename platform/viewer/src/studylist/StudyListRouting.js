@@ -1,33 +1,27 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import queryString from 'query-string';
 import ConnectedStudyList from './ConnectedStudyList';
+import useServer from '../customHooks/useServer';
+import OHIF from '@ohif/core';
+const { urlUtil: UrlUtil } = OHIF.utils;
 
 // Contexts
 import AppContext from '../context/AppContext';
 
-// TODO: Move to @ohif/ui
-
-function toLowerCaseFirstLetter(word) {
-  return word[0].toLowerCase() + word.slice(1);
-}
-
-function getFilters({ search }) {
-  const searchParameters = queryString.parse(search);
-  const filters = {};
-
-  Object.entries(searchParameters).forEach(([key, value]) => {
-    filters[toLowerCaseFirstLetter(key)] = value;
-  });
-
-  return filters;
-}
-
-function StudyListRouting({ location }) {
+function StudyListRouting({ match: routeMatch, location: routeLocation }) {
+  const {
+    project,
+    location,
+    dataset,
+    dicomStore,
+    studyInstanceUids,
+    seriesInstanceUids,
+  } = routeMatch.params;
+  const server = useServer({ project, location, dataset, dicomStore });
   const { appConfig = {} } = useContext(AppContext);
 
-  const filters = location ? getFilters(location) : undefined;
+  const filters = UrlUtil.queryString.getQueryFilters(routeLocation);
 
   let studyListFunctionsEnabled = false;
   if (appConfig.studyListFunctionsEnabled) {

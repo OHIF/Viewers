@@ -10,19 +10,9 @@ const mapStateToProps = (state, ownProps) => {
 
   const { viewportIndex } = ownProps;
   const toolContextMenuData = state.ui.contextMenu[viewportIndex];
-  let availableTools;
-
-  if (
-    state.extensions &&
-    state.extensions.cornerstone &&
-    state.extensions.cornerstone.availableTools
-  ) {
-    availableTools = state.extensions.cornerstone.availableTools;
-  }
 
   return {
     ...toolContextMenuData,
-    availableTools,
   };
 };
 

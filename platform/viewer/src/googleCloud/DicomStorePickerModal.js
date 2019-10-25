@@ -4,6 +4,7 @@ import Modal from 'react-bootstrap-modal';
 import DatasetSelector from './DatasetSelector';
 import './googleCloud.css';
 import { withTranslation } from 'react-i18next';
+import * as GoogleCloudUtilServers from './utils/getServers';
 
 class DicomStorePickerModal extends Component {
   static propTypes = {
@@ -19,22 +20,10 @@ class DicomStorePickerModal extends Component {
   };
 
   handleEvent = data => {
-    const servers = [
-      {
-        name: data.dicomStore,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-        qidoSupportsIncludeField: false,
-        type: 'dicomWeb',
-        qidoRoot: data.qidoRoot,
-        wadoRoot: data.wadoRoot,
-        wadoUriRoot: data.wadoUriRoot,
-        active: true,
-        supportsFuzzyMatching: false,
-      },
-    ];
-
+    const servers = GoogleCloudUtilServers.getServers(data, data.dicomstore);
     this.props.setServers(servers);
+    // Force auto close
+    this.props.onClose();
   };
 
   render() {

@@ -1,3 +1,4 @@
+/* global cornerstone */
 import './ImageThumbnail.styl';
 
 import React, { PureComponent } from 'react';
@@ -11,25 +12,6 @@ import ViewportLoadingIndicator from '../../viewer/ViewportLoadingIndicator';
 // - Set as external dependency?
 // - Pass in the entire load and render function as a prop?
 //import cornerstone from 'cornerstone-core';
-
-/**
- * Asynchronous wrapper around Cornerstone's renderToCanvas method.
- *
- * @param {HTMLElement} canvasElement An HTML <canvas> element
- * @param {Image} image A Cornerstone Image
- *
- * @return {Promise} A promise tracking the progress of the rendering. Resolves empty.
- */
-function renderAsync(canvasElement, image) {
-  return new Promise((resolve, reject) => {
-    try {
-      cornerstone.renderToCanvas(canvasElement, image);
-      resolve();
-    } catch (error) {
-      reject(error);
-    }
-  });
-}
 
 export default class ImageThumbnail extends PureComponent {
   static propTypes = {
@@ -52,40 +34,32 @@ export default class ImageThumbnail extends PureComponent {
     super(props);
 
     this.canvas = React.createRef();
-
-    const renderIntoCanvas = this.props.imageId && !this.props.imageSrc;
-
     this.state = {
-      loading: renderIntoCanvas,
+      loading: this.shouldRenderToCanvas(),
     };
   }
 
+  shouldRenderToCanvas() {
+    return this.props.imageId && !this.props.imageSrc;
+  }
+
   componentDidMount() {
-    const renderIntoCanvas = this.props.imageId && !this.props.imageSrc;
-
-    if (renderIntoCanvas) {
-      const { imageId } = this.props;
-      const canvas = this.canvas.current;
-
-      cornerstone.loadAndCacheImage(imageId).then(
-        image => {
-          renderAsync(canvas, image).then(
-            () => {
-              this.setState({
-                loading: false,
-              });
-            },
-            error => {
-              // TODO: Set state?
-              throw new Error(error);
-            }
-          );
-        },
-        error => {
-          // TODO: Set state?
+    if (this.shouldRenderToCanvas()) {
+      cornerstone
+        .loadAndCacheImage(this.props.imageId)
+        .then(image => {
+          cornerstone.renderToCanvas(this.canvas.current, image);
+          this.setState({
+            loading: false,
+          });
+        })
+        .catch(error => {
+          this.setState({
+            loading: false,
+            error: true,
+          });
           throw new Error(error);
-        }
-      );
+        });
     }
   }
 
@@ -100,12 +74,10 @@ export default class ImageThumbnail extends PureComponent {
     const showStackLoadingProgressBar =
       this.props.stackPercentComplete !== undefined;
 
-    const renderIntoCanvas = this.props.imageId && !this.props.imageSrc;
-
     return (
       <div className="ImageThumbnail">
         <div className="image-thumbnail-canvas">
-          {renderIntoCanvas ? (
+          {this.shouldRenderToCanvas() ? (
             <canvas
               ref={this.canvas}
               width={this.props.width}
@@ -129,6 +101,9 @@ export default class ImageThumbnail extends PureComponent {
               style={{ width: `${this.props.stackPercentComplete}%` }}
             />
           </div>
+        )}
+        {this.state.loading && (
+          <div className="image-thumbnail-loading-indicator"></div>
         )}
       </div>
     );

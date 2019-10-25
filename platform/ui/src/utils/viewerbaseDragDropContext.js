@@ -10,10 +10,11 @@ const isTouchDevice = !!('ontouchstart' in window || navigator.maxTouchPoints);
 //
 // http://react-dnd.github.io/react-dnd/docs/api/drag-drop-context
 export default function viewerbaseDragDropContext(DecoratedClass) {
-  const backend = isTouchDevice ? TouchBackend({ enableMouseEvents: true }) : HTML5Backend;
+  const backend = isTouchDevice ? TouchBackend : HTML5Backend;
+  const opts = isTouchDevice ? { enableMouseEvents: true } : {};
 
   return (props) => (
-    <DndProvider backend={backend}>
+    <DndProvider backend={backend} opts={opts}>
       <DecoratedClass {...props}/>
     </DndProvider>
   );

@@ -6,7 +6,7 @@ import cornerstone from 'cornerstone-core';
 
 //
 import jumpToRowItem from './jumpToRowItem.js';
-import getMeasurementLocationCallback from './../../lib/getMeasurementLocationCallback';
+import getMeasurementLocationCallback from './getMeasurementLocationCallback';
 
 const { setViewportSpecificData } = OHIF.redux.actions;
 const { MeasurementApi } = OHIF.measurements;

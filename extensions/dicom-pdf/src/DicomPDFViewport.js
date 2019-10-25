@@ -4,41 +4,46 @@ import TypedArrayProp from './TypedArrayProp';
 
 // TODO: Should probably use dcmjs for this
 const SOP_CLASS_UIDS = {
-  ENCAPSULATED_PDF: '1.2.840.10008.5.1.4.1.1.104.1'
+  ENCAPSULATED_PDF: '1.2.840.10008.5.1.4.1.1.104.1',
 };
 
 class DicomPDFViewport extends Component {
   state = {
     fileURL: null,
-    error: null
+    error: null,
   };
 
   static propTypes = {
-    byteArray: TypedArrayProp.uint8
+    byteArray: TypedArrayProp.uint8,
   };
 
-  renderPDF = dataSet => {
-    const sopClassUid = dataSet.string('x00080016');
+  renderPDF = (dataSet, byteArray) => {
+    let pdfByteArray = byteArray;
 
-    if (sopClassUid !== SOP_CLASS_UIDS.ENCAPSULATED_PDF) {
-      throw new Error('This is not a DICOM-encapsulated PDF');
+    if (dataSet) {
+      const sopClassUid = dataSet.string('x00080016');
+
+      if (sopClassUid !== SOP_CLASS_UIDS.ENCAPSULATED_PDF) {
+        throw new Error('This is not a DICOM-encapsulated PDF');
+      }
+
+      const fileTag = dataSet.elements.x00420011;
+      const offset = fileTag.dataOffset;
+      const remainder = offset + fileTag.length;
+      pdfByteArray = dataSet.byteArray.slice(offset, remainder);
     }
 
-    const fileTag = dataSet.elements.x00420011;
-    const offset = fileTag.dataOffset;
-    const remainder = offset + fileTag.length;
-    const pdfByteArray = dataSet.byteArray.slice(offset, remainder);
     const PDF = new Blob([pdfByteArray], { type: 'application/pdf' });
     const fileURL = URL.createObjectURL(PDF);
 
     this.setState({
-      fileURL
+      fileURL,
     });
   };
 
   parseByteArray = byteArray => {
     const options = {
-      untilTag: ''
+      untilTag: '',
     };
 
     let dataSet;
@@ -47,7 +52,7 @@ class DicomPDFViewport extends Component {
       dataSet = dicomParser.parseDicom(byteArray, options);
     } catch (error) {
       this.setState({
-        error
+        error,
       });
     }
 
@@ -57,7 +62,7 @@ class DicomPDFViewport extends Component {
   componentDidMount() {
     const dataSet = this.parseByteArray(this.props.byteArray);
 
-    this.renderPDF(dataSet);
+    this.renderPDF(dataSet, this.props.byteArray);
   }
 
   render() {

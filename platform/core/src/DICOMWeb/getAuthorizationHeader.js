@@ -9,7 +9,7 @@ import user from '../user';
  * @export
  * @param {Object} [server={}]
  * @param {Object} [server.requestOptions]
- * @param {string} [server.requestOptions.auth]
+ * @param {string|function} [server.requestOptions.auth]
  * @returns {Object} { Authorization }
  */
 export default function getAuthorizationHeader({ requestOptions } = {}) {
@@ -19,8 +19,13 @@ export default function getAuthorizationHeader({ requestOptions } = {}) {
   const accessToken = user && user.getAccessToken && user.getAccessToken();
 
   if (requestOptions && requestOptions.auth) {
-    // HTTP Basic Auth (user:password)
-    headers.Authorization = `Basic ${btoa(requestOptions.auth)}`;
+    if (typeof requestOptions.auth === 'function') {
+      // Custom Auth Header
+      headers.Authorization = requestOptions.auth(requestOptions);
+    } else {
+      // HTTP Basic Auth (user:password)
+      headers.Authorization = `Basic ${btoa(requestOptions.auth)}`;
+    }
   } else if (accessToken) {
     headers.Authorization = `Bearer ${accessToken}`;
   }
