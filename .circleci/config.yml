@@ -55,10 +55,10 @@ jobs:
             - ~/.cache ## Cache yarn and Cypress
           key: yarn-packages-{{ checksum "yarn.lock" }}
 
-      - run:
-          name: "JavaScript Linter"
+      # TODO: We can enable this to make the PR_CHECKS fail if ESLint fails
+      #- run:
+          #name: "JavaScript Linter"
           # yarn here makes sure we are using the local jest binary
-          # TODO: We can enable this to make the PR_CHECKS fail if ESLint fails
           #command: yarn run eslint platform/viewer/src --format junit -o reports/junit/js-lint-results.xml
 
       # RUN TESTS
