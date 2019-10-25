@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.2](https://github.com/OHIF/Viewers/compare/@ohif/core@1.5.1...@ohif/core@1.5.2) (2019-10-25)
+
+
+### Bug Fixes
+
+* set SR in ActiveViewport by clicking thumb ([#1091](https://github.com/OHIF/Viewers/issues/1091)) ([986b7ae](https://github.com/OHIF/Viewers/commit/986b7ae2bf4f7d27f326e62f93285ce20eaf0a79))
+
+
+
+
+
+## [1.5.1](https://github.com/OHIF/Viewers/compare/@ohif/core@1.5.0...@ohif/core@1.5.1) (2019-10-25)
+
+
+### Bug Fixes
+
+* 🐛 Orthographic MPR fix ([#1092](https://github.com/OHIF/Viewers/issues/1092)) ([460e375](https://github.com/OHIF/Viewers/commit/460e375f0aa75d35f7a46b4d48e6cc706019956d))
+
+
+
+
+
 # [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.4.0...@ohif/core@1.5.0) (2019-10-25)
 
 
