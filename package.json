@@ -1,3 +1,4 @@
+
 {
   "name": "root",
   "private": true,
@@ -115,6 +116,9 @@
       "prettier --write",
       "git add"
     ]
+  },
+  "jest-junit":{
+    "output": "./reports/junit/results.xml"
   },
   "resolutions": {
     "**/@babel/runtime": "7.5.5"

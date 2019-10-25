@@ -58,9 +58,11 @@ jobs:
       # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
-          command: yarn run test:unit:ci
+          command: |
+            mkdir -p ./test-results/junit
+            yarn run test:unit:ci
           environment:
-            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+            JEST_JUNIT_OUTPUT: "~/test-results/junit/results.xml"
 
       # PLATFORM/VIEWER
       - run:
@@ -89,6 +91,8 @@ jobs:
       - codecov/upload:
           file: '/home/circleci/repo/platform/core/coverage/reports'
           flags: 'core'
+      - store_test_results:
+          path: ~/test-results/junit
 
   UNIT_TESTS_PERSIST_WORKSPACE:
     <<: *defaults
@@ -124,7 +128,11 @@ jobs:
       # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
-          command: yarn run test:unit:ci
+          command: |
+            mkdir -p ./test-results/junit
+            yarn run test:unit:ci
+          environment:
+            JEST_JUNIT_OUTPUT: "~/test-results/junit/results.xml"
 
       # PLATFORM/VIEWER
       - run:
@@ -153,6 +161,8 @@ jobs:
       - codecov/upload:
           file: '/home/circleci/repo/platform/core/coverage/reports'
           flags: 'core'
+      - store_test_results:
+          path: ~/test-results/junit
 
       # Persist :+1:
       - persist_to_workspace: &persist_to_workspace
@@ -345,7 +355,7 @@ workflows:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
             - store_test_results:
-                path: cypress/results
+                path: ~/cypress/results
           requires:
             - UNIT_TESTS
       # E2E: script-tag
@@ -370,7 +380,7 @@ workflows:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
             - store_test_results:
-                path: cypress/results
+                path: ~/cypress/results
           requires:
             - UNIT_TESTS
 
@@ -414,7 +424,7 @@ workflows:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
             - store_test_results:
-                path: cypress/results
+                path: ~/cypress/results
           requires:
             - UNIT_TESTS_PERSIST_WORKSPACE
       # E2E: script-tag
@@ -439,7 +449,7 @@ workflows:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
             - store_test_results:
-                path: cypress/results
+                path: ~/cypress/results
           requires:
             - UNIT_TESTS_PERSIST_WORKSPACE
       # Update NPM
