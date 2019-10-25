@@ -312,28 +312,54 @@ Cypress.Commands.add('isInViewport', element => {
  *
  */
 Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
-  function convertCanvas(documentClone) {
-    documentClone
-      .querySelectorAll('canvas')
-      .forEach(selector => canvasToImage(selector));
+  cy.document().then(doc => {
+    convertCanvas(doc);
+  });
 
-    return documentClone;
-  }
+  // `domTransformation` does not appear to be working
+  // But modifying our immediate DOM does.
+  cy.percySnapshot(name, { ...options }); //, domTransformation: convertCanvas });
 
-  function canvasToImage(selectorOrEl) {
-    let canvas =
-      typeof selectorOrEl === 'object'
-        ? selectorOrEl
-        : document.querySelector(selectorOrEl);
-    let image = document.createElement('img');
-    let canvasImageBase64 = canvas.toDataURL();
-
-    image.src = canvasImageBase64;
-    image.style = 'max-width: 100%';
-    canvas.setAttribute('data-percy-modified', true);
-    canvas.parentElement.appendChild(image);
-    canvas.style = 'display: none';
-  }
-
-  cy.percySnapshot(name, { ...options, domTransformation: convertCanvas });
+  cy.document().then(doc => {
+    unconvertCanvas(doc);
+  });
 });
+
+function convertCanvas(documentClone) {
+  documentClone
+    .querySelectorAll('canvas')
+    .forEach(selector => canvasToImage(selector));
+
+  return documentClone;
+}
+
+function unconvertCanvas(documentClone) {
+  // Remove previously generated images
+  documentClone
+    .querySelectorAll('[data-percy-image]')
+    .forEach(selector => selector.remove());
+
+  // Restore canvas visibility
+  documentClone.querySelectorAll('[data-percy-canvas]').forEach(selector => {
+    selector.removeAttribute('data-percy-canvas');
+    selector.style = '';
+  });
+}
+
+function canvasToImage(selectorOrEl) {
+  let canvas =
+    typeof selectorOrEl === 'object'
+      ? selectorOrEl
+      : document.querySelector(selectorOrEl);
+  let image = document.createElement('img');
+  let canvasImageBase64 = canvas.toDataURL('image/png');
+
+  // Show Image
+  image.src = canvasImageBase64;
+  image.style = 'max-width: 100%';
+  image.setAttribute('data-percy-image', true);
+  // Hide Canvas
+  canvas.setAttribute('data-percy-canvas', true);
+  canvas.parentElement.appendChild(image);
+  canvas.style = 'display: none';
+}
