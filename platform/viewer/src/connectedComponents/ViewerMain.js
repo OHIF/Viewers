@@ -59,13 +59,7 @@ class ViewerMain extends Component {
     // Get all the display sets for the viewer studies
     if (this.props.studies) {
       const displaySets = this.getDisplaySets(this.props.studies);
-
-      this.setState(
-        {
-          displaySets,
-        },
-        this.fillEmptyViewportPanes
-      );
+      this.setState({ displaySets }, this.fillEmptyViewportPanes);
     }
   }
 
@@ -79,12 +73,7 @@ class ViewerMain extends Component {
       (viewportAmount !== prevViewportAmount && !isVtk)
     ) {
       const displaySets = this.getDisplaySets(this.props.studies);
-
-      this.setState({
-        displaySets,
-      });
-
-      this.fillEmptyViewportPanes();
+      this.setState({ displaySets }, this.fillEmptyViewportPanes);
     }
   }
 

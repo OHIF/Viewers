@@ -103,7 +103,7 @@ class StandaloneRouting extends Component {
       studyMetadataManager.purge();
 
       // Map studies to new format, update metadata manager?
-      const studyInstanceUids = new Set();
+      const uniqueStudyUids = new Set();
       const updatedStudies = studies.map(study => {
         const studyMetadata = new OHIFStudyMetadata(
           study,
@@ -121,12 +121,12 @@ class StandaloneRouting extends Component {
         updateMetaDataManager(study);
 
         studyMetadataManager.add(studyMetadata);
-        studyInstanceUids.add(study.studyInstanceUid);
+        uniqueStudyUids.add(study.studyInstanceUid);
 
         return study;
       });
 
-      this.studyInstanceUids = Array.from(studyInstanceUids);
+      this.studyInstanceUids = Array.from(uniqueStudyUids);
       this.setState({ studies: updatedStudies });
     } catch (error) {
       this.setState({ error });
