@@ -105,6 +105,7 @@ class Header extends Component {
             className={`${
               this.props.home ? 'header-versionInfoHome' : 'header-versionInfo'
             }`}
+            data-cy="header-version-info"
           >
             v{process.env.VERSION_NUMBER}
           </span>

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.5.2...@ohif/core@1.6.0) (2019-10-26)
+
+
+### Features
+
+* Snapshot Download Tool ([#840](https://github.com/OHIF/Viewers/issues/840)) ([450e098](https://github.com/OHIF/Viewers/commit/450e0981a5ba054fcfcb85eeaeb18371af9088f8))
+
+
+
+
+
 ## [1.5.2](https://github.com/OHIF/Viewers/compare/@ohif/core@1.5.1...@ohif/core@1.5.2) (2019-10-25)
 
 
