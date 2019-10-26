@@ -1,2 +1,3 @@
-export * from './Icon';
-export * from './form';
+import { ICONS, Icon } from './Icon';
+
+export { Icon, ICONS };

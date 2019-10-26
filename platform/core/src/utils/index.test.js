@@ -9,14 +9,13 @@ describe('Top level exports', () => {
       'addServers',
       'sortBy',
       'writeScript',
-      'b64toBlob',
       'StackManager',
       'studyMetadataManager',
       // Updates WADO-RS metaDataManager
       'updateMetaDataManager',
       'DICOMTagDescriptions',
       'DicomLoaderService',
-      'urlUtil',
+      'urlUtil'
     ].sort();
 
     const exports = Object.keys(utils.default).sort();

@@ -1,7 +1,6 @@
 import {
   Checkbox,
   CineDialog,
-  DownloadDialog,
   LayoutButton,
   LayoutChooser,
   MeasurementTable,
@@ -23,20 +22,10 @@ import {
   UserPreferences,
   UserPreferencesModal,
 } from './components';
-
-// Elements
-import {
-  ICONS,
-  Icon,
-  DropdownMenu as Dropdown,
-  Select,
-  Label,
-  Range,
-  TextArea,
-  TextInput,
-} from './elements';
+import { ICONS, Icon } from './elements';
 
 // Alias this for now as not all dependents are using strict versioning
+import { DropdownMenu as Dropdown, Range, Select } from './elements/form';
 import ExpandableToolMenu from './viewer/ExpandableToolMenu.js';
 import PlayClipButton from './viewer/PlayClipButton.js';
 import { ScrollableArea } from './ScrollableArea/ScrollableArea.js';
@@ -49,16 +38,11 @@ import SnackbarProvider, {
 } from './utils/SnackbarProvider';
 
 export {
-  // Elements
   ICONS,
   //
   Checkbox,
-  Dropdown,
-  Label,
-  TextArea,
-  TextInput,
   CineDialog,
-  DownloadDialog,
+  Dropdown,
   ExpandableToolMenu,
   Icon,
   LayoutButton,
