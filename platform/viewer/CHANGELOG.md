@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.0...@ohif/viewer@2.1.1) (2019-10-26)
+
+
+### Bug Fixes
+
+* 🐛 JSON launch not working properly ([#1089](https://github.com/OHIF/Viewers/issues/1089)) ([#1093](https://github.com/OHIF/Viewers/issues/1093)) ([2677170](https://github.com/OHIF/Viewers/commit/2677170d67659ee178cf77307414d54cfe9cb563))
+
+
+
+
+
 # [2.1.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.0.0...@ohif/viewer@2.1.0) (2019-10-26)
 
 
