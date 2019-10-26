@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.57.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.56.1...@ohif/ui@0.57.0) (2019-10-26)
+
+
+### Features
+
+* Snapshot Download Tool ([#840](https://github.com/OHIF/Viewers/issues/840)) ([450e098](https://github.com/OHIF/Viewers/commit/450e0981a5ba054fcfcb85eeaeb18371af9088f8))
+
+
+
+
+
+## [0.56.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.56.0...@ohif/ui@0.56.1) (2019-10-26)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [0.56.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.55.0...@ohif/ui@0.56.0) (2019-10-22)
+
+
+### Features
+
+* 🎸 Load spinner when selecting gcloud store. Add key on td ([#1034](https://github.com/OHIF/Viewers/issues/1034)) ([e62f403](https://github.com/OHIF/Viewers/commit/e62f403fe9e3df56713128e3d59045824b086d8d)), closes [#1057](https://github.com/OHIF/Viewers/issues/1057)
+
+
+
+
+
 # [0.55.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.54.0...@ohif/ui@0.55.0) (2019-10-15)
 
 

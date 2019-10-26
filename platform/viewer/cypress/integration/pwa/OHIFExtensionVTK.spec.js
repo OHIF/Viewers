@@ -2,7 +2,7 @@ describe('OHIF VTK Extension', () => {
   before(() => {
     cy.openStudy('Juno');
     cy.waitDicomImage();
-    cy.expectMinimumThumbnails(1);
+    cy.expectMinimumThumbnails(7);
   });
 
   beforeEach(() => {
@@ -11,19 +11,26 @@ describe('OHIF VTK Extension', () => {
     // has data from a drag-n-drop
     // Drag and drop first thumbnail into first viewport
     cy.get('[data-cy="thumbnail-list"]:nth-child(3)').drag(
-      '.cornerstone-canvas'
+      '.viewport-drop-target'
     );
 
     cy.get('.PluginSwitch > .toolbar-button')
       .as('twodmprBtn')
       .should('be.visible')
-      .click();
-
+      .then(btn => {
+        if (!btn.text().includes('Exit')) {
+          btn.click();
+        }
+      });
+    //wait VTK toolbar and images to be loaded
+    cy.wait(3000);
     cy.initVTKToolsAliases();
-    cy.wait(1000);
   });
 
   it('checks if VTK buttons are displayed on the toolbar', () => {
+    cy.screenshot();
+    cy.percyCanvasSnapshot('VTK Extension');
+
     cy.get('@crosshairsBtn')
       .should('be.visible')
       .contains('Crosshairs');

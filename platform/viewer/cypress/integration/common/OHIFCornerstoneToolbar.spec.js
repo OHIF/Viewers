@@ -2,7 +2,7 @@ describe('OHIF Cornerstone Toolbar', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
     cy.waitDicomImage();
-    cy.expectMinimumThumbnails(1);
+    cy.expectMinimumThumbnails(3);
   });
 
   beforeEach(() => {
@@ -57,12 +57,11 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'top', { which: 1 })
-      .trigger('mousemove', 'center', { which: 1 })
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
       .trigger('mouseup');
-
     const expectedText =
-      'Ser: 1Img: 14 14/26256 x 256Loc: 0.00 mm Thick: 5.00 mm';
+      'Ser: 1Img: 1 1/26256 x 256Loc: -30.00 mm Thick: 5.00 mm';
     cy.get('@viewportInfoBottomLeft').should('have.text', expectedText);
   });
 
@@ -76,11 +75,11 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'top', { which: 1 })
-      .trigger('mousemove', 'center', { which: 1 })
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
       .trigger('mouseup');
 
-    const expectedText = 'Zoom: 884%W: 820 L: 410Lossless / Uncompressed';
+    const expectedText = 'Zoom: 50%W: 958 L: 479Lossless / Uncompressed';
     cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
@@ -94,14 +93,14 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'top', { which: 1 })
-      .trigger('mousemove', 'center', { which: 1 })
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
       .trigger('mouseup')
       .trigger('mousedown', 'center', { which: 1 })
       .trigger('mousemove', 'left', { which: 1 })
       .trigger('mouseup');
 
-    const expectedText = 'Zoom: 211%W: 544 L: 626Lossless / Uncompressed';
+    const expectedText = 'Zoom: 211%W: 635 L: 226Lossless / Uncompressed';
     cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
@@ -197,11 +196,14 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Click on reset button
     cy.get('@resetBtn').click();
 
-    const expectedText = 'Zoom: 211%W: 820 L: 410Lossless / Uncompressed';
+    const expectedText = 'Zoom: 211%W: 958 L: 479Lossless / Uncompressed';
     cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
   it('checks if CINE tool will prompt a modal with working controls', () => {
+    cy.server();
+    cy.route('GET', '/**/studies/**/').as('studies');
+
     //Click on button
     cy.get('@cineBtn').click();
     //Vefiry if cine control overlay is being displayed
@@ -216,26 +218,49 @@ describe('OHIF Cornerstone Toolbar', () => {
       .click();
 
     let expectedText = 'Img: 1 1/26';
-    cy.get('@viewportInfoBottomLeft').should('not.have.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'not.have.text',
+      expectedText
+    );
 
     //Test SKIP TO FIRST IMAGE button
-    cy.get('[title="Skip to first Image"]').click();
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('[title="Skip to first Image"]')
+      .click()
+      .wait(1000);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Test NEXT IMAGE button
-    cy.get('[title="Next Image"]').click();
+    cy.get('[title="Next Image"]')
+      .click()
+      .wait(1000);
     expectedText = 'Img: 2 2/26';
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Test SKIP TO LAST IMAGE button
-    cy.get('[title="Skip to last Image"]').click();
+    cy.get('[title="Skip to last Image"]')
+      .click()
+      .wait(2000);
     expectedText = 'Img: 27 26/26';
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Test PREVIOUS IMAGE button
-    cy.get('[title="Previous Image"]').click();
+    cy.get('[title="Previous Image"]')
+      .click()
+      .wait(1000);
     expectedText = 'Img: 26 25/26';
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Click on Cine button
     cy.get('@cineBtn').click();

@@ -147,6 +147,7 @@ export class StudyMetadata extends Metadata {
 
       if (isMultiFrame(instance)) {
         displaySet = makeDisplaySet(series, [instance]);
+
         displaySet.setAttributes({
           sopClassUids,
           isClip: true,

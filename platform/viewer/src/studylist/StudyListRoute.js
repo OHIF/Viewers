@@ -23,6 +23,8 @@ import UserManagerContext from '../context/UserManagerContext';
 import WhiteLabellingContext from '../context/WhiteLabellingContext';
 import AppContext from '../context/AppContext';
 
+const { urlUtil: UrlUtil } = OHIF.utils;
+
 function StudyListRoute(props) {
   const { history, server, t, user, studyListFunctionsEnabled } = props;
   // ~~ STATE
@@ -65,7 +67,6 @@ function StudyListRoute(props) {
 
   // Google Cloud Adapter for DICOM Store Picking
   const { appConfig = {} } = AppContext;
-  console.log(AppContext, appConfig);
   const isGoogleCHAIntegrationEnabled =
     !server && appConfig.enableGoogleCloudAdapter;
   if (isGoogleCHAIntegrationEnabled) {
@@ -127,6 +128,9 @@ function StudyListRoute(props) {
   let healthCareApiWindows = null;
 
   if (appConfig.enableGoogleCloudAdapter) {
+    const isModalOpen = activeModalId === 'DicomStorePicker';
+    updateURL(isModalOpen, appConfig, server, history);
+
     healthCareApiWindows = (
       <ConnectedDicomStorePicker
         isOpen={activeModalId === 'DicomStorePicker'}
@@ -225,7 +229,7 @@ function StudyListRoute(props) {
           onSort={handleSort}
           filterValues={filterValues}
           onFilterChange={handleFilterChange}
-          // onImport={() => setActiveModalId('DicomFilesUploader')}
+        // onImport={() => setActiveModalId('DicomFilesUploader')}
         >
           {studyListFunctionsEnabled ? (
             <ConnectedDicomFilesUploader
@@ -278,6 +282,21 @@ StudyListRoute.propTypes = {
 StudyListRoute.defaultProps = {
   studyListFunctionsEnabled: true,
 };
+
+function updateURL(isModalOpen, appConfig, server, history) {
+  if (isModalOpen) {
+    return;
+  }
+
+  const listPath = RoutesUtil.parseStudyListPath(appConfig, server);
+
+  if (UrlUtil.paramString.isValidPath(listPath)) {
+    const { location = {} } = history;
+    if (location.pathname !== listPath) {
+      history.replace(listPath);
+    }
+  }
+}
 
 /**
  * Not ideal, but we use displaySize to determine how the filters should be used
@@ -402,7 +421,7 @@ function _sortStudies(studies, field, order) {
   });
 
   // Sort by field
-  sortedStudies.sort(function(a, b) {
+  sortedStudies.sort(function (a, b) {
     let fieldA = a[field];
     let fieldB = b[field];
     if (field === 'studyDate') {

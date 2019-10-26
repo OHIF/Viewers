@@ -92,7 +92,7 @@ class AboutModal extends Component {
         <Modal.Header closeButton>
           <Modal.Title>{t('OHIF Viewer - About')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body data-cy="about-modal">
           <div className="btn-group">
             <a
               className="btn btn-default"
