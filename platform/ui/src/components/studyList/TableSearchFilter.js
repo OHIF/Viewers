@@ -4,7 +4,7 @@ import moment from 'moment';
 import { isInclusivelyBeforeDay } from 'react-dates';
 import CustomDateRangePicker from './CustomDateRangePicker.js';
 import { Icon } from './../../elements/Icon';
-import { useTranslation } from '@ohif/i18n';
+import { useTranslation } from 'react-i18next';
 
 
 
@@ -18,7 +18,7 @@ function TableSearchFilter(props) {
     sortDirection,
   } = props;
   const [focusedInput, setFocusedInput] = useState(null);
-  const { t } = useTranslation('Common');
+  const [t] = useTranslation(); // 'Common'?
 
   const sortIcons = ['sort', 'sort-up', 'sort-down'];
   const sortIconForSortField =
