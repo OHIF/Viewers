@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.56.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.56.0...@ohif/ui@0.56.1) (2019-10-26)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
 # [0.56.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.55.0...@ohif/ui@0.56.0) (2019-10-22)
 
 

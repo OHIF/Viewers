@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.12.2...@ohif/viewer@2.0.0) (2019-10-26)
+
+
+### Bug Fixes
+
+* 🐛 Desc of meas.table not being updated on properly ([#1094](https://github.com/OHIF/Viewers/issues/1094)) ([85f836c](https://github.com/OHIF/Viewers/commit/85f836cd918614be722fce1bff2373460ec4900b)), closes [#1013](https://github.com/OHIF/Viewers/issues/1013)
+
+
+### BREAKING CHANGES
+
+* 1013
+
+
+
+
+
 ## [1.12.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.12.1...@ohif/viewer@1.12.2) (2019-10-25)
 
 
