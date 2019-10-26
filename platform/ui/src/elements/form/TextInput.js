@@ -1,36 +1,45 @@
-import './TextInput.css';
-
 import React from 'react';
 import PropTypes from 'prop-types';
+
+import './TextInput.css';
 
 class TextInput extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { value: props.value };
   }
 
-  handleChange = event => {
-    this.setState({ value: event.target.value });
-    if (this.props.onChange) this.props.onChange();
+  static propTypes = {
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ]),
+    id: PropTypes.string,
+    label:PropTypes.string,
+    type: PropTypes.string,
+  };
+
+  static defaultProps = {
+    value: '',
+    id: `TextInput-${new Date().toTimeString()}`,
+    label: undefined,
+    type: 'text',
   };
 
   render() {
     return (
-      <input
-        className="input-ohif"
-        type="text"
-        value={this.state.value}
-        onChange={this.handleChange}
-        id={this.props.id}
-      />
+      <div className="input-ohif-container">
+        <label className="input-ohif-label" htmlFor={this.props.id}>
+          {this.props.label}
+          <input
+            type={this.props.type}
+            id={this.props.id}
+            className="form-control input-ohif"
+            {...this.props}
+          />
+        </label>
+      </div>
     );
   }
 }
-
-TextInput.propTypes = {
-  value: PropTypes.string,
-  id: PropTypes.string,
-  onChange: PropTypes.func,
-};
 
 export { TextInput };
