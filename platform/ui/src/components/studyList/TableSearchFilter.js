@@ -4,6 +4,9 @@ import moment from 'moment';
 import { isInclusivelyBeforeDay } from 'react-dates';
 import CustomDateRangePicker from './CustomDateRangePicker.js';
 import { Icon } from './../../elements/Icon';
+import { useTranslation } from '@ohif/i18n';
+
+
 
 function TableSearchFilter(props) {
   const {
@@ -15,6 +18,7 @@ function TableSearchFilter(props) {
     sortDirection,
   } = props;
   const [focusedInput, setFocusedInput] = useState(null);
+  const { t } = useTranslation('Common');
 
   const sortIcons = ['sort', 'sort-up', 'sort-down'];
   const sortIconForSortField =
@@ -29,17 +33,17 @@ function TableSearchFilter(props) {
   const defaultEndDate = today;
   const studyDatePresets = [
     {
-      text: 'Today',
+      text: t('Today'),
       start: today,
       end: today,
     },
     {
-      text: 'Last 7 days',
+      text: t('Last 7 days'),
       start: lastWeek,
       end: today,
     },
     {
-      text: 'Last 30 days',
+      text: t('Last 30 days'),
       start: lastMonth,
       end: today,
     },
