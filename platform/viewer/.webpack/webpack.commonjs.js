@@ -4,6 +4,7 @@ const path = require('path');
 const merge = require('webpack-merge');
 const webpackCommon = require('./../../../.webpack/webpack.commonjs.js');
 // ~~ Plugins
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const fontsToJavaScriptRule = require('./rules/fontsToJavaScript.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
