@@ -3,6 +3,82 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.21](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.20...@ohif/extension-vtk@0.52.21) (2019-10-26)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.20](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.19...@ohif/extension-vtk@0.52.20) (2019-10-26)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.19](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.18...@ohif/extension-vtk@0.52.19) (2019-10-25)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.18](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.17...@ohif/extension-vtk@0.52.18) (2019-10-25)
+
+
+### Bug Fixes
+
+* 🐛 Orthographic MPR fix ([#1092](https://github.com/OHIF/Viewers/issues/1092)) ([460e375](https://github.com/OHIF/Viewers/commit/460e375f0aa75d35f7a46b4d48e6cc706019956d))
+
+
+
+
+
+## [0.52.17](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.16...@ohif/extension-vtk@0.52.17) (2019-10-25)
+
+
+### Bug Fixes
+
+* 🐛 Fix crosshairs location when using MIP ([#1080](https://github.com/OHIF/Viewers/issues/1080)) ([b451ce4](https://github.com/OHIF/Viewers/commit/b451ce440796f13b0891739d2130e8ee71993d3d))
+
+
+
+
+
+## [0.52.16](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.15...@ohif/extension-vtk@0.52.16) (2019-10-23)
+
+
+### Bug Fixes
+
+* 🐛 Switch to orhtographic view for 2D MPR ([#1074](https://github.com/OHIF/Viewers/issues/1074)) ([13d337a](https://github.com/OHIF/Viewers/commit/13d337aaabb8dadf6366c6262c5e47e7781edd08))
+
+
+
+
+
+## [0.52.15](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.14...@ohif/extension-vtk@0.52.15) (2019-10-23)
+
+
+### Performance Improvements
+
+* ⚡️ Throttle UI refresh of synced WL value in vtk port ([#1070](https://github.com/OHIF/Viewers/issues/1070)) ([9d08e81](https://github.com/OHIF/Viewers/commit/9d08e81aa5def63a5e34f464aae099f7c29f0ac5))
+
+
+
+
+
+## [0.52.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.13...@ohif/extension-vtk@0.52.14) (2019-10-22)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
 ## [0.52.13](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.12...@ohif/extension-vtk@0.52.13) (2019-10-18)
 
 **Note:** Version bump only for package @ohif/extension-vtk

@@ -39,20 +39,13 @@ import {
  * @param {string} PatientName - Patient name that we would like to search for
  */
 Cypress.Commands.add('openStudy', patientName => {
-  cy.initRouteAliases();
-  cy.visit('/');
-  cy.wrap(null).then(() => {
-    return new Cypress.Promise((resolve, reject) => {
-      cy.get('#patientName').type(patientName);
-      setTimeout(() => {
-        cy.get('#studyListData')
-          .contains(patientName)
-          .first()
-          .click();
-        resolve();
-      }, 2000);
-    });
-  });
+  cy.openStudyList();
+  cy.get('#patientName').type(patientName);
+  cy.wait('@getStudies');
+  cy.get('#studyListData .studylistStudy', { timeout: 5000 })
+    .contains(patientName)
+    .first()
+    .click({ force: true });
 });
 
 /**
@@ -80,6 +73,12 @@ Cypress.Commands.add('openStudyModality', modality => {
  */
 Cypress.Commands.add('isPageLoaded', (url = '/viewer/') => {
   return cy.location('pathname', { timeout: 60000 }).should('include', url);
+});
+
+Cypress.Commands.add('openStudyList', patientName => {
+  cy.initRouteAliases();
+  cy.visit('/');
+  cy.wait('@getStudies');
 });
 
 /**
@@ -181,7 +180,7 @@ Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
 //Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
   cy.initCornerstoneToolsAliases();
-  cy.get('@resetBtn').click();
+
   //Click on More button
   cy.get('@moreBtn').click();
   //Verify if overlay is displayed
@@ -194,6 +193,8 @@ Cypress.Commands.add('resetViewport', () => {
   cy.get('.tooltip-inner > :nth-child(10)')
     .as('clearBtn')
     .click();
+  //Click on Reset button
+  cy.get('@resetBtn').click();
 });
 
 Cypress.Commands.add('imageZoomIn', () => {
@@ -306,4 +307,35 @@ Cypress.Commands.add('isInViewport', element => {
       expect(isInViewport).to.be.true;
     }
   });
+});
+
+/**
+ * Percy.io Canvas screenshot workaround
+ *
+ */
+Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
+  function convertCanvas(documentClone) {
+    documentClone
+      .querySelectorAll('canvas')
+      .forEach(selector => canvasToImage(selector));
+
+    return documentClone;
+  }
+
+  function canvasToImage(selectorOrEl) {
+    let canvas =
+      typeof selectorOrEl === 'object'
+        ? selectorOrEl
+        : document.querySelector(selectorOrEl);
+    let image = document.createElement('img');
+    let canvasImageBase64 = canvas.toDataURL();
+
+    image.src = canvasImageBase64;
+    image.style = 'max-width: 100%';
+    canvas.setAttribute('data-percy-modified', true);
+    canvas.parentElement.appendChild(image);
+    canvas.style = 'display: none';
+  }
+
+  cy.percySnapshot(name, { ...options, domTransformation: convertCanvas });
 });

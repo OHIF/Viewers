@@ -1,11 +1,11 @@
 describe('OHIFStandaloneViewer', () => {
   beforeEach(() => {
-    cy.visit('/');
+    cy.openStudyList();
   });
 
   it('loads route with at least 2 rows', () => {
     cy.screenshot();
-    cy.percySnapshot();
+    cy.percyCanvasSnapshot('Study List');
 
     cy.get('#studyListData tr')
       .its('length')

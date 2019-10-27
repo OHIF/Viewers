@@ -22,8 +22,6 @@ class ViewerMain extends Component {
     this.state = {
       displaySets: [],
     };
-
-    this.cachedViewportData = {};
   }
 
   getDisplaySets(studies) {
@@ -61,67 +59,69 @@ class ViewerMain extends Component {
     // Get all the display sets for the viewer studies
     if (this.props.studies) {
       const displaySets = this.getDisplaySets(this.props.studies);
-
-      this.setState({
-        displaySets,
-      });
+      this.setState({ displaySets }, this.fillEmptyViewportPanes);
     }
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.studies !== prevProps.studies) {
-      const displaySets = this.getDisplaySets(this.props.studies);
+    const prevViewportAmount = prevProps.layout.viewports.length;
+    const viewportAmount = this.props.layout.viewports.length;
+    const isVtk = this.props.layout.viewports.some(vp => !!vp.vtk);
 
-      this.setState({
-        displaySets,
-      });
+    if (
+      this.props.studies !== prevProps.studies ||
+      (viewportAmount !== prevViewportAmount && !isVtk)
+    ) {
+      const displaySets = this.getDisplaySets(this.props.studies);
+      this.setState({ displaySets }, this.fillEmptyViewportPanes);
     }
   }
 
-  getViewportData = () => {
-    const viewportData = [];
+  fillEmptyViewportPanes = () => {
+    const dirtyViewportPanes = [];
     const { layout, viewportSpecificData } = this.props;
+    const { displaySets } = this.state;
 
-    for (
-      let viewportIndex = 0;
-      viewportIndex < layout.viewports.length;
-      viewportIndex++
-    ) {
-      let displaySet = viewportSpecificData[viewportIndex];
-
-      // Use the cached display set in viewport if the new one is empty
-      if (displaySet && !displaySet.displaySetInstanceUid) {
-        displaySet = this.cachedViewportData[viewportIndex];
-      }
-
-      if (
-        displaySet &&
-        displaySet.studyInstanceUid &&
-        displaySet.displaySetInstanceUid
-      ) {
-        // Get missing fields from original display set
-        const originalDisplaySet = this.findDisplaySet(
-          this.props.studies,
-          displaySet.studyInstanceUid,
-          displaySet.displaySetInstanceUid
-        );
-        viewportData.push(Object.assign({}, originalDisplaySet, displaySet));
-      } else {
-        // If the viewport is empty, get one available in study
-        const { displaySets } = this.state;
-        displaySet = displaySets.find(
-          ds =>
-            !viewportData.some(
-              v => v.displaySetInstanceUid === ds.displaySetInstanceUid
-            )
-        );
-        viewportData.push(Object.assign({}, displaySet));
-      }
+    if (!displaySets || !displaySets.length) {
+      return;
     }
 
-    this.cachedViewportData = viewportData;
+    for (let i = 0; i < layout.viewports.length; i++) {
+      const viewportPane = viewportSpecificData[i];
+      const isNonEmptyViewport =
+        viewportPane &&
+        viewportPane.studyInstanceUid &&
+        viewportPane.displaySetInstanceUid;
 
-    return viewportData;
+      if (isNonEmptyViewport) {
+        dirtyViewportPanes.push({
+          studyInstanceUid: viewportPane.studyInstanceUid,
+          displaySetInstanceUid: viewportPane.displaySetInstanceUid,
+        });
+
+        continue;
+      }
+
+      const foundDisplaySet =
+        displaySets.find(
+          ds =>
+            !dirtyViewportPanes.some(
+              v => v.displaySetInstanceUid === ds.displaySetInstanceUid
+            )
+        ) || displaySets[displaySets.length - 1];
+
+      dirtyViewportPanes.push(foundDisplaySet);
+    }
+
+    dirtyViewportPanes.forEach((vp, i) => {
+      if (vp && vp.studyInstanceUid) {
+        this.setViewportData({
+          viewportIndex: i,
+          studyInstanceUid: vp.studyInstanceUid,
+          displaySetInstanceUid: vp.displaySetInstanceUid,
+        });
+      }
+    });
   };
 
   setViewportData = ({
@@ -139,12 +139,17 @@ class ViewerMain extends Component {
   };
 
   render() {
+    const { viewportSpecificData } = this.props;
+    const viewportData = viewportSpecificData
+      ? Object.values(viewportSpecificData)
+      : [];
+
     return (
       <div className="ViewerMain">
         {this.state.displaySets.length && (
           <ConnectedViewportGrid
             studies={this.props.studies}
-            viewportData={this.getViewportData()}
+            viewportData={viewportData}
             setViewportData={this.setViewportData}
           >
             {/* Children to add to each viewport that support children */}

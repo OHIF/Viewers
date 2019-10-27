@@ -11,11 +11,79 @@ import { StudylistToolbar } from './StudyListToolbar.js';
 import { isInclusivelyBeforeDay } from 'react-dates';
 import moment from 'moment';
 import debounce from 'lodash.debounce';
+import isEqual from 'lodash.isequal';
 import { withTranslation } from '../../utils/LanguageProvider';
 
 const today = moment();
 const lastWeek = moment().subtract(7, 'day');
 const lastMonth = moment().subtract(1, 'month');
+function getPaginationFragment(
+  props,
+  searchData,
+  nextPageCb,
+  prevPageCb,
+  changeRowsPerPageCb
+) {
+  return (
+    <PaginationArea
+      pageOptions={props.pageOptions}
+      currentPage={searchData.currentPage}
+      nextPageFunc={nextPageCb}
+      prevPageFunc={prevPageCb}
+      onRowsPerPageChange={changeRowsPerPageCb}
+      rowsPerPage={searchData.rowsPerPage}
+      recordCount={props.studies.length}
+    />
+  );
+}
+
+function getTableMeta(translate) {
+  return {
+    patientName: {
+      displayText: translate('PatientName'),
+      sort: 0,
+    },
+    patientId: {
+      displayText: translate('MRN'),
+      sort: 0,
+    },
+    accessionNumber: {
+      displayText: translate('AccessionNumber'),
+      sort: 0,
+    },
+    studyDate: {
+      displayText: translate('StudyDate'),
+      inputType: 'date-range',
+      sort: 0,
+    },
+    modalities: {
+      displayText: translate('Modality'),
+      sort: 0,
+    },
+    studyDescription: {
+      displayText: translate('StudyDescription'),
+      sort: 0,
+    },
+  };
+}
+
+function getNoListFragment(translate, studies, error, loading) {
+  if (loading) {
+    return (
+      <div className="loading">
+        <StudyListLoadingText />
+      </div>
+    );
+  } else if (error) {
+    return (
+      <div className="notFound">
+        {translate('There was an error fetching studies')}
+      </div>
+    );
+  } else if (!studies.length) {
+    return <div className="notFound">{translate('No matching results')}</div>;
+  }
+}
 
 class StudyList extends Component {
   static propTypes = {
@@ -111,24 +179,27 @@ class StudyList extends Component {
   getBlurHandler(key) {
     return event => {
       this.delayedSearch.cancel();
-      this.setSearchData(key, event.target.value, this.search);
+      this.setSearchData(key, event.target.value);
     };
   }
 
-  setSearchData(key, value, callback) {
-    const searchData = this.state.searchData;
+  setSearchData(key, value) {
+    const searchData = { ...this.state.searchData };
     searchData[key] = value;
-    this.setState({ searchData }, callback);
+
+    if (!isEqual(searchData[key], this.state.searchData[key])) {
+      this.setState({ ...this.state, searchData });
+    }
   }
 
-  setSearchDataBatch(keyValues, callback) {
-    const searchData = this.state.searchData;
+  setSearchDataBatch(keyValues) {
+    const searchData = { ...this.state.searchData };
 
     Object.keys(keyValues).forEach(key => {
       searchData[key] = keyValues[key];
     });
 
-    this.setState({ searchData }, callback);
+    this.setState({ searchData });
   }
 
   async onInputKeydown(event) {
@@ -138,7 +209,7 @@ class StudyList extends Component {
 
       this.delayedSearch.cancel();
       // reset the page because user is doing a new search
-      this.setSearchData('currentPage', 0, this.search);
+      this.setSearchData('currentPage', 0);
     }
   }
 
@@ -154,45 +225,21 @@ class StudyList extends Component {
     }
   }
 
-  renderNoMachingResults() {
-    if (!this.props.studies.length && !this.state.error) {
-      return <div className="notFound">No matching results</div>;
-    }
-  }
-
-  renderHasError() {
-    if (this.state.error) {
-      return (
-        <div className="notFound">There was an error fetching studies</div>
-      );
-    }
-  }
-
-  renderIsLoading() {
-    if (this.state.loading) {
-      return (
-        <div className="loading">
-          <StudyListLoadingText />
-        </div>
-      );
-    }
-  }
-
   nextPage(currentPage) {
     currentPage = currentPage + 1;
     this.delayedSearch.cancel();
-    this.setSearchData('currentPage', currentPage, this.search);
+    this.setSearchData('currentPage', currentPage);
   }
 
   prevPage(currentPage) {
     currentPage = currentPage - 1;
     this.delayedSearch.cancel();
-    this.setSearchData('currentPage', currentPage, this.search);
+    this.setSearchData('currentPage', currentPage);
   }
 
   onRowsPerPageChange(rowsPerPage) {
     this.delayedSearch.cancel();
-    this.setSearchDataBatch({ rowsPerPage, currentPage: 0 }, this.search);
+    this.setSearchDataBatch({ rowsPerPage, currentPage: 0 });
   }
 
   onSortClick(field) {
@@ -213,7 +260,7 @@ class StudyList extends Component {
       }
 
       this.delayedSearch.cancel();
-      this.setSearchData('sortData', { field, order }, this.search);
+      this.setSearchData('sortData', { field, order });
     };
   }
 
@@ -221,10 +268,39 @@ class StudyList extends Component {
     this.setState({ highlightedItem: studyItemUid });
   }
 
-  renderTableRow(study) {
+  getTableRow(study, index) {
+    const trKey = `trStudy${index}${study.studyInstanceUid}`;
+
+    if (!study) {
+      return;
+    }
+
+    const getTableCell = (
+      study,
+      studyKey,
+      emptyValue = '',
+      emptyClass = ''
+    ) => {
+      const componentKey = `td${studyKey}`;
+      const isValidValue = study && typeof study[studyKey] === 'string';
+      let className = emptyClass;
+      let value = emptyValue;
+
+      if (isValidValue) {
+        className = studyKey;
+        value = study[studyKey];
+      }
+
+      return (
+        <td key={componentKey} className={className}>
+          {value}
+        </td>
+      );
+    };
+
     return (
       <tr
-        key={study.studyInstanceUid}
+        key={trKey}
         className={
           this.state.highlightedItem === study.studyInstanceUid
             ? 'studylistStudy noselect active'
@@ -241,47 +317,35 @@ class StudyList extends Component {
           this.props.onSelectItem(study.studyInstanceUid);
         }}
       >
-        <td className={study.patientName ? 'patientName' : 'emptyCell'}>
-          {study.patientName || `(${this.props.t('Empty')})`}
-        </td>
-
-        <td className="patientId">{study.patientId}</td>
-        <td className="accessionNumber">{study.accessionNumber}</td>
-        <td className="studyDate">{study.studyDate}</td>
-        <td className="modalities">{study.modalities}</td>
-        <td className="studyDescription">{study.studyDescription}</td>
+        {getTableCell(
+          study,
+          'patientName',
+          `(${this.props.t('Empty')})`,
+          'emptyCell'
+        )}
+        {getTableCell(study, 'patientId')}
+        {getTableCell(study, 'accessionNumber')}
+        {getTableCell(study, 'studyDate')}
+        {getTableCell(study, 'modalities')}
+        {getTableCell(study, 'studyDescription')}
       </tr>
     );
   }
 
+  componentDidUpdate(previousProps, previousState) {
+    if (!isEqual(previousState.searchData, this.state.searchData)) {
+      this.search();
+    }
+  }
+
+  renderTableBody(noListFragment) {
+    return !noListFragment && this.props.studies
+      ? this.props.studies.map(this.getTableRow.bind(this))
+      : null;
+  }
+
   render() {
-    const tableMeta = {
-      patientName: {
-        displayText: this.props.t('PatientName'),
-        sort: 0,
-      },
-      patientId: {
-        displayText: this.props.t('MRN'),
-        sort: 0,
-      },
-      accessionNumber: {
-        displayText: this.props.t('AccessionNumber'),
-        sort: 0,
-      },
-      studyDate: {
-        displayText: this.props.t('StudyDate'),
-        inputType: 'date-range',
-        sort: 0,
-      },
-      modalities: {
-        displayText: this.props.t('Modality'),
-        sort: 0,
-      },
-      studyDescription: {
-        displayText: this.props.t('StudyDescription'),
-        sort: 0,
-      },
-    };
+    const tableMeta = getTableMeta(this.props.t);
 
     // Apply sort
     const sortedFieldName = this.state.searchData.sortData.field;
@@ -294,14 +358,20 @@ class StudyList extends Component {
 
     // Sort Icons
     const sortIcons = ['sort', 'sort-up', 'sort-down'];
+    const noListFragment = getNoListFragment(
+      this.props.t,
+      this.props.studies,
+      this.state.error,
+      this.props.loading || this.state.loading
+    );
+    const tableBody = this.renderTableBody(noListFragment);
+    const studiesNum = (this.props.studies && this.props.studies.length) || 0;
 
     return (
       <div className="StudyList">
         <div className="studyListToolbar clearfix">
           <div className="header pull-left">{this.props.t('StudyList')}</div>
-          <div className="studyCount pull-right">
-            {this.props.studies.length}
-          </div>
+          <div className="studyCount pull-right">{studiesNum}</div>
           <div className="pull-right">
             {this.props.studyListFunctionsEnabled ? (
               <StudylistToolbar onImport={this.props.onImport} />
@@ -367,22 +437,16 @@ class StudyList extends Component {
                                   (this.state.focusedInput === 'endDate' ||
                                     preset)
                                 ) {
-                                  this.setSearchDataBatch(
-                                    {
-                                      studyDateFrom: startDate.toDate(),
-                                      studyDateTo: endDate.toDate(),
-                                    },
-                                    this.search
-                                  );
+                                  this.setSearchDataBatch({
+                                    studyDateFrom: startDate.toDate(),
+                                    studyDateTo: endDate.toDate(),
+                                  });
                                   this.setState({ focusedInput: false });
                                 } else if (!startDate && !endDate) {
-                                  this.setSearchDataBatch(
-                                    {
-                                      studyDateFrom: null,
-                                      studyDateTo: null,
-                                    },
-                                    this.search
-                                  );
+                                  this.setSearchDataBatch({
+                                    studyDateFrom: null,
+                                    studyDateTo: null,
+                                  });
                                 }
                               }}
                               focusedInput={this.state.focusedInput}
@@ -398,26 +462,18 @@ class StudyList extends Component {
                 })}
               </tr>
             </thead>
-            <tbody id="studyListData">
-              {this.props.studies.map(study => {
-                return this.renderTableRow(study);
-              })}
-            </tbody>
+            <tbody id="studyListData">{tableBody}</tbody>
           </table>
 
-          {this.renderIsLoading()}
-          {this.renderHasError()}
-          {this.renderNoMachingResults()}
-
-          <PaginationArea
-            pageOptions={this.props.pageOptions}
-            currentPage={this.state.searchData.currentPage}
-            nextPageFunc={this.nextPage}
-            prevPageFunc={this.prevPage}
-            onRowsPerPageChange={this.onRowsPerPageChange}
-            rowsPerPage={this.state.searchData.rowsPerPage}
-            recordCount={this.props.studies.length}
-          />
+          {noListFragment
+            ? noListFragment
+            : getPaginationFragment(
+                this.props,
+                this.state.searchData,
+                this.nextPage,
+                this.prevPage,
+                this.onRowsPerPageChange
+              )}
         </div>
       </div>
     );

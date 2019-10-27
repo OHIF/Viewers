@@ -30,13 +30,15 @@ export function initCommonElementsAliases() {
   cy.get('div.ViewportOverlay > div.bottom-right.overlay-element > div').as(
     'viewportInfoBottomRight'
   );
+  cy.get('.left-mid.orientation-marker').as('viewportInfoMidLeft');
+  cy.get('.top-mid.orientation-marker').as('viewportInfoMidTop');
 }
 
 //Creating aliases for Routes
 export function initRouteAliases() {
   cy.server();
-  cy.route('GET', '/**/series/**').as('getStudySeries');
-  cy.route('GET', '/**/studies/**').as('getStudies');
+  cy.route('GET', '**/series**').as('getStudySeries');
+  cy.route('GET', '**/studies**').as('getStudies');
 }
 
 //Creating aliases for VTK tools buttons
