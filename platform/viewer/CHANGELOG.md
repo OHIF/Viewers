@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.2...@ohif/viewer@2.1.3) (2019-10-26)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.1.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.1...@ohif/viewer@2.1.2) (2019-10-26)
+
+
+### Bug Fixes
+
+* update script-tag output to include config from default.js ([c522ff3](https://github.com/OHIF/Viewers/commit/c522ff3ddab7ed8e3a128dd6edd2cd6902226e99))
+
+
+
+
+
 ## [2.1.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.0...@ohif/viewer@2.1.1) (2019-10-26)
 
 
