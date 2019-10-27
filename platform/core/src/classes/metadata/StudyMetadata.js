@@ -585,43 +585,22 @@ const isMultiFrame = instance => {
   return instance.getRawValue('x00280008') > 1;
 };
 
-const is4DSeries = instances => { // The goal here is to identify 4D series and the tags we'll use to sort them
+const is4DSeries = instances => {
+  // The goal here is to identify 4D series and the tags we'll use to sort them
   // List tags used to identify and sort 4D series
-  const sortTagsList = [
-    'DiffusionBValue',
-    'TemporalPositionIdentifier',
-    // Shamelessly stolen from fedorov@github/MultiVolumeImporter/MultiVolumeImporterPlugin.py
-    'TriggerTime',
-    'EchoTime',
-    'FlipAngle',
-    'RepetitionTime',
-    'AcquisitionTime',
-    'SeriesTime',
-    'ContentTime',
-    // Siemens Somatom Cardiac CT 'ScanOptions' tag contains info on cardiac cycle
-    'CardiacCycle',
-    // GE Revolution CT uses 'NominalPercentageOfCardiacPhase' tag to identify cardiac cycle
-    'NominalPercentageOfCardiacPhase',
-    'SiemensBValue',
-    'GEBValue',
-    // Philips DWI
-    'PhilipsBValue',
-    // GE Revolution CT Kinematics protocol
-    'DeltaStartTime',
-    // From @JoaoSantinha in PR #1066
-    'SequenceName',
-    'MRDiffusionSequence',
-  ];
+  const sortTagsList = Object.keys(instances[0]._instance.sort4DSeriesTags);
 
   // Among those tags, identify those that have multiple values
   var sortTags = Array(); // Declare an array to store tags to sort by
   var sortTagsVal = Array(); // for debug purposes
 
-  sortTagsList.map(a => { // loop through the tag list
-    var testedTagValues = instances.map(b => b._instance[a]);
+  sortTagsList.map(testedTag => { // loop through the tag list
+    var testedTagValues = instances.map(b => b._instance.sort4DSeriesTags[testedTag]);
     var tagsUniqueValues = [...new Set(testedTagValues)];
-    if (tagsUniqueValues.length > 1) { // If the tested tag has more than one value throughout the series..
-      sortTags.push(a); // Push to our new array
+    if (tagsUniqueValues.length > 1 && tagsUniqueValues.length < 5) {
+      // If the tested tag has more than one value throughout the series..
+      // And less than 5 (i.e. not too many)
+      sortTags.push(testedTag); // Push to our new array
       sortTagsVal.push(tagsUniqueValues); // debug
     }
   });
@@ -648,7 +627,7 @@ const makeDisplaySet = (series, instances) => {
     seriesTime: seriesData.seriesTime,
     seriesInstanceUid: series.getSeriesInstanceUID(),
     seriesNumber: instance.getRawValue('x00200011'),
-    seriesDescription: instance.getRawValue('x0008103e'),
+    seriesDescription: instance.getRawValue('x0008103e') || '',
     numImageFrames: instances.length,
     frameRate: instance.getRawValue('x00181063'),
     modality: instance.getRawValue('x00080060'),
@@ -670,11 +649,13 @@ const makeDisplaySet = (series, instances) => {
 
   // If 4Dseries, sort according to identified tags
   if (imageSet.is4DSeries) {
+      // Tell the user about sorting in series description
+      imageSet.seriesDescription += ' | 4D: ' + imageSet.is4DSeries;
       // Sort series by each tag in the array
       imageSet.is4DSeries.map(c => {
         imageSet.sortBy((a, b) => {
-          if (a._instance[c] > b._instance[c]) return 1;
-          if (a._instance[c] < b._instance[c]) return -1;
+          if (a._instance.sort4DSeriesTags[c] > b._instance.sort4DSeriesTags[c]) return 1;
+          if (a._instance.sort4DSeriesTags[c] < b._instance.sort4DSeriesTags[c]) return -1;
         });
       });
   }
@@ -687,7 +668,12 @@ const makeDisplaySet = (series, instances) => {
 
   const isReconstructable = isDisplaySetReconstructable(series, instances);
 
-  imageSet.isReconstructable = isReconstructable.value;
+  if (imageSet.is4DSeries) {
+    // Quick and nasty override (maybe make it part of isDisplaySetReconstructable ?)
+    imageSet.isReconstructable = false;
+  } else {
+    imageSet.isReconstructable = isReconstructable.value;
+  }
 
   if (isReconstructable.missingFrames) {
     // TODO -> This is currently unused, but may be used for reconstructing

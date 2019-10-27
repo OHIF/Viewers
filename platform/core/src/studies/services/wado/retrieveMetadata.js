@@ -355,30 +355,32 @@ async function makeSOPInstance(server, study, instance) {
     lossyImageCompressionMethod: DICOMWeb.getString(instance['00282114']),
     echoNumber: DICOMWeb.getString(instance['00180086']),
     contrastBolusAgent: DICOMWeb.getString(instance['00180010']),
-    // Get Tags for 4D series stack sorting
-    DiffusionBValue: DICOMWeb.getNumber(instance['00189087']),
-    TemporalPositionIdentifier: DICOMWeb.getNumber(instance['00200100']),
-    // Shamelessly stolen from fedorov@github/MultiVolumeImporter/MultiVolumeImporterPlugin.py
-    TriggerTime: DICOMWeb.getString(instance['00181060']),
-    EchoTime: DICOMWeb.getString(instance['00180081']),
-    FlipAngle: DICOMWeb.getString(instance['00181314']),
-    RepetitionTime: DICOMWeb.getString(instance['00180080']),
-    AcquisitionTime: DICOMWeb.getString(instance['00080032']),
-    SeriesTime: DICOMWeb.getString(instance['00080031']),
-    ContentTime: DICOMWeb.getString(instance['00080033']),
-    // Siemens Somatom Cardiac CT 'ScanOptions' tag contains info on cardiac cycle
-    CardiacCycle: DICOMWeb.getString(instance['00180022']),
-    // GE Revolution CT uses 'NominalPercentageOfCardiacPhase' tag to identify cardiac cycle
-    NominalPercentageOfCardiacPhase: DICOMWeb.getString(instance['00209241']),
-    SiemensBValue: DICOMWeb.getString(instance['0019100C']),
-    GEBValue: DICOMWeb.getString(instance['00431039']),
-    // Philips DWI
-    PhilipsBValue: DICOMWeb.getString(instance['20011003']),
-    // GE Revolution CT Kinematics protocol
-    DeltaStartTime: DICOMWeb.getString(instance['0043101E']),
-    // From @JoaoSantinha in PR #1066
-    SequenceName: DICOMWeb.getString(instance['00180024']),
-    MRDiffusionSequence: DICOMWeb.getString(instance['00189117']),
+    sort4DSeriesTags: {
+      // Get Tags for 4D series stack sorting
+      DiffusionBValue: DICOMWeb.getNumber(instance['00189087']),
+      TemporalPositionIdentifier: DICOMWeb.getNumber(instance['00200100']),
+      // Shamelessly stolen from fedorov@github/MultiVolumeImporter/MultiVolumeImporterPlugin.py
+      TriggerTime: DICOMWeb.getString(instance['00181060']),
+      EchoTime: DICOMWeb.getString(instance['00180081']),
+      FlipAngle: DICOMWeb.getString(instance['00181314']),
+      RepetitionTime: DICOMWeb.getString(instance['00180080']),
+      AcquisitionTime: DICOMWeb.getString(instance['00080032']),
+      SeriesTime: DICOMWeb.getString(instance['00080031']),
+      ContentTime: DICOMWeb.getString(instance['00080033']),
+      // Siemens Somatom Cardiac CT 'ScanOptions' tag contains info on cardiac cycle
+      CardiacCycle: DICOMWeb.getString(instance['00180022']),
+      // GE Revolution CT uses 'NominalPercentageOfCardiacPhase' tag to identify cardiac cycle
+      NominalPercentageOfCardiacPhase: DICOMWeb.getString(instance['00209241']),
+      SiemensBValue: DICOMWeb.getString(instance['0019100C']),
+      GEBValue: DICOMWeb.getString(instance['00431039']),
+      // Philips DWI
+      PhilipsBValue: DICOMWeb.getString(instance['20011003']),
+      // GE Revolution CT Kinematics protocol
+      DeltaStartTime: DICOMWeb.getString(instance['0043101E']),
+      // From @JoaoSantinha in PR #1066
+      SequenceName: DICOMWeb.getString(instance['00180024']),
+      MRDiffusionSequence: DICOMWeb.getString(instance['00189117']),
+    },
     radiopharmaceuticalInfo: getRadiopharmaceuticalInfo(instance),
     baseWadoRsUri: baseWadoRsUri,
     wadouri: WADOProxy.convertURL(wadouri, server),
