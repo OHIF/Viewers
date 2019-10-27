@@ -119,3 +119,4 @@ TableSearchFilter.propTypes = {
 TableSearchFilter.defaultProps = {};
 
 export { TableSearchFilter };
+export default TableSearchFilter;
