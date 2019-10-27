@@ -137,12 +137,17 @@ function StudyList(props) {
          * This is not ideal because it create a jump in focus. For loading especially,
          * We should keep our current results visible while we load the new ones.
          */}
+        {/* LOADING */}
         {isLoading && (
           <tr>
             <td colspan={tableMeta.length}>
               <StudyListLoadingText />
             </td>
           </tr>
+        )}
+        {/* EMPTY */}
+        {!isLoading && !studies.length && (
+          <div className="notFound">{translate('No matching results')}</div>
         )}
         {!isLoading &&
           studies.map((study, index) => (
@@ -371,22 +376,13 @@ const connectedComponent = withTranslation('StudyList')(StudyList);
 export { connectedComponent as StudyList };
 
 // function getNoListFragment(translate, studies, error, loading) {
-//   if (loading) {
-//     return (
-//       <div className="loading">
-//         <StudyListLoadingText />
-//       </div>
-//     );
 //   } else if (error) {
 //     return (
 //       <div className="notFound">
 //         {translate('There was an error fetching studies')}
 //       </div>
 //     );
-//   } else if (!studies.length) {
-//     return <div className="notFound">{translate('No matching results')}</div>;
-//   }
-// }
+
 //     // What we display if there are no results or an error
 //     // const noListFragment = getNoListFragment(
 //     //   this.props.t,
