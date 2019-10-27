@@ -24,6 +24,7 @@
 
   <div id="root"></div>
 
+  <script type="text/javascript" src="<%= PUBLIC_URL %>app-config.js"></script>
   <script src="/index.umd.js" crossorigin></script>
   <script>
     var containerId = 'root';
@@ -31,25 +32,7 @@
       console.log('OHIF Viewer rendered/updated');
     };
     window.OHIFViewer.installViewer(
-      {
-        // routerBasename: '/',
-        servers: {
-          dicomWeb: [
-            {
-              name: 'DCM4CHEE',
-              wadoUriRoot:
-                'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-              qidoRoot:
-                'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-              wadoRoot:
-                'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-              qidoSupportsIncludeField: true,
-              imageRendering: 'wadors',
-              thumbnailRendering: 'wadors',
-            },
-          ],
-        },
-      },
+      window.config, // See `/config/default.js`
       containerId,
       componentRenderedOrUpdatedCallback
     );
