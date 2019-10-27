@@ -16,6 +16,8 @@ function TableSearchFilter(props) {
     onValueChange,
     sortFieldName,
     sortDirection,
+    // TODO: Rename
+    studyListDateFilterNumDays
   } = props;
   const [focusedInput, setFocusedInput] = useState(null);
   const [t] = useTranslation(); // 'Common'?
@@ -27,9 +29,7 @@ function TableSearchFilter(props) {
   const today = moment();
   const lastWeek = moment().subtract(7, 'day');
   const lastMonth = moment().subtract(1, 'month');
-  // TODO: Does this need to be preserved? Default sort could be nice for large data sources
-  // this.props.studyListDateFilterNumDays,
-  const defaultStartDate = moment().subtract(365 * 10, 'days');
+  const defaultStartDate = moment().subtract(studyListDateFilterNumDays, 'days');
   const defaultEndDate = today;
   const studyDatePresets = [
     {
@@ -76,9 +76,9 @@ function TableSearchFilter(props) {
           // https://github.com/airbnb/react-dates
           <CustomDateRangePicker
             // Required
-            startDate={null}
+            startDate={studyListDateFilterNumDays ? defaultStartDate : null}
             startDateId="start-date"
-            endDate={null}
+            endDate={studyListDateFilterNumDays ? defaultEndDate : null}
             endDateId="end-date"
             // TODO: We need a dynamic way to determine which fields values to update
             onDatesChange={({ startDate, endDate, preset = false }) => {
