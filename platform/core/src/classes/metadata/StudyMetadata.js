@@ -586,6 +586,8 @@ const isMultiFrame = instance => {
 };
 
 const is4DSeries = instances => {
+  if (instances[0].getRawValue('x00080060') !== 'MR') return 0; // only MR exams
+
   // The goal here is to identify 4D series and the tags we'll use to sort them
   // List tags used to identify and sort 4D series
   const sortTagsList = Object.keys(instances[0]._instance.sort4DSeriesTags);
