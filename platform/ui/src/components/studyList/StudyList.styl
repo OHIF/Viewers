@@ -126,7 +126,9 @@ table.table
   &.table--hoverable > tbody tr
     &:hover, &:active, &.active
       background-color: var(--table-hover-color)
-      color: var(--text-primary-color)
+    &.no-hover
+      &:hover, &:active, &.active
+        background-color: var(--ui-gray-darker)
 
 .study-list-container > table.table > tr
   height: 20px
