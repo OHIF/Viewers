@@ -2,7 +2,8 @@ import './StudyList.styl';
 
 import React from 'react';
 import classNames from 'classnames';
-import { useMedia, TableSearchFilter } from '@ohif/ui'; // same project, doof
+import TableSearchFilter from './TableSearchFilter.js';
+import useMedia from '../../hooks/useMedia.js';
 import PropTypes from 'prop-types';
 import ColorHash from './internal/color-hash.js';
 import { StudyListLoadingText } from './StudyListLoadingText.js';

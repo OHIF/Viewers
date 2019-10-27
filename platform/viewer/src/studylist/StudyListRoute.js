@@ -203,9 +203,11 @@ function StudyListRoute(props) {
           </h1>
         </div>
         <div className="actions">
-          <PageToolbar
-            onImport={() => setActiveModalId('DicomFilesUploader')}
-          />
+          {studyListFunctionsEnabled && (
+            <PageToolbar
+              onImport={() => setActiveModalId('DicomFilesUploader')}
+            />
+          )}
           <span className="study-count">{studies.length}</span>
         </div>
       </div>
