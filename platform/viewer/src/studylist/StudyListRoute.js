@@ -242,22 +242,6 @@ function StudyListRoute(props) {
           {healthCareApiButtons}
           {healthCareApiWindows}
         </StudyList>
-        {/* // /LOCAL??????
-
-            TODO:This may not be the best place for this? */}
-        {/* // <Dropzone onDrop={onDrop}>
-          //   {({ getRootProps, getInputProps }) => (
-          //     <div {...getRootProps()} className={'drag-drop-instructions'}>
-          //       <h3>
-          //         {t(
-          //           'Drag and Drop DICOM files here to load them in the Viewer'
-          //         )}
-          //       </h3>
-          //       <h4>{t("Or click to load the browser's file selector")}</h4>
-          //       <input {...getInputProps()} style={{ display: 'none' }} />
-          //     </div>
-          //   )}
-          // </Dropzone> */}
         }{/* PAGINATION FOOTER */}
         <TablePagination
           currentPage={pageNumber}
