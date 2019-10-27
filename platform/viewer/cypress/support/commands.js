@@ -42,7 +42,7 @@ Cypress.Commands.add('openStudy', patientName => {
   cy.openStudyList();
   cy.get('#filter-patientNameOrId').type(patientName);
   cy.wait('@getStudies');
-  cy.get('#studyListData .studylistStudy', { timeout: 5000 })
+  cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
     .contains(patientName)
     .first()
     .click({ force: true });
