@@ -232,7 +232,6 @@ function StudyListRoute(props) {
           filterValues={filterValues}
           onFilterChange={handleFilterChange}
           studyListDateFilterNumDays={appConfig.studyListDateFilterNumDays}
-        // onImport={() => setActiveModalId('DicomFilesUploader')}
         >
           {studyListFunctionsEnabled ? (
             <ConnectedDicomFilesUploader
