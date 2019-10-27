@@ -147,13 +147,21 @@ function StudyList(props) {
           </tr>
         )}
         {!isLoading && hasError && (
-          <div className="notFound">
-            {t('There was an error fetching studies')}
-          </div>
+          <tr>
+            <td colspan={tableMeta.length}>
+              <div className="notFound">
+                {t('There was an error fetching studies')}
+              </div>
+            </td>
+          </tr>
         )}
         {/* EMPTY */}
         {!isLoading && !studies.length && (
-          <div className="notFound">{t('No matching results')}</div>
+          <tr>
+            <td colspan={tableMeta.length}>
+              <div className="notFound">{t('No matching results')}</div>
+            </td>
+          </tr>
         )}
         {!isLoading &&
           studies.map((study, index) => (
