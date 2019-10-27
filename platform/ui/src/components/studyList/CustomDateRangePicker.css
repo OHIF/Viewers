@@ -70,3 +70,14 @@ is not yet selected. Edits the dates between your mouse and said date */
   font-size: 10pt;
   padding: 0;
 }
+
+/* PRESETS */
+.PresetDateRangePicker_panel {
+  display: flex;
+  justify-content: space-between;
+}
+
+.PresetDateRangePicker_button {
+  margin: 0;
+  padding: 4px 8px;
+}
