@@ -19,6 +19,7 @@ const colorHash = new ColorHash();
 function StudyList(props) {
   const {
     isLoading,
+    hasError,
     studies,
     sort,
     onSort: handleSort,
@@ -145,9 +146,14 @@ function StudyList(props) {
             </td>
           </tr>
         )}
+        {!isLoading && hasError && (
+          <div className="notFound">
+            {t('There was an error fetching studies')}
+          </div>
+        )}
         {/* EMPTY */}
         {!isLoading && !studies.length && (
-          <div className="notFound">{translate('No matching results')}</div>
+          <div className="notFound">{t('No matching results')}</div>
         )}
         {!isLoading &&
           studies.map((study, index) => (
@@ -171,6 +177,7 @@ function StudyList(props) {
 
 StudyList.propTypes = {
   isLoading: PropTypes.bool.isRequired,
+  hasError: PropTypes.bool.isRequired,
   studies: PropTypes.array.isRequired,
   onSelectItem: PropTypes.func.isRequired,
   // ~~ SORT
@@ -374,22 +381,6 @@ TableRow.defaultProps = {
 
 const connectedComponent = withTranslation('StudyList')(StudyList);
 export { connectedComponent as StudyList };
-
-// function getNoListFragment(translate, studies, error, loading) {
-//   } else if (error) {
-//     return (
-//       <div className="notFound">
-//         {translate('There was an error fetching studies')}
-//       </div>
-//     );
-
-//     // What we display if there are no results or an error
-//     // const noListFragment = getNoListFragment(
-//     //   this.props.t,
-//     //   this.props.studies,
-//     //   this.state.error,
-//     //   this.props.loading
-//     // );
 
 //             {this.props.studyListFunctionsEnabled ? (
 //               <PageToolbar onImport={this.props.onImport} />

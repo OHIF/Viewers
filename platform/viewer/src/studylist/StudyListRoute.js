@@ -215,10 +215,10 @@ function StudyListRoute(props) {
         {/* STUDY LIST OR DROP ZONE? */}
         <StudyList
           isLoading={searchStatus.isSearchingForStudies}
+          hasError={searchStatus.error === true}
           // Rows
           studies={studies}
           onSelectItem={studyInstanceUID => {
-            console.log(studyInstanceUID);
             const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
               studyInstanceUids: studyInstanceUID,
             });
