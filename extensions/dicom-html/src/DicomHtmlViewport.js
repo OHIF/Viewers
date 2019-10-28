@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import * as dcmjs from 'dcmjs';
 import TypedArrayProp from './TypedArrayProp';
+import throttle from 'lodash.throttle';
+
 import './DicomHtmlViewport.css';
 
 function getRelationshipString(data) {
@@ -30,7 +33,7 @@ function getValueString(data) {
       const {
         CodeMeaning,
         CodeValue,
-        CodingSchemeDesignator
+        CodingSchemeDesignator,
       } = data.ConceptNameCodeSequence;
 
       return `${CodeMeaning} (${CodeValue}, ${CodingSchemeDesignator})`;
@@ -75,7 +78,7 @@ function constructContentSequence(data, header) {
   }
 
   const result = {
-    items
+    items,
   };
 
   if (header) {
@@ -106,9 +109,7 @@ const { DicomMetaDictionary, DicomMessage } = dcmjs.data;
 function getMainData(data) {
   const root = [];
 
-  const patientValue = `${data.PatientName} (${data.PatientSex}, #${
-    data.PatientID
-  })`;
+  const patientValue = `${data.PatientName} (${data.PatientSex}, #${data.PatientID})`;
   root.push(getMainDataItem('Patient', patientValue));
 
   const studyValue = data.StudyDescription;
@@ -117,15 +118,13 @@ function getMainData(data) {
   const seriesValue = `${data.SeriesDescription} (#${data.SeriesNumber})`;
   root.push(getMainDataItem('Series', seriesValue));
 
-  const manufacturerValue = `${data.Manufacturer} (${
-    data.ManufacturerModelName
-  }, #${data.DeviceSerialNumber})`;
+  const manufacturerValue = `${data.Manufacturer} (${data.ManufacturerModelName}, #${data.DeviceSerialNumber})`;
 
   root.push(getMainDataItem('Manufacturer', manufacturerValue));
 
   const mainDataObjects = {
     CompletionFlag: 'Completion flag',
-    VerificationFlag: 'Verification flag'
+    VerificationFlag: 'Verification flag',
   };
 
   Object.keys(mainDataObjects).forEach(key => {
@@ -154,7 +153,7 @@ const getContentSequence = (data, level = 1) => {
     const {
       CodeMeaning,
       CodeValue,
-      CodingSchemeDesignator
+      CodingSchemeDesignator,
     } = data.ConceptNameCodeSequence;
 
     header = `${CodeMeaning} (${CodeValue} - ${CodingSchemeDesignator})`;
@@ -196,13 +195,22 @@ function getMainDataItem(key, value) {
 }
 
 class DicomHtmlViewport extends Component {
-  state = {
-    content: null,
-    error: null
-  };
+  constructor(props) {
+    super(props);
+
+    this.scrollHandlerThrottled = throttle(this.setViewportActiveHandler, 300);
+
+    this.state = {
+      content: null,
+      error: null,
+    };
+  }
 
   static propTypes = {
-    byteArray: TypedArrayProp.uint8
+    byteArray: TypedArrayProp.uint8,
+    setViewportActive: PropTypes.func.isRequired,
+    viewportIndex: PropTypes.number.isRequired,
+    activeViewportIndex: PropTypes.number.isRequired,
   };
 
   componentDidMount() {
@@ -225,15 +233,33 @@ class DicomHtmlViewport extends Component {
     );
 
     this.setState({
-      content
+      content,
     });
   }
 
+  setViewportActiveHandler = () => {
+    const {
+      setViewportActive,
+      viewportIndex,
+      activeViewportIndex,
+    } = this.props;
+
+    if (viewportIndex !== activeViewportIndex) {
+      setViewportActive();
+    }
+  };
+
   render() {
+    const { content, error } = this.state;
+
     return (
-      <div className={'DicomHtmlViewport'}>
-        {this.state.content}
-        {this.state.error && <h2>{JSON.stringify(this.state.error)}</h2>}
+      <div
+        className="DicomHtmlViewport"
+        onClick={this.setViewportActiveHandler}
+        onScroll={this.scrollHandlerThrottled}
+      >
+        {content}
+        {error && <h2>{JSON.stringify(error)}</h2>}
       </div>
     );
   }
