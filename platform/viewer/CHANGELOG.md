@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.4...@ohif/viewer@2.2.0) (2019-10-28)
+
+
+### Features
+
+* responsive study list ([#1068](https://github.com/OHIF/Viewers/issues/1068)) ([2cdef4b](https://github.com/OHIF/Viewers/commit/2cdef4b9844cc2ce61e9ce76b5a942ba7051fe16))
+
+
+
+
+
 ## [2.1.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.3...@ohif/viewer@2.1.4) (2019-10-28)
 
 **Note:** Version bump only for package @ohif/viewer
