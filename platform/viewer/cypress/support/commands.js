@@ -338,7 +338,6 @@ function unconvertCanvas(documentClone) {
   documentClone
     .querySelectorAll('[data-percy-image]')
     .forEach(selector => selector.remove());
-
   // Restore canvas visibility
   documentClone.querySelectorAll('[data-percy-canvas]').forEach(selector => {
     selector.removeAttribute('data-percy-canvas');
@@ -356,7 +355,7 @@ function canvasToImage(selectorOrEl) {
 
   // Show Image
   image.src = canvasImageBase64;
-  image.style = 'max-width: 100%';
+  image.style = 'width: 100%';
   image.setAttribute('data-percy-image', true);
   // Hide Canvas
   canvas.setAttribute('data-percy-canvas', true);

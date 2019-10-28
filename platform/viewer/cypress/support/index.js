@@ -13,8 +13,20 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-// Import commands.js using ES2015 syntax:
 import './commands';
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+Cypress.on('window:before:load', window => {
+  // Override our `getContext` function so all contexts that are webGl are
+  // Created with `preserveDrawingBuffer = true`; this is required for percy
+  // Snapshot
+  window.HTMLCanvasElement.prototype.getContext = (function(oldGetContextFn) {
+    return function(type, attrs) {
+      attrs = attrs || {};
+      // webgl, 2d, experimental-webgl,
+      if (type === 'webgl' || type === 'experimental-webgl') {
+        attrs.preserveDrawingBuffer = true;
+      }
+      return oldGetContextFn.apply(this, [type, attrs]);
+    };
+  })(HTMLCanvasElement.prototype.getContext);
+});
