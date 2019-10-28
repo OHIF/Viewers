@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import OHIF from '@ohif/core';
 import ConnectedDicomHtmlViewport from './ConnectedDicomHtmlViewport';
+
 const { DicomLoaderService } = OHIF.utils;
 
 class OHIFDicomHtmlViewport extends Component {
