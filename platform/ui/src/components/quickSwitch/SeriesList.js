@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { ThumbnailEntry } from './../studyBrowser';
+import { Thumbnail } from './../studyBrowser';
 import './SeriesList.styl';
 
 export class SeriesList extends Component {
@@ -24,7 +24,7 @@ export class SeriesList extends Component {
   getSeriesItems = () => {
     return this.props.seriesItems.map((seriesData, index) => {
       return (
-        <ThumbnailEntry
+        <Thumbnail
           key={seriesData.displaySetInstanceUid}
           id={`series_thumb_${index}`}
           {...seriesData}
