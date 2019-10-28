@@ -31,10 +31,7 @@ class Select extends Component {
       <div className="select-ohif-container">
         <label className="select-ohif-label" htmlFor={this.id}>
           {this.props.label}
-          <select
-            className="form-control select-ohif"
-            {...this.props}
-          >
+          <select className="form-control select-ohif" {...this.props}>
             {this.props.options.map(({ key, value }) => {
               return (
                 <option key={key} value={value}>
@@ -44,9 +41,7 @@ class Select extends Component {
             })}
           </select>
         </label>
-
       </div>
-
     );
   }
 }
