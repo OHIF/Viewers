@@ -35,10 +35,12 @@ module.exports = (on, config) => {
     // Override our `getContext` function so all contexts that are webGl are
     // Created with `preserveDrawingBuffer = true`; this is required for percy
     // Snapshot
+    // TODO: DOES NOT APPEAR TO BE FIRING
     window.HTMLCanvasElement.prototype.getContext = (function(oldGetContextFn) {
       return function(type, attrs) {
         attrs = attrs || {};
         if (type === 'webgl') {
+          alert('WEBGL');
           attrs.preserveDrawingBuffer = true;
         }
         return oldGetContextFn.apply(this, type, attrs);
