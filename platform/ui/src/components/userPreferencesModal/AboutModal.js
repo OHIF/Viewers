@@ -58,53 +58,48 @@ const AboutModal = ({ t }) => {
   );
 
   return (
-    <>
-      <Modal.Header closeButton>
-        <Modal.Title>{t('OHIF Viewer - About')}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body data-cy="about-modal">
-        <div className="btn-group">
-          <a
-            className="btn btn-default"
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://groups.google.com/forum/#!forum/cornerstone-platform"
-          >
-            {t('Visit the forum')}
-          </a>
-          {` `}
-          <a
-            className="btn btn-default"
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://github.com/OHIF/Viewers/issues/new/choose"
-          >
-            {t('Report an issue')}
-          </a>
-          {` `}
-          <a
-            className="btn btn-default"
-            target="_blank"
-            rel="noopener noreferrer"
-            href="http://ohif.org"
-          >
-            {t('More details')}
-          </a>
-        </div>
-        <div>
-          <h3>{t('Version Information')}</h3>
-          <table className="table table-responsive">
-            <thead>
-              <tr>
-                <th>{t('Name')}</th>
-                <th>{t('Value')}</th>
-              </tr>
-            </thead>
-            <tbody>{itemsPreset().map(item => renderTableRow(item))}</tbody>
-          </table>
-        </div>
-      </Modal.Body>
-    </>
+    <Modal.Body data-cy="about-modal">
+      <div className="btn-group">
+        <a
+          className="btn btn-default"
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://groups.google.com/forum/#!forum/cornerstone-platform"
+        >
+          {t('Visit the forum')}
+        </a>
+        {` `}
+        <a
+          className="btn btn-default"
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/OHIF/Viewers/issues/new/choose"
+        >
+          {t('Report an issue')}
+        </a>
+        {` `}
+        <a
+          className="btn btn-default"
+          target="_blank"
+          rel="noopener noreferrer"
+          href="http://ohif.org"
+        >
+          {t('More details')}
+        </a>
+      </div>
+      <div>
+        <h3>{t('Version Information')}</h3>
+        <table className="table table-responsive">
+          <thead>
+            <tr>
+              <th>{t('Name')}</th>
+              <th>{t('Value')}</th>
+            </tr>
+          </thead>
+          <tbody>{itemsPreset().map(item => renderTableRow(item))}</tbody>
+        </table>
+      </div>
+    </Modal.Body>
   );
 };
 

@@ -14,6 +14,8 @@ const ModalProvider = ({ children }) => {
       keyboard: false,
       show: true,
       large: true,
+      closeButton: true,
+      title: null,
     },
   };
 
@@ -34,6 +36,11 @@ const ModalProvider = ({ children }) => {
         {({ component: Component, props, hide }) =>
           Component ? (
             <Modal {...props} onHide={hide}>
+              {props.title && (
+                <Modal.Header closeButton={props.closeButton}>
+                  <Modal.Title>{props.title}</Modal.Title>
+                </Modal.Header>
+              )}
               <Component {...props} hide={hide} />
             </Modal>
           ) : null

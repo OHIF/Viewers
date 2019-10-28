@@ -65,7 +65,10 @@ class Header extends Component {
         title: t('About'),
         icon: { name: 'info' },
         onClick: () =>
-          show(AboutModal, { className: 'AboutModal modal fade themed in' }),
+          show(AboutModal, {
+            className: 'AboutModal modal fade themed in',
+            title: t('OHIF Viewer - About'),
+          }),
       },
     ];
 
