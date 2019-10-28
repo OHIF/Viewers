@@ -1,3 +1,41 @@
+.select-ohif-container .select-ohif {
+  display: inline-block;
+  font-size: 10pt;
+  box-sizing: border-box;
+  width: auto;
+  transition: all 0.15s ease;
+  background-color: var(--input-background-color);
+  line-height: 16px;
+  color: var(--input-placeholder-color);
+  height: 40px;
+  margin: 0 5px 20px 5px;
+  padding: 0 20px;
+  placeholder-color: var(--input-placeholder-color);
+  cursor: pointer;
+  border: none;
+  font-weight: normal;
+  border-radius: 4px;
+  background-image: none;
+}
+
+.select-ohif-container .select-ohif::-ms-expand {
+  display: none;
+}
+
+.select-ohif-container .select-ohif-label {
+  padding: 5px;
+}
+
+.select-ohif:focus {
+  outline: none;
+}
+
+.select-ohif-container .select-ohif option {
+  font-weight: normal;
+}
+
+/** Compatibility styles for MIP */
+
 .select-ohif {
   display: block;
   font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
@@ -9,7 +47,6 @@
   padding: 0.6em 1.4em 0.5em 0.8em;
   width: 100%;
   max-width: 100%;
-  box-sizing: border-box;
   margin: 0;
   border: 1px solid #aaa;
   box-shadow: 0 1px 0 1px rgba(0, 0, 0, 0.04);
@@ -23,20 +60,4 @@
   background-repeat: no-repeat, repeat;
   background-position: right 0.7em top 50%, 0 0;
   background-size: 0.65em auto, 100%;
-}
-
-.select-ohif::-ms-expand {
-  display: none;
-}
-
-.select-ohif:hover {
-  border-color: #888;
-}
-
-.select-ohif:focus {
-  outline: none;
-}
-
-.select-ohif option {
-  font-weight: normal;
 }

@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.57.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.57.0...@ohif/ui@0.57.1) (2019-10-28)
+
+
+### Bug Fixes
+
+* MIP styling ([#1109](https://github.com/OHIF/Viewers/issues/1109)) ([0d21cc6](https://github.com/OHIF/Viewers/commit/0d21cc6ad0c47706b9e62e05fe2a0f1d86339760))
+
+
+
+
+
+# [0.57.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.56.1...@ohif/ui@0.57.0) (2019-10-26)
+
+
+### Features
+
+* Snapshot Download Tool ([#840](https://github.com/OHIF/Viewers/issues/840)) ([450e098](https://github.com/OHIF/Viewers/commit/450e0981a5ba054fcfcb85eeaeb18371af9088f8))
+
+
+
+
+
+## [0.56.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.56.0...@ohif/ui@0.56.1) (2019-10-26)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
 # [0.56.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.55.0...@ohif/ui@0.56.0) (2019-10-22)
 
 

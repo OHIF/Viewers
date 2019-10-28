@@ -66,7 +66,7 @@ describe('OHIF Cornerstone Toolbar', () => {
   });
 
   it('checks if Zoom tool will zoom in/out an image in the viewport', () => {
-    //Click on button and vefiry if icon is active on toolbar
+    //Click on button and verify if icon is active on toolbar
     cy.get('@zoomBtn')
       .click()
       .then($zoomBtn => {

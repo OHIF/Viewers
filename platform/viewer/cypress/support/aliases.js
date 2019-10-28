@@ -30,6 +30,8 @@ export function initCommonElementsAliases() {
   cy.get('div.ViewportOverlay > div.bottom-right.overlay-element > div').as(
     'viewportInfoBottomRight'
   );
+  cy.get('.left-mid.orientation-marker').as('viewportInfoMidLeft');
+  cy.get('.top-mid.orientation-marker').as('viewportInfoMidTop');
 }
 
 //Creating aliases for Routes

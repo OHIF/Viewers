@@ -35,14 +35,14 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onThumbnailClick: displaySetInstanceUid => {
-      dispatch(
-        setActiveViewportSpecificData({
-          displaySetInstanceUid,
-        })
+      const displaySet = ownProps.studyMetadata[0].displaySets.find(
+        ds => ds.displaySetInstanceUid === displaySetInstanceUid
       );
+
+      dispatch(setActiveViewportSpecificData(displaySet));
     },
   };
 };
