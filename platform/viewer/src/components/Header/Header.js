@@ -1,18 +1,19 @@
-import './Header.css';
-import './Header.css';
-
-import { Link, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import { withTranslation } from 'react-i18next';
+import PropTypes from 'prop-types';
 
 import { Dropdown } from '@ohif/ui';
-import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
-import PropTypes from 'prop-types';
 import { AboutModal } from '@ohif/ui';
+
+import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import { hotkeysManager } from './../../App.js';
-import { withTranslation } from 'react-i18next';
+import './Header.css';
+import './Header.css';
 
 // Context
 import AppContext from './../../context/AppContext';
+import { withModal } from '../../../../ui/src/utils/ModalProvider.js';
 
 class Header extends Component {
   static contextType = AppContext;
@@ -22,6 +23,8 @@ class Header extends Component {
     children: PropTypes.node,
     t: PropTypes.func.isRequired,
     userManager: PropTypes.object,
+    user: PropTypes.object,
+    modalContext: PropTypes.object,
   };
 
   static defaultProps = {
@@ -51,26 +54,26 @@ class Header extends Component {
   }
 
   loadOptions() {
-    const { t } = this.props;
+    const {
+      t,
+      user,
+      userManager,
+      modalContext: { show },
+    } = this.props;
     this.options = [
       {
         title: t('About'),
         icon: { name: 'info' },
-        onClick: () => {
-          this.setState({
-            isOpen: true,
-          });
-        },
+        onClick: () =>
+          show(AboutModal, { className: 'AboutModal modal fade themed in' }),
       },
     ];
 
-    if (this.props.user && this.props.userManager) {
+    if (user && userManager) {
       this.options.push({
         title: t('Logout'),
         icon: { name: 'power-off' },
-        onClick: () => {
-          this.props.userManager.signoutRedirect();
-        },
+        onClick: () => userManager.signoutRedirect(),
       });
     }
 
@@ -85,16 +88,16 @@ class Header extends Component {
   }
 
   render() {
-    const { t } = this.props;
+    const { t, home, location, children } = this.props;
     const { appConfig = {} } = this.context;
     const showStudyList =
       appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
     return (
-      <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
+      <div className={`entry-header ${home ? 'header-big' : ''}`}>
         <div className="header-left-box">
-          {this.props.location && this.props.location.studyLink && (
+          {location && location.studyLink && (
             <Link
-              to={this.props.location.studyLink}
+              to={location.studyLink}
               className="header-btn header-viewerLink"
             >
               {t('Back to Viewer')}
@@ -103,21 +106,21 @@ class Header extends Component {
 
           <span
             className={`${
-              this.props.home ? 'header-versionInfoHome' : 'header-versionInfo'
+              home ? 'header-versionInfoHome' : 'header-versionInfo'
             }`}
             data-cy="header-version-info"
           >
             v{process.env.VERSION_NUMBER}
           </span>
 
-          {this.props.children}
+          {children}
 
-          {showStudyList && !this.props.home && (
+          {showStudyList && !home && (
             <Link
               className="header-btn header-studyListLinkSection"
               to={{
                 pathname: '/',
-                state: { studyLink: this.props.location.pathname },
+                state: { studyLink: location.pathname },
               }}
             >
               {t('Study list')}
@@ -128,18 +131,10 @@ class Header extends Component {
         <div className="header-menu">
           <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
           <Dropdown title={t('Options')} list={this.options} align="right" />
-          <AboutModal
-            {...this.state}
-            onCancel={() =>
-              this.setState({
-                isOpen: false,
-              })
-            }
-          />
         </div>
       </div>
     );
   }
 }
 
-export default withTranslation('Header')(withRouter(Header));
+export default withTranslation('Header')(withRouter(withModal(Header)));
