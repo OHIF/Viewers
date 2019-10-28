@@ -48,6 +48,11 @@ import SnackbarProvider, {
   useSnackbarContext,
   withSnackbar,
 } from './utils/SnackbarProvider';
+import ModalProvider, {
+  useModalContext,
+  withModal,
+  ModalConsumer,
+} from './utils/ModalProvider';
 
 export {
   // Elements
@@ -93,4 +98,8 @@ export {
   SnackbarProvider,
   useSnackbarContext,
   withSnackbar,
+  ModalProvider,
+  useModalContext,
+  ModalConsumer,
+  withModal,
 };
