@@ -32,6 +32,7 @@ const DownloadDialog = ({
   downloadBlob,
   defaultSize,
   minimumSize,
+  maximumSize,
   canvasClass,
 }) => {
   const [filename, setFilename] = useState(DEFAULT_FILENAME);
@@ -75,24 +76,31 @@ const DownloadDialog = ({
   }, [defaultSize, disableViewport, enableViewport, viewportElement]);
 
   useEffect(() => {
+    const getValidMeasure = value => {
+      const min = minimumSize - 1;
+      return value > min && value < maximumSize
+        ? value
+        : value < min
+        ? minimumSize
+        : maximumSize;
+    };
     const loadAndUpdateViewports = async () => {
       const {
         image,
         width: scaledWidth,
         height: scaledHeight,
       } = await loadImage(activeViewport, viewportElement, width, height);
-
       setLastImage(image);
 
       toggleAnnotations(showAnnotations, viewportElement);
 
-      setViewportElementHeight(scaledHeight);
-      setViewportElementWidth(scaledWidth);
+      setViewportElementHeight(getValidMeasure(scaledHeight));
+      setViewportElementWidth(getValidMeasure(scaledWidth));
 
       setDownloadCanvas(state => ({
         ...state,
-        height: scaledHeight,
-        width: scaledWidth,
+        height: getValidMeasure(scaledHeight),
+        width: getValidMeasure(scaledWidth),
       }));
 
       const {
@@ -108,8 +116,8 @@ const DownloadDialog = ({
       setViewportPreview(state => ({
         ...state,
         src: dataUrl,
-        width: viewportElementWidth,
-        height: viewportElementHeight,
+        width: getValidMeasure(viewportElementWidth),
+        height: getValidMeasure(viewportElementHeight),
       }));
     };
 
@@ -125,10 +133,13 @@ const DownloadDialog = ({
     updateViewportPreview,
     fileType,
     downloadCanvas.ref,
+    minimumSize,
+    maximumSize,
   ]);
 
-  const onHeightChange = () => {
-    const newHeight = event.target.value;
+  const onHeightChange = event => {
+    const newHeight =
+      event.target.value > maximumSize ? maximumSize : event.target.value;
     setHeight(newHeight);
 
     setViewportElementHeight(newHeight);
@@ -153,7 +164,8 @@ const DownloadDialog = ({
   };
 
   const onWidthChange = event => {
-    const newWidth = event.target.value;
+    const newWidth =
+      event.target.value > maximumSize ? maximumSize : event.target.value;
     setWidth(newWidth);
 
     setViewportElementWidth(newWidth);
@@ -212,18 +224,22 @@ const DownloadDialog = ({
               <TextInput
                 type="number"
                 min={minimumSize}
+                max={maximumSize}
                 value={width}
                 label={t('Image width (px)')}
                 onChange={onWidthChange}
+                onBlur={onHeightChange}
               />
             </div>
             <div className="height">
               <TextInput
                 type="number"
                 min={minimumSize}
+                max={maximumSize}
                 value={height}
                 label={t('Image height (px)')}
                 onChange={onHeightChange}
+                onBlur={onHeightChange}
               />
             </div>
           </div>
@@ -329,6 +345,7 @@ DownloadDialog.propTypes = {
   downloadBlob: PropTypes.func.isRequired,
   defaultSize: PropTypes.number.isRequired,
   minimumSize: PropTypes.number.isRequired,
+  maximumSize: PropTypes.number.isRequired,
   canvasClass: PropTypes.string.isRequired,
 };
 
