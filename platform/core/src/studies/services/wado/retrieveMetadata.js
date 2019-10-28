@@ -33,10 +33,10 @@ const paletteColorCache = {
   count: 0,
   maxAge: 24 * 60 * 60 * 1000, // 24h cache?
   entries: {},
-  isValidUID: function(paletteUID) {
+  isValidUID: function (paletteUID) {
     return typeof paletteUID === 'string' && paletteUID.length > 0;
   },
-  get: function(paletteUID) {
+  get: function (paletteUID) {
     let entry = null;
     if (this.entries.hasOwnProperty(paletteUID)) {
       entry = this.entries[paletteUID];
@@ -50,7 +50,7 @@ const paletteColorCache = {
     }
     return entry;
   },
-  add: function(entry) {
+  add: function (entry) {
     if (this.isValidUID(entry.uid)) {
       let paletteUID = entry.uid;
       if (this.entries.hasOwnProperty(paletteUID) !== true) {
@@ -436,7 +436,7 @@ function createStudy(server, aSopInstance) {
  */
 async function addInstancesToStudy(server, study, sopInstanceList) {
   return Promise.all(
-    sopInstanceList.map(function(sopInstance) {
+    sopInstanceList.map(function (sopInstance) {
       return makeSOPInstance(server, study, sopInstance);
     })
   );
@@ -468,10 +468,10 @@ async function createStudyFromSOPInstanceList(server, sopInstanceList) {
  * @param {string} studyInstanceUid The Study Instance UID of the study which needs to be loaded
  * @returns {Object} A study descriptor object
  */
-async function RetrieveMetadata(server, studyInstanceUid) {
-  return (server.enableStudyLazyLoad !== false
+async function RetrieveMetadata(server, studyInstanceUid, filters) {
+  return (server.enableStudyLazyLoad !== false && false
     ? lazyLoadStudyMetadata
-    : loadStudyMetadata)(server, studyInstanceUid);
+    : loadStudyMetadata)(server, studyInstanceUid, filters);
 }
 
 /**
@@ -479,26 +479,59 @@ async function RetrieveMetadata(server, studyInstanceUid) {
  * @param {*} server
  * @param {*} studyInstanceUID
  */
-async function loadStudyMetadata(server, studyInstanceUID) {
-  const dicomWeb = new api.DICOMwebClient({
+async function loadStudyMetadata(server, studyInstanceUID, filters) {
+  const client = new api.DICOMwebClient({
     url: server.wadoRoot,
     headers: DICOMWeb.getAuthorizationHeader(server),
   });
-  return dicomWeb
-    .retrieveStudyMetadata({ studyInstanceUID })
-    .then(result => createStudyFromSOPInstanceList(server, result));
+
+  const options = {
+    studyInstanceUID,
+  };
+
+  const { seriesInstanceUID } = filters;
+
+  let retrieveMethod = client.retrieveStudyMetadata;
+
+  if (seriesInstanceUID) {
+    retrieveMethod = client.retrieveSeriesMetadata;
+    options['seriesInstanceUID'] = seriesInstanceUID;
+  }
+
+  let studyMetadata;
+
+  try {
+    studyMetadata = await retrieveMethod.call(client, options);
+  } catch (e) {
+    // in case occurred error when retrieveSeriesMetadata, retrieve again from retrieveStudyMetadata
+    if (seriesInstanceUID) {
+      studyMetadata = await client.retrieveStudyMetadata({ studyInstanceUID });
+    } else {
+      throw e;
+    }
+  }
+
+  const study = await createStudyFromSOPInstanceList(server, studyMetadata);
+
+  return study;
 }
 
-async function lazyLoadStudyMetadata(server, studyInstanceUid) {
-  const seriesInstanceUids = await searchStudySeries(server, studyInstanceUid);
+async function lazyLoadStudyMetadata(server, studyInstanceUID, filters) {
+  const seriesInstanceUIDs = await searchStudySeries(server, studyInstanceUID);
+  const filtered = filterStudySeries(seriesInstanceUIDs, filters);
+  const toSort = filtered && filtered.length ? filtered : seriesInstanceUIDs;
+  const sorted = sortStudySeries(toSort);
+  const seriesInstanceUIDsMap = mapStudySeries(sorted);
+
   const dicomWeb = new api.DICOMwebClient({
     url: server.wadoRoot,
     headers: DICOMWeb.getAuthorizationHeader(server),
   });
+
   const seriesLoader = makeSeriesLoader(
     dicomWeb,
-    studyInstanceUid,
-    seriesInstanceUids
+    studyInstanceUID,
+    seriesInstanceUIDsMap
   );
   const firstSeries = await seriesLoader.next();
   const study = await createStudyFromSOPInstanceList(
@@ -555,7 +588,7 @@ function makeSeriesLoader(
  * Search series of a given study
  * @param {Object} server Object with server configuration paramenters
  * @param {string} studyInstanceUID The Study Instance UID to search series from;
- * @returns {Arrays} A list of Series Instance UIDs
+ * @returns {Arrays} A list of Series Instances
  */
 async function searchStudySeries(server, studyInstanceUID) {
   const dicomWeb = new api.DICOMwebClient({
@@ -563,9 +596,46 @@ async function searchStudySeries(server, studyInstanceUID) {
     headers: DICOMWeb.getAuthorizationHeader(server),
   });
   const seriesList = await dicomWeb.searchForSeries({ studyInstanceUID });
-  return seriesList
-    .sort(seriesSortingCriteria)
-    .map(series => getSeriesInfo(series).seriesInstanceUid);
+  return seriesList;
+}
+
+/**
+ * Sort seriesList
+ * @param {Arrays} seriesList list of Series Instance UIDs
+ * @returns {Arrays} A list of Series Instances
+ */
+function sortStudySeries(seriesList) {
+  return seriesList.sort(seriesSortingCriteria);
+}
+
+/**
+ * Filter seriesList
+ * @param {Arrays} seriesList list of Series Instance UIDs
+ * @param {Object} filters object containing filter to be applied.
+ * @returns {Arrays} A list of Series Instances
+ */
+function filterStudySeries(seriesList, filters) {
+  let result = [...seriesList];
+  const { seriesInstanceUID: toCompare } = filters;
+
+  const compare = (valueToCompare, series) => {
+    const seriesInstanceUID = DICOMWeb.getString(series['0020000E']);
+    return valueToCompare === seriesInstanceUID;
+  };
+
+  if (toCompare) {
+    result = result.filter(series => compare(toCompare, series));
+  }
+
+  return result;
+}
+/**
+ * Map seriesList to an array of seriesInstanceUid
+ * @param {Arrays} seriesList list of Series Instance UIDs
+ * @returns {Arrays} A list of Series Instance UIDs
+ */
+function mapStudySeries(seriesList) {
+  return seriesList.map(series => getSeriesInfo(series).seriesInstanceUid);
 }
 
 /**

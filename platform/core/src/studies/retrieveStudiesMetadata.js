@@ -13,7 +13,7 @@ import { retrieveStudyMetadata } from './retrieveStudyMetadata';
 export default function retrieveStudiesMetadata(
   server,
   studyInstanceUids,
-  seriesInstanceUids
+  filters
 ) {
   // Create an empty array to store the Promises for each metaData retrieval call
   const promises = [];
@@ -21,11 +21,7 @@ export default function retrieveStudiesMetadata(
   // Loop through the array of studyInstanceUids
   studyInstanceUids.forEach(function(studyInstanceUid) {
     // Send the call and resolve or reject the related promise based on its outcome
-    const promise = retrieveStudyMetadata(
-      server,
-      studyInstanceUid,
-      seriesInstanceUids
-    );
+    const promise = retrieveStudyMetadata(server, studyInstanceUid, filters);
 
     // Add the current promise to the array of promises
     promises.push(promise);

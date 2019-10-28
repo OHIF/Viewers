@@ -12,7 +12,7 @@ const { urlUtil: UrlUtil } = OHIF.utils;
  */
 const getSeriesInstanceUIDs = (seriesInstanceUIDs, routeLocation) => {
   const queryFilters = UrlUtil.queryString.getQueryFilters(routeLocation);
-  const querySeriesUIDs = queryFilters && queryFilters['SeriesInstanceUID'];
+  const querySeriesUIDs = queryFilters && queryFilters['seriesInstanceUID'];
   const _seriesInstanceUIDs = seriesInstanceUIDs || querySeriesUIDs;
 
   return UrlUtil.paramString.parseParam(_seriesInstanceUIDs);
@@ -36,7 +36,7 @@ function ViewerRouting({ match: routeMatch, location: routeLocation }) {
     return (
       <ConnectedViewerRetrieveStudyData
         studyInstanceUids={studyUIDs}
-        seriesInstanceUids={seriesUIDs}
+        seriesInstanceUIDs={seriesUIDs}
       />
     );
   }

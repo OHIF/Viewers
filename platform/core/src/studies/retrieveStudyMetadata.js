@@ -11,7 +11,7 @@ const StudyMetaDataPromises = new Map();
  * @param {string} studyInstanceUid The UID of the Study to be retrieved
  * @returns {Promise} that will be resolved with the metadata or rejected with the error
  */
-export function retrieveStudyMetadata(server, studyInstanceUid) {
+export function retrieveStudyMetadata(server, studyInstanceUid, filters) {
   // @TODO: Whenever a study metadata request has failed, its related promise will be rejected once and for all
   // and further requests for that metadata will always fail. On failure, we probably need to remove the
   // corresponding promise from the "StudyMetaDataPromises" map...
@@ -32,7 +32,7 @@ export function retrieveStudyMetadata(server, studyInstanceUid) {
 
   // Create a promise to handle the data retrieval
   const promise = new Promise((resolve, reject) => {
-    RetrieveMetadata(server, studyInstanceUid).then(function(data) {
+    RetrieveMetadata(server, studyInstanceUid, filters).then(function(data) {
       resolve(data);
     }, reject);
   });
