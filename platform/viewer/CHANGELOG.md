@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.2.2...@ohif/viewer@2.3.0) (2019-10-29)
+
+
+### Features
+
+* service worker ([#1045](https://github.com/OHIF/Viewers/issues/1045)) ([cf51368](https://github.com/OHIF/Viewers/commit/cf5136899eac08300ec4f15474a6440129ef7a9a))
+
+
+
+
+
 ## [2.2.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.2.1...@ohif/viewer@2.2.2) (2019-10-29)
 
 
