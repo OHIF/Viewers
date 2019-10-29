@@ -24,13 +24,16 @@ const getInstanceMetadata = (displaySets, sopInstanceUid) => {
   // find the correct instance
   displaySets.some(displaySet => {
     // Search the display set to find the instance metadata for
-    return displaySet.images.find(instanceMetadata => {
-      if (instanceMetadata._sopInstanceUID === sopInstanceUid) {
-        instance = instanceMetadata;
+    return (
+      displaySet.images &&
+      displaySet.images.find(instanceMetadata => {
+        if (instanceMetadata._sopInstanceUID === sopInstanceUid) {
+          instance = instanceMetadata;
 
-        return true;
-      }
-    });
+          return true;
+        }
+      })
+    );
   });
 
   return instance;

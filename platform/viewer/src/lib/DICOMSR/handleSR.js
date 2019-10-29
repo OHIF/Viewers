@@ -6,7 +6,7 @@ import retrieveDataFromMeasurements from './retrieveDataFromMeasurements';
 import { api } from 'dicomweb-client';
 
 const retrieveMeasurementFromSR = async series => {
-  // TODO: Find a way to get the server and get the wadoRoot url
+  // TODO SR: Find a way to get the server and get the wadoRoot url
   const url = 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs';
   const config = {
     url,
@@ -45,7 +45,7 @@ const stowSRFromMeasurements = async measurements => {
 
   const part10Buffer = dicomDict.write();
 
-  // TODO: Find a way to get the server and get the wadoRoot url
+  // TODO SR: Find a way to get the server and get the wadoRoot url
   const url = 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs';
   const config = {
     url,

@@ -31,20 +31,19 @@ const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
         displaySets,
         measurement.sopInstanceUid
       );
-      const imageId = instanceMetadata.getImageId();
-      if (!imageId) {
-        return;
-      }
-
-      // TODO: Update the OHIF metadata provider, then switch these to use 'generalSeriesModule'
-      const study = cornerstone.metaData.get('study', imageId);
-      const series = cornerstone.metaData.get('series', imageId);
+      const study = instanceMetadata._study;
+      const series = instanceMetadata._series;
       const imagePath = [
         study.studyInstanceUid,
         series.seriesInstanceUid,
         measurement.sopInstanceUid,
         measurement.frameIndex,
       ].join('_');
+
+      const imageId = instanceMetadata.getImageId();
+      if (!imageId) {
+        return;
+      }
 
       // TODO: We need the currentTimepointID set into the viewer
       const currentTimepointId = 'TimepointId';

@@ -1,9 +1,10 @@
 import * as dcmjs from 'dcmjs';
 import OHIF from '@ohif/core';
+import cornerstone from 'cornerstone-core';
 
 const retrieveDataFromMeasurements = measurements => {
   const { MeasurementReport } = dcmjs.adapters.Cornerstone;
-  const { getImageIdForImagePath } = OHIF.viewerbase;
+  const { getImageIdForImagePath } = OHIF.measurements;
 
   const toolState = {};
 

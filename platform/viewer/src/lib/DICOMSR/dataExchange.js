@@ -12,12 +12,13 @@ export const retrieveMeasurements = () => {
   return retrieveMeasurementFromSR(latestSeries);
 };
 
-export const storeMeasurements = (measurementData, server) => {
+export const storeMeasurements = (measurementData, filter) => {
   console.info('[DICOMSR] storeMeasurements');
 
-  if (!server || server.type !== 'dicomWeb') {
-    return Promise.resolve({});
-  }
+  // TODO SR: Come back with this when we have access to the server here and throw an error if its not dicomWeb
+  // if (!server || server.type !== 'dicomWeb') {
+  //   return Promise.reject({});
+  // }
 
   const studyInstanceUid =
     measurementData[Object.keys(measurementData)[0]][0].studyInstanceUid;
