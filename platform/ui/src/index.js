@@ -8,6 +8,7 @@ import {
   MeasurementTableItem,
   Overlay,
   OverlayTrigger,
+  PageToolbar,
   QuickSwitch,
   RoundedButtonGroup,
   SelectTree,
@@ -17,12 +18,15 @@ import {
   TableList,
   TableListItem,
   Thumbnail,
+  TableSearchFilter,
+  TablePagination,
   ToolbarSection,
   Tooltip,
   AboutModal,
   UserPreferences,
   UserPreferencesModal,
 } from './components';
+import { useDebounce, useMedia } from './hooks';
 
 // Elements
 import {
@@ -69,6 +73,7 @@ export {
   Overlay,
   OverlayTrigger,
   PlayClipButton,
+  PageToolbar,
   QuickSwitch,
   Range,
   RoundedButtonGroup,
@@ -82,6 +87,8 @@ export {
   TableList,
   TableListItem,
   Thumbnail,
+  TableSearchFilter,
+  TablePagination,
   Toolbar,
   ToolbarButton,
   ToolbarSection,
@@ -93,4 +100,7 @@ export {
   SnackbarProvider,
   useSnackbarContext,
   withSnackbar,
+  // Hooks
+  useDebounce,
+  useMedia,
 };

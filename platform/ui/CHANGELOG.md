@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.58.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.57.1...@ohif/ui@0.58.0) (2019-10-28)
+
+
+### Features
+
+* responsive study list ([#1068](https://github.com/OHIF/Viewers/issues/1068)) ([2cdef4b](https://github.com/OHIF/Viewers/commit/2cdef4b9844cc2ce61e9ce76b5a942ba7051fe16))
+
+
+
+
+
 ## [0.57.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.57.0...@ohif/ui@0.57.1) (2019-10-28)
 
 

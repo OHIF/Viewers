@@ -16,7 +16,12 @@ import { QuickSwitch } from './quickSwitch';
 import { RoundedButtonGroup } from './roundedButtonGroup';
 import { SelectTree } from './selectTree';
 import { SimpleDialog } from './simpleDialog';
-import { StudyList } from './studyList';
+import {
+  PageToolbar,
+  StudyList,
+  TableSearchFilter,
+  TablePagination,
+} from './studyList';
 import { ToolbarSection } from './toolbarSection';
 import { Tooltip } from './tooltip';
 
@@ -32,6 +37,7 @@ export {
   OverlayTrigger,
   QuickSwitch,
   RoundedButtonGroup,
+  PageToolbar,
   SelectTree,
   SimpleDialog,
   StudyBrowser,
@@ -39,6 +45,8 @@ export {
   TableList,
   TableListItem,
   Thumbnail,
+  TableSearchFilter,
+  TablePagination,
   ToolbarSection,
   Tooltip,
   AboutModal,
