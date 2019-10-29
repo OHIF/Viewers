@@ -111,7 +111,7 @@ const mapStateToProps = (state, ownProps) => {
 
       viewportElement.querySelector('canvas').toBlob(blob => {
         const URLObj = window.URL || window.webkitURL;
-        let a = document.createElement('a');
+        const a = document.createElement('a');
         a.href = URLObj.createObjectURL(blob);
         a.download = file;
         document.body.appendChild(a);
