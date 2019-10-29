@@ -1,5 +1,6 @@
 import { hot } from 'react-hot-loader/root';
 
+// TODO: This should not be here
 import './config';
 
 import {

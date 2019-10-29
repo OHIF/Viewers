@@ -22,14 +22,20 @@ describe('OHIF VTK Extension', () => {
           btn.click();
         }
       });
-    //wait VTK toolbar and images to be loaded
-    cy.wait(3000);
+
     cy.initVTKToolsAliases();
   });
 
   it('checks if VTK buttons are displayed on the toolbar', () => {
-    cy.screenshot();
-    cy.percyCanvasSnapshot('VTK Extension');
+    // Wait for start reformatting
+    cy.get('[data-cy="viewprt-grid"]', { timeout: 10000 }).should($grid => {
+      expect($grid).to.contain.text('Reform');
+    });
+
+    // Wait for finish reformatting
+    cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
+      expect($grid).not.to.contain.text('Reform');
+    });
 
     cy.get('@crosshairsBtn')
       .should('be.visible')
@@ -50,5 +56,8 @@ describe('OHIF VTK Extension', () => {
     cy.get('@layoutBtn')
       .should('be.visible')
       .contains('Layout');
+
+    cy.wait(3000);
+    cy.percyCanvasSnapshot('VTK Extension');
   });
 });
