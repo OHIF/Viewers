@@ -328,20 +328,30 @@ workflows:
           executor: cypress/browsers-chrome76
           browser: chrome
           pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
+            - run: |
+                # Where are we?
+                echo "$(dirname "$0")"
+                # Clear yarn cache; update to latest
+                rm -rf ~/.yarn
+                npm i -g yarn
+                yarn -v
+                # Add `wait-on` library for Cypress orb? (global)
+                yarn global add wait-on
+                chmod +x ~/../../.circleci/start-test-server.sh
           yarn: true
           record: false
           store_artifacts: false
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build
-          start: yarn run test:e2e:serve
-          wait-on: 'http://localhost:3000'
+          start: ~/../../.circleci/start-test-server.sh
+          wait-on: 'http://localhost:5985'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
+            - store_test_results:
+                path: platform/viewer/cypress/results
           requires:
             - UNIT_TESTS
       # E2E: script-tag

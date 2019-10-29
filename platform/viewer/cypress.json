@@ -6,5 +6,6 @@
   "defaultCommandTimeout": 10000,
   "requestTimeout": 10000,
   "responseTimeout": 10000,
-  "projectId": "4oe38f"
+  "projectId": "4oe38f",
+  "reporter": "junit"
 }
