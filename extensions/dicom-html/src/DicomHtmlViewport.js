@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as dcmjs from 'dcmjs';
 import TypedArrayProp from './TypedArrayProp';
-import throttle from 'lodash.throttle';
 
 import './DicomHtmlViewport.css';
 
@@ -195,16 +194,10 @@ function getMainDataItem(key, value) {
 }
 
 class DicomHtmlViewport extends Component {
-  constructor(props) {
-    super(props);
-
-    this.scrollHandlerThrottled = throttle(this.setViewportActiveHandler, 300);
-
-    this.state = {
-      content: null,
-      error: null,
-    };
-  }
+  state = {
+    content: null,
+    error: null,
+  };
 
   static propTypes = {
     byteArray: TypedArrayProp.uint8,
@@ -257,7 +250,7 @@ class DicomHtmlViewport extends Component {
         data-cy="dicom-html-viewport"
         className="DicomHtmlViewport"
         onClick={this.setViewportActiveHandler}
-        onScroll={this.scrollHandlerThrottled}
+        onScroll={this.setViewportActiveHandler}
       >
         {content}
         {error && <h2>{JSON.stringify(error)}</h2>}
