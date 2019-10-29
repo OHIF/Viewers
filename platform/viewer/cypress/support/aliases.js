@@ -55,7 +55,7 @@ export function initVTKToolsAliases() {
 
 //Creating aliases for Study List page elements
 export function initStudyListAliases() {
-  cy.get('.studyCount').as('studyCount');
+  cy.get('.study-count').as('studyCount');
   cy.get('#patientName').as('patientName');
   cy.get('#patientId').as('MRN');
   cy.get('#accessionNumber').as('accessionNumber');

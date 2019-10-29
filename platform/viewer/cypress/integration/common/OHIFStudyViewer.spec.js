@@ -224,14 +224,12 @@ describe('OHIF Study Viewer Page', function() {
     cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
   });
 
-  //TO-DO: this test is blocked due to issue #1072: https://github.com/OHIF/Viewers/issues/1072
-  // Uncomment this once #1072 is fixed.
-  // it('performs single-click to load thumbnail in active viewport', () => {
-  //   cy.get('[data-cy="thumbnail-list"]:nth-child(3)').click();
+  it('performs single-click to load thumbnail in active viewport', () => {
+    cy.get('[data-cy="thumbnail-list"]:nth-child(3)').click();
 
-  //   const expectedText = 'Ser 3';
-  //   cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
-  // });
+    const expectedText = 'Ser 3';
+    cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
+  });
 
   it('performs right click to zoom', function() {
     //Right click on viewport
@@ -240,7 +238,7 @@ describe('OHIF Study Viewer Page', function() {
       .trigger('mousemove', 'center', { which: 3 })
       .trigger('mouseup');
 
-    const expectedText = 'Zoom: 442%';
+    const expectedText = 'Zoom: 301%';
     cy.get('@viewportInfoBottomRight').should('contains.text', expectedText);
   });
 

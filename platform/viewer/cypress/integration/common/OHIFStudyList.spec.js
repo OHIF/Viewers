@@ -1,5 +1,3 @@
-const expectExport = require('expect');
-
 describe('OHIF Study List', function() {
   beforeEach(function() {
     cy.openStudyList();
