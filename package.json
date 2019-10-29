@@ -28,6 +28,7 @@
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
     "test:e2e": "lerna run test:e2e --stream",
+    "test:e2e:script-tag": "lerna run test:e2e:script-tag --stream",
     "test:e2e:ci": "lerna run test:e2e:ci --stream",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
     "test:e2e:serve": "lerna run test:e2e:serve --stream",

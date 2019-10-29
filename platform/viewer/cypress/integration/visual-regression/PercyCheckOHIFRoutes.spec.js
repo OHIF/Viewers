@@ -13,7 +13,7 @@ describe('Visual Regression - OHIF Routes', function() {
     );
 
     cy.server();
-    cy.route('GET', '**/ TESTStudy; /**').as('getTESTStudy');
+    cy.route('GET', '*TESTStudy; /**').as('getTESTStudy');
 
     cy.wait('@getTESTStudy.all');
     cy.get('@getTESTStudy').should($route => {

@@ -1,3 +1,6 @@
+/*
+Temporarily disabling as we transition to containerized PACS for E2E tests
+
 describe('Visual Regression - OHIF VTK Extension', () => {
   before(() => {
     cy.checkStudyRouteInViewer(
@@ -91,3 +94,4 @@ describe('Visual Regression - OHIF VTK Extension', () => {
     cy.percyCanvasSnapshot('VTK Rotate tool - Should rotate image');
   });
 });
+*/
