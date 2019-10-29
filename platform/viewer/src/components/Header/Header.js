@@ -90,6 +90,7 @@ class Header extends Component {
     // TODO: reset `this.hotKeysData`
   }
 
+  // ANTD -- Hamburger, Drawer, Menu
   render() {
     const { t, home, location, children } = this.props;
     const { appConfig = {} } = this.context;
@@ -135,7 +136,7 @@ class Header extends Component {
           <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
           <Dropdown title={t('Options')} list={this.options} align="right" />
         </div>
-      </div>
+      </>
     );
   }
 }
