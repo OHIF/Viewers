@@ -254,7 +254,7 @@ class DicomHtmlViewport extends Component {
 
     return (
       <div
-        data-cy="DicomHtmlViewport"
+        data-cy="dicom-html-viewport"
         className="DicomHtmlViewport"
         onClick={this.setViewportActiveHandler}
         onScroll={this.scrollHandlerThrottled}
