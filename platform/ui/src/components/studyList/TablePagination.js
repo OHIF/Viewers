@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './PaginationArea.styl';
 import { withTranslation } from '../../utils/LanguageProvider';
 
-class PaginationArea extends PureComponent {
+class TablePagination extends PureComponent {
   static defaultProps = {
     pageOptions: [5, 10, 25, 50, 100],
     rowsPerPage: 25,
@@ -11,7 +11,8 @@ class PaginationArea extends PureComponent {
   };
 
   static propTypes = {
-    pageOptions: PropTypes.array.isRequired,
+    /* Values to show in "rows per page" select dropdown */
+    pageOptions: PropTypes.array,
     rowsPerPage: PropTypes.number.isRequired,
     currentPage: PropTypes.number.isRequired,
     nextPageFunc: PropTypes.func,
@@ -89,17 +90,11 @@ class PaginationArea extends PureComponent {
 
   render() {
     return (
-      <div name="paginationArea">
-        <div className="pagination-area">
-          <div className="row">
-            <div className="rows-dropdown">
-              {this.renderRowsPerPageDropdown()}
-            </div>
-            <div className="pagination-buttons">
-              <div className="form-inline form-group page-number pull-right">
-                {this.renderPaginationButtons()}
-              </div>
-            </div>
+      <div className="pagination-area">
+        <div className="rows-dropdown">{this.renderRowsPerPageDropdown()}</div>
+        <div className="pagination-buttons">
+          <div className="form-inline form-group page-number pull-right">
+            {this.renderPaginationButtons()}
           </div>
         </div>
       </div>
@@ -107,5 +102,5 @@ class PaginationArea extends PureComponent {
   }
 }
 
-const connectedComponent = withTranslation('Common')(PaginationArea);
-export { connectedComponent as PaginationArea };
+const connectedComponent = withTranslation('Common')(TablePagination);
+export { connectedComponent as TablePagination };

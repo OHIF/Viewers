@@ -41,9 +41,9 @@ import {
  */
 Cypress.Commands.add('openStudy', patientName => {
   cy.openStudyList();
-  cy.get('#patientName').type(patientName);
+  cy.get('#filter-patientNameOrId').type(patientName);
   cy.wait('@getStudies');
-  cy.get('#studyListData .studylistStudy', { timeout: 5000 })
+  cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
     .contains(patientName)
     .first()
     .click({ force: true });
@@ -57,11 +57,12 @@ Cypress.Commands.add('openStudy', patientName => {
 Cypress.Commands.add('openStudyModality', modality => {
   cy.initRouteAliases();
   cy.visit('/');
-  cy.get('#modalities')
+
+  cy.get('#filter-accessionOrModalityOrDescription')
     .type(modality)
     .wait(2000);
 
-  cy.get('#studyListData')
+  cy.get('[data-cy="study-list-results"]')
     .contains(modality)
     .first()
     .click();
