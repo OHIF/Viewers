@@ -213,6 +213,16 @@ const definitions = [
         commandName: 'setToolActive',
         commandOptions: { toolName: 'Eraser' },
       },
+      {
+        id: 'Download',
+        label: 'Download',
+        icon: 'create-screen-capture',
+        //
+        type: TOOLBAR_BUTTON_TYPES.BUILT_IN,
+        options: {
+          behavior: 'DOWNLOAD_SCREEN_SHOT',
+        },
+      },
     ],
   },
 ];

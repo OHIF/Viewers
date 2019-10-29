@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { log, metadata, studies, utils } from "@ohif/core";
+import React, { Component } from 'react';
+import { log, metadata, studies, utils } from '@ohif/core';
 
-import PropTypes from "prop-types";
-import Viewer from "../connectedComponents/Viewer";
-import { extensionManager } from "./../App.js";
-import qs from "querystring";
+import PropTypes from 'prop-types';
+import ConnectedViewer from '../connectedComponents/ConnectedViewer';
+import { extensionManager } from './../App.js';
+import qs from 'querystring';
 
 const { OHIFStudyMetadata } = metadata;
 const { retrieveStudiesMetadata } = studies;
@@ -13,12 +13,14 @@ const { studyMetadataManager, updateMetaDataManager } = utils;
 class StandaloneRouting extends Component {
   state = {
     studies: null,
-    error: null
+    error: null,
   };
+
+  studyInstanceUids = [];
 
   static propTypes = {
     location: PropTypes.object,
-    store: PropTypes.object
+    store: PropTypes.object,
   };
 
   static parseQueryAndFetchStudies(query) {
@@ -26,7 +28,7 @@ class StandaloneRouting extends Component {
       const url = query.url;
 
       if (!url) {
-        return reject(new Error("No URL was specified. Use ?url=$yourURL"));
+        return reject(new Error('No URL was specified. Use ?url=$yourURL'));
       }
 
       // Define a request to the server to retrieve the study data
@@ -34,19 +36,19 @@ class StandaloneRouting extends Component {
       const oReq = new XMLHttpRequest();
 
       // Add event listeners for request failure
-      oReq.addEventListener("error", error => {
-        log.warn("An error occurred while retrieving the JSON data");
+      oReq.addEventListener('error', error => {
+        log.warn('An error occurred while retrieving the JSON data');
         reject(error);
       });
 
       // When the JSON has been returned, parse it into a JavaScript Object
       // and render the OHIF Viewer with this data
-      oReq.addEventListener("load", () => {
+      oReq.addEventListener('load', () => {
         // Parse the response content
         // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseText
         if (!oReq.responseText) {
-          log.warn("Response was undefined");
-          reject(new Error("Response was undefined"));
+          log.warn('Response was undefined');
+          reject(new Error('Response was undefined'));
         }
 
         log.info(JSON.stringify(oReq.responseText, null, 2));
@@ -54,9 +56,9 @@ class StandaloneRouting extends Component {
         const data = JSON.parse(oReq.responseText);
         if (data.servers && query.studyInstanceUids) {
           const server = data.servers.dicomWeb[0];
-          server.type = "dicomWeb";
+          server.type = 'dicomWeb';
 
-          const studyInstanceUids = query.studyInstanceUids.split(";");
+          const studyInstanceUids = query.studyInstanceUids.split(';');
           const seriesInstanceUids = [];
 
           retrieveStudiesMetadata(
@@ -80,8 +82,8 @@ class StandaloneRouting extends Component {
       // In this case we have a server-side route called /api/
       // which responds to GET requests with the study data
       log.info(`Sending Request to: ${url}`);
-      oReq.open("GET", url);
-      oReq.setRequestHeader("Accept", "application/json");
+      oReq.open('GET', url);
+      oReq.setRequestHeader('Accept', 'application/json');
 
       // Fire the request to the server
       oReq.send();
@@ -101,13 +103,14 @@ class StandaloneRouting extends Component {
       studyMetadataManager.purge();
 
       // Map studies to new format, update metadata manager?
+      const uniqueStudyUids = new Set();
       const updatedStudies = studies.map(study => {
         const studyMetadata = new OHIFStudyMetadata(
           study,
           study.studyInstanceUid
         );
         const sopClassHandlerModules =
-          extensionManager.modules["sopClassHandlerModule"];
+          extensionManager.modules['sopClassHandlerModule'];
 
         study.displaySets =
           study.displaySets ||
@@ -118,10 +121,12 @@ class StandaloneRouting extends Component {
         updateMetaDataManager(study);
 
         studyMetadataManager.add(studyMetadata);
+        uniqueStudyUids.add(study.studyInstanceUid);
 
         return study;
       });
 
+      this.studyInstanceUids = Array.from(uniqueStudyUids);
       this.setState({ studies: updatedStudies });
     } catch (error) {
       this.setState({ error });
@@ -134,8 +139,12 @@ class StandaloneRouting extends Component {
     } else if (!this.state.studies) {
       return <div>Loading...</div>;
     }
-
-    return <Viewer studies={this.state.studies} />;
+    return (
+      <ConnectedViewer
+        studies={this.state.studies}
+        studyInstanceUids={this.studyInstanceUids}
+      />
+    );
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui",
-  "version": "0.56.0",
+  "version": "0.58.1",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -48,7 +48,7 @@
     "moment": "2.24.0",
     "prop-types": "15.6.2",
     "react-bootstrap-modal": "4.2.0",
-    "react-dates": "18.4.1",
+    "react-dates": "21.2.1",
     "react-dnd": "9.3.4",
     "react-dnd-html5-backend": "^9.3.4",
     "react-dnd-touch-backend": "^9.3.4",

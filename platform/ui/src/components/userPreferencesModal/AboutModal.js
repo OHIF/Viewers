@@ -62,7 +62,7 @@ class AboutModal extends Component {
 
   renderTableRow(item) {
     return (
-      <tr key={item.name}>
+      <tr key={item.name} style={{ backgroundColor: 'transparent' }}>
         <td>{item.name}</td>
         <td>
           {item.link ? (
@@ -92,7 +92,7 @@ class AboutModal extends Component {
         <Modal.Header closeButton>
           <Modal.Title>{t('OHIF Viewer - About')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body data-cy="about-modal">
           <div className="btn-group">
             <a
               className="btn btn-default"
