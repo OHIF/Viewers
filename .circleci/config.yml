@@ -333,6 +333,8 @@ workflows:
                 echo "$(dirname "$0")"
                 cd ~/ && ls
                 cd ~/project && ls
+                cd /platform/viewer && ls
+                cs ~/platform/viewer && ls
                 cd ~/project/platform/viewer && ls
                 # Clear yarn cache; update to latest
                 rm -rf ~/.yarn
