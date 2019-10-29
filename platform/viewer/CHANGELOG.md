@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.0...@ohif/viewer@2.3.1) (2019-10-29)
+
+
+### Bug Fixes
+
+* rollbar template needs PUBLIC_URL defined ([#1127](https://github.com/OHIF/Viewers/issues/1127)) ([352407c](https://github.com/OHIF/Viewers/commit/352407c71ae93946e9ebad41446d6086cfbc237b))
+
+
+
+
+
 # [2.3.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.2.2...@ohif/viewer@2.3.0) (2019-10-29)
 
 
