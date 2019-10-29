@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.2.2...@ohif/viewer@2.3.0) (2019-10-29)
+
+
+### Features
+
+* service worker ([#1045](https://github.com/OHIF/Viewers/issues/1045)) ([cf51368](https://github.com/OHIF/Viewers/commit/cf5136899eac08300ec4f15474a6440129ef7a9a))
+
+
+
+
+
+## [2.2.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.2.1...@ohif/viewer@2.2.2) (2019-10-29)
+
+
+### Bug Fixes
+
+* Set SR viewport as active by interaction ([#1118](https://github.com/OHIF/Viewers/issues/1118)) ([5b33417](https://github.com/OHIF/Viewers/commit/5b334175c370afb930b4b6dbd307ddece8f850e3))
+
+
+
+
+
+## [2.2.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.2.0...@ohif/viewer@2.2.1) (2019-10-29)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 # [2.2.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.4...@ohif/viewer@2.2.0) (2019-10-28)
 
 
