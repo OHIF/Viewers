@@ -16,6 +16,7 @@
   },
   "globals": {
     "cy": true,
+    "before": true,
     "context": true,
     "Cypress": true,
     "assert": true
