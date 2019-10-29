@@ -13,10 +13,10 @@ const mapStateToProps = (state, ownProps) => {
     viewportSpecificData[activeViewportIndex] || {};
 
   return {
+    onClose: ownProps.hide,
     minimumSize: MINIMUM_SIZE,
     defaultSize: DEFAULT_SIZE,
     canvasClass: 'cornerstone-canvas',
-    onClose: ownProps.toggleDownloadDialog,
     activeViewport: activeEnabledElement,
     enableViewport: viewportElement => {
       if (viewportElement) {

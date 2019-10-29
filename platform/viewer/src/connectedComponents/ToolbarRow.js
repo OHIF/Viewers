@@ -15,7 +15,7 @@ import ConnectedCineDialog from './ConnectedCineDialog';
 import ConnectedDownloadDialog from './ConnectedDownloadDialog';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
-
+import { withModal } from '../../../ui/src/utils/ModalProvider';
 
 class ToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
@@ -46,12 +46,9 @@ class ToolbarRow extends Component {
       toolbarButtons: toolbarButtonDefinitions,
       activeButtons: [],
       isCineDialogOpen: false,
-      isDownloadScreenShotDialogOpen: false,
     };
 
     this._handleBuiltIn = _handleBuiltIn.bind(this);
-
-    this.toggleDownloadDialog = toggleDownloadDialog.bind(this);
 
     const panelModules = extensionManager.modules[MODULE_TYPES.PANEL];
     this.buttonGroups = {
@@ -116,13 +113,6 @@ class ToolbarRow extends Component {
       zIndex: 999,
     };
 
-    const downloadScreenShotContainerStyle = {
-      display: this.state.isDownloadScreenShotDialogOpen ? 'block' : 'none',
-      position: 'absolute',
-      top: '82px',
-      zIndex: 1001,
-    };
-
     const onPress = (side, value) => {
       this.props.handleSidePanelChange(side, value);
     };
@@ -157,12 +147,6 @@ class ToolbarRow extends Component {
         </div>
         <div className="CineDialogContainer" style={cineDialogContainerStyle}>
           <ConnectedCineDialog />
-        </div>
-        <div className="DownloadScreenShotContainer" style={downloadScreenShotContainerStyle}>
-          <ConnectedDownloadDialog
-            isOpen={this.state.isDownloadScreenShotDialogOpen}
-            toggleDownloadDialog={this.toggleDownloadDialog}
-          />
         </div>
       </>
     );
@@ -295,15 +279,6 @@ function _getVisibleToolbarButtons() {
   return toolbarButtonDefinitions;
 }
 
-/**
- * Toggles the Download Dialog Modal
- */
-function toggleDownloadDialog() {
-  this.setState({
-    isDownloadScreenShotDialogOpen: !this.state.isDownloadScreenShotDialogOpen,
-  });
-}
-
 function _handleBuiltIn({ behavior } = {}) {
   if (behavior === 'CINE') {
     this.setState({
@@ -312,8 +287,10 @@ function _handleBuiltIn({ behavior } = {}) {
   }
 
   if (behavior === 'DOWNLOAD_SCREEN_SHOT') {
-    this.toggleDownloadDialog();
+    this.props.modalContext.show(ConnectedDownloadDialog, {
+      className: 'DownloadDialog modal fade themed in',
+    });
   }
 }
 
-export default withTranslation('Common')(ToolbarRow);
+export default withTranslation('Common')(withModal(ToolbarRow));

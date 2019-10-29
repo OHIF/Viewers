@@ -28,7 +28,7 @@ const ModalProvider = ({ children }) => {
       props: { ...options.props, ...props },
     });
 
-  const hide = () => setOptions({ ...options, component: null, props: {} });
+  const hide = () => setOptions(DEFAULT_OPTIONS);
 
   return (
     <Provider value={{ ...options, show, hide }}>

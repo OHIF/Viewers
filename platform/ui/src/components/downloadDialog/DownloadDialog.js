@@ -187,15 +187,7 @@ const DownloadDialog = ({
   };
 
   return (
-    <Modal
-      show={isOpen}
-      onHide={onClose}
-      aria-labelledby="ModalHeader"
-      className="DownloadDialog modal fade themed in"
-      backdrop={false}
-      large={true}
-      keyboard={true}
-    >
+    <>
       <Modal.Header closeButton>
         <Modal.Title>{t('Download High Quality Image')}</Modal.Title>
       </Modal.Header>
@@ -312,15 +304,13 @@ const DownloadDialog = ({
           </div>
         </div>
       </Modal.Body>
-    </Modal>
+    </>
   );
 };
 
 DownloadDialog.propTypes = {
   t: PropTypes.func.isRequired,
-  isOpen: PropTypes.bool.isRequired,
   activeViewport: PropTypes.object,
-  onClose: PropTypes.func.isRequired,
   updateViewportPreview: PropTypes.func.isRequired,
   enableViewport: PropTypes.func.isRequired,
   disableViewport: PropTypes.func.isRequired,
