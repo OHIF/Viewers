@@ -1,0 +1,83 @@
+/* NOTE: the order of these styles DO matter */
+
+/* Will edit everything selected including everything between a range of dates */
+.CalendarDay__selected_span {
+  background: var(--table-text-secondary-color);
+  color: #fff;
+  border-color: #e4e7e7;
+}
+
+/* Will edit selected date or the endpoints of a range of dates */
+.CalendarDay__selected {
+  background: var(--table-text-secondary-color);
+  color: #fff;
+  border-color: #e4e7e7;
+}
+
+/* Will edit when hovered over. _span style also has this property */
+.CalendarDay__selected:hover {
+  background: var(--table-text-secondary-color);
+  color: #fff;
+  border-color: #e4e7e7;
+}
+
+/* Will edit when the second date (end date) in a range of dates
+is not yet selected. Edits the dates between your mouse and said date */
+.CalendarDay__hovered_span:hover,
+.CalendarDay__hovered_span {
+  background: var(--table-text-secondary-color);
+  color: #fff;
+  border-color: #e4e7e7;
+}
+
+/* EXTERIOR INPUT STYLE */
+/* Container - placement */
+.DateRangePicker {
+  height: 40px;
+  margin: 0 5px 20px 5px;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+}
+/* Container - visual */
+.DateRangePickerInput {
+  width: calc(100% - 10px); /* Just use padding? */
+  background-color: var(--input-background-color);
+  border-color: var(--input-background-color);
+  color: var(--input-placeholder-color);
+  height: 40px;
+}
+
+.DateRangePickerInput.DateRangePickerInput__withBorder {
+  border-radius: 4px;
+  background-color: var(--input-background-color);
+}
+
+/* Input Container */
+.DateInput {
+  width: 97px;
+  height: 38px;
+  border-radius: 4px;
+  background-color: var(--input-background-color);
+}
+
+/* Actual Input Element */
+.DateInput > .DateInput_input {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--input-placeholder-color);
+  height: 38px;
+  font-size: 10pt;
+  padding: 0;
+}
+
+/* PRESETS */
+.PresetDateRangePicker_panel {
+  display: flex;
+  justify-content: space-between;
+}
+
+.PresetDateRangePicker_button {
+  margin: 0;
+  padding: 4px 8px;
+}
