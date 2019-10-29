@@ -3,6 +3,91 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.58.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.58.0...@ohif/ui@0.58.1) (2019-10-29)
+
+
+### Bug Fixes
+
+* **StudyList:** camel case colSpan ([#1123](https://github.com/OHIF/Viewers/issues/1123)) ([0d498ba](https://github.com/OHIF/Viewers/commit/0d498ba17ddde8d8f0c51d742770e1574041eec0))
+
+
+
+
+
+# [0.58.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.57.1...@ohif/ui@0.58.0) (2019-10-28)
+
+
+### Features
+
+* responsive study list ([#1068](https://github.com/OHIF/Viewers/issues/1068)) ([2cdef4b](https://github.com/OHIF/Viewers/commit/2cdef4b9844cc2ce61e9ce76b5a942ba7051fe16))
+
+
+
+
+
+## [0.57.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.57.0...@ohif/ui@0.57.1) (2019-10-28)
+
+
+### Bug Fixes
+
+* MIP styling ([#1109](https://github.com/OHIF/Viewers/issues/1109)) ([0d21cc6](https://github.com/OHIF/Viewers/commit/0d21cc6ad0c47706b9e62e05fe2a0f1d86339760))
+
+
+
+
+
+# [0.57.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.56.1...@ohif/ui@0.57.0) (2019-10-26)
+
+
+### Features
+
+* Snapshot Download Tool ([#840](https://github.com/OHIF/Viewers/issues/840)) ([450e098](https://github.com/OHIF/Viewers/commit/450e0981a5ba054fcfcb85eeaeb18371af9088f8))
+
+
+
+
+
+## [0.56.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.56.0...@ohif/ui@0.56.1) (2019-10-26)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [0.56.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.55.0...@ohif/ui@0.56.0) (2019-10-22)
+
+
+### Features
+
+* 🎸 Load spinner when selecting gcloud store. Add key on td ([#1034](https://github.com/OHIF/Viewers/issues/1034)) ([e62f403](https://github.com/OHIF/Viewers/commit/e62f403fe9e3df56713128e3d59045824b086d8d)), closes [#1057](https://github.com/OHIF/Viewers/issues/1057)
+
+
+
+
+
+# [0.55.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.54.0...@ohif/ui@0.55.0) (2019-10-15)
+
+
+### Features
+
+* Add browser info and app version ([#1046](https://github.com/OHIF/Viewers/issues/1046)) ([c217b8b](https://github.com/OHIF/Viewers/commit/c217b8b))
+
+
+
+
+
+# [0.54.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.53.4...@ohif/ui@0.54.0) (2019-10-14)
+
+
+### Features
+
+* Notification Service ([#1011](https://github.com/OHIF/Viewers/issues/1011)) ([92c8996](https://github.com/OHIF/Viewers/commit/92c8996))
+
+
+
+
+
 ## [0.53.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.53.3...@ohif/ui@0.53.4) (2019-10-11)
 
 **Note:** Version bump only for package @ohif/ui

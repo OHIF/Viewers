@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Range, Checkbox, Select } from '@ohif/ui';
+import { Range, Checkbox, OldSelect } from '@ohif/ui';
 
 import './slab-thickness-toolbar-button.styl';
 
@@ -14,6 +14,10 @@ const SLIDER = {
 const ToolbarLabel = props => {
   const { label } = props;
   return <div className="toolbar-button-label">{label}</div>;
+};
+
+ToolbarLabel.propTypes = {
+  label: PropTypes.string.isRequired,
 };
 
 const ToolbarSlider = props => {
@@ -31,6 +35,13 @@ const ToolbarSlider = props => {
       />
     </div>
   );
+};
+
+ToolbarSlider.propTypes = {
+  value: PropTypes.number.isRequired,
+  min: PropTypes.number.isRequired,
+  max: PropTypes.number.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
 const _getSelectOptions = button => {
@@ -184,12 +195,12 @@ function SlabThicknessToolbarComponent({
           checked={state.modeChecked}
           onChange={onChangeCheckbox}
         ></Checkbox>
-        <Select
+        <OldSelect
           key="toolbar-select"
           options={selectOptions}
           value={selectOptions[INITIAL_OPTION_INDEX].value}
           onChange={onChangeSelect}
-        ></Select>
+        ></OldSelect>
       </div>
     </div>
   );

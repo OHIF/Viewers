@@ -3,6 +3,245 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.2.0...@ohif/viewer@2.2.1) (2019-10-29)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [2.2.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.4...@ohif/viewer@2.2.0) (2019-10-28)
+
+
+### Features
+
+* responsive study list ([#1068](https://github.com/OHIF/Viewers/issues/1068)) ([2cdef4b](https://github.com/OHIF/Viewers/commit/2cdef4b9844cc2ce61e9ce76b5a942ba7051fe16))
+
+
+
+
+
+## [2.1.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.3...@ohif/viewer@2.1.4) (2019-10-28)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.1.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.2...@ohif/viewer@2.1.3) (2019-10-26)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.1.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.1...@ohif/viewer@2.1.2) (2019-10-26)
+
+
+### Bug Fixes
+
+* update script-tag output to include config from default.js ([c522ff3](https://github.com/OHIF/Viewers/commit/c522ff3ddab7ed8e3a128dd6edd2cd6902226e99))
+
+
+
+
+
+## [2.1.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.1.0...@ohif/viewer@2.1.1) (2019-10-26)
+
+
+### Bug Fixes
+
+* 🐛 JSON launch not working properly ([#1089](https://github.com/OHIF/Viewers/issues/1089)) ([#1093](https://github.com/OHIF/Viewers/issues/1093)) ([2677170](https://github.com/OHIF/Viewers/commit/2677170d67659ee178cf77307414d54cfe9cb563))
+
+
+
+
+
+# [2.1.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.0.0...@ohif/viewer@2.1.0) (2019-10-26)
+
+
+### Features
+
+* Snapshot Download Tool ([#840](https://github.com/OHIF/Viewers/issues/840)) ([450e098](https://github.com/OHIF/Viewers/commit/450e0981a5ba054fcfcb85eeaeb18371af9088f8))
+
+
+
+
+
+# [2.0.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.12.2...@ohif/viewer@2.0.0) (2019-10-26)
+
+
+### Bug Fixes
+
+* 🐛 Desc of meas.table not being updated on properly ([#1094](https://github.com/OHIF/Viewers/issues/1094)) ([85f836c](https://github.com/OHIF/Viewers/commit/85f836cd918614be722fce1bff2373460ec4900b)), closes [#1013](https://github.com/OHIF/Viewers/issues/1013)
+
+
+### BREAKING CHANGES
+
+* 1013
+
+
+
+
+
+## [1.12.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.12.1...@ohif/viewer@1.12.2) (2019-10-25)
+
+
+### Bug Fixes
+
+* set SR in ActiveViewport by clicking thumb ([#1091](https://github.com/OHIF/Viewers/issues/1091)) ([986b7ae](https://github.com/OHIF/Viewers/commit/986b7ae2bf4f7d27f326e62f93285ce20eaf0a79))
+
+
+
+
+
+## [1.12.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.12.0...@ohif/viewer@1.12.1) (2019-10-25)
+
+
+### Bug Fixes
+
+* 🐛 Orthographic MPR fix ([#1092](https://github.com/OHIF/Viewers/issues/1092)) ([460e375](https://github.com/OHIF/Viewers/commit/460e375f0aa75d35f7a46b4d48e6cc706019956d))
+
+
+
+
+
+# [1.12.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.5...@ohif/viewer@1.12.0) (2019-10-25)
+
+
+### Features
+
+* 🎸 Allow routes to load Google Cloud DICOM Stores in the Study List ([#1069](https://github.com/OHIF/Viewers/issues/1069)) ([21b586b](https://github.com/OHIF/Viewers/commit/21b586b08f3dde6613859712a9e0577dece564db))
+
+
+
+
+
+## [1.11.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.4...@ohif/viewer@1.11.5) (2019-10-24)
+
+**Note:** Version bump only for package @ohif/viewer
+
+## [1.11.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.3...@ohif/viewer@1.11.4) (2019-10-23)
+
+
+### Bug Fixes
+
+* Revert "Revert "fix: MPR initialization"" ([#1065](https://github.com/OHIF/Viewers/issues/1065)) ([c680720](https://github.com/OHIF/Viewers/commit/c680720ce5ead58fdb399e3a356edac18093f5c0)), closes [#1062](https://github.com/OHIF/Viewers/issues/1062) [#1064](https://github.com/OHIF/Viewers/issues/1064)
+
+## [1.11.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.2...@ohif/viewer@1.11.3) (2019-10-23)
+
+
+### Bug Fixes
+
+* 🐛 Switch to orhtographic view for 2D MPR ([#1074](https://github.com/OHIF/Viewers/issues/1074)) ([13d337a](https://github.com/OHIF/Viewers/commit/13d337aaabb8dadf6366c6262c5e47e7781edd08))
+
+
+
+
+
+## [1.11.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.1...@ohif/viewer@1.11.2) (2019-10-23)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.11.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.11.0...@ohif/viewer@1.11.1) (2019-10-23)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [1.11.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.10.3...@ohif/viewer@1.11.0) (2019-10-22)
+
+
+### Bug Fixes
+
+* MPR initialization ([#1062](https://github.com/OHIF/Viewers/issues/1062)) ([b037394](https://github.com/OHIF/Viewers/commit/b03739428f72bb50bdabdd6f83b7af885057da69))
+
+
+### Features
+
+* 🎸 Load spinner when selecting gcloud store. Add key on td ([#1034](https://github.com/OHIF/Viewers/issues/1034)) ([e62f403](https://github.com/OHIF/Viewers/commit/e62f403fe9e3df56713128e3d59045824b086d8d)), closes [#1057](https://github.com/OHIF/Viewers/issues/1057)
+
+
+
+
+
+## [1.10.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.10.2...@ohif/viewer@1.10.3) (2019-10-18)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.10.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.10.1...@ohif/viewer@1.10.2) (2019-10-18)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [1.10.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.10.0...@ohif/viewer@1.10.1) (2019-10-16)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [1.10.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.9.1...@ohif/viewer@1.10.0) (2019-10-15)
+
+
+### Features
+
+* Add browser info and app version ([#1046](https://github.com/OHIF/Viewers/issues/1046)) ([c217b8b](https://github.com/OHIF/Viewers/commit/c217b8b))
+
+
+
+
+
+## [1.9.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.9.0...@ohif/viewer@1.9.1) (2019-10-15)
+
+
+### Bug Fixes
+
+* 🐛 Remove debugger statement left in from last PR ([#1052](https://github.com/OHIF/Viewers/issues/1052)) ([d091cd6](https://github.com/OHIF/Viewers/commit/d091cd6))
+
+
+
+
+
+# [1.9.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.8.0...@ohif/viewer@1.9.0) (2019-10-15)
+
+
+### Features
+
+* 🎸 Only allow reconstruction of datasets that make sense ([#1010](https://github.com/OHIF/Viewers/issues/1010)) ([2d75e01](https://github.com/OHIF/Viewers/commit/2d75e01)), closes [#561](https://github.com/OHIF/Viewers/issues/561)
+
+
+
+
+
+# [1.8.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.7.0...@ohif/viewer@1.8.0) (2019-10-14)
+
+
+### Features
+
+* Notification Service ([#1011](https://github.com/OHIF/Viewers/issues/1011)) ([92c8996](https://github.com/OHIF/Viewers/commit/92c8996))
+
+
+
+
+
 # [1.7.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@1.6.3...@ohif/viewer@1.7.0) (2019-10-14)
 
 

@@ -1,11 +1,13 @@
+/* Viewer Route */
 .entry-header {
-  padding: 10px 10px 0;
+  padding: 10px 15px;
   height: var(--top-bar-height);
 }
 
+/* Home Page */
 .entry-header.header-big {
   background: rgba(21, 25, 30, 0.7);
-  padding: 10px var(--study-list-padding);
+  padding: 35px var(--study-list-padding);
   height: auto;
   display: inline-block;
   width: 100%;
@@ -29,7 +31,7 @@
 
 .entry-header.header-big .header-brand {
   height: auto;
-  padding: 25px 0;
+  padding: 0;
 }
 
 .header-logo-image {
@@ -41,7 +43,7 @@
 }
 
 .entry-header.header-big .header-logo-image {
-  margin: 0 20px 0 0;
+  margin-right: 20px;
   width: 50px;
   height: 50px;
 }
@@ -95,4 +97,47 @@
   font-weight: 700;
   color: #91b9cd;
   margin-right: 1rem;
+}
+
+.notification-bar {
+  display: none;
+  position: absolute;
+  height: 20px;
+  line-height: 20px;
+  width: 100%;
+  background-color: #91b9cd;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
+}
+
+@media only screen and (max-width: 768px) {
+  .entry-header,
+  .entry-header.header-big {
+    padding: 30px 15px 10px 15px;
+  }
+  .entry-header.header-big .header-logo-image {
+    margin: 0 10px 0 0;
+    width: 25px;
+    height: 25px;
+  }
+
+  .entry-header.header-big .header-logo-text {
+    width: 40%;
+  }
+
+  /* Account for notification bar height */
+  .entry-header.header-big .header-brand {
+  }
+
+  .dd-menu {
+  }
+
+  /* Toggle Notification Bar */
+  .notification-bar {
+    display: block;
+  }
+  .header-menu .research-use {
+    display: none;
+  }
 }

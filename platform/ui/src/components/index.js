@@ -11,17 +11,24 @@ import {
 
 import { Checkbox } from './checkbox';
 import { CineDialog } from './cineDialog';
+import { DownloadDialog } from './downloadDialog';
 import { QuickSwitch } from './quickSwitch';
 import { RoundedButtonGroup } from './roundedButtonGroup';
 import { SelectTree } from './selectTree';
 import { SimpleDialog } from './simpleDialog';
-import { StudyList } from './studyList';
+import {
+  PageToolbar,
+  StudyList,
+  TableSearchFilter,
+  TablePagination,
+} from './studyList';
 import { ToolbarSection } from './toolbarSection';
 import { Tooltip } from './tooltip';
 
 export {
   Checkbox,
   CineDialog,
+  DownloadDialog,
   LayoutButton,
   LayoutChooser,
   MeasurementTable,
@@ -30,12 +37,15 @@ export {
   OverlayTrigger,
   QuickSwitch,
   RoundedButtonGroup,
+  PageToolbar,
   SelectTree,
   SimpleDialog,
   StudyBrowser,
   StudyList,
   TableList,
   TableListItem,
+  TableSearchFilter,
+  TablePagination,
   ThumbnailEntry,
   ToolbarSection,
   Tooltip,

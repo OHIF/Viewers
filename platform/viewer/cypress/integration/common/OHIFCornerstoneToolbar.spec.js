@@ -2,12 +2,12 @@ describe('OHIF Cornerstone Toolbar', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
     cy.waitDicomImage();
+    cy.expectMinimumThumbnails(3);
   });
 
   beforeEach(() => {
     cy.initCornerstoneToolsAliases();
     cy.initCommonElementsAliases();
-    //Following best practices, reset should be done before each test
     cy.resetViewport();
   });
 
@@ -42,9 +42,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@moreBtn')
       .should('be.visible')
       .contains('More');
-    cy.get('@twodmprBtn')
-      .should('be.visible')
-      .contains('2D MPR');
     cy.get('@layoutBtn')
       .should('be.visible')
       .contains('Layout');
@@ -60,17 +57,16 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'top', { which: 1 })
-      .trigger('mousemove', 'center', { which: 1 })
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
       .trigger('mouseup');
-
     const expectedText =
-      'Ser: 1Img: 14 14/26256 x 256Loc: 0.00 mm Thick: 5.00 mm';
+      'Ser: 1Img: 1 1/26256 x 256Loc: -30.00 mm Thick: 5.00 mm';
     cy.get('@viewportInfoBottomLeft').should('have.text', expectedText);
   });
 
   it('checks if Zoom tool will zoom in/out an image in the viewport', () => {
-    //Click on button and vefiry if icon is active on toolbar
+    //Click on button and verify if icon is active on toolbar
     cy.get('@zoomBtn')
       .click()
       .then($zoomBtn => {
@@ -79,11 +75,11 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'top', { which: 1 })
-      .trigger('mousemove', 'center', { which: 1 })
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
       .trigger('mouseup');
 
-    const expectedText = 'Zoom: 884%W: 820 L: 410Lossless / Uncompressed';
+    const expectedText = 'Zoom: 50%W: 958 L: 479Lossless / Uncompressed';
     cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
@@ -97,14 +93,14 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
-      .trigger('mousedown', 'top', { which: 1 })
-      .trigger('mousemove', 'center', { which: 1 })
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
       .trigger('mouseup')
       .trigger('mousedown', 'center', { which: 1 })
       .trigger('mousemove', 'left', { which: 1 })
       .trigger('mouseup');
 
-    const expectedText = 'Zoom: 211%W: 544 L: 626Lossless / Uncompressed';
+    const expectedText = 'Zoom: 211%W: 635 L: 226Lossless / Uncompressed';
     cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
@@ -148,7 +144,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Add annotation on the viewport
     const firstClick = [150, 100];
     const secondClick = [130, 170];
-    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
+    cy.addLine('@viewport', firstClick, secondClick);
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn')
@@ -176,7 +172,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     const initPos = [180, 390];
     const midPos = [300, 410];
     const finalPos = [180, 450];
-    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
+    cy.addAngle('@viewport', initPos, midPos, finalPos);
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn')
@@ -200,11 +196,14 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Click on reset button
     cy.get('@resetBtn').click();
 
-    const expectedText = 'Zoom: 211%W: 820 L: 410Lossless / Uncompressed';
+    const expectedText = 'Zoom: 211%W: 958 L: 479Lossless / Uncompressed';
     cy.get('@viewportInfoBottomRight').should('have.text', expectedText);
   });
 
   it('checks if CINE tool will prompt a modal with working controls', () => {
+    cy.server();
+    cy.route('GET', '/**/studies/**/').as('studies');
+
     //Click on button
     cy.get('@cineBtn').click();
     //Vefiry if cine control overlay is being displayed
@@ -219,26 +218,49 @@ describe('OHIF Cornerstone Toolbar', () => {
       .click();
 
     let expectedText = 'Img: 1 1/26';
-    cy.get('@viewportInfoBottomLeft').should('not.have.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'not.have.text',
+      expectedText
+    );
 
     //Test SKIP TO FIRST IMAGE button
-    cy.get('[title="Skip to first Image"]').click();
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('[title="Skip to first Image"]')
+      .click()
+      .wait(1000);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Test NEXT IMAGE button
-    cy.get('[title="Next Image"]').click();
+    cy.get('[title="Next Image"]')
+      .click()
+      .wait(1000);
     expectedText = 'Img: 2 2/26';
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Test SKIP TO LAST IMAGE button
-    cy.get('[title="Skip to last Image"]').click();
+    cy.get('[title="Skip to last Image"]')
+      .click()
+      .wait(2000);
     expectedText = 'Img: 27 26/26';
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Test PREVIOUS IMAGE button
-    cy.get('[title="Previous Image"]').click();
+    cy.get('[title="Previous Image"]')
+      .click()
+      .wait(1000);
     expectedText = 'Img: 26 25/26';
-    cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
+    cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
+      'contain.text',
+      expectedText
+    );
 
     //Click on Cine button
     cy.get('@cineBtn').click();
@@ -361,33 +383,20 @@ describe('OHIF Cornerstone Toolbar', () => {
         .should('be.eq', 9);
     });
 
-    //Commented this to avoid throwing an wrong exception at the end of "Layout button" test
-    //this commented section should be uncommented once issue #999 is fixed. (https://github.com/OHIF/Viewers/issues/999)
-
     //verify if layout has changed to 1 viewport
-    //  cy.get('@layoutBtn').click();
-    //  cy.get('tbody > :nth-child(1) > :nth-child(1)').click();
-    //  cy.get('.viewport-container').then(($viewport) =>{
-    //    cy.wrap($viewport)
-    //      .its('length')
-    //      .should('be.eq', 1);
-    //  })
-    cy.reload();
-    cy.waitDicomImage();
+    cy.get('@layoutBtn').click();
+    cy.get('tbody > :nth-child(1) > :nth-child(1)').click();
+    cy.get('.viewport-container').then($viewport => {
+      cy.wrap($viewport)
+        .its('length')
+        .should('be.eq', 1);
+    });
   });
 
   it('checks if Clear tool will delete all measurements added in the viewport', () => {
     //Add measurements in the viewport
-    cy.get('@lengthBtn').click();
-    const firstClick = [150, 100];
-    const secondClick = [130, 170];
-    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
-
-    cy.get('@angleBtn').click();
-    const initPos = [180, 390];
-    const midPos = [300, 410];
-    const finalPos = [180, 450];
-    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
+    cy.addLengthMeasurement();
+    cy.addAngleMeasurement();
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn').click();
@@ -419,23 +428,18 @@ describe('OHIF Cornerstone Toolbar', () => {
 
   it('checks if Eraser tool will remove the measurements added in the viewport', () => {
     //Add measurements in the viewport
-    cy.get('@lengthBtn').click();
-    const firstClick = [150, 100];
-    const secondClick = [130, 170];
-    cy.addLine('.cornerstone-canvas', firstClick, secondClick);
-
-    cy.get('@angleBtn').click();
-    const initPos = [180, 390];
-    const midPos = [300, 410];
-    const finalPos = [180, 450];
-    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
+    cy.addLengthMeasurement();
+    cy.addAngleMeasurement();
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn').click();
     cy.get('.measurementItem')
       .its('length')
       .should('be.eq', 2);
-    cy.get('@measurementsBtn').click();
+    cy.get('@measurementsBtn')
+      .click()
+      .wait(2000);
+    //cy.isNotInViewport('@measurementsPanel'); //TO DO: check this intermittent behaviour
 
     //Click More button
     cy.get('@moreBtn').click();
@@ -443,14 +447,14 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('.tooltip-inner > :nth-child(12)').click();
 
     //Erase measurement #1 and Verify if it was removed from the measurements panel
-    const [x1, y1] = firstClick;
+    const [x1, y1] = [150, 100];
     cy.get('@viewport').click(x1, y1, { force: true });
     cy.get('.measurementItem')
       .its('length')
       .should('be.eq', 1);
 
     //Erase measurement #2 and Verify if it was removed from the measurements panel
-    const [x2, y2] = initPos;
+    const [x2, y2] = [180, 390];
     cy.get('@viewport').click(x2, y2, { force: true });
     cy.get('.measurementItem').should('not.exist');
   });

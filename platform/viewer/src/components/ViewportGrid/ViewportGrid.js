@@ -32,6 +32,11 @@ const ViewportGrid = function(props) {
 
   const ViewportPanes = layout.viewports.map((layout, viewportIndex) => {
     const displaySet = viewportData[viewportIndex];
+
+    if (!displaySet) {
+      return null;
+    }
+
     const data = {
       displaySet,
       studies,
@@ -86,6 +91,7 @@ const ViewportGrid = function(props) {
 
   return (
     <div
+      data-cy="viewprt-grid"
       style={{
         display: 'grid',
         gridTemplateRows: `repeat(${numRows}, ${rowSize}%)`,
@@ -108,6 +114,9 @@ ViewportGrid.propTypes = {
   setViewportData: PropTypes.func.isRequired,
   studies: PropTypes.array,
   children: PropTypes.node,
+  defaultPlugin: PropTypes.string,
+  numRows: PropTypes.number.isRequired,
+  numColumns: PropTypes.number.isRequired,
 };
 
 ViewportGrid.defaultProps = {

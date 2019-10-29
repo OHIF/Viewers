@@ -34,7 +34,6 @@ const defaultState = {
  * @param {Object} [action.viewportSpecificData]
  */
 const viewports = (state = defaultState, action) => {
-  let currentData;
   let viewportSpecificData;
   let useActiveViewport = false;
   switch (action.type) {
@@ -85,14 +84,24 @@ const viewports = (state = defaultState, action) => {
     // Allow fall-through
     // eslint-disable-next-line
     case SET_SPECIFIC_DATA: {
+      const layout = cloneDeep(state.layout);
+      const hasPlugin = action.data && action.data.plugin;
       const viewportIndex = useActiveViewport
         ? state.activeViewportIndex
         : action.viewportIndex;
-      currentData = cloneDeep(state.viewportSpecificData[viewportIndex]) || {};
-      viewportSpecificData = cloneDeep(state.viewportSpecificData);
-      viewportSpecificData[viewportIndex] = merge({}, currentData, action.data);
+      const { dom } = state.viewportSpecificData[viewportIndex];
 
-      return Object.assign({}, state, { viewportSpecificData });
+      viewportSpecificData = cloneDeep(state.viewportSpecificData);
+      viewportSpecificData[viewportIndex] = {
+        dom,
+        ...action.data,
+      };
+
+      if (hasPlugin) {
+        layout.viewports[viewportIndex].plugin = action.data.plugin;
+      }
+
+      return Object.assign({}, state, { layout, viewportSpecificData });
     }
     case CLEAR_VIEWPORT:
       viewportSpecificData = cloneDeep(state.viewportSpecificData);
