@@ -5,6 +5,7 @@ import {
   initCommonElementsAliases,
   initRouteAliases,
   initVTKToolsAliases,
+  initStudyListAliases,
 } from './aliases.js';
 
 // ***********************************************
@@ -75,7 +76,7 @@ Cypress.Commands.add('isPageLoaded', (url = '/viewer/') => {
   return cy.location('pathname', { timeout: 60000 }).should('include', url);
 });
 
-Cypress.Commands.add('openStudyList', patientName => {
+Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
   cy.visit('/');
   cy.wait('@getStudies');
@@ -237,6 +238,11 @@ Cypress.Commands.add('initRouteAliases', () => {
 //Initialize aliases for VTK tools
 Cypress.Commands.add('initVTKToolsAliases', () => {
   initVTKToolsAliases();
+});
+
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliases', () => {
+  initStudyListAliases();
 });
 
 //Add measurements in the viewport

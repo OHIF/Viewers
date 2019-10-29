@@ -52,3 +52,16 @@ export function initVTKToolsAliases() {
   cy.get('.ohif-check-label').as('modeCheckbox');
   cy.get('.btn-group > .toolbar-button').as('layoutBtn');
 }
+
+//Creating aliases for Study List page elements
+export function initStudyListAliases() {
+  cy.get('.studyCount').as('studyCount');
+  cy.get('#patientName').as('patientName');
+  cy.get('#patientId').as('MRN');
+  cy.get('#accessionNumber').as('accessionNumber');
+  cy.get('#studyListStartDate').as('studyListStartDate');
+  cy.get('#studyListEndDate').as('studyListEndDate');
+  cy.get('#modalities').as('modalities');
+  cy.get('#studyDescription').as('studyDescription');
+  cy.get('.studylistStudy').as('searchResult');
+}
