@@ -330,24 +330,31 @@ workflows:
           pre-steps:
             - run: |
                 # Where are we?
-                echo "$(dirname "$0")"
-                cd ~/ && ls
-                cd ~/project && ls
-                cd /platform/viewer && ls
-                cs ~/platform/viewer && ls
-                cd ~/project/platform/viewer && ls
+                # echo "$(dirname "$0")"
+                # cd ~/ && ls
+                # cd ~/project && ls
+                # cd /platform/viewer && ls
+                # cs ~/platform/viewer && ls
+                # cd ~/project/platform/viewer && ls
                 # Clear yarn cache; update to latest
                 rm -rf ~/.yarn
                 npm i -g yarn
                 yarn -v
                 # Add `wait-on` library for Cypress orb? (global)
                 yarn global add wait-on
-                chmod +x ~/.circleci/start-test-server.sh
+                # chmod +x ~/.circleci/start-test-server.sh
           yarn: true
           record: false
           store_artifacts: false
           working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build
+          build: |
+            echo "$(dirname "$0")"
+            cd ~/ && ls
+            cd ~/project && ls
+            cd /platform/viewer && ls
+            cd ~/platform/viewer && ls
+            cd ~/project/platform/viewer && ls
+            npx cross-env QUICK_BUILD=true yarn run build
           start: ~/.circleci/start-test-server.sh
           wait-on: 'http://localhost:5985'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
