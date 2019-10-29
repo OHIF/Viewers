@@ -40,34 +40,14 @@
     margin-left: 1rem
     margin-right: 0.5rem
     max-width: 217px
-    min-height: 36px
     position: relative
     word-wrap: break-word
 
     .series-description
-        flex-grow: 1
+      flex-grow: 1
 
-    &.info-only
-      .series-description
-        display: none
-
-      .series-information
-        display: flex
-        flex-grow: 1
-        max-width: none
-        padding-right: 0
-
-        .item
-          flex: 1
-          text-align: center
-
-          .icon, .value
-            display: inline
-            line-height: 25px
-
-          .value
-            margin-left: 0
-            width: auto
+    &.info-only .series-description
+      display: none
 
   .series-information
     display: flex
@@ -83,15 +63,17 @@
         position: relative
 
         &:after
+          content: ''
           background-color: var(--active-color);
           box-shadow: 1px 1px rgba(0, 0, 0, .115)
           left: -4px
           position: absolute
           top: -4px
+
         &
         &:after
-          border: 0px solid var(--series-count-background-color)
           content: ''
+          border: 0px solid var(--series-count-background-color)
           display: inline-block
           height: 11px
           width: 11px
