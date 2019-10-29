@@ -1,4 +1,4 @@
-import DICOMWeb from '../../../DICOMWeb/';
+import DICOMWeb from '../DICOMWeb/';
 
 const WADOProxy = {
   convertURL: (url, server) => {
