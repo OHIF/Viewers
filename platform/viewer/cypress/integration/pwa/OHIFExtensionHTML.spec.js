@@ -23,7 +23,7 @@ describe('OHIF HTML Extension', () => {
     );
   });
 
-  it.only('checks if the HTML viewport has been set to active by interaction', () => {
+  it('checks if the HTML viewport has been set to active by interaction', () => {
     cy.setLayout('3', '3');
 
     // check if viewport has been set as active by CLICKING
