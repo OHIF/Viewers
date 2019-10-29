@@ -7,7 +7,7 @@ import useMedia from '../../hooks/useMedia.js';
 import PropTypes from 'prop-types';
 import ColorHash from './internal/color-hash.js';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
-import { withTranslation } from '../../utils/LanguageProvider';
+import { useTranslation } from 'react-i18next';
 
 const colorHash = new ColorHash();
 
@@ -27,10 +27,10 @@ function StudyList(props) {
     filterValues,
     onFilterChange: handleFilterChange,
     onSelectItem: handleSelectItem,
-    t,
     //
     studyListDateFilterNumDays,
   } = props;
+  const [t] = useTranslation('StudyList');
 
   const largeTableMeta = [
     {
@@ -73,13 +73,13 @@ function StudyList(props) {
 
   const mediumTableMeta = [
     {
-      displayText: 'Patient / MRN',
+      displayText: `${t('Patient')} / ${t('MRN')}`,
       fieldName: 'patientNameOrId',
       inputType: 'text',
       size: 250,
     },
     {
-      displayText: 'Description',
+      displayText: t('Description'),
       fieldName: 'accessionOrModalityOrDescription',
       inputType: 'text',
       size: 350,
@@ -94,7 +94,7 @@ function StudyList(props) {
 
   const smallTableMeta = [
     {
-      displayText: 'Search',
+      displayText: t('Search'),
       fieldName: 'allFields',
       inputType: 'text',
       size: 100,
@@ -393,5 +393,4 @@ TableRow.defaultProps = {
   isHighlighted: false,
 };
 
-const connectedComponent = withTranslation('StudyList')(StudyList);
-export { connectedComponent as StudyList };
+export { StudyList };

@@ -6,8 +6,6 @@ import CustomDateRangePicker from './CustomDateRangePicker.js';
 import { Icon } from './../../elements/Icon';
 import { useTranslation } from 'react-i18next';
 
-
-
 function TableSearchFilter(props) {
   const {
     meta,
@@ -17,10 +15,10 @@ function TableSearchFilter(props) {
     sortFieldName,
     sortDirection,
     // TODO: Rename
-    studyListDateFilterNumDays
+    studyListDateFilterNumDays,
   } = props;
   const [focusedInput, setFocusedInput] = useState(null);
-  const [t] = useTranslation(); // 'Common'?
+  const [t] = useTranslation('Common');
 
   const sortIcons = ['sort', 'sort-up', 'sort-down'];
   const sortIconForSortField =
@@ -29,7 +27,10 @@ function TableSearchFilter(props) {
   const today = moment();
   const lastWeek = moment().subtract(7, 'day');
   const lastMonth = moment().subtract(1, 'month');
-  const defaultStartDate = moment().subtract(studyListDateFilterNumDays, 'days');
+  const defaultStartDate = moment().subtract(
+    studyListDateFilterNumDays,
+    'days'
+  );
   const defaultEndDate = today;
   const studyDatePresets = [
     {
