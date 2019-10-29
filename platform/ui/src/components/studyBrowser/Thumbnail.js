@@ -6,30 +6,44 @@ import classNames from 'classnames';
 
 import './Thumbnail.styl';
 
-function ThumbnailFooter({ seriesDescription, seriesNumber, instanceNumber, numImageFrames }) {
+function ThumbnailFooter({
+  seriesDescription,
+  seriesNumber,
+  instanceNumber,
+  numImageFrames,
+}) {
   const infoOnly = !seriesDescription;
+
+  const getInfo = (value, icon, className = '') => {
+    return (
+      <div className={classNames('item item-series', className)}>
+        <div className="icon">{icon}</div>
+        <div className="value">{value}</div>
+      </div>
+    );
+  };
+  const getSeriesInformation = (
+    seriesNumber,
+    instanceNumber,
+    numImageFrames
+  ) => {
+    if (!seriesNumber && !instanceNumber && !numImageFrames) {
+      return;
+    }
+
+    return (
+      <div className="series-information">
+        {getInfo(seriesNumber, 'S:')}
+        {getInfo(instanceNumber, 'I:')}
+        {getInfo(numImageFrames, '', 'image-frames')}
+      </div>
+    );
+  };
 
   return (
     <div className={classNames('series-details', { 'info-only': infoOnly })}>
       <div className="series-description">{seriesDescription}</div>
-      <div className="series-information">
-        <div className="item item-series clearfix">
-          <div className="icon">S:</div>
-          <div className="value">{seriesNumber}</div>
-        </div>
-        {instanceNumber && (
-          <div className="item item-series clearfix">
-            <div className="icon">I:</div>
-            <div className="value">{instanceNumber}</div>
-          </div>
-        )}
-        <div className="item item-frames clearfix">
-          <div className="icon">
-            <div />
-          </div>
-          <div className="value">{numImageFrames}</div>
-        </div>
-      </div>
+      {getSeriesInformation(seriesNumber, instanceNumber, numImageFrames)}
     </div>
   );
 }
@@ -51,9 +65,8 @@ function Thumbnail(props) {
     onClick,
     onDoubleClick,
     onMouseDown,
-    supportsDrag
+    supportsDrag,
   } = props;
-
 
   const [collectedProps, drag, dragPreview] = useDrag({
     // `droppedItem` in `dropTarget`
@@ -63,11 +76,10 @@ function Thumbnail(props) {
       displaySetInstanceUid,
       type: 'thumbnail', // Has to match `dropTarget`'s type
     },
-    canDrag: function (monitor) {
+    canDrag: function(monitor) {
       return supportsDrag;
-    }
+    },
   });
-
 
   const hasImage = imageSrc || imageId;
   const hasAltText = altImageText !== undefined;
@@ -100,7 +112,7 @@ function Thumbnail(props) {
   );
 }
 
-const noop = () => { };
+const noop = () => {};
 
 Thumbnail.propTypes = {
   supportsDrag: PropTypes.bool,
@@ -114,7 +126,7 @@ Thumbnail.propTypes = {
   stackPercentComplete: PropTypes.number,
   /**
   altImageText will be used when no imageId or imageSrc is provided.
-  It will be displayed inside the <div>. This is useful when it is difficult
+It will be displayed inside the <div>. This is useful when it is difficult
   to make a preview for a type of DICOM series (e.g. DICOM-SR)
   */
   altImageText: PropTypes.string,

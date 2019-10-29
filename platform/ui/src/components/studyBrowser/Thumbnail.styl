@@ -32,7 +32,7 @@
 
   .series-details
     display: flex;
-    flex-direction: row;
+    flex-direction: column
     color: var(--text-primary-color);
     font-size: 14px
     line-height: 1.3em
@@ -54,7 +54,6 @@
       .series-information
         display: flex
         flex-grow: 1
-        float: none
         max-width: none
         padding-right: 0
 
@@ -64,7 +63,6 @@
 
           .icon, .value
             display: inline
-            float: none
             line-height: 25px
 
           .value
@@ -72,33 +70,14 @@
             width: auto
 
   .series-information
-    padding-right: 4px
-    max-width: 50px
+    display: flex
+    flex-direction: row
+    justify-content: space-between
 
     .item-frames .icon
       height: 18px
 
-    .value
-      color: var(--text-secondary-color);
-      display: inline-block
-      float: right
-      font-size: 12px
-      margin-left: 4px
-      overflow: hidden
-      text-overflow: ellipsis
-      white-space: nowrap
-      width: calc(100% - 15px)
-
-    .icon
-      color: var(--active-color);
-      display: inline-block
-      float: left
-      font-size: 10px
-      font-weight: 900
-      text-align: right
-      width: 11px
-
-      div
+    .item-series.image-frames .icon
         background-color: var(--series-count-background-color);
         margin-top: 6px
         position: relative
@@ -109,7 +88,6 @@
           left: -4px
           position: absolute
           top: -4px
-
         &
         &:after
           border: 0px solid var(--series-count-background-color)
@@ -117,3 +95,22 @@
           display: inline-block
           height: 11px
           width: 11px
+
+    .value
+      color: var(--text-secondary-color);
+      display: inline-block
+      font-size: 12px
+      margin-left: 4px
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+      width: calc(100% - 15px)
+      vertical-align: middle
+
+    .icon
+      color: var(--active-color);
+      display: inline-block
+      font-size: 10px
+      font-weight: 900
+      text-align: right
+      width: 11px

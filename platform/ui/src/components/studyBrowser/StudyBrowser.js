@@ -34,6 +34,7 @@ function StudyBrowser(props) {
                 <div
                   key={`container_${studyIndex}_${thumbIndex}`}
                   className="thumbnail-container"
+                  data-cy="thumbnail-list"
                 >
                   <Thumbnail
                     supportsDrag={supportsDrag}
