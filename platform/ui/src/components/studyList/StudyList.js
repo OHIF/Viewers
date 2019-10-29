@@ -145,14 +145,14 @@ function StudyList(props) {
         {/* LOADING */}
         {isLoading && (
           <tr className="no-hover">
-            <td colspan={tableMeta.length}>
+            <td colSpan={tableMeta.length}>
               <StudyListLoadingText />
             </td>
           </tr>
         )}
         {!isLoading && hasError && (
           <tr className="no-hover">
-            <td colspan={tableMeta.length}>
+            <td colSpan={tableMeta.length}>
               <div className="notFound">
                 {t('There was an error fetching studies')}
               </div>
@@ -162,7 +162,7 @@ function StudyList(props) {
         {/* EMPTY */}
         {!isLoading && !studies.length && (
           <tr className="no-hover">
-            <td colspan={tableMeta.length}>
+            <td colSpan={tableMeta.length}>
               <div className="notFound">{t('No matching results')}</div>
             </td>
           </tr>
