@@ -5,7 +5,7 @@ import {
   initCommonElementsAliases,
   initRouteAliases,
   initVTKToolsAliases,
-  initStudyListAliases,
+  initStudyListAliasesOnDesktop,
 } from './aliases.js';
 
 // ***********************************************
@@ -242,8 +242,8 @@ Cypress.Commands.add('initVTKToolsAliases', () => {
 });
 
 //Initialize aliases for Study List page elements
-Cypress.Commands.add('initStudyListAliases', () => {
-  initStudyListAliases();
+Cypress.Commands.add('initStudyListAliasesOnDesktop', () => {
+  initStudyListAliasesOnDesktop();
 });
 
 //Add measurements in the viewport

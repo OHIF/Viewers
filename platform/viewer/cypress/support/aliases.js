@@ -53,15 +53,15 @@ export function initVTKToolsAliases() {
   cy.get('.btn-group > .toolbar-button').as('layoutBtn');
 }
 
-//Creating aliases for Study List page elements
-export function initStudyListAliases() {
+//Creating aliases for Study List page elements on Desktop experience
+export function initStudyListAliasesOnDesktop() {
   cy.get('.study-count').as('studyCount');
-  cy.get('#patientName').as('patientName');
-  cy.get('#patientId').as('MRN');
-  cy.get('#accessionNumber').as('accessionNumber');
-  cy.get('#studyListStartDate').as('studyListStartDate');
-  cy.get('#studyListEndDate').as('studyListEndDate');
-  cy.get('#modalities').as('modalities');
-  cy.get('#studyDescription').as('studyDescription');
-  cy.get('.studylistStudy').as('searchResult');
+  cy.get('#filter-patientName').as('patientName');
+  cy.get('#filter-patientId').as('MRN');
+  cy.get('#filter-accessionNumber').as('accessionNumber');
+  cy.get('#start-date').as('studyListStartDate');
+  cy.get('#end-date').as('studyListEndDate');
+  cy.get('#filter-modalities').as('modalities');
+  cy.get('#filter-studyDescription').as('studyDescription');
+  cy.get('[data-cy="study-list-results"]').as('searchResult');
 }
