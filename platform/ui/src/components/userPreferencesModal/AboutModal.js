@@ -1,12 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Modal from 'react-bootstrap-modal';
 import detect from 'browser-detect';
+import { useTranslation } from 'react-i18next';
 
 import './AboutModal.styl';
-import { withTranslation } from '../../utils/LanguageProvider';
 
-const AboutModal = ({ t }) => {
+const AboutModal = () => {
+  const { t } = useTranslation('AboutModal');
+
   const { os, version, name } = detect();
   const capitalize = s =>
     s.substr(0, 1).toUpperCase() + s.substr(1).toLowerCase();
@@ -58,7 +58,7 @@ const AboutModal = ({ t }) => {
   );
 
   return (
-    <Modal.Body data-cy="about-modal">
+    <>
       <div className="btn-group">
         <a
           className="btn btn-default"
@@ -99,14 +99,11 @@ const AboutModal = ({ t }) => {
           <tbody>{itemsPreset().map(item => renderTableRow(item))}</tbody>
         </table>
       </div>
-    </Modal.Body>
+    </>
   );
 };
 
-AboutModal.propTypes = {
-  t: PropTypes.func.isRequired,
-};
+AboutModal.className = 'AboutModal';
 
-const ConnectedComponent = withTranslation('AboutModal')(AboutModal);
-export { ConnectedComponent as AboutModal };
-export default ConnectedComponent;
+export { AboutModal };
+export default AboutModal;

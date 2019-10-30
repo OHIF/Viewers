@@ -35,13 +35,19 @@ const ModalProvider = ({ children }) => {
       <Consumer>
         {({ component: Component, props, hide }) =>
           Component ? (
-            <Modal {...props} onHide={hide}>
-              {props.title && (
-                <Modal.Header closeButton={props.closeButton}>
-                  <Modal.Title>{props.title}</Modal.Title>
-                </Modal.Header>
-              )}
-              <Component {...props} hide={hide} />
+            <Modal
+              className={`modal fade themed in ${Component.className}`}
+              {...props}
+              onHide={hide}
+            >
+              <Modal.Header closeButton={props.closeButton}>
+                {props.title && <Modal.Title>{props.title}</Modal.Title>}
+                {props.header}
+              </Modal.Header>
+              <Modal.Body>
+                <Component {...props} hide={hide} />
+              </Modal.Body>
+              <Modal.Footer>{props.footer}</Modal.Footer>
             </Modal>
           ) : null
         }

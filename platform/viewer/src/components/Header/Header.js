@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 
 import { Dropdown } from '@ohif/ui';
 import { AboutModal } from '@ohif/ui';
+import { withModal } from '@ohif/ui';
 
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import { hotkeysManager } from './../../App.js';
 import './Header.css';
 // Context
 import AppContext from './../../context/AppContext';
-import { withModal } from '../../../../ui/src/utils/ModalProvider.js';
 
 class Header extends Component {
   static contextType = AppContext;
@@ -64,7 +64,6 @@ class Header extends Component {
         icon: { name: 'info' },
         onClick: () =>
           show(AboutModal, {
-            className: 'AboutModal modal fade themed in',
             title: t('OHIF Viewer - About'),
           }),
       },
@@ -97,25 +96,25 @@ class Header extends Component {
     return (
       <>
         <div className="notification-bar">{t('INVESTIGATIONAL USE ONLY')}</div>
-        <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
+        <div className={`entry-header ${home ? 'header-big' : ''}`}>
           <div className="header-left-box">
-            {this.props.location && this.props.location.studyLink && (
+            {location && location.studyLink && (
               <Link
-                to={this.props.location.studyLink}
+                to={location.studyLink}
                 className="header-btn header-viewerLink"
               >
                 {t('Back to Viewer')}
               </Link>
             )}
 
-            {this.props.children}
+            {children}
 
-            {showStudyList && !this.props.home && (
+            {showStudyList && !home && (
               <Link
                 className="header-btn header-studyListLinkSection"
                 to={{
                   pathname: '/',
-                  state: { studyLink: this.props.location.pathname },
+                  state: { studyLink: location.pathname },
                 }}
               >
                 {t('Study list')}
@@ -128,16 +127,6 @@ class Header extends Component {
               {t('INVESTIGATIONAL USE ONLY')}
             </span>
             <Dropdown title={t('Options')} list={this.options} align="right" />
-
-            {/* TODO: We need a Modal service */}
-            <AboutModal
-              {...this.state}
-              onCancel={() =>
-                this.setState({
-                  isOpen: false,
-                })
-              }
-            />
           </div>
         </div>
       </>
