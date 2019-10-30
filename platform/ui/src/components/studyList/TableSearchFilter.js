@@ -18,9 +18,7 @@ function TableSearchFilter(props) {
     studyListDateFilterNumDays,
   } = props;
   const [focusedInput, setFocusedInput] = useState(null);
-  const { t, i18n, ready } = useTranslation('Common', {
-    useSuspense: false,
-  });
+  const { t, i18n } = useTranslation('Common');
 
   console.log('TABLE SEARCH FILTER:', i18n, ready);
 

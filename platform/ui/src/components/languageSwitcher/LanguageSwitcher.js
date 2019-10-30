@@ -27,9 +27,6 @@ const LanguageSwitcher = () => {
     setCurrentLanguage(language);
 
     i18n.init({
-      react: {
-        useSuspense: false,
-      },
       fallbackLng: language,
       lng: language,
     });
