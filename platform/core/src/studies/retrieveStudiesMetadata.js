@@ -22,7 +22,7 @@ export default function retrieveStudiesMetadata(
   const promises = [];
 
   // Loop through the array of studyInstanceUids
-  studyInstanceUids.forEach(function (studyInstanceUid) {
+  studyInstanceUids.forEach(function(studyInstanceUid) {
     // Send the call and resolve or reject the related promise based on its outcome
     const promise = retrieveStudyMetadata(server, studyInstanceUid, filters);
 

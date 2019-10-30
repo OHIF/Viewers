@@ -1,7 +1,6 @@
 import RetrieveMetadataLoaderSync from './retrieveMetadataLoaderSync';
 import RetrieveMetadataLoaderAsync from './retrieveMetadataLoaderAsync';
 
-
 /**
  * Retrieve Study metadata from a DICOM server. If the server is configured to use lazy load, only the first series
  * will be loaded and the property "studyLoader" will be set to let consumer load remaining series as needed.
@@ -13,9 +12,16 @@ import RetrieveMetadataLoaderAsync from './retrieveMetadataLoaderAsync';
  * @returns {Object} A study descriptor object
  */
 async function RetrieveMetadata(server, studyInstanceUid, filters = {}) {
-  const RetrieveMetadataLoader = server.enableStudyLazyLoad !== false ? RetrieveMetadataLoaderAsync : RetrieveMetadataLoaderSync;
+  const RetrieveMetadataLoader =
+    server.enableStudyLazyLoad !== false
+      ? RetrieveMetadataLoaderAsync
+      : RetrieveMetadataLoaderSync;
 
-  const retrieveMetadataLoader = new RetrieveMetadataLoader(server, studyInstanceUid, filters);
+  const retrieveMetadataLoader = new RetrieveMetadataLoader(
+    server,
+    studyInstanceUid,
+    filters
+  );
   const studyMetadata = retrieveMetadataLoader.execLoad();
 
   return studyMetadata;

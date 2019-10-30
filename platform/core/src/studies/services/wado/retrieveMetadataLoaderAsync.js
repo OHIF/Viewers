@@ -94,11 +94,8 @@ function makeSeriesAsyncLoader(
  * It loads the one series and then append to seriesLoader the others to be consumed/loaded
  */
 export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader {
-
   configLoad() {
-    const {
-      server
-    } = this;
+    const { server } = this;
 
     const client = new api.DICOMwebClient({
       url: server.qidoRoot,
@@ -108,26 +105,26 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     this.client = client;
   }
   async preLoad() {
-    const {
-      client,
-      studyInstanceUID,
-      filters
-    } = this;
+    const { client, studyInstanceUID, filters } = this;
 
-    const seriesInstanceUIDs = await searchStudySeries(client, studyInstanceUID);
+    const seriesInstanceUIDs = await searchStudySeries(
+      client,
+      studyInstanceUID
+    );
     const filtered = filterStudySeries(seriesInstanceUIDs, filters);
-    const seriesToSort = filtered && filtered.length ? filtered : seriesInstanceUIDs;
-    const seriesSorted = sortStudySeries(seriesToSort, sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria);
+    const seriesToSort =
+      filtered && filtered.length ? filtered : seriesInstanceUIDs;
+    const seriesSorted = sortStudySeries(
+      seriesToSort,
+      sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
+    );
     const seriesInstanceUIDsMap = mapStudySeries(seriesSorted);
 
     return seriesInstanceUIDsMap;
   }
 
   async load(preLoadData) {
-    const {
-      client,
-      studyInstanceUID
-    } = this;
+    const { client, studyInstanceUID } = this;
 
     const seriesAsyncLoader = makeSeriesAsyncLoader(
       client,
@@ -139,19 +136,14 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
     return {
       sopInstances: firstSeries.sopInstances,
-      asyncLoader: seriesAsyncLoader
+      asyncLoader: seriesAsyncLoader,
     };
   }
 
   async posLoad(loadData) {
-    const {
-      server
-    } = this;
+    const { server } = this;
 
-    const {
-      sopInstances,
-      asyncLoader
-    } = loadData
+    const { sopInstances, asyncLoader } = loadData;
 
     const study = await StudyUtils.createStudyFromSOPInstanceList(
       server,

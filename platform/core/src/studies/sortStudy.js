@@ -19,17 +19,17 @@ function seriesInfoSortingCriteria(firstSeries, secondSeries) {
 }
 
 const seriesSortCriteria = {
-  default: ((a, b) => a.seriesNumber - b.seriesNumber),
-  seriesInfoSortingCriteria
+  default: (a, b) => a.seriesNumber - b.seriesNumber,
+  seriesInfoSortingCriteria,
 };
 
 const instancesSortCriteria = {
-  default: ((a, b) => a.instanceNumber - b.instanceNumber)
+  default: (a, b) => a.instanceNumber - b.instanceNumber,
 };
 
 const sortingCriteria = {
   seriesSortCriteria,
-  instancesSortCriteria
+  instancesSortCriteria,
 };
 
 /**
@@ -40,7 +40,10 @@ const sortingCriteria = {
  * @param {function} seriesSortingCriteria method for sorting
  * @returns {Array} sorted seriesList object
  */
-const sortStudySeries = (seriesList, seriesSortingCriteria = seriesSortCriteria.default) => {
+const sortStudySeries = (
+  seriesList,
+  seriesSortingCriteria = seriesSortCriteria.default
+) => {
   return seriesList.sort(seriesSortingCriteria);
 };
 
@@ -52,7 +55,10 @@ const sortStudySeries = (seriesList, seriesSortingCriteria = seriesSortCriteria.
  * @param {function} instancesSortingCriteria method for sorting
  * @returns {Array} sorted instancesList object
  */
-const sortStudyInstances = (instancesList, instancesSortingCriteria = instancesSortCriteria.default) => {
+const sortStudyInstances = (
+  instancesList,
+  instancesSortingCriteria = instancesSortCriteria.default
+) => {
   return instancesList.sort(instancesSortingCriteria);
 };
 
@@ -66,7 +72,12 @@ const sortStudyInstances = (instancesList, instancesSortingCriteria = instancesS
  * @param {function} [instancesSortingCriteria = instancesSortCriteria.default] method for sorting instances
  * @returns {Object} sorted study object
  */
-export default function sortStudy(study, deepSort = true, seriesSortingCriteria = seriesSortCriteria.default, instancesSortingCriteria = instancesSortCriteria.default) {
+export default function sortStudy(
+  study,
+  deepSort = true,
+  seriesSortingCriteria = seriesSortCriteria.default,
+  instancesSortingCriteria = instancesSortCriteria.default
+) {
   if (!study || !study.seriesList) {
     throw new Error('Insufficient study data was provided to sortStudy');
   }
@@ -82,8 +93,4 @@ export default function sortStudy(study, deepSort = true, seriesSortingCriteria 
   return study;
 }
 
-export {
-  sortStudySeries,
-  sortStudyInstances,
-  sortingCriteria
-}
+export { sortStudySeries, sortStudyInstances, sortingCriteria };

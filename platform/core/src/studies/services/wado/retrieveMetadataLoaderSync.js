@@ -11,7 +11,6 @@ import RetrieveMetadataLoader from './retrieveMetadataLoader';
  * I.e Retrieve metadata using all loaders possibilities.
  */
 export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
-
   getOptions() {
     const { studyInstanceUID, filters } = this;
 
@@ -32,12 +31,7 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
    */
   *getLoaders() {
     const loaders = [];
-    const {
-      filters: {
-        seriesInstanceUID
-      } = {},
-      client
-    } = this;
+    const { filters: { seriesInstanceUID } = {}, client } = this;
 
     if (seriesInstanceUID) {
       loaders.push(client.retrieveSeriesMetadata);
@@ -49,9 +43,7 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
   }
 
   configLoad() {
-    const {
-      server
-    } = this;
+    const { server } = this;
     const client = new api.DICOMwebClient({
       url: server.wadoRoot,
       headers: DICOMWeb.getAuthorizationHeader(server),
@@ -67,23 +59,20 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
 
     for (const loader of loaders) {
       try {
-
         result = await loader.call(this.client, options);
         break; // closes iterator in case data is retrieved successfully
-      } catch (e) { }
+      } catch (e) {}
     }
 
     if (loaders.next().done && !result) {
-      throw "cant find data";
+      throw 'cant find data';
     }
 
     return result;
   }
 
   async posLoad(loadData) {
-    const {
-      server
-    } = this;
+    const { server } = this;
     return await StudyUtils.createStudyFromSOPInstanceList(server, loadData);
   }
 }

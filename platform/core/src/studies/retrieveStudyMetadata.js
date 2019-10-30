@@ -34,7 +34,7 @@ export function retrieveStudyMetadata(server, studyInstanceUid, filters) {
 
   // Create a promise to handle the data retrieval
   const promise = new Promise((resolve, reject) => {
-    RetrieveMetadata(server, studyInstanceUid, filters).then(function (data) {
+    RetrieveMetadata(server, studyInstanceUid, filters).then(function(data) {
       resolve(data);
     }, reject);
   });

@@ -50,7 +50,6 @@ function createStudy(server, aSopInstance) {
   };
 }
 
-
 /** Returns a WADO url for an instance
  *
  * @param studyInstanceUid
@@ -105,7 +104,6 @@ function buildInstanceFrameWadoRsUri(
 
   return `${baseWadoRsUri}/frames/${frame}`;
 }
-
 
 function getFrameIncrementPointer(element) {
   const frameIncrementPointerNames = {
@@ -173,7 +171,6 @@ function getSourceImageInstanceUid(instance) {
     return SourceImageSequence.Value[0]['00081155'].Value[0];
   }
 }
-
 
 async function makeSOPInstance(server, study, instance) {
   const { studyInstanceUid } = study;
@@ -302,7 +299,6 @@ async function makeSOPInstance(server, study, instance) {
   return sopInstance;
 }
 
-
 function getPaletteColor(server, instance, tag, lutDescriptor) {
   const numLutEntries = lutDescriptor[0];
   const bits = lutDescriptor[2];
@@ -390,7 +386,6 @@ async function getPaletteColors(server, instance, lutDescriptor) {
   });
 }
 
-
 /**
  * Add a list of SOP Instances to a given study object descriptor
  * @param {Object} server Object with server configuration parameters
@@ -399,7 +394,7 @@ async function getPaletteColors(server, instance, lutDescriptor) {
  */
 async function addInstancesToStudy(server, study, sopInstanceList) {
   return Promise.all(
-    sopInstanceList.map(function (sopInstance) {
+    sopInstanceList.map(function(sopInstance) {
       return makeSOPInstance(server, study, sopInstance);
     })
   );
@@ -415,7 +410,4 @@ const createStudyFromSOPInstanceList = async (server, sopInstanceList) => {
   throw new Error('Failed to create study out of provided SOP instance list');
 };
 
-export {
-  createStudyFromSOPInstanceList,
-  addInstancesToStudy
-}
+export { createStudyFromSOPInstanceList, addInstancesToStudy };
