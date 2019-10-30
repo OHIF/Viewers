@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.3...@ohif/viewer@2.3.4) (2019-10-30)
+
+
+### Bug Fixes
+
+* 🐛 Fix ghost shadow on thumb ([#1113](https://github.com/OHIF/Viewers/issues/1113)) ([caaa032](https://github.com/OHIF/Viewers/commit/caaa032c4bc24fd69fdb01a15a8feb2721c321db))
+
+
+
+
+
 ## [2.3.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.2...@ohif/viewer@2.3.3) (2019-10-30)
 
 
