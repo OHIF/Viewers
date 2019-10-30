@@ -6,6 +6,7 @@ import {
   ExpandableToolMenu,
   RoundedButtonGroup,
   ToolbarButton,
+  withModal,
 } from '@ohif/ui';
 
 import './ToolbarRow.css';
@@ -15,7 +16,6 @@ import ConnectedCineDialog from './ConnectedCineDialog';
 import ConnectedDownloadDialog from './ConnectedDownloadDialog';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
-import { withModal } from '../../../ui/src/utils/ModalProvider';
 
 class ToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
@@ -288,7 +288,8 @@ function _handleBuiltIn({ behavior } = {}) {
 
   if (behavior === 'DOWNLOAD_SCREEN_SHOT') {
     this.props.modalContext.show(ConnectedDownloadDialog, {
-      className: 'DownloadDialog modal fade themed in',
+      title: 'Download High Quality Image',
+      customClassName: 'DownloadDialog',
     });
   }
 }

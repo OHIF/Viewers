@@ -1,5 +1,4 @@
 import React, { useEffect, useState, createRef } from 'react';
-import Modal from 'react-bootstrap-modal';
 import PropTypes from 'prop-types';
 
 import './DownloadDialog.styl';
@@ -21,7 +20,6 @@ const DEFAULT_FILENAME = 'image';
 
 const DownloadDialog = ({
   t,
-  isOpen,
   activeViewport,
   onClose,
   updateViewportPreview,
@@ -191,130 +189,126 @@ const DownloadDialog = ({
 
   return (
     <>
-      <Modal.Header closeButton>
-        <Modal.Title>{t('Download High Quality Image')}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div className="title">
-          {t(
-            'Please specify the dimensions, filename, and desired type for the output image.'
-          )}
-        </div>
+      <div className="title">
+        {t(
+          'Please specify the dimensions, filename, and desired type for the output image.'
+        )}
+      </div>
 
-        <div className="file-info-container">
-          <div className="col">
-            <div className="width">
-              <TextInput
-                type="number"
-                min={minimumSize}
-                max={maximumSize}
-                value={width}
-                label={t('Image width (px)')}
-                onChange={onWidthChange}
-              />
-            </div>
-            <div className="height">
-              <TextInput
-                type="number"
-                min={minimumSize}
-                max={maximumSize}
-                value={height}
-                label={t('Image height (px)')}
-                onChange={onHeightChange}
-              />
-            </div>
+      <div className="file-info-container">
+        <div className="col">
+          <div className="width">
+            <TextInput
+              type="number"
+              min={minimumSize}
+              max={maximumSize}
+              value={width}
+              label={t('Image width (px)')}
+              onChange={onWidthChange}
+            />
           </div>
-
-          <div className="col">
-            <div className="file-name">
-              <TextInput
-                type="text"
-                value={filename}
-                onChange={event => setFilename(event.target.value)}
-                label={t('File name')}
-                id="file-name"
-              />
-            </div>
-            <div className="file-type">
-              <Select
-                value={fileType}
-                onChange={event => setFileType(event.target.value)}
-                options={FILE_TYPE_OPTIONS}
-                label={t('File type')}
-              />
-            </div>
-          </div>
-
-          <div className="col">
-            <div className="show-annotations">
-              <label htmlFor="show-annotations" className="form-check-label">
-                <input
-                  id="show-annotations"
-                  type="checkbox"
-                  className="form-check-input"
-                  checked={showAnnotations}
-                  onChange={event => setShowAnnotations(event.target.checked)}
-                />
-                {t('Show Annotations')}
-              </label>
-            </div>
+          <div className="height">
+            <TextInput
+              type="number"
+              min={minimumSize}
+              max={maximumSize}
+              value={height}
+              label={t('Image height (px)')}
+              onChange={onHeightChange}
+            />
           </div>
         </div>
 
-        <div
+        <div className="col">
+          <div className="file-name">
+            <TextInput
+              type="text"
+              value={filename}
+              onChange={event => setFilename(event.target.value)}
+              label={t('File name')}
+              id="file-name"
+            />
+          </div>
+          <div className="file-type">
+            <Select
+              value={fileType}
+              onChange={event => setFileType(event.target.value)}
+              options={FILE_TYPE_OPTIONS}
+              label={t('File type')}
+            />
+          </div>
+        </div>
+
+        <div className="col">
+          <div className="show-annotations">
+            <label htmlFor="show-annotations" className="form-check-label">
+              <input
+                id="show-annotations"
+                type="checkbox"
+                className="form-check-input"
+                checked={showAnnotations}
+                onChange={event => setShowAnnotations(event.target.checked)}
+              />
+              {t('Show Annotations')}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          height: viewportElementHeight,
+          width: viewportElementWidth,
+          position: 'absolute',
+          left: '9999px',
+        }}
+        ref={ref => setViewportElement(ref)}
+      >
+        <canvas
+          className={canvasClass}
           style={{
-            height: viewportElementHeight,
-            width: viewportElementWidth,
-            position: 'absolute',
-            left: '9999px',
+            height: downloadCanvas.height,
+            width: downloadCanvas.width,
+            display: 'block',
           }}
-          ref={ref => setViewportElement(ref)}
-        >
-          <canvas
-            className={canvasClass}
-            style={{
-              height: downloadCanvas.height,
-              width: downloadCanvas.width,
-              display: 'block',
-            }}
-            width={downloadCanvas.width}
-            height={downloadCanvas.height}
-            ref={downloadCanvas.ref}
-          ></canvas>
-        </div>
+          width={downloadCanvas.width}
+          height={downloadCanvas.height}
+          ref={downloadCanvas.ref}
+        ></canvas>
+      </div>
 
-        <div className="preview">
-          <h4> {t('Image Preview')}</h4>
-          <img
-            className="viewport-preview"
-            src={viewportPreview.src}
-            alt="Viewport Preview"
-            style={{
-              height: viewportPreview.height,
-              width: viewportPreview.width,
-            }}
-          />
-        </div>
+      <div className="preview">
+        <h4> {t('Image Preview')}</h4>
+        <img
+          className="viewport-preview"
+          src={viewportPreview.src}
+          alt="Viewport Preview"
+          style={{
+            height: viewportPreview.height,
+            width: viewportPreview.width,
+          }}
+        />
+      </div>
 
-        <div className="actions">
-          <div className="action-cancel">
-            <button type="button" className="btn btn-danger" onClick={onClose}>
-              {t('Cancel')}
-            </button>
-          </div>
-          <div className="action-save">
-            <button onClick={downloadImage} className="btn btn-primary">
-              {t('Download')}
-            </button>
-          </div>
+      <div className="actions">
+        <div className="action-cancel">
+          <button type="button" className="btn btn-danger" onClick={onClose}>
+            {t('Cancel')}
+          </button>
         </div>
-      </Modal.Body>
+        <div className="action-save">
+          <button onClick={downloadImage} className="btn btn-primary">
+            {t('Download')}
+          </button>
+        </div>
+      </div>
     </>
   );
 };
 
 DownloadDialog.propTypes = {
   t: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
   activeViewport: PropTypes.object,
   updateViewportPreview: PropTypes.func.isRequired,
   enableViewport: PropTypes.func.isRequired,
