@@ -19,7 +19,7 @@ executors:
   with-chrome:
     docker:
       # Primary container image where all steps run.
-      - image: 'cypress/browsers:chrome76'
+      - image: 'cypress/browsers:node10.16.0-chrome76'
       # http://couchdb:5984
       - image: 'couchdb:2.3.1'
         name: 'couchdb'
