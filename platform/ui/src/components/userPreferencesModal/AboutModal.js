@@ -59,7 +59,7 @@ const AboutModal = () => {
 
   return (
     <>
-      <div className="btn-group">
+      <div data-cy="about-modal" className="btn-group">
         <a
           className="btn btn-default"
           target="_blank"
