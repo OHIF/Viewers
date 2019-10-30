@@ -1,7 +1,7 @@
 const displayFunction = data => {
   let lengthValue = '';
   if (data.length) {
-    lengthValue = Number(data.length).toFixed(2) + ' mm';
+    lengthValue = data.length.toFixed(2) + ' mm';
   }
   return lengthValue;
 };

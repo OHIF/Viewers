@@ -1,7 +1,7 @@
 const displayFunction = data => {
   let meanValue = '';
   if (data.meanStdDev && data.meanStdDev.mean) {
-    meanValue = Number(data.meanStdDev.mean).toFixed(2) + ' HU';
+    meanValue = data.meanStdDev.mean.toFixed(2) + ' HU';
   }
   return meanValue;
 };

@@ -1,9 +1,7 @@
 const displayFunction = data => {
   let text = '';
   if (data.rAngle) {
-    text =
-      Number(data.rAngle).toFixed(2) +
-      String.fromCharCode(parseInt('00B0', 16));
+    text = data.rAngle.toFixed(2) + String.fromCharCode(parseInt('00B0', 16));
   }
   return text;
 };
