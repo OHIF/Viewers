@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.2...@ohif/viewer@2.3.3) (2019-10-30)
+
+
+### Bug Fixes
+
+* get adapter store picker to show ([#1134](https://github.com/OHIF/Viewers/issues/1134)) ([50ca2bd](https://github.com/OHIF/Viewers/commit/50ca2bde971e1e67b73ece96369052dd1a35ac68))
+
+
+
+
+
 ## [2.3.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.1...@ohif/viewer@2.3.2) (2019-10-29)
 
 
