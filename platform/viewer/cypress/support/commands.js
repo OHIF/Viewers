@@ -334,6 +334,21 @@ Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
   });
 });
 
+Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
+  cy.get('.toolbar-button-label')
+    .contains('Layout')
+    .click();
+
+  cy.get('.layoutChooser')
+    .find('tr')
+    .eq(rows - 1)
+    .find('td')
+    .eq(columns - 1)
+    .click();
+
+  cy.wait(1000);
+});
+
 function convertCanvas(documentClone) {
   documentClone
     .querySelectorAll('canvas')
