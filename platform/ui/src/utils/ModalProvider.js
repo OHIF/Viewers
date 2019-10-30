@@ -15,6 +15,7 @@ const ModalProvider = ({ children }) => {
     large: true,
     closeButton: true,
     title: null,
+    customClassName: null,
   };
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
@@ -37,10 +38,11 @@ const ModalProvider = ({ children }) => {
             footer: Footer,
             header: Header,
             body: Body,
+            customClassName,
           } = props;
           return Component || Body ? (
             <Modal
-              className={`modal fade themed in ${
+              className={`modal fade themed in ${customClassName} ${
                 Component ? Component.className : Body.className
               }`}
               backdrop={options.backdrop}
