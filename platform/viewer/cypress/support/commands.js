@@ -83,6 +83,12 @@ Cypress.Commands.add('openStudyList', () => {
   cy.wait('@getStudies');
 });
 
+Cypress.Commands.add('waitStudyList', () => {
+  cy.get('table > tbody > tr').should($list => {
+    expect($list).to.not.have.class('no-hover');
+  });
+});
+
 /**
  * Command to perform a drag and drop action. Before using this command, we must get the element that should be dragged first.
  * Example of usage: cy.get(element-to-be-dragged).drag(dropzone-element)

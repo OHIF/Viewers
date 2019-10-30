@@ -227,7 +227,7 @@ describe('OHIF Study Viewer Page', function() {
   it('performs single-click to load thumbnail in active viewport', () => {
     cy.get('[data-cy="thumbnail-list"]:nth-child(3)').click();
 
-    const expectedText = 'Ser 3';
+    const expectedText = 'Ser: 3';
     cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
   });
 

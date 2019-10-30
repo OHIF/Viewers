@@ -107,43 +107,28 @@ describe('OHIF Study List', function() {
 
     it('searches Modality with camel case', function() {
       cy.get('@modalities').type('Mr');
-      cy.wait('@getStudies.all')
-        .its('response.body.length')
-        .should('be.greaterThan', 1);
-
-      return new Cypress.Promise((resolve, reject) => {
-        cy.get('table > tbody > tr')
-          .its('length')
-          .should('be.eq', 17);
-        resolve(true);
+      //Wait result list to be displayed
+      cy.waitStudyList();
+      cy.get('table > tbody > tr').should($list => {
+        expect($list.length).to.be.eq(17);
       });
     });
 
     it('searches Modality with lower case', function() {
       cy.get('@modalities').type('mr');
-      cy.wait('@getStudies.all')
-        .its('response.body.length')
-        .should('be.greaterThan', 1);
-
-      return new Cypress.Promise((resolve, reject) => {
-        cy.get('table > tbody > tr')
-          .its('length')
-          .should('be.eq', 17);
-        resolve(true);
+      //Wait result list to be displayed
+      cy.waitStudyList();
+      cy.get('table > tbody > tr').should($list => {
+        expect($list.length).to.be.eq(17);
       });
     });
 
     it('searches Modality with upper case', function() {
       cy.get('@modalities').type('MR');
-      cy.wait('@getStudies.all')
-        .its('response.body.length')
-        .should('be.greaterThan', 1);
-
-      return new Cypress.Promise((resolve, reject) => {
-        cy.get('table > tbody > tr')
-          .its('length')
-          .should('be.eq', 17);
-        resolve(true);
+      //Wait result list to be displayed
+      cy.waitStudyList();
+      cy.get('table > tbody > tr').should($list => {
+        expect($list.length).to.be.eq(17);
       });
     });
 
@@ -176,23 +161,21 @@ describe('OHIF Study List', function() {
       //Check all options of rows
       pageRows.forEach(numRows => {
         cy.get('select').select(numRows.toString()); //Select rows per page option
-
-        cy.wait('@getStudies.all')
-          .its('response.body.length')
-          .should('be.greaterThan', 1);
-
-        //Compare the search result with the Study Count on the table header
-        cy.get('@studyCount')
-          .should($studyCount => {
-            expect(parseInt($studyCount.text())).to.be.at.most(numRows); //less than or equals to
-          })
-          .then($studyCount => {
-            //Compare to the number of rows in the search result
-            cy.get('table > tbody > tr').then($searchResult => {
-              let countResults = $searchResult.length;
-              expect($studyCount.text()).to.be.eq(countResults.toString());
+        //Wait result list to be displayed
+        cy.waitStudyList().then(() => {
+          //Compare the search result with the Study Count on the table header
+          cy.get('@studyCount')
+            .should($studyCount => {
+              expect(parseInt($studyCount.text())).to.be.at.most(numRows); //less than or equals to
+            })
+            .then($studyCount => {
+              //Compare to the number of rows in the search result
+              cy.get('table > tbody > tr').then($searchResult => {
+                let countResults = $searchResult.length;
+                expect($studyCount.text()).to.be.eq(countResults.toString());
+              });
             });
-          });
+        });
       });
     });
 
