@@ -7,9 +7,10 @@ echo 'Spinning up test DICOMWeb Server'
 
 git clone git://github.com/ohif/viewer-testdata ./test-server/
 
-cd test-server
+cd test-server/dcm
 
-set -x
-docker-compose build
-docker-compose up -d
-docker run --network container:contacts appropriate/curl --retry 10 --retry-delay 1 --retry-connrefused http://localhost:5985
+# Setup Python client
+apt-get -y install python2.7 python-pip
+pip install dicomweb-client
+
+python seed-db.py
