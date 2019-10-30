@@ -355,7 +355,7 @@ workflows:
             # Build our client
             npx cross-env QUICK_BUILD=true yarn run build
           start: ~/project/.circleci/start-test-server.sh
-          wait-on: 'http://localhost:5985'
+          wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
