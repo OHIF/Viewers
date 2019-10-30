@@ -37,38 +37,35 @@ const ModalProvider = ({ children }) => {
             footer: Footer,
             header: Header,
             body: Body,
-            backdrop,
-            keyboard,
-            show,
-            large,
-            closeButton,
-            title,
-            hide,
           } = props;
           return Component || Body ? (
             <Modal
               className={`modal fade themed in ${
                 Component ? Component.className : Body.className
               }`}
-              backdrop={backdrop}
-              keyboard={keyboard}
-              show={show}
-              large={large}
-              closeButton={closeButton}
-              title={title}
+              backdrop={options.backdrop}
+              keyboard={options.keyboard}
+              show={options.show}
+              large={options.large}
+              title={options.title}
               onHide={hide}
             >
-              <Modal.Header closeButton={closeButton}>
-                {title && <Modal.Title>{title}</Modal.Title>}
-                {Header && <Header show={show} hide={hide} />}
-              </Modal.Header>
+              {(Header || options.title) && (
+                <Modal.Header closeButton={options.closeButton}>
+                  {options.title && <Modal.Title>{options.title}</Modal.Title>}
+                  {Header && <Header hide={hide} />}
+                </Modal.Header>
+              )}
               <Modal.Body>
-                {Body && <Body show={show} hide={hide} />}
-                {Component && <Component show={show} hide={hide} />}
+                {Body && <Body hide={hide} />}
+                {Component && <Component hide={hide} />}
               </Modal.Body>
-              <Modal.Footer>
-                {Footer && <Footer show={show} hide={hide} />}
-              </Modal.Footer>
+              {Footer && (
+                <Modal.Footer>
+                  {' '}
+                  <Footer hide={hide} />
+                </Modal.Footer>
+              )}
             </Modal>
           ) : null;
         }}
