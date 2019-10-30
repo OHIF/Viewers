@@ -5,8 +5,9 @@ const INFO = Symbol('INFO');
 
 /**
  * Creates an object with processed series information and saves its reference
- * inside the series object itself to simplify sorting
+ * inside the series object itself.
  * @param {Object} series The raw series object
+ * @returns {Object} object containing some useful info from given series
  */
 export default function getSeriesInfo(series) {
   let info = series[INFO];

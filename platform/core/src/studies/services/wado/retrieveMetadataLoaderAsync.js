@@ -87,6 +87,12 @@ function makeSeriesAsyncLoader(
   });
 }
 
+/**
+ * Class for async load of study metadata.
+ * It inherits from RetrieveMetadataLoader
+ *
+ * It loads the one series and then append to seriesLoader the others to be consumed/loaded
+ */
 export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader {
 
   configLoad() {

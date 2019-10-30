@@ -9,7 +9,7 @@ import RetrieveMetadataLoaderAsync from './retrieveMetadataLoaderAsync';
  * @param {Object} server Object with server configuration parameters
  * @param {string} studyInstanceUid The Study Instance UID of the study which needs to be loaded
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
- * @param {string} [filter.seriesInstanceUid] - series to filter results against
+ * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
  * @returns {Object} A study descriptor object
  */
 async function RetrieveMetadata(server, studyInstanceUid, filters = {}) {

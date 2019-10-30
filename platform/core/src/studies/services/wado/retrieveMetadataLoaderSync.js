@@ -3,6 +3,13 @@ import DICOMWeb from '../../../DICOMWeb/';
 import * as StudyUtils from '../../studyUtils';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
+/**
+ * Class for sync load of study metadata.
+ * It inherits from RetrieveMetadataLoader
+ *
+ * A list of loaders (getLoaders) can be created so, it will be applied a fallback load strategy.
+ * I.e Retrieve metadata using all loaders possibilities.
+ */
 export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
 
   getOptions() {
@@ -20,6 +27,9 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
     return options;
   }
 
+  /**
+   * @returns {Array} Array of loaders. To be consumed as queue
+   */
   *getLoaders() {
     const loaders = [];
     const {
@@ -59,7 +69,7 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
       try {
 
         result = await loader.call(this.client, options);
-        break; // closes iterator in case data is retrieved
+        break; // closes iterator in case data is retrieved successfully
       } catch (e) { }
     }
 

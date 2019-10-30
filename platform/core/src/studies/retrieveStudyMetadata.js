@@ -7,8 +7,10 @@ const StudyMetaDataPromises = new Map();
 /**
  * Retrieves study metadata
  *
- * @param {Object} server
+ * @param {Object} server Object with server configuration parameters
  * @param {string} studyInstanceUid The UID of the Study to be retrieved
+ * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
+ * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
  * @returns {Promise} that will be resolved with the metadata or rejected with the error
  */
 export function retrieveStudyMetadata(server, studyInstanceUid, filters) {
@@ -32,7 +34,7 @@ export function retrieveStudyMetadata(server, studyInstanceUid, filters) {
 
   // Create a promise to handle the data retrieval
   const promise = new Promise((resolve, reject) => {
-    RetrieveMetadata(server, studyInstanceUid, filters).then(function(data) {
+    RetrieveMetadata(server, studyInstanceUid, filters).then(function (data) {
       resolve(data);
     }, reject);
   });
