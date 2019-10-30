@@ -14,6 +14,17 @@ version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.5
   cypress: cypress-io/cypress@1.11.0
+#
+executors:
+  with-chrome:
+    docker:
+      # Primary container image where all steps run.
+      - image: 'cypress/browsers:chrome76'
+      # http://couchdb:5984
+      - image: 'couchdb:2.3.1'
+        name: 'couchdb'
+      - image: 'ohif/dicomweb-server:latest'
+        name: 'dicomweb-server'
 
 defaults: &defaults
   docker:
@@ -325,7 +336,7 @@ workflows:
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
-          executor: cypress/browsers-chrome76
+          executor: with-chrome
           browser: chrome
           pre-steps:
             - run: |
