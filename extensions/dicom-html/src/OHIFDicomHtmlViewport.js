@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import DicomHtmlViewport from './DicomHtmlViewport';
 import OHIF from '@ohif/core';
+import ConnectedDicomHtmlViewport from './ConnectedDicomHtmlViewport';
+
 const { DicomLoaderService } = OHIF.utils;
 
 class OHIFDicomHtmlViewport extends Component {
@@ -9,6 +10,7 @@ class OHIFDicomHtmlViewport extends Component {
     studies: PropTypes.object,
     displaySet: PropTypes.object,
     viewportIndex: PropTypes.number,
+    viewportData: PropTypes.object,
   };
 
   state = {
@@ -40,7 +42,10 @@ class OHIFDicomHtmlViewport extends Component {
     return (
       <>
         {this.state.byteArray && (
-          <DicomHtmlViewport byteArray={this.state.byteArray} />
+          <ConnectedDicomHtmlViewport
+            byteArray={this.state.byteArray}
+            viewportIndex={this.props.viewportIndex}
+          />
         )}
         {this.state.error && <h2>{JSON.stringify(this.state.error)}</h2>}
       </>

@@ -9,8 +9,6 @@ import { AboutModal } from '@ohif/ui';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import { hotkeysManager } from './../../App.js';
 import './Header.css';
-import './Header.css';
-
 // Context
 import AppContext from './../../context/AppContext';
 import { withModal } from '../../../../ui/src/utils/ModalProvider.js';
@@ -90,52 +88,59 @@ class Header extends Component {
     // TODO: reset `this.hotKeysData`
   }
 
+  // ANTD -- Hamburger, Drawer, Menu
   render() {
     const { t, home, location, children } = this.props;
     const { appConfig = {} } = this.context;
     const showStudyList =
       appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
     return (
-      <div className={`entry-header ${home ? 'header-big' : ''}`}>
-        <div className="header-left-box">
-          {location && location.studyLink && (
-            <Link
-              to={location.studyLink}
-              className="header-btn header-viewerLink"
-            >
-              {t('Back to Viewer')}
-            </Link>
-          )}
+      <>
+        <div className="notification-bar">{t('INVESTIGATIONAL USE ONLY')}</div>
+        <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
+          <div className="header-left-box">
+            {this.props.location && this.props.location.studyLink && (
+              <Link
+                to={this.props.location.studyLink}
+                className="header-btn header-viewerLink"
+              >
+                {t('Back to Viewer')}
+              </Link>
+            )}
 
-          <span
-            className={`${
-              home ? 'header-versionInfoHome' : 'header-versionInfo'
-            }`}
-            data-cy="header-version-info"
-          >
-            v{process.env.VERSION_NUMBER}
-          </span>
+            {this.props.children}
 
-          {children}
+            {showStudyList && !this.props.home && (
+              <Link
+                className="header-btn header-studyListLinkSection"
+                to={{
+                  pathname: '/',
+                  state: { studyLink: this.props.location.pathname },
+                }}
+              >
+                {t('Study list')}
+              </Link>
+            )}
+          </div>
 
-          {showStudyList && !home && (
-            <Link
-              className="header-btn header-studyListLinkSection"
-              to={{
-                pathname: '/',
-                state: { studyLink: location.pathname },
-              }}
-            >
-              {t('Study list')}
-            </Link>
-          )}
+          <div className="header-menu">
+            <span className="research-use">
+              {t('INVESTIGATIONAL USE ONLY')}
+            </span>
+            <Dropdown title={t('Options')} list={this.options} align="right" />
+
+            {/* TODO: We need a Modal service */}
+            <AboutModal
+              {...this.state}
+              onCancel={() =>
+                this.setState({
+                  isOpen: false,
+                })
+              }
+            />
+          </div>
         </div>
-
-        <div className="header-menu">
-          <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
-          <Dropdown title={t('Options')} list={this.options} align="right" />
-        </div>
-      </div>
+      </>
     );
   }
 }

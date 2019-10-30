@@ -43,7 +43,7 @@ const AboutModal = ({ t }) => {
   };
 
   const renderTableRow = ({ name, value, link }) => (
-    <tr key={name}>
+    <tr key={name} style={{ backgroundColor: 'transparent' }}>
       <td>{name}</td>
       <td>
         {link ? (

@@ -6,6 +6,7 @@ import cornerstoneTools from 'cornerstone-tools';
 
 const MINIMUM_SIZE = 100;
 const DEFAULT_SIZE = 512;
+const MAX_TEXTURE_SIZE = 10000;
 
 const mapStateToProps = (state, ownProps) => {
   const { viewportSpecificData, activeViewportIndex } = state.viewports;
@@ -14,6 +15,7 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     minimumSize: MINIMUM_SIZE,
+    maximumSize: MAX_TEXTURE_SIZE,
     defaultSize: DEFAULT_SIZE,
     canvasClass: 'cornerstone-canvas',
     onClose: ownProps.toggleDownloadDialog,
@@ -74,7 +76,6 @@ const mapStateToProps = (state, ownProps) => {
             cornerstone.setViewport(viewportElement, viewport);
             cornerstone.resize(viewportElement, true);
 
-            const MAX_TEXTURE_SIZE = 16384;
             const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
             const newHeight = Math.min(
               height || image.height,
@@ -108,7 +109,15 @@ const mapStateToProps = (state, ownProps) => {
         return window.navigator.msSaveBlob(blob, file);
       }
 
-      return cornerstoneTools.SaveAs(viewportElement, file, mimetype);
+      viewportElement.querySelector('canvas').toBlob(blob => {
+        const URLObj = window.URL || window.webkitURL;
+        const a = document.createElement('a');
+        a.href = URLObj.createObjectURL(blob);
+        a.download = file;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
     },
   };
 };
