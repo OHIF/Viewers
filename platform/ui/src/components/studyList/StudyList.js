@@ -113,82 +113,80 @@ function StudyList(props) {
     .map(field => field.size)
     .reduce((prev, next) => prev + next);
 
-  return (
-    ready && (
-      <table className="table table--striped table--hoverable">
-        <colgroup>
-          {tableMeta.map((field, i) => {
-            const size = field.size;
-            const percentWidth = (size / totalSize) * 100.0;
+  return ready ? (
+    <table className="table table--striped table--hoverable">
+      <colgroup>
+        {tableMeta.map((field, i) => {
+          const size = field.size;
+          const percentWidth = (size / totalSize) * 100.0;
 
-            return <col key={i} style={{ width: `${percentWidth}%` }} />;
-          })}
-        </colgroup>
-        <thead className="table-head">
-          <tr className="filters">
-            <TableSearchFilter
-              meta={tableMeta}
-              values={filterValues}
-              onSort={handleSort}
-              onValueChange={handleFilterChange}
-              sortFieldName={sort.fieldName}
-              sortDirection={sort.direction}
-              studyListDateFilterNumDays={studyListDateFilterNumDays}
-            />
+          return <col key={i} style={{ width: `${percentWidth}%` }} />;
+        })}
+      </colgroup>
+      <thead className="table-head">
+        <tr className="filters">
+          <TableSearchFilter
+            meta={tableMeta}
+            values={filterValues}
+            onSort={handleSort}
+            onValueChange={handleFilterChange}
+            sortFieldName={sort.fieldName}
+            sortDirection={sort.direction}
+            studyListDateFilterNumDays={studyListDateFilterNumDays}
+          />
+        </tr>
+      </thead>
+      <tbody className="table-body" data-cy="study-list-results">
+        {/* I'm not in love with this approach, but it's the quickest way for now
+         *
+         * - Display different content based on loading, empty, results state
+         *
+         * This is not ideal because it create a jump in focus. For loading especially,
+         * We should keep our current results visible while we load the new ones.
+         */}
+        {/* LOADING */}
+        {isLoading && (
+          <tr className="no-hover">
+            <td colSpan={tableMeta.length}>
+              <StudyListLoadingText />
+            </td>
           </tr>
-        </thead>
-        <tbody className="table-body" data-cy="study-list-results">
-          {/* I'm not in love with this approach, but it's the quickest way for now
-           *
-           * - Display different content based on loading, empty, results state
-           *
-           * This is not ideal because it create a jump in focus. For loading especially,
-           * We should keep our current results visible while we load the new ones.
-           */}
-          {/* LOADING */}
-          {isLoading && (
-            <tr className="no-hover">
-              <td colSpan={tableMeta.length}>
-                <StudyListLoadingText />
-              </td>
-            </tr>
-          )}
-          {!isLoading && hasError && (
-            <tr className="no-hover">
-              <td colSpan={tableMeta.length}>
-                <div className="notFound">
-                  {t('There was an error fetching studies')}
-                </div>
-              </td>
-            </tr>
-          )}
-          {/* EMPTY */}
-          {!isLoading && !studies.length && (
-            <tr className="no-hover">
-              <td colSpan={tableMeta.length}>
-                <div className="notFound">{t('No matching results')}</div>
-              </td>
-            </tr>
-          )}
-          {!isLoading &&
-            studies.map((study, index) => (
-              <TableRow
-                key={`${study.studyInstanceUid}-${index}`}
-                onClick={studyInstanceUid => handleSelectItem(studyInstanceUid)}
-                accessionNumber={study.accessionNumber || ''}
-                modalities={study.modalities}
-                patientId={study.patientId || ''}
-                patientName={study.patientName || ''}
-                studyDate={study.studyDate}
-                studyDescription={study.studyDescription || ''}
-                studyInstanceUid={study.studyInstanceUid}
-                t={t}
-              />
-            ))}
-        </tbody>
-      </table>
-    )
-  );
+        )}
+        {!isLoading && hasError && (
+          <tr className="no-hover">
+            <td colSpan={tableMeta.length}>
+              <div className="notFound">
+                {t('There was an error fetching studies')}
+              </div>
+            </td>
+          </tr>
+        )}
+        {/* EMPTY */}
+        {!isLoading && !studies.length && (
+          <tr className="no-hover">
+            <td colSpan={tableMeta.length}>
+              <div className="notFound">{t('No matching results')}</div>
+            </td>
+          </tr>
+        )}
+        {!isLoading &&
+          studies.map((study, index) => (
+            <TableRow
+              key={`${study.studyInstanceUid}-${index}`}
+              onClick={studyInstanceUid => handleSelectItem(studyInstanceUid)}
+              accessionNumber={study.accessionNumber || ''}
+              modalities={study.modalities}
+              patientId={study.patientId || ''}
+              patientName={study.patientName || ''}
+              studyDate={study.studyDate}
+              studyDescription={study.studyDescription || ''}
+              studyInstanceUid={study.studyInstanceUid}
+              t={t}
+            />
+          ))}
+      </tbody>
+    </table>
+  ) : null;
 }
 
 StudyList.propTypes = {
