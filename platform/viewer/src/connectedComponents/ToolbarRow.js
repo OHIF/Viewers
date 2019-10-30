@@ -288,10 +288,12 @@ function _handleBuiltIn({ behavior } = {}) {
 
   if (behavior === 'DOWNLOAD_SCREEN_SHOT') {
     this.props.modalContext.show(ConnectedDownloadDialog, {
-      title: 'Download High Quality Image',
+      title: this.props.t('Download High Quality Image'),
       customClassName: 'DownloadDialog',
     });
   }
 }
 
-export default withTranslation('Common')(withModal(ToolbarRow));
+export default withTranslation(['Common', 'DownloadDialog'])(
+  withModal(ToolbarRow)
+);
