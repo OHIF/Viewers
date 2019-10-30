@@ -65,6 +65,7 @@ class Header extends Component {
         onClick: () =>
           show(AboutModal, {
             title: t('OHIF Viewer - About'),
+            customClassName: 'AboutModal',
           }),
       },
     ];

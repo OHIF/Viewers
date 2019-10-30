@@ -103,7 +103,5 @@ const AboutModal = () => {
   );
 };
 
-AboutModal.className = 'AboutModal';
-
 export { AboutModal };
 export default AboutModal;
