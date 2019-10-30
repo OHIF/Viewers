@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.0.0...@ohif/extension-dicom-html@1.0.1) (2019-10-29)
+
+
+### Bug Fixes
+
+* Set SR viewport as active by interaction ([#1118](https://github.com/OHIF/Viewers/issues/1118)) ([5b33417](https://github.com/OHIF/Viewers/commit/5b334175c370afb930b4b6dbd307ddece8f850e3))
+
+
+
+
+
 # [1.0.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@0.50.8...@ohif/extension-dicom-html@1.0.0) (2019-09-27)
 
 
