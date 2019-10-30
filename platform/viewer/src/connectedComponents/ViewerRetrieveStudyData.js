@@ -9,12 +9,34 @@ import { withSnackbar } from '@ohif/ui';
 const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
 const { retrieveStudiesMetadata } = studies;
 const { studyMetadataManager, updateMetaDataManager } = utils;
+const NOT_FILTER = true;
+const promoteToFront = (list, value, searchMethod) => {
+
+  const response = [...list];
+  let promoted = false;
+  const index = response.findIndex(searchMethod.bind(undefined, value));
+
+  if (index > 0) {
+    const first = response.splice(index, 1);
+    response = [...first, ...response];
+  }
+
+  if (index >= 0) {
+    promoted = true;
+  }
+
+  return {
+    promoted,
+    data: response
+  };
+}
 
 class ViewerRetrieveStudyData extends Component {
   static propTypes = {
     studyInstanceUids: PropTypes.array.isRequired,
     seriesInstanceUIDs: PropTypes.array,
     server: PropTypes.object,
+    clearViewportSpecificData: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -25,16 +47,22 @@ class ViewerRetrieveStudyData extends Component {
     };
   }
 
+
+
   async loadStudies() {
     try {
       const { server, studyInstanceUids, seriesInstanceUIDs } = this.props;
       const filters = {};
-
+      const toPromoteFilters = {};
       // Use the first, discard others
       const seriesInstanceUID = seriesInstanceUIDs && seriesInstanceUIDs[0];
 
       if (seriesInstanceUID) {
-        filters.seriesInstanceUID = seriesInstanceUID;
+        if (NOT_FILTER) {
+          toPromoteFilters.seriesInstanceUID = seriesInstanceUID;
+        } else {
+          filters.seriesInstanceUID = seriesInstanceUID;
+        }
       }
 
       const studies = await retrieveStudiesMetadata(
@@ -42,8 +70,7 @@ class ViewerRetrieveStudyData extends Component {
         studyInstanceUids,
         filters
       );
-      this.validateFilters(studies, filters);
-      this.setStudies(studies);
+      this.setStudies(studies, toPromoteFilters);
     } catch (e) {
       this.setState({ error: true });
       log.error(e);
@@ -66,8 +93,8 @@ class ViewerRetrieveStudyData extends Component {
     }
 
     const firstStudy = studies[0] || {};
-    const { seriesList = [] } = firstStudy;
-    const firstSeries = seriesList[0];
+    const { seriesList = [], displaySets = [] } = firstStudy;
+    const firstSeries = NOT_FILTER ? displaySets[0] : seriesList[0];
 
     if (!firstSeries || firstSeries.seriesInstanceUid !== seriesInstanceUID) {
       snackbarContext.show({
@@ -76,30 +103,92 @@ class ViewerRetrieveStudyData extends Component {
     }
   }
 
-  setStudies(givenStudies) {
+  setStudies(givenStudies, filters) {
     if (Array.isArray(givenStudies) && givenStudies.length > 0) {
-      const sopClassHandlerModules =
-        extensionManager.modules['sopClassHandlerModule'];
       // Map studies to new format, update metadata manager?
       const studies = givenStudies.map(study => {
         const studyMetadata = new OHIFStudyMetadata(
           study,
           study.studyInstanceUid
         );
-        if (!study.displaySets) {
-          study.displaySets = studyMetadata.createDisplaySets(
-            sopClassHandlerModules
-          );
-        }
-        studyMetadata.setDisplaySets(study.displaySets);
-        // Updates WADO-RS metaDataManager
-        updateMetaDataManager(study);
-        studyMetadataManager.add(studyMetadata);
+
+        this._updateStudyDisplaySets(study, studyMetadata, true);
+        this._updateMetaDataManager(study, studyMetadata);
+
         // Attempt to load remaning series if any
-        this._attemptToLoadRemainingSeries(studyMetadata);
+        this._loadRemainingSeries(studyMetadata).then(this._studyDidLoad.bind(this, study, studyMetadata, filters));
+
         return study;
       });
       this.setState({ studies });
+    }
+  }
+
+  _updateStudyDisplaySets(study, studyMetadata, shouldSort) {
+    const sopClassHandlerModules =
+      extensionManager.modules['sopClassHandlerModule'];
+
+    if (!study.displaySets) {
+      study.displaySets = studyMetadata.createDisplaySets(
+        sopClassHandlerModules,
+        shouldSort
+      );
+    }
+
+    studyMetadata.setDisplaySets(study.displaySets, shouldSort);
+  }
+
+  _promoteStudyDisplaySet(study, studyMetadata, filters) {
+    let promoted = false;
+    const queryParamsLength = Object.keys(filters).length;
+    const shouldPromoteToFront = queryParamsLength > 0;
+
+    if (shouldPromoteToFront && NOT_FILTER) {
+      const {
+        seriesInstanceUID
+      } = filters;
+
+      const _seriesLookup = (valueToCompare, displaySet) => {
+        return displaySet.seriesInstanceUid === valueToCompare
+      };
+      const promotedResponse = promoteToFront(studyMetadata.getDisplaySets(), seriesInstanceUID, _seriesLookup);
+
+      study.displaySets = promotedResponse.data;
+      promoted = promotedResponse.promoted;
+    }
+
+    return promoted;
+  }
+
+  _sortStudyDisplaySet(study, studyMetadata) {
+    studyMetadata.sortDisplaySets(study.displaySets);
+  }
+
+  _studyDidLoad(study, studyMetadata, filters) {
+
+    this._sortStudyDisplaySet(study, studyMetadata);
+    const promoted = this._promoteStudyDisplaySet(study, studyMetadata, filters);
+
+    // Clear viewport to allow new promoted one to be displayed
+    if (promoted) {
+      this.props.clearViewportSpecificData(0);
+    }
+
+    const studies = this.state.studies;
+    this.validateFilters(studies, filters);
+    // Update studies to reflect latest changes
+    this.setState(function (state) {
+      return { studies: state.studies.slice() };
+    });
+  }
+
+  _updateMetaDataManager(study, studyMetadata, series) {
+    updateMetaDataManager(study, series);
+
+    const { studyInstanceUID } = study;
+
+    if (!studyMetadataManager.get(studyInstanceUID)) {
+      studyMetadataManager.add(studyMetadata);
     }
   }
 
@@ -111,28 +200,29 @@ class ViewerRetrieveStudyData extends Component {
     studyMetadata.addSeries(seriesMetadata);
     studyMetadata.createAndAddDisplaySetsForSeries(
       sopClassHandlerModules,
-      seriesMetadata
+      seriesMetadata,
+      false
     );
     study.displaySets = studyMetadata.getDisplaySets();
-    updateMetaDataManager(study, series.seriesInstanceUid);
-    this.setState(function(state) {
-      return { studies: state.studies.slice() };
-    });
+    this._updateMetaDataManager(study, series.seriesInstanceUid);
   }
 
-  _attemptToLoadRemainingSeries(studyMetadata) {
+  _loadRemainingSeries(studyMetadata) {
     const { seriesLoader } = studyMetadata.getData();
     if (!seriesLoader) {
-      return;
+      return Promise.resolve();
     }
+    const promisesLoaders = [];
     while (seriesLoader.hasNext()) {
-      seriesLoader
+      promisesLoaders.push(seriesLoader
         .next()
         .then(
           series => void this._addSeriesToStudy(studyMetadata, series),
           error => void log.error(error)
-        );
+        ));
     }
+
+    return Promise.all(promisesLoaders);
   }
 
   componentDidMount() {
