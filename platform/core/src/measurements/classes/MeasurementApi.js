@@ -1,4 +1,5 @@
 import cornerstoneTools from 'cornerstone-tools';
+import cornerstone from 'cornerstone-core';
 import log from '../../log';
 import getLabel from '../lib/getLabel';
 import getDescription from '../lib/getDescription';
@@ -229,6 +230,10 @@ export default class MeasurementApi {
 
         // Synchronize the new tool data
         this.syncMeasurementsAndToolData();
+
+        cornerstone.getEnabledElements().forEach(enabledElement => {
+          cornerstone.updateImage(enabledElement.element);
+        });
 
         // Let others know that the measurements are updated
         this.onMeasurementsUpdated();
