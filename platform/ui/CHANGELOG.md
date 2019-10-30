@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.58.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.58.1...@ohif/ui@0.58.2) (2019-10-29)
+
+
+### Bug Fixes
+
+* 🐛 Limit image download size to avoid browser issues ([#1112](https://github.com/OHIF/Viewers/issues/1112)) ([5716b71](https://github.com/OHIF/Viewers/commit/5716b71d409ee1c6f13393c8cb7f50222415e198)), closes [#1099](https://github.com/OHIF/Viewers/issues/1099)
+
+
+
+
+
 ## [0.58.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.58.0...@ohif/ui@0.58.1) (2019-10-29)
 
 
