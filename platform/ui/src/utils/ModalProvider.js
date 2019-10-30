@@ -9,14 +9,12 @@ export const useModalContext = () => useContext(ModalContext);
 const ModalProvider = ({ children }) => {
   const DEFAULT_OPTIONS = {
     component: null,
-    props: {
-      backdrop: false,
-      keyboard: false,
-      show: true,
-      large: true,
-      closeButton: true,
-      title: null,
-    },
+    backdrop: false,
+    keyboard: false,
+    show: true,
+    large: true,
+    closeButton: true,
+    title: null,
   };
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
@@ -25,7 +23,7 @@ const ModalProvider = ({ children }) => {
     setOptions({
       ...options,
       component,
-      props: { ...options.props, ...props },
+      ...props,
     });
 
   const hide = () => setOptions(DEFAULT_OPTIONS);
@@ -33,18 +31,47 @@ const ModalProvider = ({ children }) => {
   return (
     <Provider value={{ ...options, show, hide }}>
       <Consumer>
-        {({ component: Component, props, hide }) =>
-          Component ? (
-            <Modal {...props} onHide={hide}>
-              {props.title && (
-                <Modal.Header closeButton={props.closeButton}>
-                  <Modal.Title>{props.title}</Modal.Title>
-                </Modal.Header>
-              )}
-              <Component {...props} hide={hide} />
+        {props => {
+          const {
+            component: Component,
+            footer: Footer,
+            header: Header,
+            body: Body,
+            backdrop,
+            keyboard,
+            show,
+            large,
+            closeButton,
+            title,
+            hide,
+          } = props;
+          return Component || Body ? (
+            <Modal
+              className={`modal fade themed in ${
+                Component ? Component.className : Body.className
+              }`}
+              backdrop={backdrop}
+              keyboard={keyboard}
+              show={show}
+              large={large}
+              closeButton={closeButton}
+              title={title}
+              onHide={hide}
+            >
+              <Modal.Header closeButton={closeButton}>
+                {title && <Modal.Title>{title}</Modal.Title>}
+                {Header && <Header show={show} hide={hide} />}
+              </Modal.Header>
+              <Modal.Body>
+                {Body && <Body show={show} hide={hide} />}
+                {Component && <Component show={show} hide={hide} />}
+              </Modal.Body>
+              <Modal.Footer>
+                {Footer && <Footer show={show} hide={hide} />}
+              </Modal.Footer>
             </Modal>
-          ) : null
-        }
+          ) : null;
+        }}
       </Consumer>
       {children}
     </Provider>
