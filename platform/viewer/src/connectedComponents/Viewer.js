@@ -65,6 +65,7 @@ class Viewer extends Component {
     viewports: PropTypes.object.isRequired,
     // window.store.getState().viewports.activeViewportIndex
     activeViewportIndex: PropTypes.number.isRequired,
+    seriesLoaded: PropTypes.bool,
   };
 
   constructor(props) {
@@ -181,8 +182,11 @@ class Viewer extends Component {
       const patientId = studies[0] && studies[0].patientId;
 
       timepointApi.retrieveTimepoints({ patientId });
-      measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
-
+      if (this.props.seriesLoaded) {
+        this.measurementApi.retrieveMeasurements(patientId, [
+          currentTimepointId,
+        ]);
+      }
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
       });
@@ -190,17 +194,18 @@ class Viewer extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.studies !== prevProps.studies) {
-      const { studies } = this.props;
-      const patientId = studies[0] && studies[0].patientId;
-      const currentTimepointId = this.currentTimepointId;
-
-      this.timepointApi.retrieveTimepoints({ patientId });
-      this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
-
+    const { studies, seriesLoaded } = this.props;
+    if (studies !== prevProps.studies) {
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
       });
+    }
+    if (seriesLoaded && seriesLoaded !== prevProps.seriesLoaded) {
+      const patientId = studies[0] && studies[0].patientId;
+      const { currentTimepointId } = this;
+
+      this.timepointApi.retrieveTimepoints({ patientId });
+      this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
     }
   }
 

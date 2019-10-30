@@ -20,6 +20,7 @@ class ViewerRetrieveStudyData extends Component {
     super(props);
     this.state = {
       studies: null,
+      seriesLoaded: false,
       error: null,
     };
   }
@@ -55,15 +56,26 @@ class ViewerRetrieveStudyData extends Component {
           );
         }
         studyMetadata.setDisplaySets(study.displaySets);
+
         // Updates WADO-RS metaDataManager
         updateMetaDataManager(study);
         studyMetadataManager.add(studyMetadata);
+
         // Attempt to load remaning series if any
-        this._attemptToLoadRemainingSeries(studyMetadata);
+        this._loadRemainingSeries(studyMetadata).then(
+          this._studyDidLoad.bind(this)
+        );
+
         return study;
       });
       this.setState({ studies });
     }
+  }
+
+  _studyDidLoad() {
+    this.setState({
+      seriesLoaded: true,
+    });
   }
 
   _addSeriesToStudy(studyMetadata, series) {
@@ -83,19 +95,24 @@ class ViewerRetrieveStudyData extends Component {
     });
   }
 
-  _attemptToLoadRemainingSeries(studyMetadata) {
+  _loadRemainingSeries(studyMetadata) {
     const { seriesLoader } = studyMetadata.getData();
     if (!seriesLoader) {
-      return;
+      return Promise.resolve();
     }
+    const promisesLoaders = [];
     while (seriesLoader.hasNext()) {
-      seriesLoader
-        .next()
-        .then(
-          series => void this._addSeriesToStudy(studyMetadata, series),
-          error => void log.error(error)
-        );
+      promisesLoaders.push(
+        seriesLoader
+          .next()
+          .then(
+            series => void this._addSeriesToStudy(studyMetadata, series),
+            error => void log.error(error)
+          )
+      );
     }
+
+    return Promise.all(promisesLoaders);
   }
 
   componentDidMount() {
@@ -112,6 +129,7 @@ class ViewerRetrieveStudyData extends Component {
     return (
       <ConnectedViewer
         studies={this.state.studies}
+        seriesLoaded={this.state.seriesLoaded}
         studyInstanceUids={this.props.studyInstanceUids}
       />
     );
