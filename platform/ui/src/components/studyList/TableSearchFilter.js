@@ -22,6 +22,8 @@ function TableSearchFilter(props) {
     useSuspense: false,
   });
 
+  console.log('TABLE SEARCH FILTER:', i18n, ready);
+
   const sortIcons = ['sort', 'sort-up', 'sort-down'];
   const sortIconForSortField =
     sortDirection === 'asc' ? sortIcons[1] : sortIcons[2];
