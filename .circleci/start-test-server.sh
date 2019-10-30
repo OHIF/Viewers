@@ -14,7 +14,3 @@ apt-get -y install python2.7 python-pip
 pip install dicomweb-client
 
 python seed-db.py
-
-cd ../..
-ls
-yarn run dev
