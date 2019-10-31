@@ -1,21 +1,18 @@
 import { connect } from 'react-redux';
 import { UserPreferencesModal } from '@ohif/ui';
 import OHIF from '@ohif/core';
-import cloneDeep from 'lodash.clonedeep';
 import { hotkeysManager } from './../App.js';
 
 const { setUserPreferences } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
-  const contextName = 'viewer';
-  const viewerPreferences = state.preferences[contextName];
   const isEmpty = obj => Object.keys(obj).length === 0;
   return {
     isOpen: ownProps.isOpen,
-    windowLevelData: viewerPreferences ? viewerPreferences.windowLevelData : {},
+    windowLevelData: state.preferences ? state.preferences.windowLevelData : {},
     hotKeysData:
-      viewerPreferences && !isEmpty(viewerPreferences.hotKeysData)
-        ? viewerPreferences.hotKeysData
+      state.preferences && !isEmpty(state.preferences.hotKeysData)
+        ? state.preferences.hotKeysData
         : hotkeysManager.hotkeyDefinitions,
   };
 };
@@ -39,13 +36,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     onLoad: hotKeysData => {
       hotkeysManager.setHotkeys(hotkeysManagerFormatter(hotKeysData));
     },
-    onSave: newUserPreferences => {
-      const { windowLevelData, hotKeysData } = newUserPreferences;
-      const contextName = 'viewer'; // window.store.getState().commandContext.context;
-      const preferences = cloneDeep(window.store.getState().preferences);
-      preferences[contextName] = { windowLevelData, hotKeysData };
+    onSave: ({ windowLevelData, hotKeysData }) => {
       hotkeysManager.setHotkeys(hotkeysManagerFormatter(hotKeysData));
-      dispatch(setUserPreferences(preferences));
+      dispatch(setUserPreferences({ windowLevelData, hotKeysData }));
       ownProps.onSave();
     },
     onResetToDefaults: () => {

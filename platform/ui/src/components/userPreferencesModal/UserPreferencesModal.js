@@ -23,6 +23,7 @@ class UserPreferencesModal extends Component {
     windowLevelData: PropTypes.object,
     hotKeysData: PropTypes.object,
     t: PropTypes.func,
+    onLoad: PropTypes.func,
   };
 
   constructor(props) {
