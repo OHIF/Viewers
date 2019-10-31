@@ -23,7 +23,6 @@ class UserPreferencesModal extends Component {
     windowLevelData: PropTypes.object,
     hotKeysData: PropTypes.object,
     t: PropTypes.func,
-    onLoad: PropTypes.func,
   };
 
   constructor(props) {
@@ -45,10 +44,6 @@ class UserPreferencesModal extends Component {
       hotKeysData: this.state.hotKeysData,
     });
   };
-
-  componentDidMount() {
-    this.props.onLoad(this.props.hotKeysData);
-  }
 
   componentDidUpdate(prev, next) {
     const newStateData = {};
