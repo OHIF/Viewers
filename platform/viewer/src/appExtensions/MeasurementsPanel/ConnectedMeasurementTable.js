@@ -31,7 +31,7 @@ function getAllTools() {
 function getMeasurementText(measurementData = {}) {
   const defaultText = '...';
   const { location = '', description = '' } = measurementData;
-  const result = location + (description ? `(${description})` : '');
+  const result = location + (description ? ` (${description})` : '');
 
   return result || defaultText;
 }
