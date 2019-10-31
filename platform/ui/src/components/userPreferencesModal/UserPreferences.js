@@ -66,8 +66,8 @@ export class UserPreferences extends Component {
     switch (tabIndex) {
       case 0:
         return this.renderHotkeysTab();
-      case 1:
-        return this.renderWindowLevelTab();
+      /* case 1:
+        return this.renderWindowLevelTab(); */
       case 2:
         return this.renderGeneralTab();
 
@@ -93,14 +93,16 @@ export class UserPreferences extends Component {
             >
               <button>Hotkeys</button>
             </li>
-            <li
-              onClick={() => {
-                this.tabClick(1);
-              }}
-              className={this.getTabClass(1)}
-            >
-              <button>Window Level</button>
-            </li>
+            {false && (
+              <li
+                onClick={() => {
+                  this.tabClick(1);
+                }}
+                className={this.getTabClass(1)}
+              >
+                <button>Window Level</button>
+              </li>
+            )}
             <li
               onClick={() => {
                 this.tabClick(2);
