@@ -40,6 +40,24 @@ export class HotKeysPreferences extends Component {
     this.onInputKeyDown = this.onInputKeyDown.bind(this);
   }
 
+  componentDidUpdate() {
+    const hotkeyCommands = Object.keys(this.props.hotKeysData);
+    const localHotKeys = hotkeyCommands.map(commandName => {
+      const definition = this.props.hotKeysData[commandName];
+
+      return {
+        commandName,
+        keys: definition.keys,
+        label: definition.label,
+      };
+    });
+
+    this.state = {
+      hotKeys: localHotKeys,
+      errorMessages: {},
+    };
+  }
+
   /**
    * Normalizes the keys used in a KeyPress event and returns an array of the
    * keys pressed

@@ -50,21 +50,21 @@ class UserPreferencesModal extends Component {
     this.props.onLoad(this.props.hotKeysData);
   }
 
-  /* componentDidUpdate(prev, next) {
+  componentDidUpdate(prev, next) {
     const newStateData = {};
 
     if (!isEqual(prev.windowLevelData, next.windowLevelData)) {
-      newStateData.windowLevelData = next.windowLevelData; // prev.windowLevelData;
+      newStateData.windowLevelData = prev.windowLevelData;
     }
 
     if (!isEqual(prev.hotKeysData, next.hotKeysData)) {
-      newStateData.hotKeysData = next.hotKeysData; // prev.hotKeysData;
+      newStateData.hotKeysData = prev.hotKeysData;
     }
 
     if (newStateData.hotKeysData || newStateData.windowLevelData) {
       this.setState(newStateData);
     }
-  } */
+  }
 
   render() {
     return (
