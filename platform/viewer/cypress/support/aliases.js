@@ -63,5 +63,17 @@ export function initStudyListAliasesOnDesktop() {
   cy.get('#end-date').as('studyListEndDate');
   cy.get('#filter-modalities').as('modalities');
   cy.get('#filter-studyDescription').as('studyDescription');
-  cy.get('[data-cy="study-list-results"]').as('searchResult');
+  cy.get('[data-cy="study-list-results"] > tr').as('searchResult');
+}
+
+//Creating aliases for Study List page elements on Tablet experience
+export function initStudyListAliasesOnTablet() {
+  cy.get('.study-count').as('studyCount');
+  cy.get('#filter-patientNameOrId').as('patientNameOrMRN');
+  cy.get('#filter-accessionOrModalityOrDescription').as(
+    'accessionModalityDescription'
+  );
+  cy.get('#start-date').as('studyListStartDate');
+  cy.get('#end-date').as('studyListEndDate');
+  cy.get('[data-cy="study-list-results"] > tr').as('searchResult');
 }

@@ -6,6 +6,7 @@ import {
   initRouteAliases,
   initVTKToolsAliases,
   initStudyListAliasesOnDesktop,
+  initStudyListAliasesOnTablet,
 } from './aliases.js';
 
 // ***********************************************
@@ -84,7 +85,7 @@ Cypress.Commands.add('openStudyList', () => {
 });
 
 Cypress.Commands.add('waitStudyList', () => {
-  cy.get('table > tbody > tr').should($list => {
+  cy.get('@searchResult').should($list => {
     expect($list).to.not.have.class('no-hover');
   });
 });
@@ -250,6 +251,11 @@ Cypress.Commands.add('initVTKToolsAliases', () => {
 //Initialize aliases for Study List page elements
 Cypress.Commands.add('initStudyListAliasesOnDesktop', () => {
   initStudyListAliasesOnDesktop();
+});
+
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliasesOnTablet', () => {
+  initStudyListAliasesOnTablet();
 });
 
 //Add measurements in the viewport
