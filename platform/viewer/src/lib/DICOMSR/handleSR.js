@@ -5,11 +5,12 @@ import retrieveDataFromMeasurements from './retrieveDataFromMeasurements';
 
 import { api } from 'dicomweb-client';
 
-const retrieveMeasurementFromSR = async series => {
-  // TODO SR: Find a way to get the server and get the wadoRoot url
-  const url = 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs';
+const VERSION_NAME = 'dcmjs-0.0';
+const TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.1';
+
+const retrieveMeasurementFromSR = async (series, server) => {
   const config = {
-    url,
+    url: server.wadoRoot,
     headers: OHIF.DICOMWeb.getAuthorizationHeader(),
   };
 
@@ -25,7 +26,7 @@ const retrieveMeasurementFromSR = async series => {
   return dicomWeb.retrieveInstance(options).then(retrieveDataFromSR);
 };
 
-const stowSRFromMeasurements = async measurements => {
+const stowSRFromMeasurements = async (measurements, server) => {
   const dataset = retrieveDataFromMeasurements(measurements);
   const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -33,9 +34,9 @@ const stowSRFromMeasurements = async measurements => {
     FileMetaInformationVersion: dataset._meta.FileMetaInformationVersion.Value,
     MediaStorageSOPClassUID: dataset.SOPClassUID,
     MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
-    TransferSyntaxUID: '1.2.840.10008.1.2.1',
+    TransferSyntaxUID: TRANSFER_SYNTAX_UID,
     ImplementationClassUID: DicomMetaDictionary.uid(),
-    ImplementationVersionName: 'dcmjs-0.0',
+    ImplementationVersionName: VERSION_NAME,
   };
 
   const denaturalized = DicomMetaDictionary.denaturalizeDataset(meta);
@@ -45,10 +46,8 @@ const stowSRFromMeasurements = async measurements => {
 
   const part10Buffer = dicomDict.write();
 
-  // TODO SR: Find a way to get the server and get the wadoRoot url
-  const url = 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs';
   const config = {
-    url,
+    url: server.wadoRoot,
     headers: OHIF.DICOMWeb.getAuthorizationHeader(),
   };
 

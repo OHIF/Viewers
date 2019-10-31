@@ -2,28 +2,29 @@ import OHIF from '@ohif/core';
 import { retrieveMeasurementFromSR, stowSRFromMeasurements } from './handleSR';
 import { getLatestSRSeries } from './srUtils';
 
-export const retrieveMeasurements = () => {
+export const retrieveMeasurements = options => {
   OHIF.log.info('[DICOMSR] retrieveMeasurements');
 
+  const { server } = options;
   const latestSeries = getLatestSRSeries();
 
   if (!latestSeries) return Promise.resolve({});
 
-  return retrieveMeasurementFromSR(latestSeries);
+  return retrieveMeasurementFromSR(latestSeries, server);
 };
 
-export const storeMeasurements = (measurementData, filter) => {
+export const storeMeasurements = (measurementData, filter, server) => {
   OHIF.log.info('[DICOMSR] storeMeasurements');
 
-  // TODO SR: Come back with this when we have access to the server here and throw an error if its not dicomWeb
-  // if (!server || server.type !== 'dicomWeb') {
-  //   return Promise.reject({});
-  // }
+  if (!server || server.type !== 'dicomWeb') {
+    OHIF.log.error('DicomWeb server is required!');
+    return Promise.reject({});
+  }
 
   const studyInstanceUid =
     measurementData[Object.keys(measurementData)[0]][0].studyInstanceUid;
 
-  return stowSRFromMeasurements(measurementData).then(
+  return stowSRFromMeasurements(measurementData, server).then(
     () => {
       OHIF.studies.deleteStudyMetadataPromise(studyInstanceUid);
     },

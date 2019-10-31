@@ -204,13 +204,14 @@ export default class MeasurementApi {
 
   retrieveMeasurements(patientId, timepointIds) {
     const retrievalFn = configuration.dataExchange.retrieve;
+    const { server } = this.options;
     if (typeof retrievalFn !== 'function') {
       log.error('Measurement retrieval function has not been configured.');
       return;
     }
 
     return new Promise((resolve, reject) => {
-      retrievalFn(patientId, timepointIds).then(measurementData => {
+      retrievalFn({ patientId, timepointIds, server }).then(measurementData => {
         if (measurementData) {
           log.info('Measurement data retrieval');
           log.info(measurementData);
@@ -242,6 +243,7 @@ export default class MeasurementApi {
   }
 
   storeMeasurements(timepointId) {
+    const { server } = this.options;
     const storeFn = configuration.dataExchange.store;
     if (typeof storeFn !== 'function') {
       log.error('Measurement store function has not been configured.');
@@ -283,7 +285,7 @@ export default class MeasurementApi {
     };
 
     log.info('Saving Measurements for timepoints:', timepoints);
-    return storeFn(measurementData, filter).then(() => {
+    return storeFn(measurementData, filter, server).then(() => {
       log.info('Measurement storage completed');
     });
   }

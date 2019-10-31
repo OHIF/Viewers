@@ -59,6 +59,7 @@ class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.array,
     studyInstanceUids: PropTypes.array,
+    activeServer: PropTypes.object,
     onTimepointsUpdated: PropTypes.func,
     onMeasurementsUpdated: PropTypes.func,
     // window.store.getState().viewports.viewportSpecificData
@@ -162,7 +163,7 @@ class Viewer extends Component {
   };
 
   componentDidMount() {
-    const { studies } = this.props;
+    const { studies, activeServer } = this.props;
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
     const currentTimepointId = 'TimepointId';
 
@@ -172,6 +173,7 @@ class Viewer extends Component {
 
     const measurementApi = new MeasurementApi(timepointApi, {
       onMeasurementsUpdated: this.onMeasurementsUpdated,
+      server: activeServer,
     });
 
     this.currentTimepointId = currentTimepointId;
