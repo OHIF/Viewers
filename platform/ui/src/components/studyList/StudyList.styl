@@ -113,10 +113,17 @@ table.table
   border-spacing: 0;
   border-collapse: collapse;
   table-layout: fixed;
+  color: var(--table-text-primary-color)
+  font-weight: 300
 
   > tbody tr
     padding: 5px
     background-color: black
+
+  > tbody td
+    padding: $body-cell-top-bottom-padding 8px;
+    height: $body-cell-height
+    word-wrap: break-word;
 
   /* Striped Variant */
   &.table--striped > tbody tr:nth-child(even)
@@ -129,6 +136,9 @@ table.table
     &.no-hover
       &:hover, &:active, &.active
         background-color: var(--ui-gray-darker)
+
+  .empty-value
+    color: var(--ui-gray-light)
 
 .study-list-container > table.table > tr
   height: 20px
@@ -146,18 +156,14 @@ table.table
   text-align: left;
   border-top: 0;
 
-.study-list-container > table.table > tbody > tr > td
-  padding: $body-cell-top-bottom-padding 8px;
-  height: $body-cell-height
-  color: var(--table-text-primary-color)
-  font-weight: 300
-  word-wrap: break-word;
-
-  &.emptyCell
-    color: var(--ui-gray-light)
-
 .study-list-container > table.table > thead > tr > th.studyDate
   min-width: 230px
+.study-list-container > table.table .modalities
+  font-weight: 500;
+  min-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 
 .study-list-container
   .filters
