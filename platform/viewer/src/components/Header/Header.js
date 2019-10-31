@@ -3,11 +3,11 @@ import './Header.css';
 import { Link, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
 
+import ConnectedUserPreferencesModal from '../../connectedComponents/ConnectedUserPreferencesModal';
 import { Dropdown } from '@ohif/ui';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import PropTypes from 'prop-types';
 import { AboutModal } from '@ohif/ui';
-import { hotkeysManager } from './../../App.js';
 import { withTranslation } from 'react-i18next';
 
 // Context
@@ -28,20 +28,6 @@ class Header extends Component {
     children: OHIFLogo(),
   };
 
-  // onSave: data => {
-  //   const contextName = store.getState().commandContext.context;
-  //   const preferences = cloneDeep(store.getState().preferences);
-  //   preferences[contextName] = data;
-  //   dispatch(setUserPreferences(preferences));
-  //   dispatch(setUserPreferencesModalOpen(false));
-  //   OHIF.hotkeysUtil.setHotkeys(data.hotKeysData);
-  // },
-  // onResetToDefaults: () => {
-  //   dispatch(setUserPreferences());
-  //   dispatch(setUserPreferencesModalOpen(false));
-  //   OHIF.hotkeysUtil.setHotkeys();
-  // },
-
   constructor(props) {
     super(props);
     this.state = { isUserPreferencesOpen: false, isOpen: false };
@@ -61,6 +47,17 @@ class Header extends Component {
           });
         },
       },
+      {
+        title: 'Preferences ',
+        icon: {
+          name: 'user',
+        },
+        onClick: () => {
+          this.setState({
+            isUserPreferencesOpen: true,
+          });
+        },
+      },
     ];
 
     if (this.props.user && this.props.userManager) {
@@ -72,15 +69,10 @@ class Header extends Component {
         },
       });
     }
-
-    this.hotKeysData = hotkeysManager.hotkeyDefinitions;
   }
 
-  onUserPreferencesSave({ windowLevelData, hotKeysData }) {
-    // console.log(windowLevelData);
-    // console.log(hotKeysData);
-    // TODO: Update hotkeysManager
-    // TODO: reset `this.hotKeysData`
+  toggleUserPreferences() {
+    this.setState({ isUserPreferencesOpen: !this.state.isUserPreferencesOpen });
   }
 
   // ANTD -- Hamburger, Drawer, Menu
@@ -123,6 +115,13 @@ class Header extends Component {
               {t('INVESTIGATIONAL USE ONLY')}
             </span>
             <Dropdown title={t('Options')} list={this.options} align="right" />
+
+            <ConnectedUserPreferencesModal
+              isOpen={this.state.isUserPreferencesOpen}
+              onCancel={this.toggleUserPreferences.bind(this)}
+              onSave={this.toggleUserPreferences.bind(this)}
+              onResetToDefaults={this.toggleUserPreferences.bind(this)}
+            />
 
             {/* TODO: We need a Modal service */}
             <AboutModal
