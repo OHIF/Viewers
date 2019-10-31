@@ -142,8 +142,26 @@ function convertTimepointsToTableData(timepoints) {
   ];
 }
 
+function getSaveFunction(servers) {
+  const activeServer = servers.servers.find(a => a.active === true);
+  let saveFunction = undefined;
+
+  if (activeServer.type === 'dicomWeb') {
+    saveFunction = () => {
+      const measurementApi = OHIF.measurements.MeasurementApi.Instance;
+      const promise = measurementApi.storeMeasurements();
+      return promise;
+    };
+  }
+
+  return saveFunction;
+}
+
 const mapStateToProps = state => {
-  const { timepoints, measurements } = state.timepointManager;
+  const { timepointManager, servers } = state;
+  const { timepoints, measurements } = timepointManager;
+  const saveFunction = getSaveFunction(servers);
+
   return {
     timepoints: convertTimepointsToTableData(timepoints),
     measurementCollection: convertMeasurementsToTableData(
@@ -152,6 +170,7 @@ const mapStateToProps = state => {
     ),
     timepointManager: state.timepointManager,
     viewports: state.viewports,
+    saveFunction,
   };
 };
 
@@ -289,6 +308,7 @@ const mapDispatchToProps = dispatch => {
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   return {
     timepoints: propsFromState.timepoints,
+    saveFunction: propsFromState.saveFunction,
     measurementCollection: propsFromState.measurementCollection,
     selectedMeasurementNumber: ownProps.selectedMeasurementNumber,
     ...propsFromDispatch,
@@ -339,21 +359,6 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
           },
         },
       });
-    },
-    saveToSR: () => {
-      const successHandler = () => {
-        alert('Success');
-      };
-
-      const errorHandler = data => {
-        alert('Error saving');
-      };
-
-      const measurementApi = OHIF.measurements.MeasurementApi.Instance;
-      const promise = measurementApi.storeMeasurements();
-      promise.then(successHandler).catch(errorHandler);
-
-      return promise;
     },
   };
 };

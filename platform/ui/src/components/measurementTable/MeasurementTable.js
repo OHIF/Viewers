@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import { ScrollableArea } from './../../ScrollableArea/ScrollableArea.js';
 import { TableList } from './../tableList';
 import { Tooltip } from './../tooltip';
+import { withSnackbar } from './../../utils/SnackbarProvider';
 
 class MeasurementTable extends Component {
   static propTypes = {
@@ -24,7 +25,8 @@ class MeasurementTable extends Component {
     selectedMeasurementNumber: PropTypes.number,
     overwallWarnings: PropTypes.object,
     t: PropTypes.func,
-    saveToSR: PropTypes.func,
+    saveFunction: PropTypes.func,
+    snackbarContext: PropTypes.object,
   };
 
   static defaultProps = {
@@ -39,8 +41,9 @@ class MeasurementTable extends Component {
   };
 
   render() {
-    const hasOverallWarnings =
-      this.props.overallWarnings.warningList.length > 0;
+    const { overallWarnings, saveFunction, t } = this.props;
+    const hasOverallWarnings = overallWarnings.warningList.length > 0;
+
     return (
       <div className="measurementTable">
         <div className="measurementTableHeader">
@@ -56,7 +59,7 @@ class MeasurementTable extends Component {
                   style={{}}
                 >
                   <div className="warningTitle">
-                    {this.props.t('Criteria nonconformities')}
+                    {t('Criteria nonconformities')}
                   </div>
                   <div className="warningContent">
                     {this.getWarningContent()}
@@ -77,13 +80,33 @@ class MeasurementTable extends Component {
           <div>{this.getMeasurementsGroups()}</div>
         </ScrollableArea>
         <div className="measurementTableFooter">
-          <button onClick={this.props.saveToSR} className="saveBtn">
-            SAVE
-          </button>
+          {saveFunction && (
+            <button onClick={this.saveFunction} className="saveBtn">
+              SAVE
+            </button>
+          )}
         </div>
       </div>
     );
   }
+
+  saveFunction = async event => {
+    const { saveFunction, snackbarContext } = this.props;
+    if (saveFunction) {
+      try {
+        await saveFunction();
+        snackbarContext.show({
+          title: 'STOW SR',
+          message: 'Measurements were saved with success',
+        });
+      } catch (error) {
+        snackbarContext.show({
+          title: 'STOW SR',
+          message: 'Error while saving the measurements',
+        });
+      }
+    }
+  };
 
   getMeasurementsGroups = () => {
     return this.props.measurementCollection.map((measureGroup, index) => {
@@ -177,8 +200,8 @@ class MeasurementTable extends Component {
   };
 }
 
-const connectedComponent = withTranslation(['MeasurementTable', 'Common'])(
-  MeasurementTable
+const connectedComponent = withSnackbar(
+  withTranslation(['MeasurementTable', 'Common'])(MeasurementTable)
 );
 export { connectedComponent as MeasurementTable };
 export default connectedComponent;
