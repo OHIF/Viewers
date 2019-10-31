@@ -1,28 +1,71 @@
 window.config = {
+  // default: '/'
   routerBasename: '/',
-  enableGoogleCloudAdapter: true,
+  extensions: [],
+  showStudyList: true,
   servers: {
-    // This is an array, but we'll only use the first entry for now
-    dicomWeb: [],
+    dicomWeb: [
+      {
+        name: 'DCM4CHEE',
+        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        qidoSupportsIncludeField: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+      },
+    ],
   },
-  // This is an array, but we'll only use the first entry for now
-  oidc: [
+  // Extensions should be able to suggest default values for these?
+  // Or we can require that these be explicitly set
+  hotkeys: [
+    // ~ Global
     {
-      // ~ REQUIRED
-      // Authorization Server URL
-      authority: 'https://accounts.google.com',
-      client_id:
-        '723928408739-k9k9r3i44j32rhu69vlnibipmmk9i57p.apps.googleusercontent.com',
-      redirect_uri: '/callback', // `OHIFStandaloneViewer.js`
-      response_type: 'id_token token',
-      scope:
-        'email profile openid https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/cloud-healthcare', // email profile openid
-      // ~ OPTIONAL
-      post_logout_redirect_uri: '/logout-redirect.html',
-      revoke_uri: 'https://accounts.google.com/o/oauth2/revoke?token=',
-      automaticSilentRenew: true,
-      revokeAccessTokenOnSignout: true,
+      commandName: 'incrementActiveViewport',
+      label: 'Next Image Viewport',
+      keys: ['right'],
     },
+    {
+      commandName: 'decrementActiveViewport',
+      label: 'Previous Image Viewport',
+      keys: ['left'],
+    },
+    // Supported Keys: https://craig.is/killing/mice
+    // ~ Cornerstone Extension
+    { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'] },
+    { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
+    { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
+    {
+      commandName: 'flipViewportVertical',
+      label: 'Flip Horizontally',
+      keys: ['h'],
+    },
+    {
+      commandName: 'flipViewportHorizontal',
+      label: 'Flip Vertically',
+      keys: ['v'],
+    },
+    { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'] },
+    { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'] },
+    { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },
+    { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
+    // clearAnnotations
+    { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
+    { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
+    // firstImage
+    // lastImage
+    {
+      commandName: 'nextViewportDisplaySet',
+      label: 'Previous Series',
+      keys: ['pagedown'],
+    },
+    {
+      commandName: 'previousViewportDisplaySet',
+      label: 'Next Series',
+      keys: ['pageup'],
+    },
+    // ~ Cornerstone Tools
+    { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
   ],
-  studyListFunctionsEnabled: true,
 };
