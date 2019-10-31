@@ -240,7 +240,7 @@ function TableRow(props) {
       <td>{accessionNumber}</td>
       <td>{studyDate}</td>
       <td className={classNames({ 'empty-value': !modalities })}>
-        {modalities || `(${t('Empty')})`}}
+        {modalities || `(${t('Empty')})`}
       </td>
       <td>{studyDescription}</td>
     </tr>
@@ -273,14 +273,14 @@ function TableRow(props) {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              minWidth: '80px',
-              maxWidth: '100px',
+              maxWidth: '80px',
+              width: '80px',
             }}
           >
             <div
               className={classNames({
                 modalities: modalities,
-                : !modalities,
+                'empty-value': !modalities,
               })}
               aria-label={modalities}
               title={modalities}
@@ -341,7 +341,8 @@ function TableRow(props) {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              minWidth: '80px',
+              maxWidth: '80px',
+              width: '80px',
             }}
           >
             <div
