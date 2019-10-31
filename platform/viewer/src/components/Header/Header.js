@@ -1,5 +1,4 @@
 import './Header.css';
-import './Header.css';
 
 import { Link, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
@@ -84,59 +83,59 @@ class Header extends Component {
     // TODO: reset `this.hotKeysData`
   }
 
+  // ANTD -- Hamburger, Drawer, Menu
   render() {
     const { t } = this.props;
     const { appConfig = {} } = this.context;
     const showStudyList =
       appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
     return (
-      <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
-        <div className="header-left-box">
-          {this.props.location && this.props.location.studyLink && (
-            <Link
-              to={this.props.location.studyLink}
-              className="header-btn header-viewerLink"
-            >
-              {t('Back to Viewer')}
-            </Link>
-          )}
+      <>
+        <div className="notification-bar">{t('INVESTIGATIONAL USE ONLY')}</div>
+        <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
+          <div className="header-left-box">
+            {this.props.location && this.props.location.studyLink && (
+              <Link
+                to={this.props.location.studyLink}
+                className="header-btn header-viewerLink"
+              >
+                {t('Back to Viewer')}
+              </Link>
+            )}
 
-          <span
-            className={`${
-              this.props.home ? 'header-versionInfoHome' : 'header-versionInfo'
-            }`}
-          >
-            v{process.env.VERSION_NUMBER}
-          </span>
+            {this.props.children}
 
-          {this.props.children}
+            {showStudyList && !this.props.home && (
+              <Link
+                className="header-btn header-studyListLinkSection"
+                to={{
+                  pathname: '/',
+                  state: { studyLink: this.props.location.pathname },
+                }}
+              >
+                {t('Study list')}
+              </Link>
+            )}
+          </div>
 
-          {showStudyList && !this.props.home && (
-            <Link
-              className="header-btn header-studyListLinkSection"
-              to={{
-                pathname: '/',
-                state: { studyLink: this.props.location.pathname },
-              }}
-            >
-              {t('Study list')}
-            </Link>
-          )}
+          <div className="header-menu">
+            <span className="research-use">
+              {t('INVESTIGATIONAL USE ONLY')}
+            </span>
+            <Dropdown title={t('Options')} list={this.options} align="right" />
+
+            {/* TODO: We need a Modal service */}
+            <AboutModal
+              {...this.state}
+              onCancel={() =>
+                this.setState({
+                  isOpen: false,
+                })
+              }
+            />
+          </div>
         </div>
-
-        <div className="header-menu">
-          <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
-          <Dropdown title={t('Options')} list={this.options} align="right" />
-          <AboutModal
-            {...this.state}
-            onCancel={() =>
-              this.setState({
-                isOpen: false,
-              })
-            }
-          />
-        </div>
-      </div>
+      </>
     );
   }
 }

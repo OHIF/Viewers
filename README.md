@@ -26,6 +26,7 @@
 [![Netlify Status][netlify-image]][netlify-url]
 [![CircleCI][circleci-image]][circleci-url]
 [![codecov][codecov-image]][codecov-url]
+[![This project is using Percy.io for visual regression testing.][percy-image]](percy-url)
 [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors)
 <!-- prettier-ignore-end -->
 
@@ -288,6 +289,8 @@ MIT © [OHIF](https://github.com/OHIF)
 [docker-image-url]: https://hub.docker.com/r/ohif/viewer
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE
+[percy-image]: https://percy.io/static/images/percy-badge.svg
+[percy-url]: https://percy.io/Open-Health-Imaging-Foundation/OHIF-Viewer
 <!-- Links -->
 [monorepo]: https://en.wikipedia.org/wiki/Monorepo
 [how-to-fork]: https://help.github.com/en/articles/fork-a-repo

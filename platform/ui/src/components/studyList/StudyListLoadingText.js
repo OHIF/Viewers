@@ -1,12 +1,18 @@
-import { Icon } from './../../elements/Icon';
 import React from 'react';
+import { Icon } from './../../elements/Icon';
+// TODO: useTranslation
+import { withTranslation } from '../../utils/LanguageProvider';
 
-function StudyListLoadingText() {
+function StudyListLoadingText({ t: translate }) {
   return (
     <div className="loading-text">
-      Loading... <Icon name="circle-notch" animation="pulse" />
+      {translate('Loading')}... <Icon name="circle-notch" animation="pulse" />
     </div>
   );
 }
 
-export { StudyListLoadingText };
+const connectedComponent = withTranslation('StudyListLoadingText')(
+  StudyListLoadingText
+);
+
+export { connectedComponent as StudyListLoadingText };
