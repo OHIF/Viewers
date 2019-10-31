@@ -233,13 +233,15 @@ function TableRow(props) {
       onClick={() => handleClick(studyInstanceUid)}
       className={classNames({ active: isHighlighted })}
     >
-      <td className={classNames({ emptyCell: !patientName })}>
+      <td className={classNames({ 'empty-value': !patientName })}>
         {patientName || `(${t('Empty')})`}
       </td>
       <td>{patientId}</td>
       <td>{accessionNumber}</td>
       <td>{studyDate}</td>
-      <td>{modalities}</td>
+      <td className={classNames({ 'empty-value': !modalities })}>
+        {modalities || `(${t('Empty')})`}}
+      </td>
       <td>{studyDescription}</td>
     </tr>
   );
@@ -249,7 +251,7 @@ function TableRow(props) {
       onClick={() => handleClick(studyInstanceUid)}
       className={classNames({ active: isHighlighted })}
     >
-      <td className={classNames({ emptyCell: !patientName })}>
+      <td className={classNames({ 'empty-value': !patientName })}>
         {patientName || `(${t('Empty')})`}
         <div style={{ color: '#60656f' }}>{patientId}</div>
       </td>
@@ -276,18 +278,14 @@ function TableRow(props) {
             }}
           >
             <div
-              style={{
-                padding: '2px 8px 0px 8px',
-                fontWeight: 500,
-                minHeight: '20px',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-              }}
+              className={classNames({
+                modalities: modalities,
+                : !modalities,
+              })}
               aria-label={modalities}
               title={modalities}
             >
-              {modalities}
+              {modalities || `(${t('Empty')})`}
             </div>
             <div
               style={{
@@ -317,7 +315,7 @@ function TableRow(props) {
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           {/* NAME AND ID */}
           <div
-            className={classNames({ emptyCell: !patientName })}
+            className={classNames({ 'empty-value': !patientName })}
             style={{ width: '150px', minWidth: '150px' }}
           >
             <div style={{ fontWeight: 500, paddingTop: '3px' }}>
@@ -347,18 +345,14 @@ function TableRow(props) {
             }}
           >
             <div
-              style={{
-                padding: '2px 8px 0px 8px',
-                fontWeight: 500,
-                minHeight: '20px',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-              }}
+              className={classNames({
+                modalities: modalities,
+                'empty-value': !modalities,
+              })}
               aria-label={modalities}
               title={modalities}
             >
-              {modalities}
+              {modalities || `(${t('Empty')})`}
             </div>
             <div>{studyDate}</div>
           </div>
@@ -379,7 +373,7 @@ function TableRow(props) {
 TableRow.propTypes = {
   accessionNumber: PropTypes.string.isRequired,
   isHighlighted: PropTypes.bool,
-  modalities: PropTypes.string.isRequired,
+  modalities: PropTypes.string,
   patientId: PropTypes.string.isRequired,
   patientName: PropTypes.string.isRequired,
   studyDate: PropTypes.string.isRequired,

@@ -130,6 +130,9 @@ table.table
       &:hover, &:active, &.active
         background-color: var(--ui-gray-darker)
 
+  .empty-value
+    color: var(--ui-gray-light)
+
 .study-list-container > table.table > tr
   height: 20px
 
@@ -153,11 +156,14 @@ table.table
   font-weight: 300
   word-wrap: break-word;
 
-  &.emptyCell
-    color: var(--ui-gray-light)
-
 .study-list-container > table.table > thead > tr > th.studyDate
   min-width: 230px
+.study-list-container > table.table > td > td.modalities
+  font-weight: 500;
+  min-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 
 .study-list-container
   .filters
