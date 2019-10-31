@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.4...@ohif/viewer@2.3.5) (2019-10-31)
+
+
+### Bug Fixes
+
+* application crash if patientName is an object ([#1138](https://github.com/OHIF/Viewers/issues/1138)) ([64cf3b3](https://github.com/OHIF/Viewers/commit/64cf3b324da2383a927af1df2d46db2fca5318aa))
+
+
+
+
+
+## [2.3.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.3...@ohif/viewer@2.3.4) (2019-10-30)
+
+
+### Bug Fixes
+
+* 🐛 Fix ghost shadow on thumb ([#1113](https://github.com/OHIF/Viewers/issues/1113)) ([caaa032](https://github.com/OHIF/Viewers/commit/caaa032c4bc24fd69fdb01a15a8feb2721c321db))
+
+
+
+
+
+## [2.3.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.2...@ohif/viewer@2.3.3) (2019-10-30)
+
+
+### Bug Fixes
+
+* get adapter store picker to show ([#1134](https://github.com/OHIF/Viewers/issues/1134)) ([50ca2bd](https://github.com/OHIF/Viewers/commit/50ca2bde971e1e67b73ece96369052dd1a35ac68))
+
+
+
+
+
+## [2.3.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.1...@ohif/viewer@2.3.2) (2019-10-29)
+
+
+### Bug Fixes
+
+* 🐛 Limit image download size to avoid browser issues ([#1112](https://github.com/OHIF/Viewers/issues/1112)) ([5716b71](https://github.com/OHIF/Viewers/commit/5716b71d409ee1c6f13393c8cb7f50222415e198)), closes [#1099](https://github.com/OHIF/Viewers/issues/1099)
+
+
+
+
+
+## [2.3.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.0...@ohif/viewer@2.3.1) (2019-10-29)
+
+
+### Bug Fixes
+
+* rollbar template needs PUBLIC_URL defined ([#1127](https://github.com/OHIF/Viewers/issues/1127)) ([352407c](https://github.com/OHIF/Viewers/commit/352407c71ae93946e9ebad41446d6086cfbc237b))
+
+
+
+
+
+# [2.3.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.2.2...@ohif/viewer@2.3.0) (2019-10-29)
+
+
+### Features
+
+* service worker ([#1045](https://github.com/OHIF/Viewers/issues/1045)) ([cf51368](https://github.com/OHIF/Viewers/commit/cf5136899eac08300ec4f15474a6440129ef7a9a))
+
+
+
+
+
+## [2.2.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.2.1...@ohif/viewer@2.2.2) (2019-10-29)
+
+
+### Bug Fixes
+
+* Set SR viewport as active by interaction ([#1118](https://github.com/OHIF/Viewers/issues/1118)) ([5b33417](https://github.com/OHIF/Viewers/commit/5b334175c370afb930b4b6dbd307ddece8f850e3))
+
+
+
+
+
 ## [2.2.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.2.0...@ohif/viewer@2.2.1) (2019-10-29)
 
 **Note:** Version bump only for package @ohif/viewer

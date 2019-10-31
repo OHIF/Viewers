@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 import OHIF from '@ohif/core';
 import { withRouter } from 'react-router-dom';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import {
   StudyList,
   PageToolbar,
@@ -26,7 +26,8 @@ import AppContext from '../context/AppContext';
 const { urlUtil: UrlUtil } = OHIF.utils;
 
 function StudyListRoute(props) {
-  const { history, server, t, user, studyListFunctionsEnabled } = props;
+  const { history, server, user, studyListFunctionsEnabled } = props;
+  const [t] = useTranslation('Common');
   // ~~ STATE
   const [sort, setSort] = useState({
     fieldName: 'patientName',
@@ -55,6 +56,7 @@ function StudyListRoute(props) {
   const [activeModalId, setActiveModalId] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [pageNumber, setPageNumber] = useState(0);
+  const appContext = useContext(AppContext);
   // ~~ RESPONSIVE
   const displaySize = useMedia(
     ['(min-width: 1750px)', '(min-width: 1000px)', '(min-width: 768px)'],
@@ -66,39 +68,52 @@ function StudyListRoute(props) {
   const debouncedFilters = useDebounce(filterValues, 250);
 
   // Google Cloud Adapter for DICOM Store Picking
-  const { appConfig = {} } = AppContext;
+  const { appConfig = {} } = appContext;
   const isGoogleCHAIntegrationEnabled =
     !server && appConfig.enableGoogleCloudAdapter;
-  if (isGoogleCHAIntegrationEnabled) {
+  if (isGoogleCHAIntegrationEnabled && activeModalId !== 'DicomStorePicker') {
     setActiveModalId('DicomStorePicker');
   }
 
   // Called when relevant state/props are updated
   // Watches filters and sort, debounced
-  useEffect(() => {
-    const fetchStudies = async () => {
-      try {
-        setSearchStatus({ error: null, isSearchingForStudies: true });
+  useEffect(
+    () => {
+      const fetchStudies = async () => {
+        try {
+          setSearchStatus({ error: null, isSearchingForStudies: true });
 
-        const response = await getStudyList(
-          server,
-          debouncedFilters,
-          debouncedSort,
-          rowsPerPage,
-          pageNumber,
-          displaySize
-        );
+          const response = await getStudyList(
+            server,
+            debouncedFilters,
+            debouncedSort,
+            rowsPerPage,
+            pageNumber,
+            displaySize
+          );
 
-        setStudies(response);
-        setSearchStatus({ error: null, isSearchingForStudies: false });
-      } catch (error) {
-        console.warn(error);
-        setSearchStatus({ error: true, isFetching: false });
+          setStudies(response);
+          setSearchStatus({ error: null, isSearchingForStudies: false });
+        } catch (error) {
+          console.warn(error);
+          setSearchStatus({ error: true, isFetching: false });
+        }
+      };
+
+      if (server) {
+        fetchStudies();
       }
-    };
-
-    fetchStudies();
-  }, [debouncedFilters, debouncedSort, rowsPerPage, pageNumber, displaySize]);
+    },
+    // TODO: Can we update studies directly?
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      debouncedFilters,
+      debouncedSort,
+      rowsPerPage,
+      pageNumber,
+      displaySize,
+      server,
+    ]);
 
   // TODO: Update Server
   // if (this.props.server !== prevProps.server) {
@@ -181,6 +196,13 @@ function StudyListRoute(props) {
 
   return (
     <>
+      {studyListFunctionsEnabled ? (
+        <ConnectedDicomFilesUploader
+          isOpen={activeModalId === 'DicomFilesUploader'}
+          onClose={() => setActiveModalId(null)}
+        />
+      ) : null}
+      {healthCareApiWindows}
       <WhiteLabellingContext.Consumer>
         {whiteLabelling => (
           <UserManagerContext.Consumer>
@@ -203,6 +225,7 @@ function StudyListRoute(props) {
           </h1>
         </div>
         <div className="actions">
+          {studyListFunctionsEnabled && healthCareApiButtons}
           {studyListFunctionsEnabled && (
             <PageToolbar
               onImport={() => setActiveModalId('DicomFilesUploader')}
@@ -232,17 +255,8 @@ function StudyListRoute(props) {
           filterValues={filterValues}
           onFilterChange={handleFilterChange}
           studyListDateFilterNumDays={appConfig.studyListDateFilterNumDays}
-        >
-          {studyListFunctionsEnabled ? (
-            <ConnectedDicomFilesUploader
-              isOpen={activeModalId === 'DicomFilesUploader'}
-              onClose={() => setActiveModalId(null)}
-            />
-          ) : null}
-          {healthCareApiButtons}
-          {healthCareApiWindows}
-        </StudyList>
-        }{/* PAGINATION FOOTER */}
+        />
+        {/* PAGINATION FOOTER */}
         <TablePagination
           currentPage={pageNumber}
           nextPageFunc={() => setPageNumber(pageNumber + 1)}
@@ -342,6 +356,9 @@ async function getStudyList(
 
   // Only the fields we use
   const mappedStudies = studies.map(study => {
+    const patientName =
+      typeof study.patientName === 'string' ? study.patientName : undefined;
+
     return {
       accessionNumber: study.accessionNumber, // "1"
       modalities: study.modalities, // "SEG\\MR"  ​​
@@ -349,7 +366,7 @@ async function getStudyList(
       // numberOfStudyRelatedSeries: "3"
       // patientBirthdate: undefined
       patientId: study.patientId, // "NOID"
-      patientName: study.patientName, // "NAME^NONE"
+      patientName, // "NAME^NONE"
       // patientSex: "M"
       // referringPhysicianName: undefined
       studyDate: study.studyDate, // "Jun 28, 2002"
@@ -407,7 +424,7 @@ function _sortStudies(studies, field, order) {
   });
 
   // Sort by field
-  sortedStudies.sort(function (a, b) {
+  sortedStudies.sort(function(a, b) {
     let fieldA = a[field];
     let fieldB = b[field];
     if (field === 'studyDate') {
@@ -549,4 +566,4 @@ function _getQueryFiltersForValue(filters, fields, value) {
   return queryFilters;
 }
 
-export default withRouter(withTranslation('Common')(StudyListRoute));
+export default withRouter(StudyListRoute);
