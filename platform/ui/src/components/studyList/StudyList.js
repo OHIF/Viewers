@@ -5,11 +5,8 @@ import classNames from 'classnames';
 import TableSearchFilter from './TableSearchFilter.js';
 import useMedia from '../../hooks/useMedia.js';
 import PropTypes from 'prop-types';
-import ColorHash from './internal/color-hash.js';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
 import { withTranslation } from '../../utils/LanguageProvider';
-
-const colorHash = new ColorHash();
 
 /**
  *
@@ -280,11 +277,9 @@ function TableRow(props) {
           >
             <div
               style={{
-                backgroundColor: colorHash.hex(modalities),
-                borderRadius: '16px',
                 padding: '2px 8px 0px 8px',
                 fontWeight: 500,
-                marginBottom: '4px',
+                minHeight: '20px',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
@@ -353,12 +348,15 @@ function TableRow(props) {
           >
             <div
               style={{
-                backgroundColor: colorHash.hex(modalities),
-                borderRadius: '16px',
                 padding: '2px 8px 0px 8px',
                 fontWeight: 500,
-                marginBottom: '4px',
+                minHeight: '20px',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
               }}
+              aria-label={modalities}
+              title={modalities}
             >
               {modalities}
             </div>
