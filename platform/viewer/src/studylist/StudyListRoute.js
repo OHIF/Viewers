@@ -352,6 +352,9 @@ async function getStudyList(
 
   // Only the fields we use
   const mappedStudies = studies.map(study => {
+    const patientName =
+      typeof study.patientName === 'string' ? study.patientName : undefined;
+
     return {
       accessionNumber: study.accessionNumber, // "1"
       modalities: study.modalities, // "SEG\\MR"  ​​
@@ -359,7 +362,7 @@ async function getStudyList(
       // numberOfStudyRelatedSeries: "3"
       // patientBirthdate: undefined
       patientId: study.patientId, // "NOID"
-      patientName: study.patientName, // "NAME^NONE"
+      patientName, // "NAME^NONE"
       // patientSex: "M"
       // referringPhysicianName: undefined
       studyDate: study.studyDate, // "Jun 28, 2002"
