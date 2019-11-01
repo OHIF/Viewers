@@ -37,6 +37,7 @@ import AppContext from './context/AppContext';
 
 // ~~~~ APP SETUP
 const commandsManagerConfig = {
+  dispatchAppState: (action) => store.dispatch(action),
   getAppState: () => store.getState(),
   getActiveContexts: () => getActiveContexts(store.getState()),
 };

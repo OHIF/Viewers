@@ -3,6 +3,7 @@ import cornerstoneTools from 'cornerstone-tools';
 import OHIF from '@ohif/core';
 const scroll = cornerstoneTools.import('util/scroll');
 
+
 const actions = {
   rotateViewport: ({ viewports, rotation }) => {
     const enabledElement = _getActiveViewportEnabledElement(
@@ -86,10 +87,6 @@ const actions = {
       console.warn('No toolname provided to setToolActive command');
     }
     cornerstoneTools.setToolActive(toolName, { mouseButtonMask: 1 });
-  },
-  updateViewportDisplaySet: ({ direction }) => {
-    // TODO
-    console.warn('updateDisplaySet: ', direction);
   },
   clearAnnotations: ({ viewports }) => {
     const element = _getActiveViewportEnabledElement(
@@ -224,18 +221,6 @@ const definitions = {
     commandFn: actions.previousImage,
     storeContexts: ['viewports'],
     options: {},
-  },
-  // TODO: First/Last image
-  // Next/Previous series/DisplaySet
-  nextViewportDisplaySet: {
-    commandFn: actions.updateViewportDisplaySet,
-    storeContexts: [],
-    options: { direction: 1 },
-  },
-  previousViewportDisplaySet: {
-    commandFn: actions.updateViewportDisplaySet,
-    storeContexts: [],
-    options: { direction: -1 },
   },
   // TOOLS
   setToolActive: {

@@ -5,6 +5,7 @@
 import {
   CLEAR_VIEWPORT,
   SET_ACTIVE_SPECIFIC_DATA,
+  SET_ACTIVE_SINGLE_STEP_DATA,
   SET_SERVERS,
   SET_VIEWPORT,
   SET_VIEWPORT_ACTIVE,
@@ -66,6 +67,12 @@ export const setActiveViewportSpecificData = data => ({
   data,
 });
 
+export const setActiveViewportSingleStepData = (studies, direction) => ({
+  type: SET_ACTIVE_SINGLE_STEP_DATA,
+  studies,
+  direction
+});
+
 /**
  * NOT-VIEWPORT
  */
@@ -120,6 +127,7 @@ const actions = {
   setLayout,
   clearViewportSpecificData,
   setActiveViewportSpecificData,
+  setActiveViewportSingleStepData,
   setStudyLoadingProgress,
   clearStudyLoadingProgress,
   setUserPreferences,

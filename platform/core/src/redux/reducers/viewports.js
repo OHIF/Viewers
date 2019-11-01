@@ -1,6 +1,7 @@
 import {
   CLEAR_VIEWPORT,
   SET_ACTIVE_SPECIFIC_DATA,
+  SET_ACTIVE_SINGLE_STEP_DATA,
   SET_SPECIFIC_DATA,
   SET_VIEWPORT,
   SET_VIEWPORT_ACTIVE,
@@ -103,7 +104,7 @@ const viewports = (state = defaultState, action) => {
 
       return Object.assign({}, state, { layout, viewportSpecificData });
     }
-    case CLEAR_VIEWPORT:
+    case CLEAR_VIEWPORT: {
       viewportSpecificData = cloneDeep(state.viewportSpecificData);
       if (action.viewportIndex) {
         viewportSpecificData[action.viewportIndex] = {};
@@ -111,7 +112,48 @@ const viewports = (state = defaultState, action) => {
       } else {
         return defaultState;
       }
+    }
+    case SET_ACTIVE_SINGLE_STEP_DATA: {
+      const layout = cloneDeep(state.layout);
 
+      const viewportIndex = state.activeViewportIndex;
+
+      const {
+        dom,
+        seriesInstanceUid,
+        studyInstanceUid
+      } = state.viewportSpecificData[viewportIndex];
+
+      const studiesMap = action.studies.studyData;
+      const direction = action.direction;
+
+      const study = studiesMap[studyInstanceUid];
+
+
+      const displaySetIndex = study.displaySets.findIndex(displaySet => {
+        return displaySet.seriesInstanceUid === seriesInstanceUid;
+      });
+
+      const dsLength = study.displaySets.length;
+      let nextIndex = (displaySetIndex + direction) % dsLength;
+
+      nextIndex = nextIndex < 0 ? dsLength - 1 : nextIndex;
+
+      const nextData = study.displaySets[nextIndex];
+      const hasPlugin = nextData && nextData.plugin;
+
+      viewportSpecificData = cloneDeep(state.viewportSpecificData);
+      viewportSpecificData[viewportIndex] = {
+        dom,
+        ...nextData,
+      };
+
+      if (hasPlugin) {
+        layout.viewports[viewportIndex].plugin = nextData.plugin;
+      }
+
+      return Object.assign({}, state, { layout, viewportSpecificData });
+    }
     default:
       return state;
   }

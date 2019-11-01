@@ -60,6 +60,8 @@ class ViewerRetrieveStudyData extends Component {
         studyMetadataManager.add(studyMetadata);
         // Attempt to load remaning series if any
         this._attemptToLoadRemainingSeries(studyMetadata);
+
+        this.props.onStudyLoaded(study.studyInstanceUid, study);
         return study;
       });
       this.setState({ studies });
@@ -78,7 +80,7 @@ class ViewerRetrieveStudyData extends Component {
     );
     study.displaySets = studyMetadata.getDisplaySets();
     updateMetaDataManager(study, series.seriesInstanceUid);
-    this.setState(function(state) {
+    this.setState(function (state) {
       return { studies: state.studies.slice() };
     });
   }

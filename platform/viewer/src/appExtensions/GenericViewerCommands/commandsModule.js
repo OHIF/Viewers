@@ -1,12 +1,8 @@
 import { redux } from "@ohif/core";
 import store from "./../../store";
-const { setViewportActive } = redux.actions;
+const { setViewportActive, setActiveViewportSingleStepData } = redux.actions;
 
 const actions = {
-  updateViewportDisplaySet: ({ direction }) => {
-    // TODO
-    // console.warn('updateDisplaySet: ', direction);
-  },
   updateActiveViewport: ({ viewports, direction }) => {
     const { viewportSpecificData, activeViewportIndex } = viewports;
     const maxIndex = Object.keys(viewportSpecificData).length - 1;
@@ -16,7 +12,10 @@ const actions = {
     newIndex = newIndex < 0 ? maxIndex : newIndex;
 
     store.dispatch(setViewportActive(newIndex));
-  }
+  },
+  updateViewportDisplaySet: ({ direction }, store) => {
+    store.dispatch(setActiveViewportSingleStepData(store.state.studies, direction));
+  },
 };
 
 const definitions = {
@@ -30,7 +29,17 @@ const definitions = {
     commandFn: actions.updateActiveViewport,
     storeContexts: ["viewports"],
     options: { direction: -1 }
-  }
+  },
+  nextViewportDisplaySet: {
+    commandFn: actions.updateViewportDisplaySet,
+    storeContexts: [],
+    options: { direction: 1 },
+  },
+  previousViewportDisplaySet: {
+    commandFn: actions.updateViewportDisplaySet,
+    storeContexts: [],
+    options: { direction: -1 },
+  },
 };
 
 export default {

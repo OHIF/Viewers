@@ -19,7 +19,7 @@ import log from '../log.js';
  * to extend this class, please check it's source before adding new methods.
  */
 export class CommandsManager {
-  constructor({ getAppState, getActiveContexts } = {}) {
+  constructor({ getAppState, getActiveContexts, dispatchAppState } = {}) {
     this.contexts = {};
 
     if (!getAppState || !getActiveContexts) {
@@ -30,6 +30,7 @@ export class CommandsManager {
 
     this._getAppState = getAppState;
     this._getActiveContexts = getActiveContexts;
+    this._dispatchAppState = dispatchAppState;
   }
 
   /**
@@ -169,19 +170,24 @@ export class CommandsManager {
     storeContexts.forEach(context => {
       commandParams[context] = appState[context];
     });
+    const dispatchAppState = this._dispatchAppState;
+    const store = {
+      dispatch: dispatchAppState, // expose dispatch store method from current command manager
+      state: appState,
+    }
 
     commandParams = Object.assign(
       {},
       commandParams, // Required store contexts
       definitionOptions, // "Command configuration"
-      options // "Time of call" info
+      options, // "Time of call" info
     );
 
     if (typeof commandFn !== 'function') {
       log.warn(`No commandFn was defined for command "${commandName}"`);
       return;
     } else {
-      return commandFn(commandParams);
+      return commandFn(commandParams, store);
     }
   }
 }
