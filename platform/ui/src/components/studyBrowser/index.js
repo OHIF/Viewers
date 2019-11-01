@@ -1,2 +1,2 @@
 export { StudyBrowser } from './StudyBrowser.js';
-export { ThumbnailEntry } from './ThumbnailEntry.js';
+export { Thumbnail } from './Thumbnail.js';
