@@ -11,7 +11,7 @@ import {
 
 import { Checkbox } from './checkbox';
 import { CineDialog } from './cineDialog';
-import { DownloadDialog } from './downloadDialog';
+import { DownloadContent } from './content/downloadContent';
 import { QuickSwitch } from './quickSwitch';
 import { RoundedButtonGroup } from './roundedButtonGroup';
 import { SelectTree } from './selectTree';
@@ -29,7 +29,7 @@ import { Tooltip } from './tooltip';
 export {
   Checkbox,
   CineDialog,
-  DownloadDialog,
+  DownloadContent,
   LayoutButton,
   LayoutChooser,
   MeasurementTable,

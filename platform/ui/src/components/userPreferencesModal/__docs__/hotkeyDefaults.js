@@ -55,13 +55,8 @@ export default {
     column: 1,
   },
   toggleCinePlay: { label: 'Play/Pause Cine', keys: ['SPACE'], column: 1 },
-  toggleCineDialog: {
+  F: {
     label: 'Show/Hide Cine Controls',
-    keys: [''],
-    column: 1,
-  },
-  toggleDownloadDialog: {
-    label: 'Show/Hide Download Dialog',
     keys: [''],
     column: 1,
   },

@@ -2,7 +2,7 @@ import React, { useEffect, useState, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-import './DownloadDialog.styl';
+import './DownloadContent.styl';
 import { TextInput, Select } from '@ohif/ui';
 
 const FILE_TYPE_OPTIONS = [
@@ -18,7 +18,7 @@ const FILE_TYPE_OPTIONS = [
 
 const DEFAULT_FILENAME = 'image';
 
-const DownloadDialog = ({
+const DownloadContent = ({
   activeViewport,
   onClose,
   updateViewportPreview,
@@ -32,7 +32,7 @@ const DownloadDialog = ({
   maximumSize,
   canvasClass,
 }) => {
-  const [t] = useTranslation('DownloadDialog');
+  const [t] = useTranslation('DownloadContent');
 
   const [filename, setFilename] = useState(DEFAULT_FILENAME);
   const [fileType, setFileType] = useState('jpg');
@@ -307,7 +307,7 @@ const DownloadDialog = ({
   );
 };
 
-DownloadDialog.propTypes = {
+DownloadContent.propTypes = {
   onClose: PropTypes.func.isRequired,
   activeViewport: PropTypes.object,
   updateViewportPreview: PropTypes.func.isRequired,
@@ -322,4 +322,4 @@ DownloadDialog.propTypes = {
   canvasClass: PropTypes.string.isRequired,
 };
 
-export default DownloadDialog;
+export default DownloadContent;
