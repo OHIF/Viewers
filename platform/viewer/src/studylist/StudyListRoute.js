@@ -77,39 +77,43 @@ function StudyListRoute(props) {
 
   // Called when relevant state/props are updated
   // Watches filters and sort, debounced
-  useEffect(() => {
-    const fetchStudies = async () => {
-      try {
-        setSearchStatus({ error: null, isSearchingForStudies: true });
+  useEffect(
+    () => {
+      const fetchStudies = async () => {
+        try {
+          setSearchStatus({ error: null, isSearchingForStudies: true });
 
-        const response = await getStudyList(
-          server,
-          debouncedFilters,
-          debouncedSort,
-          rowsPerPage,
-          pageNumber,
-          displaySize
-        );
+          const response = await getStudyList(
+            server,
+            debouncedFilters,
+            debouncedSort,
+            rowsPerPage,
+            pageNumber,
+            displaySize
+          );
 
-        setStudies(response);
-        setSearchStatus({ error: null, isSearchingForStudies: false });
-      } catch (error) {
-        console.warn(error);
-        setSearchStatus({ error: true, isFetching: false });
+          setStudies(response);
+          setSearchStatus({ error: null, isSearchingForStudies: false });
+        } catch (error) {
+          console.warn(error);
+          setSearchStatus({ error: true, isFetching: false });
+        }
+      };
+
+      if (server) {
+        fetchStudies();
       }
-    };
-
-    if (server) {
-      fetchStudies();
-    }
-  }, [
-    debouncedFilters,
-    debouncedSort,
-    rowsPerPage,
-    pageNumber,
-    displaySize,
-    server,
-  ]);
+    },
+    // TODO: Can we update studies directly?
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      debouncedFilters,
+      debouncedSort,
+      rowsPerPage,
+      pageNumber,
+      displaySize,
+      server,
+    ]);
 
   // TODO: Update Server
   // if (this.props.server !== prevProps.server) {
@@ -352,6 +356,9 @@ async function getStudyList(
 
   // Only the fields we use
   const mappedStudies = studies.map(study => {
+    const patientName =
+      typeof study.patientName === 'string' ? study.patientName : undefined;
+
     return {
       accessionNumber: study.accessionNumber, // "1"
       modalities: study.modalities, // "SEG\\MR"  ​​
@@ -359,7 +366,7 @@ async function getStudyList(
       // numberOfStudyRelatedSeries: "3"
       // patientBirthdate: undefined
       patientId: study.patientId, // "NOID"
-      patientName: study.patientName, // "NAME^NONE"
+      patientName, // "NAME^NONE"
       // patientSex: "M"
       // referringPhysicianName: undefined
       studyDate: study.studyDate, // "Jun 28, 2002"

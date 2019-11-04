@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.58.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.58.3...@ohif/ui@0.58.4) (2019-10-31)
+
+
+### Bug Fixes
+
+* application crash if patientName is an object ([#1138](https://github.com/OHIF/Viewers/issues/1138)) ([64cf3b3](https://github.com/OHIF/Viewers/commit/64cf3b324da2383a927af1df2d46db2fca5318aa))
+
+
+
+
+
 ## [0.58.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.58.2...@ohif/ui@0.58.3) (2019-10-30)
 
 
