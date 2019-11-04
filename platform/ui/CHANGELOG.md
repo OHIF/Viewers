@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.58.5](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.58.4...@ohif/ui@0.58.5) (2019-11-04)
+
+
+### Bug Fixes
+
+* 🐛 Minor issues measurement panel related to description ([#1142](https://github.com/OHIF/Viewers/issues/1142)) ([681384b](https://github.com/OHIF/Viewers/commit/681384b7425c83b02a0ed83371ca92d78ca7838c))
+
+
+
+
+
 ## [0.58.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.58.3...@ohif/ui@0.58.4) (2019-10-31)
 
 
