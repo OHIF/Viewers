@@ -1,7 +1,7 @@
 import {
   Checkbox,
   CineDialog,
-  DownloadContent,
+  ViewportDownloadForm,
   LayoutButton,
   LayoutChooser,
   MeasurementTable,
@@ -69,7 +69,7 @@ export {
   TextArea,
   TextInput,
   CineDialog,
-  DownloadContent,
+  ViewportDownloadForm,
   ExpandableToolMenu,
   Icon,
   LayoutButton,

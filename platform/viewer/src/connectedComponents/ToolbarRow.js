@@ -13,7 +13,7 @@ import './ToolbarRow.css';
 import { commandsManager, extensionManager } from './../App.js';
 
 import ConnectedCineDialog from './ConnectedCineDialog';
-import ConnectedDownloadContent from './ConnectedDownloadContent';
+import ConnectedViewportDownloadForm from './ConnectedViewportDownloadForm';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 
@@ -287,13 +287,13 @@ function _handleBuiltIn({ behavior } = {}) {
   }
 
   if (behavior === 'DOWNLOAD_SCREEN_SHOT') {
-    this.props.modalContext.show(ConnectedDownloadContent, {
+    this.props.modalContext.show(ConnectedViewportDownloadForm, {
       title: this.props.t('Download High Quality Image'),
-      customClassName: 'DownloadContent',
+      customClassName: 'ViewportDownloadForm',
     });
   }
 }
 
-export default withTranslation(['Common', 'DownloadContent'])(
+export default withTranslation(['Common', 'ViewportDownloadForm'])(
   withModal(ToolbarRow)
 );

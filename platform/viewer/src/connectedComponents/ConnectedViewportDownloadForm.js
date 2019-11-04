@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { DownloadContent } from '@ohif/ui';
+import { ViewportDownloadForm } from '@ohif/ui';
 import { utils } from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
@@ -122,9 +122,9 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const ConnectedDownloadContent = connect(
+const ConnectedViewportDownloadForm = connect(
   mapStateToProps,
   null
-)(DownloadContent);
+)(ViewportDownloadForm);
 
-export default ConnectedDownloadContent;
+export default ConnectedViewportDownloadForm;
