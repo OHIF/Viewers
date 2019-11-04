@@ -12,7 +12,7 @@ const mapStateToProps = (state, ownProps) => {
     state.preferences && !isEmpty(state.preferences.hotKeysData)
       ? state.preferences.hotKeysData
       : hotkeysManager.hotkeyDefinitions;
-  hotkeysManager.setHotkeys(hotkeysManagerFormatter(cloneDeep(newHotKeysData)));
+  hotkeysManager.setHotkeys(hotkeysManager.format(cloneDeep(newHotKeysData)));
   return {
     isOpen: ownProps.isOpen,
     windowLevelData: state.preferences ? state.preferences.windowLevelData : {},
@@ -20,33 +20,17 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-/* HotkeysManager's hotkeysDefinitions have different output/input. */
-const hotkeysManagerFormatter = hotKeysData => {
-  const hotKeysCommands = Object.keys(hotKeysData);
-  return hotKeysCommands.map(commandName => {
-    const definition = hotKeysData[commandName];
-
-    return {
-      commandName,
-      keys: definition.keys,
-      label: definition.label,
-    };
-  });
-};
-
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onSave: ({ windowLevelData, hotKeysData }) => {
-      hotkeysManager.setHotkeys(
-        hotkeysManagerFormatter(cloneDeep(hotKeysData))
-      );
-      dispatch(setUserPreferences({ windowLevelData, hotKeysData }));
+      hotkeysManager.setHotkeys(hotkeysManager.format(cloneDeep(hotKeysData)));
       ownProps.onSave();
+      dispatch(setUserPreferences({ windowLevelData, hotKeysData }));
     },
     onResetToDefaults: () => {
       hotkeysManager.restoreDefaultBindings();
-      dispatch(setUserPreferences());
       ownProps.onResetToDefaults();
+      dispatch(setUserPreferences());
     },
   };
 };

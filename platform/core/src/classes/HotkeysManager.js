@@ -86,6 +86,26 @@ export class HotkeysManager {
   }
 
   /**
+   * Converts manager's hotkey definitions object to array.
+   *
+   * @param {HotkeyDefinition{}} hotkeyDefinitions
+   *
+   * @returns {HotkeyDefinition[]}
+   */
+  format = hotKeysData => {
+    const hotKeysCommands = Object.keys(hotKeysData);
+    return hotKeysCommands.map(commandName => {
+      const definition = hotKeysData[commandName];
+
+      return {
+        commandName,
+        keys: definition.keys,
+        label: definition.label,
+      };
+    });
+  };
+
+  /**
    * Uses most recent
    *
    * @returns {undefined}
