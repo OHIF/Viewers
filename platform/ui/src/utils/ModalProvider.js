@@ -1,4 +1,6 @@
 import React, { useState, createContext, useContext } from 'react';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 const ModalContext = createContext(null);
 const { Provider, Consumer } = ModalContext;
@@ -11,7 +13,6 @@ const ModalProvider = ({ children, modal: Modal }) => {
     backdrop: false /* Should the modal render a backdrop overlay. */,
     keyboard: false /* Modal is dismissible via the esc key. */,
     show: true /* Make the Modal visible or hidden. */,
-    large: true /* Modal size. */,
     closeButton: true /* Should the modal body render the close button. */,
     title: null /* Should the modal render the title independently of the body content. */,
     customClassName: null /* The custom class to style the modal. */,
@@ -41,11 +42,10 @@ const ModalProvider = ({ children, modal: Modal }) => {
           const { component, footer, header, customClassName } = props;
           return component ? (
             <Modal
-              className={`${customClassName} ${component.className}`}
+              className={classNames(customClassName, component.className)}
               backdrop={options.backdrop}
               keyboard={options.keyboard}
               show={options.show}
-              large={options.large}
               title={options.title}
               closeButton={options.closeButton}
               onHide={hide}
@@ -60,6 +60,11 @@ const ModalProvider = ({ children, modal: Modal }) => {
       {children}
     </Provider>
   );
+};
+
+ModalProvider.propTypes = {
+  children: PropTypes.node,
+  modal: PropTypes.node,
 };
 
 /**
