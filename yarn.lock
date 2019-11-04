@@ -6545,10 +6545,10 @@ dateformat@^3.0.0:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dcmjs@0.8.0-build-79:
-  version "0.8.0-build-79"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.8.0-build-79.tgz#31adb897d93bf4e9553f41464cf9209b5d4841c7"
-  integrity sha512-/tTkCWGfataAU8IRB50kCFI6ns9lxiu/43RrrzyUQth6/ZD6jb2v0Y2537jcjzPjgUoRWg6Z5Pp1RCcjbIrBqw==
+dcmjs@0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.8.1.tgz#bc38b9ee608705b52eb6f96617bec38f0638839e"
+  integrity sha512-QkORPsfqSvnGS2EvbxnveOna+MOVo6oWCV7D9759fLnysRd4feXRSkSw7tdmGrfpB1Gw26x7ssFOk83q8VRhQQ==
   dependencies:
     "@babel/polyfill" "^7.6.0"
     "@babel/runtime" "^7.6.3"
