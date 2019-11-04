@@ -4,7 +4,7 @@ import { MeasurementTable, MeasurementTableItem } from './measurementTable';
 import { Overlay, OverlayTrigger } from './overlayTrigger';
 import { TableList, TableListItem } from './tableList';
 import {
-  AboutModal,
+  AboutContent,
   UserPreferences,
   UserPreferencesModal,
 } from './userPreferencesModal';
@@ -50,7 +50,7 @@ export {
   TablePagination,
   ToolbarSection,
   Tooltip,
-  AboutModal,
+  AboutContent,
   UserPreferences,
   UserPreferencesModal,
   Modal,

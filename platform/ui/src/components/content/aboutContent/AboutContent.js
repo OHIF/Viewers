@@ -2,10 +2,10 @@ import React from 'react';
 import detect from 'browser-detect';
 import { useTranslation } from 'react-i18next';
 
-import './AboutModal.styl';
+import './AboutContent.styl';
 
-const AboutModal = () => {
-  const { t } = useTranslation('AboutModal');
+const AboutContent = () => {
+  const { t } = useTranslation('AboutContent');
 
   const { os, version, name } = detect();
   const capitalize = s =>
@@ -103,5 +103,5 @@ const AboutModal = () => {
   );
 };
 
-export { AboutModal };
-export default AboutModal;
+export { AboutContent };
+export default AboutContent;

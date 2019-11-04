@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 
 import { Dropdown } from '@ohif/ui';
-import { AboutModal } from '@ohif/ui';
+import { AboutContent } from '@ohif/ui';
 import { withModal } from '@ohif/ui';
 
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
@@ -63,9 +63,9 @@ class Header extends Component {
         title: t('About'),
         icon: { name: 'info' },
         onClick: () =>
-          show(AboutModal, {
+          show(AboutContent, {
             title: t('OHIF Viewer - About'),
-            customClassName: 'AboutModal',
+            customClassName: 'AboutContent',
           }),
       },
     ];
