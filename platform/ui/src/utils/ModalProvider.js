@@ -25,11 +25,7 @@ const ModalProvider = ({ children, modal: Modal }) => {
    * @returns void
    */
   const show = (component, props = {}) =>
-    setOptions({
-      ...options,
-      component,
-      ...props,
-    });
+    setOptions(Object.assign({}, options, props, { component }));
 
   /**
    * Hide the modal and set its properties to default.
