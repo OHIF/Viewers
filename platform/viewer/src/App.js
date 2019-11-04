@@ -28,7 +28,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import store from './store';
-import { SnackbarProvider, ModalProvider, Modal } from '@ohif/ui';
+import { SnackbarProvider, ModalProvider, OHIFModal } from '@ohif/ui';
 
 // Contexts
 import WhiteLabellingContext from './context/WhiteLabellingContext';
@@ -101,7 +101,7 @@ class App extends Component {
                   <Router basename={routerBasename}>
                     <WhiteLabellingContext.Provider value={whiteLabelling}>
                       <SnackbarProvider>
-                        <ModalProvider modal={Modal}>
+                        <ModalProvider modal={OHIFModal}>
                           <OHIFStandaloneViewer userManager={userManager} />
                         </ModalProvider>
                       </SnackbarProvider>
@@ -122,7 +122,7 @@ class App extends Component {
             <Router basename={routerBasename}>
               <WhiteLabellingContext.Provider value={whiteLabelling}>
                 <SnackbarProvider>
-                  <ModalProvider modal={Modal}>
+                  <ModalProvider modal={OHIFModal}>
                     <OHIFStandaloneViewer />
                   </ModalProvider>
                 </SnackbarProvider>

@@ -25,7 +25,7 @@ import {
   AboutModal,
   UserPreferences,
   UserPreferencesModal,
-  Modal,
+  OHIFModal,
 } from './components';
 import { useDebounce, useMedia } from './hooks';
 
@@ -110,7 +110,7 @@ export {
   useModal,
   ModalConsumer,
   withModal,
-  Modal,
+  OHIFModal,
   // Hooks
   useDebounce,
   useMedia,
