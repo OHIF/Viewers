@@ -16,6 +16,7 @@ import { QuickSwitch } from './quickSwitch';
 import { RoundedButtonGroup } from './roundedButtonGroup';
 import { SelectTree } from './selectTree';
 import { SimpleDialog } from './simpleDialog';
+import { OHIFModal } from './ohifModal';
 import {
   PageToolbar,
   StudyList,
@@ -52,4 +53,5 @@ export {
   AboutModal,
   UserPreferences,
   UserPreferencesModal,
+  OHIFModal,
 };
