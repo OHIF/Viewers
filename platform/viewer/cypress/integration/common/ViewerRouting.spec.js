@@ -2,11 +2,13 @@ describe('ViewerRouting', () => {
   beforeEach(() => {
     cy.visit('/');
     cy.contains('Study List');
-    cy.get('#studyListData > :nth-child(1) > .patientId').click();
+    cy.get(
+      '[data-cy="study-list-results"]> :nth-child(1) > .patientId'
+    ).click();
   });
 
   // it('thumbnails list has more than 2 items', () => {
-  //   cy.get('.scrollable-study-thumbnails div.ThumbnailEntryContainer')
+  //   cy.get('.scrollable-study-thumbnails div.thumbnail-container')
   //     .its('length')
   //     .should('be.gte', 2);
   // });

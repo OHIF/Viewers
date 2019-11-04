@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.27](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.26...@ohif/extension-vtk@0.52.27) (2019-10-31)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.26](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.25...@ohif/extension-vtk@0.52.26) (2019-10-30)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.25](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.24...@ohif/extension-vtk@0.52.25) (2019-10-29)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.24](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.23...@ohif/extension-vtk@0.52.24) (2019-10-29)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.23](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.22...@ohif/extension-vtk@0.52.23) (2019-10-28)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.22](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.21...@ohif/extension-vtk@0.52.22) (2019-10-28)
+
+
+### Bug Fixes
+
+* MIP styling ([#1109](https://github.com/OHIF/Viewers/issues/1109)) ([0d21cc6](https://github.com/OHIF/Viewers/commit/0d21cc6ad0c47706b9e62e05fe2a0f1d86339760))
+
+
+
+
+
 ## [0.52.21](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.20...@ohif/extension-vtk@0.52.21) (2019-10-26)
 
 **Note:** Version bump only for package @ohif/extension-vtk

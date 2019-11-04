@@ -1,11 +1,9 @@
-import './StudyListToolbar.styl';
-
 import React, { PureComponent } from 'react';
 
 import { Icon } from './../../elements/Icon';
 import PropTypes from 'prop-types';
 
-class StudylistToolbar extends PureComponent {
+class PageToolbar extends PureComponent {
   static propTypes = {
     onImport: PropTypes.func,
   };
@@ -37,4 +35,4 @@ class StudylistToolbar extends PureComponent {
   }
 }
 
-export { StudylistToolbar };
+export { PageToolbar };

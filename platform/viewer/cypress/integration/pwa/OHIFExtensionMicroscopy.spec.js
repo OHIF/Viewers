@@ -21,7 +21,6 @@ describe('OHIF Microscopy Extension', () => {
       .should('be.eq', 1);
 
     cy.wait(3000); //Waiting for image to render before taking the snapshot
-    cy.screenshot();
     cy.percyCanvasSnapshot('Microscopy Extension');
   });
 });

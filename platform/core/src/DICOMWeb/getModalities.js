@@ -1,11 +1,14 @@
 export default function getModalities(modality, modalitiesInStudy) {
-  let modalities = {};
-  if (modality) {
-    modalities = modality;
+  if (!modality && !modalitiesInStudy) {
+    return {};
   }
 
+  const modalities = modality || {
+    vr: 'CS',
+    Value: [],
+  };
+
   if (modalitiesInStudy) {
-    // Find vr in modalities
     if (modalities.vr && modalities.vr === modalitiesInStudy.vr) {
       for (let i = 0; i < modalitiesInStudy.Value.length; i++) {
         const value = modalitiesInStudy.Value[i];
@@ -14,8 +17,9 @@ export default function getModalities(modality, modalitiesInStudy) {
         }
       }
     } else {
-      modalities = modalitiesInStudy;
+      return modalitiesInStudy;
     }
   }
+
   return modalities;
 }
