@@ -4,12 +4,12 @@
   --series-count-background-color: #678696;
 }
 
-.ThumbnailEntry
+.thumbnail
   cursor: pointer
   display: table
-
-  .p-x-1
-    padding: 0 1rem
+  margin: 0 auto;
+  min-width: 90%;
+  padding-bottom: 1.5rem;
 
   .alt-image-text
     align-items: center;
@@ -31,6 +31,8 @@
       color: var(--text-primary-color);
 
   .series-details
+    display: flex;
+    flex-direction: column
     color: var(--text-primary-color);
     font-size: 14px
     line-height: 1.3em
@@ -38,64 +40,30 @@
     margin-left: 1rem
     margin-right: 0.5rem
     max-width: 217px
-    min-height: 36px
     position: relative
     word-wrap: break-word
 
-    &.info-only
-      .series-description
-        display: none
+    .series-description
+      flex-grow: 1
 
-      .series-information
-        display: flex
-        flex-grow: 1
-        float: none
-        max-width: none
-        padding-right: 0
-
-        .item
-          flex: 1
-          text-align: center
-
-          .icon, .value
-            display: inline
-            float: none
-            line-height: 25px
-
+    &.info-only .series-description
+      display: none
 
   .series-information
     display: flex
     flex-direction: row
-    align-items: center
-
-    .item
-      flex: 1
-      text-align: center
+    justify-content: space-between
 
     .item-frames .icon
       height: 18px
 
-    .value
-      color: var(--text-secondary-color);
-      display: inline
-      font-size: 12px
-      margin-left: 4px
-      text-overflow: ellipsis
-      white-space: nowrap
-
-    .icon
-      color: var(--active-color);
-      display: inline
-      font-size: 10px
-      font-weight: 900
-      text-align: right
-
-      div
+    .item-series.image-frames .icon
         background-color: var(--series-count-background-color);
         margin-top: 6px
         position: relative
 
         &:after
+          content: ''
           background-color: var(--active-color);
           box-shadow: 1px 1px rgba(0, 0, 0, .115)
           left: -4px
@@ -104,16 +72,27 @@
 
         &
         &:after
-          border: 0px solid var(--series-count-background-color)
           content: ''
+          border: 0px solid var(--series-count-background-color)
           display: inline-block
           height: 11px
           width: 11px
 
-.image-thumbnail-clone
-  z-index: 100000
-  pointer-events: none
+    .value
+      color: var(--text-secondary-color);
+      display: inline-block
+      font-size: 12px
+      margin-left: 4px
+      overflow: hidden
+      text-overflow: ellipsis
+      white-space: nowrap
+      width: calc(100% - 15px)
+      vertical-align: middle
 
-  &:hover
-    border-color: var(--hover-color);
-    box-shadow: none
+    .icon
+      color: var(--active-color);
+      display: inline-block
+      font-size: 10px
+      font-weight: 900
+      text-align: right
+      width: 11px

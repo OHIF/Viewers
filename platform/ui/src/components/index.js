@@ -1,4 +1,4 @@
-import { StudyBrowser, ThumbnailEntry } from './studyBrowser';
+import { StudyBrowser, Thumbnail } from './studyBrowser';
 import { LayoutButton, LayoutChooser } from './layoutButton';
 import { MeasurementTable, MeasurementTableItem } from './measurementTable';
 import { Overlay, OverlayTrigger } from './overlayTrigger';
@@ -16,6 +16,7 @@ import { QuickSwitch } from './quickSwitch';
 import { RoundedButtonGroup } from './roundedButtonGroup';
 import { SelectTree } from './selectTree';
 import { SimpleDialog } from './simpleDialog';
+import { Modal } from './modal';
 import {
   PageToolbar,
   StudyList,
@@ -44,12 +45,13 @@ export {
   StudyList,
   TableList,
   TableListItem,
+  Thumbnail,
   TableSearchFilter,
   TablePagination,
-  ThumbnailEntry,
   ToolbarSection,
   Tooltip,
   AboutModal,
   UserPreferences,
   UserPreferencesModal,
+  Modal,
 };
