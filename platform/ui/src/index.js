@@ -106,18 +106,12 @@ export {
   SnackbarProvider,
   useSnackbarContext,
   withSnackbar,
-  // Hooks
-  useDebounce,
-  useMedia,
   ModalProvider,
   useModal,
   ModalConsumer,
   withModal,
-<<<<<<< Updated upstream
-=======
   Modal,
   // Hooks
   useDebounce,
   useMedia,
->>>>>>> Stashed changes
 };
