@@ -13,7 +13,7 @@ const { studyMetadataManager, updateMetaDataManager } = utils;
 class ViewerRetrieveStudyData extends Component {
   static propTypes = {
     studyInstanceUids: PropTypes.array.isRequired,
-    seriesInstanceUIDs: PropTypes.array,
+    seriesInstanceUids: PropTypes.array,
     server: PropTypes.object,
   };
 
@@ -27,11 +27,11 @@ class ViewerRetrieveStudyData extends Component {
 
   async loadStudies() {
     try {
-      const { server, studyInstanceUids, seriesInstanceUIDs } = this.props;
+      const { server, studyInstanceUids, seriesInstanceUids } = this.props;
       const filters = {};
 
       // Use the first, discard others
-      const seriesInstanceUID = seriesInstanceUIDs && seriesInstanceUIDs[0];
+      const seriesInstanceUID = seriesInstanceUids && seriesInstanceUids[0];
 
       if (seriesInstanceUID) {
         filters.seriesInstanceUID = seriesInstanceUID;

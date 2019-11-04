@@ -1,6 +1,6 @@
 import { api } from 'dicomweb-client';
 import DICOMWeb from '../../../DICOMWeb/';
-import * as StudyUtils from '../../studyUtils';
+import { createStudyFromSOPInstanceList } from './studyInstanceHelpers';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
 /**
@@ -31,13 +31,24 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
    */
   *getLoaders() {
     const loaders = [];
-    const { filters: { seriesInstanceUID } = {}, client } = this;
+    const {
+      studyInstanceUID,
+      filters: { seriesInstanceUID } = {},
+      client,
+    } = this;
 
     if (seriesInstanceUID) {
-      loaders.push(client.retrieveSeriesMetadata);
+      loaders.push(
+        client.retrieveSeriesMetadata.bind(client, {
+          studyInstanceUID,
+          seriesInstanceUID,
+        })
+      );
     }
 
-    loaders.push(client.retrieveStudyMetadata);
+    loaders.push(
+      client.retrieveStudyMetadata.bind(client, { studyInstanceUID })
+    );
 
     yield* loaders;
   }
@@ -53,26 +64,13 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
   }
 
   async load(preLoadData) {
-    let result;
     const loaders = this.getLoaders();
-    const options = this.getOptions();
-
-    for (const loader of loaders) {
-      try {
-        result = await loader.call(this.client, options);
-        break; // closes iterator in case data is retrieved successfully
-      } catch (e) {}
-    }
-
-    if (loaders.next().done && !result) {
-      throw 'cant find data';
-    }
-
+    const result = this.runLoaders(loaders);
     return result;
   }
 
   async posLoad(loadData) {
     const { server } = this;
-    return await StudyUtils.createStudyFromSOPInstanceList(server, loadData);
+    return createStudyFromSOPInstanceList(server, loadData);
   }
 }
