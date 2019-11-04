@@ -55,7 +55,7 @@ export default {
     column: 1,
   },
   toggleCinePlay: { label: 'Play/Pause Cine', keys: ['SPACE'], column: 1 },
-  F: {
+  toggleCineDialog: {
     label: 'Show/Hide Cine Controls',
     keys: [''],
     column: 1,
