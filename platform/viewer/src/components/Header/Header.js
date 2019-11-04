@@ -65,7 +65,7 @@ class Header extends Component {
         onClick: () =>
           show(AboutContent, {
             title: t('OHIF Viewer - About'),
-            customClassName: 'AboutModal',
+            customClassName: 'AboutContent',
           }),
       },
     ];
@@ -135,4 +135,6 @@ class Header extends Component {
   }
 }
 
-export default withTranslation('Header')(withRouter(withModal(Header)));
+export default withTranslation(['Header', 'AboutModal'])(
+  withRouter(withModal(Header))
+);
