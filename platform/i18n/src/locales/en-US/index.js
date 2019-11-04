@@ -1,4 +1,4 @@
-import AboutContent from './AboutContent.json';
+import AboutModal from './AboutModal.json';
 import Buttons from './Buttons.json';
 import CineDialog from './CineDialog.json';
 import Common from './Common.json';
@@ -9,7 +9,7 @@ import UserPreferencesModal from './UserPreferencesModal.json';
 
 export default {
   'en-US': {
-    AboutContent,
+    AboutModal,
     Buttons,
     CineDialog,
     Common,
