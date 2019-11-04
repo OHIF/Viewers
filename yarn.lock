@@ -6929,7 +6929,7 @@ direction@^1.0.1, direction@^1.0.2:
   resolved "https://registry.yarnpkg.com/direction/-/direction-1.0.3.tgz#5030e1e091e923904067d015dbaafd08f4d27d26"
   integrity sha512-8bHRqMt4w/kND19KBksE4NOJo+gIOPuiZfxQvbd6xikfKbuNBYBdLIw0hA/4lWzBaDpwpW+Olmg1BjD9+0LU2w==
 
-dnd-core@^9.3.4, dnd-core@^9.4.0:
+dnd-core@^9.4.0:
   version "9.4.0"
   resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-9.4.0.tgz#ccf605d36887f18cdde8fd5576ca3145d2e69fa8"
   integrity sha512-Kg+8VwU8s7TgdR/BUYGUHrvFiS+5ePMZ0Q0XD7p+cFVJvgKqykBaeQDuaziuauFMPm8QxtnUy8Pncey9flXW3Q==
@@ -15920,14 +15920,14 @@ react-dev-utils@^9.0.1:
     strip-ansi "5.2.0"
     text-table "0.2.0"
 
-react-dnd-html5-backend@^9.3.4:
+react-dnd-html5-backend@^9.4.0:
   version "9.4.0"
   resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-9.4.0.tgz#5b1d192f57d103298657cde1fe0eabdbf2726311"
   integrity sha512-gehPwLp505F6RoFkQiDX7Q4mbpbyfyT0TbIoZop/m4vkBw6yUE/QLrnxBQdNpDPSwL/9XkZxxd/PrbeMCQ+WrQ==
   dependencies:
     dnd-core "^9.4.0"
 
-react-dnd-touch-backend@^9.3.4:
+react-dnd-touch-backend@^9.4.0:
   version "9.4.0"
   resolved "https://registry.yarnpkg.com/react-dnd-touch-backend/-/react-dnd-touch-backend-9.4.0.tgz#6784e71fad0904723e33e6710caafe36c62192a4"
   integrity sha512-yJjFhgslriSTIEXQ/Q5MrLnETJaoyRct+AsJ//e96WOH2pUNMGSxkl8RIb/IMhNysVnMc8frLIyT8dQxXAcmGA==
@@ -15936,14 +15936,14 @@ react-dnd-touch-backend@^9.3.4:
     dnd-core "^9.4.0"
     invariant "^2.2.4"
 
-react-dnd@9.3.4:
-  version "9.3.4"
-  resolved "https://registry.yarnpkg.com/react-dnd/-/react-dnd-9.3.4.tgz#ebab4b5b430b72f3580c058a29298054e1f9d2b8"
-  integrity sha512-UUtyoHFRrryMxVMEGYa3EdZIdibnys/ax7ZRs6CKpETHlnJQOFhHE3rpI+ManvKS0o3MFc1DZ+aoudAFtrOvFA==
+react-dnd@9.4.0:
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/react-dnd/-/react-dnd-9.4.0.tgz#eec87035c6360fb33a44932326b3369af011a41c"
+  integrity sha512-jnLF8qKowCKTqSddfCiLx5+sb+HxO1qgdiAgbBeL8yuo5tRYNtKxZYn7+wVwNoyZuWEuM1Gw/Wsdhr+yb2RELQ==
   dependencies:
     "@types/hoist-non-react-statics" "^3.3.1"
     "@types/shallowequal" "^1.1.1"
-    dnd-core "^9.3.4"
+    dnd-core "^9.4.0"
     hoist-non-react-statics "^3.3.0"
     shallowequal "^1.1.0"
 
@@ -16221,10 +16221,10 @@ react-transition-group@^4.1.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-vtkjs-viewport@^0.3.7:
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.3.7.tgz#a71eb09a88586b2b96c40f7e8fe2db56b693d613"
-  integrity sha512-hPaTIAJCgrdsegU96OdDRSKBDoRXbg0x72x/CCTR+6vMaXry4CnoMNMVtNJ3eCa29j6bKytiE7VkPBBEcoG+IQ==
+react-vtkjs-viewport@^0.3.9:
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.3.9.tgz#dc3dd5323c4cbaf5978cd64af2794b6b4ed61642"
+  integrity sha512-Sc3dRRz8tRSdUrdgL8tuYwVEl0CTjaZfDLqP5ufMXH2KjwBt3T5bjpk4xvzFyPc9CG6ywEX5MSa6eQ+NNjaUkw==
   dependencies:
     date-fns "^2.2.1"
     gl-matrix "^3.1.0"

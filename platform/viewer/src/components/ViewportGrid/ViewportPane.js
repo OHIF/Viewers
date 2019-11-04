@@ -35,6 +35,7 @@ const ViewportPane = function(props) {
         propClassName
       )}
       ref={drop}
+      data-cy={`viewport-container-${viewportIndex}`}
     >
       {children}
     </div>
