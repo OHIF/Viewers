@@ -25,6 +25,7 @@ import {
   AboutModal,
   UserPreferences,
   UserPreferencesModal,
+  Modal,
 } from './components';
 import { useDebounce, useMedia } from './hooks';
 
@@ -53,7 +54,7 @@ import SnackbarProvider, {
   withSnackbar,
 } from './utils/SnackbarProvider';
 import ModalProvider, {
-  useModalContext,
+  useModal,
   withModal,
   ModalConsumer,
 } from './utils/ModalProvider';
@@ -109,7 +110,14 @@ export {
   useDebounce,
   useMedia,
   ModalProvider,
-  useModalContext,
+  useModal,
   ModalConsumer,
   withModal,
+<<<<<<< Updated upstream
+=======
+  Modal,
+  // Hooks
+  useDebounce,
+  useMedia,
+>>>>>>> Stashed changes
 };
