@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.8...@ohif/viewer@2.4.0) (2019-11-04)
+
+
+### Features
+
+* 🎸 New modal provider ([#1110](https://github.com/OHIF/Viewers/issues/1110)) ([5ee832b](https://github.com/OHIF/Viewers/commit/5ee832b19505a4e8e5756660ce6ed03a7f18dec3)), closes [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116)
+
+
+
+
+
 ## [2.3.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.7...@ohif/viewer@2.3.8) (2019-11-04)
 
 **Note:** Version bump only for package @ohif/viewer
