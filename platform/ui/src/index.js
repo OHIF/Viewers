@@ -17,14 +17,15 @@ import {
   StudyList,
   TableList,
   TableListItem,
+  Thumbnail,
   TableSearchFilter,
   TablePagination,
-  ThumbnailEntry,
   ToolbarSection,
   Tooltip,
   AboutModal,
   UserPreferences,
   UserPreferencesModal,
+  Modal,
 } from './components';
 import { useDebounce, useMedia } from './hooks';
 
@@ -53,7 +54,7 @@ import SnackbarProvider, {
   withSnackbar,
 } from './utils/SnackbarProvider';
 import ModalProvider, {
-  useModalContext,
+  useModal,
   withModal,
   ModalConsumer,
 } from './utils/ModalProvider';
@@ -91,9 +92,9 @@ export {
   StudyList,
   TableList,
   TableListItem,
+  Thumbnail,
   TableSearchFilter,
   TablePagination,
-  ThumbnailEntry,
   Toolbar,
   ToolbarButton,
   ToolbarSection,
@@ -105,11 +106,12 @@ export {
   SnackbarProvider,
   useSnackbarContext,
   withSnackbar,
+  ModalProvider,
+  useModal,
+  ModalConsumer,
+  withModal,
+  Modal,
   // Hooks
   useDebounce,
   useMedia,
-  ModalProvider,
-  useModalContext,
-  ModalConsumer,
-  withModal,
 };

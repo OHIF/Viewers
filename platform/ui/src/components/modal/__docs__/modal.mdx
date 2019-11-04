@@ -1,0 +1,39 @@
+---
+name: Modal
+menu: Components
+route: /components/modal
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { Modal } from './../index'
+import NameSpace from '../../../__docs__/NameSpace'
+
+# Download Dialog
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{}}
+  >
+    {({ state, setState }) => (
+      <React.Fragment>
+        <div>
+          <pre>{JSON.stringify(state, null, 2)}</pre>
+        </div>
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+          <Modal />
+        </div>
+      </React.Fragment>
+    )}
+  </State>
+</Playground>
+
+## API
+
+<Props of={Modal} />
+
+## Translation Namespace
+
+<NameSpace name="Modal" />
