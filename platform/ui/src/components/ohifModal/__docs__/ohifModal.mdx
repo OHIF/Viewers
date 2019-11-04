@@ -1,15 +1,15 @@
 ---
-name: Modal
+name: OHIFModal
 menu: Components
-route: /components/modal
+route: /components/ohif-modal
 ---
 
 import { Playground, Props } from 'docz'
 import { State } from 'react-powerplug'
-import { Modal } from './../index'
+import { OHIFModal } from './../index'
 import NameSpace from '../../../__docs__/NameSpace'
 
-# Download Dialog
+# OHIF Modal
 
 ## Basic usage
 
@@ -23,7 +23,7 @@ import NameSpace from '../../../__docs__/NameSpace'
           <pre>{JSON.stringify(state, null, 2)}</pre>
         </div>
         <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-          <Modal />
+          <OHIFModal />
         </div>
       </React.Fragment>
     )}
@@ -32,8 +32,8 @@ import NameSpace from '../../../__docs__/NameSpace'
 
 ## API
 
-<Props of={Modal} />
+<Props of={OHIFModal} />
 
 ## Translation Namespace
 
-<NameSpace name="Modal" />
+<NameSpace name="OHIFModal" />
