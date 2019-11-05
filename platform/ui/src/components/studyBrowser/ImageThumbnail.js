@@ -1,6 +1,7 @@
 /* global cornerstone */
 import './ImageThumbnail.styl';
 
+import { utils } from '@ohif/core';
 import React, { PureComponent } from 'react';
 
 import PropTypes from 'prop-types';
@@ -32,7 +33,7 @@ export default class ImageThumbnail extends PureComponent {
 
   constructor(props) {
     super(props);
-
+    this.cancelablePromises = [];
     this.canvas = React.createRef();
     this.state = {
       loading: this.shouldRenderToCanvas(),
@@ -43,10 +44,17 @@ export default class ImageThumbnail extends PureComponent {
     return this.props.imageId && !this.props.imageSrc;
   }
 
+  fetchImage() {
+    const cancelablePromise = utils.makeCancelable(
+      cornerstone.loadAndCacheImage(this.props.imageId)
+    );
+    this.cancelablePromises.push(cancelablePromise);
+    return cancelablePromise;
+  }
+
   componentDidMount() {
     if (this.shouldRenderToCanvas()) {
-      cornerstone
-        .loadAndCacheImage(this.props.imageId)
+      this.fetchImage()
         .then(image => {
           cornerstone.renderToCanvas(this.canvas.current, image);
           this.setState({
@@ -54,12 +62,19 @@ export default class ImageThumbnail extends PureComponent {
           });
         })
         .catch(error => {
+          if (error.isCanceled) return;
           this.setState({
             loading: false,
             error: true,
           });
           throw new Error(error);
         });
+    }
+  }
+
+  componentWillUnmount() {
+    while (this.cancelablePromises.length > 0) {
+      this.cancelablePromises.pop().cancel();
     }
   }
 

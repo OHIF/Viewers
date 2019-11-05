@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.2](https://github.com/OHIF/Viewers/compare/@ohif/core@1.6.1...@ohif/core@1.6.2) (2019-11-05)
+
+
+### Bug Fixes
+
+* [#1075](https://github.com/OHIF/Viewers/issues/1075) Returning to the Study List before all series have finishe… ([#1090](https://github.com/OHIF/Viewers/issues/1090)) ([ecaf578](https://github.com/OHIF/Viewers/commit/ecaf578f92dc40294cec7ff9b272fb432dec4125))
+
+
+
+
+
+## [1.6.1](https://github.com/OHIF/Viewers/compare/@ohif/core@1.6.0...@ohif/core@1.6.1) (2019-10-31)
+
+
+### Bug Fixes
+
+* application crash if patientName is an object ([#1138](https://github.com/OHIF/Viewers/issues/1138)) ([64cf3b3](https://github.com/OHIF/Viewers/commit/64cf3b324da2383a927af1df2d46db2fca5318aa))
+
+
+
+
+
 # [1.6.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.5.2...@ohif/core@1.6.0) (2019-10-26)
 
 

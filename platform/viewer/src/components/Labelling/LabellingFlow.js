@@ -152,6 +152,7 @@ export default class LabellingFlow extends Component {
                   ref={this.descriptionInput}
                   defaultValue={description || ''}
                   autoComplete="off"
+                  onKeyPress={this.handleKeyPress}
                 />
               </div>
             </div>
@@ -221,6 +222,12 @@ export default class LabellingFlow extends Component {
     this.setState({
       editDescription: false,
     });
+  };
+
+  handleKeyPress = e => {
+    if (e.key === 'Enter') {
+      this.descriptionSave();
+    }
   };
 
   descriptionSave = () => {
