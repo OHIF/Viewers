@@ -4,6 +4,7 @@ import { metadata, studies, utils, log } from '@ohif/core';
 import ConnectedViewer from './ConnectedViewer.js';
 import PropTypes from 'prop-types';
 import { extensionManager } from './../App.js';
+import { withSnackbar } from '@ohif/ui';
 
 const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
 const { retrieveStudiesMetadata, deleteStudyMetadataPromise } = studies;
@@ -29,15 +30,51 @@ class ViewerRetrieveStudyData extends Component {
   async loadStudies() {
     try {
       const { server, studyInstanceUids, seriesInstanceUids } = this.props;
+      const filters = {};
+
+      // Use the first, discard others
+      const seriesInstanceUID = seriesInstanceUids && seriesInstanceUids[0];
+
+      if (seriesInstanceUID) {
+        filters.seriesInstanceUID = seriesInstanceUID;
+      }
+
       const studies = await retrieveStudiesMetadata(
         server,
         studyInstanceUids,
-        seriesInstanceUids
+        filters
       );
+      this.validateFilters(studies, filters);
       this.setStudies(studies);
     } catch (e) {
       this.setState({ error: true });
       log.error(e);
+    }
+  }
+
+  /**
+   * Validate filters and promp user a message in case filter is unsuccessfully applied.
+   * In case of success, studies array contains, as the first element, the queried content (from filter)
+   * @param {Array} studies array of studies to be evaluated
+   * @param {Object} filters filters to test against
+   */
+  validateFilters(studies = [], filters = {}) {
+    const { seriesInstanceUID } = filters;
+
+    const { snackbarContext } = this.props;
+    // skip in case no filter or no toast manager
+    if (!seriesInstanceUID || !snackbarContext) {
+      return;
+    }
+
+    const firstStudy = studies[0] || {};
+    const { seriesList = [] } = firstStudy;
+    const firstSeries = seriesList[0];
+
+    if (!firstSeries || firstSeries.seriesInstanceUid !== seriesInstanceUID) {
+      snackbarContext.show({
+        message: 'No series for given filter: ' + seriesInstanceUID,
+      });
     }
   }
 
@@ -151,4 +188,4 @@ class ViewerRetrieveStudyData extends Component {
   }
 }
 
-export default ViewerRetrieveStudyData;
+export default withSnackbar(ViewerRetrieveStudyData);
