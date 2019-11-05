@@ -28,7 +28,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import store from './store';
-import { SnackbarProvider } from '@ohif/ui';
+import { SnackbarProvider, ModalProvider, OHIFModal } from '@ohif/ui';
 
 // Contexts
 import WhiteLabellingContext from './context/WhiteLabellingContext';
@@ -85,6 +85,7 @@ class App extends Component {
   }
 
   render() {
+    const { whiteLabelling, routerBasename } = this.props;
     const userManager = this._userManager;
     const config = {
       appConfig: this._appConfig,
@@ -97,12 +98,12 @@ class App extends Component {
             <I18nextProvider i18n={i18n}>
               <OidcProvider store={store} userManager={userManager}>
                 <UserManagerContext.Provider value={userManager}>
-                  <Router basename={this.props.routerBasename}>
-                    <WhiteLabellingContext.Provider
-                      value={this.props.whiteLabelling}
-                    >
+                  <Router basename={routerBasename}>
+                    <WhiteLabellingContext.Provider value={whiteLabelling}>
                       <SnackbarProvider>
-                        <OHIFStandaloneViewer userManager={userManager} />
+                        <ModalProvider modal={OHIFModal}>
+                          <OHIFStandaloneViewer userManager={userManager} />
+                        </ModalProvider>
                       </SnackbarProvider>
                     </WhiteLabellingContext.Provider>
                   </Router>
@@ -118,10 +119,12 @@ class App extends Component {
       <AppContext.Provider value={config}>
         <Provider store={store}>
           <I18nextProvider i18n={i18n}>
-            <Router basename={this.props.routerBasename}>
-              <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
+            <Router basename={routerBasename}>
+              <WhiteLabellingContext.Provider value={whiteLabelling}>
                 <SnackbarProvider>
-                  <OHIFStandaloneViewer />
+                  <ModalProvider modal={OHIFModal}>
+                    <OHIFStandaloneViewer />
+                  </ModalProvider>
                 </SnackbarProvider>
               </WhiteLabellingContext.Provider>
             </Router>
