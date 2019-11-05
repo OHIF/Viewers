@@ -30,11 +30,12 @@ function StudyList(props) {
     //
     studyListDateFilterNumDays,
   } = props;
-  const { t, i18n } = useTranslation('StudyList');
+  const { t, i18n, ready } = useTranslation('StudyList', { useSuspense: false });
+  const { t: t2, i18n: i18n2, ready: ready2 } = useTranslation('Common', { useSuspense: false });
 
   const largeTableMeta = [
     {
-      displayText: t('PatientName'),
+      displayText: t2('More'),
       fieldName: 'patientName',
       inputType: 'text',
       size: 330,
@@ -52,7 +53,7 @@ function StudyList(props) {
       size: 180,
     },
     {
-      displayText: t('StudyDate'),
+      displayText: t2('More'),
       fieldName: 'studyDate',
       inputType: 'date-range',
       size: 300,
@@ -73,7 +74,7 @@ function StudyList(props) {
 
   const mediumTableMeta = [
     {
-      displayText: `${t('Patient')} / ${t('MRN')}`,
+      displayText: `${t2('More')} / ${t('MRN')}`,
       fieldName: 'patientNameOrId',
       inputType: 'text',
       size: 250,
@@ -104,14 +105,19 @@ function StudyList(props) {
   const tableMeta = useMedia(
     ['(min-width: 1750px)', '(min-width: 1000px)', '(min-width: 768px)'],
     [largeTableMeta, mediumTableMeta, smallTableMeta],
-    smallTableMeta
+    smallTableMeta,
+    ready
   );
+
+
+  if (!ready) {
+    return null;
+  }
 
   const totalSize = tableMeta
     .map(field => field.size)
     .reduce((prev, next) => prev + next);
-
-  return ready ? (
+  return (
     <table className="table table--striped table--hoverable">
       <colgroup>
         {tableMeta.map((field, i) => {
@@ -180,11 +186,12 @@ function StudyList(props) {
               studyDescription={study.studyDescription || ''}
               studyInstanceUid={study.studyInstanceUid}
               t={t}
+              ready={ready}
             />
           ))}
       </tbody>
     </table>
-  ) : null;
+  );
 }
 
 StudyList.propTypes = {
@@ -229,6 +236,7 @@ function TableRow(props) {
     studyInstanceUid,
     onClick: handleClick,
     t,
+    ready,
   } = props;
 
   const largeRowTemplate = (
@@ -372,7 +380,8 @@ function TableRow(props) {
   const rowTemplate = useMedia(
     ['(min-width: 1750px)', '(min-width: 1000px)', '(min-width: 768px)'],
     [largeRowTemplate, mediumRowTemplate, smallRowTemplate],
-    smallRowTemplate
+    smallRowTemplate,
+    ready
   );
 
   return rowTemplate;

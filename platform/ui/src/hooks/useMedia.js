@@ -16,7 +16,7 @@ import { useState, useEffect } from 'react';
  * @param {*} defaultValue
  * @returns
  */
-function useMedia(queries, values, defaultValue) {
+function useMedia(queries, values, defaultValue, ready = false) {
   // Array containing a media query list for each query
   const mediaQueryLists = queries.map(q => window.matchMedia(q));
 
@@ -31,6 +31,13 @@ function useMedia(queries, values, defaultValue) {
 
   // State and setter for matched value
   const [value, setValue] = useState(getValue);
+
+  useEffect(
+    () => {
+      setValue(getValue);
+    },
+    [ready]
+  );
 
   useEffect(
     () => {
