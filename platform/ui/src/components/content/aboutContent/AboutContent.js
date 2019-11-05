@@ -58,8 +58,8 @@ const AboutContent = () => {
   );
 
   return (
-    <>
-      <div data-cy="about-modal" className="btn-group">
+    <div data-cy="about-modal">
+      <div className="btn-group">
         <a
           className="btn btn-default"
           target="_blank"
@@ -99,7 +99,7 @@ const AboutContent = () => {
           <tbody>{itemsPreset().map(item => renderTableRow(item))}</tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 };
 
