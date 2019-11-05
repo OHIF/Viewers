@@ -3,10 +3,13 @@ import './ViewportGrid.css';
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { utils } from '@ohif/core';
 //
 import ViewportPane from './ViewportPane.js';
 import DefaultViewport from './DefaultViewport.js';
 import EmptyViewport from './EmptyViewport.js';
+
+const { loadAndCacheDerivedDisplaySets } = utils;
 
 const ViewportGrid = function(props) {
   const {
@@ -41,6 +44,8 @@ const ViewportGrid = function(props) {
       displaySet,
       studies,
     };
+
+    loadAndCacheDerivedDisplaySets(displaySet, studies);
 
     // Use whichever plugin is currently in use in the panel
     // unless nothing is specified. If nothing is specified

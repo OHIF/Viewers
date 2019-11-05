@@ -74,8 +74,6 @@ class ViewerLocalFileData extends Component {
       const sopClassHandlerModules =
         extensionManager.modules['sopClassHandlerModule'];
 
-      debugger;
-
       study.displaySets =
         study.displaySets ||
         studyMetadata.createDisplaySets(sopClassHandlerModules);

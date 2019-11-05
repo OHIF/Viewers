@@ -10,6 +10,7 @@ import updateMetaDataManager from './updateMetaDataManager.js';
 import writeScript from './writeScript.js';
 import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
+import loadAndCacheDerivedDisplaySets from './loadAndCacheDerivedDisplaySets.js';
 import * as urlUtil from './urlUtil';
 
 const utils = {
@@ -27,6 +28,7 @@ const utils = {
   DICOMTagDescriptions,
   DicomLoaderService,
   urlUtil,
+  loadAndCacheDerivedDisplaySets,
 };
 
 export {
