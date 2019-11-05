@@ -50,6 +50,7 @@
     "@ohif/extension-dicom-html": "^1.0.1",
     "@ohif/extension-dicom-microscopy": "^0.50.6",
     "@ohif/extension-dicom-pdf": "^1.0.0",
+    "@ohif/extension-dicom-seg": "^1.0.0",
     "@ohif/extension-vtk": "^0.53.6",
     "@ohif/i18n": "^0.52.0",
     "@ohif/ui": "^0.62.1",

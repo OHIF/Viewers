@@ -119,6 +119,41 @@ function getFrameIncrementPointer(element) {
   return frameIncrementPointerNames[value];
 }
 
+function getReferencedSeriesSequence(instance) {
+  const referencedSeriesSequenceRaw = instance['00081115'];
+
+  const referencedSeriesSequence = [];
+
+  if (referencedSeriesSequenceRaw && referencedSeriesSequenceRaw.Value) {
+    referencedSeriesSequenceRaw.Value.forEach(referencedSeries => {
+      const referencedSeriesInstanceUID = DICOMWeb.getString(
+        referencedSeries['0020000E']
+      );
+
+      const referencedInstanceSequenceRaw = referencedSeries['0008114A'];
+      const referencedInstanceSequence = [];
+
+      referencedInstanceSequenceRaw.Value.forEach(referencedInstance => {
+        referencedInstanceSequence.push({
+          referencedSOPClassUID: DICOMWeb.getString(
+            referencedInstance['00081150']
+          ),
+          referencedSOPInstanceUID: DICOMWeb.getString(
+            referencedInstance['00081155']
+          ),
+        });
+      });
+
+      referencedSeriesSequence.push({
+        referencedSeriesInstanceUID,
+        referencedInstanceSequence,
+      });
+    });
+  }
+
+  return referencedSeriesSequence;
+}
+
 function getRadiopharmaceuticalInfo(instance) {
   const modality = DICOMWeb.getString(instance['00080060']);
 
@@ -219,7 +254,7 @@ async function makeSOPInstance(server, study, instance) {
     instanceNumber: DICOMWeb.getNumber(instance['00200013']),
     imagePositionPatient: DICOMWeb.getString(instance['00200032']),
     imageOrientationPatient: DICOMWeb.getString(instance['00200037']),
-    frameOfReferenceUID: DICOMWeb.getString(instance['00200052']),
+    frameOfReferenceUid: DICOMWeb.getString(instance['00200052']),
     sliceLocation: DICOMWeb.getNumber(instance['00201041']),
     samplesPerPixel: DICOMWeb.getNumber(instance['00280002']),
     photometricInterpretation: DICOMWeb.getString(instance['00280004']),
@@ -256,6 +291,7 @@ async function makeSOPInstance(server, study, instance) {
     echoNumber: DICOMWeb.getString(instance['00180086']),
     contrastBolusAgent: DICOMWeb.getString(instance['00180010']),
     radiopharmaceuticalInfo: getRadiopharmaceuticalInfo(instance),
+    referencedSeriesSequence: getReferencedSeriesSequence(instance),
     baseWadoRsUri: baseWadoRsUri,
     wadouri: WADOProxy.convertURL(wadouri, server),
     wadorsuri: WADOProxy.convertURL(wadorsuri, server),
