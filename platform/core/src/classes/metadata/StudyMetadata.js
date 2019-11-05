@@ -206,11 +206,11 @@ export class StudyMetadata extends Metadata {
   }
 
   /**
-   *
+   * Returns a list of derived datasets in the study, filtered by the given filter.
    * @param {object} filter An object containing search filters with
    * optional fields for the modality, referencedSeriesInstanceUID and referencedFrameOfReferenceUID.
    */
-  _findDerivedDatasets(filter) {
+  getDerivedDatasets(filter) {
     const {
       modality,
       referencedSeriesInstanceUID,

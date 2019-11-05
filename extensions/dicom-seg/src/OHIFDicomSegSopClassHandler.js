@@ -25,7 +25,11 @@ const OHIFDicomSegSopClassHandler = {
     );
     const frameOfReferenceUID = instance.getTagValue('FrameOfReferenceUID');
 
-    return {
+    debugger;
+
+    const { seriesDate, seriesTime } = series.getData();
+
+    const displaySet = {
       plugin: 'seg',
       modality: 'SEG',
       displaySetInstanceUid: utils.guid(),
@@ -38,8 +42,34 @@ const OHIFDicomSegSopClassHandler = {
       frameOfReferenceUID,
       authorizationHeaders,
       isDerived: true,
+      referencedDisplaySetUid: null, // Assigned when loaded.
+      labelmapIndex: null, // Assigned when loaded.
+      isLoaded: false,
+      seriesDate,
+      seriesTime,
     };
+
+    displaySet.load = function(referencedDisplaySet, studies) {
+      loadSegmentationIntoCornerstoneTools(
+        displaySet,
+        referencedDisplaySet,
+        studies
+      );
+    };
+
+    return displaySet;
   },
 };
+
+async function loadSegmentationIntoCornerstoneTools(
+  segDisplaySet,
+  referencedDisplaySet,
+  studies
+) {
+  console.log(segDisplaySet, referencedDisplaySet, studies);
+  debugger;
+
+  // TODO -> Seg loading logic.
+}
 
 export default OHIFDicomSegSopClassHandler;

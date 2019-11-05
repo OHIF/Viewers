@@ -7,7 +7,7 @@
 export default function isDisplaySetReconstructable(series, instances) {
   // Can't reconstruct if we only have one image.
 
-  const modality = series._data.modality; // TODO -> Is there a better way to get this?
+  const modality = series.getData().modality;
   const isMultiframe = instances[0].getRawValue('x00280008') > 1;
 
   if (!constructableModalities.includes(modality)) {
