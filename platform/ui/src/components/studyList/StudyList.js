@@ -30,8 +30,8 @@ function StudyList(props) {
     //
     studyListDateFilterNumDays,
   } = props;
-  const { t, i18n, ready } = useTranslation('StudyList', { useSuspense: false });
-  const { t: t2, i18n: i18n2, ready: ready2 } = useTranslation('Common', { useSuspense: false });
+  const { t, i18n, ready } = useTranslation('StudyList');
+  const { t: t2, i18n: i18n2, ready: ready2 } = useTranslation('Common');
 
   const largeTableMeta = [
     {
