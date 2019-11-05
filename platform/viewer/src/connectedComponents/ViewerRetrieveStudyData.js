@@ -87,13 +87,11 @@ class ViewerRetrieveStudyData extends Component {
 
   _handleSeriesLoadResult(error, studyMetadata, series) {
     if (this.abortSeriesLoad) return;
-    const seriesLoadStats = this.seriesLoadStats[
-      studyMetadata.getStudyInstanceUID()
-    ];
-    if (!seriesLoadStats) return;
-    seriesLoadStats.count--;
+    const stats = this.seriesLoadStats[studyMetadata.getStudyInstanceUID()];
+    if (!stats) return;
+    stats.count--;
     if (error || !series) {
-      seriesLoadStats.errors++;
+      stats.errors++;
       log.error(error || 'Bad Series');
       return;
     }
@@ -105,9 +103,7 @@ class ViewerRetrieveStudyData extends Component {
     if (!seriesLoader) {
       return;
     }
-    const seriesLoadStats = (this.seriesLoadStats[
-      studyMetadata.getStudyInstanceUID()
-    ] = {
+    const stats = (this.seriesLoadStats[studyMetadata.getStudyInstanceUID()] = {
       errors: 0,
       count: 0,
     });
@@ -119,18 +115,15 @@ class ViewerRetrieveStudyData extends Component {
             void this._handleSeriesLoadResult(null, studyMetadata, series),
           error => void this._handleSeriesLoadResult({ error }, null, null)
         );
-      seriesLoadStats.count++;
+      stats.count++;
     }
   }
 
   componentWillUnmount() {
     this.abortSeriesLoad = true;
     for (const studyInstanceUid in this.seriesLoadStats) {
-      const seriesLoadStats = this.seriesLoadStats[studyInstanceUid];
-      if (
-        seriesLoadStats &&
-        (seriesLoadStats.count > 0 || seriesLoadStats.errors > 0)
-      ) {
+      const stats = this.seriesLoadStats[studyInstanceUid];
+      if (stats && (stats.count > 0 || stats.errors > 0)) {
         deleteStudyMetadataPromise(studyInstanceUid);
         studyMetadataManager.remove(studyInstanceUid);
         log.info(`Purging incomplete study data: ${studyInstanceUid}`);
