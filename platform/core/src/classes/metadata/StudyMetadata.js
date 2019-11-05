@@ -35,6 +35,12 @@ export class StudyMetadata extends Metadata {
         writable: false,
         value: [],
       },
+      _derivedDisplaySets: {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: [],
+      },
       _firstSeries: {
         configurable: false,
         enumerable: false,
@@ -121,7 +127,11 @@ export class StudyMetadata extends Metadata {
       );
       if (displaySet) {
         displaySet.sopClassModule = true;
-        displaySets.push(displaySet);
+
+        displaySet.isDerived
+          ? this._addDerivedDisplaySet(displaySet)
+          : displaySets.push(displaySet);
+
         return displaySets;
       }
     }
@@ -186,9 +196,65 @@ export class StudyMetadata extends Metadata {
   }
 
   /**
-   * Creates a set of series to be placed in the Study Metadata
-   * The series that appear in the Study Metadata must represent
-   * imaging modalities.
+   * Adds the displaySets to the studies list of derived displaySets.
+   * @param {object} displaySet The displaySet to append to the derived displaysets list.
+   */
+  _addDerivedDisplaySet(displaySet) {
+    this._derivedDisplaySets.push(displaySet);
+    // --> Perhaps that logic should exist in the extension sop class handler and this be a dumb list.
+    // TODO -> Get x Modality by referencedSeriesInstanceUid, FoR, etc.
+  }
+
+  /**
+   *
+   * @param {object} filter An object containing search filters with
+   * optional fields for the modality, referencedSeriesInstanceUID and referencedFrameOfReferenceUID.
+   */
+  _findDerivedDatasets(filter) {
+    const {
+      modality,
+      referencedSeriesInstanceUID,
+      referencedFrameOfReferenceUID,
+    } = filter;
+    let filteredDerivedDisplaySets = this._derivedDisplaySets;
+
+    if (modality) {
+      filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
+        displaySet => displaySet.modality === modality
+      );
+    }
+
+    if (referencedSeriesInstanceUID) {
+      filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
+        displaySet => {
+          if (!displaySet.referencedSeriesSequence) {
+            return false;
+          }
+
+          return displaySet.referencedSeriesSequence.some(
+            referencedSeries =>
+              referencedSeries.referencedSeriesInstanceUID ===
+              referencedSeriesInstanceUID
+          );
+        }
+      );
+    }
+
+    if (referencedFrameOfReferenceUID) {
+      filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
+        displaySet =>
+          displaySet.referencedFrameOfReferenceUID ===
+          referencedFrameOfReferenceUID
+      );
+    }
+
+    return filteredDerivedDisplaySets;
+  }
+
+  /**
+   * Creates a set of displaySets to be placed in the Study Metadata
+   * The displaySets that appear in the Study Metadata must represent
+   * imaging modalities. A series may be split into one or more displaySets.
    *
    * Furthermore, for drag/drop functionality,
    * it is easiest if the stack objects also contain information about

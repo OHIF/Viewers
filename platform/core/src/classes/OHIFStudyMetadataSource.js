@@ -52,6 +52,8 @@ export class OHIFStudyMetadataSource extends StudyMetadataSource {
             studyInfo.studyInstanceUid
           );
 
+          debugger;
+
           // Get Study display sets
           const displaySets = studyMetadata.createDisplaySets();
 
