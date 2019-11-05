@@ -6,8 +6,6 @@ import CustomDateRangePicker from './CustomDateRangePicker.js';
 import { Icon } from './../../elements/Icon';
 import { useTranslation } from 'react-i18next';
 
-
-
 function TableSearchFilter(props) {
   const {
     meta,
@@ -16,8 +14,6 @@ function TableSearchFilter(props) {
     onValueChange,
     sortFieldName,
     sortDirection,
-    // TODO: Rename
-    studyListDateFilterNumDays
   } = props;
   const [focusedInput, setFocusedInput] = useState(null);
   const [t] = useTranslation(); // 'Common'?
@@ -25,12 +21,9 @@ function TableSearchFilter(props) {
   const sortIcons = ['sort', 'sort-up', 'sort-down'];
   const sortIconForSortField =
     sortDirection === 'asc' ? sortIcons[1] : sortIcons[2];
-  //
   const today = moment();
   const lastWeek = moment().subtract(7, 'day');
   const lastMonth = moment().subtract(1, 'month');
-  const defaultStartDate = moment().subtract(studyListDateFilterNumDays, 'days');
-  const defaultEndDate = today;
   const studyDatePresets = [
     {
       text: t('Today'),
@@ -76,9 +69,9 @@ function TableSearchFilter(props) {
           // https://github.com/airbnb/react-dates
           <CustomDateRangePicker
             // Required
-            startDate={studyListDateFilterNumDays ? defaultStartDate : null}
+            startDate={values.studyDateTo || null}
             startDateId="start-date"
-            endDate={studyListDateFilterNumDays ? defaultEndDate : null}
+            endDate={values.studyDateFrom || null}
             endDateId="end-date"
             // TODO: We need a dynamic way to determine which fields values to update
             onDatesChange={({ startDate, endDate, preset = false }) => {

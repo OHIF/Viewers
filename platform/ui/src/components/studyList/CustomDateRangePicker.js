@@ -7,39 +7,29 @@ import './CustomDateRangePicker.css';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { DateRangePicker } from 'react-dates';
+import moment from 'moment';
+import i18n from '@ohif/i18n';
+import { useTranslation } from 'react-i18next';
 
-export default class CustomDateRangePicker extends React.Component {
-  static propTypes = {
-    presets: PropTypes.arrayOf(
-      PropTypes.shape({
-        text: PropTypes.string,
-        start: PropTypes.required,
-        end: PropTypes.required,
-      })
-    ),
-  };
+function CustomDateRangePicker(props) {
+  moment.locale(i18n.language); // using i18n in the date picker
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      startDate: this.props.startDate,
-      endDate: this.props.endDate,
-    };
+  const { t } = useTranslation('DatePicker');
+  const {
+    autoFocus,
+    autoFocusEndDate,
+    initialStartDate,
+    initialEndDate,
+    stateDateWrapper,
+    onDatesChange,
+    startDate,
+    endDate,
+    presets,
+    ...dateRangePickerProps
+  } = props;
 
-    this.renderDatePresets = this.renderDatePresets.bind(this);
-    this.onDatesChange = this.onDatesChange.bind(this);
-  }
-
-  onDatesChange({ startDate, endDate, preset }) {
-    this.setState({ startDate, endDate });
-    if (this.props.onDatesChange) {
-      this.props.onDatesChange({ startDate, endDate, preset });
-    }
-  }
-
-  renderDatePresets() {
-    const { presets } = this.props;
-    const { startDate, endDate } = this.state;
+  const renderDatePresets = () => {
+    const { presets } = props;
 
     return (
       <div className="PresetDateRangePicker_panel">
@@ -54,7 +44,7 @@ export default class CustomDateRangePicker extends React.Component {
                 isSelected ? 'PresetDateRangePicker_button__selected' : ''
               }`}
               onClick={() =>
-                this.onDatesChange({
+                onDatesChange({
                   startDate: start,
                   endDate: end,
                   preset: true,
@@ -67,30 +57,80 @@ export default class CustomDateRangePicker extends React.Component {
         })}
       </div>
     );
-  }
+  };
+  const renderMonthElement = ({ month, onMonthSelect, onYearSelect }) => {
+    const containerStyle = {
+      margin: '0 10px',
+    };
 
-  render() {
-    let {
-      autoFocus,
-      autoFocusEndDate,
-      initialStartDate,
-      initialEndDate,
-      stateDateWrapper,
-      onDatesChange,
-      startDate,
-      endDate,
-      presets,
-      ...dateRangePickerProps
-    } = this.props;
+    const selectStyle = {
+      fontSize: 14,
+    };
+
+    const renderYearsOptions = () => {
+      const yearsRange = 20;
+      const options = [];
+
+      for (let i = 0; i < yearsRange; i++) {
+        const year = moment().year() - i;
+        options.push(<option value={year}>{year}</option>);
+      }
+
+      return options;
+    };
 
     return (
-      <DateRangePicker
-        {...dateRangePickerProps}
-        startDate={this.state.startDate}
-        endDate={this.state.endDate}
-        renderCalendarInfo={this.renderDatePresets}
-        onDatesChange={this.onDatesChange}
-      />
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={containerStyle}>
+          <select
+            value={month.month()}
+            onChange={e => onMonthSelect(month, e.target.value)}
+            style={selectStyle}
+          >
+            {moment.months().map((label, value) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div style={containerStyle}>
+          {}
+          <select
+            value={month.year()}
+            onChange={e => onYearSelect(month, e.target.value)}
+            style={selectStyle}
+          >
+            {renderYearsOptions()}
+          </select>
+        </div>
+      </div>
     );
-  }
+  };
+
+  return (
+    <DateRangePicker
+      {...dateRangePickerProps}
+      startDate={startDate}
+      endDate={endDate}
+      renderCalendarInfo={renderDatePresets}
+      onDatesChange={onDatesChange}
+      renderMonthElement={renderMonthElement}
+      startDatePlaceholderText={t('Start Date')}
+      endDatePlaceholderText={t('End Date')}
+      phrases={{ closeDatePicker: t('Close'), clearDates: t('Clear dates') }}
+    />
+  );
 }
+
+CustomDateRangePicker.propTypes = {
+  presets: PropTypes.arrayOf(
+    PropTypes.shape({
+      text: PropTypes.string,
+      start: PropTypes.required,
+      end: PropTypes.required,
+    })
+  ),
+};
+
+export default CustomDateRangePicker;
