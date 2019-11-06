@@ -11,6 +11,7 @@ import writeScript from './writeScript.js';
 import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
 import * as urlUtil from './urlUtil';
+import makeCancelable from './makeCancelable';
 
 const utils = {
   guid,
@@ -27,6 +28,7 @@ const utils = {
   DICOMTagDescriptions,
   DicomLoaderService,
   urlUtil,
+  makeCancelable,
 };
 
 export {
@@ -44,6 +46,7 @@ export {
   DICOMTagDescriptions,
   DicomLoaderService,
   urlUtil,
+  makeCancelable,
 };
 
 export default utils;

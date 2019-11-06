@@ -17,6 +17,7 @@ describe('Top level exports', () => {
       'DICOMTagDescriptions',
       'DicomLoaderService',
       'urlUtil',
+      'makeCancelable',
     ].sort();
 
     const exports = Object.keys(utils.default).sort();

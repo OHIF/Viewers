@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+
+# [2.5.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.4.1...@ohif/viewer@2.5.0) (2019-11-05)
+
+
+### Features
+
+* 🎸 Filter by url query param for seriesInstnaceUID ([#1117](https://github.com/OHIF/Viewers/issues/1117)) ([e208f2e](https://github.com/OHIF/Viewers/commit/e208f2e6a9c49b16dadead0a917f657cf023929a)), closes [#1118](https://github.com/OHIF/Viewers/issues/1118)
+
+
+
+
+
+## [2.4.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.4.0...@ohif/viewer@2.4.1) (2019-11-05)
+
+
+### Bug Fixes
+
+* [#1075](https://github.com/OHIF/Viewers/issues/1075) Returning to the Study List before all series have finishe… ([#1090](https://github.com/OHIF/Viewers/issues/1090)) ([ecaf578](https://github.com/OHIF/Viewers/commit/ecaf578f92dc40294cec7ff9b272fb432dec4125))
+
+
+
+
+
 # [2.4.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.8...@ohif/viewer@2.4.0) (2019-11-04)
 
 
