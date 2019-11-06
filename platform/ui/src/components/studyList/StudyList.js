@@ -25,8 +25,6 @@ function StudyList(props) {
     onFilterChange: handleFilterChange,
     onSelectItem: handleSelectItem,
     t,
-    //
-    studyListDateFilterNumDays,
   } = props;
 
   const largeTableMeta = [
@@ -127,7 +125,6 @@ function StudyList(props) {
             onValueChange={handleFilterChange}
             sortFieldName={sort.fieldName}
             sortDirection={sort.direction}
-            studyListDateFilterNumDays={studyListDateFilterNumDays}
           />
         </tr>
       </thead>
@@ -208,8 +205,6 @@ StudyList.propTypes = {
     allFields: PropTypes.string.isRequired,
   }).isRequired,
   onFilterChange: PropTypes.func.isRequired,
-  //
-  studyListDateFilterNumDays: PropTypes.number,
 };
 
 StudyList.defaultProps = {};

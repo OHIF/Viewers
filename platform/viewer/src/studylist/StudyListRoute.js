@@ -256,7 +256,6 @@ function StudyListRoute(props) {
           onSort={handleSort}
           filterValues={filterValues}
           onFilterChange={handleFilterChange}
-          studyListDateFilterNumDays={appConfig.studyListDateFilterNumDays}
         />
         {/* PAGINATION FOOTER */}
         <TablePagination
