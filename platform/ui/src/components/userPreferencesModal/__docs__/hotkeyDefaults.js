@@ -60,11 +60,6 @@ export default {
     keys: [''],
     column: 1,
   },
-  toggleDownloadDialog: {
-    label: 'Show/Hide Download Dialog',
-    keys: [''],
-    column: 1,
-  },
 
   // Preset hotkeys
   WLPreset0: { label: 'W/L Preset 0  (Soft Tissue)', keys: ['1'], column: 1 },

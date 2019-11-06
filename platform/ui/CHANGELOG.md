@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.60.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.59.1...@ohif/ui@0.60.0) (2019-11-06)
+
+
+### Features
+
+* modal provider ([#1151](https://github.com/OHIF/Viewers/issues/1151)) ([75d88bc](https://github.com/OHIF/Viewers/commit/75d88bc454710d2dcdbc7d68c4d9df041159c840)), closes [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1146](https://github.com/OHIF/Viewers/issues/1146) [#1142](https://github.com/OHIF/Viewers/issues/1142) [#1143](https://github.com/OHIF/Viewers/issues/1143) [#1110](https://github.com/OHIF/Viewers/issues/1110) [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1119](https://github.com/OHIF/Viewers/issues/1119)
+
+
+
+
+
+
+## [0.59.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.59.0...@ohif/ui@0.59.1) (2019-11-05)
+
+
+### Bug Fixes
+
+* [#1075](https://github.com/OHIF/Viewers/issues/1075) Returning to the Study List before all series have finishe… ([#1090](https://github.com/OHIF/Viewers/issues/1090)) ([ecaf578](https://github.com/OHIF/Viewers/commit/ecaf578f92dc40294cec7ff9b272fb432dec4125))
+
+
+
+
 # [0.59.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.58.5...@ohif/ui@0.59.0) (2019-11-04)
 
 
