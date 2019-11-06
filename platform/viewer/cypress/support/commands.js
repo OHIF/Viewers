@@ -5,6 +5,8 @@ import {
   initCommonElementsAliases,
   initRouteAliases,
   initVTKToolsAliases,
+  initStudyListAliasesOnDesktop,
+  initStudyListAliasesOnTablet,
 } from './aliases.js';
 
 // ***********************************************
@@ -76,10 +78,16 @@ Cypress.Commands.add('isPageLoaded', (url = '/viewer/') => {
   return cy.location('pathname', { timeout: 60000 }).should('include', url);
 });
 
-Cypress.Commands.add('openStudyList', patientName => {
+Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
   cy.visit('/');
   cy.wait('@getStudies');
+});
+
+Cypress.Commands.add('waitStudyList', () => {
+  cy.get('@searchResult').should($list => {
+    expect($list).to.not.have.class('no-hover');
+  });
 });
 
 /**
@@ -238,6 +246,16 @@ Cypress.Commands.add('initRouteAliases', () => {
 //Initialize aliases for VTK tools
 Cypress.Commands.add('initVTKToolsAliases', () => {
   initVTKToolsAliases();
+});
+
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliasesOnDesktop', () => {
+  initStudyListAliasesOnDesktop();
+});
+
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliasesOnTablet', () => {
+  initStudyListAliasesOnTablet();
 });
 
 //Add measurements in the viewport
