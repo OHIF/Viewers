@@ -1,4 +1,5 @@
-import { MODULE_TYPES, utils, DICOMWeb } from '@ohif/core';
+import { MODULE_TYPES, utils } from '@ohif/core';
+import loadSegmentation from './loadSegmentation';
 
 // TODO: Should probably use dcmjs for this
 const SOP_CLASS_UIDS = {
@@ -25,11 +26,9 @@ const OHIFDicomSegSopClassHandler = {
     );
     const frameOfReferenceUID = instance.getTagValue('FrameOfReferenceUID');
 
-    debugger;
-
     const { seriesDate, seriesTime } = series.getData();
 
-    const displaySet = {
+    const segDisplaySet = {
       plugin: 'seg',
       modality: 'SEG',
       displaySetInstanceUid: utils.guid(),
@@ -49,27 +48,17 @@ const OHIFDicomSegSopClassHandler = {
       seriesTime,
     };
 
-    displaySet.load = function(referencedDisplaySet, studies) {
-      loadSegmentationIntoCornerstoneTools(
-        displaySet,
-        referencedDisplaySet,
-        studies
+    segDisplaySet.load = function(referencedDisplaySet, studies) {
+      loadSegmentation(segDisplaySet, referencedDisplaySet, studies).catch(
+        error => {
+          segDisplaySet.isLoaded = false;
+          throw new Error(error);
+        }
       );
     };
 
-    return displaySet;
+    return segDisplaySet;
   },
 };
-
-async function loadSegmentationIntoCornerstoneTools(
-  segDisplaySet,
-  referencedDisplaySet,
-  studies
-) {
-  console.log(segDisplaySet, referencedDisplaySet, studies);
-  debugger;
-
-  // TODO -> Seg loading logic.
-}
 
 export default OHIFDicomSegSopClassHandler;
