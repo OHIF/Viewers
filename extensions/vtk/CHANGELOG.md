@@ -17,8 +17,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-
-
 ## [0.52.30](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.29...@ohif/extension-vtk@0.52.30) (2019-11-04)
 
 **Note:** Version bump only for package @ohif/extension-vtk

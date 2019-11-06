@@ -3,13 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+
 ## [0.59.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.59.0...@ohif/ui@0.59.1) (2019-11-05)
 
 
 ### Bug Fixes
 
 * [#1075](https://github.com/OHIF/Viewers/issues/1075) Returning to the Study List before all series have finishe… ([#1090](https://github.com/OHIF/Viewers/issues/1090)) ([ecaf578](https://github.com/OHIF/Viewers/commit/ecaf578f92dc40294cec7ff9b272fb432dec4125))
-
 
 
 
