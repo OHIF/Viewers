@@ -1,23 +1,17 @@
-import './UserPreferencesModal.styl';
+import './UserPreferencesForm.styl';
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Modal from 'react-bootstrap-modal';
 import { withTranslation } from '../../utils/LanguageProvider';
 
-import 'react-bootstrap-modal/lib/css/rbm-patch.css';
 import cloneDeep from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';
 import { UserPreferences } from './UserPreferences';
 
-// TODO: Is this the only component importing these?
-import './../../design/styles/common/modal.styl';
-
-class UserPreferencesModal extends Component {
+class UserPreferencesForm extends Component {
   // TODO: Make this component more generic to allow things other than W/L and hotkeys...
   static propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    onCancel: PropTypes.func,
+    onClose: PropTypes.func,
     onSave: PropTypes.func,
     onResetToDefaults: PropTypes.func,
     windowLevelData: PropTypes.object,
@@ -33,10 +27,6 @@ class UserPreferencesModal extends Component {
       hotKeysData: cloneDeep(props.hotKeysData),
     };
   }
-
-  static defaultProps = {
-    isOpen: false,
-  };
 
   save = () => {
     this.props.onSave({
@@ -63,45 +53,34 @@ class UserPreferencesModal extends Component {
 
   render() {
     return (
-      <Modal
-        show={this.props.isOpen}
-        onHide={this.props.onCancel}
-        aria-labelledby="ModalHeader"
-        className="ModalHeader modal fade themed in"
-        backdrop={false}
-        large={true}
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>{this.props.t('User Preferences')}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <UserPreferences
-            windowLevelData={this.state.windowLevelData}
-            hotKeysData={this.state.hotKeysData}
-          />
-        </Modal.Body>
-        <Modal.Footer>
+      <div className="UserPreferencesForm">
+        <UserPreferences
+          windowLevelData={this.state.windowLevelData}
+          hotKeysData={this.state.hotKeysData}
+        />
+        <div className="footer">
           <button
             className="btn btn-danger pull-left"
             onClick={this.props.onResetToDefaults}
           >
             {this.props.t('Reset to Defaults')}
           </button>
-          <Modal.Dismiss className="btn btn-default">
-            {this.props.t('Cancel')}
-          </Modal.Dismiss>
-          <button className="btn btn-primary" onClick={this.save}>
-            {this.props.t('Save')}
-          </button>
-        </Modal.Footer>
-      </Modal>
+          <div>
+            <div onClick={this.props.onClose} className="btn btn-default">
+              {this.props.t('Cancel')}
+            </div>
+            <button className="btn btn-primary" onClick={this.save}>
+              {this.props.t('Save')}
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 }
 
-const connectedComponent = withTranslation('UserPreferencesModal')(
-  UserPreferencesModal
+const connectedComponent = withTranslation('UserPreferencesForm')(
+  UserPreferencesForm
 );
-export { connectedComponent as UserPreferencesModal };
+export { connectedComponent as UserPreferencesForm };
 export default connectedComponent;

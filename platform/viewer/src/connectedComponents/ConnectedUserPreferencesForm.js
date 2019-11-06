@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
-import { UserPreferencesModal } from '@ohif/ui';
+import { UserPreferencesForm } from '@ohif/ui';
 import OHIF from '@ohif/core';
-import { hotkeysManager } from './../App.js';
+import { hotkeysManager } from '../App.js';
 import cloneDeep from 'lodash.clonedeep';
 
 const { setUserPreferences } = OHIF.redux.actions;
@@ -14,7 +14,7 @@ const mapStateToProps = (state, ownProps) => {
       : hotkeysManager.hotkeyDefinitions;
   hotkeysManager.setHotkeys(hotkeysManager.format(cloneDeep(newHotKeysData)));
   return {
-    isOpen: ownProps.isOpen,
+    onClose: ownProps.hide,
     windowLevelData: state.preferences ? state.preferences.windowLevelData : {},
     hotKeysData: newHotKeysData,
   };
@@ -24,20 +24,20 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onSave: ({ windowLevelData, hotKeysData }) => {
       hotkeysManager.setHotkeys(hotkeysManager.format(cloneDeep(hotKeysData)));
-      ownProps.onSave();
+      ownProps.hide();
       dispatch(setUserPreferences({ windowLevelData, hotKeysData }));
     },
     onResetToDefaults: () => {
       hotkeysManager.restoreDefaultBindings();
-      ownProps.onResetToDefaults();
+      ownProps.hide();
       dispatch(setUserPreferences());
     },
   };
 };
 
-const ConnectedUserPreferencesModal = connect(
+const ConnectedUserPreferencesForm = connect(
   mapStateToProps,
   mapDispatchToProps
-)(UserPreferencesModal);
+)(UserPreferencesForm);
 
-export default ConnectedUserPreferencesModal;
+export default ConnectedUserPreferencesForm;

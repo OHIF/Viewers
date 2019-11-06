@@ -2,12 +2,10 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import ConnectedUserPreferencesModal from '../../connectedComponents/ConnectedUserPreferencesModal';
-import { Dropdown } from '@ohif/ui';
-import { AboutContent } from '@ohif/ui';
-import { withModal } from '@ohif/ui';
+
+import ConnectedUserPreferencesForm from '../../connectedComponents/ConnectedUserPreferencesForm';
+import { Dropdown, AboutContent, withModal } from '@ohif/ui';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
-import { hotkeysManager } from './../../App.js';
 import './Header.css';
 
 // Context
@@ -32,7 +30,7 @@ class Header extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { isUserPreferencesOpen: false, isOpen: false };
+    this.state = { isOpen: false };
 
     this.loadOptions();
   }
@@ -59,11 +57,11 @@ class Header extends Component {
         icon: {
           name: 'user',
         },
-        onClick: () => {
-          this.setState({
-            isUserPreferencesOpen: true,
-          });
-        },
+        onClick: () =>
+          show(ConnectedUserPreferencesForm, {
+            title: t('User Preferences'),
+            customClassName: 'ModalHeader',
+          }),
       },
     ];
 
@@ -74,10 +72,6 @@ class Header extends Component {
         onClick: () => userManager.signoutRedirect(),
       });
     }
-  }
-
-  toggleUserPreferences() {
-    this.setState({ isUserPreferencesOpen: !this.state.isUserPreferencesOpen });
   }
 
   // ANTD -- Hamburger, Drawer, Menu
@@ -120,12 +114,6 @@ class Header extends Component {
               {t('INVESTIGATIONAL USE ONLY')}
             </span>
             <Dropdown title={t('Options')} list={this.options} align="right" />
-            <ConnectedUserPreferencesModal
-              isOpen={this.state.isUserPreferencesOpen}
-              onCancel={this.toggleUserPreferences.bind(this)}
-              onSave={this.toggleUserPreferences.bind(this)}
-              onResetToDefaults={this.toggleUserPreferences.bind(this)}
-            />
           </div>
         </div>
       </>
