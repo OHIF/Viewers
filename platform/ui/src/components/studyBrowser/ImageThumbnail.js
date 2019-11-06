@@ -1,6 +1,7 @@
 /* global cornerstone */
 import './ImageThumbnail.styl';
 
+import { utils } from '@ohif/core';
 import React, { useState, useEffect, createRef } from 'react';
 
 import PropTypes from 'prop-types';
@@ -22,12 +23,16 @@ function ImageThumbnail(props) {
     error: propsError,
   } = props;
 
+  let mount = true;
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [image, setImage] = useState({});
   const canvasRef = createRef();
 
   let loadingOrError;
+  let cancelablePromise;
+
   if (propsError || error) {
     loadingOrError = <ViewportErrorIndicator />;
   } else if (loading) {
@@ -40,21 +45,43 @@ function ImageThumbnail(props) {
     return imageId && !imageSrc;
   };
 
-  const retrieveImageData = () => {
+  const fetchImagePromise = () => {
+    if (!cancelablePromise) {
+      return;
+    }
+
+    setLoading(true);
+    cancelablePromise
+      .then(response => {
+        setImage(response);
+      })
+      .catch(error => {
+        if (error.isCanceled) return;
+        setLoading(false);
+        setError(true);
+        throw new Error(error);
+      });
+  };
+
+  const setImagePromise = () => {
     if (shouldRenderToCanvas()) {
-      setLoading(true);
-      cornerstone
-        .loadAndCacheImage(imageId)
-        .then(response => {
-          setImage(response);
-        })
-        .catch(error => {
-          setLoading(false);
-          setError(true);
-          throw new Error(error);
-        });
+      cancelablePromise = utils.makeCancelable(
+        cornerstone.loadAndCacheImage(imageId)
+      );
     }
   };
+
+  const purgeCancelablePromise = () => {
+    if (cancelablePromise) {
+      cancelablePromise.cancel();
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      purgeCancelablePromise();
+    };
+  }, []);
 
   useEffect(() => {
     if (image.imageId) {
@@ -65,7 +92,9 @@ function ImageThumbnail(props) {
 
   useEffect(() => {
     if (!image.imageId || image.imageId !== imageId) {
-      retrieveImageData();
+      purgeCancelablePromise();
+      setImagePromise();
+      fetchImagePromise();
     }
   }, [imageId]);
 
@@ -75,14 +104,14 @@ function ImageThumbnail(props) {
         {shouldRenderToCanvas() ? (
           <canvas ref={canvasRef} width={width} height={height} />
         ) : (
-            <img
-              className="static-image"
-              src={imageSrc}
-              //width={this.props.width}
-              height={height}
-              alt={''}
-            />
-          )}
+          <img
+            className="static-image"
+            src={imageSrc}
+            //width={this.props.width}
+            height={height}
+            alt={''}
+          />
+        )}
       </div>
       {loadingOrError}
       {showStackLoadingProgressBar && (
