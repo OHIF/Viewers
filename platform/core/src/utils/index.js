@@ -31,6 +31,7 @@ const utils = {
   urlUtil,
   makeCancelable,
   loadAndCacheDerivedDisplaySets,
+  makeCancelable,
 };
 
 export {
