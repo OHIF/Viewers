@@ -4,9 +4,10 @@ import { metadata, studies, utils, log } from '@ohif/core';
 import ConnectedViewer from './ConnectedViewer.js';
 import PropTypes from 'prop-types';
 import { extensionManager } from './../App.js';
+import { withSnackbar } from '@ohif/ui';
 
 const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
-const { retrieveStudiesMetadata } = studies;
+const { retrieveStudiesMetadata, deleteStudyMetadataPromise } = studies;
 const { studyMetadataManager, updateMetaDataManager } = utils;
 
 class ViewerRetrieveStudyData extends Component {
@@ -18,6 +19,8 @@ class ViewerRetrieveStudyData extends Component {
 
   constructor(props) {
     super(props);
+    this.abortSeriesLoad = false;
+    this.seriesLoadStats = Object.create(null);
     this.state = {
       studies: null,
       error: null,
@@ -27,15 +30,51 @@ class ViewerRetrieveStudyData extends Component {
   async loadStudies() {
     try {
       const { server, studyInstanceUids, seriesInstanceUids } = this.props;
+      const filters = {};
+
+      // Use the first, discard others
+      const seriesInstanceUID = seriesInstanceUids && seriesInstanceUids[0];
+
+      if (seriesInstanceUID) {
+        filters.seriesInstanceUID = seriesInstanceUID;
+      }
+
       const studies = await retrieveStudiesMetadata(
         server,
         studyInstanceUids,
-        seriesInstanceUids
+        filters
       );
+      this.validateFilters(studies, filters);
       this.setStudies(studies);
     } catch (e) {
       this.setState({ error: true });
       log.error(e);
+    }
+  }
+
+  /**
+   * Validate filters and promp user a message in case filter is unsuccessfully applied.
+   * In case of success, studies array contains, as the first element, the queried content (from filter)
+   * @param {Array} studies array of studies to be evaluated
+   * @param {Object} filters filters to test against
+   */
+  validateFilters(studies = [], filters = {}) {
+    const { seriesInstanceUID } = filters;
+
+    const { snackbarContext } = this.props;
+    // skip in case no filter or no toast manager
+    if (!seriesInstanceUID || !snackbarContext) {
+      return;
+    }
+
+    const firstStudy = studies[0] || {};
+    const { seriesList = [] } = firstStudy;
+    const firstSeries = seriesList[0];
+
+    if (!firstSeries || firstSeries.seriesInstanceUid !== seriesInstanceUID) {
+      snackbarContext.show({
+        message: 'No series for given filter: ' + seriesInstanceUID,
+      });
     }
   }
 
@@ -83,18 +122,49 @@ class ViewerRetrieveStudyData extends Component {
     });
   }
 
+  _handleSeriesLoadResult(error, studyMetadata, series) {
+    if (this.abortSeriesLoad) return;
+    const stats = this.seriesLoadStats[studyMetadata.getStudyInstanceUID()];
+    if (!stats) return;
+    stats.count--;
+    if (error || !series) {
+      stats.errors++;
+      log.error(error || 'Bad Series');
+      return;
+    }
+    this._addSeriesToStudy(studyMetadata, series);
+  }
+
   _attemptToLoadRemainingSeries(studyMetadata) {
     const { seriesLoader } = studyMetadata.getData();
     if (!seriesLoader) {
       return;
     }
+    const stats = (this.seriesLoadStats[studyMetadata.getStudyInstanceUID()] = {
+      errors: 0,
+      count: 0,
+    });
     while (seriesLoader.hasNext()) {
       seriesLoader
         .next()
         .then(
-          series => void this._addSeriesToStudy(studyMetadata, series),
-          error => void log.error(error)
+          series =>
+            void this._handleSeriesLoadResult(null, studyMetadata, series),
+          error => void this._handleSeriesLoadResult({ error }, null, null)
         );
+      stats.count++;
+    }
+  }
+
+  componentWillUnmount() {
+    this.abortSeriesLoad = true;
+    for (const studyInstanceUid in this.seriesLoadStats) {
+      const stats = this.seriesLoadStats[studyInstanceUid];
+      if (stats && (stats.count > 0 || stats.errors > 0)) {
+        deleteStudyMetadataPromise(studyInstanceUid);
+        studyMetadataManager.remove(studyInstanceUid);
+        log.info(`Purging incomplete study data: ${studyInstanceUid}`);
+      }
     }
   }
 
@@ -118,4 +188,4 @@ class ViewerRetrieveStudyData extends Component {
   }
 }
 
-export default ViewerRetrieveStudyData;
+export default withSnackbar(ViewerRetrieveStudyData);

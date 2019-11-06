@@ -12,6 +12,7 @@ import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
 import loadAndCacheDerivedDisplaySets from './loadAndCacheDerivedDisplaySets.js';
 import * as urlUtil from './urlUtil';
+import makeCancelable from './makeCancelable';
 
 const utils = {
   guid,
@@ -29,6 +30,7 @@ const utils = {
   DicomLoaderService,
   urlUtil,
   loadAndCacheDerivedDisplaySets,
+  makeCancelable,
 };
 
 export {
@@ -46,6 +48,7 @@ export {
   DICOMTagDescriptions,
   DicomLoaderService,
   urlUtil,
+  makeCancelable,
 };
 
 export default utils;
