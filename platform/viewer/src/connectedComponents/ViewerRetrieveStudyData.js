@@ -24,9 +24,11 @@ class ViewerRetrieveStudyData extends Component {
     this.seriesLoadStats = Object.create(null);
     this.state = {
       studies: null,
-      seriesLoaded: false,
+      studyLoaded: false,
       error: null,
     };
+
+    this._studyDidLoad = this._studyDidLoad.bind(this);
   }
 
   async loadStudies() {
@@ -102,9 +104,7 @@ class ViewerRetrieveStudyData extends Component {
         studyMetadataManager.add(studyMetadata);
 
         // Attempt to load remaning series if any
-        this._loadRemainingSeries(studyMetadata).then(
-          this._studyDidLoad.bind(this)
-        );
+        this._loadRemainingSeries(studyMetadata).then(this._studyDidLoad);
 
         return study;
       });
@@ -114,7 +114,7 @@ class ViewerRetrieveStudyData extends Component {
 
   _studyDidLoad() {
     this.setState({
-      seriesLoaded: true,
+      studyLoaded: true,
     });
   }
 
@@ -201,7 +201,7 @@ class ViewerRetrieveStudyData extends Component {
     return (
       <ConnectedViewer
         studies={this.state.studies}
-        seriesLoaded={this.state.seriesLoaded}
+        studyLoaded={this.state.studyLoaded}
         studyInstanceUids={this.props.studyInstanceUids}
       />
     );
