@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.53.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.32...@ohif/extension-vtk@0.53.0) (2019-11-06)
+
+
+### Features
+
+* modal provider ([#1151](https://github.com/OHIF/Viewers/issues/1151)) ([75d88bc](https://github.com/OHIF/Viewers/commit/75d88bc454710d2dcdbc7d68c4d9df041159c840)), closes [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1146](https://github.com/OHIF/Viewers/issues/1146) [#1142](https://github.com/OHIF/Viewers/issues/1142) [#1143](https://github.com/OHIF/Viewers/issues/1143) [#1110](https://github.com/OHIF/Viewers/issues/1110) [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1119](https://github.com/OHIF/Viewers/issues/1119)
+
+
+
+
+
+## [0.52.32](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.31...@ohif/extension-vtk@0.52.32) (2019-11-05)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.31](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.30...@ohif/extension-vtk@0.52.31) (2019-11-05)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+## [0.52.30](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.29...@ohif/extension-vtk@0.52.30) (2019-11-04)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.29](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.28...@ohif/extension-vtk@0.52.29) (2019-11-04)
+
+
+### Bug Fixes
+
+* 🐛 Upgrade react-vtkjs-viewport to fix volume orientation ([#1143](https://github.com/OHIF/Viewers/issues/1143)) ([1d86b1a](https://github.com/OHIF/Viewers/commit/1d86b1a102fc422053cff103de8c12ca6f437354))
+
+
+
+
+
+## [0.52.28](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.27...@ohif/extension-vtk@0.52.28) (2019-11-04)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
 ## [0.52.27](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.26...@ohif/extension-vtk@0.52.27) (2019-10-31)
 
 **Note:** Version bump only for package @ohif/extension-vtk

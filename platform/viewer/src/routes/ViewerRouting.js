@@ -7,15 +7,15 @@ const { urlUtil: UrlUtil } = OHIF.utils;
 
 /**
  * Get array of seriesUIDs from param or from queryString
- * @param {*} seriesInstanceUIDs
+ * @param {*} seriesInstanceUids
  * @param {*} location
  */
-const getSeriesInstanceUIDs = (seriesInstanceUIDs, routeLocation) => {
+const getSeriesInstanceUIDs = (seriesInstanceUids, routeLocation) => {
   const queryFilters = UrlUtil.queryString.getQueryFilters(routeLocation);
-  const querySeriesUIDs = queryFilters && queryFilters['SeriesInstanceUID'];
-  const _seriesInstanceUIDs = seriesInstanceUIDs || querySeriesUIDs;
+  const querySeriesUIDs = queryFilters && queryFilters['seriesInstanceUID'];
+  const _seriesInstanceUids = seriesInstanceUids || querySeriesUIDs;
 
-  return UrlUtil.paramString.parseParam(_seriesInstanceUIDs);
+  return UrlUtil.paramString.parseParam(_seriesInstanceUids);
 };
 
 function ViewerRouting({ match: routeMatch, location: routeLocation }) {
@@ -29,14 +29,14 @@ function ViewerRouting({ match: routeMatch, location: routeLocation }) {
   } = routeMatch.params;
   const server = useServer({ project, location, dataset, dicomStore });
 
-  const studyUIDs = UrlUtil.paramString.parseParam(studyInstanceUids);
-  const seriesUIDs = getSeriesInstanceUIDs(seriesInstanceUids, routeLocation);
+  const studyUids = UrlUtil.paramString.parseParam(studyInstanceUids);
+  const seriesUids = getSeriesInstanceUIDs(seriesInstanceUids, routeLocation);
 
-  if (server && studyUIDs) {
+  if (server && studyUids) {
     return (
       <ConnectedViewerRetrieveStudyData
-        studyInstanceUids={studyUIDs}
-        seriesInstanceUids={seriesUIDs}
+        studyInstanceUids={studyUids}
+        seriesInstanceUids={seriesUids}
       />
     );
   }
