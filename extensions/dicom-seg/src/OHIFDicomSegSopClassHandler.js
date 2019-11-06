@@ -28,6 +28,8 @@ const OHIFDicomSegSopClassHandler = {
 
     const { seriesDate, seriesTime } = series.getData();
 
+    debugger;
+
     const segDisplaySet = {
       plugin: 'seg',
       modality: 'SEG',
