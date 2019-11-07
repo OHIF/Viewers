@@ -23,9 +23,7 @@ function ImageThumbnail(props) {
     error: propsError,
   } = props;
 
-  let mount = true;
-
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [image, setImage] = useState({});
   const canvasRef = createRef();
@@ -35,7 +33,7 @@ function ImageThumbnail(props) {
 
   if (propsError || error) {
     loadingOrError = <ViewportErrorIndicator />;
-  } else if (loading) {
+  } else if (isLoading) {
     loadingOrError = <ViewportLoadingIndicator />;
   }
 
@@ -122,7 +120,7 @@ function ImageThumbnail(props) {
           />
         </div>
       )}
-      {loading && <div className="image-thumbnail-loading-indicator"></div>}
+      {isLoading && <div className="image-thumbnail-loading-indicator"></div>}
     </div>
   );
 }
