@@ -6,7 +6,7 @@ import LoadingIndicator from './LoadingIndicator.js';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
-import handleSegmentationStorage from './handleSegmentationStorage.js';
+import cornerstoneTools from 'cornerstone-tools';
 import vtkDataArray from 'vtk.js/Sources/Common/Core/DataArray';
 import vtkImageData from 'vtk.js/Sources/Common/DataModel/ImageData';
 import vtkVolume from 'vtk.js/Sources/Rendering/Core/Volume';
@@ -23,17 +23,9 @@ cornerstone.metaData.addProvider(
 
 StackManager.setMetadataProvider(metadataProvider);
 
-const SOP_CLASSES = {
-  SEGMENTATION_STORAGE: '1.2.840.10008.5.1.4.1.1.66.4',
-};
-
-const specialCaseHandlers = {};
-specialCaseHandlers[
-  SOP_CLASSES.SEGMENTATION_STORAGE
-] = handleSegmentationStorage;
-
 // TODO: Figure out where we plan to put this long term
 const volumeCache = {};
+const labelmapCache = {};
 
 /**
  * Create a labelmap image with the same dimensions as our background volume.
@@ -41,6 +33,9 @@ const volumeCache = {};
  * @param backgroundImageData vtkImageData
  */
 function createLabelMapImageData(backgroundImageData) {
+  // TODO => Need to do something like this if we start drawing a new segmentation
+  // On a vtkjs viewport.
+
   const labelMapData = vtkImageData.newInstance(
     backgroundImageData.get('spacing', 'origin', 'direction')
   );
@@ -141,7 +136,6 @@ class OHIFVTKViewport extends Component {
     studies,
     studyInstanceUid,
     displaySetInstanceUid,
-    sopClassUid,
     sopInstanceUid,
     frameIndex
   ) => {
@@ -149,38 +143,64 @@ class OHIFVTKViewport extends Component {
       studies,
       studyInstanceUid,
       displaySetInstanceUid,
-      sopClassUid,
       sopInstanceUid,
       frameIndex
     );
 
-    let imageDataObject;
+    const imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid);
     let labelmapDataObject;
+    let labelmapColorLUT;
 
-    switch (sopClassUid) {
-      case SOP_CLASSES.SEGMENTATION_STORAGE:
-        throw new Error('Not yet implemented');
-      /*
-        const data = handleSegmentationStorage(
-          stack.imageIds,
-          displaySetInstanceUid
+    const firstImageId = stack.imageIds[0];
+    const { state } = cornerstoneTools.getModule('segmentation');
+    const brushStackState = state.series[firstImageId];
+
+    if (brushStackState) {
+      const { activeLabelmapIndex } = brushStackState;
+      const labelmap3D = brushStackState.labelmaps3D[activeLabelmapIndex];
+
+      const vtkLabelmapID = `firstImageId_activeLabelmapIndex`;
+
+      if (labelmapCache[vtkLabelmapID]) {
+        labelmapDataObject = labelmapCache[vtkLabelmapID];
+      } else {
+        // TODO -> We need an imageId based getter in cornerstoneTools
+        const labelmapBuffer = labelmap3D.buffer;
+
+        // Create VTK Image Data with buffer as input
+        labelmapDataObject = vtkImageData.newInstance();
+
+        const dataArray = vtkDataArray.newInstance({
+          numberOfComponents: 1, // labelmap with single component
+          values: new Uint16Array(labelmapBuffer),
+        });
+
+        labelmapDataObject.getPointData().setScalars(dataArray);
+        labelmapDataObject.setDimensions(...imageDataObject.dimensions);
+        labelmapDataObject.setSpacing(
+          ...imageDataObject.vtkImageData.getSpacing()
+        );
+        labelmapDataObject.setOrigin(
+          ...imageDataObject.vtkImageData.getOrigin()
+        );
+        labelmapDataObject.setDirection(
+          ...imageDataObject.vtkImageData.getDirection()
         );
 
-        imageDataObject = data.referenceDataObject;
-        labelmapDataObject = data.labelmapDataObject;
+        // volume inserted wrong way.
 
-        return loadImageData(imageDataObject).then(() => {
-          return {
-            data: imageDataObject.vtkImageData,
-            labelmap: labelmapDataObject,
-          };
-        });
-        */
-      default:
-        imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid);
+        // Cache the labelmap volume.
+        labelmapCache[vtkLabelmapID] = labelmapDataObject;
+      }
 
-        return imageDataObject;
+      labelmapColorLUT = state.colorLutTables[labelmap3D.colorLUTIndex];
     }
+
+    return {
+      imageDataObject,
+      labelmapDataObject,
+      labelmapColorLUT,
+    };
   };
 
   /**
@@ -252,12 +272,14 @@ class OHIFVTKViewport extends Component {
       );
     }
 
-    const sopClassUid = sopClassUids[0];
-    const imageDataObject = this.getViewportData(
+    const {
+      imageDataObject,
+      labelmapDataObject,
+      labelmapColorLUT,
+    } = this.getViewportData(
       studies,
       studyInstanceUid,
       displaySetInstanceUid,
-      sopClassUid,
       sopInstanceUid,
       frameIndex
     );
@@ -275,16 +297,9 @@ class OHIFVTKViewport extends Component {
       displaySetInstanceUid
     );
 
-    this.setState({
-      paintFilterBackgroundImageData: imageDataObject.vtkImageData,
-      paintFilterLabelMapImageData: null, // TODO
-      percentComplete: 0,
-    });
-
     this.setState(
       {
         paintFilterBackgroundImageData: imageDataObject.vtkImageData,
-        paintFilterLabelMapImageData: null, // TODO
         percentComplete: 0,
       },
       () => {
@@ -297,6 +312,8 @@ class OHIFVTKViewport extends Component {
         setTimeout(() => {
           this.setState({
             volumes: [volumeActor],
+            paintFilterLabelMapImageData: labelmapDataObject,
+            labelmapColorLUT,
           });
         }, 200);
       }
@@ -308,7 +325,7 @@ class OHIFVTKViewport extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { studies, displaySet } = this.props.viewportData;
+    const { displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
     if (
@@ -353,6 +370,7 @@ class OHIFVTKViewport extends Component {
   }
 
   render() {
+    const { configuration } = cornerstoneTools.getModule('segmentation');
     let childrenWithProps = null;
 
     // TODO: Does it make more sense to use Context?
@@ -383,6 +401,10 @@ class OHIFVTKViewport extends Component {
                 this.state.paintFilterBackgroundImageData
               }
               viewportIndex={this.props.viewportIndex}
+              labelmapRenderingOptions={{
+                colorLUT: this.state.labelmapColorLUT,
+                globalOpacity: 1.0, // TODO -> Anything not close to 1 is super dim. It might be because the labelmap voxels and the image are directly on top of each other?
+              }}
             />
           )}
         </div>

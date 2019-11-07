@@ -5,23 +5,6 @@ export default function(referencedDisplaySet, studies) {
 
   const studyMetadata = studyMetadataManager.get(studyInstanceUid);
 
-  const numDisplaySets =
-    studyMetadata._displaySets.length +
-    studyMetadata._derivedDisplaySets.length;
-
-  debugger;
-
-  const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
-  );
-
-  console.log(`hasNext: ${study.seriesLoader.hasNext()}`);
-
-  if (study.seriesLoader.hasNext()) {
-    // wait for all metadata to load first.
-    return;
-  }
-
   const derivedDisplaySets = studyMetadata.getDerivedDatasets({
     referencedSeriesInstanceUID: seriesInstanceUid,
   });
@@ -67,8 +50,6 @@ export default function(referencedDisplaySet, studies) {
         recentDisplaySet = displaySet;
       }
     });
-
-    debugger;
 
     recentDisplaySet.load(referencedDisplaySet, studies);
   });

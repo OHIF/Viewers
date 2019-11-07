@@ -17798,10 +17798,8 @@ react-transition-group@^4.1.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-vtkjs-viewport@^0.3.9:
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.3.9.tgz#dc3dd5323c4cbaf5978cd64af2794b6b4ed61642"
-  integrity sha512-Sc3dRRz8tRSdUrdgL8tuYwVEl0CTjaZfDLqP5ufMXH2KjwBt3T5bjpk4xvzFyPc9CG6ywEX5MSa6eQ+NNjaUkw==
+"react-vtkjs-viewport@file:extensions/vtk/.yalc/react-vtkjs-viewport":
+  version "0.0.12-fba660ae"
   dependencies:
     date-fns "^2.2.1"
     gl-matrix "^3.1.0"
