@@ -42,6 +42,7 @@ function createStudy(server, aSopInstance) {
     patientWeight: DICOMWeb.getNumber(aSopInstance['00101030']),
     accessionNumber: DICOMWeb.getString(aSopInstance['00080050']),
     studyDate: DICOMWeb.getString(aSopInstance['00080020']),
+    studyTime: DICOMWeb.getString(aSopInstance['00080030']),
     modalities: DICOMWeb.getString(aSopInstance['00080061']),
     studyDescription: DICOMWeb.getString(aSopInstance['00081030']),
     imageCount: DICOMWeb.getString(aSopInstance['00201208']),
