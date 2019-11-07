@@ -28,9 +28,31 @@ export default class RetrieveMetadataLoader {
     return postLoadData;
   }
 
+  /**
+   * It iterates over given loaders running each one. Loaders parameters must be bind when getting it.
+   * @param {Array} loaders - array of loader to retrieve data.
+   */
+  async runLoaders(loaders) {
+    let result;
+    for (const loader of loaders) {
+      try {
+        result = await loader();
+        if (result && result.length) {
+          break; // closes iterator in case data is retrieved successfully
+        }
+      } catch (e) { }
+    }
+
+    if (loaders.next().done && !result) {
+      throw 'cant find data';
+    }
+
+    return result;
+  }
+
   // Methods to be overwrite
-  async configLoad() {}
-  async preLoad() {}
-  async load(preLoadData) {}
-  async posLoad(loadData) {}
+  async configLoad() { }
+  async preLoad() { }
+  async load(preLoadData) { }
+  async posLoad(loadData) { }
 }

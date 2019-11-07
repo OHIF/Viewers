@@ -3,40 +3,10 @@ import DICOMWeb from '../../../DICOMWeb/';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 import { sortStudySeries, sortingCriteria } from '../../sortStudy';
 import getSeriesInfo from '../../getSeriesInfo';
-import * as StudyUtils from '../../studyUtils';
-
-/**
- * Search series of a given study
- * @param {DICOMwebClient} client Dicomweb client api
- * @param {string} studyInstanceUID The Study Instance UID to search series from;
- * @returns {Arrays} A list of Series Instances
- */
-async function searchStudySeries(client, studyInstanceUID) {
-  const seriesList = await client.searchForSeries({ studyInstanceUID });
-  return seriesList;
-}
-
-/**
- * Filter seriesList
- * @param {Arrays} seriesList list of Series Instance UIDs
- * @param {Object} filters object containing filter to be applied.
- * @returns {Arrays} A list of Series Instances
- */
-function filterStudySeries(seriesList = [], filters) {
-  let result = [...seriesList];
-  const { seriesInstanceUID: toCompare } = filters;
-
-  const compare = (valueToCompare, series) => {
-    const seriesInstanceUID = DICOMWeb.getString(series['0020000E']);
-    return valueToCompare === seriesInstanceUID;
-  };
-
-  if (toCompare) {
-    result = result.filter(series => compare(toCompare, series));
-  }
-
-  return result;
-}
+import {
+  createStudyFromSOPInstanceList,
+  addInstancesToStudy,
+} from './studyInstanceHelpers';
 
 /**
  * Map seriesList to an array of seriesInstanceUid
@@ -54,7 +24,7 @@ function attachSeriesLoader(server, study, seriesLoader) {
     },
     async next() {
       const series = await seriesLoader.next();
-      await StudyUtils.addInstancesToStudy(server, study, series.sopInstances);
+      await addInstancesToStudy(server, study, series.sopInstances);
       return study.seriesMap[series.seriesInstanceUID];
     },
   });
@@ -104,23 +74,42 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
     this.client = client;
   }
-  async preLoad() {
-    const { client, studyInstanceUID, filters } = this;
 
-    const seriesInstanceUIDs = await searchStudySeries(
+  /**
+   * @returns {Array} Array of preLoaders. To be consumed as queue
+   */
+  *getPreLoaders() {
+    const preLoaders = [];
+    const {
+      studyInstanceUID,
+      filters: { seriesInstanceUID } = {},
       client,
-      studyInstanceUID
-    );
-    const filtered = filterStudySeries(seriesInstanceUIDs, filters);
-    const seriesToSort =
-      filtered && filtered.length ? filtered : seriesInstanceUIDs;
+    } = this;
+
+    if (seriesInstanceUID) {
+      const options = {
+        studyInstanceUID,
+        queryParams: { SeriesInstanceUID: seriesInstanceUID },
+      };
+      preLoaders.push(client.searchForSeries.bind(client, options));
+    }
+    // Fallback preloader
+    preLoaders.push(client.searchForSeries.bind(client, { studyInstanceUID }));
+
+    yield* preLoaders;
+  }
+
+  async preLoad() {
+    const preLoaders = this.getPreLoaders();
+    const result = await this.runLoaders(preLoaders);
+
     const seriesSorted = sortStudySeries(
-      seriesToSort,
+      result,
       sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
     );
-    const seriesInstanceUIDsMap = mapStudySeries(seriesSorted);
+    const seriesInstanceUidsMap = mapStudySeries(seriesSorted);
 
-    return seriesInstanceUIDsMap;
+    return seriesInstanceUidsMap;
   }
 
   async load(preLoadData) {
@@ -145,10 +134,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
     const { sopInstances, asyncLoader } = loadData;
 
-    const study = await StudyUtils.createStudyFromSOPInstanceList(
-      server,
-      sopInstances
-    );
+    const study = await createStudyFromSOPInstanceList(server, sopInstances);
 
     if (asyncLoader.hasNext()) {
       attachSeriesLoader(server, study, asyncLoader);

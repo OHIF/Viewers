@@ -7,7 +7,7 @@ import { extensionManager } from './../App.js';
 import { useSnackbarContext } from '@ohif/ui';
 
 const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
-const { retrieveStudiesMetadata } = studies;
+const { retrieveStudiesMetadata, deleteStudyMetadataPromise } = studies;
 const { studyMetadataManager, updateMetaDataManager } = utils;
 
 // Contexts
@@ -104,7 +104,7 @@ const _showUserMessage = (queryParamApplied, message, dialog = {}) => {
     return;
   }
 
-  const { show: showUserMessage = () => {} } = dialog;
+  const { show: showUserMessage = () => { } } = dialog;
   showUserMessage({
     message,
   });
@@ -172,7 +172,7 @@ const _loadRemainingSeries = studyMetadata => {
 function ViewerRetrieveStudyData({
   server,
   studyInstanceUids,
-  seriesInstanceUIDs,
+  seriesInstanceUids,
   clearViewportSpecificData,
 }) {
   // hooks
@@ -252,10 +252,11 @@ function ViewerRetrieveStudyData({
     try {
       const filters = {};
       // Use the first, discard others
-      const seriesInstanceUID = seriesInstanceUIDs && seriesInstanceUIDs[0];
+      const seriesInstanceUID = seriesInstanceUids && seriesInstanceUids[0];
 
       const retrieveParams = [server, studyInstanceUids];
 
+      // TODO check case
       if (seriesInstanceUID) {
         filters.seriesInstanceUID = seriesInstanceUID;
         // Query param filtering controlled by appConfig property
@@ -289,7 +290,7 @@ function ViewerRetrieveStudyData({
 
 ViewerRetrieveStudyData.propTypes = {
   studyInstanceUids: PropTypes.array.isRequired,
-  seriesInstanceUIDs: PropTypes.array,
+  seriesInstanceUids: PropTypes.array,
   server: PropTypes.object,
   clearViewportSpecificData: PropTypes.func.isRequired,
 };

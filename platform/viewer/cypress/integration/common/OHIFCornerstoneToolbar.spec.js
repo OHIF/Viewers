@@ -393,6 +393,20 @@ describe('OHIF Cornerstone Toolbar', () => {
     });
   });
 
+  it('checks if the available viewport was set to active when layout is decreased', () => {
+    cy.setLayout(3, 3);
+
+    // activate the ninth viewport
+    cy.get('[data-cy=viewport-container-8]')
+      .click()
+      .should('have.class', 'active');
+
+    cy.setLayout(1, 1);
+
+    // first viewport should be active
+    cy.get('[data-cy=viewport-container-0]').should('have.class', 'active');
+  });
+
   it('checks if Clear tool will delete all measurements added in the viewport', () => {
     //Add measurements in the viewport
     cy.addLengthMeasurement();
