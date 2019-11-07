@@ -692,6 +692,10 @@ const makeDisplaySet = (series, instances) => {
 
   imageSet.isReconstructable = isReconstructable.value;
 
+  if (shallSort && imageSet.isReconstructable) {
+    imageSet.sortByImagePositionPatient();
+  }
+
   if (isReconstructable.missingFrames) {
     // TODO -> This is currently unused, but may be used for reconstructing
     // Volumes with gaps later on.

@@ -1,5 +1,6 @@
 import OHIFError from '../classes/OHIFError.js';
 import getImageId from './getImageId';
+import reconstructableModalities from './reconstructableModalities';
 
 let stackMap = {};
 let configuration = {};

@@ -187,8 +187,6 @@ class OHIFVTKViewport extends Component {
           ...imageDataObject.vtkImageData.getDirection()
         );
 
-        // volume inserted wrong way.
-
         // Cache the labelmap volume.
         labelmapCache[vtkLabelmapID] = labelmapDataObject;
       }
@@ -299,7 +297,6 @@ class OHIFVTKViewport extends Component {
 
     this.setState(
       {
-        paintFilterBackgroundImageData: imageDataObject.vtkImageData,
         percentComplete: 0,
       },
       () => {
@@ -313,6 +310,7 @@ class OHIFVTKViewport extends Component {
           this.setState({
             volumes: [volumeActor],
             paintFilterLabelMapImageData: labelmapDataObject,
+            paintFilterBackgroundImageData: imageDataObject.vtkImageData,
             labelmapColorLUT,
           });
         }, 200);
@@ -365,12 +363,13 @@ class OHIFVTKViewport extends Component {
     });
 
     Promise.all(insertPixelDataPromises).then(() => {
-      this.setState({ isLoaded: true });
+      this.setState({
+        isLoaded: true,
+      });
     });
   }
 
   render() {
-    const { configuration } = cornerstoneTools.getModule('segmentation');
     let childrenWithProps = null;
 
     // TODO: Does it make more sense to use Context?

@@ -210,8 +210,6 @@ function getSourceImageInstanceUid(instance) {
 function getReferencedSeriesSequence(instance) {
   const referencedSeriesSequenceRaw = instance['00081115'];
 
-  debugger;
-
   const referencedSeriesSequence = [];
 
   if (referencedSeriesSequenceRaw && referencedSeriesSequenceRaw.Value) {
