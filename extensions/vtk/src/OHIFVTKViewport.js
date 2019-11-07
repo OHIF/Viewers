@@ -256,6 +256,26 @@ class OHIFVTKViewport extends Component {
       );
     }
 
+    debugger;
+
+    const study = studies.find(
+      study => study.studyInstanceUid === studyInstanceUid
+    );
+
+    const dataDetails = {
+      studyDate: study.studyDate,
+      studyTime: study.studyTime,
+      studyDescription: study.studyDescription,
+      patientName: study.patientName,
+      patientId: study.patientId,
+      seriesNumber: displaySet.seriesNumber,
+      seriesDescription: displaySet.seriesDescription,
+    };
+
+    /*
+    studyTime,
+    */
+
     const {
       imageDataObject,
       labelmapDataObject,
