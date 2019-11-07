@@ -1,5 +1,6 @@
 import guid from '../utils/guid.js';
 import OHIFError from './OHIFError';
+import { Vector3 } from 'cornerstone-math';
 
 const OBJECT = 'object';
 
@@ -63,6 +64,74 @@ class ImageSet {
   sortBy(sortingCallback) {
     return this.images.sort(sortingCallback);
   }
+
+  sortByImagePositionPatient() {
+    const images = this.images;
+
+    debugger;
+
+    const referenceImagePositionPatient = _getImagePositionPatient(images[0]);
+
+    const refIppVec = new Vector3(
+      referenceImagePositionPatient[0],
+      referenceImagePositionPatient[1],
+      referenceImagePositionPatient[2]
+    );
+
+    const imageOrientationPatient = _getImageOrientationPatient(images[0]);
+
+    const scanAxisNormal = new Vector3(
+      imageOrientationPatient[0],
+      imageOrientationPatient[1],
+      imageOrientationPatient[2]
+    ).cross(
+      new Vector3(
+        imageOrientationPatient[3],
+        imageOrientationPatient[4],
+        imageOrientationPatient[5]
+      )
+    );
+
+    const distanceImagePairs = images.map(function(image) {
+      const ippVec = new Vector3(..._getImagePositionPatient(image));
+      const positionVector = refIppVec.clone().sub(ippVec);
+      const distance = positionVector.dot(scanAxisNormal);
+
+      return {
+        distance,
+        image,
+      };
+    });
+
+    distanceImagePairs.sort(function(a, b) {
+      return b.distance - a.distance;
+    });
+
+    const sortedImages = distanceImagePairs.map(a => a.image);
+
+    images.sort(function(a, b) {
+      return sortedImages.indexOf(a) - sortedImages.indexOf(b);
+    });
+
+    console.log(images);
+
+    debugger;
+    //
+  }
+}
+
+function _getImagePositionPatient(image) {
+  return image
+    .getTagValue('x00200032')
+    .split('\\')
+    .map(Number);
+}
+
+function _getImageOrientationPatient(image) {
+  return image
+    .getTagValue('x00200037')
+    .split('\\')
+    .map(Number);
 }
 
 export default ImageSet;

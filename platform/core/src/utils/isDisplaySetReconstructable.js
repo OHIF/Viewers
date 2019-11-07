@@ -1,3 +1,5 @@
+import reconstructableModalities from './reconstructableModalities';
+
 /**
  * Checks if a series is reconstructable to a 3D volume.
  *
@@ -10,7 +12,7 @@ export default function isDisplaySetReconstructable(series, instances) {
   const modality = series.getData().modality;
   const isMultiframe = instances[0].getRawValue('x00280008') > 1;
 
-  if (!constructableModalities.includes(modality)) {
+  if (!reconstructableModalities.includes(modality)) {
     return { value: false };
   }
 
@@ -150,7 +152,6 @@ function _getPerpendicularDistance(a, b) {
   );
 }
 
-const constructableModalities = ['MR', 'CT', 'PT', 'NM'];
 const reconstructionIssues = {
   MISSING_FRAMES: 'missingframes',
   IRREGULAR_SPACING: 'irregularspacing',

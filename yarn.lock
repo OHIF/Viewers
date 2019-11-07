@@ -16222,7 +16222,7 @@ react-transition-group@^4.1.1:
     prop-types "^15.6.2"
 
 "react-vtkjs-viewport@file:extensions/vtk/.yalc/react-vtkjs-viewport":
-  version "0.0.12-fba660ae"
+  version "0.0.12-37687a68"
   dependencies:
     date-fns "^2.2.1"
     gl-matrix "^3.1.0"
