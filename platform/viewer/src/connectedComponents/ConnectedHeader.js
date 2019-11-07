@@ -1,15 +1,13 @@
 import Header from '../components/Header/Header.js';
 import { connect } from 'react-redux';
 import { hotkeysManager } from '../App.js';
-import cloneDeep from 'lodash.clonedeep';
 
 const mapStateToProps = state => {
-  const isEmpty = obj => Object.keys(obj).length === 0;
-  const newHotKeysData =
-    state.preferences && !isEmpty(state.preferences.hotKeysData)
-      ? state.preferences.hotKeysData
-      : hotkeysManager.hotkeyDefinitions;
-  hotkeysManager.setHotkeys(hotkeysManager.format(cloneDeep(newHotKeysData)));
+  const hotkeyDefinitions =
+    state.preferences.hotkeyDefinitions.length > 0
+      ? state.preferences.hotkeyDefinitions
+      : hotkeysManager.hotkeyDefaults;
+  hotkeysManager.setHotkeys(hotkeyDefinitions);
 
   return {
     user: state.oidc && state.oidc.user,

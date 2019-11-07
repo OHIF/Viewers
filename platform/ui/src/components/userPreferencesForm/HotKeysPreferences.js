@@ -10,30 +10,14 @@ import PropTypes from 'prop-types';
 
 export class HotKeysPreferences extends Component {
   static propTypes = {
-    hotKeysData: PropTypes.objectOf(
-      PropTypes.shape({
-        keys: PropTypes.arrayOf(PropTypes.string).isRequired,
-        label: PropTypes.string.isRequired,
-      })
-    ).isRequired,
+    hotkeyDefinitions: PropTypes.array.isRequired,
   };
 
   constructor(props) {
     super(props);
 
-    const hotkeyCommands = Object.keys(this.props.hotKeysData);
-    const localHotKeys = hotkeyCommands.map(commandName => {
-      const definition = this.props.hotKeysData[commandName];
-
-      return {
-        commandName,
-        keys: definition.keys,
-        label: definition.label,
-      };
-    });
-
     this.state = {
-      hotKeys: localHotKeys,
+      hotKeys: this.props.hotkeyDefinitions,
       errorMessages: {},
     };
 

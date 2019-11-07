@@ -2,30 +2,28 @@ import { connect } from 'react-redux';
 import { UserPreferencesForm } from '@ohif/ui';
 import OHIF from '@ohif/core';
 import { hotkeysManager } from '../App.js';
-import cloneDeep from 'lodash.clonedeep';
 
 const { setUserPreferences } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
-  const isEmpty = obj => Object.keys(obj).length === 0;
-  const newHotKeysData =
-    state.preferences && !isEmpty(state.preferences.hotKeysData)
-      ? state.preferences.hotKeysData
-      : hotkeysManager.hotkeyDefinitions;
-  hotkeysManager.setHotkeys(hotkeysManager.format(cloneDeep(newHotKeysData)));
+  const hotkeyDefinitions =
+    state.preferences.hotkeyDefinitions.length > 0
+      ? state.preferences.hotkeyDefinitions
+      : hotkeysManager.hotkeyDefaults;
+  hotkeysManager.setHotkeys(hotkeyDefinitions);
   return {
     onClose: ownProps.hide,
     windowLevelData: state.preferences ? state.preferences.windowLevelData : {},
-    hotKeysData: newHotKeysData,
+    hotkeyDefinitions,
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onSave: ({ windowLevelData, hotKeysData }) => {
-      hotkeysManager.setHotkeys(hotkeysManager.format(cloneDeep(hotKeysData)));
+    onSave: ({ windowLevelData, hotkeyDefinitions }) => {
+      hotkeysManager.setHotkeys(hotkeyDefinitions);
       ownProps.hide();
-      dispatch(setUserPreferences({ windowLevelData, hotKeysData }));
+      dispatch(setUserPreferences({ windowLevelData, hotkeyDefinitions }));
     },
     onResetToDefaults: () => {
       hotkeysManager.restoreDefaultBindings();

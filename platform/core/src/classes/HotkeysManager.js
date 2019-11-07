@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash.clonedeep';
 import hotkeys from './hotkeys';
 import log from './../log.js';
 
@@ -51,10 +52,11 @@ export class HotkeysManager {
    * @param {Boolean} [isDefaultDefinitions]
    */
   setHotkeys(hotkeyDefinitions, isDefaultDefinitions = false) {
-    hotkeyDefinitions.forEach(definition => this.registerHotkeys(definition));
+    const definitions = cloneDeep(hotkeyDefinitions);
+    definitions.forEach(definition => this.registerHotkeys(definition));
 
     if (isDefaultDefinitions) {
-      this.hotkeyDefaults = hotkeyDefinitions;
+      this.hotkeyDefaults = definitions;
     }
   }
 
@@ -84,26 +86,6 @@ export class HotkeysManager {
     this.hotkeyDefinitions[commandName] = { keys, label };
     this._bindHotkeys(commandName, keys);
   }
-
-  /**
-   * Converts manager's hotkey definitions object to array.
-   *
-   * @param {HotkeyDefinition{}} hotkeyDefinitions
-   *
-   * @returns {HotkeyDefinition[]}
-   */
-  format = hotKeysData => {
-    const hotKeysCommands = Object.keys(hotKeysData);
-    return hotKeysCommands.map(commandName => {
-      const definition = hotKeysData[commandName];
-
-      return {
-        commandName,
-        keys: definition.keys,
-        label: definition.label,
-      };
-    });
-  };
 
   /**
    * Uses most recent

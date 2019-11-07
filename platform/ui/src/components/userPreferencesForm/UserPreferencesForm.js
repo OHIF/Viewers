@@ -15,7 +15,7 @@ class UserPreferencesForm extends Component {
     onSave: PropTypes.func,
     onResetToDefaults: PropTypes.func,
     windowLevelData: PropTypes.object,
-    hotKeysData: PropTypes.object,
+    hotkeyDefinitions: PropTypes.array,
     t: PropTypes.func,
   };
 
@@ -24,14 +24,14 @@ class UserPreferencesForm extends Component {
 
     this.state = {
       windowLevelData: cloneDeep(props.windowLevelData),
-      hotKeysData: cloneDeep(props.hotKeysData),
+      hotkeyDefinitions: cloneDeep(props.hotkeyDefinitions),
     };
   }
 
   save = () => {
     this.props.onSave({
       windowLevelData: this.state.windowLevelData,
-      hotKeysData: this.state.hotKeysData,
+      hotkeyDefinitions: this.state.hotkeyDefinitions,
     });
   };
 
@@ -42,11 +42,11 @@ class UserPreferencesForm extends Component {
       newStateData.windowLevelData = prev.windowLevelData;
     }
 
-    if (!isEqual(prev.hotKeysData, next.hotKeysData)) {
-      newStateData.hotKeysData = prev.hotKeysData;
+    if (!isEqual(prev.hotkeyDefinitions, next.hotkeyDefinitions)) {
+      newStateData.hotkeyDefinitions = prev.hotkeyDefinitions;
     }
 
-    if (newStateData.hotKeysData || newStateData.windowLevelData) {
+    if (newStateData.hotkeyDefinitions || newStateData.windowLevelData) {
       this.setState(newStateData);
     }
   }
@@ -56,7 +56,7 @@ class UserPreferencesForm extends Component {
       <div className="UserPreferencesForm">
         <UserPreferences
           windowLevelData={this.state.windowLevelData}
-          hotKeysData={this.state.hotKeysData}
+          hotkeyDefinitions={this.state.hotkeyDefinitions}
         />
         <div className="footer">
           <button

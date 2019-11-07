@@ -8,14 +8,14 @@ import './UserPreferences.styl';
 
 export class UserPreferences extends Component {
   static defaultProps = {
-    hotKeysData: {},
+    hotkeyDefinitions: [],
     windowLevelData: {},
     generalData: {},
   };
 
   // TODO: Make this more generic. Tabs should not be restricted to these entries
   static propTypes = {
-    hotKeysData: PropTypes.object.isRequired,
+    hotkeyDefinitions: PropTypes.array.isRequired,
     windowLevelData: PropTypes.object.isRequired,
     generalData: PropTypes.object.isRequired,
   };
@@ -32,7 +32,9 @@ export class UserPreferences extends Component {
     return (
       <form className="form-themed themed">
         <div className="form-content">
-          <HotKeysPreferences hotKeysData={this.props.hotKeysData} />
+          <HotKeysPreferences
+            hotkeyDefinitions={this.props.hotkeyDefinitions}
+          />
         </div>
       </form>
     );

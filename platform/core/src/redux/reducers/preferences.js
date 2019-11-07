@@ -2,10 +2,10 @@ import cloneDeep from 'lodash.clonedeep';
 
 const defaultState = {
   // First tab
-  hotKeysData: {
-    // hotkeyName, label, keys, column
-    // zoom: { label: 'Zoom', command: 'Z', column: 0 },
-  },
+  hotkeyDefinitions: [
+    // commandName, label, keys
+    // [{ zoom: { label: 'Zoom', keys: ['z'] }}]
+  ],
   // Second tab
   windowLevelData: {
     // order, description, window (int), level (int)
