@@ -183,6 +183,19 @@ class OHIFVTKViewport extends Component {
     }
   };
 
+  /**
+   *
+   *
+   * @param {object} imageDataObject
+   * @param {object} imageDataObject.vtkImageData
+   * @param {object} imageDataObject.imageMetaData0
+   * @param {number} [imageDataObject.imageMetaData0.windowWidth] - The volume's initial windowWidth
+   * @param {number} [imageDataObject.imageMetaData0.windowCenter] - The volume's initial windowCenter
+   * @param {string} imageDataObject.imageMetaData0.modality - CT, MR, PT, etc
+   * @param {string} displaySetInstanceUid
+   * @returns vtkVolumeActor
+   * @memberof OHIFVTKViewport
+   */
   getOrCreateVolume(imageDataObject, displaySetInstanceUid) {
     if (volumeCache[displaySetInstanceUid]) {
       return volumeCache[displaySetInstanceUid];
@@ -191,18 +204,11 @@ class OHIFVTKViewport extends Component {
     const { vtkImageData, imageMetaData0 } = imageDataObject;
     const { windowWidth, windowCenter, modality } = imageMetaData0;
 
-    let lower;
-    let upper;
-
-    if (modality === 'PT') {
-      // For PET just set the range to 0-5 SUV
-      lower = 0;
-      upper = 5;
-    } else {
-      lower = windowCenter - windowWidth / 2.0;
-      upper = windowCenter + windowWidth / 2.0;
-    }
-
+    const { lower, upper } = _getRangeFromWindowLevels(
+      windowWidth,
+      windowCenter,
+      modality
+    );
     const volumeActor = vtkVolume.newInstance();
     const volumeMapper = vtkVolumeMapper.newInstance();
 
@@ -385,6 +391,34 @@ class OHIFVTKViewport extends Component {
       </>
     );
   }
+}
+
+/**
+ * Takes window levels and converts them to a range (lower/upper)
+ * for use with VTK RGBTransferFunction
+ *
+ * @private
+ * @param {number} [width] - the width of our window
+ * @param {number} [center] - the center of our window
+ * @param {string} [modality] - 'PT', 'CT', etc.
+ * @returns { lower, upper } - range
+ */
+function _getRangeFromWindowLevels(width, center, modality = undefined) {
+  const levelsAreNotNumbers = isNaN(center) || isNaN(width);
+
+  if (levelsAreNotNumbers) {
+    return { lower: 0, upper: 512 };
+  }
+
+  // For PET just set the range to 0-5 SUV
+  if (modality === 'PT') {
+    return { lower: 0, upper: 5 };
+  }
+
+  return {
+    lower: center - width / 2.0,
+    upper: center + width / 2.0,
+  };
 }
 
 export default OHIFVTKViewport;
