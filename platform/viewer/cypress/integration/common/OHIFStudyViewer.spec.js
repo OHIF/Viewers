@@ -72,30 +72,26 @@ describe('OHIF Study Viewer Page', function() {
     cy.get('@measurementsPanel').should('not.be.enabled');
   });
 
-  //TO-DO: Test case will fail due to issue #1013: https://github.com/OHIF/Viewers/issues/1013
+  it('checks if Description can be added to measurement item under Measurements panel', () => {
+    cy.addLengthMeasurement(); //Adding measurement in the viewport
+    cy.get('@measurementsBtn').click();
+    cy.get('.measurementItem').click();
 
-  // it('checks if Description can be added to measurement item under Measurements panel', () => {
-  //   cy.addLengthMeasurement(); //Adding measurement in the viewport
-  //   cy.get('@measurementsBtn').click();
-  //   cy.get('.measurementItem').click();
-  //
-  //   // Click "Description"
-  //   cy.get('.btnAction')
-  //     .contains('Description')
-  //     .click();
-  //
-  //   // Enter description text
-  //   const descriptionText = 'Adding text for description test';
-  //   cy.get('#description')
-  //     .type(descriptionText);
-  //
-  //   // Confirm
-  //   cy.get('.btn-confirm').click();
-  //
-  //   //Verify if descriptionText was added
-  //   cy.get('.measurementLocation')
-  //     .should('contain.text', descriptionText);
-  // });
+    // Click "Description"
+    cy.get('.btnAction')
+      .contains('Description')
+      .click();
+
+    // Enter description text
+    const descriptionText = 'Adding text for description test';
+    cy.get('#description').type(descriptionText);
+
+    // Confirm
+    cy.get('.btn-confirm').click();
+
+    //Verify if descriptionText was added
+    cy.get('.measurementLocation').should('contain.text', descriptionText);
+  });
 
   it('checks if measurement item can be deleted through the context menu on the viewport', function() {
     cy.addLengthMeasurement([100, 100], [200, 100]); //Adding measurement in the viewport
@@ -228,14 +224,12 @@ describe('OHIF Study Viewer Page', function() {
     cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
   });
 
-  //TO-DO: this test is blocked due to issue #1072: https://github.com/OHIF/Viewers/issues/1072
-  // Uncomment this once #1072 is fixed.
-  // it('performs single-click to load thumbnail in active viewport', () => {
-  //   cy.get('[data-cy="thumbnail-list"]:nth-child(3)').click();
+  it('performs single-click to load thumbnail in active viewport', () => {
+    cy.get('[data-cy="thumbnail-list"]:nth-child(3)').click();
 
-  //   const expectedText = 'Ser 3';
-  //   cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
-  // });
+    const expectedText = 'Ser: 3';
+    cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
+  });
 
   it('performs right click to zoom', function() {
     //Right click on viewport
@@ -244,7 +238,7 @@ describe('OHIF Study Viewer Page', function() {
       .trigger('mousemove', 'center', { which: 3 })
       .trigger('mouseup');
 
-    const expectedText = 'Zoom: 442%';
+    const expectedText = 'Zoom: 301%';
     cy.get('@viewportInfoBottomRight').should('contains.text', expectedText);
   });
 

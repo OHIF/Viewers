@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.0...@ohif/viewer@2.6.1) (2019-11-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [2.6.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.5.0...@ohif/viewer@2.6.0) (2019-11-06)
+
+
+### Features
+
+* modal provider ([#1151](https://github.com/OHIF/Viewers/issues/1151)) ([75d88bc](https://github.com/OHIF/Viewers/commit/75d88bc454710d2dcdbc7d68c4d9df041159c840)), closes [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1146](https://github.com/OHIF/Viewers/issues/1146) [#1142](https://github.com/OHIF/Viewers/issues/1142) [#1143](https://github.com/OHIF/Viewers/issues/1143) [#1110](https://github.com/OHIF/Viewers/issues/1110) [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1119](https://github.com/OHIF/Viewers/issues/1119)
+
+
+
+
+
+
+# [2.5.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.4.1...@ohif/viewer@2.5.0) (2019-11-05)
+
+
+### Features
+
+* 🎸 Filter by url query param for seriesInstnaceUID ([#1117](https://github.com/OHIF/Viewers/issues/1117)) ([e208f2e](https://github.com/OHIF/Viewers/commit/e208f2e6a9c49b16dadead0a917f657cf023929a)), closes [#1118](https://github.com/OHIF/Viewers/issues/1118)
+
+
+
+
+
+## [2.4.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.4.0...@ohif/viewer@2.4.1) (2019-11-05)
+
+
+### Bug Fixes
+
+* [#1075](https://github.com/OHIF/Viewers/issues/1075) Returning to the Study List before all series have finishe… ([#1090](https://github.com/OHIF/Viewers/issues/1090)) ([ecaf578](https://github.com/OHIF/Viewers/commit/ecaf578f92dc40294cec7ff9b272fb432dec4125))
+
+
+
+
+
 # [2.4.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.8...@ohif/viewer@2.4.0) (2019-11-04)
 
 

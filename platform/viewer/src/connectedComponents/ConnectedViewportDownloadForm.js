@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { DownloadDialog } from '@ohif/ui';
+import { ViewportDownloadForm } from '@ohif/ui';
 import { utils } from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
@@ -14,11 +14,11 @@ const mapStateToProps = (state, ownProps) => {
     viewportSpecificData[activeViewportIndex] || {};
 
   return {
+    onClose: ownProps.hide,
     minimumSize: MINIMUM_SIZE,
     maximumSize: MAX_TEXTURE_SIZE,
     defaultSize: DEFAULT_SIZE,
     canvasClass: 'cornerstone-canvas',
-    onClose: ownProps.toggleDownloadDialog,
     activeViewport: activeEnabledElement,
     enableViewport: viewportElement => {
       if (viewportElement) {
@@ -122,9 +122,9 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const ConnectedDownloadDialog = connect(
+const ConnectedViewportDownloadForm = connect(
   mapStateToProps,
   null
-)(DownloadDialog);
+)(ViewportDownloadForm);
 
-export default ConnectedDownloadDialog;
+export default ConnectedViewportDownloadForm;
