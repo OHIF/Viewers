@@ -15,12 +15,8 @@ function CustomDateRangePicker(props) {
   moment.locale(i18n.language); // using i18n in the date picker
 
   const { t } = useTranslation('DatePicker');
+
   const {
-    autoFocus,
-    autoFocusEndDate,
-    initialStartDate,
-    initialEndDate,
-    stateDateWrapper,
     onDatesChange,
     startDate,
     endDate,
@@ -118,7 +114,10 @@ function CustomDateRangePicker(props) {
       renderMonthElement={renderMonthElement}
       startDatePlaceholderText={t('Start Date')}
       endDatePlaceholderText={t('End Date')}
-      phrases={{ closeDatePicker: t('Close'), clearDates: t('Clear dates') }}
+      phrases={{
+        closeDatePicker: t('Common:Close'),
+        clearDates: t('Clear dates'),
+      }}
     />
   );
 }
@@ -131,6 +130,13 @@ CustomDateRangePicker.propTypes = {
       end: PropTypes.required,
     })
   ),
+  autoFocus: PropTypes.bool.isRequired,
+  onDatesChange: PropTypes.func.isRequired,
+  startDate: PropTypes.instanceOf(Date),
+  endDate: PropTypes.instanceOf(Date),
+  month: PropTypes.instanceOf(Date),
+  onMonthSelect: PropTypes.func.isRequired,
+  onYearSelect: PropTypes.func.isRequired,
 };
 
 export default CustomDateRangePicker;
