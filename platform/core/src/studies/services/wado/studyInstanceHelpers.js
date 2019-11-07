@@ -175,6 +175,8 @@ function getSourceImageInstanceUid(instance) {
 function getReferencedSeriesSequence(instance) {
   const referencedSeriesSequenceRaw = instance['00081115'];
 
+  debugger;
+
   const referencedSeriesSequence = [];
 
   if (referencedSeriesSequenceRaw && referencedSeriesSequenceRaw.Value) {
@@ -186,16 +188,21 @@ function getReferencedSeriesSequence(instance) {
       const referencedInstanceSequenceRaw = referencedSeries['0008114A'];
       const referencedInstanceSequence = [];
 
-      referencedInstanceSequenceRaw.Value.forEach(referencedInstance => {
-        referencedInstanceSequence.push({
-          referencedSOPClassUID: DICOMWeb.getString(
-            referencedInstance['00081150']
-          ),
-          referencedSOPInstanceUID: DICOMWeb.getString(
-            referencedInstance['00081155']
-          ),
+      if (
+        referencedInstanceSequenceRaw &&
+        referencedInstanceSequenceRaw.Value
+      ) {
+        referencedInstanceSequenceRaw.Value.forEach(referencedInstance => {
+          referencedInstanceSequence.push({
+            referencedSOPClassUID: DICOMWeb.getString(
+              referencedInstance['00081150']
+            ),
+            referencedSOPInstanceUID: DICOMWeb.getString(
+              referencedInstance['00081155']
+            ),
+          });
         });
-      });
+      }
 
       referencedSeriesSequence.push({
         referencedSeriesInstanceUID,

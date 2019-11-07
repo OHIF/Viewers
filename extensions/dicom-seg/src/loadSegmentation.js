@@ -10,7 +10,6 @@ export default async function loadSegmentation(
   referencedDisplaySet,
   studies
 ) {
-  debugger;
   const { studyInstanceUid } = referencedDisplaySet;
 
   // Set here is loading is asynchronous.
@@ -63,8 +62,6 @@ export default async function loadSegmentation(
 }
 
 function _getNextLabelmapIndex(firstImageId) {
-  debugger;
-
   const { state } = cornerstoneTools.getModule('segmentation');
   const brushStackState = state[firstImageId];
 
@@ -83,8 +80,18 @@ function _getNextLabelmapIndex(firstImageId) {
       labelmapIndex = 0;
     }
   } else {
-    const labelmapIndex = 0;
+    labelmapIndex = 0;
   }
+
+  return labelmapIndex;
+}
+
+function _parseSeg(arrayBuffer, imageIds) {
+  return dcmjs.adapters.Cornerstone.Segmentation.generateToolState(
+    imageIds,
+    arrayBuffer,
+    cornerstone.metaData
+  );
 }
 
 function _getImageIdsForDisplaySet(
@@ -112,12 +119,4 @@ function _getImageIdsForDisplaySet(
   const referencedDisplaySet = displaySets[0];
 
   return referencedDisplaySet.images.map(image => image.getImageId());
-}
-
-function _parseSeg(arrayBuffer, imageIds) {
-  return dcmjs.adapters.Cornerstone.Segmentation.generateToolState(
-    imageIds,
-    arrayBuffer,
-    cornerstone.metaData
-  );
 }
