@@ -77,14 +77,6 @@ const getWadoRsInstanceMetaData = (study, series, instance) => {
  */
 function updateMetaDataManagerForSeries(study, series) {
   series.instances.forEach(instance => {
-    // Cache just images that are going to be loaded via WADO-RS
-    if (
-      instance.imageRendering !== 'wadors' &&
-      instance.thumbnailRendering !== 'wadors'
-    ) {
-      return;
-    }
-
     const metaData = getWadoRsInstanceMetaData(study, series, instance);
     const numberOfFrames = instance.numberOfFrames || 1;
 
@@ -94,7 +86,7 @@ function updateMetaDataManagerForSeries(study, series) {
     for (let frameNumber = 0; frameNumber < numberOfFrames; frameNumber++) {
       const imageId = getWADORSImageId(instance, frameNumber);
 
-      // TODO Drop dependency on this
+      // TODO Make a metadata manager which uses study/series/instance UIDS instead of imageIds
       cornerstoneWADOImageLoader.wadors.metaDataManager.add(imageId, metaData);
     }
   });
