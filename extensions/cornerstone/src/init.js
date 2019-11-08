@@ -14,9 +14,6 @@ function fallbackMetaDataProvider (type, imageId) {
   const qs = queryString.parse(imageId);
   const wadoRoot = window.store.getState().servers.servers[0].wadoRoot
   const wadoRsImageId = `wadors:${wadoRoot}/studies/${qs.studyUID}/series/${qs.seriesUID}/instances/${qs.objectUID}/frames/${qs.frame || 1}`;
-  console.log(wadoRsImageId);
-
-  debugger;
 
   return cornerstone.metaData.get(type, wadoRsImageId);
 }
