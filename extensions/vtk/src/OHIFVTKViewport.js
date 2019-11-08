@@ -268,13 +268,9 @@ class OHIFVTKViewport extends Component {
       studyDescription: study.studyDescription,
       patientName: study.patientName,
       patientId: study.patientId,
-      seriesNumber: displaySet.seriesNumber,
+      seriesNumber: String(displaySet.seriesNumber),
       seriesDescription: displaySet.seriesDescription,
     };
-
-    /*
-    studyTime,
-    */
 
     const {
       imageDataObject,
@@ -304,6 +300,7 @@ class OHIFVTKViewport extends Component {
     this.setState(
       {
         percentComplete: 0,
+        dataDetails,
       },
       () => {
         this.loadProgressively(imageDataObject);
@@ -406,6 +403,7 @@ class OHIFVTKViewport extends Component {
                 this.state.paintFilterBackgroundImageData
               }
               viewportIndex={this.props.viewportIndex}
+              dataDetails={this.state.dataDetails}
               labelmapRenderingOptions={{
                 colorLUT: this.state.labelmapColorLUT,
                 globalOpacity: 1.0, // TODO -> Anything not close to 1 is super dim. It might be because the labelmap voxels and the image are directly on top of each other?
