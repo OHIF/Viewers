@@ -8,7 +8,7 @@ import { useSnackbarContext } from '@ohif/ui';
 
 const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
 const { retrieveStudiesMetadata, deleteStudyMetadataPromise } = studies;
-const { studyMetadataManager, updateMetaDataManager } = utils;
+const { studyMetadataManager, updateMetaDataManager, makeCancelable } = utils;
 
 // Contexts
 import AppContext from '../context/AppContext';
@@ -104,7 +104,7 @@ const _showUserMessage = (queryParamApplied, message, dialog = {}) => {
     return;
   }
 
-  const { show: showUserMessage = () => { } } = dialog;
+  const { show: showUserMessage = () => {} } = dialog;
   showUserMessage({
     message,
   });
@@ -182,6 +182,8 @@ function ViewerRetrieveStudyData({
   const { appConfig = {} } = useContext(AppContext);
   const { filterQueryParam: isFilterStrategy = false } = appConfig;
 
+  let cancelableSeriesPromises;
+  let cancelableStudiesPromises;
   /**
    * Callback method when study is totally loaded
    * @param {object} study study loaded
@@ -237,9 +239,19 @@ function ViewerRetrieveStudyData({
         _updateMetaDataManager(study, studyMetadata);
 
         // Attempt to load remaning series if any
-        _loadRemainingSeries(studyMetadata).then(
-          studyDidLoad.bind(undefined, study, studyMetadata, filters)
-        );
+        cancelableSeriesPromises[study.studyInstanceUid] = makeCancelable(
+          _loadRemainingSeries(studyMetadata)
+        )
+          .then(result => {
+            if (result && !result.isCanceled) {
+              studyDidLoad(study, studyMetadata, filters);
+            }
+          })
+          .catch(error => {
+            if (error && !error.isCanceled) {
+              setError(true);
+            }
+          });
 
         return study;
       });
@@ -265,18 +277,55 @@ function ViewerRetrieveStudyData({
         }
       }
 
-      const studies = await retrieveStudiesMetadata(...retrieveParams);
-      processStudies(studies, filters);
-    } catch (e) {
-      setError(true);
-      log.error(e);
+      cancelableStudiesPromises[studyInstanceUids] = makeCancelable(
+        retrieveStudiesMetadata(...retrieveParams)
+      )
+        .then(result => {
+          if (result && !result.isCanceled) {
+            processStudies(result, filters);
+          }
+        })
+        .catch(error => {
+          if (error && !error.isCanceled) {
+            setError(true);
+          }
+        });
+    } catch (error) {
+      if (error) {
+        setError(true);
+      }
     }
   };
 
-  // Did mount
+  const purgeCancellablePromises = () => {
+    for (let studyInstanceUids in cancelableStudiesPromises) {
+      if ('cancel' in cancelableStudiesPromises[studyInstanceUids]) {
+        cancelableStudiesPromises[studyInstanceUids].cancel();
+      }
+    }
+
+    for (let studyInstanceUids in cancelableSeriesPromises) {
+      if ('cancel' in cancelableSeriesPromises[studyInstanceUids]) {
+        cancelableSeriesPromises[studyInstanceUids].cancel();
+        deleteStudyMetadataPromise(studyInstanceUids);
+        studyMetadataManager.remove(studyInstanceUids);
+      }
+    }
+  };
+
   useEffect(() => {
     studyMetadataManager.purge();
+    purgeCancellablePromises();
+  }, [studyInstanceUids]);
+
+  useEffect(() => {
+    cancelableSeriesPromises = {};
+    cancelableStudiesPromises = {};
     loadStudies();
+
+    return () => {
+      purgeCancellablePromises();
+    };
   }, []);
 
   if (error) {
