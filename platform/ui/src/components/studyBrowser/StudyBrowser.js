@@ -32,7 +32,7 @@ function StudyBrowser(props) {
 
               return (
                 <div
-                  key={`container_${studyIndex}_${thumbIndex}`}
+                  key={thumb.displaySetInstanceUid}
                   className="thumbnail-container"
                   data-cy="thumbnail-list"
                 >
