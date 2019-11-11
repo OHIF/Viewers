@@ -1,5 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
+const getValue = (mediaQueryLists, values, defaultValue) => {
+  if ((!values && !defaultValue) || !mediaQueryLists) {
+    return;
+  }
+  // Get index of first media query that matches
+  const index = mediaQueryLists.findIndex(mql => mql.matches);
+
+  // Return related value or defaultValue if none
+  return index >= 0 && typeof values[index] !== 'undefined'
+    ? values[index]
+    : defaultValue;
+};
+
+const getMediaQueryMap = queries => {
+  return queries && queries.map(q => window.matchMedia(q));
+};
 /**
  *
  * @example <caption></caption>
@@ -16,44 +32,38 @@ import { useState, useEffect } from 'react';
  * @param {*} defaultValue
  * @returns
  */
-function useMedia(queries, values, defaultValue, ready = false) {
-  // Array containing a media query list for each query
-  const mediaQueryLists = queries.map(q => window.matchMedia(q));
+function useMedia(queries, values, defaultValue) {
+  const memoizedQueryMap = useMemo(() => getMediaQueryMap(queries), [queries]);
+  const memoizedValue = useMemo(
+    () => getValue(memoizedQueryMap, values, defaultValue),
+    [mediaQueryLists, values]
+  );
+  // State and setter for matched value
+  const [mediaQueryLists, setMediaQueryLists] = useState(memoizedQueryMap);
+  const [value, setValue] = useState(memoizedValue);
 
-  // Function that gets value based on matching media query
-  const getValue = () => {
-    // Get index of first media query that matches
-    const index = mediaQueryLists.findIndex(mql => mql.matches);
-
-    // Return related value or defaultValue if none
-    return typeof values[index] !== 'undefined' ? values[index] : defaultValue;
+  const mediaQueryListener = () => {
+    const nextValue = getValue(mediaQueryLists, values, defaultValue);
+    setValue(nextValue);
   };
 
-  // State and setter for matched value
-  const [value, setValue] = useState(getValue);
+  const addMediaQueryListeners = mediaQueryLists => {
+    // Set a listener for each media query with above mediaQueryListener as callback.
+    mediaQueryLists.forEach(mql => mql.addListener(mediaQueryListener));
+  };
 
-  useEffect(
-    () => {
-      setValue(getValue);
-    },
-    [ready]
-  );
+  const removeMediaQueryListeners = (mediaQueryLists = []) => {
+    mediaQueryLists.forEach(mql => mql.removeListener(mediaQueryListener));
+  };
 
-  useEffect(
-    () => {
-      // Event listener callback
-      // Note: By defining getValue outside of useEffect we ensure that it has ...
-      // ... current values of hook args (as this hook callback is created once on mount).
-      const handler = () => setValue(getValue);
+  useEffect(() => {
+    addMediaQueryListeners(mediaQueryLists);
+  }, [mediaQueryLists]);
 
-      // Set a listener for each media query with above handler as callback.
-      mediaQueryLists.forEach(mql => mql.addListener(handler));
-
-      // Remove listeners on cleanup
-      return () => mediaQueryLists.forEach(mql => mql.removeListener(handler));
-    },
-    [] // Empty array ensures effect is only run on mount and unmount
-  );
+  useEffect(() => {
+    // Remove listeners on cleanup
+    return () => removeMediaQueryListeners(mediaQueryLists);
+  }, []);
 
   return value;
 }

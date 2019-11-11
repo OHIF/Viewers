@@ -28,11 +28,10 @@ function StudyList(props) {
     studyListDateFilterNumDays,
   } = props;
   const { t, i18n, ready } = useTranslation('StudyList');
-  const { t: t2, i18n: i18n2, ready: ready2 } = useTranslation('Common');
 
   const largeTableMeta = [
     {
-      displayText: t2('More'),
+      displayText: t('PatientName'),
       fieldName: 'patientName',
       inputType: 'text',
       size: 330,
@@ -50,7 +49,7 @@ function StudyList(props) {
       size: 180,
     },
     {
-      displayText: t2('More'),
+      displayText: t('StudyDate'),
       fieldName: 'studyDate',
       inputType: 'date-range',
       size: 300,
@@ -71,7 +70,7 @@ function StudyList(props) {
 
   const mediumTableMeta = [
     {
-      displayText: `${t2('More')} / ${t('MRN')}`,
+      displayText: `${t('Patient')} / ${t('MRN')}`,
       fieldName: 'patientNameOrId',
       inputType: 'text',
       size: 250,
@@ -102,10 +101,8 @@ function StudyList(props) {
   const tableMeta = useMedia(
     ['(min-width: 1750px)', '(min-width: 1000px)', '(min-width: 768px)'],
     [largeTableMeta, mediumTableMeta, smallTableMeta],
-    smallTableMeta,
-    ready
+    smallTableMeta
   );
-
 
   if (!ready) {
     return null;
@@ -183,7 +180,6 @@ function StudyList(props) {
               studyDescription={study.studyDescription || ''}
               studyInstanceUid={study.studyInstanceUid}
               t={t}
-              ready={ready}
             />
           ))}
       </tbody>
@@ -233,7 +229,6 @@ function TableRow(props) {
     studyInstanceUid,
     onClick: handleClick,
     t,
-    ready,
   } = props;
 
   const largeRowTemplate = (
@@ -373,8 +368,7 @@ function TableRow(props) {
   const rowTemplate = useMedia(
     ['(min-width: 1750px)', '(min-width: 1000px)', '(min-width: 768px)'],
     [largeRowTemplate, mediumRowTemplate, smallRowTemplate],
-    smallRowTemplate,
-    ready
+    smallRowTemplate
   );
 
   return rowTemplate;

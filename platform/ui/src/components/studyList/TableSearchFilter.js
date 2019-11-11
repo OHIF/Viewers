@@ -20,8 +20,6 @@ function TableSearchFilter(props) {
   const [focusedInput, setFocusedInput] = useState(null);
   const { t, i18n, ready } = useTranslation('Common');
 
-  console.log('TABLE SEARCH FILTER:', i18n, ready);
-
   const sortIcons = ['sort', 'sort-up', 'sort-down'];
   const sortIconForSortField =
     sortDirection === 'asc' ? sortIcons[1] : sortIcons[2];
@@ -37,7 +35,7 @@ function TableSearchFilter(props) {
   const defaultEndDate = today;
   const studyDatePresets = [
     {
-      text: t('More'),
+      text: t('Today'),
       start: today,
       end: today,
     },
@@ -53,56 +51,58 @@ function TableSearchFilter(props) {
     },
   ];
 
-  return ready ? (meta.map((field, i) => {
-    const { displayText, fieldName, inputType } = field;
-    const isSortField = sortFieldName === fieldName;
-    const sortIcon = isSortField ? sortIconForSortField : sortIcons[0];
+  return ready
+    ? meta.map((field, i) => {
+        const { displayText, fieldName, inputType } = field;
+        const isSortField = sortFieldName === fieldName;
+        const sortIcon = isSortField ? sortIconForSortField : sortIcons[0];
 
-    return (
-      <th key={`${fieldName}-${i}`}>
-        <label
-          htmlFor={`filter-${fieldName}`}
-          onClick={() => onSort(fieldName)}
-        >
-          {`${displayText}`}
-          <Icon name={sortIcon} style={{ fontSize: '12px' }} />
-        </label>
-        {inputType === 'text' && (
-          <input
-            type="text"
-            id={`filter-${fieldName}`}
-            className="form-control studylist-search"
-            value={values[fieldName]}
-            onChange={e => onValueChange(fieldName, e.target.value)}
-          />
-        )}
-        {inputType === 'date-range' && (
-          // https://github.com/airbnb/react-dates
-          <CustomDateRangePicker
-            // Required
-            startDate={studyListDateFilterNumDays ? defaultStartDate : null}
-            startDateId="start-date"
-            endDate={studyListDateFilterNumDays ? defaultEndDate : null}
-            endDateId="end-date"
-            // TODO: We need a dynamic way to determine which fields values to update
-            onDatesChange={({ startDate, endDate, preset = false }) => {
-              onValueChange('studyDateTo', startDate);
-              onValueChange('studyDateFrom', endDate);
-            }}
-            focusedInput={focusedInput}
-            onFocusChange={updatedVal => setFocusedInput(updatedVal)}
-            // Optional
-            numberOfMonths={1} // For med and small screens? 2 for large?
-            showClearDates={true}
-            anchorDirection="left"
-            presets={studyDatePresets}
-            hideKeyboardShortcutsPanel={true}
-            isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
-          />
-        )}
-      </th>
-    );
-  })) : null;
+        return (
+          <th key={`${fieldName}-${i}`}>
+            <label
+              htmlFor={`filter-${fieldName}`}
+              onClick={() => onSort(fieldName)}
+            >
+              {`${displayText}`}
+              <Icon name={sortIcon} style={{ fontSize: '12px' }} />
+            </label>
+            {inputType === 'text' && (
+              <input
+                type="text"
+                id={`filter-${fieldName}`}
+                className="form-control studylist-search"
+                value={values[fieldName]}
+                onChange={e => onValueChange(fieldName, e.target.value)}
+              />
+            )}
+            {inputType === 'date-range' && (
+              // https://github.com/airbnb/react-dates
+              <CustomDateRangePicker
+                // Required
+                startDate={studyListDateFilterNumDays ? defaultStartDate : null}
+                startDateId="start-date"
+                endDate={studyListDateFilterNumDays ? defaultEndDate : null}
+                endDateId="end-date"
+                // TODO: We need a dynamic way to determine which fields values to update
+                onDatesChange={({ startDate, endDate, preset = false }) => {
+                  onValueChange('studyDateTo', startDate);
+                  onValueChange('studyDateFrom', endDate);
+                }}
+                focusedInput={focusedInput}
+                onFocusChange={updatedVal => setFocusedInput(updatedVal)}
+                // Optional
+                numberOfMonths={1} // For med and small screens? 2 for large?
+                showClearDates={true}
+                anchorDirection="left"
+                presets={studyDatePresets}
+                hideKeyboardShortcutsPanel={true}
+                isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
+              />
+            )}
+          </th>
+        );
+      })
+    : null;
 }
 
 TableSearchFilter.propTypes = {
