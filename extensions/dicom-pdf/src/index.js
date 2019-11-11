@@ -1,5 +1,5 @@
 import OHIFDicomPDFSopClassHandler from './OHIFDicomPDFSopClassHandler.js';
-import OHIFDicomPDFViewport from './OHIFDicomPDFViewport.js';
+import ConnectedOHIFDicomPDFViewport from './ConnectedOHIFDicomPDFViewer.js';
 
 export default {
   /**
@@ -8,9 +8,9 @@ export default {
   id: 'pdf',
 
   getViewportModule() {
-    return OHIFDicomPDFViewport;
+    return ConnectedOHIFDicomPDFViewport;
   },
   getSopClassHandlerModule() {
     return OHIFDicomPDFSopClassHandler;
-  }
+  },
 };

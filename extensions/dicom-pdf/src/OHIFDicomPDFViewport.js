@@ -63,7 +63,12 @@ class OHIFDicomPDFViewport extends Component {
     return (
       <OHIFComponentPlugin {...pluginProps}>
         {this.state.byteArray && (
-          <DicomPDFViewport byteArray={this.state.byteArray} />
+          <DicomPDFViewport
+            byteArray={this.state.byteArray}
+            setViewportActive={this.props.setViewportActive}
+            viewportIndex={this.props.viewportIndex}
+            activeViewportIndex={this.props.activeViewportIndex}
+          />
         )}
         {this.state.error && <h2>{JSON.stringify(this.state.error)}</h2>}
       </OHIFComponentPlugin>
