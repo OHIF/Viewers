@@ -67,9 +67,6 @@ class ImageSet {
 
   sortByImagePositionPatient() {
     const images = this.images;
-
-    debugger;
-
     const referenceImagePositionPatient = _getImagePositionPatient(images[0]);
 
     const refIppVec = new Vector3(
@@ -112,11 +109,6 @@ class ImageSet {
     images.sort(function(a, b) {
       return sortedImages.indexOf(a) - sortedImages.indexOf(b);
     });
-
-    console.log(images);
-
-    debugger;
-    //
   }
 }
 

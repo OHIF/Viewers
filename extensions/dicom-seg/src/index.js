@@ -6,6 +6,7 @@ import OHIFDicomSegSopClassHandler from './OHIFDicomSegSopClassHandler.js';
 
 // TODO: Should all tools for cornerstone/vtkjs live inside this extension?
 // TODO: Should all segmentation UI live in this extension?
+// TODO: This extension should work if either cornerstone or
 
 export default {
   /**
