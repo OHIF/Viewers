@@ -104,7 +104,7 @@ const _showUserMessage = (queryParamApplied, message, dialog = {}) => {
     return;
   }
 
-  const { show: showUserMessage = () => {} } = dialog;
+  const { show: showUserMessage = () => { } } = dialog;
   showUserMessage({
     message,
   });
@@ -268,7 +268,6 @@ function ViewerRetrieveStudyData({
 
       const retrieveParams = [server, studyInstanceUids];
 
-      // TODO check case
       if (seriesInstanceUID) {
         filters.seriesInstanceUID = seriesInstanceUID;
         // Query param filtering controlled by appConfig property
