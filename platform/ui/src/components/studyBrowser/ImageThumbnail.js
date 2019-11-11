@@ -2,11 +2,7 @@
 import './ImageThumbnail.styl';
 
 import { utils } from '@ohif/core';
-<<<<<<< HEAD
-import React, { PureComponent } from 'react';
-=======
 import React, { useState, useEffect, createRef } from 'react';
->>>>>>> master
 
 import PropTypes from 'prop-types';
 import ViewportErrorIndicator from '../../viewer/ViewportErrorIndicator';
