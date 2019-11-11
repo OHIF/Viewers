@@ -3,6 +3,154 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.3...@ohif/viewer@2.6.4) (2019-11-11)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.6.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.2...@ohif/viewer@2.6.3) (2019-11-08)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.6.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.1...@ohif/viewer@2.6.2) (2019-11-08)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.6.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.0...@ohif/viewer@2.6.1) (2019-11-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [2.6.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.5.0...@ohif/viewer@2.6.0) (2019-11-06)
+
+
+### Features
+
+* modal provider ([#1151](https://github.com/OHIF/Viewers/issues/1151)) ([75d88bc](https://github.com/OHIF/Viewers/commit/75d88bc454710d2dcdbc7d68c4d9df041159c840)), closes [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1146](https://github.com/OHIF/Viewers/issues/1146) [#1142](https://github.com/OHIF/Viewers/issues/1142) [#1143](https://github.com/OHIF/Viewers/issues/1143) [#1110](https://github.com/OHIF/Viewers/issues/1110) [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1119](https://github.com/OHIF/Viewers/issues/1119)
+
+
+
+
+
+
+# [2.5.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.4.1...@ohif/viewer@2.5.0) (2019-11-05)
+
+
+### Features
+
+* 🎸 Filter by url query param for seriesInstnaceUID ([#1117](https://github.com/OHIF/Viewers/issues/1117)) ([e208f2e](https://github.com/OHIF/Viewers/commit/e208f2e6a9c49b16dadead0a917f657cf023929a)), closes [#1118](https://github.com/OHIF/Viewers/issues/1118)
+
+
+
+
+
+## [2.4.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.4.0...@ohif/viewer@2.4.1) (2019-11-05)
+
+
+### Bug Fixes
+
+* [#1075](https://github.com/OHIF/Viewers/issues/1075) Returning to the Study List before all series have finishe… ([#1090](https://github.com/OHIF/Viewers/issues/1090)) ([ecaf578](https://github.com/OHIF/Viewers/commit/ecaf578f92dc40294cec7ff9b272fb432dec4125))
+
+
+
+
+
+# [2.4.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.8...@ohif/viewer@2.4.0) (2019-11-04)
+
+
+### Features
+
+* 🎸 New modal provider ([#1110](https://github.com/OHIF/Viewers/issues/1110)) ([5ee832b](https://github.com/OHIF/Viewers/commit/5ee832b19505a4e8e5756660ce6ed03a7f18dec3)), closes [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116)
+
+
+
+
+
+## [2.3.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.7...@ohif/viewer@2.3.8) (2019-11-04)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.3.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.6...@ohif/viewer@2.3.7) (2019-11-04)
+
+
+### Bug Fixes
+
+* 🐛 Minor issues measurement panel related to description ([#1142](https://github.com/OHIF/Viewers/issues/1142)) ([681384b](https://github.com/OHIF/Viewers/commit/681384b7425c83b02a0ed83371ca92d78ca7838c))
+
+
+
+
+
+## [2.3.6](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.5...@ohif/viewer@2.3.6) (2019-11-02)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.3.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.4...@ohif/viewer@2.3.5) (2019-10-31)
+
+
+### Bug Fixes
+
+* application crash if patientName is an object ([#1138](https://github.com/OHIF/Viewers/issues/1138)) ([64cf3b3](https://github.com/OHIF/Viewers/commit/64cf3b324da2383a927af1df2d46db2fca5318aa))
+
+
+
+
+
+## [2.3.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.3...@ohif/viewer@2.3.4) (2019-10-30)
+
+
+### Bug Fixes
+
+* 🐛 Fix ghost shadow on thumb ([#1113](https://github.com/OHIF/Viewers/issues/1113)) ([caaa032](https://github.com/OHIF/Viewers/commit/caaa032c4bc24fd69fdb01a15a8feb2721c321db))
+
+
+
+
+
+## [2.3.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.2...@ohif/viewer@2.3.3) (2019-10-30)
+
+
+### Bug Fixes
+
+* get adapter store picker to show ([#1134](https://github.com/OHIF/Viewers/issues/1134)) ([50ca2bd](https://github.com/OHIF/Viewers/commit/50ca2bde971e1e67b73ece96369052dd1a35ac68))
+
+
+
+
+
+## [2.3.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.1...@ohif/viewer@2.3.2) (2019-10-29)
+
+
+### Bug Fixes
+
+* 🐛 Limit image download size to avoid browser issues ([#1112](https://github.com/OHIF/Viewers/issues/1112)) ([5716b71](https://github.com/OHIF/Viewers/commit/5716b71d409ee1c6f13393c8cb7f50222415e198)), closes [#1099](https://github.com/OHIF/Viewers/issues/1099)
+
+
+
+
+
 ## [2.3.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.0...@ohif/viewer@2.3.1) (2019-10-29)
 
 

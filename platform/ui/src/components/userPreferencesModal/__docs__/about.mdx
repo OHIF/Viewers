@@ -6,7 +6,7 @@ route: /components/about-modal
 
 import { Playground, Props } from 'docz'
 import { State } from 'react-powerplug'
-import { AboutModal } from './../index.js'
+import { AboutContent } from './../index.js'
 
 # About  Modal
 
@@ -26,7 +26,7 @@ import { AboutModal } from './../index.js'
                 >
                     Open about modal
                 </button>
-                <AboutModal
+                <AboutContent
                     {...state}
                     onCancel={() => setState({ isOpen: false })}
                 />
@@ -39,4 +39,4 @@ import { AboutModal } from './../index.js'
 
 ## API
 
-<Props of={AboutModal} />
+<Props of={AboutContent} />

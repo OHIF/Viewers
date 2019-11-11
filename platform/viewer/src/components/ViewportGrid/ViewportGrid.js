@@ -107,7 +107,7 @@ const ViewportGrid = function(props) {
 
 ViewportGrid.propTypes = {
   viewportData: PropTypes.array.isRequired,
-  supportsDragAndDrop: PropTypes.bool.isRequired,
+  supportsDrop: PropTypes.bool.isRequired,
   activeViewportIndex: PropTypes.number.isRequired,
   layout: PropTypes.object.isRequired,
   availablePlugins: PropTypes.object.isRequired,
@@ -127,7 +127,7 @@ ViewportGrid.defaultProps = {
     viewports: [{}],
   },
   activeViewportIndex: 0,
-  supportsDragAndDrop: true,
+  supportsDrop: true,
   availablePlugins: {
     DefaultViewport,
   },
