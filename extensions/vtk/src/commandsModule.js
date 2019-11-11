@@ -103,7 +103,6 @@ const actions = {
   },
   enableLevelTool: () => {
     function updateVOI(apis, windowWidth, windowCenter) {
-      debugger;
       apis.forEach(api => {
         api.updateVOI(windowWidth, windowCenter);
       });
