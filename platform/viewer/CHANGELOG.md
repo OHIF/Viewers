@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.7.0...@ohif/viewer@2.7.1) (2019-11-12)
+
+
+### Bug Fixes
+
+* 🐛 Fix for JS breaking on header ([#1164](https://github.com/OHIF/Viewers/issues/1164)) ([0fbaf95](https://github.com/OHIF/Viewers/commit/0fbaf95971dc0b3a671e1f586a876d9019e860ed))
+
+
+
+
+
 # [2.7.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.4...@ohif/viewer@2.7.0) (2019-11-12)
 
 
