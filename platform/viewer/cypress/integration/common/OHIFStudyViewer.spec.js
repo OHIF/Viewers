@@ -267,8 +267,12 @@ describe('OHIF Study Viewer Page', function() {
   });
 
   it('opens About modal and verify the displayed information', function() {
-    cy.get('[data-cy="options-menu"]').click();
-    cy.get('[data-cy="about-item-menu"]').click();
+    cy.get('[data-cy="options-menu"]')
+      .first()
+      .click();
+    cy.get('[data-cy="about-item-menu"]')
+      .first()
+      .click();
     cy.get('.modal-content')
       .as('aboutOverlay')
       .should('be.visible');
