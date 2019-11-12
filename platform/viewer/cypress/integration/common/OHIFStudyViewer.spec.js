@@ -291,6 +291,10 @@ describe('OHIF Study Viewer Page', function() {
       });
     });
 
+    // Visual comparison
+    cy.screenshot();
+    cy.percyCanvasSnapshot('About modal');
+
     //close modal
     cy.get('.close').click();
     cy.get('@aboutOverlay').should('not.be.enabled');
