@@ -6,8 +6,8 @@ import { TableList, TableListItem } from './tableList';
 import {
   AboutContent,
   UserPreferences,
-  UserPreferencesModal,
-} from './userPreferencesModal';
+  UserPreferencesForm,
+} from './userPreferencesForm';
 
 import { Checkbox } from './checkbox';
 import { CineDialog } from './cineDialog';
@@ -52,6 +52,6 @@ export {
   Tooltip,
   AboutContent,
   UserPreferences,
-  UserPreferencesModal,
+  UserPreferencesForm,
   OHIFModal,
 };

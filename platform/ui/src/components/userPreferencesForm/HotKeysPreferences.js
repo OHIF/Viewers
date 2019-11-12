@@ -10,31 +10,14 @@ import PropTypes from 'prop-types';
 
 export class HotKeysPreferences extends Component {
   static propTypes = {
-    hotKeysData: PropTypes.objectOf(
-      PropTypes.shape({
-        keys: PropTypes.arrayOf(PropTypes.string).isRequired,
-        label: PropTypes.string.isRequired,
-      })
-    ).isRequired,
-    onChange: PropTypes.func,
+    hotkeyDefinitions: PropTypes.array.isRequired,
   };
 
   constructor(props) {
     super(props);
 
-    const hotkeyCommands = Object.keys(this.props.hotKeysData);
-    const localHotKeys = hotkeyCommands.map(commandName => {
-      const definition = this.props.hotKeysData[commandName];
-
-      return {
-        commandName,
-        keys: definition.keys,
-        label: definition.label,
-      };
-    });
-
     this.state = {
-      hotKeys: localHotKeys,
+      hotKeys: this.props.hotkeyDefinitions,
       errorMessages: {},
     };
 
@@ -53,24 +36,28 @@ export class HotKeysPreferences extends Component {
     const { ctrlKey, altKey, shiftKey } = keyDownEvent;
 
     if (ctrlKey && !altKey) {
-      keysPressedArray.push('CTRL');
+      keysPressedArray.push('ctrl');
     }
 
     if (shiftKey && !altKey) {
-      keysPressedArray.push('SHIFT');
+      keysPressedArray.push('shift');
     }
 
     if (altKey && !ctrlKey) {
-      keysPressedArray.push('ALT');
+      keysPressedArray.push('alt');
     }
 
     return keysPressedArray;
   }
 
-  getConflictingCommand(currentToolKey, hotKeyCommand) {
-    return Object.keys(this.state.hotKeys).find(tool => {
-      const value = this.state.hotKeys[tool].command;
-      return value && value === hotKeyCommand && tool !== currentToolKey;
+  getConflictingCommand(currentCommandName, currentHotKeys) {
+    return this.state.hotKeys.find((tool, index) => {
+      const toolHotKeys = tool.keys[0];
+      return (
+        toolHotKeys &&
+        toolHotKeys === currentHotKeys &&
+        tool.commandName !== currentCommandName
+      );
     });
   }
 
@@ -89,7 +76,7 @@ export class HotKeysPreferences extends Component {
         specialKeyName ||
         keyDownEvent.key ||
         String.fromCharCode(keyDownEvent.keyCode);
-      pressedKeys.push(keyName.toUpperCase());
+      pressedKeys.push(keyName);
     }
 
     this.updateHotKeysState(commandName, pressedKeys.join('+'));
@@ -136,17 +123,17 @@ export class HotKeysPreferences extends Component {
     const hotKey = this.state.hotKeys[hotKeyIndex];
     const keys = hotKey.keys[0];
     const pressedKeys = keys.split('+');
-    const lastPressedKey = pressedKeys[pressedKeys.length - 1].toUpperCase();
+    const lastPressedKey = pressedKeys[pressedKeys.length - 1];
 
     // clear the prior errors
     this.setState({ errorMessages: {} }, () => {
       // Check if it has a valid modifier
-      const isModifier = ['CTRL', 'ALT', 'SHIFT'].includes(lastPressedKey);
+      const isModifier = ['ctrl', 'alt', 'shift'].includes(lastPressedKey);
       if (isModifier) {
         this.updateHotKeysState(commandName, '');
         this.updateErrorsState(
           commandName,
-          "It's not possible to define only modifier keys (CTRL, ALT and SHIFT) as a shortcut"
+          "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut"
         );
         return;
       }
@@ -154,21 +141,13 @@ export class HotKeysPreferences extends Component {
       /*
        * Check if it has some conflict
        */
-      const conflictedCommandKey = this.getConflictingCommand(
-        commandName,
-        keys
-      );
-      if (conflictedCommandKey) {
-        const conflictedCommand = this.state.hotKeys[conflictedCommandKey];
-
+      const conflictedCommand = this.getConflictingCommand(commandName, keys);
+      if (conflictedCommand) {
+        this.updateHotKeysState(commandName, '');
         this.updateErrorsState(
           commandName,
-          `"${conflictedCommand.label}" is already using the "${
-            conflictedCommand.command
-          }" shortcut.`
+          `"${conflictedCommand.label}" is already using the "${keys}" shortcut.`
         );
-        this.updateErrorsState(conflictedCommandKey, '');
-        this.updateHotKeysState(commandName, '');
         return;
       }
 
@@ -177,8 +156,7 @@ export class HotKeysPreferences extends Component {
        */
       const modifierCommand = pressedKeys
         .slice(0, pressedKeys.length - 1)
-        .join('+')
-        .toUpperCase();
+        .join('+');
 
       const disallowedCombination = disallowedCombinations[modifierCommand];
       const hasDisallowedCombinations = disallowedCombination
@@ -189,7 +167,7 @@ export class HotKeysPreferences extends Component {
         this.updateHotKeysState(commandName, '');
         this.updateErrorsState(
           commandName,
-          "It's not possible to define only modifier keys (CTRL, ALT and SHIFT) as a shortcut"
+          `"${pressedKeys.join('+')}" shortcut combination is not allowed`
         );
         return;
       }
