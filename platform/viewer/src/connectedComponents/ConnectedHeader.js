@@ -3,11 +3,14 @@ import { connect } from 'react-redux';
 import { hotkeysManager } from '../App.js';
 
 const mapStateToProps = state => {
-  const hotkeyDefinitions =
-    state.preferences.hotkeyDefinitions.length > 0
-      ? state.preferences.hotkeyDefinitions
+  const { hotkeyDefinitions = [] } = state.preferences || {};
+
+  const _hotkeyDefinitions =
+    hotkeyDefinitions.length > 0
+      ? hotkeyDefinitions
       : hotkeysManager.hotkeyDefaults;
-  hotkeysManager.setHotkeys(hotkeyDefinitions);
+
+  hotkeysManager.setHotkeys(_hotkeyDefinitions);
 
   return {
     user: state.oidc && state.oidc.user,
