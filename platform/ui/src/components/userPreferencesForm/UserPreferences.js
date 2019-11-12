@@ -21,7 +21,7 @@ export class UserPreferences extends Component {
         keys: PropTypes.arrayOf(PropTypes.string),
         label: PropTypes.string,
       })
-    ),
+    ).isRequired,
     windowLevelData: PropTypes.object.isRequired,
     generalData: PropTypes.object.isRequired,
   };

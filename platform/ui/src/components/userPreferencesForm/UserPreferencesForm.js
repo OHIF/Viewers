@@ -21,7 +21,7 @@ class UserPreferencesForm extends Component {
         keys: PropTypes.arrayOf(PropTypes.string),
         label: PropTypes.string,
       })
-    ),
+    ).isRequired,
     t: PropTypes.func,
   };
 
