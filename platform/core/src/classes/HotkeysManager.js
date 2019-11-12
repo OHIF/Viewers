@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash.clonedeep';
 import hotkeys from './hotkeys';
 import log from './../log.js';
 
@@ -51,10 +52,11 @@ export class HotkeysManager {
    * @param {Boolean} [isDefaultDefinitions]
    */
   setHotkeys(hotkeyDefinitions, isDefaultDefinitions = false) {
-    hotkeyDefinitions.forEach(definition => this.registerHotkeys(definition));
+    const definitions = cloneDeep(hotkeyDefinitions);
+    definitions.forEach(definition => this.registerHotkeys(definition));
 
     if (isDefaultDefinitions) {
-      this.hotkeyDefaults = hotkeyDefinitions;
+      this.hotkeyDefaults = definitions;
     }
   }
 
