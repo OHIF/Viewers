@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.7.1...@ohif/core@1.8.0) (2019-11-12)
+
+
+### Features
+
+* 🎸 Update hotkeys and user preferences modal ([#1135](https://github.com/OHIF/Viewers/issues/1135)) ([e62f5f8](https://github.com/OHIF/Viewers/commit/e62f5f8dd28ab363f23671cd21cee115abb870ff)), closes [#923](https://github.com/OHIF/Viewers/issues/923)
+
+
+
+
+
 ## [1.7.1](https://github.com/OHIF/Viewers/compare/@ohif/core@1.7.0...@ohif/core@1.7.1) (2019-11-08)
 
 

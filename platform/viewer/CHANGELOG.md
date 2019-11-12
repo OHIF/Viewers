@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.4...@ohif/viewer@2.7.0) (2019-11-12)
+
+
+### Features
+
+* 🎸 Update hotkeys and user preferences modal ([#1135](https://github.com/OHIF/Viewers/issues/1135)) ([e62f5f8](https://github.com/OHIF/Viewers/commit/e62f5f8dd28ab363f23671cd21cee115abb870ff)), closes [#923](https://github.com/OHIF/Viewers/issues/923)
+
+
+
+
+
 ## [2.6.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.3...@ohif/viewer@2.6.4) (2019-11-11)
 
 **Note:** Version bump only for package @ohif/viewer
