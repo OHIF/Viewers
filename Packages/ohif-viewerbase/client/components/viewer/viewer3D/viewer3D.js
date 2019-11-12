@@ -18,6 +18,8 @@ import { getElementIfNotEmpty } from "../../../lib/getElementIfNotEmpty";
 import "meteor/gtajesgenga:ami";
 import {viewportOverlayUtils} from "../../../lib/viewportOverlayUtils";
 
+let _div;
+
 const colors = {
     red: 0xff0000,
     blue: 0x0000ff,
@@ -828,7 +830,11 @@ Template.viewer3D.onRendered(function () {
 
 Template.viewer3D.onCreated(function () {
     let toolbar = $('div.toolbarSection > div.clearfix > div.toolbarSectionTools').get(0);
-    var _div = $('<div><div class="svgContainer"><i class="fa fa-eye"></i></div><div class="buttonLabel"><span>View 3D</span></div></div>').addClass('toolbarSectionButton rp-x-1 imageViewerCommand').appendTo(toolbar);
+    var _div = $('<div class="button3DContainer"><div class="svgContainer"><i class="fa fa-eye"></i></div><div class="buttonLabel"><span>View 3D</span></div></div>').addClass('toolbarSectionButton rp-x-1 imageViewerCommand').appendTo(toolbar);
     _div.on('click', renderSerieHandler);
+});
+
+Template.viewer3D.onDestroyed(function () {
+    $('div.button3DContainer').remove();
 });
 

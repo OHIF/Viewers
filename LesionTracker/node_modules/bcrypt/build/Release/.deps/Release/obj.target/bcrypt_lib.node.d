@@ -1,1 +1,0 @@
-cmd_Release/obj.target/bcrypt_lib.node := g++ -shared -pthread -rdynamic -m64  -Wl,-soname=bcrypt_lib.node -o Release/obj.target/bcrypt_lib.node -Wl,--start-group Release/obj.target/bcrypt_lib/src/blowfish.o Release/obj.target/bcrypt_lib/src/bcrypt.o Release/obj.target/bcrypt_lib/src/bcrypt_node.o -Wl,--end-group 
