@@ -1,18 +1,18 @@
 ---
-name: User Preferences Modal
+name: User Preferences Form
 menu: Components
-route: /components/user-preferences-modal
+route: /components/user-preferences-form
 ---
 
 import { Playground, Props } from 'docz'
 import { State } from 'react-powerplug'
-import { UserPreferencesModal } from './../index.js'
+import { UserPreferencesForm } from './../index.js'
 import NameSpace from '../../../__docs__/NameSpace'
 //
 import windowLevelDefaults from './windowLevelDefaults.js'
 import hotkeyDefaults from './hotkeyDefaults.js'
 
-# User Preferences Modal
+# User Preferences Form
 
 ## Basic usage
 
@@ -20,7 +20,7 @@ import hotkeyDefaults from './hotkeyDefaults.js'
     <State initial={{
         isOpen: false,
         windowLevelData: windowLevelDefaults,
-        hotKeysData: hotkeyDefaults,
+        hotkeyDefinitions: hotkeyDefaults,
     }}>
 
         {({ state, setState }) => (
@@ -32,7 +32,7 @@ import hotkeyDefaults from './hotkeyDefaults.js'
                 >
                     Open user preferences
                 </button>
-                <UserPreferencesModal
+                <UserPreferencesForm
                     {...state}
                     onCancel={() => setState({ isOpen: false })}
                     onSave={() => alert('on save')}
@@ -47,8 +47,8 @@ import hotkeyDefaults from './hotkeyDefaults.js'
 
 ## API
 
-<Props of={UserPreferencesModal} />
+<Props of={UserPreferencesForm} />
 
 ## Translation Namespace
 
-<NameSpace name="UserPreferencesModal" />
+<NameSpace name="UserPreferencesForm" />
