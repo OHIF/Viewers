@@ -7,8 +7,8 @@ export default {
    */
   id: 'measurements-table',
 
-  preRegistration(configuration = {}) {
-    init(configuration);
+  preRegistration({ serviceManager, configuration = {} }) {
+    init({ serviceManager, configuration });
   },
   getPanelModule() {
     return {
