@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.7.0...@ohif/viewer@2.7.1) (2019-11-12)
+
+
+### Bug Fixes
+
+* 🐛 Fix for JS breaking on header ([#1164](https://github.com/OHIF/Viewers/issues/1164)) ([0fbaf95](https://github.com/OHIF/Viewers/commit/0fbaf95971dc0b3a671e1f586a876d9019e860ed))
+
+
+
+
+
+# [2.7.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.4...@ohif/viewer@2.7.0) (2019-11-12)
+
+
+### Features
+
+* 🎸 Update hotkeys and user preferences modal ([#1135](https://github.com/OHIF/Viewers/issues/1135)) ([e62f5f8](https://github.com/OHIF/Viewers/commit/e62f5f8dd28ab363f23671cd21cee115abb870ff)), closes [#923](https://github.com/OHIF/Viewers/issues/923)
+
+
+
+
+
+## [2.6.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.3...@ohif/viewer@2.6.4) (2019-11-11)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.6.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.2...@ohif/viewer@2.6.3) (2019-11-08)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.6.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.1...@ohif/viewer@2.6.2) (2019-11-08)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [2.6.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.0...@ohif/viewer@2.6.1) (2019-11-06)
 
 **Note:** Version bump only for package @ohif/viewer

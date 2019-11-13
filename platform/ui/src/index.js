@@ -24,7 +24,7 @@ import {
   Tooltip,
   AboutContent,
   UserPreferences,
-  UserPreferencesModal,
+  UserPreferencesForm,
   OHIFModal,
 } from './components';
 import { useDebounce, useMedia } from './hooks';
@@ -101,7 +101,7 @@ export {
   Tooltip,
   AboutContent,
   UserPreferences,
-  UserPreferencesModal,
+  UserPreferencesForm,
   ViewerbaseDragDropContext,
   SnackbarProvider,
   useSnackbarContext,

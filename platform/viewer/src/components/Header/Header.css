@@ -4,6 +4,10 @@
   height: var(--top-bar-height);
 }
 
+.dd-item {
+  width: 100%;
+}
+
 /* Home Page */
 .entry-header.header-big {
   background: rgba(21, 25, 30, 0.7);

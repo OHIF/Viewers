@@ -2,6 +2,25 @@ import OHIF from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import initCornerstoneTools from './initCornerstoneTools.js';
+import queryString from 'query-string';
+
+function fallbackMetaDataProvider (type, imageId) {
+  if (!imageId.includes('wado?requestType=WADO')) {
+    return
+  }
+
+  // If you call for an WADO-URI imageId and get no 
+  // metadata, try reformatting to WADO-RS imageId
+  const qs = queryString.parse(imageId);
+  const wadoRoot = window.store.getState().servers.servers[0].wadoRoot
+  const wadoRsImageId = `wadors:${wadoRoot}/studies/${qs.studyUID}/series/${qs.seriesUID}/instances/${qs.objectUID}/frames/${qs.frame || 1}`;
+
+  return cornerstone.metaData.get(type, wadoRsImageId);
+}
+
+// Add this fallback provider with a low priority so it is handled last
+cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
+
 
 /**
  *

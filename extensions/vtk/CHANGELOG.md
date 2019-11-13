@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.53.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.53.3...@ohif/extension-vtk@0.53.4) (2019-11-12)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.53.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.53.2...@ohif/extension-vtk@0.53.3) (2019-11-11)
+
+
+### Bug Fixes
+
+* mpr2d vtkjs viewport does not render if range is set to `NaN` values ([#1157](https://github.com/OHIF/Viewers/issues/1157)) ([84a0972](https://github.com/OHIF/Viewers/commit/84a097212babc0f98198b9ced1def9743973a5a8))
+
+
+
+
+
+## [0.53.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.53.1...@ohif/extension-vtk@0.53.2) (2019-11-08)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.53.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.53.0...@ohif/extension-vtk@0.53.1) (2019-11-08)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
 # [0.53.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.32...@ohif/extension-vtk@0.53.0) (2019-11-06)
 
 
