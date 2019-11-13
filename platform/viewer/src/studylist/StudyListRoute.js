@@ -59,7 +59,11 @@ function StudyListRoute(props) {
   const appContext = useContext(AppContext);
   // ~~ RESPONSIVE
   const displaySize = useDisplayMediaSize(
-    ['(min-width: 1750px)', '(min-width: 1000px)', '(min-width: 768px)'],
+    [
+      '(min-width: 1750px)',
+      '(min-width: 1000px) and (max-width: 1749px)',
+      '(max-width: 999px)',
+    ],
     ['large', 'medium', 'small'],
     'small'
   );

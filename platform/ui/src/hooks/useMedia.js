@@ -71,15 +71,19 @@ const MediaQuery = {
   getMediaTypeAlias(mediaQuery) {
     const { media } = mediaQuery;
     const { mediaQueriesStringList, mediaTypesAliases } = this.state;
-    const index = mediaQueriesStringList.findIndex(
-      toCompare => toCompare === media
-    );
+
+    const index = mediaQueriesStringList.findIndex(originalMediaQuery => {
+      const { media: toCompareMedia } = window.matchMedia(originalMediaQuery);
+      return toCompareMedia === media;
+    });
 
     return mediaTypesAliases[index];
   },
   onMediaQueryChange(mediaQuery) {
-    const nextMediaType = this.getMediaTypeAlias(mediaQuery);
-    this.setDisplaySize(nextMediaType);
+    if (mediaQuery.matches) {
+      const nextMediaType = this.getMediaTypeAlias(mediaQuery);
+      this.setDisplaySize(nextMediaType);
+    }
   },
   runSetters() {
     for (let setter of this.setters) {
