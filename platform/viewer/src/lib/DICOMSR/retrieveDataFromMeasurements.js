@@ -3,7 +3,8 @@ import OHIF from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 
 const retrieveDataFromMeasurements = measurements => {
-  const { MeasurementReport } = dcmjs.adapters.Cornerstone;
+  const cornerstoneAdpater = dcmjs.adapters.Cornerstone;
+  const { MeasurementReport } = cornerstoneAdpater;
   const { getImageIdForImagePath } = OHIF.measurements;
 
   const toolState = {};
@@ -12,15 +13,18 @@ const retrieveDataFromMeasurements = measurements => {
     const annotations = measurements[measurementType];
 
     annotations.forEach(annotation => {
-      const imageId = getImageIdForImagePath(annotation.imagePath);
-      toolState[imageId] = toolState[imageId] || {};
-      toolState[imageId][annotation.toolType] = toolState[imageId][
-        annotation.toolType
-      ] || {
-        data: [],
-      };
+      const { toolType, imagePath } = annotation;
+      if (cornerstoneAdpater[toolType]) {
+        const imageId = getImageIdForImagePath(imagePath);
+        toolState[imageId] = toolState[imageId] || {};
+        toolState[imageId][toolType] = toolState[imageId][toolType] || {
+          data: [],
+        };
 
-      toolState[imageId][annotation.toolType].data.push(annotation);
+        toolState[imageId][toolType].data.push(annotation);
+      } else {
+        OHIF.log.warn(`[DICOMSR] Tool type not supported: ${toolType}`);
+      }
     });
   });
 
