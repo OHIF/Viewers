@@ -4,38 +4,38 @@ const range = (start, end) => {
 
 export const disallowedCombinations = {
   '': [],
-  ALT: ['SPACE'],
-  SHIFT: [],
-  CTRL: [
-    'F4',
-    'F5',
-    'F11',
-    'W',
-    'R',
-    'T',
-    'O',
-    'P',
-    'A',
-    'D',
-    'F',
-    'G',
-    'H',
-    'J',
-    'L',
-    'Z',
-    'X',
-    'C',
-    'V',
-    'B',
-    'N',
-    'PAGEDOWN',
-    'PAGEUP',
+  alt: ['space'],
+  shift: [],
+  ctrl: [
+    'f4',
+    'f5',
+    'f11',
+    'w',
+    'r',
+    't',
+    'o',
+    'p',
+    'a',
+    'd',
+    'f',
+    'g',
+    'h',
+    'j',
+    'l',
+    'z',
+    'x',
+    'c',
+    'v',
+    'b',
+    'n',
+    'pagedown',
+    'pageup',
   ],
-  'CTRL+SHIFT': ['Q', 'W', 'R', 'T', 'P', 'A', 'H', 'V', 'B', 'N'],
+  'ctrl+shift': ['q', 'w', 'r', 't', 'p', 'a', 'h', 'v', 'b', 'n'],
 };
 
 export const allowedKeys = [
-  ...[8, 13, 27, 32, 46], // BACKSPACE, ENTER, ESCAPE, SPACE, DELETE
+  ...[8, 13, 27, 32, 46], // backspace, enter, escape, space, delete
   ...[12, 106, 107, 109, 110, 111], // Numpad keys
   ...range(218, 220), // [\]
   ...range(185, 190), // ;=,-./
