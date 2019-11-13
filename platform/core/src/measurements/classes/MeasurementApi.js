@@ -285,8 +285,9 @@ export default class MeasurementApi {
     };
 
     log.info('Saving Measurements for timepoints:', timepoints);
-    return storeFn(measurementData, filter, server).then(() => {
+    return storeFn(measurementData, filter, server).then(result => {
       log.info('Measurement storage completed');
+      return result;
     });
   }
 

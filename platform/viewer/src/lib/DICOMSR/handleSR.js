@@ -27,41 +27,46 @@ const retrieveMeasurementFromSR = async (series, server) => {
 };
 
 const stowSRFromMeasurements = async (measurements, server) => {
-  let dataset;
   try {
-    dataset = retrieveDataFromMeasurements(measurements);
+    const { dataset, notSupportedTools } = retrieveDataFromMeasurements(
+      measurements
+    );
+    const { DicomMetaDictionary, DicomDict } = dcmjs.data;
+    const meta = {
+      FileMetaInformationVersion:
+        dataset._meta.FileMetaInformationVersion.Value,
+      MediaStorageSOPClassUID: dataset.SOPClassUID,
+      MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
+      TransferSyntaxUID: TRANSFER_SYNTAX_UID,
+      ImplementationClassUID: DicomMetaDictionary.uid(),
+      ImplementationVersionName: VERSION_NAME,
+    };
+
+    const denaturalized = DicomMetaDictionary.denaturalizeDataset(meta);
+    const dicomDict = new DicomDict(denaturalized);
+
+    dicomDict.dict = DicomMetaDictionary.denaturalizeDataset(dataset);
+
+    const part10Buffer = dicomDict.write();
+
+    const config = {
+      url: server.wadoRoot,
+      headers: OHIF.DICOMWeb.getAuthorizationHeader(),
+    };
+
+    const dicomWeb = new api.DICOMwebClient(config);
+    const options = {
+      datasets: [part10Buffer],
+    };
+
+    await dicomWeb.storeInstances(options);
+
+    return {
+      notSupportedTools,
+    };
   } catch (error) {
     throw error;
   }
-
-  const { DicomMetaDictionary, DicomDict } = dcmjs.data;
-  const meta = {
-    FileMetaInformationVersion: dataset._meta.FileMetaInformationVersion.Value,
-    MediaStorageSOPClassUID: dataset.SOPClassUID,
-    MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
-    TransferSyntaxUID: TRANSFER_SYNTAX_UID,
-    ImplementationClassUID: DicomMetaDictionary.uid(),
-    ImplementationVersionName: VERSION_NAME,
-  };
-
-  const denaturalized = DicomMetaDictionary.denaturalizeDataset(meta);
-  const dicomDict = new DicomDict(denaturalized);
-
-  dicomDict.dict = DicomMetaDictionary.denaturalizeDataset(dataset);
-
-  const part10Buffer = dicomDict.write();
-
-  const config = {
-    url: server.wadoRoot,
-    headers: OHIF.DICOMWeb.getAuthorizationHeader(),
-  };
-
-  const dicomWeb = new api.DICOMwebClient(config);
-  const options = {
-    datasets: [part10Buffer],
-  };
-
-  return dicomWeb.storeInstances(options);
 };
 
 export { retrieveMeasurementFromSR, stowSRFromMeasurements };

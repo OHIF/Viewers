@@ -13,7 +13,7 @@ export const retrieveMeasurements = options => {
   return retrieveMeasurementFromSR(latestSeries, server);
 };
 
-export const storeMeasurements = (measurementData, filter, server) => {
+export const storeMeasurements = async (measurementData, filter, server) => {
   OHIF.log.info('[DICOMSR] storeMeasurements');
 
   if (!server || server.type !== 'dicomWeb') {
@@ -26,14 +26,24 @@ export const storeMeasurements = (measurementData, filter, server) => {
   const studyInstanceUid =
     firstMeasurement && firstMeasurement.studyInstanceUid;
 
-  return stowSRFromMeasurements(measurementData, server).then(
-    () => {
-      if (studyInstanceUid) {
-        OHIF.studies.deleteStudyMetadataPromise(studyInstanceUid);
-      }
-    },
-    error => {
-      throw error;
+  try {
+    const { notSupportedTools } = await stowSRFromMeasurements(
+      measurementData,
+      server
+    );
+    if (studyInstanceUid) {
+      OHIF.studies.deleteStudyMetadataPromise(studyInstanceUid);
     }
-  );
+    const message =
+      notSupportedTools.length > 0
+        ? 'Measurements were parcially saved, some of the tools are not supported.'
+        : 'Measurements were saved with success';
+
+    return {
+      message,
+    };
+  } catch (error) {
+    OHIF.log.error(`Error while saving the measurements: ${error.message}`);
+    throw new Error('Error while saving the measurements.');
+  }
 };

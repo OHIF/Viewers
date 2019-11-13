@@ -11,7 +11,6 @@ import { ScrollableArea } from './../../ScrollableArea/ScrollableArea.js';
 import { TableList } from './../tableList';
 import { Tooltip } from './../tooltip';
 import { withSnackbar } from './../../utils/SnackbarProvider';
-import { log } from '@ohif/core';
 
 class MeasurementTable extends Component {
   static propTypes = {
@@ -95,16 +94,15 @@ class MeasurementTable extends Component {
     const { saveFunction, snackbarContext } = this.props;
     if (saveFunction) {
       try {
-        await saveFunction();
+        const result = await saveFunction();
         snackbarContext.show({
           title: 'STOW SR',
-          message: 'Measurements were saved with success',
+          message: result.message,
         });
       } catch (error) {
-        log.error(`Error during store attempt: ${error.message}`);
         snackbarContext.show({
           title: 'STOW SR',
-          message: 'Error while saving the measurements',
+          message: error.message,
         });
       }
     }
