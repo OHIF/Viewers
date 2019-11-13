@@ -3,6 +3,190 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.53.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.53.3...@ohif/extension-vtk@0.53.4) (2019-11-12)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.53.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.53.2...@ohif/extension-vtk@0.53.3) (2019-11-11)
+
+
+### Bug Fixes
+
+* mpr2d vtkjs viewport does not render if range is set to `NaN` values ([#1157](https://github.com/OHIF/Viewers/issues/1157)) ([84a0972](https://github.com/OHIF/Viewers/commit/84a097212babc0f98198b9ced1def9743973a5a8))
+
+
+
+
+
+## [0.53.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.53.1...@ohif/extension-vtk@0.53.2) (2019-11-08)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.53.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.53.0...@ohif/extension-vtk@0.53.1) (2019-11-08)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+# [0.53.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.32...@ohif/extension-vtk@0.53.0) (2019-11-06)
+
+
+### Features
+
+* modal provider ([#1151](https://github.com/OHIF/Viewers/issues/1151)) ([75d88bc](https://github.com/OHIF/Viewers/commit/75d88bc454710d2dcdbc7d68c4d9df041159c840)), closes [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1146](https://github.com/OHIF/Viewers/issues/1146) [#1142](https://github.com/OHIF/Viewers/issues/1142) [#1143](https://github.com/OHIF/Viewers/issues/1143) [#1110](https://github.com/OHIF/Viewers/issues/1110) [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1119](https://github.com/OHIF/Viewers/issues/1119)
+
+
+
+
+
+## [0.52.32](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.31...@ohif/extension-vtk@0.52.32) (2019-11-05)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.31](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.30...@ohif/extension-vtk@0.52.31) (2019-11-05)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+## [0.52.30](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.29...@ohif/extension-vtk@0.52.30) (2019-11-04)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.29](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.28...@ohif/extension-vtk@0.52.29) (2019-11-04)
+
+
+### Bug Fixes
+
+* 🐛 Upgrade react-vtkjs-viewport to fix volume orientation ([#1143](https://github.com/OHIF/Viewers/issues/1143)) ([1d86b1a](https://github.com/OHIF/Viewers/commit/1d86b1a102fc422053cff103de8c12ca6f437354))
+
+
+
+
+
+## [0.52.28](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.27...@ohif/extension-vtk@0.52.28) (2019-11-04)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.27](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.26...@ohif/extension-vtk@0.52.27) (2019-10-31)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.26](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.25...@ohif/extension-vtk@0.52.26) (2019-10-30)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.25](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.24...@ohif/extension-vtk@0.52.25) (2019-10-29)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.24](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.23...@ohif/extension-vtk@0.52.24) (2019-10-29)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.23](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.22...@ohif/extension-vtk@0.52.23) (2019-10-28)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.22](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.21...@ohif/extension-vtk@0.52.22) (2019-10-28)
+
+
+### Bug Fixes
+
+* MIP styling ([#1109](https://github.com/OHIF/Viewers/issues/1109)) ([0d21cc6](https://github.com/OHIF/Viewers/commit/0d21cc6ad0c47706b9e62e05fe2a0f1d86339760))
+
+
+
+
+
+## [0.52.21](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.20...@ohif/extension-vtk@0.52.21) (2019-10-26)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.20](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.19...@ohif/extension-vtk@0.52.20) (2019-10-26)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.19](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.18...@ohif/extension-vtk@0.52.19) (2019-10-25)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.52.18](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.17...@ohif/extension-vtk@0.52.18) (2019-10-25)
+
+
+### Bug Fixes
+
+* 🐛 Orthographic MPR fix ([#1092](https://github.com/OHIF/Viewers/issues/1092)) ([460e375](https://github.com/OHIF/Viewers/commit/460e375f0aa75d35f7a46b4d48e6cc706019956d))
+
+
+
+
+
+## [0.52.17](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.16...@ohif/extension-vtk@0.52.17) (2019-10-25)
+
+
+### Bug Fixes
+
+* 🐛 Fix crosshairs location when using MIP ([#1080](https://github.com/OHIF/Viewers/issues/1080)) ([b451ce4](https://github.com/OHIF/Viewers/commit/b451ce440796f13b0891739d2130e8ee71993d3d))
+
+
+
+
+
 ## [0.52.16](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.52.15...@ohif/extension-vtk@0.52.16) (2019-10-23)
 
 

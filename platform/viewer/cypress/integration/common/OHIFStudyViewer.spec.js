@@ -1,25 +1,25 @@
-describe('OHIF Study Viewer Page', () => {
-  before(() => {
+describe('OHIF Study Viewer Page', function() {
+  before(function() {
     cy.openStudy('MISTER^MR');
     cy.waitDicomImage();
     cy.expectMinimumThumbnails(6);
   });
 
-  beforeEach(() => {
+  beforeEach(function() {
     cy.initCommonElementsAliases();
     cy.resetViewport();
   });
 
-  it('checks if series thumbnails are being displayed', () => {
+  it('checks if series thumbnails are being displayed', function() {
     cy.screenshot();
-    cy.percySnapshot();
+    cy.percyCanvasSnapshot('Series Thumbnails');
 
     cy.get('[data-cy="thumbnail-list"]')
       .its('length')
       .should('be.gt', 1);
   });
 
-  it('drags and drop a series thumbnail into viewport', () => {
+  it('drags and drop a series thumbnail into viewport', function() {
     cy.get('[data-cy="thumbnail-list"]:nth-child(2)') //element to be dragged
       .drag('.cornerstone-canvas'); //dropzone element
 
@@ -28,7 +28,7 @@ describe('OHIF Study Viewer Page', () => {
     cy.get('@viewportInfoBottomLeft').should('contain.text', expectedText);
   });
 
-  it('checks if Series left panel can be hidden/displayed', () => {
+  it('checks if Series left panel can be hidden/displayed', function() {
     cy.get('@seriesBtn').click();
     cy.get('@seriesPanel').should('not.be.enabled');
 
@@ -36,7 +36,7 @@ describe('OHIF Study Viewer Page', () => {
     cy.get('@seriesPanel').should('be.visible');
   });
 
-  it('checks if Measurements right panel can be hidden/displayed', () => {
+  it('checks if Measurements right panel can be hidden/displayed', function() {
     cy.get('@measurementsBtn').click();
     cy.get('@measurementsPanel').should('be.visible');
 
@@ -44,7 +44,7 @@ describe('OHIF Study Viewer Page', () => {
     cy.get('@measurementsPanel').should('not.be.enabled');
   });
 
-  it('checks if measurement item can be Relabeled under Measurements panel', () => {
+  it('checks if measurement item can be Relabeled under Measurements panel', function() {
     cy.addLengthMeasurement(); //Adding measurement in the viewport
     cy.get('@measurementsBtn').click();
     cy.get('.measurementItem').click();
@@ -72,32 +72,28 @@ describe('OHIF Study Viewer Page', () => {
     cy.get('@measurementsPanel').should('not.be.enabled');
   });
 
-  //TO-DO: Test case will fail due to issue #1013: https://github.com/OHIF/Viewers/issues/1013
+  it('checks if Description can be added to measurement item under Measurements panel', () => {
+    cy.addLengthMeasurement(); //Adding measurement in the viewport
+    cy.get('@measurementsBtn').click();
+    cy.get('.measurementItem').click();
 
-  // it('checks if Description can be added to measurement item under Measurements panel', () => {
-  //   cy.addLengthMeasurement(); //Adding measurement in the viewport
-  //   cy.get('@measurementsBtn').click();
-  //   cy.get('.measurementItem').click();
-  //
-  //   // Click "Description"
-  //   cy.get('.btnAction')
-  //     .contains('Description')
-  //     .click();
-  //
-  //   // Enter description text
-  //   const descriptionText = 'Adding text for description test';
-  //   cy.get('#description')
-  //     .type(descriptionText);
-  //
-  //   // Confirm
-  //   cy.get('.btn-confirm').click();
-  //
-  //   //Verify if descriptionText was added
-  //   cy.get('.measurementLocation')
-  //     .should('contain.text', descriptionText);
-  // });
+    // Click "Description"
+    cy.get('.btnAction')
+      .contains('Description')
+      .click();
 
-  it('checks if measurement item can be deleted through the context menu on the viewport', () => {
+    // Enter description text
+    const descriptionText = 'Adding text for description test';
+    cy.get('#description').type(descriptionText);
+
+    // Confirm
+    cy.get('.btn-confirm').click();
+
+    //Verify if descriptionText was added
+    cy.get('.measurementLocation').should('contain.text', descriptionText);
+  });
+
+  it('checks if measurement item can be deleted through the context menu on the viewport', function() {
     cy.addLengthMeasurement([100, 100], [200, 100]); //Adding measurement in the viewport
 
     //Right click on measurement annotation
@@ -131,7 +127,7 @@ describe('OHIF Study Viewer Page', () => {
     cy.get('@measurementsPanel').should('not.be.enabled');
   });
 
-  it('adds relabel and description to measurement item through the context menu on the viewport', () => {
+  it('adds relabel and description to measurement item through the context menu on the viewport', function() {
     cy.addLengthMeasurement([100, 100], [200, 100]); //Adding measurement in the viewport
 
     // Relabel
@@ -205,5 +201,98 @@ describe('OHIF Study Viewer Page', () => {
     // Close panel
     cy.get('@measurementsBtn').click();
     cy.get('@measurementsPanel').should('not.be.enabled');
+  });
+
+  it('scrolls series stack using scrollbar', function() {
+    // Workaround implemented based on Cypress issue:
+    // https://github.com/cypress-io/cypress/issues/1570#issuecomment-450966053
+    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+      window.HTMLInputElement.prototype,
+      'value'
+    ).set;
+
+    cy.get('input.imageSlider[type=range]').then($range => {
+      // get the DOM node
+      const range = $range[0];
+      // set the value manually
+      nativeInputValueSetter.call(range, 13);
+      // now dispatch the event
+      range.dispatchEvent(new Event('change', { value: 13, bubbles: true }));
+    });
+
+    const expectedText = 'Img: 13 13/13';
+    cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
+  });
+
+  it('performs single-click to load thumbnail in active viewport', () => {
+    cy.get('[data-cy="thumbnail-list"]:nth-child(3)').click();
+
+    const expectedText = 'Ser: 3';
+    cy.get('@viewportInfoBottomLeft').should('contains.text', expectedText);
+  });
+
+  it('performs right click to zoom', function() {
+    //Right click on viewport
+    cy.get('@viewport')
+      .trigger('mousedown', 'top', { which: 3 })
+      .trigger('mousemove', 'center', { which: 3 })
+      .trigger('mouseup');
+
+    const expectedText = 'Zoom: 301%';
+    cy.get('@viewportInfoBottomRight').should('contains.text', expectedText);
+  });
+
+  it('performs middle click to pan', function() {
+    //Get image position from cornerstone and check if y axis was modified
+    let cornerstone;
+    let currentPan;
+
+    // TO DO: Replace the cornerstone pan check by Percy snapshop comparison
+    cy.window()
+      .its('cornerstone')
+      .then(c => {
+        cornerstone = c;
+        currentPan = () =>
+          cornerstone.getEnabledElements()[0].viewport.translation;
+      });
+
+    //pan image with middle click
+    cy.get('@viewport')
+      .trigger('mousedown', 'center', { which: 2 })
+      .trigger('mousemove', 'bottom', { which: 2 })
+      .trigger('mouseup', 'bottom')
+      .then(() => {
+        expect(currentPan().y > 0).to.eq(true);
+      });
+  });
+
+  it('opens About modal and verify the displayed information', function() {
+    cy.get('[data-cy="options-menu"]')
+      .first()
+      .click();
+    cy.get('[data-cy="about-item-menu"]')
+      .first()
+      .click();
+    cy.get('.modal-content')
+      .as('aboutOverlay')
+      .should('be.visible');
+
+    //check buttons and links
+    cy.get('[data-cy="about-modal"]')
+      .should('contains.text', 'Visit the forum')
+      .and('contains.text', 'Report an issue')
+      .and('contains.text', 'https://github.com/OHIF/Viewers/');
+
+    //check version number
+    cy.get('[data-cy="about-modal"]').then($modal => {
+      cy.get('[data-cy="header-version-info"]').should($headerVersionNumber => {
+        $headerVersionNumber = $headerVersionNumber.text().substring(1);
+        expect($modal).to.contain($headerVersionNumber);
+      });
+    });
+
+    //close modal
+    cy.get('.close').click();
+    cy.get('@aboutOverlay').should('not.be.enabled');
   });
 });

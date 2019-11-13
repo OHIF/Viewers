@@ -38,3 +38,10 @@
   transition: var(--sidepanel-transition);
   width: 100%;
 }
+
+@media only screen and (max-width: 768px) {
+  /* Account for "Investigational Use" banner height */
+  .FlexboxLayout {
+    height: calc(100% - var(--toolbar-height) - var(--top-bar-height) - 16px);
+  }
+}

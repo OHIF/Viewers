@@ -1,0 +1,107 @@
+@import '../../../design/styles/common/global.styl'
+@import '../../../design/styles/common/form.styl'
+@import '../../../design/styles/common/button.styl'
+
+.ViewportDownloadForm
+  color: var(--text-secondary-color);
+  filter: drop-shadow(0 0 3px var(--ui-gray-darkest));
+  border: none;
+  border-radius: 8px;
+  width: inherit;
+  padding: 15px;
+  background: transparent;
+  z-index: 1080 !important;
+
+  .title
+    margin: 0;
+    font-weight: bold;
+
+  .file-info-container
+    display: flex;
+    flex-direction: row;
+    margin: 20px 0;
+    border-radius: 5px;
+    padding: 20px 10px 0;
+    background-color: #16202b;
+
+    .form-control.input-ohif
+      padding: 6px 12px;
+
+    @media screen and (max-width: 1023px)
+      flex-direction: column;
+
+    .col
+      flex-grow: 1;
+
+      .input-ohif
+        margin-left: 15px;
+        @media screen and (max-width: 1023px)
+          margin-left: 0;
+          margin-top: 5px;
+          width: 100%;
+
+      .file-type
+        .select-ohif
+          margin-left: 17px;
+          @media screen and (max-width: 1023px)
+            margin-left: 0;
+            width: 100%;
+
+      .show-annotations
+        font-weight: bold;
+        line-height: 30px;
+        input
+          margin-right: 7px;
+          vertical-align: middle;
+        label
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+  .preview
+    display: flex;
+    flex-direction column;
+    height: fit-content;
+    background-color: #16202b;
+    width: fit-content;
+    padding: 10px;
+    border-radius: 5px;
+    align-self: center;
+    @media screen and (max-width: 1023px)
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+
+    .viewport-preview
+      max-height: 512px;
+      max-width: 512px;
+
+    h4
+      width: 100%;
+      text-align center;
+      font-size: 1.3em;
+      margin: 0 0 10px;
+
+    .preview-container
+      width: auto;
+      height: 100%;
+      max-height: 400px;
+      object-fit contain;
+
+  .actions
+    display: flex;
+    height: 60px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    .action-cancel
+      margin: 0 20px;
+    .actions-save
+      margin: 0 0 0 10px;
+
+.modal-dialog
+  height: 100%;
+
+  .modal-body
+    display: flex;
+    flex-direction: column;

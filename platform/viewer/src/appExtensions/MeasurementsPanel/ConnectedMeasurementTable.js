@@ -28,16 +28,12 @@ function getAllTools() {
   return tools;
 }
 
-function getMeasurementText(measurementData) {
-  const { location, description } = measurementData;
-  let text = '...';
-  if (location) {
-    text = location;
-    if (description) {
-      text += `(${description})`;
-    }
-  }
-  return text;
+function getMeasurementText(measurementData = {}) {
+  const defaultText = '...';
+  const { location = '', description = '' } = measurementData;
+  const result = location + (description ? ` (${description})` : '');
+
+  return result || defaultText;
 }
 
 function getDataForEachMeasurementNumber(

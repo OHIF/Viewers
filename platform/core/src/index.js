@@ -19,6 +19,8 @@ import ui from './ui';
 import user from './user.js';
 import utils from './utils/';
 
+import { createUiNotificationService } from './services';
+
 const OHIF = {
   MODULE_TYPES,
   //
@@ -43,6 +45,8 @@ const OHIF = {
   viewer: {},
   measurements,
   hangingProtocols,
+  //
+  createUiNotificationService,
 };
 
 export {
@@ -68,6 +72,8 @@ export {
   DICOMWeb,
   measurements,
   hangingProtocols,
+  //
+  createUiNotificationService,
 };
 
 export { OHIF };

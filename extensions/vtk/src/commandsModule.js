@@ -1,7 +1,6 @@
 import {
   vtkInteractorStyleMPRCrosshairs,
   vtkInteractorStyleMPRWindowLevel,
-  vtkInteractorStyleMPRSlice,
   vtkInteractorStyleMPRRotate,
   vtkSVGCrosshairsWidget,
 } from 'react-vtkjs-viewport';

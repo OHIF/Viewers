@@ -46,6 +46,7 @@ class DropdownMenu extends Component {
           <button
             key={key}
             className="dd-item"
+            data-cy="about-item-menu"
             onClick={() => this.handleOnClick(onClick)}
           >
             {icon && <Icon {...icon} className="dd-item-icon" />}
@@ -119,7 +120,11 @@ class DropdownMenu extends Component {
 
   render() {
     return (
-      <div className="dd-menu" ref={node => (this.node = node)}>
+      <div
+        className="dd-menu"
+        data-cy="options-menu"
+        ref={node => (this.node = node)}
+      >
         <div className="dd-menu-toggle" onClick={this.toggleList}>
           {this.renderTitleElement()}
         </div>

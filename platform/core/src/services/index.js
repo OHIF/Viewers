@@ -1,3 +1,4 @@
 import ServicesManager from './ServicesManager.js';
+import createUiNotificationService from './uiNotificationService';
 
-export { ServicesManager };
+export { createUiNotificationService, ServicesManager };

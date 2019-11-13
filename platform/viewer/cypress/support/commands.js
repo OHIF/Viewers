@@ -5,6 +5,8 @@ import {
   initCommonElementsAliases,
   initRouteAliases,
   initVTKToolsAliases,
+  initStudyListAliasesOnDesktop,
+  initStudyListAliasesOnTablet,
 } from './aliases.js';
 
 // ***********************************************
@@ -40,9 +42,9 @@ import {
  */
 Cypress.Commands.add('openStudy', patientName => {
   cy.openStudyList();
-  cy.get('#patientName').type(patientName);
+  cy.get('#filter-patientNameOrId').type(patientName);
   cy.wait('@getStudies');
-  cy.get('#studyListData .studylistStudy', { timeout: 5000 })
+  cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
     .contains(patientName)
     .first()
     .click({ force: true });
@@ -56,11 +58,12 @@ Cypress.Commands.add('openStudy', patientName => {
 Cypress.Commands.add('openStudyModality', modality => {
   cy.initRouteAliases();
   cy.visit('/');
-  cy.get('#modalities')
+
+  cy.get('#filter-accessionOrModalityOrDescription')
     .type(modality)
     .wait(2000);
 
-  cy.get('#studyListData')
+  cy.get('[data-cy="study-list-results"]')
     .contains(modality)
     .first()
     .click();
@@ -75,10 +78,16 @@ Cypress.Commands.add('isPageLoaded', (url = '/viewer/') => {
   return cy.location('pathname', { timeout: 60000 }).should('include', url);
 });
 
-Cypress.Commands.add('openStudyList', patientName => {
+Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
   cy.visit('/');
   cy.wait('@getStudies');
+});
+
+Cypress.Commands.add('waitStudyList', () => {
+  cy.get('@searchResult').should($list => {
+    expect($list).to.not.have.class('no-hover');
+  });
 });
 
 /**
@@ -180,7 +189,7 @@ Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
 //Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
   cy.initCornerstoneToolsAliases();
-  cy.get('@resetBtn').click();
+
   //Click on More button
   cy.get('@moreBtn').click();
   //Verify if overlay is displayed
@@ -193,6 +202,8 @@ Cypress.Commands.add('resetViewport', () => {
   cy.get('.tooltip-inner > :nth-child(10)')
     .as('clearBtn')
     .click();
+  //Click on Reset button
+  cy.get('@resetBtn').click();
 });
 
 Cypress.Commands.add('imageZoomIn', () => {
@@ -235,6 +246,16 @@ Cypress.Commands.add('initRouteAliases', () => {
 //Initialize aliases for VTK tools
 Cypress.Commands.add('initVTKToolsAliases', () => {
   initVTKToolsAliases();
+});
+
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliasesOnDesktop', () => {
+  initStudyListAliasesOnDesktop();
+});
+
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliasesOnTablet', () => {
+  initStudyListAliasesOnTablet();
 });
 
 //Add measurements in the viewport
@@ -306,3 +327,74 @@ Cypress.Commands.add('isInViewport', element => {
     }
   });
 });
+
+/**
+ * Percy.io Canvas screenshot workaround
+ *
+ */
+Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
+  cy.document().then(doc => {
+    convertCanvas(doc);
+  });
+
+  // `domTransformation` does not appear to be working
+  // But modifying our immediate DOM does.
+  cy.percySnapshot(name, { ...options }); //, domTransformation: convertCanvas });
+
+  cy.document().then(doc => {
+    unconvertCanvas(doc);
+  });
+});
+
+Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
+  cy.get('.toolbar-button-label')
+    .contains('Layout')
+    .click();
+
+  cy.get('.layoutChooser')
+    .find('tr')
+    .eq(rows - 1)
+    .find('td')
+    .eq(columns - 1)
+    .click();
+
+  cy.wait(1000);
+});
+
+function convertCanvas(documentClone) {
+  documentClone
+    .querySelectorAll('canvas')
+    .forEach(selector => canvasToImage(selector));
+
+  return documentClone;
+}
+
+function unconvertCanvas(documentClone) {
+  // Remove previously generated images
+  documentClone
+    .querySelectorAll('[data-percy-image]')
+    .forEach(selector => selector.remove());
+  // Restore canvas visibility
+  documentClone.querySelectorAll('[data-percy-canvas]').forEach(selector => {
+    selector.removeAttribute('data-percy-canvas');
+    selector.style = '';
+  });
+}
+
+function canvasToImage(selectorOrEl) {
+  let canvas =
+    typeof selectorOrEl === 'object'
+      ? selectorOrEl
+      : document.querySelector(selectorOrEl);
+  let image = document.createElement('img');
+  let canvasImageBase64 = canvas.toDataURL('image/png');
+
+  // Show Image
+  image.src = canvasImageBase64;
+  image.style = 'width: 100%';
+  image.setAttribute('data-percy-image', true);
+  // Hide Canvas
+  canvas.setAttribute('data-percy-canvas', true);
+  canvas.parentElement.appendChild(image);
+  canvas.style = 'display: none';
+}

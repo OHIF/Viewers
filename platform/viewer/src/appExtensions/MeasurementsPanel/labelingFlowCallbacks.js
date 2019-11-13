@@ -105,9 +105,9 @@ function getToolLabellingFlowCallback(store) {
       if (location) {
         measurementData.location = location;
       }
-      if (description) {
-        measurementData.description = description;
-      }
+
+      measurementData.description = description || '';
+
       if (response) {
         measurementData.response = response;
       }

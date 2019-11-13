@@ -22,4 +22,23 @@ describe('OHIF HTML Extension', () => {
       'Imaging Measurement Report'
     );
   });
+
+  it('checks if the HTML viewport has been set to active by interaction', () => {
+    cy.setLayout('3', '3');
+
+    // check if viewport has been set as active by CLICKING
+    cy.get('[data-cy=viewprt-grid] > :nth-child(4)')
+      .click()
+      .then($viewport => {
+        cy.wrap($viewport).should('have.class', 'active');
+      });
+
+    // check if viewport has been set as active by SCROLLING
+    cy.get('[data-cy=viewprt-grid] > :nth-child(7)').then($viewport => {
+      cy.wrap($viewport)
+        .find('[data-cy=dicom-html-viewport]')
+        .scrollTo('bottom');
+      cy.wrap($viewport).should('have.class', 'active');
+    });
+  });
 });

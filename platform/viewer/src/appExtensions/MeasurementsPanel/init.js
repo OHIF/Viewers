@@ -35,7 +35,7 @@ const MEASUREMENT_ACTION_MAP = {
  * @param {*} configuration
  */
 export default function init(services, configuration = {}) {
-  const { DialogService } = services;
+  const { UINotificationService } = services;
   // If these tools were already added by a different extension, we want to replace
   // them with the same tools that have an alternative configuration. By passing in
   // our custom `getMeasurementLocationCallback`, we can...
@@ -92,11 +92,7 @@ export default function init(services, configuration = {}) {
     configuration: {
       getMeasurementLocationCallback: toolLabellingFlowCallback,
       getTextCallback: async () => {
-        alert('Trying to get text');
-        const getValueFromDialog = await DialogService.promptForInput(
-          'Message'
-        );
-        alert(getValueFromDialog);
+        await UINotificationService.show({ title: 'blah', message: 'blue' });
       },
       changeTextCallback: () => {
         alert('change text');

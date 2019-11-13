@@ -67,7 +67,8 @@ export default class ExtensionManager {
 
     // preRegistrationHook
     if (extension.preRegistration) {
-      extension.preRegistration(configuration);
+      console.log(this._servicesManager.services);
+      extension.preRegistration(this._servicesManager.services, configuration);
     }
 
     // Register Modules

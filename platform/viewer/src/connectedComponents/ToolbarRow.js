@@ -1,19 +1,21 @@
-import './ToolbarRow.css';
-
 import React, { Component } from 'react';
+import { MODULE_TYPES } from '@ohif/core';
+import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 import {
   ExpandableToolMenu,
   RoundedButtonGroup,
   ToolbarButton,
+  withModal,
 } from '@ohif/ui';
+
+import './ToolbarRow.css';
 import { commandsManager, extensionManager } from './../App.js';
 
 import ConnectedCineDialog from './ConnectedCineDialog';
+import ConnectedViewportDownloadForm from './ConnectedViewportDownloadForm';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
-import { MODULE_TYPES } from '@ohif/core';
-import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
 
 class ToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
@@ -283,6 +285,15 @@ function _handleBuiltIn({ behavior } = {}) {
       isCineDialogOpen: !this.state.isCineDialogOpen,
     });
   }
+
+  if (behavior === 'DOWNLOAD_SCREEN_SHOT') {
+    this.props.modalContext.show(ConnectedViewportDownloadForm, {
+      title: this.props.t('Download High Quality Image'),
+      customClassName: 'ViewportDownloadForm',
+    });
+  }
 }
 
-export default withTranslation('Common')(ToolbarRow);
+export default withTranslation(['Common', 'ViewportDownloadForm'])(
+  withModal(ToolbarRow)
+);

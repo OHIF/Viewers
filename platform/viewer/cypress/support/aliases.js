@@ -30,6 +30,8 @@ export function initCommonElementsAliases() {
   cy.get('div.ViewportOverlay > div.bottom-right.overlay-element > div').as(
     'viewportInfoBottomRight'
   );
+  cy.get('.left-mid.orientation-marker').as('viewportInfoMidLeft');
+  cy.get('.top-mid.orientation-marker').as('viewportInfoMidTop');
 }
 
 //Creating aliases for Routes
@@ -49,4 +51,29 @@ export function initVTKToolsAliases() {
   cy.get('.select-ohif').as('modeDropdown');
   cy.get('.ohif-check-label').as('modeCheckbox');
   cy.get('.btn-group > .toolbar-button').as('layoutBtn');
+}
+
+//Creating aliases for Study List page elements on Desktop experience
+export function initStudyListAliasesOnDesktop() {
+  cy.get('.study-count').as('studyCount');
+  cy.get('#filter-patientName').as('patientName');
+  cy.get('#filter-patientId').as('MRN');
+  cy.get('#filter-accessionNumber').as('accessionNumber');
+  cy.get('#start-date').as('studyListStartDate');
+  cy.get('#end-date').as('studyListEndDate');
+  cy.get('#filter-modalities').as('modalities');
+  cy.get('#filter-studyDescription').as('studyDescription');
+  cy.get('[data-cy="study-list-results"] > tr').as('searchResult');
+}
+
+//Creating aliases for Study List page elements on Tablet experience
+export function initStudyListAliasesOnTablet() {
+  cy.get('.study-count').as('studyCount');
+  cy.get('#filter-patientNameOrId').as('patientNameOrMRN');
+  cy.get('#filter-accessionOrModalityOrDescription').as(
+    'accessionModalityDescription'
+  );
+  cy.get('#start-date').as('studyListStartDate');
+  cy.get('#end-date').as('studyListEndDate');
+  cy.get('[data-cy="study-list-results"] > tr').as('searchResult');
 }

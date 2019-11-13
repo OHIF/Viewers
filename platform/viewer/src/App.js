@@ -1,5 +1,6 @@
 import { hot } from 'react-hot-loader/root';
 
+// TODO: This should not be here
 import './config';
 
 import {
@@ -7,6 +8,7 @@ import {
   ExtensionManager,
   ServicesManager,
   HotkeysManager,
+  createUiNotificationService,
   utils,
 } from '@ohif/core';
 import React, { Component } from 'react';
@@ -28,7 +30,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import store from './store';
-import { SnackbarProvider, useSnackbarContext } from '@ohif/ui';
+import { SnackbarProvider, ModalProvider, OHIFModal } from '@ohif/ui';
 
 // Contexts
 import WhiteLabellingContext from './context/WhiteLabellingContext';
@@ -40,6 +42,9 @@ const commandsManagerConfig = {
   getAppState: () => store.getState(),
   getActiveContexts: () => getActiveContexts(store.getState()),
 };
+
+// Services
+const UINotificationService = createUiNotificationService();
 
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
@@ -80,19 +85,18 @@ class App extends Component {
     super(props);
 
     this._appConfig = props;
+
     const { servers, extensions, hotkeys, oidc } = props;
 
-    console.log(useSnackbarContext);
-    const snackBar = useSnackbarContext;
-
     this.initUserManager(oidc);
-    _initServices([snackBar]); // We're not injecting this into Extensions yet
+    _initServices([UINotificationService]);
     _initExtensions(extensions, hotkeys);
     _initServers(servers);
     initWebWorkers();
   }
 
   render() {
+    const { whiteLabelling, routerBasename } = this.props;
     const userManager = this._userManager;
     const config = {
       appConfig: this._appConfig,
@@ -105,19 +109,12 @@ class App extends Component {
             <I18nextProvider i18n={i18n}>
               <OidcProvider store={store} userManager={userManager}>
                 <UserManagerContext.Provider value={userManager}>
-                  <Router basename={this.props.routerBasename}>
-                    <WhiteLabellingContext.Provider
-                      value={this.props.whiteLabelling}
-                    >
-                      <SnackbarProvider>
-                        {/* PubSubBus.pushNotification('name of event', payloadOfInformation)
-                        PubSubBus.subscribeNotification('name of event', handler(data) => {
-
-                          const { show } = useSnackbarContext();
-                          show(data);
-
-                        }); */}
-                        <OHIFStandaloneViewer userManager={userManager} />
+                  <Router basename={routerBasename}>
+                    <WhiteLabellingContext.Provider value={whiteLabelling}>
+                      <SnackbarProvider service={UINotificationService}>
+                        <ModalProvider modal={OHIFModal}>
+                          <OHIFStandaloneViewer userManager={userManager} />
+                        </ModalProvider>
                       </SnackbarProvider>
                     </WhiteLabellingContext.Provider>
                   </Router>
@@ -133,10 +130,12 @@ class App extends Component {
       <AppContext.Provider value={config}>
         <Provider store={store}>
           <I18nextProvider i18n={i18n}>
-            <Router basename={this.props.routerBasename}>
-              <WhiteLabellingContext.Provider value={this.props.whiteLabelling}>
-                <SnackbarProvider>
-                  <OHIFStandaloneViewer />
+            <Router basename={routerBasename}>
+              <WhiteLabellingContext.Provider value={whiteLabelling}>
+                <SnackbarProvider service={UINotificationService}>
+                  <ModalProvider modal={OHIFModal}>
+                    <OHIFStandaloneViewer />
+                  </ModalProvider>
                 </SnackbarProvider>
               </WhiteLabellingContext.Provider>
             </Router>

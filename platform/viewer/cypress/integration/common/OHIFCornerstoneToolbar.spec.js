@@ -66,7 +66,7 @@ describe('OHIF Cornerstone Toolbar', () => {
   });
 
   it('checks if Zoom tool will zoom in/out an image in the viewport', () => {
-    //Click on button and vefiry if icon is active on toolbar
+    //Click on button and verify if icon is active on toolbar
     cy.get('@zoomBtn')
       .click()
       .then($zoomBtn => {
@@ -391,6 +391,20 @@ describe('OHIF Cornerstone Toolbar', () => {
         .its('length')
         .should('be.eq', 1);
     });
+  });
+
+  it('checks if the available viewport was set to active when layout is decreased', () => {
+    cy.setLayout(3, 3);
+
+    // activate the ninth viewport
+    cy.get('[data-cy=viewport-container-8]')
+      .click()
+      .should('have.class', 'active');
+
+    cy.setLayout(1, 1);
+
+    // first viewport should be active
+    cy.get('[data-cy=viewport-container-0]').should('have.class', 'active');
   });
 
   it('checks if Clear tool will delete all measurements added in the viewport', () => {
