@@ -90,13 +90,14 @@ describe('OHIF VTK Extension', () => {
       .trigger('mousemove', 'top', { which: 1 })
       .trigger('mousedown', 'center', { which: 1 })
       .trigger('mousemove', 'top', { which: 1 })
-      .trigger('mouseup', { which: 1 });
-
-    const expectedText = 'W: 350 L: -1044';
-    cy.get('.ViewportOverlay > div.bottom-right.overlay-element').should(
-      'contains.text',
-      expectedText
-    );
+      .trigger('mouseup', { which: 1 })
+      .then(() => {
+        const expectedText = 'W: 350 L: -1044';
+        cy.get('.ViewportOverlay > div.bottom-right.overlay-element').should(
+          'contains.text',
+          expectedText
+        );
+      });
 
     // Visual comparison
     cy.screenshot('VTK WWWC tool - Canvas should be bright');

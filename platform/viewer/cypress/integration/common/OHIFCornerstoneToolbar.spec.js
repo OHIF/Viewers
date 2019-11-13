@@ -115,10 +115,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@viewport')
       .trigger('mousedown', 'center', { which: 1 })
       .trigger('mousemove', 'bottom', { which: 1 })
-      .trigger('mouseup', 'bottom')
-      .then(() => {
-        expect(currentPan().y > 0).to.eq(true);
-      });
+      .trigger('mouseup', 'bottom');
 
     // Visual comparison
     cy.screenshot('Pan tool moved the image inside the viewport');
