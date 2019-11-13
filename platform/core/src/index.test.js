@@ -8,6 +8,7 @@ describe('Top level exports', () => {
       'CommandsManager',
       'ExtensionManager',
       'HotkeysManager',
+      'ServicesManager',
       //
       'createUiNotificationService',
       //
