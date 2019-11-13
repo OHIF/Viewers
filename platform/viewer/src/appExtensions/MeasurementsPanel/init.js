@@ -35,7 +35,6 @@ const MEASUREMENT_ACTION_MAP = {
  * @param {*} configuration
  */
 export default function init({ serviceManager, configuration = {} }) {
-  const { UINotificationService } = serviceManager.services;
   // If these tools were already added by a different extension, we want to replace
   // them with the same tools that have an alternative configuration. By passing in
   // our custom `getMeasurementLocationCallback`, we can...
@@ -91,12 +90,6 @@ export default function init({ serviceManager, configuration = {} }) {
   csTools.addTool(csTools.ArrowAnnotateTool, {
     configuration: {
       getMeasurementLocationCallback: toolLabellingFlowCallback,
-      getTextCallback: async () => {
-        await UINotificationService.show({ title: 'it', message: 'works!' });
-      },
-      changeTextCallback: () => {
-        alert('change text');
-      },
     },
   });
 

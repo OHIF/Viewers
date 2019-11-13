@@ -29,7 +29,6 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
  * @param {Object|Array} configuration.csToolsConfig
  */
 export default function init({ serviceManager, configuration = {} }) {
-  const { UINotificationService } = serviceManager.services;
   const { csToolsConfig } = configuration;
   const { StackManager } = OHIF.utils;
   const metadataProvider = new OHIF.cornerstone.MetadataProvider();
@@ -63,6 +62,7 @@ export default function init({ serviceManager, configuration = {} }) {
     ZoomTouchPinchTool,
     // Annotations
     EraserTool,
+    ArrowAnnotateTool,
     BidirectionalTool,
     LengthTool,
     AngleTool,
@@ -85,6 +85,7 @@ export default function init({ serviceManager, configuration = {} }) {
     ZoomTouchPinchTool,
     // Annotations
     EraserTool,
+    ArrowAnnotateTool,
     BidirectionalTool,
     LengthTool,
     AngleTool,
@@ -97,18 +98,6 @@ export default function init({ serviceManager, configuration = {} }) {
   ];
 
   tools.forEach(tool => csTools.addTool(tool));
-
-  csTools.addTool(csTools.ArrowAnnotateTool, {
-    configuration: {
-      getTextCallback: async () => {
-        alert('change text');
-        await UINotificationService.show({ title: 'it', message: 'works!' });
-      },
-      changeTextCallback: () => {
-        alert('change text');
-      },
-    },
-  });
 
   csTools.setToolActive('Pan', { mouseButtonMask: 4 });
   csTools.setToolActive('Zoom', { mouseButtonMask: 2 });
