@@ -24,12 +24,15 @@ const retrieveDataFromMeasurements = measurements => {
     });
   });
 
-  const report = MeasurementReport.generateReport(
-    toolState,
-    cornerstone.metaData
-  );
-
-  return report.dataset;
+  try {
+    const report = MeasurementReport.generateReport(
+      toolState,
+      cornerstone.metaData
+    );
+    return report.dataset;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export default retrieveDataFromMeasurements;

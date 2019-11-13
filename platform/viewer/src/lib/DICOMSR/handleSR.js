@@ -27,9 +27,14 @@ const retrieveMeasurementFromSR = async (series, server) => {
 };
 
 const stowSRFromMeasurements = async (measurements, server) => {
-  const dataset = retrieveDataFromMeasurements(measurements);
-  const { DicomMetaDictionary, DicomDict } = dcmjs.data;
+  let dataset;
+  try {
+    dataset = retrieveDataFromMeasurements(measurements);
+  } catch (error) {
+    throw error;
+  }
 
+  const { DicomMetaDictionary, DicomDict } = dcmjs.data;
   const meta = {
     FileMetaInformationVersion: dataset._meta.FileMetaInformationVersion.Value,
     MediaStorageSOPClassUID: dataset.SOPClassUID,

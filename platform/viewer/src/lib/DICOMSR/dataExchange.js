@@ -21,15 +21,19 @@ export const storeMeasurements = (measurementData, filter, server) => {
     return Promise.reject({});
   }
 
+  const firstMeasurementKey = Object.keys(measurementData)[0];
+  const firstMeasurement = measurementData[firstMeasurementKey][0];
   const studyInstanceUid =
-    measurementData[Object.keys(measurementData)[0]][0].studyInstanceUid;
+    firstMeasurement && firstMeasurement.studyInstanceUid;
 
   return stowSRFromMeasurements(measurementData, server).then(
     () => {
-      OHIF.studies.deleteStudyMetadataPromise(studyInstanceUid);
+      if (studyInstanceUid) {
+        OHIF.studies.deleteStudyMetadataPromise(studyInstanceUid);
+      }
     },
     error => {
-      throw new Error(error);
+      throw error;
     }
   );
 };

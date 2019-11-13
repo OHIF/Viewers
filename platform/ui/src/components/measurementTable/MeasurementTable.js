@@ -101,7 +101,7 @@ class MeasurementTable extends Component {
           message: 'Measurements were saved with success',
         });
       } catch (error) {
-        log.error(`Error during store attempt: ${error}`);
+        log.error(`Error during store attempt: ${error.message}`);
         snackbarContext.show({
           title: 'STOW SR',
           message: 'Error while saving the measurements',
