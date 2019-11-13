@@ -112,18 +112,6 @@ describe('OHIF Cornerstone Toolbar', () => {
         cy.wrap($panBtn).should('have.class', 'active');
       });
 
-    //Get image position from cornerstone and check if y axis was modified
-    let cornerstone;
-    let currentPan;
-
-    cy.window()
-      .its('cornerstone')
-      .then(c => {
-        cornerstone = c;
-        currentPan = () =>
-          cornerstone.getEnabledElements()[0].viewport.translation;
-      });
-
     cy.get('@viewport')
       .trigger('mousedown', 'center', { which: 1 })
       .trigger('mousemove', 'bottom', { which: 1 })
@@ -133,7 +121,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       });
 
     // Visual comparison
-    cy.screenshot();
+    cy.screenshot('Pan tool moved the image inside the viewport');
     cy.percyCanvasSnapshot('Pan tool moved the image inside the viewport');
   });
 
@@ -490,16 +478,9 @@ describe('OHIF Cornerstone Toolbar', () => {
       .contains('Invert')
       .click();
 
-    // check on cornerstone if image was inverted
-    cy.window()
-      .its('cornerstone')
-      .then($cornerstone => {
-        expect($cornerstone.getEnabledElements()[0].viewport.invert).to.be.true;
-      });
-
     // Visual comparison
-    cy.screenshot();
-    cy.percyCanvasSnapshot('Invert tool');
+    cy.screenshot('Invert tool - Should Invert Canvas');
+    cy.percyCanvasSnapshot('Invert tool - Should Invert Canvas');
   });
 
   it('check if Rotate tool will change the image orientation in the viewport', () => {
@@ -515,18 +496,9 @@ describe('OHIF Cornerstone Toolbar', () => {
           .click({ force: true });
       });
 
-    //Check on cornerstone if image was rotated
-    cy.window()
-      .its('cornerstone')
-      .then($cornerstone => {
-        expect($cornerstone.getEnabledElements()[0].viewport.rotation).to.equal(
-          90
-        );
-      });
-
     // Visual comparison
-    cy.screenshot();
-    cy.percyCanvasSnapshot('Rotate tool');
+    cy.screenshot('Rotate tool - Should Rotate Image to Right');
+    cy.percyCanvasSnapshot('Rotate tool - Should Rotate Image to Right');
   });
 
   it('check if Flip H tool will flip the image horizontally in the viewport', () => {
@@ -540,16 +512,9 @@ describe('OHIF Cornerstone Toolbar', () => {
       .contains('Flip H')
       .click();
 
-    //Check on cornerstone if image was flipped horizontally
-    cy.window()
-      .its('cornerstone')
-      .then($cornerstone => {
-        expect($cornerstone.getEnabledElements()[0].viewport.hflip).to.be.true;
-      });
-
     // Visual comparison
-    cy.screenshot();
-    cy.percyCanvasSnapshot('Flip H tool');
+    cy.screenshot('Flip H tool - Should Flip Image on Y axis');
+    cy.percyCanvasSnapshot('Flip H tool - Should Flip Image on Y axis');
   });
 
   it('check if Flip V tool will flip the image vertically in the viewport', () => {
@@ -563,15 +528,8 @@ describe('OHIF Cornerstone Toolbar', () => {
       .contains('Flip V')
       .click();
 
-    //Check on cornerstone if image was flipped vertically
-    cy.window()
-      .its('cornerstone')
-      .then($cornerstone => {
-        expect($cornerstone.getEnabledElements()[0].viewport.vflip).to.be.true;
-      });
-
     // Visual comparison
-    cy.screenshot();
-    cy.percyCanvasSnapshot('Flip V tool');
+    cy.screenshot('Flip V tool - Should Flip Image on X axis');
+    cy.percyCanvasSnapshot('Flip V tool - Should Flip Image on X axis');
   });
 });

@@ -57,8 +57,10 @@ describe('OHIF VTK Extension', () => {
       .contains('Layout');
 
     // Visual comparison
-    cy.screenshot();
-    cy.percyCanvasSnapshot('VTK initial');
+    cy.screenshot('VTK initial state - Should display toolbar and 3 viewports');
+    cy.percyCanvasSnapshot(
+      'VTK initial state - Should display toolbar and 3 viewports'
+    );
   });
 
   it('checks Crosshairs tool', () => {
@@ -71,8 +73,12 @@ describe('OHIF VTK Extension', () => {
       .trigger('mouseup');
 
     // Visual comparison
-    cy.screenshot();
-    cy.percyCanvasSnapshot('VTK Crosshairs tool');
+    cy.screenshot(
+      "VTK Crosshairs tool - Should display crosshairs' green lines"
+    );
+    cy.percyCanvasSnapshot(
+      "VTK Crosshairs tool - Should display crosshairs' green lines"
+    );
   });
 
   it('checks WWWC tool', () => {
@@ -86,9 +92,15 @@ describe('OHIF VTK Extension', () => {
       .trigger('mousemove', 'top', { which: 1 })
       .trigger('mouseup', { which: 1 });
 
+    const expectedText = 'W: 350 L: -1044';
+    cy.get('.ViewportOverlay > div.bottom-right.overlay-element').should(
+      'contains.text',
+      expectedText
+    );
+
     // Visual comparison
-    cy.screenshot();
-    cy.percyCanvasSnapshot('VTK WWWC tool');
+    cy.screenshot('VTK WWWC tool - Canvas should be bright');
+    cy.percyCanvasSnapshot('VTK WWWC tool - Canvas should be bright');
   });
 
   it('checks Rotate tool', () => {
@@ -103,7 +115,7 @@ describe('OHIF VTK Extension', () => {
       .trigger('mouseup', { which: 1 });
 
     // Visual comparison
-    cy.screenshot();
-    cy.percyCanvasSnapshot('VTK Rotate tool');
+    cy.screenshot('VTK Rotate tool - Should rotate image');
+    cy.percyCanvasSnapshot('VTK Rotate tool - Should rotate image');
   });
 });
