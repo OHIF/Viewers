@@ -62,3 +62,4 @@ shell-server@0.3.0
 fds:threejs
 polguixe:meteor-datgui
 url
+sergeyt:typeahead

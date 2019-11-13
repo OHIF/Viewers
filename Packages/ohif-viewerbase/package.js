@@ -218,6 +218,7 @@ Package.onUse(function(api) {
 
 
     api.use('gtajesgenga:ami');
+    api.use('gtajesgenga:vtk');
     api.mainModule('main.js', 'client');
 
 });

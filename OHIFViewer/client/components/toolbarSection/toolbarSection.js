@@ -33,6 +33,13 @@ Template.toolbarSection.helpers({
         let buttonData = [];
 
         buttonData.push({
+            toggleable: false,
+            id: 'pipelineSelectorButton',
+            title: 'Pipeline selector',
+            template: 'pipelineSelector'
+        });
+
+        buttonData.push({
             toggleable: true,
             id: 'enableSelectionButton',
             title: 'Select mode',

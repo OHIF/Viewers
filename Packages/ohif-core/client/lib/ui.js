@@ -4,7 +4,6 @@ import { Meteor } from 'meteor/meteor';
 // Get the UI settings
 const ui = Meteor.settings && Meteor.settings.public && Meteor.settings.public.ui;
 OHIF.uiSettings = ui || {};
-OHIF.uiSettings.show3DViewport = Meteor.settings.public.custom && Meteor.settings.public.custom.show3DViewport || false;
 
 /**
  * Get the offset for the given element

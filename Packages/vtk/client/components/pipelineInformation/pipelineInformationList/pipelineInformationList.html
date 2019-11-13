@@ -1,0 +1,38 @@
+<template name="pipelineInformationList">
+    {{#form api=instance.api}}
+        <table id="tblPipeline" class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#if Template.subscriptionsReady}}
+                    {{#each pipeline in pipelines}}
+                        <tr>
+                            <td>{{pipeline.name}}</td>
+                            <td class="text-right">
+                                <div class="btn-group" role="group" aria-label="Actions">
+                                    {{#button class='btn btn-sm btn-default' action='edit' params=pipeline title='Edit'}}
+                                        <i class="fa fa-pencil"></i>
+                                    {{/button}}
+                                    {{#button class='btn btn-sm btn-danger' action='delete' params=pipeline title='Remove'}}
+                                        <i class="fa fa-trash"></i>
+                                    {{/button}}
+                                </div>
+                            </td>
+                        </tr>
+                    {{else}}
+                        <tr>
+                            <td class="text-center" colspan="3">No pipelines found</td>
+                        </tr>
+                    {{/each}}
+                {{/if}}
+            </tbody>
+        </table>
+        {{#button class='btn btn-sm btn-default' action='add'}}
+            <i class="fa fa-plus"></i> Add a new pipeline
+        {{/button}}
+    {{/form}}
+</template>

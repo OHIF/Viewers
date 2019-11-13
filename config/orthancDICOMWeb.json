@@ -20,7 +20,7 @@
     ]
   },
   "defaultServiceType": "dicomWeb",
-  "dropCollections": true,
+  "dropCollections": false,
   "public": {
     "verifyEmail": false,
     "demoUserEnabled": false,
@@ -30,10 +30,8 @@
         "displaySetNavigationLoopOverSeries": false,
         "displaySetNavigationMultipleViewports": true,
         "autoPositionMeasurementsTextCallOuts": "TRLB",
-        "displaySeriesQuickSwitch": true
-    },
-    "custom": {
-      "show3DViewport": true
+        "displaySeriesQuickSwitch": true,
+        "show3DViewport": true
     }
   },
   "proxy": {

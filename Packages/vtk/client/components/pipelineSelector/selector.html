@@ -1,0 +1,14 @@
+<template name="pipelineSelector">
+    <div class="pipeline-selector">
+        <input id="selected-pipeline-id" type="hidden"/>
+        <label for="pipeline-selector">Pipeline:</label>
+        <input class="form-control typeahead" id="pipeline-selector" name="pipeline-selector" type="text"
+               placeholder="Search pipelines" autocomplete="off" spellcheck="off"
+               data-source="pipelines" data-select="selected" data-min-length="0" data-highlight="true"
+               data-hint="true" data-value-key="name"/>
+        <label class="fa fa-cog"></label>
+        {{#unless Template.subscriptionsReady}}
+            Loading...
+        {{/unless}}
+    </div>
+</template>
