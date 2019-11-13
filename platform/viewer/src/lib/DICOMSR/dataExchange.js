@@ -17,7 +17,7 @@ export const storeMeasurements = (measurementData, filter, server) => {
   OHIF.log.info('[DICOMSR] storeMeasurements');
 
   if (!server || server.type !== 'dicomWeb') {
-    OHIF.log.error('DicomWeb server is required!');
+    OHIF.log.error('[DICOMSR] DicomWeb server is required!');
     return Promise.reject({});
   }
 
