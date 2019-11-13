@@ -316,6 +316,7 @@ describe('OHIF Cornerstone Toolbar', () => {
           .find('td')
           .its('length')
           .should('be.eq', 9);
+        cy.get('@layoutBtn').click();
       });
 
     //verify if layout has changed to 2 viewports
@@ -326,7 +327,6 @@ describe('OHIF Cornerstone Toolbar', () => {
         .should('be.eq', 2);
     });
 
-    cy.get('@layoutBtn').click();
     cy.setLayout(2, 1);
     cy.get('.viewport-container').then($viewport => {
       cy.wrap($viewport)
@@ -335,7 +335,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     });
 
     //verify if layout has changed to 3 viewports
-    cy.get('@layoutBtn').click();
     cy.setLayout(1, 3);
     cy.get('.viewport-container').then($viewport => {
       cy.wait(1000);
@@ -344,7 +343,6 @@ describe('OHIF Cornerstone Toolbar', () => {
         .should('be.eq', 3);
     });
 
-    cy.get('@layoutBtn').click();
     cy.setLayout(3, 1);
     cy.get('.viewport-container').then($viewport => {
       cy.wrap($viewport)
@@ -353,7 +351,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     });
 
     //verify if layout has changed to 4 viewports
-    cy.get('@layoutBtn').click();
     cy.setLayout(2, 2);
     cy.get('.viewport-container').then($viewport => {
       cy.wrap($viewport)
@@ -362,7 +359,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     });
 
     //verify if layout has changed to 6 viewports
-    cy.get('@layoutBtn').click();
     cy.setLayout(2, 3);
     cy.get('.viewport-container').then($viewport => {
       cy.wrap($viewport)
@@ -370,7 +366,6 @@ describe('OHIF Cornerstone Toolbar', () => {
         .should('be.eq', 6);
     });
 
-    cy.get('@layoutBtn').click();
     cy.setLayout(3, 2);
     cy.get('.viewport-container').then($viewport => {
       cy.wrap($viewport)
@@ -379,7 +374,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     });
 
     //verify if layout has changed to 9 viewports
-    cy.get('@layoutBtn').click();
     cy.setLayout(3, 3);
     cy.get('.viewport-container').then($viewport => {
       cy.wrap($viewport)
@@ -388,7 +382,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     });
 
     //verify if layout has changed to 1 viewport
-    cy.get('@layoutBtn').click();
     cy.setLayout(1, 1);
     cy.get('.viewport-container').then($viewport => {
       cy.wrap($viewport)
@@ -463,10 +456,15 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //Click More button
     cy.get('@moreBtn').click();
-    //Click Eraser button
-    cy.get('.tooltip-inner')
-      .contains('Eraser')
-      .click();
+    //Verify if overlay is displayed
+    cy.get('.tooltip-toolbar-overlay')
+      .should('be.visible')
+      .then(() => {
+        //Click Eraser button
+        cy.get('.tooltip-inner')
+          .contains('Eraser')
+          .click({ force: true });
+      });
 
     //Erase measurement #1 and Verify if it was removed from the measurements panel
     const [x1, y1] = [150, 100];
@@ -508,12 +506,14 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Click on More button
     cy.get('@moreBtn').click();
     //Verify if overlay is displayed
-    cy.get('.tooltip-toolbar-overlay').should('be.visible');
-
-    //Click on Rotate button
-    cy.get('.tooltip-inner')
-      .contains('Rotate Right')
-      .click();
+    cy.get('.tooltip-toolbar-overlay')
+      .should('be.visible')
+      .then(() => {
+        //Click on Rotate button
+        cy.get('.tooltip-inner')
+          .contains('Rotate')
+          .click({ force: true });
+      });
 
     //Check on cornerstone if image was rotated
     cy.window()
