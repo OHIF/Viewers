@@ -1,9 +1,12 @@
 import './StudyList.styl';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import TableSearchFilter from './TableSearchFilter.js';
-import useMedia from '../../hooks/useMedia.js';
+import {
+  useDisplayMediaContent,
+  useDisplayMediaSize,
+} from '../../hooks/useMedia.js';
 import PropTypes from 'prop-types';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
 import { useTranslation } from 'react-i18next';
@@ -24,10 +27,9 @@ function StudyList(props) {
     filterValues,
     onFilterChange: handleFilterChange,
     onSelectItem: handleSelectItem,
-    //
     studyListDateFilterNumDays,
   } = props;
-  const { t, i18n, ready } = useTranslation('StudyList');
+  const { t, ready: translationsAreReady } = useTranslation('StudyList');
 
   const largeTableMeta = [
     {
@@ -98,20 +100,16 @@ function StudyList(props) {
     },
   ];
 
-  const tableMeta = useMedia(
-    ['(min-width: 1750px)', '(min-width: 1000px)', '(min-width: 768px)'],
-    [largeTableMeta, mediumTableMeta, smallTableMeta],
+  const tableMeta = useDisplayMediaContent(
+    { large: largeTableMeta, medium: mediumTableMeta, small: smallTableMeta },
     smallTableMeta
   );
-
-  if (!ready) {
-    return null;
-  }
 
   const totalSize = tableMeta
     .map(field => field.size)
     .reduce((prev, next) => prev + next);
-  return (
+
+  return translationsAreReady ? (
     <table className="table table--striped table--hoverable">
       <colgroup>
         {tableMeta.map((field, i) => {
@@ -184,7 +182,7 @@ function StudyList(props) {
           ))}
       </tbody>
     </table>
-  );
+  ) : null;
 }
 
 StudyList.propTypes = {
@@ -231,143 +229,155 @@ function TableRow(props) {
     t,
   } = props;
 
-  const largeRowTemplate = (
-    <tr
-      onClick={() => handleClick(studyInstanceUid)}
-      className={classNames({ active: isHighlighted })}
-    >
-      <td className={classNames({ 'empty-value': !patientName })}>
-        {patientName || `(${t('Empty')})`}
-      </td>
-      <td>{patientId}</td>
-      <td>{accessionNumber}</td>
-      <td>{studyDate}</td>
-      <td className={classNames({ 'empty-value': !modalities })}>
-        {modalities || `(${t('Empty')})`}
-      </td>
-      <td>{studyDescription}</td>
-    </tr>
+  const largeRowTemplate = useMemo(
+    () => (
+      <tr
+        onClick={() => handleClick(studyInstanceUid)}
+        className={classNames({ active: isHighlighted })}
+      >
+        <td className={classNames({ 'empty-value': !patientName })}>
+          {patientName || `(${t('Empty')})`}
+        </td>
+        <td>{patientId}</td>
+        <td>{accessionNumber}</td>
+        <td>{studyDate}</td>
+        <td className={classNames({ 'empty-value': !modalities })}>
+          {modalities || `(${t('Empty')})`}
+        </td>
+        <td>{studyDescription}</td>
+      </tr>
+    ),
+    []
   );
 
-  const mediumRowTemplate = (
-    <tr
-      onClick={() => handleClick(studyInstanceUid)}
-      className={classNames({ active: isHighlighted })}
-    >
-      <td className={classNames({ 'empty-value': !patientName })}>
-        {patientName || `(${t('Empty')})`}
-        <div style={{ color: '#60656f' }}>{patientId}</div>
-      </td>
-      <td>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {/* DESCRIPTION */}
-          <div
-            className="hide-xs"
-            style={{
-              whiteSpace: 'pre-wrap',
-              flexGrow: 1,
-            }}
-          >
-            {studyDescription}
-          </div>
-
-          {/* MODALITY & ACCESSION */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              maxWidth: '80px',
-              width: '80px',
-            }}
-          >
+  const mediumRowTemplate = useMemo(
+    () => (
+      <tr
+        onClick={() => handleClick(studyInstanceUid)}
+        className={classNames({ active: isHighlighted })}
+      >
+        <td className={classNames({ 'empty-value': !patientName })}>
+          {patientName || `(${t('Empty')})`}
+          <div style={{ color: '#60656f' }}>{patientId}</div>
+        </td>
+        <td>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            {/* DESCRIPTION */}
             <div
-              className={classNames({
-                modalities: modalities,
-                'empty-value': !modalities,
-              })}
-              aria-label={modalities}
-              title={modalities}
+              className="hide-xs"
+              style={{
+                whiteSpace: 'pre-wrap',
+                flexGrow: 1,
+              }}
             >
-              {modalities || `(${t('Empty')})`}
+              {studyDescription}
             </div>
+
+            {/* MODALITY & ACCESSION */}
             <div
               style={{
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                maxWidth: '80px',
+                width: '80px',
               }}
-              aria-label={accessionNumber}
-              title={accessionNumber}
             >
-              {accessionNumber}
+              <div
+                className={classNames({
+                  modalities: modalities,
+                  'empty-value': !modalities,
+                })}
+                aria-label={modalities}
+                title={modalities}
+              >
+                {modalities || `(${t('Empty')})`}
+              </div>
+              <div
+                style={{
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                }}
+                aria-label={accessionNumber}
+                title={accessionNumber}
+              >
+                {accessionNumber}
+              </div>
             </div>
           </div>
-        </div>
-      </td>
-      {/* DATE */}
-      <td style={{ textAlign: 'center' }}>{studyDate}</td>
-    </tr>
+        </td>
+        {/* DATE */}
+        <td style={{ textAlign: 'center' }}>{studyDate}</td>
+      </tr>
+    ),
+    []
   );
 
-  const smallRowTemplate = (
-    <tr
-      onClick={() => handleClick(studyInstanceUid)}
-      className={classNames({ active: isHighlighted })}
-    >
-      <td style={{ position: 'relative', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {/* NAME AND ID */}
-          <div
-            className={classNames({ 'empty-value': !patientName })}
-            style={{ width: '150px', minWidth: '150px' }}
-          >
-            <div style={{ fontWeight: 500, paddingTop: '3px' }}>
-              {patientName || `(${t('Empty')})`}
-            </div>
-            <div style={{ color: '#60656f' }}>{patientId}</div>
-          </div>
-
-          {/* DESCRIPTION */}
-          <div
-            className="hide-xs"
-            style={{
-              whiteSpace: 'pre-wrap',
-              flexGrow: 1,
-              paddingLeft: '35px',
-            }}
-          >
-            {studyDescription}
-          </div>
-
-          {/* MODALITY & DATE */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              maxWidth: '80px',
-              width: '80px',
-            }}
-          >
+  const smallRowTemplate = useMemo(
+    () => (
+      <tr
+        onClick={() => handleClick(studyInstanceUid)}
+        className={classNames({ active: isHighlighted })}
+      >
+        <td style={{ position: 'relative', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            {/* NAME AND ID */}
             <div
-              className={classNames({
-                modalities: modalities,
-                'empty-value': !modalities,
-              })}
-              aria-label={modalities}
-              title={modalities}
+              className={classNames({ 'empty-value': !patientName })}
+              style={{ width: '150px', minWidth: '150px' }}
             >
-              {modalities || `(${t('Empty')})`}
+              <div style={{ fontWeight: 500, paddingTop: '3px' }}>
+                {patientName || `(${t('Empty')})`}
+              </div>
+              <div style={{ color: '#60656f' }}>{patientId}</div>
             </div>
-            <div>{studyDate}</div>
+
+            {/* DESCRIPTION */}
+            <div
+              className="hide-xs"
+              style={{
+                whiteSpace: 'pre-wrap',
+                flexGrow: 1,
+                paddingLeft: '35px',
+              }}
+            >
+              {studyDescription}
+            </div>
+
+            {/* MODALITY & DATE */}
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                maxWidth: '80px',
+                width: '80px',
+              }}
+            >
+              <div
+                className={classNames({
+                  modalities: modalities,
+                  'empty-value': !modalities,
+                })}
+                aria-label={modalities}
+                title={modalities}
+              >
+                {modalities || `(${t('Empty')})`}
+              </div>
+              <div>{studyDate}</div>
+            </div>
           </div>
-        </div>
-      </td>
-    </tr>
+        </td>
+      </tr>
+    ),
+    []
   );
 
-  const rowTemplate = useMedia(
-    ['(min-width: 1750px)', '(min-width: 1000px)', '(min-width: 768px)'],
-    [largeRowTemplate, mediumRowTemplate, smallRowTemplate],
+  const rowTemplate = useDisplayMediaContent(
+    {
+      large: largeRowTemplate,
+      medium: mediumRowTemplate,
+      small: smallRowTemplate,
+    },
     smallRowTemplate
   );
 

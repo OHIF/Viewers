@@ -1,4 +1,4 @@
-import useMedia from './useMedia.js';
+import { useDisplayMediaSize, useDisplayMediaContent } from './useMedia.js';
 import useDebounce from './useDebounce.js';
 
-export { useDebounce, useMedia };
+export { useDebounce, useDisplayMediaSize, useDisplayMediaContent };

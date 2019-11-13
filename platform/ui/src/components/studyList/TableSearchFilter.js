@@ -18,7 +18,7 @@ function TableSearchFilter(props) {
     studyListDateFilterNumDays,
   } = props;
   const [focusedInput, setFocusedInput] = useState(null);
-  const { t, i18n, ready } = useTranslation('Common');
+  const { t, ready: translationsAreReady } = useTranslation('Common');
 
   const sortIcons = ['sort', 'sort-up', 'sort-down'];
   const sortIconForSortField =
@@ -51,7 +51,7 @@ function TableSearchFilter(props) {
     },
   ];
 
-  return ready
+  return translationsAreReady
     ? meta.map((field, i) => {
         const { displayText, fieldName, inputType } = field;
         const isSortField = sortFieldName === fieldName;

@@ -9,7 +9,7 @@ import {
   PageToolbar,
   TablePagination,
   useDebounce,
-  useMedia,
+  useDisplayMediaSize,
 } from '@ohif/ui';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import * as RoutesUtil from '../routes/routesUtil';
@@ -58,7 +58,7 @@ function StudyListRoute(props) {
   const [pageNumber, setPageNumber] = useState(0);
   const appContext = useContext(AppContext);
   // ~~ RESPONSIVE
-  const displaySize = useMedia(
+  const displaySize = useDisplayMediaSize(
     ['(min-width: 1750px)', '(min-width: 1000px)', '(min-width: 768px)'],
     ['large', 'medium', 'small'],
     'small'
@@ -113,7 +113,8 @@ function StudyListRoute(props) {
       pageNumber,
       displaySize,
       server,
-    ]);
+    ]
+  );
 
   // TODO: Update Server
   // if (this.props.server !== prevProps.server) {
