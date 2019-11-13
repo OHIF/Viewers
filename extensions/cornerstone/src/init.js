@@ -29,7 +29,7 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
  * @param {Object|Array} configuration.csToolsConfig
  */
 export default function init(services, configuration = {}) {
-  const { DialogService } = services;
+  const { UINotificationService } = services;
   const { csToolsConfig } = configuration;
   const { StackManager } = OHIF.utils;
   const metadataProvider = new OHIF.cornerstone.MetadataProvider();
@@ -101,9 +101,8 @@ export default function init(services, configuration = {}) {
   csTools.addTool(csTools.ArrowAnnotateTool, {
     configuration: {
       getTextCallback: async () => {
-        alert('Trying to get text hahahah');
-        const getValueFromDialog = await DialogService.show();
-        // alert(getValueFromDialog);
+        alert('change text');
+        await UINotificationService.show({ title: 'it', message: 'works!' });
       },
       changeTextCallback: () => {
         alert('change text');

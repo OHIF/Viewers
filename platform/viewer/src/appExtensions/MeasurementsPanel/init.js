@@ -92,7 +92,7 @@ export default function init(services, configuration = {}) {
     configuration: {
       getMeasurementLocationCallback: toolLabellingFlowCallback,
       getTextCallback: async () => {
-        await UINotificationService.show({ title: 'blah', message: 'blue' });
+        await UINotificationService.show({ title: 'it', message: 'works!' });
       },
       changeTextCallback: () => {
         alert('change text');
