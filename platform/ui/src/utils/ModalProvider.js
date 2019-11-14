@@ -32,7 +32,9 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
    * @returns void
    */
   useEffect(() => {
-    service.setServiceImplementation({ hide, show });
+    if (service) {
+      service.setServiceImplementation({ hide, show });
+    }
   }, [hide, service, show]);
 
   /**
@@ -78,6 +80,10 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
   );
 };
 
+ModalProvider.defaultProps = {
+  service: null,
+};
+
 ModalProvider.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
@@ -91,7 +97,7 @@ ModalProvider.propTypes = {
   ]).isRequired,
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
-  }).isRequired,
+  }),
 };
 
 /**

@@ -5,6 +5,8 @@ import React, {
   useCallback,
   useEffect,
 } from 'react';
+import PropTypes from 'prop-types';
+
 import SnackbarContainer from '../components/snackbar/SnackbarContainer';
 import SnackbarTypes from '../components/snackbar/SnackbarTypes';
 
@@ -31,7 +33,9 @@ const SnackbarProvider = ({ children, service }) => {
    * @returns void
    */
   useEffect(() => {
-    service.setServiceImplementation({ hide, show });
+    if (service) {
+      service.setServiceImplementation({ hide, show });
+    }
   }, [service, hide, show]);
 
   const show = useCallback(options => {
@@ -98,6 +102,21 @@ const SnackbarProvider = ({ children, service }) => {
       {children}
     </SnackbarContext.Provider>
   );
+};
+
+SnackbarProvider.defaultProps = {
+  service: null,
+};
+
+SnackbarProvider.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.func,
+  ]).isRequired,
+  service: PropTypes.shape({
+    setServiceImplementation: PropTypes.func,
+  }),
 };
 
 /**
