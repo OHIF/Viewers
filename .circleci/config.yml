@@ -180,7 +180,9 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run: sudo npm install netlify-cli -g
-      - run: sudo npx netlify deploy --prod --dir platform/viewer/dist
+      - run:
+          sudo npx netlify deploy --prod --auth $NETLIFY_AUTH_TOKEN --dir
+          platform/viewer/dist
 
   DEPLOY_TO_STAGING:
     docker:
