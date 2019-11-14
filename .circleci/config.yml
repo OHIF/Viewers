@@ -168,6 +168,7 @@ jobs:
           paths:
             - platform/viewer/dist
             - netlify.toml
+            - .netlify
 
   DEPLOY_TO_DEV:
     docker:
@@ -179,10 +180,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
-      - run: sudo npm install netlify-cli -g
-      - run:
-          sudo npx netlify deploy --prod --auth $NETLIFY_AUTH_TOKEN --dir
-          platform/viewer/dist
+      - run: cd .netlify && npm install
+      - run: cd .netlify && npm run deploy
 
   DEPLOY_TO_STAGING:
     docker:
