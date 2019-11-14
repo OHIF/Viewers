@@ -111,7 +111,8 @@ ModalProvider.propTypes = {
  */
 export const withModal = Component => {
   return function WrappedComponent(props) {
-    return <Component {...props} modalContext={{ ...useModal() }} />;
+    const { show, hide } = useModal();
+    return <Component {...props} modal={{ show, hide }} />;
   };
 };
 
