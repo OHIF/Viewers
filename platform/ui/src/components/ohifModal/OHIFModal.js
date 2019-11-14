@@ -35,7 +35,6 @@ const OHIFModal = ({
     <ReactBootstrapModal.Body>{children}</ReactBootstrapModal.Body>
     {Footer && (
       <ReactBootstrapModal.Footer>
-        {' '}
         <Footer hide={onHide} />
       </ReactBootstrapModal.Footer>
     )}
@@ -50,8 +49,16 @@ OHIFModal.propTypes = {
   show: PropTypes.bool,
   title: PropTypes.string,
   onHide: PropTypes.func,
-  footer: PropTypes.node,
-  header: PropTypes.node,
+  footer: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.func,
+  ]),
+  header: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.func,
+  ]),
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
