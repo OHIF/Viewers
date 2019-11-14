@@ -66,12 +66,16 @@ function makeSeriesAsyncLoader(
 export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader {
   configLoad() {
     const { server } = this;
-
-    const client = new api.DICOMwebClient({
-      url: server.qidoRoot,
-      headers: DICOMWeb.getAuthorizationHeader(server),
-    });
-
+	
+	// 要在options中加上qidoURLPrefix和wadoURLPrefix，防止后面的URL都指向同一个。    jwa 2019.11.12
+	var options = {
+		url: server.baseUrl,
+        headers: DICOMWeb.getAuthorizationHeader(server),
+		qidoURLPrefix: server.qidoURLPrefix,
+		wadoURLPrefix: server.wadoURLPrefix,
+	};
+	
+	const client = new api.DICOMwebClient(options);
     this.client = client;
   }
 
