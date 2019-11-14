@@ -1,4 +1,4 @@
-import { api } from 'dicomweb-client';
+﻿import { api } from 'dicomweb-client';
 import DICOMWeb from '../../../DICOMWeb/';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 import { sortStudySeries, sortingCriteria } from '../../sortStudy';
@@ -67,7 +67,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
   configLoad() {
     const { server } = this;
 	
-	// 要在options中加上qidoURLPrefix和wadoURLPrefix，防止后面的URL都指向同一个。    jwa 2019.11.12
+	
 	var options = {
 		url: server.baseUrl,
         headers: DICOMWeb.getAuthorizationHeader(server),
