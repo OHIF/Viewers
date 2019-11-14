@@ -1,7 +1,7 @@
 /**
  * A UI Element
  *
- * @typedef {HTMLElement} Modal
+ * @typedef {ReactElement|HTMLElement} Modal
  */
 
 /**
@@ -16,7 +16,7 @@
  * @property {boolean} [customClassName=null] - '.ModalClass'
  */
 
-const uiModalServicePublicApi = {
+const uiModalServicePublicAPI = {
   name: 'UIModalService',
   hide,
   show,
@@ -28,14 +28,14 @@ const uiModalServiceImplementation = {
   _show: () => console.warn('show() NOT IMPLEMENTED'),
 };
 
-function createUiModalService() {
-  return uiModalServicePublicApi;
+function createUIModalService() {
+  return uiModalServicePublicAPI;
 }
 
 /**
  * Show a new UI modal;
  *
- * @param {Modal} component
+ * @param {Modal} component React component
  * @param {ModalProps} props { backdrop, keyboard, show, closeButton, title, customClassName }
  */
 function show(component, props) {
@@ -86,4 +86,4 @@ function setServiceImplementation({
   }
 }
 
-export default createUiModalService;
+export default createUIModalService;
