@@ -40,10 +40,9 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
    *
    * @returns void
    */
-  const show = useCallback((component, props = {}) => {
-    setOptions(Object.assign({}, options, props, { component }));
-    console.log(component, props);
-  });
+  const show = useCallback((component, props = {}) =>
+    setOptions(Object.assign({}, options, props, { component }))
+  );
 
   /**
    * Hide the modal and set its properties to default.
@@ -80,8 +79,16 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
 };
 
 ModalProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-  modal: PropTypes.node.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.func,
+  ]).isRequired,
+  modal: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.func,
+  ]).isRequired,
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }).isRequired,
