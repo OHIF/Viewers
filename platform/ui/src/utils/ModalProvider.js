@@ -2,20 +2,22 @@ import React, {
   useState,
   createContext,
   useContext,
-  useCallback,
   useEffect,
+  useCallback,
 } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 const ModalContext = createContext(null);
-const { Provider, Consumer } = ModalContext;
+const { Provider } = ModalContext;
 
 export const useModal = () => useContext(ModalContext);
 
 const ModalProvider = ({ children, modal: Modal, service }) => {
   const DEFAULT_OPTIONS = {
     component: null /* The component instance inside the modal. */,
+    header: null /* The content inside the modal header. */,
+    footer: null /* The content inside the modal footer. */,
     backdrop: false /* Should the modal render a backdrop overlay. */,
     keyboard: false /* Modal is dismissible via the esc key. */,
     show: true /* Make the Modal visible or hidden. */,
@@ -42,8 +44,10 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
    *
    * @returns void
    */
-  const show = useCallback((component, props = {}) =>
-    setOptions(Object.assign({}, options, props, { component }))
+  const show = useCallback(
+    (component, props = {}) =>
+      setOptions(Object.assign({}, options, props, { component })),
+    [options]
   );
 
   /**
@@ -51,30 +55,30 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
    *
    * @returns void
    */
-  const hide = useCallback(() => setOptions(DEFAULT_OPTIONS));
+  const hide = useCallback(() => setOptions(DEFAULT_OPTIONS), [
+    DEFAULT_OPTIONS,
+  ]);
 
   return (
-    <Provider value={{ ...options, show, hide }}>
-      <Consumer>
-        {props => {
-          const { component, footer, header, customClassName } = props;
-          return component ? (
-            <Modal
-              className={classNames(customClassName, component.className)}
-              backdrop={options.backdrop}
-              keyboard={options.keyboard}
-              show={options.show}
-              title={options.title}
-              closeButton={options.closeButton}
-              onHide={hide}
-              footer={footer}
-              header={header}
-            >
-              {component}
-            </Modal>
-          ) : null;
-        }}
-      </Consumer>
+    <Provider value={{ show, hide }}>
+      {options.component && (
+        <Modal
+          className={classNames(
+            options.customClassName,
+            options.component.className
+          )}
+          backdrop={options.backdrop}
+          keyboard={options.keyboard}
+          show={options.show}
+          title={options.title}
+          closeButton={options.closeButton}
+          onHide={hide}
+          footer={options.footer}
+          header={options.header}
+        >
+          {options.component}
+        </Modal>
+      )}
       {children}
     </Provider>
   );

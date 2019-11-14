@@ -8,6 +8,8 @@
  * UI Modal
  *
  * @typedef {Object} ModalProps
+ * @property {string} [header=null] -
+ * @property {string} [footer=null] -
  * @property {string} [backdrop=false] -
  * @property {string} [keyboard=false] -
  * @property {number} [show=true] -
@@ -36,10 +38,12 @@ function createUIModalService() {
  * Show a new UI modal;
  *
  * @param {Modal} component React component
- * @param {ModalProps} props { backdrop, keyboard, show, closeButton, title, customClassName }
+ * @param {ModalProps} props { header, footer, backdrop, keyboard, show, closeButton, title, customClassName }
  */
 function show(component, props) {
   const {
+    header = null,
+    footer = null,
     backdrop = false,
     keyboard = false,
     show = true,
@@ -48,6 +52,8 @@ function show(component, props) {
     customClassName = null,
   } = props;
   return uiModalServiceImplementation._show(component, {
+    header,
+    footer,
     backdrop,
     keyboard,
     show,
