@@ -74,9 +74,9 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           show={options.show}
           title={options.title}
           closeButton={options.closeButton}
-          onHide={hide}
           footer={options.footer}
           header={options.header}
+          onHide={hide}
         >
           <Component {...options} show={show} hide={hide} />
         </Modal>
