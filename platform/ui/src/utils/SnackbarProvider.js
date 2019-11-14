@@ -38,45 +38,51 @@ const SnackbarProvider = ({ children, service }) => {
     }
   }, [service, hide, show]);
 
-  const show = useCallback(options => {
-    if (!options || (!options.title && !options.message)) {
-      console.warn(
-        'Snackbar cannot be rendered without required parameters: title | message'
-      );
+  const show = useCallback(
+    options => {
+      if (!options || (!options.title && !options.message)) {
+        console.warn(
+          'Snackbar cannot be rendered without required parameters: title | message'
+        );
 
-      return null;
-    }
+        return null;
+      }
 
-    const newItem = {
-      ...DEFAULT_OPTIONS,
-      ...options,
-      id: count,
-      visible: true,
-    };
+      const newItem = {
+        ...DEFAULT_OPTIONS,
+        ...options,
+        id: count,
+        visible: true,
+      };
 
-    setSnackbarItems(state => [...state, newItem]);
-    setCount(count + 1);
-  });
+      setSnackbarItems(state => [...state, newItem]);
+      setCount(count + 1);
+    },
+    [count, DEFAULT_OPTIONS]
+  );
 
-  const hide = useCallback(id => {
-    const hideItem = items => {
-      const newItems = items.map(item => {
-        if (item.id === id) {
-          item.visible = false;
-        }
+  const hide = useCallback(
+    id => {
+      const hideItem = items => {
+        const newItems = items.map(item => {
+          if (item.id === id) {
+            item.visible = false;
+          }
 
-        return item;
-      });
+          return item;
+        });
 
-      return newItems;
-    };
+        return newItems;
+      };
 
-    setSnackbarItems(state => hideItem(state));
+      setSnackbarItems(state => hideItem(state));
 
-    setTimeout(() => {
-      setSnackbarItems(state => [...state.filter(item => item.id !== id)]);
-    }, 1000);
-  });
+      setTimeout(() => {
+        setSnackbarItems(state => [...state.filter(item => item.id !== id)]);
+      }, 1000);
+    },
+    [setSnackbarItems]
+  );
 
   const hideAll = () => {
     // reset count
