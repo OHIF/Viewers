@@ -25,6 +25,11 @@ const SnackbarProvider = ({ children, service }) => {
   const [count, setCount] = useState(1);
   const [snackbarItems, setSnackbarItems] = useState([]);
 
+  /**
+   * Sets the implementation of a notification service that can be used by extensions.
+   *
+   * @returns void
+   */
   useEffect(() => {
     service.setServiceImplementation({ hide, show });
   }, [service, hide, show]);
