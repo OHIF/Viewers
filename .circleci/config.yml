@@ -181,7 +181,7 @@ jobs:
           at: ~/repo
       - run: echo $(pwd) && ls
       - run: npx netlify deploy --prod --dir ~/repo/platform/viewer/dist
-
+      
   DEPLOY_TO_STAGING:
     docker:
       - image: circleci/node:12.9.1
