@@ -6,37 +6,36 @@ describe('OHIF VTK Extension', () => {
   });
 
   beforeEach(() => {
+    //TODO: Due to percy snapshot, the images inside the viewports are being resized
+    //and once the browser continues the test execution, the images are not centered in the viewport.
+    //To fix that, we need to reload the page before each test.
+    //https://github.com/OHIF/Viewers/issues/1168
+    cy.reload();
+
+    //Waiting for the desired thumbnail content to be displayed
+    cy.get('[data-cy="thumbnail-list"]').should($list => {
+      expect($list).to.contain('CT WB 5.0  B35f');
+    });
+
     // TODO: We shouldn't have to drag the thumbnail
     // This is a known bug; 2D MPR button does not show until viewport
     // has data from a drag-n-drop
-    // Drag and drop first thumbnail into first viewport
-    cy.get('[data-cy="thumbnail-list"]:nth-child(3)').drag(
-      '.viewport-drop-target'
-    );
+    // Drag and drop third thumbnail into first viewport
+    cy.get('[data-cy="thumbnail-list"]')
+      .contains('CT WB 5.0  B35f')
+      .drag('.viewport-drop-target')
+      .wait(1000); // TODO: Once issue #1167 is fixed, the wait command should be removed. (https://github.com/OHIF/Viewers/issues/1167)
 
-    cy.get('.PluginSwitch > .toolbar-button')
-      .as('twodmprBtn')
-      .should('be.visible')
-      .then(btn => {
-        if (!btn.text().includes('Exit')) {
-          btn.click();
-        }
-      });
+    //Select 2D MPR button
+    cy.get('.PluginSwitch > .toolbar-button').click();
+
+    //Wait Reformatting Images
+    cy.waitVTKReformatting();
 
     cy.initVTKToolsAliases();
   });
 
   it('checks if VTK buttons are displayed on the toolbar', () => {
-    // Wait for start reformatting
-    cy.get('[data-cy="viewprt-grid"]', { timeout: 10000 }).should($grid => {
-      expect($grid).to.contain.text('Reform');
-    });
-
-    // Wait for finish reformatting
-    cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
-      expect($grid).not.to.contain.text('Reform');
-    });
-
     cy.get('@crosshairsBtn')
       .should('be.visible')
       .contains('Crosshairs');
@@ -57,7 +56,67 @@ describe('OHIF VTK Extension', () => {
       .should('be.visible')
       .contains('Layout');
 
-    cy.wait(3000);
-    cy.percyCanvasSnapshot('VTK Extension');
+    // Visual comparison
+    cy.screenshot('VTK initial state - Should display toolbar and 3 viewports');
+    cy.percyCanvasSnapshot(
+      'VTK initial state - Should display toolbar and 3 viewports'
+    );
+  });
+
+  it('checks Crosshairs tool', () => {
+    cy.get('@crosshairsBtn').click();
+
+    // Click and Move the mouse inside the viewport
+    cy.get('[data-cy="viewport-container-0"]')
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
+      .trigger('mouseup');
+
+    // Visual comparison
+    cy.screenshot(
+      "VTK Crosshairs tool - Should display crosshairs' green lines"
+    );
+    cy.percyCanvasSnapshot(
+      "VTK Crosshairs tool - Should display crosshairs' green lines"
+    );
+  });
+
+  it('checks WWWC tool', () => {
+    cy.get('@wwwcBtn').click();
+
+    // Click and Move the mouse inside the viewport
+    cy.get('[data-cy="viewport-container-0"]')
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
+      .trigger('mouseup', { which: 1 })
+      .then(() => {
+        const expectedText = 'W: 350 L: -1044';
+        cy.get('.ViewportOverlay > div.bottom-right.overlay-element').should(
+          'contains.text',
+          expectedText
+        );
+      });
+
+    // Visual comparison
+    cy.screenshot('VTK WWWC tool - Canvas should be bright');
+    cy.percyCanvasSnapshot('VTK WWWC tool - Canvas should be bright');
+  });
+
+  it('checks Rotate tool', () => {
+    cy.get('@rotateBtn').click();
+
+    // Click and Move the mouse inside the viewport
+    cy.get('[data-cy="viewport-container-0"]')
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
+      .trigger('mouseup', { which: 1 });
+
+    // Visual comparison
+    cy.screenshot('VTK Rotate tool - Should rotate image');
+    cy.percyCanvasSnapshot('VTK Rotate tool - Should rotate image');
   });
 });
