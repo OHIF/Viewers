@@ -2,12 +2,13 @@ import MODULE_TYPES from './MODULE_TYPES.js';
 import log from './../log.js';
 
 export default class ExtensionManager {
-  constructor({ commandsManager }) {
+  constructor({ commandsManager, servicesManager }) {
     this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
     //
     this._commandsManager = commandsManager;
+    this._servicesManager = servicesManager;
 
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
@@ -66,7 +67,10 @@ export default class ExtensionManager {
 
     // preRegistrationHook
     if (extension.preRegistration) {
-      extension.preRegistration(configuration);
+      extension.preRegistration({
+        serviceManager: this._servicesManager,
+        configuration,
+      });
     }
 
     // Register Modules

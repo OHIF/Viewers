@@ -15,7 +15,13 @@ class UserPreferencesForm extends Component {
     onSave: PropTypes.func,
     onResetToDefaults: PropTypes.func,
     windowLevelData: PropTypes.object,
-    hotkeyDefinitions: PropTypes.array,
+    hotkeyDefinitions: PropTypes.arrayOf(
+      PropTypes.shape({
+        commandName: PropTypes.string,
+        keys: PropTypes.arrayOf(PropTypes.string),
+        label: PropTypes.string,
+      })
+    ).isRequired,
     t: PropTypes.func,
   };
 

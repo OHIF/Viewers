@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.4.1...@ohif/extension-cornerstone@1.5.0) (2019-11-13)
+
+
+### Features
+
+* expose UiNotifications service ([#1172](https://github.com/OHIF/Viewers/issues/1172)) ([5c04e34](https://github.com/OHIF/Viewers/commit/5c04e34c8fb2394ab7acd9eb4f2ab12afeb2f255))
+
+
+
+
+
 ## [1.4.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.4.0...@ohif/extension-cornerstone@1.4.1) (2019-11-08)
 
 

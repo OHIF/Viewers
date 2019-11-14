@@ -1,4 +1,10 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, {
+  useState,
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+} from 'react';
 import SnackbarContainer from '../components/snackbar/SnackbarContainer';
 import SnackbarTypes from '../components/snackbar/SnackbarTypes';
 
@@ -6,7 +12,7 @@ const SnackbarContext = createContext(null);
 
 export const useSnackbarContext = () => useContext(SnackbarContext);
 
-const SnackbarProvider = ({ children }) => {
+const SnackbarProvider = ({ children, service }) => {
   const DEFAULT_OPTIONS = {
     title: '',
     message: '',
@@ -19,7 +25,11 @@ const SnackbarProvider = ({ children }) => {
   const [count, setCount] = useState(1);
   const [snackbarItems, setSnackbarItems] = useState([]);
 
-  const show = options => {
+  useEffect(() => {
+    service.setServiceImplementation({ hide, show });
+  }, [service, hide, show]);
+
+  const show = useCallback(options => {
     if (!options || (!options.title && !options.message)) {
       console.warn(
         'Snackbar cannot be rendered without required parameters: title | message'
@@ -37,9 +47,9 @@ const SnackbarProvider = ({ children }) => {
 
     setSnackbarItems(state => [...state, newItem]);
     setCount(count + 1);
-  };
+  });
 
-  const hide = id => {
+  const hide = useCallback(id => {
     const hideItem = items => {
       const newItems = items.map(item => {
         if (item.id === id) {
@@ -57,7 +67,7 @@ const SnackbarProvider = ({ children }) => {
     setTimeout(() => {
       setSnackbarItems(state => [...state.filter(item => item.id !== id)]);
     }, 1000);
-  };
+  });
 
   const hideAll = () => {
     // reset count

@@ -90,6 +90,18 @@ Cypress.Commands.add('waitStudyList', () => {
   });
 });
 
+Cypress.Commands.add('waitVTKReformatting', () => {
+  // Wait for start reformatting
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 10000 }).should($grid => {
+    expect($grid).to.contain.text('Reform');
+  });
+
+  // Wait for finish reformatting
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
+    expect($grid).not.to.contain.text('Reform');
+  });
+});
+
 /**
  * Command to perform a drag and drop action. Before using this command, we must get the element that should be dragged first.
  * Example of usage: cy.get(element-to-be-dragged).drag(dropzone-element)
