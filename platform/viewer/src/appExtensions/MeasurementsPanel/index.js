@@ -10,7 +10,7 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getPanelModule() {
+  getPanelModule({ servicesManager }) {
     return {
       menuOptions: [
         {
