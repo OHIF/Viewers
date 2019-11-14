@@ -1,4 +1,10 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, {
+  useState,
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
@@ -7,7 +13,7 @@ const { Provider, Consumer } = ModalContext;
 
 export const useModal = () => useContext(ModalContext);
 
-const ModalProvider = ({ children, modal: Modal }) => {
+const ModalProvider = ({ children, modal: Modal, service }) => {
   const DEFAULT_OPTIONS = {
     component: null /* The component instance inside the modal. */,
     backdrop: false /* Should the modal render a backdrop overlay. */,
@@ -21,19 +27,30 @@ const ModalProvider = ({ children, modal: Modal }) => {
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
 
   /**
+   * Sets the implementation of a modal service that can be used by extensions.
+   *
+   * @returns void
+   */
+  useEffect(() => {
+    service.setServiceImplementation({ hide, show });
+  }, [hide, service, show]);
+
+  /**
    * Show the modal and override its configuration props.
    *
    * @returns void
    */
-  const show = (component, props = {}) =>
+  const show = useCallback((component, props = {}) => {
     setOptions(Object.assign({}, options, props, { component }));
+    console.log(component, props);
+  });
 
   /**
    * Hide the modal and set its properties to default.
    *
    * @returns void
    */
-  const hide = () => setOptions(DEFAULT_OPTIONS);
+  const hide = useCallback(() => setOptions(DEFAULT_OPTIONS));
 
   return (
     <Provider value={{ ...options, show, hide }}>
@@ -65,6 +82,9 @@ const ModalProvider = ({ children, modal: Modal }) => {
 ModalProvider.propTypes = {
   children: PropTypes.node,
   modal: PropTypes.node,
+  service: PropTypes.shape({
+    setServiceImplementation: PropTypes.func,
+  }),
 };
 
 /**

@@ -22,7 +22,7 @@ const uiNotificationServiceImplementation = {
   _show: () => console.warn('show() NOT IMPLEMENTED'),
 };
 
-function createUiNotificationService() {
+function createUINotificationService() {
   return uiNotificationServicePublicApi;
 }
 
@@ -81,4 +81,4 @@ function setServiceImplementation({
   }
 }
 
-export default createUiNotificationService;
+export default createUINotificationService;

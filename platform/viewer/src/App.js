@@ -8,7 +8,8 @@ import {
   ExtensionManager,
   ServicesManager,
   HotkeysManager,
-  createUiNotificationService,
+  createUINotificationService,
+  createUIModalService,
   utils,
 } from '@ohif/core';
 import React, { Component } from 'react';
@@ -44,7 +45,8 @@ const commandsManagerConfig = {
 };
 
 // Services
-const UINotificationService = createUiNotificationService();
+const UINotificationService = createUINotificationService();
+const UIModalService = createUIModalService();
 
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
@@ -89,7 +91,7 @@ class App extends Component {
     const { servers, extensions, hotkeys, oidc } = props;
 
     this.initUserManager(oidc);
-    _initServices([UINotificationService]);
+    _initServices([UINotificationService, UIModalService]);
     _initExtensions(extensions, hotkeys);
     _initServers(servers);
     initWebWorkers();
@@ -112,7 +114,10 @@ class App extends Component {
                   <Router basename={routerBasename}>
                     <WhiteLabellingContext.Provider value={whiteLabelling}>
                       <SnackbarProvider service={UINotificationService}>
-                        <ModalProvider modal={OHIFModal}>
+                        <ModalProvider
+                          modal={OHIFModal}
+                          service={UIModalService}
+                        >
                           <OHIFStandaloneViewer userManager={userManager} />
                         </ModalProvider>
                       </SnackbarProvider>
@@ -133,7 +138,7 @@ class App extends Component {
             <Router basename={routerBasename}>
               <WhiteLabellingContext.Provider value={whiteLabelling}>
                 <SnackbarProvider service={UINotificationService}>
-                  <ModalProvider modal={OHIFModal}>
+                  <ModalProvider modal={OHIFModal} service={UIModalService}>
                     <OHIFStandaloneViewer />
                   </ModalProvider>
                 </SnackbarProvider>
