@@ -244,9 +244,8 @@ function StudyListRoute(props) {
           // Rows
           studies={studies}
           onSelectItem={studyInstanceUID => {
-            var base64StudyUID = window.btoa(studyInstanceUID);
             const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-              studyInstanceUids: base64StudyUID,
+              studyInstanceUids: studyInstanceUID,
             });
             history.push(viewerPath);
           }}
