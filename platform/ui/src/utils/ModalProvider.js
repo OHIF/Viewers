@@ -59,6 +59,8 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     DEFAULT_OPTIONS,
   ]);
 
+  const { component: Component } = options;
+
   return (
     <Provider value={{ show, hide }}>
       {options.component && (
@@ -76,7 +78,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           footer={options.footer}
           header={options.header}
         >
-          {options.component}
+          <Component {...options} show={show} hide={hide} />
         </Modal>
       )}
       {children}
@@ -92,7 +94,6 @@ ModalProvider.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
-    PropTypes.func,
   ]).isRequired,
   modal: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
