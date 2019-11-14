@@ -20,6 +20,7 @@ defaults: &defaults
     - image: circleci/node:12.9.1
       environment:
         TERM: xterm # Enable colors in term
+        QUICK_BUILD: true
   working_directory: ~/repo
 
 jobs:
@@ -164,7 +165,9 @@ jobs:
       # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
-          paths: .
+          paths:
+            - platform/viewer/dist
+            - netlify.toml
 
   DEPLOY_TO_DEV:
     docker:
@@ -176,7 +179,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
-      - run: npx netlify deploy --prod
+      - run: npx netlify deploy --prod --dir platform/viewer/dist
 
   DEPLOY_TO_STAGING:
     docker:
