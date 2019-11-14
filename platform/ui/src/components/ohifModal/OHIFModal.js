@@ -54,7 +54,12 @@ OHIFModal.propTypes = {
   onHide: PropTypes.func,
   footer: PropTypes.node,
   header: PropTypes.node,
-  children: PropTypes.node,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.object,
+    PropTypes.func,
+  ]).isRequired,
 };
 
 export default OHIFModal;
