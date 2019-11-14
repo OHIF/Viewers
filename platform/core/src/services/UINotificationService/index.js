@@ -10,7 +10,7 @@
  * @property {boolean} [autoClose=true]
  */
 
-const uiNotificationServicePublicApi = {
+const uiNotificationServicePublicAPI = {
   name: 'UINotificationService',
   hide,
   show,
@@ -23,7 +23,7 @@ const uiNotificationServiceImplementation = {
 };
 
 function createUINotificationService() {
-  return uiNotificationServicePublicApi;
+  return uiNotificationServicePublicAPI;
 }
 
 /**

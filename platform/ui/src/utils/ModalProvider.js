@@ -80,11 +80,11 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
 };
 
 ModalProvider.propTypes = {
-  children: PropTypes.node,
-  modal: PropTypes.node,
+  children: PropTypes.node.isRequired,
+  modal: PropTypes.node.isRequired,
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
-  }),
+  }).isRequired,
 };
 
 /**
