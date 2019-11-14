@@ -56,11 +56,7 @@ function CustomDateRangePicker(props) {
   };
   const renderMonthElement = ({ month, onMonthSelect, onYearSelect }) => {
     const containerStyle = {
-      margin: '0 10px',
-    };
-
-    const selectStyle = {
-      fontSize: 14,
+      margin: '0 5px',
     };
 
     const renderYearsOptions = () => {
@@ -79,9 +75,9 @@ function CustomDateRangePicker(props) {
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div style={containerStyle}>
           <select
+            className="DateRangePicker_select"
             value={month.month()}
             onChange={e => onMonthSelect(month, e.target.value)}
-            style={selectStyle}
           >
             {moment.months().map((label, value) => (
               <option key={value} value={value}>
@@ -93,9 +89,9 @@ function CustomDateRangePicker(props) {
         <div style={containerStyle}>
           {}
           <select
+            className="DateRangePicker_select"
             value={month.year()}
             onChange={e => onYearSelect(month, e.target.value)}
-            style={selectStyle}
           >
             {renderYearsOptions()}
           </select>
