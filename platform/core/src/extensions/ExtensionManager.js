@@ -110,7 +110,9 @@ export default class ExtensionManager {
     }
 
     try {
-      const extensionModule = getModuleFn();
+      const extensionModule = getModuleFn({
+        servicesManager: this._servicesManager,
+      });
 
       if (!extensionModule) {
         log.warn(
