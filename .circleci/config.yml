@@ -179,8 +179,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
-      - run: echo $(pwd) && ls
-      - run: npx netlify deploy --prod --dir ~/repo/platform/viewer/dist
+      - run: npm install netlify-cli -g
+      - run: npx netlify deploy --prod --dir platform/viewer/dist
 
   DEPLOY_TO_STAGING:
     docker:
