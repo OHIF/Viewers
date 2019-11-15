@@ -381,68 +381,35 @@ workflows:
           type: approval
           requires:
             - DEPLOY_TO_DEV
+      - DEPLOY_TO_STAGING:
+          requires:
+            - PROMOTE_TO_STAGING
+      - PROMOTE_TO_PRODUCTION:
+          type: approval
+          requires:
+            - DEPLOY_TO_STAGING
       # TODO: PWA E2E Test against demo site
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
           executor: cypress/browsers-chrome76
           browser: chrome
-          pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
+          working_directory: platform/viewer
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           yarn: true
           record: false
+          no-workspace: true
           store_artifacts: true
-          working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build
-          start: yarn run test:e2e:serve
-          wait-on: 'http://localhost:3000'
-          command: 'yarn run test:e2e:ci'
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
             - store_test_results:
                 path: cypress/results
-          requires:
-            - PROMOTE_TO_STAGING
-      # E2E: script-tag
-      - cypress/run:
-          name: 'E2E: Script Tag'
-          executor: cypress/browsers-chrome76
-          browser: chrome
-          pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
-          yarn: true
-          record: false
-          store_artifacts: false
-          working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build:package
-          start: yarn run test:e2e:serve
-          spec: 'cypress/integration/common/**/*'
-          wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
-          post-steps:
-            - store_artifacts:
-                path: platform/viewer/cypress/screenshots
-            - store_test_results:
-                path: cypress/results
-          requires:
-            - PROMOTE_TO_STAGING
-      - DEPLOY_TO_STAGING:
-          requires:
-            - 'E2E: PWA'
-            - 'E2E: Script Tag'
-      - PROMOTE_TO_PRODUCTION:
-          type: approval
-          requires:
-            - DEPLOY_TO_STAGING
-      - DEPLOY_TO_PRODUCTION:
           requires:
             - PROMOTE_TO_PRODUCTION
+      - DEPLOY_TO_PRODUCTION:
+          requires:
+            - 'E2E: PWA'
 
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here
