@@ -24,13 +24,13 @@ const DialogProvider = ({ children, service }) => {
    */
   useEffect(() => {
     if (service) {
-      service.setServiceImplementation({ create, destroy });
+      service.setServiceImplementation({ create, dismiss });
     }
   }, [service]);
 
   const create = ({ id }) => {};
 
-  const destroy = ({ id }) => {};
+  const dismiss = ({ id }) => {};
 
   const dismissAll = () => {
     setCount(1);
@@ -43,13 +43,13 @@ const DialogProvider = ({ children, service }) => {
    */
   window.dialog = {
     create,
-    destroy,
+    dismiss,
     dismissAll,
     dialogs,
   };
 
   return (
-    <DialogContext.Provider value={{ create, destroy, dismissAll, dialogs }}>
+    <DialogContext.Provider value={{ create, dismiss, dismissAll, dialogs }}>
       {!!dialogs && <DialogContainer />}
       {children}
     </DialogContext.Provider>
@@ -78,10 +78,8 @@ DialogProvider.propTypes = {
  */
 export const withDialog = Component => {
   return function WrappedComponent(props) {
-    const dialogContext = {
-      ...useDialog(),
-    };
-    return <Component {...props} dialog={dialogContext} />;
+    const { create, dismiss, dismissAll } = useDialog();
+    return <Component {...props} dialog={{ create, dismiss, dismissAll }} />;
   };
 };
 

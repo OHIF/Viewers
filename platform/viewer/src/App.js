@@ -21,6 +21,7 @@ import {
   HotkeysManager,
   createUINotificationService,
   createUIModalService,
+  createUIDialogService,
   utils,
 } from '@ohif/core';
 
@@ -59,7 +60,7 @@ const commandsManagerConfig = {
 /** Services */
 const UINotificationService = createUINotificationService();
 const UIModalService = createUIModalService();
-const UIDialogService = createUIModalService();
+const UIDialogService = createUIDialogService();
 
 /** Managers */
 const commandsManager = new CommandsManager(commandsManagerConfig);
