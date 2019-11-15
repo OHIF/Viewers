@@ -286,8 +286,7 @@ class OHIFVTKViewport extends Component {
 
     this.imageDataObject = imageDataObject;
 
-    // TODO: Temporarily disabling this since it is not yet
-    // being used and hurts performance significantly.
+    // TODO: Not currently used until we have drawing tools in vtkjs.
     /*if (!labelmap) {
       labelmap = createLabelMapImageData(data);
     }*/
@@ -392,7 +391,8 @@ class OHIFVTKViewport extends Component {
     // render _something_ in vtkjs if cornerstoneTools is just rendering the outline.
     // TODO: -> Make this reactive on cornerstoneTools segmentation module configuration.
     const visible = configuration.renderFill || configuration.renderOutline;
-    const opacity = configuration.fillAlpha;
+    // Use outline alphas as fill alpha whilst we don't have outline rendering.
+    const opacity = configuration.outlineAlpha;
 
     return (
       <>
@@ -413,7 +413,7 @@ class OHIFVTKViewport extends Component {
               dataDetails={this.state.dataDetails}
               labelmapRenderingOptions={{
                 colorLUT: this.state.labelmapColorLUT,
-                globalOpacity: 0.5, // TODO -> Anything not close to 1 is super dim. It might be because the labelmap voxels and the image are directly on top of each other?
+                globalOpacity: opacity, // TODO -> Anything not close to 1 is super dim. It might be because the labelmap voxels and the image are directly on top of each other?
                 visible,
               }}
             />
