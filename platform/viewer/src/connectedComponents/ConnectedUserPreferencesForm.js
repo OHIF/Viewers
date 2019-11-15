@@ -6,14 +6,11 @@ import { hotkeysManager } from '../App.js';
 const { setUserPreferences } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
-  const hotkeyDefinitions =
-    state.preferences.hotkeyDefinitions.length > 0
-      ? state.preferences.hotkeyDefinitions
-      : hotkeysManager.hotkeyDefaults;
-  hotkeysManager.setHotkeys(hotkeyDefinitions);
+  const { hotkeyDefinitions, windowLevelData = {} } = state.preferences || {};
+
   return {
     onClose: ownProps.hide,
-    windowLevelData: state.preferences ? state.preferences.windowLevelData : {},
+    windowLevelData,
     hotkeyDefinitions,
   };
 };
@@ -28,7 +25,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     onResetToDefaults: () => {
       hotkeysManager.restoreDefaultBindings();
       ownProps.hide();
-      dispatch(setUserPreferences());
+      const { hotkeyDefinitions } = hotkeysManager;
+      dispatch(setUserPreferences({ hotkeyDefinitions }));
     },
   };
 };

@@ -29,6 +29,8 @@ import { getActiveContexts } from './store/layout/selectors.js';
 import i18n from '@ohif/i18n';
 import store from './store';
 import { SnackbarProvider, ModalProvider, OHIFModal } from '@ohif/ui';
+import OHIF from '@ohif/core';
+const { setUserPreferences } = OHIF.redux.actions;
 
 // Contexts
 import WhiteLabellingContext from './context/WhiteLabellingContext';
@@ -184,6 +186,9 @@ function _initExtensions(extensions, hotkeys) {
   // Must run after extension commands are registered
   if (hotkeys) {
     hotkeysManager.setHotkeys(hotkeys, true);
+    const { hotkeyDefinitions } = hotkeysManager;
+    const windowLevelData = {};
+    store.dispatch(setUserPreferences({ windowLevelData, hotkeyDefinitions }));
   }
 }
 

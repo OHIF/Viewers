@@ -48,16 +48,32 @@ export class HotkeysManager {
    * default hotkey bindings for all provided definitions. These
    * values are used in `this.restoreDefaultBindings`.
    *
-   * @param {HotkeyDefinition[]} hotkeyDefinitions
+   * @param {HotkeyDefinition[] | Object} hotkeyDefinitions
    * @param {Boolean} [isDefaultDefinitions]
    */
   setHotkeys(hotkeyDefinitions, isDefaultDefinitions = false) {
-    const definitions = cloneDeep(hotkeyDefinitions);
+    const definitions = Array.isArray(hotkeyDefinitions)
+      ? [...hotkeyDefinitions]
+      : this.parseToArrayLike(hotkeyDefinitions);
     definitions.forEach(definition => this.registerHotkeys(definition));
 
     if (isDefaultDefinitions) {
       this.hotkeyDefaults = definitions;
     }
+  }
+
+  parseToArrayLike(hotkeyDefinitionsObj) {
+    const copy = { ...hotkeyDefinitionsObj };
+    return Object.entries(copy).map(entryValue =>
+      this.parseHotKeyToObj(entryValue[0], entryValue[1])
+    );
+  }
+
+  parseHotKeyToObj(name, props) {
+    return {
+      commandName: name,
+      ...props,
+    };
   }
 
   /**

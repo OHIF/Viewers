@@ -1,86 +1,131 @@
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+
 import './UserPreferencesForm.styl';
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withTranslation } from '../../utils/LanguageProvider';
+import { useTranslation } from 'react-i18next';
 
-import cloneDeep from 'lodash.clonedeep';
-import isEqual from 'lodash.isequal';
-import { UserPreferences } from './UserPreferences';
+// Tabs Component wrapper
+import { UserPreferencesTabs } from './UserPreferencesTabs';
 
-class UserPreferencesForm extends Component {
-  // TODO: Make this component more generic to allow things other than W/L and hotkeys...
-  static propTypes = {
-    onClose: PropTypes.func,
-    onSave: PropTypes.func,
-    onResetToDefaults: PropTypes.func,
-    windowLevelData: PropTypes.object,
-    hotkeyDefinitions: PropTypes.array,
-    t: PropTypes.func,
+// Tabs
+import { HotKeysPreferences } from './HotKeysPreferences';
+import { WindowLevelPreferences } from './WindowLevelPreferences';
+import { GeneralPreferences } from './GeneralPreferences';
+
+/**
+ @typedef TabObject
+ @type {Object}
+ @property {string} name Name for given tab
+ @property {ReactComponent} Component React component for given tab.
+ @property {object} initialState Initial State for given tab component
+ @property {object} props Props State for given tab component
+ @property {boolean} [hidden] To hidden tab or not
+ */
+
+/**
+ * Create tabs obj.
+ * Each tab obj must have 'name', 'Component',
+ * @param {object} windowLevelData
+ * @param {object} hotkeyDefinitions
+ *
+ * @returns {TabObject[]} Array of TabObjs.
+ */
+const createTabs = (windowLevelData, hotkeyDefinitions) => {
+  return [
+    {
+      name: 'HotKey',
+      Component: HotKeysPreferences,
+      initialState: { hotkeyDefinitions },
+      props: {},
+    },
+    {
+      name: 'General',
+      Component: GeneralPreferences,
+      initialState: {},
+      props: {},
+    },
+    {
+      name: 'Window Level',
+      Component: WindowLevelPreferences,
+      initialState: { windowLevelData },
+      props: {},
+    },
+  ];
+};
+
+/**
+ * Main form component to render preferences tabs and buttons
+ * @param {object} props component props
+ * @param {string} props.name Tab`s name
+ * @param {object} props.hotkeyDefinitions Hotkeys Data
+ * @param {object} props.windowLevelData Window level data
+ * @param {function} props.onSave Callback function when saving
+ * @param {function} props.onClose Callback function when closing
+ * @param {function} props.onResetToDefaults Callback function when resetting
+ */
+function UserPreferencesForm({
+  onClose,
+  onSave,
+  onResetToDefaults,
+  windowLevelData,
+  hotkeyDefinitions,
+}) {
+  const tabs = createTabs(windowLevelData, hotkeyDefinitions);
+  const [tabsState, setTabsState] = useState(
+    tabs.reduce((acc, tab) => {
+      acc[tab.name] = tab.initialState;
+      return acc;
+    }, {})
+  );
+  const { t, ready: translationsAreReady } = useTranslation(
+    'UserPreferencesForm'
+  );
+
+  const onTabStateChanged = (tabName, newState) => {
+    setTabsState({ ...tabsState, [tabName]: newState });
   };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      windowLevelData: cloneDeep(props.windowLevelData),
-      hotkeyDefinitions: cloneDeep(props.hotkeyDefinitions),
-    };
-  }
-
-  save = () => {
-    this.props.onSave({
-      windowLevelData: this.state.windowLevelData,
-      hotkeyDefinitions: this.state.hotkeyDefinitions,
-    });
-  };
-
-  componentDidUpdate(prev, next) {
-    const newStateData = {};
-
-    if (!isEqual(prev.windowLevelData, next.windowLevelData)) {
-      newStateData.windowLevelData = prev.windowLevelData;
-    }
-
-    if (!isEqual(prev.hotkeyDefinitions, next.hotkeyDefinitions)) {
-      newStateData.hotkeyDefinitions = prev.hotkeyDefinitions;
-    }
-
-    if (newStateData.hotkeyDefinitions || newStateData.windowLevelData) {
-      this.setState(newStateData);
-    }
-  }
-
-  render() {
-    return (
-      <div className="UserPreferencesForm">
-        <UserPreferences
-          windowLevelData={this.state.windowLevelData}
-          hotkeyDefinitions={this.state.hotkeyDefinitions}
-        />
-        <div className="footer">
-          <button
-            className="btn btn-danger pull-left"
-            onClick={this.props.onResetToDefaults}
-          >
-            {this.props.t('Reset to Defaults')}
-          </button>
-          <div>
-            <div onClick={this.props.onClose} className="btn btn-default">
-              {this.props.t('Cancel')}
-            </div>
-            <button className="btn btn-primary" onClick={this.save}>
-              {this.props.t('Save')}
-            </button>
+  return translationsAreReady ? (
+    <div className="UserPreferencesForm">
+      <UserPreferencesTabs tabs={tabs} onTabStateChanged={onTabStateChanged} />
+      <div className="footer">
+        <button
+          className="btn btn-danger pull-left"
+          onClick={onResetToDefaults}
+        >
+          {t('Reset to Defaults')}
+        </button>
+        <div>
+          <div onClick={onClose} className="btn btn-default">
+            {t('Cancel')}
           </div>
+          <button
+            className="btn btn-primary"
+            onClick={event => {
+              // TODO to check this method for other tabs than Hotkeys
+              const toSave = Object.values(tabsState).reduce(
+                (acc, tabState) => {
+                  return { ...acc, ...tabState };
+                },
+                {}
+              );
+              onSave(toSave);
+            }}
+          >
+            {t('Save')}
+          </button>
         </div>
       </div>
-    );
-  }
+    </div>
+  ) : null;
 }
 
-const connectedComponent = withTranslation('UserPreferencesForm')(
-  UserPreferencesForm
-);
-export { connectedComponent as UserPreferencesForm };
-export default connectedComponent;
+UserPreferencesForm.propTypes = {
+  onClose: PropTypes.func,
+  onSave: PropTypes.func,
+  onResetToDefaults: PropTypes.func,
+  windowLevelData: PropTypes.object,
+};
+
+export { UserPreferencesForm };
