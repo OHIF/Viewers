@@ -14,6 +14,13 @@ version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.5
   cypress: cypress-io/cypress@1.11.0
+executors:
+  # Custom executor to override Cypress config
+  deploy-to-prod-executor:
+    docker:
+      - image: 'cypress/browsers:chrome76'
+      environment:
+        CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
 
 defaults: &defaults
   docker:
@@ -392,7 +399,7 @@ workflows:
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
-          executor: cypress/browsers-chrome76
+          executor: deploy-to-prod-executor
           browser: chrome
           working_directory: platform/viewer
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
