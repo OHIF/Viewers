@@ -24,11 +24,7 @@ import {
   Tooltip,
   AboutContent,
   UserPreferences,
-<<<<<<< HEAD
   UserPreferencesForm,
-=======
-  UserPreferencesModal,
->>>>>>> Pull in master.
   OHIFModal,
 } from './components';
 import { useDebounce, useMedia } from './hooks';

@@ -208,46 +208,6 @@ function getSourceImageInstanceUid(instance) {
   }
 }
 
-function getReferencedSeriesSequence(instance) {
-  const referencedSeriesSequenceRaw = instance['00081115'];
-
-  const referencedSeriesSequence = [];
-
-  if (referencedSeriesSequenceRaw && referencedSeriesSequenceRaw.Value) {
-    referencedSeriesSequenceRaw.Value.forEach(referencedSeries => {
-      const referencedSeriesInstanceUID = DICOMWeb.getString(
-        referencedSeries['0020000E']
-      );
-
-      const referencedInstanceSequenceRaw = referencedSeries['0008114A'];
-      const referencedInstanceSequence = [];
-
-      if (
-        referencedInstanceSequenceRaw &&
-        referencedInstanceSequenceRaw.Value
-      ) {
-        referencedInstanceSequenceRaw.Value.forEach(referencedInstance => {
-          referencedInstanceSequence.push({
-            referencedSOPClassUID: DICOMWeb.getString(
-              referencedInstance['00081150']
-            ),
-            referencedSOPInstanceUID: DICOMWeb.getString(
-              referencedInstance['00081155']
-            ),
-          });
-        });
-      }
-
-      referencedSeriesSequence.push({
-        referencedSeriesInstanceUID,
-        referencedInstanceSequence,
-      });
-    });
-  }
-
-  return referencedSeriesSequence;
-}
-
 async function makeSOPInstance(server, study, instance) {
   const { studyInstanceUid } = study;
   const seriesInstanceUid = DICOMWeb.getString(instance['0020000E']);
