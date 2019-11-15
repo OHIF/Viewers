@@ -40,27 +40,20 @@ function createUIModalService() {
  * @param {Modal} component React component
  * @param {ModalProps} props { header, footer, backdrop, keyboard, show, closeButton, title, customClassName }
  */
-function show(component, props) {
-  const {
-    header = null,
-    footer = null,
-    backdrop = false,
-    keyboard = false,
-    show = true,
-    closeButton = true,
-    title = null,
-    customClassName = null,
-  } = props;
-  return uiModalServiceImplementation._show(component, {
-    header,
-    footer,
-    backdrop,
-    keyboard,
-    show,
-    closeButton,
-    title,
-    customClassName,
-  });
+function show(
+  component,
+  props = {
+    header: null,
+    footer: null,
+    backdrop: false,
+    keyboard: false,
+    show: true,
+    closeButton: true,
+    title: null,
+    customClassName: null,
+  }
+) {
+  return uiModalServiceImplementation._show(component, props);
 }
 
 /**
