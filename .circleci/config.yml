@@ -284,7 +284,8 @@ jobs:
           name: Build and push Docker image
           command: |
             # This file will exist if a new version was published by
-            # our `semantic-release` command in the previous job
+            # our command in the previous job. Created in npm postpublish hook
+            # in the `platform/viewer` project.
             if [[ ! -e platform/viewer/success_version.txt ]]; then
               exit 0
             else
