@@ -253,17 +253,16 @@ jobs:
   DOCS_PUBLISH:
     <<: *defaults
     steps:
-      - attach_workspace:
-          at: ~/repo
+      - checkout
       - run:
           name: Avoid hosts unknown for github
-          command:
-            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
-            no\n" > ~/.ssh/config
-      - run: git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
-      - run: git config --global user.name "ohif-bot"
-      - run: yarn global add gitbook-cli
-      - run: yarn global add gh-pages
+          command: |
+            rm -rf ~/.ssh
+            mkdir ~/.ssh/
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+            git config --global user.name "ohif-bot"
+      - run: yarn global add gitbook-cli gh-pages
       - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
       - run: ~/repo/.circleci/build-and-publish-docs.sh
 
