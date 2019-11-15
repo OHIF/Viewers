@@ -1,0 +1,15 @@
+{
+  "name": "root",
+  "private": true,
+  "engines": {
+    "node": ">=10",
+    "npm": ">=6",
+    "yarn": ">=1.16.0"
+  },
+  "scripts": {
+    "deploy": "netlify deploy --prod --dir ./../platform/viewer/dist"
+  },
+  "devDependencies": {
+    "netlify-cli": "^2.21.0"
+  }
+}
