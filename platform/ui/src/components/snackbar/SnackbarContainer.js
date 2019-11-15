@@ -37,8 +37,8 @@ const SnackbarContainer = () => {
 
           return (
             <div key={pos} className={`sb-container sb-${pos}`}>
-              {items[pos].map(item => (
-                <div key={item.id}>{renderItem(item)}</div>
+              {items[pos].map((item, index) => (
+                <div key={item.id + index}>{renderItem(item)}</div>
               ))}
             </div>
           );
