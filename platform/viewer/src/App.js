@@ -185,7 +185,7 @@ class App extends Component {
 }
 
 function _initServices(services) {
-  services.forEach(service => servicesManager.register(service));
+  servicesManager.registerServices(services);
 }
 
 /**
