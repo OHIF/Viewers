@@ -40,6 +40,30 @@ describe('ExtensionManager.js', () => {
   });
 
   describe('registerExtension()', () => {
+    it('calls preRegistration() for extension', () => {
+      // SUT
+      const fakeExtension = { one: '1', preRegistration: jest.fn() };
+      extensionManager.registerExtension(fakeExtension);
+
+      // Assert
+      expect(fakeExtension.preRegistration.mock.calls.length).toBe(1);
+    });
+
+    it('calls preRegistration() passing configuration and servicesManager instance for extension', () => {
+      const configuration = { config: 'Some configuration' };
+      extensionManager._servicesManager = { services: { TestService: {} } };
+
+      // SUT
+      const fakeExtension = { one: '1', preRegistration: jest.fn() };
+      extensionManager.registerExtension(fakeExtension, configuration);
+
+      // Assert
+      expect(fakeExtension.preRegistration.mock.calls[0][0]).toEqual({
+        servicesManager: extensionManager._servicesManager,
+        configuration,
+      });
+    });
+
     it('logs a warning if the extension is null or undefined', () => {
       const undefinedExtension = undefined;
       const nullExtension = null;
@@ -108,6 +132,25 @@ describe('ExtensionManager.js', () => {
       expect(log.error.mock.calls[0][0]).toContain(
         'Exception thrown while trying to call'
       );
+    });
+
+    it('successfully passes a servicesManager instance to each module', () => {
+      extensionManager._servicesManager = { services: { TestService: {} } };
+
+      const extension = {
+        id: 'hello-world',
+        getViewportModule: jest.fn(),
+        getSopClassHandlerModule: jest.fn(),
+        getPanelModule: jest.fn(),
+        getToolbarModule: jest.fn(),
+        getCommandsModule: jest.fn(),
+      };
+
+      extensionManager.registerExtension(extension);
+
+      expect(extension.getViewportModule.mock.calls[0][0]).toEqual({
+        servicesManager: extensionManager._servicesManager,
+      });
     });
 
     it('successfully registers a module for each module type', () => {

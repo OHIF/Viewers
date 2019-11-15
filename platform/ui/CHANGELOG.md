@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.62.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.2...@ohif/ui@0.62.3) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [0.62.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.1...@ohif/ui@0.62.2) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [0.62.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.0...@ohif/ui@0.62.1) (2019-11-14)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [0.62.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.61.0...@ohif/ui@0.62.0) (2019-11-13)
+
+
+### Features
+
+* expose UiNotifications service ([#1172](https://github.com/OHIF/Viewers/issues/1172)) ([5c04e34](https://github.com/OHIF/Viewers/commit/5c04e34c8fb2394ab7acd9eb4f2ab12afeb2f255))
+
+
+
+
+
+# [0.61.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.60.1...@ohif/ui@0.61.0) (2019-11-12)
+
+
+### Features
+
+* 🎸 Update hotkeys and user preferences modal ([#1135](https://github.com/OHIF/Viewers/issues/1135)) ([e62f5f8](https://github.com/OHIF/Viewers/commit/e62f5f8dd28ab363f23671cd21cee115abb870ff)), closes [#923](https://github.com/OHIF/Viewers/issues/923)
+
+
+
+
+
+## [0.60.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.60.0...@ohif/ui@0.60.1) (2019-11-08)
+
+
+### Bug Fixes
+
+* Fix display issues with incorrect thumbnails. Change ImageThumb to functional component. ([#1148](https://github.com/OHIF/Viewers/issues/1148)) ([d70eae3](https://github.com/OHIF/Viewers/commit/d70eae3eb04fe854464f3e62316df8869bba6f11))
+
+
+
+
+
+# [0.60.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.59.1...@ohif/ui@0.60.0) (2019-11-06)
+
+
+### Features
+
+* modal provider ([#1151](https://github.com/OHIF/Viewers/issues/1151)) ([75d88bc](https://github.com/OHIF/Viewers/commit/75d88bc454710d2dcdbc7d68c4d9df041159c840)), closes [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1146](https://github.com/OHIF/Viewers/issues/1146) [#1142](https://github.com/OHIF/Viewers/issues/1142) [#1143](https://github.com/OHIF/Viewers/issues/1143) [#1110](https://github.com/OHIF/Viewers/issues/1110) [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1119](https://github.com/OHIF/Viewers/issues/1119)
+
+
+
+
+
+
+## [0.59.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.59.0...@ohif/ui@0.59.1) (2019-11-05)
+
+
+### Bug Fixes
+
+* [#1075](https://github.com/OHIF/Viewers/issues/1075) Returning to the Study List before all series have finishe… ([#1090](https://github.com/OHIF/Viewers/issues/1090)) ([ecaf578](https://github.com/OHIF/Viewers/commit/ecaf578f92dc40294cec7ff9b272fb432dec4125))
+
+
+
+
 # [0.59.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.58.5...@ohif/ui@0.59.0) (2019-11-04)
 
 

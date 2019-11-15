@@ -8,14 +8,20 @@ import './UserPreferences.styl';
 
 export class UserPreferences extends Component {
   static defaultProps = {
-    hotKeysData: {},
+    hotkeyDefinitions: [],
     windowLevelData: {},
     generalData: {},
   };
 
   // TODO: Make this more generic. Tabs should not be restricted to these entries
   static propTypes = {
-    hotKeysData: PropTypes.object.isRequired,
+    hotkeyDefinitions: PropTypes.arrayOf(
+      PropTypes.shape({
+        commandName: PropTypes.string,
+        keys: PropTypes.arrayOf(PropTypes.string),
+        label: PropTypes.string,
+      })
+    ).isRequired,
     windowLevelData: PropTypes.object.isRequired,
     generalData: PropTypes.object.isRequired,
   };
@@ -32,7 +38,9 @@ export class UserPreferences extends Component {
     return (
       <form className="form-themed themed">
         <div className="form-content">
-          <HotKeysPreferences hotKeysData={this.props.hotKeysData} />
+          <HotKeysPreferences
+            hotkeyDefinitions={this.props.hotkeyDefinitions}
+          />
         </div>
       </form>
     );
@@ -66,8 +74,8 @@ export class UserPreferences extends Component {
     switch (tabIndex) {
       case 0:
         return this.renderHotkeysTab();
-      case 1:
-        return this.renderWindowLevelTab();
+      /* case 1:
+        return this.renderWindowLevelTab(); */
       case 2:
         return this.renderGeneralTab();
 
@@ -93,14 +101,16 @@ export class UserPreferences extends Component {
             >
               <button>Hotkeys</button>
             </li>
-            <li
-              onClick={() => {
-                this.tabClick(1);
-              }}
-              className={this.getTabClass(1)}
-            >
-              <button>Window Level</button>
-            </li>
+            {false && (
+              <li
+                onClick={() => {
+                  this.tabClick(1);
+                }}
+                className={this.getTabClass(1)}
+              >
+                <button>Window Level</button>
+              </li>
+            )}
             <li
               onClick={() => {
                 this.tabClick(2);

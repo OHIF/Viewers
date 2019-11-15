@@ -7,10 +7,10 @@ export default {
    */
   id: 'measurements-table',
 
-  preRegistration(configuration = {}) {
-    init(configuration);
+  preRegistration({ servicesManager, configuration = {} }) {
+    init({ servicesManager, configuration });
   },
-  getPanelModule() {
+  getPanelModule({ servicesManager }) {
     return {
       menuOptions: [
         {

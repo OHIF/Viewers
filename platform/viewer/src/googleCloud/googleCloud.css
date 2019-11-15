@@ -141,3 +141,15 @@
   margin: 20px auto;
 }
 
+.gcp-input{
+  height: 40px;
+  margin: 0 5px 20px 5px;
+  padding: 0 20px;
+  cursor: pointer;
+  border: none;
+  background-color: var(--input-background-color);
+  color: var(--input-placeholder-color);
+  font-size: 10pt;
+  font-weight: normal;
+  border-radius: 4px;
+}

@@ -3,6 +3,138 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.3...@ohif/viewer@2.8.4) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.8.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.2...@ohif/viewer@2.8.3) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.8.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.1...@ohif/viewer@2.8.2) (2019-11-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.8.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.0...@ohif/viewer@2.8.1) (2019-11-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [2.8.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.7.1...@ohif/viewer@2.8.0) (2019-11-13)
+
+
+### Features
+
+* expose UiNotifications service ([#1172](https://github.com/OHIF/Viewers/issues/1172)) ([5c04e34](https://github.com/OHIF/Viewers/commit/5c04e34c8fb2394ab7acd9eb4f2ab12afeb2f255))
+* filter field for google api windows ([#1170](https://github.com/OHIF/Viewers/issues/1170)) ([c59c5b3](https://github.com/OHIF/Viewers/commit/c59c5b3f14d44f1c06aa396125a1f4caaa431c25))
+
+
+
+
+
+## [2.7.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.7.0...@ohif/viewer@2.7.1) (2019-11-12)
+
+
+### Bug Fixes
+
+* 🐛 Fix for JS breaking on header ([#1164](https://github.com/OHIF/Viewers/issues/1164)) ([0fbaf95](https://github.com/OHIF/Viewers/commit/0fbaf95971dc0b3a671e1f586a876d9019e860ed))
+
+
+
+
+
+# [2.7.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.4...@ohif/viewer@2.7.0) (2019-11-12)
+
+
+### Features
+
+* 🎸 Update hotkeys and user preferences modal ([#1135](https://github.com/OHIF/Viewers/issues/1135)) ([e62f5f8](https://github.com/OHIF/Viewers/commit/e62f5f8dd28ab363f23671cd21cee115abb870ff)), closes [#923](https://github.com/OHIF/Viewers/issues/923)
+
+
+
+
+
+## [2.6.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.3...@ohif/viewer@2.6.4) (2019-11-11)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.6.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.2...@ohif/viewer@2.6.3) (2019-11-08)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.6.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.1...@ohif/viewer@2.6.2) (2019-11-08)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.6.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.0...@ohif/viewer@2.6.1) (2019-11-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [2.6.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.5.0...@ohif/viewer@2.6.0) (2019-11-06)
+
+
+### Features
+
+* modal provider ([#1151](https://github.com/OHIF/Viewers/issues/1151)) ([75d88bc](https://github.com/OHIF/Viewers/commit/75d88bc454710d2dcdbc7d68c4d9df041159c840)), closes [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1146](https://github.com/OHIF/Viewers/issues/1146) [#1142](https://github.com/OHIF/Viewers/issues/1142) [#1143](https://github.com/OHIF/Viewers/issues/1143) [#1110](https://github.com/OHIF/Viewers/issues/1110) [#1086](https://github.com/OHIF/Viewers/issues/1086) [#1116](https://github.com/OHIF/Viewers/issues/1116) [#1119](https://github.com/OHIF/Viewers/issues/1119)
+
+
+
+
+
+
+# [2.5.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.4.1...@ohif/viewer@2.5.0) (2019-11-05)
+
+
+### Features
+
+* 🎸 Filter by url query param for seriesInstnaceUID ([#1117](https://github.com/OHIF/Viewers/issues/1117)) ([e208f2e](https://github.com/OHIF/Viewers/commit/e208f2e6a9c49b16dadead0a917f657cf023929a)), closes [#1118](https://github.com/OHIF/Viewers/issues/1118)
+
+
+
+
+
+## [2.4.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.4.0...@ohif/viewer@2.4.1) (2019-11-05)
+
+
+### Bug Fixes
+
+* [#1075](https://github.com/OHIF/Viewers/issues/1075) Returning to the Study List before all series have finishe… ([#1090](https://github.com/OHIF/Viewers/issues/1090)) ([ecaf578](https://github.com/OHIF/Viewers/commit/ecaf578f92dc40294cec7ff9b272fb432dec4125))
+
+
+
+
+
 # [2.4.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.3.8...@ohif/viewer@2.4.0) (2019-11-04)
 
 

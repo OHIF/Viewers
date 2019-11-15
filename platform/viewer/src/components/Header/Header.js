@@ -1,14 +1,12 @@
-import './Header.css';
-
-import { Link, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
-
-import { Dropdown } from '@ohif/ui';
-import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
-import PropTypes from 'prop-types';
-import { AboutModal } from '@ohif/ui';
-import { hotkeysManager } from './../../App.js';
+import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
+import PropTypes from 'prop-types';
+
+import ConnectedUserPreferencesForm from '../../connectedComponents/ConnectedUserPreferencesForm';
+import { Dropdown, AboutContent, withModal } from '@ohif/ui';
+import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
+import './Header.css';
 
 // Context
 import AppContext from './../../context/AppContext';
@@ -21,6 +19,8 @@ class Header extends Component {
     children: PropTypes.node,
     t: PropTypes.func.isRequired,
     userManager: PropTypes.object,
+    user: PropTypes.object,
+    modal: PropTypes.object,
   };
 
   static defaultProps = {
@@ -28,89 +28,79 @@ class Header extends Component {
     children: OHIFLogo(),
   };
 
-  // onSave: data => {
-  //   const contextName = store.getState().commandContext.context;
-  //   const preferences = cloneDeep(store.getState().preferences);
-  //   preferences[contextName] = data;
-  //   dispatch(setUserPreferences(preferences));
-  //   dispatch(setUserPreferencesModalOpen(false));
-  //   OHIF.hotkeysUtil.setHotkeys(data.hotKeysData);
-  // },
-  // onResetToDefaults: () => {
-  //   dispatch(setUserPreferences());
-  //   dispatch(setUserPreferencesModalOpen(false));
-  //   OHIF.hotkeysUtil.setHotkeys();
-  // },
-
   constructor(props) {
     super(props);
-    this.state = { isUserPreferencesOpen: false, isOpen: false };
+    this.state = { isOpen: false };
 
     this.loadOptions();
   }
 
   loadOptions() {
-    const { t } = this.props;
+    const {
+      t,
+      user,
+      userManager,
+      modal: { show },
+    } = this.props;
     this.options = [
       {
         title: t('About'),
         icon: { name: 'info' },
-        onClick: () => {
-          this.setState({
-            isOpen: true,
-          });
+        onClick: () =>
+          show(AboutContent, {
+            title: t('OHIF Viewer - About'),
+            customClassName: 'AboutContent',
+          }),
+      },
+      {
+        title: 'Preferences ',
+        icon: {
+          name: 'user',
         },
+        onClick: () =>
+          show(ConnectedUserPreferencesForm, {
+            title: t('User Preferences'),
+          }),
       },
     ];
 
-    if (this.props.user && this.props.userManager) {
+    if (user && userManager) {
       this.options.push({
         title: t('Logout'),
         icon: { name: 'power-off' },
-        onClick: () => {
-          this.props.userManager.signoutRedirect();
-        },
+        onClick: () => userManager.signoutRedirect(),
       });
     }
-
-    this.hotKeysData = hotkeysManager.hotkeyDefinitions;
-  }
-
-  onUserPreferencesSave({ windowLevelData, hotKeysData }) {
-    // console.log(windowLevelData);
-    // console.log(hotKeysData);
-    // TODO: Update hotkeysManager
-    // TODO: reset `this.hotKeysData`
   }
 
   // ANTD -- Hamburger, Drawer, Menu
   render() {
-    const { t } = this.props;
+    const { t, home, location, children } = this.props;
     const { appConfig = {} } = this.context;
     const showStudyList =
       appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
     return (
       <>
         <div className="notification-bar">{t('INVESTIGATIONAL USE ONLY')}</div>
-        <div className={`entry-header ${this.props.home ? 'header-big' : ''}`}>
+        <div className={`entry-header ${home ? 'header-big' : ''}`}>
           <div className="header-left-box">
-            {this.props.location && this.props.location.studyLink && (
+            {location && location.studyLink && (
               <Link
-                to={this.props.location.studyLink}
+                to={location.studyLink}
                 className="header-btn header-viewerLink"
               >
                 {t('Back to Viewer')}
               </Link>
             )}
 
-            {this.props.children}
+            {children}
 
-            {showStudyList && !this.props.home && (
+            {showStudyList && !home && (
               <Link
                 className="header-btn header-studyListLinkSection"
                 to={{
                   pathname: '/',
-                  state: { studyLink: this.props.location.pathname },
+                  state: { studyLink: location.pathname },
                 }}
               >
                 {t('Study list')}
@@ -123,16 +113,6 @@ class Header extends Component {
               {t('INVESTIGATIONAL USE ONLY')}
             </span>
             <Dropdown title={t('Options')} list={this.options} align="right" />
-
-            {/* TODO: We need a Modal service */}
-            <AboutModal
-              {...this.state}
-              onCancel={() =>
-                this.setState({
-                  isOpen: false,
-                })
-              }
-            />
           </div>
         </div>
       </>
@@ -140,4 +120,6 @@ class Header extends Component {
   }
 }
 
-export default withTranslation('Header')(withRouter(Header));
+export default withTranslation(['Header', 'AboutModal'])(
+  withRouter(withModal(Header))
+);

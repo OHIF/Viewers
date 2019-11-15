@@ -4,14 +4,14 @@ import { MeasurementTable, MeasurementTableItem } from './measurementTable';
 import { Overlay, OverlayTrigger } from './overlayTrigger';
 import { TableList, TableListItem } from './tableList';
 import {
-  AboutModal,
+  AboutContent,
   UserPreferences,
-  UserPreferencesModal,
-} from './userPreferencesModal';
+  UserPreferencesForm,
+} from './userPreferencesForm';
 
 import { Checkbox } from './checkbox';
 import { CineDialog } from './cineDialog';
-import { DownloadDialog } from './downloadDialog';
+import { ViewportDownloadForm } from './content/viewportDownloadForm';
 import { QuickSwitch } from './quickSwitch';
 import { RoundedButtonGroup } from './roundedButtonGroup';
 import { SelectTree } from './selectTree';
@@ -29,7 +29,7 @@ import { Tooltip } from './tooltip';
 export {
   Checkbox,
   CineDialog,
-  DownloadDialog,
+  ViewportDownloadForm,
   LayoutButton,
   LayoutChooser,
   MeasurementTable,
@@ -50,8 +50,8 @@ export {
   TablePagination,
   ToolbarSection,
   Tooltip,
-  AboutModal,
+  AboutContent,
   UserPreferences,
-  UserPreferencesModal,
+  UserPreferencesForm,
   OHIFModal,
 };
