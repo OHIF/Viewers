@@ -18,7 +18,7 @@ executors:
   # Custom executor to override Cypress config
   deploy-to-prod-executor:
     docker:
-      - image: 'cypress/browsers:chrome76'
+      - image: 'cypress/browsers:node10.16.0-chrome77'
         environment:
           CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
 
@@ -284,7 +284,8 @@ jobs:
           name: Build and push Docker image
           command: |
             # This file will exist if a new version was published by
-            # our `semantic-release` command in the previous job
+            # our command in the previous job. Created in npm postpublish hook
+            # in the `platform/viewer` project.
             if [[ ! -e platform/viewer/success_version.txt ]]; then
               exit 0
             else
