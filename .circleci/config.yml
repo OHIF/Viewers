@@ -186,7 +186,7 @@ jobs:
       - image: circleci/node:12.9.1
         environment:
           TERM: xterm
-          NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
+          NETLIFY_SITE_ID: c7502ae3-b150-493c-8422-05701e44a969
     working_directory: ~/repo
     steps:
       - attach_workspace:
@@ -199,7 +199,7 @@ jobs:
       - image: circleci/node:12.9.1
         environment:
           TERM: xterm
-          NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
+          NETLIFY_SITE_ID: 79c4a5da-5c95-4dc9-84f7-45fd9dfe21b0
     working_directory: ~/repo
     steps:
       - attach_workspace:
