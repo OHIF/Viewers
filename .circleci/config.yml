@@ -19,8 +19,8 @@ executors:
   deploy-to-prod-executor:
     docker:
       - image: 'cypress/browsers:chrome76'
-      environment:
-        CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
+        environment:
+          CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
 
 defaults: &defaults
   docker:
