@@ -46,20 +46,24 @@ class DicomStoreList extends Component {
   }
 
   render() {
-    if (this.props.error) {
-      return <p>{this.props.error}</p>;
+    const { loading, stores, filter, error } = this.props;
+
+    if (error) {
+      return <p>{error}</p>;
     }
 
     const loadingIcon = (
       <Icon name="circle-notch" className="loading-icon-spin loading-icon" />
     );
 
-    if (this.props.loading) {
+    if (loading) {
       return loadingIcon;
     }
 
     const body = (
-      <tbody id="StoreList">{this.props.stores.map(this.renderTableRow)}</tbody>
+      <tbody id="StoreList">{
+        stores.filter(store => (store.name.split('/')[7].toLowerCase().includes(filter.toLowerCase()) || filter=="")).map(this.renderTableRow)}
+      </tbody>
     );
 
     return (
@@ -69,7 +73,7 @@ class DicomStoreList extends Component {
             <th>{this.props.t('DICOM Store')}</th>
           </tr>
         </thead>
-        {this.props.stores && body}
+        {stores && body}
       </table>
     );
   }

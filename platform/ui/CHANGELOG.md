@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.62.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.0...@ohif/ui@0.62.1) (2019-11-14)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [0.62.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.61.0...@ohif/ui@0.62.0) (2019-11-13)
+
+
+### Features
+
+* expose UiNotifications service ([#1172](https://github.com/OHIF/Viewers/issues/1172)) ([5c04e34](https://github.com/OHIF/Viewers/commit/5c04e34c8fb2394ab7acd9eb4f2ab12afeb2f255))
+
+
+
+
+
 # [0.61.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.60.1...@ohif/ui@0.61.0) (2019-11-12)
 
 

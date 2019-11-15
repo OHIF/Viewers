@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.1...@ohif/viewer@2.8.2) (2019-11-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.8.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.0...@ohif/viewer@2.8.1) (2019-11-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [2.8.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.7.1...@ohif/viewer@2.8.0) (2019-11-13)
+
+
+### Features
+
+* expose UiNotifications service ([#1172](https://github.com/OHIF/Viewers/issues/1172)) ([5c04e34](https://github.com/OHIF/Viewers/commit/5c04e34c8fb2394ab7acd9eb4f2ab12afeb2f255))
+* filter field for google api windows ([#1170](https://github.com/OHIF/Viewers/issues/1170)) ([c59c5b3](https://github.com/OHIF/Viewers/commit/c59c5b3f14d44f1c06aa396125a1f4caaa431c25))
+
+
+
+
+
 ## [2.7.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.7.0...@ohif/viewer@2.7.1) (2019-11-12)
 
 

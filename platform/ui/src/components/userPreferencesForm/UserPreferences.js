@@ -15,7 +15,13 @@ export class UserPreferences extends Component {
 
   // TODO: Make this more generic. Tabs should not be restricted to these entries
   static propTypes = {
-    hotkeyDefinitions: PropTypes.array.isRequired,
+    hotkeyDefinitions: PropTypes.arrayOf(
+      PropTypes.shape({
+        commandName: PropTypes.string,
+        keys: PropTypes.arrayOf(PropTypes.string),
+        label: PropTypes.string,
+      })
+    ).isRequired,
     windowLevelData: PropTypes.object.isRequired,
     generalData: PropTypes.object.isRequired,
   };

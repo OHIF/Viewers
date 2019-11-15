@@ -6,7 +6,9 @@ import './config';
 import {
   CommandsManager,
   ExtensionManager,
+  ServicesManager,
   HotkeysManager,
+  createUiNotificationService,
   utils,
 } from '@ohif/core';
 import React, { Component } from 'react';
@@ -41,9 +43,16 @@ const commandsManagerConfig = {
   getActiveContexts: () => getActiveContexts(store.getState()),
 };
 
+// Services
+const UINotificationService = createUiNotificationService();
+
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
-const extensionManager = new ExtensionManager({ commandsManager });
+const servicesManager = new ServicesManager();
+const extensionManager = new ExtensionManager({
+  commandsManager,
+  servicesManager,
+});
 // ~~~~ END APP SETUP
 
 // TODO[react] Use a provider when the whole tree is React
@@ -76,9 +85,11 @@ class App extends Component {
     super(props);
 
     this._appConfig = props;
+
     const { servers, extensions, hotkeys, oidc } = props;
 
     this.initUserManager(oidc);
+    _initServices([UINotificationService]);
     _initExtensions(extensions, hotkeys);
     _initServers(servers);
     initWebWorkers();
@@ -100,7 +111,7 @@ class App extends Component {
                 <UserManagerContext.Provider value={userManager}>
                   <Router basename={routerBasename}>
                     <WhiteLabellingContext.Provider value={whiteLabelling}>
-                      <SnackbarProvider>
+                      <SnackbarProvider service={UINotificationService}>
                         <ModalProvider modal={OHIFModal}>
                           <OHIFStandaloneViewer userManager={userManager} />
                         </ModalProvider>
@@ -121,7 +132,7 @@ class App extends Component {
           <I18nextProvider i18n={i18n}>
             <Router basename={routerBasename}>
               <WhiteLabellingContext.Provider value={whiteLabelling}>
-                <SnackbarProvider>
+                <SnackbarProvider service={UINotificationService}>
                   <ModalProvider modal={OHIFModal}>
                     <OHIFStandaloneViewer />
                   </ModalProvider>
@@ -166,6 +177,10 @@ class App extends Component {
       );
     }
   }
+}
+
+function _initServices(services) {
+  services.forEach(service => servicesManager.register(service));
 }
 
 /**
@@ -214,4 +229,4 @@ function _makeAbsoluteIfNecessary(url, base_url) {
 const ExportedApp = process.env.NODE_ENV === 'development' ? hot(App) : App;
 
 export default ExportedApp;
-export { commandsManager, extensionManager, hotkeysManager };
+export { commandsManager, extensionManager, hotkeysManager, servicesManager };

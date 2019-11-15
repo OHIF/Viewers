@@ -10,7 +10,13 @@ import PropTypes from 'prop-types';
 
 export class HotKeysPreferences extends Component {
   static propTypes = {
-    hotkeyDefinitions: PropTypes.array.isRequired,
+    hotkeyDefinitions: PropTypes.arrayOf(
+      PropTypes.shape({
+        commandName: PropTypes.string,
+        keys: PropTypes.arrayOf(PropTypes.string),
+        label: PropTypes.string,
+      })
+    ).isRequired,
   };
 
   constructor(props) {
@@ -76,7 +82,7 @@ export class HotKeysPreferences extends Component {
         specialKeyName ||
         keyDownEvent.key ||
         String.fromCharCode(keyDownEvent.keyCode);
-      pressedKeys.push(keyName);
+      pressedKeys.push(keyName.toLowerCase());
     }
 
     this.updateHotKeysState(commandName, pressedKeys.join('+'));
@@ -123,7 +129,7 @@ export class HotKeysPreferences extends Component {
     const hotKey = this.state.hotKeys[hotKeyIndex];
     const keys = hotKey.keys[0];
     const pressedKeys = keys.split('+');
-    const lastPressedKey = pressedKeys[pressedKeys.length - 1];
+    const lastPressedKey = pressedKeys[pressedKeys.length - 1].toLowerCase();
 
     // clear the prior errors
     this.setState({ errorMessages: {} }, () => {
@@ -156,7 +162,8 @@ export class HotKeysPreferences extends Component {
        */
       const modifierCommand = pressedKeys
         .slice(0, pressedKeys.length - 1)
-        .join('+');
+        .join('+')
+        .toLowerCase();
 
       const disallowedCombination = disallowedCombinations[modifierCommand];
       const hasDisallowedCombinations = disallowedCombination
@@ -215,7 +222,7 @@ export class HotKeysPreferences extends Component {
       this.state.hotKeys.length
     );
 
-    return (
+    return this.state.hotKeys.length > 0 ? (
       <div className="HotKeysPreferences">
         {/* <!-- Column 1 --> */}
         <div className="column">
@@ -250,6 +257,8 @@ export class HotKeysPreferences extends Component {
           </table>
         </div>
       </div>
+    ) : (
+      <p>{`No hotkeys are configured for this application. Hotkeys can be configured in the application's app-config.js file.`}</p>
     );
   }
 }
