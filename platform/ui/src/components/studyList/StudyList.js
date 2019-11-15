@@ -6,7 +6,7 @@ import TableSearchFilter from './TableSearchFilter.js';
 import useMedia from '../../hooks/useMedia.js';
 import PropTypes from 'prop-types';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
-import { withTranslation } from '../../utils/LanguageProvider';
+import { withTranslation } from '../../utils/providers';
 
 /**
  *
