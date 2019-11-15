@@ -14,6 +14,13 @@ version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.5
   cypress: cypress-io/cypress@1.11.0
+executors:
+  # Custom executor to override Cypress config
+  deploy-to-prod-executor:
+    docker:
+      - image: 'cypress/browsers:chrome76'
+        environment:
+          CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
 
 defaults: &defaults
   docker:
@@ -186,7 +193,7 @@ jobs:
       - image: circleci/node:12.9.1
         environment:
           TERM: xterm
-          NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
+          NETLIFY_SITE_ID: c7502ae3-b150-493c-8422-05701e44a969
     working_directory: ~/repo
     steps:
       - attach_workspace:
@@ -199,7 +206,7 @@ jobs:
       - image: circleci/node:12.9.1
         environment:
           TERM: xterm
-          NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
+          NETLIFY_SITE_ID: 79c4a5da-5c95-4dc9-84f7-45fd9dfe21b0
     working_directory: ~/repo
     steps:
       - attach_workspace:
@@ -213,16 +220,15 @@ jobs:
   NPM_PUBLISH:
     <<: *defaults
     steps:
-      # Update yarn
       - run: yarn -v
       # Checkout code and ALL Git Tags
       - checkout:
           post:
             - git fetch --all
+      # Use increasingly general patterns to restore cache
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
-            # when lock file changes, use increasingly general patterns to restore cache
             - yarn-packages-{{ checksum "yarn.lock" }}
             - yarn-packages-
       - run:
@@ -231,23 +237,22 @@ jobs:
       - save_cache:
           name: Save Yarn Package Cache
           paths:
-            - ~/.cache ## Cache yarn and Cypress
+            - ~/.cache/yarn
           key: yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Avoid hosts unknown for github
-          command:
-            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
-            no\n" > ~/.ssh/config
-      - run: git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
-      - run: git config --global user.name "ohif-bot"
+          command: |
+            rm -rf ~/.ssh
+            mkdir ~/.ssh/
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+            git config --global user.name "ohif-bot"
       - run:
-          name: Authenticate with registry
+          name: Authenticate with NPM registry
           command:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run: npx lerna version
       - run: npx lerna publish from-package
-
-      # Persist :+1:
       - persist_to_workspace:
           root: ~/repo
           paths: .
@@ -255,17 +260,16 @@ jobs:
   DOCS_PUBLISH:
     <<: *defaults
     steps:
-      - attach_workspace:
-          at: ~/repo
+      - checkout
       - run:
           name: Avoid hosts unknown for github
-          command:
-            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking
-            no\n" > ~/.ssh/config
-      - run: git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
-      - run: git config --global user.name "ohif-bot"
-      - run: yarn global add gitbook-cli
-      - run: yarn global add gh-pages
+          command: |
+            rm -rf ~/.ssh
+            mkdir ~/.ssh/
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+            git config --global user.name "ohif-bot"
+      - run: yarn global add gitbook-cli gh-pages
       - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
       - run: ~/repo/.circleci/build-and-publish-docs.sh
 
@@ -384,68 +388,35 @@ workflows:
           type: approval
           requires:
             - DEPLOY_TO_DEV
-      # TODO: PWA E2E Test against demo site
-      # E2E: PWA
-      - cypress/run:
-          name: 'E2E: PWA'
-          executor: cypress/browsers-chrome76
-          browser: chrome
-          pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
-          yarn: true
-          record: false
-          store_artifacts: true
-          working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build
-          start: yarn run test:e2e:serve
-          wait-on: 'http://localhost:3000'
-          command: 'yarn run test:e2e:ci'
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
-          post-steps:
-            - store_artifacts:
-                path: platform/viewer/cypress/screenshots
-            - store_test_results:
-                path: cypress/results
-          requires:
-            - PROMOTE_TO_STAGING
-      # E2E: script-tag
-      - cypress/run:
-          name: 'E2E: Script Tag'
-          executor: cypress/browsers-chrome76
-          browser: chrome
-          pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
-          yarn: true
-          record: false
-          store_artifacts: false
-          working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build:package
-          start: yarn run test:e2e:serve
-          spec: 'cypress/integration/common/**/*'
-          wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
-          post-steps:
-            - store_artifacts:
-                path: platform/viewer/cypress/screenshots
-            - store_test_results:
-                path: cypress/results
-          requires:
-            - PROMOTE_TO_STAGING
       - DEPLOY_TO_STAGING:
           requires:
-            - 'E2E: PWA'
-            - 'E2E: Script Tag'
+            - PROMOTE_TO_STAGING
       - PROMOTE_TO_PRODUCTION:
           type: approval
           requires:
             - DEPLOY_TO_STAGING
-      - DEPLOY_TO_PRODUCTION:
+      # TODO: PWA E2E Test against demo site
+      # E2E: PWA
+      - cypress/run:
+          name: 'E2E: PWA'
+          executor: deploy-to-prod-executor
+          browser: chrome
+          working_directory: platform/viewer
+          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+          yarn: true
+          record: false
+          no-workspace: true
+          store_artifacts: true
+          post-steps:
+            - store_artifacts:
+                path: platform/viewer/cypress/screenshots
+            - store_test_results:
+                path: cypress/results
           requires:
             - PROMOTE_TO_PRODUCTION
+      - DEPLOY_TO_PRODUCTION:
+          requires:
+            - 'E2E: PWA'
 
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here
