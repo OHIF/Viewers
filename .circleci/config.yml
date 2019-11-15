@@ -375,7 +375,7 @@ workflows:
   ###
   # Our workflow for building, deploying, and promoting builds across our
   # development, staging, and production environments.
-  ##
+  ###
   DEPLOY:
     jobs:
       - BUILD:
@@ -396,31 +396,13 @@ workflows:
           type: approval
           requires:
             - DEPLOY_TO_STAGING
-      # TODO: PWA E2E Test against demo site
-      # E2E: PWA
-      - cypress/run:
-          name: 'E2E: PWA'
-          executor: deploy-to-prod-executor
-          browser: chrome
-          working_directory: platform/viewer
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          yarn: true
-          record: false
-          no-workspace: true
-          store_artifacts: true
-          post-steps:
-            - store_artifacts:
-                path: platform/viewer/cypress/screenshots
-            - store_test_results:
-                path: cypress/results
-          requires:
-            - PROMOTE_TO_PRODUCTION
       - DEPLOY_TO_PRODUCTION:
           requires:
-            - 'E2E: PWA'
-
+            - PROMOTE_TO_PRODUCTION
+  ###
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here
+  ###
   RELEASE:
     jobs:
       - NPM_PUBLISH:
@@ -434,3 +416,22 @@ workflows:
       - DOCKER_MASTER_PUBLISH:
           requires:
             - NPM_PUBLISH
+#
+#
+# Potentially use to E2E test STAGING environment
+# before publishing to production
+# - cypress/run:
+#     name: 'E2E: PWA'
+#     executor: deploy-to-prod-executor
+#     browser: chrome
+#     working_directory: platform/viewer
+#     cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+#     yarn: true
+#     record: false
+#     no-workspace: true
+#     store_artifacts: true
+#     post-steps:
+#       - store_artifacts:
+#           path: platform/viewer/cypress/screenshots
+#       - store_test_results:
+#           path: cypress/results
