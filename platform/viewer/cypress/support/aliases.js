@@ -77,3 +77,17 @@ export function initStudyListAliasesOnTablet() {
   cy.get('#end-date').as('studyListEndDate');
   cy.get('[data-cy="study-list-results"] > tr').as('searchResult');
 }
+
+//Creating aliases for User Preferences modal
+export function initPreferencesModalAliases() {
+  cy.get('.modal-content').as('preferencesModal');
+  cy.get('.nav-link')
+    .first()
+    .as('hotkeysLink');
+  cy.get('.nav-link')
+    .last()
+    .as('generalLink');
+  cy.get('[data-cy="reset-default-btn"]').as('restoreBtn');
+  cy.get('[data-cy="cancel-btn"]').as('cancelBtn');
+  cy.get('[data-cy="save-btn"]').as('saveBtn');
+}

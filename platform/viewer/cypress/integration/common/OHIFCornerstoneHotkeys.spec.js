@@ -84,7 +84,7 @@ describe('OHIF Cornerstone Hotkeys', () => {
     //Click on Layout button
     cy.get('@layoutBtn').click();
     //Select 3 viewports
-    cy.get('tbody > :nth-child(1) > :nth-child(3)').click();
+    cy.setLayout(1, 3);
 
     // Press multiples hotkeys on viewport #1
     cy.get('body').type('VL+++I');

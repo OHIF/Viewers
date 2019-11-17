@@ -67,15 +67,24 @@ class UserPreferencesForm extends Component {
         <div className="footer">
           <button
             className="btn btn-danger pull-left"
+            data-cy="reset-default-btn"
             onClick={this.props.onResetToDefaults}
           >
             {this.props.t('Reset to Defaults')}
           </button>
           <div>
-            <div onClick={this.props.onClose} className="btn btn-default">
+            <div
+              onClick={this.props.onClose}
+              className="btn btn-default"
+              data-cy="cancel-btn"
+            >
               {this.props.t('Cancel')}
             </div>
-            <button className="btn btn-primary" onClick={this.save}>
+            <button
+              className="btn btn-primary"
+              data-cy="save-btn"
+              onClick={this.save}
+            >
               {this.props.t('Save')}
             </button>
           </div>

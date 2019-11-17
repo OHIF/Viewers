@@ -7,6 +7,7 @@ import {
   initVTKToolsAliases,
   initStudyListAliasesOnDesktop,
   initStudyListAliasesOnTablet,
+  initPreferencesModalAliases,
 } from './aliases.js';
 
 // ***********************************************
@@ -359,9 +360,7 @@ Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
 });
 
 Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
-  cy.get('.toolbar-button-label')
-    .contains('Layout')
-    .click();
+  cy.get('.btn-group > .toolbar-button').click();
 
   cy.get('.layoutChooser')
     .find('tr')
@@ -410,3 +409,33 @@ function canvasToImage(selectorOrEl) {
   canvas.parentElement.appendChild(image);
   canvas.style = 'display: none';
 }
+
+//Initialize aliases for User Preferences modal
+Cypress.Commands.add('initPreferencesModalAliases', () => {
+  initPreferencesModalAliases();
+});
+
+Cypress.Commands.add('openPreferences', () => {
+  // Open User Preferences modal
+  cy.get('[data-cy="options-menu"]')
+    .scrollIntoView()
+    .click()
+    .then(() => {
+      cy.get('[data-cy="about-item-menu"]')
+        .last()
+        .click();
+    });
+});
+
+Cypress.Commands.add('resetHotkeysPreferences', () => {
+  // Open User Preferences modal
+  cy.openPreferences();
+
+  cy.initPreferencesModalAliases();
+
+  cy.get('@restoreBtn').click();
+
+  //TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
+  //Once the issue is fixed, the following code should be uncommented
+  //cy.get('@saveBtn').click();
+});
