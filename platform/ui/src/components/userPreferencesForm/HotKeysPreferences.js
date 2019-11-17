@@ -227,7 +227,7 @@ export class HotKeysPreferences extends Component {
       <div className="HotKeysPreferences">
         {/* <!-- Column 1 --> */}
         <div className="column">
-          <table className="full-width" data-cy="hotkeys-table-1">
+          <table className="full-width">
             <thead>
               <tr>
                 <th className="text-right p-r-1">Function</th>

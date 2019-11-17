@@ -215,7 +215,6 @@ describe('OHIF User Preferences', () => {
       cy.resetViewport();
       cy.wait(200);
       cy.resetHotkeysPreferences();
-
       // Open User Preferences modal
       cy.openPreferences();
     });
@@ -568,5 +567,5 @@ describe('OHIF User Preferences', () => {
       cy.get('[data-cy="Rotate Right"]').should('have.value', 'r');
       cy.get('.close').click();
     });
-  }); //Context
+  });
 });

@@ -81,9 +81,7 @@ describe('OHIF Cornerstone Hotkeys', () => {
   });
 
   it('uses hotkeys "RightArrow" and "LeftArrow" to navigate between multiple viewports', () => {
-    //Click on Layout button
-    cy.get('@layoutBtn').click();
-    //Select 3 viewports
+    // Set layout with 3 viewports
     cy.setLayout(1, 3);
 
     // Press multiples hotkeys on viewport #1
