@@ -8,7 +8,7 @@ const retrieveDataFromMeasurements = measurements => {
   const { getImageIdForImagePath } = OHIF.measurements;
 
   const toolState = {};
-  const notSupportedTools = [];
+  const unsupportedTools = [];
 
   Object.keys(measurements).forEach(measurementType => {
     const annotations = measurements[measurementType];
@@ -24,14 +24,14 @@ const retrieveDataFromMeasurements = measurements => {
 
         toolState[imageId][toolType].data.push(annotation);
       } else {
-        notSupportedTools.push(toolType);
+        unsupportedTools.push(toolType);
       }
     });
   });
 
-  if (notSupportedTools.length > 0) {
+  if (unsupportedTools.length > 0) {
     OHIF.log.warn(
-      `[DICOMSR] Tooltypes not supported: ${notSupportedTools.join(', ')}`
+      `[DICOMSR] Tooltypes not supported: ${unsupportedTools.join(', ')}`
     );
   }
 
@@ -42,7 +42,7 @@ const retrieveDataFromMeasurements = measurements => {
     );
     return {
       dataset: report.dataset,
-      notSupportedTools,
+      unsupportedTools,
     };
   } catch (error) {
     throw error;

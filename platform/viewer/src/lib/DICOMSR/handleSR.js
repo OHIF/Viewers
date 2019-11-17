@@ -28,7 +28,7 @@ const retrieveMeasurementFromSR = async (series, server) => {
 
 const stowSRFromMeasurements = async (measurements, server) => {
   try {
-    const { dataset, notSupportedTools } = retrieveDataFromMeasurements(
+    const { dataset, unsupportedTools } = retrieveDataFromMeasurements(
       measurements
     );
     const { DicomMetaDictionary, DicomDict } = dcmjs.data;
@@ -62,7 +62,7 @@ const stowSRFromMeasurements = async (measurements, server) => {
     await dicomWeb.storeInstances(options);
 
     return {
-      notSupportedTools,
+      unsupportedTools,
     };
   } catch (error) {
     throw error;

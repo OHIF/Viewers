@@ -27,7 +27,7 @@ export const storeMeasurements = async (measurementData, filter, server) => {
     firstMeasurement && firstMeasurement.studyInstanceUid;
 
   try {
-    const { notSupportedTools } = await stowSRFromMeasurements(
+    const { unsupportedTools } = await stowSRFromMeasurements(
       measurementData,
       server
     );
@@ -35,7 +35,7 @@ export const storeMeasurements = async (measurementData, filter, server) => {
       OHIF.studies.deleteStudyMetadataPromise(studyInstanceUid);
     }
     const message =
-      notSupportedTools.length > 0
+      unsupportedTools.length > 0
         ? 'Measurements were parcially saved, some of the tools are not supported.'
         : 'Measurements were saved with success';
 
