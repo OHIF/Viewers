@@ -53,7 +53,7 @@ class Header extends Component {
           }),
       },
       {
-        title: 'Preferences ',
+        title: t('Preferences'),
         icon: {
           name: 'user',
         },
