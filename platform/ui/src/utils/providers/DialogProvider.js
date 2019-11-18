@@ -68,7 +68,7 @@ const DialogProvider = ({ children, service }) => {
    *
    * @returns id
    */
-  const create = useCallback(({ id, content, ...props }) => {
+  const create = useCallback(({ id, content, onSubmit, onClose }) => {
     let dialogId = id;
     if (!dialogId) {
       dialogId = utils.guid();
@@ -77,7 +77,8 @@ const DialogProvider = ({ children, service }) => {
     const newDialog = {
       id: dialogId,
       content,
-      ...props,
+      onSubmit,
+      onClose,
     };
 
     setDialogs(dialogs => [...dialogs, newDialog]);
