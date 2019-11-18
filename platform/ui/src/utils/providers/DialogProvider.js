@@ -7,14 +7,48 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
+import classNames from 'classnames';
+
+import './DialogProvider.styl';
 
 const DialogContext = createContext(null);
 
 export const useDialog = () => useContext(DialogContext);
 
 const DialogProvider = ({ children, service }) => {
-  const [count, setCount] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
   const [dialogs, setDialogs] = useState([]);
+  const [dialogBeingDragged, setDialogBeingDragged] = useState(null);
+  const [dialogBounds, setDialogBounds] = useState({
+    height: 0,
+    width: 0,
+  });
+  const [appBounds, setAppBounds] = useState({
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  });
+
+  /**
+   * Sets movement boundaries.
+   *
+   * @returns void
+   */
+  useEffect(() => {
+    setAppBounds(document.querySelector('#root').getBoundingClientRect());
+  }, []);
+
+  /**
+   * Sets dialog boundaries.
+   *
+   * @returns void
+   */
+  useEffect(() => {
+    if (dialogBeingDragged) {
+      setDialogBounds(dialogBeingDragged.getBoundingClientRect());
+    }
+  }, [dialogBeingDragged]);
 
   /**
    * Sets the implementation of a dialog service that can be used by extensions.
@@ -32,28 +66,24 @@ const DialogProvider = ({ children, service }) => {
    *
    * @returns id
    */
-  const create = useCallback(
-    ({ id, content, ...props }) => {
-      let dialogId = id;
-      if (!dialogId) {
-        dialogId = Math.random()
-          .toString(36)
-          .substr(2, 5);
-      }
+  const create = useCallback(({ id, content, ...props }) => {
+    let dialogId = id;
+    if (!dialogId) {
+      dialogId = Math.random()
+        .toString(36)
+        .substr(2, 5);
+    }
 
-      const newDialog = {
-        id: dialogId,
-        content,
-        ...props,
-      };
+    const newDialog = {
+      id: dialogId,
+      content,
+      ...props,
+    };
 
-      setDialogs(dialogs => [...dialogs, newDialog]);
-      setCount(count + 1);
+    setDialogs(dialogs => [...dialogs, newDialog]);
 
-      return dialogId;
-    },
-    [count]
-  );
+    return dialogId;
+  }, []);
 
   /**
    * Dismisses the dialog with a given id.
@@ -70,8 +100,7 @@ const DialogProvider = ({ children, service }) => {
    * @returns void
    */
   const dismissAll = () => {
-    setCount(1);
-    setDialogs(() => []);
+    setDialogs([]);
   };
 
   /**
@@ -84,16 +113,6 @@ const DialogProvider = ({ children, service }) => {
       ...dialogs.filter(dialog => dialog.id !== id),
       dialogs.find(dialog => dialog.id === id),
     ]);
-  };
-
-  /**
-   * Expose dialog methods to window for debug purposes.
-   */
-  window.dialog = {
-    create,
-    dismiss,
-    dismissAll,
-    dialogs,
   };
 
   return (
@@ -114,13 +133,30 @@ const DialogProvider = ({ children, service }) => {
             disabled={!isDraggable}
             position={position}
             defaultPosition={defaultPosition}
-            onStop={onStop}
+            bounds={{
+              top: appBounds.top,
+              bottom: appBounds.bottom - dialogBounds.height,
+              left: appBounds.left,
+              right: appBounds.right - dialogBounds.width,
+            }}
+            onStop={event => {
+              onStop(event);
+              setDialogBeingDragged(event.target);
+              setIsDragging(false);
+              return;
+            }}
             onDrag={event => {
+              const BLACKLIST = ['SVG', 'BUTTON', 'PATH', 'INPUT'];
+              if (BLACKLIST.includes(event.target.tagName.toUpperCase())) {
+                return false;
+              }
               _reorder(id);
+              setIsDragging(true);
               onDrag(event);
             }}
           >
             <div
+              className={classNames('DraggableItem', isDragging && 'dragging')}
               style={{ zIndex: '999', position: 'absolute' }}
               onClick={() => _reorder(id)}
             >

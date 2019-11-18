@@ -9,6 +9,9 @@
  *
  * @typedef {Object} DialogProps
  * @property {string} id -
+ * @property {DialogContent} content -
+ * @property {Function} onSubmit -
+ * @property {Function} onClose -
  */
 
 const uiDialogServicePublicAPI = {
@@ -32,11 +35,15 @@ function createUIDialogService() {
 /**
  * Show a new UI dialog;
  *
- * @param {DialogContent} component React component
- * @param {DialogProps} props { id, content, ...props }
+ * @param {DialogProps} props { id, content, onSubmit, onClose }
  */
-function create({ id, content, ...props }) {
-  return uiDialogServiceImplementation._create({ id, content, ...props });
+function create({ id, content, onSubmit, onClose }) {
+  return uiDialogServiceImplementation._create({
+    id,
+    content,
+    onSubmit,
+    onClose,
+  });
 }
 
 /**
