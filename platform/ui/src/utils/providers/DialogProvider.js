@@ -9,6 +9,8 @@ import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import classNames from 'classnames';
 
+import { utils } from '@ohif/core';
+
 import './DialogProvider.styl';
 
 const DialogContext = createContext(null);
@@ -69,9 +71,7 @@ const DialogProvider = ({ children, service }) => {
   const create = useCallback(({ id, content, ...props }) => {
     let dialogId = id;
     if (!dialogId) {
-      dialogId = Math.random()
-        .toString(36)
-        .substr(2, 5);
+      dialogId = utils.guid();
     }
 
     const newDialog = {
