@@ -81,7 +81,8 @@ class MeasurementTable extends Component {
         <div className="measurementTableFooter">
           {saveFunction && (
             <button onClick={this.saveFunction} className="saveBtn">
-              SAVE
+              <Icon name="save" width="14px" height="14px" />
+              Save measurements
             </button>
           )}
         </div>
