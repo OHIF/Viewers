@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.9.1...@ohif/core@1.10.0) (2019-11-15)
+
+
+### Features
+
+* Inject into Extension Modules / improve tests ([f63d8a7](https://github.com/OHIF/Viewers/commit/f63d8a73d867ad9dfd8ee0cad74edce180eb34f0))
+
+
+
+
+
+## [1.9.1](https://github.com/OHIF/Viewers/compare/@ohif/core@1.9.0...@ohif/core@1.9.1) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [1.9.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.8.0...@ohif/core@1.9.0) (2019-11-13)
+
+
+### Features
+
+* expose UiNotifications service ([#1172](https://github.com/OHIF/Viewers/issues/1172)) ([5c04e34](https://github.com/OHIF/Viewers/commit/5c04e34c8fb2394ab7acd9eb4f2ab12afeb2f255))
+
+
+
+
+
 # [1.8.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.7.1...@ohif/core@1.8.0) (2019-11-12)
 
 

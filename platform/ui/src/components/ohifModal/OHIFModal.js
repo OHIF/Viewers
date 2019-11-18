@@ -13,7 +13,7 @@ const OHIFModal = ({
   onHide,
   footer: Footer,
   header: Header,
-  children: Component,
+  children,
 }) => (
   <ReactBootstrapModal
     className={classNames('modal fade themed in', className)}
@@ -32,12 +32,9 @@ const OHIFModal = ({
         {Header && <Header hide={onHide} />}
       </ReactBootstrapModal.Header>
     )}
-    <ReactBootstrapModal.Body>
-      {Component && <Component hide={onHide} />}
-    </ReactBootstrapModal.Body>
+    <ReactBootstrapModal.Body>{children}</ReactBootstrapModal.Body>
     {Footer && (
       <ReactBootstrapModal.Footer>
-        {' '}
         <Footer hide={onHide} />
       </ReactBootstrapModal.Footer>
     )}
@@ -52,9 +49,20 @@ OHIFModal.propTypes = {
   show: PropTypes.bool,
   title: PropTypes.string,
   onHide: PropTypes.func,
-  footer: PropTypes.node,
-  header: PropTypes.node,
-  children: PropTypes.node,
+  footer: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.func,
+  ]),
+  header: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.func,
+  ]),
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
 };
 
 export default OHIFModal;

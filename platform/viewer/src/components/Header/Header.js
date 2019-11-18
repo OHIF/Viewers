@@ -20,7 +20,7 @@ class Header extends Component {
     t: PropTypes.func.isRequired,
     userManager: PropTypes.object,
     user: PropTypes.object,
-    modalContext: PropTypes.object,
+    modal: PropTypes.object,
   };
 
   static defaultProps = {
@@ -40,7 +40,7 @@ class Header extends Component {
       t,
       user,
       userManager,
-      modalContext: { show },
+      modal: { show },
     } = this.props;
     this.options = [
       {

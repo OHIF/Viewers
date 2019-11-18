@@ -73,7 +73,7 @@ const getHotKeysArrayColumns = (keysObj = {}, columnSize) => {
   for (
     let it = 0;
     it < keysLength;
-    it++, it % columnSize === 0 ? currentColumn++ : currentColumn
+    it++ , it % columnSize === 0 ? currentColumn++ : currentColumn
   ) {
     if (!dividedKeys[currentColumn]) {
       dividedKeys[currentColumn] = [];
@@ -254,7 +254,7 @@ function HotKeyPreferencesRow({
         <label
           className={`wrapperLabel ${
             fieldErrorMessage !== undefined ? 'state-error' : ''
-          } `}
+            } `}
           data-key="defaultTool"
         >
           <input
@@ -307,42 +307,43 @@ function HotKeysPreferences({ hotkeyDefinitions, name, onTabStateChanged }) {
     <div className="HotKeysPreferences">
       {splittedHotKeys.length > 0
         ? splittedHotKeys.map((columnHotKeys, index) => {
-            return (
-              <div className="column" key={index}>
-                <table className="full-width">
-                  <thead>
-                    <tr>
-                      <th className="text-right p-r-1">Function</th>
-                      <th className="text-center">Shortcut</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.entries(columnHotKeys).map(
-                      hotkeyDefinitionTuple => (
-                        <HotKeyPreferencesRow
-                          key={hotkeyDefinitionTuple[0]}
-                          commandName={hotkeyDefinitionTuple[0]}
-                          hotkeys={hotkeyDefinitionTuple[1].keys}
-                          label={hotkeyDefinitionTuple[1].label}
-                          originalHotKeys={tabState}
-                          onSuccessChanged={keys =>
-                            onHotKeyChanged(
-                              hotkeyDefinitionTuple[0],
-                              hotkeyDefinitionTuple[1],
-                              keys
-                            )
-                          }
-                        ></HotKeyPreferencesRow>
-                      )
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            );
-          })
+          return (
+            <div className="column" key={index}>
+              <table className="full-width">
+                <thead>
+                  <tr>
+                    <th className="text-right p-r-1">Function</th>
+                    <th className="text-center">Shortcut</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(columnHotKeys).map(
+                    hotkeyDefinitionTuple => (
+                      <HotKeyPreferencesRow
+                        key={hotkeyDefinitionTuple[0]}
+                        commandName={hotkeyDefinitionTuple[0]}
+                        hotkeys={hotkeyDefinitionTuple[1].keys}
+                        label={hotkeyDefinitionTuple[1].label}
+                        originalHotKeys={tabState}
+                        onSuccessChanged={keys =>
+                          onHotKeyChanged(
+                            hotkeyDefinitionTuple[0],
+                            hotkeyDefinitionTuple[1],
+                            keys
+                          )
+                        }
+                      ></HotKeyPreferencesRow>
+                    )
+                  )}
+                </tbody>
+              </table>
+            </div>
+          );
+        })
         : null}
     </div>
   );
+
 }
 
 HotKeysPreferences.propTypes = {
