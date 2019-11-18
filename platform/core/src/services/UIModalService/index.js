@@ -8,14 +8,11 @@
  * UI Modal
  *
  * @typedef {Object} ModalProps
- * @property {string} [header=null] -
- * @property {string} [footer=null] -
- * @property {string} [backdrop=false] -
- * @property {string} [keyboard=false] -
- * @property {number} [show=true] -
+ * @property {string} [shouldCloseOnEsc=false] -
+ * @property {number} [isOpen=true] -
  * @property {string} [closeButton=true] -
  * @property {string} [title=null] - 'Modal Title'
- * @property {boolean} [customClassName=null] - '.ModalClass'
+ * @property {boolean} [customClassName=''] - '.ModalClass'
  */
 
 const uiModalServicePublicAPI = {
@@ -38,19 +35,16 @@ function createUIModalService() {
  * Show a new UI modal;
  *
  * @param {Modal} component React component
- * @param {ModalProps} props { header, footer, backdrop, keyboard, show, closeButton, title, customClassName }
+ * @param {ModalProps} props { shouldCloseOnEsc, isOpen, closeButton, title, customClassName }
  */
 function show(
   component,
   props = {
-    header: null,
-    footer: null,
-    backdrop: false,
-    keyboard: false,
-    show: true,
+    shouldCloseOnEsc: false,
+    isOpen: true,
     closeButton: true,
     title: null,
-    customClassName: null,
+    customClassName: '',
   }
 ) {
   return uiModalServiceImplementation._show(component, props);
