@@ -1,21 +1,20 @@
-import React, { useState, createContext, useContext, useEffect } from 'react';
+import React, {
+  useState,
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+} from 'react';
 import PropTypes from 'prop-types';
+import Draggable from 'react-draggable';
 
 const DialogContext = createContext(null);
 
 export const useDialog = () => useContext(DialogContext);
 
-const DialogContainer = () => <p></p>;
-
 const DialogProvider = ({ children, service }) => {
-  const DEFAULT_OPTIONS = {
-    title: '',
-    message: '',
-  };
-
   const [count, setCount] = useState(1);
   const [dialogs, setDialogs] = useState([]);
-  const [options, setOptions] = useState(DEFAULT_OPTIONS);
 
   /**
    * Sets the implementation of a dialog service that can be used by extensions.
@@ -24,18 +23,67 @@ const DialogProvider = ({ children, service }) => {
    */
   useEffect(() => {
     if (service) {
-      service.setServiceImplementation({ create, dismiss });
+      service.setServiceImplementation({ create, dismiss, dismissAll });
     }
-  }, [service]);
+  }, [create, dismiss, service]);
 
-  const create = ({ id }) => {};
+  /**
+   * Creates a dialog and return its id.
+   *
+   * @returns id
+   */
+  const create = useCallback(
+    ({ id, content, ...props }) => {
+      let dialogId = id;
+      if (!dialogId) {
+        dialogId = Math.random()
+          .toString(36)
+          .substr(2, 5);
+      }
 
-  const dismiss = ({ id }) => {};
+      const newDialog = {
+        id: dialogId,
+        content,
+        ...props,
+      };
 
+      setDialogs(dialogs => [...dialogs, newDialog]);
+      setCount(count + 1);
+
+      return dialogId;
+    },
+    [count]
+  );
+
+  /**
+   * Dismisses the dialog with a given id.
+   *
+   * @returns void
+   */
+  const dismiss = useCallback(({ id }) => {
+    setDialogs(dialogs => dialogs.filter(dialog => dialog.id !== id));
+  }, []);
+
+  /**
+   * Dismisses all dialogs.
+   *
+   * @returns void
+   */
   const dismissAll = () => {
     setCount(1);
     setDialogs(() => []);
-    setOptions(DEFAULT_OPTIONS);
+  };
+
+  /**
+   * Moves the dialog to the foreground if clicked.
+   *
+   * @returns void
+   */
+  const _reorder = id => {
+    setDialogs(dialogs => [
+      ...dialogs.filter(dialog => dialog.id !== id),
+      dialogs.find(dialog => dialog.id === id),
+    ]);
   };
 
   /**
@@ -50,7 +98,37 @@ const DialogProvider = ({ children, service }) => {
 
   return (
     <DialogContext.Provider value={{ create, dismiss, dismissAll, dialogs }}>
-      {!!dialogs && <DialogContainer />}
+      {dialogs.map(dialog => {
+        const {
+          id,
+          content: Dialog,
+          position /* Position of the dialog. {{x: 0, y: 0}} */,
+          defaultPosition,
+          isDraggable = true,
+          onStop = () => {},
+          onDrag = () => {},
+        } = dialog;
+        return (
+          <Draggable
+            key={id}
+            disabled={!isDraggable}
+            position={position}
+            defaultPosition={defaultPosition}
+            onStop={onStop}
+            onDrag={event => {
+              _reorder(id);
+              onDrag(event);
+            }}
+          >
+            <div
+              style={{ zIndex: '999', position: 'absolute' }}
+              onClick={() => _reorder(id)}
+            >
+              <Dialog {...dialog} />
+            </div>
+          </Draggable>
+        );
+      })}
       {children}
     </DialogContext.Provider>
   );

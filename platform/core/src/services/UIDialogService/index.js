@@ -33,10 +33,10 @@ function createUIDialogService() {
  * Show a new UI dialog;
  *
  * @param {DialogContent} component React component
- * @param {DialogProps} props { id }
+ * @param {DialogProps} props { id, content, ...props }
  */
-function create({ id }) {
-  return uiDialogServiceImplementation._create({ id });
+function create({ id, content, ...props }) {
+  return uiDialogServiceImplementation._create({ id, content, ...props });
 }
 
 /**
@@ -53,8 +53,8 @@ function dismissAll() {
  *
  * @returns void
  */
-function dismiss() {
-  return uiDialogServiceImplementation.dismiss();
+function dismiss({ id }) {
+  return uiDialogServiceImplementation._dismiss({ id });
 }
 
 /**
