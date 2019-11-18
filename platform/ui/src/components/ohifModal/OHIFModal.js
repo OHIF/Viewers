@@ -14,6 +14,8 @@ const customStyle = {
   },
 };
 
+Modal.setAppElement(document.getElementById('root'));
+
 const OHIFModal = ({
   className,
   closeButton,
