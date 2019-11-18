@@ -28,7 +28,7 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
  * @param {object} configuration
  * @param {Object|Array} configuration.csToolsConfig
  */
-export default function init({ serviceManager, configuration = {} }) {
+export default function init({ servicesManager, configuration = {} }) {
   const { csToolsConfig } = configuration;
   const { StackManager } = OHIF.utils;
   const metadataProvider = new OHIF.cornerstone.MetadataProvider();

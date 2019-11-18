@@ -47,5 +47,6 @@
 
 - [FAQ](frequently-asked-questions.md)
 - [Contributing](contributing/index.md)
+  - [Continuous Integration](continous-integration.md)
 - [Browser Support](browser-support.md)
 - [Help](help.md)
