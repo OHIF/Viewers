@@ -3,7 +3,7 @@ import Backend from 'i18next-locize-backend';
 import LastUsed from 'locize-lastused';
 import Editor from 'locize-editor';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { initReactI18next, useTranslation } from 'react-i18next';
+import { initReactI18next } from 'react-i18next';
 import customDebug from './debugger';
 import pkg from '../package.json';
 import { debugMode, detectionOptions } from './config';
