@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
+import i18n from '@ohif/i18n';
 
 const defaultState = {
   // First tab
@@ -11,12 +12,15 @@ const defaultState = {
     // order, description, window (int), level (int)
     // 0: { description: 'Soft tissue', window: '', level: '' },
   },
+  generalPreferences: {
+    language: i18n.language.split('-')[0],
+  },
 };
 
 const preferences = (state, action) => {
   switch (action.type) {
     case 'SET_USER_PREFERENCES': {
-      const newState = action.state ? action.state : cloneDeep(defaultState);
+      const newState = action.state || cloneDeep(defaultState);
 
       return Object.assign({}, state, newState);
     }

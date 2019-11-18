@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 
 import './LanguageSwitcher.styl';
 import { withTranslation } from '../../utils/LanguageProvider';
 
-const LanguageSwitcher = () => {
-  const getCurrentLanguage = (language = i18n.language) =>
-    language.split('-')[0];
+const LanguageSwitcher = props => {
+  console.log('LanguageSwitcher', props);
+  const getCurrentLanguage = (lang = i18n.language) => lang.split('-')[0];
 
-  const [currentLanguage, setCurrentLanguage] = useState(getCurrentLanguage());
   const languages = [
     // TODO: list of available languages should come from i18n.options.resources
     {
@@ -24,12 +24,13 @@ const LanguageSwitcher = () => {
   const onChange = () => {
     const { value } = event.target;
     const language = getCurrentLanguage(value);
-    setCurrentLanguage(language);
+    console.log('language', language);
+    props.updatePropValue(language, 'generalPreferences', 'language');
 
-    i18n.init({
-      fallbackLng: language,
-      lng: language,
-    });
+    // i18n.init({
+    //   fallbackLng: language,
+    //   lng: language,
+    // });
   };
 
   useEffect(() => {
@@ -37,21 +38,25 @@ const LanguageSwitcher = () => {
 
     i18n.on('languageChanged', () => {
       if (mounted) {
-        setCurrentLanguage(getCurrentLanguage());
+        props.updatePropValue(
+          getCurrentLanguage(props.language),
+          'generalPreferences',
+          'language'
+        );
       }
     });
 
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [props, props.language]);
 
   return (
     <select
       name="language-select"
       id="language-select"
       className="language-select"
-      value={currentLanguage}
+      value={props.language}
       onChange={onChange}
     >
       {languages.map(language => (
@@ -61,6 +66,11 @@ const LanguageSwitcher = () => {
       ))}
     </select>
   );
+};
+
+LanguageSwitcher.propTypes = {
+  language: PropTypes.string.isRequired,
+  updatePropValue: PropTypes.func.isRequired,
 };
 
 export default withTranslation('UserPreferencesModal')(LanguageSwitcher);

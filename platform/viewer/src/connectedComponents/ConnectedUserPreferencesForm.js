@@ -1,11 +1,18 @@
 import { connect } from 'react-redux';
 import { UserPreferencesForm } from '@ohif/ui';
 import OHIF from '@ohif/core';
+import i18n from '@ohif/i18n';
+
 import { hotkeysManager } from '../App.js';
 
 const { setUserPreferences } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
+  console.log(
+    'state.preferences.hotkeyDefinitions',
+    state.preferences.hotkeyDefinitions
+  );
+  const { generalPreferences } = state.preferences;
   const hotkeyDefinitions =
     state.preferences.hotkeyDefinitions.length > 0
       ? state.preferences.hotkeyDefinitions
@@ -15,15 +22,29 @@ const mapStateToProps = (state, ownProps) => {
     onClose: ownProps.hide,
     windowLevelData: state.preferences ? state.preferences.windowLevelData : {},
     hotkeyDefinitions,
+    generalPreferences,
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onSave: ({ windowLevelData, hotkeyDefinitions }) => {
+    onSave: ({ windowLevelData, hotkeyDefinitions, generalPreferences }) => {
+      console.log('onSave hotkeyDefinitions', hotkeyDefinitions);
       hotkeysManager.setHotkeys(hotkeyDefinitions);
+
+      i18n.init({
+        fallbackLng: generalPreferences.language,
+        lng: generalPreferences.language,
+      });
+
       ownProps.hide();
-      dispatch(setUserPreferences({ windowLevelData, hotkeyDefinitions }));
+      dispatch(
+        setUserPreferences({
+          windowLevelData,
+          hotkeyDefinitions,
+          generalPreferences,
+        })
+      );
     },
     onResetToDefaults: () => {
       hotkeysManager.restoreDefaultBindings();

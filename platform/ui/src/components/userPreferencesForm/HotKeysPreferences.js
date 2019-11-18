@@ -215,6 +215,7 @@ export class HotKeysPreferences extends Component {
   }
 
   render() {
+    console.log('this.props.hotkeyDefinitions', this.props.hotkeyDefinitions);
     const halfWayThough = Math.floor(this.state.hotKeys.length / 2);
     const firstHalfHotkeys = this.state.hotKeys.slice(0, halfWayThough);
     const secondHalfHotkeys = this.state.hotKeys.slice(

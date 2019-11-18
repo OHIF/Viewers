@@ -22,6 +22,9 @@ class UserPreferencesForm extends Component {
         label: PropTypes.string,
       })
     ).isRequired,
+    generalPreferences: PropTypes.shape({
+      language: PropTypes.string,
+    }).isRequired,
     t: PropTypes.func,
   };
 
@@ -31,13 +34,37 @@ class UserPreferencesForm extends Component {
     this.state = {
       windowLevelData: cloneDeep(props.windowLevelData),
       hotkeyDefinitions: cloneDeep(props.hotkeyDefinitions),
+      generalPreferences: cloneDeep(props.generalPreferences),
     };
   }
 
   save = () => {
+    const {
+      windowLevelData,
+      hotkeyDefinitions,
+      generalPreferences,
+    } = this.state;
+
+    console.log('SAVING', {
+      windowLevelData,
+      hotkeyDefinitions,
+      generalPreferences,
+    });
+
     this.props.onSave({
-      windowLevelData: this.state.windowLevelData,
-      hotkeyDefinitions: this.state.hotkeyDefinitions,
+      windowLevelData,
+      hotkeyDefinitions,
+      generalPreferences,
+    });
+  };
+
+  updatePropValue = (value, prop, key) => {
+    console.log('UPDATING ', value, prop);
+    this.setState({
+      [prop]: {
+        ...this.state[prop],
+        [key]: value,
+      },
     });
   };
 
@@ -52,31 +79,49 @@ class UserPreferencesForm extends Component {
       newStateData.hotkeyDefinitions = prev.hotkeyDefinitions;
     }
 
-    if (newStateData.hotkeyDefinitions || newStateData.windowLevelData) {
+    if (!isEqual(prev.generalPreferences, next.generalPreferences)) {
+      newStateData.generalPreferences = prev.generalPreferences;
+    }
+
+    const hasNewData = !(
+      Object.entries(newStateData).length === 0 &&
+      newStateData.constructor === Object
+    );
+
+    if (hasNewData) {
       this.setState(newStateData);
     }
   }
 
   render() {
+    const {
+      windowLevelData,
+      hotkeyDefinitions,
+      generalPreferences,
+    } = this.state;
+    const { t, onResetToDefaults, onClose } = this.props;
+
     return (
       <div className="UserPreferencesForm">
         <UserPreferences
-          windowLevelData={this.state.windowLevelData}
-          hotkeyDefinitions={this.state.hotkeyDefinitions}
+          windowLevelData={windowLevelData}
+          hotkeyDefinitions={hotkeyDefinitions}
+          generalPreferences={generalPreferences}
+          updatePropValue={this.updatePropValue}
         />
         <div className="footer">
           <button
             className="btn btn-danger pull-left"
-            onClick={this.props.onResetToDefaults}
+            onClick={onResetToDefaults}
           >
-            {this.props.t('Reset to Defaults')}
+            {t('Reset to Defaults')}
           </button>
           <div>
-            <div onClick={this.props.onClose} className="btn btn-default">
-              {this.props.t('Cancel')}
+            <div onClick={onClose} className="btn btn-default">
+              {t('Cancel')}
             </div>
             <button className="btn btn-primary" onClick={this.save}>
-              {this.props.t('Save')}
+              {t('Save')}
             </button>
           </div>
         </div>
