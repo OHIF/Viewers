@@ -71,6 +71,11 @@ function CustomDateRangePicker(props) {
       return options;
     };
 
+    renderMonthElement.propTypes = {
+      onMonthSelect: PropTypes.func,
+      onYearSelect: PropTypes.func,
+    };
+
     return (
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div style={containerStyle}>
@@ -131,8 +136,6 @@ CustomDateRangePicker.propTypes = {
   startDate: PropTypes.instanceOf(Date),
   endDate: PropTypes.instanceOf(Date),
   month: PropTypes.instanceOf(Date),
-  onMonthSelect: PropTypes.func.isRequired,
-  onYearSelect: PropTypes.func.isRequired,
 };
 
 export default CustomDateRangePicker;
