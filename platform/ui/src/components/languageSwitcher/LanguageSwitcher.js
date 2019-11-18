@@ -24,30 +24,7 @@ const LanguageSwitcher = props => {
     const { value } = event.target;
     const language = getCurrentLanguage(value);
     props.updatePropValue(language, 'generalPreferences', 'language');
-
-    // i18n.init({
-    //   fallbackLng: language,
-    //   lng: language,
-    // });
   };
-
-  useEffect(() => {
-    let mounted = true;
-
-    i18n.on('languageChanged', () => {
-      if (mounted) {
-        props.updatePropValue(
-          getCurrentLanguage(props.language),
-          'generalPreferences',
-          'language'
-        );
-      }
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, [props, props.language]);
 
   return (
     <select
