@@ -7,6 +7,7 @@ import './OHIFModal.styl';
 
 const customStyle = {
   overlay: {
+    zIndex: 1071,
     backgroundColor: 'rgb(0, 0, 0, 0.5)',
     display: 'flex',
     alignItems: 'center',
