@@ -50,6 +50,7 @@ const createTabs = (windowLevelData, hotkeyDefinitions) => {
       Component: WindowLevelPreferences,
       initialState: { windowLevelData },
       props: {},
+      hidden: true,
     },
   ];
 };

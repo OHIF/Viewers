@@ -17,6 +17,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    // TODO improve this strategy on windowLevel implementation
     onSave: ({ windowLevelData, hotkeyDefinitions }) => {
       hotkeysManager.setHotkeys(hotkeyDefinitions);
       ownProps.hide();

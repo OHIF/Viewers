@@ -86,7 +86,8 @@ const getHotKeysArrayColumns = (keysObj = {}, columnSize) => {
 };
 
 const NO_FIELD_ERROR_MESSAGE = undefined;
-
+const formatPressedKeys = pressedKeysArray => pressedKeysArray.join('+');
+const unFormatPressedKeys = pressedKeysStr => pressedKeysStr.split('+');
 const inputValidators = (
   commandName,
   inputValue,
@@ -94,7 +95,7 @@ const inputValidators = (
   lastPressedKey,
   originalHotKeys
 ) => {
-  const modifierValitor = ({ lastPressedKey }) => {
+  const modifierValidator = ({ lastPressedKey }) => {
     // Check if it has a valid modifier
     const isModifier = ['ctrl', 'alt', 'shift'].includes(lastPressedKey);
     if (isModifier) {
@@ -111,7 +112,6 @@ const inputValidators = (
   const conflictingValidator = ({
     commandName,
     pressedKeys,
-    lastPressedKey,
     originalHotKeys,
   }) => {
     const conflictingCommand = findConflictingCommand(
@@ -129,13 +129,7 @@ const inputValidators = (
     }
   };
 
-  const disallowedValidator = ({
-    commandName,
-    inputValue,
-    pressedKeys,
-    lastPressedKey,
-    originalHotKeys,
-  }) => {
+  const disallowedValidator = ({ inputValue, pressedKeys, lastPressedKey }) => {
     const modifierCommand = formatPressedKeys(
       pressedKeys.slice(0, pressedKeys.length - 1)
     );
@@ -156,7 +150,7 @@ const inputValidators = (
   };
 
   const validators = [
-    modifierValitor,
+    modifierValidator,
     conflictingValidator,
     disallowedValidator,
   ];
@@ -194,7 +188,7 @@ function HotKeyPreferencesRow({
   onSuccessChanged,
   onFailureChanged,
 }) {
-  const [inputValue, setInputValue] = useState(hotkeys[0]);
+  const [inputValue, setInputValue] = useState(hotkeys);
   const [fieldErrorMessage, setFieldErrorMessage] = useState(
     NO_FIELD_ERROR_MESSAGE
   );
@@ -215,9 +209,6 @@ function HotKeyPreferencesRow({
     setInputValue(formatPressedKeys(pressedKeys));
   };
 
-  const formatPressedKeys = pressedKeysArray => pressedKeysArray.join('+');
-  const unFormatPressedKeys = pressedKeysStr => pressedKeysStr.split('+');
-
   // validate input value
   const validateInput = event => {
     const pressedKeys = unFormatPressedKeys(inputValue);
@@ -237,7 +228,7 @@ function HotKeyPreferencesRow({
     if (hasError) {
       setInputValue('');
     } else {
-      onSuccessChanged(unFormatPressedKeys(inputValue));
+      onSuccessChanged(inputValue);
     }
     setFieldErrorMessage(errorMessage);
   };

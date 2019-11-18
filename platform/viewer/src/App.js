@@ -183,12 +183,27 @@ function _initExtensions(extensions, hotkeys) {
   const mergedExtensions = defaultExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
 
+  const { hotkeyDefinitions = {} } = store.getState().preferences || {};
+  let updateStore = false;
+  let hotkeysToUse = hotkeyDefinitions;
+
   // Must run after extension commands are registered
-  if (hotkeys) {
-    hotkeysManager.setHotkeys(hotkeys, true);
-    const { hotkeyDefinitions } = hotkeysManager;
-    const windowLevelData = {};
-    store.dispatch(setUserPreferences({ windowLevelData, hotkeyDefinitions }));
+  // if there is no hotkeys from localStorate set up from config
+  if (!Object.keys(hotkeyDefinitions).length) {
+    hotkeysToUse = hotkeys;
+    updateStore = true;
+  }
+
+  if (hotkeysToUse) {
+    hotkeysManager.setHotkeys(hotkeysToUse, true);
+
+    if (updateStore) {
+      const { hotkeyDefinitions } = hotkeysManager;
+      const windowLevelData = {};
+      store.dispatch(
+        setUserPreferences({ windowLevelData, hotkeyDefinitions })
+      );
+    }
   }
 }
 
