@@ -95,6 +95,9 @@ const inputValidators = (
   lastPressedKey,
   originalHotKeys
 ) => {
+  let hasError = false;
+  let errorMessage = NO_FIELD_ERROR_MESSAGE;
+
   const modifierValidator = ({ lastPressedKey }) => {
     // Check if it has a valid modifier
     const isModifier = ['ctrl', 'alt', 'shift'].includes(lastPressedKey);
@@ -170,8 +173,8 @@ const inputValidators = (
 
   // validation has passed successfully
   return {
-    hasError: false,
-    errorMessage: NO_FIELD_ERROR_MESSAGE,
+    hasError,
+    errorMessage,
   };
 };
 /**
@@ -203,7 +206,8 @@ function HotKeyPreferencesRow({
         keyDownEvent.key ||
         String.fromCharCode(keyDownEvent.keyCode);
 
-      pressedKeys.push(keyName);
+      // ensure lowerCase
+      pressedKeys.push(keyName.toLowerCase());
     }
 
     setInputValue(formatPressedKeys(pressedKeys));
