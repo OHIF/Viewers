@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
-import Dropzone from 'react-dropzone';
 import OHIF from '@ohif/core';
 import { withRouter } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -193,10 +192,12 @@ function StudyListRoute(props) {
   }
 
   function handleFilterChange(fieldName, value) {
-    const updatedFilterValues = Object.assign({}, filterValues);
-
-    updatedFilterValues[fieldName] = value;
-    setFilterValues(updatedFilterValues);
+    setFilterValues(state => {
+      return {
+        ...state,
+        [fieldName]: value,
+      };
+    });
   }
 
   return (

@@ -220,7 +220,6 @@ StudyList.propTypes = {
     allFields: PropTypes.string.isRequired,
   }).isRequired,
   onFilterChange: PropTypes.func.isRequired,
-  //
   studyListDateFilterNumDays: PropTypes.number,
   displaySize: PropTypes.string,
 };
