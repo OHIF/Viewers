@@ -3,11 +3,22 @@ import './StudyList.styl';
 import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import TableSearchFilter from './TableSearchFilter.js';
-import { useDisplayMediaContent } from '../../hooks/useMedia.js';
 import PropTypes from 'prop-types';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
 import { useTranslation } from 'react-i18next';
 
+const getContentFromUseMediaValue = (
+  displaySize,
+  contentArrayMap,
+  defaultContent
+) => {
+  const content =
+    displaySize in contentArrayMap
+      ? contentArrayMap[displaySize]
+      : defaultContent;
+
+  return content;
+};
 /**
  *
  *
@@ -25,6 +36,7 @@ function StudyList(props) {
     onFilterChange: handleFilterChange,
     onSelectItem: handleSelectItem,
     studyListDateFilterNumDays,
+    displaySize,
   } = props;
   const { t, ready: translationsAreReady } = useTranslation('StudyList');
 
@@ -97,14 +109,8 @@ function StudyList(props) {
     },
   ];
 
-  const tableMeta = useDisplayMediaContent(
-    [
-      '(min-width: 1750px)',
-      '(min-width: 1000px) and (max-width: 1749px)',
-      '(max-width: 999px)',
-    ],
-    ['large', 'medium', 'small'],
-    'small',
+  const tableMeta = getContentFromUseMediaValue(
+    displaySize,
     { large: largeTableMeta, medium: mediumTableMeta, small: smallTableMeta },
     smallTableMeta
   );
@@ -182,6 +188,7 @@ function StudyList(props) {
               studyDescription={study.studyDescription || ''}
               studyInstanceUid={study.studyInstanceUid}
               t={t}
+              displaySize={displaySize}
             />
           ))}
       </tbody>
@@ -215,6 +222,7 @@ StudyList.propTypes = {
   onFilterChange: PropTypes.func.isRequired,
   //
   studyListDateFilterNumDays: PropTypes.number,
+  displaySize: PropTypes.string,
 };
 
 StudyList.defaultProps = {};
@@ -231,6 +239,7 @@ function TableRow(props) {
     studyInstanceUid,
     onClick: handleClick,
     t,
+    displaySize,
   } = props;
 
   const largeRowTemplate = useMemo(
@@ -376,14 +385,8 @@ function TableRow(props) {
     []
   );
 
-  const rowTemplate = useDisplayMediaContent(
-    [
-      '(min-width: 1750px)',
-      '(min-width: 1000px) and (max-width: 1749px)',
-      '(max-width: 999px)',
-    ],
-    ['large', 'medium', 'small'],
-    'small',
+  const rowTemplate = getContentFromUseMediaValue(
+    displaySize,
     {
       large: largeRowTemplate,
       medium: mediumRowTemplate,
@@ -404,6 +407,7 @@ TableRow.propTypes = {
   studyDate: PropTypes.string.isRequired,
   studyDescription: PropTypes.string.isRequired,
   studyInstanceUid: PropTypes.string.isRequired,
+  displaySize: PropTypes.string,
 };
 
 TableRow.defaultProps = {

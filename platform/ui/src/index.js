@@ -27,11 +27,7 @@ import {
   UserPreferencesForm,
   OHIFModal,
 } from './components';
-import {
-  useDebounce,
-  useDisplayMediaSize,
-  useDisplayMediaContent,
-} from './hooks';
+import { useDebounce, useMedia } from './hooks';
 
 // Elements
 import {
@@ -117,6 +113,5 @@ export {
   OHIFModal,
   // Hooks
   useDebounce,
-  useDisplayMediaSize,
-  useDisplayMediaContent,
+  useMedia,
 };

@@ -60,17 +60,17 @@ const getMediaTypeAlias = (mediaQuery, state) => {
  *
  * @example <caption>Example to getDisplayMedia Size based on viewport size</caption>
  *
- *    const displaySize = useDisplayMediaSize(
+ *    const displaySize = useMedia(
  *    ['(min-width: 1500px)', '(min-width: 1000px)', '(min-width: 600px)'],
  *    // Value to return for matched media query
  *    ['large', 'medium', 'small'],
  *      // Default value
  *    'medium');
  *
- *  const currentDisplaySize = useDisplayMediaSize();
+ *  const currentDisplaySize = useMedia();
  *
  */
-const useDisplayMediaSize = (
+const useMedia = (
   mediaQueriesStringList,
   mediaTypesAliases,
   defaultMediaType
@@ -164,72 +164,15 @@ const useDisplayMediaSize = (
     mount.current = true;
 
     return () => {
+      mount.current = false;
       const { mediaQueryMap } = state;
       mediaQueryMap.forEach(mql => {
         mql.removeListener(onMediaQueryChange);
       });
-      mount.current = false;
     };
   }, []);
 
   return state.displaySize;
 };
-/**
- * Hook to get a content based on current displayMedia size.
- *
- * It uses useDisplayMediaSize. Hook immutable on content changing (i.e. mutable only when displayMediaSize changes)
- *
- * Current hook only offers content, it wont expose method to change its state.
- *
- * @param {Array} mediaQueriesStringList - array of string media queries to be parsed
- * @param {Array} mediaTypesAliases - array of aliases. Each value represents one mediaQueryList from array mediaQueriesStringList
- * @param {String} defaultMediaType - default mediaTypeAlias
- * @param {Object} contentArrayMap - Mapping object for mediaTypesAliases to content (of any type).
- * @param {Any} defaultContent - Default content to be used in case current displayMedia size not present on contentArrayMap
- * @returns {Any} current content based on displayMedia size.
- *
- * @example <caption>Example to getContent based on displayMedia size</caption>
- *
- *    const currentComponent = useDisplayMediaContent(
- *    ['(min-width: 1500px)', '(min-width: 1000px)', '(min-width: 600px)'],
- *    // Value to return for matched media query
- *    ['large', 'medium', 'small'],
- *      // Default value
- *    'medium',
- *    {"small": ComponentA, "medium": ComponentB},
- *    ComponentA);
- *
- *    const currentObject = useDisplayMediaContent(
- *    ['(min-width: 1500px)', '(min-width: 1000px)', '(min-width: 600px)'],
- *    // Value to return for matched media query
- *    ['large', 'medium', 'small'],
- *      // Default value
- *    'medium',
- *    {"small": ObjectA, "medium": ObjectB},
- *    ObjectB);
- */
-const useDisplayMediaContent = (
-  mediaQueriesStringList,
-  mediaTypesAliases,
-  defaultMediaType,
-  contentArrayMap,
-  defaultContent
-) => {
-  const displaySize = useDisplayMediaSize(
-    mediaQueriesStringList,
-    mediaTypesAliases,
-    defaultMediaType
-  );
 
-  const getContent = () => {
-    const content =
-      displaySize in contentArrayMap
-        ? contentArrayMap[displaySize]
-        : defaultContent;
-    return content;
-  };
-
-  return getContent();
-};
-
-export { useDisplayMediaSize, useDisplayMediaContent };
+export { useMedia };

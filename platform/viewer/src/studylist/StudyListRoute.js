@@ -9,7 +9,7 @@ import {
   PageToolbar,
   TablePagination,
   useDebounce,
-  useDisplayMediaSize,
+  useMedia,
 } from '@ohif/ui';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import * as RoutesUtil from '../routes/routesUtil';
@@ -58,7 +58,7 @@ function StudyListRoute(props) {
   const [pageNumber, setPageNumber] = useState(0);
   const appContext = useContext(AppContext);
   // ~~ RESPONSIVE
-  const displaySize = useDisplayMediaSize(
+  const displaySize = useMedia(
     [
       '(min-width: 1750px)',
       '(min-width: 1000px) and (max-width: 1749px)',
@@ -260,6 +260,7 @@ function StudyListRoute(props) {
           filterValues={filterValues}
           onFilterChange={handleFilterChange}
           studyListDateFilterNumDays={appConfig.studyListDateFilterNumDays}
+          displaySize={displaySize}
         />
         {/* PAGINATION FOOTER */}
         <TablePagination
