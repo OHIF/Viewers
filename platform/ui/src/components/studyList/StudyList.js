@@ -3,10 +3,7 @@ import './StudyList.styl';
 import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import TableSearchFilter from './TableSearchFilter.js';
-import {
-  useDisplayMediaContent,
-  useDisplayMediaSize,
-} from '../../hooks/useMedia.js';
+import { useDisplayMediaContent } from '../../hooks/useMedia.js';
 import PropTypes from 'prop-types';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
 import { useTranslation } from 'react-i18next';
@@ -101,6 +98,13 @@ function StudyList(props) {
   ];
 
   const tableMeta = useDisplayMediaContent(
+    [
+      '(min-width: 1750px)',
+      '(min-width: 1000px) and (max-width: 1749px)',
+      '(max-width: 999px)',
+    ],
+    ['large', 'medium', 'small'],
+    'small',
     { large: largeTableMeta, medium: mediumTableMeta, small: smallTableMeta },
     smallTableMeta
   );
@@ -373,6 +377,13 @@ function TableRow(props) {
   );
 
   const rowTemplate = useDisplayMediaContent(
+    [
+      '(min-width: 1750px)',
+      '(min-width: 1000px) and (max-width: 1749px)',
+      '(max-width: 999px)',
+    ],
+    ['large', 'medium', 'small'],
+    'small',
     {
       large: largeRowTemplate,
       medium: mediumRowTemplate,

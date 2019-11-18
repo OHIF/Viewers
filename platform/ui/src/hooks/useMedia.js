@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import isEqual from 'lodash.isequal';
 /**
  * Get display size value for matched mediaQueryList
@@ -34,79 +34,16 @@ const getMediaQueryMap = mediaQueriesStringList => {
   );
 };
 
-/**
- * Auxiliary object to store MediaQuery state.
- * This object will be consumed by useDisplayMediaSize and it will be used as single source of truth for its state.
- *
- * Whenever its state changes, it triggers setters previous bind to it. So consumer state will updated promptly.
- *
- */
-const MediaQuery = {
-  state: {},
-  setState(value) {
-    const {
-      mediaQueriesStringList,
-      mediaTypesAliases,
-      defaultMediaType,
-    } = value;
-    const mediaQueryMap = getMediaQueryMap(mediaQueriesStringList);
-    const displaySize = getDisplaySize(
-      mediaQueryMap,
-      mediaTypesAliases,
-      defaultMediaType
-    );
-    // immutable state
-    this.state = { ...value, displaySize, mediaQueryMap };
-    this.runSetters();
-  },
+const getMediaTypeAlias = (mediaQuery, state) => {
+  const { media } = mediaQuery;
+  const { mediaQueriesStringList, mediaTypesAliases } = state;
 
-  setDisplaySize(displaySize) {
-    if (!displaySize) {
-      return;
-    }
-    // immutable state
-    this.state = { ...this.state, displaySize };
-    this.runSetters();
-  },
-  getMediaTypeAlias(mediaQuery) {
-    const { media } = mediaQuery;
-    const { mediaQueriesStringList, mediaTypesAliases } = this.state;
-
-    const index = mediaQueriesStringList.findIndex(originalMediaQuery => {
-      const { media: toCompareMedia } = window.matchMedia(originalMediaQuery);
-      return toCompareMedia === media;
-    });
-
-    return mediaTypesAliases[index];
-  },
-  onMediaQueryChange(mediaQuery) {
-    if (mediaQuery.matches) {
-      const nextMediaType = this.getMediaTypeAlias(mediaQuery);
-      this.setDisplaySize(nextMediaType);
-    }
-  },
-  runSetters() {
-    for (let setter of this.setters) {
-      setter(this.state);
-    }
-  },
-  setters: [],
-};
-
-// Force to bind MediaQuery to onMediaQueryChange context.
-MediaQuery.onMediaQueryChange = MediaQuery.onMediaQueryChange.bind(MediaQuery);
-
-const removeMediaQueryListeners = (mediaQueryMap = []) => {
-  mediaQueryMap.forEach(mql => {
-    mql.removeListener(MediaQuery.onMediaQueryChange);
+  const index = mediaQueriesStringList.findIndex(originalMediaQuery => {
+    const { media: toCompareMedia } = window.matchMedia(originalMediaQuery);
+    return toCompareMedia === media;
   });
-};
 
-const addMediaQueryListeners = (mediaQueryMap = []) => {
-  mediaQueryMap.forEach(mql => {
-    mql.removeListener(MediaQuery.onMediaQueryChange);
-    mql.addListener(MediaQuery.onMediaQueryChange);
-  });
+  return mediaTypesAliases[index];
 };
 
 /**
@@ -139,18 +76,62 @@ const useDisplayMediaSize = (
   defaultMediaType
 ) => {
   // MediaQuery.state is the source of truth. This hook will be dependent on it.
-  const [state, setState] = useState(MediaQuery.state);
+  const [state, setState] = useState(() => {
+    const _mediaQueryMap = getMediaQueryMap(mediaQueriesStringList);
+    const _displaySize = getDisplaySize(
+      _mediaQueryMap,
+      mediaTypesAliases,
+      defaultMediaType
+    );
+
+    return {
+      mediaQueryMap: _mediaQueryMap,
+      displaySize: _displaySize,
+      mediaQueriesStringList,
+      mediaTypesAliases,
+      defaultMediaType,
+    };
+  });
   let mount = useRef(false);
 
-  // bind current hook set state to MediaQuery setState
-  if (!MediaQuery.setters.includes(setState)) {
-    MediaQuery.setters.push(nextState => {
-      // last chance to avoid setState of unmount component
-      if (mount.current) {
-        setState(nextState);
-      }
-    });
-  }
+  const updateDisplaySize = displaySize => {
+    if (mount.current) {
+      setState({ ...state, displaySize });
+    }
+  };
+
+  const updateState = value => {
+    const {
+      mediaQueriesStringList,
+      mediaTypesAliases,
+      defaultMediaType,
+    } = value;
+
+    const mediaQueryMap = getMediaQueryMap(mediaQueriesStringList);
+    const displaySize = getDisplaySize(
+      mediaQueryMap,
+      mediaTypesAliases,
+      defaultMediaType
+    );
+    // immutable state
+    // last chance to avoid setState of unmount component
+    if (mount.current) {
+      setState({
+        ...state,
+        mediaQueriesStringList,
+        mediaTypesAliases,
+        displaySize,
+        mediaQueryMap,
+      });
+    }
+  };
+
+  const onMediaQueryChange = useCallback(mediaQuery => {
+    if (mediaQuery.matches) {
+      const nextDisplaySize = getMediaTypeAlias(mediaQuery, state);
+      updateDisplaySize(nextDisplaySize);
+    }
+  }, []);
 
   // update state of MediaQuery in case mediaQueriesStringList or mediaTypesAliases has changed
   useEffect(() => {
@@ -163,10 +144,9 @@ const useDisplayMediaSize = (
         !isEqual(mediaQueriesStringList, _mediaQueriesStringList)) ||
       (mediaTypesAliases && !isEqual(mediaTypesAliases, _mediaTypesAliases))
     ) {
-      MediaQuery.setState({
+      updateState({
         mediaQueriesStringList,
         mediaTypesAliases,
-        defaultMediaType,
       });
     }
   }, [mediaQueriesStringList, mediaTypesAliases]);
@@ -174,7 +154,10 @@ const useDisplayMediaSize = (
   // re-assign window resizing listeners
   useEffect(() => {
     const { mediaQueryMap } = state;
-    addMediaQueryListeners(mediaQueryMap);
+    mediaQueryMap.forEach(mql => {
+      mql.removeListener(onMediaQueryChange);
+      mql.addListener(onMediaQueryChange);
+    });
   }, [state.mediaQueryMap]);
 
   useEffect(() => {
@@ -182,8 +165,9 @@ const useDisplayMediaSize = (
 
     return () => {
       const { mediaQueryMap } = state;
-      removeMediaQueryListeners(mediaQueryMap);
-      MediaQuery.setters = [];
+      mediaQueryMap.forEach(mql => {
+        mql.removeListener(onMediaQueryChange);
+      });
       mount.current = false;
     };
   }, []);
@@ -193,21 +177,49 @@ const useDisplayMediaSize = (
 /**
  * Hook to get a content based on current displayMedia size.
  *
- * It uses useDisplayMediaSize. Hook immutable on content changing.
+ * It uses useDisplayMediaSize. Hook immutable on content changing (i.e. mutable only when displayMediaSize changes)
  *
  * Current hook only offers content, it wont expose method to change its state.
  *
+ * @param {Array} mediaQueriesStringList - array of string media queries to be parsed
+ * @param {Array} mediaTypesAliases - array of aliases. Each value represents one mediaQueryList from array mediaQueriesStringList
+ * @param {String} defaultMediaType - default mediaTypeAlias
  * @param {Object} contentArrayMap - Mapping object for mediaTypesAliases to content (of any type).
  * @param {Any} defaultContent - Default content to be used in case current displayMedia size not present on contentArrayMap
  * @returns {Any} current content based on displayMedia size.
  *
  * @example <caption>Example to getContent based on displayMedia size</caption>
  *
- *    const currentComponent = useDisplayMediaContent({"small": ComponentA, "medium": ComponentB}, ComponentA);
- *    const currentObject = useDisplayMediaContent({"small": ObjectA, "medium": ObjectB}, ObjectB);
+ *    const currentComponent = useDisplayMediaContent(
+ *    ['(min-width: 1500px)', '(min-width: 1000px)', '(min-width: 600px)'],
+ *    // Value to return for matched media query
+ *    ['large', 'medium', 'small'],
+ *      // Default value
+ *    'medium',
+ *    {"small": ComponentA, "medium": ComponentB},
+ *    ComponentA);
+ *
+ *    const currentObject = useDisplayMediaContent(
+ *    ['(min-width: 1500px)', '(min-width: 1000px)', '(min-width: 600px)'],
+ *    // Value to return for matched media query
+ *    ['large', 'medium', 'small'],
+ *      // Default value
+ *    'medium',
+ *    {"small": ObjectA, "medium": ObjectB},
+ *    ObjectB);
  */
-const useDisplayMediaContent = (contentArrayMap, defaultContent) => {
-  const displaySize = useDisplayMediaSize();
+const useDisplayMediaContent = (
+  mediaQueriesStringList,
+  mediaTypesAliases,
+  defaultMediaType,
+  contentArrayMap,
+  defaultContent
+) => {
+  const displaySize = useDisplayMediaSize(
+    mediaQueriesStringList,
+    mediaTypesAliases,
+    defaultMediaType
+  );
 
   const getContent = () => {
     const content =
