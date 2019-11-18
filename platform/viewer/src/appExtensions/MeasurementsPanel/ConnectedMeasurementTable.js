@@ -3,6 +3,7 @@ import { MeasurementTable } from '@ohif/ui';
 import OHIF from '@ohif/core';
 import moment from 'moment';
 import cornerstone from 'cornerstone-core';
+import DICOMSR from './../../lib/DICOMSR';
 
 //
 import jumpToRowItem from './jumpToRowItem.js';
@@ -58,6 +59,19 @@ function getDataForEachMeasurementNumber(
   return data;
 }
 
+function getWarningsForMeasurement(meansurementData) {
+  const { toolType } = meansurementData;
+  const isToolSupported = DICOMSR.isToolSupported(toolType);
+
+  return {
+    hasWarnings: !isToolSupported,
+    warningTitle: isToolSupported ? '' : 'Unsupported Tool',
+    warningList: isToolSupported
+      ? []
+      : [`${toolType} cannot be persisted at this time`],
+  };
+}
+
 function convertMeasurementsToTableData(toolCollections, timepoints) {
   const config = OHIF.measurements.MeasurementApi.getConfiguration();
   const toolGroups = config.measurementTools;
@@ -90,6 +104,12 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
       } = measurementData;
       const measurementId = measurementData._id;
 
+      const {
+        hasWarnings,
+        warningTitle,
+        warningList,
+      } = getWarningsForMeasurement(measurementData);
+
       //check if all measurements with same measurementNumber will have same LABEL
       const tableMeasurement = {
         itemNumber: lesionNamingNumber,
@@ -98,10 +118,10 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
         measurementNumber,
         lesionNamingNumber,
         toolType,
-        hasWarnings: false, //TODO
-        warningTitle: '', //TODO
+        hasWarnings,
+        warningTitle,
+        warningList,
         isSplitLesion: false, //TODO
-        warningList: [], //TODO
         data: getDataForEachMeasurementNumber(
           measurementNumberList,
           timepoints,
@@ -140,6 +160,10 @@ function convertTimepointsToTableData(timepoints) {
       date: moment(timepoints[0].latestDate).format('DD-MMM-YY'),
     },
   ];
+}
+
+function updateWarnings(measurementCollection) {
+  measurementCollection;
 }
 
 function getSaveFunction(servers) {
@@ -306,10 +330,14 @@ const mapDispatchToProps = dispatch => {
 };
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
+  const { timepoints, saveFunction, measurementCollection } = propsFromState;
+
+  updateWarnings(measurementCollection);
+
   return {
-    timepoints: propsFromState.timepoints,
-    saveFunction: propsFromState.saveFunction,
-    measurementCollection: propsFromState.measurementCollection,
+    timepoints,
+    saveFunction,
+    measurementCollection,
     selectedMeasurementNumber: ownProps.selectedMeasurementNumber,
     ...propsFromDispatch,
     onItemClick: (event, measurementData) => {

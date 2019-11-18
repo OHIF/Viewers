@@ -23,7 +23,6 @@ class MeasurementTable extends Component {
     onDeleteClick: PropTypes.func,
     onEditDescriptionClick: PropTypes.func,
     selectedMeasurementNumber: PropTypes.number,
-    overwallWarnings: PropTypes.object,
     t: PropTypes.func,
     saveFunction: PropTypes.func,
     snackbarContext: PropTypes.object,
@@ -186,7 +185,7 @@ class MeasurementTable extends Component {
   };
 
   getWarningContent = () => {
-    const { warningList = '' } = this.props.overwallWarnings;
+    const { warningList = '' } = this.props.overallWarnings;
 
     if (Array.isArray(warningList)) {
       const listedWarnings = warningList.map((warn, index) => {
