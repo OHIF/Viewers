@@ -1,5 +1,4 @@
 import cloneDeep from 'lodash.clonedeep';
-import i18n from '@ohif/i18n';
 
 const defaultState = {
   // First tab
@@ -13,7 +12,7 @@ const defaultState = {
     // 0: { description: 'Soft tissue', window: '', level: '' },
   },
   generalPreferences: {
-    language: i18n.language.split('-')[0],
+    // language: "en"
   },
 };
 

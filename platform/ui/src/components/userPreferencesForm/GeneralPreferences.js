@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import LanguageSwitcher from '../languageSwitcher';
 
 const GeneralPreferences = props => {
-  console.log('GeneralPreferences', props);
   return (
     <div className="general-preferences-wrapper">
       <div className="col-sm-3">

@@ -210,6 +210,7 @@ StudyList.propTypes = {
   onFilterChange: PropTypes.func.isRequired,
   //
   studyListDateFilterNumDays: PropTypes.number,
+  t: PropTypes.func.isRequired,
 };
 
 StudyList.defaultProps = {};

@@ -6,7 +6,6 @@ import './LanguageSwitcher.styl';
 import { withTranslation } from '../../utils/LanguageProvider';
 
 const LanguageSwitcher = props => {
-  console.log('LanguageSwitcher', props);
   const getCurrentLanguage = (lang = i18n.language) => lang.split('-')[0];
 
   const languages = [
@@ -24,7 +23,6 @@ const LanguageSwitcher = props => {
   const onChange = () => {
     const { value } = event.target;
     const language = getCurrentLanguage(value);
-    console.log('language', language);
     props.updatePropValue(language, 'generalPreferences', 'language');
 
     // i18n.init({

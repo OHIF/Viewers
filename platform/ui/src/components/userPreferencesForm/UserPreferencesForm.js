@@ -45,12 +45,6 @@ class UserPreferencesForm extends Component {
       generalPreferences,
     } = this.state;
 
-    console.log('SAVING', {
-      windowLevelData,
-      hotkeyDefinitions,
-      generalPreferences,
-    });
-
     this.props.onSave({
       windowLevelData,
       hotkeyDefinitions,
@@ -59,7 +53,6 @@ class UserPreferencesForm extends Component {
   };
 
   updatePropValue = (value, prop, key) => {
-    console.log('UPDATING ', value, prop);
     this.setState({
       [prop]: {
         ...this.state[prop],
