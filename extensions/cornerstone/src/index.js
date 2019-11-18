@@ -24,8 +24,8 @@ export default {
    * @param {object} [configuration={}]
    * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
    */
-  preRegistration({ serviceManager, configuration = {} }) {
-    init({ serviceManager, configuration });
+  preRegistration({ servicesManager, configuration = {} }) {
+    init({ servicesManager, configuration });
   },
   getViewportModule() {
     return OHIFCornerstoneViewport;

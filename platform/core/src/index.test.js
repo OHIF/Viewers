@@ -10,7 +10,8 @@ describe('Top level exports', () => {
       'HotkeysManager',
       'ServicesManager',
       //
-      'createUiNotificationService',
+      'createUINotificationService',
+      'createUIModalService',
       //
       'utils',
       'studies',

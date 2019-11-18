@@ -287,7 +287,7 @@ function _handleBuiltIn({ behavior } = {}) {
   }
 
   if (behavior === 'DOWNLOAD_SCREEN_SHOT') {
-    this.props.modalContext.show(ConnectedViewportDownloadForm, {
+    this.props.modal.show(ConnectedViewportDownloadForm, {
       title: this.props.t('Download High Quality Image'),
       customClassName: 'ViewportDownloadForm',
     });
