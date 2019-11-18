@@ -186,6 +186,8 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run: cd .netlify && npm install
+      - run:
+          cp .netlify/deploy-worflow/_redirects platform/viewer/dist/_redirects
       - run: cd .netlify && npm run deploy
 
   DEPLOY_TO_STAGING:
@@ -199,6 +201,8 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run: cd .netlify && npm install
+      - run:
+          cp .netlify/deploy-worflow/_redirects platform/viewer/dist/_redirects
       - run: cd .netlify && npm run deploy
 
   DEPLOY_TO_PRODUCTION:
@@ -212,6 +216,8 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run: cd .netlify && npm install
+      - run:
+          cp .netlify/deploy-worflow/_redirects platform/viewer/dist/_redirects
       - run: cd .netlify && npm run deploy
 
   ###
