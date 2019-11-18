@@ -7,6 +7,7 @@ import {
   RoundedButtonGroup,
   ToolbarButton,
   withModal,
+  withDialog,
 } from '@ohif/ui';
 
 import './ToolbarRow.css';
@@ -45,7 +46,6 @@ class ToolbarRow extends Component {
     this.state = {
       toolbarButtons: toolbarButtonDefinitions,
       activeButtons: [],
-      isCineDialogOpen: false,
     };
 
     this._handleBuiltIn = _handleBuiltIn.bind(this);
@@ -106,13 +106,6 @@ class ToolbarRow extends Component {
       this.state.activeButtons
     );
 
-    const cineDialogContainerStyle = {
-      display: this.state.isCineDialogOpen ? 'block' : 'none',
-      position: 'absolute',
-      top: '82px',
-      zIndex: 999,
-    };
-
     const onPress = (side, value) => {
       this.props.handleSidePanelChange(side, value);
     };
@@ -144,9 +137,6 @@ class ToolbarRow extends Component {
               />
             )}
           </div>
-        </div>
-        <div className="CineDialogContainer" style={cineDialogContainerStyle}>
-          <ConnectedCineDialog />
         </div>
       </>
     );
@@ -250,11 +240,9 @@ function _handleToolbarButtonClick(button, evt, props) {
   // TODO: We can update this to be a `getter` on the extension to query
   //       For the active tools after we apply our updates?
   if (button.type === 'setToolActive') {
-    this.setState({
-      activeButtons: [button.id],
-    });
+    this.setState({ activeButtons: [button.id] });
   } else if (button.type === 'builtIn') {
-    this._handleBuiltIn(button.options);
+    this._handleBuiltIn(button);
   }
 }
 
@@ -279,21 +267,38 @@ function _getVisibleToolbarButtons() {
   return toolbarButtonDefinitions;
 }
 
-function _handleBuiltIn({ behavior } = {}) {
+function _handleBuiltIn({ id, options: { behavior } } = {}) {
+  /* TODO: Keep cine button active until its unselected. */
+  const { dialog, modal, t } = this.props;
+  const { dialogId } = this.state;
+
   if (behavior === 'CINE') {
-    this.setState({
-      isCineDialogOpen: !this.state.isCineDialogOpen,
-    });
+    if (dialogId) {
+      dialog.dismiss({ id: dialogId });
+      this.setState({ dialogId: null });
+    } else {
+      const spacing = 20;
+      const { x, y } = document
+        .querySelector(`.ViewerMain`)
+        .getBoundingClientRect();
+      const newDialogId = dialog.create({
+        content: ConnectedCineDialog,
+        defaultPosition: {
+          x: x + spacing || 0,
+          y: y + spacing || 0,
+        },
+      });
+      this.setState({ dialogId: newDialogId });
+    }
   }
 
   if (behavior === 'DOWNLOAD_SCREEN_SHOT') {
-    this.props.modal.show(ConnectedViewportDownloadForm, {
-      title: this.props.t('Download High Quality Image'),
-      customClassName: 'ViewportDownloadForm',
+    modal.show(ConnectedViewportDownloadForm, {
+      title: t('Download High Quality Image'),
     });
   }
 }
 
 export default withTranslation(['Common', 'ViewportDownloadForm'])(
-  withModal(ToolbarRow)
+  withModal(withDialog(ToolbarRow))
 );
