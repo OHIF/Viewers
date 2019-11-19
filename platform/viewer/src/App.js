@@ -1,7 +1,18 @@
+import React, { Component } from 'react';
+import { OidcProvider } from 'redux-oidc';
+import { I18nextProvider } from 'react-i18next';
+import PropTypes from 'prop-types';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
+import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import { hot } from 'react-hot-loader/root';
 
-// TODO: This should not be here
-import './config';
+import {
+  SnackbarProvider,
+  ModalProvider,
+  DialogProvider,
+  OHIFModal,
+} from '@ohif/ui';
 
 import {
   CommandsManager,
@@ -10,44 +21,48 @@ import {
   HotkeysManager,
   createUINotificationService,
   createUIModalService,
+  createUIDialogService,
   utils,
 } from '@ohif/core';
-import React, { Component } from 'react';
+
+import i18n from '@ohif/i18n';
+
+// TODO: This should not be here
+import './config';
+
+/** Utils */
 import {
   getUserManagerForOpenIdConnectClient,
   initWebWorkers,
 } from './utils/index.js';
 
-import { I18nextProvider } from 'react-i18next';
-
-// ~~ EXTENSIONS
+/** Extensions */
 import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
-import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
-import OHIFStandaloneViewer from './OHIFStandaloneViewer';
-import { OidcProvider } from 'redux-oidc';
-import PropTypes from 'prop-types';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { getActiveContexts } from './store/layout/selectors.js';
-import i18n from '@ohif/i18n';
-import store from './store';
-import { SnackbarProvider, ModalProvider, OHIFModal } from '@ohif/ui';
 
-// Contexts
+/** Viewer */
+import OHIFStandaloneViewer from './OHIFStandaloneViewer';
+
+/** Store */
+import { getActiveContexts } from './store/layout/selectors.js';
+import store from './store';
+
+/** Contexts */
 import WhiteLabellingContext from './context/WhiteLabellingContext';
 import UserManagerContext from './context/UserManagerContext';
 import AppContext from './context/AppContext';
 
-// ~~~~ APP SETUP
+/** ~~~~~~~~~~~~~ Application Setup */
 const commandsManagerConfig = {
   getAppState: () => store.getState(),
   getActiveContexts: () => getActiveContexts(store.getState()),
 };
 
-// Services
+/** Services */
 const UINotificationService = createUINotificationService();
 const UIModalService = createUIModalService();
+const UIDialogService = createUIDialogService();
 
+/** Managers */
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
 const servicesManager = new ServicesManager();
@@ -55,7 +70,7 @@ const extensionManager = new ExtensionManager({
   commandsManager,
   servicesManager,
 });
-// ~~~~ END APP SETUP
+/** ~~~~~~~~~~~~~ End Application Setup */
 
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
@@ -72,6 +87,7 @@ class App extends Component {
         id: PropTypes.string.isRequired,
       })
     ),
+    hotkeys: PropTypes.array,
   };
 
   static defaultProps = {
@@ -91,7 +107,7 @@ class App extends Component {
     const { servers, extensions, hotkeys, oidc } = props;
 
     this.initUserManager(oidc);
-    _initServices([UINotificationService, UIModalService]);
+    _initServices([UINotificationService, UIModalService, UIDialogService]);
     _initExtensions(extensions, hotkeys);
     _initServers(servers);
     initWebWorkers();
@@ -114,12 +130,14 @@ class App extends Component {
                   <Router basename={routerBasename}>
                     <WhiteLabellingContext.Provider value={whiteLabelling}>
                       <SnackbarProvider service={UINotificationService}>
-                        <ModalProvider
-                          modal={OHIFModal}
-                          service={UIModalService}
-                        >
-                          <OHIFStandaloneViewer userManager={userManager} />
-                        </ModalProvider>
+                        <DialogProvider service={UIDialogService}>
+                          <ModalProvider
+                            modal={OHIFModal}
+                            service={UIModalService}
+                          >
+                            <OHIFStandaloneViewer userManager={userManager} />
+                          </ModalProvider>
+                        </DialogProvider>
                       </SnackbarProvider>
                     </WhiteLabellingContext.Provider>
                   </Router>
@@ -138,9 +156,11 @@ class App extends Component {
             <Router basename={routerBasename}>
               <WhiteLabellingContext.Provider value={whiteLabelling}>
                 <SnackbarProvider service={UINotificationService}>
-                  <ModalProvider modal={OHIFModal} service={UIModalService}>
-                    <OHIFStandaloneViewer />
-                  </ModalProvider>
+                  <DialogProvider service={UIDialogService}>
+                    <ModalProvider modal={OHIFModal} service={UIModalService}>
+                      <OHIFStandaloneViewer />
+                    </ModalProvider>
+                  </DialogProvider>
                 </SnackbarProvider>
               </WhiteLabellingContext.Provider>
             </Router>

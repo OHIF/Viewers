@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.12.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.11.0...@ohif/core@1.12.0) (2019-11-19)
+
+
+### Features
+
+* New dialog service ([#1202](https://github.com/OHIF/Viewers/issues/1202)) ([f65639c](https://github.com/OHIF/Viewers/commit/f65639c2b0dab01decd20cab2cef4263cb4fab37))
+
+
+
+
+
 # [1.11.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.10.0...@ohif/core@1.11.0) (2019-11-19)
 
 

@@ -189,7 +189,7 @@ const ViewportDownloadForm = ({
   };
 
   return (
-    <>
+    <div className="ViewportDownloadForm">
       <div className="title">
         {t(
           'Please specify the dimensions, filename, and desired type for the output image.'
@@ -284,10 +284,6 @@ const ViewportDownloadForm = ({
           className="viewport-preview"
           src={viewportPreview.src}
           alt="Viewport Preview"
-          style={{
-            height: viewportPreview.height,
-            width: viewportPreview.width,
-          }}
         />
       </div>
 
@@ -303,7 +299,7 @@ const ViewportDownloadForm = ({
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
