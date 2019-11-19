@@ -232,6 +232,7 @@ const definitions = [
         type: TOOLBAR_BUTTON_TYPES.BUILT_IN,
         options: {
           behavior: TOOLBAR_BUTTON_BEHAVIORS.DOWNLOAD_SCREEN_SHOT,
+          togglable: true,
         },
       },
     ],

@@ -150,7 +150,8 @@ function _getCustomButtonComponent(button, activeButtons) {
   // Check if its a valid customComponent. Later on an CustomToolbarComponent interface could be implemented.
   if (isValidComponent) {
     const parentContext = this;
-    const isActive = activeButtons.includes(button.id);
+    const activeButtonsIds = activeButtons.map(button => button.id);
+    const isActive = activeButtonsIds.includes(button.id);
 
     return (
       <CustomComponent
@@ -158,7 +159,7 @@ function _getCustomButtonComponent(button, activeButtons) {
         toolbarClickCallback={_handleToolbarButtonClick.bind(this)}
         button={button}
         key={button.id}
-        activeButtons={activeButtons}
+        activeButtons={activeButtonsIds}
         isActive={isActive}
       />
     );
@@ -171,7 +172,7 @@ function _getExpandableButtonComponent(button, activeButtons) {
   const childButtons = button.buttons.map(childButton => {
     childButton.onClick = _handleToolbarButtonClick.bind(this, childButton);
 
-    if (activeButtons.indexOf(childButton.id) > -1) {
+    if (activeButtons.map(button => button.id).indexOf(childButton.id) > -1) {
       activeCommand = childButton.id;
     }
 
@@ -196,7 +197,7 @@ function _getDefaultButtonComponent(button, activeButtons) {
       label={button.label}
       icon={button.icon}
       onClick={_handleToolbarButtonClick.bind(this, button)}
-      isActive={activeButtons.includes(button.id)}
+      isActive={activeButtons.map(button => button.id).includes(button.id)}
     />
   );
 }
@@ -231,6 +232,8 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
  * @param {*} props
  */
 function _handleToolbarButtonClick(button, evt, props) {
+  const { activeButtons } = this.state;
+
   if (button.commandName) {
     const options = Object.assign({ evt }, button.commandOptions);
     commandsManager.runCommand(button.commandName, options);
@@ -240,7 +243,10 @@ function _handleToolbarButtonClick(button, evt, props) {
   // TODO: We can update this to be a `getter` on the extension to query
   //       For the active tools after we apply our updates?
   if (button.type === 'setToolActive') {
-    this.setState({ activeButtons: [button.id] });
+    const toggables = activeButtons.filter(
+      ({ options }) => options && !options.togglable
+    );
+    this.setState({ activeButtons: [...toggables, button] });
   } else if (button.type === 'builtIn') {
     this._handleBuiltIn(button);
   }
@@ -267,15 +273,21 @@ function _getVisibleToolbarButtons() {
   return toolbarButtonDefinitions;
 }
 
-function _handleBuiltIn({ id, options: { behavior } } = {}) {
+function _handleBuiltIn(button) {
   /* TODO: Keep cine button active until its unselected. */
   const { dialog, modal, t } = this.props;
   const { dialogId } = this.state;
+  const { id, options } = button;
 
-  if (behavior === 'CINE') {
+  if (options.behavior === 'CINE') {
     if (dialogId) {
       dialog.dismiss({ id: dialogId });
-      this.setState({ dialogId: null });
+      this.setState(state => ({
+        dialogId: null,
+        activeButtons: [
+          ...state.activeButtons.filter(button => button.id !== id),
+        ],
+      }));
     } else {
       const spacing = 20;
       const { x, y } = document
@@ -288,11 +300,14 @@ function _handleBuiltIn({ id, options: { behavior } } = {}) {
           y: y + spacing || 0,
         },
       });
-      this.setState({ dialogId: newDialogId });
+      this.setState(state => ({
+        dialogId: newDialogId,
+        activeButtons: [...state.activeButtons, button],
+      }));
     }
   }
 
-  if (behavior === 'DOWNLOAD_SCREEN_SHOT') {
+  if (options.behavior === 'DOWNLOAD_SCREEN_SHOT') {
     modal.show(ConnectedViewportDownloadForm, {
       title: t('Download High Quality Image'),
     });
