@@ -31,7 +31,11 @@ const OHIFModal = ({
       title && (
         <div className="OHIFModal__header">
           <h4>{title}</h4>
-          {closeButton && <button onClick={onClose}>×</button>}
+          {closeButton && (
+            <button data-cy="close-button" onClick={onClose}>
+              ×
+            </button>
+          )}
         </div>
       )
     );
