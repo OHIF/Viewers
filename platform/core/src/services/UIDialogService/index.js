@@ -25,6 +25,7 @@
  * @property {ElementPosition} position -
  * @property {Function} onSubmit -
  * @property {Function} onClose -
+ * @property {Function} onStart -
  * @property {Function} onStop -
  * @property {Function} onDrag -
  */
@@ -50,13 +51,14 @@ function createUIDialogService() {
 /**
  * Show a new UI dialog;
  *
- * @param {DialogProps} props { id, content, onSubmit, onClose, onDrag, onStop, isDraggable, defaultPosition, position }
+ * @param {DialogProps} props { id, content, onSubmit, onClose, onStart, onDrag, onStop, isDraggable, defaultPosition, position }
  */
 function create({
   id,
   content,
   onSubmit,
   onClose,
+  onStart,
   onDrag,
   onStop,
   isDraggable,
@@ -68,6 +70,7 @@ function create({
     content,
     onSubmit,
     onClose,
+    onStart,
     onDrag,
     onStop,
     isDraggable,

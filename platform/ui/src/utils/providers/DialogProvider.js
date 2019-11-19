@@ -20,37 +20,6 @@ export const useDialog = () => useContext(DialogContext);
 const DialogProvider = ({ children, service }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dialogs, setDialogs] = useState([]);
-  const [dialogBeingDragged, setDialogBeingDragged] = useState(null);
-  const [dialogBounds, setDialogBounds] = useState({
-    height: 0,
-    width: 0,
-  });
-  const [appBounds, setAppBounds] = useState({
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  });
-
-  /**
-   * Sets movement boundaries.
-   *
-   * @returns void
-   */
-  useEffect(() => {
-    setAppBounds(document.querySelector('#root').getBoundingClientRect());
-  }, []);
-
-  /**
-   * Sets dialog boundaries.
-   *
-   * @returns void
-   */
-  useEffect(() => {
-    if (dialogBeingDragged) {
-      setDialogBounds(dialogBeingDragged.getBoundingClientRect());
-    }
-  }, [dialogBeingDragged]);
 
   /**
    * Sets the implementation of a dialog service that can be used by extensions.
@@ -136,56 +105,60 @@ const DialogProvider = ({ children, service }) => {
 
   return (
     <DialogContext.Provider value={{ create, dismiss, dismissAll, dialogs }}>
-      {dialogs.map(dialog => {
-        const {
-          id,
-          content: Dialog,
-          position /* Position of the dialog. {{x: 0, y: 0}} */,
-          defaultPosition,
-          isDraggable = true,
-          onStop = () => {},
-          onDrag = () => {},
-        } = dialog;
-        return (
-          <Draggable
-            key={id}
-            disabled={!isDraggable}
-            position={position}
-            defaultPosition={defaultPosition}
-            bounds={{
-              top: appBounds.top,
-              bottom: appBounds.bottom - dialogBounds.height,
-              left: appBounds.left,
-              right: appBounds.right - dialogBounds.width,
-            }}
-            onStop={event => {
-              onStop(event);
-              setDialogBeingDragged(event.target);
-              setIsDragging(false);
-              return;
-            }}
-            onDrag={event => {
-              const e = event || window.event,
-                target = e.target || e.srcElement;
-              const BLACKLIST = ['SVG', 'BUTTON', 'PATH', 'INPUT'];
-              if (BLACKLIST.includes(target.tagName.toUpperCase())) {
-                return false;
-              }
-              _reorder(id);
-              setIsDragging(true);
-              onDrag(e);
-            }}
-          >
-            <div
-              className={classNames('DraggableItem', isDragging && 'dragging')}
-              style={{ zIndex: '999', position: 'absolute' }}
-              onClick={() => _reorder(id)}
+      <div className="DraggableArea">
+        {dialogs.map(dialog => {
+          const {
+            id,
+            content: Dialog,
+            position /* Position of the dialog. {{x: 0, y: 0}} */,
+            defaultPosition,
+            isDraggable = true,
+            onStart = () => {},
+            onStop = () => {},
+            onDrag = () => {},
+          } = dialog;
+          return (
+            <Draggable
+              key={id}
+              disabled={!isDraggable}
+              position={position}
+              defaultPosition={defaultPosition}
+              bounds="parent"
+              onStart={event => {
+                const e = event || window.event;
+                const target = e.target || e.srcElement;
+                const BLACKLIST = ['SVG', 'BUTTON', 'PATH', 'INPUT'];
+                if (BLACKLIST.includes(target.tagName.toUpperCase())) {
+                  return false;
+                }
+
+                onStart(event);
+              }}
+              onStop={event => {
+                onStop(event);
+                setIsDragging(false);
+                return;
+              }}
+              onDrag={event => {
+                _reorder(id);
+                setIsDragging(true);
+                onDrag(event);
+              }}
             >
-              <Dialog {...dialog} />
-            </div>
-          </Draggable>
-        );
-      })}
+              <div
+                className={classNames(
+                  'DraggableItem',
+                  isDragging && 'dragging'
+                )}
+                style={{ zIndex: '999', position: 'absolute' }}
+                onClick={() => _reorder(id)}
+              >
+                <Dialog {...dialog} />
+              </div>
+            </Draggable>
+          );
+        })}
+      </div>
       {children}
     </DialogContext.Provider>
   );
