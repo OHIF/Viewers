@@ -80,7 +80,7 @@ export function initStudyListAliasesOnTablet() {
 
 //Creating aliases for User Preferences modal
 export function initPreferencesModalAliases() {
-  cy.get('.modal-content').as('preferencesModal');
+  cy.get('.OHIFModal').as('preferencesModal');
   cy.get('.nav-link')
     .first()
     .as('userPreferencesHotkeysTab');

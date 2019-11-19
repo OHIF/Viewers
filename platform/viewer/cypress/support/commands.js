@@ -103,6 +103,13 @@ Cypress.Commands.add('waitVTKReformatting', () => {
   });
 });
 
+Cypress.Commands.add('waitViewportImageLoading', () => {
+  // Wait for finish loading
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 20000 }).should($grid => {
+    expect($grid).not.to.contain.text('Load');
+  });
+});
+
 /**
  * Command to perform a drag and drop action. Before using this command, we must get the element that should be dragged first.
  * Example of usage: cy.get(element-to-be-dragged).drag(dropzone-element)
@@ -418,6 +425,7 @@ Cypress.Commands.add('initPreferencesModalAliases', () => {
 });
 
 Cypress.Commands.add('openPreferences', () => {
+  cy.log('Open User Preferences Modal');
   // Open User Preferences modal
   cy.get('[data-cy="options-menu"]')
     .scrollIntoView()
@@ -425,7 +433,8 @@ Cypress.Commands.add('openPreferences', () => {
     .then(() => {
       cy.get('[data-cy="about-item-menu"]')
         .last()
-        .click();
+        .click()
+        .wait(200);
     });
 });
 
@@ -435,6 +444,7 @@ Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
 
   cy.initPreferencesModalAliases();
 
+  cy.log('Reset to Default Preferences');
   cy.get('@restoreBtn').click();
 
   //TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
@@ -443,11 +453,11 @@ Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
 });
 
 Cypress.Commands.add(
-  'setNewHoktkeyShortcutOnUserPreferencesModal',
+  'setNewHotkeyShortcutOnUserPreferencesModal',
   (function_label, shortcut) => {
     // Within scopes all `.get` and `.contains` to within the matched elements
     // dom instead of checking from document
-    cy.get('.modal-body').within(() => {
+    cy.get('.HotKeysPreferences').within(() => {
       cy.contains(function_label) // label we're looking for
         .parent()
         .find('input') // closest input to that label

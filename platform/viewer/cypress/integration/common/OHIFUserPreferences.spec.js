@@ -29,7 +29,7 @@ describe('OHIF User Preferences', () => {
       cy.percyCanvasSnapshot(
         'User Preferences Modal - Hotkeys tab initial state in Study Viewer page'
       );
-      cy.get('.close').click();
+      cy.get('[data-cy="close-button"]').click();
     });
 
     it('checks translation by selecting Spanish language', function() {
@@ -151,10 +151,7 @@ describe('OHIF User Preferences', () => {
         .should('have.class', 'active');
 
       // Set new hotkey for 'Rotate Right' function
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal(
-        'Rotate Right',
-        '{shift}Q'
-      );
+      cy.setNewHotkeyShortcutOnUserPreferencesModal('Rotate Right', '{shift}Q');
       // Save new hotkey
       cy.get('@saveBtn')
         .scrollIntoView()
@@ -214,7 +211,7 @@ describe('OHIF User Preferences', () => {
     beforeEach(() => {
       cy.initCommonElementsAliases();
       cy.resetViewport();
-      cy.wait(200);
+
       cy.resetUserHoktkeyPreferences();
       // Open User Preferences modal
       cy.openPreferences();
@@ -239,7 +236,7 @@ describe('OHIF User Preferences', () => {
       cy.percyCanvasSnapshot(
         'User Preferences Modal - Hotkeys tab initial state in Study List page'
       );
-      cy.get('.close').click(); //close User Preferences modal
+      cy.get('[data-cy="close-button"]').click(); //close User Preferences modal
     });
 
     it('checks translation by selecting Spanish language', function() {
@@ -366,12 +363,12 @@ describe('OHIF User Preferences', () => {
         .should('have.class', 'active');
 
       // Set new hotkey for 'Rotate Right' function
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal(
+      cy.setNewHotkeyShortcutOnUserPreferencesModal(
         'Rotate Right',
         '{shift}{rightarrow}'
       );
       // Set new hotkey for 'Rotate Left' function
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal(
+      cy.setNewHotkeyShortcutOnUserPreferencesModal(
         'Rotate Left',
         '{shift}{leftarrow}'
       );
@@ -397,13 +394,13 @@ describe('OHIF User Preferences', () => {
         .should('have.class', 'active');
 
       // Set new hotkey for 'Next Image Viewport' function
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal(
+      cy.setNewHotkeyShortcutOnUserPreferencesModal(
         'Next Image Viewport',
         '{shift}{rightarrow}'
       );
 
       // Set new hotkey for 'Previous Image Viewport' function
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal(
+      cy.setNewHotkeyShortcutOnUserPreferencesModal(
         'Previous Image Viewport',
         '{shift}{leftarrow}'
       );
@@ -415,6 +412,7 @@ describe('OHIF User Preferences', () => {
 
       // Set 3 viewports layout
       cy.setLayout(3, 1);
+      cy.waitViewportImageLoading();
 
       // Rotate Right and Invert colors on Viewport #1
       cy.get('body').type('RI');
@@ -452,13 +450,13 @@ describe('OHIF User Preferences', () => {
       cy.get('@userPreferencesHotkeysTab').click();
 
       // Set duplicated hotkey for 'Rotate Right' function
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal(
+      cy.setNewHotkeyShortcutOnUserPreferencesModal(
         'Rotate Right',
         '{rightarrow}'
       );
 
       // Check error message
-      cy.get('.modal-body').within(() => {
+      cy.get('.HotKeysPreferences').within(() => {
         cy.contains('Rotate Right') // label we're looking for
           .parent()
           .find('.errorMessage')
@@ -479,10 +477,10 @@ describe('OHIF User Preferences', () => {
       cy.get('@userPreferencesHotkeysTab').click();
 
       // Set invalid hotkey for 'Rotate Right' function
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal('Rotate Right', '{ctrl}Z');
+      cy.setNewHotkeyShortcutOnUserPreferencesModal('Rotate Right', '{ctrl}Z');
 
       // Check error message
-      cy.get('.modal-body').within(() => {
+      cy.get('.HotKeysPreferences').within(() => {
         cy.contains('Rotate Right') // label we're looking for
           .parent()
           .find('.errorMessage')
@@ -501,9 +499,9 @@ describe('OHIF User Preferences', () => {
       cy.get('@userPreferencesHotkeysTab').click();
 
       // Set invalid modifier key: ctrl
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal('Zoom Out', '{ctrl}');
+      cy.setNewHotkeyShortcutOnUserPreferencesModal('Zoom Out', '{ctrl}');
       // Check error message
-      cy.get('.modal-body').within(() => {
+      cy.get('.HotKeysPreferences').within(() => {
         cy.contains('Zoom Out') // label we're looking for
           .parent()
           .find('.errorMessage')
@@ -515,7 +513,7 @@ describe('OHIF User Preferences', () => {
       });
 
       // Set invalid modifier key: shift
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal('Zoom Out', '{shift}');
+      cy.setNewHotkeyShortcutOnUserPreferencesModal('Zoom Out', '{shift}');
       // Check error message
       cy.get('@errorMsg').should(
         'have.text',
@@ -523,7 +521,7 @@ describe('OHIF User Preferences', () => {
       );
 
       // Set invalid modifier key: alt
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal('Zoom Out', '{alt}');
+      cy.setNewHotkeyShortcutOnUserPreferencesModal('Zoom Out', '{alt}');
       // Check error message
       cy.get('@errorMsg').should(
         'have.text',
@@ -541,7 +539,7 @@ describe('OHIF User Preferences', () => {
       cy.get('@userPreferencesHotkeysTab').click();
 
       // Set new hotkey for 'Rotate Right' function
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal(
+      cy.setNewHotkeyShortcutOnUserPreferencesModal(
         'Rotate Right',
         '{ctrl}{shift}S'
       );
@@ -555,13 +553,13 @@ describe('OHIF User Preferences', () => {
       cy.openPreferences();
 
       //Check that hotkey for 'Rotate Right' function was not changed
-      cy.get('.modal-body').within(() => {
+      cy.get('.HotKeysPreferences').within(() => {
         cy.contains('Rotate Right') // label we're looking for
           .parent()
           .find('input')
           .should('have.value', 'r');
       });
-      cy.get('.close').click();
+      cy.get('[data-cy="close-button"]').click();
     });
 
     it('checks if user can reset to default values on User Preferences Hotkeys tab', function() {
@@ -569,7 +567,7 @@ describe('OHIF User Preferences', () => {
       cy.get('@userPreferencesHotkeysTab').click();
 
       // Set new hotkey for 'Rotate Right' function
-      cy.setNewHoktkeyShortcutOnUserPreferencesModal(
+      cy.setNewHotkeyShortcutOnUserPreferencesModal(
         'Rotate Right',
         '{ctrl}{shift}S'
       );
@@ -591,13 +589,13 @@ describe('OHIF User Preferences', () => {
       cy.openPreferences();
 
       //Check that hotkey for 'Rotate Right' function was not changed
-      cy.get('.modal-body').within(() => {
+      cy.get('.HotKeysPreferences').within(() => {
         cy.contains('Rotate Right') // label we're looking for
           .parent()
           .find('input')
           .should('have.value', 'r');
       });
-      cy.get('.close').click();
+      cy.get('[data-cy="close-button"]').click();
     });
   });
 });
