@@ -201,12 +201,11 @@ export class HotKeysPreferences extends Component {
               value={keys[0]}
               vali="true"
               className="form-control hotkey text-center"
-              data-cy={label}
               onKeyDown={event => this.onInputKeyDown(event, commandName)}
               onKeyUp={event => this.onChange(event, commandName)}
             />
             <span className="wrapperText" />
-            <span className="errorMessage" data-cy={`error-${label}`}>
+            <span className="errorMessage">
               {this.state.errorMessages[commandName]}
             </span>
           </label>

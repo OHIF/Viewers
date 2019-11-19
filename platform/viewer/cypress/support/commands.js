@@ -427,7 +427,7 @@ Cypress.Commands.add('openPreferences', () => {
     });
 });
 
-Cypress.Commands.add('resetHotkeysPreferences', () => {
+Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
   // Open User Preferences modal
   cy.openPreferences();
 
@@ -439,3 +439,17 @@ Cypress.Commands.add('resetHotkeysPreferences', () => {
   //Once the issue is fixed, the following code should be uncommented
   //cy.get('@saveBtn').click();
 });
+
+Cypress.Commands.add(
+  'setNewHoktkeyShortcutOnUserPreferencesModal',
+  (function_label, shortcut) => {
+    // Within scopes all `.get` and `.contains` to within the matched elements
+    // dom instead of checking from document
+    cy.get('.modal-body').within(() => {
+      cy.contains(function_label) // label we're looking for
+        .parent()
+        .find('input') // closest input to that label
+        .type(shortcut, { force: true }); // Set new shortcut for that function
+    });
+  }
+);

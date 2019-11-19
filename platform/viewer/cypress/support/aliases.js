@@ -83,10 +83,10 @@ export function initPreferencesModalAliases() {
   cy.get('.modal-content').as('preferencesModal');
   cy.get('.nav-link')
     .first()
-    .as('hotkeysLink');
+    .as('userPreferencesHotkeysTab');
   cy.get('.nav-link')
     .last()
-    .as('generalLink');
+    .as('userPreferencesGeneralTab');
   cy.get('[data-cy="reset-default-btn"]').as('restoreBtn');
   cy.get('[data-cy="cancel-btn"]').as('cancelBtn');
   cy.get('[data-cy="save-btn"]').as('saveBtn');
