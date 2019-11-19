@@ -67,9 +67,26 @@ While we don't yet have a long-term or quarterly road map, we do regularly add i
 
 ## Contributions (Pull Requests)
 
-..
+Incoming Pull Requests (PRs) are triaged using the following labels. Code review is performed on all PRs where the bug fix or added functionality is deemed appropriate:
+
+- PR: Bug Fix - Describes a PR filed to address a Bug.
+- PR: Draft - Describes a PR filed to gather early feedback from the core team, but which is not intended for merging in the short term.
+- Awaiting Response - Describes a PR where the core team is waiting for additional information from the author. This may occur before or after code review.
+- Awaiting Review -  Describes a PR where the core team has not yet performed a code review.
+- Awaiting Revisions - Following code review, this label is applied until the author has made sufficient changes.
+
+We rely on GitHub Checks and integrations with third party services to evaluate changes in code quality and test coverage. Tests must pass before a PR can be merged to master, and code quality and test coverage must not changed by a significant margin. For some repositories, visual screenshot-based tests are also included, and video recordings of end-to-end tests are stored for later review.
+
+[You can read more about our continous integration efforts here](/continous-integration.md)
 
 ## Releases
+
+Releases are made automatically based on the type of commits which have been merged (major.minor.patch). Releases are automatically pushed to NPM. Release notes are automatically generated. Users can subscribe to GitHub and NPM releases.
+
+Important announcements are made on GitHub, tagged as Announcement, and pinned so that they remain at the top of the Issue page.
+
+The Core team occasionally performs full manual testing to begin the process of releasing a Stable version. Once testing is complete, the known issues are addressed and a Stable version 
+
 
 <!--
   LINKS
