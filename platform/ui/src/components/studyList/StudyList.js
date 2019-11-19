@@ -6,7 +6,7 @@ import TableSearchFilter from './TableSearchFilter.js';
 import useMedia from '../../hooks/useMedia.js';
 import PropTypes from 'prop-types';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
-import { withTranslation } from '../../utils/LanguageProvider';
+import { withTranslation } from '../../contextProviders';
 
 /**
  *
@@ -25,7 +25,6 @@ function StudyList(props) {
     onFilterChange: handleFilterChange,
     onSelectItem: handleSelectItem,
     t,
-    //
     studyListDateFilterNumDays,
   } = props;
 
@@ -208,7 +207,6 @@ StudyList.propTypes = {
     allFields: PropTypes.string.isRequired,
   }).isRequired,
   onFilterChange: PropTypes.func.isRequired,
-  //
   studyListDateFilterNumDays: PropTypes.number,
 };
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import i18n from '@ohif/i18n';
 
 import './LanguageSwitcher.styl';
-import { withTranslation } from '../../utils/LanguageProvider';
+import { withTranslation } from '../../contextProviders';
 
 const LanguageSwitcher = () => {
   const getCurrentLanguage = (language = i18n.language) =>

@@ -49,7 +49,6 @@ class Header extends Component {
         onClick: () =>
           show(AboutContent, {
             title: t('OHIF Viewer - About'),
-            customClassName: 'AboutContent',
           }),
       },
       {

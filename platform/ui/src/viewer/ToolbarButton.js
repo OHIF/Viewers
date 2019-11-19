@@ -4,7 +4,7 @@ import { Icon } from './../elements/Icon';
 import PropTypes from 'prop-types';
 import React from 'react';
 import classnames from 'classnames';
-import { withTranslation } from '../utils/LanguageProvider';
+import { withTranslation } from '../contextProviders';
 
 export function ToolbarButton(props) {
   const { isActive, icon, labelWhenActive, onClick, t } = props;

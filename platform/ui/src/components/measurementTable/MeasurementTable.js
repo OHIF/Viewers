@@ -1,7 +1,7 @@
 import './MeasurementTable.styl';
 
 import React, { Component } from 'react';
-import { withTranslation } from '../../utils/LanguageProvider';
+import { withTranslation } from '../../contextProviders';
 
 import { Icon } from './../../elements/Icon';
 import { MeasurementTableItem } from './MeasurementTableItem.js';

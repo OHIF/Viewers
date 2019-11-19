@@ -2,7 +2,7 @@
 name: "\U0001F41B Bug report"
 about: Create a report to help us improve
 title: ''
-labels: 'Community: Report :bug:'
+labels: 'Community: Report :bug:, Awaiting Reproduction, Triage :white_flag:'
 assignees: ''
 ---
 
