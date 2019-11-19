@@ -5,7 +5,11 @@ import classNames from 'classnames';
 import TableSearchFilter from './TableSearchFilter.js';
 import PropTypes from 'prop-types';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
+<<<<<<< HEAD
 import { useTranslation } from 'react-i18next';
+=======
+import { withTranslation } from '../../contextProviders';
+>>>>>>> master
 
 const getContentFromUseMediaValue = (
   displaySize,

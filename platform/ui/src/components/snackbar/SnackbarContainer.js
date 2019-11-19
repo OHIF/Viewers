@@ -1,7 +1,7 @@
 import React from 'react';
 import SnackbarItem from './SnackbarItem';
 import './Snackbar.css';
-import { useSnackbarContext } from '../../utils/SnackbarProvider';
+import { useSnackbarContext } from '../../contextProviders';
 
 const SnackbarContainer = () => {
   const { snackbarItems, hide } = useSnackbarContext();

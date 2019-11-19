@@ -16,14 +16,11 @@ export const useModal = () => useContext(ModalContext);
 const ModalProvider = ({ children, modal: Modal, service }) => {
   const DEFAULT_OPTIONS = {
     component: null /* The component instance inside the modal. */,
-    header: null /* The content inside the modal header. */,
-    footer: null /* The content inside the modal footer. */,
-    backdrop: false /* Should the modal render a backdrop overlay. */,
-    keyboard: false /* Modal is dismissible via the esc key. */,
-    show: true /* Make the Modal visible or hidden. */,
+    shouldCloseOnEsc: false /* Modal is dismissible via the esc key. */,
+    isOpen: true /* Make the Modal visible or hidden. */,
     closeButton: true /* Should the modal body render the close button. */,
     title: null /* Should the modal render the title independently of the body content. */,
-    customClassName: null /* The custom class to style the modal. */,
+    customClassName: '' /* The custom class to style the modal. */,
   };
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
@@ -69,14 +66,11 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
             options.customClassName,
             options.component.className
           )}
-          backdrop={options.backdrop}
-          keyboard={options.keyboard}
-          show={options.show}
+          shouldCloseOnEsc={options.keyboard}
+          isOpen={options.isOpen}
           title={options.title}
           closeButton={options.closeButton}
-          footer={options.footer}
-          header={options.header}
-          onHide={hide}
+          onClose={hide}
         >
           <Component {...options} show={show} hide={hide} />
         </Modal>
