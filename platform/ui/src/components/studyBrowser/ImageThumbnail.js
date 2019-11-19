@@ -102,14 +102,14 @@ function ImageThumbnail(props) {
         {shouldRenderToCanvas() ? (
           <canvas ref={canvasRef} width={width} height={height} />
         ) : (
-          <img
-            className="static-image"
-            src={imageSrc}
-            //width={this.props.width}
-            height={height}
-            alt={''}
-          />
-        )}
+            <img
+              className="static-image"
+              src={imageSrc}
+              //width={this.props.width}
+              height={height}
+              alt={''}
+            />
+          )}
       </div>
       {loadingOrError}
       {showStackLoadingProgressBar && (
