@@ -2,14 +2,24 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import './WindowLevelPreferences.styl';
-
+/**
+ * WindowLevelPreferencesRow
+ * Renders row for window level preference
+ * It stores current state and whenever it changes, component messages parent of new value (through function callback)
+ * @param {object} props component props
+ * @param {string} props.description description for given preset
+ * @param {number} props.window window value
+ * @param {number} props.level level value
+ * @param {string} props.rowName name of given row to identify it
+ * @param {function} props.onSuccessChanged Callback function to communicate parent in case its states changes
+ */
 function WindowLevelPreferencesRow({
   description,
   window,
   level,
   rowName,
   onSuccessChanged,
-  onFailureChanged,
+  // onFailureChanged
 }) {
   const [rowState, setRowState] = useState({ description, window, level });
 
@@ -48,6 +58,16 @@ function WindowLevelPreferencesRow({
     </tr>
   );
 }
+
+WindowLevelPreferencesRow.propTypes = {
+  description: PropTypes.string.isRequired,
+  window: PropTypes.number.isRequired,
+  level: PropTypes.number.isRequired,
+  rowName: PropTypes.string.isRequired,
+  onSuccessChanged: PropTypes.func.isRequired,
+  //onFailureChanged: PropTypes.func.isRequired,
+};
+
 /**
  * WindowLevelPreferences tab
  * It renders all window level presets
@@ -58,8 +78,14 @@ function WindowLevelPreferencesRow({
  * @param {object} props.windowLevelData Data for initial state
  * @param {function} props.onTabStateChanged Callback function to communicate parent in case its states changes
  */
-function WindowLevelPreferences({ windowLevelData, name, onTabStateChanged }) {
+function WindowLevelPreferences({
+  windowLevelData,
+  name,
+  onTabStateChanged /*onTabErrorChanged*/,
+}) {
   const [tabState, setTabState] = useState(windowLevelData);
+  // TODO to be used once error handling is implemented
+  //const [tabError, setTabError] = useState(false);
 
   const onWindowLevelChanged = (key, state) => {
     setTabState({ ...tabState, [key]: state });
@@ -96,10 +122,11 @@ function WindowLevelPreferences({ windowLevelData, name, onTabStateChanged }) {
   );
 }
 
-WindowLevelPreferences.prototype = {
+WindowLevelPreferences.propTypes = {
   windowLevelData: PropTypes.object.isRequired,
   name: PropTypes.string.isRequired,
   onTabStateChanged: PropTypes.func.isRequired,
+  //onTabErrorChanged: PropTypes.func.isRequired,
 };
 
 export { WindowLevelPreferences };

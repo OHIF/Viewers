@@ -73,7 +73,7 @@ const getHotKeysArrayColumns = (keysObj = {}, columnSize) => {
   for (
     let it = 0;
     it < keysLength;
-    it++ , it % columnSize === 0 ? currentColumn++ : currentColumn
+    it++, it % columnSize === 0 ? currentColumn++ : currentColumn
   ) {
     if (!dividedKeys[currentColumn]) {
       dividedKeys[currentColumn] = [];
@@ -87,7 +87,7 @@ const getHotKeysArrayColumns = (keysObj = {}, columnSize) => {
 
 const NO_FIELD_ERROR_MESSAGE = undefined;
 const formatPressedKeys = pressedKeysArray => pressedKeysArray.join('+');
-const unFormatPressedKeys = pressedKeysStr => pressedKeysStr.split('+');
+const unFormatPressedKeys = (pressedKeysStr = '') => pressedKeysStr.split('+');
 const inputValidators = (
   commandName,
   inputValue,
@@ -112,6 +112,16 @@ const inputValidators = (
     }
   };
 
+  const emptyValidator = ({ inputValue }) => {
+    if (!inputValue) {
+      hasError = true;
+      errorMessage = "Field can't be empty.";
+      return {
+        hasError,
+        errorMessage,
+      };
+    }
+  };
   const conflictingValidator = ({
     commandName,
     pressedKeys,
@@ -153,6 +163,7 @@ const inputValidators = (
   };
 
   const validators = [
+    emptyValidator,
     modifierValidator,
     conflictingValidator,
     disallowedValidator,
@@ -177,11 +188,17 @@ const inputValidators = (
     errorMessage,
   };
 };
+
 /**
  * HotKeysPreferencesRow
- * Renders a row hotkey
+ * Renders row for hotkey preference
  * It stores current state and whenever it changes, component messages parent of new value (through function callback)
  * @param {object} props component props
+ * @param {string} props.commandName command name associated to given row
+ * @param {string[]} props.hotkeys keys associated to given command
+ * @param {object} props.originalHotKeys original hotkeys values
+ * @param {function} props.onSuccessChanged Callback function to communicate parent in case its states changes
+ * @param {function} props.onFailureChanged Callback Function in case any error on row
  */
 function HotKeyPreferencesRow({
   commandName,
@@ -191,7 +208,9 @@ function HotKeyPreferencesRow({
   onSuccessChanged,
   onFailureChanged,
 }) {
-  const [inputValue, setInputValue] = useState(hotkeys);
+  const [inputValue, setInputValue] = useState(formatPressedKeys(hotkeys));
+  const [error, setError] = useState(false);
+
   const [fieldErrorMessage, setFieldErrorMessage] = useState(
     NO_FIELD_ERROR_MESSAGE
   );
@@ -232,10 +251,19 @@ function HotKeyPreferencesRow({
     if (hasError) {
       setInputValue('');
     } else {
-      onSuccessChanged(inputValue);
+      onSuccessChanged([inputValue]);
     }
+
+    if (hasError !== error) {
+      setError(hasError);
+    }
+
     setFieldErrorMessage(errorMessage);
   };
+
+  useEffect(() => {
+    onFailureChanged(error);
+  }, [error]);
 
   const onInputKeyDown = event => {
     // Prevent ESC key from propagating and closing the modal
@@ -254,17 +282,16 @@ function HotKeyPreferencesRow({
         <label
           className={`wrapperLabel ${
             fieldErrorMessage !== undefined ? 'state-error' : ''
-            } `}
+          } `}
           data-key="defaultTool"
         >
           <input
             readOnly={true}
             type="text"
             value={inputValue}
-            vali="true"
             className="form-control hotkey text-center"
             onKeyDown={onInputKeyDown}
-            onKeyUp={validateInput}
+            onBlur={validateInput}
           />
           <span className="wrapperText" />
           <span className="errorMessage">{fieldErrorMessage}</span>
@@ -273,6 +300,15 @@ function HotKeyPreferencesRow({
     </tr>
   );
 }
+
+HotKeyPreferencesRow.propTypes = {
+  commandName: PropTypes.string.isRequired,
+  hotkeys: PropTypes.array.isRequired,
+  label: PropTypes.string.isRequired,
+  originalHotKeys: PropTypes.object.isRequired,
+  onSuccessChanged: PropTypes.func.isRequired,
+  onFailureChanged: PropTypes.func.isRequired,
+};
 
 /**
  * HotKeysPreferences tab
@@ -283,9 +319,16 @@ function HotKeyPreferencesRow({
  * @param {string} props.name Tab`s name
  * @param {object} props.hotkeyDefinitions Data for initial state
  * @param {function} props.onTabStateChanged Callback function to communicate parent in case its states changes
+ * @param {function} props.onTabErrorChanged Callback Function in case any error on tab
  */
-function HotKeysPreferences({ hotkeyDefinitions, name, onTabStateChanged }) {
+function HotKeysPreferences({
+  hotkeyDefinitions,
+  name,
+  onTabStateChanged,
+  onTabErrorChanged,
+}) {
   const [tabState, setTabState] = useState(hotkeyDefinitions);
+  const [tabErrorCounter, setTabErrorCounter] = useState(0);
 
   const [numColumns] = useState(2);
   const [columnSize] = useState(() =>
@@ -298,6 +341,25 @@ function HotKeysPreferences({ hotkeyDefinitions, name, onTabStateChanged }) {
     setTabState({ ...tabState, [commandName]: { ...hotkeyDefinition, keys } });
   };
 
+  const onErrorChanged = (toInc = true) => {
+    const increment = toInc ? 1 : -1;
+    const newValue = tabErrorCounter + increment;
+    if (newValue >= 0) {
+      setTabErrorCounter(newValue);
+    }
+  };
+
+  // tell parent to update its state
+  useEffect(() => {
+    if (tabErrorCounter === 0) {
+      onTabErrorChanged(name, false);
+    }
+
+    if (tabErrorCounter === 1) {
+      onTabErrorChanged(name, true);
+    }
+  }, [tabErrorCounter]);
+
   // tell parent to update its state
   useEffect(() => {
     onTabStateChanged(name, { hotkeyDefinitions: tabState });
@@ -307,49 +369,50 @@ function HotKeysPreferences({ hotkeyDefinitions, name, onTabStateChanged }) {
     <div className="HotKeysPreferences">
       {splittedHotKeys.length > 0
         ? splittedHotKeys.map((columnHotKeys, index) => {
-          return (
-            <div className="column" key={index}>
-              <table className="full-width">
-                <thead>
-                  <tr>
-                    <th className="text-right p-r-1">Function</th>
-                    <th className="text-center">Shortcut</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(columnHotKeys).map(
-                    hotkeyDefinitionTuple => (
-                      <HotKeyPreferencesRow
-                        key={hotkeyDefinitionTuple[0]}
-                        commandName={hotkeyDefinitionTuple[0]}
-                        hotkeys={hotkeyDefinitionTuple[1].keys}
-                        label={hotkeyDefinitionTuple[1].label}
-                        originalHotKeys={tabState}
-                        onSuccessChanged={keys =>
-                          onHotKeyChanged(
-                            hotkeyDefinitionTuple[0],
-                            hotkeyDefinitionTuple[1],
-                            keys
-                          )
-                        }
-                      ></HotKeyPreferencesRow>
-                    )
-                  )}
-                </tbody>
-              </table>
-            </div>
-          );
-        })
+            return (
+              <div className="column" key={index}>
+                <table className="full-width">
+                  <thead>
+                    <tr>
+                      <th className="text-right p-r-1">Function</th>
+                      <th className="text-center">Shortcut</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(columnHotKeys).map(
+                      hotkeyDefinitionTuple => (
+                        <HotKeyPreferencesRow
+                          key={hotkeyDefinitionTuple[0]}
+                          commandName={hotkeyDefinitionTuple[0]}
+                          hotkeys={hotkeyDefinitionTuple[1].keys}
+                          label={hotkeyDefinitionTuple[1].label}
+                          originalHotKeys={tabState}
+                          onSuccessChanged={keys =>
+                            onHotKeyChanged(
+                              hotkeyDefinitionTuple[0],
+                              hotkeyDefinitionTuple[1],
+                              keys
+                            )
+                          }
+                          onFailureChanged={onErrorChanged}
+                        ></HotKeyPreferencesRow>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })
         : null}
     </div>
   );
-
 }
 
 HotKeysPreferences.propTypes = {
   hotkeyDefinitions: PropTypes.any,
   name: PropTypes.string,
   onTabStateChanged: PropTypes.func,
+  onTabErrorChanged: PropTypes.func,
 };
 
 export { HotKeysPreferences };

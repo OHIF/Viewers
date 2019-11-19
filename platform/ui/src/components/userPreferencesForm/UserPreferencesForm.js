@@ -79,6 +79,14 @@ function UserPreferencesForm({
       return acc;
     }, {})
   );
+
+  const [tabsError, setTabsError] = useState(
+    tabs.reduce((acc, tab) => {
+      acc[tab.name] = false;
+      return acc;
+    }, {})
+  );
+
   const { t, ready: translationsAreReady } = useTranslation(
     'UserPreferencesForm'
   );
@@ -87,9 +95,21 @@ function UserPreferencesForm({
     setTabsState({ ...tabsState, [tabName]: newState });
   };
 
+  const onTabErrorChanged = (tabName, hasError) => {
+    setTabsError({ ...tabsError, [tabName]: hasError });
+  };
+
+  const hasAnyError = () => {
+    return Object.values(tabsError).reduce((acc, value) => acc || value);
+  };
+
   return translationsAreReady ? (
     <div className="UserPreferencesForm">
-      <UserPreferencesTabs tabs={tabs} onTabStateChanged={onTabStateChanged} />
+      <UserPreferencesTabs
+        tabs={tabs}
+        onTabStateChanged={onTabStateChanged}
+        onTabErrorChanged={onTabErrorChanged}
+      />
       <div className="footer">
         <button
           className="btn btn-danger pull-left"
@@ -103,6 +123,7 @@ function UserPreferencesForm({
           </div>
           <button
             className="btn btn-primary"
+            disabled={hasAnyError()}
             onClick={event => {
               // TODO to check this method for other tabs than Hotkeys
               const toSave = Object.values(tabsState).reduce(
@@ -127,6 +148,7 @@ UserPreferencesForm.propTypes = {
   onSave: PropTypes.func,
   onResetToDefaults: PropTypes.func,
   windowLevelData: PropTypes.object,
+  hotkeyDefinitions: PropTypes.object,
 };
 
 export { UserPreferencesForm };

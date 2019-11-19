@@ -215,7 +215,9 @@ function _initExtensions(extensions, hotkeys) {
   }
 
   if (hotkeysToUse) {
-    hotkeysManager.setHotkeys(hotkeysToUse, true);
+    hotkeysManager.setHotkeys(hotkeysToUse);
+    // set default based on app config
+    hotkeysManager.setDefaultHotKeys(hotkeys);
 
     if (updateStore) {
       const { hotkeyDefinitions } = hotkeysManager;

@@ -60,7 +60,6 @@ class Header extends Component {
         onClick: () =>
           show(ConnectedUserPreferencesForm, {
             title: t('User Preferences'),
-            t,
           }),
       },
     ];
