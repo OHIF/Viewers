@@ -7,8 +7,8 @@ like to discuss the changes you intend to make to clarify where or how they
 should be implemented, please don't hesitate to create a new issue. At a
 minimum, you may want to read the following documentation:
 
-- [Essentials: Getting Started](./essentials/getting-started.md)
-- [Advanced: Architecture](./advanced/architecture.md)
+- [Essentials: Getting Started](/essentials/getting-started.md)
+- [Advanced: Architecture](/advanced/architecture.md)
 
 Pull requests that are:
 

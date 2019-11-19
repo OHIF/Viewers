@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.63.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.4...@ohif/ui@0.63.0) (2019-11-19)
+
+
+### Features
+
+* Issue 879 viewer route query param not filtering but promoting ([#1141](https://github.com/OHIF/Viewers/issues/1141)) ([b17f753](https://github.com/OHIF/Viewers/commit/b17f753e6222045252ef885e40233681541a32e1)), closes [#1118](https://github.com/OHIF/Viewers/issues/1118)
+
+
+
+
+
 ## [0.62.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.3...@ohif/ui@0.62.4) (2019-11-18)
 
 
