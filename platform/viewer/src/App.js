@@ -23,6 +23,7 @@ import {
   createUIModalService,
   createUIDialogService,
   utils,
+  redux as reduxOHIF
 } from '@ohif/core';
 
 import i18n from '@ohif/i18n';
@@ -45,9 +46,7 @@ import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 /** Store */
 import { getActiveContexts } from './store/layout/selectors.js';
 import store from './store';
-import { SnackbarProvider, ModalProvider, OHIFModal } from '@ohif/ui';
-import OHIF from '@ohif/core';
-const { setUserPreferences } = OHIF.redux.actions;
+const { setUserPreferences } = reduxOHIF.actions;
 
 /** Contexts */
 import WhiteLabellingContext from './context/WhiteLabellingContext';
