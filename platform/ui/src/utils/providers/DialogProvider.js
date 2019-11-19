@@ -20,6 +20,7 @@ export const useDialog = () => useContext(DialogContext);
 const DialogProvider = ({ children, service }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dialogs, setDialogs] = useState([]);
+  const [lastDialogPosition, setLastDialogPosition] = useState(null);
 
   /**
    * Sets the implementation of a dialog service that can be used by extensions.
@@ -103,6 +104,16 @@ const DialogProvider = ({ children, service }) => {
     ]);
   };
 
+  const _updateLastDialogPosition = dialogId => {
+    const draggableItemBounds = document
+      .querySelector(`#draggableItem-${dialogId}`)
+      .getBoundingClientRect();
+    setLastDialogPosition({
+      x: draggableItemBounds.x,
+      y: draggableItemBounds.y,
+    });
+  };
+
   return (
     <DialogContext.Provider value={{ create, dismiss, dismissAll, dialogs }}>
       <div className="DraggableArea">
@@ -117,12 +128,13 @@ const DialogProvider = ({ children, service }) => {
             onStop = () => {},
             onDrag = () => {},
           } = dialog;
+
           return (
             <Draggable
               key={id}
               disabled={!isDraggable}
               position={position}
-              defaultPosition={defaultPosition}
+              defaultPosition={lastDialogPosition || defaultPosition}
               bounds="parent"
               onStart={event => {
                 const e = event || window.event;
@@ -140,12 +152,14 @@ const DialogProvider = ({ children, service }) => {
                 return;
               }}
               onDrag={event => {
-                _reorder(id);
                 setIsDragging(true);
+                _reorder(id);
+                _updateLastDialogPosition(id);
                 onDrag(event);
               }}
             >
               <div
+                id={`draggableItem-${id}`}
                 className={classNames(
                   'DraggableItem',
                   isDragging && 'dragging'
