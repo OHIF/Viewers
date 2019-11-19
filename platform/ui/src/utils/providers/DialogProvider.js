@@ -68,23 +68,41 @@ const DialogProvider = ({ children, service }) => {
    *
    * @returns id
    */
-  const create = useCallback(({ id, content, onSubmit, onClose }) => {
-    let dialogId = id;
-    if (!dialogId) {
-      dialogId = utils.guid();
-    }
-
-    const newDialog = {
-      id: dialogId,
+  const create = useCallback(
+    ({
+      id,
       content,
       onSubmit,
       onClose,
-    };
+      onDrag,
+      onStop,
+      isDraggable,
+      defaultPosition,
+      position,
+    }) => {
+      let dialogId = id;
+      if (!dialogId) {
+        dialogId = utils.guid();
+      }
 
-    setDialogs(dialogs => [...dialogs, newDialog]);
+      const newDialog = {
+        id: dialogId,
+        content,
+        onSubmit,
+        onClose,
+        onDrag,
+        onStop,
+        isDraggable,
+        defaultPosition,
+        position,
+      };
 
-    return dialogId;
-  }, []);
+      setDialogs(dialogs => [...dialogs, newDialog]);
+
+      return dialogId;
+    },
+    []
+  );
 
   /**
    * Dismisses the dialog with a given id.
@@ -147,13 +165,15 @@ const DialogProvider = ({ children, service }) => {
               return;
             }}
             onDrag={event => {
+              const e = event || window.event,
+                target = e.target || e.srcElement;
               const BLACKLIST = ['SVG', 'BUTTON', 'PATH', 'INPUT'];
-              if (BLACKLIST.includes(event.target.tagName.toUpperCase())) {
+              if (BLACKLIST.includes(target.tagName.toUpperCase())) {
                 return false;
               }
               _reorder(id);
               setIsDragging(true);
-              onDrag(event);
+              onDrag(e);
             }}
           >
             <div

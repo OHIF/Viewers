@@ -5,13 +5,28 @@
  */
 
 /**
+ * A UI Position
+ *
+ * @typedef {Object} ElementPosition
+ * @property {number} top -
+ * @property {number} left -
+ * @property {number} right -
+ * @property {number} bottom -
+ */
+
+/**
  * UI Dialog
  *
  * @typedef {Object} DialogProps
  * @property {string} id -
  * @property {DialogContent} content -
+ * @property {boolean} isDraggable -
+ * @property {ElementPosition} defaultPosition -
+ * @property {ElementPosition} position -
  * @property {Function} onSubmit -
  * @property {Function} onClose -
+ * @property {Function} onStop -
+ * @property {Function} onDrag -
  */
 
 const uiDialogServicePublicAPI = {
@@ -35,14 +50,29 @@ function createUIDialogService() {
 /**
  * Show a new UI dialog;
  *
- * @param {DialogProps} props { id, content, onSubmit, onClose }
+ * @param {DialogProps} props { id, content, onSubmit, onClose, onDrag, onStop, isDraggable, defaultPosition, position }
  */
-function create({ id, content, onSubmit, onClose }) {
+function create({
+  id,
+  content,
+  onSubmit,
+  onClose,
+  onDrag,
+  onStop,
+  isDraggable,
+  defaultPosition,
+  position,
+}) {
   return uiDialogServiceImplementation._create({
     id,
     content,
     onSubmit,
     onClose,
+    onDrag,
+    onStop,
+    isDraggable,
+    defaultPosition,
+    position,
   });
 }
 

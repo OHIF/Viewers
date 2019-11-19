@@ -8,11 +8,11 @@
  * UI Modal
  *
  * @typedef {Object} ModalProps
- * @property {string} [shouldCloseOnEsc=false] -
- * @property {number} [isOpen=true] -
- * @property {string} [closeButton=true] -
+ * @property {boolean} [shouldCloseOnEsc=false] -
+ * @property {boolean} [isOpen=true] -
+ * @property {boolean} [closeButton=true] -
  * @property {string} [title=null] - 'Modal Title'
- * @property {boolean} [customClassName=''] - '.ModalClass'
+ * @property {string} [customClassName=null] - '.ModalClass'
  */
 
 const uiModalServicePublicAPI = {
@@ -44,7 +44,7 @@ function show(
     isOpen: true,
     closeButton: true,
     title: null,
-    customClassName: '',
+    customClassName: null,
   }
 ) {
   return uiModalServiceImplementation._show(component, props);
