@@ -19,6 +19,13 @@
 
   &__content
     padding: 20px
+    max-height: 90vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar
+      display: none;
 
   &__header
     display: flex
