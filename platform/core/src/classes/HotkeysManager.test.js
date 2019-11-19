@@ -107,7 +107,7 @@ describe('HotkeysManager', () => {
     it('it sets default hotkeys', () => {
       const hotkeyDefinitions = [{ commandName: 'dance', keys: '+' }];
 
-      hotkeysManager.setHotkeys(hotkeyDefinitions);
+      hotkeysManager.setDefaultHotKeys(hotkeyDefinitions);
 
       expect(hotkeysManager.hotkeyDefaults).toEqual(hotkeyDefinitions);
     });
