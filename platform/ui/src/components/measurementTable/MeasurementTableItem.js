@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from '../../utils/LanguageProvider';
+import { withTranslation } from '../../contextProviders';
 
 import { Icon } from './../../elements/Icon';
 import { OverlayTrigger } from './../overlayTrigger';
