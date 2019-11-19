@@ -59,7 +59,11 @@ _table 2. backlogged issue types ([full list of labels][gh-labels])_
 
 ## Issue Curation (["backlog grooming"][groom-backlog])
 
-...
+If a [GitHub issue][gh-issues] has a `bug`, `story`, or `task` label; it's on our backlog. If an issue is on our backlog, it means we are, at the very least, committed to reviewing any community drafted Pull Requests to complete the issue. If you're interested in seeing an issue completed but don't know where to start, please don't hesitate to leave a comment!
+
+While we don't yet have a long-term or quarterly road map, we do regularly add items to our ["Active Development" GitHub Project Board][gh-board]. Items on this project board are either in active development by Core Team members, or queued up for development as in-progress items are completed.
+
+> :pencil: Want to contribute but not sure where to start? Check out [Up for grabs][label-grabs] issues and our [Contributing documentation][contributing-docs]
 
 ## Contributions (Pull Requests)
 
@@ -82,4 +86,7 @@ _table 2. backlogged issue types ([full list of labels][gh-labels])_
 [label-refactor]: https://github.com/OHIF/Viewers/labels/Task%3A%20Refactor%20%3Ahammer_and_wrench%3A
 [label-tests]: https://github.com/OHIF/Viewers/labels/Task%3A%20Tests%20%3Amicroscope%3A
 [label-bug]: https://github.com/OHIF/Viewers/labels/Bug%3A%20Verified%20%3Abug%3A
+[gh-board]: https://github.com/OHIF/Viewers/projects/4
+[label-grabs]: https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3A%22Up+For+Grabs+%3Araising_hand_woman%3A%22
+[contributing-docs]: https://docs.ohif.org/contributing/
 <!-- prettier-ignore-end -->
