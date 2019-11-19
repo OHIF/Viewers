@@ -42,6 +42,7 @@ const DialogProvider = ({ children, service }) => {
     ({
       id,
       content,
+      contentProps,
       onSubmit,
       onClose,
       onDrag,
@@ -58,6 +59,7 @@ const DialogProvider = ({ children, service }) => {
       const newDialog = {
         id: dialogId,
         content,
+        contentProps,
         onSubmit,
         onClose,
         onDrag,
@@ -121,6 +123,7 @@ const DialogProvider = ({ children, service }) => {
           const {
             id,
             content: Dialog,
+            contentProps,
             position /* Position of the dialog. {{x: 0, y: 0}} */,
             defaultPosition,
             isDraggable = true,
@@ -167,7 +170,7 @@ const DialogProvider = ({ children, service }) => {
                 style={{ zIndex: '999', position: 'absolute' }}
                 onClick={() => _reorder(id)}
               >
-                <Dialog {...dialog} />
+                <Dialog {...dialog} {...contentProps} />
               </div>
             </Draggable>
           );

@@ -20,6 +20,7 @@
  * @typedef {Object} DialogProps
  * @property {string} id -
  * @property {DialogContent} content -
+ * @property {Object} contentProps -
  * @property {boolean} isDraggable -
  * @property {ElementPosition} defaultPosition -
  * @property {ElementPosition} position -
@@ -51,11 +52,12 @@ function createUIDialogService() {
 /**
  * Show a new UI dialog;
  *
- * @param {DialogProps} props { id, content, onSubmit, onClose, onStart, onDrag, onStop, isDraggable, defaultPosition, position }
+ * @param {DialogProps} props { id, content, contentProps, onSubmit, onClose, onStart, onDrag, onStop, isDraggable, defaultPosition, position }
  */
 function create({
   id,
   content,
+  contentProps,
   onSubmit,
   onClose,
   onStart,
@@ -68,6 +70,7 @@ function create({
   return uiDialogServiceImplementation._create({
     id,
     content,
+    contentProps,
     onSubmit,
     onClose,
     onStart,
