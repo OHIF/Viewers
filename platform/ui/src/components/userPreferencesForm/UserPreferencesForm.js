@@ -2,7 +2,7 @@ import './UserPreferencesForm.styl';
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from '../../utils/providers';
+import { withTranslation } from '../../contextProviders';
 
 import cloneDeep from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';

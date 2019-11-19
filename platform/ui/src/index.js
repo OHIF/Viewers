@@ -60,7 +60,7 @@ import {
   ModalConsumer,
   useModal,
   withModal,
-} from './utils/providers';
+} from './contextProviders';
 
 export {
   // Elements

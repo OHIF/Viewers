@@ -1,7 +1,7 @@
 import './CineDialog.styl';
 
 import React, { PureComponent } from 'react';
-import { withTranslation } from '../../utils/providers';
+import { withTranslation } from '../../contextProviders';
 import { Icon } from './../../elements/Icon';
 import PropTypes from 'prop-types';
 

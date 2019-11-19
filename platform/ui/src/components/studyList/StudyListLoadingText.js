@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from './../../elements/Icon';
 // TODO: useTranslation
-import { withTranslation } from '../../utils/providers';
+import { withTranslation } from '../../contextProviders';
 
 function StudyListLoadingText({ t: translate }) {
   return (

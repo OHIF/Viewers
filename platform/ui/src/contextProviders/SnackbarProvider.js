@@ -7,8 +7,8 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import SnackbarContainer from '../../components/snackbar/SnackbarContainer';
-import SnackbarTypes from '../../components/snackbar/SnackbarTypes';
+import SnackbarContainer from '../components/snackbar/SnackbarContainer';
+import SnackbarTypes from '../components/snackbar/SnackbarTypes';
 
 const SnackbarContext = createContext(null);
 
