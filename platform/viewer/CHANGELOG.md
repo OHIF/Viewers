@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.4...@ohif/viewer@2.8.5) (2019-11-18)
+
+
+### Bug Fixes
+
+* minor date picker UX improvements ([813ee5e](https://github.com/OHIF/Viewers/commit/813ee5ed4d78b7bda234922d5f3389efe346451c))
+
+
+
+
+
 ## [2.8.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.3...@ohif/viewer@2.8.4) (2019-11-15)
 
 **Note:** Version bump only for package @ohif/viewer
