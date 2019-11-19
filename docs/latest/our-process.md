@@ -2,15 +2,18 @@
 
 Our process is a living, breathing thing. We strive to have regular [retrospectives][retrospective] that help us
 shape and adapt our process to our team's current needs. This document attempts to capture the broad strokes of
-that process, and how it
+that process in an effort to:
+
+- Strengthen community member involvement and understanding
+- Welcome feedback and helpful suggestions
 
 
 ## Overview
 
-- Issue Triage
-- Issue Curation (["backlog grooming"][groom-backlog])
-- Contributions (Pull Requests)
-- Releases
+- [Issue Triage](#issue-triage)
+- [Issue Curation ("backlog grooming")](#issue-curation-backlog-grooming)
+- [Contributions (Pull Requests)](#contributions-pull-requests)
+- [Releases](#releases)
 
 
 _Include issue lifecycle diagram_
