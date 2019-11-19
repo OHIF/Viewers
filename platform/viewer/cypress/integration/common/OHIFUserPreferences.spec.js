@@ -208,8 +208,7 @@ describe('OHIF User Preferences', () => {
   context('Study Viewer Page', function() {
     before(() => {
       cy.openStudy('MISTER^MR');
-      cy.waitDicomImage();
-      cy.expectMinimumThumbnails(3);
+      cy.expectMinimumThumbnails(5);
     });
 
     beforeEach(() => {

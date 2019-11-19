@@ -201,10 +201,10 @@ Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
 
 //Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
-  cy.initCornerstoneToolsAliases();
-
   //Click on More button
-  cy.get('@moreBtn').click();
+  cy.get('.expandableToolMenu')
+    .as('moreBtn')
+    .click();
   //Verify if overlay is displayed
   cy.get('body').then(body => {
     if (body.find('.tooltip-toolbar-overlay').length == 0) {
@@ -216,7 +216,9 @@ Cypress.Commands.add('resetViewport', () => {
     .as('clearBtn')
     .click();
   //Click on Reset button
-  cy.get('@resetBtn').click();
+  cy.get('.ToolbarRow > :nth-child(9)')
+    .as('resetBtn')
+    .click();
 });
 
 Cypress.Commands.add('imageZoomIn', () => {
