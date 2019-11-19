@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.1](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.52.0...@ohif/i18n@0.52.1) (2019-11-18)
+
+
+### Bug Fixes
+
+* minor date picker UX improvements ([813ee5e](https://github.com/OHIF/Viewers/commit/813ee5ed4d78b7bda234922d5f3389efe346451c))
+
+
+
+
+
 # [0.52.0](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.51.0...@ohif/i18n@0.52.0) (2019-11-06)
 
 

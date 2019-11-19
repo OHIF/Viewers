@@ -1,5 +1,6 @@
 # OHIF Viewers
 
+- [Our Process](our-process.md)
 - Essentials
   - [Getting Started](essentials/getting-started.md)
   - [Installation](essentials/installation.md)
@@ -47,5 +48,6 @@
 
 - [FAQ](frequently-asked-questions.md)
 - [Contributing](contributing/index.md)
+  - [Continuous Integration](continous-integration.md)
 - [Browser Support](browser-support.md)
 - [Help](help.md)

@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.4...@ohif/viewer@2.8.5) (2019-11-18)
+
+
+### Bug Fixes
+
+* minor date picker UX improvements ([813ee5e](https://github.com/OHIF/Viewers/commit/813ee5ed4d78b7bda234922d5f3389efe346451c))
+
+
+
+
+
+## [2.8.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.3...@ohif/viewer@2.8.4) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.8.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.2...@ohif/viewer@2.8.3) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.8.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.1...@ohif/viewer@2.8.2) (2019-11-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.8.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.0...@ohif/viewer@2.8.1) (2019-11-14)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [2.8.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.7.1...@ohif/viewer@2.8.0) (2019-11-13)
+
+
+### Features
+
+* expose UiNotifications service ([#1172](https://github.com/OHIF/Viewers/issues/1172)) ([5c04e34](https://github.com/OHIF/Viewers/commit/5c04e34c8fb2394ab7acd9eb4f2ab12afeb2f255))
+* filter field for google api windows ([#1170](https://github.com/OHIF/Viewers/issues/1170)) ([c59c5b3](https://github.com/OHIF/Viewers/commit/c59c5b3f14d44f1c06aa396125a1f4caaa431c25))
+
+
+
+
+
+## [2.7.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.7.0...@ohif/viewer@2.7.1) (2019-11-12)
+
+
+### Bug Fixes
+
+* 🐛 Fix for JS breaking on header ([#1164](https://github.com/OHIF/Viewers/issues/1164)) ([0fbaf95](https://github.com/OHIF/Viewers/commit/0fbaf95971dc0b3a671e1f586a876d9019e860ed))
+
+
+
+
+
+# [2.7.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.4...@ohif/viewer@2.7.0) (2019-11-12)
+
+
+### Features
+
+* 🎸 Update hotkeys and user preferences modal ([#1135](https://github.com/OHIF/Viewers/issues/1135)) ([e62f5f8](https://github.com/OHIF/Viewers/commit/e62f5f8dd28ab363f23671cd21cee115abb870ff)), closes [#923](https://github.com/OHIF/Viewers/issues/923)
+
+
+
+
+
 ## [2.6.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.6.3...@ohif/viewer@2.6.4) (2019-11-11)
 
 **Note:** Version bump only for package @ohif/viewer

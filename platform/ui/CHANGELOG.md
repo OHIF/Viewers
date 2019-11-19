@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.62.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.3...@ohif/ui@0.62.4) (2019-11-18)
+
+
+### Bug Fixes
+
+* minor date picker UX improvements ([813ee5e](https://github.com/OHIF/Viewers/commit/813ee5ed4d78b7bda234922d5f3389efe346451c))
+
+
+
+
+
+## [0.62.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.2...@ohif/ui@0.62.3) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [0.62.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.1...@ohif/ui@0.62.2) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [0.62.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.0...@ohif/ui@0.62.1) (2019-11-14)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [0.62.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.61.0...@ohif/ui@0.62.0) (2019-11-13)
+
+
+### Features
+
+* expose UiNotifications service ([#1172](https://github.com/OHIF/Viewers/issues/1172)) ([5c04e34](https://github.com/OHIF/Viewers/commit/5c04e34c8fb2394ab7acd9eb4f2ab12afeb2f255))
+
+
+
+
+
+# [0.61.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.60.1...@ohif/ui@0.61.0) (2019-11-12)
+
+
+### Features
+
+* 🎸 Update hotkeys and user preferences modal ([#1135](https://github.com/OHIF/Viewers/issues/1135)) ([e62f5f8](https://github.com/OHIF/Viewers/commit/e62f5f8dd28ab363f23671cd21cee115abb870ff)), closes [#923](https://github.com/OHIF/Viewers/issues/923)
+
+
+
+
+
 ## [0.60.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.60.0...@ohif/ui@0.60.1) (2019-11-08)
 
 
