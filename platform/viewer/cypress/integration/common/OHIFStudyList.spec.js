@@ -1,14 +1,14 @@
 //We are keeping the hardcoded results values for the study list tests
 //this is intended to be running in a controled docker environment with test data.
-describe('OHIF Study List', function() {
-  context('Desktop resolution', function() {
-    beforeEach(function() {
+describe('OHIF Study List', function () {
+  context('Desktop resolution', function () {
+    beforeEach(function () {
       cy.viewport(1750, 720);
       cy.openStudyList();
       cy.initStudyListAliasesOnDesktop();
     });
 
-    it('searches Patient Name with exact string', function() {
+    it('searches Patient Name with exact string', function () {
       cy.get('@patientName').type('Juno');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -18,7 +18,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches MRN with exact string', function() {
+    it('searches MRN with exact string', function () {
       cy.get('@MRN').type('ProstateX-0000');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -28,7 +28,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches Accession with exact string', function() {
+    it('searches Accession with exact string', function () {
       cy.get('@accessionNumber').type('fpcben98890');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -38,7 +38,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches Modality with camel case', function() {
+    it('searches Modality with camel case', function () {
       cy.get('@modalities').type('Mr');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -48,7 +48,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches Description with exact string', function() {
+    it('searches Description with exact string', function () {
       cy.get('@studyDescription').type('CHEST');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -58,7 +58,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('changes rows per page and checks the study count', function() {
+    it('changes rows per page and checks the study count', function () {
       //Show rows per page options
       const pageRows = [25, 50, 100];
 
@@ -100,14 +100,14 @@ describe('OHIF Study List', function() {
     // });
   });
 
-  context('Tablet resolution', function() {
-    beforeEach(function() {
+  context('Tablet resolution', function () {
+    beforeEach(function () {
       cy.viewport(1000, 660);
       cy.openStudyList();
       cy.initStudyListAliasesOnTablet();
     });
 
-    it('searches Patient Name with exact string', function() {
+    it('searches Patient Name with exact string', function () {
       cy.get('@patientNameOrMRN').type('Juno');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -117,7 +117,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches MRN with with exact string', function() {
+    it('searches MRN with with exact string', function () {
       cy.get('@patientNameOrMRN').type('ProstateX-0000');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -127,7 +127,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches Modality with exact string', function() {
+    it('searches Modality with exact string', function () {
       cy.get('@accessionModalityDescription').type('MR');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -137,7 +137,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches Accession with exact string', function() {
+    it('searches Accession with exact string', function () {
       cy.get('@accessionModalityDescription').type('fpcben98890');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -147,7 +147,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('searches Description with exact string', function() {
+    it('searches Description with exact string', function () {
       cy.get('@accessionModalityDescription').type('CHEST');
       //Wait result list to be displayed
       cy.waitStudyList();
@@ -157,7 +157,7 @@ describe('OHIF Study List', function() {
       });
     });
 
-    it('changes rows per page and checks the study count', function() {
+    it('changes rows per page and checks the study count', function () {
       //Show rows per page options
       const pageRows = [25, 50, 100];
 
