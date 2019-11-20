@@ -7,6 +7,7 @@ import {
   initVTKToolsAliases,
   initStudyListAliasesOnDesktop,
   initStudyListAliasesOnTablet,
+  initPreferencesModalAliases,
 } from './aliases.js';
 
 // ***********************************************
@@ -99,6 +100,13 @@ Cypress.Commands.add('waitVTKReformatting', () => {
   // Wait for finish reformatting
   cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
     expect($grid).not.to.contain.text('Reform');
+  });
+});
+
+Cypress.Commands.add('waitViewportImageLoading', () => {
+  // Wait for finish loading
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 20000 }).should($grid => {
+    expect($grid).not.to.contain.text('Load');
   });
 });
 
@@ -200,10 +208,10 @@ Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
 
 //Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
-  cy.initCornerstoneToolsAliases();
-
   //Click on More button
-  cy.get('@moreBtn').click();
+  cy.get('.expandableToolMenu')
+    .as('moreBtn')
+    .click();
   //Verify if overlay is displayed
   cy.get('body').then(body => {
     if (body.find('.tooltip-toolbar-overlay').length == 0) {
@@ -215,7 +223,9 @@ Cypress.Commands.add('resetViewport', () => {
     .as('clearBtn')
     .click();
   //Click on Reset button
-  cy.get('@resetBtn').click();
+  cy.get('.ToolbarRow > :nth-child(9)')
+    .as('resetBtn')
+    .click();
 });
 
 Cypress.Commands.add('imageZoomIn', () => {
@@ -359,9 +369,7 @@ Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
 });
 
 Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
-  cy.get('.toolbar-button-label')
-    .contains('Layout')
-    .click();
+  cy.get('.btn-group > .toolbar-button').click();
 
   cy.get('.layoutChooser')
     .find('tr')
@@ -410,3 +418,50 @@ function canvasToImage(selectorOrEl) {
   canvas.parentElement.appendChild(image);
   canvas.style = 'display: none';
 }
+
+//Initialize aliases for User Preferences modal
+Cypress.Commands.add('initPreferencesModalAliases', () => {
+  initPreferencesModalAliases();
+});
+
+Cypress.Commands.add('openPreferences', () => {
+  cy.log('Open User Preferences Modal');
+  // Open User Preferences modal
+  cy.get('[data-cy="options-menu"]')
+    .scrollIntoView()
+    .click()
+    .then(() => {
+      cy.get('[data-cy="about-item-menu"]')
+        .last()
+        .click()
+        .wait(200);
+    });
+});
+
+Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
+  // Open User Preferences modal
+  cy.openPreferences();
+
+  cy.initPreferencesModalAliases();
+
+  cy.log('Reset to Default Preferences');
+  cy.get('@restoreBtn').click();
+
+  //TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
+  //Once the issue is fixed, the following code should be uncommented
+  //cy.get('@saveBtn').click();
+});
+
+Cypress.Commands.add(
+  'setNewHotkeyShortcutOnUserPreferencesModal',
+  (function_label, shortcut) => {
+    // Within scopes all `.get` and `.contains` to within the matched elements
+    // dom instead of checking from document
+    cy.get('.HotKeysPreferences').within(() => {
+      cy.contains(function_label) // label we're looking for
+        .parent()
+        .find('input') // closest input to that label
+        .type(shortcut, { force: true }); // Set new shortcut for that function
+    });
+  }
+);
