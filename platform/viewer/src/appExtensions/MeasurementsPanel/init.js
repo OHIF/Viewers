@@ -8,7 +8,7 @@ import {
   getResetLabellingAndContextMenu,
 } from './labelingFlowCallbacks.js';
 import throttle from 'lodash.throttle';
-import { SimpleDialog } from '@ohif/ui';
+import EditDescriptionDialog from '../../components/EditDescriptionDialog/EditDescriptionDialog';
 
 // TODO: This only works because we have a hard dependency on this extension
 // We need to decouple and make stuff like this possible w/o bundling this at
@@ -37,19 +37,20 @@ const MEASUREMENT_ACTION_MAP = {
  */
 export default function init({ servicesManager, configuration = {} }) {
   const { UIDialogService } = servicesManager.services;
-  const callInputDialog = (event, callback) => {
-    const dialogId = UIDialogService.create({
-      content: SimpleDialog.InputDialog,
+  const callInputDialog = (data, event, callback) => {
+    let dialogId = UIDialogService.create({
+      content: EditDescriptionDialog,
       defaultPosition: {
         x: (event && event.currentPoints.canvas.x) || 0,
         y: (event && event.currentPoints.canvas.y) || 0,
       },
       showOverlay: true,
       contentProps: {
-        title: 'Edit Description',
+        noBounding: true,
+        measurementData: data ? { description: data.text } : {},
         label: 'New label',
-        onClose: () => UIDialogService.dismiss({ id: dialogId }),
-        onSubmit: value => {
+        onCancel: () => UIDialogService.dismiss({ id: dialogId }),
+        onUpdate: value => {
           callback(value);
           UIDialogService.dismiss({ id: dialogId });
         },
@@ -112,9 +113,9 @@ export default function init({ servicesManager, configuration = {} }) {
   csTools.addTool(csTools.ArrowAnnotateTool, {
     configuration: {
       getMeasurementLocationCallback: toolLabellingFlowCallback,
-      getTextCallback: callback => callInputDialog(null, callback),
+      getTextCallback: callback => callInputDialog(null, null, callback),
       changeTextCallback: (data, event, callback) =>
-        callInputDialog(event, callback),
+        callInputDialog(data, event, callback),
     },
   });
 

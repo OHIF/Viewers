@@ -102,10 +102,12 @@ const DialogProvider = ({ children, service }) => {
    * @returns void
    */
   const _reorder = id => {
-    setDialogs(dialogs => [
-      ...dialogs.filter(dialog => dialog.id !== id),
-      dialogs.find(dialog => dialog.id === id),
-    ]);
+    setDialogs(dialogs => {
+      const topDialog = dialogs.find(dialog => dialog.id === id);
+      return topDialog
+        ? [...dialogs.filter(dialog => dialog.id !== id), topDialog]
+        : [];
+    });
   };
 
   /**
@@ -155,7 +157,14 @@ const DialogProvider = ({ children, service }) => {
                 onStart={event => {
                   const e = event || window.event;
                   const target = e.target || e.srcElement;
-                  const BLACKLIST = ['SVG', 'BUTTON', 'PATH', 'INPUT'];
+                  const BLACKLIST = [
+                    'SVG',
+                    'BUTTON',
+                    'PATH',
+                    'INPUT',
+                    'SPAN',
+                    'LABEL',
+                  ];
                   if (BLACKLIST.includes(target.tagName.toUpperCase())) {
                     return false;
                   }
