@@ -113,9 +113,10 @@ export default function init({ servicesManager, configuration = {} }) {
   csTools.addTool(csTools.ArrowAnnotateTool, {
     configuration: {
       getMeasurementLocationCallback: toolLabellingFlowCallback,
-      getTextCallback: callback => callInputDialog(null, null, callback),
-      changeTextCallback: (data, event, callback) =>
-        callInputDialog(data, event, callback),
+      getTextCallback: (callback, eventDetails) =>
+        callInputDialog(null, eventDetails, callback),
+      changeTextCallback: (data, eventDetails, callback) =>
+        callInputDialog(data, eventDetails, callback),
     },
   });
 
