@@ -3,6 +3,7 @@ import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import queryString from 'query-string';
+import { SimpleDialog } from '@ohif/ui';
 
 function fallbackMetaDataProvider(type, imageId) {
   if (!imageId.includes('wado?requestType=WADO')) {
@@ -29,6 +30,28 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
  * @param {Object|Array} configuration.csToolsConfig
  */
 export default function init({ servicesManager, configuration = {} }) {
+  const { UIDialogService } = servicesManager.services;
+  const callInputDialog = (data, event, callback) => {
+    let dialogId = UIDialogService.create({
+      content: SimpleDialog.InputDialog,
+      defaultPosition: {
+        x: (event && event.currentPoints.canvas.x) || 0,
+        y: (event && event.currentPoints.canvas.y) || 0,
+      },
+      showOverlay: true,
+      contentProps: {
+        title: 'Enter your annotation',
+        label: 'New label',
+        measurementData: data ? { description: data.text } : {},
+        onClose: () => UIDialogService.dismiss({ id: dialogId }),
+        onSubmit: value => {
+          callback(value);
+          UIDialogService.dismiss({ id: dialogId });
+        },
+      },
+    });
+  };
+
   const { csToolsConfig } = configuration;
   const { StackManager } = OHIF.utils;
   const metadataProvider = new OHIF.cornerstone.MetadataProvider();
@@ -62,7 +85,6 @@ export default function init({ servicesManager, configuration = {} }) {
     ZoomTouchPinchTool,
     // Annotations
     EraserTool,
-    ArrowAnnotateTool,
     BidirectionalTool,
     LengthTool,
     AngleTool,
@@ -85,7 +107,6 @@ export default function init({ servicesManager, configuration = {} }) {
     ZoomTouchPinchTool,
     // Annotations
     EraserTool,
-    ArrowAnnotateTool,
     BidirectionalTool,
     LengthTool,
     AngleTool,
@@ -98,6 +119,15 @@ export default function init({ servicesManager, configuration = {} }) {
   ];
 
   tools.forEach(tool => csTools.addTool(tool));
+
+  csTools.addTool(csTools.ArrowAnnotateTool, {
+    configuration: {
+      getTextCallback: (callback, eventDetails) =>
+        callInputDialog(null, eventDetails, callback),
+      changeTextCallback: (data, eventDetails, callback) =>
+        callInputDialog(data, eventDetails, callback),
+    },
+  });
 
   csTools.setToolActive('Pan', { mouseButtonMask: 4 });
   csTools.setToolActive('Zoom', { mouseButtonMask: 2 });

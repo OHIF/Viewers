@@ -19,9 +19,7 @@ export default class EditDescriptionDialog extends Component {
     onCancel: PropTypes.func.isRequired,
     componentRef: PropTypes.object,
     componentStyle: PropTypes.object,
-    label: PropTypes.string,
     onUpdate: PropTypes.func.isRequired,
-    noBounding: PropTypes.bool,
   };
 
   constructor(props) {
@@ -35,9 +33,7 @@ export default class EditDescriptionDialog extends Component {
   }
 
   componentDidMount = () => {
-    if (!this.props.noBounding) {
-      bounding(this.mainElement);
-    }
+    bounding(this.mainElement);
   };
 
   componentDidUpdate(prevProps) {
@@ -64,7 +60,6 @@ export default class EditDescriptionDialog extends Component {
           value={this.state.description}
           className="simpleDialogInput"
           id="description"
-          label={this.props.label}
           autoComplete="off"
           autoFocus
           onChange={this.handleChange}

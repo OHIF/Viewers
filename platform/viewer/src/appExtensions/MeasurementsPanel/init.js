@@ -8,7 +8,7 @@ import {
   getResetLabellingAndContextMenu,
 } from './labelingFlowCallbacks.js';
 import throttle from 'lodash.throttle';
-import EditDescriptionDialog from '../../components/EditDescriptionDialog/EditDescriptionDialog';
+import { SimpleDialog } from '@ohif/ui';
 
 // TODO: This only works because we have a hard dependency on this extension
 // We need to decouple and make stuff like this possible w/o bundling this at
@@ -39,18 +39,18 @@ export default function init({ servicesManager, configuration = {} }) {
   const { UIDialogService } = servicesManager.services;
   const callInputDialog = (data, event, callback) => {
     let dialogId = UIDialogService.create({
-      content: EditDescriptionDialog,
+      content: SimpleDialog.InputDialog,
       defaultPosition: {
         x: (event && event.currentPoints.canvas.x) || 0,
         y: (event && event.currentPoints.canvas.y) || 0,
       },
       showOverlay: true,
       contentProps: {
-        noBounding: true,
-        measurementData: data ? { description: data.text } : {},
+        title: 'Enter your annotation',
         label: 'New label',
-        onCancel: () => UIDialogService.dismiss({ id: dialogId }),
-        onUpdate: value => {
+        defaultValue: data ? data.text : '',
+        onClose: () => UIDialogService.dismiss({ id: dialogId }),
+        onSubmit: value => {
           callback(value);
           UIDialogService.dismiss({ id: dialogId });
         },
