@@ -13,7 +13,7 @@ const renderTab = (tab = {}, onTabStateChanged, onTabErrorChanged) => {
   const { props, Component, name, hidden = false, initialState } = tab;
 
   return !hidden ? (
-    <form className="form-themed themed">
+    <form className="form-themed themed tabs">
       <div className="form-content">
         <Component
           key={name}
@@ -59,11 +59,13 @@ function UserPreferencesTabs({ tabs, onTabStateChanged, onTabErrorChanged }) {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   return (
-    <div>
-      <div className="dialog-separator-after">
-        <ul className="nav nav-tabs">
-          {renderTabsHeader(tabs, activeTabIndex, setActiveTabIndex)}
-        </ul>
+    <div className="UserPreferencesTabs">
+      <div className="UserPreferencesTabs__selector">
+        <div className="dialog-separator-after">
+          <ul className="nav nav-tabs">
+            {renderTabsHeader(tabs, activeTabIndex, setActiveTabIndex)}
+          </ul>
+        </div>
       </div>
       {renderTab(tabs[activeTabIndex], onTabStateChanged, onTabErrorChanged)}
     </div>
