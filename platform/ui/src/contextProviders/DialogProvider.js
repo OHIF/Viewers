@@ -34,51 +34,45 @@ const DialogProvider = ({ children, service }) => {
   }, [create, dismiss, service]);
 
   /**
-   * Creates a dialog and return its id.
+   * UI Dialog
    *
-   * @returns id
+   * @typedef {Object} DialogProps
+   * @property {string} id The dialog id.
+   * @property {DialogContent} content The dialog content.
+   * @property {Object} contentProps The dialog content props.
+   * @property {boolean} isDraggable Controls if dialog content is draggable or not.
+   * @property {boolean} showOverlay Controls dialog overlay.
+   * @property {ElementPosition} defaultPosition Specifies the `x` and `y` that the dragged item should start at.
+   * @property {ElementPosition} position If this property is present, the item becomes 'controlled' and is not responsive to user input.
+   * @property {Function} onStart Called when dragging starts. If `false` is returned any handler, the action will cancel.
+   * @property {Function} onStop Called when dragging stops.
+   * @property {Function} onDrag Called while dragging.
    */
-  const create = useCallback(
-    ({
-      id,
-      content,
-      contentProps,
-      onSubmit,
-      onClose,
-      onDrag,
-      onStop,
-      isDraggable,
-      defaultPosition,
-      position,
-    }) => {
-      let dialogId = id;
-      if (!dialogId) {
-        dialogId = utils.guid();
-      }
 
-      const newDialog = {
-        id: dialogId,
-        content,
-        contentProps,
-        onSubmit,
-        onClose,
-        onDrag,
-        onStop,
-        isDraggable,
-        defaultPosition,
-        position,
-      };
+  /**
+   * Creates a new dialog and return its id.
+   *
+   * @param {DialogProps} props The dialog props.
+   * @returns The new dialog id.
+   */
+  const create = useCallback(props => {
+    const { id } = props;
 
-      setDialogs(dialogs => [...dialogs, newDialog]);
+    let dialogId = id;
+    if (!dialogId) {
+      dialogId = utils.guid();
+    }
 
-      return dialogId;
-    },
-    []
-  );
+    setDialogs(dialogs => [...dialogs, { ...props, id: dialogId }]);
+
+    return dialogId;
+  }, []);
 
   /**
    * Dismisses the dialog with a given id.
    *
+   * @param {Object} props -
+   * @property {string} props.id The dialog id.
    * @returns void
    */
   const dismiss = useCallback(({ id }) => {
@@ -95,8 +89,16 @@ const DialogProvider = ({ children, service }) => {
   };
 
   /**
+   * Indicate if there are no dialogs present.
+   *
+   * @returns True if no dialogs are present.
+   */
+  const noDialogs = () => dialogs && dialogs.length < 1;
+
+  /**
    * Moves the dialog to the foreground if clicked.
    *
+   * @param {string} id The dialog id.
    * @returns void
    */
   const _reorder = id => {
@@ -106,6 +108,11 @@ const DialogProvider = ({ children, service }) => {
     ]);
   };
 
+  /**
+   * Update the last dialog position to be used as the new default position.
+   *
+   * @returns void
+   */
   const _updateLastDialogPosition = dialogId => {
     const draggableItemBounds = document
       .querySelector(`#draggableItem-${dialogId}`)
@@ -116,69 +123,100 @@ const DialogProvider = ({ children, service }) => {
     });
   };
 
+  const validCallback = callback => callback && typeof callback === 'function';
+
   return (
-    <DialogContext.Provider value={{ create, dismiss, dismissAll, dialogs }}>
+    <DialogContext.Provider value={{ create, dismiss, dismissAll, noDialogs }}>
       <div className="DraggableArea">
         {dialogs.map(dialog => {
           const {
-            id,
-            content: Dialog,
-            contentProps,
-            position /* Position of the dialog. {{x: 0, y: 0}} */,
-            defaultPosition,
+            id = null,
+            content: DialogContent = null,
+            contentProps = null,
+            position = null,
+            defaultPosition = null,
             isDraggable = true,
-            onStart = () => {},
-            onStop = () => {},
-            onDrag = () => {},
+            showOverlay = false,
+            onStart = null,
+            onStop = null,
+            onDrag = null,
           } = dialog;
 
           return (
-            <Draggable
+            <div
               key={id}
-              disabled={!isDraggable}
-              position={position}
-              defaultPosition={lastDialogPosition || defaultPosition}
-              bounds="parent"
-              onStart={event => {
-                const e = event || window.event;
-                const target = e.target || e.srcElement;
-                const BLACKLIST = ['SVG', 'BUTTON', 'PATH', 'INPUT'];
-                if (BLACKLIST.includes(target.tagName.toUpperCase())) {
-                  return false;
-                }
-
-                onStart(event);
-              }}
-              onStop={event => {
-                onStop(event);
-                setIsDragging(false);
-                return;
-              }}
-              onDrag={event => {
-                setIsDragging(true);
-                _reorder(id);
-                _updateLastDialogPosition(id);
-                onDrag(event);
-              }}
+              className={classNames('Overlay', showOverlay && 'active')}
             >
-              <div
-                id={`draggableItem-${id}`}
-                className={classNames(
-                  'DraggableItem',
-                  isDragging && 'dragging'
-                )}
-                style={{ zIndex: '999', position: 'absolute' }}
-                onClick={() => _reorder(id)}
+              <Draggable
+                disabled={!isDraggable}
+                position={position}
+                defaultPosition={lastDialogPosition || defaultPosition}
+                bounds="parent"
+                onStart={event => {
+                  const e = event || window.event;
+                  const target = e.target || e.srcElement;
+                  const BLACKLIST = ['SVG', 'BUTTON', 'PATH', 'INPUT'];
+                  if (BLACKLIST.includes(target.tagName.toUpperCase())) {
+                    return false;
+                  }
+
+                  if (validCallback(onStart)) {
+                    return onStart(event);
+                  }
+                }}
+                onStop={event => {
+                  setIsDragging(false);
+
+                  if (validCallback(onStop)) {
+                    return onStop(event);
+                  }
+                }}
+                onDrag={event => {
+                  setIsDragging(true);
+                  _reorder(id);
+                  _updateLastDialogPosition(id);
+
+                  if (validCallback(onDrag)) {
+                    return onDrag(event);
+                  }
+                }}
               >
-                <Dialog {...dialog} {...contentProps} />
-              </div>
-            </Draggable>
+                <div
+                  id={`draggableItem-${id}`}
+                  className={classNames(
+                    'DraggableItem',
+                    isDragging && 'dragging'
+                  )}
+                  style={{ zIndex: '999', position: 'absolute' }}
+                  onClick={() => _reorder(id)}
+                >
+                  <DialogContent {...dialog} {...contentProps} />
+                </div>
+              </Draggable>
+            </div>
           );
         })}
       </div>
       {children}
     </DialogContext.Provider>
   );
+};
+
+/**
+ *
+ * High Order Component to use the dialog methods through a Class Component
+ *
+ */
+export const withDialog = Component => {
+  return function WrappedComponent(props) {
+    const { create, dismiss, dismissAll, noDialogs } = useDialog();
+    return (
+      <Component
+        {...props}
+        dialog={{ create, dismiss, dismissAll, noDialogs }}
+      />
+    );
+  };
 };
 
 DialogProvider.defaultProps = {
@@ -194,18 +232,6 @@ DialogProvider.propTypes = {
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
-};
-
-/**
- *
- * High Order Component to use the dialog methods through a Class Component
- *
- */
-export const withDialog = Component => {
-  return function WrappedComponent(props) {
-    const { create, dismiss, dismissAll } = useDialog();
-    return <Component {...props} dialog={{ create, dismiss, dismissAll }} />;
-  };
 };
 
 export default DialogProvider;

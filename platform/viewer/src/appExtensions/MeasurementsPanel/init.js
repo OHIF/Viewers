@@ -37,6 +37,26 @@ const MEASUREMENT_ACTION_MAP = {
  */
 export default function init({ servicesManager, configuration = {} }) {
   const { UIDialogService } = servicesManager.services;
+  const callInputDialog = (event, callback) => {
+    const dialogId = UIDialogService.create({
+      content: SimpleDialog.InputDialog,
+      defaultPosition: {
+        x: (event && event.currentPoints.canvas.x) || 0,
+        y: (event && event.currentPoints.canvas.y) || 0,
+      },
+      showOverlay: true,
+      contentProps: {
+        title: 'Edit Description',
+        label: 'New label',
+        onClose: () => UIDialogService.dismiss({ id: dialogId }),
+        onSubmit: value => {
+          callback(value);
+          UIDialogService.dismiss({ id: dialogId });
+        },
+      },
+    });
+  };
+
   // If these tools were already added by a different extension, we want to replace
   // them with the same tools that have an alternative configuration. By passing in
   // our custom `getMeasurementLocationCallback`, we can...
@@ -92,42 +112,9 @@ export default function init({ servicesManager, configuration = {} }) {
   csTools.addTool(csTools.ArrowAnnotateTool, {
     configuration: {
       getMeasurementLocationCallback: toolLabellingFlowCallback,
-      getTextCallback: callback => {
-        const dialogId = UIDialogService.create({
-          content: SimpleDialog.InputDialog,
-          onClose: () => UIDialogService.dismiss({ id: dialogId }),
-          defaultPosition: {
-            x: 512,
-            y: 212,
-          },
-          contentProps: {
-            title: 'Edit Description',
-            label: 'New label',
-          },
-          onSubmit: value => {
-            callback(value);
-            UIDialogService.dismiss({ id: dialogId });
-          },
-        });
-      },
-      changeTextCallback: (data, event, callback) => {
-        const dialogId = UIDialogService.create({
-          content: SimpleDialog.InputDialog,
-          onClose: () => UIDialogService.dismiss({ id: dialogId }),
-          defaultPosition: {
-            x: event.currentPoints.canvas.x,
-            y: event.currentPoints.canvas.y,
-          },
-          contentProps: {
-            title: 'Edit Description',
-            label: 'New label',
-          },
-          onSubmit: value => {
-            callback(value);
-            UIDialogService.dismiss({ id: dialogId });
-          },
-        });
-      },
+      getTextCallback: callback => callInputDialog(null, callback),
+      changeTextCallback: (data, event, callback) =>
+        callInputDialog(event, callback),
     },
   });
 
