@@ -94,8 +94,8 @@ export class UserPreferences extends Component {
 
   render() {
     return (
-      <div>
-        <div className="dialog-separator-after">
+      <div className="UserPreferences">
+        <div className="UserPreferences__selector">
           <ul className="nav nav-tabs">
             <li
               onClick={() => {

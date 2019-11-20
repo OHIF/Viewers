@@ -63,11 +63,11 @@ promote the build to `STAGING` and `PRODUCTION` environments.
   <div><i>Workflow diagram for WORKFLOW_DEPLOY</i></div>
 </div>
 
-| Environment | Description                                                                        | URL                        |
-| ----------- | ---------------------------------------------------------------------------------- | -------------------------- |
-| Development | Always reflects latest changes on `master` branch.                                 | [Netlify][netlify-dev]     |
-| Staging     | For manual testing before promotion to prod. Keeps development workflow unblocked. | [Netlify][netlify-staging] |
-| Production  | Stable, tested, updated less frequently.                                           | [Netlify][netlify-prod]    |
+| Environment | Description                                                                        | URL                                           |
+| ----------- | ---------------------------------------------------------------------------------- | --------------------------------------------- |
+| Development | Always reflects latest changes on `master` branch.                                 | [Netlify][netlify-dev] / [OHIF][ohif-dev]     |
+| Staging     | For manual testing before promotion to prod. Keeps development workflow unblocked. | [Netlify][netlify-stage] / [OHIF][ohif-stage] |
+| Production  | Stable, tested, updated less frequently.                                           | [Netlify][netlify-prod] / [OHIF][ohif-prod]   |
 
 ### Workflow: RELEASE
 
@@ -101,6 +101,9 @@ _Not yet implemented_
 [deploy-previews]: https://www.netlify.com/blog/2016/07/20/introducing-deploy-previews-in-netlify/
 [circleci-workflows]: https://circleci.com/docs/2.0/workflows/
 [netlify-dev]: https://ohif-dev.netlify.com
-[netlify-staging]: https://ohif-staging.netlify.com
+[netlify-stage]: https://ohif-stage.netlify.com
 [netlify-prod]: https://ohif-prod.netlify.com
+[ohif-dev]: https://viewer-dev.ohif.org
+[ohif-stage]: https://viewer-stage.ohif.org
+[ohif-prod]: https://viewer-prod.ohif.org
 <!-- prettier-ignore-end -->

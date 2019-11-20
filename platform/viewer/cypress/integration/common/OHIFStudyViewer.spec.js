@@ -273,7 +273,7 @@ describe('OHIF Study Viewer Page', function() {
     cy.get('[data-cy="about-item-menu"]')
       .first()
       .click();
-    cy.get('.modal-content')
+    cy.get('[data-cy="about-modal"]')
       .as('aboutOverlay')
       .should('be.visible');
 
@@ -296,7 +296,7 @@ describe('OHIF Study Viewer Page', function() {
     cy.percyCanvasSnapshot('About modal - Should display modal');
 
     //close modal
-    cy.get('.close').click();
+    cy.get('[data-cy="close-button"]').click();
     cy.get('@aboutOverlay').should('not.be.enabled');
   });
 });

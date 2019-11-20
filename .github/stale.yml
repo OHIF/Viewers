@@ -15,7 +15,7 @@ exemptLabels:
   - 'Task: Refactor 🛠'
   - 'Task: Tests :microscope:'
   - 'PR: Awaiting Review 👀'
-  - 'Triage 🏳️'
+  - 'Triage :white_flag:'
   - 'Announcement 🎉'
 # Label to use when marking an issue as stale
 staleLabel: 'Stale :baguette_bread:'

@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import LanguageSwitcher from '../languageSwitcher';
 
-const GeneralPreferences = props => {
+/**
+ * General Preferences tab
+ */
+function GeneralPreferences(props) {
   return (
     <div className="general-preferences-wrapper">
       <div className="col-sm-3">
@@ -16,7 +19,7 @@ const GeneralPreferences = props => {
       </div>
     </div>
   );
-};
+}
 
 GeneralPreferences.propTypes = {
   generalPreferences: PropTypes.shape({

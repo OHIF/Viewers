@@ -1,130 +1,160 @@
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+
 import './UserPreferencesForm.styl';
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withTranslation } from '../../utils/LanguageProvider';
+import { useTranslation } from 'react-i18next';
 
-import cloneDeep from 'lodash.clonedeep';
-import isEqual from 'lodash.isequal';
-import { UserPreferences } from './UserPreferences';
+// Tabs Component wrapper
+import { UserPreferencesTabs } from './UserPreferencesTabs';
 
-class UserPreferencesForm extends Component {
-  // TODO: Make this component more generic to allow things other than W/L and hotkeys...
-  static propTypes = {
-    onClose: PropTypes.func,
-    onSave: PropTypes.func,
-    onResetToDefaults: PropTypes.func,
-    windowLevelData: PropTypes.object,
-    hotkeyDefinitions: PropTypes.arrayOf(
-      PropTypes.shape({
-        commandName: PropTypes.string,
-        keys: PropTypes.arrayOf(PropTypes.string),
-        label: PropTypes.string,
-      })
-    ).isRequired,
-    generalPreferences: PropTypes.shape({
-      language: PropTypes.string,
-    }).isRequired,
-    t: PropTypes.func,
+// Tabs
+import { HotKeysPreferences } from './HotKeysPreferences';
+import { WindowLevelPreferences } from './WindowLevelPreferences';
+import { GeneralPreferences } from './GeneralPreferences';
+
+/**
+ @typedef TabObject
+ @type {Object}
+ @property {string} name Name for given tab
+ @property {ReactComponent} Component React component for given tab.
+ @property {object} initialState Initial State for given tab component
+ @property {object} props Props State for given tab component
+ @property {boolean} [hidden] To hidden tab or not
+ */
+
+/**
+ * Create tabs obj.
+ * Each tab obj must have 'name', 'Component',
+ * @param {object} windowLevelData
+ * @param {object} hotkeyDefinitions
+ *
+ * @returns {TabObject[]} Array of TabObjs.
+ */
+const createTabs = (windowLevelData, hotkeyDefinitions, generalPreferences) => {
+  return [
+    {
+      name: 'HotKey',
+      Component: HotKeysPreferences,
+      initialState: { hotkeyDefinitions },
+      props: {},
+    },
+    {
+      name: 'General',
+      Component: GeneralPreferences,
+      initialState: { generalPreferences },
+      props: {},
+    },
+    {
+      name: 'Window Level',
+      Component: WindowLevelPreferences,
+      initialState: { windowLevelData },
+      props: {},
+      hidden: true,
+    },
+  ];
+};
+
+/**
+ * Main form component to render preferences tabs and buttons
+ * @param {object} props component props
+ * @param {string} props.name Tab`s name
+ * @param {object} props.hotkeyDefinitions Hotkeys Data
+ * @param {object} props.windowLevelData Window level data
+ * @param {function} props.onSave Callback function when saving
+ * @param {function} props.onClose Callback function when closing
+ * @param {function} props.onResetToDefaults Callback function when resetting
+ */
+function UserPreferencesForm({
+  onClose,
+  onSave,
+  onResetToDefaults,
+  windowLevelData,
+  hotkeyDefinitions,
+  generalPreferences,
+}) {
+  const tabs = createTabs(
+    windowLevelData,
+    hotkeyDefinitions,
+    generalPreferences
+  );
+  const [tabsState, setTabsState] = useState(
+    tabs.reduce((acc, tab) => {
+      acc[tab.name] = tab.initialState;
+      return acc;
+    }, {})
+  );
+
+  const [tabsError, setTabsError] = useState(
+    tabs.reduce((acc, tab) => {
+      acc[tab.name] = false;
+      return acc;
+    }, {})
+  );
+
+  const { t, ready: translationsAreReady } = useTranslation(
+    'UserPreferencesForm'
+  );
+
+  const onTabStateChanged = (tabName, newState) => {
+    setTabsState({ ...tabsState, [tabName]: newState });
   };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      windowLevelData: cloneDeep(props.windowLevelData),
-      hotkeyDefinitions: cloneDeep(props.hotkeyDefinitions),
-      generalPreferences: cloneDeep(props.generalPreferences),
-    };
-  }
-
-  save = () => {
-    const {
-      windowLevelData,
-      hotkeyDefinitions,
-      generalPreferences,
-    } = this.state;
-
-    this.props.onSave({
-      windowLevelData,
-      hotkeyDefinitions,
-      generalPreferences,
-    });
+  const onTabErrorChanged = (tabName, hasError) => {
+    setTabsError({ ...tabsError, [tabName]: hasError });
   };
 
-  updatePropValue = (value, prop, key) => {
-    this.setState({
-      [prop]: {
-        ...this.state[prop],
-        [key]: value,
-      },
-    });
+  const hasAnyError = () => {
+    return Object.values(tabsError).reduce((acc, value) => acc || value);
   };
 
-  componentDidUpdate(prev, next) {
-    const newStateData = {};
-
-    if (!isEqual(prev.windowLevelData, next.windowLevelData)) {
-      newStateData.windowLevelData = prev.windowLevelData;
-    }
-
-    if (!isEqual(prev.hotkeyDefinitions, next.hotkeyDefinitions)) {
-      newStateData.hotkeyDefinitions = prev.hotkeyDefinitions;
-    }
-
-    if (!isEqual(prev.generalPreferences, next.generalPreferences)) {
-      newStateData.generalPreferences = prev.generalPreferences;
-    }
-
-    const hasNewData = !(
-      Object.entries(newStateData).length === 0 &&
-      newStateData.constructor === Object
-    );
-
-    if (hasNewData) {
-      this.setState(newStateData);
-    }
-  }
-
-  render() {
-    const {
-      windowLevelData,
-      hotkeyDefinitions,
-      generalPreferences,
-    } = this.state;
-    const { t, onResetToDefaults, onClose } = this.props;
-
-    return (
-      <div className="UserPreferencesForm">
-        <UserPreferences
-          windowLevelData={windowLevelData}
-          hotkeyDefinitions={hotkeyDefinitions}
-          generalPreferences={generalPreferences}
-          updatePropValue={this.updatePropValue}
-        />
-        <div className="footer">
-          <button
-            className="btn btn-danger pull-left"
-            onClick={onResetToDefaults}
-          >
-            {t('Reset to Defaults')}
-          </button>
-          <div>
-            <div onClick={onClose} className="btn btn-default">
-              {t('Cancel')}
-            </div>
-            <button className="btn btn-primary" onClick={this.save}>
-              {t('Save')}
-            </button>
+  return translationsAreReady ? (
+    <div className="UserPreferencesForm">
+      <UserPreferencesTabs
+        tabs={tabs}
+        onTabStateChanged={onTabStateChanged}
+        onTabErrorChanged={onTabErrorChanged}
+      />
+      <div className="footer">
+        <button
+          className="btn btn-danger pull-left"
+          onClick={onResetToDefaults}
+        >
+          {t('Reset to Defaults')}
+        </button>
+        <div>
+          <div onClick={onClose} className="btn btn-default">
+            {t('Cancel')}
           </div>
+          <button
+            className="btn btn-primary"
+            disabled={hasAnyError()}
+            onClick={event => {
+              // TODO to check this method for other tabs than Hotkeys
+              const toSave = Object.values(tabsState).reduce(
+                (acc, tabState) => {
+                  return { ...acc, ...tabState };
+                },
+                {}
+              );
+              onSave(toSave);
+            }}
+          >
+            {t('Save')}
+          </button>
         </div>
       </div>
-    );
-  }
+    </div>
+  ) : null;
 }
 
-const connectedComponent = withTranslation('UserPreferencesForm')(
-  UserPreferencesForm
-);
-export { connectedComponent as UserPreferencesForm };
-export default connectedComponent;
+UserPreferencesForm.propTypes = {
+  onClose: PropTypes.func,
+  onSave: PropTypes.func,
+  onResetToDefaults: PropTypes.func,
+  windowLevelData: PropTypes.object,
+  hotkeyDefinitions: PropTypes.object,
+  generalPreferences: PropTypes.object,
+};
+
+export { UserPreferencesForm };
