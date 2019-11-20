@@ -5,8 +5,8 @@ import i18n from '@ohif/i18n';
 import './LanguageSwitcher.styl';
 import { withTranslation } from '../../contextProviders';
 
-const LanguageSwitcher = props => {
-  const getCurrentLanguage = (lang = i18n.language) => lang.split('-')[0];
+const LanguageSwitcher = ({ language, onLanguageChange }) => {
+  const parseLanguage = (lang = i18n.language) => lang.split('-')[0];
 
   const languages = [
     // TODO: list of available languages should come from i18n.options.resources
@@ -20,10 +20,9 @@ const LanguageSwitcher = props => {
     },
   ];
 
-  const onChange = () => {
+  const onChange = event => {
     const { value } = event.target;
-    const language = getCurrentLanguage(value);
-    props.updatePropValue(language, 'generalPreferences', 'language');
+    onLanguageChange(parseLanguage(value));
   };
 
   return (
@@ -31,12 +30,12 @@ const LanguageSwitcher = props => {
       name="language-select"
       id="language-select"
       className="language-select"
-      value={props.language}
+      value={language}
       onChange={onChange}
     >
-      {languages.map(language => (
-        <option key={language.value} value={language.value}>
-          {language.label}
+      {languages.map(lng => (
+        <option key={lng.value} value={lng.value}>
+          {lng.label}
         </option>
       ))}
     </select>
@@ -45,7 +44,7 @@ const LanguageSwitcher = props => {
 
 LanguageSwitcher.propTypes = {
   language: PropTypes.string.isRequired,
-  updatePropValue: PropTypes.func.isRequired,
+  onLanguageChange: PropTypes.func.isRequired,
 };
 
 export default withTranslation('UserPreferencesModal')(LanguageSwitcher);

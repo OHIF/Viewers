@@ -1,11 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import LanguageSwitcher from '../languageSwitcher';
 
 /**
  * General Preferences tab
  */
-function GeneralPreferences(props) {
+
+/**
+ * General Preferences tab
+ * It renders the General Preferences content
+ *
+ * It stores current state and whenever it changes, component messages parent of new value (through function callback)
+ * @param {object} props component props
+ * @param {string} props.name Tab`s name
+ * @param {object} props.generalPreferences Data for initial state
+ * @param {function} props.onTabStateChanged Callback function to communicate parent in case its states changes
+ * @param {function} props.onTabErrorChanged Callback Function in case any error on tab
+ */
+function GeneralPreferences({
+  generalPreferences,
+  name,
+  onTabStateChanged,
+  onTabErrorChanged,
+}) {
+  const [tabState, setTabState] = useState(generalPreferences);
+
+  const onLanguageChange = language => {
+    setTabState(state => ({ ...state, language }));
+
+    onTabStateChanged(name, {
+      generalPreferences: { ...generalPreferences, language },
+    });
+  };
+
   return (
     <div className="general-preferences-wrapper">
       <div className="col-sm-3">
@@ -13,8 +40,8 @@ function GeneralPreferences(props) {
           Language
         </label>
         <LanguageSwitcher
-          language={props.generalPreferences.language}
-          updatePropValue={props.updatePropValue}
+          language={tabState.language}
+          onLanguageChange={onLanguageChange}
         />
       </div>
     </div>
@@ -22,10 +49,10 @@ function GeneralPreferences(props) {
 }
 
 GeneralPreferences.propTypes = {
-  generalPreferences: PropTypes.shape({
-    language: PropTypes.string,
-  }).isRequired,
-  updatePropValue: PropTypes.func.isRequired,
+  generalPreferences: PropTypes.any,
+  name: PropTypes.string,
+  onTabStateChanged: PropTypes.func,
+  onTabErrorChanged: PropTypes.func,
 };
 
 export { GeneralPreferences };
