@@ -44,9 +44,7 @@ export default async function loadSegmentation(
   const { setters } = cornerstoneTools.getModule('segmentation');
 
   // TODO: Could define a color LUT based on colors in the SEG.
-
   // TODO -> Check the index and allocate a different labelmap if one exists?
-
   const labelmapIndex = _getNextLabelmapIndex(imageIds[0]);
 
   setters.labelmap3DByFirstImageId(
