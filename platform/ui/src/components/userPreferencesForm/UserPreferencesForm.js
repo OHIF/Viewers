@@ -96,7 +96,7 @@ function UserPreferencesForm({
   const snackbar = useSnackbarContext();
 
   const { t, ready: translationsAreReady } = useTranslation(
-    'UserPreferencesForm'
+    'UserPreferencesModal'
   );
 
   const onTabStateChanged = (tabName, newState) => {
@@ -141,7 +141,10 @@ function UserPreferencesForm({
                 {}
               );
               onSave(toSave);
-              snackbar.show({ message: 'Preferences saved!', type: 'success' });
+              snackbar.show({
+                message: t('PreferencesSaved'),
+                type: 'success',
+              });
             }}
           >
             {t('Save')}
