@@ -26,6 +26,7 @@ import OHIFVTKExtension from '@ohif/extension-vtk';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
+import OHIFSegmentation from '@ohif/extension-segmentation';
 
 // Default Settings
 let config = {};
@@ -40,6 +41,7 @@ if (window) {
     OHIFDicomHtmlExtension,
     OHIFDicomMicroscopyExtension,
     OHIFDicomPDFExtension,
+    OHIFSegmentation,
   ];
 }
 
