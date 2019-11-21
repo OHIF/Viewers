@@ -29,7 +29,6 @@ export default function(referencedDisplaySet, studies) {
   // For each type, see if any are loaded, if not load the most recent.
   Object.keys(displaySetsPerPlugin).forEach(key => {
     const displaySets = displaySetsPerPlugin[key];
-
     const isLoaded = displaySets.some(displaySet => displaySet.isLoaded);
 
     if (isLoaded) {
@@ -37,7 +36,6 @@ export default function(referencedDisplaySet, studies) {
     }
 
     // find most recent and load it.
-
     let recentDateTime = 0;
     let recentDisplaySet;
 
