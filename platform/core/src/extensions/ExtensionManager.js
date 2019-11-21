@@ -68,7 +68,7 @@ export default class ExtensionManager {
     // preRegistrationHook
     if (extension.preRegistration) {
       extension.preRegistration({
-        serviceManager: this._servicesManager,
+        servicesManager: this._servicesManager,
         configuration,
       });
     }
@@ -110,7 +110,9 @@ export default class ExtensionManager {
     }
 
     try {
-      const extensionModule = getModuleFn();
+      const extensionModule = getModuleFn({
+        servicesManager: this._servicesManager,
+      });
 
       if (!extensionModule) {
         log.warn(

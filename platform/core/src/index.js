@@ -19,7 +19,11 @@ import ui from './ui';
 import user from './user.js';
 import utils from './utils/';
 
-import { createUiNotificationService } from './services';
+import {
+  createUINotificationService,
+  createUIModalService,
+  createUIDialogService,
+} from './services';
 
 const OHIF = {
   MODULE_TYPES,
@@ -46,7 +50,9 @@ const OHIF = {
   measurements,
   hangingProtocols,
   //
-  createUiNotificationService,
+  createUINotificationService,
+  createUIModalService,
+  createUIDialogService,
 };
 
 export {
@@ -73,7 +79,9 @@ export {
   measurements,
   hangingProtocols,
   //
-  createUiNotificationService,
+  createUINotificationService,
+  createUIModalService,
+  createUIDialogService,
 };
 
 export { OHIF };

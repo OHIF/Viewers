@@ -10,7 +10,7 @@
  * @property {boolean} [autoClose=true]
  */
 
-const uiNotificationServicePublicApi = {
+const uiNotificationServicePublicAPI = {
   name: 'UINotificationService',
   hide,
   show,
@@ -22,8 +22,8 @@ const uiNotificationServiceImplementation = {
   _show: () => console.warn('show() NOT IMPLEMENTED'),
 };
 
-function createUiNotificationService() {
-  return uiNotificationServicePublicApi;
+function createUINotificationService() {
+  return uiNotificationServicePublicAPI;
 }
 
 /**
@@ -81,4 +81,4 @@ function setServiceImplementation({
   }
 }
 
-export default createUiNotificationService;
+export default createUINotificationService;

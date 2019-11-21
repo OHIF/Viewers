@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.12.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.11.0...@ohif/core@1.12.0) (2019-11-19)
+
+
+### Features
+
+* New dialog service ([#1202](https://github.com/OHIF/Viewers/issues/1202)) ([f65639c](https://github.com/OHIF/Viewers/commit/f65639c2b0dab01decd20cab2cef4263cb4fab37))
+
+
+
+
+
+# [1.11.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.10.0...@ohif/core@1.11.0) (2019-11-19)
+
+
+### Features
+
+* Issue 879 viewer route query param not filtering but promoting ([#1141](https://github.com/OHIF/Viewers/issues/1141)) ([b17f753](https://github.com/OHIF/Viewers/commit/b17f753e6222045252ef885e40233681541a32e1)), closes [#1118](https://github.com/OHIF/Viewers/issues/1118)
+
+
+
+
+
+# [1.10.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.9.1...@ohif/core@1.10.0) (2019-11-15)
+
+
+### Features
+
+* Inject into Extension Modules / improve tests ([f63d8a7](https://github.com/OHIF/Viewers/commit/f63d8a73d867ad9dfd8ee0cad74edce180eb34f0))
+
+
+
+
+
+## [1.9.1](https://github.com/OHIF/Viewers/compare/@ohif/core@1.9.0...@ohif/core@1.9.1) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [1.9.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.8.0...@ohif/core@1.9.0) (2019-11-13)
 
 ### Features

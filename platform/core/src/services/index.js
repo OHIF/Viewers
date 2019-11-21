@@ -1,4 +1,11 @@
 import ServicesManager from './ServicesManager.js';
-import createUiNotificationService from './UINotificationService';
+import createUINotificationService from './UINotificationService';
+import createUIModalService from './UIModalService';
+import createUIDialogService from './UIDialogService';
 
-export { createUiNotificationService, ServicesManager };
+export {
+  createUINotificationService,
+  createUIModalService,
+  createUIDialogService,
+  ServicesManager,
+};

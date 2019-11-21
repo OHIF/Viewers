@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.5.1...@ohif/extension-cornerstone@1.6.0) (2019-11-19)
+
+
+### Features
+
+* New dialog service ([#1202](https://github.com/OHIF/Viewers/issues/1202)) ([f65639c](https://github.com/OHIF/Viewers/commit/f65639c2b0dab01decd20cab2cef4263cb4fab37))
+
+
+
+
+
+## [1.5.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.5.0...@ohif/extension-cornerstone@1.5.1) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 # [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.4.1...@ohif/extension-cornerstone@1.5.0) (2019-11-13)
 
 
