@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useSnackbarContext } from '@ohif/ui';
 
 import './UserPreferencesForm.styl';
 
@@ -92,6 +93,8 @@ function UserPreferencesForm({
     }, {})
   );
 
+  const snackbar = useSnackbarContext();
+
   const { t, ready: translationsAreReady } = useTranslation(
     'UserPreferencesForm'
   );
@@ -138,6 +141,7 @@ function UserPreferencesForm({
                 {}
               );
               onSave(toSave);
+              snackbar.show({ message: 'Preferences saved!', type: 'success' });
             }}
           >
             {t('Save')}

@@ -25,11 +25,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       // TODO improve this strategy on windowLevel implementation
       hotkeysManager.setHotkeys(hotkeyDefinitions);
 
+      const { language } = generalPreferences;
+
       // set new language
-      i18n.init({
-        fallbackLng: generalPreferences.language,
-        lng: generalPreferences.language,
-      });
+      i18n.changeLanguage(language);
 
       ownProps.hide();
       dispatch(
@@ -42,9 +41,18 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     onResetToDefaults: () => {
       hotkeysManager.restoreDefaultBindings();
-      ownProps.hide();
       const { hotkeyDefinitions } = hotkeysManager;
-      dispatch(setUserPreferences({ hotkeyDefinitions }));
+
+      // restore default language
+      const { defaultLanguage } = i18n;
+      i18n.changeLanguage(defaultLanguage);
+
+      dispatch(
+        setUserPreferences({
+          hotkeyDefinitions,
+          generalPreferences: { language: defaultLanguage },
+        })
+      );
     },
   };
 };

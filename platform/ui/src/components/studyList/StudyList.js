@@ -81,7 +81,7 @@ function StudyList(props) {
 
   const mediumTableMeta = [
     {
-      displayText: `${t('Patient')} / ${t('MRN')}`,
+      displayText: `${t('PatientName')} / ${t('MRN')}`,
       fieldName: 'patientNameOrId',
       inputType: 'text',
       size: 250,

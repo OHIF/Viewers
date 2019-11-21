@@ -30,7 +30,7 @@ const LanguageSwitcher = ({ language, onLanguageChange }) => {
       name="language-select"
       id="language-select"
       className="language-select"
-      value={language}
+      value={parseLanguage(language)}
       onChange={onChange}
     >
       {languages.map(lng => (
