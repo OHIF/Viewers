@@ -81,7 +81,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
      */
     onElementEnabled: event => {
       const enabledElement = event.detail.element;
-      setEnabledElement(enabledElement);
+      setEnabledElement(viewportIndex, enabledElement);
       dispatch(
         setViewportSpecificData(viewportIndex, {
           // TODO: Hack to make sure our plugin info is available from the outset

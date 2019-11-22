@@ -5,8 +5,8 @@ import { getEnabledElement } from './state';
 const scroll = cornerstoneTools.import('util/scroll');
 
 const actions = {
-  rotateViewport: ({ rotation }) => {
-    const enabledElement = getEnabledElement();
+  rotateViewport: ({ viewports, rotation }) => {
+    const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
     if (enabledElement) {
       let viewport = cornerstone.getViewport(enabledElement);
@@ -14,8 +14,8 @@ const actions = {
       cornerstone.setViewport(enabledElement, viewport);
     }
   },
-  flipViewportHorizontal: () => {
-    const enabledElement = getEnabledElement();
+  flipViewportHorizontal: ({ viewports }) => {
+    const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
     if (enabledElement) {
       let viewport = cornerstone.getViewport(enabledElement);
@@ -23,8 +23,8 @@ const actions = {
       cornerstone.setViewport(enabledElement, viewport);
     }
   },
-  flipViewportVertical: () => {
-    const enabledElement = getEnabledElement();
+  flipViewportVertical: ({ viewports }) => {
+    const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
     if (enabledElement) {
       let viewport = cornerstone.getViewport(enabledElement);
@@ -32,8 +32,8 @@ const actions = {
       cornerstone.setViewport(enabledElement, viewport);
     }
   },
-  scaleViewport: ({ direction }) => {
-    const enabledElement = getEnabledElement();
+  scaleViewport: ({ direction, viewports }) => {
+    const enabledElement = getEnabledElement(viewports.activeViewportIndex);
     const step = direction * 0.15;
 
     if (enabledElement) {
@@ -46,15 +46,15 @@ const actions = {
       }
     }
   },
-  resetViewport: () => {
-    const enabledElement = getEnabledElement();
+  resetViewport: ({ viewports }) => {
+    const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
     if (enabledElement) {
       cornerstone.reset(enabledElement);
     }
   },
-  invertViewport: () => {
-    const enabledElement = getEnabledElement();
+  invertViewport: ({ viewports }) => {
+    const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
     if (enabledElement) {
       let viewport = cornerstone.getViewport(enabledElement);
@@ -74,8 +74,8 @@ const actions = {
     // TODO
     console.warn('updateDisplaySet: ', direction);
   },
-  clearAnnotations: () => {
-    const element = getEnabledElement();
+  clearAnnotations: ({ viewports }) => {
+    const element = getEnabledElement(viewports.activeViewportIndex);
     if (!element) {
       return;
     }
@@ -126,16 +126,16 @@ const actions = {
       });
     });
   },
-  nextImage: () => {
-    const enabledElement = getEnabledElement();
+  nextImage: ({ viewports }) => {
+    const enabledElement = getEnabledElement(viewports.activeViewportIndex);
     scroll(enabledElement, 1);
   },
-  previousImage: () => {
-    const enabledElement = getEnabledElement();
+  previousImage: ({ viewports }) => {
+    const enabledElement = getEnabledElement(viewports.activeViewportIndex);
     scroll(enabledElement, -1);
   },
-  getActiveViewportEnabledElement: () => {
-    const enabledElement = getEnabledElement();
+  getActiveViewportEnabledElement: ({ viewports }) => {
+    const enabledElement = getEnabledElement(viewports.activeViewportIndex);
     return enabledElement;
   },
 };
