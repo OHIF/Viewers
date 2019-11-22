@@ -2,11 +2,20 @@ import React, { Component } from 'react';
 import { utils } from '@ohif/core';
 import PropTypes from 'prop-types';
 //
+import id from './id.js';
 import cornerstoneTools from 'cornerstone-tools';
+
+const segmentationModule = cornerstoneTools.getModule('segmentation');
 
 const { studyMetadataManager } = utils;
 
 class ExampleSidePanel extends Component {
+  constructor(props) {
+    super(props);
+
+    this.switchSegmentation = this.switchSegmentation.bind(this);
+  }
+
   static propTypes = {
     // An object, with int index keys?
     // Maps to: state.viewports.viewportSpecificData, in `viewer`
@@ -31,6 +40,28 @@ class ExampleSidePanel extends Component {
     studies: PropTypes.array.isRequired,
   };
   static defaultProps = {};
+
+  switchSegmentation(segmentation) {
+    console.log(`todo: switch the seg.`);
+
+    // TODO -> Check if the segmentation has a defined labelmapIndex:
+    // -> if not, call `load` first.
+    // -> If so, proceed:
+
+    //Set the active labelmap like this:
+
+    // Get imageIds for stack -> get first imageId. (see loadSegmentation.js)
+    // Get the brushStackState by:
+    //    const { state } = cornerstoneTools.getModule('segmentation');
+    //    const brushStackState = state[firstImageId];
+    // Set the labelmapIndex to active:
+    //    brushStackState.activeLabelmapIndex = segmentation.labelmapIndex.
+
+    // If the port is cornerstone just need to call a re-render.
+    // If the port is vtkjs its a bit more tricky as we now need to create a new
+    // volume -> Not sure how we pass that information down there to parse the different volume.
+    // Might need to be an event.
+  }
 
   render() {
     const viewport = this.props.viewports[0];
@@ -103,6 +134,33 @@ class ExampleSidePanel extends Component {
         ))}
       </div>
     );
+
+    // JAMES
+    // const segmentations = groupedAndSortedDatasets[id];
+    // let segmentationListRows = [];
+
+    // if (segmentations && segmentations.length) {
+    //   segmentationListRows = segmentations.map(segmentation => (
+    //     <tr key={segmentation.seriesInstanceUid}>
+    //       <td
+    //         onClick={() => {
+    //           debugger;
+    //           this.switchSegmentation(segmentation);
+    //         }}
+    //       >
+    //         <button>{segmentation.seriesDescription}</button>
+    //       </td>
+    //     </tr>
+    //   ));
+    // }
+
+    // return (
+    //   <div style={{ color: 'white' }}>
+    //     <table>
+    //       <tbody>{segmentationListRows}</tbody>
+    //     </table>
+    //   </div>
+    // );
   }
 }
 
@@ -114,12 +172,15 @@ class ExampleSidePanel extends Component {
 function _getReferencedSegDisplaysets(studyInstanceUid, seriesInstanceUid) {
   // Referenced DisplaySets
   const studyMetadata = studyMetadataManager.get(studyInstanceUid);
-  console.log(studyMetadata);
-  const referencedDisplaysets =
-    studyMetadata.getDerivedDatasets({
-      referencedSeriesInstanceUID: seriesInstanceUid,
-    }) || [];
 
+  // return studyMetadata.getDerivedDatasets({
+  //   referencedSeriesInstanceUID: seriesInstanceUid,
+  //   modality: 'SEG',
+  // });
+}
+
+// @dannyrb Is the idea here that this will become generic and we'll have some kind of menu for selecting all derivedDisplaySets?
+function _groupAndSortDisplaysetsByPlugin(displaysets) {
   const displaySetsPerPlugin = {};
 
   // Group

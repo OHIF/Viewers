@@ -5,6 +5,10 @@ export default function(referencedDisplaySet, studies) {
 
   const studyMetadata = studyMetadataManager.get(studyInstanceUid);
 
+  if (!studyMetadata) {
+    return;
+  }
+
   const derivedDisplaySets = studyMetadata.getDerivedDatasets({
     referencedSeriesInstanceUID: seriesInstanceUid,
   });

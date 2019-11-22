@@ -6555,6 +6555,16 @@ dcmjs@^0.6.1:
     loglevelnext "^3.0.0"
     ndarray "^1.0.18"
 
+dcmjs@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.7.0.tgz#a8c469b666a136d81e73cbe7118bab3f846e3ce2"
+  integrity sha512-2XVnyfQ3Kp0rtomNoDiAJ78SWZazhmEEvbhYL8nMib/2Qf7VVfB/hLxoYi4XfDuNYW/3Wh8fRm+0j7/OLMAzmg==
+  dependencies:
+    "@babel/polyfill" "^7.2.5"
+    "@babel/runtime" "^7.3.1"
+    loglevelnext "^3.0.0"
+    ndarray "^1.0.18"
+
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.1, debug@^2.6.3, debug@^2.6.6, debug@^2.6.8, debug@^2.6.9:
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
@@ -9175,6 +9185,11 @@ github-slugger@^1.0.0, github-slugger@^1.1.1:
   integrity sha512-SsZUjg/P03KPzQBt7OxJPasGw6NRO5uOgiZ5RGXVud5iSIZ0eNZeNp5rTwCxtavrRUa/A77j8mePVc5lEvk0KQ==
   dependencies:
     emoji-regex ">=6.0.0 <=6.1.1"
+
+gl-matrix@2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/gl-matrix/-/gl-matrix-2.3.2.tgz#aac808c74af7d5db05fe04cb60ca1a0fcb174d74"
+  integrity sha1-qsgIx0r31dsF/gTLYMoaD8sXTXQ=
 
 gl-matrix@3.0.0:
   version "3.0.0"
@@ -13750,6 +13765,14 @@ octokit-pagination-methods@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/octokit-pagination-methods/-/octokit-pagination-methods-1.1.0.tgz#cf472edc9d551055f9ef73f6e42b4dbb4c80bea4"
   integrity sha512-fZ4qZdQ2nxJvtcasX7Ghl+WlWS/d9IgnBIwFZXVNNZUmzpno91SX5bc5vuxiuKoCtK78XxGGNuSCrDC7xYB3OQ==
+
+ohif-step@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/ohif-step/-/ohif-step-0.0.1.tgz#7e42c23f98f58378ead0add60e7a2389790e10b3"
+  integrity sha512-1gh3V15D2kUzYjZV6zD89+lIy34CdeOI5kN1IlD5YPIG7c9mSHuMbYufKjfvPW6wtwZ94tHGa7QtdykIawLShg==
+  dependencies:
+    dcmjs "^0.7.0"
+    gl-matrix "2.3.2"
 
 oidc-client@1.7.x:
   version "1.7.1"
