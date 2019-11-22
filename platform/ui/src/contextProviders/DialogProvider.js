@@ -114,68 +114,68 @@ const DialogProvider = ({ children, service }) => {
     });
   };
 
-  // Does not allow sidepanel clicks
-  return null;
-  // <DialogContext.Provider value={{ create, dismiss, dismissAll, dialogs }}>
-  //   <div className="DraggableArea">
-  //     {dialogs.map(dialog => {
-  //       const {
-  //         id,
-  //         content: Dialog,
-  //         position /* Position of the dialog. {{x: 0, y: 0}} */,
-  //         defaultPosition,
-  //         isDraggable = true,
-  //         onStart = () => {},
-  //         onStop = () => {},
-  //         onDrag = () => {},
-  //       } = dialog;
+  return (
+    <DialogContext.Provider value={{ create, dismiss, dismissAll, dialogs }}>
+      <div className="DraggableArea">
+        {dialogs.map(dialog => {
+          const {
+            id,
+            content: Dialog,
+            position /* Position of the dialog. {{x: 0, y: 0}} */,
+            defaultPosition,
+            isDraggable = true,
+            onStart = () => {},
+            onStop = () => {},
+            onDrag = () => {},
+          } = dialog;
 
-  //       return (
-  //         <Draggable
-  //           key={id}
-  //           disabled={!isDraggable}
-  //           position={position}
-  //           defaultPosition={lastDialogPosition || defaultPosition}
-  //           bounds="parent"
-  //           onStart={event => {
-  //             const e = event || window.event;
-  //             const target = e.target || e.srcElement;
-  //             const BLACKLIST = ['SVG', 'BUTTON', 'PATH', 'INPUT'];
-  //             if (BLACKLIST.includes(target.tagName.toUpperCase())) {
-  //               return false;
-  //             }
+          return (
+            <Draggable
+              key={id}
+              disabled={!isDraggable}
+              position={position}
+              defaultPosition={lastDialogPosition || defaultPosition}
+              bounds="parent"
+              onStart={event => {
+                const e = event || window.event;
+                const target = e.target || e.srcElement;
+                const BLACKLIST = ['SVG', 'BUTTON', 'PATH', 'INPUT'];
+                if (BLACKLIST.includes(target.tagName.toUpperCase())) {
+                  return false;
+                }
 
-  //             onStart(event);
-  //           }}
-  //           onStop={event => {
-  //             onStop(event);
-  //             setIsDragging(false);
-  //             return;
-  //           }}
-  //           onDrag={event => {
-  //             setIsDragging(true);
-  //             _reorder(id);
-  //             _updateLastDialogPosition(id);
-  //             onDrag(event);
-  //           }}
-  //         >
-  //           <div
-  //             id={`draggableItem-${id}`}
-  //             className={classNames(
-  //               'DraggableItem',
-  //               isDragging && 'dragging'
-  //             )}
-  //             style={{ zIndex: '999', position: 'absolute' }}
-  //             onClick={() => _reorder(id)}
-  //           >
-  //             <Dialog {...dialog} />
-  //           </div>
-  //         </Draggable>
-  //       );
-  //     })}
-  //   </div>
-  //   {children}
-  // </DialogContext.Provider>
+                onStart(event);
+              }}
+              onStop={event => {
+                onStop(event);
+                setIsDragging(false);
+                return;
+              }}
+              onDrag={event => {
+                setIsDragging(true);
+                _reorder(id);
+                _updateLastDialogPosition(id);
+                onDrag(event);
+              }}
+            >
+              <div
+                id={`draggableItem-${id}`}
+                className={classNames(
+                  'DraggableItem',
+                  isDragging && 'dragging'
+                )}
+                style={{ zIndex: '999', position: 'absolute' }}
+                onClick={() => _reorder(id)}
+              >
+                <Dialog {...dialog} />
+              </div>
+            </Draggable>
+          );
+        })}
+      </div>
+      {children}
+    </DialogContext.Provider>
+  );
 };
 
 DialogProvider.defaultProps = {
