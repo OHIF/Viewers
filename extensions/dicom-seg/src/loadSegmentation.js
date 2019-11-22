@@ -61,7 +61,7 @@ export default async function loadSegmentation(
 
 function _getNextLabelmapIndex(firstImageId) {
   const { state } = cornerstoneTools.getModule('segmentation');
-  const brushStackState = state[firstImageId];
+  const brushStackState = state.series[firstImageId];
 
   let labelmapIndex;
 
