@@ -46,6 +46,8 @@ const viewports = (state = DEFAULT_STATE, action) => {
   switch (action.type) {
     /**
      * Sets the active viewport index.
+     *
+     * @return {Object} New state.
      */
     case SET_VIEWPORT_ACTIVE: {
       return { ...state, activeViewportIndex: action.viewportIndex };
@@ -53,6 +55,8 @@ const viewports = (state = DEFAULT_STATE, action) => {
 
     /**
      * Sets viewport layout.
+     *
+     * @return {Object} New state.
      */
     case SET_VIEWPORT_LAYOUT: {
       return {
@@ -65,6 +69,8 @@ const viewports = (state = DEFAULT_STATE, action) => {
 
     /**
      * Sets viewport layout and data.
+     *
+     * @return {Object} New state.
      */
     case SET_VIEWPORT_LAYOUT_AND_DATA: {
       return {
@@ -78,6 +84,8 @@ const viewports = (state = DEFAULT_STATE, action) => {
 
     /**
      * Sets viewport specific data of active viewport.
+     *
+     * @return {Object} New state.
      */
     case SET_VIEWPORT: {
       const layout = cloneDeep(state.layout);
@@ -99,6 +107,8 @@ const viewports = (state = DEFAULT_STATE, action) => {
 
     /**
      * Sets viewport specific data of active/any viewport.
+     *
+     * @return {Object} New state.
      */
     case SET_ACTIVE_SPECIFIC_DATA:
       useActiveViewport = true;
@@ -125,6 +135,8 @@ const viewports = (state = DEFAULT_STATE, action) => {
 
     /**
      * Clears viewport specific data of any viewport.
+     *
+     * @return {Object} New state.
      */
     case CLEAR_VIEWPORT: {
       let viewportSpecificData = cloneDeep(state.viewportSpecificData);
@@ -139,6 +151,8 @@ const viewports = (state = DEFAULT_STATE, action) => {
 
     /**
      * Returns the current application state.
+     *
+     * @return {Object} The current state.
      */
     default: {
       return state;

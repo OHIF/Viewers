@@ -323,7 +323,8 @@ export default {
 };
 
 function getVOIFromCornerstoneViewport(displaySet) {
-  const cornerstoneElement = cornerstone.getEnabledElement(displaySet.dom);
+  return undefined;
+  /* const cornerstoneElement = cornerstone.getEnabledElement(displaySet.dom);
 
   if (cornerstoneElement) {
     const imageId = cornerstoneElement.image.imageId;
@@ -341,7 +342,7 @@ function getVOIFromCornerstoneViewport(displaySet) {
         windowCenter,
       };
     }
-  }
+  } */
 }
 
 function setVOI(voi) {
