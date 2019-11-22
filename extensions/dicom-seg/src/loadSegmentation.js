@@ -63,10 +63,11 @@ function _getNextLabelmapIndex(firstImageId) {
   const { state } = cornerstoneTools.getModule('segmentation');
   const brushStackState = state.series[firstImageId];
 
-  let labelmapIndex;
+  let labelmapIndex = 0;
 
   if (brushStackState) {
     const { labelmaps3D } = brushStackState;
+    labelmapIndex = labelmaps3D.length;
 
     for (let i = 0; i < labelmaps3D.length; i++) {
       if (!labelmaps3D[i]) {
@@ -74,11 +75,6 @@ function _getNextLabelmapIndex(firstImageId) {
         break;
       }
     }
-    if (labelmapIndex === undefined) {
-      labelmapIndex = 0;
-    }
-  } else {
-    labelmapIndex = 0;
   }
 
   return labelmapIndex;
