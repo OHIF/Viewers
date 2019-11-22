@@ -465,3 +465,15 @@ Cypress.Commands.add(
     });
   }
 );
+
+Cypress.Commands.add('openDownloadImageModal', () => {
+  // Click on More button
+  cy.get('.expandableToolMenu')
+    .as('moreBtn')
+    .click();
+
+  // Click on Download button
+  cy.get('.tooltip-inner > :nth-child(13)')
+    .as('downloadBtn')
+    .click();
+});

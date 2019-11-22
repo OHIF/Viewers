@@ -11,6 +11,7 @@ export function initCornerstoneToolsAliases() {
   cy.get('.ToolbarRow > :nth-child(10)').as('cineBtn');
   cy.get('.expandableToolMenu').as('moreBtn');
   cy.get('.btn-group > .toolbar-button').as('layoutBtn');
+  cy.get('.viewport-element').as('viewport');
 }
 
 //Creating aliases for Common page elements

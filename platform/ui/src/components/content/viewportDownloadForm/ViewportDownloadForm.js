@@ -284,17 +284,27 @@ const ViewportDownloadForm = ({
           className="viewport-preview"
           src={viewportPreview.src}
           alt="Viewport Preview"
+          data-cy="viewport-preview-img"
         />
       </div>
 
       <div className="actions">
         <div className="action-cancel">
-          <button type="button" className="btn btn-danger" onClick={onClose}>
+          <button
+            type="button"
+            data-cy="cancel-btn"
+            className="btn btn-danger"
+            onClick={onClose}
+          >
             {t('Cancel')}
           </button>
         </div>
         <div className="action-save">
-          <button onClick={downloadImage} className="btn btn-primary">
+          <button
+            onClick={downloadImage}
+            className="btn btn-primary"
+            data-cy="download-btn"
+          >
             {t('Download')}
           </button>
         </div>
