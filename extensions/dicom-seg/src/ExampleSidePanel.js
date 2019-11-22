@@ -2,10 +2,7 @@ import React, { Component } from 'react';
 import { utils } from '@ohif/core';
 import PropTypes from 'prop-types';
 //
-import id from './id.js';
 import cornerstoneTools from 'cornerstone-tools';
-
-const segmentationModule = cornerstoneTools.getModule('segmentation');
 
 const { studyMetadataManager } = utils;
 
@@ -173,14 +170,11 @@ function _getReferencedSegDisplaysets(studyInstanceUid, seriesInstanceUid) {
   // Referenced DisplaySets
   const studyMetadata = studyMetadataManager.get(studyInstanceUid);
 
-  // return studyMetadata.getDerivedDatasets({
-  //   referencedSeriesInstanceUID: seriesInstanceUid,
-  //   modality: 'SEG',
-  // });
-}
+  const referencedDisplaysets = studyMetadata.getDerivedDatasets({
+    referencedSeriesInstanceUID: seriesInstanceUid,
+    // modality: 'SEG',
+  });
 
-// @dannyrb Is the idea here that this will become generic and we'll have some kind of menu for selecting all derivedDisplaySets?
-function _groupAndSortDisplaysetsByPlugin(displaysets) {
   const displaySetsPerPlugin = {};
 
   // Group
