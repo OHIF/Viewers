@@ -292,6 +292,7 @@ class Viewer extends Component {
             {VisiblePanelLeft ? (
               <VisiblePanelLeft
                 viewports={this.props.viewports}
+                studies={this.props.studies}
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
@@ -312,6 +313,7 @@ class Viewer extends Component {
             {VisiblePanelRight && (
               <VisiblePanelRight
                 viewports={this.props.viewports}
+                studies={this.props.studies}
                 activeIndex={this.props.activeViewportIndex}
               />
             )}

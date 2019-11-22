@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { utils } from '@ohif/core';
 import PropTypes from 'prop-types';
+//
+import cornerstoneTools from 'cornerstone-tools';
 
 const { studyMetadataManager } = utils;
 
@@ -26,6 +28,7 @@ class ExampleSidePanel extends Component {
       studyInstanceUid: PropTypes.string,
       // dom:
     }),
+    studies: PropTypes.array.isRequired,
   };
   static defaultProps = {};
 
@@ -35,39 +38,92 @@ class ExampleSidePanel extends Component {
       return null;
     }
 
+    // May need to update in useEffect
     const { studyInstanceUid, seriesInstanceUid } = viewport;
-    const derivedReferencedDisplaysets = _getDerivedDisplaysetsThatReferenceSeries(
+    const referencedSegDisplaysets = _getReferencedSegDisplaysets(
       studyInstanceUid,
       seriesInstanceUid
     );
-    console.log(derivedReferencedDisplaysets);
-    const groupedAndSortedDatasets = _groupAnddSortDisplaysetsByPlugin(
-      derivedReferencedDisplaysets
-    );
-    console.log(groupedAndSortedDatasets);
+    const mappedSegDisplaysets = referencedSegDisplaysets.map(ds => {
+      return {
+        seriesDate: ds.seriesDate,
+        seriesTime: ds.seriesTime,
+        isLoaded: ds.isLoaded, // bool
+        load: ds.load, // fn
+        labelmapIndex: ds.labelmapIndex, // csTools
+      };
+    });
+    // displaySetInstanceUid? (string)
+    // seriesInstanceUid? (string)
+    // sopInstanceUid?
+    // sopClassModule? (bool)
+    // referencedSeriesSequence{
+    //   referencedInstanceSequence[] --> referencedSOPClassUID, referencedSOPInstanceUID
+    //   referencedSeriesInstanceUID: string
+    // }
+    console.log(referencedSegDisplaysets);
 
-    return <div style={{ color: 'white' }}>Hello :wave:</div>;
+    const segmentationModule = cornerstoneTools.getModule('segmentation');
+    const { getters, setters } = segmentationModule;
+    const {
+      activeLabelmapIndex,
+      activeSegmentIndex,
+      brushColor,
+      metadata,
+    } = getters;
+    // const { activeLabelmapIndex, decrementActiveSegmentIndex, incrementActiveSegmentIndex, undo, redo } = setters;
+
+    return (
+      <div style={{ color: 'white' }}>
+        <h3>Labelmaps</h3>
+        <div
+          onClick={() => {
+            console.log('hi');
+          }}
+        >
+          HELLO
+        </div>
+        {mappedSegDisplaysets.map(ds => (
+          <button
+            key={`${ds.seriesDate}${ds.seriesTime}`}
+            style={{
+              padding: '5px',
+              margin: '2.5px',
+              backgroundColor: 'dodgerblue',
+            }}
+            // CLICK BLOCKED BY DRAGGABLEAREA
+            onClick={() => {
+              console.log('CLICK');
+              console.log(ds);
+              _setActiveLabelmap(viewport, this.props.studies, ds);
+            }}
+          >
+            {ds.seriesDate}:{ds.seriesTime}
+          </button>
+        ))}
+      </div>
+    );
   }
 }
 
-function _getDerivedDisplaysetsThatReferenceSeries(
-  studyInstanceUid,
-  seriesInstanceUid
-) {
+/**
+ *
+ * @param {*} studyInstanceUid
+ * @param {*} seriesInstanceUid
+ */
+function _getReferencedSegDisplaysets(studyInstanceUid, seriesInstanceUid) {
+  // Referenced DisplaySets
   const studyMetadata = studyMetadataManager.get(studyInstanceUid);
-
-  return (
+  console.log(studyMetadata);
+  const referencedDisplaysets =
     studyMetadata.getDerivedDatasets({
       referencedSeriesInstanceUID: seriesInstanceUid,
-    }) || []
-  );
-}
+    }) || [];
 
-function _groupAnddSortDisplaysetsByPlugin(displaysets) {
   const displaySetsPerPlugin = {};
 
   // Group
-  displaysets.forEach(displaySet => {
+  referencedDisplaysets.forEach(displaySet => {
     const plugin = displaySet.plugin;
 
     if (displaySetsPerPlugin[plugin] === undefined) {
@@ -90,7 +146,56 @@ function _groupAnddSortDisplaysetsByPlugin(displaysets) {
     displaySets.sort(sortNumber);
   });
 
-  return displaySetsPerPlugin;
+  // Filter
+  const filteredDisplaysets = displaySetsPerPlugin['seg'] || [];
+
+  return filteredDisplaysets;
+}
+
+/**
+ *
+ * @param {*} ds
+ */
+function _setActiveLabelmap(viewportSpecificData, studies, displaySet) {
+  const { getters, setters } = cornerstoneTools.getModule('segmentation');
+  const { activeLabelmapIndex, metadata } = getters;
+
+  console.log('clicked', displaySet);
+  console.log(metadata);
+
+  if (displaySet.labelmapIndex == activeLabelmapIndex) {
+    return;
+  }
+
+  if (!displaySet.isLoaded) {
+    // Instance of `viewportSpecificData` (for activeViewport)
+    // All studies?
+    console.log(viewportSpecificData);
+    // const studyMetadata = studyMetadataManager.get(
+    //   viewportSpecificData.studyInstanceUid
+    // );
+    const doesThisGiveMeAnId = displaySet.load(viewportSpecificData, studies);
+    console.log('loading...', doesThisGiveMeAnId);
+
+    const { studyInstanceUid, seriesInstanceUid } = viewportSpecificData;
+    const referencedSegDisplaysets = _getReferencedSegDisplaysets(
+      studyInstanceUid,
+      seriesInstanceUid
+    );
+    const mappedSegDisplaysets = referencedSegDisplaysets.map(ds => {
+      return {
+        seriesDate: ds.seriesDate,
+        seriesTime: ds.seriesTime,
+        isLoaded: ds.isLoaded, // bool
+        load: ds.load, // fn
+        labelmapIndex: ds.labelmapIndex, // csTools
+      };
+    });
+
+    console.log(mappedSegDisplaysets);
+  }
+
+  // setters.activeLabelmapIndex(doesThisGiveMeAnId);
 }
 
 export default ExampleSidePanel;
