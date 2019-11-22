@@ -338,7 +338,10 @@ function HotKeysPreferences({
   const splittedHotKeys = getHotKeysArrayColumns(tabState, columnSize);
 
   const onHotKeyChanged = (commandName, hotkeyDefinition, keys) => {
-    setTabState({ ...tabState, [commandName]: { ...hotkeyDefinition, keys } });
+    const newState = { ...tabState, [commandName]: { ...hotkeyDefinition, keys } };
+    setTabState(newState);
+    onTabStateChanged(name, { hotkeyDefinitions: newState });
+
   };
 
   const onErrorChanged = (toInc = true) => {
@@ -360,10 +363,13 @@ function HotKeysPreferences({
     }
   }, [tabErrorCounter]);
 
-  // tell parent to update its state
+  // update local state if parent updates
   useEffect(() => {
-    onTabStateChanged(name, { hotkeyDefinitions: tabState });
-  }, [tabState]);
+    console.log('updating local state');
+    setTabState({...hotkeyDefinitions});
+  }, [hotkeyDefinitions]);
+
+  console.log('hotkey state', tabState);
 
   return (
     <div className="HotKeysPreferences">

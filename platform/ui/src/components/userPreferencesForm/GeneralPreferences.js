@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import LanguageSwitcher from '../languageSwitcher';
 
@@ -23,11 +23,9 @@ function GeneralPreferences({
   onTabStateChanged,
   onTabErrorChanged,
 }) {
-  const [tabState, setTabState] = useState(generalPreferences);
+  const { language } = generalPreferences;
 
   const onLanguageChange = language => {
-    setTabState(state => ({ ...state, language }));
-
     onTabStateChanged(name, {
       generalPreferences: { ...generalPreferences, language },
     });
@@ -39,10 +37,12 @@ function GeneralPreferences({
         <label htmlFor="language-select" className="p-r-1">
           Language
         </label>
-        <LanguageSwitcher
-          language={tabState.language}
-          onLanguageChange={onLanguageChange}
-        />
+        {language && (
+          <LanguageSwitcher
+            language={language}
+            onLanguageChange={onLanguageChange}
+          />
+        )}
       </div>
     </div>
   );

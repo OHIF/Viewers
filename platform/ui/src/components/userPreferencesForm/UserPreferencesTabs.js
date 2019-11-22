@@ -9,15 +9,21 @@ import './UserPreferencesTabs.styl';
  * @param {function} onTabStateChanged Callback Function in case tab changes its state
  * @param {function} onTabErrorChanged Callback Function in case any error on tab
  */
-const renderTab = (tab = {}, onTabStateChanged, onTabErrorChanged) => {
-  const { props, Component, name, hidden = false, initialState } = tab;
+const renderTab = (
+  tab = {},
+  tabsState,
+  onTabStateChanged,
+  onTabErrorChanged
+) => {
+  const { props, Component, name, hidden = false } = tab;
+  const tabState = tabsState[name];
 
   return !hidden ? (
     <form className="form-themed themed tabs">
       <div className="form-content">
         <Component
           key={name}
-          {...initialState}
+          {...tabState}
           {...props}
           name={name}
           onTabStateChanged={onTabStateChanged}
@@ -55,7 +61,12 @@ const renderTabsHeader = (tabs, activeTabIndex, onHeaderChanged) => {
  * In case any tab changes its state this current component tells parent through function callback
  * @param {object} props Component props
  */
-function UserPreferencesTabs({ tabs, onTabStateChanged, onTabErrorChanged }) {
+function UserPreferencesTabs({
+  tabs,
+  tabsState,
+  onTabStateChanged,
+  onTabErrorChanged,
+}) {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   return (
@@ -67,13 +78,19 @@ function UserPreferencesTabs({ tabs, onTabStateChanged, onTabErrorChanged }) {
           </ul>
         </div>
       </div>
-      {renderTab(tabs[activeTabIndex], onTabStateChanged, onTabErrorChanged)}
+      {renderTab(
+        tabs[activeTabIndex],
+        tabsState,
+        onTabStateChanged,
+        onTabErrorChanged
+      )}
     </div>
   );
 }
 
 UserPreferencesTabs.propTypes = {
   tabs: PropTypes.array.isRequired,
+  tabsState: PropTypes.object.isRequired,
   onTabStateChanged: PropTypes.func.isRequired,
   onTabErrorChanged: PropTypes.func.isRequired,
 };

@@ -8,14 +8,19 @@ import { hotkeysManager } from '../App.js';
 const { setUserPreferences } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
+  const { defaultLanguage } = i18n;
   const { hotkeyDefinitions, windowLevelData = {}, generalPreferences } =
     state.preferences || {};
+  const { hotkeyDefaults } = hotkeysManager;
 
   return {
     onClose: ownProps.hide,
     windowLevelData,
     hotkeyDefinitions,
     generalPreferences,
+    hotkeysManager,
+    hotkeyDefaults,
+    defaultLanguage,
   };
 };
 

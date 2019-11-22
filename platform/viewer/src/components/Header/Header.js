@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -11,38 +11,21 @@ import './Header.css';
 // Context
 import AppContext from './../../context/AppContext';
 
-class Header extends Component {
-  static contextType = AppContext;
-  static propTypes = {
-    home: PropTypes.bool.isRequired,
-    location: PropTypes.object.isRequired,
-    children: PropTypes.node,
-    t: PropTypes.func.isRequired,
-    userManager: PropTypes.object,
-    user: PropTypes.object,
-    modal: PropTypes.object,
-  };
+function Header(props) {
+  const {
+    t,
+    user,
+    userManager,
+    modal: { show },
+    home,
+    location,
+    children,
+  } = props;
 
-  static defaultProps = {
-    home: true,
-    children: OHIFLogo(),
-  };
+  const [options, setOptions] = useState([]);
 
-  constructor(props) {
-    super(props);
-    this.state = { isOpen: false };
-
-    this.loadOptions();
-  }
-
-  loadOptions() {
-    const {
-      t,
-      user,
-      userManager,
-      modal: { show },
-    } = this.props;
-    this.options = [
+  useEffect(() => {
+    const optionsValue = [
       {
         title: t('About'),
         icon: { name: 'info' },
@@ -64,60 +47,73 @@ class Header extends Component {
     ];
 
     if (user && userManager) {
-      this.options.push({
+      optionsValue.push({
         title: t('Logout'),
         icon: { name: 'power-off' },
         onClick: () => userManager.signoutRedirect(),
       });
     }
-  }
+
+    setOptions(optionsValue);
+  }, [setOptions, show, t, user, userManager]);
+
+  const { appConfig = {} } = AppContext;
+  const showStudyList =
+    appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
 
   // ANTD -- Hamburger, Drawer, Menu
-  render() {
-    const { t, home, location, children } = this.props;
-    const { appConfig = {} } = this.context;
-    const showStudyList =
-      appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
-    return (
-      <>
-        <div className="notification-bar">{t('INVESTIGATIONAL USE ONLY')}</div>
-        <div className={`entry-header ${home ? 'header-big' : ''}`}>
-          <div className="header-left-box">
-            {location && location.studyLink && (
-              <Link
-                to={location.studyLink}
-                className="header-btn header-viewerLink"
-              >
-                {t('Back to Viewer')}
-              </Link>
-            )}
+  return (
+    <>
+      <div className="notification-bar">{t('INVESTIGATIONAL USE ONLY')}</div>
+      <div className={`entry-header ${home ? 'header-big' : ''}`}>
+        <div className="header-left-box">
+          {location && location.studyLink && (
+            <Link
+              to={location.studyLink}
+              className="header-btn header-viewerLink"
+            >
+              {t('Back to Viewer')}
+            </Link>
+          )}
 
-            {children}
+          {children}
 
-            {showStudyList && !home && (
-              <Link
-                className="header-btn header-studyListLinkSection"
-                to={{
-                  pathname: '/',
-                  state: { studyLink: location.pathname },
-                }}
-              >
-                {t('Study list')}
-              </Link>
-            )}
-          </div>
-
-          <div className="header-menu">
-            <span className="research-use">
-              {t('INVESTIGATIONAL USE ONLY')}
-            </span>
-            <Dropdown title={t('Options')} list={this.options} align="right" />
-          </div>
+          {showStudyList && !home && (
+            <Link
+              className="header-btn header-studyListLinkSection"
+              to={{
+                pathname: '/',
+                state: { studyLink: location.pathname },
+              }}
+            >
+              {t('Study list')}
+            </Link>
+          )}
         </div>
-      </>
-    );
-  }
+
+        <div className="header-menu">
+          <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
+          <Dropdown title={t('Options')} list={options} align="right" />
+        </div>
+      </div>
+    </>
+  );
 }
+
+Header.propTypes = {
+  home: PropTypes.bool.isRequired,
+  location: PropTypes.object.isRequired,
+  children: PropTypes.node,
+  t: PropTypes.func.isRequired,
+  userManager: PropTypes.object,
+  user: PropTypes.object,
+  modal: PropTypes.object,
+};
+
+Header.defaultProps = {
+  home: true,
+  children: OHIFLogo(),
+};
 
 export default withTranslation(['Header', 'AboutModal'])(
   withRouter(withModal(Header))

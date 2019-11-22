@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSnackbarContext } from '@ohif/ui';
 
@@ -19,37 +19,29 @@ import { GeneralPreferences } from './GeneralPreferences';
  @type {Object}
  @property {string} name Name for given tab
  @property {ReactComponent} Component React component for given tab.
- @property {object} initialState Initial State for given tab component
  @property {object} props Props State for given tab component
  @property {boolean} [hidden] To hidden tab or not
  */
 
 /**
  * Create tabs obj.
- * Each tab obj must have 'name', 'Component',
- * @param {object} windowLevelData
- * @param {object} hotkeyDefinitions
- *
  * @returns {TabObject[]} Array of TabObjs.
  */
-const createTabs = (windowLevelData, hotkeyDefinitions, generalPreferences) => {
+const createTabs = () => {
   return [
     {
       name: 'HotKey',
       Component: HotKeysPreferences,
-      initialState: { hotkeyDefinitions },
       props: {},
     },
     {
       name: 'General',
       Component: GeneralPreferences,
-      initialState: { generalPreferences },
       props: {},
     },
     {
       name: 'Window Level',
       Component: WindowLevelPreferences,
-      initialState: { windowLevelData },
       props: {},
       hidden: true,
     },
@@ -73,17 +65,26 @@ function UserPreferencesForm({
   windowLevelData,
   hotkeyDefinitions,
   generalPreferences,
+  hotkeysManager,
+  defaultLanguage,
+  hotkeyDefaults,
 }) {
-  const tabs = createTabs(
+  const [tabs, setTabs] = useState(createTabs());
+
+  const createTabsState = (
     windowLevelData,
     hotkeyDefinitions,
     generalPreferences
-  );
+  ) => {
+    return {
+      HotKey: { hotkeyDefinitions },
+      'Window Level': { windowLevelData },
+      General: { generalPreferences },
+    };
+  };
+
   const [tabsState, setTabsState] = useState(
-    tabs.reduce((acc, tab) => {
-      acc[tab.name] = tab.initialState;
-      return acc;
-    }, {})
+    createTabsState(windowLevelData, hotkeyDefinitions, generalPreferences)
   );
 
   const [tabsError, setTabsError] = useState(
@@ -111,17 +112,56 @@ function UserPreferencesForm({
     return Object.values(tabsError).reduce((acc, value) => acc || value);
   };
 
+  const onResetPreferences = () => {
+    // update local state
+    setTabsState({
+      ...tabsState,
+      HotKey: { hotkeyDefinitions: hotkeyDefaults },
+      General: { generalPreferences: { language: defaultLanguage } },
+    });
+
+    // update tabs state
+    setTabs(createTabs(windowLevelData, hotkeyDefinitions, generalPreferences));
+
+    snackbar.show({
+      message: t('PreferencesReset'),
+      type: 'info',
+    });
+  };
+
+  const onSavePreferences = event => {
+    const toSave = Object.values(tabsState).reduce((acc, tabState) => {
+      return { ...acc, ...tabState };
+    }, {});
+
+    onSave(toSave);
+    snackbar.show({
+      message: t('PreferencesSaved'),
+      type: 'success',
+    });
+  };
+
+  // update local state if prop values changes
+  useEffect(() => {
+    setTabsState(
+      createTabsState(windowLevelData, hotkeyDefinitions, generalPreferences)
+    );
+  }, [windowLevelData, hotkeyDefinitions, generalPreferences]);
+
+  console.log('tabsState', tabsState);
+
   return translationsAreReady ? (
     <div className="UserPreferencesForm">
       <UserPreferencesTabs
         tabs={tabs}
+        tabsState={tabsState}
         onTabStateChanged={onTabStateChanged}
         onTabErrorChanged={onTabErrorChanged}
       />
       <div className="footer">
         <button
           className="btn btn-danger pull-left"
-          onClick={onResetToDefaults}
+          onClick={onResetPreferences}
         >
           {t('Reset to Defaults')}
         </button>
@@ -132,20 +172,7 @@ function UserPreferencesForm({
           <button
             className="btn btn-primary"
             disabled={hasAnyError()}
-            onClick={event => {
-              // TODO to check this method for other tabs than Hotkeys
-              const toSave = Object.values(tabsState).reduce(
-                (acc, tabState) => {
-                  return { ...acc, ...tabState };
-                },
-                {}
-              );
-              onSave(toSave);
-              snackbar.show({
-                message: t('PreferencesSaved'),
-                type: 'success',
-              });
-            }}
+            onClick={onSavePreferences}
           >
             {t('Save')}
           </button>
@@ -162,6 +189,9 @@ UserPreferencesForm.propTypes = {
   windowLevelData: PropTypes.object,
   hotkeyDefinitions: PropTypes.object,
   generalPreferences: PropTypes.object,
+  hotkeysManager: PropTypes.object,
+  defaultLanguage: PropTypes.string,
+  hotkeyDefaults: PropTypes.array,
 };
 
 export { UserPreferencesForm };

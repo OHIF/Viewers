@@ -187,7 +187,6 @@ function StudyList(props) {
               studyDate={study.studyDate}
               studyDescription={study.studyDescription || ''}
               studyInstanceUid={study.studyInstanceUid}
-              t={t}
               displaySize={displaySize}
             />
           ))}
@@ -223,7 +222,6 @@ StudyList.propTypes = {
   }).isRequired,
   onFilterChange: PropTypes.func.isRequired,
   studyListDateFilterNumDays: PropTypes.number,
-  t: PropTypes.func.isRequired,
   displaySize: PropTypes.string,
 };
 
@@ -240,9 +238,11 @@ function TableRow(props) {
     studyDescription,
     studyInstanceUid,
     onClick: handleClick,
-    t,
+
     displaySize,
   } = props;
+
+  const { t } = useTranslation('StudyList');
 
   const largeRowTemplate = (
     <tr
