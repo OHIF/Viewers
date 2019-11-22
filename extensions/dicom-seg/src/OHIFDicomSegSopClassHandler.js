@@ -1,6 +1,8 @@
 import { MODULE_TYPES, utils } from '@ohif/core';
 import loadSegmentation from './loadSegmentation';
 
+import id from './id';
+
 // TODO: Should probably use dcmjs for this
 const SOP_CLASS_UIDS = {
   DICOM_SEG: '1.2.840.10008.5.1.4.1.1.66.4',
@@ -25,11 +27,10 @@ const OHIFDicomSegSopClassHandler = {
       'ReferencedSeriesSequence'
     );
     const frameOfReferenceUID = instance.getTagValue('FrameOfReferenceUID');
-
-    const { seriesDate, seriesTime } = series.getData();
+    const { seriesDate, seriesTime, seriesDescription } = series.getData();
 
     const segDisplaySet = {
-      plugin: 'seg',
+      plugin: id,
       modality: 'SEG',
       displaySetInstanceUid: utils.guid(),
       wadoRoot: study.getData().wadoRoot,
@@ -46,6 +47,7 @@ const OHIFDicomSegSopClassHandler = {
       isLoaded: false,
       seriesDate,
       seriesTime,
+      seriesDescription,
     };
 
     segDisplaySet.load = function(referencedDisplaySet, studies) {
