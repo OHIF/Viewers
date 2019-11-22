@@ -30,7 +30,7 @@
   --snackbar-info: rgba(54, 156, 199, 0.9);
 
   /** z-Index **/
-  --snackbar-zIndex: 10;
+  --snackbar-zIndex: 1075;
 
   /** DatePicker Colors **/
   --datePicker-input-background: #2c363f;
