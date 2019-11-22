@@ -112,16 +112,22 @@ function UserPreferencesForm({
       />
       <div className="footer">
         <button
+          data-cy="reset-default-btn"
           className="btn btn-danger pull-left"
           onClick={onResetToDefaults}
         >
           {t('Reset to Defaults')}
         </button>
         <div>
-          <div onClick={onClose} className="btn btn-default">
+          <div
+            data-cy="cancel-btn"
+            onClick={onClose}
+            className="btn btn-default"
+          >
             {t('Cancel')}
           </div>
           <button
+            data-cy="save-btn"
             className="btn btn-primary"
             disabled={hasAnyError()}
             onClick={event => {
