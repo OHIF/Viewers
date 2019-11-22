@@ -25,6 +25,7 @@ import ReactDOM from 'react-dom';
 import OHIFVTKExtension from '@ohif/extension-vtk';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomSegExtension from '@ohif/extension-dicom-seg';
+import OHIFCornerstoneSphericalGrowcutExtention from '@ohif/extension-cornerstone-spherical-growcut';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 
@@ -42,6 +43,7 @@ if (window) {
     OHIFDicomMicroscopyExtension,
     OHIFDicomPDFExtension,
     OHIFDicomSegExtension,
+    OHIFCornerstoneSphericalGrowcutExtention,
   ];
 }
 
