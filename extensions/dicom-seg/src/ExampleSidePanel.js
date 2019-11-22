@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { utils } from '@ohif/core';
 import PropTypes from 'prop-types';
+import { Icon } from '@ohif/ui';
 //
 import cornerstoneTools from 'cornerstone-tools';
+import classnames from 'classnames';
 
 const { studyMetadataManager } = utils;
 
@@ -10,7 +12,7 @@ class ExampleSidePanel extends Component {
   constructor(props) {
     super(props);
 
-    this.switchSegmentation = this.switchSegmentation.bind(this);
+    // this.switchSegmentation = this.switchSegmentation.bind(this);
   }
 
   static propTypes = {
@@ -38,27 +40,23 @@ class ExampleSidePanel extends Component {
   };
   static defaultProps = {};
 
-  switchSegmentation(segmentation) {
-    console.log(`todo: switch the seg.`);
+  // TODO -> Check if the segmentation has a defined labelmapIndex:
+  // -> if not, call `load` first.
+  // -> If so, proceed:
 
-    // TODO -> Check if the segmentation has a defined labelmapIndex:
-    // -> if not, call `load` first.
-    // -> If so, proceed:
+  //Set the active labelmap like this:
 
-    //Set the active labelmap like this:
+  // Get imageIds for stack -> get first imageId. (see loadSegmentation.js)
+  // Get the brushStackState by:
+  //  const { state } = cornerstoneTools.getModule('segmentation');
+  //  const brushStackState = state[firstImageId];
+  // Set the labelmapIndex to active:
+  //    brushStackState.activeLabelmapIndex = segmentation.labelmapIndex.
 
-    // Get imageIds for stack -> get first imageId. (see loadSegmentation.js)
-    // Get the brushStackState by:
-    //    const { state } = cornerstoneTools.getModule('segmentation');
-    //    const brushStackState = state[firstImageId];
-    // Set the labelmapIndex to active:
-    //    brushStackState.activeLabelmapIndex = segmentation.labelmapIndex.
-
-    // If the port is cornerstone just need to call a re-render.
-    // If the port is vtkjs its a bit more tricky as we now need to create a new
-    // volume -> Not sure how we pass that information down there to parse the different volume.
-    // Might need to be an event.
-  }
+  // If the port is cornerstone, just need to call a re-render.
+  // If the port is vtkjs, its a bit more tricky as we now need to create a new
+  // volume -> Not sure how we pass that information down there to parse the different volume.
+  // Might need to be an event.
 
   render() {
     const viewport = this.props.viewports[0];
@@ -102,22 +100,28 @@ class ExampleSidePanel extends Component {
     // const { activeLabelmapIndex, decrementActiveSegmentIndex, incrementActiveSegmentIndex, undo, redo } = setters;
 
     return (
-      <div style={{ color: 'white' }}>
+      <div
+        style={{
+          color: 'white',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '200px',
+        }}
+      >
         <h3>Labelmaps</h3>
-        <div
-          onClick={() => {
-            console.log('hi');
-          }}
-        >
-          HELLO
-        </div>
         {mappedSegDisplaysets.map(ds => (
-          <button
+          <div
             key={`${ds.seriesDate}${ds.seriesTime}`}
+            className={classnames({
+              isActive: ds.labelmapIndex === activeLabelmapIndex,
+            })}
             style={{
-              padding: '5px',
-              margin: '2.5px',
-              backgroundColor: 'dodgerblue',
+              display: 'flex',
+              justifyContent: 'space-between',
+              cursor: 'pointer',
+              borderBottom: '1px solid var(--ui-gray-light)',
+              padding: '8px',
+              margin: '4px',
             }}
             // CLICK BLOCKED BY DRAGGABLEAREA
             onClick={() => {
@@ -126,38 +130,18 @@ class ExampleSidePanel extends Component {
               _setActiveLabelmap(viewport, this.props.studies, ds);
             }}
           >
-            {ds.seriesDate}:{ds.seriesTime}
-          </button>
+            <Icon name="exclamation-triangle" />
+            <div
+              style={{
+                backgroundColor: 'dodgerblue',
+              }}
+            >
+              {ds.seriesDate}:{ds.seriesTime}
+            </div>
+          </div>
         ))}
       </div>
     );
-
-    // JAMES
-    // const segmentations = groupedAndSortedDatasets[id];
-    // let segmentationListRows = [];
-
-    // if (segmentations && segmentations.length) {
-    //   segmentationListRows = segmentations.map(segmentation => (
-    //     <tr key={segmentation.seriesInstanceUid}>
-    //       <td
-    //         onClick={() => {
-    //           debugger;
-    //           this.switchSegmentation(segmentation);
-    //         }}
-    //       >
-    //         <button>{segmentation.seriesDescription}</button>
-    //       </td>
-    //     </tr>
-    //   ));
-    // }
-
-    // return (
-    //   <div style={{ color: 'white' }}>
-    //     <table>
-    //       <tbody>{segmentationListRows}</tbody>
-    //     </table>
-    //   </div>
-    // );
   }
 }
 
@@ -215,8 +199,19 @@ function _setActiveLabelmap(viewportSpecificData, studies, displaySet) {
   const { getters, setters } = cornerstoneTools.getModule('segmentation');
   const { activeLabelmapIndex, metadata } = getters;
 
+  console.log(
+    'viwportSpecificData: ',
+    viewportSpecificData,
+    studies,
+    displaySet
+  );
+  const { state } = cornerstoneTools.getModule('segmentation');
+  // const brushStackState = state[firstImageId];
+  // Set the labelmapIndex to active:
+  //    brushStackState.activeLabelmapIndex = segmentation.labelmapIndex.
+
   console.log('clicked', displaySet);
-  console.log(metadata);
+  console.log('meta', metadata());
 
   if (displaySet.labelmapIndex == activeLabelmapIndex) {
     return;
