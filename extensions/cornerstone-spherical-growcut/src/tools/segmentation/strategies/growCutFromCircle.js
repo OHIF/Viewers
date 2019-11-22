@@ -1,27 +1,27 @@
-import cornerstone from "cornerstone-core";
-import cornerstoneTools from "cornerstone-tools";
+import cornerstone from 'cornerstone-core';
+import cornerstoneTools from 'cornerstone-tools';
 import {
   performGrowCut,
   getCircumferencePoints,
   subVolume,
   updateSegmentsOnActiveLabelmap,
-  deleteLabelmap
-} from "../../../utils";
-import getDatasetPair from "../../../utils/getDatasetPair";
-import calculateIterationCountFromExtent from "../../../utils/calculateIterationCountFromExtent";
+  deleteLabelmap,
+} from '../../../utils';
+import getDatasetPair from '../../../utils/getDatasetPair';
+import calculateIterationCountFromExtent from '../../../utils/calculateIterationCountFromExtent';
 
 const {
   setPixelDataOfSubVolume,
   getPointsInSubVolume,
-  getExtentOfSphere
+  getExtentOfSphere,
 } = subVolume;
 const { getToolState } = cornerstoneTools;
-const { floodFill } = cornerstoneTools.importInternal("util/segmentationUtils");
-const segmentationModule = cornerstoneTools.getModule("segmentation");
-const getLogger = cornerstoneTools.importInternal("util/getLogger");
+const { floodFill } = cornerstoneTools.importInternal('util/segmentationUtils');
+const segmentationModule = cornerstoneTools.getModule('segmentation');
+const getLogger = cornerstoneTools.importInternal('util/getLogger');
 
 const logger = getLogger(
-  "GrowCutSegmentationTool:tools:segmentation:strategies:growCutFromCircle"
+  'GrowCutSegmentationTool:tools:segmentation:strategies:growCutFromCircle'
 );
 
 // We need "WIP" label values to work with within the Uint16 bounds of the labelmap.
@@ -36,9 +36,9 @@ export default function growCutFromCircle(evt, operationData) {
   const { segmentationMixinType } = operationData;
   const { shouldCleanSegment } = this.configuration;
 
-  if (segmentationMixinType !== "circleSegmentationMixin") {
+  if (segmentationMixinType !== 'circleSegmentationMixin') {
     logger.error(
-      "fillInsideCircle operation requires circleSegmentationMixin operationData, recieved ${segmentationMixinType}"
+      'fillInsideCircle operation requires circleSegmentationMixin operationData, recieved ${segmentationMixinType}'
     );
 
     return;
@@ -62,7 +62,7 @@ async function asyncGrowCutFromCircle(evt, points, shouldCleanSegment = false) {
   setters.activeLabelmapIndex(element, previewLabelmapIndex);
   setters.activeSegmentIndex(element, activeSegmentIndex);
 
-  const stack = getToolState(element, "stack");
+  const stack = getToolState(element, 'stack');
   const imageIds = stack.data[0].imageIds;
   const currentImageIdIndex = stack.data[0].currentImageIdIndex;
 
@@ -106,7 +106,7 @@ async function asyncGrowCutFromCircle(evt, points, shouldCleanSegment = false) {
         {
           width: extent.width,
           height: extent.height,
-          numFrames: extent.numFrames
+          numFrames: extent.numFrames,
         }
       )
     : _finalizeSegment(result, activeSegmentIndex);
@@ -186,15 +186,6 @@ function _initializeSeeds(labelmapData, extent, start, end) {
     width * height * currentSubVolumeIndex + start.y * width + start.x
   ] = seedValue;
 
-  // const seedPoints = [];
-
-  // // Cross pattern for seeds.
-  // seedPoints.push(start);
-  // seedPoints.push({ x: start.x - 1, y: start.y });
-  // seedPoints.push({ x: start.x + 1, y: start.y });
-  // seedPoints.push({ x: start.x, y: start.y + 1 });
-  // seedPoints.push({ x: start.x, y: start.y - 1 });
-
   for (let x = start.x - 1; x <= start.x + 1; x++) {
     for (let y = start.y - 1; y <= start.y + 1; y++) {
       labelmapData[
@@ -202,18 +193,6 @@ function _initializeSeeds(labelmapData, extent, start, end) {
       ] = seedValue;
     }
   }
-
-  // seedPoints.forEach(point => {
-  //   labelmapData[
-  //     width * height * currentSubVolumeIndex + point.y + width + point.x
-  //   ] = seedValue;
-  // });
-
-  console.log(
-    width * height * currentSubVolumeIndex + start.y + width + start.x
-  );
-
-  debugger;
 
   // Set the circumference points to the 'outside'
   const circumferencePoints = getCircumferencePoints(start, end, width, height);

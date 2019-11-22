@@ -1,1 +1,1 @@
-# @ohif/extension-dicom-html
+# @ohif/extension-spherical-growcut
