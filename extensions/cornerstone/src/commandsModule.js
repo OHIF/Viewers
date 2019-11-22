@@ -1,14 +1,12 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import OHIF from '@ohif/core';
+import { getEnabledElement } from './state';
 const scroll = cornerstoneTools.import('util/scroll');
 
 const actions = {
-  rotateViewport: ({ viewports, rotation }) => {
-    const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
-      viewports.activeViewportIndex
-    );
+  rotateViewport: ({ rotation }) => {
+    const enabledElement = getEnabledElement();
 
     if (enabledElement) {
       let viewport = cornerstone.getViewport(enabledElement);
@@ -16,11 +14,8 @@ const actions = {
       cornerstone.setViewport(enabledElement, viewport);
     }
   },
-  flipViewportHorizontal: ({ viewports }) => {
-    const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
-      viewports.activeViewportIndex
-    );
+  flipViewportHorizontal: () => {
+    const enabledElement = getEnabledElement();
 
     if (enabledElement) {
       let viewport = cornerstone.getViewport(enabledElement);
@@ -28,11 +23,8 @@ const actions = {
       cornerstone.setViewport(enabledElement, viewport);
     }
   },
-  flipViewportVertical: ({ viewports }) => {
-    const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
-      viewports.activeViewportIndex
-    );
+  flipViewportVertical: () => {
+    const enabledElement = getEnabledElement();
 
     if (enabledElement) {
       let viewport = cornerstone.getViewport(enabledElement);
@@ -40,11 +32,8 @@ const actions = {
       cornerstone.setViewport(enabledElement, viewport);
     }
   },
-  scaleViewport: ({ viewports, direction }) => {
-    const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
-      viewports.activeViewportIndex
-    );
+  scaleViewport: ({ direction }) => {
+    const enabledElement = getEnabledElement();
     const step = direction * 0.15;
 
     if (enabledElement) {
@@ -57,21 +46,15 @@ const actions = {
       }
     }
   },
-  resetViewport: ({ viewports }) => {
-    const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
-      viewports.activeViewportIndex
-    );
+  resetViewport: () => {
+    const enabledElement = getEnabledElement();
 
     if (enabledElement) {
       cornerstone.reset(enabledElement);
     }
   },
-  invertViewport: ({ viewports }) => {
-    const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
-      viewports.activeViewportIndex
-    );
+  invertViewport: () => {
+    const enabledElement = getEnabledElement();
 
     if (enabledElement) {
       let viewport = cornerstone.getViewport(enabledElement);
@@ -91,11 +74,8 @@ const actions = {
     // TODO
     console.warn('updateDisplaySet: ', direction);
   },
-  clearAnnotations: ({ viewports }) => {
-    const element = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
-      viewports.activeViewportIndex
-    );
+  clearAnnotations: () => {
+    const element = getEnabledElement();
     if (!element) {
       return;
     }
@@ -146,25 +126,26 @@ const actions = {
       });
     });
   },
-  nextImage: ({ viewports }) => {
-    const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
-      viewports.activeViewportIndex
-    );
-
+  nextImage: () => {
+    const enabledElement = getEnabledElement();
     scroll(enabledElement, 1);
   },
-  previousImage: ({ viewports }) => {
-    const enabledElement = _getActiveViewportEnabledElement(
-      viewports.viewportSpecificData,
-      viewports.activeViewportIndex
-    );
-
+  previousImage: () => {
+    const enabledElement = getEnabledElement();
     scroll(enabledElement, -1);
+  },
+  getActiveViewportEnabledElement: () => {
+    const enabledElement = getEnabledElement();
+    return enabledElement;
   },
 };
 
 const definitions = {
+  getActiveViewportEnabledElement: {
+    commandFn: actions.getActiveViewportEnabledElement,
+    storeContexts: ['viewports'],
+    options: {},
+  },
   rotateViewportCW: {
     commandFn: actions.rotateViewport,
     storeContexts: ['viewports'],
@@ -244,15 +225,6 @@ const definitions = {
     options: {},
   },
 };
-
-/**
- * Grabs `dom` reference for the enabledElement of
- * the active viewport
- */
-function _getActiveViewportEnabledElement(viewports, activeIndex) {
-  const activeViewport = viewports[activeIndex] || {};
-  return activeViewport.dom;
-}
 
 export default {
   actions,

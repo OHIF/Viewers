@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import { CineDialog } from '@ohif/ui';
 import OHIF from '@ohif/core';
 import csTools from 'cornerstone-tools';
+import { commandsManager } from './../App.js';
 // Our target output kills the `as` and "import" throws a keyword error
 // import { import as toolImport, getToolState } from 'cornerstone-tools';
 import cloneDeep from 'lodash.clonedeep';
@@ -16,7 +17,8 @@ const { setViewportSpecificData } = OHIF.redux.actions;
 const mapStateToProps = state => {
   // Get activeViewport's `cine` and `stack`
   const { viewportSpecificData, activeViewportIndex } = state.viewports;
-  const { cine, dom } = viewportSpecificData[activeViewportIndex] || {};
+  const { cine } = viewportSpecificData[activeViewportIndex] || {};
+  const dom = commandsManager.runCommand('getActiveViewportEnabledElement');
 
   const cineData = cine || {
     isPlaying: false,
