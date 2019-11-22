@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { utils } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { Icon } from '@ohif/ui';
@@ -8,168 +8,160 @@ import classnames from 'classnames';
 
 const { studyMetadataManager } = utils;
 
-class ExampleSidePanel extends Component {
-  constructor(props) {
-    super(props);
+function ExampleSidePanel(props) {
+  const {
+    studies,
+    viewports, // viewportSpecificData
+  } = props;
 
-    // this.switchSegmentation = this.switchSegmentation.bind(this);
-  }
+  // TODO: Needs to be activeViewport
+  const viewport = viewports[0];
 
-  static propTypes = {
-    // An object, with int index keys?
-    // Maps to: state.viewports.viewportSpecificData, in `viewer`
-    // Passed in MODULE_TYPES.PANEL when specifying component in viewer
-    viewports: PropTypes.shape({
-      displaySetInstanceUid: PropTypes.string,
-      framRate: PropTypes.any,
-      instanceNumber: PropTypes.number,
-      isMultiFrame: PropTypes.bool,
-      isReconstructable: PropTypes.bool,
-      modality: PropTypes.string,
-      plugin: PropTypes.string,
-      seriesDate: PropTypes.string,
-      seriesDescription: PropTypes.string,
-      seriesInstanceUid: PropTypes.string,
-      seriesNumber: PropTypes.any,
-      seriesTime: PropTypes.string,
-      sopClassUids: PropTypes.arrayOf(PropTypes.string),
-      studyInstanceUid: PropTypes.string,
-      // dom:
-    }),
-    studies: PropTypes.array.isRequired,
-  };
-  static defaultProps = {};
+  // No viewports, nothing to render
+  // if (!viewport) {
+  //   return null;
+  // }
 
-  // TODO -> Check if the segmentation has a defined labelmapIndex:
-  // -> if not, call `load` first.
-  // -> If so, proceed:
+  const {
+    studyInstanceUid,
+    seriesInstanceUid,
+    displaySetInstanceUid,
+  } = viewport;
+  const [state, setState] = useState({
+    activeLabelmapIndex: undefined,
+    firstImageId: undefined,
+  });
 
-  //Set the active labelmap like this:
+  // Find our activeLabelmapIndex and activeLabelmap
+  useEffect(() => {
+    const segmentationModule = cornerstoneTools.getModule('segmentation');
+    const studyMetadata = studyMetadataManager.get(studyInstanceUid);
+    const displaySet = studyMetadata.findDisplaySet(
+      displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
+    );
+    const firstImageId = displaySet.images[0].getImageId();
 
-  // Get imageIds for stack -> get first imageId. (see loadSegmentation.js)
-  // Get the brushStackState by:
-  //  const { state } = cornerstoneTools.getModule('segmentation');
-  //  const brushStackState = state[firstImageId];
-  // Set the labelmapIndex to active:
-  //    brushStackState.activeLabelmapIndex = segmentation.labelmapIndex.
+    if (segmentationModule.state.series[firstImageId]) {
+      const activeBrushStackState =
+        segmentationModule.state.series[firstImageId];
+
+      setState({
+        activeLabelmapIndex: activeBrushStackState.activeLabelmapIndex,
+        firstImageId: firstImageId,
+      });
+      //activeLabelmap3D = activeBrushStackState.labelmaps3D[activeLabelmapIndex];
+    }
+  }, [displaySetInstanceUid, studyInstanceUid]);
+
+  // Get list of SEG labelmaps specific to active viewport (reference series)
+  const referencedSegDisplaysets = _getReferencedSegDisplaysets(
+    studyInstanceUid,
+    seriesInstanceUid
+  );
+
+  // 1. Update labelmap...
+  // 2. UseEffect to update state? or to a least trigger a re-render
+  // 3. Pull in seg names for each labelmap
+  // 4. Toggle visibility of labelmap?
+  // 5. Toggle visibility of seg?
+  // 6. Jump to seg?
 
   // If the port is cornerstone, just need to call a re-render.
   // If the port is vtkjs, its a bit more tricky as we now need to create a new
-  // volume -> Not sure how we pass that information down there to parse the different volume.
-  // Might need to be an event.
 
-  render() {
-    const viewport = this.props.viewports[0];
-    if (!viewport) {
-      return null;
-    }
-
-    // May need to update in useEffect
-    const { studyInstanceUid, seriesInstanceUid } = viewport;
-    const referencedSegDisplaysets = _getReferencedSegDisplaysets(
-      studyInstanceUid,
-      seriesInstanceUid
-    );
-    const mappedSegDisplaysets = referencedSegDisplaysets.map(ds => {
-      return {
-        seriesDate: ds.seriesDate,
-        seriesTime: ds.seriesTime,
-        isLoaded: ds.isLoaded, // bool
-        load: ds.load, // fn
-        labelmapIndex: ds.labelmapIndex, // csTools
-      };
-    });
-    // displaySetInstanceUid? (string)
-    // seriesInstanceUid? (string)
-    // sopInstanceUid?
-    // sopClassModule? (bool)
-    // referencedSeriesSequence{
-    //   referencedInstanceSequence[] --> referencedSOPClassUID, referencedSOPInstanceUID
-    //   referencedSeriesInstanceUID: string
-    // }
-    console.log(referencedSegDisplaysets);
-
-    const segmentationModule = cornerstoneTools.getModule('segmentation');
-    const { getters, setters } = segmentationModule;
-    const {
-      activeLabelmapIndex,
-      activeSegmentIndex,
-      brushColor,
-      metadata,
-    } = getters;
-    // const { activeLabelmapIndex, decrementActiveSegmentIndex, incrementActiveSegmentIndex, undo, redo } = setters;
-
-    return (
-      <div
-        style={{
-          color: 'white',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '200px',
-        }}
-      >
-        <h3>Labelmaps</h3>
-        {mappedSegDisplaysets.map(ds => (
+  return (
+    <div
+      style={{
+        color: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '200px',
+      }}
+    >
+      <h3>Labelmaps</h3>
+      {referencedSegDisplaysets.map(ds => (
+        <div
+          key={`${ds.seriesDate}${ds.seriesTime}`}
+          className={classnames({
+            isActive: ds.labelmapIndex === state.activeLabelmapIndex,
+          })}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            borderBottom: '1px solid var(--ui-gray-light)',
+            padding: '8px',
+            margin: '4px',
+          }}
+          // CLICK BLOCKED BY DRAGGABLEAREA
+          onClick={() => {
+            // TODO: Await?
+            _setActiveLabelmap(
+              viewport,
+              studies,
+              ds,
+              state.firstImageId,
+              state.activeLabelmapIndex
+            );
+            setState(
+              Object.assign({}, state, {
+                activeLabelmapIndex: ds.labelmapIndex,
+              })
+            );
+          }}
+        >
+          <Icon name="exclamation-triangle" />
           <div
-            key={`${ds.seriesDate}${ds.seriesTime}`}
-            className={classnames({
-              isActive: ds.labelmapIndex === activeLabelmapIndex,
-            })}
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              cursor: 'pointer',
-              borderBottom: '1px solid var(--ui-gray-light)',
-              padding: '8px',
-              margin: '4px',
-            }}
-            // CLICK BLOCKED BY DRAGGABLEAREA
-            onClick={() => {
-              console.log('CLICK');
-              console.log(ds);
-              _setActiveLabelmap(viewport, this.props.studies, ds);
+              backgroundColor: 'dodgerblue',
             }}
           >
-            <Icon name="exclamation-triangle" />
-            <div
-              style={{
-                backgroundColor: 'dodgerblue',
-              }}
-            >
-              {ds.seriesDate}:{ds.seriesTime}
-            </div>
+            {ds.seriesDate}:{ds.seriesTime}
           </div>
-        ))}
-      </div>
-    );
-  }
+        </div>
+      ))}
+    </div>
+  );
 }
 
+ExampleSidePanel.propTypes = {
+  // An object, with int index keys?
+  // Maps to: state.viewports.viewportSpecificData, in `viewer`
+  // Passed in MODULE_TYPES.PANEL when specifying component in viewer
+  viewports: PropTypes.shape({
+    displaySetInstanceUid: PropTypes.string,
+    framRate: PropTypes.any,
+    instanceNumber: PropTypes.number,
+    isMultiFrame: PropTypes.bool,
+    isReconstructable: PropTypes.bool,
+    modality: PropTypes.string,
+    plugin: PropTypes.string,
+    seriesDate: PropTypes.string,
+    seriesDescription: PropTypes.string,
+    seriesInstanceUid: PropTypes.string,
+    seriesNumber: PropTypes.any,
+    seriesTime: PropTypes.string,
+    sopClassUids: PropTypes.arrayOf(PropTypes.string),
+    studyInstanceUid: PropTypes.string,
+    // dom:
+  }),
+  studies: PropTypes.array.isRequired,
+};
+ExampleSidePanel.defaultProps = {};
+
 /**
+ * Returns SEG Displaysets that reference the target series, sorted by dateTime
  *
- * @param {*} studyInstanceUid
- * @param {*} seriesInstanceUid
+ * @param {string} studyInstanceUid
+ * @param {string} seriesInstanceUid
+ * @returns Array
  */
 function _getReferencedSegDisplaysets(studyInstanceUid, seriesInstanceUid) {
   // Referenced DisplaySets
   const studyMetadata = studyMetadataManager.get(studyInstanceUid);
-
   const referencedDisplaysets = studyMetadata.getDerivedDatasets({
     referencedSeriesInstanceUID: seriesInstanceUid,
-    // modality: 'SEG',
-  });
-
-  const displaySetsPerPlugin = {};
-
-  // Group
-  referencedDisplaysets.forEach(displaySet => {
-    const plugin = displaySet.plugin;
-
-    if (displaySetsPerPlugin[plugin] === undefined) {
-      displaySetsPerPlugin[plugin] = [];
-    }
-
-    displaySetsPerPlugin[plugin].push(displaySet);
+    modality: 'SEG',
   });
 
   // Sort
@@ -179,73 +171,48 @@ function _getReferencedSegDisplaysets(studyInstanceUid, seriesInstanceUid) {
 
     return aNumber - bNumber;
   }
-  Object.keys(displaySetsPerPlugin).forEach(key => {
-    const displaySets = displaySetsPerPlugin[key];
-    // const isLoaded = displaySets.some(displaySet => displaySet.isLoaded);
-    displaySets.sort(sortNumber);
-  });
 
-  // Filter
-  const filteredDisplaysets = displaySetsPerPlugin['seg'] || [];
+  referencedDisplaysets.sort(sortNumber);
 
-  return filteredDisplaysets;
+  return referencedDisplaysets;
 }
 
 /**
  *
- * @param {*} ds
+ *
+ * @param {*} viewportSpecificData
+ * @param {*} studies
+ * @param {*} displaySet
+ * @returns
  */
-function _setActiveLabelmap(viewportSpecificData, studies, displaySet) {
-  const { getters, setters } = cornerstoneTools.getModule('segmentation');
-  const { activeLabelmapIndex, metadata } = getters;
-
-  console.log(
-    'viwportSpecificData: ',
-    viewportSpecificData,
-    studies,
-    displaySet
-  );
-  const { state } = cornerstoneTools.getModule('segmentation');
-  // const brushStackState = state[firstImageId];
-  // Set the labelmapIndex to active:
-  //    brushStackState.activeLabelmapIndex = segmentation.labelmapIndex.
-
-  console.log('clicked', displaySet);
-  console.log('meta', metadata());
-
-  if (displaySet.labelmapIndex == activeLabelmapIndex) {
+async function _setActiveLabelmap(
+  viewportSpecificData,
+  studies,
+  displaySet,
+  firstImageId,
+  activeLabelmapIndex
+) {
+  if (displaySet.labelmapIndex === activeLabelmapIndex) {
+    console.warn(`${activeLabelmapIndex} is already the active labelmap`);
     return;
   }
 
   if (!displaySet.isLoaded) {
-    // Instance of `viewportSpecificData` (for activeViewport)
-    // All studies?
-    console.log(viewportSpecificData);
-    // const studyMetadata = studyMetadataManager.get(
-    //   viewportSpecificData.studyInstanceUid
-    // );
-    const doesThisGiveMeAnId = displaySet.load(viewportSpecificData, studies);
-    console.log('loading...', doesThisGiveMeAnId);
-
-    const { studyInstanceUid, seriesInstanceUid } = viewportSpecificData;
-    const referencedSegDisplaysets = _getReferencedSegDisplaysets(
-      studyInstanceUid,
-      seriesInstanceUid
-    );
-    const mappedSegDisplaysets = referencedSegDisplaysets.map(ds => {
-      return {
-        seriesDate: ds.seriesDate,
-        seriesTime: ds.seriesTime,
-        isLoaded: ds.isLoaded, // bool
-        load: ds.load, // fn
-        labelmapIndex: ds.labelmapIndex, // csTools
-      };
-    });
-
-    console.log(mappedSegDisplaysets);
+    // What props does this expect `viewportSpecificData` to have?
+    // TODO: Should this return the `labelmapIndex`?
+    await displaySet.load(viewportSpecificData, studies);
   }
 
-  // setters.activeLabelmapIndex(doesThisGiveMeAnId);
+  console.log('UPDATED DISPLAYSET', displaySet, displaySet.labelmapIndex);
+
+  const { state } = cornerstoneTools.getModule('segmentation');
+  const brushStackState = state.series[firstImageId];
+
+  // Set the labelmapIndex to active:
+  console.log('setting active labelmap index to: ', displaySet.labelmapIndex);
+  brushStackState.activeLabelmapIndex = displaySet.labelmapIndex;
+
+  return displaySet.labelmapIndex;
 }
 
 export default ExampleSidePanel;
