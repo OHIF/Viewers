@@ -215,6 +215,11 @@ function HotKeyPreferencesRow({
     NO_FIELD_ERROR_MESSAGE
   );
 
+  // update state values if props changes
+  useEffect(() => {
+    setInputValue(formatPressedKeys(hotkeys));
+  }, [hotkeys]);
+
   const updateInputText = (keyDownEvent, displayPressedKey = false) => {
     const pressedKeys = getKeysPressedArray(keyDownEvent);
 
@@ -338,10 +343,12 @@ function HotKeysPreferences({
   const splittedHotKeys = getHotKeysArrayColumns(tabState, columnSize);
 
   const onHotKeyChanged = (commandName, hotkeyDefinition, keys) => {
-    const newState = { ...tabState, [commandName]: { ...hotkeyDefinition, keys } };
+    const newState = {
+      ...tabState,
+      [commandName]: { ...hotkeyDefinition, keys },
+    };
     setTabState(newState);
     onTabStateChanged(name, { hotkeyDefinitions: newState });
-
   };
 
   const onErrorChanged = (toInc = true) => {
@@ -365,11 +372,8 @@ function HotKeysPreferences({
 
   // update local state if parent updates
   useEffect(() => {
-    console.log('updating local state');
-    setTabState({...hotkeyDefinitions});
+    setTabState({ ...hotkeyDefinitions });
   }, [hotkeyDefinitions]);
-
-  console.log('hotkey state', tabState);
 
   return (
     <div className="HotKeysPreferences">

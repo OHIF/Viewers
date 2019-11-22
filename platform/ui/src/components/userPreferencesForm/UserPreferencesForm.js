@@ -113,15 +113,30 @@ function UserPreferencesForm({
   };
 
   const onResetPreferences = () => {
+    const defaultHotKeyDefitions = {};
+
+    hotkeyDefaults.map(item => {
+      const { commandName, ...values } = item;
+      defaultHotKeyDefitions[commandName] = { ...values };
+    });
+
     // update local state
     setTabsState({
       ...tabsState,
-      HotKey: { hotkeyDefinitions: hotkeyDefaults },
+      HotKey: { hotkeyDefinitions: defaultHotKeyDefitions },
       General: { generalPreferences: { language: defaultLanguage } },
     });
 
     // update tabs state
     setTabs(createTabs(windowLevelData, hotkeyDefinitions, generalPreferences));
+
+    // reset errors
+    setTabsError(
+      tabs.reduce((acc, tab) => {
+        acc[tab.name] = false;
+        return acc;
+      }, {})
+    );
 
     snackbar.show({
       message: t('PreferencesReset'),
@@ -147,8 +162,6 @@ function UserPreferencesForm({
       createTabsState(windowLevelData, hotkeyDefinitions, generalPreferences)
     );
   }, [windowLevelData, hotkeyDefinitions, generalPreferences]);
-
-  console.log('tabsState', tabsState);
 
   return translationsAreReady ? (
     <div className="UserPreferencesForm">

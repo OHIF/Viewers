@@ -44,21 +44,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         })
       );
     },
-    onResetToDefaults: () => {
-      hotkeysManager.restoreDefaultBindings();
-      const { hotkeyDefinitions } = hotkeysManager;
-
-      // restore default language
-      const { defaultLanguage } = i18n;
-      i18n.changeLanguage(defaultLanguage);
-
-      dispatch(
-        setUserPreferences({
-          hotkeyDefinitions,
-          generalPreferences: { language: defaultLanguage },
-        })
-      );
-    },
   };
 };
 
