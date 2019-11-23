@@ -12,11 +12,14 @@ import './UserPreferencesTabs.styl';
 const renderTab = (
   tab = {},
   tabsState,
+  tabsError,
   onTabStateChanged,
   onTabErrorChanged
 ) => {
   const { props, Component, name, hidden = false } = tab;
+
   const tabState = tabsState[name];
+  const tabError = tabsError[name];
 
   return !hidden ? (
     <form className="form-themed themed tabs">
@@ -26,6 +29,7 @@ const renderTab = (
           {...tabState}
           {...props}
           name={name}
+          tabError={tabError}
           onTabStateChanged={onTabStateChanged}
           onTabErrorChanged={onTabErrorChanged}
         ></Component>
@@ -64,6 +68,7 @@ const renderTabsHeader = (tabs, activeTabIndex, onHeaderChanged) => {
 function UserPreferencesTabs({
   tabs,
   tabsState,
+  tabsError,
   onTabStateChanged,
   onTabErrorChanged,
 }) {
@@ -81,6 +86,7 @@ function UserPreferencesTabs({
       {renderTab(
         tabs[activeTabIndex],
         tabsState,
+        tabsError,
         onTabStateChanged,
         onTabErrorChanged
       )}
@@ -91,6 +97,7 @@ function UserPreferencesTabs({
 UserPreferencesTabs.propTypes = {
   tabs: PropTypes.array.isRequired,
   tabsState: PropTypes.object.isRequired,
+  tabsError: PropTypes.object.isRequired,
   onTabStateChanged: PropTypes.func.isRequired,
   onTabErrorChanged: PropTypes.func.isRequired,
 };

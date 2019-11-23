@@ -168,6 +168,7 @@ function UserPreferencesForm({
       <UserPreferencesTabs
         tabs={tabs}
         tabsState={tabsState}
+        tabsError={tabsError}
         onTabStateChanged={onTabStateChanged}
         onTabErrorChanged={onTabErrorChanged}
       />

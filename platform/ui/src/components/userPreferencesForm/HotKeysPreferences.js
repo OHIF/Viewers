@@ -205,6 +205,7 @@ function HotKeyPreferencesRow({
   hotkeys,
   label,
   originalHotKeys,
+  tabError,
   onSuccessChanged,
   onFailureChanged,
 }) {
@@ -214,6 +215,14 @@ function HotKeyPreferencesRow({
   const [fieldErrorMessage, setFieldErrorMessage] = useState(
     NO_FIELD_ERROR_MESSAGE
   );
+
+  // reset error count if tab has no errors
+  useEffect(() => {
+    if (!tabError) {
+      setError(false);
+      setFieldErrorMessage(NO_FIELD_ERROR_MESSAGE);
+    }
+  }, [tabError]);
 
   // update state values if props changes
   useEffect(() => {
@@ -311,6 +320,7 @@ HotKeyPreferencesRow.propTypes = {
   hotkeys: PropTypes.array.isRequired,
   label: PropTypes.string.isRequired,
   originalHotKeys: PropTypes.object.isRequired,
+  tabError: PropTypes.bool.isRequired,
   onSuccessChanged: PropTypes.func.isRequired,
   onFailureChanged: PropTypes.func.isRequired,
 };
@@ -329,6 +339,7 @@ HotKeyPreferencesRow.propTypes = {
 function HotKeysPreferences({
   hotkeyDefinitions,
   name,
+  tabError,
   onTabStateChanged,
   onTabErrorChanged,
 }) {
@@ -358,6 +369,13 @@ function HotKeysPreferences({
       setTabErrorCounter(newValue);
     }
   };
+
+  // reset error count if tab has no errors
+  useEffect(() => {
+    if (!tabError) {
+      setTabErrorCounter(0);
+    }
+  }, [tabError]);
 
   // tell parent to update its state
   useEffect(() => {
@@ -397,6 +415,7 @@ function HotKeysPreferences({
                           hotkeys={hotkeyDefinitionTuple[1].keys}
                           label={hotkeyDefinitionTuple[1].label}
                           originalHotKeys={tabState}
+                          tabError={tabError}
                           onSuccessChanged={keys =>
                             onHotKeyChanged(
                               hotkeyDefinitionTuple[0],
@@ -421,6 +440,7 @@ function HotKeysPreferences({
 HotKeysPreferences.propTypes = {
   hotkeyDefinitions: PropTypes.any,
   name: PropTypes.string,
+  tabError: PropTypes.bool,
   onTabStateChanged: PropTypes.func,
   onTabErrorChanged: PropTypes.func,
 };
