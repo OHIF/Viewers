@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import LanguageSwitcher from '../languageSwitcher';
+import i18n from '@ohif/i18n';
 
 /**
  * General Preferences tab
@@ -23,7 +24,7 @@ function GeneralPreferences({
   onTabStateChanged,
   onTabErrorChanged,
 }) {
-  const { language } = generalPreferences;
+  const { language = i18n.language } = generalPreferences;
 
   const onLanguageChange = language => {
     onTabStateChanged(name, {
@@ -37,12 +38,10 @@ function GeneralPreferences({
         <label htmlFor="language-select" className="p-r-1">
           Language
         </label>
-        {language && (
-          <LanguageSwitcher
-            language={language}
-            onLanguageChange={onLanguageChange}
-          />
-        )}
+        <LanguageSwitcher
+          language={language}
+          onLanguageChange={onLanguageChange}
+        />
       </div>
     </div>
   );

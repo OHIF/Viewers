@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import i18n from '@ohif/i18n';
 
 import './LanguageSwitcher.styl';
 import { withTranslation } from '../../contextProviders';
 
 const LanguageSwitcher = ({ language, onLanguageChange }) => {
-  const parseLanguage = (lang = i18n.language) => lang.split('-')[0];
+  const parseLanguage = lang => lang.split('-')[0];
 
   const languages = [
     // TODO: list of available languages should come from i18n.options.resources
