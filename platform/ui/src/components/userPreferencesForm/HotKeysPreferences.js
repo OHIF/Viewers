@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
@@ -221,6 +222,7 @@ function HotKeyPreferencesRow({
     if (!tabError) {
       setError(false);
       setFieldErrorMessage(NO_FIELD_ERROR_MESSAGE);
+      setInputValue(formatPressedKeys(hotkeys));
     }
   }, [tabError]);
 
@@ -247,7 +249,7 @@ function HotKeyPreferencesRow({
   };
 
   // validate input value
-  const validateInput = event => {
+  const validateInput = () => {
     const pressedKeys = unFormatPressedKeys(inputValue);
     const lastPressedKey = pressedKeys[pressedKeys.length - 1];
 
@@ -374,6 +376,8 @@ function HotKeysPreferences({
   useEffect(() => {
     if (!tabError) {
       setTabErrorCounter(0);
+      // update tab state
+      setTabState({ ...hotkeyDefinitions });
     }
   }, [tabError]);
 
