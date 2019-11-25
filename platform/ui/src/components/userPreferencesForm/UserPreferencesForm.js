@@ -34,7 +34,7 @@ import { GeneralPreferences } from './GeneralPreferences';
 const createTabs = (windowLevelData, hotkeyDefinitions) => {
   return [
     {
-      name: 'HotKey',
+      name: 'Hotkeys',
       Component: HotKeysPreferences,
       initialState: { hotkeyDefinitions },
       props: {},
