@@ -1,6 +1,7 @@
 import './lib';
 
 import { ExtensionManager, MODULE_TYPES } from './extensions';
+import { ServicesManager } from './services';
 import classes, { CommandsManager, HotkeysManager } from './classes/';
 
 import DICOMWeb from './DICOMWeb';
@@ -18,12 +19,19 @@ import ui from './ui';
 import user from './user.js';
 import utils from './utils/';
 
+import {
+  createUINotificationService,
+  createUIModalService,
+  createUIDialogService,
+} from './services';
+
 const OHIF = {
   MODULE_TYPES,
   //
   CommandsManager,
   ExtensionManager,
   HotkeysManager,
+  ServicesManager,
   //
   utils,
   studies,
@@ -41,6 +49,10 @@ const OHIF = {
   viewer: {},
   measurements,
   hangingProtocols,
+  //
+  createUINotificationService,
+  createUIModalService,
+  createUIDialogService,
 };
 
 export {
@@ -49,6 +61,7 @@ export {
   CommandsManager,
   ExtensionManager,
   HotkeysManager,
+  ServicesManager,
   //
   utils,
   studies,
@@ -65,6 +78,10 @@ export {
   DICOMWeb,
   measurements,
   hangingProtocols,
+  //
+  createUINotificationService,
+  createUIModalService,
+  createUIDialogService,
 };
 
 export { OHIF };
