@@ -1,6 +1,8 @@
 {
   "Cancel": "Cancelar",
   "Reset to Defaults": "Restaurar Default",
+  "ResetDefaultMessage": "Preferências resetadas com sucesso. <br /> Você deve <strong>Salvar</strong> para que essa ação seja realizada.",
   "Save": "Salvar",
+  "SaveMessage": "Preferências salvas",
   "User Preferences": "Preferências do Usuário"
 }
