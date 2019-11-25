@@ -1,11 +1,5 @@
 /**
- * A UI Element
- *
- * @typedef {ReactElement|HTMLElement} DialogContent
- */
-
-/**
- * A UI Position
+ * A UI Element Position
  *
  * @typedef {Object} ElementPosition
  * @property {number} top -
@@ -18,16 +12,16 @@
  * UI Dialog
  *
  * @typedef {Object} DialogProps
- * @property {string} id -
- * @property {DialogContent} content -
- * @property {boolean} isDraggable -
- * @property {ElementPosition} defaultPosition -
- * @property {ElementPosition} position -
- * @property {Function} onSubmit -
- * @property {Function} onClose -
- * @property {Function} onStart -
- * @property {Function} onStop -
- * @property {Function} onDrag -
+ * @property {string} id The dialog id.
+ * @property {ReactElement|HTMLElement} content The dialog content.
+ * @property {Object} contentProps The dialog content props.
+ * @property {boolean} [isDraggable=true] Controls if dialog content is draggable or not.
+ *  @property {boolean} [showOverlay=false] Controls dialog overlay.
+ * @property {ElementPosition} defaultPosition Specifies the `x` and `y` that the dragged item should start at.
+ * @property {ElementPosition} position If this property is present, the item becomes 'controlled' and is not responsive to user input.
+ * @property {Function} onStart Called when dragging starts. If `false` is returned any handler, the action will cancel.
+ * @property {Function} onStop Called when dragging stops.
+ * @property {Function} onDrag Called while dragging.
  */
 
 const uiDialogServicePublicAPI = {
@@ -51,29 +45,29 @@ function createUIDialogService() {
 /**
  * Show a new UI dialog;
  *
- * @param {DialogProps} props { id, content, onSubmit, onClose, onStart, onDrag, onStop, isDraggable, defaultPosition, position }
+ * @param {DialogProps} props { id, content, contentProps, onStart, onDrag, onStop, isDraggable, showOverlay, defaultPosition, position }
  */
 function create({
   id,
   content,
-  onSubmit,
-  onClose,
+  contentProps,
   onStart,
   onDrag,
   onStop,
-  isDraggable,
+  isDraggable = true,
+  showOverlay = false,
   defaultPosition,
   position,
 }) {
   return uiDialogServiceImplementation._create({
     id,
     content,
-    onSubmit,
-    onClose,
+    contentProps,
     onStart,
     onDrag,
     onStop,
     isDraggable,
+    showOverlay,
     defaultPosition,
     position,
   });

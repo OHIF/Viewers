@@ -308,7 +308,8 @@ function _handleBuiltIn(button) {
   }
 
   if (options.behavior === 'DOWNLOAD_SCREEN_SHOT') {
-    modal.show(ConnectedViewportDownloadForm, {
+    modal.show({
+      content: ConnectedViewportDownloadForm,
       title: t('Download High Quality Image'),
     });
   }
