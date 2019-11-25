@@ -3,15 +3,15 @@ import { ViewportDownloadForm } from '@ohif/ui';
 import { utils } from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import { commandsManager } from './../App.js';
+import { getEnabledElement } from './state';
 
 const MINIMUM_SIZE = 100;
 const DEFAULT_SIZE = 512;
 const MAX_TEXTURE_SIZE = 10000;
 
 const mapStateToProps = (state, ownProps) => {
-  const activeEnabledElement = commandsManager.runCommand(
-    'getActiveViewportEnabledElement'
+  const activeEnabledElement = getEnabledElement(
+    state.viewports.activeViewportIndex
   );
 
   return {
