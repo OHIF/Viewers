@@ -36,18 +36,14 @@ class Header extends Component {
   }
 
   loadOptions() {
-    const {
-      t,
-      user,
-      userManager,
-      modal: { show },
-    } = this.props;
+    const { t, user, userManager, modal } = this.props;
     this.options = [
       {
         title: t('About'),
         icon: { name: 'info' },
         onClick: () =>
-          show(AboutContent, {
+          modal.show({
+            content: AboutContent,
             title: t('OHIF Viewer - About'),
           }),
       },
@@ -57,7 +53,8 @@ class Header extends Component {
           name: 'user',
         },
         onClick: () =>
-          show(ConnectedUserPreferencesForm, {
+          modal.show({
+            content: ConnectedUserPreferencesForm,
             title: t('User Preferences'),
           }),
       },

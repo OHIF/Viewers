@@ -312,10 +312,14 @@ function _handleBuiltIn(button) {
     const activeViewportIndex = commandsManager.runCommand(
       'getActiveViewportIndex'
     );
-    modal.show(CornerstoneViewportDownloadForm, {
+
+    modal.show({
+      content: CornerstoneViewportDownloadForm,
       title: t('Download High Quality Image'),
-      activeViewportIndex,
-      onClose: modal.hide,
+      contentProps: {
+        activeViewportIndex,
+        onClose: modal.hide,
+      },
     });
   }
 }
