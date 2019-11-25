@@ -10,11 +10,11 @@ export default {
   /**
    * LIFECYCLE HOOKS
    */
-
+  //
   preRegistration({
     servicesManager,
     configuration: extensionConfiguration,
-  }) {},
+  }) { },
 
   /**
    * MODULE GETTERS
