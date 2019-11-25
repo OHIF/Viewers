@@ -54,7 +54,7 @@
   "devDependencies": {
     "@ohif/core": "^1.12.0",
     "@ohif/ui": "^0.64.2",
-    "cornerstone-tools": "^4.0.9",
+    "cornerstone-tools": "^4.8.0",
     "cornerstone-wado-image-loader": "^3.0.0",
     "dcmjs": "^0.6.1",
     "dicom-parser": "^1.8.3",
