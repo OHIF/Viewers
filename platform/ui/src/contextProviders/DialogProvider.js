@@ -93,7 +93,7 @@ const DialogProvider = ({ children, service }) => {
    *
    * @returns True if no dialogs are present.
    */
-  const noDialogs = () => dialogs && dialogs.length < 1;
+  const isEmpty = () => dialogs && dialogs.length < 1;
 
   /**
    * Moves the dialog to the foreground if clicked.
@@ -101,7 +101,7 @@ const DialogProvider = ({ children, service }) => {
    * @param {string} id The dialog id.
    * @returns void
    */
-  const _reorder = id => {
+  const _bringToFront = id => {
     setDialogs(dialogs => {
       const topDialog = dialogs.find(dialog => dialog.id === id);
       return topDialog
@@ -128,20 +128,20 @@ const DialogProvider = ({ children, service }) => {
   const validCallback = callback => callback && typeof callback === 'function';
 
   return (
-    <DialogContext.Provider value={{ create, dismiss, dismissAll, noDialogs }}>
+    <DialogContext.Provider value={{ create, dismiss, dismissAll, isEmpty }}>
       <div className="DraggableArea">
         {dialogs.map(dialog => {
           const {
-            id = null,
-            content: DialogContent = null,
-            contentProps = null,
-            position = null,
-            defaultPosition = null,
+            id,
+            content: DialogContent,
+            contentProps,
+            position,
+            defaultPosition,
             isDraggable = true,
             showOverlay = false,
-            onStart = null,
-            onStop = null,
-            onDrag = null,
+            onStart,
+            onStop,
+            onDrag,
           } = dialog;
 
           return (
@@ -182,7 +182,7 @@ const DialogProvider = ({ children, service }) => {
                 }}
                 onDrag={event => {
                   setIsDragging(true);
-                  _reorder(id);
+                  _bringToFront(id);
                   _updateLastDialogPosition(id);
 
                   if (validCallback(onDrag)) {
@@ -197,7 +197,7 @@ const DialogProvider = ({ children, service }) => {
                     isDragging && 'dragging'
                   )}
                   style={{ zIndex: '999', position: 'absolute' }}
-                  onClick={() => _reorder(id)}
+                  onClick={() => _bringToFront(id)}
                 >
                   <DialogContent {...dialog} {...contentProps} />
                 </div>
@@ -218,12 +218,9 @@ const DialogProvider = ({ children, service }) => {
  */
 export const withDialog = Component => {
   return function WrappedComponent(props) {
-    const { create, dismiss, dismissAll, noDialogs } = useDialog();
+    const { create, dismiss, dismissAll, isEmpty } = useDialog();
     return (
-      <Component
-        {...props}
-        dialog={{ create, dismiss, dismissAll, noDialogs }}
-      />
+      <Component {...props} dialog={{ create, dismiss, dismissAll, isEmpty }} />
     );
   };
 };
