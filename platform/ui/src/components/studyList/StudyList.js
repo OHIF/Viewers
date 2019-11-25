@@ -238,7 +238,6 @@ function TableRow(props) {
     studyDescription,
     studyInstanceUid,
     onClick: handleClick,
-
     displaySize,
   } = props;
 
