@@ -2,7 +2,7 @@ import init from './init.js';
 import asyncComponent from './asyncComponent.js';
 import commandsModule from './commandsModule.js';
 import toolbarModule from './toolbarModule.js';
-import ConnectedViewportDownloadForm from './ConnectedViewportDownloadForm';
+import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 
 const OHIFCornerstoneViewport = asyncComponent(() =>
   import(
@@ -39,4 +39,4 @@ export default {
   },
 };
 
-export { ConnectedViewportDownloadForm };
+export { CornerstoneViewportDownloadForm };

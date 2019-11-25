@@ -138,9 +138,17 @@ const actions = {
     const enabledElement = getEnabledElement(viewports.activeViewportIndex);
     return enabledElement;
   },
+  getActiveViewportIndex: ({ viewports }) => {
+    return viewports.activeViewportIndex;
+  },
 };
 
 const definitions = {
+  getActiveViewportIndex: {
+    commandFn: actions.getActiveViewportIndex,
+    storeContexts: ['viewports'],
+    options: {},
+  },
   getActiveViewportEnabledElement: {
     commandFn: actions.getActiveViewportEnabledElement,
     storeContexts: ['viewports'],

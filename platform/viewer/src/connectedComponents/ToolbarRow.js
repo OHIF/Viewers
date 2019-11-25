@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 
 import { MODULE_TYPES } from '@ohif/core';
-import { ConnectedViewportDownloadForm } from '@ohif/extension-cornerstone';
+import { CornerstoneViewportDownloadForm } from '@ohif/extension-cornerstone';
 import {
   ExpandableToolMenu,
   RoundedButtonGroup,
@@ -309,8 +309,13 @@ function _handleBuiltIn(button) {
   }
 
   if (options.behavior === 'DOWNLOAD_SCREEN_SHOT') {
-    modal.show(ConnectedViewportDownloadForm, {
+    const activeViewportIndex = commandsManager.runCommand(
+      'getActiveViewportIndex'
+    );
+    modal.show(CornerstoneViewportDownloadForm, {
       title: t('Download High Quality Image'),
+      activeViewportIndex,
+      onClose: modal.hide,
     });
   }
 }
