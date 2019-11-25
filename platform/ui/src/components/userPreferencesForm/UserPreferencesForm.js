@@ -139,7 +139,9 @@ function UserPreferencesForm({
     );
 
     snackbar.show({
-      message: t('PreferencesReset'),
+      message: (
+        <div dangerouslySetInnerHTML={{ __html: t('ResetDefaultMessage') }} />
+      ),
       type: 'info',
     });
   };
@@ -151,7 +153,7 @@ function UserPreferencesForm({
 
     onSave(toSave);
     snackbar.show({
-      message: t('PreferencesSaved'),
+      message: t('SaveMessage'),
       type: 'success',
     });
   };
