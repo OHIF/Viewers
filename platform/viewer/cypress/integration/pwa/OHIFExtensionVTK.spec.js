@@ -81,6 +81,7 @@ describe('OHIF VTK Extension', () => {
     );
   });
 
+  /* TODO: Non-deterministic behavior (const expectedText = 'W: 350 L: -1044';)
   it('checks WWWC tool', () => {
     cy.get('@wwwcBtn').click();
 
@@ -102,7 +103,7 @@ describe('OHIF VTK Extension', () => {
     // Visual comparison
     cy.screenshot('VTK WWWC tool - Canvas should be bright');
     cy.percyCanvasSnapshot('VTK WWWC tool - Canvas should be bright');
-  });
+  }); */
 
   it('checks Rotate tool', () => {
     cy.get('@rotateBtn').click();
