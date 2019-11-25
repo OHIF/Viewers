@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { ScrollableArea } from './../../ScrollableArea/ScrollableArea.js';
 import { TableList } from './../tableList';
 import { Tooltip } from './../tooltip';
-import { withSnackbar } from './../../utils/SnackbarProvider';
+import { withSnackbar } from './../../contextProviders/SnackbarProvider';
 
 class MeasurementTable extends Component {
   static propTypes = {

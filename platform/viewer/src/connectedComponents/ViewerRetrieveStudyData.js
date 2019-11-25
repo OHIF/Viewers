@@ -6,12 +6,12 @@ import PropTypes from 'prop-types';
 import { extensionManager } from './../App.js';
 import { useSnackbarContext } from '@ohif/ui';
 
-// Contexts
-import AppContext from '../context/AppContext';
-
 const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
 const { retrieveStudiesMetadata, deleteStudyMetadataPromise } = studies;
 const { studyMetadataManager, updateMetaDataManager, makeCancelable } = utils;
+
+// Contexts
+import AppContext from '../context/AppContext';
 
 const _promoteToFront = (list, value, searchMethod) => {
   let response = [...list];
@@ -104,7 +104,7 @@ const _showUserMessage = (queryParamApplied, message, dialog = {}) => {
     return;
   }
 
-  const { show: showUserMessage = () => {} } = dialog;
+  const { show: showUserMessage = () => { } } = dialog;
   showUserMessage({
     message,
   });
@@ -298,7 +298,7 @@ function ViewerRetrieveStudyData({
     }
   };
 
-  const purgeCancellablePromises = useCallback(() => {
+  const purgeCancellablePromises = () => {
     for (let studyInstanceUids in cancelableStudiesPromises) {
       if ('cancel' in cancelableStudiesPromises[studyInstanceUids]) {
         cancelableStudiesPromises[studyInstanceUids].cancel();
@@ -312,12 +312,12 @@ function ViewerRetrieveStudyData({
         studyMetadataManager.remove(studyInstanceUids);
       }
     }
-  });
+  };
 
   useEffect(() => {
     studyMetadataManager.purge();
     purgeCancellablePromises();
-  }, [purgeCancellablePromises, studyInstanceUids]);
+  }, [studyInstanceUids]);
 
   useEffect(() => {
     cancelableSeriesPromises = {};
