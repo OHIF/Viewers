@@ -92,7 +92,7 @@ describe('OHIF VTK Extension', () => {
       .trigger('mousemove', 'top', { which: 1 })
       .trigger('mouseup', { which: 1 })
       .then(() => {
-        const expectedText = 'W: 350 L: -1044';
+        const expectedText = 'W: 350 L: 40';
         cy.get('.ViewportOverlay > div.bottom-right.overlay-element').should(
           'contains.text',
           expectedText
