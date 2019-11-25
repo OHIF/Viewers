@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.10.1...@ohif/viewer@2.10.2) (2019-11-25)
+
+
+### Bug Fixes
+
+* Issue branch from danny experimental changes pr 1128 ([#1150](https://github.com/OHIF/Viewers/issues/1150)) ([a870b3c](https://github.com/OHIF/Viewers/commit/a870b3cc6056cf824af422e46f1ad674910b534e)), closes [#1161](https://github.com/OHIF/Viewers/issues/1161) [#1164](https://github.com/OHIF/Viewers/issues/1164) [#1177](https://github.com/OHIF/Viewers/issues/1177) [#1179](https://github.com/OHIF/Viewers/issues/1179) [#1180](https://github.com/OHIF/Viewers/issues/1180) [#1181](https://github.com/OHIF/Viewers/issues/1181) [#1182](https://github.com/OHIF/Viewers/issues/1182) [#1183](https://github.com/OHIF/Viewers/issues/1183) [#1184](https://github.com/OHIF/Viewers/issues/1184) [#1185](https://github.com/OHIF/Viewers/issues/1185)
+
+
+
+
+
+## [2.10.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.10.0...@ohif/viewer@2.10.1) (2019-11-20)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [2.10.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.9.0...@ohif/viewer@2.10.0) (2019-11-19)
+
+
+### Features
+
+* New dialog service ([#1202](https://github.com/OHIF/Viewers/issues/1202)) ([f65639c](https://github.com/OHIF/Viewers/commit/f65639c2b0dab01decd20cab2cef4263cb4fab37))
+
+
+
+
+
+# [2.9.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.5...@ohif/viewer@2.9.0) (2019-11-19)
+
+
+### Features
+
+* Issue 879 viewer route query param not filtering but promoting ([#1141](https://github.com/OHIF/Viewers/issues/1141)) ([b17f753](https://github.com/OHIF/Viewers/commit/b17f753e6222045252ef885e40233681541a32e1)), closes [#1118](https://github.com/OHIF/Viewers/issues/1118)
+
+
+
+
+
+## [2.8.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.4...@ohif/viewer@2.8.5) (2019-11-18)
+
+
+### Bug Fixes
+
+* minor date picker UX improvements ([813ee5e](https://github.com/OHIF/Viewers/commit/813ee5ed4d78b7bda234922d5f3389efe346451c))
+
+
+
+
+
 ## [2.8.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.8.3...@ohif/viewer@2.8.4) (2019-11-15)
 
 **Note:** Version bump only for package @ohif/viewer
