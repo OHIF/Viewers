@@ -110,6 +110,75 @@ const DialogProvider = ({ children, service }) => {
     });
   };
 
+  const renderDialogs = () =>
+    dialogs.map(dialog => {
+      const {
+        id,
+        content: DialogContent,
+        contentProps,
+        position,
+        defaultPosition,
+        isDraggable = true,
+        onStart,
+        onStop,
+        onDrag,
+      } = dialog;
+
+      return (
+        <Draggable
+          key={id}
+          disabled={!isDraggable}
+          position={position}
+          defaultPosition={lastDialogPosition || defaultPosition}
+          bounds="parent"
+          onStart={event => {
+            const e = event || window.event;
+            const target = e.target || e.srcElement;
+            const BLACKLIST = [
+              'SVG',
+              'BUTTON',
+              'PATH',
+              'INPUT',
+              'SPAN',
+              'LABEL',
+            ];
+            if (BLACKLIST.includes(target.tagName.toUpperCase())) {
+              return false;
+            }
+
+            if (validCallback(onStart)) {
+              return onStart(event);
+            }
+          }}
+          onStop={event => {
+            setIsDragging(false);
+
+            if (validCallback(onStop)) {
+              return onStop(event);
+            }
+          }}
+          onDrag={event => {
+            setIsDragging(true);
+            _bringToFront(id);
+            _updateLastDialogPosition(id);
+
+            if (validCallback(onDrag)) {
+              return onDrag(event);
+            }
+          }}
+        >
+          <div
+            id={`draggableItem-${id}`}
+            className={classNames('DraggableItem', isDragging && 'dragging')}
+            style={{ zIndex: '999', position: 'absolute' }}
+            onClick={() => _bringToFront(id)}
+          >
+            <DialogContent {...dialog} {...contentProps} />
+          </div>
+        </Draggable>
+      );
+    });
+
   /**
    * Update the last dialog position to be used as the new default position.
    *
@@ -130,81 +199,11 @@ const DialogProvider = ({ children, service }) => {
   return (
     <DialogContext.Provider value={{ create, dismiss, dismissAll, isEmpty }}>
       <div className="DraggableArea">
-        {dialogs.map(dialog => {
-          const {
-            id,
-            content: DialogContent,
-            contentProps,
-            position,
-            defaultPosition,
-            isDraggable = true,
-            showOverlay = false,
-            onStart,
-            onStop,
-            onDrag,
-          } = dialog;
-
-          return (
-            <div
-              key={id}
-              className={classNames('Overlay', showOverlay && 'active')}
-            >
-              <Draggable
-                disabled={!isDraggable}
-                position={position}
-                defaultPosition={lastDialogPosition || defaultPosition}
-                bounds="parent"
-                onStart={event => {
-                  const e = event || window.event;
-                  const target = e.target || e.srcElement;
-                  const BLACKLIST = [
-                    'SVG',
-                    'BUTTON',
-                    'PATH',
-                    'INPUT',
-                    'SPAN',
-                    'LABEL',
-                  ];
-                  if (BLACKLIST.includes(target.tagName.toUpperCase())) {
-                    return false;
-                  }
-
-                  if (validCallback(onStart)) {
-                    return onStart(event);
-                  }
-                }}
-                onStop={event => {
-                  setIsDragging(false);
-
-                  if (validCallback(onStop)) {
-                    return onStop(event);
-                  }
-                }}
-                onDrag={event => {
-                  setIsDragging(true);
-                  _bringToFront(id);
-                  _updateLastDialogPosition(id);
-
-                  if (validCallback(onDrag)) {
-                    return onDrag(event);
-                  }
-                }}
-              >
-                <div
-                  id={`draggableItem-${id}`}
-                  className={classNames(
-                    'DraggableItem',
-                    isDragging && 'dragging'
-                  )}
-                  style={{ zIndex: '999', position: 'absolute' }}
-                  onClick={() => _bringToFront(id)}
-                >
-                  <DialogContent {...dialog} {...contentProps} />
-                </div>
-              </Draggable>
-            </div>
-          );
-        })}
+        {dialogs.some(dialog => dialog.showOverlay) ? (
+          <div className="Overlay active">{renderDialogs()}</div>
+        ) : (
+          renderDialogs()
+        )}
       </div>
       {children}
     </DialogContext.Provider>
