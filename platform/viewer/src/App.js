@@ -7,6 +7,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import { hot } from 'react-hot-loader/root';
 
+import { getToolLabellingFlowCallback } from './appExtensions/MeasurementsPanel/labelingFlowCallbacks.js';
+
 import {
   SnackbarProvider,
   ModalProvider,
@@ -212,9 +214,27 @@ function _initServices(services) {
  * @param
  */
 function _initExtensions(extensions, hotkeys) {
+  const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
+  const tools = [
+    'Bidirectional',
+    'Length',
+    'Angle',
+    'FreehandRoi',
+    'EllipticalRoi',
+    'CircleRoi',
+    'RectangleRoi',
+    'ArrowAnnotate',
+  ].map(tool => ({
+    [tool]: {
+      configuration: {
+        getMeasurementLocationCallback: toolLabellingFlowCallback,
+      },
+    },
+  }));
+
   const defaultExtensions = [
     GenericViewerCommands,
-    OHIFCornerstoneExtension,
+    [OHIFCornerstoneExtension, { tools }],
     // WARNING: MUST BE REGISTERED _AFTER_ OHIFCORNERSTONEEXTENSION
     MeasurementsPanel,
   ];

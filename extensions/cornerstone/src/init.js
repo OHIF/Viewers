@@ -4,6 +4,7 @@ import csTools from 'cornerstone-tools';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import queryString from 'query-string';
 import { SimpleDialog } from '@ohif/ui';
+import isEmpty from 'lodash.isempty';
 
 function fallbackMetaDataProvider(type, imageId) {
   if (!imageId.includes('wado?requestType=WADO')) {
@@ -26,7 +27,8 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
 
 /**
  *
- * @param {object} configuration
+ * @param {Object} servicesManager
+ * @param {Object} configuration
  * @param {Object|Array} configuration.csToolsConfig
  */
 export default function init({ servicesManager, configuration = {} }) {
@@ -73,52 +75,38 @@ export default function init({ servicesManager, configuration = {} }) {
   initCornerstoneTools(defaultCsToolsConfig);
 
   // ~~ Toooools 🙌
-  const {
-    PanTool,
-    ZoomTool,
-    WwwcTool,
-    MagnifyTool,
-    StackScrollTool,
-    StackScrollMouseWheelTool,
-    // Touch
-    PanMultiTouchTool,
-    ZoomTouchPinchTool,
-    // Annotations
-    EraserTool,
-    BidirectionalTool,
-    LengthTool,
-    AngleTool,
-    FreehandRoiTool,
-    EllipticalRoiTool,
-    DragProbeTool,
-    RectangleRoiTool,
-    // Segmentation
-    BrushTool,
-  } = csTools;
   const tools = [
-    PanTool,
-    ZoomTool,
-    WwwcTool,
-    MagnifyTool,
-    StackScrollTool,
-    StackScrollMouseWheelTool,
+    csTools.PanTool,
+    csTools.ZoomTool,
+    csTools.WwwcTool,
+    csTools.MagnifyTool,
+    csTools.StackScrollTool,
+    csTools.StackScrollMouseWheelTool,
     // Touch
-    PanMultiTouchTool,
-    ZoomTouchPinchTool,
+    csTools.PanMultiTouchTool,
+    csTools.ZoomTouchPinchTool,
     // Annotations
-    EraserTool,
-    BidirectionalTool,
-    LengthTool,
-    AngleTool,
-    FreehandRoiTool,
-    EllipticalRoiTool,
-    DragProbeTool,
-    RectangleRoiTool,
+    csTools.EraserTool,
+    csTools.BidirectionalTool,
+    csTools.LengthTool,
+    csTools.AngleTool,
+    csTools.FreehandRoiTool,
+    csTools.EllipticalRoiTool,
+    csTools.DragProbeTool,
+    csTools.RectangleRoiTool,
     // Segmentation
-    BrushTool,
+    csTools.BrushTool,
   ];
 
-  tools.forEach(tool => csTools.addTool(tool));
+  if (!isEmpty(configuration.tools)) {
+    tools.forEach(tool => {
+      const toolName = tool.name.replace('Tool', '');
+      const props = configuration.tools[toolName];
+      csTools.addTool(tool, props || {});
+    });
+  } else {
+    tools.forEach(tool => csTools.addTool(tool));
+  }
 
   csTools.addTool(csTools.ArrowAnnotateTool, {
     configuration: {

@@ -33,7 +33,8 @@ const MEASUREMENT_ACTION_MAP = {
  *
  *
  * @export
- * @param {*} configuration
+ * @param {Object} servicesManager
+ * @param {Object} configuration
  */
 export default function init({ servicesManager, configuration = {} }) {
   const { UIDialogService } = servicesManager.services;
@@ -57,68 +58,6 @@ export default function init({ servicesManager, configuration = {} }) {
       },
     });
   };
-
-  // If these tools were already added by a different extension, we want to replace
-  // them with the same tools that have an alternative configuration. By passing in
-  // our custom `getMeasurementLocationCallback`, we can...
-  const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
-
-  // Removes all tools from all enabled elements w/ provided name
-  // Not commonly used API, so :eyes: for unknown side-effects
-  csTools.removeTool('Bidirectional');
-  csTools.removeTool('Length');
-  csTools.removeTool('Angle');
-  csTools.removeTool('FreehandRoi');
-  csTools.removeTool('EllipticalRoi');
-  csTools.removeTool('CircleRoi');
-  csTools.removeTool('RectangleRoi');
-  csTools.removeTool('ArrowAnnotate');
-
-  // Re-add each tool w/ our custom configuration
-  csTools.addTool(csTools.BidirectionalTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.LengthTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.AngleTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.FreehandRoiTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.EllipticalRoiTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.CircleRoiTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.RectangleRoiTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.ArrowAnnotateTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-      getTextCallback: (callback, eventDetails) =>
-        callInputDialog(null, eventDetails, callback),
-      changeTextCallback: (data, eventDetails, callback) =>
-        callInputDialog(data, eventDetails, callback),
-    },
-  });
 
   // TODO: MEASUREMENT_COMPLETED (not present in initial implementation)
   const onMeasurementsChanged = (action, event) => {
