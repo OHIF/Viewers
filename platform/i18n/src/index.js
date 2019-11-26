@@ -139,6 +139,4 @@ i18n.initI18n = initI18n;
 i18n.addLocales = addLocales;
 i18n.defaultLanguage = DEFAULT_LANGUAGE;
 
-window.i18n = i18n;
-
 export default i18n;
