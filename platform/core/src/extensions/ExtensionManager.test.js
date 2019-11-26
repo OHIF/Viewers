@@ -37,6 +37,24 @@ describe('ExtensionManager.js', () => {
       // Assert
       expect(extensionManager.registerExtension.mock.calls.length).toBe(3);
     });
+
+    it('calls registerExtension() for each extension passing its configuration if tuple', () => {
+      const fakeConfiguration = { testing: true };
+      extensionManager.registerExtension = jest.fn();
+
+      // SUT
+      const fakeExtensions = [
+        { one: '1' },
+        [{ two: '2' }, fakeConfiguration],
+        { three: '3 ' },
+      ];
+      extensionManager.registerExtensions(fakeExtensions);
+
+      // Assert
+      expect(extensionManager.registerExtension.mock.calls[1]).toContain(
+        fakeConfiguration
+      );
+    });
   });
 
   describe('registerExtension()', () => {
