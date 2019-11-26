@@ -30,7 +30,8 @@ function Header(props) {
         title: t('About'),
         icon: { name: 'info' },
         onClick: () =>
-          show(AboutContent, {
+          show({
+            content: AboutContent,
             title: t('OHIF Viewer - About'),
           }),
       },
@@ -40,7 +41,8 @@ function Header(props) {
           name: 'user',
         },
         onClick: () =>
-          show(ConnectedUserPreferencesForm, {
+          show({
+            content: ConnectedUserPreferencesForm,
             title: t('User Preferences'),
           }),
       },
