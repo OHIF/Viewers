@@ -107,7 +107,6 @@ function TableSearchFilter(props) {
                 startDateId="start-date"
                 endDate={getDateEntry(studyDateTo, defaultEndDate)}
                 endDateId="end-date"
-                autoFocus={false}
                 // TODO: We need a dynamic way to determine which fields values to update
                 onDatesChange={({ startDate, endDate, preset = false }) => {
                   onValueChange('studyDateFrom', startDate);
