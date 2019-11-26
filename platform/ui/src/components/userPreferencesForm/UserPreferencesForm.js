@@ -30,7 +30,7 @@ import { GeneralPreferences } from './GeneralPreferences';
 const createTabs = () => {
   return [
     {
-      name: 'HotKey',
+      name: 'Hotkeys',
       Component: HotKeysPreferences,
       props: {},
     },
@@ -77,7 +77,7 @@ function UserPreferencesForm({
     generalPreferences
   ) => {
     return {
-      HotKey: { hotkeyDefinitions },
+      Hotkeys: { hotkeyDefinitions },
       'Window Level': { windowLevelData },
       General: { generalPreferences },
     };
@@ -123,7 +123,7 @@ function UserPreferencesForm({
     // update local state
     setTabsState({
       ...tabsState,
-      HotKey: { hotkeyDefinitions: defaultHotKeyDefitions },
+      Hotkeys: { hotkeyDefinitions: defaultHotKeyDefitions },
       General: { generalPreferences: { language: defaultLanguage } },
     });
 
@@ -177,16 +177,22 @@ function UserPreferencesForm({
       <div className="footer">
         <button
           className="btn btn-danger pull-left"
+          data-cy="reset-default-btn"
           onClick={onResetPreferences}
         >
           {t('Reset to Defaults')}
         </button>
         <div>
-          <div onClick={onClose} className="btn btn-default">
+          <div
+            onClick={onClose}
+            data-cy="cancel-btn"
+            className="btn btn-default"
+          >
             {t('Cancel')}
           </div>
           <button
             className="btn btn-primary"
+            data-cy="save-btn"
             disabled={hasAnyError()}
             onClick={onSavePreferences}
           >
