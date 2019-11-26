@@ -12,7 +12,9 @@ const getAllDisplaySets = () => {
   let allDisplaySets = [];
 
   allStudies.forEach(study => {
-    allDisplaySets = allDisplaySets.concat(study.getDisplaySets());
+    if (study.getDisplaySets) {
+      allDisplaySets = allDisplaySets.concat(study.getDisplaySets());
+    }
   });
 
   return allDisplaySets;
@@ -44,7 +46,8 @@ const getLatestSRSeries = () => {
   let latestSeries;
 
   allStudies.forEach(study => {
-    study.getSeries().forEach(series => {
+    const allSeries = study.getSeries ? study.getSeries() : [];
+    allSeries.forEach(series => {
       const firstInstance = series.getFirstInstance();
       const sopClassUid = firstInstance._instance.sopClassUid;
 
