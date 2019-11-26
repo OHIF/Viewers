@@ -215,22 +215,24 @@ function _initServices(services) {
  */
 function _initExtensions(extensions, hotkeys) {
   const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
-  const tools = [
-    'Bidirectional',
-    'Length',
-    'Angle',
-    'FreehandRoi',
-    'EllipticalRoi',
-    'CircleRoi',
-    'RectangleRoi',
-    'ArrowAnnotate',
-  ].map(tool => ({
-    [tool]: {
-      configuration: {
-        getMeasurementLocationCallback: toolLabellingFlowCallback,
+  const tools = Object.assign(
+    ...[
+      'Bidirectional',
+      'Length',
+      'Angle',
+      'FreehandRoi',
+      'EllipticalRoi',
+      'CircleRoi',
+      'RectangleRoi',
+      'ArrowAnnotate',
+    ].map(tool => ({
+      [tool]: {
+        configuration: {
+          getMeasurementLocationCallback: toolLabellingFlowCallback,
+        },
       },
-    },
-  }));
+    }))
+  );
 
   const defaultExtensions = [
     GenericViewerCommands,
