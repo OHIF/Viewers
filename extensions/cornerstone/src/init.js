@@ -70,8 +70,6 @@ export default function init({ servicesManager, configuration = {} }) {
     EllipticalRoiTool,
     DragProbeTool,
     RectangleRoiTool,
-    // Segmentation
-    BrushTool,
   } = csTools;
   const tools = [
     PanTool,
@@ -93,8 +91,6 @@ export default function init({ servicesManager, configuration = {} }) {
     EllipticalRoiTool,
     DragProbeTool,
     RectangleRoiTool,
-    // Segmentation
-    BrushTool,
   ];
 
   tools.forEach(tool => csTools.addTool(tool));
