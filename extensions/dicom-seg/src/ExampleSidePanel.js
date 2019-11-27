@@ -19,6 +19,7 @@ function ExampleSidePanel(props) {
 
   // TODO: Needs to be activeViewport
   const viewport = viewports[0];
+  const segModule = cornerstoneTools.getModule('segmentation');
 
   // No viewports, nothing to render
   // if (!viewport) {
@@ -34,6 +35,10 @@ function ExampleSidePanel(props) {
     activeLabelmapIndex: undefined,
     firstImageId: undefined,
   });
+  // This technically defaults to 10 if undefined (bug?)
+  const [brushRadius, setBrushRadius] = useState(
+    segModule.getters.radius || 10
+  );
 
   // Find our activeLabelmapIndex and activeLabelmap
   // TODO: Another useEffect that captures cornerstone events where these are modified
@@ -75,8 +80,6 @@ function ExampleSidePanel(props) {
   });
 
   // Get list of SEG labelmaps specific to active viewport (reference series)
-  const segModule = cornerstoneTools.getModule('segmentation');
-  console.log('SEG MODULE', segModule);
   const referencedSegDisplaysets = _getReferencedSegDisplaysets(
     studyInstanceUid,
     seriesInstanceUid
@@ -194,9 +197,57 @@ function ExampleSidePanel(props) {
     }
   }
 
+  function updateBrushSize(evt) {
+    setBrushRadius(evt.target.value);
+    segModule.setters.radius(evt.target.value);
+  }
+
+  function incrementSegment(shouldIncrement = true) {
+    const brushStackState = segModule.state.series[state.firstImageId];
+    const labelmap3D = brushStackState.labelmaps3D[state.activeLabelmapIndex];
+
+    if (shouldIncrement) {
+      labelmap3D.activeSegmentIndex++;
+    } else {
+      labelmap3D.activeSegmentIndex--;
+    }
+  }
+
   return (
     <div className="labelmap-container">
-      <h2 style={{ marginLeft: '16px' }}>Labelmaps</h2>
+      <h3 style={{ marginLeft: '16px' }}>Segmentation</h3>
+
+      <form style={{ padding: '0px 16px' }}>
+        <button
+          onClick={evt => {
+            evt.preventDefault();
+            incrementSegment();
+          }}
+        >
+          Next
+        </button>
+        <button
+          onClick={evt => {
+            evt.preventDefault();
+            incrementSegment(false);
+          }}
+        >
+          Previous
+        </button>
+
+        <div>
+          <label>Brush Radius</label>
+          <input
+            type="range"
+            min="1"
+            max="50"
+            value={brushRadius}
+            onChange={updateBrushSize}
+          ></input>
+        </div>
+      </form>
+
+      <h3 style={{ marginLeft: '16px' }}>Labelmaps</h3>
       <ul className="unlist labelmap-list">{labelmapList}</ul>
 
       <h3 style={{ marginLeft: '16px' }}>Segments</h3>
