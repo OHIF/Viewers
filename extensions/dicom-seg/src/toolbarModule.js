@@ -64,6 +64,15 @@ const definitions = [
         commandName: 'setToolActive',
         commandOptions: { toolName: 'CorrectionScissors' },
       },
+      {
+        id: 'BrushEraser',
+        label: 'Eraser',
+        icon: 'trash',
+        //
+        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'BrushEraser' },
+      },
     ],
   },
 ];

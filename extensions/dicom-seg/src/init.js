@@ -24,4 +24,11 @@ export default function init({ servicesManager, configuration = {} }) {
   ];
 
   tools.forEach(tool => csTools.addTool(tool));
+
+  csTools.addTool(BrushTool, {
+    name: 'BrushEraser',
+    configuration: {
+      alwaysEraseOnClick: true,
+    },
+  });
 }
