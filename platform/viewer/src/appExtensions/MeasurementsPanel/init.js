@@ -2,13 +2,11 @@ import OHIF from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import {
-  getToolLabellingFlowCallback,
   getOnRightClickCallback,
   getOnTouchPressCallback,
   getResetLabellingAndContextMenu,
 } from './labelingFlowCallbacks.js';
 import throttle from 'lodash.throttle';
-import { SimpleDialog } from '@ohif/ui';
 
 // TODO: This only works because we have a hard dependency on this extension
 // We need to decouple and make stuff like this possible w/o bundling this at
@@ -37,28 +35,6 @@ const MEASUREMENT_ACTION_MAP = {
  * @param {Object} configuration
  */
 export default function init({ servicesManager, configuration = {} }) {
-  const { UIDialogService } = servicesManager.services;
-  const callInputDialog = (data, event, callback) => {
-    let dialogId = UIDialogService.create({
-      content: SimpleDialog.InputDialog,
-      defaultPosition: {
-        x: (event && event.currentPoints.canvas.x) || 0,
-        y: (event && event.currentPoints.canvas.y) || 0,
-      },
-      showOverlay: true,
-      contentProps: {
-        title: 'Enter your annotation',
-        label: 'New label',
-        defaultValue: data ? data.text : '',
-        onClose: () => UIDialogService.dismiss({ id: dialogId }),
-        onSubmit: value => {
-          callback(value);
-          UIDialogService.dismiss({ id: dialogId });
-        },
-      },
-    });
-  };
-
   // TODO: MEASUREMENT_COMPLETED (not present in initial implementation)
   const onMeasurementsChanged = (action, event) => {
     return MEASUREMENT_ACTION_MAP[action](event);

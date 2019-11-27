@@ -125,8 +125,8 @@ export default function init({ servicesManager, configuration = {} }) {
     /* Add tools with its props. */
     tools.forEach(tool => {
       const toolName = tool.name.replace('Tool', '');
-      const props = externalToolsProps[toolName];
-      csTools.addTool(tool, props || {});
+      const props = externalToolsProps[toolName] || {};
+      csTools.addTool(tool, props);
     });
   } else {
     tools.forEach(tool => csTools.addTool(tool));
