@@ -5,6 +5,7 @@ import initCornerstoneTools from './initCornerstoneTools.js';
 import queryString from 'query-string';
 import { SimpleDialog } from '@ohif/ui';
 import isEmpty from 'lodash.isempty';
+import merge from 'lodash.merge';
 
 function fallbackMetaDataProvider(type, imageId) {
   if (!imageId.includes('wado?requestType=WADO')) {
@@ -86,6 +87,7 @@ export default function init({ servicesManager, configuration = {} }) {
     csTools.PanMultiTouchTool,
     csTools.ZoomTouchPinchTool,
     // Annotations
+    csTools.ArrowAnnotateTool,
     csTools.EraserTool,
     csTools.BidirectionalTool,
     csTools.LengthTool,
@@ -98,24 +100,37 @@ export default function init({ servicesManager, configuration = {} }) {
     csTools.BrushTool,
   ];
 
+  const internalToolsProps = {
+    ArrowAnnotate: {
+      configuration: {
+        getTextCallback: (callback, eventDetails) =>
+          callInputDialog(null, eventDetails, callback),
+        changeTextCallback: (data, eventDetails, callback) =>
+          callInputDialog(data, eventDetails, callback),
+      },
+    },
+  };
+
   if (!isEmpty(configuration.tools)) {
+    const externalToolsProps = configuration.tools;
+
+    /* Merge internal with external configuration. */
+    for (const toolName in internalToolsProps) {
+      externalToolsProps[toolName] = merge(
+        externalToolsProps[toolName],
+        internalToolsProps[toolName]
+      );
+    }
+
+    /* Add tools with its props. */
     tools.forEach(tool => {
       const toolName = tool.name.replace('Tool', '');
-      const props = configuration.tools[toolName];
+      const props = externalToolsProps[toolName];
       csTools.addTool(tool, props || {});
     });
   } else {
     tools.forEach(tool => csTools.addTool(tool));
   }
-
-  csTools.addTool(csTools.ArrowAnnotateTool, {
-    configuration: {
-      getTextCallback: (callback, eventDetails) =>
-        callInputDialog(null, eventDetails, callback),
-      changeTextCallback: (data, eventDetails, callback) =>
-        callInputDialog(data, eventDetails, callback),
-    },
-  });
 
   csTools.setToolActive('Pan', { mouseButtonMask: 4 });
   csTools.setToolActive('Zoom', { mouseButtonMask: 2 });
