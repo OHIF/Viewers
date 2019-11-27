@@ -117,12 +117,13 @@ function ExampleSidePanel(props) {
             state.activeLabelmapIndex
           );
 
-          // NOTE: should not update until study has finished loading...
-          setState(
-            Object.assign({}, state, {
-              activeLabelmapIndex: activatedLabelmapIndex,
-            })
-          );
+          if (typeof activatedLabelmapIndex == 'number') {
+            setState(
+              Object.assign({}, state, {
+                activeLabelmapIndex: activatedLabelmapIndex,
+              })
+            );
+          }
         }}
       >
         <Icon
