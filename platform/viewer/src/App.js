@@ -216,7 +216,7 @@ function _initExtensions(extensions, hotkeys) {
     GenericViewerCommands,
     OHIFCornerstoneExtension,
     // WARNING: MUST BE REGISTERED _AFTER_ OHIFCORNERSTONEEXTENSION
-    MeasurementsPanel,
+    // MeasurementsPanel,
   ];
   const mergedExtensions = defaultExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
