@@ -34,7 +34,7 @@ const appDefaults = {
 };
 
 if (window) {
-  config = window.config || {};
+  config = window.config || (() => ({}));
   config.extensions = [
     OHIFVTKExtension,
     OHIFDicomHtmlExtension,

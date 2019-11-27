@@ -82,21 +82,7 @@ class App extends Component {
     oidc: PropTypes.array,
     whiteLabelling: PropTypes.object,
     routerBasename: PropTypes.string.isRequired,
-    config: PropTypes.shape({
-      tools: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-      hotkeys: PropTypes.oneOfType([PropTypes.func, PropTypes.array]),
-      servers: PropTypes.oneOfType([
-        PropTypes.func.isRequired,
-        PropTypes.object.isRequired,
-      ]),
-      extensions: PropTypes.oneOfType([
-        PropTypes.arrayOf(
-          PropTypes.shape({
-            id: PropTypes.string.isRequired,
-          })
-        ),
-      ]),
-    }),
+    config: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -115,8 +101,12 @@ class App extends Component {
 
     this._appConfig = { props, ...props.config };
 
+    const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
+
     const { config, oidc } = props;
-    const { servers, extensions, hotkeys, tools } = _initConfig(config);
+    const { servers, extensions, hotkeys, tools } = config({
+      toolLabellingFlowCallback,
+    });
 
     this.initUserManager(oidc);
     _initServices([UINotificationService, UIModalService, UIDialogService]);
@@ -260,23 +250,6 @@ function _makeAbsoluteIfNecessary(url, base_url) {
   }
 
   return base_url + url;
-}
-
-function _initConfig(config) {
-  const injectedConfig = config;
-
-  const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
-
-  for (const key in config) {
-    if (typeof config[key] === 'function') {
-      injectedConfig[key] = injectedConfig[key]({
-        toolLabellingFlowCallback,
-        /* TODO: Inject servicesManager */
-      });
-    }
-  }
-
-  return injectedConfig;
 }
 
 // Only wrap/use hot if in dev
