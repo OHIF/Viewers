@@ -3,8 +3,11 @@ import { utils } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { Icon } from '@ohif/ui';
 //
+import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import classnames from 'classnames';
+import moment from 'moment';
+import './ExampleSidePanel.css';
 
 const { studyMetadataManager } = utils;
 
@@ -33,6 +36,7 @@ function ExampleSidePanel(props) {
   });
 
   // Find our activeLabelmapIndex and activeLabelmap
+  // TODO: Another useEffect that captures cornerstone events where these are modified
   useEffect(() => {
     const segmentationModule = cornerstoneTools.getModule('segmentation');
     const studyMetadata = studyMetadataManager.get(studyInstanceUid);
@@ -53,73 +57,148 @@ function ExampleSidePanel(props) {
     }
   }, [displaySetInstanceUid, studyInstanceUid]);
 
+  useEffect(() => {
+    const labelmapModifiedHandler = function(evt) {
+      console.log(evt);
+    };
+    cornerstone.events.addEventListener(
+      'cornersontetoolslabelmapmodified',
+      labelmapModifiedHandler
+    );
+
+    return () => {
+      cornerstone.events.removeEventListener(
+        'cornersontetoolslabelmapmodified',
+        labelmapModifiedHandler
+      );
+    };
+  });
+
   // Get list of SEG labelmaps specific to active viewport (reference series)
+  const segModule = cornerstoneTools.getModule('segmentation');
   const referencedSegDisplaysets = _getReferencedSegDisplaysets(
     studyInstanceUid,
     seriesInstanceUid
   );
 
-  // 1. Update labelmap...
   // 2. UseEffect to update state? or to a least trigger a re-render
-  // 3. Pull in seg names for each labelmap
   // 4. Toggle visibility of labelmap?
   // 5. Toggle visibility of seg?
-  // 6. Jump to seg?
 
   // If the port is cornerstone, just need to call a re-render.
   // If the port is vtkjs, its a bit more tricky as we now need to create a new
 
-  return (
-    <div
-      style={{
-        color: 'white',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '200px',
-      }}
-    >
-      <h3>Labelmaps</h3>
-      {referencedSegDisplaysets.map(ds => (
+  const labelmapList = referencedSegDisplaysets.map(ds => {
+    const { labelmapIndex, seriesDate, seriesTime } = ds;
+    const { activeLabelmapIndex } = state;
+
+    // Map to display representation
+    const dateStr = `${seriesDate}:${seriesTime}`.split('.')[0];
+    const date = moment(dateStr, 'YYYYMMDD:HHmmss');
+    const isActiveLabelmap = labelmapIndex === activeLabelmapIndex;
+    const displayDate = date.format('ddd, MMM Do YYYY');
+    const displayTime = date.format('h:mm:ss a');
+    const displayDescription = ds.seriesDescription;
+
+    return (
+      <li
+        key={`${seriesDate}${seriesTime}`}
+        className={classnames('labelmap-item', {
+          isActive: isActiveLabelmap,
+        })}
+        // CLICK BLOCKED BY DRAGGABLEAREA
+        // Specific to UIDialogService
+        onClick={async () => {
+          const activatedLabelmapIndex = await _setActiveLabelmap(
+            viewport,
+            studies,
+            ds,
+            state.firstImageId,
+            state.activeLabelmapIndex
+          );
+
+          // NOTE: should not update until study has finished loading...
+          setState(
+            Object.assign({}, state, {
+              activeLabelmapIndex: activatedLabelmapIndex,
+            })
+          );
+        }}
+      >
+        <Icon
+          style={{
+            marginRight: '8px',
+            marginTop: '12px',
+            minWidth: '14px',
+            color: isActiveLabelmap ? '#FFF' : '#000',
+          }}
+          name="star"
+        />
         <div
-          key={`${ds.seriesDate}${ds.seriesTime}`}
-          className={classnames({
-            isActive: ds.labelmapIndex === state.activeLabelmapIndex,
-          })}
           style={{
             display: 'flex',
-            justifyContent: 'space-between',
-            cursor: 'pointer',
-            borderBottom: '1px solid var(--ui-gray-light)',
-            padding: '8px',
-            margin: '4px',
-          }}
-          // CLICK BLOCKED BY DRAGGABLEAREA
-          onClick={() => {
-            // TODO: Await?
-            _setActiveLabelmap(
-              viewport,
-              studies,
-              ds,
-              state.firstImageId,
-              state.activeLabelmapIndex
-            );
-            setState(
-              Object.assign({}, state, {
-                activeLabelmapIndex: ds.labelmapIndex,
-              })
-            );
+            flexDirection: 'column',
+            flexGrow: '1',
+            overflow: 'hidden',
           }}
         >
-          <Icon name="exclamation-triangle" />
           <div
             style={{
-              backgroundColor: 'dodgerblue',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
             }}
           >
-            {ds.seriesDate}:{ds.seriesTime}
+            {displayDescription}
           </div>
+          <div style={{ color: '#BABABA' }}>{displayDate}</div>
         </div>
-      ))}
+      </li>
+    );
+  });
+
+  const segmentList = [];
+
+  if (state.activeLabelmapIndex !== undefined) {
+    const brushStackState = segModule.state.series[state.firstImageId];
+    const labelmap3D = brushStackState.labelmaps3D[state.activeLabelmapIndex];
+
+    if (labelmap3D) {
+      const colorLutTable =
+        segModule.state.colorLutTables[labelmap3D.colorLUTIndex];
+      const segmentsMeta = labelmap3D.metadata.data;
+      for (
+        let segmentIndex = 0;
+        segmentIndex < segmentsMeta.length;
+        segmentIndex++
+      ) {
+        const segment = segmentsMeta[segmentIndex];
+
+        if (!segment) {
+          continue;
+        }
+        const color = colorLutTable[segmentIndex];
+
+        segmentList.push(
+          <li key={segment.SegmentNumber} className="segment-list-item">
+            <div
+              className="segment-color"
+              style={{ backgroundColor: `rgba(${color.join(',')})` }}
+            ></div>
+            <div className="segment-label">{segment.SegmentLabel}</div>
+          </li>
+        );
+      }
+    }
+  }
+
+  return (
+    <div className="labelmap-container">
+      <h2 style={{ marginLeft: '16px' }}>Labelmaps</h2>
+      <ul className="unlist labelmap-list">{labelmapList}</ul>
+
+      <h3 style={{ marginLeft: '16px' }}>Segments</h3>
+      <ul className="unlist">{segmentList}</ul>
     </div>
   );
 }
@@ -183,6 +262,8 @@ function _getReferencedSegDisplaysets(studyInstanceUid, seriesInstanceUid) {
  * @param {*} viewportSpecificData
  * @param {*} studies
  * @param {*} displaySet
+ * @param {*} firstImageId
+ * @param {*} activeLabelmapIndex
  * @returns
  */
 async function _setActiveLabelmap(
@@ -203,13 +284,9 @@ async function _setActiveLabelmap(
     await displaySet.load(viewportSpecificData, studies);
   }
 
-  console.log('UPDATED DISPLAYSET', displaySet, displaySet.labelmapIndex);
-
   const { state } = cornerstoneTools.getModule('segmentation');
   const brushStackState = state.series[firstImageId];
 
-  // Set the labelmapIndex to active:
-  console.log('setting active labelmap index to: ', displaySet.labelmapIndex);
   brushStackState.activeLabelmapIndex = displaySet.labelmapIndex;
 
   return displaySet.labelmapIndex;

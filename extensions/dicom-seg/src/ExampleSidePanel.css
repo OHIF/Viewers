@@ -1,0 +1,49 @@
+.unlist {
+  list-style: none;
+  padding-left: 0;
+}
+
+.unlist li {
+  list-style: none;
+}
+
+.labelmap-container {
+  color: white;
+  min-height: 200px;
+}
+
+.labelmap-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.labelmap-item {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  border-bottom: 1px solid var(--ui-gray-light);
+  padding: 8px 16px;
+  margin: 0;
+}
+
+.labelmap-item:hover {
+  cursor: pointer;
+  background-color: var(--active-color);
+}
+
+.segment-list-item {
+  display: flex;
+  padding: 2px 16px;
+}
+
+.segment-color {
+  border-radius: 100%;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  margin-top: 3px;
+}
+
+.segment-label {
+  flex-grow: 1;
+}
