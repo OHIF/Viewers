@@ -76,6 +76,7 @@ function ExampleSidePanel(props) {
 
   // Get list of SEG labelmaps specific to active viewport (reference series)
   const segModule = cornerstoneTools.getModule('segmentation');
+  console.log('SEG MODULE', segModule);
   const referencedSegDisplaysets = _getReferencedSegDisplaysets(
     studyInstanceUid,
     seriesInstanceUid

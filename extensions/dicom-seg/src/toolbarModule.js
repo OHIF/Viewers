@@ -13,7 +13,7 @@ const definitions = [
       {
         id: 'Brush',
         label: 'Brush',
-        icon: 'circle',
+        icon: 'brush',
         //
         type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
         commandName: 'setToolActive',
@@ -22,7 +22,7 @@ const definitions = [
       {
         id: 'SphericalBrush',
         label: 'Spherical',
-        icon: 'circle',
+        icon: 'sphere',
         //
         type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
         commandName: 'setToolActive',
@@ -31,7 +31,7 @@ const definitions = [
       {
         id: 'FreehandScissors',
         label: 'Freehand Scissors',
-        icon: 'circle',
+        icon: 'edit',
         //
         type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
         commandName: 'setToolActive',
@@ -40,7 +40,7 @@ const definitions = [
       {
         id: 'RectangleScissors',
         label: 'Rectangle Scissors',
-        icon: 'circle',
+        icon: 'square-o',
         //
         type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
         commandName: 'setToolActive',
@@ -49,7 +49,7 @@ const definitions = [
       {
         id: 'CircleScissors',
         label: 'Circle Scissors',
-        icon: 'circle',
+        icon: 'circle-o',
         //
         type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
         commandName: 'setToolActive',
@@ -58,7 +58,7 @@ const definitions = [
       {
         id: 'CorrectionScissors',
         label: 'Correction Scissors',
-        icon: 'circle',
+        icon: 'scissors',
         //
         type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
         commandName: 'setToolActive',
