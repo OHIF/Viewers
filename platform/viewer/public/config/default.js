@@ -69,4 +69,26 @@ window.config = {
     // ~ Cornerstone Tools
     { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
   ],
+  tools: function({ toolLabellingFlowCallback }) {
+    const tools = Object.assign(
+      ...[
+        'Bidirectional',
+        'Length',
+        'Angle',
+        'FreehandRoi',
+        'EllipticalRoi',
+        'CircleRoi',
+        'RectangleRoi',
+        'ArrowAnnotate',
+      ].map(tool => ({
+        [tool]: {
+          configuration: {
+            getMeasurementLocationCallback: toolLabellingFlowCallback,
+          },
+        },
+      }))
+    );
+
+    return tools;
+  },
 };

@@ -79,23 +79,32 @@ window.store = store;
 
 class App extends Component {
   static propTypes = {
-    routerBasename: PropTypes.string.isRequired,
-    servers: PropTypes.object.isRequired,
-    //
     oidc: PropTypes.array,
     whiteLabelling: PropTypes.object,
-    extensions: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-      })
-    ),
-    hotkeys: PropTypes.array,
+    routerBasename: PropTypes.string.isRequired,
+    config: PropTypes.shape({
+      tools: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+      hotkeys: PropTypes.oneOfType([PropTypes.func, PropTypes.array]),
+      servers: PropTypes.oneOfType([
+        PropTypes.func.isRequired,
+        PropTypes.object.isRequired,
+      ]),
+      extensions: PropTypes.oneOfType([
+        PropTypes.arrayOf(
+          PropTypes.shape({
+            id: PropTypes.string.isRequired,
+          })
+        ),
+      ]),
+    }),
   };
 
   static defaultProps = {
     whiteLabelling: {},
     oidc: [],
-    extensions: [],
+    config: {
+      extensions: [],
+    },
   };
 
   _appConfig;
@@ -104,13 +113,14 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this._appConfig = props;
+    this._appConfig = { props, ...props.config };
 
-    const { servers, extensions, hotkeys, oidc } = props;
+    const { config, oidc } = props;
+    const { servers, extensions, hotkeys, tools } = _initConfig(config);
 
     this.initUserManager(oidc);
     _initServices([UINotificationService, UIModalService, UIDialogService]);
-    _initExtensions(extensions, hotkeys);
+    _initExtensions(extensions, hotkeys, tools);
     _initServers(servers);
     initWebWorkers();
   }
@@ -213,27 +223,7 @@ function _initServices(services) {
 /**
  * @param
  */
-function _initExtensions(extensions, hotkeys) {
-  const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
-  const tools = Object.assign(
-    ...[
-      'Bidirectional',
-      'Length',
-      'Angle',
-      'FreehandRoi',
-      'EllipticalRoi',
-      'CircleRoi',
-      'RectangleRoi',
-      'ArrowAnnotate',
-    ].map(tool => ({
-      [tool]: {
-        configuration: {
-          getMeasurementLocationCallback: toolLabellingFlowCallback,
-        },
-      },
-    }))
-  );
-
+function _initExtensions(extensions, hotkeys, tools) {
   const defaultExtensions = [
     GenericViewerCommands,
     [OHIFCornerstoneExtension, { tools }],
@@ -270,6 +260,23 @@ function _makeAbsoluteIfNecessary(url, base_url) {
   }
 
   return base_url + url;
+}
+
+function _initConfig(config) {
+  const injectedConfig = config;
+
+  const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
+
+  for (const key in config) {
+    if (typeof config[key] === 'function') {
+      injectedConfig[key] = injectedConfig[key]({
+        toolLabellingFlowCallback,
+        /* TODO: Inject servicesManager */
+      });
+    }
+  }
+
+  return injectedConfig;
 }
 
 // Only wrap/use hot if in dev

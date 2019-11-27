@@ -43,7 +43,7 @@ if (window) {
   ];
 }
 
-const appProps = Object.assign({}, appDefaults, config);
+const appProps = Object.assign({}, appDefaults, { config });
 
 // Create App
 const app = React.createElement(App, appProps, null);
