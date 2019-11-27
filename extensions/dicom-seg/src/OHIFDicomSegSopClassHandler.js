@@ -51,12 +51,14 @@ const OHIFDicomSegSopClassHandler = {
     };
 
     segDisplaySet.load = function(referencedDisplaySet, studies) {
-      loadSegmentation(segDisplaySet, referencedDisplaySet, studies).catch(
-        error => {
-          segDisplaySet.isLoaded = false;
-          throw new Error(error);
-        }
-      );
+      return loadSegmentation(
+        segDisplaySet,
+        referencedDisplaySet,
+        studies
+      ).catch(error => {
+        segDisplaySet.isLoaded = false;
+        throw new Error(error);
+      });
     };
 
     return segDisplaySet;
