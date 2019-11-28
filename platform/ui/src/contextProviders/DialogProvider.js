@@ -21,6 +21,28 @@ const DialogProvider = ({ children, service }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dialogs, setDialogs] = useState([]);
   const [lastDialogPosition, setLastDialogPosition] = useState(null);
+  const [centerPositions, setCenterPositions] = useState([]);
+
+  useEffect(() => {
+    setCenterPositions(
+      dialogs.map(dialog => ({
+        id: dialog.id,
+        ...getCenterPosition(dialog.id),
+      }))
+    );
+  }, [dialogs]);
+
+  const getCenterPosition = id => {
+    const root = document.querySelector('#root');
+    const centerX = root.offsetLeft + root.offsetWidth / 2;
+    const centerY = root.offsetTop + root.offsetHeight / 2;
+    const item = document.querySelector(`#draggableItem-${id}`);
+    const itemBounds = item.getBoundingClientRect();
+    return {
+      x: centerX - itemBounds.width / 2,
+      y: centerY - itemBounds.height / 2,
+    };
+  };
 
   /**
    * Sets the implementation of a dialog service that can be used by extensions.
@@ -42,6 +64,7 @@ const DialogProvider = ({ children, service }) => {
    * @property {Object} contentProps The dialog content props.
    * @property {boolean} isDraggable Controls if dialog content is draggable or not.
    * @property {boolean} showOverlay Controls dialog overlay.
+   * @property {boolean} centralize Center the dialog on the screen.
    * @property {boolean} useLastPosition Use last position instead of default.
    * @property {ElementPosition} defaultPosition Specifies the `x` and `y` that the dragged item should start at.
    * @property {ElementPosition} position If this property is present, the item becomes 'controlled' and is not responsive to user input.
@@ -119,6 +142,7 @@ const DialogProvider = ({ children, service }) => {
         contentProps,
         position,
         defaultPosition,
+        centralize = false,
         useLastPosition = true,
         isDraggable = true,
         onStart,
@@ -130,11 +154,13 @@ const DialogProvider = ({ children, service }) => {
         <Draggable
           key={id}
           disabled={!isDraggable}
-          position={position}
+          position={
+            centralize
+              ? centerPositions.find(position => position.id === id)
+              : position
+          }
           defaultPosition={
-            useLastPosition
-              ? lastDialogPosition || defaultPosition
-              : defaultPosition
+            (useLastPosition && lastDialogPosition) || defaultPosition
           }
           bounds="parent"
           onStart={event => {
