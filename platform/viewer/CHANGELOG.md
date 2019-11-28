@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.11.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.0...@ohif/viewer@2.11.1) (2019-11-27)
+
+
+### Bug Fixes
+
+* of undefined name of project ([#1231](https://github.com/OHIF/Viewers/issues/1231)) ([e34a057](https://github.com/OHIF/Viewers/commit/e34a05726319e3e70279c43d5bf976d33cdf71f7))
+
+
+
+
+
 # [2.11.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.10.2...@ohif/viewer@2.11.0) (2019-11-25)
 
 
