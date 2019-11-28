@@ -74,7 +74,7 @@ const DialogProvider = ({ children, service }) => {
    * @property {Function} onDrag Called while dragging.
    */
 
-  useEffect(() => _bringToFront(lastDialogId), [lastDialogId]);
+  useEffect(() => _bringToFront(lastDialogId), [_bringToFront, lastDialogId]);
 
   /**
    * Creates a new dialog and return its id.
@@ -103,9 +103,11 @@ const DialogProvider = ({ children, service }) => {
    * @property {string} props.id The dialog id.
    * @returns void
    */
-  const dismiss = useCallback(({ id }) => {
-    setDialogs(dialogs => dialogs.filter(dialog => dialog.id !== id));
-  }, []);
+  const dismiss = useCallback(
+    ({ id }) =>
+      setDialogs(dialogs => dialogs.filter(dialog => dialog.id !== id)),
+    []
+  );
 
   /**
    * Dismisses all dialogs.
@@ -129,14 +131,14 @@ const DialogProvider = ({ children, service }) => {
    * @param {string} id The dialog id.
    * @returns void
    */
-  const _bringToFront = id => {
+  const _bringToFront = useCallback(id => {
     setDialogs(dialogs => {
       const topDialog = dialogs.find(dialog => dialog.id === id);
       return topDialog
         ? [...dialogs.filter(dialog => dialog.id !== id), topDialog]
-        : [];
+        : dialogs;
     });
-  };
+  }, []);
 
   const renderDialogs = () =>
     dialogs.map(dialog => {
