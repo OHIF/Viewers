@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import LabellingTransition from './LabellingTransition.js';
 import OHIFLabellingData from './OHIFLabellingData.js';
 import PropTypes from 'prop-types';
-import bounding from '../../lib/utils/bounding.js';
 import cloneDeep from 'lodash.clonedeep';
 import { getAddLabelButtonStyle } from './labellingPositionUtils.js';
 
@@ -51,7 +50,6 @@ export default class LabellingFlow extends Component {
   }
 
   componentDidUpdate = () => {
-    this.repositionComponent();
     if (this.state.editDescription) {
       this.descriptionInput.current.focus();
     }
@@ -89,10 +87,8 @@ export default class LabellingFlow extends Component {
         onTransitionExit={this.props.labellingDoneCallback}
       >
         <>
-          <div className="labellingComponent-overlay"></div>
           <div
             className={mainElementClassName}
-            style={style}
             ref={this.mainElement}
             onMouseLeave={this.fadeOutAndLeave}
             onMouseEnter={this.clearFadeOutTimer}
@@ -132,7 +128,6 @@ export default class LabellingFlow extends Component {
             columns={1}
             onSelected={this.selectTreeSelectCalback}
             selectTreeFirstTitle="Assign Label"
-            onComponentChange={this.repositionComponent}
           />
         );
       } else {
@@ -295,30 +290,5 @@ export default class LabellingFlow extends Component {
     }
 
     clearTimeout(this.fadeOutTimer);
-  };
-
-  calculateTopDistance = () => {
-    const height = window.innerHeight - window.innerHeight * 0.3;
-    let top = this.state.componentStyle.top - height / 2 + 55;
-    if (top < 0) {
-      top = 0;
-    } else {
-      if (top + height > window.innerHeight) {
-        top -= top + height - window.innerHeight;
-      }
-    }
-    return top;
-  };
-
-  repositionComponent = () => {
-    // SetTimeout for the css animation to end.
-    setTimeout(() => {
-      bounding(this.mainElement);
-      if (this.state.editLocation) {
-        this.mainElement.current.style.maxHeight = '70vh';
-        const top = this.calculateTopDistance();
-        this.mainElement.current.style.top = `${top}px`;
-      }
-    }, 200);
   };
 }
