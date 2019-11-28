@@ -23,6 +23,7 @@ import {
   createUIModalService,
   createUIDialogService,
   utils,
+  redux as reduxOHIF
 } from '@ohif/core';
 
 import i18n from '@ohif/i18n';
@@ -45,6 +46,7 @@ import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 /** Store */
 import { getActiveContexts } from './store/layout/selectors.js';
 import store from './store';
+const { setUserPreferences } = reduxOHIF.actions;
 
 /** Contexts */
 import WhiteLabellingContext from './context/WhiteLabellingContext';
@@ -221,9 +223,29 @@ function _initExtensions(extensions, hotkeys) {
   const mergedExtensions = defaultExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
 
+  const { hotkeyDefinitions = {} } = store.getState().preferences || {};
+  let updateStore = false;
+  let hotkeysToUse = hotkeyDefinitions;
+
   // Must run after extension commands are registered
-  if (hotkeys) {
-    hotkeysManager.setHotkeys(hotkeys, true);
+  // if there is no hotkeys from localStorate set up from config
+  if (!Object.keys(hotkeyDefinitions).length) {
+    hotkeysToUse = hotkeys;
+    updateStore = true;
+  }
+
+  if (hotkeysToUse) {
+    hotkeysManager.setHotkeys(hotkeysToUse);
+    // set default based on app config
+    hotkeysManager.setDefaultHotKeys(hotkeys);
+
+    if (updateStore) {
+      const { hotkeyDefinitions } = hotkeysManager;
+      const windowLevelData = {};
+      store.dispatch(
+        setUserPreferences({ windowLevelData, hotkeyDefinitions })
+      );
+    }
   }
 }
 
