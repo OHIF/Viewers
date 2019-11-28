@@ -20,6 +20,7 @@ export const useDialog = () => useContext(DialogContext);
 const DialogProvider = ({ children, service }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dialogs, setDialogs] = useState([]);
+  const [lastDialogId, setLastDialogId] = useState(null);
   const [lastDialogPosition, setLastDialogPosition] = useState(null);
   const [centerPositions, setCenterPositions] = useState([]);
 
@@ -73,6 +74,8 @@ const DialogProvider = ({ children, service }) => {
    * @property {Function} onDrag Called while dragging.
    */
 
+  useEffect(() => _bringToFront(lastDialogId), [lastDialogId]);
+
   /**
    * Creates a new dialog and return its id.
    *
@@ -88,6 +91,7 @@ const DialogProvider = ({ children, service }) => {
     }
 
     setDialogs(dialogs => [...dialogs, { ...props, id: dialogId }]);
+    setLastDialogId(dialogId);
 
     return dialogId;
   }, []);
