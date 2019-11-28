@@ -231,15 +231,30 @@ function HotKeyPreferencesRow({
     setInputValue(formatPressedKeys(hotkeys));
   }, [hotkeys]);
 
+  const isSpecialCharacter = str => {
+    return str.length === 1 && str.match(/^[^a-zA-Z0-9]+$/);
+  };
+
   const updateInputText = (keyDownEvent, displayPressedKey = false) => {
     const pressedKeys = getKeysPressedArray(keyDownEvent);
 
     if (displayPressedKey) {
       const specialKeyName = specialKeys[keyDownEvent.which];
+
       const keyName =
         specialKeyName ||
         keyDownEvent.key ||
         String.fromCharCode(keyDownEvent.keyCode);
+
+      /**
+       * Check if the pressed key is a special character created by
+       * combined keys e.g.: "shift" + "=" results in "+".
+       * If so, we should set only the key itself "+", without the combined one.
+       */
+      if (isSpecialCharacter(keyName)) {
+        setInputValue(keyName.toLowerCase());
+        return;
+      }
 
       // ensure lowerCase
       pressedKeys.push(keyName.toLowerCase());
