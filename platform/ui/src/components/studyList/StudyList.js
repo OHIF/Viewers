@@ -81,7 +81,7 @@ function StudyList(props) {
 
   const mediumTableMeta = [
     {
-      displayText: `${t('Patient')} / ${t('MRN')}`,
+      displayText: `${t('PatientName')} / ${t('MRN')}`,
       fieldName: 'patientNameOrId',
       inputType: 'text',
       size: 250,
@@ -187,7 +187,6 @@ function StudyList(props) {
               studyDate={study.studyDate}
               studyDescription={study.studyDescription || ''}
               studyInstanceUid={study.studyInstanceUid}
-              t={t}
               displaySize={displaySize}
             />
           ))}
@@ -239,9 +238,10 @@ function TableRow(props) {
     studyDescription,
     studyInstanceUid,
     onClick: handleClick,
-    t,
     displaySize,
   } = props;
+
+  const { t } = useTranslation('StudyList');
 
   const largeRowTemplate = (
     <tr

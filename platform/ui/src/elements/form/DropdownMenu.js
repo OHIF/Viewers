@@ -46,7 +46,7 @@ class DropdownMenu extends Component {
           <button
             key={key}
             className="dd-item"
-            data-cy="about-item-menu"
+            data-cy="dd-item-menu"
             onClick={() => this.handleOnClick(onClick)}
           >
             {icon && <Icon {...icon} className="dd-item-icon" />}
