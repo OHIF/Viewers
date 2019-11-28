@@ -205,7 +205,11 @@ const DialogProvider = ({ children, service }) => {
         >
           <div
             id={`draggableItem-${id}`}
-            className={classNames('DraggableItem', isDragging && 'dragging')}
+            className={classNames(
+              'DraggableItem',
+              isDragging && 'dragging',
+              isDraggable && 'draggable'
+            )}
             style={{ zIndex: '999', position: 'absolute' }}
             onClick={() => _bringToFront(id)}
           >
