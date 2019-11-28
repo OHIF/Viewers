@@ -16,7 +16,8 @@
  * @property {ReactElement|HTMLElement} content The dialog content.
  * @property {Object} contentProps The dialog content props.
  * @property {boolean} [isDraggable=true] Controls if dialog content is draggable or not.
- *  @property {boolean} [showOverlay=false] Controls dialog overlay.
+ * @property {boolean} [showOverlay=false] Controls dialog overlay.
+ * @property {boolean} [useLastPosition=true] Use last position instead of default.
  * @property {ElementPosition} defaultPosition Specifies the `x` and `y` that the dragged item should start at.
  * @property {ElementPosition} position If this property is present, the item becomes 'controlled' and is not responsive to user input.
  * @property {Function} onStart Called when dragging starts. If `false` is returned any handler, the action will cancel.
@@ -45,7 +46,7 @@ function createUIDialogService() {
 /**
  * Show a new UI dialog;
  *
- * @param {DialogProps} props { id, content, contentProps, onStart, onDrag, onStop, isDraggable, showOverlay, defaultPosition, position }
+ * @param {DialogProps} props { id, content, contentProps, onStart, onDrag, onStop, isDraggable, showOverlay, useLastPosition, defaultPosition, position }
  */
 function create({
   id,
@@ -54,6 +55,7 @@ function create({
   onStart,
   onDrag,
   onStop,
+  useLastPosition = true,
   isDraggable = true,
   showOverlay = false,
   defaultPosition,
@@ -66,6 +68,7 @@ function create({
     onStart,
     onDrag,
     onStop,
+    useLastPosition,
     isDraggable,
     showOverlay,
     defaultPosition,
