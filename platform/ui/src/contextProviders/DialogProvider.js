@@ -42,6 +42,7 @@ const DialogProvider = ({ children, service }) => {
    * @property {Object} contentProps The dialog content props.
    * @property {boolean} isDraggable Controls if dialog content is draggable or not.
    * @property {boolean} showOverlay Controls dialog overlay.
+   * @property {boolean} useLastPosition Use last position instead of default.
    * @property {ElementPosition} defaultPosition Specifies the `x` and `y` that the dragged item should start at.
    * @property {ElementPosition} position If this property is present, the item becomes 'controlled' and is not responsive to user input.
    * @property {Function} onStart Called when dragging starts. If `false` is returned any handler, the action will cancel.
@@ -118,6 +119,7 @@ const DialogProvider = ({ children, service }) => {
         contentProps,
         position,
         defaultPosition,
+        useLastPosition = true,
         isDraggable = true,
         onStart,
         onStop,
@@ -129,7 +131,11 @@ const DialogProvider = ({ children, service }) => {
           key={id}
           disabled={!isDraggable}
           position={position}
-          defaultPosition={lastDialogPosition || defaultPosition}
+          defaultPosition={
+            useLastPosition
+              ? lastDialogPosition || defaultPosition
+              : defaultPosition
+          }
           bounds="parent"
           onStart={event => {
             const e = event || window.event;
