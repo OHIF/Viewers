@@ -139,9 +139,9 @@ describe('OHIF Download Snapshot File', () => {
         // Uncheck "Show Annotations" option
         cy.get('[data-cy="show-annotations"]')
           .uncheck()
-          .wait(300);
+          .wait(1000);
         //Compare if both images are diffent and have different src attribute
-        cy.get('[data-cy="viewport-preview-img"]')
+        cy.get('.viewport-preview')
           .invoke('attr', 'src')
           .should($ImageSrcWithoutAnnotations => {
             expect(
