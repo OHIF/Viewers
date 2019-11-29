@@ -161,7 +161,7 @@ class OHIFVTKViewport extends Component {
       const { activeLabelmapIndex } = brushStackState;
       const labelmap3D = brushStackState.labelmaps3D[activeLabelmapIndex];
 
-      const vtkLabelmapID = `firstImageId_activeLabelmapIndex`;
+      const vtkLabelmapID = `${firstImageId}_${activeLabelmapIndex}`;
 
       if (labelmapCache[vtkLabelmapID]) {
         labelmapDataObject = labelmapCache[vtkLabelmapID];
