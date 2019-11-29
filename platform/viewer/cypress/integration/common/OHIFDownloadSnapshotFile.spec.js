@@ -132,24 +132,17 @@ describe('OHIF Download Snapshot File', () => {
     // Visual comparison
     cy.screenshot('Download Image Modal - Show Annotations checked');
     cy.percyCanvasSnapshot('Download Image Modal - Show Annotations checked');
-    //Compare image src between Image with Annotations and without annotation
-    cy.get('[data-cy="viewport-preview-img"]')
-      .invoke('attr', 'src')
-      .then($ImageSrcWithAnnotations => {
-        // Uncheck "Show Annotations" option
-        cy.get('[data-cy="show-annotations"]')
-          .uncheck()
-          .wait(1000);
-        //Compare if both images are diffent and have different src attribute
-        cy.get('.viewport-preview')
-          .invoke('attr', 'src')
-          .should($ImageSrcWithoutAnnotations => {
-            expect(
-              $ImageSrcWithAnnotations.localeCompare(
-                $ImageSrcWithoutAnnotations
-              )
-            ).not.eq(0);
-          });
-      });
+    //Compare classes that exists on Image Preview with Annotations and Without Annotation
+    cy.get('[data-cy="OHIFModal-content"]')
+      .find('canvas')
+      .should('have.class', 'magnifyTool'); //Class "MagnifyTool" exists with annotations displayed on Image preview
+    // Uncheck "Show Annotations" option
+    cy.get('[data-cy="show-annotations"]')
+      .uncheck()
+      .wait(300);
+    // Check that class "MagnifyTool" should not exist
+    cy.get('[data-cy="OHIFModal-content"]')
+      .find('canvas')
+      .should('not.have.class', 'magnifyTool');
   });
 });
