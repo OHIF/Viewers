@@ -67,7 +67,7 @@ describe('ExtensionManager.js', () => {
       expect(fakeExtension.preRegistration.mock.calls.length).toBe(1);
     });
 
-    it('calls preRegistration() passing configuration and servicesManager instance for extension', () => {
+    it('calls preRegistration() passing configuration along with servicesManager and commandsManager instances for extension', () => {
       const configuration = { config: 'Some configuration' };
       extensionManager._servicesManager = { services: { TestService: {} } };
 
@@ -78,6 +78,7 @@ describe('ExtensionManager.js', () => {
       // Assert
       expect(fakeExtension.preRegistration.mock.calls[0][0]).toEqual({
         servicesManager: extensionManager._servicesManager,
+        commandsManager: extensionManager._commandsManager,
         configuration,
       });
     });
@@ -152,8 +153,10 @@ describe('ExtensionManager.js', () => {
       );
     });
 
-    it('successfully passes a servicesManager instance to each module', () => {
-      extensionManager._servicesManager = { services: { TestService: {} } };
+    it('successfully passes a servicesManager and commandsManager instances to each module', () => {
+      extensionManager._servicesManager = {
+        services: { TestService: {}, commandsManager: {} },
+      };
 
       const extension = {
         id: 'hello-world',
@@ -168,6 +171,7 @@ describe('ExtensionManager.js', () => {
 
       expect(extension.getViewportModule.mock.calls[0][0]).toEqual({
         servicesManager: extensionManager._servicesManager,
+        commandsManager: extensionManager._commandsManager,
       });
     });
 

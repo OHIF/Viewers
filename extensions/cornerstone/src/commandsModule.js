@@ -162,9 +162,42 @@ const actions = {
 
     scroll(enabledElement, -1);
   },
+  updateTableWithNewMeasurementData(measurementData) {
+    const {
+      toolType,
+      measurementNumber,
+      location,
+      description,
+    } = measurementData;
+
+    // Update all measurements by measurement number
+    const measurementApi = OHIF.measurements.MeasurementApi.Instance;
+    const measurements = measurementApi.tools[toolType].filter(
+      m => m.measurementNumber === measurementNumber
+    );
+
+    measurements.forEach(measurement => {
+      measurement.location = location;
+      measurement.description = description;
+
+      measurementApi.updateMeasurement(measurement.toolType, measurement);
+    });
+
+    measurementApi.syncMeasurementsAndToolData();
+
+    // Update images in all active viewports
+    cornerstone.getEnabledElements().forEach(enabledElement => {
+      cornerstone.updateImage(enabledElement.element);
+    });
+  },
 };
 
 const definitions = {
+  updateTableWithNewMeasurementData: {
+    commandFn: actions.updateTableWithNewMeasurementData,
+    storeContexts: ['viewports'],
+    options: {},
+  },
   rotateViewportCW: {
     commandFn: actions.rotateViewport,
     storeContexts: ['viewports'],
