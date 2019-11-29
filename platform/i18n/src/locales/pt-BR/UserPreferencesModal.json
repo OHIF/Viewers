@@ -1,6 +1,6 @@
 {
   "Cancel": "Cancelar",
-  "Reset to Defaults": "Restaurar Default",
+  "Reset to Defaults": "$t(Common:Reset) para Padrão",
   "ResetDefaultMessage": "Preferências resetadas com sucesso. <br /> Você deve <strong>Salvar</strong> para que essa ação seja realizada.",
   "Save": "Salvar",
   "SaveMessage": "Preferências salvas",
