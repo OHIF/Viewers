@@ -19,7 +19,7 @@
     flex-direction: row;
     margin: 20px 0;
     border-radius: 5px;
-    padding: 20px 10px 0;
+    padding: 20px 10px;
     background-color: #16202b;
 
     .form-control.input-ohif
@@ -56,6 +56,17 @@
           justify-content: center;
           align-items: center;
 
+      .keep-aspect
+        font-weight: bold;
+        @media screen and (max-width: 1023px)
+            margin-bottom: 20px
+        input
+          margin-right: 7px;
+          vertical-align: middle;
+        label
+          display: flex;
+          align-items: center;
+
   .preview
     display: flex;
     flex-direction column;
@@ -87,6 +98,9 @@
       max-height: 400px;
       object-fit contain;
 
+  .loading-image
+    text-align center
+
   .actions
     display: flex;
     flex-wrap: nowrap;
@@ -96,6 +110,11 @@
       margin: 0 20px;
     .actions-save
       margin: 0 0 0 10px;
+
+  .input-error
+    font-size: 12px;
+    color: red;
+    margin: -10px 0 10px 5px
 
 .modal-dialog
   height: 100%;
