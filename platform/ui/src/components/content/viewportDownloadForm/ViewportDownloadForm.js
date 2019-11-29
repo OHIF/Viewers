@@ -196,11 +196,12 @@ const ViewportDownloadForm = ({
         )}
       </div>
 
-      <div className="file-info-container">
+      <div className="file-info-container" data-cy="file-info-container">
         <div className="col">
           <div className="width">
             <TextInput
               type="number"
+              data-cy="image-width"
               min={minimumSize}
               max={maximumSize}
               value={width}
@@ -211,6 +212,7 @@ const ViewportDownloadForm = ({
           <div className="height">
             <TextInput
               type="number"
+              data-cy="image-height"
               min={minimumSize}
               max={maximumSize}
               value={height}
@@ -224,6 +226,7 @@ const ViewportDownloadForm = ({
           <div className="file-name">
             <TextInput
               type="text"
+              data-cy="file-name"
               value={filename}
               onChange={event => setFilename(event.target.value)}
               label={t('File name')}
@@ -233,6 +236,7 @@ const ViewportDownloadForm = ({
           <div className="file-type">
             <Select
               value={fileType}
+              data-cy="file-type"
               onChange={event => setFileType(event.target.value)}
               options={FILE_TYPE_OPTIONS}
               label={t('File type')}
@@ -245,6 +249,7 @@ const ViewportDownloadForm = ({
             <label htmlFor="show-annotations" className="form-check-label">
               <input
                 id="show-annotations"
+                data-cy="show-annotations"
                 type="checkbox"
                 className="form-check-input"
                 checked={showAnnotations}
@@ -278,7 +283,7 @@ const ViewportDownloadForm = ({
         ></canvas>
       </div>
 
-      <div className="preview">
+      <div className="preview" data-cy="image-preview">
         <h4> {t('Image Preview')}</h4>
         <img
           className="viewport-preview"
