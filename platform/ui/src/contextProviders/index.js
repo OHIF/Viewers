@@ -18,3 +18,8 @@ export {
   withDialog,
   useDialog,
 } from './DialogProvider.js';
+export {
+  default as ContextMenuProvider,
+  withContextMenu,
+  useContextMenu,
+} from './ContextMenuProvider.js';

@@ -60,6 +60,10 @@ import {
   ModalConsumer,
   useModal,
   withModal,
+  ContextMenuProvider,
+  ContextMenuConsumer,
+  useContextMenu,
+  withContextMenu,
 } from './contextProviders';
 
 export {
@@ -117,6 +121,10 @@ export {
   DialogProvider,
   withDialog,
   useDialog,
+  ContextMenuProvider,
+  ContextMenuConsumer,
+  useContextMenu,
+  withContextMenu,
   // Hooks
   useDebounce,
   useMedia,

@@ -6,13 +6,14 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import { hot } from 'react-hot-loader/root';
-
-import { getToolLabellingFlowCallback } from './appExtensions/MeasurementsPanel/labelingFlowCallbacks.js';
+import merge from 'lodash.merge';
 
 import {
+  SimpleDialog,
   SnackbarProvider,
   ModalProvider,
   DialogProvider,
+  ContextMenuProvider,
   OHIFModal,
 } from '@ohif/ui';
 
@@ -24,6 +25,7 @@ import {
   createUINotificationService,
   createUIModalService,
   createUIDialogService,
+  createUIContextMenuService,
   utils,
 } from '@ohif/core';
 
@@ -63,6 +65,7 @@ const commandsManagerConfig = {
 const UINotificationService = createUINotificationService();
 const UIModalService = createUIModalService();
 const UIDialogService = createUIDialogService();
+const UIContextMenuService = createUIContextMenuService();
 
 /** Managers */
 const commandsManager = new CommandsManager(commandsManagerConfig);
@@ -101,15 +104,22 @@ class App extends Component {
 
     this._appConfig = { props, ...props.config };
 
-    const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
-
     const { config, oidc } = props;
     const { servers, extensions, hotkeys, tools } = config({
-      toolLabellingFlowCallback,
+      servicesManager,
+      dependencies: {
+        merge,
+        SimpleDialog,
+      },
     });
 
     this.initUserManager(oidc);
-    _initServices([UINotificationService, UIModalService, UIDialogService]);
+    _initServices([
+      UINotificationService,
+      UIModalService,
+      UIDialogService,
+      UIContextMenuService,
+    ]);
     _initExtensions(extensions, hotkeys, tools);
     _initServers(servers);
     initWebWorkers();
@@ -137,7 +147,9 @@ class App extends Component {
                             modal={OHIFModal}
                             service={UIModalService}
                           >
-                            <OHIFStandaloneViewer userManager={userManager} />
+                            <ContextMenuProvider service={UIContextMenuService}>
+                              <OHIFStandaloneViewer userManager={userManager} />
+                            </ContextMenuProvider>
                           </ModalProvider>
                         </DialogProvider>
                       </SnackbarProvider>
@@ -160,7 +172,9 @@ class App extends Component {
                 <SnackbarProvider service={UINotificationService}>
                   <DialogProvider service={UIDialogService}>
                     <ModalProvider modal={OHIFModal} service={UIModalService}>
-                      <OHIFStandaloneViewer />
+                      <ContextMenuProvider service={UIContextMenuService}>
+                        <OHIFStandaloneViewer />
+                      </ContextMenuProvider>
                     </ModalProvider>
                   </DialogProvider>
                 </SnackbarProvider>

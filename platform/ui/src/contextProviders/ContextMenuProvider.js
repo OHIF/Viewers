@@ -1,5 +1,4 @@
 import React, {
-  useState,
   createContext,
   useContext,
   useEffect,
@@ -18,19 +17,7 @@ const { Provider } = ContextMenuContext;
 export const useContextMenu = () => useContext(ContextMenuContext);
 
 const ContextMenuProvider = ({ children, service }) => {
-  const dialog = useDialog();
-  const [contextMenuDialogId, setContextMenuDialogId] = useState();
-  const [labellingDialogId, setLabellingDialogId] = useState();
-
-  const DEFAULTS = {
-    LABELLING: {},
-    CONTEXT_MENU: {},
-  };
-
-  const [labellingProps, setLabellingProps] = useState(DEFAULTS.LABELLING);
-  const [contextMenuProps, setContextMenuProps] = useState(
-    DEFAULTS.CONTEXT_MENU
-  );
+  const { create, dismiss } = useDialog();
 
   /**
    * Sets the implementation of a context menu service that can be used by extensions.
@@ -39,9 +26,9 @@ const ContextMenuProvider = ({ children, service }) => {
    */
   useEffect(() => {
     if (service) {
-      service.setServiceImplementation({ hide, show });
+      service.setServiceImplementation({ show });
     }
-  }, [hide, service, show]);
+  }, [service, show]);
 
   /**
    * Show the context menu and override its configuration props.
@@ -50,29 +37,78 @@ const ContextMenuProvider = ({ children, service }) => {
    * @returns void
    */
   const show = useCallback(
-    props => {
-      setDialogId(
-        dialog.create({ content: ToolContextMenu, contentProps: props })
-      );
-      setOptions({ ...options, ...props });
+    ({ event, updateLabellingCallback }) => {
+      dismiss({ id: 'context-menu' });
+      create({
+        id: 'context-menu',
+        isDraggable: false,
+        useLastPosition: false,
+        content: ToolContextMenu,
+        contentProps: {
+          eventData: event,
+          onClose: () => dismiss({ id: 'context-menu' }),
+          onSetLabel: (eventData, measurementData) =>
+            _onSetLabel(eventData, measurementData, updateLabellingCallback),
+          onSetDescription: (eventData, measurementData) =>
+            _onSetDescription(
+              eventData,
+              measurementData,
+              updateLabellingCallback
+            ),
+        },
+        defaultPosition: {
+          x: (event && event.currentPoints.client.x) || 0,
+          y: (event && event.currentPoints.client.y) || 0,
+        },
+      });
     },
-    [dialog]
+    [_onSetDescription, _onSetLabel, create, dismiss]
   );
 
-  /**
-   * Hide the context menu and set its properties to default.
-   *
-   * @returns void
-   */
-  const hide = useCallback(() => dialog.dismiss(dialogId), [dialog]);
-
-  return (
-    <Provider value={{ show, hide }}>
-      <ToolContextMenu {...contextMenuDefaultProps} />
-      <LabellingManager {...labellingDefaultProps} />
-      {children}
-    </Provider>
+  const _onSetLabel = useCallback(
+    (eventData, measurementData, updateLabellingCallback) => {
+      create({
+        id: 'labelling',
+        centralize: true,
+        isDraggable: false,
+        content: LabellingManager,
+        contentProps: {
+          visible: true,
+          eventData,
+          measurementData,
+          skipAddLabelButton: true,
+          editLocation: true,
+          labellingDoneCallback: () => dismiss({ id: 'labelling' }),
+          updateLabelling: labellingData =>
+            updateLabellingCallback(labellingData, measurementData),
+        },
+      });
+    },
+    [create, dismiss]
   );
+
+  const _onSetDescription = useCallback(
+    (eventData, measurementData, updateLabellingCallback) => {
+      create({
+        id: 'labelling',
+        centralize: true,
+        isDraggable: false,
+        content: LabellingManager,
+        contentProps: {
+          visible: true,
+          eventData,
+          measurementData,
+          editDescriptionDialog: true,
+          labellingDoneCallback: () => dismiss({ id: 'labelling' }),
+          updateLabelling: labellingData =>
+            updateLabellingCallback(labellingData, measurementData),
+        },
+      });
+    },
+    [create, dismiss]
+  );
+
+  return <Provider value={{ show }}>{children}</Provider>;
 };
 
 /**
@@ -82,8 +118,8 @@ const ContextMenuProvider = ({ children, service }) => {
  */
 export const withContextMenu = Component => {
   return function WrappedComponent(props) {
-    const { show, hide } = useContextMenu();
-    return <Component {...props} modal={{ show, hide }} />;
+    const { show } = useContextMenu();
+    return <Component {...props} modal={{ show }} />;
   };
 };
 
