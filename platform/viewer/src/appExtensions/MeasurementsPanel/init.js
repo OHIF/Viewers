@@ -1,17 +1,16 @@
 import OHIF from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
-import {
-  getOnRightClickCallback,
-  getOnTouchPressCallback,
-  getResetLabellingAndContextMenu,
-} from './labelingFlowCallbacks.js';
 import throttle from 'lodash.throttle';
 
 // TODO: This only works because we have a hard dependency on this extension
 // We need to decouple and make stuff like this possible w/o bundling this at
 // build time
 import store from './../../store';
+import {
+  getOnTouchPressCallback,
+  getResetLabellingAndContextMenu,
+} from './labelingFlowCallbacks.js';
 
 const {
   onAdded,
@@ -34,7 +33,13 @@ const MEASUREMENT_ACTION_MAP = {
  * @param {Object} servicesManager
  * @param {Object} configuration
  */
-export default function init({ servicesManager, configuration = {} }) {
+export default function init({
+  servicesManager,
+  commandsManager,
+  configuration = {},
+}) {
+  const { UIContextMenuService } = servicesManager.services;
+
   // TODO: MEASUREMENT_COMPLETED (not present in initial implementation)
   const onMeasurementsChanged = (action, event) => {
     return MEASUREMENT_ACTION_MAP[action](event);
@@ -46,11 +51,31 @@ export default function init({ servicesManager, configuration = {} }) {
     this,
     'labelmapModified'
   );
-  //
-  const onRightClick = getOnRightClickCallback(store);
+
+  const onRightClick = event => {
+    const updateLabellingCallback = (labellingData, measurementData) => {
+      if (labellingData.location) {
+        measurementData.location = labellingData.location;
+      }
+
+      measurementData.description = labellingData.description || '';
+
+      if (labellingData.response) {
+        measurementData.response = labellingData.response;
+      }
+
+      commandsManager.runCommand(
+        'updateTableWithNewMeasurementData',
+        measurementData
+      );
+    };
+
+    UIContextMenuService.show({ event: event.detail, updateLabellingCallback });
+  };
+
   const onTouchPress = getOnTouchPressCallback(store);
   const onNewImage = getResetLabellingAndContextMenu(store);
-  const onMouseClick = getResetLabellingAndContextMenu(store);
+  // const onMouseClick = resetContextMenu;
   const onTouchStart = getResetLabellingAndContextMenu(store);
 
   // Because click gives us the native "mouse up", buttons will always be `0`
