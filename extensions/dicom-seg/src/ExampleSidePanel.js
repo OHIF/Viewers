@@ -39,6 +39,7 @@ function ExampleSidePanel(props) {
   const [brushRadius, setBrushRadius] = useState(
     segModule.getters.radius || 10
   );
+  const [brushColor, setBrushColor] = useState('rgba(221, 85, 85, 1)');
 
   // Find our activeLabelmapIndex and activeLabelmap
   // TODO: Another useEffect that captures cornerstone events where these are modified
@@ -211,29 +212,74 @@ function ExampleSidePanel(props) {
     } else {
       labelmap3D.activeSegmentIndex--;
     }
+
+    const color = getActiveSegmentColor();
+    setBrushColor(color);
+  }
+
+  function getActiveSegmentColor() {
+    const brushStackState = segModule.state.series[state.firstImageId];
+
+    if (!brushStackState) {
+      return 'rgba(255, 255, 255, 1)';
+    }
+
+    const labelmap3D = brushStackState.labelmaps3D[state.activeLabelmapIndex];
+    const colorLutTable =
+      segModule.state.colorLutTables[labelmap3D.colorLUTIndex];
+    const color = colorLutTable[labelmap3D.activeSegmentIndex];
+
+    return `rgba(${color.join(',')})`;
   }
 
   return (
     <div className="labelmap-container">
-      <h3 style={{ marginLeft: '16px' }}>Segmentation</h3>
+      <h2 style={{ marginLeft: '16px' }}>Segmentation</h2>
 
       <form style={{ padding: '0px 16px' }}>
-        <button
-          onClick={evt => {
-            evt.preventDefault();
-            incrementSegment();
+        <div
+          style={{
+            display: 'flex',
+            marginBottom: '16px',
           }}
         >
-          Next
-        </button>
-        <button
-          onClick={evt => {
-            evt.preventDefault();
-            incrementSegment(false);
-          }}
-        >
-          Previous
-        </button>
+          <div
+            style={{
+              borderRadius: '100%',
+              backgroundColor: brushColor,
+              width: '32px',
+              height: '32px',
+              marginTop: '8px',
+              marginRight: '8px',
+            }}
+          ></div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              flexGrow: '1',
+            }}
+          >
+            <button
+              className="db-button"
+              onClick={evt => {
+                evt.preventDefault();
+                incrementSegment();
+              }}
+            >
+              Next
+            </button>
+            <button
+              className="db-button"
+              onClick={evt => {
+                evt.preventDefault();
+                incrementSegment(false);
+              }}
+            >
+              Previous
+            </button>
+          </div>
+        </div>
 
         <div>
           <label>Brush Radius</label>
@@ -247,10 +293,12 @@ function ExampleSidePanel(props) {
         </div>
       </form>
 
-      <h3 style={{ marginLeft: '16px' }}>Labelmaps</h3>
-      <ul className="unlist labelmap-list">{labelmapList}</ul>
+      <h3 style={{ marginTop: '32px', marginLeft: '16px' }}>Labelmaps</h3>
+      <ul className="unlist labelmap-list" style={{ marginBottom: '24px' }}>
+        {labelmapList}
+      </ul>
 
-      <h3 style={{ marginLeft: '16px' }}>Segments</h3>
+      <h3 style={{ marginTop: '32px', marginLeft: '16px' }}>Segments</h3>
       <ul className="unlist">{segmentList}</ul>
     </div>
   );
