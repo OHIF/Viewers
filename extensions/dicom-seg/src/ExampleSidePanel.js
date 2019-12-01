@@ -7,6 +7,7 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import classnames from 'classnames';
 import moment from 'moment';
+import { Range } from '@ohif/ui';
 import './ExampleSidePanel.css';
 
 const { studyMetadataManager } = utils;
@@ -199,8 +200,12 @@ function ExampleSidePanel(props) {
   }
 
   function updateBrushSize(evt) {
-    setBrushRadius(evt.target.value);
-    segModule.setters.radius(evt.target.value);
+    const updatedRadius = Number(evt.target.value);
+
+    if (updatedRadius !== brushRadius) {
+      setBrushRadius(updatedRadius);
+      segModule.setters.radius(updatedRadius);
+    }
   }
 
   function incrementSegment(shouldIncrement = true) {
@@ -282,14 +287,23 @@ function ExampleSidePanel(props) {
         </div>
 
         <div>
-          <label>Brush Radius</label>
-          <input
-            type="range"
-            min="1"
-            max="50"
+          <label
+            htmlFor="brush-radius"
+            style={{
+              display: 'block',
+              marginBottom: '8px',
+            }}
+          >
+            Brush Radius
+          </label>
+          <Range
             value={brushRadius}
+            min={1}
+            max={50}
+            step={1}
             onChange={updateBrushSize}
-          ></input>
+            id="brush-radius"
+          />
         </div>
       </form>
 
