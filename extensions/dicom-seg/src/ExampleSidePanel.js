@@ -3,7 +3,6 @@ import { utils } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { Icon } from '@ohif/ui';
 //
-import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import classnames from 'classnames';
 import moment from 'moment';
@@ -19,68 +18,66 @@ function ExampleSidePanel(props) {
     activeIndex, // activeViewportIndex
   } = props;
 
-  // TODO: Needs to be activeViewport
-  const viewport = viewports[activeIndex];
   const segModule = cornerstoneTools.getModule('segmentation');
-
-  // No viewports, nothing to render
-  // if (!viewport) {
-  //   return null;
-  // }
-
+  const viewport = viewports[activeIndex];
   const {
     studyInstanceUid,
     seriesInstanceUid,
     displaySetInstanceUid,
   } = viewport;
-  const [state, setState] = useState({
-    activeLabelmapIndex: undefined,
-    firstImageId: undefined,
-  });
   // This technically defaults to 10 if undefined (bug?)
   const [brushRadius, setBrushRadius] = useState(
     segModule.getters.radius || 10
   );
   const [brushColor, setBrushColor] = useState('rgba(221, 85, 85, 1)');
 
-  // Find our activeLabelmapIndex and activeLabelmap
-  // TODO: Another useEffect that captures cornerstone events where these are modified
-  useEffect(() => {
-    const segmentationModule = cornerstoneTools.getModule('segmentation');
-    const studyMetadata = studyMetadataManager.get(studyInstanceUid);
-    const displaySet = studyMetadata.findDisplaySet(
-      displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
-    );
-    const firstImageId = displaySet.images[0].getImageId();
+  // meta
+  const studyMetadata = studyMetadataManager.get(studyInstanceUid);
+  const displaySet = studyMetadata.findDisplaySet(
+    displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
+  );
+  const firstImageId = displaySet.images[0].getImageId();
 
-    if (segmentationModule.state.series[firstImageId]) {
-      const activeBrushStackState =
-        segmentationModule.state.series[firstImageId];
-
-      setState({
-        activeLabelmapIndex: activeBrushStackState.activeLabelmapIndex,
-        firstImageId: firstImageId,
-      });
-      //activeLabelmap3D = activeBrushStackState.labelmaps3D[activeLabelmapIndex];
-    }
-  }, [displaySetInstanceUid, studyInstanceUid]);
+  // CORNERSTONE TOOLS
+  const [brushStackState, setBrushStackState] = useState(
+    segModule.state.series[firstImageId]
+  );
+  const [updateCount, setUpdateCount] = useState(0);
 
   useEffect(() => {
     const labelmapModifiedHandler = function(evt) {
-      console.log(evt);
+      console.warn('labelmap modified', evt);
+      const segmentationModule = cornerstoneTools.getModule('segmentation');
+      setBrushStackState(segmentationModule.state.series[firstImageId]);
+      setUpdateCount(updateCount + 1);
     };
-    cornerstone.events.addEventListener(
-      'cornersontetoolslabelmapmodified',
-      labelmapModifiedHandler
+
+    // These are specific to each element;
+    // Need to iterate cornerstone-tools tracked enabled elements?
+    // Then only care about the one tied to active viewport?
+    cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
+      enabledElement.addEventListener(
+        'cornersontetoolslabelmapmodified',
+        labelmapModifiedHandler
+      )
     );
 
     return () => {
-      cornerstone.events.removeEventListener(
-        'cornersontetoolslabelmapmodified',
-        labelmapModifiedHandler
+      cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
+        enabledElement.removeEventListener(
+          'cornersontetoolslabelmapmodified',
+          labelmapModifiedHandler
+        )
       );
     };
   });
+
+  if (!brushStackState) {
+    return null;
+  }
+
+  const labelmap3D =
+    brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
 
   // Get list of SEG labelmaps specific to active viewport (reference series)
   const referencedSegDisplaysets = _getReferencedSegDisplaysets(
@@ -97,12 +94,12 @@ function ExampleSidePanel(props) {
 
   const labelmapList = referencedSegDisplaysets.map(ds => {
     const { labelmapIndex, seriesDate, seriesTime } = ds;
-    const { activeLabelmapIndex } = state;
 
     // Map to display representation
     const dateStr = `${seriesDate}:${seriesTime}`.split('.')[0];
     const date = moment(dateStr, 'YYYYMMDD:HHmmss');
-    const isActiveLabelmap = labelmapIndex === activeLabelmapIndex;
+    const isActiveLabelmap =
+      labelmapIndex === brushStackState.activeLabelmapIndex;
     const displayDate = date.format('ddd, MMM Do YYYY');
     const displayTime = date.format('h:mm:ss a');
     const displayDescription = ds.seriesDescription;
@@ -120,17 +117,12 @@ function ExampleSidePanel(props) {
             viewport,
             studies,
             ds,
-            state.firstImageId,
-            state.activeLabelmapIndex
+            firstImageId,
+            brushStackState.activeLabelmapIndex
           );
 
-          if (typeof activatedLabelmapIndex == 'number') {
-            setState(
-              Object.assign({}, state, {
-                activeLabelmapIndex: activatedLabelmapIndex,
-              })
-            );
-          }
+          // TODO: Notify of change?
+          setUpdateCount(updateCount + 1);
         }}
       >
         <Icon
@@ -167,60 +159,64 @@ function ExampleSidePanel(props) {
 
   const segmentList = [];
 
-  if (state.activeLabelmapIndex !== undefined) {
-    const brushStackState = segModule.state.series[state.firstImageId];
-    const labelmap3D = brushStackState.labelmaps3D[state.activeLabelmapIndex];
+  if (labelmap3D) {
+    // Newly created segments have no `meta`
+    // So we instead build a list of all segment indexes in use
+    // Then find any associated metadata
+    const uniqueSegmentIndexes = labelmap3D.labelmaps2D
+      .reduce((acc, labelmap2D) => {
+        if (labelmap2D) {
+          const segmentIndexes = labelmap2D.segmentsOnLabelmap;
 
-    if (labelmap3D) {
-      console.log('LABELMAP 3D: ', labelmap3D);
-
-      const uniqueSegments = labelmap3D.labelmaps2D.reduce(
-        (acc, labelmap2D) => {
-          if (labelmap2D) {
-            const segments = labelmap2D.segmentsOnLabelmap;
-            segments.forEach(seg => {
-              if (acc.includes(seg)) {
-                acc.push(seg);
-              }
-            });
+          for (let i = 0; i < segmentIndexes.length; i++) {
+            if (!acc.includes(segmentIndexes[i]) && segmentIndexes[i] !== 0) {
+              acc.push(segmentIndexes[i]);
+            }
           }
-        },
-        []
-      );
-
-      console.log('unique Segments', uniqueSegments);
-
-      // Let's iterate over segmentIndexes ^ above
-      // If meta has a match, use it to show info
-      // If now, add "no-meta" class
-      // Show default name
-
-      const colorLutTable =
-        segModule.state.colorLutTables[labelmap3D.colorLUTIndex];
-      const segmentsMeta = labelmap3D.metadata.data;
-      for (
-        let segmentIndex = 0;
-        segmentIndex < segmentsMeta.length;
-        segmentIndex++
-      ) {
-        const segment = segmentsMeta[segmentIndex];
-
-        if (!segment) {
-          continue;
         }
-        const color = colorLutTable[segmentIndex];
 
-        segmentList.push(
-          <li key={segment.SegmentNumber} className="segment-list-item">
-            <div
-              className="segment-color"
-              style={{ backgroundColor: `rgba(${color.join(',')})` }}
-            ></div>
-            <div className="segment-label">{segment.SegmentLabel}</div>
-          </li>
-        );
+        return acc;
+      }, [])
+      .sort((a, b) => a - b);
+
+    const colorLutTable =
+      segModule.state.colorLutTables[labelmap3D.colorLUTIndex];
+    const hasLabelmapMeta = labelmap3D.metadata && labelmap3D.metadata.data;
+
+    for (let i = 0; i < uniqueSegmentIndexes.length; i++) {
+      const segmentIndex = uniqueSegmentIndexes[i];
+
+      const color = colorLutTable[segmentIndex];
+      let segmentLabel = '(unlabeled)';
+      let segmentNumber = segmentIndex;
+
+      // META
+      if (hasLabelmapMeta) {
+        const segmentMeta = labelmap3D.metadata.data[segmentIndex];
+
+        if (segmentMeta) {
+          segmentNumber = segmentMeta.SegmentNumber;
+          segmentLabel = segmentMeta.SegmentLabel;
+        }
       }
+
+      segmentList.push(
+        <li key={segmentNumber} className="segment-list-item">
+          <div
+            className="segment-color"
+            style={{ backgroundColor: `rgba(${color.join(',')})` }}
+          >
+            {segmentNumber}
+          </div>
+          <div className="segment-label">{segmentLabel}</div>
+        </li>
+      );
     }
+
+    // Let's iterate over segmentIndexes ^ above
+    // If meta has a match, use it to show info
+    // If now, add "no-meta" class
+    // Show default name
   }
 
   function updateBrushSize(evt) {
@@ -233,13 +229,12 @@ function ExampleSidePanel(props) {
   }
 
   function incrementSegment(shouldIncrement = true) {
-    const brushStackState = segModule.state.series[state.firstImageId];
-    const labelmap3D = brushStackState.labelmaps3D[state.activeLabelmapIndex];
-
     if (shouldIncrement) {
       labelmap3D.activeSegmentIndex++;
     } else {
-      labelmap3D.activeSegmentIndex--;
+      if (labelmap3D.activeSegmentIndex > 1) {
+        labelmap3D.activeSegmentIndex--;
+      }
     }
 
     const color = getActiveSegmentColor();
@@ -247,13 +242,10 @@ function ExampleSidePanel(props) {
   }
 
   function getActiveSegmentColor() {
-    const brushStackState = segModule.state.series[state.firstImageId];
-
     if (!brushStackState) {
       return 'rgba(255, 255, 255, 1)';
     }
 
-    const labelmap3D = brushStackState.labelmaps3D[state.activeLabelmapIndex];
     const colorLutTable =
       segModule.state.colorLutTables[labelmap3D.colorLUTIndex];
     const color = colorLutTable[labelmap3D.activeSegmentIndex];
@@ -280,8 +272,12 @@ function ExampleSidePanel(props) {
               height: '32px',
               marginTop: '8px',
               marginRight: '8px',
+              textAlign: 'center',
+              lineHeight: '32px',
             }}
-          ></div>
+          >
+            {labelmap3D.activeSegmentIndex}
+          </div>
           <div
             style={{
               display: 'flex',

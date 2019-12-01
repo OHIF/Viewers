@@ -38,12 +38,14 @@
 
 .segment-color {
   border-radius: 100%;
-  width: 12px;
-  height: 12px;
+  width: 24px;
+  height: 24px;
   margin-right: 8px;
-  margin-top: 3px;
+  text-align: center;
+  line-height: 25px;
 }
 
 .segment-label {
   flex-grow: 1;
+  line-height: 25px;
 }
