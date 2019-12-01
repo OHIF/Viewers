@@ -16,10 +16,11 @@ function ExampleSidePanel(props) {
   const {
     studies,
     viewports, // viewportSpecificData
+    activeIndex, // activeViewportIndex
   } = props;
 
   // TODO: Needs to be activeViewport
-  const viewport = viewports[0];
+  const viewport = viewports[activeIndex];
   const segModule = cornerstoneTools.getModule('segmentation');
 
   // No viewports, nothing to render
@@ -171,6 +172,29 @@ function ExampleSidePanel(props) {
     const labelmap3D = brushStackState.labelmaps3D[state.activeLabelmapIndex];
 
     if (labelmap3D) {
+      console.log('LABELMAP 3D: ', labelmap3D);
+
+      const uniqueSegments = labelmap3D.labelmaps2D.reduce(
+        (acc, labelmap2D) => {
+          if (labelmap2D) {
+            const segments = labelmap2D.segmentsOnLabelmap;
+            segments.forEach(seg => {
+              if (acc.includes(seg)) {
+                acc.push(seg);
+              }
+            });
+          }
+        },
+        []
+      );
+
+      console.log('unique Segments', uniqueSegments);
+
+      // Let's iterate over segmentIndexes ^ above
+      // If meta has a match, use it to show info
+      // If now, add "no-meta" class
+      // Show default name
+
       const colorLutTable =
         segModule.state.colorLutTables[labelmap3D.colorLUTIndex];
       const segmentsMeta = labelmap3D.metadata.data;

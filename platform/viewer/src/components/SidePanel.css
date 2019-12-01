@@ -52,7 +52,7 @@
   user-select: none;
   border: 1px solid #ccc;
   border-radius: 4px;
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
 }
 
 .db-button:hover,
