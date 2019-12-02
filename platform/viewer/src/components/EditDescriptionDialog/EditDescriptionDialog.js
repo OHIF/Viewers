@@ -1,24 +1,20 @@
 import { Component } from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import SimpleDialog from '../SimpleDialog/SimpleDialog.js';
-
 import bounding from '../../lib/utils/bounding.js';
-import { getDialogStyle } from './../Labelling/labellingPositionUtils.js';
-
 import './EditDescriptionDialog.css';
 
 export default class EditDescriptionDialog extends Component {
   static defaultProps = {
     componentRef: React.createRef(),
-    componentStyle: {},
   };
 
   static propTypes = {
     measurementData: PropTypes.object.isRequired,
     onCancel: PropTypes.func.isRequired,
     componentRef: PropTypes.object,
-    componentStyle: PropTypes.object,
     onUpdate: PropTypes.func.isRequired,
   };
 
@@ -45,8 +41,6 @@ export default class EditDescriptionDialog extends Component {
   }
 
   render() {
-    const style = getDialogStyle(this.props.componentStyle);
-
     return (
       <SimpleDialog
         headerTitle="Edit Description"
@@ -54,7 +48,6 @@ export default class EditDescriptionDialog extends Component {
         onConfirm={this.onConfirm}
         rootClass="editDescriptionDialog"
         componentRef={this.mainElement}
-        componentStyle={style}
       >
         <input
           value={this.state.description}
