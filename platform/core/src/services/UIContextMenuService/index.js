@@ -18,6 +18,7 @@
 const uiContextMenuServicePublicAPI = {
   name: 'UIContextMenuService',
   showLabellingFlow,
+  hideLabellingFlow,
   hideContextMenu,
   showContextMenu,
   setServiceImplementation,
@@ -25,8 +26,9 @@ const uiContextMenuServicePublicAPI = {
 
 const uiContextMenuServiceImplementation = {
   _showLabellingFlow: () => console.warn('showLabellingFlow() NOT IMPLEMENTED'),
+  _hideLabellingFlow: () => console.warn('hideLabellingFlow() NOT IMPLEMENTED'),
+  _showContextMenu: () => console.warn('showContextMenu() NOT IMPLEMENTED'),
   _hideContextMenu: () => console.warn('hideContextMenu() NOT IMPLEMENTED'),
-  _showContextMenu: () => console.warn('showLabellingFlow() NOT IMPLEMENTED'),
 };
 
 function createUIContextMenuService() {
@@ -34,7 +36,7 @@ function createUIContextMenuService() {
 }
 
 /**
- * Show a new UI ContextMenu;
+ * Show a new UI ContextMenu dialog;
  *
  * @param {ContextMenuProps} props { event }
  */
@@ -45,7 +47,7 @@ function showContextMenu({ event }) {
 }
 
 /**
- * Hide a UI ContextMenu;
+ * Hide a UI ContextMenu dialog;
  *
  */
 function hideContextMenu() {
@@ -53,7 +55,7 @@ function hideContextMenu() {
 }
 
 /**
- * Show a new UI LabellingFlow;
+ * Show a new UI LabellingFlow dialog;
  *
  * @param {LabellingFlowProps} props { defaultPosition, centralize, props }
  */
@@ -66,18 +68,28 @@ function showLabellingFlow({ defaultPosition, centralize, props }) {
 }
 
 /**
+ * Hide a UI LabellingFlow dialog;
+ *
+ */
+function hideLabellingFlow() {
+  return uiContextMenuServiceImplementation._hideLabellingFlow();
+}
+
+/**
  *
  *
  * @param {*} {
  *   showContextMenu: showContextMenuImplementation,
  *   hideContextMenu: hideContextMenuImplementation,
  *   showLabellingFlow: showLabellingFlowImplementation,
+ *   hideLabellingFlow: hideLabellingFlowImplementation,
  * }
  */
 function setServiceImplementation({
   showContextMenu: showContextMenuImplementation,
   hideContextMenu: hideContextMenuImplementation,
   showLabellingFlow: showLabellingFlowImplementation,
+  hideLabellingFlow: hideLabellingFlowImplementation,
 }) {
   if (showContextMenuImplementation) {
     uiContextMenuServiceImplementation._showContextMenu = showContextMenuImplementation;
@@ -87,6 +99,9 @@ function setServiceImplementation({
   }
   if (showLabellingFlowImplementation) {
     uiContextMenuServiceImplementation._showLabellingFlow = showLabellingFlowImplementation;
+  }
+  if (hideLabellingFlowImplementation) {
+    uiContextMenuServiceImplementation._hideLabellingFlow = hideLabellingFlowImplementation;
   }
 }
 

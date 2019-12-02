@@ -211,6 +211,10 @@ const commandsModule = ({ servicesManager }) => {
         props,
       });
     },
+    hideLabellingFlow() {
+      const { UIContextMenuService } = servicesManager.services;
+      UIContextMenuService.hideLabellingFlow();
+    },
   };
 
   const definitions = {
@@ -226,6 +230,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     showLabellingFlow: {
       commandFn: actions.showLabellingFlow,
+      storeContexts: ['viewports'],
+      options: {},
+    },
+    hideLabellingFlow: {
+      commandFn: actions.hideLabellingFlow,
       storeContexts: ['viewports'],
       options: {},
     },

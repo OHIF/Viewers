@@ -30,11 +30,20 @@ const ContextMenuProvider = ({ children, service, commandsManager }) => {
         showContextMenu,
         hideContextMenu,
         showLabellingFlow,
+        hideLabellingFlow,
       });
     }
-  }, [hideContextMenu, service, showContextMenu, showLabellingFlow]);
+  }, [
+    hideContextMenu,
+    service,
+    showContextMenu,
+    showLabellingFlow,
+    hideLabellingFlow,
+  ]);
 
   const hideContextMenu = useCallback(() => dismiss({ id: 'context-menu' }));
+
+  const hideLabellingFlow = useCallback(() => dismiss({ id: 'labelling' }));
 
   /**
    * Show the context menu and override its configuration props.
@@ -44,7 +53,7 @@ const ContextMenuProvider = ({ children, service, commandsManager }) => {
    */
   const showContextMenu = useCallback(
     ({ event }) => {
-      dismiss({ id: 'context-menu' });
+      hideContextMenu();
       create({
         id: 'context-menu',
         isDraggable: false,
@@ -83,12 +92,12 @@ const ContextMenuProvider = ({ children, service, commandsManager }) => {
         },
       });
     },
-    [create, dismiss, showLabellingFlow]
+    [create, dismiss, hideContextMenu, showLabellingFlow]
   );
 
   const showLabellingFlow = useCallback(
     ({ centralize, defaultPosition, props }) => {
-      dismiss({ id: 'labelling' });
+      hideLabellingFlow();
       create({
         id: 'labelling',
         centralize,
@@ -106,7 +115,7 @@ const ContextMenuProvider = ({ children, service, commandsManager }) => {
         },
       });
     },
-    [_updateLabellingHandler, create, dismiss]
+    [_updateLabellingHandler, create, dismiss, hideLabellingFlow]
   );
 
   const _updateLabellingHandler = useCallback(
@@ -132,7 +141,14 @@ const ContextMenuProvider = ({ children, service, commandsManager }) => {
   );
 
   return (
-    <Provider value={{ showContextMenu, hideContextMenu, showLabellingFlow }}>
+    <Provider
+      value={{
+        showContextMenu,
+        hideContextMenu,
+        showLabellingFlow,
+        hideLabellingFlow,
+      }}
+    >
       {children}
     </Provider>
   );
@@ -153,7 +169,12 @@ export const withContextMenu = Component => {
     return (
       <Component
         {...props}
-        modal={{ showContextMenu, hideContextMenu, showLabellingFlow }}
+        modal={{
+          showContextMenu,
+          hideContextMenu,
+          showLabellingFlow,
+          hideLabellingFlow,
+        }}
       />
     );
   };

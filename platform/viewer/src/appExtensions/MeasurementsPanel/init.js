@@ -56,9 +56,15 @@ export default function init({
     });
   };
 
-  const onTouchStart = () => commandsManager.runCommand('hideContextMenu');
+  const onTouchStart = () => {
+    commandsManager.runCommand('hideContextMenu');
+    commandsManager.runCommand('hideLabellingFlow');
+  };
 
-  const onMouseClick = () => commandsManager.runCommand('hideContextMenu');
+  const onMouseClick = () => {
+    commandsManager.runCommand('hideContextMenu');
+    commandsManager.runCommand('hideLabellingFlow');
+  };
 
   // TODO: This makes scrolling painfully slow
   // const onNewImage = getResetLabellingAndContextMenu(store);
