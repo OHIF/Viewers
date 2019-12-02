@@ -36,9 +36,10 @@ window.config = ({ servicesManager, dependencies }) => {
     ].map(tool => ({
       [tool]: {
         configuration: {
+          /* Add common configurations:
           getMeasurementLocationCallback: (eventData, tool, options) => {
             console.log(eventData, tool, options);
-          },
+          }, */
         },
       },
     }))

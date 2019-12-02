@@ -22,4 +22,5 @@ export {
   default as ContextMenuProvider,
   withContextMenu,
   useContextMenu,
+  ContextMenuConsumer,
 } from './ContextMenuProvider.js';

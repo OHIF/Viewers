@@ -16,7 +16,7 @@ const { Provider } = ContextMenuContext;
 
 export const useContextMenu = () => useContext(ContextMenuContext);
 
-const ContextMenuProvider = ({ children, service }) => {
+const ContextMenuProvider = ({ children, service, commandsManager }) => {
   const { create, dismiss } = useDialog();
 
   /**
@@ -26,9 +26,9 @@ const ContextMenuProvider = ({ children, service }) => {
    */
   useEffect(() => {
     if (service) {
-      service.setServiceImplementation({ show });
+      service.setServiceImplementation({ showContextMenu, showLabellingFlow });
     }
-  }, [service, show]);
+  }, [service, showContextMenu, showLabellingFlow]);
 
   /**
    * Show the context menu and override its configuration props.
@@ -36,8 +36,8 @@ const ContextMenuProvider = ({ children, service }) => {
    * @param {ContextMenuProps} props { eventData, isTouchEvent, onClose, visible }
    * @returns void
    */
-  const show = useCallback(
-    ({ event, updateLabellingCallback }) => {
+  const showContextMenu = useCallback(
+    ({ event }) => {
       dismiss({ id: 'context-menu' });
       create({
         id: 'context-menu',
@@ -48,13 +48,28 @@ const ContextMenuProvider = ({ children, service }) => {
           eventData: event,
           onClose: () => dismiss({ id: 'context-menu' }),
           onSetLabel: (eventData, measurementData) =>
-            _onSetLabel(eventData, measurementData, updateLabellingCallback),
+            showLabellingFlow({
+              event: eventData,
+              centralize: true,
+              props: {
+                measurementData,
+                skipAddLabelButton: true,
+                editLocation: true,
+              },
+            }),
           onSetDescription: (eventData, measurementData) =>
-            _onSetDescription(
-              eventData,
-              measurementData,
-              updateLabellingCallback
-            ),
+            showLabellingFlow({
+              event: eventData,
+              centralize: false,
+              defaultPosition: {
+                x: (eventData && eventData.currentPoints.client.x) || 0,
+                y: (eventData && eventData.currentPoints.client.y) || 0,
+              },
+              props: {
+                measurementData,
+                editDescriptionDialog: true,
+              },
+            }),
         },
         defaultPosition: {
           x: (event && event.currentPoints.client.x) || 0,
@@ -62,53 +77,59 @@ const ContextMenuProvider = ({ children, service }) => {
         },
       });
     },
-    [_onSetDescription, _onSetLabel, create, dismiss]
+    [create, dismiss, showLabellingFlow]
   );
 
-  const _onSetLabel = useCallback(
-    (eventData, measurementData, updateLabellingCallback) => {
+  const showLabellingFlow = useCallback(
+    ({ centralize, defaultPosition, props }) => {
+      dismiss({ id: 'labelling' });
       create({
         id: 'labelling',
-        centralize: true,
+        centralize,
         isDraggable: false,
+        showOverlay: true,
         content: LabellingManager,
+        defaultPosition,
         contentProps: {
           visible: true,
-          eventData,
-          measurementData,
-          skipAddLabelButton: true,
-          editLocation: true,
+          measurementData: props.measurementData,
           labellingDoneCallback: () => dismiss({ id: 'labelling' }),
           updateLabelling: labellingData =>
-            updateLabellingCallback(labellingData, measurementData),
+            _updateLabellingHandler(labellingData, props.measurementData),
+          ...props,
         },
       });
     },
-    [create, dismiss]
+    [_updateLabellingHandler, create, dismiss]
   );
 
-  const _onSetDescription = useCallback(
-    (eventData, measurementData, updateLabellingCallback) => {
-      create({
-        id: 'labelling',
-        centralize: true,
-        isDraggable: false,
-        content: LabellingManager,
-        contentProps: {
-          visible: true,
-          eventData,
-          measurementData,
-          editDescriptionDialog: true,
-          labellingDoneCallback: () => dismiss({ id: 'labelling' }),
-          updateLabelling: labellingData =>
-            updateLabellingCallback(labellingData, measurementData),
-        },
-      });
+  const _updateLabellingHandler = useCallback(
+    (labellingData, measurementData) => {
+      const { location, description, response } = labellingData;
+
+      if (location) {
+        measurementData.location = location;
+      }
+
+      measurementData.description = description || '';
+
+      if (response) {
+        measurementData.response = response;
+      }
+
+      commandsManager.runCommand(
+        'updateTableWithNewMeasurementData',
+        measurementData
+      );
     },
-    [create, dismiss]
+    [commandsManager]
   );
 
-  return <Provider value={{ show }}>{children}</Provider>;
+  return (
+    <Provider value={{ showContextMenu, showLabellingFlow }}>
+      {children}
+    </Provider>
+  );
 };
 
 /**
@@ -118,8 +139,10 @@ const ContextMenuProvider = ({ children, service }) => {
  */
 export const withContextMenu = Component => {
   return function WrappedComponent(props) {
-    const { show } = useContextMenu();
-    return <Component {...props} modal={{ show }} />;
+    const { showContextMenu, showLabellingFlow } = useContextMenu();
+    return (
+      <Component {...props} modal={{ showContextMenu, showLabellingFlow }} />
+    );
   };
 };
 
@@ -135,6 +158,7 @@ ContextMenuProvider.propTypes = {
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
+  commandsManager: PropTypes.object.isRequired,
 };
 
 export default ContextMenuProvider;

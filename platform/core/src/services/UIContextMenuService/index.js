@@ -5,14 +5,23 @@
  * @property {Event} event The event with tool information.
  */
 
+/**
+ * UI Labelling Flow
+ *
+ * @typedef {Object} LabellingFlowProps
+ * @property {Event} event The event with tool information.
+ */
+
 const uiContextMenuServicePublicAPI = {
   name: 'UIContextMenuService',
-  show,
+  showLabellingFlow,
+  showContextMenu,
   setServiceImplementation,
 };
 
 const uiContextMenuServiceImplementation = {
-  _show: () => console.warn('show() NOT IMPLEMENTED'),
+  _showLabellingFlow: () => console.warn('showLabellingFlow() NOT IMPLEMENTED'),
+  _showContextMenu: () => console.warn('showLabellingFlow() NOT IMPLEMENTED'),
 };
 
 function createUIContextMenuService() {
@@ -24,10 +33,22 @@ function createUIContextMenuService() {
  *
  * @param {ContextMenuProps} props {  }
  */
-function show({ event, updateLabellingCallback }) {
-  return uiContextMenuServiceImplementation._show({
+function showContextMenu({ event }) {
+  return uiContextMenuServiceImplementation._showContextMenu({
     event,
-    updateLabellingCallback,
+  });
+}
+
+/**
+ * Show a new UI LabellingFlow;
+ *
+ * @param {LabellingFlowProps} props {  }
+ */
+function showLabellingFlow({ defaultPosition, centralize, props }) {
+  return uiContextMenuServiceImplementation._showLabellingFlow({
+    defaultPosition,
+    centralize,
+    props,
   });
 }
 
@@ -35,12 +56,19 @@ function show({ event, updateLabellingCallback }) {
  *
  *
  * @param {*} {
- *   show: showImplementation,
+ *   showContextMenu: showContextMenuImplementation,
+ *   showLabellingFlow: showLabellingFlowImplementation,
  * }
  */
-function setServiceImplementation({ show: showImplementation }) {
-  if (showImplementation) {
-    uiContextMenuServiceImplementation._show = showImplementation;
+function setServiceImplementation({
+  showContextMenu: showContextMenuImplementation,
+  showLabellingFlow: showLabellingFlowImplementation,
+}) {
+  if (showContextMenuImplementation) {
+    uiContextMenuServiceImplementation._showContextMenu = showContextMenuImplementation;
+  }
+  if (showLabellingFlowImplementation) {
+    uiContextMenuServiceImplementation._showLabellingFlow = showLabellingFlowImplementation;
   }
 }
 
