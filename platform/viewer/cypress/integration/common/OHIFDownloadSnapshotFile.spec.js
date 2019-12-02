@@ -1,5 +1,3 @@
-import { copyResponse } from 'workbox-core';
-
 describe('OHIF Download Snapshot File', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
