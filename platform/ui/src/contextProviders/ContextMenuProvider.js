@@ -164,6 +164,7 @@ export const withContextMenu = Component => {
     const {
       showContextMenu,
       hideContextMenu,
+      hideLabellingFlow,
       showLabellingFlow,
     } = useContextMenu();
     return (
