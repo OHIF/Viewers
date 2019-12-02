@@ -7,7 +7,6 @@ import OHIF from '@ohif/core';
 import moment from 'moment';
 import ConnectedHeader from './ConnectedHeader.js';
 import ConnectedToolbarRow from './ConnectedToolbarRow.js';
-import ConnectedLabellingOverlay from './ConnectedLabellingOverlay';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
@@ -317,7 +316,6 @@ class Viewer extends Component {
             )}
           </SidePanel>
         </div>
-        <ConnectedLabellingOverlay />
       </>
     );
   }

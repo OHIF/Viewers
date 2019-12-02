@@ -67,7 +67,7 @@ export default function init({
   };
 
   // TODO: This makes scrolling painfully slow
-  // const onNewImage = getResetLabellingAndContextMenu(store);
+  // const onNewImage = ...
 
   /*
    * Because click gives us the native "mouse up", buttons will always be `0`
