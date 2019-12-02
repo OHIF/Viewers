@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.7.1...@ohif/extension-cornerstone@1.7.2) (2019-12-02)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+## [1.7.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.7.0...@ohif/extension-cornerstone@1.7.1) (2019-12-02)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 # [1.7.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.6.0...@ohif/extension-cornerstone@1.7.0) (2019-11-25)
 
 

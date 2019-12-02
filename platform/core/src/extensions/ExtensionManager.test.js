@@ -154,9 +154,7 @@ describe('ExtensionManager.js', () => {
     });
 
     it('successfully passes a servicesManager and commandsManager instances to each module', () => {
-      extensionManager._servicesManager = {
-        services: { TestService: {}, commandsManager: {} },
-      };
+      extensionManager._servicesManager = { services: { TestService: {} } };
 
       const extension = {
         id: 'hello-world',
