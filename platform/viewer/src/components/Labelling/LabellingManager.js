@@ -8,7 +8,6 @@ import './LabellingManager.css';
 
 export default class LabellingManager extends Component {
   static propTypes = {
-    eventData: PropTypes.object.isRequired,
     measurementData: PropTypes.object.isRequired,
     labellingDoneCallback: PropTypes.func.isRequired,
     updateLabelling: PropTypes.func.isRequired,

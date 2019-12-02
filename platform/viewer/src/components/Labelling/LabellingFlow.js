@@ -8,7 +8,6 @@ import OHIFLabellingData from './OHIFLabellingData.js';
 
 export default class LabellingFlow extends Component {
   static propTypes = {
-    eventData: PropTypes.object.isRequired,
     measurementData: PropTypes.object.isRequired,
     labellingDoneCallback: PropTypes.func.isRequired,
     updateLabelling: PropTypes.func.isRequired,

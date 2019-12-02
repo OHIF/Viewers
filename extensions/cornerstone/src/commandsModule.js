@@ -199,10 +199,9 @@ const commandsModule = ({ servicesManager }) => {
       const { UIContextMenuService } = servicesManager.services;
       UIContextMenuService.showContextMenu({ event });
     },
-    showLabellingFlow({ event, defaultPosition, centralize, props }) {
+    showLabellingFlow({ defaultPosition, centralize, props }) {
       const { UIContextMenuService } = servicesManager.services;
       UIContextMenuService.showLabellingFlow({
-        event,
         defaultPosition,
         centralize,
         props,
