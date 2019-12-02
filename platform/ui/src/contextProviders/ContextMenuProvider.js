@@ -26,9 +26,15 @@ const ContextMenuProvider = ({ children, service, commandsManager }) => {
    */
   useEffect(() => {
     if (service) {
-      service.setServiceImplementation({ showContextMenu, showLabellingFlow });
+      service.setServiceImplementation({
+        showContextMenu,
+        hideContextMenu,
+        showLabellingFlow,
+      });
     }
-  }, [service, showContextMenu, showLabellingFlow]);
+  }, [hideContextMenu, service, showContextMenu, showLabellingFlow]);
+
+  const hideContextMenu = useCallback(() => dismiss({ id: 'context-menu' }));
 
   /**
    * Show the context menu and override its configuration props.
@@ -126,7 +132,7 @@ const ContextMenuProvider = ({ children, service, commandsManager }) => {
   );
 
   return (
-    <Provider value={{ showContextMenu, showLabellingFlow }}>
+    <Provider value={{ showContextMenu, hideContextMenu, showLabellingFlow }}>
       {children}
     </Provider>
   );
@@ -139,9 +145,16 @@ const ContextMenuProvider = ({ children, service, commandsManager }) => {
  */
 export const withContextMenu = Component => {
   return function WrappedComponent(props) {
-    const { showContextMenu, showLabellingFlow } = useContextMenu();
+    const {
+      showContextMenu,
+      hideContextMenu,
+      showLabellingFlow,
+    } = useContextMenu();
     return (
-      <Component {...props} modal={{ showContextMenu, showLabellingFlow }} />
+      <Component
+        {...props}
+        modal={{ showContextMenu, hideContextMenu, showLabellingFlow }}
+      />
     );
   };
 };

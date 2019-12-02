@@ -3,15 +3,6 @@ import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import throttle from 'lodash.throttle';
 
-// TODO: This only works because we have a hard dependency on this extension
-// We need to decouple and make stuff like this possible w/o bundling this at
-// build time
-import store from './../../store';
-import {
-  getOnTouchPressCallback,
-  getResetLabellingAndContextMenu,
-} from './labelingFlowCallbacks.js';
-
 const {
   onAdded,
   onRemoved,
@@ -56,13 +47,27 @@ export default function init({
     });
   };
 
-  const onTouchPress = getOnTouchPressCallback(store);
-  const onNewImage = getResetLabellingAndContextMenu(store);
-  // const onMouseClick = resetContextMenu;
-  const onTouchStart = getResetLabellingAndContextMenu(store);
+  const onTouchPress = event => {
+    commandsManager.runCommand('showContextMenu', {
+      event: event.detail,
+      props: {
+        isTouchEvent: true,
+      },
+    });
+  };
 
-  // Because click gives us the native "mouse up", buttons will always be `0`
-  // Need to fallback to event.which;
+  const onTouchStart = () => commandsManager.runCommand('hideContextMenu');
+
+  const onMouseClick = () => commandsManager.runCommand('hideContextMenu');
+
+  // TODO: This makes scrolling painfully slow
+  // const onNewImage = getResetLabellingAndContextMenu(store);
+
+  /*
+   * Because click gives us the native "mouse up", buttons will always be `0`
+   * Need to fallback to event.which;
+   *
+   */
   const handleClick = cornerstoneMouseClickEvent => {
     const mouseUpEvent = cornerstoneMouseClickEvent.detail.event;
     const isRightClick = mouseUpEvent.which === 3;
@@ -93,10 +98,11 @@ export default function init({
       csTools.EVENTS.LABELMAP_MODIFIED,
       onLabelmapModified
     );
-    //
+
     element.addEventListener(csTools.EVENTS.TOUCH_PRESS, onTouchPress);
     element.addEventListener(csTools.EVENTS.MOUSE_CLICK, handleClick);
     element.addEventListener(csTools.EVENTS.TOUCH_START, onTouchStart);
+
     // TODO: This makes scrolling painfully slow
     // element.addEventListener(cornerstone.EVENTS.NEW_IMAGE, onNewImage);
   }
@@ -120,10 +126,12 @@ export default function init({
       csTools.EVENTS.LABELMAP_MODIFIED,
       onLabelmapModified
     );
-    //
+
     element.removeEventListener(csTools.EVENTS.TOUCH_PRESS, onTouchPress);
     element.removeEventListener(csTools.EVENTS.MOUSE_CLICK, handleClick);
     element.removeEventListener(csTools.EVENTS.TOUCH_START, onTouchStart);
+
+    // TODO: This makes scrolling painfully slow
     // element.removeEventListener(cornerstone.EVENTS.NEW_IMAGE, onNewImage);
   }
 
