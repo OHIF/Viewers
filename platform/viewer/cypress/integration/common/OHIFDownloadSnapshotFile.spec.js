@@ -1,3 +1,5 @@
+import { copyResponse } from 'workbox-core';
+
 describe('OHIF Download Snapshot File', () => {
   before(() => {
     cy.openStudy('MISTER^MR');
@@ -67,13 +69,17 @@ describe('OHIF Download Snapshot File', () => {
       .clear()
       .type('new-filename');
     cy.get('[data-cy=file-type]').select('png');
-
-    // TO-DO: Implement a way to not trigger the button function to open the download browser dialog.
-    // Suggestion of approach: https://github.com/cypress-io/cypress/issues/949
-    // Once we can block the download dialog we can click on Download button.
-    // cy.get('[data-cy="download-btn"]')
-    //   .scrollIntoView()
-    //   .click();
+    //Click on Download button
+    //For testing purposes, download dialog event is blocked during cypress execution
+    cy.get('[data-cy="download-btn"]')
+      .scrollIntoView()
+      .click();
+    //Get download url and verify if blob was created
+    cy.window()
+      .its('downloadUrl')
+      .then($url => {
+        expect($url).to.contain('blob:');
+      });
   });
 
   it('cancel changes on download modal', function() {

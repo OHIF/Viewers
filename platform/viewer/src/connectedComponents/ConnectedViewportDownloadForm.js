@@ -114,6 +114,12 @@ const mapStateToProps = (state, ownProps) => {
         const URLObj = window.URL || window.webkitURL;
         const a = document.createElement('a');
         a.href = URLObj.createObjectURL(blob);
+        window.downloadUrl = URLObj.createObjectURL(blob);
+        // Do not open the download dialog if Cypress test is being executed
+        if (window.Cypress) {
+          console.log(window.downloadUrl);
+          return;
+        }
         a.download = file;
         document.body.appendChild(a);
         a.click();
