@@ -6,7 +6,7 @@ const { setViewportActive } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
   const { viewportIndex, byteArray } = ownProps;
-  const activeViewportIndex = state.viewports;
+  const { activeViewportIndex } = state.viewports;
 
   return {
     viewportIndex,
