@@ -82,7 +82,7 @@ const ContextMenuProvider = ({ children, service, commandsManager }) => {
               },
               props: {
                 measurementData,
-                editDescriptionDialog: true,
+                editDescriptionOnDialog: true,
               },
             }),
         },
