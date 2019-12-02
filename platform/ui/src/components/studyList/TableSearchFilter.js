@@ -103,15 +103,14 @@ function TableSearchFilter(props) {
               // https://github.com/airbnb/react-dates
               <CustomDateRangePicker
                 // Required
-                startDate={getDateEntry(studyDateTo, defaultStartDate)}
+                startDate={getDateEntry(studyDateFrom, defaultStartDate)}
                 startDateId="start-date"
-                endDate={getDateEntry(studyDateFrom, defaultEndDate)}
+                endDate={getDateEntry(studyDateTo, defaultEndDate)}
                 endDateId="end-date"
-                autoFocus={false}
                 // TODO: We need a dynamic way to determine which fields values to update
                 onDatesChange={({ startDate, endDate, preset = false }) => {
-                  onValueChange('studyDateTo', startDate);
-                  onValueChange('studyDateFrom', endDate);
+                  onValueChange('studyDateFrom', startDate);
+                  onValueChange('studyDateTo', endDate);
                 }}
                 focusedInput={focusedInput}
                 onFocusChange={updatedVal => setFocusedInput(updatedVal)}
