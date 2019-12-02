@@ -4,9 +4,14 @@ import { I18nextProvider } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
-import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import { hot } from 'react-hot-loader/root';
 import merge from 'lodash.merge';
+
+import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
+import OHIFVTKExtension from '@ohif/extension-vtk';
+import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
+import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
+import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 
 import {
   SimpleDialog,
@@ -27,7 +32,7 @@ import {
   createUIDialogService,
   createUIContextMenuService,
   utils,
-  redux as reduxOHIF
+  redux as reduxOHIF,
 } from '@ohif/core';
 
 import i18n from '@ohif/i18n';
@@ -50,12 +55,12 @@ import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 /** Store */
 import { getActiveContexts } from './store/layout/selectors.js';
 import store from './store';
-const { setUserPreferences } = reduxOHIF.actions;
 
 /** Contexts */
 import WhiteLabellingContext from './context/WhiteLabellingContext';
 import UserManagerContext from './context/UserManagerContext';
 import AppContext from './context/AppContext';
+const { setUserPreferences } = reduxOHIF.actions;
 
 /** ~~~~~~~~~~~~~ Application Setup */
 const commandsManagerConfig = {
@@ -107,13 +112,17 @@ class App extends Component {
     this._appConfig = { props, ...props.config };
 
     const { config, oidc } = props;
-    const { servers, extensions, hotkeys, tools } = config({
-      servicesManager,
-      dependencies: {
-        merge,
-        SimpleDialog,
-      },
-    });
+
+    const { servers, extensions, hotkeys, tools } =
+      typeof config === 'function'
+        ? config({
+            servicesManager,
+            dependencies: {
+              merge,
+              SimpleDialog,
+            },
+          })
+        : config;
 
     this.initUserManager(oidc);
     _initServices([
@@ -241,6 +250,10 @@ function _initExtensions(extensions, hotkeys, tools) {
     [OHIFCornerstoneExtension, { tools }],
     // WARNING: MUST BE REGISTERED _AFTER_ OHIFCORNERSTONEEXTENSION
     MeasurementsPanel,
+    OHIFVTKExtension,
+    OHIFDicomHtmlExtension,
+    OHIFDicomMicroscopyExtension,
+    OHIFDicomPDFExtension,
   ];
   const mergedExtensions = defaultExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
