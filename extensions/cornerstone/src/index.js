@@ -33,7 +33,7 @@ export default {
   getToolbarModule() {
     return toolbarModule;
   },
-  getCommandsModule() {
-    return commandsModule;
+  getCommandsModule({ servicesManager }) {
+    return commandsModule({ servicesManager });
   },
 };
