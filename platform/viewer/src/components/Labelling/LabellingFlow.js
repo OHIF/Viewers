@@ -1,11 +1,10 @@
 import { Icon, SelectTree } from '@ohif/ui';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import cloneDeep from 'lodash.clonedeep';
 
 import LabellingTransition from './LabellingTransition.js';
 import OHIFLabellingData from './OHIFLabellingData.js';
-import PropTypes from 'prop-types';
-import cloneDeep from 'lodash.clonedeep';
-import { getAddLabelButtonStyle } from './labellingPositionUtils.js';
 
 export default class LabellingFlow extends Component {
   static propTypes = {
@@ -13,7 +12,6 @@ export default class LabellingFlow extends Component {
     measurementData: PropTypes.object.isRequired,
     labellingDoneCallback: PropTypes.func.isRequired,
     updateLabelling: PropTypes.func.isRequired,
-
     initialTopDistance: PropTypes.number,
     skipAddLabelButton: PropTypes.bool,
     editLocation: PropTypes.bool,
@@ -25,11 +23,6 @@ export default class LabellingFlow extends Component {
 
     const { location, locationLabel, description } = props.measurementData;
 
-    let style = props.componentStyle;
-    if (!props.skipAddLabelButton) {
-      style = getAddLabelButtonStyle(props.measurementData, props.eventData);
-    }
-
     this.state = {
       location,
       locationLabel,
@@ -37,14 +30,12 @@ export default class LabellingFlow extends Component {
       skipAddLabelButton: props.skipAddLabelButton,
       editDescription: props.editDescription,
       editLocation: props.editLocation,
-      componentStyle: style,
       confirmationState: false,
       displayComponent: true,
     };
 
     this.mainElement = React.createRef();
     this.descriptionInput = React.createRef();
-
     this.initialItems = OHIFLabellingData;
     this.currentItems = cloneDeep(this.initialItems);
   }
@@ -59,26 +50,6 @@ export default class LabellingFlow extends Component {
     let mainElementClassName = 'labellingComponent';
     if (this.state.editDescription) {
       mainElementClassName += ' editDescription';
-    }
-
-    const style = Object.assign({}, this.state.componentStyle);
-    if (this.state.skipAddLabelButton) {
-      if (style.left - 160 < 0) {
-        style.left = 0;
-      } else {
-        style.left -= 160;
-      }
-    }
-
-    if (this.state.editLocation) {
-      style.maxHeight = '70vh';
-      if (!this.initialTopDistance) {
-        this.initialTopDistance = window.innerHeight - window.innerHeight * 0.3;
-        style.top = `${this.state.componentStyle.top -
-          this.initialTopDistance / 2}px`;
-      } else {
-        style.top = `${this.state.componentStyle.top}px`;
-      }
     }
 
     return (
@@ -126,7 +97,7 @@ export default class LabellingFlow extends Component {
           <SelectTree
             items={this.currentItems}
             columns={1}
-            onSelected={this.selectTreeSelectCalback}
+            onSelected={this.selectTreeSelectCallback}
             selectTreeFirstTitle="Assign Label"
           />
         );
@@ -190,33 +161,17 @@ export default class LabellingFlow extends Component {
     }
   };
 
-  relabel = event => {
-    const viewportTopPosition = this.mainElement.current.offsetParent.offsetTop;
-    const componentStyle = {
-      top: event.nativeEvent.y - viewportTopPosition - 55,
-      left: event.nativeEvent.x,
-    };
-    this.setState({
-      editLocation: true,
-      componentStyle,
-    });
-  };
+  relabel = event => this.setState({ editLocation: true });
 
   setDescriptionUpdateMode = () => {
     this.descriptionInput.current.focus();
-
-    this.setState({
-      editDescription: true,
-    });
+    this.setState({ editDescription: true });
   };
 
   descriptionCancel = () => {
     const { description = '' } = cloneDeep(this.state);
     this.descriptionInput.current.value = description;
-
-    this.setState({
-      editDescription: false,
-    });
+    this.setState({ editDescription: false });
   };
 
   handleKeyPress = e => {
@@ -235,22 +190,15 @@ export default class LabellingFlow extends Component {
     });
   };
 
-  selectTreeSelectCalback = (event, itemSelected) => {
+  selectTreeSelectCallback = (event, itemSelected) => {
     const location = itemSelected.value;
     this.props.updateLabelling({ location });
-
-    const viewportTopPosition = this.mainElement.current.offsetParent.offsetTop;
-    const componentStyle = {
-      top: event.nativeEvent.y - viewportTopPosition - 25,
-      left: event.nativeEvent.x,
-    };
 
     this.setState({
       editLocation: false,
       confirmationState: true,
       location: itemSelected.value,
       locationLabel: itemSelected.label,
-      componentStyle,
     });
 
     if (this.isTouchScreen) {
@@ -271,18 +219,13 @@ export default class LabellingFlow extends Component {
 
   fadeOutAndLeave = () => {
     // Wait for 1 sec to dismiss the labelling component
-    this.fadeOutTimer = setTimeout(() => {
-      this.setState({
-        displayComponent: false,
-      });
-    }, 1000);
+    this.fadeOutTimer = setTimeout(
+      () => this.setState({ displayComponent: false }),
+      1000
+    );
   };
 
-  fadeOutAndLeaveFast = () => {
-    this.setState({
-      displayComponent: false,
-    });
-  };
+  fadeOutAndLeaveFast = () => this.setState({ displayComponent: false });
 
   clearFadeOutTimer = () => {
     if (!this.fadeOutTimer) {
