@@ -131,7 +131,6 @@ CustomDateRangePicker.propTypes = {
       end: PropTypes.required,
     })
   ),
-  autoFocus: PropTypes.bool.isRequired,
   onDatesChange: PropTypes.func.isRequired,
   startDate: PropTypes.instanceOf(Date),
   endDate: PropTypes.instanceOf(Date),

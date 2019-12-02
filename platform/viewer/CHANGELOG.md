@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.11.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.1...@ohif/viewer@2.11.2) (2019-11-28)
+
+
+### Bug Fixes
+
+* User Preferences Issues ([#1207](https://github.com/OHIF/Viewers/issues/1207)) ([1df21a9](https://github.com/OHIF/Viewers/commit/1df21a9e075b5e6dfc10a429ae825826f46c71b8)), closes [#1161](https://github.com/OHIF/Viewers/issues/1161) [#1164](https://github.com/OHIF/Viewers/issues/1164) [#1177](https://github.com/OHIF/Viewers/issues/1177) [#1179](https://github.com/OHIF/Viewers/issues/1179) [#1180](https://github.com/OHIF/Viewers/issues/1180) [#1181](https://github.com/OHIF/Viewers/issues/1181) [#1182](https://github.com/OHIF/Viewers/issues/1182) [#1183](https://github.com/OHIF/Viewers/issues/1183) [#1184](https://github.com/OHIF/Viewers/issues/1184) [#1185](https://github.com/OHIF/Viewers/issues/1185)
+
+
+
+
+
+## [2.11.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.0...@ohif/viewer@2.11.1) (2019-11-27)
+
+
+### Bug Fixes
+
+* of undefined name of project ([#1231](https://github.com/OHIF/Viewers/issues/1231)) ([e34a057](https://github.com/OHIF/Viewers/commit/e34a05726319e3e70279c43d5bf976d33cdf71f7))
+
+
+
+
+
 # [2.11.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.10.2...@ohif/viewer@2.11.0) (2019-11-25)
 
 

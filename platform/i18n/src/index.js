@@ -42,6 +42,7 @@ const locizeOptions = {
 
 const envUseLocize = !!config.USE_LOCIZE;
 const envApiKeyAvailable = !!config.LOCIZE_API_KEY;
+const DEFAULT_LANGUAGE = 'en-US';
 
 function initI18n(
   detection = detectionOptions,
@@ -74,7 +75,7 @@ function initI18n(
       // init i18next
       // for all options read: https://www.i18next.com/overview/configuration-options
       .init({
-        fallbackLng: 'en-US',
+        fallbackLng: DEFAULT_LANGUAGE,
         saveMissing: apiKeyAvailable,
         debug: debugMode,
         keySeparator: false,
@@ -111,7 +112,7 @@ function initI18n(
       // init i18next
       // for all options read: https://www.i18next.com/overview/configuration-options
       .init({
-        fallbackLng: 'en-US',
+        fallbackLng: DEFAULT_LANGUAGE,
         resources: locales,
         debug: debugMode,
         keySeparator: false,
@@ -136,5 +137,6 @@ customDebug(`version ${pkg.version} loaded.`, 'info');
 i18n.initializing = initI18n();
 i18n.initI18n = initI18n;
 i18n.addLocales = addLocales;
+i18n.defaultLanguage = DEFAULT_LANGUAGE;
 
 export default i18n;
