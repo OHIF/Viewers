@@ -1,15 +1,16 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import OHIF from '@ohif/core';
+
+import { getEnabledElement } from './state';
+import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 const scroll = cornerstoneTools.import('util/scroll');
 
+// what the fuck?
 const commandsModule = ({ servicesManager }) => {
   const actions = {
     rotateViewport: ({ viewports, rotation }) => {
-      const enabledElement = _getActiveViewportEnabledElement(
-        viewports.viewportSpecificData,
-        viewports.activeViewportIndex
-      );
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -18,10 +19,7 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     flipViewportHorizontal: ({ viewports }) => {
-      const enabledElement = _getActiveViewportEnabledElement(
-        viewports.viewportSpecificData,
-        viewports.activeViewportIndex
-      );
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -30,10 +28,7 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     flipViewportVertical: ({ viewports }) => {
-      const enabledElement = _getActiveViewportEnabledElement(
-        viewports.viewportSpecificData,
-        viewports.activeViewportIndex
-      );
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -41,11 +36,8 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.setViewport(enabledElement, viewport);
       }
     },
-    scaleViewport: ({ viewports, direction }) => {
-      const enabledElement = _getActiveViewportEnabledElement(
-        viewports.viewportSpecificData,
-        viewports.activeViewportIndex
-      );
+    scaleViewport: ({ direction, viewports }) => {
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
       const step = direction * 0.15;
 
       if (enabledElement) {
@@ -59,20 +51,14 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     resetViewport: ({ viewports }) => {
-      const enabledElement = _getActiveViewportEnabledElement(
-        viewports.viewportSpecificData,
-        viewports.activeViewportIndex
-      );
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
       if (enabledElement) {
         cornerstone.reset(enabledElement);
       }
     },
     invertViewport: ({ viewports }) => {
-      const enabledElement = _getActiveViewportEnabledElement(
-        viewports.viewportSpecificData,
-        viewports.activeViewportIndex
-      );
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -93,10 +79,7 @@ const commandsModule = ({ servicesManager }) => {
       console.warn('updateDisplaySet: ', direction);
     },
     clearAnnotations: ({ viewports }) => {
-      const element = _getActiveViewportEnabledElement(
-        viewports.viewportSpecificData,
-        viewports.activeViewportIndex
-      );
+      const element = getEnabledElement(viewports.activeViewportIndex);
       if (!element) {
         return;
       }
@@ -152,20 +135,28 @@ const commandsModule = ({ servicesManager }) => {
       });
     },
     nextImage: ({ viewports }) => {
-      const enabledElement = _getActiveViewportEnabledElement(
-        viewports.viewportSpecificData,
-        viewports.activeViewportIndex
-      );
-
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
       scroll(enabledElement, 1);
     },
     previousImage: ({ viewports }) => {
-      const enabledElement = _getActiveViewportEnabledElement(
-        viewports.viewportSpecificData,
-        viewports.activeViewportIndex
-      );
-
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
       scroll(enabledElement, -1);
+    },
+    getActiveViewportEnabledElement: ({ viewports }) => {
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+      return enabledElement;
+    },
+    showDownloadViewportModal: ({ title, viewports }) => {
+      const activeViewportIndex = viewports.activeViewportIndex;
+      const { UIModalService } = servicesManager.services;
+      UIModalService.show({
+        content: CornerstoneViewportDownloadForm,
+        title,
+        contentProps: {
+          activeViewportIndex,
+          onClose: UIModalService.hide,
+        },
+      });
     },
     updateTableWithNewMeasurementData(measurementData) {
       const {
@@ -240,6 +231,16 @@ const commandsModule = ({ servicesManager }) => {
     },
     updateTableWithNewMeasurementData: {
       commandFn: actions.updateTableWithNewMeasurementData,
+      storeContexts: ['viewports'],
+      options: {},
+    },
+    showDownloadViewportModal: {
+      commandFn: actions.showDownloadViewportModal,
+      storeContexts: ['viewports'],
+      options: {},
+    },
+    getActiveViewportEnabledElement: {
+      commandFn: actions.getActiveViewportEnabledElement,
       storeContexts: ['viewports'],
       options: {},
     },
@@ -322,15 +323,6 @@ const commandsModule = ({ servicesManager }) => {
       options: {},
     },
   };
-
-  /**
-   * Grabs `dom` reference for the enabledElement of
-   * the active viewport
-   */
-  function _getActiveViewportEnabledElement(viewports, activeIndex) {
-    const activeViewport = viewports[activeIndex] || {};
-    return activeViewport.dom;
-  }
 
   return {
     actions,
