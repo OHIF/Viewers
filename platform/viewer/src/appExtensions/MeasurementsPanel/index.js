@@ -1,3 +1,4 @@
+import React from 'react';
 import ConnectedMeasurementTable from './ConnectedMeasurementTable.js';
 import init from './init.js';
 
@@ -11,6 +12,9 @@ export default {
     init({ servicesManager, commandsManager, configuration });
   },
   getPanelModule({ servicesManager, commandsManager }) {
+    const ExtendedConnectedMeasurementTable = () => (
+      <ConnectedMeasurementTable commandsManager={commandsManager} />
+    );
     return {
       menuOptions: [
         {
@@ -22,7 +26,7 @@ export default {
       components: [
         {
           id: 'measurement-panel',
-          component: ConnectedMeasurementTable,
+          component: ExtendedConnectedMeasurementTable,
         },
       ],
       defaultContext: ['VIEWER'],

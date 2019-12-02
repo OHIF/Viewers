@@ -38,8 +38,6 @@ export default function init({
   commandsManager,
   configuration = {},
 }) {
-  const { UIContextMenuService } = servicesManager.services;
-
   // TODO: MEASUREMENT_COMPLETED (not present in initial implementation)
   const onMeasurementsChanged = (action, event) => {
     return MEASUREMENT_ACTION_MAP[action](event);
@@ -53,24 +51,9 @@ export default function init({
   );
 
   const onRightClick = event => {
-    const updateLabellingCallback = (labellingData, measurementData) => {
-      if (labellingData.location) {
-        measurementData.location = labellingData.location;
-      }
-
-      measurementData.description = labellingData.description || '';
-
-      if (labellingData.response) {
-        measurementData.response = labellingData.response;
-      }
-
-      commandsManager.runCommand(
-        'updateTableWithNewMeasurementData',
-        measurementData
-      );
-    };
-
-    UIContextMenuService.show({ event: event.detail, updateLabellingCallback });
+    commandsManager.runCommand('showContextMenu', {
+      event: event.detail,
+    });
   };
 
   const onTouchPress = getOnTouchPressCallback(store);
