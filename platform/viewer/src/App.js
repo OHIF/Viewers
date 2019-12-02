@@ -147,7 +147,10 @@ class App extends Component {
                             modal={OHIFModal}
                             service={UIModalService}
                           >
-                            <ContextMenuProvider service={UIContextMenuService}>
+                            <ContextMenuProvider
+                              service={UIContextMenuService}
+                              commandsManager={commandsManager}
+                            >
                               <OHIFStandaloneViewer userManager={userManager} />
                             </ContextMenuProvider>
                           </ModalProvider>
@@ -172,7 +175,10 @@ class App extends Component {
                 <SnackbarProvider service={UINotificationService}>
                   <DialogProvider service={UIDialogService}>
                     <ModalProvider modal={OHIFModal} service={UIModalService}>
-                      <ContextMenuProvider service={UIContextMenuService}>
+                      <ContextMenuProvider
+                        service={UIContextMenuService}
+                        commandsManager={commandsManager}
+                      >
                         <OHIFStandaloneViewer />
                       </ContextMenuProvider>
                     </ModalProvider>
