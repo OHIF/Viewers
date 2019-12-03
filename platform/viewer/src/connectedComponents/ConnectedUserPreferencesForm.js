@@ -21,7 +21,7 @@ const mapStateToProps = (state, ownProps) => {
     hotkeysManager,
     hotkeyDefaults,
     defaultLanguage,
-    record,
+    hotkeyRecord: record,
   };
 };
 

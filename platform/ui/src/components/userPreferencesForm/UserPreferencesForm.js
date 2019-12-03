@@ -70,7 +70,7 @@ function UserPreferencesForm({
   hotkeysManager,
   defaultLanguage,
   hotkeyDefaults,
-  record,
+  hotkeyRecord,
 }) {
   const [tabs, setTabs] = useState(createTabs());
 
@@ -80,7 +80,7 @@ function UserPreferencesForm({
     generalPreferences
   ) => {
     return {
-      Hotkeys: { hotkeyDefinitions, record },
+      Hotkeys: { hotkeyDefinitions, hotkeyRecord },
       'Window Level': { windowLevelData },
       General: { generalPreferences },
     };
@@ -126,7 +126,7 @@ function UserPreferencesForm({
     // update local state
     setTabsState({
       ...tabsState,
-      Hotkeys: { hotkeyDefinitions: defaultHotKeyDefitions, record },
+      Hotkeys: { hotkeyDefinitions: defaultHotKeyDefitions, hotkeyRecord },
       General: { generalPreferences: { language: defaultLanguage } },
     });
 
@@ -217,7 +217,7 @@ UserPreferencesForm.propTypes = {
   hotkeysManager: PropTypes.object,
   defaultLanguage: PropTypes.string,
   hotkeyDefaults: PropTypes.array,
-  record: PropTypes.func,
+  hotkeyRecord: PropTypes.func,
 };
 
 export { UserPreferencesForm };
