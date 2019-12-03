@@ -14,6 +14,7 @@ describe('Top level exports', () => {
       'createUIModalService',
       'createUIDialogService',
       'createUIContextMenuService',
+      'createUILabellingFlowService',
       //
       'utils',
       'studies',
