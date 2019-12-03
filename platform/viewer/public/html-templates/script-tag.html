@@ -32,7 +32,7 @@
       console.log('OHIF Viewer rendered/updated');
     };
     window.OHIFViewer.installViewer(
-      window.config, // See `/config/default.js`
+      { config: window.config }, // See `/config/default.js`
       containerId,
       componentRenderedOrUpdatedCallback
     );
