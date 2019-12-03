@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSnackbarContext } from '@ohif/ui';
@@ -68,6 +70,7 @@ function UserPreferencesForm({
   hotkeysManager,
   defaultLanguage,
   hotkeyDefaults,
+  record,
 }) {
   const [tabs, setTabs] = useState(createTabs());
 
@@ -77,7 +80,7 @@ function UserPreferencesForm({
     generalPreferences
   ) => {
     return {
-      Hotkeys: { hotkeyDefinitions },
+      Hotkeys: { hotkeyDefinitions, record },
       'Window Level': { windowLevelData },
       General: { generalPreferences },
     };
@@ -123,12 +126,12 @@ function UserPreferencesForm({
     // update local state
     setTabsState({
       ...tabsState,
-      Hotkeys: { hotkeyDefinitions: defaultHotKeyDefitions },
+      Hotkeys: { hotkeyDefinitions: defaultHotKeyDefitions, record },
       General: { generalPreferences: { language: defaultLanguage } },
     });
 
     // update tabs state
-    setTabs(createTabs(windowLevelData, hotkeyDefinitions, generalPreferences));
+    setTabs(createTabs());
 
     // reset errors
     setTabsError(
@@ -214,6 +217,7 @@ UserPreferencesForm.propTypes = {
   hotkeysManager: PropTypes.object,
   defaultLanguage: PropTypes.string,
   hotkeyDefaults: PropTypes.array,
+  record: PropTypes.func,
 };
 
 export { UserPreferencesForm };

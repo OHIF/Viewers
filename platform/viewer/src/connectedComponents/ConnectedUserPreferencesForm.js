@@ -11,7 +11,7 @@ const mapStateToProps = (state, ownProps) => {
   const { defaultLanguage } = i18n;
   const { hotkeyDefinitions, windowLevelData = {}, generalPreferences } =
     state.preferences || {};
-  const { hotkeyDefaults } = hotkeysManager;
+  const { hotkeyDefaults, record } = hotkeysManager;
 
   return {
     onClose: ownProps.hide,
@@ -21,6 +21,7 @@ const mapStateToProps = (state, ownProps) => {
     hotkeysManager,
     hotkeyDefaults,
     defaultLanguage,
+    record,
   };
 };
 
