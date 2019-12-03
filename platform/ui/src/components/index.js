@@ -3,11 +3,7 @@ import { LayoutButton, LayoutChooser } from './layoutButton';
 import { MeasurementTable, MeasurementTableItem } from './measurementTable';
 import { Overlay, OverlayTrigger } from './overlayTrigger';
 import { TableList, TableListItem } from './tableList';
-import {
-  AboutContent,
-  UserPreferences,
-  UserPreferencesForm,
-} from './userPreferencesForm';
+import { AboutContent, UserPreferencesForm } from './userPreferencesForm';
 
 import { Checkbox } from './checkbox';
 import { CineDialog } from './cineDialog';
@@ -51,7 +47,6 @@ export {
   ToolbarSection,
   Tooltip,
   AboutContent,
-  UserPreferences,
   UserPreferencesForm,
   OHIFModal,
 };

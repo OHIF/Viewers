@@ -23,7 +23,6 @@ import {
   ToolbarSection,
   Tooltip,
   AboutContent,
-  UserPreferences,
   UserPreferencesForm,
   OHIFModal,
 } from './components';
@@ -103,7 +102,6 @@ export {
   ToolbarSection,
   Tooltip,
   AboutContent,
-  UserPreferences,
   UserPreferencesForm,
   ViewerbaseDragDropContext,
   SnackbarProvider,
