@@ -25,6 +25,14 @@ export class HotkeysManager {
     this._commandsManager = commandsManager;
   }
 
+  record(event) {
+    // initialize record plugin
+    hotkeys.record(hotkeys);
+
+    // return mousetrap object with the plugin injected
+    return hotkeys.record(event);
+  }
+
   /**
    * Disables all hotkeys. Hotkeys added while disabled will not listen for
    * input.
