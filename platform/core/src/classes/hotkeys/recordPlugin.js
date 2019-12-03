@@ -66,7 +66,7 @@ export default function(Mousetrap) {
         _recordCurrentCombo();
       }
 
-      for (i = 0; i < modifiers.length; ++i) {
+      for (let i = 0; i < modifiers.length; ++i) {
         _recordKey(modifiers[i]);
       }
       _recordKey(character);
@@ -85,10 +85,8 @@ export default function(Mousetrap) {
    * @returns void
    */
   function _recordKey(key) {
-    var i;
-
     // one-off implementation of Array.indexOf, since IE6-9 don't support it
-    for (i = 0; i < _currentRecordedKeys.length; ++i) {
+    for (let i = 0; i < _currentRecordedKeys.length; ++i) {
       if (_currentRecordedKeys[i] === key) {
         return;
       }
@@ -111,7 +109,9 @@ export default function(Mousetrap) {
     _recordedSequence.push(_currentRecordedKeys);
     _currentRecordedKeys = [];
     _recordedCharacterKey = false;
-    _restartRecordTimer();
+    _finishRecording();
+    // comenting method below for the record to be more "real-time" w/o delay
+    // _restartRecordTimer();
   }
 
   /**
@@ -124,7 +124,7 @@ export default function(Mousetrap) {
    * @returns void
    */
   function _normalizeSequence(sequence) {
-    var i;
+    let i;
 
     for (i = 0; i < sequence.length; ++i) {
       sequence[i].sort(function(x, y) {
