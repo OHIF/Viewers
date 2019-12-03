@@ -4,39 +4,17 @@ import PropTypes from 'prop-types';
 
 import './HotKeysPreferences.styl';
 
-import {
-  allowedKeys,
-  disallowedCombinations,
-  specialKeys,
-} from './hotKeysConfig.js';
+import { allowedKeys, disallowedCombinations } from './hotKeysConfig.js';
 
 import isEqual from 'lodash.isequal';
-
-const getKeysPressedArray = keyDownEvent => {
-  const keysPressedArray = [];
-  const { ctrlKey, altKey, shiftKey } = keyDownEvent;
-
-  if (ctrlKey && !altKey) {
-    keysPressedArray.push('ctrl');
-  }
-
-  if (shiftKey && !altKey) {
-    keysPressedArray.push('shift');
-  }
-
-  if (altKey && !ctrlKey) {
-    keysPressedArray.push('alt');
-  }
-
-  return keysPressedArray;
-};
 
 const findConflictingCommand = (
   originalHotKeys,
   currentCommandName,
-  currentHotKeys
+  hotkeys
 ) => {
   let firstConflictingCommand = undefined;
+  const currentHotKeys = [formatPressedKeys(hotkeys)];
 
   for (const commandName in originalHotKeys) {
     const toolHotKeys = originalHotKeys[commandName].keys;
@@ -209,6 +187,7 @@ function HotKeyPreferencesRow({
   tabError,
   onSuccessChanged,
   onFailureChanged,
+  hotkeyRecord,
 }) {
   const [inputValue, setInputValue] = useState(formatPressedKeys(hotkeys));
   const [error, setError] = useState(false);
@@ -230,38 +209,6 @@ function HotKeyPreferencesRow({
   useEffect(() => {
     setInputValue(formatPressedKeys(hotkeys));
   }, [hotkeys]);
-
-  const isSpecialCharacter = str => {
-    return str.length === 1 && str.match(/^[^a-zA-Z0-9]+$/);
-  };
-
-  const updateInputText = (keyDownEvent, displayPressedKey = false) => {
-    const pressedKeys = getKeysPressedArray(keyDownEvent);
-
-    if (displayPressedKey) {
-      const specialKeyName = specialKeys[keyDownEvent.which];
-
-      const keyName =
-        specialKeyName ||
-        keyDownEvent.key ||
-        String.fromCharCode(keyDownEvent.keyCode);
-
-      /**
-       * Check if the pressed key is a special character created by
-       * combined keys e.g.: "shift" + "=" results in "+".
-       * If so, we should set only the key itself "+", without the combined one.
-       */
-      if (isSpecialCharacter(keyName)) {
-        setInputValue(keyName.toLowerCase());
-        return;
-      }
-
-      // ensure lowerCase
-      pressedKeys.push(keyName.toLowerCase());
-    }
-
-    setInputValue(formatPressedKeys(pressedKeys));
-  };
 
   // validate input value
   const validateInput = () => {
@@ -302,8 +249,11 @@ function HotKeyPreferencesRow({
       event.stopPropagation();
     }
 
-    updateInputText(event, allowedKeys.includes(event.keyCode));
-    event.preventDefault();
+    hotkeyRecord(sequence => {
+      const keys = sequence.join(' ').split('+');
+      // TODO: Validate allowedKeys
+      setInputValue(formatPressedKeys(keys));
+    });
   };
 
   return (
@@ -340,6 +290,7 @@ HotKeyPreferencesRow.propTypes = {
   tabError: PropTypes.bool.isRequired,
   onSuccessChanged: PropTypes.func.isRequired,
   onFailureChanged: PropTypes.func.isRequired,
+  hotkeyRecord: PropTypes.func.isRequired,
 };
 
 /**
@@ -359,6 +310,7 @@ function HotKeysPreferences({
   tabError,
   onTabStateChanged,
   onTabErrorChanged,
+  hotkeyRecord,
 }) {
   const [tabState, setTabState] = useState(hotkeyDefinitions);
   const [tabErrorCounter, setTabErrorCounter] = useState(0);
@@ -376,7 +328,7 @@ function HotKeysPreferences({
       [commandName]: { ...hotkeyDefinition, keys },
     };
     setTabState(newState);
-    onTabStateChanged(name, { hotkeyDefinitions: newState });
+    onTabStateChanged(name, { hotkeyDefinitions: newState, hotkeyRecord });
   };
 
   const onErrorChanged = (toInc = true) => {
@@ -435,6 +387,7 @@ function HotKeysPreferences({
                           label={hotkeyDefinitionTuple[1].label}
                           originalHotKeys={tabState}
                           tabError={tabError}
+                          hotkeyRecord={hotkeyRecord}
                           onSuccessChanged={keys =>
                             onHotKeyChanged(
                               hotkeyDefinitionTuple[0],
@@ -462,6 +415,7 @@ HotKeysPreferences.propTypes = {
   tabError: PropTypes.bool,
   onTabStateChanged: PropTypes.func,
   onTabErrorChanged: PropTypes.func,
+  hotkeyRecord: PropTypes.func,
 };
 
 export { HotKeysPreferences };
