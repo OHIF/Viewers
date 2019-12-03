@@ -24,3 +24,9 @@ export {
   useContextMenu,
   ContextMenuConsumer,
 } from './ContextMenuProvider.js';
+export {
+  default as LabellingFlowProvider,
+  withLabellingFlow,
+  useLabellingFlow,
+  LabellingFlowConsumer,
+} from './LabellingFlowProvider.js';

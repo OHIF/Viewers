@@ -5,30 +5,16 @@
  * @property {Event} event The event with tool information.
  */
 
-/**
- * UI Labelling Flow
- *
- * @typedef {Object} LabellingFlowProps
- * @property {Object} defaultPosition The position of the labelling dialog.
- * @property {boolean} centralize conditional to center the labelling dialog.
- * @property {Object} props The labelling props.
- *
- */
-
 const uiContextMenuServicePublicAPI = {
   name: 'UIContextMenuService',
-  showLabellingFlow,
-  hideLabellingFlow,
-  hideContextMenu,
-  showContextMenu,
+  hide,
+  show,
   setServiceImplementation,
 };
 
 const uiContextMenuServiceImplementation = {
-  _showLabellingFlow: () => console.warn('showLabellingFlow() NOT IMPLEMENTED'),
-  _hideLabellingFlow: () => console.warn('hideLabellingFlow() NOT IMPLEMENTED'),
-  _showContextMenu: () => console.warn('showContextMenu() NOT IMPLEMENTED'),
-  _hideContextMenu: () => console.warn('hideContextMenu() NOT IMPLEMENTED'),
+  _show: () => console.warn('show() NOT IMPLEMENTED'),
+  _hide: () => console.warn('hide() NOT IMPLEMENTED'),
 };
 
 function createUIContextMenuService() {
@@ -40,8 +26,8 @@ function createUIContextMenuService() {
  *
  * @param {ContextMenuProps} props { event }
  */
-function showContextMenu({ event }) {
-  return uiContextMenuServiceImplementation._showContextMenu({
+function show({ event }) {
+  return uiContextMenuServiceImplementation._show({
     event,
   });
 }
@@ -50,58 +36,27 @@ function showContextMenu({ event }) {
  * Hide a UI ContextMenu dialog;
  *
  */
-function hideContextMenu() {
-  return uiContextMenuServiceImplementation._hideContextMenu();
-}
-
-/**
- * Show a new UI LabellingFlow dialog;
- *
- * @param {LabellingFlowProps} props { defaultPosition, centralize, props }
- */
-function showLabellingFlow({ defaultPosition, centralize, props }) {
-  return uiContextMenuServiceImplementation._showLabellingFlow({
-    defaultPosition,
-    centralize,
-    props,
-  });
-}
-
-/**
- * Hide a UI LabellingFlow dialog;
- *
- */
-function hideLabellingFlow() {
-  return uiContextMenuServiceImplementation._hideLabellingFlow();
+function hide() {
+  return uiContextMenuServiceImplementation._hide();
 }
 
 /**
  *
  *
  * @param {*} {
- *   showContextMenu: showContextMenuImplementation,
- *   hideContextMenu: hideContextMenuImplementation,
- *   showLabellingFlow: showLabellingFlowImplementation,
- *   hideLabellingFlow: hideLabellingFlowImplementation,
+ *   show: showImplementation,
+ *   hide: hideImplementation,
  * }
  */
 function setServiceImplementation({
-  showContextMenu: showContextMenuImplementation,
-  hideContextMenu: hideContextMenuImplementation,
-  showLabellingFlow: showLabellingFlowImplementation,
-  hideLabellingFlow: hideLabellingFlowImplementation,
+  show: showImplementation,
+  hide: hideImplementation,
 }) {
-  if (showContextMenuImplementation) {
-    uiContextMenuServiceImplementation._showContextMenu = showContextMenuImplementation;
+  if (showImplementation) {
+    uiContextMenuServiceImplementation._show = showImplementation;
   }
-  if (hideContextMenuImplementation) {
-    uiContextMenuServiceImplementation._hideContextMenu = hideContextMenuImplementation;
-  }
-  if (showLabellingFlowImplementation) {
-    uiContextMenuServiceImplementation._showLabellingFlow = showLabellingFlowImplementation;
-  }
-  if (hideLabellingFlowImplementation) {
-    uiContextMenuServiceImplementation._hideLabellingFlow = hideLabellingFlowImplementation;
+  if (hideImplementation) {
+    uiContextMenuServiceImplementation._hide = hideImplementation;
   }
 }
 

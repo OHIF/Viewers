@@ -187,23 +187,23 @@ const commandsModule = ({ servicesManager }) => {
     },
     showContextMenu({ event }) {
       const { UIContextMenuService } = servicesManager.services;
-      UIContextMenuService.showContextMenu({ event });
+      UIContextMenuService.show({ event });
     },
     hideContextMenu() {
       const { UIContextMenuService } = servicesManager.services;
-      UIContextMenuService.hideContextMenu();
+      UIContextMenuService.hide();
     },
     showLabellingFlow({ defaultPosition, centralize, props }) {
-      const { UIContextMenuService } = servicesManager.services;
-      UIContextMenuService.showLabellingFlow({
+      const { UILabellingFlowService } = servicesManager.services;
+      UILabellingFlowService.show({
         defaultPosition,
         centralize,
         props,
       });
     },
     hideLabellingFlow() {
-      const { UIContextMenuService } = servicesManager.services;
-      UIContextMenuService.hideLabellingFlow();
+      const { UILabellingFlowService } = servicesManager.services;
+      UILabellingFlowService.hide();
     },
     getNearbyToolData({ element, canvasCoordinates, availableToolTypes }) {
       const nearbyTool = {};

@@ -64,6 +64,10 @@ import {
   ContextMenuConsumer,
   useContextMenu,
   withContextMenu,
+  LabellingFlowProvider,
+  LabellingFlowConsumer,
+  useLabellingFlow,
+  withLabellingFlow,
 } from './contextProviders';
 
 export {
@@ -125,6 +129,10 @@ export {
   ContextMenuConsumer,
   useContextMenu,
   withContextMenu,
+  LabellingFlowProvider,
+  LabellingFlowConsumer,
+  useLabellingFlow,
+  withLabellingFlow,
   // Hooks
   useDebounce,
   useMedia,

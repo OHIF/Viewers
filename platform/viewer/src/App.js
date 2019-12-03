@@ -8,10 +8,6 @@ import { hot } from 'react-hot-loader/root';
 import merge from 'lodash.merge';
 
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
-import OHIFVTKExtension from '@ohif/extension-vtk';
-import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
-import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
-import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 
 import {
   SimpleDialog,
@@ -96,6 +92,7 @@ class App extends Component {
     whiteLabelling: PropTypes.object,
     routerBasename: PropTypes.string.isRequired,
     config: PropTypes.func.isRequired,
+    extensions: PropTypes.array,
   };
 
   static defaultProps = {
@@ -104,6 +101,7 @@ class App extends Component {
     config: {
       extensions: [],
     },
+    defaultExtensions: [],
   };
 
   _appConfig;
@@ -114,9 +112,9 @@ class App extends Component {
 
     this._appConfig = { props, ...props.config };
 
-    const { config, oidc } = props;
+    const { config, oidc, defaultExtensions } = props;
 
-    const { servers, extensions, hotkeys, tools } =
+    const { servers, hotkeys, tools, extensions } =
       typeof config === 'function'
         ? config({
             servicesManager,
@@ -135,7 +133,7 @@ class App extends Component {
       UIContextMenuService,
       UILabellingFlowService,
     ]);
-    _initExtensions(extensions, hotkeys, tools);
+    _initExtensions([extensions, ...defaultExtensions], hotkeys, tools);
     _initServers(servers);
     initWebWorkers();
   }
@@ -262,10 +260,6 @@ function _initExtensions(extensions, hotkeys, tools) {
     [OHIFCornerstoneExtension, { tools }],
     // WARNING: MUST BE REGISTERED _AFTER_ OHIFCORNERSTONEEXTENSION
     MeasurementsPanel,
-    OHIFVTKExtension,
-    OHIFDicomHtmlExtension,
-    OHIFDicomMicroscopyExtension,
-    OHIFDicomPDFExtension,
   ];
   const mergedExtensions = defaultExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
