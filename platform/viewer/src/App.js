@@ -133,7 +133,7 @@ class App extends Component {
       UIContextMenuService,
       UILabellingFlowService,
     ]);
-    _initExtensions([extensions, ...defaultExtensions], hotkeys, tools);
+    _initExtensions([...defaultExtensions, ...extensions], hotkeys, tools);
     _initServers(servers);
     initWebWorkers();
   }
