@@ -5,9 +5,11 @@ import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
-import merge from 'lodash.merge';
 
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
+
+import ToolContextMenu from './connectedComponents/ToolContextMenu';
+import LabellingManager from './components/Labelling/LabellingManager';
 
 import {
   SnackbarProvider,
@@ -120,9 +122,7 @@ class App extends Component {
     const { config, defaultExtensions } = props;
 
     this._appConfig =
-      typeof config === 'function'
-        ? config({ servicesManager, dependencies: { merge } })
-        : config;
+      typeof config === 'function' ? config({ servicesManager }) : config;
 
     const { servers, hotkeys, tools, extensions, oidc } = this._appConfig;
 
@@ -164,10 +164,12 @@ class App extends Component {
                           >
                             <LabellingFlowProvider
                               service={UILabellingFlowService}
+                              labellingComponent={LabellingManager}
                               commandsManager={commandsManager}
                             >
                               <ContextMenuProvider
                                 service={UIContextMenuService}
+                                contextMenuComponent={ToolContextMenu}
                                 commandsManager={commandsManager}
                               >
                                 <OHIFStandaloneViewer
@@ -199,10 +201,12 @@ class App extends Component {
                     <ModalProvider modal={OHIFModal} service={UIModalService}>
                       <LabellingFlowProvider
                         service={UILabellingFlowService}
+                        labellingComponent={LabellingManager}
                         commandsManager={commandsManager}
                       >
                         <ContextMenuProvider
                           service={UIContextMenuService}
+                          contextMenuComponent={ToolContextMenu}
                           commandsManager={commandsManager}
                         >
                           <OHIFStandaloneViewer />

@@ -1,44 +1,4 @@
-window.config = ({ servicesManager, dependencies }) => {
-  const { merge } = dependencies;
-
-  const allToolsProps = Object.assign(
-    ...[
-      'Bidirectional',
-      'Length',
-      'Angle',
-      'FreehandRoi',
-      'EllipticalRoi',
-      'CircleRoi',
-      'RectangleRoi',
-      'ArrowAnnotate',
-    ].map(tool => ({
-      [tool]: {
-        configuration: {
-          /* Add common tool configurations here. */
-        },
-      },
-    }))
-  );
-
-  /* Add specific tools configuration here. */
-  const specificToolsProps = {
-    /* ArrowAnnotate: {
-      configuration: {
-        ...
-      },
-    }, */
-  };
-
-  /* Merge generic with specific tools props. */
-  for (const toolName in specificToolsProps) {
-    allToolsProps[toolName] = merge(
-      allToolsProps[toolName],
-      specificToolsProps[toolName]
-    );
-  }
-
-  const tools = allToolsProps;
-
+window.config = ({ servicesManager }) => {
   return {
     // default: '/'
     routerBasename: '/',
@@ -112,6 +72,6 @@ window.config = ({ servicesManager, dependencies }) => {
       // ~ Cornerstone Tools
       { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
     ],
-    tools,
+    tools: {},
   };
 };

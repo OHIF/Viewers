@@ -6,8 +6,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import LabellingManager from '../../../viewer/src/components/Labelling/LabellingManager';
-
 import { useDialog } from './DialogProvider';
 
 const LabellingFlowContext = createContext(null);
@@ -15,7 +13,12 @@ const { Provider } = LabellingFlowContext;
 
 export const useLabellingFlow = () => useContext(LabellingFlowContext);
 
-const LabellingFlowProvider = ({ children, service, onUpdateLabelling }) => {
+const LabellingFlowProvider = ({
+  children,
+  service,
+  labellingComponent: LabellingComponent,
+  onUpdateLabelling,
+}) => {
   const { create, dismiss } = useDialog();
 
   /**
@@ -42,7 +45,7 @@ const LabellingFlowProvider = ({ children, service, onUpdateLabelling }) => {
         centralize,
         isDraggable: false,
         showOverlay: true,
-        content: LabellingManager,
+        content: LabellingComponent,
         defaultPosition,
         contentProps: {
           visible: true,
@@ -54,7 +57,7 @@ const LabellingFlowProvider = ({ children, service, onUpdateLabelling }) => {
         },
       });
     },
-    [_updateLabellingHandler, create, dismiss, hide]
+    [LabellingComponent, _updateLabellingHandler, create, dismiss, hide]
   );
 
   const _updateLabellingHandler = useCallback(
@@ -120,6 +123,11 @@ LabellingFlowProvider.propTypes = {
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
+  labellingComponent: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.func,
+  ]).isRequired,
   onUpdateLabelling: PropTypes.func.isRequired,
 };
 

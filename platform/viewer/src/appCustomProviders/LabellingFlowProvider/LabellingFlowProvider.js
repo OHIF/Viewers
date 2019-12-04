@@ -5,6 +5,7 @@ import { LabellingFlowProvider } from '@ohif/ui';
 const CustomLabellingFlowProvider = ({
   children,
   service,
+  labellingComponent,
   commandsManager,
 }) => {
   const onUpdateLabellingHandler = (labellingData, measurementData) => {
@@ -17,6 +18,7 @@ const CustomLabellingFlowProvider = ({
   return (
     <LabellingFlowProvider
       service={service}
+      labellingComponent={labellingComponent}
       onUpdateLabelling={onUpdateLabellingHandler}
     >
       {children}
@@ -36,6 +38,11 @@ CustomLabellingFlowProvider.propTypes = {
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
+  labellingComponent: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.func,
+  ]).isRequired,
   commandsManager: PropTypes.object.isRequired,
 };
 

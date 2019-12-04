@@ -3,18 +3,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import SimpleDialog from '../SimpleDialog/SimpleDialog.js';
-import bounding from '../../lib/utils/bounding.js';
 import './EditDescriptionDialog.css';
 
 export default class EditDescriptionDialog extends Component {
-  static defaultProps = {
-    componentRef: React.createRef(),
-  };
-
   static propTypes = {
+    description: PropTypes.string,
     measurementData: PropTypes.object.isRequired,
     onCancel: PropTypes.func.isRequired,
-    componentRef: PropTypes.object,
     onUpdate: PropTypes.func.isRequired,
   };
 
@@ -24,13 +19,7 @@ export default class EditDescriptionDialog extends Component {
     this.state = {
       description: props.measurementData.description || '',
     };
-
-    this.mainElement = React.createRef();
   }
-
-  componentDidMount = () => {
-    bounding(this.mainElement);
-  };
 
   componentDidUpdate(prevProps) {
     if (this.props.description !== prevProps.description) {
@@ -47,7 +36,6 @@ export default class EditDescriptionDialog extends Component {
         onClose={this.onClose}
         onConfirm={this.onConfirm}
         rootClass="editDescriptionDialog"
-        componentRef={this.mainElement}
       >
         <input
           value={this.state.description}

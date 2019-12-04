@@ -6,8 +6,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import ToolContextMenu from '../../../viewer/src/connectedComponents/ToolContextMenu';
-
 import { useDialog } from './DialogProvider';
 import { useLabellingFlow } from './LabellingFlowProvider';
 
@@ -16,7 +14,12 @@ const { Provider } = ContextMenuContext;
 
 export const useContextMenu = () => useContext(ContextMenuContext);
 
-const ContextMenuProvider = ({ children, service, onDelete }) => {
+const ContextMenuProvider = ({
+  children,
+  service,
+  contextMenuComponent: ContextMenuComponent,
+  onDelete,
+}) => {
   const { create, dismiss } = useDialog();
   const { show: showLabellingFlow } = useLabellingFlow();
 
@@ -49,7 +52,7 @@ const ContextMenuProvider = ({ children, service, onDelete }) => {
         id: 'context-menu',
         isDraggable: false,
         useLastPosition: false,
-        content: ToolContextMenu,
+        content: ContextMenuComponent,
         contentProps: {
           eventData: event,
           onDelete: (nearbyToolData, eventData) =>
@@ -79,7 +82,7 @@ const ContextMenuProvider = ({ children, service, onDelete }) => {
         defaultPosition: _getDefaultPosition(event),
       });
     },
-    [create, dismiss, hide, onDelete, showLabellingFlow]
+    [ContextMenuComponent, create, dismiss, hide, onDelete, showLabellingFlow]
   );
 
   const _getDefaultPosition = event => ({
@@ -131,6 +134,11 @@ ContextMenuProvider.propTypes = {
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
+  contextMenuComponent: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.func,
+  ]).isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 

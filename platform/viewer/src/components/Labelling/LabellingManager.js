@@ -69,7 +69,6 @@ export default class LabellingManager extends Component {
         <EditDescriptionDialog
           onCancel={this.props.labellingDoneCallback}
           onUpdate={this.descriptionDialogUpdate}
-          componentRef={this.editDescriptionDialog}
           measurementData={measurementData}
         />
       );

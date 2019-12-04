@@ -2,7 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ContextMenuProvider } from '@ohif/ui';
 
-const CustomContextMenuProvider = ({ children, service, commandsManager }) => {
+const CustomContextMenuProvider = ({
+  children,
+  service,
+  contextMenuComponent,
+  commandsManager,
+}) => {
   const onDeleteHandler = (nearbyToolData, eventData) => {
     const element = eventData.element;
     commandsManager.runCommand('removeToolState', {
@@ -13,7 +18,11 @@ const CustomContextMenuProvider = ({ children, service, commandsManager }) => {
   };
 
   return (
-    <ContextMenuProvider service={service} onDelete={onDeleteHandler}>
+    <ContextMenuProvider
+      service={service}
+      contextMenuComponent={contextMenuComponent}
+      onDelete={onDeleteHandler}
+    >
       {children}
     </ContextMenuProvider>
   );
@@ -31,6 +40,11 @@ CustomContextMenuProvider.propTypes = {
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
+  contextMenuComponent: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.func,
+  ]).isRequired,
   commandsManager: PropTypes.object.isRequired,
 };
 
