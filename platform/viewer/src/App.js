@@ -13,10 +13,13 @@ import {
   SnackbarProvider,
   ModalProvider,
   DialogProvider,
-  ContextMenuProvider,
-  LabellingFlowProvider,
   OHIFModal,
 } from '@ohif/ui';
+
+import {
+  LabellingFlowProvider,
+  ContextMenuProvider,
+} from './appCustomProviders';
 
 import {
   CommandsManager,
@@ -161,29 +164,11 @@ class App extends Component {
                           >
                             <LabellingFlowProvider
                               service={UILabellingFlowService}
-                              onUpdateLabelling={(
-                                labellingData,
-                                measurementData
-                              ) => {
-                                commandsManager.runCommand(
-                                  'updateTableWithNewMeasurementData',
-                                  measurementData
-                                );
-                              }}
+                              commandsManager={commandsManager}
                             >
                               <ContextMenuProvider
                                 service={UIContextMenuService}
-                                onDelete={(nearbyToolData, eventData) => {
-                                  const element = eventData.element;
-                                  commandsManager.runCommand(
-                                    'removeToolState',
-                                    {
-                                      element,
-                                      toolType: nearbyToolData.toolType,
-                                      tool: nearbyToolData.tool,
-                                    }
-                                  );
-                                }}
+                                commandsManager={commandsManager}
                               >
                                 <OHIFStandaloneViewer
                                   userManager={this._userManager}
@@ -214,23 +199,11 @@ class App extends Component {
                     <ModalProvider modal={OHIFModal} service={UIModalService}>
                       <LabellingFlowProvider
                         service={UILabellingFlowService}
-                        onUpdateLabelling={(labellingData, measurementData) => {
-                          commandsManager.runCommand(
-                            'updateTableWithNewMeasurementData',
-                            measurementData
-                          );
-                        }}
+                        commandsManager={commandsManager}
                       >
                         <ContextMenuProvider
                           service={UIContextMenuService}
-                          onDelete={(nearbyToolData, eventData) => {
-                            const element = eventData.element;
-                            commandsManager.runCommand('removeToolState', {
-                              element,
-                              toolType: nearbyToolData.toolType,
-                              tool: nearbyToolData.tool,
-                            });
-                          }}
+                          commandsManager={commandsManager}
                         >
                           <OHIFStandaloneViewer />
                         </ContextMenuProvider>
