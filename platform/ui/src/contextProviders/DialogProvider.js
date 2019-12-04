@@ -154,7 +154,8 @@ const DialogProvider = ({ children, service }) => {
         onDrag,
       } = dialog;
 
-      let position = preservePosition ? lastDialogPosition : defaultPosition;
+      let position =
+        (preservePosition && lastDialogPosition) || defaultPosition;
       if (centralize) {
         position = centerPositions.find(position => position.id === id);
       }
