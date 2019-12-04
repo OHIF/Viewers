@@ -51,7 +51,7 @@ const ContextMenuProvider = ({
       create({
         id: 'context-menu',
         isDraggable: false,
-        useLastPosition: false,
+        preservePosition: false,
         content: ContextMenuComponent,
         contentProps: {
           eventData: event,

@@ -66,9 +66,8 @@ const DialogProvider = ({ children, service }) => {
    * @property {boolean} isDraggable Controls if dialog content is draggable or not.
    * @property {boolean} showOverlay Controls dialog overlay.
    * @property {boolean} centralize Center the dialog on the screen.
-   * @property {boolean} useLastPosition Use last position instead of default.
+   * @property {boolean} preservePosition Use last position instead of default.
    * @property {ElementPosition} defaultPosition Specifies the `x` and `y` that the dragged item should start at.
-   * @property {ElementPosition} position If this property is present, the item becomes 'controlled' and is not responsive to user input.
    * @property {Function} onStart Called when dragging starts. If `false` is returned any handler, the action will cancel.
    * @property {Function} onStop Called when dragging stops.
    * @property {Function} onDrag Called while dragging.
@@ -146,28 +145,26 @@ const DialogProvider = ({ children, service }) => {
         id,
         content: DialogContent,
         contentProps,
-        position,
         defaultPosition,
         centralize = false,
-        useLastPosition = true,
+        preservePosition = true,
         isDraggable = true,
         onStart,
         onStop,
         onDrag,
       } = dialog;
 
+      let position = preservePosition ? lastDialogPosition : defaultPosition;
+      if (centralize) {
+        position = centerPositions.find(position => position.id === id);
+      }
+
       return (
         <Draggable
           key={id}
           disabled={!isDraggable}
-          position={
-            centralize
-              ? centerPositions.find(position => position.id === id)
-              : position
-          }
-          defaultPosition={
-            (useLastPosition && lastDialogPosition) || defaultPosition
-          }
+          position={position}
+          defaultPosition={position}
           bounds="parent"
           onStart={event => {
             const e = event || window.event;

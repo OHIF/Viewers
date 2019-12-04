@@ -18,9 +18,8 @@
  * @property {boolean} [isDraggable=true] Controls if dialog content is draggable or not.
  * @property {boolean} [showOverlay=false] Controls dialog overlay.
  * @property {boolean} [centralize=false] Center the dialog on the screen.
- * @property {boolean} [useLastPosition=true] Use last position instead of default.
+ * @property {boolean} [preservePosition=true] Use last position instead of default.
  * @property {ElementPosition} defaultPosition Specifies the `x` and `y` that the dragged item should start at.
- * @property {ElementPosition} position If this property is present, the item becomes 'controlled' and is not responsive to user input.
  * @property {Function} onStart Called when dragging starts. If `false` is returned any handler, the action will cancel.
  * @property {Function} onStop Called when dragging stops.
  * @property {Function} onDrag Called while dragging.
@@ -47,7 +46,7 @@ function createUIDialogService() {
 /**
  * Show a new UI dialog;
  *
- * @param {DialogProps} props { id, content, contentProps, onStart, onDrag, onStop, centralize, isDraggable, showOverlay, useLastPosition, defaultPosition, position }
+ * @param {DialogProps} props { id, content, contentProps, onStart, onDrag, onStop, centralize, isDraggable, showOverlay, preservePosition, defaultPosition }
  */
 function create({
   id,
@@ -57,11 +56,10 @@ function create({
   onDrag,
   onStop,
   centralize = false,
-  useLastPosition = true,
+  preservePosition = true,
   isDraggable = true,
   showOverlay = false,
   defaultPosition,
-  position,
 }) {
   return uiDialogServiceImplementation._create({
     id,
@@ -71,11 +69,10 @@ function create({
     onDrag,
     onStop,
     centralize,
-    useLastPosition,
+    preservePosition,
     isDraggable,
     showOverlay,
     defaultPosition,
-    position,
   });
 }
 
