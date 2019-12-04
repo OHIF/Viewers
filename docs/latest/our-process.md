@@ -114,6 +114,12 @@ merged (major.minor.patch). Releases are automatically pushed to NPM. Release
 notes are automatically generated. Users can subscribe to GitHub and NPM
 releases.
 
+We host development, staging, and production environments for the Progressive
+Web Application version of the OHIF Viewer. [Development][ohif-dev] always
+reflects the latest changes on our master branch. [Staging][ohif-stage] is used
+to regression test a release before a bi-weekly deploy to our [Production
+environment][ohif-prod].
+
 Important announcements are made on GitHub, tagged as Announcement, and pinned
 so that they remain at the top of the Issue page.
 
@@ -145,6 +151,9 @@ addressed and a Stable version is released.
 [awaiting-revisions]: https://github.com/OHIF/Viewers/labels/PR%3A%20Awaiting%20Revisions%20%3Apen%3A
 [no-ux-impact]: https://github.com/OHIF/Viewers/labels/PR%3A%20No%20UX%20Impact%20%3Aupside_down_face%3A
 <!-- -->
+[ohif-dev]: https://viewer-dev.ohif.org
+[ohif-stage]: https://viewer-stage.ohif.org
+[ohif-prod]: https://viewer.ohif.org
 [gh-board]: https://github.com/OHIF/Viewers/projects/4
 [label-grabs]: https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3A%22Up+For+Grabs+%3Araising_hand_woman%3A%22
 [contributing-docs]: https://docs.ohif.org/contributing/
