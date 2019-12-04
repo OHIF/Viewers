@@ -1,6 +1,6 @@
 {
   "name": "@ohif/viewer",
-  "version": "2.11.2",
+  "version": "2.11.4",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -45,12 +45,12 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@ohif/core": "^1.13.1",
+    "@ohif/core": "^1.13.2",
     "@ohif/extension-cornerstone": "^2.0.0",
-    "@ohif/extension-dicom-html": "^1.0.1",
+    "@ohif/extension-dicom-html": "^1.0.2",
     "@ohif/extension-dicom-microscopy": "^0.50.6",
     "@ohif/extension-dicom-pdf": "^1.0.0",
-    "@ohif/extension-vtk": "^0.54.1",
+    "@ohif/extension-vtk": "^0.54.2",
     "@ohif/i18n": "^0.52.2",
     "@ohif/ui": "^0.65.1",
     "@tanem/react-nprogress": "^1.1.25",

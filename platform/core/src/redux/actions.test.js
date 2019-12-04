@@ -28,7 +28,7 @@ describe('actions', () => {
 
   describe('viewport action creators', () => {
     it('should create an action to set the viewport specific data', () => {
-      const data = {
+      const viewportSpecificData = {
         displaySetInstanceUid: 'ef859a23-4631-93ab-d26b-7940a822c699',
         seriesDate: '20151026',
         seriesTime: '082611.370000',
@@ -65,12 +65,12 @@ describe('actions', () => {
 
       const expectedAction = {
         type: types.SET_ACTIVE_SPECIFIC_DATA,
-        data,
+        viewportSpecificData,
       };
 
-      expect(actions.setActiveViewportSpecificData(data)).toEqual(
-        expectedAction
-      );
+      expect(
+        actions.setActiveViewportSpecificData(viewportSpecificData)
+      ).toEqual(expectedAction);
     });
 
     it('should create an action to clear clearViewportSpecificData', () => {
