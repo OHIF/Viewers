@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { commandsManager } from './../App.js';
 
@@ -20,19 +20,13 @@ const ToolContextMenu = ({
   isTouchEvent,
   eventData,
   onClose,
+  onDelete,
 }) => {
-  const mainElement = useRef();
   const defaultDropdownItems = [
     {
       actionType: 'Delete',
-      action: ({ nearbyToolData, eventData }) => {
-        const element = eventData.element;
-        commandsManager.runCommand('removeToolState', {
-          element,
-          toolType: nearbyToolData.toolType,
-          tool: nearbyToolData.tool,
-        });
-      },
+      action: ({ nearbyToolData, eventData }) =>
+        onDelete(nearbyToolData, eventData),
     },
     {
       actionType: 'setLabel',
@@ -107,7 +101,7 @@ const ToolContextMenu = ({
   return (
     dropdownItems.length &&
     eventData && (
-      <div className="ToolContextMenu" ref={mainElement}>
+      <div className="ToolContextMenu">
         <ul className="bounded">
           {dropdownItems.map(({ params, action, text, actionType }) => (
             <li key={actionType}>

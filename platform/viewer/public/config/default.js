@@ -42,6 +42,7 @@ window.config = ({ servicesManager, dependencies }) => {
   return {
     // default: '/'
     routerBasename: '/',
+    whiteLabelling: {},
     extensions: [],
     showStudyList: true,
     filterQueryParam: false,

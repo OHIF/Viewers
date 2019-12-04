@@ -27,17 +27,16 @@ import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 
-// Default Settings
+/*
+ * Default Settings
+ */
 let config = {};
-const appDefaults = {
-  routerBasename: '/',
-};
 
 if (window) {
   config = window.config || {};
 }
 
-const appProps = Object.assign({}, appDefaults, {
+const appProps = {
   config,
   defaultExtensions: [
     OHIFVTKExtension,
@@ -45,10 +44,10 @@ const appProps = Object.assign({}, appDefaults, {
     OHIFDicomMicroscopyExtension,
     OHIFDicomPDFExtension,
   ],
-});
+};
 
-// Create App
+/** Create App */
 const app = React.createElement(App, appProps, null);
 
-// Render
+/** Render */
 ReactDOM.render(app, document.getElementById('root'));
