@@ -29,6 +29,11 @@ export default function init({
   commandsManager,
   configuration = {},
 }) {
+  const {
+    UIContextMenuService,
+    UILabellingFlowService,
+  } = servicesManager.services;
+
   // TODO: MEASUREMENT_COMPLETED (not present in initial implementation)
   const onMeasurementsChanged = (action, event) => {
     return MEASUREMENT_ACTION_MAP[action](event);
@@ -42,13 +47,11 @@ export default function init({
   );
 
   const onRightClick = event => {
-    commandsManager.runCommand('showContextMenu', {
-      event: event.detail,
-    });
+    UIContextMenuService.show({ event: event.detail });
   };
 
   const onTouchPress = event => {
-    commandsManager.runCommand('showContextMenu', {
+    UIContextMenuService.show({
       event: event.detail,
       props: {
         isTouchEvent: true,
@@ -57,13 +60,13 @@ export default function init({
   };
 
   const onTouchStart = () => {
-    commandsManager.runCommand('hideContextMenu');
-    commandsManager.runCommand('hideLabellingFlow');
+    UILabellingFlowService.hide();
+    UIContextMenuService.hide();
   };
 
   const onMouseClick = () => {
-    commandsManager.runCommand('hideContextMenu');
-    commandsManager.runCommand('hideLabellingFlow');
+    UIContextMenuService.hide();
+    UILabellingFlowService.hide();
   };
 
   // TODO: This makes scrolling painfully slow

@@ -175,16 +175,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       // Clone the tool not to set empty location initially
       const toolForLocation = Object.assign({}, tool, { location: null });
 
-      const props = {
-        skipAddLabelButton: true,
-        editLocation: true,
-        measurementData: toolForLocation,
-      };
-
-      ownProps.commandsManager.runCommand('showLabellingFlow', {
-        centralize: true,
-        props,
-      });
+      ownProps.onRelabel(toolForLocation);
     },
     dispatchEditDescription: (event, measurementData, viewportsState) => {
       event.persist();
@@ -203,15 +194,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         return measurement._id === measurementId;
       });
 
-      const props = {
-        editDescriptionOnDialog: true,
-        measurementData: tool,
-      };
-
-      ownProps.commandsManager.runCommand('showLabellingFlow', {
-        centralize: true,
-        props,
-      });
+      ownProps.onEditDescription(tool);
     },
     dispatchJumpToRowItem: (
       measurementData,

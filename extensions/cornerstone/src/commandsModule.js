@@ -185,26 +185,6 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.updateImage(enabledElement.element);
       });
     },
-    showContextMenu({ event }) {
-      const { UIContextMenuService } = servicesManager.services;
-      UIContextMenuService.show({ event });
-    },
-    hideContextMenu() {
-      const { UIContextMenuService } = servicesManager.services;
-      UIContextMenuService.hide();
-    },
-    showLabellingFlow({ defaultPosition, centralize, props }) {
-      const { UILabellingFlowService } = servicesManager.services;
-      UILabellingFlowService.show({
-        defaultPosition,
-        centralize,
-        props,
-      });
-    },
-    hideLabellingFlow() {
-      const { UILabellingFlowService } = servicesManager.services;
-      UILabellingFlowService.hide();
-    },
     getNearbyToolData({ element, canvasCoordinates, availableToolTypes }) {
       const nearbyTool = {};
       let pointNearTool = false;
@@ -272,26 +252,6 @@ const commandsModule = ({ servicesManager }) => {
     },
     removeToolState: {
       commandFn: actions.removeToolState,
-      storeContexts: ['viewports'],
-      options: {},
-    },
-    showContextMenu: {
-      commandFn: actions.showContextMenu,
-      storeContexts: ['viewports'],
-      options: {},
-    },
-    hideContextMenu: {
-      commandFn: actions.hideContextMenu,
-      storeContexts: ['viewports'],
-      options: {},
-    },
-    showLabellingFlow: {
-      commandFn: actions.showLabellingFlow,
-      storeContexts: ['viewports'],
-      options: {},
-    },
-    hideLabellingFlow: {
-      commandFn: actions.hideLabellingFlow,
       storeContexts: ['viewports'],
       options: {},
     },

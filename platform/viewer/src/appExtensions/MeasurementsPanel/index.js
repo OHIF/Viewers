@@ -12,8 +12,29 @@ export default {
     init({ servicesManager, commandsManager, configuration });
   },
   getPanelModule({ servicesManager, commandsManager }) {
+    const { UILabellingFlowService } = servicesManager.services;
     const ExtendedConnectedMeasurementTable = () => (
-      <ConnectedMeasurementTable commandsManager={commandsManager} />
+      <ConnectedMeasurementTable
+        onRelabel={tool => {
+          UILabellingFlowService.show({
+            centralize: true,
+            props: {
+              skipAddLabelButton: true,
+              editLocation: true,
+              measurementData: tool,
+            },
+          });
+        }}
+        onEditDescription={tool => {
+          UILabellingFlowService.show({
+            centralize: true,
+            props: {
+              editDescriptionOnDialog: true,
+              measurementData: tool,
+            },
+          });
+        }}
+      />
     );
     return {
       menuOptions: [
