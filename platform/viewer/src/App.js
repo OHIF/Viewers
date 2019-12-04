@@ -161,11 +161,29 @@ class App extends Component {
                           >
                             <LabellingFlowProvider
                               service={UILabellingFlowService}
-                              commandsManager={commandsManager}
+                              onUpdateLabelling={(
+                                labellingData,
+                                measurementData
+                              ) => {
+                                commandsManager.runCommand(
+                                  'updateTableWithNewMeasurementData',
+                                  measurementData
+                                );
+                              }}
                             >
                               <ContextMenuProvider
                                 service={UIContextMenuService}
-                                commandsManager={commandsManager}
+                                onDelete={(nearbyToolData, eventData) => {
+                                  const element = eventData.element;
+                                  commandsManager.runCommand(
+                                    'removeToolState',
+                                    {
+                                      element,
+                                      toolType: nearbyToolData.toolType,
+                                      tool: nearbyToolData.tool,
+                                    }
+                                  );
+                                }}
                               >
                                 <OHIFStandaloneViewer
                                   userManager={this._userManager}
@@ -196,9 +214,24 @@ class App extends Component {
                     <ModalProvider modal={OHIFModal} service={UIModalService}>
                       <LabellingFlowProvider
                         service={UILabellingFlowService}
-                        commandsManager={commandsManager}
+                        onUpdateLabelling={(labellingData, measurementData) => {
+                          commandsManager.runCommand(
+                            'updateTableWithNewMeasurementData',
+                            measurementData
+                          );
+                        }}
                       >
-                        <ContextMenuProvider service={UIContextMenuService}>
+                        <ContextMenuProvider
+                          service={UIContextMenuService}
+                          onDelete={(nearbyToolData, eventData) => {
+                            const element = eventData.element;
+                            commandsManager.runCommand('removeToolState', {
+                              element,
+                              toolType: nearbyToolData.toolType,
+                              tool: nearbyToolData.tool,
+                            });
+                          }}
+                        >
                           <OHIFStandaloneViewer />
                         </ContextMenuProvider>
                       </LabellingFlowProvider>

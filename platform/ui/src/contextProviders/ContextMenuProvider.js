@@ -16,7 +16,7 @@ const { Provider } = ContextMenuContext;
 
 export const useContextMenu = () => useContext(ContextMenuContext);
 
-const ContextMenuProvider = ({ children, service, commandsManager }) => {
+const ContextMenuProvider = ({ children, service, onDelete }) => {
   const { create, dismiss } = useDialog();
   const { show: showLabellingFlow } = useLabellingFlow();
 
@@ -52,14 +52,8 @@ const ContextMenuProvider = ({ children, service, commandsManager }) => {
         content: ToolContextMenu,
         contentProps: {
           eventData: event,
-          onDelete: (nearbyToolData, eventData) => {
-            const element = eventData.element;
-            commandsManager.runCommand('removeToolState', {
-              element,
-              toolType: nearbyToolData.toolType,
-              tool: nearbyToolData.tool,
-            });
-          },
+          onDelete: (nearbyToolData, eventData) =>
+            onDelete(nearbyToolData, eventData),
           onClose: () => dismiss({ id: 'context-menu' }),
           onSetLabel: (eventData, measurementData) =>
             showLabellingFlow({
@@ -85,7 +79,7 @@ const ContextMenuProvider = ({ children, service, commandsManager }) => {
         defaultPosition: _getDefaultPosition(event),
       });
     },
-    [commandsManager, create, dismiss, hide, showLabellingFlow]
+    [create, dismiss, hide, onDelete, showLabellingFlow]
   );
 
   const _getDefaultPosition = event => ({
@@ -137,6 +131,7 @@ ContextMenuProvider.propTypes = {
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
+  onDelete: PropTypes.func.isRequired,
 };
 
 export default ContextMenuProvider;

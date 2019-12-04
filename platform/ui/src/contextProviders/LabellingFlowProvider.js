@@ -15,7 +15,7 @@ const { Provider } = LabellingFlowContext;
 
 export const useLabellingFlow = () => useContext(LabellingFlowContext);
 
-const LabellingFlowProvider = ({ children, service, commandsManager }) => {
+const LabellingFlowProvider = ({ children, service, onUpdateLabelling }) => {
   const { create, dismiss } = useDialog();
 
   /**
@@ -71,12 +71,9 @@ const LabellingFlowProvider = ({ children, service, commandsManager }) => {
         measurementData.response = response;
       }
 
-      commandsManager.runCommand(
-        'updateTableWithNewMeasurementData',
-        measurementData
-      );
+      onUpdateLabelling(labellingData, measurementData);
     },
-    [commandsManager]
+    [onUpdateLabelling]
   );
 
   return (
@@ -123,7 +120,7 @@ LabellingFlowProvider.propTypes = {
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
-  commandsManager: PropTypes.object.isRequired,
+  onUpdateLabelling: PropTypes.func.isRequired,
 };
 
 export default LabellingFlowProvider;
