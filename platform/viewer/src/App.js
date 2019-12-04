@@ -10,7 +10,6 @@ import merge from 'lodash.merge';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 
 import {
-  SimpleDialog,
   SnackbarProvider,
   ModalProvider,
   DialogProvider,
@@ -92,7 +91,7 @@ class App extends Component {
     whiteLabelling: PropTypes.object,
     routerBasename: PropTypes.string.isRequired,
     config: PropTypes.func.isRequired,
-    extensions: PropTypes.array,
+    defaultExtensions: PropTypes.array,
   };
 
   static defaultProps = {
@@ -120,7 +119,6 @@ class App extends Component {
             servicesManager,
             dependencies: {
               merge,
-              SimpleDialog,
             },
           })
         : config;

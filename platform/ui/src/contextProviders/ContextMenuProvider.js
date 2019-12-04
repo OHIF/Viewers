@@ -18,7 +18,6 @@ export const useContextMenu = () => useContext(ContextMenuContext);
 
 const ContextMenuProvider = ({ children, service }) => {
   const { create, dismiss } = useDialog();
-  console.log(useLabellingFlow(), useDialog());
   const { show: showLabellingFlow } = useLabellingFlow();
 
   /**

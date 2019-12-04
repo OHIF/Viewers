@@ -3,7 +3,8 @@ import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import queryString from 'query-string';
-import isEmpty from 'lodash.isempty';
+import { SimpleDialog } from '@ohif/ui';
+import merge from 'lodash.merge';
 
 function fallbackMetaDataProvider(type, imageId) {
   if (!imageId.includes('wado?requestType=WADO')) {
@@ -31,6 +32,28 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
  * @param {Object|Array} configuration.csToolsConfig
  */
 export default function init({ servicesManager, configuration = {} }) {
+  const callInputDialog = (data, event, callback) => {
+    const { UIDialogService } = servicesManager.services;
+
+    let dialogId = UIDialogService.create({
+      centralize: true,
+      isDraggable: false,
+      content: SimpleDialog.InputDialog,
+      useLastPosition: false,
+      showOverlay: true,
+      contentProps: {
+        title: 'Enter your annotation',
+        label: 'New label',
+        measurementData: data ? { description: data.text } : {},
+        onClose: () => UIDialogService.dismiss({ id: dialogId }),
+        onSubmit: value => {
+          callback(value);
+          UIDialogService.dismiss({ id: dialogId });
+        },
+      },
+    });
+  };
+
   const { csToolsConfig } = configuration;
   const { StackManager } = OHIF.utils;
   const metadataProvider = new OHIF.cornerstone.MetadataProvider();
@@ -76,11 +99,26 @@ export default function init({ servicesManager, configuration = {} }) {
     csTools.BrushTool,
   ];
 
-  if (!isEmpty(configuration.tools)) {
+  /* Add extension tools configuration here. */
+  const extensionToolsConfiguration = {
+    ArrowAnnotate: {
+      configuration: {
+        getTextCallback: (callback, eventDetails) =>
+          callInputDialog(null, eventDetails, callback),
+        changeTextCallback: (data, eventDetails, callback) =>
+          callInputDialog(data, eventDetails, callback),
+      },
+    },
+  };
+
+  const isEmpty = obj => Object.keys(obj).length < 1;
+  if (!isEmpty(configuration.tools) || !isEmpty(extensionToolsConfiguration)) {
     /* Add tools with its custom props through extension configuration. */
     tools.forEach(tool => {
       const toolName = tool.name.replace('Tool', '');
-      const props = configuration.tools[toolName] || {};
+      const configurationToolProps = configuration.tools[toolName] || {};
+      const extensionToolProps = extensionToolsConfiguration[toolName];
+      let props = merge(extensionToolProps, configurationToolProps);
       csTools.addTool(tool, props);
     });
   } else {

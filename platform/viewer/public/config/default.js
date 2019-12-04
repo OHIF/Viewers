@@ -1,27 +1,5 @@
 window.config = ({ servicesManager, dependencies }) => {
-  const { SimpleDialog, merge } = dependencies;
-
-  const callInputDialog = (data, event, callback) => {
-    const { UIDialogService } = servicesManager.services;
-
-    let dialogId = UIDialogService.create({
-      centralize: true,
-      isDraggable: false,
-      content: SimpleDialog.InputDialog,
-      useLastPosition: false,
-      showOverlay: true,
-      contentProps: {
-        title: 'Enter your annotation',
-        label: 'New label',
-        measurementData: data ? { description: data.text } : {},
-        onClose: () => UIDialogService.dismiss({ id: dialogId }),
-        onSubmit: value => {
-          callback(value);
-          UIDialogService.dismiss({ id: dialogId });
-        },
-      },
-    });
-  };
+  const { merge } = dependencies;
 
   const allToolsProps = Object.assign(
     ...[
@@ -42,15 +20,13 @@ window.config = ({ servicesManager, dependencies }) => {
     }))
   );
 
+  /* Add specific tools configuration here. */
   const specificToolsProps = {
-    ArrowAnnotate: {
+    /* ArrowAnnotate: {
       configuration: {
-        getTextCallback: (callback, eventDetails) =>
-          callInputDialog(null, eventDetails, callback),
-        changeTextCallback: (data, eventDetails, callback) =>
-          callInputDialog(data, eventDetails, callback),
+        ...
       },
-    },
+    }, */
   };
 
   /* Merge generic with specific tools props. */
