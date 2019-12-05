@@ -68,7 +68,7 @@ if (UINotificationService) {
 
 <div style="text-align: center;">
   <a href="/assets/img/notification-example.gif">
-    <img src="/assets/img/notification-example.gif" alt="UI Service Notification Example" style="margin: 0 auto; max-width: 500px;" />
+    <img src="/assets/img/notification-example.gif" alt="UI Notification Service Example" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>GIF showing successful call of UINotificationService from an extension.</i></div>
 </div>
@@ -87,6 +87,8 @@ takeaways worth mentioning:
 - In extensions, you can provide fallback/alternative behavior if an expected
   service is not registered
   - No `UIModalService`? Use the `UINotificationService` to notify users.
+- While we don't have an examples of this, you can technically register a
+  service in an extension and expose it to the core application
 
 > Note: These are recommended patterns, not hard and fast rules. Following them
 > will help reduce confusion and interoperability with the larger OHIF
