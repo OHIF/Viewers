@@ -10,7 +10,9 @@ Each service should be:
 - able to fail and/or be removed without breaking the application
 - completely interchangeable with another module implementing the same interface
 
-## SS
+Practical Examples
+
+## Anatomy
 
 A service consists of
 
@@ -31,15 +33,18 @@ ExtensionsManager
 
 ## UI Services
 
-A convention, not a hard rule.
+A typical web application will have components and state for common UI like
+modals, notifications, dialogs, etc. A UI service makes it possible to leverage
+these components from an extension.
 
-Implementation defined in `@ohif/ui` Context Provider with a `service` prop.
-Service prop should have a `setServiceImplmentation` method. In a `useEffect`
-hook, set the context's methods (`useCallback` hooks) as the service's
-implementation
+We maintain the following UI Services:
 
-This allows service to read/update context/state. Components consuming the
-provider will update accordingly
+- UIDialogService
+- UIModalService
+- UINotificationService
+
+You can read more about a specific service by selecting it in the above list,
+and more about [UI services in general: here](./ui-services.md)
 
 ## Parting Words
 
