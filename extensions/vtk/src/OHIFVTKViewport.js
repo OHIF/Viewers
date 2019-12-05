@@ -401,12 +401,9 @@ class OHIFVTKViewport extends Component {
 
     const style = { width: '100%', height: '100%', position: 'relative' };
 
-    // TODO -> We don't have outline rendering in vtkjs yet, but we should
-    // render _something_ in vtkjs if cornerstoneTools is just rendering the outline.
-    // TODO: -> Make this reactive on cornerstoneTools segmentation module configuration.
     const visible = configuration.renderFill || configuration.renderOutline;
-    // Use outline alphas as fill alpha whilst we don't have outline rendering.
-    const opacity = configuration.outlineAlpha;
+    const opacity = configuration.fillAlpha;
+    const outlineThickness = configuration.outlineThickness;
 
     return (
       <>
@@ -427,8 +424,10 @@ class OHIFVTKViewport extends Component {
               dataDetails={this.state.dataDetails}
               labelmapRenderingOptions={{
                 colorLUT: this.state.labelmapColorLUT,
-                globalOpacity: opacity, // TODO -> Anything not close to 1 is super dim. It might be because the labelmap voxels and the image are directly on top of each other?
+                globalOpacity: opacity,
                 visible,
+                outlineThickness,
+                renderOutline: true,
               }}
             />
           )}

@@ -47,11 +47,11 @@
     "@babel/runtime": "^7.5.5",
     "@ohif/core": "^1.12.0",
     "@ohif/extension-cornerstone": "^2.0.0",
+    "@ohif/extension-cornerstone-spherical-growcut": "^0.0.1",
     "@ohif/extension-dicom-html": "^1.0.1",
     "@ohif/extension-dicom-microscopy": "^0.50.6",
     "@ohif/extension-dicom-pdf": "^1.0.0",
     "@ohif/extension-dicom-seg": "^0.0.1",
-    "@ohif/extension-cornerstone-spherical-growcut": "^0.0.1",
     "@ohif/extension-vtk": "^0.53.12",
     "@ohif/i18n": "^0.52.1",
     "@ohif/ui": "^0.64.1",
@@ -84,7 +84,7 @@
     "redux-oidc": "3.1.x",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "vtk.js": "^11.7.2"
+    "vtk.js": "^11.14.0"
   },
   "devDependencies": {
     "cypress": "^3.3.1",
