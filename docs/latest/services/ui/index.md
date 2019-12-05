@@ -4,9 +4,6 @@
 - [Example](#/)
 - [Tips & Tricks](#/)
 - [Maintained Services](#/)
-  - [UI Dialog Service](#/)
-  - [UI Modal Service](#/)
-  - [UI Notification Service](#/)
 
 ## Overview
 
