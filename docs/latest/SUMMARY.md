@@ -26,6 +26,8 @@
   - [Modules](advanced/extensions.md#modules)
   - [Registering](advanced/extensions.md#registering-extensions)
   - [OHIF Maintained](advanced/extensions.md#ohif-maintained-extensions)
+- [Services](services/index.md)
+  - [UI](services/ui/index.md)
 - [Custom Tools](advanced/custom-tools.md)
 
 ---
