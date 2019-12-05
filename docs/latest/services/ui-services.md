@@ -2,8 +2,11 @@
 
 - [Overview](#/)
 - [Example](#/)
-- [Maintained Services](#/)
 - [Tips & Tricks](#/)
+- [Maintained Services](#/)
+  - [UI Dialog Service](#/)
+  - [UI Modal Service](#/)
+  - [UI Notification Service](#/)
 
 ## Overview
 
@@ -71,3 +74,40 @@ if (UINotificationService) {
 </div>
 
 ## Tips & Tricks
+
+It's important to remember that all we're doing is making it possible to control
+bits of the application's UI from an extension. Here are a few non-obvious
+takeaways worth mentioning:
+
+- Your application code should continue to use React context
+  (consumers/providers) as it normally would
+- You can substitute our "out of the box" UI implementations with your own
+- You can create and register your own UI services
+- You can choose not to register a service or provide a service implementation
+- In extensions, you can provide fallback/alternative behavior if an expected
+  service is not registered
+  - No `UIModalService`? Use the `UINotificationService` to notify users.
+
+> Note: These are recommended patterns, not hard and fast rules. Following them
+> will help reduce confusion and interoperability with the larger OHIF
+> community, but they're not silver bullets. Please speak up, create an issue,
+> if you would like to discuss new services or improvements to this pattern.
+
+## Maintained Services
+
+Our `@ohif/viewer` project is an example of how to glue together the different
+parts and pieces of the OHIF Platform to create a polished and powerful product.
+To accomplish that, we maintain several UI Services that you can use in your own
+project, or provide alternative implementations for:
+
+### UI Dialog Service
+
+...
+
+### UI Modal Service
+
+...
+
+### UI Notification Service
+
+...
