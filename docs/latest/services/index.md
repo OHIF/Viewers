@@ -39,12 +39,12 @@ these components from an extension.
 
 We maintain the following UI Services:
 
-- UIDialogService
-- UIModalService
-- UINotificationService
+- [UIDialogService](./ui/ui-dialog-service.md)
+- [UIModalService](./ui/ui-modal-service.md)
+- [UINotificationService](./ui/ui-notification-service.md)
 
 You can read more about a specific service by selecting it in the above list,
-and more about [UI services in general: here](./ui-services.md)
+and more about [UI services in general: here](./ui/index.md)
 
 ## Parting Words
 

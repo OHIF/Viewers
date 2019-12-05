@@ -100,14 +100,8 @@ parts and pieces of the OHIF Platform to create a polished and powerful product.
 To accomplish that, we maintain several UI Services that you can use in your own
 project, or provide alternative implementations for:
 
-### UI Dialog Service
-
-...
-
-### UI Modal Service
-
-...
-
-### UI Notification Service
-
-...
+| Name                  | Description | Docs                                 |
+| --------------------- | ----------- | ------------------------------------ |
+| UIDialogService       |             | [Here](./ui-dialog-service.md)       |
+| UIModalService        |             | [Here](./ui-modal-service.md)        |
+| UINotificationService |             | [Here](./ui-notification-service.md) |
