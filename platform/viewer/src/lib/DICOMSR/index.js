@@ -1,5 +1,5 @@
 import { retrieveMeasurements, storeMeasurements } from './dataExchange';
-import { isToolSupported } from './isToolSupported';
+import isToolSupported from './utils/isToolSupported';
 
 const DICOMSR = {
   retrieveMeasurements,

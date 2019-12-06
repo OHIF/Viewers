@@ -1,21 +1,28 @@
 import * as dcmjs from 'dcmjs';
-import OHIF from '@ohif/core';
+import { log, measurements } from '@ohif/core';
 import cornerstone from 'cornerstone-core';
+import isToolSupported from './utils/isToolSupported';
 
-const retrieveDataFromMeasurements = measurements => {
-  const cornerstoneAdpater = dcmjs.adapters.Cornerstone;
-  const { MeasurementReport } = cornerstoneAdpater;
-  const { getImageIdForImagePath } = OHIF.measurements;
+/**
+ *
+ *
+ * @param {Object} measurementsData
+ * @returns
+ */
+const parseMeasurementsData = measurementsData => {
+  const { MeasurementReport } = dcmjs.adapters.Cornerstone;
+  const { getImageIdForImagePath } = measurements;
 
   const toolState = {};
   const unsupportedTools = [];
 
-  Object.keys(measurements).forEach(measurementType => {
-    const annotations = measurements[measurementType];
+  Object.keys(measurementsData).forEach(measurementType => {
+    const annotations = measurementsData[measurementType];
 
     annotations.forEach(annotation => {
       const { toolType, imagePath } = annotation;
-      if (cornerstoneAdpater[toolType]) {
+
+      if (isToolSupported(toolType)) {
         const imageId = getImageIdForImagePath(imagePath);
         toolState[imageId] = toolState[imageId] || {};
         toolState[imageId][toolType] = toolState[imageId][toolType] || {
@@ -30,23 +37,19 @@ const retrieveDataFromMeasurements = measurements => {
   });
 
   if (unsupportedTools.length > 0) {
-    OHIF.log.warn(
+    log.warn(
       `[DICOMSR] Tooltypes not supported: ${unsupportedTools.join(', ')}`
     );
   }
 
-  try {
-    const report = MeasurementReport.generateReport(
-      toolState,
-      cornerstone.metaData
-    );
-    return {
-      dataset: report.dataset,
-      unsupportedTools,
-    };
-  } catch (error) {
-    throw error;
-  }
+  const report = MeasurementReport.generateReport(
+    toolState,
+    cornerstone.metaData
+  );
+  return {
+    dataset: report.dataset,
+    unsupportedTools,
+  };
 };
 
-export default retrieveDataFromMeasurements;
+export default parseMeasurementsData;

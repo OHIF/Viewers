@@ -1,19 +1,31 @@
 import * as dcmjs from 'dcmjs';
-import { getAllDisplaySets, getInstanceMetadata } from './srUtils';
+import getInstanceMetadata from './utils/getInstanceMetadata';
 
-const retrieveDataFromSR = Part10SRArrayBuffer => {
-  const allDisplaySets = getAllDisplaySets();
-
+/**
+ *
+ *
+ * @param {*} part10SRArrayBuffer
+ * @param {*} displaySets
+ * @returns
+ */
+const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
   // Get the dicom data as an Object
-  const dicomData = dcmjs.data.DicomMessage.readFile(Part10SRArrayBuffer);
+  const dicomData = dcmjs.data.DicomMessage.readFile(part10SRArrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
     dicomData.dict
   );
 
   // Convert the SR into the kind of object the Measurements package is expecting
-  return imagingMeasurementsToMeasurementData(dataset, allDisplaySets);
+  return imagingMeasurementsToMeasurementData(dataset, displaySets);
 };
 
+/**
+ *
+ *
+ * @param {*} dataset
+ * @param {*} displaySets
+ * @returns
+ */
 const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
   const { MeasurementReport } = dcmjs.adapters.Cornerstone;
   const storedMeasurementByToolType = MeasurementReport.generateToolState(
@@ -67,4 +79,4 @@ const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
   return measurementData;
 };
 
-export default retrieveDataFromSR;
+export default parseDicomStructuredReport;

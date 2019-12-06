@@ -1,17 +1,27 @@
 import * as dcmjs from 'dcmjs';
-import OHIF from '@ohif/core';
-import retrieveDataFromSR from './retrieveDataFromSR';
-import retrieveDataFromMeasurements from './retrieveDataFromMeasurements';
+import { DICOMWeb, utils } from '@ohif/core';
+import parseDicomStructuredReport from './parseDicomStructuredReport';
+import parseMeasurementsData from './parseMeasurementsData';
+import getAllDisplaySets from './utils/getAllDisplaySets';
 
 import { api } from 'dicomweb-client';
 
 const VERSION_NAME = 'dcmjs-0.0';
 const TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.1';
 
+const { studyMetadataManager } = utils;
+
+/**
+ *
+ *
+ * @param {*} series
+ * @param {*} server
+ * @returns
+ */
 const retrieveMeasurementFromSR = async (series, server) => {
   const config = {
     url: server.wadoRoot,
-    headers: OHIF.DICOMWeb.getAuthorizationHeader(),
+    headers: DICOMWeb.getAuthorizationHeader(),
   };
 
   const dicomWeb = new api.DICOMwebClient(config);
@@ -23,12 +33,24 @@ const retrieveMeasurementFromSR = async (series, server) => {
     sopInstanceUID: instance.getSOPInstanceUID(),
   };
 
-  return dicomWeb.retrieveInstance(options).then(retrieveDataFromSR);
+  const part10SRArrayBuffer = await dicomWeb.retrieveInstance(options);
+  const displaySets = getAllDisplaySets(studyMetadataManager);
+  const measurementsData = parseDicomStructuredReport(part10SRArrayBuffer, displaySets);
+
+  debugger;
+  return measurementsData;
 };
 
+/**
+ *
+ *
+ * @param {*} measurements
+ * @param {*} server
+ * @returns
+ */
 const stowSRFromMeasurements = async (measurements, server) => {
   try {
-    const { dataset, unsupportedTools } = retrieveDataFromMeasurements(
+    const { dataset, unsupportedTools } = parseMeasurementsData(
       measurements
     );
     const { DicomMetaDictionary, DicomDict } = dcmjs.data;
@@ -51,7 +73,7 @@ const stowSRFromMeasurements = async (measurements, server) => {
 
     const config = {
       url: server.wadoRoot,
-      headers: OHIF.DICOMWeb.getAuthorizationHeader(),
+      headers: DICOMWeb.getAuthorizationHeader(),
     };
 
     const dicomWeb = new api.DICOMwebClient(config);
