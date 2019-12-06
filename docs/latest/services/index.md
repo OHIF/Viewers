@@ -2,7 +2,7 @@
 
 - [Overview](#overview)
 - [Kinds of Services](#kinds-of-services)
-  - [Services (default)](#services--default-)
+  - [Services (default)](#services-default)
   - [UI Services](#ui-services)
 - [Related Patterns](#related-patterns)
 
@@ -31,7 +31,7 @@ them different below:
 Services are a work in progress. As we are still in the progress of creating a
 non-ui maintained service, this usage may change.
 
-[You can read more about default services: here](./services.md)
+[You can read more about default services: here](./default/index.md)
 
 ### UI Services
 
@@ -41,12 +41,12 @@ these components from an extension.
 
 We maintain the following UI Services:
 
-- [UIDialogService](./ui-dialog-service.md)
-- [UIModalService](./ui-modal-service.md)
-- [UINotificationService](./ui-notification-service.md)
+- [UIDialogService](./ui/ui-dialog-service.md)
+- [UIModalService](./ui/ui-modal-service.md)
+- [UINotificationService](./ui/ui-notification-service.md)
 
 You can read more about a specific service by selecting it in the above list,
-and more about [UI services in general: here](./ui.md)
+and more about [UI services in general: here](./ui/index.md)
 
 ## Related Patterns
 
