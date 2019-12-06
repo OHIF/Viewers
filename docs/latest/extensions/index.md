@@ -2,7 +2,8 @@
 
 - [Overview](#overview)
 - [Concepts](#concepts)
-  - [Configuration](#configuration)
+  - [Extension Skeleton](#extension-skeleton)
+  - [Registering an Extension](#registering-an-extension)
   - [Lifecylce Hooks](#lifecycle-hooks)
   - [Modules](#modules)
   - [Contexts](#contexts)
@@ -12,6 +13,7 @@
 ## Overview
 
 We use extensions to help us isolate and package groups of related features.
+Extensions provide functionality, ui components, and new behaviors.
 
 <div style="text-align: center;">
   <a href="/assets/img/extensions-diagram.png">
@@ -42,7 +44,72 @@ Practical examples of extensions include:
 
 ## Concepts
 
-### Configuration
+### Extension Skeleton
+
+An extension is a plain JavaScript object has an `id` property, and one or more
+"getModuleFunctions" and/or lifecycle hooks. You can read more about
+[lifecycle hooks](#lifecycle-hooks) and [modules](#modules) further down.
+
+```js
+// prettier-ignore
+export default {
+  /**
+   * Only required property. Should be a unique value across all extensions.
+   */
+  id: 'example-extension',
+
+  // Lifecyle
+  preInit() { /* */ },
+  // Modules
+  getCommandsModule() { /* */ },
+  getToolbarModule() { /* */ },
+  getPanelModule() { /* */ },
+  getSopClassHandler() { /* */ },
+  getViewportModule() { /* */ },
+}
+```
+
+### Registering an Extension
+
+There are two different ways to register and configure extensions. You can
+leverage one or both strategies. Which one(s) you choose depend on your
+application's requirements.
+
+```js
+// prettier-ignore
+const config = {
+  extensions: [
+    MyFirstExtension,
+    [
+      MySecondExtension,
+      { /* MySecondExtensions Configuration */ },
+    ],
+  ];
+}
+```
+
+#### Runtime Extensions
+
+The `@ohif/viewer` uses a [configuration file](#) at startup. The schema for
+that file includes an `Extensions` key that supports an array of extensions to
+register.
+
+#### Bundled Extensions
+
+The `@ohif/viewer` works best when built as a "Progressive Web Application"
+(PWA). If you know the extensions your application will need, you can specify
+them at "build time" to leverage some advantaged afforded to us by modern
+tooling:
+
+- Code Splitting
+- Tree Shaking
+- Dependency deduplication
+
+You can update the list of bundled extensions by:
+
+1. Having your `@ohif/viewer` project depend on the extension
+2. Importing and adding it to the list of extensions in the
+   `<repo-root>/platform/src/index.js` entrypoint.
 
 ### Lifecycle Hooks
 
