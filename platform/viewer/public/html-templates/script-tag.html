@@ -31,9 +31,8 @@
     var componentRenderedOrUpdatedCallback = function () {
       console.log('OHIF Viewer rendered/updated');
     };
-    var props = { config: window.config };
     window.OHIFViewer.installViewer(
-      props, // See `/config/default.js`
+      window.config, // See `/config/default.js`
       containerId,
       componentRenderedOrUpdatedCallback
     );

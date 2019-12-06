@@ -16,23 +16,27 @@ export default {
     const ExtendedConnectedMeasurementTable = () => (
       <ConnectedMeasurementTable
         onRelabel={tool => {
-          UILabellingFlowService.show({
-            centralize: true,
-            props: {
-              skipAddLabelButton: true,
-              editLocation: true,
-              measurementData: tool,
-            },
-          });
+          if (UILabellingFlowService) {
+            UILabellingFlowService.show({
+              centralize: true,
+              props: {
+                skipAddLabelButton: true,
+                editLocation: true,
+                measurementData: tool,
+              },
+            });
+          }
         }}
         onEditDescription={tool => {
-          UILabellingFlowService.show({
-            centralize: true,
-            props: {
-              editDescriptionOnDialog: true,
-              measurementData: tool,
-            },
-          });
+          if (UILabellingFlowService) {
+            UILabellingFlowService.show({
+              centralize: true,
+              props: {
+                editDescriptionOnDialog: true,
+                measurementData: tool,
+              },
+            });
+          }
         }}
       />
     );

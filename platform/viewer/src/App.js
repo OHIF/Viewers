@@ -121,8 +121,15 @@ class App extends Component {
 
     const { config, defaultExtensions } = props;
 
-    this._appConfig =
-      typeof config === 'function' ? config({ servicesManager }) : config;
+    const appDefaultConfig = {
+      routerBasename: '/',
+      whiteLabelling: {},
+    };
+
+    this._appConfig = {
+      appDefaultConfig,
+      ...(typeof config === 'function' ? config({ servicesManager }) : config),
+    };
 
     const { servers, hotkeys, tools, extensions, oidc } = this._appConfig;
 

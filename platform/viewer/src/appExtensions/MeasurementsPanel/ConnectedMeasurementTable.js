@@ -175,7 +175,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       // Clone the tool not to set empty location initially
       const toolForLocation = Object.assign({}, tool, { location: null });
 
-      ownProps.onRelabel(toolForLocation);
+      if (ownProps.onRelabel) {
+        ownProps.onRelabel(toolForLocation);
+      }
     },
     dispatchEditDescription: (event, measurementData, viewportsState) => {
       event.persist();
@@ -194,7 +196,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         return measurement._id === measurementId;
       });
 
-      ownProps.onEditDescription(tool);
+      if (ownProps.onEditDescription) {
+        ownProps.onEditDescription(tool);
+      }
     },
     dispatchJumpToRowItem: (
       measurementData,

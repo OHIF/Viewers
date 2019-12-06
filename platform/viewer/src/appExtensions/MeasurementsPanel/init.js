@@ -47,26 +47,31 @@ export default function init({
   );
 
   const onRightClick = event => {
-    UIContextMenuService.show({ event: event.detail });
+    if (UIContextMenuService) {
+      UIContextMenuService.show({ event: event.detail });
+    }
   };
 
   const onTouchPress = event => {
-    UIContextMenuService.show({
-      event: event.detail,
-      props: {
-        isTouchEvent: true,
-      },
-    });
+    if (UIContextMenuService) {
+      UIContextMenuService.show({
+        event: event.detail,
+        props: {
+          isTouchEvent: true,
+        },
+      });
+    }
   };
 
-  const onTouchStart = () => {
-    UILabellingFlowService.hide();
-    UIContextMenuService.hide();
-  };
+  const onTouchStart = () => resetLabelligAndContextMenu();
 
-  const onMouseClick = () => {
-    UIContextMenuService.hide();
-    UILabellingFlowService.hide();
+  const onMouseClick = () => resetLabelligAndContextMenu();
+
+  const resetLabelligAndContextMenu = () => {
+    if (UILabellingFlowService && UIContextMenuService) {
+      UILabellingFlowService.hide();
+      UIContextMenuService.hide();
+    }
   };
 
   // TODO: This makes scrolling painfully slow
