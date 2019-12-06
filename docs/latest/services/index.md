@@ -28,7 +28,10 @@ them different below:
 
 ### Services (default)
 
-...
+Services are a work in progress. As we are still in the progress of creating a
+non-ui maintained service, this usage may change.
+
+[You can read more about default services: here](./services.md)
 
 ### UI Services
 

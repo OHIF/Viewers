@@ -1,4 +1,12 @@
-# Services
+# Services (default)
+
+- [Overview](#overview)
+- [Example](#example)
+
+## Overview
+
+Services are a work in progress. As we are still in the progress of creating a
+non-ui maintained service, this usage may change.
 
 <div style="text-align: center;">
   <a href="/assets/img/services.png">
