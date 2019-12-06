@@ -35,8 +35,7 @@ benefits, but comes at the cost of time and complexity. Some benefits include:
 
 _Today:_
 
-- Leverage [extensions](/advanced/extensions.md) to drop-in powerful new
-  features
+- Leverage [extensions](/extensions/index.md) to drop-in powerful new features
 - Add routes and customize the viewer's workflow
 - Finer control over styling and whitelabeling
 

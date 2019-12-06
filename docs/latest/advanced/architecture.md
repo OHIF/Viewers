@@ -94,16 +94,16 @@ the viewer. Some common use cases include:
 - Adding surgical templating tools and reports
 - and many others
 
-We expose common integration points via [extensions](./extensions.md) to make
-this possible. The viewer and many of our own extensions also offer
+We expose common integration points via [extensions](../extensions/index.md) to
+make this possible. The viewer and many of our own extensions also offer
 [configuration][configuration]. For a list of extensions maintained by OHIF,
-[check out this helpful table](./extensions.html#ohif-maintained-extensions).
+[check out this helpful table](../extensions/index.mdl#maintained-extensions).
 
 If you find yourself thinking "I wish the Viewer could do X", and you can't
 accomplish it with an extension today, create a GitHub issue! We're actively
 looking for ways to improve our extensibility ^\_^
 
-[Click here to read more about extensions!](./extensions.md)
+[Click here to read more about extensions!](../extensions/index.md)
 
 ### Diagram
 
@@ -145,7 +145,7 @@ you would need to recreate.
 [viewer-npm]: https://www.npmjs.com/package/@ohif/viewer
 [pwa]: https://developers.google.com/web/progressive-web-apps/
 [configuration]: ../essentials/configuration.md
-[extensions]: ./extensions.md
+[extensions]: ../extensions/index.md
 [core-github]: https://github.com/OHIF/viewers/platform/core
 [ui-github]: https://github.com/OHIF/Viewers/platform/ui
 <!-- prettier-ignore-end -->
