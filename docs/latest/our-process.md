@@ -95,11 +95,11 @@ appropriate:
 | [PR: Awaiting Review 👀][awaiting-review]      | The core team has not yet performed a code review.                                                          |
 | [PR: Awaiting Revisions 🖊][awaiting-revisions] | Following code review, this label is applied until the author has made sufficient changes.                  |
 | **QA**                                         |                                                                                                             |
-| [PR: Awaiting UX Stories 💃][awaiting-stories] | The PR code changes need common language descriptions of impact to end users before the review can start    |
+| [PR: Awaiting User Cases 💃][awaiting-stories] | The PR code changes need common language descriptions of impact to end users before the review can start    |
 | [PR: No UX Impact 🙃][no-ux-impact]            | The PR code changes do not impact the user's experience                                                     |
 
 We rely on GitHub Checks and integrations with third party services to evaluate
-changes in code quality and test coverage. Tests must pass and UX stories must
+changes in code quality and test coverage. Tests must pass and User cases must
 be present (when applicable) before a PR can be merged to master, and code
 quality and test coverage must not changed by a significant margin. For some
 repositories, visual screenshot-based tests are also included, and video
