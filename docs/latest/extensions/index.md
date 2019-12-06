@@ -59,7 +59,7 @@ export default {
   id: 'example-extension',
 
   // Lifecyle
-  preInit() { /* */ },
+  preRegistration() { /* */ },
   // Modules
   getCommandsModule() { /* */ },
   getToolbarModule() { /* */ },
@@ -73,7 +73,8 @@ export default {
 
 There are two different ways to register and configure extensions. You can
 leverage one or both strategies. Which one(s) you choose depend on your
-application's requirements.
+application's requirements. Each [module](#modules) defined by the extension
+becomes available to the core application via the `ExtensionManager`.
 
 ```js
 // prettier-ignore
@@ -113,7 +114,19 @@ You can update the list of bundled extensions by:
 
 ### Lifecycle Hooks
 
+...
+
+### Modules
+
+There are a few different module types. Each module type allows us to extend the
+viewer in a different way, and provides a consistent API for us to do so. You
+can find a full list of the different types of modules
+[`in ohif-core`][module-types]. Information on each type of module, it's API,
+and how we determine when/where it should be used is included below.
+
 ### Contexts
+
+...
 
 ## Consuming Extensions
 
@@ -134,4 +147,5 @@ the top level [`extensions/`][ext-source] directory.
 <!-- prettier-ignore-start -->
 [viewers-repo]: https://github.com/OHIF/Viewers
 [ext-source]: https://github.com/OHIF/Viewers/tree/master/extensions
+[module-types]: https://github.com/OHIF/Viewers/blob/master/platform/core/src/extensions/MODULE_TYPES.js
 <!-- prettier-ignore-end -->

@@ -24,7 +24,7 @@
 - [Extensions](extensions/index.md)
   - [Registering](extensions/index.md#registering-an-extension)
   - [Lifecycle Hooks](extensions/index.md#lifecycle-hooks)
-    - [preInit](extensions/lifecycle/pre-init.md)
+    - [preRegistration](extensions/lifecycle/pre-registration.md)
   - [Modules](extensions/index.md#modules)
     - [Commands](extensions/modules/commands.md)
     - [Panel](extensions/modules/panel.md)
