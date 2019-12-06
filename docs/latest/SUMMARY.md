@@ -27,7 +27,11 @@
   - [Registering](advanced/extensions.md#registering-extensions)
   - [OHIF Maintained](advanced/extensions.md#ohif-maintained-extensions)
 - [Services](services/index.md)
+  - [Default](services/default/index.md)
   - [UI](services/ui/index.md)
+    - [Dialog Service](services/ui/ui-dialog-service.md)
+    - [Modal Service](services/ui/ui-modal-service.md)
+    - [Notification Service](services/ui/ui-notification-service.md)
 - [Custom Tools](advanced/custom-tools.md)
 
 ---

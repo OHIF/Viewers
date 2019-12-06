@@ -1,7 +1,7 @@
 # UI Services
 
-- [Overview](#/)
-- [Example](#/)
+- [Overview](#overview)
+- [Example](#example)
 - [Tips & Tricks](#/)
 - [Maintained Services](#/)
 
@@ -36,7 +36,7 @@ The `ServicesManager` is:
   - All of it's lifecycle hooks (`preInit`)
   - Each "getModuleFunction" (`getToolbarModule`, `getPanelModule`, etc.)
 
-## An Example
+## Example
 
 That's all fine and good, but it's still a little too abstract. What does this
 translate to in practice?
@@ -99,8 +99,8 @@ parts and pieces of the OHIF Platform to create a polished and powerful product.
 To accomplish that, we maintain several UI Services that you can use in your own
 project, or provide alternative implementations for:
 
-| Name                  | Description | Docs                                 |
-| --------------------- | ----------- | ------------------------------------ |
-| UIDialogService       |             | [Here](./ui-dialog-service.md)       |
-| UIModalService        |             | [Here](./ui-modal-service.md)        |
-| UINotificationService |             | [Here](./ui-notification-service.md) |
+| Name                  | Docs                                 |
+| --------------------- | ------------------------------------ |
+| UIDialogService       | [Here](./ui-dialog-service.md)       |
+| UIModalService        | [Here](./ui-modal-service.md)        |
+| UINotificationService | [Here](./ui-notification-service.md) |
