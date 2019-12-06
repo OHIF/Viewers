@@ -336,7 +336,7 @@ function ViewerRetrieveStudyData({
   return (
     <ConnectedViewer
       studies={studies}
-      studyLoaded={isStudyLoaded}
+      isStudyLoaded={isStudyLoaded}
       studyInstanceUids={studyInstanceUids}
     />
   );

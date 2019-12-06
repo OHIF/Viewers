@@ -66,7 +66,7 @@ class Viewer extends Component {
     viewports: PropTypes.object.isRequired,
     // window.store.getState().viewports.activeViewportIndex
     activeViewportIndex: PropTypes.number.isRequired,
-    studyLoaded: PropTypes.bool,
+    isStudyLoaded: PropTypes.bool,
   };
 
   constructor(props) {
@@ -163,7 +163,7 @@ class Viewer extends Component {
   };
 
   componentDidMount() {
-    const { studies, activeServer } = this.props;
+    const { studies, activeServer, isStudyLoaded } = this.props;
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
     const currentTimepointId = 'TimepointId';
 
@@ -184,7 +184,7 @@ class Viewer extends Component {
       const patientId = studies[0] && studies[0].patientId;
 
       timepointApi.retrieveTimepoints({ patientId });
-      if (this.props.studyLoaded) {
+      if (isStudyLoaded) {
         this.measurementApi.retrieveMeasurements(patientId, [
           currentTimepointId,
         ]);
@@ -196,13 +196,13 @@ class Viewer extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { studies, studyLoaded } = this.props;
+    const { studies, isStudyLoaded } = this.props;
     if (studies !== prevProps.studies) {
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
       });
     }
-    if (studyLoaded && studyLoaded !== prevProps.studyLoaded) {
+    if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
       const patientId = studies[0] && studies[0].patientId;
       const { currentTimepointId } = this;
 
@@ -291,11 +291,11 @@ class Viewer extends Component {
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
-              <ConnectedStudyBrowser
-                studies={this.state.thumbnails}
-                studyMetadata={this.props.studies}
-              />
-            )}
+                <ConnectedStudyBrowser
+                  studies={this.state.thumbnails}
+                  studyMetadata={this.props.studies}
+                />
+              )}
           </SidePanel>
 
           {/* MAIN */}
@@ -332,7 +332,7 @@ export default Viewer;
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function(studies) {
+const _mapStudiesToThumbnails = function (studies) {
   return studies.map(study => {
     const { studyInstanceUid } = study;
 

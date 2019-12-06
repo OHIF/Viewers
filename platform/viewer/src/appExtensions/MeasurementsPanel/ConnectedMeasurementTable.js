@@ -59,8 +59,7 @@ function getDataForEachMeasurementNumber(
   return data;
 }
 
-function getWarningsForMeasurement(meansurementData) {
-  const { toolType } = meansurementData;
+function getWarningsForMeasurement(toolType) {
   const isToolSupported = DICOMSR.isToolSupported(toolType);
 
   return {
@@ -108,7 +107,7 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
         hasWarnings,
         warningTitle,
         warningList,
-      } = getWarningsForMeasurement(measurementData);
+      } = getWarningsForMeasurement(toolType);
 
       //check if all measurements with same measurementNumber will have same LABEL
       const tableMeasurement = {
@@ -160,10 +159,6 @@ function convertTimepointsToTableData(timepoints) {
       date: moment(timepoints[0].latestDate).format('DD-MMM-YY'),
     },
   ];
-}
-
-function updateWarnings(measurementCollection) {
-  measurementCollection;
 }
 
 function getSaveFunction(servers) {
@@ -331,8 +326,6 @@ const mapDispatchToProps = dispatch => {
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   const { timepoints, saveFunction, measurementCollection } = propsFromState;
-
-  updateWarnings(measurementCollection);
 
   return {
     timepoints,
