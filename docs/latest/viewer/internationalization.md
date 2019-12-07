@@ -1,4 +1,4 @@
-# Translating
+# Internationalization
 
 OHIF supports internationalization using [i18next](https://www.i18next.com/)
 through the npm package [@ohif/i18n](https://www.npmjs.com/package/@ohif/i18n),
@@ -15,7 +15,7 @@ where is the main instance of i18n containing several languages and tools.
   </div>
 </div>
 
-### Installing
+## Installing
 
 ```bash
 yarn add @ohif/i18n
@@ -25,7 +25,7 @@ yarn add @ohif/i18n
 npm install --save @ohif/i18n
 ```
 
-### How it works
+## How it works
 
 After installing `@ohif/i18n` npm package, the translation function
 [t](https://www.i18next.com/overview/api#t) can be used [with](#with-react) or
@@ -57,13 +57,13 @@ If the translation.json file contains a key that matches the HTML content e.g.
 
 ---
 
-#### With React
+### With React
 
 This section will introduce you to [react-i18next](https://react.i18next.com/)
 basics and show how to implement the [t](https://www.i18next.com/overview/api#t)
 function easily.
 
-##### Using HOCs
+#### Using HOCs
 
 In most cases we used
 [High Order Components](https://react.i18next.com/latest/withtranslation-hoc) to
@@ -86,13 +86,13 @@ export default withTranslation('MyNameSpace')(MyComponent);
 > [I18nextProvider](#using-outside-of-ohif-viewer) section, `withTranslation`
 > HOC doesnt works without a I18nextProvider
 
-##### Using Hooks
+#### Using Hooks
 
 Also, it's possible to get the `t` tool using
 [React Hooks](https://react.i18next.com/latest/usetranslation-hook), but it
 requires at least React > 16.8 😉
 
-#### Using outside of OHIF viewer
+### Using outside of OHIF viewer
 
 OHIF Viewer already sets a main
 [I18nextProvider](https://react.i18next.com/latest/i18nextprovider) connected to
@@ -119,7 +119,7 @@ usage.
 
 ---
 
-#### Without React
+### Without React
 
 When needed, you can also use available translations _without React_.
 

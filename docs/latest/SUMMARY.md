@@ -6,7 +6,6 @@
   - [Installation](essentials/installation.md)
   - [Data Source](essentials/data-source.md)
   - [Configuration](essentials/configuration.md)
-  - [Translating](essentials/translating.md)
 - [Contributing](contributing/index.md)
   - [Continuous Integration](continous-integration.md)
 
@@ -16,6 +15,7 @@
 - [Viewer](viewer/index.md)
   - [Configuration](viewer/configuration.md)
   - [Themeing](viewer/themeing.md)
+  - [Internationalization](viewer/internationalization.md)
 - [Extensions](extensions/index.md)
   - [Registering](extensions/index.md#registering-an-extension)
   - [Lifecycle Hooks](extensions/index.md#lifecycle-hooks)
