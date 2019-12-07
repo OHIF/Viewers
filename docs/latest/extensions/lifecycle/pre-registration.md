@@ -1,7 +1,7 @@
 # Lifecylce Hook: preRegistration
 
 If an extension defines the `preRegistration` lifecycle hook, it is called
-before any modules are registered to the `ExtensionManager`.
+before any modules are registered in the `ExtensionManager`.
 
 ```js
 export default {

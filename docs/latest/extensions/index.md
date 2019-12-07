@@ -91,18 +91,17 @@ const config = {
 }
 ```
 
-#### Runtime Extensions
+#### Registering at Runtime
 
 The `@ohif/viewer` uses a [configuration file](#) at startup. The schema for
 that file includes an `Extensions` key that supports an array of extensions to
 register.
 
-#### Bundled Extensions
+#### Registering at Build Time
 
 The `@ohif/viewer` works best when built as a "Progressive Web Application"
 (PWA). If you know the extensions your application will need, you can specify
-them at "build time" to leverage some advantaged afforded to us by modern
-tooling:
+them at "build time" to leverage advantages afforded to us by modern tooling:
 
 - Code Splitting
 - Tree Shaking
@@ -116,7 +115,14 @@ You can update the list of bundled extensions by:
 
 ### Lifecycle Hooks
 
-...
+Currently, there is only a single lifecycle hook for extensions:
+[`preRegistration`](./lifecycle/pre-registration.md)
+
+If an extension defines the [`preRegistration`](./lifecycle/pre-registration.md)
+lifecycle hook, it is called before any modules are registered in the
+`ExtensionManager`. It's most commonly used to wire up extensions to
+[services](./../services/index.md) and [commands](./modules/commands.md), and to
+bootstrap 3rd party libraries.
 
 ### Modules
 
