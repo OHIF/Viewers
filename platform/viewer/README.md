@@ -129,7 +129,7 @@ yarn run cy:run:ci
 > Large portions of the Viewer's functionality are maintained in other
 > repositories. To get a better understanding of the Viewer's architecture and
 > "where things live", read
-> [our docs on the Viewer's architecture](https://docs.ohif.org/advanced/architecture.html#diagram)
+> [our docs on the Viewer's architecture](https://docs.ohif.org/architecture/index.html#overview)
 
 It is notoriously difficult to setup multiple dependent repositories for
 end-to-end testing and development. That's why we recommend writing and running
@@ -195,7 +195,7 @@ Links:
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
 [ohif-viewer-url]: https://www.npmjs.com/package/ohif-viewer
 [configuration-url]: https://docs.ohif.org/essentials/configuration.html
-[extensions-url]: https://docs.ohif.org/advanced/extensions.html
+[extensions-url]: https://docs.ohif.org/extensions
 <!-- Misc. -->
 [react-viewer]: https://github.com/OHIF/Viewers/tree/react
 <!-- Issue Boilerplate -->
