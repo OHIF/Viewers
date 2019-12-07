@@ -126,15 +126,32 @@ bootstrap 3rd party libraries.
 
 ### Modules
 
-There are a few different module types. Each module type allows us to extend the
-viewer in a different way, and provides a consistent API for us to do so. You
-can find a full list of the different types of modules
-[`in ohif-core`][module-types]. Information on each type of module, it's API,
-and how we determine when/where it should be used is included below.
+Modules are the meat of extensions. They provide "definitions", components, and
+filtering/mapping logic that are then made available by various managers and
+services.
+
+Each module type has a special purpose, and is consumed by our viewer
+differently.
+
+| Type                                              | Description                                                      | Examples                                          |
+| ------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------- |
+| [Commands](./modules/commands.md)                 | Adds named commands, scoped to a context, to the CommandsManager | `setToolActive()`, `nextSeries()`                 |
+| [Panel](./modules/panel.md)                       | Adds left or right hand side panels                              | `<ThumbnailList />`, `<MeasurementsTable />`      |
+| [SOPClassHandler](./modules/sop-class-handler.md) | Determines how retrieved study data is split into "DisplaySets"  | `getDisplaySetFromSeries()`                       |
+| [Toolbar](./modules/toolbar.md)                   | Adds buttons or custom components to the toolbar                 | Toolbar button, nested buttons, custom            |
+| [Viewport](./modules/viewport.md)                 | Adds a component responsible for rendering a "DisplaySet"        | `<CornerstoneViewport />`, `<DicomPdfViewport />` |
 
 ### Contexts
 
-...
+The `@ohif/viewer` tracks "active contexts" that extensions can use to scope
+their functionality. Some example contexts being:
+
+- Route: `ROUTE:VIEWER`, `ROUTE:STUDY_LIST`
+- Active Viewport: `ACTIVE_VIEWPORT:CORNERSTONE`, `ACTIVE_VIEWPORT:VTK`
+
+An extension module can use these to say "Only show this Toolbar Button if the
+active viewport is a Cornerstone viewport." This helps us use the appropriate UI
+and behaviors depending on the current contexts.
 
 ## Consuming Extensions
 
