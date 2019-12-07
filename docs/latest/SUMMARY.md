@@ -7,7 +7,6 @@
   - [Data Source](essentials/data-source.md)
   - [Configuration](essentials/configuration.md)
   - [Translating](essentials/translating.md)
-  - [Troubleshooting](essentials/troubleshooting.md)
 - [Contributing](contributing/index.md)
   - [Continuous Integration](continous-integration.md)
 

@@ -91,9 +91,6 @@ yarn run build:package
   changing the Study Date filters to a wider range.
 - If you see a 'Loading' message which never resolves, check your browser
   JavaScript console inside the Developer Tools to identify any errors.
-- If you see any errors in your server console, check the
-  [Troubleshooting](./essentials/troubleshooting.md) page for more in depth
-  advice.
 
 <!--
   Links
