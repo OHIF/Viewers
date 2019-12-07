@@ -1,8 +1,7 @@
 # Build for Production
 
-> If you've already followed the
-> ["Getting Started" Guide](/essentials/getting-started.md), you can skip ahead
-> to [Configuration](#configuration)
+> If you've already followed the ["Getting Started" Guide](/getting-started.md),
+> you can skip ahead to [Configuration](#configuration)
 
 ## Overview
 

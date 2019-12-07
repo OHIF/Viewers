@@ -89,7 +89,7 @@ yarn start
 
 For more advanced local development scenarios, like using your own locally
 hosted PACS and test data,
-[check out our Essential: Getting Started](https://docs.ohif.org/essentials/getting-started.html)
+[check out our Essential: Getting Started](https://docs.ohif.org/getting-started.html)
 guide.
 
 ### E2E Tests

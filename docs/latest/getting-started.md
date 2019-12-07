@@ -75,7 +75,7 @@ You should see the following output:
 ### Building for Production
 
 > More comprehensive guides for building and publishing can be found in our
-> [deployment docs](./../deployment/index.md)
+> [deployment docs](./deployment/index.md)
 
 ```bash
 # Build static assets to host a PWA
@@ -85,12 +85,6 @@ yarn run build
 yarn run build:package
 ```
 
-## Next Steps
-
-Take a look at the sidebar. Depending on how you intend to use The OHIF Viewer,
-different topics may be more pertinent than others. At a minimum, reading "The
-Essentials" and the deployment recipes should be a good starting point.
-
 ## Troubleshooting
 
 - If you receive a _"No Studies Found"_ message and do not see your studies, try
@@ -98,7 +92,8 @@ Essentials" and the deployment recipes should be a good starting point.
 - If you see a 'Loading' message which never resolves, check your browser
   JavaScript console inside the Developer Tools to identify any errors.
 - If you see any errors in your server console, check the
-  [Troubleshooting](./troubleshooting.md) page for more in depth advice.
+  [Troubleshooting](./essentials/troubleshooting.md) page for more in depth
+  advice.
 
 <!--
   Links

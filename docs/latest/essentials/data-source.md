@@ -1,8 +1,9 @@
 # Data Source
 
-After following the steps outlined in [Getting Started](./getting-started.md),
-you'll notice that the OHIF Viewer has data for several studies and their
-images. You didn't add this data, so where is it coming from?
+After following the steps outlined in
+[Getting Started](./../getting-started.md), you'll notice that the OHIF Viewer
+has data for several studies and their images. You didn't add this data, so
+where is it coming from?
 
 By default, the viewer is configured to connect to a remote server hosted by the
 nice folks over at [dcmjs.org][dcmjs-org]. While convenient for getting started,

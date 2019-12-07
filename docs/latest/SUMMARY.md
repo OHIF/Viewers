@@ -1,8 +1,8 @@
 # OHIF Viewers
 
 - [Our Process](our-process.md)
+- [Getting Started](getting-started.md)
 - Essentials
-  - [Getting Started](essentials/getting-started.md)
   - [Installation](essentials/installation.md)
   - [Data Source](essentials/data-source.md)
   - [Configuration](essentials/configuration.md)
