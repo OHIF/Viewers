@@ -13,14 +13,7 @@
 
 ---
 
-- [Advanced](advanced/index.md)
-- [Architecture](advanced/architecture.md)
-  - [Overview](advanced/architecture.md#overview)
-  - [Business Logic](advanced/architecture.md#business-logic)
-  - [Component Library](advanced/architecture.md#react-component-library)
-  - [Extensions](advanced/architecture.md#misc-extensions)
-  - [Diagram](advanced/architecture.md#diagram)
-  - [Common Questions](advanced/architecture.md#common-questions)
+- [Architecture](architecture/index.md)
 - [Extensions](extensions/index.md)
   - [Registering](extensions/index.md#registering-an-extension)
   - [Lifecycle Hooks](extensions/index.md#lifecycle-hooks)
@@ -39,7 +32,6 @@
     - [Dialog Service](services/ui/ui-dialog-service.md)
     - [Modal Service](services/ui/ui-modal-service.md)
     - [Notification Service](services/ui/ui-notification-service.md)
-- [Custom Tools](advanced/custom-tools.md)
 
 ---
 
