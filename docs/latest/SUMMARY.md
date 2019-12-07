@@ -8,7 +8,6 @@
   - [Continuous Integration](development/continous-integration.md)
 - [Configuring](configuring/index.md)
   - [Data Source](configuring/data-source.md)
-  - [Configuration](essentials/configuration.md)
 
 ---
 
