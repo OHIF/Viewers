@@ -84,7 +84,7 @@ We offer support through
 
 For commercial support, academic collaberations, and answers to common
 questions; please read our
-[documented FAQ](https://docs.ohif.org/frequently-asked-questions.html#does-ohif-offer-commercial-support).
+[documented FAQ](https://docs.ohif.org/faq/index.html#does-ohif-offer-commercial-support).
 
 ## Quick Start Deployment
 
@@ -302,7 +302,7 @@ MIT © [OHIF](https://github.com/OHIF)
 [react-url]: https://reactjs.org/
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
 [ohif-viewer-url]: https://www.npmjs.com/package/@ohif/viewer
-[configuration-url]: https://docs.ohif.org/essentials/configuration.html
+[configuration-url]: https://docs.ohif.org/configuring/
 [extensions-url]: https://docs.ohif.org/extensions/
 <!-- Platform -->
 [platform-core]: platform/core/README.md

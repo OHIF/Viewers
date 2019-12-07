@@ -194,7 +194,7 @@ Links:
 [react-url]: https://reactjs.org/
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
 [ohif-viewer-url]: https://www.npmjs.com/package/ohif-viewer
-[configuration-url]: https://docs.ohif.org/essentials/configuration.html
+[configuration-url]: https://docs.ohif.org/configuring/
 [extensions-url]: https://docs.ohif.org/extensions
 <!-- Misc. -->
 [react-viewer]: https://github.com/OHIF/Viewers/tree/react

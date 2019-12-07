@@ -1,4 +1,4 @@
-# Installation
+# PWA vs Packaged
 
 It's important to know that the OHIF Viewer project provides two different build
 processes:

@@ -1,13 +1,14 @@
 # OHIF Viewers
 
 - [Our Process](our-process.md)
-- [Getting Started](getting-started.md)
-- Essentials
-  - [Installation](essentials/installation.md)
-  - [Data Source](essentials/data-source.md)
+- [Quick Start](quick-start.md)
+- Development
+  - [Getting Started](development/getting-started.md)
+  - [Contributing](development/contributing.md)
+  - [Continuous Integration](development/continous-integration.md)
+- [Configuring](configuring/index.md)
+  - [Data Source](configuring/data-source.md)
   - [Configuration](essentials/configuration.md)
-- [Contributing](contributing/index.md)
-  - [Continuous Integration](continous-integration.md)
 
 ---
 
@@ -54,7 +55,8 @@
 
 ---
 
-- [FAQ](frequently-asked-questions.md)
-- [Scope of Project](scope-of-project.md)
-- [Browser Support](browser-support.md)
+- [FAQ](faq/index.md)
+  - [Scope of Project](faq/scope-of-project.md)
+  - [Browser Support](faq/browser-support.md)
+  - [PWA vs Packaged](faq/pwa-vs-packaged.md)
 - [Help](help.md)
