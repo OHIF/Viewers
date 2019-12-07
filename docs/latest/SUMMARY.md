@@ -28,6 +28,7 @@
   - [OHIF Maintained](extension/index.md#maintained-extensions)
 - [Services](services/index.md)
   - [Default](services/default/index.md)
+    - [Measurements](services/default/measurements.md)
   - [UI](services/ui/index.md)
     - [Dialog Service](services/ui/ui-dialog-service.md)
     - [Modal Service](services/ui/ui-modal-service.md)

@@ -1,6 +1,6 @@
-# Measurements Package (ohif-measurements)
+# Service: Measurements
 
-## Package design
+...
 
 ## Usage
 
