@@ -75,7 +75,7 @@ You should see the following output:
 ### Building for Production
 
 > More comprehensive guides for building and publishing can be found in our
-> [deployment docs](./deployment/index.md)
+> [deployment docs](./../deployment/index.md)
 
 ```bash
 # Build static assets to host a PWA
