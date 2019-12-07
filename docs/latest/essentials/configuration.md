@@ -4,6 +4,8 @@
 > one up, check out the [`Data Source` Guide](./data-source.md) or a deployment
 > recipe that contains an open source Image Archive
 
+- [Configuration Files](#configuration-files)
+
 ## Overview
 
 ### Configuration Files

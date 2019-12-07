@@ -6,14 +6,17 @@
   - [Installation](essentials/installation.md)
   - [Data Source](essentials/data-source.md)
   - [Configuration](essentials/configuration.md)
-  - [Themeing](essentials/themeing.md)
   - [Translating](essentials/translating.md)
   - [Troubleshooting](essentials/troubleshooting.md)
-- [Scope of Project](essentials/scope-of-project.md)
+- [Contributing](contributing/index.md)
+  - [Continuous Integration](continous-integration.md)
 
 ---
 
 - [Architecture](architecture/index.md)
+- [Viewer](viewer/index.md)
+  - [Configuration](viewer/configuration.md)
+  - [Themeing](viewer/themeing.md)
 - [Extensions](extensions/index.md)
   - [Registering](extensions/index.md#registering-an-extension)
   - [Lifecycle Hooks](extensions/index.md#lifecycle-hooks)
@@ -53,7 +56,6 @@
 ---
 
 - [FAQ](frequently-asked-questions.md)
-- [Contributing](contributing/index.md)
-  - [Continuous Integration](continous-integration.md)
+- [Scope of Project](scope-of-project.md)
 - [Browser Support](browser-support.md)
 - [Help](help.md)
