@@ -1,4 +1,4 @@
-# Internationalization
+# Viewer: Internationalization
 
 OHIF supports internationalization using [i18next](https://www.i18next.com/)
 through the npm package [@ohif/i18n](https://www.npmjs.com/package/@ohif/i18n),
