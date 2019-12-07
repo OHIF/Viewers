@@ -71,8 +71,10 @@ export default {
 
 ### Registering an Extension
 
-There are two different ways to register and configure extensions. You can
-leverage one or both strategies. Which one(s) you choose depend on your
+There are two different ways to register and configure extensions: At
+[runtime](#runtime-extensions) and at [build time](#bundled-extensions).
+
+You can leverage one or both strategies. Which one(s) you choose depend on your
 application's requirements. Each [module](#modules) defined by the extension
 becomes available to the core application via the `ExtensionManager`.
 
