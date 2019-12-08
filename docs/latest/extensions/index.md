@@ -13,7 +13,9 @@
 ## Overview
 
 We use extensions to help us isolate and package groups of related features.
-Extensions provide functionality, ui components, and new behaviors.
+Extensions provide functionality, ui components, and new behaviors. Ideally,
+they're built in a way that allows them to extend entirely different
+implementations of the `@ohif/viewer` project.
 
 <div style="text-align: center;">
   <a href="/assets/img/extensions-diagram.png">
@@ -46,9 +48,8 @@ Practical examples of extensions include:
 
 ### Extension Skeleton
 
-An extension is a plain JavaScript object has an `id` property, and one or more
-"getModuleFunctions" and/or lifecycle hooks. You can read more about
-[lifecycle hooks](#lifecycle-hooks) and [modules](#modules) further down.
+An extension is a plain JavaScript object that has an `id` property, and one or
+more [modules](#modules) and/or [lifecycle hooks](#lifecycle-hooks).
 
 ```js
 // prettier-ignore
@@ -78,6 +79,12 @@ You can leverage one or both strategies. Which one(s) you choose depend on your
 application's requirements. Each [module](#modules) defined by the extension
 becomes available to the core application via the `ExtensionManager`.
 
+#### Registering at Runtime
+
+The `@ohif/viewer` uses a [configuration file](#) at startup. The schema for
+that file includes an `Extensions` key that supports an array of extensions to
+register.
+
 ```js
 // prettier-ignore
 const config = {
@@ -91,19 +98,13 @@ const config = {
 }
 ```
 
-#### Registering at Runtime
-
-The `@ohif/viewer` uses a [configuration file](#) at startup. The schema for
-that file includes an `Extensions` key that supports an array of extensions to
-register.
-
 #### Registering at Build Time
 
 The `@ohif/viewer` works best when built as a "Progressive Web Application"
 (PWA). If you know the extensions your application will need, you can specify
 them at "build time" to leverage advantages afforded to us by modern tooling:
 
-- Code Splitting
+- Code Splitting (dynamic imports)
 - Tree Shaking
 - Dependency deduplication
 
@@ -141,6 +142,8 @@ differently.
 | [Toolbar](./modules/toolbar.md)                   | Adds buttons or custom components to the toolbar                 | Toolbar button, nested buttons, custom            |
 | [Viewport](./modules/viewport.md)                 | Adds a component responsible for rendering a "DisplaySet"        | `<CornerstoneViewport />`, `<DicomPdfViewport />` |
 
+<figure style="text-align: center; font-style: italic;">Tbl. Module types with abridged descriptions and examples. Each module links to a dedicated documentation page.</figure>
+
 ### Contexts
 
 The `@ohif/viewer` tracks "active contexts" that extensions can use to scope
@@ -153,9 +156,37 @@ An extension module can use these to say "Only show this Toolbar Button if the
 active viewport is a Cornerstone viewport." This helps us use the appropriate UI
 and behaviors depending on the current contexts.
 
+For example, if we have hotkey that "rotates the active viewport", each Viewport
+module that supports this behavior can add a command with the same name, scoped
+to the appropriate context. When the `command` is fired, the "active contexts"
+are used to determine the appropriate implementation of the rotate behavior.
+
 ## Consuming Extensions
 
-...
+We consume extensions, via the `ExtensionManager`, in our `@ohif/viewer`
+project.
+
+```js
+const extensionManager = new ExtensionManager({
+  commandsManager,
+  servicesManager,
+});
+
+// prettier-ignore
+extensionManager.registerExtensions([ /** **/ ]);
+```
+
+The `@ohif/viewer` project handles data fetching, basic routing, wires up UI
+services, and is the home to the more bespoke application logic that doesn't
+make as much sense to make reusable.
+
+Long-term, replacing the `@ohif/viewer` application and consuming extensions
+(and the `ExtensionManager`) in your own project is the ideal path for
+applications requiring a high degree of customization that can't be achieved
+with current theming, configuration, extension, and services support.
+
+If you're not sure how to achieve your goals with the extensibility available
+today, create a GitHub issue!
 
 ## Maintained Extensions
 
