@@ -8,6 +8,7 @@
   - [Modules](#modules)
   - [Contexts](#contexts)
 - [Consuming Extensions](#consuming-extensions)
+  - [Extension Manager](#extension-manager)
 - [Maintained Extensions](#maintained-extensions)
 
 ## Overview
@@ -187,6 +188,33 @@ with current theming, configuration, extension, and services support.
 
 If you're not sure how to achieve your goals with the extensibility available
 today, create a GitHub issue!
+
+### `ExtensionManager`
+
+The `ExtensionManager` is a class made available to us via the `@ohif/core`
+project (platform/core). Our application instantiates a single instance of it,
+and provides a `ServicesManager` and `CommandsManager`.
+
+```js
+const commandsManager = new CommandsManager();
+const servicesManager = new ServicesManager();
+const extensionManager = new ExtensionManager({
+  commandsManager,
+  servicesManager,
+});
+```
+
+The `ExtensionManager` only has a few public members:
+
+- `registerExtension` - Registers a single extension
+- `registerExtensions` - Registers an array of extensions
+- `modules` - An object containing registered extensions by `MODULE_TYPE`
+
+During registration, lifecycle hooks and modules have access to
+`ExtensionManager`'s `ServicesManager` and `CommandsManager`.
+
+Our `@ohif/viewer` uses the `modules` member to access registered extensions at
+appropriate places in our application.
 
 ## Maintained Extensions
 
