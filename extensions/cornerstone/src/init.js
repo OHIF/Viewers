@@ -31,7 +31,7 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
  * @param {Object} configuration
  * @param {Object|Array} configuration.csToolsConfig
  */
-export default function init({ servicesManager, configuration = {} }) {
+export default function init({ servicesManager, configuration }) {
   const callInputDialog = (data, event, callback) => {
     const { UIDialogService } = servicesManager.services;
 

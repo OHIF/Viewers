@@ -27,7 +27,7 @@ const MEASUREMENT_ACTION_MAP = {
 export default function init({
   servicesManager,
   commandsManager,
-  configuration = {},
+  configuration,
 }) {
   const {
     UIContextMenuService,
