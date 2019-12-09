@@ -11,10 +11,7 @@ export default {
    * LIFECYCLE HOOKS
    */
 
-  preRegistration({
-    servicesManager,
-    configuration: extensionConfiguration,
-  }) {},
+  preRegistration({ servicesManager, commandsManager, configuration }) {},
 
   /**
    * MODULE GETTERS
