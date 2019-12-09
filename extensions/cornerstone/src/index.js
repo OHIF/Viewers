@@ -25,7 +25,7 @@ export default {
    * @param {object} [configuration={}]
    * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
    */
-  preRegistration({ servicesManager = {}, configuration = {} }) {
+  preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
   getViewportModule() {
@@ -34,7 +34,7 @@ export default {
   getToolbarModule() {
     return toolbarModule;
   },
-  getCommandsModule({ servicesManager = {} }) {
+  getCommandsModule({ servicesManager }) {
     return commandsModule({ servicesManager });
   },
 };

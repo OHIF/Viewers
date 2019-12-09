@@ -130,31 +130,6 @@ window.config = {
 };
 ```
 
-The configuration can also be written as a JS Function in case you need to inject dependencies like external services:
-
-```js
-window.config = ({ randomService } = {}) => {
-  const randomInfo = randomService.getInfo('randomKey');
-  return {
-    randomConfigKey: randomInfo,
-    routerBasename: '/',
-    servers: {
-      dicomWeb: [
-        {
-          name: 'Orthanc',
-          wadoUriRoot: 'http://localhost:8899/wado',
-          qidoRoot: 'http://localhost:8899/dicom-web',
-          wadoRoot: 'http://localhost:8899/dicom-web',
-          qidoSupportsIncludeField: false,
-          imageRendering: 'wadors',
-          thumbnailRendering: 'wadors',
-        },
-      ],
-    },
-  };
-};
-```
-
 To learn more about how you can configure the OHIF Viewer, check out our
 [Configuration Guide](./index.md).
 

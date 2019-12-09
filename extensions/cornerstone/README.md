@@ -73,13 +73,15 @@ Tools can be configured through extension configuration using the tools key:
 
 ```js
   ...
-  tools: {
-    ArrowAnnotate: {
-      configuration: {
-        getTextCallback: (callback, eventDetails) => callback(prompt('Enter your custom annotation')),
+  cornerstoneExtensionConfig: {
+    tools: {
+      ArrowAnnotate: {
+        configuration: {
+          getTextCallback: (callback, eventDetails) => callback(prompt('Enter your custom annotation')),
+        },
       },
     },
-  }
+  },
   ...
 ```
 

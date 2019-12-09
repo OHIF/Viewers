@@ -49,32 +49,8 @@ window.config = {
 };
 ```
 
-```js
-// Set before importing `ohif-viewer` (JS Function)
-window.config = ({
-  randomService
-} = {}) => {
-  const randomInfo = randomService.getInfo('randomKey');
-  return {
-    // default: '/'
-    randomKey: randomInfo,
-    routerBasename: '/',
-    servers: {
-      dicomWeb: [
-        {
-          name: 'DCM4CHEE',
-          wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-          qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-          wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-          qidoSupportsIncludeField: true,
-          imageRendering: 'wadors',
-          thumbnailRendering: 'wadors',
-        },
-      ],
-    },
-  };
-};
-```
+To learn more about how you can configure the OHIF Viewer, check out our
+[Configuration Guide](./index.md).
 
 <ol start="3"><li>
   Render the viewer in the web page's target <code>div</code>

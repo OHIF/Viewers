@@ -8,14 +8,10 @@ export default {
    */
   id: 'measurements-table',
 
-  preRegistration({
-    servicesManager = {},
-    commandsManager = {},
-    configuration = {},
-  }) {
+  preRegistration({ servicesManager, commandsManager, configuration = {} }) {
     init({ servicesManager, commandsManager, configuration });
   },
-  getPanelModule({ servicesManager = {}, commandsManager = {} }) {
+  getPanelModule({ servicesManager, commandsManager }) {
     const { UILabellingFlowService } = servicesManager.services;
     const ExtendedConnectedMeasurementTable = () => (
       <ConnectedMeasurementTable

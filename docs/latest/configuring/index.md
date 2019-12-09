@@ -69,10 +69,18 @@ window.config = {
 The configuration can also be written as a JS Function in case you need to inject dependencies like external services:
 
 ```js
-window.config = ({ randomService } = {}) => {
-  const randomInfo = randomService.getInfo('randomKey');
+window.config = ({ servicesManager } = {}) => {
+  const { UIDialogService } = servicesManager.services;
   return {
-    randomConfigKey: randomInfo,
+    cornerstoneExtensionConfig: {
+      tools: {
+        ArrowAnnotate: {
+          configuration: {
+            getTextCallback: (callback, eventDetails) => UIDialogService.create({...
+          }
+        }
+      },
+    },
     routerBasename: '/',
     servers: {
       dicomWeb: [

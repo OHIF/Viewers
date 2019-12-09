@@ -122,7 +122,7 @@ class App extends Component {
     const { config, defaultExtensions } = props;
 
     const appDefaultConfig = {
-      tools: {},
+      cornerstoneExtensionConfig: {},
       extensions: [],
       routerBasename: '/',
       whiteLabelling: {},
@@ -133,7 +133,13 @@ class App extends Component {
       ...(typeof config === 'function' ? config({ servicesManager }) : config),
     };
 
-    const { servers, hotkeys, tools, extensions, oidc } = this._appConfig;
+    const {
+      servers,
+      hotkeys,
+      cornerstoneExtensionConfig,
+      extensions,
+      oidc,
+    } = this._appConfig;
 
     this.initUserManager(oidc);
     _initServices([
@@ -143,7 +149,10 @@ class App extends Component {
       UIContextMenuService,
       UILabellingFlowService,
     ]);
-    _initExtensions([...defaultExtensions, ...extensions], tools);
+    _initExtensions(
+      [...defaultExtensions, ...extensions],
+      cornerstoneExtensionConfig
+    );
 
     /*
      * Must run after extension commands are registered
@@ -273,10 +282,10 @@ function _initServices(services) {
 /**
  * @param
  */
-function _initExtensions(extensions, tools) {
+function _initExtensions(extensions, cornerstoneExtensionConfig) {
   const requiredExtensions = [
     GenericViewerCommands,
-    [OHIFCornerstoneExtension, { tools }],
+    [OHIFCornerstoneExtension, cornerstoneExtensionConfig],
     /* WARNING: MUST BE REGISTERED _AFTER_ OHIFCornerstoneExtension */
     MeasurementsPanel,
   ];
