@@ -1,18 +1,38 @@
 # Module: Viewport
 
-An extension can register a Viewport Module by providing a `getViewportModule()`
-method that returns a React Component. The React component will receive the
-following props:
+An extension can register a Viewport Module by defining a `getViewportModule`
+method that returns a React component. Currently, we use viewport components to
+add support for:
 
-```js
-children: PropTypes.arrayOf(PropTypes.element)
-studies: PropTypes.object,
-displaySet: PropTypes.object,
-viewportData: PropTypes.object, // { studies, displaySet }
-viewportIndex: PropTypes.number,
-children: PropTypes.node,
-customProps: PropTypes.object
+- 2D Medical Image Viewing (cornerstone ext.)
+- Structured Reports as HTML (dicom html ext.)
+- Encapsulated PDFs as PDFs (dicom pdf ext.)
+- Whole Slide Microscopy Viewing (whole slide ext.)
+- etc.
+
+The general pattern is, the [`sopClassHandlerModule`](#) helps us determine
+which Viewport Component a set of `sopClassUIDs` should default to. The Viewport
+Component receives props containing a display set it should know how to render.
+
+## Viewport Component Props
+
+Each `ViewportComponent` will receive the following props:
+
+```html
+<viewportComponent
+  viewportData="{viewportData}"
+  viewportIndex="{viewportIndex}"
+  children="{[children]}"
+/>
 ```
+
+| Property        | Type            | Description                       |
+| --------------- | --------------- | --------------------------------- |
+| `children`      | React.element[] |                                   |
+| `viewportData`  | object          | `viewportSpecificData` (probably) |
+| `viewportIndex` | number          |                                   |
+
+### `@ohif/viewer`
 
 Viewport components are managed by the `ViewportGrid` Component. Which Viewport
 component is used depends on:
@@ -23,7 +43,4 @@ component is used depends on:
 
 ![Cornerstone Viewport](../../assets/img/extensions-viewport.png)
 
-<center><i>An example of three Viewports</i></center>
-
-For a complete example implementation,
-[check out the OHIFCornerstoneViewport](https://github.com/OHIF/Viewers/blob/master/extensions/cornerstone/src/OHIFCornerstoneViewport.js).
+<center><i>An example of three cornerstone Viewports</i></center>
