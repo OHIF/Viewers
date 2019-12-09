@@ -148,18 +148,118 @@ const commandsModule = ({ servicesManager }) => {
     showDownloadViewportModal: ({ title, viewports }) => {
       const activeViewportIndex = viewports.activeViewportIndex;
       const { UIModalService } = servicesManager.services;
-      UIModalService.show({
-        content: CornerstoneViewportDownloadForm,
-        title,
-        contentProps: {
-          activeViewportIndex,
-          onClose: UIModalService.hide,
-        },
+      if (UIModalService) {
+        UIModalService.show({
+          content: CornerstoneViewportDownloadForm,
+          title,
+          contentProps: {
+            activeViewportIndex,
+            onClose: UIModalService.hide,
+          },
+        });
+      }
+    },
+    updateTableWithNewMeasurementData({
+      toolType,
+      measurementNumber,
+      location,
+      description,
+    }) {
+      // Update all measurements by measurement number
+      const measurementApi = OHIF.measurements.MeasurementApi.Instance;
+      const measurements = measurementApi.tools[toolType].filter(
+        m => m.measurementNumber === measurementNumber
+      );
+
+      measurements.forEach(measurement => {
+        measurement.location = location;
+        measurement.description = description;
+
+        measurementApi.updateMeasurement(measurement.toolType, measurement);
       });
+
+      measurementApi.syncMeasurementsAndToolData();
+
+      // Update images in all active viewports
+      cornerstone.getEnabledElements().forEach(enabledElement => {
+        cornerstone.updateImage(enabledElement.element);
+      });
+    },
+    getNearbyToolData({ element, canvasCoordinates, availableToolTypes }) {
+      const nearbyTool = {};
+      let pointNearTool = false;
+
+      availableToolTypes.forEach(toolType => {
+        const elementToolData = cornerstoneTools.getToolState(
+          element,
+          toolType
+        );
+
+        if (!elementToolData) {
+          return;
+        }
+
+        elementToolData.data.forEach((toolData, index) => {
+          let elementToolInstance = cornerstoneTools.getToolForElement(
+            element,
+            toolType
+          );
+
+          if (!elementToolInstance) {
+            elementToolInstance = cornerstoneTools.getToolForElement(
+              element,
+              `${toolType}Tool`
+            );
+          }
+
+          if (!elementToolInstance) {
+            console.warn('Tool not found.');
+            return undefined;
+          }
+
+          if (
+            elementToolInstance.pointNearTool(
+              element,
+              toolData,
+              canvasCoordinates
+            )
+          ) {
+            pointNearTool = true;
+            nearbyTool.tool = toolData;
+            nearbyTool.index = index;
+            nearbyTool.toolType = toolType;
+          }
+        });
+
+        if (pointNearTool) {
+          return false;
+        }
+      });
+
+      return pointNearTool ? nearbyTool : undefined;
+    },
+    removeToolState: ({ element, toolType, tool }) => {
+      cornerstoneTools.removeToolState(element, toolType, tool);
+      cornerstone.updateImage(element);
     },
   };
 
   const definitions = {
+    getNearbyToolData: {
+      commandFn: actions.getNearbyToolData,
+      storeContexts: [],
+      options: {},
+    },
+    removeToolState: {
+      commandFn: actions.removeToolState,
+      storeContexts: [],
+      options: {},
+    },
+    updateTableWithNewMeasurementData: {
+      commandFn: actions.updateTableWithNewMeasurementData,
+      storeContexts: [],
+      options: {},
+    },
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
       storeContexts: ['viewports'],

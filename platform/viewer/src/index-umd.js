@@ -7,7 +7,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.js';
 
-function installViewer(props, containerId = 'root', callback) {
+function installViewer(config, containerId = 'root', callback) {
   const container = document.getElementById(containerId);
 
   if (!container) {
@@ -16,7 +16,7 @@ function installViewer(props, containerId = 'root', callback) {
     );
   }
 
-  return ReactDOM.render(<App {...props} />, container, callback);
+  return ReactDOM.render(<App config={config} />, container, callback);
 }
 
 export { App, installViewer };

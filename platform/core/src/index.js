@@ -23,6 +23,8 @@ import {
   createUINotificationService,
   createUIModalService,
   createUIDialogService,
+  createUIContextMenuService,
+  createUILabellingFlowService,
 } from './services';
 
 const OHIF = {
@@ -53,6 +55,8 @@ const OHIF = {
   createUINotificationService,
   createUIModalService,
   createUIDialogService,
+  createUIContextMenuService,
+  createUILabellingFlowService,
 };
 
 export {
@@ -82,6 +86,8 @@ export {
   createUINotificationService,
   createUIModalService,
   createUIDialogService,
+  createUIContextMenuService,
+  createUILabellingFlowService,
 };
 
 export { OHIF };

@@ -12,8 +12,9 @@ export default {
    */
 
   preRegistration({
-    servicesManager,
-    configuration: extensionConfiguration,
+    servicesManager = {},
+    commandsManager = {},
+    configuration = {},
   }) {},
 
   /**
