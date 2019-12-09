@@ -211,7 +211,7 @@ export default class MeasurementApi {
     }
 
     return new Promise((resolve, reject) => {
-      retrievalFn({ patientId, timepointIds, server }).then(measurementData => {
+      retrievalFn(server).then(measurementData => {
         if (measurementData) {
           log.info('Measurement data retrieval');
           log.info(measurementData);

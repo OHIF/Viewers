@@ -7,13 +7,12 @@ const { studyMetadataManager } = utils;
 /**
  * Function to be registered into MeasurementAPI to retrieve measurements from DICOM Structured Reports
  *
- * @param {Object} options
+ * @param {Object} server
  * @returns {Promise} Should resolve with OHIF measurementData object
  */
-const retrieveMeasurements = options => {
+const retrieveMeasurements = server => {
   log.info('[DICOMSR] retrieveMeasurements');
 
-  const { server } = options;
   const latestSeries = findMostRecentStructuredReport(studyMetadataManager);
 
   if (!latestSeries) return Promise.resolve({});
