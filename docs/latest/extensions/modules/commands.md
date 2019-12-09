@@ -69,7 +69,7 @@ myCommandName: {
 | `commandFn`     | func               | The function to call when command is run. Receives `options` and `storeContexts`.                                                       |
 | `storeContexts` | string[]           | (optional) Expected state objects to be passed in as props. Located using `getAppState` fn defined at `CommandsManager`'s instatiation. |
 | `options`       | object             | (optional) Arguments to pass at the time of calling to the `commandFn`                                                                  |
-| `context`       | string[] \| string | (optional) Overrides the `defaultContext`. Let's us know if command is currently "available" to be run.                                 |
+| `context`       | string[] or string | (optional) Overrides the `defaultContext`. Let's us know if command is currently "available" to be run.                                 |
 
 ## `CommandsManager`
 
