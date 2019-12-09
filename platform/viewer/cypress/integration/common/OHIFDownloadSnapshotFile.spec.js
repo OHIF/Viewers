@@ -10,6 +10,7 @@ describe('OHIF Download Snapshot File', () => {
   });
 
   afterEach(() => {
+    // Close modal
     cy.get('[data-cy="close-button"]')
       .scrollIntoView()
       .click();
@@ -30,16 +31,10 @@ describe('OHIF Download Snapshot File', () => {
     cy.screenshot('Download Image Modal - Desktop experience');
     cy.percyCanvasSnapshot('Download Image Modal - Desktop experience');
     //Check if all elements are displayed
-    cy.get('[data-cy=OHIFModal-header]')
+    cy.get('[data-cy=modal-header]')
       .as('downloadImageModal')
       .should('contain.text', 'Download High Quality Image');
     // Check input fields
-    cy.get('[data-cy=file-info-container]')
-      .should('contain.text', 'Image width (px)')
-      .should('contain.text', 'Image height (px)')
-      .and('contain.text', 'File name')
-      .and('contain.text', 'File type')
-      .and('contain.text', 'Show Annotations');
     cy.get('[data-cy=file-type]')
       .select('png')
       .should('have.value', 'png')
@@ -53,10 +48,10 @@ describe('OHIF Download Snapshot File', () => {
     // Check buttons
     cy.get('[data-cy="cancel-btn"]')
       .scrollIntoView()
-      .should('have.text', 'Cancel');
+      .should('be.visible');
     cy.get('[data-cy="download-btn"]')
       .scrollIntoView()
-      .should('have.text', 'Download');
+      .should('be.visible');
   });
 
   it('downloads image file', function() {
@@ -96,7 +91,7 @@ describe('OHIF Download Snapshot File', () => {
       .scrollIntoView()
       .click();
     //Check modal is closed
-    cy.get('[data-cy="OHIFModal"]').should('not.exist');
+    cy.get('[data-cy="modal"]').should('not.exist');
     //Open Modal
     cy.openDownloadImageModal();
     //Verify default values was restored
@@ -137,7 +132,7 @@ describe('OHIF Download Snapshot File', () => {
     cy.screenshot('Download Image Modal - Show Annotations checked');
     cy.percyCanvasSnapshot('Download Image Modal - Show Annotations checked');
     //Compare classes that exists on Image Preview with Annotations and Without Annotation
-    cy.get('[data-cy="OHIFModal-content"]')
+    cy.get('[data-cy="modal-content"]')
       .find('canvas')
       .should('have.class', 'magnifyTool'); //Class "MagnifyTool" exists with annotations displayed on Image preview
     // Uncheck "Show Annotations" option
@@ -145,7 +140,7 @@ describe('OHIF Download Snapshot File', () => {
       .uncheck()
       .wait(300);
     // Check that class "MagnifyTool" should not exist
-    cy.get('[data-cy="OHIFModal-content"]')
+    cy.get('[data-cy="modal-content"]')
       .find('canvas')
       .should('not.have.class', 'magnifyTool');
   });

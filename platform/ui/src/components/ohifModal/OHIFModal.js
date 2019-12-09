@@ -29,7 +29,7 @@ const OHIFModal = ({
   const renderHeader = () => {
     return (
       title && (
-        <div className="OHIFModal__header" data-cy="OHIFModal-header">
+        <div className="OHIFModal__header" data-cy="modal-header">
           <h4>{title}</h4>
           {closeButton && (
             <button data-cy="close-button" onClick={onClose}>
@@ -44,7 +44,7 @@ const OHIFModal = ({
   return (
     <Modal
       className={classNames('OHIFModal', className)}
-      data-cy="OHIFModal"
+      data-cy="modal"
       shouldCloseOnEsc={shouldCloseOnEsc}
       isOpen={isOpen}
       title={title}
@@ -52,7 +52,7 @@ const OHIFModal = ({
     >
       <>
         {renderHeader()}
-        <div className="OHIFModal__content" data-cy="OHIFModal-content">
+        <div className="OHIFModal__content" data-cy="modal-content">
           {children}
         </div>
       </>
