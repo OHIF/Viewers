@@ -60,7 +60,7 @@ describe('viewports reducer', () => {
     const setViewportAction = {
       type: types.SET_VIEWPORT,
       viewportIndex: viewportToSet,
-      data: {
+      viewportSpecificData: {
         hello: 'this is that data for the viewport',
         world: 'that will be set for the viewportIndex',
       },
@@ -69,7 +69,7 @@ describe('viewports reducer', () => {
     const updatedState = reducer(undefined, setViewportAction);
     const updatedViewport = updatedState.viewportSpecificData[viewportToSet];
 
-    expect(updatedViewport).toEqual(setViewportAction.data);
+    expect(updatedViewport).toEqual(setViewportAction.viewportSpecificData);
   });
 
   it('should handle CLEAR_VIEWPORT', () => {
