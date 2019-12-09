@@ -31,7 +31,7 @@ function addLocales(newLocales) {
 
 // Note: Developers can add the API key to use the in-context editor.
 // DO NOT commit the API key
-const config = (window.i18nConfig && window.i18nConfig.i18n) || {};
+const config = (window.config && window.config.i18n) || {};
 
 const locizeOptions = {
   projectId: config.LOCIZE_PROJECTID,
