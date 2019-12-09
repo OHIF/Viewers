@@ -20,9 +20,10 @@ export default {
   id: 'MyExampleExtension',
 
   /**
-   * @param {ServicesManager} servicesManager
-   * @param {CommandsManager} commandsManager
-   * @param {object} configuration
+   * @param {object} params
+   * @param {object} params.configuration
+   * @param {ServicesManager} params.servicesManager
+   * @param {CommandsManager} params.commandsManager
    * @returns void
    */
   preRegistration({ servicesManager, commandsManager, configuration }) {
