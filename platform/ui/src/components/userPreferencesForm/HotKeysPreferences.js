@@ -65,6 +65,7 @@ const getHotKeysArrayColumns = (keysObj = {}, columnSize) => {
 };
 
 const NO_FIELD_ERROR_MESSAGE = undefined;
+const MODIFIER_KEYS = ['ctrl', 'alt', 'shift'];
 const formatPressedKeys = pressedKeysArray => pressedKeysArray.join('+');
 const unFormatPressedKeys = (pressedKeysStr = '') => pressedKeysStr.split('+');
 const inputValidators = (
@@ -79,7 +80,7 @@ const inputValidators = (
 
   const modifierValidator = ({ lastPressedKey }) => {
     // Check if it has a valid modifier
-    const isModifier = ['ctrl', 'alt', 'shift'].includes(lastPressedKey);
+    const isModifier = MODIFIER_KEYS.includes(lastPressedKey);
     if (isModifier) {
       hasError = true;
       errorMessage =
@@ -243,6 +244,25 @@ function HotKeyPreferencesRow({
     onFailureChanged(error);
   }, [error]);
 
+  /**
+   * formats given keys sequence to insert the modifier keys in the first index of the array
+   * @param {string} sequence keys sequence from MouseTrap Record -> "shift+left"
+   * @returns {Array} keys in array-format -> ['shift','left']
+   */
+  const getKeys = sequence => {
+    const keysArray = sequence.join(' ').split('+');
+    let keys = [];
+    let modifiers = [];
+    keysArray.forEach(key => {
+      if (MODIFIER_KEYS.includes(key)) {
+        modifiers.push(key);
+      } else {
+        keys.push(key);
+      }
+    });
+    return [...modifiers, ...keys];
+  };
+
   const onInputKeyDown = event => {
     // Prevent ESC key from propagating and closing the modal
     if (event.key === 'Escape') {
@@ -250,7 +270,8 @@ function HotKeyPreferencesRow({
     }
 
     hotkeyRecord(sequence => {
-      const keys = sequence.join(' ').split('+');
+      const keys = getKeys(sequence);
+
       // TODO: Validate allowedKeys
       setInputValue(formatPressedKeys(keys));
     });
