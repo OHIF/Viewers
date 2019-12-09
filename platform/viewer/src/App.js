@@ -129,7 +129,7 @@ class App extends Component {
     };
 
     this._appConfig = {
-      appDefaultConfig,
+      ...appDefaultConfig,
       ...(typeof config === 'function' ? config({ servicesManager }) : config),
     };
 
