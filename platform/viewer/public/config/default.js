@@ -1,4 +1,4 @@
-window.config = ({ servicesManager = {} }) => {
+window.config = ({ servicesManager = {} } = {}) => {
   const callInputDialog = (data, event, callback) => {
     callback(prompt('Enter your annotation: (This is the new default config)'));
   };
