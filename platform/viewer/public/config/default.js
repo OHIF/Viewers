@@ -1,4 +1,8 @@
 window.config = ({ servicesManager }) => {
+  const callInputDialog = (data, event, callback) => {
+    callback(prompt('Enter your annotation: (This is the new default config)'));
+  };
+
   return {
     // default: '/'
     routerBasename: '/',
@@ -72,6 +76,15 @@ window.config = ({ servicesManager }) => {
       // ~ Cornerstone Tools
       { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
     ],
-    tools: {},
+    tools: {
+      ArrowAnnotate: {
+        configuration: {
+          getTextCallback: (callback, eventDetails) =>
+            callInputDialog(null, eventDetails, callback),
+          changeTextCallback: (data, eventDetails, callback) =>
+            callInputDialog(data, eventDetails, callback),
+        },
+      },
+    },
   };
 };
