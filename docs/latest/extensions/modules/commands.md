@@ -71,6 +71,28 @@ myCommandName: {
 | `options`       | object             | (optional) Arguments to pass at the time of calling to the `commandFn`                                                                  |
 | `context`       | string[] or string | (optional) Overrides the `defaultContext`. Let's us know if command is currently "available" to be run.                                 |
 
+## Command Behavior
+
+**I have many similar commands. How can I share their `commandFn` and make it
+reusable?**
+
+This is where `storeContexts` and `options` come in. We use these in our
+`setToolActive` command. `storeContexts` helps us identify our `activeViewport`,
+and `options` allow us to pass in the name of a tool we would like to set as
+active.
+
+**If there are multiple valid commands for the application's active contexts**
+
+- What happens: all commands are run
+- When to use: A `clearData` command that cleans up state for multiple
+  extensions
+
+**If no commands are valid for the application's active contexts**
+
+- What happens: a warning is printed to the console
+- When to use: a `hotkey` (like "invert") that doesn't make sense for the
+  current viewport (PDF or HTML)
+
 ## `CommandsManager`
 
 The `CommandsManager` is a class defined in the `@ohif/core` project. A single
