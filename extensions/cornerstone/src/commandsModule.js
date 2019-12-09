@@ -148,23 +148,23 @@ const commandsModule = ({ servicesManager }) => {
     showDownloadViewportModal: ({ title, viewports }) => {
       const activeViewportIndex = viewports.activeViewportIndex;
       const { UIModalService } = servicesManager.services;
-      UIModalService.show({
-        content: CornerstoneViewportDownloadForm,
-        title,
-        contentProps: {
-          activeViewportIndex,
-          onClose: UIModalService.hide,
-        },
-      });
+      if (UIModalService) {
+        UIModalService.show({
+          content: CornerstoneViewportDownloadForm,
+          title,
+          contentProps: {
+            activeViewportIndex,
+            onClose: UIModalService.hide,
+          },
+        });
+      }
     },
-    updateTableWithNewMeasurementData(measurementData) {
-      const {
-        toolType,
-        measurementNumber,
-        location,
-        description,
-      } = measurementData;
-
+    updateTableWithNewMeasurementData({
+      toolType,
+      measurementNumber,
+      location,
+      description,
+    }) {
       // Update all measurements by measurement number
       const measurementApi = OHIF.measurements.MeasurementApi.Instance;
       const measurements = measurementApi.tools[toolType].filter(
@@ -247,17 +247,17 @@ const commandsModule = ({ servicesManager }) => {
   const definitions = {
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     removeToolState: {
       commandFn: actions.removeToolState,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     updateTableWithNewMeasurementData: {
       commandFn: actions.updateTableWithNewMeasurementData,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     showDownloadViewportModal: {

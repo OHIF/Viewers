@@ -35,23 +35,25 @@ export default function init({ servicesManager, configuration = {} }) {
   const callInputDialog = (data, event, callback) => {
     const { UIDialogService } = servicesManager.services;
 
-    let dialogId = UIDialogService.create({
-      centralize: true,
-      isDraggable: false,
-      content: SimpleDialog.InputDialog,
-      useLastPosition: false,
-      showOverlay: true,
-      contentProps: {
-        title: 'Enter your annotation',
-        label: 'New label',
-        measurementData: data ? { description: data.text } : {},
-        onClose: () => UIDialogService.dismiss({ id: dialogId }),
-        onSubmit: value => {
-          callback(value);
-          UIDialogService.dismiss({ id: dialogId });
+    if (UIDialogService) {
+      let dialogId = UIDialogService.create({
+        centralize: true,
+        isDraggable: false,
+        content: SimpleDialog.InputDialog,
+        useLastPosition: false,
+        showOverlay: true,
+        contentProps: {
+          title: 'Enter your annotation',
+          label: 'New label',
+          measurementData: data ? { description: data.text } : {},
+          onClose: () => UIDialogService.dismiss({ id: dialogId }),
+          onSubmit: value => {
+            callback(value);
+            UIDialogService.dismiss({ id: dialogId });
+          },
         },
-      },
-    });
+      });
+    }
   };
 
   const { csToolsConfig } = configuration;

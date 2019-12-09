@@ -6,8 +6,8 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { useDialog } from './DialogProvider';
-import { useLabellingFlow } from './LabellingFlowProvider';
+import { useDialog } from '@ohif/ui';
+import { useLabellingFlow } from '@ohif/ui';
 
 const ContextMenuContext = createContext(null);
 const { Provider } = ContextMenuContext;

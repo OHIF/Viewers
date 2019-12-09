@@ -18,9 +18,9 @@ import ReactDOM from 'react-dom';
  * "baked in" to the published application.
  *
  * Depending on your use case/needs, you may want to consider not adding any extensions
- * by default HERE, and instead provide them via the configuration specified at
- * `window.config.extensions`, or by using the exported `App` component, and passing
- * in your extensions as props.
+ * by default HERE, and instead provide them via the extensions configuration key or
+ * by using the exported `App` component, and passing in your extensions as props using
+ * the defaultExtensions property.
  */
 import OHIFVTKExtension from '@ohif/extension-vtk';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';

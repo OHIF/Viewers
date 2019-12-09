@@ -66,6 +66,47 @@ window.config = {
 };
 ```
 
+<<<<<<< Updated upstream:docs/latest/configuring/index.md
+=======
+The configuration can also be written as a JS Function in case you need to inject dependencies like external services:
+
+```js
+window.config = ({ randomService }) => {
+  const randomInfo = randomService.getInfo('randomKey');
+  return {
+    randomConfigKey: randomInfo,
+    routerBasename: '/',
+    servers: {
+      dicomWeb: [
+        {
+          name: 'DCM4CHEE',
+          wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+          qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+          wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+          qidoSupportsIncludeField: true,
+          imageRendering: 'wadors',
+          thumbnailRendering: 'wadors',
+        },
+      ],
+    },
+  };
+};
+```
+
+You can also create a new config file and specify its path relative to the build
+output's root by setting the `APP_CONFIG` environment variable. You can set the
+value of this environment variable a few different ways:
+
+- ~[Add a temporary environment variable in your shell](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#adding-temporary-environment-variables-in-your-shell)~
+  - Previous `react-scripts` functionality that we need to duplicate with
+    `dotenv-webpack`
+- ~[Add environment specific variables in `.env` file(s)](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#adding-development-environment-variables-in-env)~
+  - Previous `react-scripts` functionality that we need to duplicate with
+    `dotenv-webpack`
+- Using the `cross-env` package in an npm script:
+  - `"build": "cross-env APP_CONFIG=config/my-config.js react-scripts build"`
+
+>>>>>>> Stashed changes:docs/latest/essentials/configuration.md
 After updating the configuration, `yarn run build` to generate updated build
 output.
 

@@ -24,12 +24,12 @@ include tags. Here's how it works:
 </ul>
 
 <ol start="2">
-  <li>Create a JS Object to hold the OHIF Viewer's configuration. Here are some
+  <li>Create a JS Object or Function to hold the OHIF Viewer's configuration. Here are some
    example values that would allow the viewer to hit our public PACS:</li>
 </ol>
 
 ```js
-// Set before importing `ohif-viewer`
+// Set before importing `ohif-viewer` (JS Object)
 window.config = {
   // default: '/'
   routerBasename: '/',
@@ -46,6 +46,33 @@ window.config = {
       },
     ],
   },
+};
+```
+
+```js
+// Set before importing `ohif-viewer` (JS Function)
+window.config = ({
+  randomService
+}) => {
+  const randomInfo = randomService.getInfo('randomKey');
+  return {
+    // default: '/'
+    randomKey: randomInfo,
+    routerBasename: '/',
+    servers: {
+      dicomWeb: [
+        {
+          name: 'DCM4CHEE',
+          wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+          qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+          wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+          qidoSupportsIncludeField: true,
+          imageRendering: 'wadors',
+          thumbnailRendering: 'wadors',
+        },
+      ],
+    },
+  };
 };
 ```
 
