@@ -122,6 +122,7 @@ class App extends Component {
     const { config, defaultExtensions } = props;
 
     const appDefaultConfig = {
+      tools: {},
       extensions: [],
       routerBasename: '/',
       whiteLabelling: {},
