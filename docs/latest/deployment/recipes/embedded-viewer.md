@@ -98,7 +98,7 @@ extension enabled here][whole-slide-ext-demo] ([source code][ext-code-sandbox])
 and [without it here][whole-slide-base-demo] ([source code][code-sandbox]).
 
 You can read more about extensions and how to create your own in our
-[extensions guide](/advanced/extensions.md).
+[extensions guide](/extensions/index.md).
 
 #### FAQ
 
