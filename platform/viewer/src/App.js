@@ -119,9 +119,10 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    const { config, defaultExtensions } = props;
+    const { config, defaultExtensions = [] } = props;
 
     const appDefaultConfig = {
+      extensions: [],
       routerBasename: '/',
       whiteLabelling: {},
     };
