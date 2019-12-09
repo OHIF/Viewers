@@ -2,10 +2,12 @@ import * as dcmjs from 'dcmjs';
 import getInstanceMetadata from './utils/getInstanceMetadata';
 
 /**
+ * Function to parse the part10 array buffer that comes from a DICOM Structured report into measurementData
+ * measurementData format is a viewer specific format to be stored into the redux and consumed by other components
+ * (e.g. measurement table)
  *
- *
- * @param {*} part10SRArrayBuffer
- * @param {*} displaySets
+ * @param {ArrayBuffer} part10SRArrayBuffer
+ * @param {Array} displaySets
  * @returns
  */
 const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
@@ -20,11 +22,11 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
 };
 
 /**
+ *  Function to parse data from dcmjs into OHIF viewer measurementData
  *
- *
- * @param {*} dataset
- * @param {*} displaySets
- * @returns
+ * @param {Object} dataset
+ * @param {Array} displaySets
+ * @returns {Object} measurementData
  */
 const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
   const { MeasurementReport } = dcmjs.adapters.Cornerstone;

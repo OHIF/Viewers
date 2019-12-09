@@ -12,11 +12,11 @@ const TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.1';
 const { studyMetadataManager } = utils;
 
 /**
+ * Function to retrieve measurements from DICOM Structured Reports coming from determined server
  *
- *
- * @param {*} series
- * @param {*} server
- * @returns
+ * @param {Array} series List of all series metaData
+ * @param {Object} server
+ * @returns {Object} MeasurementData
  */
 const retrieveMeasurementFromSR = async (series, server) => {
   const config = {
@@ -37,58 +37,49 @@ const retrieveMeasurementFromSR = async (series, server) => {
   const displaySets = getAllDisplaySets(studyMetadataManager);
   const measurementsData = parseDicomStructuredReport(part10SRArrayBuffer, displaySets);
 
-  debugger;
   return measurementsData;
 };
 
 /**
+ * Function to store measurements to DICOM Structured Reports in determined server
  *
- *
- * @param {*} measurements
- * @param {*} server
- * @returns
+ * @param {Object} measurements
+ * @param {Object} server
+ * @returns {Promise}
  */
 const stowSRFromMeasurements = async (measurements, server) => {
-  try {
-    const { dataset, unsupportedTools } = parseMeasurementsData(
-      measurements
-    );
-    const { DicomMetaDictionary, DicomDict } = dcmjs.data;
-    const meta = {
-      FileMetaInformationVersion:
-        dataset._meta.FileMetaInformationVersion.Value,
-      MediaStorageSOPClassUID: dataset.SOPClassUID,
-      MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
-      TransferSyntaxUID: TRANSFER_SYNTAX_UID,
-      ImplementationClassUID: DicomMetaDictionary.uid(),
-      ImplementationVersionName: VERSION_NAME,
-    };
+  const { dataset } = parseMeasurementsData(
+    measurements
+  );
+  const { DicomMetaDictionary, DicomDict } = dcmjs.data;
+  const meta = {
+    FileMetaInformationVersion:
+      dataset._meta.FileMetaInformationVersion.Value,
+    MediaStorageSOPClassUID: dataset.SOPClassUID,
+    MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
+    TransferSyntaxUID: TRANSFER_SYNTAX_UID,
+    ImplementationClassUID: DicomMetaDictionary.uid(),
+    ImplementationVersionName: VERSION_NAME,
+  };
 
-    const denaturalized = DicomMetaDictionary.denaturalizeDataset(meta);
-    const dicomDict = new DicomDict(denaturalized);
+  const denaturalized = DicomMetaDictionary.denaturalizeDataset(meta);
+  const dicomDict = new DicomDict(denaturalized);
 
-    dicomDict.dict = DicomMetaDictionary.denaturalizeDataset(dataset);
+  dicomDict.dict = DicomMetaDictionary.denaturalizeDataset(dataset);
 
-    const part10Buffer = dicomDict.write();
+  const part10Buffer = dicomDict.write();
 
-    const config = {
-      url: server.wadoRoot,
-      headers: DICOMWeb.getAuthorizationHeader(),
-    };
+  const config = {
+    url: server.wadoRoot,
+    headers: DICOMWeb.getAuthorizationHeader(),
+  };
 
-    const dicomWeb = new api.DICOMwebClient(config);
-    const options = {
-      datasets: [part10Buffer],
-    };
+  const dicomWeb = new api.DICOMwebClient(config);
+  const options = {
+    datasets: [part10Buffer],
+  };
 
-    await dicomWeb.storeInstances(options);
-
-    return {
-      unsupportedTools,
-    };
-  } catch (error) {
-    throw error;
-  }
+  await dicomWeb.storeInstances(options);
 };
 
 export { retrieveMeasurementFromSR, stowSRFromMeasurements };

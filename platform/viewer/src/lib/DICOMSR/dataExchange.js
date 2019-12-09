@@ -5,10 +5,10 @@ import findMostRecentStructuredReport from './utils/findMostRecentStructuredRepo
 const { studyMetadataManager } = utils;
 
 /**
+ * Function to be registered into MeasurementAPI to retrieve measurements from DICOM Structured Reports
  *
- *
- * @param {*} options
- * @returns
+ * @param {Object} options
+ * @returns {Promise} Should resolve with OHIF measurementData object
  */
 const retrieveMeasurements = options => {
   log.info('[DICOMSR] retrieveMeasurements');
@@ -22,12 +22,12 @@ const retrieveMeasurements = options => {
 };
 
 /**
+ *  Function to be registered into MeasurementAPI to store measurements into DICOM Structured Reports
  *
- *
- * @param {*} measurementData
- * @param {*} filter
- * @param {*} server
- * @returns
+ * @param {Object} measurementData
+ * @param {Object} filter
+ * @param {Object} server
+ * @returns {Object} With message to be displayed on success
  */
 const storeMeasurements = async (measurementData, filter, server) => {
   log.info('[DICOMSR] storeMeasurements');
@@ -52,7 +52,7 @@ const storeMeasurements = async (measurementData, filter, server) => {
       message: 'Measurements were saved with success',
     };
   } catch (error) {
-    log.error(`Error while saving the measurements: ${error.message}`);
+    log.error(`[DICOMSR] Error while saving the measurements: ${error.message}`);
     throw new Error('Error while saving the measurements.');
   }
 };

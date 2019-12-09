@@ -4,10 +4,10 @@ import cornerstone from 'cornerstone-core';
 import isToolSupported from './utils/isToolSupported';
 
 /**
+ * Function to parse OHIF viewer measurementData into a dcmjs MeasurementReport
  *
- *
- * @param {Object} measurementsData
- * @returns
+ * @param {Object} measurementsData OHIF measurementData object
+ * @returns {Object} Dataset: measurement report from dcmjs
  */
 const parseMeasurementsData = measurementsData => {
   const { MeasurementReport } = dcmjs.adapters.Cornerstone;
@@ -46,9 +46,9 @@ const parseMeasurementsData = measurementsData => {
     toolState,
     cornerstone.metaData
   );
+
   return {
     dataset: report.dataset,
-    unsupportedTools,
   };
 };
 
