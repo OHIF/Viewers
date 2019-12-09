@@ -1,5 +1,6 @@
 # Module: Panel
 
+An extension can register a Panel Module by defining a `getPanelModule` method.
 The panel module provides the ability to define `menuOptions` and `components`
 that can be used by the consuming application. `components` are React Components
 that can be displayed in the consuming application's "Panel" Component.
