@@ -1,4 +1,4 @@
-# Themeing
+# Viewer: Themeing
 
 Themeing is currently accomplished with color variables that are defined within
 the [`:root`](https://css-tricks.com/almanac/selectors/r/root/) selector

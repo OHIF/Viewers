@@ -10,6 +10,13 @@ allows our code to be used in more ways, it also increases complexity. Below, we
 aim to demistify that complexity by providing insight into how our Viewer is
 architected, and the role each of it's dependent libraries plays.
 
+- [Overview](#overview)
+- [Business Logic](#business-logic)
+- [Component Library](#react-component-library)
+- [Internationalization](#internationalization-i18n)
+- [Extensions & Configuration](#extensions--configuration)
+- [Common Questions](#common-questions)
+
 ## Overview
 
 The [OHIF Medical Image Viewing Platform][viewers-project] is maintained as a
@@ -39,27 +46,47 @@ you'll see the following:
 └── README.md
 ```
 
-Continue reading to see how these libraries work together to create the OHIF
-Viewer.
+The `platform` directory contains the business logic library, component library,
+and the application library that combines them to create a powerful medical
+imaging viewer.
 
-### Business Logic
+The `extensions` directory contains many packages that can be registered with
+`@ohif/core`'s `ExtensionManager` to expand an application's supported features
+and functionality.
+
+![Architecture Diagram](../assets/img/architecture-diagram.png)
+
+<center><i>architecture diagram</i></center>
+
+This diagram is a conceptual illustration of how the Viewer is architected.
+
+1. (optional) `extensions` can be registered with `@ohif/core`'s
+   `ExtensionManager`
+2. `@ohif/core` provides bussiness logic and a way for `@ohif/viewer` to access
+   registered extensions
+3. The `@ohif/viewer` composes and provides data to components from our
+   component library (`@ohif/ui`)
+4. The `@ohif/viewer` can be built and served as a stand-alone PWA, or as an
+   embeddable package ([`@ohif/viewer`][viewer-npm])
+
+## Business Logic
 
 The [`@ohif/core`][core-github] project offers pre-packaged solutions for
 features common to Web-based medical imaging viewers. For example:
 
-- Hotkeys
+- [Hotkeys](#)
 - DICOM Web requests
 - Hanging Protocols
-- Managing a study's measurements
+- [Managing a study's measurements](../services/default/measurements.md)
 - Managing a study's DICOM metadata
-- A flexible pattern for extensions
+- [A flexible pattern for extensions](../extensions/index.md)
 - And many others
 
 It does this while remaining decoupled from any particular view library or
 rendering logic. While we use it to power our React Viewer, it can be used with
 Vue, React, Vanilla JS, or any number of other frameworks.
 
-### React Component Library
+## React Component Library
 
 [`@ohif/ui`][ui-github] is a React Component library that contains the reusable
 components that power the OHIF Viewer. It allows us to build, compose, and test
@@ -72,15 +99,11 @@ application.
 
 [Check out our component library!](https://react.ohif.org/)
 
-### Internationalization (i18n)
+## Internationalization (i18n)
 
 ...
 
-### The Viewer
-
-...
-
-### Extensions & Configuration
+## Extensions & Configuration
 
 While OHIF maintains several high value and commonly requested features in its
 own extensions, there are many instances where one may wish to further extend
@@ -94,33 +117,16 @@ the viewer. Some common use cases include:
 - Adding surgical templating tools and reports
 - and many others
 
-We expose common integration points via [extensions](./extensions.md) to make
-this possible. The viewer and many of our own extensions also offer
+We expose common integration points via [extensions](../extensions/index.md) to
+make this possible. The viewer and many of our own extensions also offer
 [configuration][configuration]. For a list of extensions maintained by OHIF,
-[check out this helpful table](./extensions.html#ohif-maintained-extensions).
+[check out this helpful table](../extensions/index.mdl#maintained-extensions).
 
 If you find yourself thinking "I wish the Viewer could do X", and you can't
 accomplish it with an extension today, create a GitHub issue! We're actively
 looking for ways to improve our extensibility ^\_^
 
-[Click here to read more about extensions!](./extensions.md)
-
-### Diagram
-
-This diagram is a conceptual illustration of how the Viewer is architected.
-
-1. (optional) `extensions` can be registered with `@ohif/core`'s extension
-   manager
-2. `@ohif/core` provides bussiness logic and a way for `@ohif/viewer` to access
-   registered extensions
-3. The `@ohif/viewer` composes and provides data to components from our
-   component library (`@ohif/ui`)
-4. The `@ohif/viewer` can be built and served as a stand-alone PWA, or as an
-   embeddable package ([`@ohif/viewer`][viewer-npm])
-
-![Architecture Diagram](../assets/img/architecture-diagram.png)
-
-<center><i>architecture diagram</i></center>
+[Click here to read more about extensions!](../extensions/index.md)
 
 ## Common Questions
 
@@ -141,11 +147,12 @@ you would need to recreate.
   -->
 
 <!-- prettier-ignore-start -->
+[monorepo]: #
 [viewers-project]: https://github.com/OHIF/Viewers
 [viewer-npm]: https://www.npmjs.com/package/@ohif/viewer
 [pwa]: https://developers.google.com/web/progressive-web-apps/
-[configuration]: ../essentials/configuration.md
-[extensions]: ./extensions.md
+[configuration]: ../configuring/index.md
+[extensions]: ../extensions/index.md
 [core-github]: https://github.com/OHIF/viewers/platform/core
 [ui-github]: https://github.com/OHIF/Viewers/platform/ui
 <!-- prettier-ignore-end -->

@@ -84,7 +84,7 @@ We offer support through
 
 For commercial support, academic collaberations, and answers to common
 questions; please read our
-[documented FAQ](https://docs.ohif.org/frequently-asked-questions.html#does-ohif-offer-commercial-support).
+[documented FAQ](https://docs.ohif.org/faq/index.html#does-ohif-offer-commercial-support).
 
 ## Quick Start Deployment
 
@@ -296,14 +296,14 @@ MIT © [OHIF](https://github.com/OHIF)
 [monorepo]: https://en.wikipedia.org/wiki/Monorepo
 [how-to-fork]: https://help.github.com/en/articles/fork-a-repo
 [how-to-clone]: https://help.github.com/en/articles/fork-a-repo#step-2-create-a-local-clone-of-your-fork
-[ohif-architecture]: https://docs.ohif.org/advanced/architecture.html
-[ohif-extensions]: https://docs.ohif.org/advanced/architecture.html
+[ohif-architecture]: https://docs.ohif.org/architecture/index.html
+[ohif-extensions]: https://docs.ohif.org/architecture/index.html
 [deployment-docs]: https://docs.ohif.org/deployment/
 [react-url]: https://reactjs.org/
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
 [ohif-viewer-url]: https://www.npmjs.com/package/@ohif/viewer
-[configuration-url]: https://docs.ohif.org/essentials/configuration.html
-[extensions-url]: https://docs.ohif.org/advanced/extensions.html
+[configuration-url]: https://docs.ohif.org/configuring/
+[extensions-url]: https://docs.ohif.org/extensions/
 <!-- Platform -->
 [platform-core]: platform/core/README.md
 [core-npm]: https://www.npmjs.com/package/@ohif/core
@@ -325,6 +325,5 @@ MIT © [OHIF](https://github.com/OHIF)
 [extension-vtk]: extensions/vtk/README.md
 [vtk-npm]: https://www.npmjs.com/package/@ohif/extension-vtk
 <!-- prettier-ignore-end -->
-
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FOHIF%2FViewers.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FOHIF%2FViewers?ref=badge_large)

@@ -13,7 +13,7 @@ like user preferences and previous query paramaters. Because of this, the Viewer
 has been built to be highly configurable to work with almost any web accessible
 data source.
 
-![scope-of-project diagram](./../assets/img/scope-of-project.png)
+![scope-of-project diagram](./assets/img/scope-of-project.png)
 
 To be more specific, the OHIF Viewer is a collection of HTML, JS, and CSS files.
 These can be delivered to your end users however you would like:
@@ -36,7 +36,7 @@ many data sources. The OHIF Viewer's scope **DOES** include configuration and
 support for services that are protected with OpenID-Connect.
 
 In an effort to aide our users and contributors, we attempt to provide several
-[deployment and hosting recipes](./../deployment/index.md) as potential starting
+[deployment and hosting recipes](./deployment/index.md) as potential starting
 points. These are not meant to be rock solid, production ready, solutions; like
 most recipes, they should be augmented to best fit you and your organization's
 taste, preferences, etc.

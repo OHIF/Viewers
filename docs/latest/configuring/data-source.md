@@ -1,8 +1,9 @@
 # Data Source
 
-After following the steps outlined in [Getting Started](./getting-started.md),
-you'll notice that the OHIF Viewer has data for several studies and their
-images. You didn't add this data, so where is it coming from?
+After following the steps outlined in
+[Getting Started](./../development/getting-started.md), you'll notice that the
+OHIF Viewer has data for several studies and their images. You didn't add this
+data, so where is it coming from?
 
 By default, the viewer is configured to connect to a remote server hosted by the
 nice folks over at [dcmjs.org][dcmjs-org]. While convenient for getting started,
@@ -84,7 +85,7 @@ yarn run dev:orthanc
 #### Configuration: Learn More
 
 > For more configuration fun, check out the
-> [Essentials Configuration](./configuration.md) guide.
+> [Essentials Configuration](./index.md) guide.
 
 Let's take a look at what's going on under the hood here. `yarn run dev:orthanc`
 is running the `dev:orthanc` script in our project's `package.json`. That script
@@ -130,7 +131,7 @@ window.config = {
 ```
 
 To learn more about how you can configure the OHIF Viewer, check out our
-[Configuration Guide](./configuration.md).
+[Configuration Guide](./index.md).
 
 ## Open Source DICOM Image Archives
 

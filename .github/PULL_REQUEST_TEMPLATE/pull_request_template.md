@@ -3,7 +3,7 @@
 - [ ] Brief description of changes
 - [ ] Links to any relevant issues
 - [ ] Required status checks are passing
-- [ ] UX Stories if changes impact the user's experience
+- [ ] User cases if changes impact the user's experience
 - [ ] `@mention` a maintainer to request a review
 
 <!--

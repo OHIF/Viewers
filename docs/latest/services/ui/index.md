@@ -33,7 +33,7 @@ The `ServicesManager` is:
 
 - Passed to the `ExtensionManager`
 - The `ExtensionManager` makes the `ServicesManager` available to:
-  - All of it's lifecycle hooks (`preInit`)
+  - All of it's lifecycle hooks (`preRegistration`)
   - Each "getModuleFunction" (`getToolbarModule`, `getPanelModule`, etc.)
 
 ## Example
