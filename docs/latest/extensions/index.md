@@ -8,7 +8,7 @@
   - [Modules](#modules)
   - [Contexts](#contexts)
 - [Consuming Extensions](#consuming-extensions)
-  - [Extension Manager](#extension-manager)
+  - [Extension Manager](#extensionmanager)
 - [Maintained Extensions](#maintained-extensions)
 
 ## Overview

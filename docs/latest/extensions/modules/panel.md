@@ -4,7 +4,7 @@ The panel module provides the ability to define `menuOptions` and `components`
 that can be used by the consuming application. `components` are React Components
 that can be displayed in the consuming application's "Panel" Component.
 
-![Panel Extension](../assets/img/extensions-panel.gif)
+![Panel Extension](../../assets/img/extensions-panel.gif)
 
 <center><i>A panel extension example</i></center>
 
