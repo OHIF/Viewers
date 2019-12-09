@@ -248,10 +248,13 @@ class OHIFCornerstoneViewport extends Component {
     // TODO: Does it make more sense to use Context?
     if (this.props.children && this.props.children.length) {
       childrenWithProps = this.props.children.map((child, index) => {
-        return React.cloneElement(child, {
-          viewportIndex: this.props.viewportIndex,
-          key: index,
-        });
+        return (
+          child &&
+          React.cloneElement(child, {
+            viewportIndex: this.props.viewportIndex,
+            key: index,
+          })
+        );
       });
     }
 
