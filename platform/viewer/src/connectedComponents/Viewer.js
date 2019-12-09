@@ -71,11 +71,16 @@ class Viewer extends Component {
 
   constructor(props) {
     super(props);
+
+    const { activeServer } = this.props;
+    const server = Object.assign({}, activeServer);
+
     OHIF.measurements.MeasurementApi.setConfiguration({
       dataExchange: {
         retrieve: DICOMSR.retrieveMeasurements,
         store: DICOMSR.storeMeasurements,
       },
+      server,
     });
 
     OHIF.measurements.TimepointApi.setConfiguration({
@@ -163,7 +168,7 @@ class Viewer extends Component {
   };
 
   componentDidMount() {
-    const { studies, activeServer, isStudyLoaded } = this.props;
+    const { studies, isStudyLoaded } = this.props;
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
     const currentTimepointId = 'TimepointId';
 
@@ -173,7 +178,6 @@ class Viewer extends Component {
 
     const measurementApi = new MeasurementApi(timepointApi, {
       onMeasurementsUpdated: this.onMeasurementsUpdated,
-      server: activeServer,
     });
 
     this.currentTimepointId = currentTimepointId;
