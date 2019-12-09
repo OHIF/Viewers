@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { MODULE_TYPES } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+
+import { MODULE_TYPES } from '@ohif/core';
 import {
   ExpandableToolMenu,
   RoundedButtonGroup,
@@ -14,7 +15,6 @@ import './ToolbarRow.css';
 import { commandsManager, extensionManager } from './../App.js';
 
 import ConnectedCineDialog from './ConnectedCineDialog';
-import ConnectedViewportDownloadForm from './ConnectedViewportDownloadForm';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
 import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 
@@ -308,7 +308,7 @@ function _handleBuiltIn(button) {
   }
 
   if (options.behavior === 'DOWNLOAD_SCREEN_SHOT') {
-    modal.show(ConnectedViewportDownloadForm, {
+    commandsManager.runCommand('showDownloadViewportModal', {
       title: t('Download High Quality Image'),
     });
   }

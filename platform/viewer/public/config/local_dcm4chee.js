@@ -1,6 +1,7 @@
 window.config = {
   // default: '/'
   routerBasename: '/',
+  whiteLabelling: {},
   // default: ''
   showStudyList: true,
   servers: {

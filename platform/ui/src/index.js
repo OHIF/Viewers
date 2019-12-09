@@ -60,6 +60,14 @@ import {
   ModalConsumer,
   useModal,
   withModal,
+  ContextMenuProvider,
+  ContextMenuConsumer,
+  useContextMenu,
+  withContextMenu,
+  LabellingFlowProvider,
+  LabellingFlowConsumer,
+  useLabellingFlow,
+  withLabellingFlow,
 } from './contextProviders';
 
 export {
@@ -117,6 +125,14 @@ export {
   DialogProvider,
   withDialog,
   useDialog,
+  ContextMenuProvider,
+  ContextMenuConsumer,
+  useContextMenu,
+  withContextMenu,
+  LabellingFlowProvider,
+  LabellingFlowConsumer,
+  useLabellingFlow,
+  withLabellingFlow,
   // Hooks
   useDebounce,
   useMedia,

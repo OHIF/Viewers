@@ -270,7 +270,7 @@ describe('OHIF Study Viewer Page', function() {
     cy.get('[data-cy="options-menu"]')
       .first()
       .click();
-    cy.get('[data-cy="about-item-menu"]')
+    cy.get('[data-cy="dd-item-menu"]')
       .first()
       .click();
     cy.get('[data-cy="about-modal"]')
