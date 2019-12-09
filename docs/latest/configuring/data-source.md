@@ -133,7 +133,7 @@ window.config = {
 The configuration can also be written as a JS Function in case you need to inject dependencies like external services:
 
 ```js
-window.config = ({ randomService }) => {
+window.config = ({ randomService } = {}) => {
   const randomInfo = randomService.getInfo('randomKey');
   return {
     randomConfigKey: randomInfo,

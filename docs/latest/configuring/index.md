@@ -66,12 +66,10 @@ window.config = {
 };
 ```
 
-<<<<<<< Updated upstream:docs/latest/configuring/index.md
-=======
 The configuration can also be written as a JS Function in case you need to inject dependencies like external services:
 
 ```js
-window.config = ({ randomService }) => {
+window.config = ({ randomService } = {}) => {
   const randomInfo = randomService.getInfo('randomKey');
   return {
     randomConfigKey: randomInfo,
@@ -106,7 +104,6 @@ value of this environment variable a few different ways:
 - Using the `cross-env` package in an npm script:
   - `"build": "cross-env APP_CONFIG=config/my-config.js react-scripts build"`
 
->>>>>>> Stashed changes:docs/latest/essentials/configuration.md
 After updating the configuration, `yarn run build` to generate updated build
 output.
 

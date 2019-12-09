@@ -53,7 +53,7 @@ window.config = {
 // Set before importing `ohif-viewer` (JS Function)
 window.config = ({
   randomService
-}) => {
+} = {}) => {
   const randomInfo = randomService.getInfo('randomKey');
   return {
     // default: '/'
