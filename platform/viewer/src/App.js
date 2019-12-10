@@ -9,7 +9,7 @@ import { hot } from 'react-hot-loader/root';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 
 import ToolContextMenu from './connectedComponents/ToolContextMenu';
-import LabellingManager from './components/Labelling/LabellingManager';
+import LabellingFlow from './components/Labelling/LabellingFlow';
 
 import {
   SnackbarProvider,
@@ -182,7 +182,7 @@ class App extends Component {
                           >
                             <LabellingFlowProvider
                               service={UILabellingFlowService}
-                              labellingComponent={LabellingManager}
+                              labellingComponent={LabellingFlow}
                               commandsManager={commandsManager}
                             >
                               <ContextMenuProvider
@@ -219,7 +219,7 @@ class App extends Component {
                     <ModalProvider modal={OHIFModal} service={UIModalService}>
                       <LabellingFlowProvider
                         service={UILabellingFlowService}
-                        labellingComponent={LabellingManager}
+                        labellingComponent={LabellingFlow}
                         commandsManager={commandsManager}
                       >
                         <ContextMenuProvider

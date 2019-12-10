@@ -5,17 +5,26 @@ import cloneDeep from 'lodash.clonedeep';
 
 import LabellingTransition from './LabellingTransition.js';
 import OHIFLabellingData from './OHIFLabellingData.js';
-import './LabellingManager.css';
+import EditDescriptionDialog from './../EditDescriptionDialog/EditDescriptionDialog.js';
+import './LabellingFlow.css';
 
 class LabellingFlow extends Component {
   constructor(props) {
     super(props);
 
+    const newMeasurementData = cloneDeep(props.measurementData);
+    this.treatMeasurementData(newMeasurementData);
+
+    let newEditLocation = props.editLocation;
+    if (!props.editDescription && !props.editLocation) {
+      newEditLocation = true;
+    }
+
     this.state = {
-      measurementData: props.measurementData,
+      measurementData: newMeasurementData,
       skipAddLabelButton: props.skipAddLabelButton,
       editDescription: props.editDescription,
-      editLocation: props.editLocation,
+      editLocation: newEditLocation,
       confirmationState: false,
       displayComponent: true,
     };
@@ -31,7 +40,34 @@ class LabellingFlow extends Component {
     }
   };
 
+  treatMeasurementData = measurementData => {
+    const { editDescription, editLocation } = this.props;
+
+    if (editDescription) {
+      measurementData.description = undefined;
+    }
+
+    if (editLocation) {
+      measurementData.location = undefined;
+    }
+  };
+
+  descriptionDialogUpdate = description => {
+    this.props.updateLabelling({ description });
+    this.props.labellingDoneCallback();
+  };
+
   render() {
+    if (this.props.editDescriptionOnDialog) {
+      return (
+        <EditDescriptionDialog
+          onCancel={this.props.labellingDoneCallback}
+          onUpdate={this.descriptionDialogUpdate}
+          measurementData={this.state.measurementData}
+        />
+      );
+    }
+
     return (
       <LabellingTransition
         displayComponent={this.state.displayComponent}
