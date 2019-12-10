@@ -13,6 +13,11 @@ const { studyMetadataManager } = utils;
 const retrieveMeasurements = server => {
   log.info('[DICOMSR] retrieveMeasurements');
 
+  if (!server || server.type !== 'dicomWeb') {
+    log.error('[DICOMSR] DicomWeb server is required!');
+    return Promise.reject({});
+  }
+
   const latestSeries = findMostRecentStructuredReport(studyMetadataManager);
 
   if (!latestSeries) return Promise.resolve({});

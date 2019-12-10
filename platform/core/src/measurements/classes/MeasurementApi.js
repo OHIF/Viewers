@@ -8,9 +8,7 @@ import guid from '../../utils/guid';
 import studyMetadataManager from '../../utils/studyMetadataManager';
 import { measurementApiDefaultConfig } from './../configuration.js';
 
-const configuration = {
-  ...measurementApiDefaultConfig,
-};
+const configuration = measurementApiDefaultConfig;
 
 export default class MeasurementApi {
   static Instance;
