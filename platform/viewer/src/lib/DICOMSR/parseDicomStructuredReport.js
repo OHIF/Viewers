@@ -17,18 +17,6 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
     dicomData.dict
   );
 
-  // Convert the SR into the kind of object the Measurements package is expecting
-  return imagingMeasurementsToMeasurementData(dataset, displaySets);
-};
-
-/**
- *  Function to parse data from dcmjs into OHIF viewer measurementData
- *
- * @param {Object} dataset
- * @param {Array} displaySets
- * @returns {Object} measurementData
- */
-const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
   const { MeasurementReport } = dcmjs.adapters.Cornerstone;
   const storedMeasurementByToolType = MeasurementReport.generateToolState(
     dataset
@@ -45,14 +33,11 @@ const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
         displaySets,
         measurement.sopInstanceUid
       );
-      const study = instanceMetadata._study;
-      const series = instanceMetadata._series;
-      const imagePath = [
-        study.studyInstanceUid,
-        series.seriesInstanceUid,
-        measurement.sopInstanceUid,
-        measurement.frameIndex,
-      ].join('_');
+      const { _study: study, _series: series } = instanceMetadata;
+      const { studyInstanceUid, patientId } = study;
+      const { seriesInstanceUid } = series;
+      const { sopInstanceUid, frameIndex } = measurement;
+      const imagePath = getImagePath(studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex);
 
       const imageId = instanceMetadata.getImageId();
       if (!imageId) {
@@ -65,9 +50,9 @@ const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
       const toolData = Object.assign({}, measurement, {
         imageId,
         imagePath,
-        seriesInstanceUid: series.seriesInstanceUid,
-        studyInstanceUid: study.studyInstanceUid,
-        patientId: study.patientId,
+        seriesInstanceUid,
+        studyInstanceUid,
+        patientId,
         measurementNumber: ++measurementNumber,
         timepointId: currentTimepointId,
         toolType,
@@ -80,5 +65,9 @@ const imagingMeasurementsToMeasurementData = (dataset, displaySets) => {
 
   return measurementData;
 };
+
+const getImagePath = (studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex) => {
+  return [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join('_');
+}
 
 export default parseDicomStructuredReport;
