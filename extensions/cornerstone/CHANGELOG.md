@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.0.0...@ohif/extension-cornerstone@2.0.1) (2019-12-09)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [2.0.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.7.2...@ohif/extension-cornerstone@2.0.0) (2019-12-09)
+
+
+* feat!: Ability to configure cornerstone tools via extension configuration (#1229) ([55a5806](https://github.com/OHIF/Viewers/commit/55a580659ecb74ca6433461d8f9a05c2a2b69533)), closes [#1229](https://github.com/OHIF/Viewers/issues/1229)
+
+
+### BREAKING CHANGES
+
+* modifies the exposed react <App /> components props. The contract for providing configuration for the app has changed. Please reference updated documentation for guidance.
+
+
+
+
+
+## [1.7.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.7.1...@ohif/extension-cornerstone@1.7.2) (2019-12-02)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+## [1.7.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.7.0...@ohif/extension-cornerstone@1.7.1) (2019-12-02)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [1.7.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.6.0...@ohif/extension-cornerstone@1.7.0) (2019-11-25)
+
+
+### Features
+
+* Add new annotate tool using new dialog service ([#1211](https://github.com/OHIF/Viewers/issues/1211)) ([8fd3af1](https://github.com/OHIF/Viewers/commit/8fd3af1e137e793f1b482760a22591c64a072047))
+
+
+
+
+
+# [1.6.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.5.1...@ohif/extension-cornerstone@1.6.0) (2019-11-19)
+
+
+### Features
+
+* New dialog service ([#1202](https://github.com/OHIF/Viewers/issues/1202)) ([f65639c](https://github.com/OHIF/Viewers/commit/f65639c2b0dab01decd20cab2cef4263cb4fab37))
+
+
+
+
+
+## [1.5.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.5.0...@ohif/extension-cornerstone@1.5.1) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.4.1...@ohif/extension-cornerstone@1.5.0) (2019-11-13)
+
+
+### Features
+
+* expose UiNotifications service ([#1172](https://github.com/OHIF/Viewers/issues/1172)) ([5c04e34](https://github.com/OHIF/Viewers/commit/5c04e34c8fb2394ab7acd9eb4f2ab12afeb2f255))
+
+
+
+
+
 ## [1.4.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@1.4.0...@ohif/extension-cornerstone@1.4.1) (2019-11-08)
 
 

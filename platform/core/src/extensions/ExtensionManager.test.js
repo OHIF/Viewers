@@ -37,9 +37,52 @@ describe('ExtensionManager.js', () => {
       // Assert
       expect(extensionManager.registerExtension.mock.calls.length).toBe(3);
     });
+
+    it('calls registerExtension() for each extension passing its configuration if tuple', () => {
+      const fakeConfiguration = { testing: true };
+      extensionManager.registerExtension = jest.fn();
+
+      // SUT
+      const fakeExtensions = [
+        { one: '1' },
+        [{ two: '2' }, fakeConfiguration],
+        { three: '3 ' },
+      ];
+      extensionManager.registerExtensions(fakeExtensions);
+
+      // Assert
+      expect(extensionManager.registerExtension.mock.calls[1]).toContain(
+        fakeConfiguration
+      );
+    });
   });
 
   describe('registerExtension()', () => {
+    it('calls preRegistration() for extension', () => {
+      // SUT
+      const fakeExtension = { one: '1', preRegistration: jest.fn() };
+      extensionManager.registerExtension(fakeExtension);
+
+      // Assert
+      expect(fakeExtension.preRegistration.mock.calls.length).toBe(1);
+    });
+
+    it('calls preRegistration() passing configuration along with servicesManager and commandsManager instances for extension', () => {
+      const configuration = { config: 'Some configuration' };
+      extensionManager._servicesManager = { services: { TestService: {} } };
+
+      // SUT
+      const fakeExtension = { one: '1', preRegistration: jest.fn() };
+      extensionManager.registerExtension(fakeExtension, configuration);
+
+      // Assert
+      expect(fakeExtension.preRegistration.mock.calls[0][0]).toEqual({
+        servicesManager: extensionManager._servicesManager,
+        commandsManager: extensionManager._commandsManager,
+        configuration,
+      });
+    });
+
     it('logs a warning if the extension is null or undefined', () => {
       const undefinedExtension = undefined;
       const nullExtension = null;
@@ -108,6 +151,26 @@ describe('ExtensionManager.js', () => {
       expect(log.error.mock.calls[0][0]).toContain(
         'Exception thrown while trying to call'
       );
+    });
+
+    it('successfully passes a servicesManager and commandsManager instances to each module', () => {
+      extensionManager._servicesManager = { services: { TestService: {} } };
+
+      const extension = {
+        id: 'hello-world',
+        getViewportModule: jest.fn(),
+        getSopClassHandlerModule: jest.fn(),
+        getPanelModule: jest.fn(),
+        getToolbarModule: jest.fn(),
+        getCommandsModule: jest.fn(),
+      };
+
+      extensionManager.registerExtension(extension);
+
+      expect(extension.getViewportModule.mock.calls[0][0]).toEqual({
+        servicesManager: extensionManager._servicesManager,
+        commandsManager: extensionManager._commandsManager,
+      });
     });
 
     it('successfully registers a module for each module type', () => {

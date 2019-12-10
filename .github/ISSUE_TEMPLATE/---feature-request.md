@@ -2,7 +2,7 @@
 name: "\U0001F680 Feature request"
 about: Suggest an idea for this project
 title: ''
-labels: 'Community: Request :hand:'
+labels: 'Community: Request :hand:, Triage :white_flag:'
 assignees: ''
 ---
 

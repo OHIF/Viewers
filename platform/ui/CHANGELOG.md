@@ -3,6 +3,161 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.0.0...@ohif/ui@1.0.1) (2019-12-09)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [1.0.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.65.4...@ohif/ui@1.0.0) (2019-12-09)
+
+
+* feat!: Ability to configure cornerstone tools via extension configuration (#1229) ([55a5806](https://github.com/OHIF/Viewers/commit/55a580659ecb74ca6433461d8f9a05c2a2b69533)), closes [#1229](https://github.com/OHIF/Viewers/issues/1229)
+
+
+### BREAKING CHANGES
+
+* modifies the exposed react <App /> components props. The contract for providing configuration for the app has changed. Please reference updated documentation for guidance.
+
+
+
+
+
+## [0.65.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.65.3...@ohif/ui@0.65.4) (2019-12-07)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [0.65.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.65.2...@ohif/ui@0.65.3) (2019-12-07)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [0.65.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.65.1...@ohif/ui@0.65.2) (2019-12-07)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [0.65.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.65.0...@ohif/ui@0.65.1) (2019-11-28)
+
+
+### Bug Fixes
+
+* User Preferences Issues ([#1207](https://github.com/OHIF/Viewers/issues/1207)) ([1df21a9](https://github.com/OHIF/Viewers/commit/1df21a9e075b5e6dfc10a429ae825826f46c71b8)), closes [#1161](https://github.com/OHIF/Viewers/issues/1161) [#1164](https://github.com/OHIF/Viewers/issues/1164) [#1177](https://github.com/OHIF/Viewers/issues/1177) [#1179](https://github.com/OHIF/Viewers/issues/1179) [#1180](https://github.com/OHIF/Viewers/issues/1180) [#1181](https://github.com/OHIF/Viewers/issues/1181) [#1182](https://github.com/OHIF/Viewers/issues/1182) [#1183](https://github.com/OHIF/Viewers/issues/1183) [#1184](https://github.com/OHIF/Viewers/issues/1184) [#1185](https://github.com/OHIF/Viewers/issues/1185)
+
+
+
+
+
+# [0.65.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.64.2...@ohif/ui@0.65.0) (2019-11-25)
+
+
+### Features
+
+* Add new annotate tool using new dialog service ([#1211](https://github.com/OHIF/Viewers/issues/1211)) ([8fd3af1](https://github.com/OHIF/Viewers/commit/8fd3af1e137e793f1b482760a22591c64a072047))
+
+
+
+
+
+## [0.64.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.64.1...@ohif/ui@0.64.2) (2019-11-25)
+
+
+### Bug Fixes
+
+* Issue branch from danny experimental changes pr 1128 ([#1150](https://github.com/OHIF/Viewers/issues/1150)) ([a870b3c](https://github.com/OHIF/Viewers/commit/a870b3cc6056cf824af422e46f1ad674910b534e)), closes [#1161](https://github.com/OHIF/Viewers/issues/1161) [#1164](https://github.com/OHIF/Viewers/issues/1164) [#1177](https://github.com/OHIF/Viewers/issues/1177) [#1179](https://github.com/OHIF/Viewers/issues/1179) [#1180](https://github.com/OHIF/Viewers/issues/1180) [#1181](https://github.com/OHIF/Viewers/issues/1181) [#1182](https://github.com/OHIF/Viewers/issues/1182) [#1183](https://github.com/OHIF/Viewers/issues/1183) [#1184](https://github.com/OHIF/Viewers/issues/1184) [#1185](https://github.com/OHIF/Viewers/issues/1185)
+
+
+
+
+
+## [0.64.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.64.0...@ohif/ui@0.64.1) (2019-11-20)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [0.64.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.63.0...@ohif/ui@0.64.0) (2019-11-19)
+
+
+### Features
+
+* New dialog service ([#1202](https://github.com/OHIF/Viewers/issues/1202)) ([f65639c](https://github.com/OHIF/Viewers/commit/f65639c2b0dab01decd20cab2cef4263cb4fab37))
+
+
+
+
+
+# [0.63.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.4...@ohif/ui@0.63.0) (2019-11-19)
+
+
+### Features
+
+* Issue 879 viewer route query param not filtering but promoting ([#1141](https://github.com/OHIF/Viewers/issues/1141)) ([b17f753](https://github.com/OHIF/Viewers/commit/b17f753e6222045252ef885e40233681541a32e1)), closes [#1118](https://github.com/OHIF/Viewers/issues/1118)
+
+
+
+
+
+## [0.62.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.3...@ohif/ui@0.62.4) (2019-11-18)
+
+
+### Bug Fixes
+
+* minor date picker UX improvements ([813ee5e](https://github.com/OHIF/Viewers/commit/813ee5ed4d78b7bda234922d5f3389efe346451c))
+
+
+
+
+
+## [0.62.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.2...@ohif/ui@0.62.3) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [0.62.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.1...@ohif/ui@0.62.2) (2019-11-15)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [0.62.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.62.0...@ohif/ui@0.62.1) (2019-11-14)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [0.62.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.61.0...@ohif/ui@0.62.0) (2019-11-13)
+
+
+### Features
+
+* expose UiNotifications service ([#1172](https://github.com/OHIF/Viewers/issues/1172)) ([5c04e34](https://github.com/OHIF/Viewers/commit/5c04e34c8fb2394ab7acd9eb4f2ab12afeb2f255))
+
+
+
+
+
 # [0.61.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@0.60.1...@ohif/ui@0.61.0) (2019-11-12)
 
 

@@ -1,20 +1,16 @@
 import { Icon, SelectTree } from '@ohif/ui';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import cloneDeep from 'lodash.clonedeep';
 
 import LabellingTransition from './LabellingTransition.js';
 import OHIFLabellingData from './OHIFLabellingData.js';
-import PropTypes from 'prop-types';
-import bounding from '../../lib/utils/bounding.js';
-import cloneDeep from 'lodash.clonedeep';
-import { getAddLabelButtonStyle } from './labellingPositionUtils.js';
 
 export default class LabellingFlow extends Component {
   static propTypes = {
-    eventData: PropTypes.object.isRequired,
     measurementData: PropTypes.object.isRequired,
     labellingDoneCallback: PropTypes.func.isRequired,
     updateLabelling: PropTypes.func.isRequired,
-
     initialTopDistance: PropTypes.number,
     skipAddLabelButton: PropTypes.bool,
     editLocation: PropTypes.bool,
@@ -26,11 +22,6 @@ export default class LabellingFlow extends Component {
 
     const { location, locationLabel, description } = props.measurementData;
 
-    let style = props.componentStyle;
-    if (!props.skipAddLabelButton) {
-      style = getAddLabelButtonStyle(props.measurementData, props.eventData);
-    }
-
     this.state = {
       location,
       locationLabel,
@@ -38,20 +29,17 @@ export default class LabellingFlow extends Component {
       skipAddLabelButton: props.skipAddLabelButton,
       editDescription: props.editDescription,
       editLocation: props.editLocation,
-      componentStyle: style,
       confirmationState: false,
       displayComponent: true,
     };
 
     this.mainElement = React.createRef();
     this.descriptionInput = React.createRef();
-
     this.initialItems = OHIFLabellingData;
     this.currentItems = cloneDeep(this.initialItems);
   }
 
   componentDidUpdate = () => {
-    this.repositionComponent();
     if (this.state.editDescription) {
       this.descriptionInput.current.focus();
     }
@@ -63,36 +51,14 @@ export default class LabellingFlow extends Component {
       mainElementClassName += ' editDescription';
     }
 
-    const style = Object.assign({}, this.state.componentStyle);
-    if (this.state.skipAddLabelButton) {
-      if (style.left - 160 < 0) {
-        style.left = 0;
-      } else {
-        style.left -= 160;
-      }
-    }
-
-    if (this.state.editLocation) {
-      style.maxHeight = '70vh';
-      if (!this.initialTopDistance) {
-        this.initialTopDistance = window.innerHeight - window.innerHeight * 0.3;
-        style.top = `${this.state.componentStyle.top -
-          this.initialTopDistance / 2}px`;
-      } else {
-        style.top = `${this.state.componentStyle.top}px`;
-      }
-    }
-
     return (
       <LabellingTransition
         displayComponent={this.state.displayComponent}
         onTransitionExit={this.props.labellingDoneCallback}
       >
         <>
-          <div className="labellingComponent-overlay"></div>
           <div
             className={mainElementClassName}
-            style={style}
             ref={this.mainElement}
             onMouseLeave={this.fadeOutAndLeave}
             onMouseEnter={this.clearFadeOutTimer}
@@ -130,9 +96,8 @@ export default class LabellingFlow extends Component {
           <SelectTree
             items={this.currentItems}
             columns={1}
-            onSelected={this.selectTreeSelectCalback}
+            onSelected={this.selectTreeSelectCallback}
             selectTreeFirstTitle="Assign Label"
-            onComponentChange={this.repositionComponent}
           />
         );
       } else {
@@ -195,33 +160,17 @@ export default class LabellingFlow extends Component {
     }
   };
 
-  relabel = event => {
-    const viewportTopPosition = this.mainElement.current.offsetParent.offsetTop;
-    const componentStyle = {
-      top: event.nativeEvent.y - viewportTopPosition - 55,
-      left: event.nativeEvent.x,
-    };
-    this.setState({
-      editLocation: true,
-      componentStyle,
-    });
-  };
+  relabel = event => this.setState({ editLocation: true });
 
   setDescriptionUpdateMode = () => {
     this.descriptionInput.current.focus();
-
-    this.setState({
-      editDescription: true,
-    });
+    this.setState({ editDescription: true });
   };
 
   descriptionCancel = () => {
     const { description = '' } = cloneDeep(this.state);
     this.descriptionInput.current.value = description;
-
-    this.setState({
-      editDescription: false,
-    });
+    this.setState({ editDescription: false });
   };
 
   handleKeyPress = e => {
@@ -240,22 +189,15 @@ export default class LabellingFlow extends Component {
     });
   };
 
-  selectTreeSelectCalback = (event, itemSelected) => {
+  selectTreeSelectCallback = (event, itemSelected) => {
     const location = itemSelected.value;
     this.props.updateLabelling({ location });
-
-    const viewportTopPosition = this.mainElement.current.offsetParent.offsetTop;
-    const componentStyle = {
-      top: event.nativeEvent.y - viewportTopPosition - 25,
-      left: event.nativeEvent.x,
-    };
 
     this.setState({
       editLocation: false,
       confirmationState: true,
       location: itemSelected.value,
       locationLabel: itemSelected.label,
-      componentStyle,
     });
 
     if (this.isTouchScreen) {
@@ -276,18 +218,13 @@ export default class LabellingFlow extends Component {
 
   fadeOutAndLeave = () => {
     // Wait for 1 sec to dismiss the labelling component
-    this.fadeOutTimer = setTimeout(() => {
-      this.setState({
-        displayComponent: false,
-      });
-    }, 1000);
+    this.fadeOutTimer = setTimeout(
+      () => this.setState({ displayComponent: false }),
+      1000
+    );
   };
 
-  fadeOutAndLeaveFast = () => {
-    this.setState({
-      displayComponent: false,
-    });
-  };
+  fadeOutAndLeaveFast = () => this.setState({ displayComponent: false });
 
   clearFadeOutTimer = () => {
     if (!this.fadeOutTimer) {
@@ -295,30 +232,5 @@ export default class LabellingFlow extends Component {
     }
 
     clearTimeout(this.fadeOutTimer);
-  };
-
-  calculateTopDistance = () => {
-    const height = window.innerHeight - window.innerHeight * 0.3;
-    let top = this.state.componentStyle.top - height / 2 + 55;
-    if (top < 0) {
-      top = 0;
-    } else {
-      if (top + height > window.innerHeight) {
-        top -= top + height - window.innerHeight;
-      }
-    }
-    return top;
-  };
-
-  repositionComponent = () => {
-    // SetTimeout for the css animation to end.
-    setTimeout(() => {
-      bounding(this.mainElement);
-      if (this.state.editLocation) {
-        this.mainElement.current.style.maxHeight = '70vh';
-        const top = this.calculateTopDistance();
-        this.mainElement.current.style.top = `${top}px`;
-      }
-    }, 200);
   };
 }

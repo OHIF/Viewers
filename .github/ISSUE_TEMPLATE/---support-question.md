@@ -2,7 +2,7 @@
 name: "\U0001F917 Support Question"
 about: "I have a question \U0001F4AC"
 title: ''
-labels: 'Community: Question :question:'
+labels: 'Community: Question :question:, Triage :white_flag:'
 assignees: ''
 ---
 

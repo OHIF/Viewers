@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.2](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.52.1...@ohif/i18n@0.52.2) (2019-11-28)
+
+
+### Bug Fixes
+
+* User Preferences Issues ([#1207](https://github.com/OHIF/Viewers/issues/1207)) ([1df21a9](https://github.com/OHIF/Viewers/commit/1df21a9e075b5e6dfc10a429ae825826f46c71b8)), closes [#1161](https://github.com/OHIF/Viewers/issues/1161) [#1164](https://github.com/OHIF/Viewers/issues/1164) [#1177](https://github.com/OHIF/Viewers/issues/1177) [#1179](https://github.com/OHIF/Viewers/issues/1179) [#1180](https://github.com/OHIF/Viewers/issues/1180) [#1181](https://github.com/OHIF/Viewers/issues/1181) [#1182](https://github.com/OHIF/Viewers/issues/1182) [#1183](https://github.com/OHIF/Viewers/issues/1183) [#1184](https://github.com/OHIF/Viewers/issues/1184) [#1185](https://github.com/OHIF/Viewers/issues/1185)
+
+
+
+
+
+## [0.52.1](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.52.0...@ohif/i18n@0.52.1) (2019-11-18)
+
+
+### Bug Fixes
+
+* minor date picker UX improvements ([813ee5e](https://github.com/OHIF/Viewers/commit/813ee5ed4d78b7bda234922d5f3389efe346451c))
+
+
+
+
+
 # [0.52.0](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.51.0...@ohif/i18n@0.52.0) (2019-11-06)
 
 

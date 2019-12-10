@@ -22,6 +22,7 @@
 [![NPM downloads][npm-downloads-image]][npm-url]
 [![Pulls][docker-pulls-img]][docker-image-url]
 [![MIT License][license-image]][license-url]
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FOHIF%2FViewers.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FOHIF%2FViewers?ref=badge_shield)
 
 [![Netlify Status][netlify-image]][netlify-url]
 [![CircleCI][circleci-image]][circleci-url]
@@ -83,7 +84,7 @@ We offer support through
 
 For commercial support, academic collaberations, and answers to common
 questions; please read our
-[documented FAQ](https://docs.ohif.org/frequently-asked-questions.html#does-ohif-offer-commercial-support).
+[documented FAQ](https://docs.ohif.org/faq/index.html#does-ohif-offer-commercial-support).
 
 ## Quick Start Deployment
 
@@ -270,8 +271,8 @@ MIT © [OHIF](https://github.com/OHIF)
 <!-- Badges -->
 [lerna-image]: https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg
 [lerna-url]: https://lerna.js.org/
-[netlify-image]: https://api.netlify.com/api/v1/badges/a5d369ab-18a6-41c3-bcde-83805205ac7f/deploy-status
-[netlify-url]: https://app.netlify.com/sites/ohif/deploys
+[netlify-image]: https://api.netlify.com/api/v1/badges/32708787-c9b0-4634-b50f-7ca41952da77/deploy-status
+[netlify-url]: https://app.netlify.com/sites/ohif-dev/deploys
 [all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
 [circleci-image]: https://circleci.com/gh/OHIF/Viewers.svg?style=svg
 [circleci-url]: https://circleci.com/gh/OHIF/Viewers
@@ -295,14 +296,14 @@ MIT © [OHIF](https://github.com/OHIF)
 [monorepo]: https://en.wikipedia.org/wiki/Monorepo
 [how-to-fork]: https://help.github.com/en/articles/fork-a-repo
 [how-to-clone]: https://help.github.com/en/articles/fork-a-repo#step-2-create-a-local-clone-of-your-fork
-[ohif-architecture]: https://docs.ohif.org/advanced/architecture.html
-[ohif-extensions]: https://docs.ohif.org/advanced/architecture.html
+[ohif-architecture]: https://docs.ohif.org/architecture/index.html
+[ohif-extensions]: https://docs.ohif.org/architecture/index.html
 [deployment-docs]: https://docs.ohif.org/deployment/
 [react-url]: https://reactjs.org/
 [pwa-url]: https://developers.google.com/web/progressive-web-apps/
 [ohif-viewer-url]: https://www.npmjs.com/package/@ohif/viewer
-[configuration-url]: https://docs.ohif.org/essentials/configuration.html
-[extensions-url]: https://docs.ohif.org/advanced/extensions.html
+[configuration-url]: https://docs.ohif.org/configuring/
+[extensions-url]: https://docs.ohif.org/extensions/
 <!-- Platform -->
 [platform-core]: platform/core/README.md
 [core-npm]: https://www.npmjs.com/package/@ohif/core
@@ -324,3 +325,5 @@ MIT © [OHIF](https://github.com/OHIF)
 [extension-vtk]: extensions/vtk/README.md
 [vtk-npm]: https://www.npmjs.com/package/@ohif/extension-vtk
 <!-- prettier-ignore-end -->
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FOHIF%2FViewers.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FOHIF%2FViewers?ref=badge_large)

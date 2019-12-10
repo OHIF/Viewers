@@ -1,7 +1,7 @@
 # Build for Production
 
 > If you've already followed the
-> ["Getting Started" Guide](/essentials/getting-started.md), you can skip ahead
+> ["Getting Started" Guide](/development/getting-started.md), you can skip ahead
 > to [Configuration](#configuration)
 
 ## Overview
@@ -73,7 +73,7 @@ and registered extension's features, are configured using this file.
 
 The easiest way to apply your own configuration is to modify the `default.js`
 file. For more advanced cofiguration options, check out our
-[configuration essentials guide](/essentials/configuration.md).
+[configuration essentials guide](/configuring/index.md).
 
 ## Next Steps
 
