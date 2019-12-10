@@ -5,27 +5,14 @@ import cloneDeep from 'lodash.clonedeep';
 
 import LabellingTransition from './LabellingTransition.js';
 import OHIFLabellingData from './OHIFLabellingData.js';
+import './LabellingManager.css';
 
-export default class LabellingFlow extends Component {
-  static propTypes = {
-    measurementData: PropTypes.object.isRequired,
-    labellingDoneCallback: PropTypes.func.isRequired,
-    updateLabelling: PropTypes.func.isRequired,
-    initialTopDistance: PropTypes.number,
-    skipAddLabelButton: PropTypes.bool,
-    editLocation: PropTypes.bool,
-    editDescription: PropTypes.bool,
-  };
-
+class LabellingFlow extends Component {
   constructor(props) {
     super(props);
 
-    const { location, locationLabel, description } = props.measurementData;
-
     this.state = {
-      location,
-      locationLabel,
-      description,
+      measurementData: props.measurementData,
       skipAddLabelButton: props.skipAddLabelButton,
       editDescription: props.editDescription,
       editLocation: props.editLocation,
@@ -33,7 +20,6 @@ export default class LabellingFlow extends Component {
       displayComponent: true,
     };
 
-    this.mainElement = React.createRef();
     this.descriptionInput = React.createRef();
     this.initialItems = OHIFLabellingData;
     this.currentItems = cloneDeep(this.initialItems);
@@ -46,11 +32,6 @@ export default class LabellingFlow extends Component {
   };
 
   render() {
-    let mainElementClassName = 'labellingComponent';
-    if (this.state.editDescription) {
-      mainElementClassName += ' editDescription';
-    }
-
     return (
       <LabellingTransition
         displayComponent={this.state.displayComponent}
@@ -58,8 +39,8 @@ export default class LabellingFlow extends Component {
       >
         <>
           <div
-            className={mainElementClassName}
-            ref={this.mainElement}
+            className={`labellingComponent ${this.state.editDescription &&
+              'editDescription'}`}
             onMouseLeave={this.fadeOutAndLeave}
             onMouseEnter={this.clearFadeOutTimer}
           >
@@ -71,12 +52,8 @@ export default class LabellingFlow extends Component {
   }
 
   labellingStateFragment = () => {
-    const {
-      skipAddLabelButton,
-      editLocation,
-      description,
-      locationLabel,
-    } = this.state;
+    const { skipAddLabelButton, editLocation, measurementData } = this.state;
+    const { description, locationLabel, location } = measurementData;
 
     if (!skipAddLabelButton) {
       return (
@@ -86,7 +63,7 @@ export default class LabellingFlow extends Component {
             className="addLabelButton"
             onClick={this.showLabelling}
           >
-            {this.state.location ? 'Edit' : 'Add'} Label
+            {location ? 'Edit' : 'Add'} Label
           </button>
         </>
       );
@@ -191,21 +168,24 @@ export default class LabellingFlow extends Component {
 
   selectTreeSelectCallback = (event, itemSelected) => {
     const location = itemSelected.value;
+    const locationLabel = itemSelected.label;
     this.props.updateLabelling({ location });
 
     this.setState({
       editLocation: false,
       confirmationState: true,
-      location: itemSelected.value,
-      locationLabel: itemSelected.label,
+      measurementData: {
+        ...this.state.measurementData,
+        location,
+        locationLabel,
+      },
     });
 
     if (this.isTouchScreen) {
-      this.setTimeout = setTimeout(() => {
-        this.setState({
-          displayComponent: false,
-        });
-      }, 2000);
+      this.setTimeout = setTimeout(
+        () => this.setState({ displayComponent: false }),
+        2000
+      );
     }
   };
 
@@ -234,3 +214,23 @@ export default class LabellingFlow extends Component {
     clearTimeout(this.fadeOutTimer);
   };
 }
+
+LabellingFlow.propTypes = {
+  measurementData: PropTypes.object.isRequired,
+  labellingDoneCallback: PropTypes.func.isRequired,
+  updateLabelling: PropTypes.func.isRequired,
+  initialTopDistance: PropTypes.number,
+  skipAddLabelButton: PropTypes.bool,
+  editLocation: PropTypes.bool,
+  editDescription: PropTypes.bool,
+  editDescriptionOnDialog: PropTypes.bool,
+};
+
+LabellingFlow.defaultProps = {
+  skipAddLabelButton: false,
+  editLocation: false,
+  editDescription: false,
+  editDescriptionOnDialog: false,
+};
+
+export default LabellingFlow;
