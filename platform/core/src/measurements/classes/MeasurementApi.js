@@ -16,12 +16,6 @@ const configuration = {
 export default class MeasurementApi {
   static Instance;
 
-
-
-  /**
-   *
-  */
-
   /**
    * Set configuration: It should merge default configuration with any new one
    *
