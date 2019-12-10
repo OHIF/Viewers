@@ -54,27 +54,6 @@ describe('OHIF Download Snapshot File', () => {
       .should('be.visible');
   });
 
-  it('downloads image file', function() {
-    cy.get('[data-cy="image-width"]')
-      .clear()
-      .type('300');
-    cy.get('[data-cy="file-name"]')
-      .clear()
-      .type('new-filename');
-    cy.get('[data-cy=file-type]').select('png');
-    //Click on Download button
-    //For testing purposes, download dialog event is blocked during cypress execution
-    cy.get('[data-cy="download-btn"]')
-      .scrollIntoView()
-      .click();
-    //Get download url and verify if blob was created
-    cy.window()
-      .its('downloadUrl')
-      .then($url => {
-        expect($url).to.contain('blob:');
-      });
-  });
-
   it('cancel changes on download modal', function() {
     //Change Image Width, Filename and File Type
     cy.get('[data-cy="image-width"]')
