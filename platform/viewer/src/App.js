@@ -138,7 +138,7 @@ class App extends Component {
     _initServices([
       UINotificationService,
       UIModalService,
-      [UIDialogService, { testing: true }],
+      UIDialogService,
       UIContextMenuService,
       UILabellingFlowService,
     ]);
