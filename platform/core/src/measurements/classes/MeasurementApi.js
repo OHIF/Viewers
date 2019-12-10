@@ -8,11 +8,38 @@ import guid from '../../utils/guid';
 import studyMetadataManager from '../../utils/studyMetadataManager';
 import { measurementApiDefaultConfig } from './../configuration.js';
 
-const configuration = measurementApiDefaultConfig;
+
+const configuration = {
+  ...measurementApiDefaultConfig
+};
 
 export default class MeasurementApi {
   static Instance;
 
+
+
+  /**
+   *
+  */
+
+  /**
+   * Set configuration: It should merge default configuration with any new one
+   *
+   * @static
+   * @param {Object} config
+   * @param {Object} config.server
+   * @param {string} config.server.type - The server type
+   * @param {string} config.server.wadoRoot - The server wado URL root
+   * @param {Array} config.measurementTools
+   * @param {string} config.measurementTools[].id - The tool group id
+   * @param {string} config.measurementTools[].name - The tool group name
+   * @param {Array} config.measurementTools[].childTools - The child tool's configuration
+   * @param {Object} config.dataExchange
+   * @param {Function} config.dataExchange.store - Function that store measurement data
+   * @param {Function} config.dataExchange.retrieve - Function that retrieves measurement data
+   *
+   * @memberof MeasurementApi
+   */
   static setConfiguration(config) {
     Object.assign(configuration, config);
   }
