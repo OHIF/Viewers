@@ -304,12 +304,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   const { timepoints, saveFunction, measurementCollection } = propsFromState;
+  const { onSaveComplete, selectedMeasurementNumber } = ownProps;
 
   return {
     timepoints,
     saveFunction,
     measurementCollection,
-    selectedMeasurementNumber: ownProps.selectedMeasurementNumber,
+    onSaveComplete,
+    selectedMeasurementNumber,
     ...propsFromDispatch,
     onItemClick: (event, measurementData) => {
       // TODO: Add timepointId to .data for measurementData?

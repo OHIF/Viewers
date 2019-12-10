@@ -25,7 +25,7 @@ class MeasurementTable extends Component {
     selectedMeasurementNumber: PropTypes.number,
     t: PropTypes.func,
     saveFunction: PropTypes.func,
-    snackbarContext: PropTypes.object,
+    onSaveComplete: PropTypes.func,
   };
 
   static defaultProps = {
@@ -91,19 +91,25 @@ class MeasurementTable extends Component {
   }
 
   saveFunction = async event => {
-    const { saveFunction, snackbarContext } = this.props;
+    const { saveFunction, onSaveComplete } = this.props;
     if (saveFunction) {
       try {
         const result = await saveFunction();
-        snackbarContext.show({
-          title: 'STOW SR',
-          message: result.message,
-        });
+        if (onSaveComplete) {
+          onSaveComplete({
+            title: 'STOW SR',
+            message: result.message,
+            type: 'success',
+          });
+        }
       } catch (error) {
-        snackbarContext.show({
-          title: 'STOW SR',
-          message: error.message,
-        });
+        if (onSaveComplete) {
+          onSaveComplete({
+            title: 'STOW SR',
+            message: error.message,
+            type: 'error',
+          });
+        }
       }
     }
   };

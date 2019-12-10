@@ -11,8 +11,9 @@ export default {
   preRegistration({ servicesManager, commandsManager, configuration = {} }) {
     init({ servicesManager, commandsManager, configuration });
   },
+
   getPanelModule({ servicesManager, commandsManager }) {
-    const { UILabellingFlowService } = servicesManager.services;
+    const { UILabellingFlowService, UINotificationService } = servicesManager.services;
     const ExtendedConnectedMeasurementTable = () => (
       <ConnectedMeasurementTable
         onRelabel={tool => {
@@ -36,6 +37,11 @@ export default {
                 measurementData: tool,
               },
             });
+          }
+        }}
+        onSaveComplete={message => {
+          if (UINotificationService) {
+            UINotificationService.show(message);
           }
         }}
       />
