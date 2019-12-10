@@ -1,18 +1,9 @@
-.labellingComponent-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  background-color: rgba(0, 0, 0, 0.8);
-}
-
 .labellingComponent {
-  position: absolute;
+  position: relative;
   text-align: center;
   z-index: 999;
   transition: all 200ms linear;
+  max-height: 500px;
 }
 
 .labellingComponent .selectedLabel,
@@ -87,9 +78,7 @@
   border: none;
 }
 
-.labellingComponent.editDescription
-  .locationDescriptionWrapper
-  #descriptionInput {
+.labellingComponent.editDescription .locationDescriptionWrapper #descriptionInput {
   visibility: visible;
 }
 

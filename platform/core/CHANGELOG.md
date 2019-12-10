@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.0.0...@ohif/core@2.0.1) (2019-12-09)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [2.0.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.13.3...@ohif/core@2.0.0) (2019-12-09)
+
+
+* feat!: Ability to configure cornerstone tools via extension configuration (#1229) ([55a5806](https://github.com/OHIF/Viewers/commit/55a580659ecb74ca6433461d8f9a05c2a2b69533)), closes [#1229](https://github.com/OHIF/Viewers/issues/1229)
+
+
+### BREAKING CHANGES
+
+* modifies the exposed react <App /> components props. The contract for providing configuration for the app has changed. Please reference updated documentation for guidance.
+
+
+
+
+
 ## [1.13.3](https://github.com/OHIF/Viewers/compare/@ohif/core@1.13.2...@ohif/core@1.13.3) (2019-12-06)
 
 **Note:** Version bump only for package @ohif/core

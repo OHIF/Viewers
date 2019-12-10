@@ -24,12 +24,12 @@ include tags. Here's how it works:
 </ul>
 
 <ol start="2">
-  <li>Create a JS Object to hold the OHIF Viewer's configuration. Here are some
+  <li>Create a JS Object or Function to hold the OHIF Viewer's configuration. Here are some
    example values that would allow the viewer to hit our public PACS:</li>
 </ol>
 
 ```js
-// Set before importing `ohif-viewer`
+// Set before importing `ohif-viewer` (JS Object)
 window.config = {
   // default: '/'
   routerBasename: '/',
@@ -48,6 +48,9 @@ window.config = {
   },
 };
 ```
+
+To learn more about how you can configure the OHIF Viewer, check out our
+[Configuration Guide](./index.md).
 
 <ol start="3"><li>
   Render the viewer in the web page's target <code>div</code>
