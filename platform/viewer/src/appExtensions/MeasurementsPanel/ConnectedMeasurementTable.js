@@ -159,11 +159,16 @@ function convertTimepointsToTableData(timepoints) {
   ];
 }
 
-function getSaveFunction(servers) {
-  const activeServer = servers.servers.find(a => a.active === true);
+/**
+ *  Takes server type and return a function or undefined
+ *
+ * @param {string} serverType - The server type
+ * @returns {undefined|Function}
+ */
+function getSaveFunction(serverType) {
   let saveFunction = undefined;
 
-  if (activeServer.type === 'dicomWeb') {
+  if (serverType === 'dicomWeb') {
     saveFunction = () => {
       const measurementApi = OHIF.measurements.MeasurementApi.Instance;
       const promise = measurementApi.storeMeasurements();
@@ -177,7 +182,8 @@ function getSaveFunction(servers) {
 const mapStateToProps = state => {
   const { timepointManager, servers } = state;
   const { timepoints, measurements } = timepointManager;
-  const saveFunction = getSaveFunction(servers);
+  const activeServer = servers.servers.find(a => a.active === true);
+  const saveFunction = getSaveFunction(activeServer.type);
 
   return {
     timepoints: convertTimepointsToTableData(timepoints),

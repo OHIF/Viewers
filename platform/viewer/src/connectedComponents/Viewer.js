@@ -58,7 +58,10 @@ class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.array,
     studyInstanceUids: PropTypes.array,
-    activeServer: PropTypes.object,
+    activeServer: PropTypes.shape({
+      type: PropTypes.string,
+      wadoRoot: PropTypes.string,
+    }),
     onTimepointsUpdated: PropTypes.func,
     onMeasurementsUpdated: PropTypes.func,
     // window.store.getState().viewports.viewportSpecificData
