@@ -1,11 +1,11 @@
 /**
- *  Should look for the instance metadata into the displaySets and return it
+ *  Should Find the requested instance metadata into the displaySets and return
  *
  * @param {Array} displaySets List of displaySets
  * @param {String} sopInstanceUid sopInstanceUID to look for
- * @returns {Object} instance metadata searched
+ * @returns {Object} instance metadata found
  */
-const getInstanceMetadata = (displaySets, sopInstanceUid) => {
+const findInstanceMetadataBySopInstanceUid = (displaySets, sopInstanceUid) => {
   let instanceFound;
 
   displaySets.find(displaySet => {
@@ -19,4 +19,4 @@ const getInstanceMetadata = (displaySets, sopInstanceUid) => {
   return instanceFound;
 };
 
-export default getInstanceMetadata;
+export default findInstanceMetadataBySopInstanceUid;
