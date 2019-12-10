@@ -43,7 +43,7 @@ translate to in practice?
 
 ```js
 // In the application
-const UINotificationService = createUINotificationService();
+import UINotificationService from '@ohif/core';
 const servicesManager = new ServicesManager();
 
 servicesManager.registerService(UINotificationService);

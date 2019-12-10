@@ -28,11 +28,11 @@ import {
   ExtensionManager,
   ServicesManager,
   HotkeysManager,
-  createUINotificationService,
-  createUIModalService,
-  createUIDialogService,
-  createUIContextMenuService,
-  createUILabellingFlowService,
+  UINotificationService,
+  UIModalService,
+  UIDialogService,
+  UIContextMenuService,
+  UILabellingFlowService,
   utils,
   redux as reduxOHIF,
 } from '@ohif/core';
@@ -69,13 +69,6 @@ const commandsManagerConfig = {
   getAppState: () => store.getState(),
   getActiveContexts: () => getActiveContexts(store.getState()),
 };
-
-/** Services */
-const UINotificationService = createUINotificationService();
-const UIModalService = createUIModalService();
-const UIDialogService = createUIDialogService();
-const UIContextMenuService = createUIContextMenuService();
-const UILabellingFlowService = createUILabellingFlowService();
 
 /** Managers */
 const commandsManager = new CommandsManager(commandsManagerConfig);
@@ -145,7 +138,7 @@ class App extends Component {
     _initServices([
       UINotificationService,
       UIModalService,
-      UIDialogService,
+      [UIDialogService, { testing: true }],
       UIContextMenuService,
       UILabellingFlowService,
     ]);
@@ -165,6 +158,14 @@ class App extends Component {
 
   render() {
     const { whiteLabelling, routerBasename } = this._appConfig;
+    const {
+      UINotificationService,
+      UIDialogService,
+      UILabellingFlowService,
+      UIModalService,
+      UIContextMenuService,
+    } = servicesManager.services;
+
     if (this._userManager) {
       return (
         <AppContext.Provider value={{ appConfig: this._appConfig }}>
