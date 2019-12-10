@@ -1,14 +1,14 @@
 /**
+ *
  * Retrieve a list of all displaySets of all studies
  *
- * @param {Object} studyMetadataManager
- * @returns {Object} List of DisplaySets
+ * @param {object} studies - List of studies loaded into the viewer
+ * @returns {object} List of DisplaySets
  */
-const getAllDisplaySets = (studyMetadataManager) => {
-  const allStudies = studyMetadataManager.all();
+const getAllDisplaySets = (studies) => {
   let allDisplaySets = [];
 
-  allStudies.forEach(study => {
+  studies.forEach(study => {
     if (study.getDisplaySets) {
       allDisplaySets = allDisplaySets.concat(study.getDisplaySets());
     }

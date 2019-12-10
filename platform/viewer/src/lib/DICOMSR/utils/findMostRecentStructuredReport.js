@@ -1,14 +1,13 @@
 /**
  * Should find the most recent Structured Report metadata
  *
- * @param {*} studyMetadataManager
+ * @param {Array} studies
  * @returns {Object} Series
  */
-const findMostRecentStructuredReport = (studyMetadataManager) => {
-  const allStudies = studyMetadataManager.all();
+const findMostRecentStructuredReport = (studies) => {
   let mostRecentStructuredReport;
 
-  allStudies.forEach(study => {
+  studies.forEach(study => {
     const allSeries = study.getSeries ? study.getSeries() : [];
     allSeries.forEach(series => {
 

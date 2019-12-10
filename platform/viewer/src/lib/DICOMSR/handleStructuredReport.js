@@ -1,5 +1,5 @@
 import * as dcmjs from 'dcmjs';
-import { DICOMWeb, utils } from '@ohif/core';
+import { DICOMWeb } from '@ohif/core';
 import parseDicomStructuredReport from './parseDicomStructuredReport';
 import parseMeasurementsData from './parseMeasurementsData';
 import getAllDisplaySets from './utils/getAllDisplaySets';
@@ -9,18 +9,16 @@ import { api } from 'dicomweb-client';
 const VERSION_NAME = 'dcmjs-0.0';
 const TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.1';
 
-const { studyMetadataManager } = utils;
-
 /**
  * Function to retrieve measurements from DICOM Structured Reports coming from determined server
  *
  * @param {Array} series List of all series metaData
- * @param {Object} server
+ * @param {string} serverUrl
  * @returns {Object} MeasurementData
  */
-const retrieveMeasurementFromSR = async (series, server) => {
+const retrieveMeasurementFromSR = async (series, studies, serverUrl) => {
   const config = {
-    url: server.wadoRoot,
+    url: serverUrl,
     headers: DICOMWeb.getAuthorizationHeader(),
   };
 
@@ -34,7 +32,7 @@ const retrieveMeasurementFromSR = async (series, server) => {
   };
 
   const part10SRArrayBuffer = await dicomWeb.retrieveInstance(options);
-  const displaySets = getAllDisplaySets(studyMetadataManager);
+  const displaySets = getAllDisplaySets(studies);
   const measurementsData = parseDicomStructuredReport(part10SRArrayBuffer, displaySets);
 
   return measurementsData;
@@ -44,10 +42,10 @@ const retrieveMeasurementFromSR = async (series, server) => {
  * Function to store measurements to DICOM Structured Reports in determined server
  *
  * @param {Object} measurements
- * @param {Object} server
+ * @param {string} serverUrl
  * @returns {Promise}
  */
-const stowSRFromMeasurements = async (measurements, server) => {
+const stowSRFromMeasurements = async (measurements, serverUrl) => {
   const { dataset } = parseMeasurementsData(
     measurements
   );
@@ -70,7 +68,7 @@ const stowSRFromMeasurements = async (measurements, server) => {
   const part10Buffer = dicomDict.write();
 
   const config = {
-    url: server.wadoRoot,
+    url: serverUrl,
     headers: DICOMWeb.getAuthorizationHeader(),
   };
 

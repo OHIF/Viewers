@@ -2,12 +2,18 @@ import { log, studies, utils } from '@ohif/core';
 import { retrieveMeasurementFromSR, stowSRFromMeasurements } from './handleStructuredReport';
 import findMostRecentStructuredReport from './utils/findMostRecentStructuredReport';
 
-const { studyMetadataManager } = utils;
+/**
+ *
+ * @typedef serverType
+ * @property {string} type - type of the server
+ * @property {string} wadoRoot - server wado root url
+ *
+ */
 
 /**
  * Function to be registered into MeasurementAPI to retrieve measurements from DICOM Structured Reports
  *
- * @param {Object} server
+ * @param {serverType} server
  * @returns {Promise} Should resolve with OHIF measurementData object
  */
 const retrieveMeasurements = server => {
@@ -18,20 +24,22 @@ const retrieveMeasurements = server => {
     return Promise.reject({});
   }
 
-  const latestSeries = findMostRecentStructuredReport(studyMetadataManager);
+  const serverUrl = server.wadoRoot;
+  const studies = utils.studyMetadataManager.all();
+  const latestSeries = findMostRecentStructuredReport(studies);
 
   if (!latestSeries) return Promise.resolve({});
 
-  return retrieveMeasurementFromSR(latestSeries, server);
+  return retrieveMeasurementFromSR(latestSeries, studies, serverUrl);
 };
 
 /**
  *  Function to be registered into MeasurementAPI to store measurements into DICOM Structured Reports
  *
- * @param {Object} measurementData
- * @param {Object} filter
- * @param {Object} server
- * @returns {Object} With message to be displayed on success
+ * @param {object} measurementData
+ * @param {object} filter
+ * @param {serverType} server
+ * @returns {object} With message to be displayed on success
  */
 const storeMeasurements = async (measurementData, filter, server) => {
   log.info('[DICOMSR] storeMeasurements');
@@ -41,13 +49,14 @@ const storeMeasurements = async (measurementData, filter, server) => {
     return Promise.reject({});
   }
 
+  const serverUrl = server.wadoRoot;
   const firstMeasurementKey = Object.keys(measurementData)[0];
   const firstMeasurement = measurementData[firstMeasurementKey][0];
   const studyInstanceUid =
     firstMeasurement && firstMeasurement.studyInstanceUid;
 
   try {
-    await stowSRFromMeasurements(measurementData, server);
+    await stowSRFromMeasurements(measurementData, serverUrl);
     if (studyInstanceUid) {
       studies.deleteStudyMetadataPromise(studyInstanceUid);
     }
