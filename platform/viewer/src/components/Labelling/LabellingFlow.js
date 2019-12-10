@@ -44,13 +44,9 @@ const LabellingFlow = ({
     const newMeasurementData = cloneDeep(measurementData);
     treatMeasurementData(newMeasurementData);
 
-    let newEditLocation = editLocation;
-    if (!editDescription && !editLocation) {
-      newEditLocation = true;
-    }
     setState(state => ({
       ...state,
-      editLocation: newEditLocation,
+      editLocation: !editDescription && !editLocation,
       measurementData: newMeasurementData,
     }));
   }, [editDescription, editLocation, measurementData]);
@@ -75,8 +71,8 @@ const LabellingFlow = ({
     setState(state => ({ ...state, editDescription: false }));
   };
 
-  const handleKeyPress = e => {
-    if (e.key === 'Enter') {
+  const handleKeyPress = event => {
+    if (event.key === 'Enter') {
       descriptionSave();
     }
   };
@@ -120,19 +116,16 @@ const LabellingFlow = ({
    * Waits for 1 sec to dismiss the labelling component.
    *
    */
-  const fadeOutAndLeave = () => {
-    setFadeOutTimer(setTimeout(() => setShowComponent(false), 1000));
-  };
+  const fadeOutAndLeave = () =>
+    setFadeOutTimer(setTimeout(fadeOutAndLeaveFast, 1000));
 
   const fadeOutAndLeaveFast = () => setShowComponent(false);
 
   const clearFadeOutTimer = () => {
-    if (!fadeOutTimer) {
-      return;
+    if (fadeOutTimer) {
+      clearTimeout(fadeOutTimer);
+      setFadeOutTimer(null);
     }
-
-    clearTimeout(fadeOutTimer);
-    setFadeOutTimer(null);
   };
 
   const descriptionDialogUpdate = description => {
@@ -146,15 +139,13 @@ const LabellingFlow = ({
 
     if (!skipAddLabelButton) {
       return (
-        <>
-          <button
-            type="button"
-            className="addLabelButton"
-            onClick={showLabelling}
-          >
-            {location ? 'Edit' : 'Add'} Label
-          </button>
-        </>
+        <button
+          type="button"
+          className="addLabelButton"
+          onClick={showLabelling}
+        >
+          {location ? 'Edit' : 'Add'} Label
+        </button>
       );
     } else {
       if (editLocation) {
