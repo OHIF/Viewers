@@ -212,19 +212,46 @@ class OHIFCornerstoneViewport extends Component {
     });
   }
 
+  setImageIdIndex(imageIdIndex) {
+    this.setState(state => {
+      state.viewportData.stack.currentImageIdIndex = imageIdIndex;
+      return state;
+    });
+  }
+
+  getImageIdIndexChanged(sopInstanceUid) {
+    const { imageIds, currentImageIdIndex } = this.state.viewportData.stack;
+    const imageId = imageIds[currentImageIdIndex];
+    const sopCommonModule = cornerstone.metaData.get(
+      'sopCommonModule',
+      imageId
+    );
+
+    if (!sopCommonModule) {
+      return;
+    }
+
+    return sopCommonModule.sopInstanceUID !== sopInstanceUid;
+  }
+
   componentDidMount() {
     this.setStateFromProps();
   }
 
-  componentDidUpdate(prevProps) {
-    const { studies, displaySet } = this.props.viewportData;
+  componentDidUpdate(prevProps, prevState) {
+    const { displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
+    const displaySetInstanceUidChanged = displaySet.displaySetInstanceUid !== prevDisplaySet.displaySetInstanceUid;
+    const sopInstanceUidChanged = displaySet.sopInstanceUid !== prevDisplaySet.sopInstanceUid;
+    const frameIndexChanged = displaySet.frameIndex !== prevDisplaySet.frameIndex;
+    const imageIdIndexChanged = this.getImageIdIndexChanged(displaySet.sopInstanceUid);
+
     if (
-      displaySet.displaySetInstanceUid !==
-        prevDisplaySet.displaySetInstanceUid ||
-      displaySet.sopInstanceUid !== prevDisplaySet.sopInstanceUid ||
-      displaySet.frameIndex !== prevDisplaySet.frameIndex
+      displaySetInstanceUidChanged ||
+      sopInstanceUidChanged ||
+      frameIndexChanged ||
+      imageIdIndexChanged
     ) {
       this.setStateFromProps();
     }
@@ -264,6 +291,7 @@ class OHIFCornerstoneViewport extends Component {
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
+          updateImageIdIndex={this.setImageIdIndex.bind(this)}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}
