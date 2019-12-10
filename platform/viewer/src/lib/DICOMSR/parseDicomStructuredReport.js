@@ -24,9 +24,9 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
   const measurementData = {};
   let measurementNumber = 0;
 
-  Object.keys(storedMeasurementByToolType).forEach(toolType => {
-    const measurements = storedMeasurementByToolType[toolType];
-    measurementData[toolType] = [];
+  Object.keys(storedMeasurementByToolType).forEach(toolName => {
+    const measurements = storedMeasurementByToolType[toolName];
+    measurementData[toolName] = [];
 
     measurements.forEach(measurement => {
       const instanceMetadata = getInstanceMetadata(
@@ -55,11 +55,11 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
         patientId,
         measurementNumber: ++measurementNumber,
         timepointId: currentTimepointId,
-        toolType,
+        toolType: toolName,
         _id: imageId + measurementNumber,
       });
 
-      measurementData[toolType].push(toolData);
+      measurementData[toolName].push(toolData);
     });
   });
 
