@@ -27,26 +27,25 @@ const LabellingFlow = ({
     skipAddLabelButton,
   });
 
-  const initialItems = OHIFLabellingData;
-  const currentItems = cloneDeep(initialItems);
-
   useEffect(() => {
-    const treatMeasurementData = measurementData => {
-      if (editDescription) {
-        measurementData.description = undefined;
-      }
-
-      if (editLocation) {
-        measurementData.location = undefined;
-      }
-    };
-
     const newMeasurementData = cloneDeep(measurementData);
-    treatMeasurementData(newMeasurementData);
+
+    if (editDescription) {
+      newMeasurementData.description = undefined;
+    }
+
+    if (editLocation) {
+      newMeasurementData.location = undefined;
+    }
+
+    let newEditLocation = editLocation;
+    if (!editDescription && !editLocation) {
+      newEditLocation = true;
+    }
 
     setState(state => ({
       ...state,
-      editLocation: !editDescription && !editLocation,
+      editLocation: newEditLocation,
       measurementData: newMeasurementData,
     }));
   }, [editDescription, editLocation, measurementData]);
@@ -151,7 +150,7 @@ const LabellingFlow = ({
       if (editLocation) {
         return (
           <SelectTree
-            items={currentItems}
+            items={OHIFLabellingData}
             columns={1}
             onSelected={selectTreeSelectCallback}
             selectTreeFirstTitle="Assign Label"
