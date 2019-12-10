@@ -3,7 +3,7 @@ import * as dcmjs from 'dcmjs';
 /**
  *  Checks if dcmjs has support to determined tool
  *
- * @param {String} toolName
+ * @param {string} toolName
  * @returns {boolean}
  */
 const isToolSupported = toolName => {

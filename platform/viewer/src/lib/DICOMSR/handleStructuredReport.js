@@ -12,8 +12,9 @@ const TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.1';
 /**
  * Function to retrieve measurements from DICOM Structured Reports coming from determined server
  *
- * @param {Array} series List of all series metaData
- * @param {string} serverUrl
+ * @param {Array} series - List of all series metaData loaded
+ * @param {Array} studies - List of all studies metaData loaded
+ * @param {string} serverUrl - Server URL to be used on request
  * @returns {Object} MeasurementData
  */
 const retrieveMeasurementFromSR = async (series, studies, serverUrl) => {
@@ -41,8 +42,8 @@ const retrieveMeasurementFromSR = async (series, studies, serverUrl) => {
 /**
  * Function to store measurements to DICOM Structured Reports in determined server
  *
- * @param {Object} measurements
- * @param {string} serverUrl
+ * @param {Object} measurements - OHIF measurementData object
+ * @param {string} serverUrl - Server URL to be used on request
  * @returns {Promise}
  */
 const stowSRFromMeasurements = async (measurements, serverUrl) => {

@@ -6,7 +6,7 @@ import isToolSupported from './utils/isToolSupported';
 /**
  * Function to parse OHIF viewer measurementData into a dcmjs MeasurementReport
  *
- * @param {Object} measurementsData OHIF measurementData object
+ * @param {Object} measurementsData - OHIF measurementData object
  * @returns {Object} Dataset: measurement report from dcmjs
  */
 const parseMeasurementsData = measurementsData => {

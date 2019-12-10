@@ -66,6 +66,15 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
   return measurementData;
 };
 
+/**
+ * Function to create imagePath with all imageData related
+ *
+ * @param {string} studyInstanceUid
+ * @param {string} seriesInstanceUid
+ * @param {string} sopInstanceUid
+ * @param {string} frameIndex
+ * @returns
+ */
 const getImagePath = (studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex) => {
   return [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join('_');
 }

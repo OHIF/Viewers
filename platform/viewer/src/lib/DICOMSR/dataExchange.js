@@ -36,10 +36,10 @@ const retrieveMeasurements = server => {
 /**
  *  Function to be registered into MeasurementAPI to store measurements into DICOM Structured Reports
  *
- * @param {object} measurementData
- * @param {object} filter
+ * @param {Object} measurementData - OHIF measurementData object
+ * @param {Object} filter
  * @param {serverType} server
- * @returns {object} With message to be displayed on success
+ * @returns {Object} With message to be displayed on success
  */
 const storeMeasurements = async (measurementData, filter, server) => {
   log.info('[DICOMSR] storeMeasurements');

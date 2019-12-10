@@ -25,7 +25,7 @@ const findMostRecentStructuredReport = (studies) => {
 /**
  *  Checks if series sopClassUID matches with the supported Structured Reports sopClassUID
  *
- * @param {Object} series Series metadata
+ * @param {Object} series - Series metadata
  * @returns {boolean}
  */
 const isStructuredReportSeries = (series) => {
@@ -43,8 +43,8 @@ const isStructuredReportSeries = (series) => {
 /**
  *  Checkes if series1 is newer than series2
  *
- * @param {Object} series1 Series Metadata 1
- * @param {Object} series2 Series Metadata 2
+ * @param {Object} series1 - Series Metadata 1
+ * @param {Object} series2 - Series Metadata 2
  * @returns {boolean} true/false if series1 is newer than series2
  */
 const compareSeriesDate = (series1, series2) => {
