@@ -115,7 +115,6 @@ const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
       const URLObj = window.URL || window.webkitURL;
       const a = document.createElement('a');
       a.href = URLObj.createObjectURL(blob);
-      window.downloadUrl = URLObj.createObjectURL(blob);
       a.download = file;
       document.body.appendChild(a);
       a.click();
