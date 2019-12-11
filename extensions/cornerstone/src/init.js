@@ -102,7 +102,7 @@ export default function init({ servicesManager, configuration }) {
   ];
 
   /* Add extension tools configuration here. */
-  const extensionToolsConfiguration = {
+  const internalToolsConfig = {
     ArrowAnnotate: {
       configuration: {
         getTextCallback: (callback, eventDetails) =>
@@ -113,19 +113,15 @@ export default function init({ servicesManager, configuration }) {
     },
   };
 
-  const isEmpty = obj => Object.keys(obj).length < 1;
-  if (!isEmpty(configuration.tools) || !isEmpty(extensionToolsConfiguration)) {
-    /* Add tools with its custom props through extension configuration. */
-    tools.forEach(tool => {
-      const toolName = tool.name.replace('Tool', '');
-      const configurationToolProps = configuration.tools[toolName] || {};
-      const extensionToolProps = extensionToolsConfiguration[toolName];
-      let props = merge(extensionToolProps, configurationToolProps);
-      csTools.addTool(tool, props);
-    });
-  } else {
-    tools.forEach(tool => csTools.addTool(tool));
-  }
+  /* Add tools with its custom props through extension configuration. */
+  tools.forEach(tool => {
+    const toolName = tool.name.replace('Tool', '');
+    const externalToolsConfig = configuration.tools || {};
+    const externalToolProps = externalToolsConfig[toolName] || {};
+    const internalToolProps = internalToolsConfig[toolName] || {};
+    const props = merge(internalToolProps, externalToolProps);
+    csTools.addTool(tool, props);
+  });
 
   csTools.setToolActive('Pan', { mouseButtonMask: 4 });
   csTools.setToolActive('Zoom', { mouseButtonMask: 2 });
