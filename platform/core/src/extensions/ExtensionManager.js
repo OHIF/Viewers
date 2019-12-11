@@ -26,7 +26,7 @@ export default class ExtensionManager {
       const hasConfiguration = Array.isArray(extension);
 
       if (hasConfiguration) {
-        const [ohifExtension, configuration] = extensions;
+        const [ohifExtension, configuration] = extension;
         this.registerExtension(ohifExtension, configuration);
       } else {
         this.registerExtension(extension);
@@ -69,6 +69,7 @@ export default class ExtensionManager {
     if (extension.preRegistration) {
       extension.preRegistration({
         servicesManager: this._servicesManager,
+        commandsManager: this._commandsManager,
         configuration,
       });
     }
@@ -112,6 +113,7 @@ export default class ExtensionManager {
     try {
       const extensionModule = getModuleFn({
         servicesManager: this._servicesManager,
+        commandsManager: this._commandsManager,
       });
 
       if (!extensionModule) {

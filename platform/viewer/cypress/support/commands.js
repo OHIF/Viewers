@@ -427,15 +427,19 @@ Cypress.Commands.add('initPreferencesModalAliases', () => {
 Cypress.Commands.add('openPreferences', () => {
   cy.log('Open User Preferences Modal');
   // Open User Preferences modal
-  cy.get('[data-cy="options-menu"]')
-    .scrollIntoView()
-    .click()
-    .then(() => {
-      cy.get('[data-cy="about-item-menu"]')
-        .last()
+  cy.get('body').then(body => {
+    if (body.find('.OHIFModal').length === 0) {
+      cy.get('[data-cy="options-menu"]')
+        .scrollIntoView()
         .click()
-        .wait(200);
-    });
+        .then(() => {
+          cy.get('[data-cy="dd-item-menu"]')
+            .last()
+            .click()
+            .wait(200);
+        });
+    }
+  });
 });
 
 Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
@@ -446,10 +450,7 @@ Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
 
   cy.log('Reset to Default Preferences');
   cy.get('@restoreBtn').click();
-
-  //TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
-  //Once the issue is fixed, the following code should be uncommented
-  //cy.get('@saveBtn').click();
+  cy.get('@saveBtn').click();
 });
 
 Cypress.Commands.add(
@@ -457,11 +458,46 @@ Cypress.Commands.add(
   (function_label, shortcut) => {
     // Within scopes all `.get` and `.contains` to within the matched elements
     // dom instead of checking from document
-    cy.get('.HotKeysPreferences').within(() => {
-      cy.contains(function_label) // label we're looking for
-        .parent()
-        .find('input') // closest input to that label
-        .type(shortcut, { force: true }); // Set new shortcut for that function
-    });
+    cy.get('.HotKeysPreferences')
+      .within(() => {
+        cy.contains(function_label) // label we're looking for
+          .parent()
+          .find('input') // closest input to that label
+          .type(shortcut, { force: true }); // Set new shortcut for that function
+      })
+      .blur();
   }
 );
+
+Cypress.Commands.add('openDownloadImageModal', () => {
+  // Click on More button
+  cy.get('.expandableToolMenu')
+    .as('moreBtn')
+    .click();
+
+  // Click on Download button
+  cy.get('.tooltip-inner > :nth-child(13)')
+    .as('downloadBtn')
+    .click();
+});
+
+Cypress.Commands.add('setLanguage', (language, save = true) => {
+  cy.openPreferences();
+
+  cy.get('@userPreferencesGeneralTab')
+    .click()
+    .should('have.class', 'active');
+
+  // Language dropdown should be displayed
+  cy.get('#language-select').should('be.visible');
+
+  // Select Language and Save/Cancel
+  cy.get('#language-select')
+    .select(language)
+    .then(() => {
+      const toClick = save ? '@saveBtn' : '@cancelBtn';
+      cy.get(toClick)
+        .scrollIntoView()
+        .click();
+    });
+});

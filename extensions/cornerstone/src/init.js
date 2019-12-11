@@ -3,6 +3,8 @@ import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import queryString from 'query-string';
+import { SimpleDialog } from '@ohif/ui';
+import merge from 'lodash.merge';
 
 function fallbackMetaDataProvider(type, imageId) {
   if (!imageId.includes('wado?requestType=WADO')) {
@@ -25,10 +27,35 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
 
 /**
  *
- * @param {object} configuration
+ * @param {Object} servicesManager
+ * @param {Object} configuration
  * @param {Object|Array} configuration.csToolsConfig
  */
-export default function init({ servicesManager, configuration = {} }) {
+export default function init({ servicesManager, configuration }) {
+  const callInputDialog = (data, event, callback) => {
+    const { UIDialogService } = servicesManager.services;
+
+    if (UIDialogService) {
+      let dialogId = UIDialogService.create({
+        centralize: true,
+        isDraggable: false,
+        content: SimpleDialog.InputDialog,
+        useLastPosition: false,
+        showOverlay: true,
+        contentProps: {
+          title: 'Enter your annotation',
+          label: 'New label',
+          measurementData: data ? { description: data.text } : {},
+          onClose: () => UIDialogService.dismiss({ id: dialogId }),
+          onSubmit: value => {
+            callback(value);
+            UIDialogService.dismiss({ id: dialogId });
+          },
+        },
+      });
+    }
+  };
+
   const { csToolsConfig } = configuration;
   const { StackManager } = OHIF.utils;
   const metadataProvider = new OHIF.cornerstone.MetadataProvider();
@@ -50,55 +77,62 @@ export default function init({ servicesManager, configuration = {} }) {
   initCornerstoneTools(defaultCsToolsConfig);
 
   // ~~ Toooools 🙌
-  const {
-    PanTool,
-    ZoomTool,
-    WwwcTool,
-    MagnifyTool,
-    StackScrollTool,
-    StackScrollMouseWheelTool,
-    // Touch
-    PanMultiTouchTool,
-    ZoomTouchPinchTool,
-    // Annotations
-    EraserTool,
-    ArrowAnnotateTool,
-    BidirectionalTool,
-    LengthTool,
-    AngleTool,
-    FreehandRoiTool,
-    EllipticalRoiTool,
-    DragProbeTool,
-    RectangleRoiTool,
-    // Segmentation
-    BrushTool,
-  } = csTools;
   const tools = [
-    PanTool,
-    ZoomTool,
-    WwwcTool,
-    MagnifyTool,
-    StackScrollTool,
-    StackScrollMouseWheelTool,
+    csTools.PanTool,
+    csTools.ZoomTool,
+    csTools.WwwcTool,
+    csTools.MagnifyTool,
+    csTools.StackScrollTool,
+    csTools.StackScrollMouseWheelTool,
     // Touch
-    PanMultiTouchTool,
-    ZoomTouchPinchTool,
+    csTools.PanMultiTouchTool,
+    csTools.ZoomTouchPinchTool,
     // Annotations
-    EraserTool,
-    ArrowAnnotateTool,
-    BidirectionalTool,
-    LengthTool,
-    AngleTool,
-    FreehandRoiTool,
-    EllipticalRoiTool,
-    DragProbeTool,
-    RectangleRoiTool,
+    csTools.ArrowAnnotateTool,
+    csTools.EraserTool,
+    csTools.BidirectionalTool,
+    csTools.LengthTool,
+    csTools.AngleTool,
+    csTools.FreehandRoiTool,
+    csTools.EllipticalRoiTool,
+    csTools.DragProbeTool,
+    csTools.RectangleRoiTool,
     // Segmentation
-    BrushTool,
+    csTools.BrushTool,
   ];
 
-  tools.forEach(tool => csTools.addTool(tool));
+  /* Add extension tools configuration here. */
+  const internalToolsConfig = {
+    ArrowAnnotate: {
+      configuration: {
+        getTextCallback: (callback, eventDetails) =>
+          callInputDialog(null, eventDetails, callback),
+        changeTextCallback: (data, eventDetails, callback) =>
+          callInputDialog(data, eventDetails, callback),
+      },
+    },
+  };
 
+  /* Add tools with its custom props through extension configuration. */
+  tools.forEach(tool => {
+    const toolName = tool.name.replace('Tool', '');
+    const externalToolsConfig = configuration.tools || {};
+    const externalToolProps = externalToolsConfig[toolName] || {};
+    const internalToolProps = internalToolsConfig[toolName] || {};
+    const props = merge(internalToolProps, externalToolProps);
+    csTools.addTool(tool, props);
+  });
+
+  // TODO -> We need a better way to do this with maybe global tool state setting all tools passive.
+  const BaseAnnotationTool = csTools.importInternal('base/BaseAnnotationTool');
+  tools.forEach(tool => {
+    if (tool.prototype instanceof BaseAnnotationTool) {
+      // BaseAnnotationTool would likely come from csTools lib exports
+      const toolName = new tool().name;
+      csTools.setToolPassive(toolName); // there may be a better place to determine name; may not be on uninstantiated class
+    }
+  });
+  
   csTools.setToolActive('Pan', { mouseButtonMask: 4 });
   csTools.setToolActive('Zoom', { mouseButtonMask: 2 });
   csTools.setToolActive('Wwwc', { mouseButtonMask: 1 });

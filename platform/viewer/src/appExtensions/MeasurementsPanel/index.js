@@ -1,3 +1,4 @@
+import React from 'react';
 import ConnectedMeasurementTable from './ConnectedMeasurementTable.js';
 import init from './init.js';
 
@@ -7,10 +8,44 @@ export default {
    */
   id: 'measurements-table',
 
-  preRegistration({ servicesManager, configuration = {} }) {
-    init({ servicesManager, configuration });
+  preRegistration({ servicesManager, commandsManager, configuration = {} }) {
+    init({ servicesManager, commandsManager, configuration });
   },
-  getPanelModule({ servicesManager }) {
+
+  getPanelModule({ servicesManager, commandsManager }) {
+    const { UILabellingFlowService, UINotificationService } = servicesManager.services;
+    const ExtendedConnectedMeasurementTable = () => (
+      <ConnectedMeasurementTable
+        onRelabel={tool => {
+          if (UILabellingFlowService) {
+            UILabellingFlowService.show({
+              centralize: true,
+              props: {
+                skipAddLabelButton: true,
+                editLocation: true,
+                measurementData: tool,
+              },
+            });
+          }
+        }}
+        onEditDescription={tool => {
+          if (UILabellingFlowService) {
+            UILabellingFlowService.show({
+              centralize: true,
+              props: {
+                editDescriptionOnDialog: true,
+                measurementData: tool,
+              },
+            });
+          }
+        }}
+        onSaveComplete={message => {
+          if (UINotificationService) {
+            UINotificationService.show(message);
+          }
+        }}
+      />
+    );
     return {
       menuOptions: [
         {
@@ -22,7 +57,7 @@ export default {
       components: [
         {
           id: 'measurement-panel',
-          component: ConnectedMeasurementTable,
+          component: ExtendedConnectedMeasurementTable,
         },
       ],
       defaultContext: ['VIEWER'],

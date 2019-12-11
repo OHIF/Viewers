@@ -3,6 +3,155 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.1.0...@ohif/viewer@3.1.1) (2019-12-11)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [3.1.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.0.3...@ohif/viewer@3.1.0) (2019-12-11)
+
+
+### Features
+
+* 🎸 DICOM SR STOW on MeasurementAPI ([#954](https://github.com/OHIF/Viewers/issues/954)) ([ebe1af8](https://github.com/OHIF/Viewers/commit/ebe1af8d4f75d2483eba869655906d7829bd9666)), closes [#758](https://github.com/OHIF/Viewers/issues/758)
+
+
+
+
+
+## [3.0.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.0.2...@ohif/viewer@3.0.3) (2019-12-11)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.0.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.0.1...@ohif/viewer@3.0.2) (2019-12-11)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.0.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.0.0...@ohif/viewer@3.0.1) (2019-12-09)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [3.0.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.8...@ohif/viewer@3.0.0) (2019-12-09)
+
+
+* feat!: Ability to configure cornerstone tools via extension configuration (#1229) ([55a5806](https://github.com/OHIF/Viewers/commit/55a580659ecb74ca6433461d8f9a05c2a2b69533)), closes [#1229](https://github.com/OHIF/Viewers/issues/1229)
+
+
+### BREAKING CHANGES
+
+* modifies the exposed react <App /> components props. The contract for providing configuration for the app has changed. Please reference updated documentation for guidance.
+
+
+
+
+
+## [2.11.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.7...@ohif/viewer@2.11.8) (2019-12-07)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.11.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.6...@ohif/viewer@2.11.7) (2019-12-07)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.11.6](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.5...@ohif/viewer@2.11.6) (2019-12-07)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.11.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.4...@ohif/viewer@2.11.5) (2019-12-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.11.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.3...@ohif/viewer@2.11.4) (2019-12-02)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.11.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.2...@ohif/viewer@2.11.3) (2019-12-02)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [2.11.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.1...@ohif/viewer@2.11.2) (2019-11-28)
+
+
+### Bug Fixes
+
+* User Preferences Issues ([#1207](https://github.com/OHIF/Viewers/issues/1207)) ([1df21a9](https://github.com/OHIF/Viewers/commit/1df21a9e075b5e6dfc10a429ae825826f46c71b8)), closes [#1161](https://github.com/OHIF/Viewers/issues/1161) [#1164](https://github.com/OHIF/Viewers/issues/1164) [#1177](https://github.com/OHIF/Viewers/issues/1177) [#1179](https://github.com/OHIF/Viewers/issues/1179) [#1180](https://github.com/OHIF/Viewers/issues/1180) [#1181](https://github.com/OHIF/Viewers/issues/1181) [#1182](https://github.com/OHIF/Viewers/issues/1182) [#1183](https://github.com/OHIF/Viewers/issues/1183) [#1184](https://github.com/OHIF/Viewers/issues/1184) [#1185](https://github.com/OHIF/Viewers/issues/1185)
+
+
+
+
+
+## [2.11.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.11.0...@ohif/viewer@2.11.1) (2019-11-27)
+
+
+### Bug Fixes
+
+* of undefined name of project ([#1231](https://github.com/OHIF/Viewers/issues/1231)) ([e34a057](https://github.com/OHIF/Viewers/commit/e34a05726319e3e70279c43d5bf976d33cdf71f7))
+
+
+
+
+
+# [2.11.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.10.2...@ohif/viewer@2.11.0) (2019-11-25)
+
+
+### Features
+
+* Add new annotate tool using new dialog service ([#1211](https://github.com/OHIF/Viewers/issues/1211)) ([8fd3af1](https://github.com/OHIF/Viewers/commit/8fd3af1e137e793f1b482760a22591c64a072047))
+
+
+
+
+
+## [2.10.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.10.1...@ohif/viewer@2.10.2) (2019-11-25)
+
+
+### Bug Fixes
+
+* Issue branch from danny experimental changes pr 1128 ([#1150](https://github.com/OHIF/Viewers/issues/1150)) ([a870b3c](https://github.com/OHIF/Viewers/commit/a870b3cc6056cf824af422e46f1ad674910b534e)), closes [#1161](https://github.com/OHIF/Viewers/issues/1161) [#1164](https://github.com/OHIF/Viewers/issues/1164) [#1177](https://github.com/OHIF/Viewers/issues/1177) [#1179](https://github.com/OHIF/Viewers/issues/1179) [#1180](https://github.com/OHIF/Viewers/issues/1180) [#1181](https://github.com/OHIF/Viewers/issues/1181) [#1182](https://github.com/OHIF/Viewers/issues/1182) [#1183](https://github.com/OHIF/Viewers/issues/1183) [#1184](https://github.com/OHIF/Viewers/issues/1184) [#1185](https://github.com/OHIF/Viewers/issues/1185)
+
+
+
+
+
 ## [2.10.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@2.10.0...@ohif/viewer@2.10.1) (2019-11-20)
 
 **Note:** Version bump only for package @ohif/viewer

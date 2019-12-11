@@ -37,6 +37,24 @@ describe('ExtensionManager.js', () => {
       // Assert
       expect(extensionManager.registerExtension.mock.calls.length).toBe(3);
     });
+
+    it('calls registerExtension() for each extension passing its configuration if tuple', () => {
+      const fakeConfiguration = { testing: true };
+      extensionManager.registerExtension = jest.fn();
+
+      // SUT
+      const fakeExtensions = [
+        { one: '1' },
+        [{ two: '2' }, fakeConfiguration],
+        { three: '3 ' },
+      ];
+      extensionManager.registerExtensions(fakeExtensions);
+
+      // Assert
+      expect(extensionManager.registerExtension.mock.calls[1]).toContain(
+        fakeConfiguration
+      );
+    });
   });
 
   describe('registerExtension()', () => {
@@ -49,7 +67,7 @@ describe('ExtensionManager.js', () => {
       expect(fakeExtension.preRegistration.mock.calls.length).toBe(1);
     });
 
-    it('calls preRegistration() passing configuration and servicesManager instance for extension', () => {
+    it('calls preRegistration() passing configuration along with servicesManager and commandsManager instances for extension', () => {
       const configuration = { config: 'Some configuration' };
       extensionManager._servicesManager = { services: { TestService: {} } };
 
@@ -60,6 +78,7 @@ describe('ExtensionManager.js', () => {
       // Assert
       expect(fakeExtension.preRegistration.mock.calls[0][0]).toEqual({
         servicesManager: extensionManager._servicesManager,
+        commandsManager: extensionManager._commandsManager,
         configuration,
       });
     });
@@ -134,7 +153,7 @@ describe('ExtensionManager.js', () => {
       );
     });
 
-    it('successfully passes a servicesManager instance to each module', () => {
+    it('successfully passes a servicesManager and commandsManager instances to each module', () => {
       extensionManager._servicesManager = { services: { TestService: {} } };
 
       const extension = {
@@ -150,6 +169,7 @@ describe('ExtensionManager.js', () => {
 
       expect(extension.getViewportModule.mock.calls[0][0]).toEqual({
         servicesManager: extensionManager._servicesManager,
+        commandsManager: extensionManager._commandsManager,
       });
     });
 

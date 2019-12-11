@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.0.2...@ohif/core@2.1.0) (2019-12-11)
+
+
+### Features
+
+* 🎸 DICOM SR STOW on MeasurementAPI ([#954](https://github.com/OHIF/Viewers/issues/954)) ([ebe1af8](https://github.com/OHIF/Viewers/commit/ebe1af8d4f75d2483eba869655906d7829bd9666)), closes [#758](https://github.com/OHIF/Viewers/issues/758)
+
+
+
+
+
+## [2.0.2](https://github.com/OHIF/Viewers/compare/@ohif/core@2.0.1...@ohif/core@2.0.2) (2019-12-11)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.0.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.0.0...@ohif/core@2.0.1) (2019-12-09)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [2.0.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.13.3...@ohif/core@2.0.0) (2019-12-09)
+
+
+* feat!: Ability to configure cornerstone tools via extension configuration (#1229) ([55a5806](https://github.com/OHIF/Viewers/commit/55a580659ecb74ca6433461d8f9a05c2a2b69533)), closes [#1229](https://github.com/OHIF/Viewers/issues/1229)
+
+
+### BREAKING CHANGES
+
+* modifies the exposed react <App /> components props. The contract for providing configuration for the app has changed. Please reference updated documentation for guidance.
+
+
+
+
+
+## [1.13.3](https://github.com/OHIF/Viewers/compare/@ohif/core@1.13.2...@ohif/core@1.13.3) (2019-12-06)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [1.13.2](https://github.com/OHIF/Viewers/compare/@ohif/core@1.13.1...@ohif/core@1.13.2) (2019-12-02)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [1.13.1](https://github.com/OHIF/Viewers/compare/@ohif/core@1.13.0...@ohif/core@1.13.1) (2019-11-28)
+
+
+### Bug Fixes
+
+* User Preferences Issues ([#1207](https://github.com/OHIF/Viewers/issues/1207)) ([1df21a9](https://github.com/OHIF/Viewers/commit/1df21a9e075b5e6dfc10a429ae825826f46c71b8)), closes [#1161](https://github.com/OHIF/Viewers/issues/1161) [#1164](https://github.com/OHIF/Viewers/issues/1164) [#1177](https://github.com/OHIF/Viewers/issues/1177) [#1179](https://github.com/OHIF/Viewers/issues/1179) [#1180](https://github.com/OHIF/Viewers/issues/1180) [#1181](https://github.com/OHIF/Viewers/issues/1181) [#1182](https://github.com/OHIF/Viewers/issues/1182) [#1183](https://github.com/OHIF/Viewers/issues/1183) [#1184](https://github.com/OHIF/Viewers/issues/1184) [#1185](https://github.com/OHIF/Viewers/issues/1185)
+
+
+
+
+
+# [1.13.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.12.0...@ohif/core@1.13.0) (2019-11-25)
+
+
+### Features
+
+* Add new annotate tool using new dialog service ([#1211](https://github.com/OHIF/Viewers/issues/1211)) ([8fd3af1](https://github.com/OHIF/Viewers/commit/8fd3af1e137e793f1b482760a22591c64a072047))
+
+
+
+
+
 # [1.12.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.11.0...@ohif/core@1.12.0) (2019-11-19)
 
 
