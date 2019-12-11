@@ -10,11 +10,11 @@ describe('Top level exports', () => {
       'HotkeysManager',
       'ServicesManager',
       //
-      'createUINotificationService',
-      'createUIModalService',
-      'createUIDialogService',
-      'createUIContextMenuService',
-      'createUILabellingFlowService',
+      'UINotificationService',
+      'UIModalService',
+      'UIDialogService',
+      'UIContextMenuService',
+      'UILabellingFlowService',
       //
       'utils',
       'studies',

@@ -178,6 +178,7 @@ function ViewerRetrieveStudyData({
   // hooks
   const [error, setError] = useState(false);
   const [studies, setStudies] = useState([]);
+  const [isStudyLoaded, setIsStudyLoaded] = useState(false);
   const snackbarContext = useSnackbarContext();
   const { appConfig = {} } = useContext(AppContext);
   const { filterQueryParam: isFilterStrategy = false } = appConfig;
@@ -218,6 +219,7 @@ function ViewerRetrieveStudyData({
     );
 
     setStudies([...studies, study]);
+    setIsStudyLoaded(true);
   };
 
   /**
@@ -332,7 +334,11 @@ function ViewerRetrieveStudyData({
   }
 
   return (
-    <ConnectedViewer studies={studies} studyInstanceUids={studyInstanceUids} />
+    <ConnectedViewer
+      studies={studies}
+      isStudyLoaded={isStudyLoaded}
+      studyInstanceUids={studyInstanceUids}
+    />
   );
 }
 
