@@ -205,8 +205,8 @@ class MeasurementTable extends Component {
   };
 }
 
-const connectedComponent = withSnackbar(
-  withTranslation(['MeasurementTable', 'Common'])(MeasurementTable)
+const connectedComponent = withTranslation(['MeasurementTable', 'Common'])(
+  MeasurementTable
 );
 export { connectedComponent as MeasurementTable };
 export default connectedComponent;

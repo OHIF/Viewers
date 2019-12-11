@@ -10,6 +10,13 @@ import jumpToRowItem from './jumpToRowItem.js';
 const { setViewportSpecificData } = OHIF.redux.actions;
 const { MeasurementApi } = OHIF.measurements;
 
+/**
+ * Takes a list of objects and a property and return the list grouped by the property
+ *
+ * @param {Array} list - The objects to be grouped by
+ * @param {string} props - The property to group the objects
+ * @returns {Object}
+ */
 function groupBy(list, props) {
   return list.reduce((a, b) => {
     (a[b[props]] = a[b[props]] || []).push(b);
@@ -17,16 +24,29 @@ function groupBy(list, props) {
   }, {});
 }
 
-function getAllTools() {
-  const config = OHIF.measurements.MeasurementApi.getConfiguration();
+/**
+ *  Takes a list of tools grouped and return all tools separately
+ *
+ * @param {Array} [toolGroups=[]] - The grouped tools
+ * @returns {Array} - The list of all tools on all groups
+ */
+function getAllTools(toolGroups = []) {
   let tools = [];
-  config.measurementTools.forEach(
+  toolGroups.forEach(
     toolGroup => (tools = tools.concat(toolGroup.childTools))
   );
 
   return tools;
 }
 
+/**
+ * Takes measurementData and build the measurement text to be used into the table
+ *
+ * @param {Object} [measurementData={}]
+ * @param {string} measurementData.location - The measurement location
+ * @param {string} measurementData.description - The measurement description
+ * @returns {string}
+ */
 function getMeasurementText(measurementData = {}) {
   const defaultText = '...';
   const { location = '', description = '' } = measurementData;
@@ -35,6 +55,14 @@ function getMeasurementText(measurementData = {}) {
   return result || defaultText;
 }
 
+/**
+ * Takes a list of measurements grouped by measurement numbers and return each measurement data by available timepoint
+ *
+ * @param {Array} measurementNumberList - The list of measurements
+ * @param {Array} timepoints - The list of available timepoints
+ * @param {Function} displayFunction - The function that builds the display text by each tool
+ * @returns
+ */
 function getDataForEachMeasurementNumber(
   measurementNumberList,
   timepoints,
@@ -57,22 +85,35 @@ function getDataForEachMeasurementNumber(
   return data;
 }
 
-function getWarningsForMeasurement(toolType) {
-  const isToolSupported = DICOMSR.isToolSupported(toolType);
+/**
+ * Take a measurement toolName and return if any warnings
+ *
+ * @param {string} toolName - The tool name
+ * @returns {string}
+ */
+function getWarningsForMeasurement(toolName) {
+  const isToolSupported = DICOMSR.isToolSupported(toolName);
 
   return {
     hasWarnings: !isToolSupported,
     warningTitle: isToolSupported ? '' : 'Unsupported Tool',
     warningList: isToolSupported
       ? []
-      : [`${toolType} cannot be persisted at this time`],
+      : [`${toolName} cannot be persisted at this time`],
   };
 }
 
+/**
+ * Take measurements from MeasurementAPI structure and convert into a measurementTable structure
+ *
+ * @param {Object} toolCollections - The list of all measurement grouped by groupTool and toolName
+ * @param {Array} timepoints - The list of available timepoints
+ * @returns
+ */
 function convertMeasurementsToTableData(toolCollections, timepoints) {
   const config = OHIF.measurements.MeasurementApi.getConfiguration();
   const toolGroups = config.measurementTools;
-  const tools = getAllTools();
+  const tools = getAllTools(toolGroups);
 
   const tableMeasurements = toolGroups.map(toolGroup => {
     return {
@@ -145,6 +186,13 @@ function convertMeasurementsToTableData(toolCollections, timepoints) {
   return tableMeasurements;
 }
 
+/**
+ * Take a list of available timepoints and return a list header information for each timepoint
+ *
+ * @param {Array} timepoints - The list of available timepoints
+ * @param {string} timepoints[].latestDate - The date of the last study taken on the timepoint
+ * @returns {{label: string, key: string, date: string}[]}
+ */
 function convertTimepointsToTableData(timepoints) {
   if (!timepoints || !timepoints.length) {
     return [];
@@ -166,17 +214,13 @@ function convertTimepointsToTableData(timepoints) {
  * @returns {undefined|Function}
  */
 function getSaveFunction(serverType) {
-  let saveFunction = undefined;
-
   if (serverType === 'dicomWeb') {
-    saveFunction = () => {
+    return () => {
       const measurementApi = OHIF.measurements.MeasurementApi.Instance;
       const promise = measurementApi.storeMeasurements();
       return promise;
     };
   }
-
-  return saveFunction;
 }
 
 const mapStateToProps = state => {
