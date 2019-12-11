@@ -4,9 +4,7 @@ import OHIF from '@ohif/core';
 import moment from 'moment';
 import cornerstone from 'cornerstone-core';
 
-//
 import jumpToRowItem from './jumpToRowItem.js';
-import getMeasurementLocationCallback from './getMeasurementLocationCallback';
 
 const { setViewportSpecificData } = OHIF.redux.actions;
 const { MeasurementApi } = OHIF.measurements;
@@ -155,9 +153,11 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     dispatchRelabel: (event, measurementData, viewportsState) => {
+      event.persist();
+
       const activeViewportIndex =
         (viewportsState && viewportsState.activeViewportIndex) || 0;
 
@@ -167,31 +167,21 @@ const mapDispatchToProps = dispatch => {
         return;
       }
 
-      const { element } = enabledElements[activeViewportIndex];
-
-      const eventData = {
-        event: {
-          clientX: event.clientX,
-          clientY: event.clientY,
-        },
-        element,
-      };
-
       const { toolType, measurementId } = measurementData;
       const tool = MeasurementApi.Instance.tools[toolType].find(measurement => {
         return measurement._id === measurementId;
       });
-
-      const options = {
-        skipAddLabelButton: true,
-        editLocation: true,
-      };
 
       // Clone the tool not to set empty location initially
       const toolForLocation = Object.assign({}, tool, { location: null });
-      getMeasurementLocationCallback(eventData, toolForLocation, options);
+
+      if (ownProps.onRelabel) {
+        ownProps.onRelabel(toolForLocation);
+      }
     },
     dispatchEditDescription: (event, measurementData, viewportsState) => {
+      event.persist();
+
       const activeViewportIndex =
         (viewportsState && viewportsState.activeViewportIndex) || 0;
 
@@ -201,26 +191,14 @@ const mapDispatchToProps = dispatch => {
         return;
       }
 
-      const { element } = enabledElements[activeViewportIndex];
-
-      const eventData = {
-        event: {
-          clientX: event.clientX,
-          clientY: event.clientY,
-        },
-        element,
-      };
-
       const { toolType, measurementId } = measurementData;
       const tool = MeasurementApi.Instance.tools[toolType].find(measurement => {
         return measurement._id === measurementId;
       });
 
-      const options = {
-        editDescriptionOnDialog: true,
-      };
-
-      getMeasurementLocationCallback(eventData, tool, options);
+      if (ownProps.onEditDescription) {
+        ownProps.onEditDescription(tool);
+      }
     },
     dispatchJumpToRowItem: (
       measurementData,

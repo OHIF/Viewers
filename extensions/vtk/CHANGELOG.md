@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.0.1...@ohif/extension-vtk@1.0.2) (2019-12-11)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.0.0...@ohif/extension-vtk@1.0.1) (2019-12-09)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+# [1.0.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.54.6...@ohif/extension-vtk@1.0.0) (2019-12-09)
+
+
+* feat!: Ability to configure cornerstone tools via extension configuration (#1229) ([55a5806](https://github.com/OHIF/Viewers/commit/55a580659ecb74ca6433461d8f9a05c2a2b69533)), closes [#1229](https://github.com/OHIF/Viewers/issues/1229)
+
+
+### BREAKING CHANGES
+
+* modifies the exposed react <App /> components props. The contract for providing configuration for the app has changed. Please reference updated documentation for guidance.
+
+
+
+
+
+## [0.54.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.54.5...@ohif/extension-vtk@0.54.6) (2019-12-07)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.54.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.54.4...@ohif/extension-vtk@0.54.5) (2019-12-07)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.54.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.54.3...@ohif/extension-vtk@0.54.4) (2019-12-07)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.54.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.54.2...@ohif/extension-vtk@0.54.3) (2019-12-06)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [0.54.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.54.1...@ohif/extension-vtk@0.54.2) (2019-12-02)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
 ## [0.54.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@0.54.0...@ohif/extension-vtk@0.54.1) (2019-11-28)
 
 **Note:** Version bump only for package @ohif/extension-vtk

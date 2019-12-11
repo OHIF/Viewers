@@ -4,8 +4,12 @@ import { I18nextProvider } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
-import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 import { hot } from 'react-hot-loader/root';
+
+import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
+
+import ToolContextMenu from './connectedComponents/ToolContextMenu';
+import LabellingManager from './components/Labelling/LabellingManager';
 
 import {
   SnackbarProvider,
@@ -15,15 +19,22 @@ import {
 } from '@ohif/ui';
 
 import {
+  LabellingFlowProvider,
+  ContextMenuProvider,
+} from './appCustomProviders';
+
+import {
   CommandsManager,
   ExtensionManager,
   ServicesManager,
   HotkeysManager,
-  createUINotificationService,
-  createUIModalService,
-  createUIDialogService,
+  UINotificationService,
+  UIModalService,
+  UIDialogService,
+  UIContextMenuService,
+  UILabellingFlowService,
   utils,
-  redux as reduxOHIF
+  redux as reduxOHIF,
 } from '@ohif/core';
 
 import i18n from '@ohif/i18n';
@@ -46,23 +57,18 @@ import OHIFStandaloneViewer from './OHIFStandaloneViewer';
 /** Store */
 import { getActiveContexts } from './store/layout/selectors.js';
 import store from './store';
-const { setUserPreferences } = reduxOHIF.actions;
 
 /** Contexts */
 import WhiteLabellingContext from './context/WhiteLabellingContext';
 import UserManagerContext from './context/UserManagerContext';
 import AppContext from './context/AppContext';
+const { setUserPreferences } = reduxOHIF.actions;
 
 /** ~~~~~~~~~~~~~ Application Setup */
 const commandsManagerConfig = {
   getAppState: () => store.getState(),
   getActiveContexts: () => getActiveContexts(store.getState()),
 };
-
-/** Services */
-const UINotificationService = createUINotificationService();
-const UIModalService = createUIModalService();
-const UIDialogService = createUIDialogService();
 
 /** Managers */
 const commandsManager = new CommandsManager(commandsManagerConfig);
@@ -79,23 +85,25 @@ window.store = store;
 
 class App extends Component {
   static propTypes = {
-    routerBasename: PropTypes.string.isRequired,
-    servers: PropTypes.object.isRequired,
-    //
-    oidc: PropTypes.array,
-    whiteLabelling: PropTypes.object,
-    extensions: PropTypes.arrayOf(
+    config: PropTypes.oneOfType([
+      PropTypes.func,
       PropTypes.shape({
-        id: PropTypes.string.isRequired,
-      })
-    ),
-    hotkeys: PropTypes.array,
+        routerBasename: PropTypes.string.isRequired,
+        oidc: PropTypes.array,
+        whiteLabelling: PropTypes.object,
+        extensions: PropTypes.array,
+      }),
+    ]).isRequired,
+    defaultExtensions: PropTypes.array,
   };
 
   static defaultProps = {
-    whiteLabelling: {},
-    oidc: [],
-    extensions: [],
+    config: {
+      whiteLabelling: {},
+      oidc: [],
+      extensions: [],
+    },
+    defaultExtensions: [],
   };
 
   _appConfig;
@@ -104,31 +112,67 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this._appConfig = props;
+    const { config, defaultExtensions } = props;
 
-    const { servers, extensions, hotkeys, oidc } = props;
+    const appDefaultConfig = {
+      cornerstoneExtensionConfig: {},
+      extensions: [],
+      routerBasename: '/',
+      whiteLabelling: {},
+    };
+
+    this._appConfig = {
+      ...appDefaultConfig,
+      ...(typeof config === 'function' ? config({ servicesManager }) : config),
+    };
+
+    const {
+      servers,
+      hotkeys,
+      cornerstoneExtensionConfig,
+      extensions,
+      oidc,
+    } = this._appConfig;
 
     this.initUserManager(oidc);
-    _initServices([UINotificationService, UIModalService, UIDialogService]);
-    _initExtensions(extensions, hotkeys);
+    _initServices([
+      UINotificationService,
+      UIModalService,
+      UIDialogService,
+      UIContextMenuService,
+      UILabellingFlowService,
+    ]);
+    _initExtensions(
+      [...defaultExtensions, ...extensions],
+      cornerstoneExtensionConfig
+    );
+
+    /*
+     * Must run after extension commands are registered
+     * if there is no hotkeys from localStorage set up from config.
+     */
+    _initHotkeys(hotkeys);
     _initServers(servers);
     initWebWorkers();
   }
 
   render() {
-    const { whiteLabelling, routerBasename } = this.props;
-    const userManager = this._userManager;
-    const config = {
-      appConfig: this._appConfig,
-    };
+    const { whiteLabelling, routerBasename } = this._appConfig;
+    const {
+      UINotificationService,
+      UIDialogService,
+      UILabellingFlowService,
+      UIModalService,
+      UIContextMenuService,
+    } = servicesManager.services;
 
-    if (userManager) {
+    if (this._userManager) {
       return (
-        <AppContext.Provider value={config}>
+        <AppContext.Provider value={{ appConfig: this._appConfig }}>
           <Provider store={store}>
             <I18nextProvider i18n={i18n}>
-              <OidcProvider store={store} userManager={userManager}>
-                <UserManagerContext.Provider value={userManager}>
+              <OidcProvider store={store} userManager={this._userManager}>
+                <UserManagerContext.Provider value={this._userManager}>
                   <Router basename={routerBasename}>
                     <WhiteLabellingContext.Provider value={whiteLabelling}>
                       <SnackbarProvider service={UINotificationService}>
@@ -137,7 +181,21 @@ class App extends Component {
                             modal={OHIFModal}
                             service={UIModalService}
                           >
-                            <OHIFStandaloneViewer userManager={userManager} />
+                            <LabellingFlowProvider
+                              service={UILabellingFlowService}
+                              labellingComponent={LabellingManager}
+                              commandsManager={commandsManager}
+                            >
+                              <ContextMenuProvider
+                                service={UIContextMenuService}
+                                contextMenuComponent={ToolContextMenu}
+                                commandsManager={commandsManager}
+                              >
+                                <OHIFStandaloneViewer
+                                  userManager={this._userManager}
+                                />
+                              </ContextMenuProvider>
+                            </LabellingFlowProvider>
                           </ModalProvider>
                         </DialogProvider>
                       </SnackbarProvider>
@@ -152,7 +210,7 @@ class App extends Component {
     }
 
     return (
-      <AppContext.Provider value={config}>
+      <AppContext.Provider value={{ appConfig: this._appConfig }}>
         <Provider store={store}>
           <I18nextProvider i18n={i18n}>
             <Router basename={routerBasename}>
@@ -160,7 +218,19 @@ class App extends Component {
                 <SnackbarProvider service={UINotificationService}>
                   <DialogProvider service={UIDialogService}>
                     <ModalProvider modal={OHIFModal} service={UIModalService}>
-                      <OHIFStandaloneViewer />
+                      <LabellingFlowProvider
+                        service={UILabellingFlowService}
+                        labellingComponent={LabellingManager}
+                        commandsManager={commandsManager}
+                      >
+                        <ContextMenuProvider
+                          service={UIContextMenuService}
+                          contextMenuComponent={ToolContextMenu}
+                          commandsManager={commandsManager}
+                        >
+                          <OHIFStandaloneViewer />
+                        </ContextMenuProvider>
+                      </LabellingFlowProvider>
                     </ModalProvider>
                   </DialogProvider>
                 </SnackbarProvider>
@@ -174,10 +244,10 @@ class App extends Component {
 
   initUserManager(oidc) {
     if (oidc && !!oidc.length) {
-      const firstOpenIdClient = this.props.oidc[0];
+      const firstOpenIdClient = this._appConfig.oidc[0];
 
       const { protocol, host } = window.location;
-      const { routerBasename } = this.props;
+      const { routerBasename } = this._appConfig;
       const baseUri = `${protocol}//${host}${routerBasename}`;
 
       const redirect_uri = firstOpenIdClient.redirect_uri || '/callback';
@@ -213,22 +283,22 @@ function _initServices(services) {
 /**
  * @param
  */
-function _initExtensions(extensions, hotkeys) {
-  const defaultExtensions = [
+function _initExtensions(extensions, cornerstoneExtensionConfig) {
+  const requiredExtensions = [
     GenericViewerCommands,
-    OHIFCornerstoneExtension,
-    // WARNING: MUST BE REGISTERED _AFTER_ OHIFCORNERSTONEEXTENSION
+    [OHIFCornerstoneExtension, cornerstoneExtensionConfig],
+    /* WARNING: MUST BE REGISTERED _AFTER_ OHIFCornerstoneExtension */
     MeasurementsPanel,
   ];
-  const mergedExtensions = defaultExtensions.concat(extensions);
+  const mergedExtensions = requiredExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
+}
 
+function _initHotkeys(hotkeys) {
   const { hotkeyDefinitions = {} } = store.getState().preferences || {};
   let updateStore = false;
   let hotkeysToUse = hotkeyDefinitions;
 
-  // Must run after extension commands are registered
-  // if there is no hotkeys from localStorate set up from config
   if (!Object.keys(hotkeyDefinitions).length) {
     hotkeysToUse = hotkeys;
     updateStore = true;
@@ -236,7 +306,8 @@ function _initExtensions(extensions, hotkeys) {
 
   if (hotkeysToUse) {
     hotkeysManager.setHotkeys(hotkeysToUse);
-    // set default based on app config
+
+    /* Set hotkeys default based on app config. */
     hotkeysManager.setDefaultHotKeys(hotkeys);
 
     if (updateStore) {
@@ -264,7 +335,9 @@ function _makeAbsoluteIfNecessary(url, base_url) {
     return url;
   }
 
-  // Make sure base_url and url are not duplicating slashes
+  /*
+   * Make sure base_url and url are not duplicating slashes.
+   */
   if (base_url[base_url.length - 1] === '/') {
     base_url = base_url.slice(0, base_url.length - 1);
   }
@@ -272,7 +345,9 @@ function _makeAbsoluteIfNecessary(url, base_url) {
   return base_url + url;
 }
 
-// Only wrap/use hot if in dev
+/*
+ * Only wrap/use hot if in dev.
+ */
 const ExportedApp = process.env.NODE_ENV === 'development' ? hot(App) : App;
 
 export default ExportedApp;

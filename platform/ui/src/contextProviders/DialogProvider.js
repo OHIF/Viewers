@@ -20,7 +20,30 @@ export const useDialog = () => useContext(DialogContext);
 const DialogProvider = ({ children, service }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dialogs, setDialogs] = useState([]);
+  const [lastDialogId, setLastDialogId] = useState(null);
   const [lastDialogPosition, setLastDialogPosition] = useState(null);
+  const [centerPositions, setCenterPositions] = useState([]);
+
+  useEffect(() => {
+    setCenterPositions(
+      dialogs.map(dialog => ({
+        id: dialog.id,
+        ...getCenterPosition(dialog.id),
+      }))
+    );
+  }, [dialogs]);
+
+  const getCenterPosition = id => {
+    const root = document.querySelector('#root');
+    const centerX = root.offsetLeft + root.offsetWidth / 2;
+    const centerY = root.offsetTop + root.offsetHeight / 2;
+    const item = document.querySelector(`#draggableItem-${id}`);
+    const itemBounds = item.getBoundingClientRect();
+    return {
+      x: centerX - itemBounds.width / 2,
+      y: centerY - itemBounds.height / 2,
+    };
+  };
 
   /**
    * Sets the implementation of a dialog service that can be used by extensions.
@@ -42,12 +65,15 @@ const DialogProvider = ({ children, service }) => {
    * @property {Object} contentProps The dialog content props.
    * @property {boolean} isDraggable Controls if dialog content is draggable or not.
    * @property {boolean} showOverlay Controls dialog overlay.
+   * @property {boolean} centralize Center the dialog on the screen.
+   * @property {boolean} preservePosition Use last position instead of default.
    * @property {ElementPosition} defaultPosition Specifies the `x` and `y` that the dragged item should start at.
-   * @property {ElementPosition} position If this property is present, the item becomes 'controlled' and is not responsive to user input.
    * @property {Function} onStart Called when dragging starts. If `false` is returned any handler, the action will cancel.
    * @property {Function} onStop Called when dragging stops.
    * @property {Function} onDrag Called while dragging.
    */
+
+  useEffect(() => _bringToFront(lastDialogId), [_bringToFront, lastDialogId]);
 
   /**
    * Creates a new dialog and return its id.
@@ -64,6 +90,7 @@ const DialogProvider = ({ children, service }) => {
     }
 
     setDialogs(dialogs => [...dialogs, { ...props, id: dialogId }]);
+    setLastDialogId(dialogId);
 
     return dialogId;
   }, []);
@@ -75,9 +102,11 @@ const DialogProvider = ({ children, service }) => {
    * @property {string} props.id The dialog id.
    * @returns void
    */
-  const dismiss = useCallback(({ id }) => {
-    setDialogs(dialogs => dialogs.filter(dialog => dialog.id !== id));
-  }, []);
+  const dismiss = useCallback(
+    ({ id }) =>
+      setDialogs(dialogs => dialogs.filter(dialog => dialog.id !== id)),
+    []
+  );
 
   /**
    * Dismisses all dialogs.
@@ -101,14 +130,14 @@ const DialogProvider = ({ children, service }) => {
    * @param {string} id The dialog id.
    * @returns void
    */
-  const _bringToFront = id => {
+  const _bringToFront = useCallback(id => {
     setDialogs(dialogs => {
       const topDialog = dialogs.find(dialog => dialog.id === id);
       return topDialog
         ? [...dialogs.filter(dialog => dialog.id !== id), topDialog]
-        : [];
+        : dialogs;
     });
-  };
+  }, []);
 
   const renderDialogs = () =>
     dialogs.map(dialog => {
@@ -116,20 +145,27 @@ const DialogProvider = ({ children, service }) => {
         id,
         content: DialogContent,
         contentProps,
-        position,
         defaultPosition,
+        centralize = false,
+        preservePosition = true,
         isDraggable = true,
         onStart,
         onStop,
         onDrag,
       } = dialog;
 
+      let position =
+        (preservePosition && lastDialogPosition) || defaultPosition;
+      if (centralize) {
+        position = centerPositions.find(position => position.id === id);
+      }
+
       return (
         <Draggable
           key={id}
           disabled={!isDraggable}
           position={position}
-          defaultPosition={lastDialogPosition || defaultPosition}
+          defaultPosition={position}
           bounds="parent"
           onStart={event => {
             const e = event || window.event;
@@ -169,7 +205,11 @@ const DialogProvider = ({ children, service }) => {
         >
           <div
             id={`draggableItem-${id}`}
-            className={classNames('DraggableItem', isDragging && 'dragging')}
+            className={classNames(
+              'DraggableItem',
+              isDragging && 'dragging',
+              isDraggable && 'draggable'
+            )}
             style={{ zIndex: '999', position: 'absolute' }}
             onClick={() => _bringToFront(id)}
           >
