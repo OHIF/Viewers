@@ -373,7 +373,7 @@ workflows:
           type: approval
       # Update hub.docker.org
       - cypress/run:
-          name: 'E2E: PWA'
+          name: 'Generate Percy Snapshots'
           executor: cypress/browsers-chrome76
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
