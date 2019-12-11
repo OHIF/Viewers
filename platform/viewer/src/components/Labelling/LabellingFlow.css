@@ -6,8 +6,7 @@
   max-height: 500px;
 }
 
-.labellingComponent .selectedLabel,
-.labellingComponent .selectedDescription {
+.labellingComponent .selectedLabel, .labellingComponent .selectedDescription {
   padding: 5px;
   background-color: white;
   width: 150px;
@@ -86,14 +85,12 @@
   color: #337ab7;
 }
 
-.labellingComponent .commonButtons,
-.labellingComponent.editDescription .editDescriptionButtons {
+.labellingComponent .commonButtons, .labellingComponent.editDescription .editDescriptionButtons {
   display: block;
   margin-left: 55px;
 }
 
-.labellingComponent.editDescription .commonButtons,
-.labellingComponent .editDescriptionButtons {
+.labellingComponent.editDescription .commonButtons, .labellingComponent .editDescriptionButtons {
   display: none;
 }
 
