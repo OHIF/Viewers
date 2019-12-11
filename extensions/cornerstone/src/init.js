@@ -123,6 +123,16 @@ export default function init({ servicesManager, configuration }) {
     csTools.addTool(tool, props);
   });
 
+  // TODO -> We need a better way to do this with maybe global tool state setting all tools passive.
+  const BaseAnnotationTool = csTools.importInternal('base/BaseAnnotationTool');
+  tools.forEach(tool => {
+    if (tool.prototype instanceof BaseAnnotationTool) {
+      // BaseAnnotationTool would likely come from csTools lib exports
+      const toolName = new tool().name;
+      csTools.setToolPassive(toolName); // there may be a better place to determine name; may not be on uninstantiated class
+    }
+  });
+  
   csTools.setToolActive('Pan', { mouseButtonMask: 4 });
   csTools.setToolActive('Zoom', { mouseButtonMask: 2 });
   csTools.setToolActive('Wwwc', { mouseButtonMask: 1 });
