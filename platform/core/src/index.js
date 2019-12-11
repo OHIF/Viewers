@@ -20,11 +20,11 @@ import user from './user.js';
 import utils from './utils/';
 
 import {
-  createUINotificationService,
-  createUIModalService,
-  createUIDialogService,
-  createUIContextMenuService,
-  createUILabellingFlowService,
+  UINotificationService,
+  UIModalService,
+  UIDialogService,
+  UIContextMenuService,
+  UILabellingFlowService,
 } from './services';
 
 const OHIF = {
@@ -52,11 +52,11 @@ const OHIF = {
   measurements,
   hangingProtocols,
   //
-  createUINotificationService,
-  createUIModalService,
-  createUIDialogService,
-  createUIContextMenuService,
-  createUILabellingFlowService,
+  UINotificationService,
+  UIModalService,
+  UIDialogService,
+  UIContextMenuService,
+  UILabellingFlowService,
 };
 
 export {
@@ -83,11 +83,11 @@ export {
   measurements,
   hangingProtocols,
   //
-  createUINotificationService,
-  createUIModalService,
-  createUIDialogService,
-  createUIContextMenuService,
-  createUILabellingFlowService,
+  UINotificationService,
+  UIModalService,
+  UIDialogService,
+  UIContextMenuService,
+  UILabellingFlowService,
 };
 
 export { OHIF };

@@ -5,29 +5,27 @@
  * @property {Event} event The event with tool information.
  */
 
-const uiContextMenuServicePublicAPI = {
-  name: 'UIContextMenuService',
-  hide,
-  show,
+const name = 'UIContextMenuService';
+
+const publicAPI = {
+  name,
+  hide: _hide,
+  show: _show,
   setServiceImplementation,
 };
 
-const uiContextMenuServiceImplementation = {
+const serviceImplementation = {
   _show: () => console.warn('show() NOT IMPLEMENTED'),
   _hide: () => console.warn('hide() NOT IMPLEMENTED'),
 };
-
-function createUIContextMenuService() {
-  return uiContextMenuServicePublicAPI;
-}
 
 /**
  * Show a new UI ContextMenu dialog;
  *
  * @param {ContextMenuProps} props { event }
  */
-function show({ event }) {
-  return uiContextMenuServiceImplementation._show({
+function _show({ event }) {
+  return serviceImplementation._show({
     event,
   });
 }
@@ -36,8 +34,8 @@ function show({ event }) {
  * Hide a UI ContextMenu dialog;
  *
  */
-function hide() {
-  return uiContextMenuServiceImplementation._hide();
+function _hide() {
+  return serviceImplementation._hide();
 }
 
 /**
@@ -53,11 +51,16 @@ function setServiceImplementation({
   hide: hideImplementation,
 }) {
   if (showImplementation) {
-    uiContextMenuServiceImplementation._show = showImplementation;
+    serviceImplementation._show = showImplementation;
   }
   if (hideImplementation) {
-    uiContextMenuServiceImplementation._hide = hideImplementation;
+    serviceImplementation._hide = hideImplementation;
   }
 }
 
-export default createUIContextMenuService;
+export default {
+  name,
+  create: ({ configuration = {} }) => {
+    return publicAPI;
+  },
+};
