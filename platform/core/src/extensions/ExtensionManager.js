@@ -1,5 +1,6 @@
 import MODULE_TYPES from './MODULE_TYPES.js';
 import log from './../log.js';
+import merge from 'lodash.merge';
 
 export default class ExtensionManager {
   constructor({ commandsManager, servicesManager }) {
@@ -21,15 +22,18 @@ export default class ExtensionManager {
    *
    * @param {Object[]} extensions - Array of extensions
    */
-  registerExtensions(extensions) {
+  registerExtensions(extensions, commonConfiguration = {}) {
     extensions.forEach(extension => {
       const hasConfiguration = Array.isArray(extension);
 
       if (hasConfiguration) {
         const [ohifExtension, configuration] = extension;
-        this.registerExtension(ohifExtension, configuration);
+        this.registerExtension(
+          ohifExtension,
+          merge({}, commonConfiguration, configuration)
+        );
       } else {
-        this.registerExtension(extension);
+        this.registerExtension(extension, commonConfiguration);
       }
     });
   }
@@ -79,7 +83,8 @@ export default class ExtensionManager {
       const extensionModule = this._getExtensionModule(
         moduleType,
         extension,
-        extensionId
+        extensionId,
+        configuration
       );
 
       if (extensionModule) {
@@ -102,7 +107,7 @@ export default class ExtensionManager {
    * @param {Object} extension
    * @param {string} extensionId - Used for logging warnings
    */
-  _getExtensionModule(moduleType, extension, extensionId) {
+  _getExtensionModule(moduleType, extension, extensionId, configuration) {
     const getModuleFnName = 'get' + _capitalizeFirstCharacter(moduleType);
     const getModuleFn = extension[getModuleFnName];
 
@@ -114,6 +119,7 @@ export default class ExtensionManager {
       const extensionModule = getModuleFn({
         servicesManager: this._servicesManager,
         commandsManager: this._commandsManager,
+        configuration,
       });
 
       if (!extensionModule) {

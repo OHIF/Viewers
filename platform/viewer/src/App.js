@@ -134,17 +134,23 @@ class App extends Component {
       oidc,
     } = this._appConfig;
 
+    const commonConfiguration = { rootConfig: this._appConfig };
+
     this.initUserManager(oidc);
-    _initServices([
-      UINotificationService,
-      UIModalService,
-      UIDialogService,
-      UIContextMenuService,
-      UILabellingFlowService,
-    ]);
+    _initServices(
+      [
+        UINotificationService,
+        UIModalService,
+        UIDialogService,
+        UIContextMenuService,
+        UILabellingFlowService,
+      ],
+      commonConfiguration
+    );
     _initExtensions(
       [...defaultExtensions, ...extensions],
-      cornerstoneExtensionConfig
+      cornerstoneExtensionConfig,
+      commonConfiguration
     );
 
     /*
@@ -276,14 +282,18 @@ class App extends Component {
   }
 }
 
-function _initServices(services) {
-  servicesManager.registerServices(services);
+function _initServices(services, commonConfiguration) {
+  servicesManager.registerServices(services, commonConfiguration);
 }
 
 /**
  * @param
  */
-function _initExtensions(extensions, cornerstoneExtensionConfig) {
+function _initExtensions(
+  extensions,
+  cornerstoneExtensionConfig,
+  commonConfiguration
+) {
   const requiredExtensions = [
     GenericViewerCommands,
     [OHIFCornerstoneExtension, cornerstoneExtensionConfig],
@@ -291,7 +301,7 @@ function _initExtensions(extensions, cornerstoneExtensionConfig) {
     MeasurementsPanel,
   ];
   const mergedExtensions = requiredExtensions.concat(extensions);
-  extensionManager.registerExtensions(mergedExtensions);
+  extensionManager.registerExtensions(mergedExtensions, commonConfiguration);
 }
 
 function _initHotkeys(hotkeys) {

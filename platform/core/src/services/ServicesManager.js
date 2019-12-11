@@ -1,4 +1,5 @@
 import log from './../log.js';
+import merge from 'lodash.merge';
 
 export default class ServicesManager {
   constructor() {
@@ -49,15 +50,18 @@ export default class ServicesManager {
    *
    * @param {Object[]} services - Array of services
    */
-  registerServices(services) {
+  registerServices(services, commonConfiguration = {}) {
     services.forEach(service => {
       const hasConfiguration = Array.isArray(service);
 
       if (hasConfiguration) {
         const [ohifService, configuration] = service;
-        this.registerService(ohifService, configuration);
+        this.registerService(
+          ohifService,
+          merge({}, commonConfiguration, configuration)
+        );
       } else {
-        this.registerService(service);
+        this.registerService(service, commonConfiguration);
       }
     });
   }

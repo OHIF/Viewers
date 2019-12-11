@@ -51,9 +51,26 @@ describe('ExtensionManager.js', () => {
       extensionManager.registerExtensions(fakeExtensions);
 
       // Assert
-      expect(extensionManager.registerExtension.mock.calls[1]).toContain(
+      expect(extensionManager.registerExtension.mock.calls[1][1]).toEqual(
         fakeConfiguration
       );
+    });
+
+    it('calls registerExtensions() registering each extension with common configuration', () => {
+      const fakeConfiguration = { testing: true };
+      const commonConfiguration = { testing2: true };
+      extensionManager.registerExtension = jest.fn();
+
+      const fakeExtensions = [
+        { one: '1' },
+        [{ two: '2' }, fakeConfiguration],
+        { three: '3 ' },
+      ];
+      extensionManager.registerExtensions(fakeExtensions, commonConfiguration);
+
+      extensionManager.registerExtension.mock.calls.forEach(call => {
+        expect(call[1]).toMatchObject(commonConfiguration);
+      });
     });
   });
 
@@ -153,8 +170,9 @@ describe('ExtensionManager.js', () => {
       );
     });
 
-    it('successfully passes a servicesManager and commandsManager instances to each module', () => {
+    it('successfully passes a servicesManager and commandsManager instances to each module along with configuration', () => {
       extensionManager._servicesManager = { services: { TestService: {} } };
+      const configuration = { testing: true };
 
       const extension = {
         id: 'hello-world',
@@ -165,11 +183,16 @@ describe('ExtensionManager.js', () => {
         getCommandsModule: jest.fn(),
       };
 
-      extensionManager.registerExtension(extension);
+      extensionManager.registerExtension(extension, configuration);
 
-      expect(extension.getViewportModule.mock.calls[0][0]).toEqual({
-        servicesManager: extensionManager._servicesManager,
-        commandsManager: extensionManager._commandsManager,
+      Object.keys(extension).forEach(module => {
+        if (typeof extension[module] === 'function') {
+          expect(extension[module].mock.calls[0][0]).toEqual({
+            servicesManager: extensionManager._servicesManager,
+            commandsManager: extensionManager._commandsManager,
+            configuration,
+          });
+        }
       });
     });
 

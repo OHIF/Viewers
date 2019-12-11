@@ -33,9 +33,29 @@ describe('ServicesManager.js', () => {
         [{ name: 'UIModalTestService', create: jest.fn() }, fakeConfiguration],
       ]);
 
-      expect(servicesManager.registerService.mock.calls[1]).toContain(
+      expect(servicesManager.registerService.mock.calls[1][1]).toEqual(
         fakeConfiguration
       );
+    });
+
+    it('calls registerService() registering each extension with common configuration', () => {
+      const fakeConfiguration = { testing: true };
+      const commonConfiguration = { testing2: true };
+      servicesManager.registerService = jest.fn();
+
+      const fakeServices = [
+        { name: 'UINotificationTestService', create: jest.fn() },
+        [
+          { name: 'UIDashboardTestService', create: jest.fn() },
+          fakeConfiguration,
+        ],
+        { name: 'UIDialogTestService', create: jest.fn() },
+      ];
+      servicesManager.registerServices(fakeServices, commonConfiguration);
+
+      servicesManager.registerService.mock.calls.forEach(call => {
+        expect(call[1]).toMatchObject(commonConfiguration);
+      });
     });
   });
 
