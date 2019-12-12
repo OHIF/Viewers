@@ -8,28 +8,26 @@
  *
  */
 
-const uiLabellingFlowServicePublicAPI = {
-  name: 'UILabellingFlowService',
-  show,
-  hide,
+const name = 'UILabellingFlowService';
+
+const publicAPI = {
+  name,
+  show: _show,
+  hide: _hide,
   setServiceImplementation,
 };
 
-const uiLabellingFlowServiceImplementation = {
+const serviceImplementation = {
   _show: () => console.warn('show() NOT IMPLEMENTED'),
   _hide: () => console.warn('hide() NOT IMPLEMENTED'),
 };
-
-function createUILabellingFlowService() {
-  return uiLabellingFlowServicePublicAPI;
-}
 
 /**
  * Hide a UI LabellingFlow dialog;
  *
  */
-function hide() {
-  return uiLabellingFlowServiceImplementation._hide();
+function _hide() {
+  return serviceImplementation._hide();
 }
 
 /**
@@ -37,8 +35,8 @@ function hide() {
  *
  * @param {LabellingFlowProps} props { defaultPosition, centralize, props }
  */
-function show({ defaultPosition, centralize, props }) {
-  return uiLabellingFlowServiceImplementation._show({
+function _show({ defaultPosition, centralize, props }) {
+  return serviceImplementation._show({
     defaultPosition,
     centralize,
     props,
@@ -58,11 +56,16 @@ function setServiceImplementation({
   hide: hideImplementation,
 }) {
   if (showImplementation) {
-    uiLabellingFlowServiceImplementation._show = showImplementation;
+    serviceImplementation._show = showImplementation;
   }
   if (hideImplementation) {
-    uiLabellingFlowServiceImplementation._hide = hideImplementation;
+    serviceImplementation._hide = hideImplementation;
   }
 }
 
-export default createUILabellingFlowService;
+export default {
+  name,
+  create: ({ configuration = {} }) => {
+    return publicAPI;
+  },
+};

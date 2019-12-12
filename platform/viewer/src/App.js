@@ -9,7 +9,7 @@ import { hot } from 'react-hot-loader/root';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 
 import ToolContextMenu from './connectedComponents/ToolContextMenu';
-import LabellingManager from './components/Labelling/LabellingManager';
+import LabellingFlow from './components/Labelling/LabellingFlow';
 
 import {
   SnackbarProvider,
@@ -28,11 +28,11 @@ import {
   ExtensionManager,
   ServicesManager,
   HotkeysManager,
-  createUINotificationService,
-  createUIModalService,
-  createUIDialogService,
-  createUIContextMenuService,
-  createUILabellingFlowService,
+  UINotificationService,
+  UIModalService,
+  UIDialogService,
+  UIContextMenuService,
+  UILabellingFlowService,
   utils,
   redux as reduxOHIF,
 } from '@ohif/core';
@@ -69,13 +69,6 @@ const commandsManagerConfig = {
   getAppState: () => store.getState(),
   getActiveContexts: () => getActiveContexts(store.getState()),
 };
-
-/** Services */
-const UINotificationService = createUINotificationService();
-const UIModalService = createUIModalService();
-const UIDialogService = createUIDialogService();
-const UIContextMenuService = createUIContextMenuService();
-const UILabellingFlowService = createUILabellingFlowService();
 
 /** Managers */
 const commandsManager = new CommandsManager(commandsManagerConfig);
@@ -165,6 +158,14 @@ class App extends Component {
 
   render() {
     const { whiteLabelling, routerBasename } = this._appConfig;
+    const {
+      UINotificationService,
+      UIDialogService,
+      UILabellingFlowService,
+      UIModalService,
+      UIContextMenuService,
+    } = servicesManager.services;
+
     if (this._userManager) {
       return (
         <AppContext.Provider value={{ appConfig: this._appConfig }}>
@@ -182,7 +183,7 @@ class App extends Component {
                           >
                             <LabellingFlowProvider
                               service={UILabellingFlowService}
-                              labellingComponent={LabellingManager}
+                              labellingComponent={LabellingFlow}
                               commandsManager={commandsManager}
                             >
                               <ContextMenuProvider
@@ -219,7 +220,7 @@ class App extends Component {
                     <ModalProvider modal={OHIFModal} service={UIModalService}>
                       <LabellingFlowProvider
                         service={UILabellingFlowService}
-                        labellingComponent={LabellingManager}
+                        labellingComponent={LabellingFlow}
                         commandsManager={commandsManager}
                       >
                         <ContextMenuProvider
