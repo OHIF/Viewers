@@ -69,6 +69,26 @@ export default function init({
     );
   };
 
+  const showLabellingDialog = (props, contentProps, measurementData) => {
+    if (UIDialogService) {
+      UIDialogService.create({
+        id: 'labelling',
+        isDraggable: false,
+        showOverlay: true,
+        content: LabellingFlow,
+        contentProps: {
+          measurementData,
+          labellingDoneCallback: () =>
+            UIDialogService.dismiss({ id: 'labelling' }),
+          updateLabelling: labellingData =>
+            _updateLabellingHandler(labellingData, measurementData),
+          ...contentProps,
+        },
+        ...props,
+      });
+    }
+  };
+
   const onRightClick = event => {
     if (UIDialogService) {
       UIDialogService.dismiss({ id: 'context-menu' });
@@ -90,41 +110,18 @@ export default function init({
           },
           onClose: () => UIDialogService.dismiss({ id: 'context-menu' }),
           onSetLabel: (eventData, measurementData) => {
-            UIDialogService.create({
-              id: 'labelling',
-              centralize: true,
-              isDraggable: false,
-              showOverlay: true,
-              content: LabellingFlow,
-              contentProps: {
-                visible: true,
-                measurementData,
-                skipAddLabelButton: true,
-                editLocation: true,
-                labellingDoneCallback: () =>
-                  UIDialogService.dismiss({ id: 'labelling' }),
-                updateLabelling: labellingData =>
-                  _updateLabellingHandler(labellingData, measurementData),
-              },
-            });
+            showLabellingDialog(
+              { centralize: true, isDraggable: false },
+              { skipAddLabelButton: true, editLocation: true },
+              measurementData
+            );
           },
           onSetDescription: (eventData, measurementData) => {
-            UIDialogService.create({
-              id: 'labelling',
-              centralize: false,
-              showOverlay: true,
-              content: LabellingFlow,
-              defaultPosition: _getDefaultPosition(eventData),
-              contentProps: {
-                visible: true,
-                measurementData,
-                editDescriptionOnDialog: true,
-                labellingDoneCallback: () =>
-                  UIDialogService.dismiss({ id: 'labelling' }),
-                updateLabelling: labellingData =>
-                  _updateLabellingHandler(labellingData, measurementData),
-              },
-            });
+            showLabellingDialog(
+              { defaultPosition: _getDefaultPosition(eventData) },
+              { editDescriptionOnDialog: true },
+              measurementData
+            );
           },
         },
       });
