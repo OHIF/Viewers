@@ -1,60 +1,76 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReactBootstrapModal from 'react-bootstrap-modal';
+import Modal from 'react-modal';
 import classNames from 'classnames';
+
+import './OHIFModal.styl';
+
+const customStyle = {
+  overlay: {
+    zIndex: 1071,
+    backgroundColor: 'rgb(0, 0, 0, 0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+};
+
+Modal.setAppElement(document.getElementById('root'));
 
 const OHIFModal = ({
   className,
   closeButton,
-  backdrop,
-  keyboard,
-  show,
+  shouldCloseOnEsc,
+  isOpen,
   title,
-  onHide,
-  footer: Footer,
-  header: Header,
-  children: Component,
-}) => (
-  <ReactBootstrapModal
-    className={classNames('modal fade themed in', className)}
-    backdrop={backdrop}
-    keyboard={keyboard}
-    show={show}
-    large={true}
-    title={title}
-    onHide={onHide}
-  >
-    {(Header || title) && (
-      <ReactBootstrapModal.Header closeButton={closeButton}>
-        {title && (
-          <ReactBootstrapModal.Title>{title}</ReactBootstrapModal.Title>
-        )}
-        {Header && <Header hide={onHide} />}
-      </ReactBootstrapModal.Header>
-    )}
-    <ReactBootstrapModal.Body>
-      {Component && <Component hide={onHide} />}
-    </ReactBootstrapModal.Body>
-    {Footer && (
-      <ReactBootstrapModal.Footer>
-        {' '}
-        <Footer hide={onHide} />
-      </ReactBootstrapModal.Footer>
-    )}
-  </ReactBootstrapModal>
-);
+  onClose,
+  children,
+}) => {
+  const renderHeader = () => {
+    return (
+      title && (
+        <div className="OHIFModal__header" data-cy="modal-header">
+          <h4>{title}</h4>
+          {closeButton && (
+            <button data-cy="close-button" onClick={onClose}>
+              ×
+            </button>
+          )}
+        </div>
+      )
+    );
+  };
+
+  return (
+    <Modal
+      className={classNames('OHIFModal', className)}
+      data-cy="modal"
+      shouldCloseOnEsc={shouldCloseOnEsc}
+      isOpen={isOpen}
+      title={title}
+      style={customStyle}
+    >
+      <>
+        {renderHeader()}
+        <div className="OHIFModal__content" data-cy="modal-content">
+          {children}
+        </div>
+      </>
+    </Modal>
+  );
+};
 
 OHIFModal.propTypes = {
   className: PropTypes.string,
   closeButton: PropTypes.bool,
-  backdrop: PropTypes.bool,
-  keyboard: PropTypes.bool,
-  show: PropTypes.bool,
+  shouldCloseOnEsc: PropTypes.bool,
+  isOpen: PropTypes.bool,
   title: PropTypes.string,
-  onHide: PropTypes.func,
-  footer: PropTypes.node,
-  header: PropTypes.node,
-  children: PropTypes.node,
+  onClose: PropTypes.func,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
 };
 
 export default OHIFModal;

@@ -1,8 +1,10 @@
 window.config = {
   // default: '/'
   routerBasename: '/',
+  whiteLabelling: {},
   extensions: [],
   showStudyList: true,
+  filterQueryParam: false,
   servers: {
     dicomWeb: [
       {
@@ -68,4 +70,5 @@ window.config = {
     // ~ Cornerstone Tools
     { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
   ],
+  cornerstoneExtensionConfig: {},
 };

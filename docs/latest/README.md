@@ -38,9 +38,9 @@ our integration and extension points.
 Check out these helpful links:
 
 - Ready to dive into some code? Check out our
-  [Getting Started Guide](./essentials/getting-started.md).
+  [Getting Started Guide](./development/getting-started.md).
 - We're an active, vibrant community.
-  [Learn how you can be more involved.](./contributing/index.md)
+  [Learn how you can be more involved.](./development/contributing.md)
 - Feeling lost? Read our [help page](./help.md).
 
 <!--

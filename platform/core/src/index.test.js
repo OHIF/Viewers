@@ -8,6 +8,13 @@ describe('Top level exports', () => {
       'CommandsManager',
       'ExtensionManager',
       'HotkeysManager',
+      'ServicesManager',
+      //
+      'UINotificationService',
+      'UIModalService',
+      'UIDialogService',
+      'UIContextMenuService',
+      'UILabellingFlowService',
       //
       'utils',
       'studies',

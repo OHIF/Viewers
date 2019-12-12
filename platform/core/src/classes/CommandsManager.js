@@ -59,7 +59,7 @@ export class CommandsManager {
    *
    * @method
    * @param {string} contextName - Namespace for commands
-   * @returs {Object} - the matched context
+   * @returns {Object} - the matched context
    */
   getContext(contextName) {
     const context = this.contexts[contextName];

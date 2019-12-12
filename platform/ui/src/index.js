@@ -24,7 +24,7 @@ import {
   Tooltip,
   AboutContent,
   UserPreferences,
-  UserPreferencesModal,
+  UserPreferencesForm,
   OHIFModal,
 } from './components';
 import { useDebounce, useMedia } from './hooks';
@@ -49,15 +49,26 @@ import { ScrollableArea } from './ScrollableArea/ScrollableArea.js';
 import Toolbar from './viewer/Toolbar.js';
 import ToolbarButton from './viewer/ToolbarButton.js';
 import ViewerbaseDragDropContext from './utils/viewerbaseDragDropContext.js';
-import SnackbarProvider, {
+import {
+  SnackbarProvider,
   useSnackbarContext,
   withSnackbar,
-} from './utils/SnackbarProvider';
-import ModalProvider, {
+  DialogProvider,
+  useDialog,
+  withDialog,
+  ModalProvider,
+  ModalConsumer,
   useModal,
   withModal,
-  ModalConsumer,
-} from './utils/ModalProvider';
+  ContextMenuProvider,
+  ContextMenuConsumer,
+  useContextMenu,
+  withContextMenu,
+  LabellingFlowProvider,
+  LabellingFlowConsumer,
+  useLabellingFlow,
+  withLabellingFlow,
+} from './contextProviders';
 
 export {
   // Elements
@@ -101,7 +112,7 @@ export {
   Tooltip,
   AboutContent,
   UserPreferences,
-  UserPreferencesModal,
+  UserPreferencesForm,
   ViewerbaseDragDropContext,
   SnackbarProvider,
   useSnackbarContext,
@@ -111,6 +122,17 @@ export {
   ModalConsumer,
   withModal,
   OHIFModal,
+  DialogProvider,
+  withDialog,
+  useDialog,
+  ContextMenuProvider,
+  ContextMenuConsumer,
+  useContextMenu,
+  withContextMenu,
+  LabellingFlowProvider,
+  LabellingFlowConsumer,
+  useLabellingFlow,
+  withLabellingFlow,
   // Hooks
   useDebounce,
   useMedia,

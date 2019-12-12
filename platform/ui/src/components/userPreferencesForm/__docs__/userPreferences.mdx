@@ -1,0 +1,54 @@
+---
+name: User Preferences Form
+menu: Components
+route: /components/user-preferences-form
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { UserPreferencesForm } from './../index.js'
+import NameSpace from '../../../__docs__/NameSpace'
+//
+import windowLevelDefaults from './windowLevelDefaults.js'
+import hotkeyDefaults from './hotkeyDefaults.js'
+
+# User Preferences Form
+
+## Basic usage
+
+<Playground>
+    <State initial={{
+        isOpen: false,
+        windowLevelData: windowLevelDefaults,
+        hotkeyDefinitions: hotkeyDefaults,
+    }}>
+
+        {({ state, setState }) => (
+            <React.Fragment>
+                <button
+                    className="btn btn-primary"
+                    type="button"
+                    onClick={ () => setState({ isOpen: true }) }
+                >
+                    Open user preferences
+                </button>
+                <UserPreferencesForm
+                    {...state}
+                    onCancel={() => setState({ isOpen: false })}
+                    onSave={() => alert('on save')}
+                    onResetToDefaults={() => alert('on reset')}
+                />
+            </React.Fragment>
+        )}
+
+    </State>
+
+</Playground>
+
+## API
+
+<Props of={UserPreferencesForm} />
+
+## Translation Namespace
+
+<NameSpace name="UserPreferencesForm" />
