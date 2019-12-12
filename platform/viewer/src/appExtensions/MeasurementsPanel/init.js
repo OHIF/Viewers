@@ -3,7 +3,8 @@ import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import throttle from 'lodash.throttle';
 
-import { ToolContextMenu, LabellingFlow } from '@ohif/viewer';
+import LabellingFlow from '../../components/Labelling/LabellingFlow';
+import ToolContextMenu from '../../connectedComponents/ToolContextMenu';
 
 const {
   onAdded,

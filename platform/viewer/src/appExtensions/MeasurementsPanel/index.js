@@ -2,7 +2,7 @@ import React from 'react';
 import ConnectedMeasurementTable from './ConnectedMeasurementTable.js';
 import init from './init.js';
 
-import { LabellingFlow } from '@ohif/viewer';
+import LabellingFlow from '../../components/Labelling/LabellingFlow';
 
 export default {
   /**
