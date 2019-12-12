@@ -225,8 +225,10 @@ class DicomPDFViewport extends Component {
               </div>
             </div>
             <div id="canvas">
-              <canvas id="pdf-canvas" />
-              <div id="text-layer"></div>
+              <div id="pdf-canvas-container">
+                <canvas id="pdf-canvas" />
+                <div id="text-layer"></div>
+              </div>
             </div>
           </>
         ) : (
