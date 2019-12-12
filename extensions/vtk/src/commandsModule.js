@@ -103,6 +103,9 @@ const commandsModule = ({ commandsManager }) => {
   }
 
   const actions = {
+    getVtkApis: ({ index }) => {
+      return apis[index];
+    },
     axial: async ({ viewports }) => {
       const api = await _getActiveViewportVTKApi(viewports);
 
@@ -353,6 +356,10 @@ const commandsModule = ({ commandsManager }) => {
       commandFn: actions.mpr2d,
       storeContexts: ['viewports'],
       options: {},
+      context: 'VIEWER',
+    },
+    getVtkApiForViewportIndex: {
+      commandFn: actions.getVtkApis,
       context: 'VIEWER',
     },
   };
