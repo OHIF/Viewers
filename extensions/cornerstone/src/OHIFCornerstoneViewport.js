@@ -212,14 +212,9 @@ class OHIFCornerstoneViewport extends Component {
     });
   }
 
-  setImageIdIndex(imageIdIndex) {
-    this.setState(state => {
-      state.viewportData.stack.currentImageIdIndex = imageIdIndex;
-      return state;
-    });
-  }
-
   getImageIdIndexChanged(sopInstanceUid) {
+    if (!sopInstanceUid) return false;
+
     const { imageIds, currentImageIdIndex } = this.state.viewportData.stack;
     const imageId = imageIds[currentImageIdIndex];
     const sopCommonModule = cornerstone.metaData.get(
@@ -291,7 +286,6 @@ class OHIFCornerstoneViewport extends Component {
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
-          updateImageIdIndex={this.setImageIdIndex.bind(this)}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}
