@@ -1,9 +1,9 @@
 import asyncComponent from './asyncComponent.js';
 import OHIFDicomPDFSopClassHandler from './OHIFDicomPDFSopClassHandler.js';
 
-const ConnectedOHIFDicomPDFViewport = asyncComponent(() =>
+const ConnectedOHIFDicomPDFViewer = asyncComponent(() =>
   import(
-    /* webpackChunkName: "ConnectedOHIFDicomPDFViewport" */ './ConnectedOHIFDicomPDFViewer'
+    /* webpackChunkName: "ConnectedOHIFDicomPDFViewer" */ './ConnectedOHIFDicomPDFViewer'
   )
 );
 
@@ -13,7 +13,7 @@ export default {
    */
   id: 'pdf',
   getViewportModule() {
-    return ConnectedOHIFDicomPDFViewport;
+    return ConnectedOHIFDicomPDFViewer;
   },
   getSopClassHandlerModule() {
     return OHIFDicomPDFSopClassHandler;
