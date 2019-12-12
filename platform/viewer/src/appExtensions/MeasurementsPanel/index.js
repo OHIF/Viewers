@@ -17,68 +17,46 @@ export default {
   getPanelModule({ servicesManager, commandsManager }) {
     const { UIDialogService, UINotificationService } = servicesManager.services;
 
-    const _updateLabellingHandler = (labellingData, measurementData) => {
-      const { location, description, response } = labellingData;
+    const showLabellingDialog = (props, measurementData) => {
+      if (UIDialogService) {
+        UIDialogService.dismiss({ id: 'labelling' });
+        UIDialogService.create({
+          id: 'labelling',
+          centralize: true,
+          isDraggable: false,
+          showOverlay: true,
+          content: LabellingFlow,
+          contentProps: {
+            measurementData,
+            labellingDoneCallback: () =>
+              UIDialogService.dismiss({ id: 'labelling' }),
+            updateLabelling: ({ location, description, response }) => {
+              measurementData.location = location || measurementData.location;
+              measurementData.description = description || '';
+              measurementData.response = response || measurementData.response;
 
-      if (location) {
-        measurementData.location = location;
+              commandsManager.runCommand(
+                'updateTableWithNewMeasurementData',
+                measurementData
+              );
+            },
+            ...props,
+          },
+        });
       }
-
-      measurementData.description = description || '';
-
-      if (response) {
-        measurementData.response = response;
-      }
-
-      commandsManager.runCommand(
-        'updateTableWithNewMeasurementData',
-        measurementData
-      );
     };
 
     const ExtendedConnectedMeasurementTable = () => (
       <ConnectedMeasurementTable
-        onRelabel={tool => {
-          if (UIDialogService) {
-            UIDialogService.dismiss({ id: 'labelling' });
-            UIDialogService.create({
-              id: 'labelling',
-              centralize: true,
-              isDraggable: false,
-              showOverlay: true,
-              content: LabellingFlow,
-              contentProps: {
-                editLocation: true,
-                measurementData: tool,
-                skipAddLabelButton: true,
-                labellingDoneCallback: () =>
-                  UIDialogService.dismiss({ id: 'labelling' }),
-                updateLabelling: labellingData =>
-                  _updateLabellingHandler(labellingData, tool),
-              },
-            });
-          }
-        }}
-        onEditDescription={tool => {
-          if (UIDialogService) {
-            UIDialogService.dismiss({ id: 'labelling' });
-            UIDialogService.create({
-              id: 'labelling',
-              centralize: true,
-              isDraggable: false,
-              showOverlay: true,
-              content: LabellingFlow,
-              contentProps: {
-                editDescriptionOnDialog: true,
-                measurementData: tool,
-                labellingDoneCallback: () =>
-                  UIDialogService.dismiss({ id: 'labelling' }),
-                updateLabelling: labellingData =>
-                  _updateLabellingHandler(labellingData, tool),
-              },
-            });
-          }
-        }}
+        onRelabel={tool =>
+          showLabellingDialog(
+            { editLocation: true, skipAddLabelButton: true },
+            tool
+          )
+        }
+        onEditDescription={tool =>
+          showLabellingDialog({ editDescriptionOnDialog: true }, tool)
+        }
         onSaveComplete={message => {
           if (UINotificationService) {
             UINotificationService.show(message);
