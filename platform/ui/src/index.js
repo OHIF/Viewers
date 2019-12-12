@@ -1,4 +1,5 @@
 import {
+  ContextMenu,
   Checkbox,
   CineDialog,
   ViewportDownloadForm,
@@ -60,14 +61,6 @@ import {
   ModalConsumer,
   useModal,
   withModal,
-  ContextMenuProvider,
-  ContextMenuConsumer,
-  useContextMenu,
-  withContextMenu,
-  LabellingFlowProvider,
-  LabellingFlowConsumer,
-  useLabellingFlow,
-  withLabellingFlow,
 } from './contextProviders';
 
 export {
@@ -80,6 +73,7 @@ export {
   TextArea,
   TextInput,
   CineDialog,
+  ContextMenu,
   ViewportDownloadForm,
   ExpandableToolMenu,
   Icon,
@@ -125,14 +119,6 @@ export {
   DialogProvider,
   withDialog,
   useDialog,
-  ContextMenuProvider,
-  ContextMenuConsumer,
-  useContextMenu,
-  withContextMenu,
-  LabellingFlowProvider,
-  LabellingFlowConsumer,
-  useLabellingFlow,
-  withLabellingFlow,
   // Hooks
   useDebounce,
   useMedia,

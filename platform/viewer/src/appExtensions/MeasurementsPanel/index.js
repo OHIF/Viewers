@@ -2,6 +2,8 @@ import React from 'react';
 import ConnectedMeasurementTable from './ConnectedMeasurementTable.js';
 import init from './init.js';
 
+import { LabellingManager } from '@ohif/viewer';
+
 export default {
   /**
    * Only required property. Should be a unique value across all extensions.
@@ -12,28 +14,65 @@ export default {
     init({ servicesManager, commandsManager, configuration });
   },
   getPanelModule({ servicesManager, commandsManager }) {
-    const { UILabellingFlowService } = servicesManager.services;
+    const _updateLabellingHandler = (labellingData, measurementData) => {
+      const { location, description, response } = labellingData;
+
+      if (location) {
+        measurementData.location = location;
+      }
+
+      measurementData.description = description || '';
+
+      if (response) {
+        measurementData.response = response;
+      }
+
+      commandsManager.runCommand(
+        'updateTableWithNewMeasurementData',
+        measurementData
+      );
+    };
+
+    const { UIDialogService } = servicesManager.services;
     const ExtendedConnectedMeasurementTable = () => (
       <ConnectedMeasurementTable
         onRelabel={tool => {
-          if (UILabellingFlowService) {
-            UILabellingFlowService.show({
+          if (UIDialogService) {
+            UIDialogService.dismiss({ id: 'labelling' });
+            UIDialogService.create({
+              id: 'labelling',
               centralize: true,
-              props: {
-                skipAddLabelButton: true,
+              isDraggable: false,
+              showOverlay: true,
+              content: LabellingManager,
+              contentProps: {
                 editLocation: true,
                 measurementData: tool,
+                skipAddLabelButton: true,
+                labellingDoneCallback: () =>
+                  UIDialogService.dismiss({ id: 'labelling' }),
+                updateLabelling: labellingData =>
+                  _updateLabellingHandler(labellingData, tool),
               },
             });
           }
         }}
         onEditDescription={tool => {
-          if (UILabellingFlowService) {
-            UILabellingFlowService.show({
+          if (UIDialogService) {
+            UIDialogService.dismiss({ id: 'labelling' });
+            UIDialogService.create({
+              id: 'labelling',
               centralize: true,
-              props: {
+              isDraggable: false,
+              showOverlay: true,
+              content: LabellingManager,
+              contentProps: {
                 editDescriptionOnDialog: true,
                 measurementData: tool,
+                labellingDoneCallback: () =>
+                  UIDialogService.dismiss({ id: 'labelling' }),
+                updateLabelling: labellingData =>
+                  _updateLabellingHandler(labellingData, tool),
               },
             });
           }
