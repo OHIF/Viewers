@@ -92,7 +92,11 @@ const ToolContextMenu = ({
 
   const dropdownItems = getDropdownItems(eventData, isTouchEvent);
 
-  return <ContextMenu items={dropdownItems} onClick={onClickHandler} />;
+  return (
+    <div className="ToolContextMenu">
+      <ContextMenu items={dropdownItems} onClick={onClickHandler} />;
+    </div>
+  );
 };
 
 ToolContextMenu.propTypes = {

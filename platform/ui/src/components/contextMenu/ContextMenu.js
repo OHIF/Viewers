@@ -9,7 +9,7 @@ const ContextMenu = ({ items, onClick }) => {
       <ul>
         {items.map((item, index) => (
           <li key={index}>
-            <button onClick={() => onClick(item)}>
+            <button className="form-action" onClick={() => onClick(item)}>
               <span key={index}>{item.label}</span>
             </button>
           </li>
