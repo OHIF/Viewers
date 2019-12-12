@@ -3,7 +3,7 @@ import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import throttle from 'lodash.throttle';
 
-import { ToolContextMenu, LabellingManager } from '@ohif/viewer';
+import { ToolContextMenu, LabellingFlow } from '@ohif/viewer';
 
 const {
   onAdded,
@@ -95,7 +95,7 @@ export default function init({
               centralize: true,
               isDraggable: false,
               showOverlay: true,
-              content: LabellingManager,
+              content: LabellingFlow,
               contentProps: {
                 visible: true,
                 measurementData,
@@ -113,7 +113,7 @@ export default function init({
               id: 'labelling',
               centralize: false,
               showOverlay: true,
-              content: LabellingManager,
+              content: LabellingFlow,
               defaultPosition: _getDefaultPosition(eventData),
               contentProps: {
                 visible: true,

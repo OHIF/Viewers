@@ -27,7 +27,7 @@ import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import ToolContextMenu from './connectedComponents/ToolContextMenu';
-import LabellingManager from './components/Labelling/LabellingManager';
+import LabellingFlow from './components/Labelling/LabellingFlow';
 
 /*
  * Default Settings
@@ -54,4 +54,4 @@ const app = React.createElement(App, appProps, null);
 /** Render */
 ReactDOM.render(app, document.getElementById('root'));
 
-export { ToolContextMenu, LabellingManager };
+export { ToolContextMenu, LabellingFlow };

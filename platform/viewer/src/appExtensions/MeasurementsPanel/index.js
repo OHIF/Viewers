@@ -2,7 +2,7 @@ import React from 'react';
 import ConnectedMeasurementTable from './ConnectedMeasurementTable.js';
 import init from './init.js';
 
-import { LabellingManager } from '@ohif/viewer';
+import { LabellingFlow } from '@ohif/viewer';
 
 export default {
   /**
@@ -13,7 +13,10 @@ export default {
   preRegistration({ servicesManager, commandsManager, configuration = {} }) {
     init({ servicesManager, commandsManager, configuration });
   },
+
   getPanelModule({ servicesManager, commandsManager }) {
+    const { UIDialogService, UINotificationService } = servicesManager.services;
+
     const _updateLabellingHandler = (labellingData, measurementData) => {
       const { location, description, response } = labellingData;
 
@@ -33,7 +36,6 @@ export default {
       );
     };
 
-    const { UIDialogService } = servicesManager.services;
     const ExtendedConnectedMeasurementTable = () => (
       <ConnectedMeasurementTable
         onRelabel={tool => {
@@ -44,7 +46,7 @@ export default {
               centralize: true,
               isDraggable: false,
               showOverlay: true,
-              content: LabellingManager,
+              content: LabellingFlow,
               contentProps: {
                 editLocation: true,
                 measurementData: tool,
@@ -65,7 +67,7 @@ export default {
               centralize: true,
               isDraggable: false,
               showOverlay: true,
-              content: LabellingManager,
+              content: LabellingFlow,
               contentProps: {
                 editDescriptionOnDialog: true,
                 measurementData: tool,
@@ -75,6 +77,11 @@ export default {
                   _updateLabellingHandler(labellingData, tool),
               },
             });
+          }
+        }}
+        onSaveComplete={message => {
+          if (UINotificationService) {
+            UINotificationService.show(message);
           }
         }}
       />

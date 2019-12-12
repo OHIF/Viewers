@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.1.1...@ohif/extension-vtk@1.1.2) (2019-12-12)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.1.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.1.0...@ohif/extension-vtk@1.1.1) (2019-12-11)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+# [1.1.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.0.2...@ohif/extension-vtk@1.1.0) (2019-12-11)
+
+
+### Features
+
+* 🎸 DICOM SR STOW on MeasurementAPI ([#954](https://github.com/OHIF/Viewers/issues/954)) ([ebe1af8](https://github.com/OHIF/Viewers/commit/ebe1af8d4f75d2483eba869655906d7829bd9666)), closes [#758](https://github.com/OHIF/Viewers/issues/758)
+
+
+
+
+
 ## [1.0.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.0.1...@ohif/extension-vtk@1.0.2) (2019-12-11)
 
 **Note:** Version bump only for package @ohif/extension-vtk
