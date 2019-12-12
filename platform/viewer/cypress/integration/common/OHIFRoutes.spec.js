@@ -6,10 +6,7 @@ describe('OHIF Routes', function() {
   });
 
   it('checks PT/CT json url study route', function() {
-    cy.fixture('./../fixtures/PTCTStudy.json').as('PTCTStudyJSON');
-
-    cy.visit('/');
-    cy.request('viewer?url=PTCTStudyJSON');
+    cy.visit('/viewer?url=https://s3.eu-central-1.amazonaws.com/ohif-viewer/JSON/PTCTStudy.json');
 
     cy.server();
     cy.route('GET', '**/PTCTStudy/**').as('getPTCTStudy');
