@@ -13,14 +13,7 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@1.11.0
-executors:
-  # Custom executor to override Cypress config
-  deploy-to-prod-executor:
-    docker:
-      - image: 'cypress/browsers:node10.16.0-chrome77'
-        environment:
-          CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
+  cypress: cypress-io/cypress@1.13.0
 
 defaults: &defaults
   docker:
@@ -324,8 +317,6 @@ workflows:
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
-          executor: cypress/browsers-chrome76
-          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
@@ -341,13 +332,13 @@ workflows:
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
           requires:
             - UNIT_TESTS
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
-          executor: cypress/browsers-chrome76
-          browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
@@ -364,6 +355,8 @@ workflows:
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
           requires:
             - UNIT_TESTS
 
@@ -374,7 +367,6 @@ workflows:
       # Update hub.docker.org
       - cypress/run:
           name: 'Generate Percy Snapshots'
-          executor: cypress/browsers-chrome76
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
@@ -389,6 +381,8 @@ workflows:
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
           requires:
             - AWAIT_APPROVAL
 
@@ -448,7 +442,6 @@ workflows:
       # and record a Cypress dashboard test run
       - cypress/run:
           name: 'Generate Percy Snapshots'
-          executor: cypress/browsers-chrome76
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
@@ -463,28 +456,13 @@ workflows:
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
+            - store_test_results:
+                path: platform/viewer/cypress/results
           filters:
             branches:
               only: master
       - DOCKER_MASTER_PUBLISH:
           requires:
             - NPM_PUBLISH
-#
-#
-# Potentially use to E2E test STAGING environment
-# before publishing to production
-# - cypress/run:
-#     name: 'E2E: PWA'
-#     executor: deploy-to-prod-executor
-#     browser: chrome
-#     working_directory: platform/viewer
-#     cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-#     yarn: true
-#     record: false
-#     no-workspace: true
-#     store_artifacts: true
-#     post-steps:
-#       - store_artifacts:
-#           path: platform/viewer/cypress/screenshots
-#       - store_test_results:
-#           path: cypress/results
