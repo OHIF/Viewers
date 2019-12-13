@@ -445,6 +445,7 @@ workflows:
             branches:
               only: master
       # Update base branch snapshots
+      # and record a Cypress dashboard test run
       - cypress/run:
           name: 'Generate Percy Snapshots'
           executor: cypress/browsers-chrome76
