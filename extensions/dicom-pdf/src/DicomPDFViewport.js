@@ -41,6 +41,10 @@ class DicomPDFViewport extends Component {
   };
 
   async componentDidMount() {
+    const pdfjs = await import('pdfjs-dist/build/pdf');
+    const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
+    pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
     const dataSet = this.parseByteArray(this.props.byteArray);
     const fileURL = this.getPDFFileUrl(dataSet, this.props.byteArray);
 
