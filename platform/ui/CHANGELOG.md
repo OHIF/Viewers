@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.2...@ohif/ui@1.1.3) (2019-12-13)
+
+
+### Bug Fixes
+
+* allow empty values for dimensions ([#1295](https://github.com/OHIF/Viewers/issues/1295)) ([cd2da34](https://github.com/OHIF/Viewers/commit/cd2da349e5212cccdd8e65ffa3f7fdc6bad1057c))
+
+
+
+
+
 ## [1.1.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.1...@ohif/ui@1.1.2) (2019-12-12)
 
 
