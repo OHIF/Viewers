@@ -5,14 +5,8 @@ import OHIFDicomPDFViewport from './OHIFDicomPDFViewport';
 const { setViewportActive } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
-  const { viewportIndex, byteArray } = ownProps;
   const { activeViewportIndex } = state.viewports;
-
-  return {
-    viewportIndex,
-    activeViewportIndex,
-    byteArray,
-  };
+  return { activeViewportIndex };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
