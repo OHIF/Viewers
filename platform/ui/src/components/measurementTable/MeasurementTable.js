@@ -79,7 +79,11 @@ class MeasurementTable extends Component {
         </ScrollableArea>
         <div className="measurementTableFooter">
           {saveFunction && (
-            <button onClick={this.saveFunction} className="saveBtn">
+            <button
+              onClick={this.saveFunction}
+              className="saveBtn"
+              data-cy="save-measurements-btn"
+            >
               <Icon name="save" width="14px" height="14px" />
               Save measurements
             </button>
