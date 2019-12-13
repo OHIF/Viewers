@@ -317,7 +317,7 @@ workflows:
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
-          executor: cypress/browsers:node12.8.1-chrome78-ff70
+          executor: cypress/browsers-chrome76
           browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
@@ -341,7 +341,7 @@ workflows:
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
-          executor: cypress/browsers:node12.8.1-chrome78-ff70
+          executor: cypress/browsers-chrome76
           browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
@@ -371,7 +371,7 @@ workflows:
       # Update hub.docker.org
       - cypress/run:
           name: 'Generate Percy Snapshots'
-          executor: cypress/browsers:node12.8.1-chrome78-ff70
+          executor: cypress/browsers-chrome76
           browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
@@ -448,7 +448,7 @@ workflows:
       # and record a Cypress dashboard test run
       - cypress/run:
           name: 'Generate Percy Snapshots'
-          executor: cypress/browsers:node12.8.1-chrome78-ff70
+          executor: cypress/browsers-chrome76
           browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
