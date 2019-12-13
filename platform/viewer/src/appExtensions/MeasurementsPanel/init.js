@@ -71,74 +71,83 @@ export default function init({
   };
 
   const showLabellingDialog = (props, contentProps, measurementData) => {
-    if (UIDialogService) {
-      UIDialogService.create({
-        id: 'labelling',
-        isDraggable: false,
-        showOverlay: true,
-        content: LabellingFlow,
-        contentProps: {
-          measurementData,
-          labellingDoneCallback: () =>
-            UIDialogService.dismiss({ id: 'labelling' }),
-          updateLabelling: labellingData =>
-            _updateLabellingHandler(labellingData, measurementData),
-          ...contentProps,
-        },
-        ...props,
-      });
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
     }
+
+    UIDialogService.create({
+      id: 'labelling',
+      isDraggable: false,
+      showOverlay: true,
+      content: LabellingFlow,
+      contentProps: {
+        measurementData,
+        labellingDoneCallback: () =>
+          UIDialogService.dismiss({ id: 'labelling' }),
+        updateLabelling: labellingData =>
+          _updateLabellingHandler(labellingData, measurementData),
+        ...contentProps,
+      },
+      ...props,
+    });
   };
 
   const onRightClick = event => {
-    if (UIDialogService) {
-      UIDialogService.dismiss({ id: 'context-menu' });
-      UIDialogService.create({
-        id: 'context-menu',
-        isDraggable: false,
-        preservePosition: false,
-        defaultPosition: _getDefaultPosition(event.detail),
-        content: ToolContextMenu,
-        contentProps: {
-          eventData: event.detail,
-          onDelete: (nearbyToolData, eventData) => {
-            const element = eventData.element;
-            commandsManager.runCommand('removeToolState', {
-              element,
-              toolType: nearbyToolData.toolType,
-              tool: nearbyToolData.tool,
-            });
-          },
-          onClose: () => UIDialogService.dismiss({ id: 'context-menu' }),
-          onSetLabel: (eventData, measurementData) => {
-            showLabellingDialog(
-              { centralize: true, isDraggable: false },
-              { skipAddLabelButton: true, editLocation: true },
-              measurementData
-            );
-          },
-          onSetDescription: (eventData, measurementData) => {
-            showLabellingDialog(
-              { defaultPosition: _getDefaultPosition(eventData) },
-              { editDescriptionOnDialog: true },
-              measurementData
-            );
-          },
-        },
-      });
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
     }
+
+    UIDialogService.dismiss({ id: 'context-menu' });
+    UIDialogService.create({
+      id: 'context-menu',
+      isDraggable: false,
+      preservePosition: false,
+      defaultPosition: _getDefaultPosition(event.detail),
+      content: ToolContextMenu,
+      contentProps: {
+        eventData: event.detail,
+        onDelete: (nearbyToolData, eventData) => {
+          const element = eventData.element;
+          commandsManager.runCommand('removeToolState', {
+            element,
+            toolType: nearbyToolData.toolType,
+            tool: nearbyToolData.tool,
+          });
+        },
+        onClose: () => UIDialogService.dismiss({ id: 'context-menu' }),
+        onSetLabel: (eventData, measurementData) => {
+          showLabellingDialog(
+            { centralize: true, isDraggable: false },
+            { skipAddLabelButton: true, editLocation: true },
+            measurementData
+          );
+        },
+        onSetDescription: (eventData, measurementData) => {
+          showLabellingDialog(
+            { defaultPosition: _getDefaultPosition(eventData) },
+            { editDescriptionOnDialog: true },
+            measurementData
+          );
+        },
+      },
+    });
   };
 
   const onTouchPress = event => {
-    if (UIDialogService) {
-      UIDialogService.create({
-        eventData: event.detail,
-        content: ToolContextMenu,
-        contentProps: {
-          isTouchEvent: true,
-        },
-      });
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
     }
+
+    UIDialogService.create({
+      eventData: event.detail,
+      content: ToolContextMenu,
+      contentProps: {
+        isTouchEvent: true,
+      },
+    });
   };
 
   const onTouchStart = () => resetLabelligAndContextMenu();
@@ -146,10 +155,13 @@ export default function init({
   const onMouseClick = () => resetLabelligAndContextMenu();
 
   const resetLabelligAndContextMenu = () => {
-    if (UIDialogService) {
-      UIDialogService.dismiss({ id: 'context-menu' });
-      UIDialogService.dismiss({ id: 'labelling' });
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
     }
+
+    UIDialogService.dismiss({ id: 'context-menu' });
+    UIDialogService.dismiss({ id: 'labelling' });
   };
 
   // TODO: This makes scrolling painfully slow

@@ -15,35 +15,38 @@ export default {
   },
 
   getPanelModule({ servicesManager, commandsManager }) {
-    const { UIDialogService, UINotificationService } = servicesManager.services;
+    const { UINotificationService, UIDialogService } = servicesManager.services;
 
     const showLabellingDialog = (props, measurementData) => {
-      if (UIDialogService) {
-        UIDialogService.dismiss({ id: 'labelling' });
-        UIDialogService.create({
-          id: 'labelling',
-          centralize: true,
-          isDraggable: false,
-          showOverlay: true,
-          content: LabellingFlow,
-          contentProps: {
-            measurementData,
-            labellingDoneCallback: () =>
-              UIDialogService.dismiss({ id: 'labelling' }),
-            updateLabelling: ({ location, description, response }) => {
-              measurementData.location = location || measurementData.location;
-              measurementData.description = description || '';
-              measurementData.response = response || measurementData.response;
-
-              commandsManager.runCommand(
-                'updateTableWithNewMeasurementData',
-                measurementData
-              );
-            },
-            ...props,
-          },
-        });
+      if (!UIDialogService) {
+        console.warn('Unable to show dialog; no UI Dialog Service available.');
+        return;
       }
+
+      UIDialogService.dismiss({ id: 'labelling' });
+      UIDialogService.create({
+        id: 'labelling',
+        centralize: true,
+        isDraggable: false,
+        showOverlay: true,
+        content: LabellingFlow,
+        contentProps: {
+          measurementData,
+          labellingDoneCallback: () =>
+            UIDialogService.dismiss({ id: 'labelling' }),
+          updateLabelling: ({ location, description, response }) => {
+            measurementData.location = location || measurementData.location;
+            measurementData.description = description || '';
+            measurementData.response = response || measurementData.response;
+
+            commandsManager.runCommand(
+              'updateTableWithNewMeasurementData',
+              measurementData
+            );
+          },
+          ...props,
+        },
+      });
     };
 
     const ExtendedConnectedMeasurementTable = () => (
