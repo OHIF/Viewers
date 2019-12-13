@@ -332,6 +332,8 @@ workflows:
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
           requires:
             - UNIT_TESTS
       # E2E: script-tag
@@ -353,6 +355,8 @@ workflows:
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
           requires:
             - UNIT_TESTS
 
@@ -377,6 +381,8 @@ workflows:
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
           requires:
             - AWAIT_APPROVAL
 
@@ -450,6 +456,8 @@ workflows:
           post-steps:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots
+            - store_artifacts:
+                path: platform/viewer/cypress/videos
             - store_test_results:
                 path: platform/viewer/cypress/results
           filters:
