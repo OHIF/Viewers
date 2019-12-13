@@ -212,41 +212,22 @@ class OHIFCornerstoneViewport extends Component {
     });
   }
 
-  getImageIdIndexChanged(sopInstanceUid) {
-    if (!sopInstanceUid) return false;
-
-    const { imageIds, currentImageIdIndex } = this.state.viewportData.stack;
-    const imageId = imageIds[currentImageIdIndex];
-    const sopCommonModule = cornerstone.metaData.get(
-      'sopCommonModule',
-      imageId
-    );
-
-    if (!sopCommonModule) {
-      return;
-    }
-
-    return sopCommonModule.sopInstanceUID !== sopInstanceUid;
-  }
-
   componentDidMount() {
     this.setStateFromProps();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     const { displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
     const displaySetInstanceUidChanged = displaySet.displaySetInstanceUid !== prevDisplaySet.displaySetInstanceUid;
     const sopInstanceUidChanged = displaySet.sopInstanceUid !== prevDisplaySet.sopInstanceUid;
     const frameIndexChanged = displaySet.frameIndex !== prevDisplaySet.frameIndex;
-    const imageIdIndexChanged = this.getImageIdIndexChanged(displaySet.sopInstanceUid);
 
     if (
       displaySetInstanceUidChanged ||
       sopInstanceUidChanged ||
-      frameIndexChanged ||
-      imageIdIndexChanged
+      frameIndexChanged
     ) {
       this.setStateFromProps();
     }

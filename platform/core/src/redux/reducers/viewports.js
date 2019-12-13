@@ -97,11 +97,6 @@ const viewports = (state = DEFAULT_STATE, action) => {
         action.viewportSpecificData
       );
 
-      // Make sure if we do not change the sopInstanceUid we don't keep the old one stored
-      if (!action.viewportSpecificData.sopInstanceUid) {
-        delete viewportSpecificData[action.viewportIndex].sopInstanceUid;
-      }
-
       if (action.viewportSpecificData && action.viewportSpecificData.plugin) {
         layout.viewports[action.viewportIndex].plugin =
           action.viewportSpecificData.plugin;
