@@ -85,7 +85,7 @@
     "vtk.js": "^11.7.2"
   },
   "devDependencies": {
-    "cypress": "^3.3.1",
+    "cypress": "^3.8.0",
     "gh-pages": "2.0.1",
     "identity-obj-proxy": "3.0.x",
     "lodash": "4.17.11",
