@@ -46,20 +46,20 @@ const ViewportDownloadForm = ({
 
   const [viewportElement, setViewportElement] = useState();
   const [viewportElementDimensions, setViewportElementDimensions] = useState({
-    width: minimumSize,
-    height: minimumSize,
+    width: defaultSize,
+    height: defaultSize,
   });
 
   const [downloadCanvas, setDownloadCanvas] = useState({
     ref: createRef(),
-    width: minimumSize,
-    height: minimumSize,
+    width: defaultSize,
+    height: defaultSize,
   });
 
   const [viewportPreview, setViewportPreview] = useState({
     src: null,
-    width: minimumSize,
-    height: minimumSize,
+    width: defaultSize,
+    height: defaultSize,
   });
 
   // Cornerstone's `enable/disable`
@@ -289,6 +289,7 @@ ViewportDownloadForm.propTypes = {
   toggleAnnotations: PropTypes.func.isRequired,
   loadImage: PropTypes.func.isRequired,
   downloadBlob: PropTypes.func.isRequired,
+  /** A default width & height, between the minimum and maximum size */
   defaultSize: PropTypes.number.isRequired,
   minimumSize: PropTypes.number.isRequired,
   maximumSize: PropTypes.number.isRequired,
