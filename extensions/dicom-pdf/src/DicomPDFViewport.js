@@ -6,6 +6,10 @@ import PropTypes from 'prop-types';
 import TypedArrayProp from './TypedArrayProp';
 import './DicomPDFViewport.css';
 
+import pdfjsBuild from 'pdfjs-dist/build/pdf';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
+pdfjsBuild.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
 // TODO: Should probably use dcmjs for this
 const SOP_CLASS_UIDS = {
   ENCAPSULATED_PDF: '1.2.840.10008.5.1.4.1.1.104.1',
@@ -41,10 +45,6 @@ class DicomPDFViewport extends Component {
   };
 
   async componentDidMount() {
-    const pdfjs = await import('pdfjs-dist/build/pdf');
-    const pdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry');
-    pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-
     const dataSet = this.parseByteArray(this.props.byteArray);
     const fileURL = this.getPDFFileUrl(dataSet, this.props.byteArray);
 
