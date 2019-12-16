@@ -2,6 +2,8 @@ import React from 'react';
 import ConnectedMeasurementTable from './ConnectedMeasurementTable.js';
 import init from './init.js';
 
+import LabellingFlow from '../../components/Labelling/LabellingFlow';
+
 export default {
   /**
    * Only required property. Should be a unique value across all extensions.
@@ -13,32 +15,51 @@ export default {
   },
 
   getPanelModule({ servicesManager, commandsManager }) {
-    const { UILabellingFlowService, UINotificationService } = servicesManager.services;
+    const { UINotificationService, UIDialogService } = servicesManager.services;
+
+    const showLabellingDialog = (props, measurementData) => {
+      if (!UIDialogService) {
+        console.warn('Unable to show dialog; no UI Dialog Service available.');
+        return;
+      }
+
+      UIDialogService.dismiss({ id: 'labelling' });
+      UIDialogService.create({
+        id: 'labelling',
+        centralize: true,
+        isDraggable: false,
+        showOverlay: true,
+        content: LabellingFlow,
+        contentProps: {
+          measurementData,
+          labellingDoneCallback: () =>
+            UIDialogService.dismiss({ id: 'labelling' }),
+          updateLabelling: ({ location, description, response }) => {
+            measurementData.location = location || measurementData.location;
+            measurementData.description = description || '';
+            measurementData.response = response || measurementData.response;
+
+            commandsManager.runCommand(
+              'updateTableWithNewMeasurementData',
+              measurementData
+            );
+          },
+          ...props,
+        },
+      });
+    };
+
     const ExtendedConnectedMeasurementTable = () => (
       <ConnectedMeasurementTable
-        onRelabel={tool => {
-          if (UILabellingFlowService) {
-            UILabellingFlowService.show({
-              centralize: true,
-              props: {
-                skipAddLabelButton: true,
-                editLocation: true,
-                measurementData: tool,
-              },
-            });
-          }
-        }}
-        onEditDescription={tool => {
-          if (UILabellingFlowService) {
-            UILabellingFlowService.show({
-              centralize: true,
-              props: {
-                editDescriptionOnDialog: true,
-                measurementData: tool,
-              },
-            });
-          }
-        }}
+        onRelabel={tool =>
+          showLabellingDialog(
+            { editLocation: true, skipAddLabelButton: true },
+            tool
+          )
+        }
+        onEditDescription={tool =>
+          showLabellingDialog({ editDescriptionOnDialog: true }, tool)
+        }
         onSaveComplete={message => {
           if (UINotificationService) {
             UINotificationService.show(message);
