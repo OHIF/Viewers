@@ -33,7 +33,7 @@ describe('ServicesManager.js', () => {
         [{ name: 'UIModalTestService', create: jest.fn() }, fakeConfiguration],
       ]);
 
-      expect(servicesManager.registerService.mock.calls[1]).toContain(
+      expect(servicesManager.registerService.mock.calls[1][1]).toEqual(
         fakeConfiguration
       );
     });
@@ -85,7 +85,7 @@ describe('ServicesManager.js', () => {
       expect(log.warn.mock.calls.length).toBe(1);
     });
 
-    it('pass configuration to service create factory function', () => {
+    it('pass dependencies and configuration to service create factory function', () => {
       const configuration = { config: 'Some configuration' };
 
       servicesManager.registerService(fakeService, configuration);
