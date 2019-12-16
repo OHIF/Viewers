@@ -11,6 +11,9 @@ class OHIFDicomPDFViewport extends Component {
     studies: PropTypes.object,
     displaySet: PropTypes.object,
     viewportIndex: PropTypes.number,
+    viewportData: PropTypes.object,
+    activeViewportIndex: PropTypes.number,
+    setViewportActive: PropTypes.func,
   };
 
   state = {
@@ -30,42 +33,36 @@ class OHIFDicomPDFViewport extends Component {
 
   componentDidMount() {
     const { displaySet, studies } = this.props.viewportData;
-    const {
-      studyInstanceUid,
-      seriesInstanceUid,
-      sopInstanceUid,
-      wadoRoot,
-      wadoUri,
-      authorizationHeaders,
-    } = displaySet;
-
     DicomLoaderService.findDicomDataPromise(displaySet, studies).then(
-      data => {
-        const byteArray = new Uint8Array(data);
-        this.setState({
-          byteArray: byteArray,
-        });
-      },
+      data => this.setState({ byteArray: new Uint8Array(data) }),
       error => {
-        this.setState({
-          error,
-        });
-
+        this.setState({ error });
         throw new Error(error);
       }
     );
   }
 
   render() {
+    const {
+      setViewportActive,
+      viewportIndex,
+      activeViewportIndex,
+    } = this.props;
+    const { byteArray, error } = this.state;
     const { id, init, destroy } = OHIFDicomPDFViewport;
     const pluginProps = { id, init, destroy };
 
     return (
       <OHIFComponentPlugin {...pluginProps}>
-        {this.state.byteArray && (
-          <DicomPDFViewport byteArray={this.state.byteArray} />
+        {byteArray && (
+          <DicomPDFViewport
+            byteArray={byteArray}
+            setViewportActive={setViewportActive}
+            viewportIndex={viewportIndex}
+            activeViewportIndex={activeViewportIndex}
+          />
         )}
-        {this.state.error && <h2>{JSON.stringify(this.state.error)}</h2>}
+        {error && <h2>{JSON.stringify(error)}</h2>}
       </OHIFComponentPlugin>
     );
   }
