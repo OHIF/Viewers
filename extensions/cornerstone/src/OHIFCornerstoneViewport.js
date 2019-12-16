@@ -212,6 +212,15 @@ class OHIFCornerstoneViewport extends Component {
     });
   }
 
+  onNewImage(newImageData) {
+    const { sopInstanceUid } = newImageData;
+    if (sopInstanceUid) {
+      this.setViewportSpecificData({
+        sopInstanceUid,
+      });
+    }
+  }
+
   componentDidMount() {
     this.setStateFromProps();
   }
@@ -267,6 +276,7 @@ class OHIFCornerstoneViewport extends Component {
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
+          onNewImage={this.onNewImage}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}
