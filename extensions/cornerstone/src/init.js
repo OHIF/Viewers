@@ -1,10 +1,10 @@
 import OHIF from '@ohif/core';
+import { SimpleDialog } from '@ohif/ui';
 import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
-import initCornerstoneTools from './initCornerstoneTools.js';
-import queryString from 'query-string';
-import { SimpleDialog } from '@ohif/ui';
 import merge from 'lodash.merge';
+import queryString from 'query-string';
+import initCornerstoneTools from './initCornerstoneTools.js';
 
 function fallbackMetaDataProvider(type, imageId) {
   if (!imageId.includes('wado?requestType=WADO')) {
@@ -81,6 +81,7 @@ export default function init({ servicesManager, configuration }) {
     csTools.PanTool,
     csTools.ZoomTool,
     csTools.WwwcTool,
+    csTools.WwwcRegionTool,
     csTools.MagnifyTool,
     csTools.StackScrollTool,
     csTools.StackScrollMouseWheelTool,
@@ -132,7 +133,7 @@ export default function init({ servicesManager, configuration }) {
       csTools.setToolPassive(toolName); // there may be a better place to determine name; may not be on uninstantiated class
     }
   });
-  
+
   csTools.setToolActive('Pan', { mouseButtonMask: 4 });
   csTools.setToolActive('Zoom', { mouseButtonMask: 2 });
   csTools.setToolActive('Wwwc', { mouseButtonMask: 1 });
