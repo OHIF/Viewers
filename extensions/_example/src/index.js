@@ -14,6 +14,7 @@ export default {
   preRegistration({
     servicesManager = {},
     commandsManager = {},
+    appConfig = {},
     configuration = {},
   }) {},
 

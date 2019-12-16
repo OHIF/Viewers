@@ -4,10 +4,11 @@ import log from '../log.js';
 jest.mock('./../log.js');
 
 describe('ServicesManager.js', () => {
-  let servicesManager;
+  let servicesManager, appConfig;
 
   beforeEach(() => {
-    servicesManager = new ServicesManager();
+    appConfig = { testing: true };
+    servicesManager = new ServicesManager({ appConfig });
     log.warn.mockClear();
     jest.clearAllMocks();
   });
@@ -36,26 +37,6 @@ describe('ServicesManager.js', () => {
       expect(servicesManager.registerService.mock.calls[1][1]).toEqual(
         fakeConfiguration
       );
-    });
-
-    it('calls registerService() registering each extension with common configuration', () => {
-      const fakeConfiguration = { testing: true };
-      const commonConfiguration = { testing2: true };
-      servicesManager.registerService = jest.fn();
-
-      const fakeServices = [
-        { name: 'UINotificationTestService', create: jest.fn() },
-        [
-          { name: 'UIDashboardTestService', create: jest.fn() },
-          fakeConfiguration,
-        ],
-        { name: 'UIDialogTestService', create: jest.fn() },
-      ];
-      servicesManager.registerServices(fakeServices, commonConfiguration);
-
-      servicesManager.registerService.mock.calls.forEach(call => {
-        expect(call[1]).toMatchObject(commonConfiguration);
-      });
     });
   });
 
@@ -105,12 +86,13 @@ describe('ServicesManager.js', () => {
       expect(log.warn.mock.calls.length).toBe(1);
     });
 
-    it('pass configuration to service create factory function', () => {
+    it('pass dependencies and configuration to service create factory function', () => {
       const configuration = { config: 'Some configuration' };
 
       servicesManager.registerService(fakeService, configuration);
 
       expect(fakeService.create.mock.calls[0][0]).toEqual({
+        appConfig,
         configuration,
       });
     });

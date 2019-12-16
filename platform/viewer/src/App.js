@@ -61,13 +61,10 @@ const commandsManagerConfig = {
 };
 
 /** Managers */
+let appConfig = {};
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
-const servicesManager = new ServicesManager();
-const extensionManager = new ExtensionManager({
-  commandsManager,
-  servicesManager,
-});
+let servicesManager, extensionManager;
 /** ~~~~~~~~~~~~~ End Application Setup */
 
 // TODO[react] Use a provider when the whole tree is React
@@ -116,6 +113,13 @@ class App extends Component {
       ...(typeof config === 'function' ? config({ servicesManager }) : config),
     };
 
+    servicesManager = new ServicesManager({ appConfig: this._appConfig });
+    extensionManager = new ExtensionManager({
+      commandsManager,
+      servicesManager,
+      appConfig: this._appConfig,
+    });
+
     const {
       servers,
       hotkeys,
@@ -124,17 +128,13 @@ class App extends Component {
       oidc,
     } = this._appConfig;
 
-    const commonConfiguration = { rootConfig: this._appConfig };
+    appConfig = this._appConfig;
 
     this.initUserManager(oidc);
-    _initServices(
-      [UINotificationService, UIModalService, UIDialogService],
-      commonConfiguration
-    );
+    _initServices([UINotificationService, UIModalService, UIDialogService]);
     _initExtensions(
       [...defaultExtensions, ...extensions],
-      cornerstoneExtensionConfig,
-      commonConfiguration
+      cornerstoneExtensionConfig
     );
 
     /*
@@ -240,18 +240,14 @@ class App extends Component {
   }
 }
 
-function _initServices(services, commonConfiguration) {
-  servicesManager.registerServices(services, commonConfiguration);
+function _initServices(services) {
+  servicesManager.registerServices(services);
 }
 
 /**
  * @param
  */
-function _initExtensions(
-  extensions,
-  cornerstoneExtensionConfig,
-  commonConfiguration
-) {
+function _initExtensions(extensions, cornerstoneExtensionConfig) {
   const requiredExtensions = [
     GenericViewerCommands,
     [OHIFCornerstoneExtension, cornerstoneExtensionConfig],
@@ -259,7 +255,7 @@ function _initExtensions(
     MeasurementsPanel,
   ];
   const mergedExtensions = requiredExtensions.concat(extensions);
-  extensionManager.registerExtensions(mergedExtensions, commonConfiguration);
+  extensionManager.registerExtensions(mergedExtensions);
 }
 
 function _initHotkeys(hotkeys) {

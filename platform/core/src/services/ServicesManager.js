@@ -1,10 +1,11 @@
 import log from './../log.js';
-import merge from 'lodash.merge';
 
 export default class ServicesManager {
-  constructor() {
+  constructor({ appConfig = {} }) {
     this.services = {};
     this.registeredServiceNames = [];
+    //
+    this._appConfig = appConfig;
   }
 
   /**
@@ -34,7 +35,10 @@ export default class ServicesManager {
     }
 
     if (service.create) {
-      this.services[service.name] = service.create({ configuration });
+      this.services[service.name] = service.create({
+        configuration,
+        appConfig: this._appConfig,
+      });
     } else {
       log.warn(`Service create factory function not defined. Exiting early.`);
       return;
@@ -50,18 +54,15 @@ export default class ServicesManager {
    *
    * @param {Object[]} services - Array of services
    */
-  registerServices(services, commonConfiguration = {}) {
+  registerServices(services) {
     services.forEach(service => {
       const hasConfiguration = Array.isArray(service);
 
       if (hasConfiguration) {
         const [ohifService, configuration] = service;
-        this.registerService(
-          ohifService,
-          merge({}, commonConfiguration, configuration)
-        );
+        this.registerService(ohifService, configuration);
       } else {
-        this.registerService(service, commonConfiguration);
+        this.registerService(service);
       }
     });
   }

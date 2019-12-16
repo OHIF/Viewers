@@ -6,7 +6,7 @@ import log from './../log.js';
 jest.mock('./../log.js');
 
 describe('ExtensionManager.js', () => {
-  let extensionManager, commandsManager;
+  let extensionManager, commandsManager, servicesManager, appConfig;
 
   beforeEach(() => {
     commandsManager = {
@@ -14,7 +14,17 @@ describe('ExtensionManager.js', () => {
       getContext: jest.fn(),
       registerCommand: jest.fn(),
     };
-    extensionManager = new ExtensionManager({ commandsManager });
+    servicesManager = {
+      registerService: jest.fn(),
+    };
+    appConfig = {
+      testing: true,
+    };
+    extensionManager = new ExtensionManager({
+      servicesManager,
+      commandsManager,
+      appConfig,
+    });
     log.warn.mockClear();
     jest.clearAllMocks();
   });
@@ -55,23 +65,6 @@ describe('ExtensionManager.js', () => {
         fakeConfiguration
       );
     });
-
-    it('calls registerExtensions() registering each extension with common configuration', () => {
-      const fakeConfiguration = { testing: true };
-      const commonConfiguration = { testing2: true };
-      extensionManager.registerExtension = jest.fn();
-
-      const fakeExtensions = [
-        { one: '1' },
-        [{ two: '2' }, fakeConfiguration],
-        { three: '3 ' },
-      ];
-      extensionManager.registerExtensions(fakeExtensions, commonConfiguration);
-
-      extensionManager.registerExtension.mock.calls.forEach(call => {
-        expect(call[1]).toMatchObject(commonConfiguration);
-      });
-    });
   });
 
   describe('registerExtension()', () => {
@@ -84,19 +77,19 @@ describe('ExtensionManager.js', () => {
       expect(fakeExtension.preRegistration.mock.calls.length).toBe(1);
     });
 
-    it('calls preRegistration() passing configuration along with servicesManager and commandsManager instances for extension', () => {
-      const configuration = { config: 'Some configuration' };
-      extensionManager._servicesManager = { services: { TestService: {} } };
+    it('calls preRegistration() passing dependencies and extension configuration to extension', () => {
+      const extensionConfiguration = { config: 'Some configuration' };
 
       // SUT
-      const fakeExtension = { one: '1', preRegistration: jest.fn() };
-      extensionManager.registerExtension(fakeExtension, configuration);
+      const extension = { one: '1', preRegistration: jest.fn() };
+      extensionManager.registerExtension(extension, extensionConfiguration);
 
       // Assert
-      expect(fakeExtension.preRegistration.mock.calls[0][0]).toEqual({
-        servicesManager: extensionManager._servicesManager,
-        commandsManager: extensionManager._commandsManager,
-        configuration,
+      expect(extension.preRegistration.mock.calls[0][0]).toEqual({
+        servicesManager,
+        commandsManager,
+        appConfig,
+        configuration: extensionConfiguration,
       });
     });
 
@@ -170,9 +163,8 @@ describe('ExtensionManager.js', () => {
       );
     });
 
-    it('successfully passes a servicesManager and commandsManager instances to each module along with configuration', () => {
-      extensionManager._servicesManager = { services: { TestService: {} } };
-      const configuration = { testing: true };
+    it('successfully passes dependencies to each module along with extension configuration', () => {
+      const extensionConfiguration = { testing: true };
 
       const extension = {
         id: 'hello-world',
@@ -183,14 +175,15 @@ describe('ExtensionManager.js', () => {
         getCommandsModule: jest.fn(),
       };
 
-      extensionManager.registerExtension(extension, configuration);
+      extensionManager.registerExtension(extension, extensionConfiguration);
 
       Object.keys(extension).forEach(module => {
         if (typeof extension[module] === 'function') {
           expect(extension[module].mock.calls[0][0]).toEqual({
-            servicesManager: extensionManager._servicesManager,
-            commandsManager: extensionManager._commandsManager,
-            configuration,
+            servicesManager,
+            commandsManager,
+            appConfig,
+            configuration: extensionConfiguration,
           });
         }
       });
