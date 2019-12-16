@@ -13,7 +13,7 @@ like user preferences and previous query paramaters. Because of this, the Viewer
 has been built to be highly configurable to work with almost any web accessible
 data source.
 
-![scope-of-project diagram](./assets/img/scope-of-project.png)
+![scope-of-project diagram](./../assets/img/scope-of-project.png)
 
 To be more specific, the OHIF Viewer is a collection of HTML, JS, and CSS files.
 These can be delivered to your end users however you would like:
