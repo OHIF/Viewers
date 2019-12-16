@@ -26,7 +26,6 @@ class DicomPDFViewport extends Component {
         currentPageIndex: 1,
         pdf: null,
         scale: 1,
-        canvas: null,
       },
     };
   }
@@ -51,7 +50,6 @@ class DicomPDFViewport extends Component {
     this.setState(state => ({
       ...state,
       [this.props.viewportIndex]: {
-        ...state[0],
         ...state[this.props.viewportIndex],
         fileURL,
       },
@@ -96,7 +94,6 @@ class DicomPDFViewport extends Component {
       ...state,
       [this.props.viewportIndex]: {
         ...state[this.props.viewportIndex],
-        canvas,
       },
     }));
 
