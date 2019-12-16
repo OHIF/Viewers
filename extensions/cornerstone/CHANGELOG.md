@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.1.0...@ohif/extension-cornerstone@2.1.1) (2019-12-16)
+
+
+### Bug Fixes
+
+* 🐛 add WwwcRegionTool to cornerstone tools initialization ([#1302](https://github.com/OHIF/Viewers/issues/1302)) ([d5bf728](https://github.com/OHIF/Viewers/commit/d5bf72851a32dff9fd3fc09332ea5250bc7e6114))
+
+
+
+
+
 # [2.1.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.0.2...@ohif/extension-cornerstone@2.1.0) (2019-12-11)
 
 
