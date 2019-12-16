@@ -61,7 +61,6 @@ const commandsManagerConfig = {
 };
 
 /** Managers */
-let appConfig = {};
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
 const servicesManager = new ServicesManager();
@@ -121,8 +120,6 @@ class App extends Component {
       extensions,
       oidc,
     } = this._appConfig;
-
-    appConfig = this._appConfig;
 
     this.initUserManager(oidc);
     _initServices([UINotificationService, UIModalService, UIDialogService]);
