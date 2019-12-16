@@ -111,7 +111,7 @@ describe('OHIF Save Measurements', function() {
     cy.get('@measurementsBtn').click();
   });
 
-  it('checks measurements of unsupported tools are not saved', function() {
+  it('checks if measurements of unsupported tools were not saved', function() {
     // Add measurement for supported tool in the viewport
     cy.addLengthMeasurement();
     // Add measurement for unsupported tool in the viewport
