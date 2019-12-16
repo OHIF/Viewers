@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-pdf",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "OHIF extension for Dicom PDF",
   "author": "OHIF",
   "license": "MIT",
@@ -37,7 +37,8 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "classnames": "^2.2.6",
-    "lodash.isequal": "^4.5.0"
+    "lodash.isequal": "^4.5.0",
+    "pdfjs-dist": "^2.2.228"
   },
   "gitHead": "a5baa9228c0eda0df880136bde4420d78e6f8706"
 }
