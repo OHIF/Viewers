@@ -1,7 +1,6 @@
 # OHIF Viewers
 
 - [Our Process](our-process.md)
-- [Quick Start](quick-start.md)
 - Development
   - [Getting Started](development/getting-started.md)
   - [Contributing](development/contributing.md)
@@ -31,7 +30,6 @@
   - [OHIF Maintained](extensions/index.md#maintained-extensions)
 - [Services](services/index.md)
   - [Default](services/default/index.md)
-    - [Measurements](services/default/measurements.md)
   - [UI](services/ui/index.md)
     - [Dialog Service](services/ui/ui-dialog-service.md)
     - [Modal Service](services/ui/ui-modal-service.md)
