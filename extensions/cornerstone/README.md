@@ -89,7 +89,7 @@ Tools can be configured through extension configuration using the tools key:
 
 *We currently support one property for annotation tools.*
 
-- Hide handles
+### Hide handles
 This extension configuration allows you to toggle on/off handle rendering for all annotate tools:
 
 ```js
