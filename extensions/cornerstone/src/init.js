@@ -76,31 +76,35 @@ export default function init({ servicesManager, configuration }) {
 
   initCornerstoneTools(defaultCsToolsConfig);
 
-  // ~~ Toooools 🙌
-  const tools = [
-    csTools.PanTool,
-    csTools.ZoomTool,
-    csTools.WwwcTool,
-    csTools.WwwcRegionTool,
-    csTools.MagnifyTool,
-    csTools.StackScrollTool,
-    csTools.StackScrollMouseWheelTool,
-    // Touch
-    csTools.PanMultiTouchTool,
-    csTools.ZoomTouchPinchTool,
-    // Annotations
-    csTools.ArrowAnnotateTool,
-    csTools.EraserTool,
-    csTools.BidirectionalTool,
-    csTools.LengthTool,
-    csTools.AngleTool,
-    csTools.FreehandRoiTool,
-    csTools.EllipticalRoiTool,
-    csTools.DragProbeTool,
-    csTools.RectangleRoiTool,
-    // Segmentation
-    csTools.BrushTool,
-  ];
+  const toolsGroupedByType = {
+    touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],
+    annotations: [
+      csTools.ArrowAnnotateTool,
+      csTools.EraserTool,
+      csTools.BidirectionalTool,
+      csTools.LengthTool,
+      csTools.AngleTool,
+      csTools.FreehandRoiTool,
+      csTools.EllipticalRoiTool,
+      csTools.DragProbeTool,
+      csTools.RectangleRoiTool,
+    ],
+    segmentation: [csTools.BrushTool],
+    other: [
+      csTools.PanTool,
+      csTools.ZoomTool,
+      csTools.WwwcTool,
+      csTools.WwwcRegionTool,
+      csTools.MagnifyTool,
+      csTools.StackScrollTool,
+      csTools.StackScrollMouseWheelTool,
+    ],
+  };
+
+  let tools = [];
+  Object.keys(toolsGroupedByType).forEach(toolsGroup =>
+    tools.push(...toolsGroupedByType[toolsGroup])
+  );
 
   /* Add extension tools configuration here. */
   const internalToolsConfig = {
@@ -114,13 +118,33 @@ export default function init({ servicesManager, configuration }) {
     },
   };
 
+  /* Abstract tools configuration using extension configuration. */
+  const parseToolProps = (props, tool) => {
+    const { annotations } = toolsGroupedByType;
+
+    let parsedProps = { ...props };
+
+    if (configuration.hideHandles && annotations.includes(tool)) {
+      if (props.configuration) {
+        parsedProps.configuration.drawHandles = false;
+      } else {
+        parsedProps.configuration = { drawHandles: false };
+      }
+    }
+
+    return parsedProps;
+  };
+
   /* Add tools with its custom props through extension configuration. */
   tools.forEach(tool => {
     const toolName = tool.name.replace('Tool', '');
     const externalToolsConfig = configuration.tools || {};
     const externalToolProps = externalToolsConfig[toolName] || {};
     const internalToolProps = internalToolsConfig[toolName] || {};
-    const props = merge(internalToolProps, externalToolProps);
+    const props = merge(
+      internalToolProps,
+      parseToolProps(externalToolProps, tool)
+    );
     csTools.addTool(tool, props);
   });
 
