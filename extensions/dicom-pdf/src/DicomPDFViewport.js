@@ -20,13 +20,11 @@ class DicomPDFViewport extends Component {
     super(props);
 
     this.state = {
-      [this.props.viewportIndex]: {
-        fileURL: null,
-        error: null,
-        currentPageIndex: 1,
-        pdf: null,
-        scale: 1,
-      },
+      fileURL: null,
+      error: null,
+      currentPageIndex: 1,
+      pdf: null,
+      scale: 1,
     };
   }
 
@@ -47,33 +45,16 @@ class DicomPDFViewport extends Component {
     const dataSet = this.parseByteArray(this.props.byteArray);
     const fileURL = this.getPDFFileUrl(dataSet, this.props.byteArray);
 
-    this.setState(state => ({
-      ...state,
-      [this.props.viewportIndex]: {
-        ...state[this.props.viewportIndex],
-        fileURL,
-      },
-    }));
+    this.setState(state => ({ ...state, fileURL }));
 
     if (!this.props.useNative) {
       const pdf = await PDFJS.getDocument(fileURL).promise;
-      this.setState(
-        state => ({
-          ...state,
-          [this.props.viewportIndex]: {
-            ...state[this.props.viewportIndex],
-            pdf,
-          },
-        }),
-        () => this.updatePDFCanvas()
-      );
+      this.setState(state => ({ ...state, pdf }), () => this.updatePDFCanvas());
     }
   }
 
   updatePDFCanvas = async () => {
-    const { pdf, scale, currentPageIndex } = this.state[
-      this.props.viewportIndex
-    ];
+    const { pdf, scale, currentPageIndex } = this.state;
     const canvas = document.querySelector(
       `#pdf-canvas${this.props.viewportIndex}`
     );
@@ -89,13 +70,6 @@ class DicomPDFViewport extends Component {
       canvasContext: context,
       viewport: viewport,
     };
-
-    this.setState(state => ({
-      ...state,
-      [this.props.viewportIndex]: {
-        ...state[this.props.viewportIndex],
-      },
-    }));
 
     await page.render(renderContext);
     const textContent = await page.getTextContent();
@@ -114,12 +88,10 @@ class DicomPDFViewport extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const { currentPageIndex, scale } = this.state[this.props.viewportIndex];
-    const newValidScale =
-      prevState[this.props.viewportIndex].scale !== scale && scale > 0;
+    const { currentPageIndex, scale } = this.state;
+    const newValidScale = prevState.scale !== scale && scale > 0;
     const newValidPageNumber =
-      prevState[this.props.viewportIndex].currentPageIndex !==
-        currentPageIndex && currentPageIndex > 0;
+      prevState.currentPageIndex !== currentPageIndex && currentPageIndex > 0;
 
     if (newValidScale || newValidPageNumber) {
       this.updatePDFCanvas();
@@ -149,7 +121,7 @@ class DicomPDFViewport extends Component {
   };
 
   onPageChange = async event => {
-    const { currentPageIndex, pdf } = this.state[this.props.viewportIndex];
+    const { currentPageIndex, pdf } = this.state;
     let newPageIndex = currentPageIndex;
 
     const action = event.target.getAttribute('data-pager');
@@ -173,17 +145,11 @@ class DicomPDFViewport extends Component {
       }
     }
 
-    this.setState(state => ({
-      ...state,
-      [this.props.viewportIndex]: {
-        ...state[this.props.viewportIndex],
-        currentPageIndex: newPageIndex,
-      },
-    }));
+    this.setState(state => ({ ...state, currentPageIndex: newPageIndex }));
   };
 
   onZoomChange = () => {
-    let newZoomValue = this.state[this.props.viewportIndex].scale;
+    let newZoomValue = this.state.scale;
 
     const action = event.target.getAttribute('data-pager');
 
@@ -195,13 +161,7 @@ class DicomPDFViewport extends Component {
       newZoomValue -= 0.25;
     }
 
-    this.setState(state => ({
-      ...state,
-      [this.props.viewportIndex]: {
-        ...state[this.props.viewportIndex],
-        scale: newZoomValue,
-      },
-    }));
+    this.setState(state => ({ ...state, scale: newZoomValue }));
   };
 
   parseByteArray = byteArray => {
@@ -213,10 +173,7 @@ class DicomPDFViewport extends Component {
     } catch (error) {
       this.setState(state => ({
         ...state,
-        [this.props.viewportIndex]: {
-          ...state[this.props.viewportIndex],
-          error,
-        },
+        error,
       }));
     }
 
@@ -236,7 +193,7 @@ class DicomPDFViewport extends Component {
   };
 
   downloadPDFCanvas = () => {
-    const { fileURL } = this.state[this.props.viewportIndex];
+    const { fileURL } = this.state;
     const a = document.createElement('a');
     a.href = fileURL;
     a.download = fileURL.substr(fileURL.lastIndexOf('/') + 1);
@@ -246,7 +203,7 @@ class DicomPDFViewport extends Component {
   };
 
   render() {
-    const { fileURL, pdf, error } = this.state[this.props.viewportIndex];
+    const { fileURL, pdf, error } = this.state;
 
     return (
       <div
