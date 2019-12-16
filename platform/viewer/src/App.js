@@ -64,10 +64,7 @@ const commandsManagerConfig = {
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
 const servicesManager = new ServicesManager();
-const extensionManager = new ExtensionManager({
-  commandsManager,
-  servicesManager,
-});
+let extensionManager;
 /** ~~~~~~~~~~~~~ End Application Setup */
 
 // TODO[react] Use a provider when the whole tree is React
@@ -128,7 +125,8 @@ class App extends Component {
     _initServices([UINotificationService, UIModalService, UIDialogService]);
     _initExtensions(
       [...defaultExtensions, ...extensions],
-      cornerstoneExtensionConfig
+      cornerstoneExtensionConfig,
+      this._appConfig
     );
 
     /*
@@ -241,7 +239,13 @@ function _initServices(services) {
 /**
  * @param
  */
-function _initExtensions(extensions, cornerstoneExtensionConfig) {
+function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
+  extensionManager = new ExtensionManager({
+    commandsManager,
+    servicesManager,
+    appConfig,
+  });
+
   const requiredExtensions = [
     GenericViewerCommands,
     [OHIFCornerstoneExtension, cornerstoneExtensionConfig],
