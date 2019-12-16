@@ -198,7 +198,7 @@ configuration through the appConfig key (optional).
 
 ```js
 const commandsManager = new CommandsManager();
-const servicesManager = new ServicesManager({ appConfig });
+const servicesManager = new ServicesManager();
 const extensionManager = new ExtensionManager({
   commandsManager,
   servicesManager,
