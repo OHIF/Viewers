@@ -28,6 +28,7 @@ class DicomPDFViewport extends Component {
     };
 
     this.canvas = createRef();
+    this.textLayer = createRef();
   }
 
   static propTypes = {
@@ -73,14 +74,13 @@ class DicomPDFViewport extends Component {
     await page.render(renderContext);
     const textContent = await page.getTextContent();
 
-    const textLayer = document.querySelector('#text-layer');
-    textLayer.innerHTML = '';
-    textLayer.style.height = viewport.height + 'px';
-    textLayer.style.width = viewport.width + 'px';
+    this.textLayer.innerHTML = '';
+    this.textLayer.style.height = viewport.height + 'px';
+    this.textLayer.style.width = viewport.width + 'px';
 
     PDFJS.renderTextLayer({
       textContent,
-      container: textLayer,
+      container: this.textLayer,
       viewport,
       textDivs: [],
     });
@@ -233,8 +233,14 @@ class DicomPDFViewport extends Component {
             </div>
             <div id="canvas">
               <div id="pdf-canvas-container">
-                <canvas ref={canvas => (this.canvas = canvas)} />
-                <div id="text-layer"></div>
+                <canvas
+                  id="pdf-canvas"
+                  ref={canvas => (this.canvas = canvas)}
+                />
+                <div
+                  id="text-layer"
+                  ref={textLayer => (this.textLayer = textLayer)}
+                ></div>
               </div>
             </div>
           </>

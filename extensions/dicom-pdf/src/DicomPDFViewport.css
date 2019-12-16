@@ -28,6 +28,7 @@
 .DicomPDFViewport canvas, #text-layer {
   display: block;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 .DicomPDFViewport #toolbar button {
