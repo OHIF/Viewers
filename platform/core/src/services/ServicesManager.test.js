@@ -4,11 +4,10 @@ import log from '../log.js';
 jest.mock('./../log.js');
 
 describe('ServicesManager.js', () => {
-  let servicesManager, appConfig;
+  let servicesManager;
 
   beforeEach(() => {
-    appConfig = { testing: true };
-    servicesManager = new ServicesManager({ appConfig });
+    servicesManager = new ServicesManager();
     log.warn.mockClear();
     jest.clearAllMocks();
   });
@@ -92,7 +91,6 @@ describe('ServicesManager.js', () => {
       servicesManager.registerService(fakeService, configuration);
 
       expect(fakeService.create.mock.calls[0][0]).toEqual({
-        appConfig,
         configuration,
       });
     });
