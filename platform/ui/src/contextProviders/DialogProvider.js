@@ -8,6 +8,7 @@ import React, {
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import classNames from 'classnames';
+import { useLocation } from 'react-router-dom';
 
 import { utils } from '@ohif/core';
 
@@ -18,6 +19,8 @@ const DialogContext = createContext(null);
 export const useDialog = () => useContext(DialogContext);
 
 const DialogProvider = ({ children, service }) => {
+  const location = useLocation();
+
   const [isDragging, setIsDragging] = useState(false);
   const [dialogs, setDialogs] = useState([]);
   const [lastDialogId, setLastDialogId] = useState(null);
@@ -32,6 +35,17 @@ const DialogProvider = ({ children, service }) => {
       }))
     );
   }, [dialogs]);
+
+  /**
+   * Reset dialogs if route has changed.
+   *
+   * @returns void
+   */
+  useEffect(() => {
+    if (location) {
+      dismissAll();
+    }
+  }, [location, location.pathname]);
 
   const getCenterPosition = id => {
     const root = document.querySelector('#root');
