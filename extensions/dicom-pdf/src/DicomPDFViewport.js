@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import dicomParser from 'dicom-parser';
 import PDFJS from 'pdfjs-dist';
 import PropTypes from 'prop-types';
@@ -26,6 +26,8 @@ class DicomPDFViewport extends Component {
       pdf: null,
       scale: 1,
     };
+
+    this.canvas = createRef();
   }
 
   static propTypes = {
@@ -55,16 +57,13 @@ class DicomPDFViewport extends Component {
 
   updatePDFCanvas = async () => {
     const { pdf, scale, currentPageIndex } = this.state;
-    const canvas = document.querySelector(
-      `#pdf-canvas${this.props.viewportIndex}`
-    );
-    const context = canvas.getContext('2d');
+    const context = this.canvas.getContext('2d');
 
     const page = await pdf.getPage(currentPageIndex);
     let viewport = page.getViewport({ scale });
 
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
+    this.canvas.height = viewport.height;
+    this.canvas.width = viewport.width;
 
     const renderContext = {
       canvasContext: context,
@@ -171,10 +170,7 @@ class DicomPDFViewport extends Component {
     try {
       dataSet = dicomParser.parseDicom(byteArray, options);
     } catch (error) {
-      this.setState(state => ({
-        ...state,
-        error,
-      }));
+      this.setState(state => ({ ...state, error }));
     }
 
     return dataSet;
@@ -237,7 +233,7 @@ class DicomPDFViewport extends Component {
             </div>
             <div id="canvas">
               <div id="pdf-canvas-container">
-                <canvas id={`pdf-canvas${this.props.viewportIndex}`} />
+                <canvas ref={canvas => (this.canvas = canvas)} />
                 <div id="text-layer"></div>
               </div>
             </div>
