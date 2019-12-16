@@ -8,20 +8,12 @@ import { hot } from 'react-hot-loader/root';
 
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 
-import ToolContextMenu from './connectedComponents/ToolContextMenu';
-import LabellingManager from './components/Labelling/LabellingManager';
-
 import {
   SnackbarProvider,
   ModalProvider,
   DialogProvider,
   OHIFModal,
 } from '@ohif/ui';
-
-import {
-  LabellingFlowProvider,
-  ContextMenuProvider,
-} from './appCustomProviders';
 
 import {
   CommandsManager,
@@ -31,8 +23,6 @@ import {
   UINotificationService,
   UIModalService,
   UIDialogService,
-  UIContextMenuService,
-  UILabellingFlowService,
   utils,
   redux as reduxOHIF,
 } from '@ohif/core';
@@ -138,13 +128,7 @@ class App extends Component {
 
     this.initUserManager(oidc);
     _initServices(
-      [
-        UINotificationService,
-        UIModalService,
-        UIDialogService,
-        UIContextMenuService,
-        UILabellingFlowService,
-      ],
+      [UINotificationService, UIModalService, UIDialogService],
       commonConfiguration
     );
     _initExtensions(
@@ -167,9 +151,7 @@ class App extends Component {
     const {
       UINotificationService,
       UIDialogService,
-      UILabellingFlowService,
       UIModalService,
-      UIContextMenuService,
     } = servicesManager.services;
 
     if (this._userManager) {
@@ -187,21 +169,9 @@ class App extends Component {
                             modal={OHIFModal}
                             service={UIModalService}
                           >
-                            <LabellingFlowProvider
-                              service={UILabellingFlowService}
-                              labellingComponent={LabellingManager}
-                              commandsManager={commandsManager}
-                            >
-                              <ContextMenuProvider
-                                service={UIContextMenuService}
-                                contextMenuComponent={ToolContextMenu}
-                                commandsManager={commandsManager}
-                              >
-                                <OHIFStandaloneViewer
-                                  userManager={this._userManager}
-                                />
-                              </ContextMenuProvider>
-                            </LabellingFlowProvider>
+                            <OHIFStandaloneViewer
+                              userManager={this._userManager}
+                            />
                           </ModalProvider>
                         </DialogProvider>
                       </SnackbarProvider>
@@ -224,19 +194,7 @@ class App extends Component {
                 <SnackbarProvider service={UINotificationService}>
                   <DialogProvider service={UIDialogService}>
                     <ModalProvider modal={OHIFModal} service={UIModalService}>
-                      <LabellingFlowProvider
-                        service={UILabellingFlowService}
-                        labellingComponent={LabellingManager}
-                        commandsManager={commandsManager}
-                      >
-                        <ContextMenuProvider
-                          service={UIContextMenuService}
-                          contextMenuComponent={ToolContextMenu}
-                          commandsManager={commandsManager}
-                        >
-                          <OHIFStandaloneViewer />
-                        </ContextMenuProvider>
-                      </LabellingFlowProvider>
+                      <OHIFStandaloneViewer />
                     </ModalProvider>
                   </DialogProvider>
                 </SnackbarProvider>

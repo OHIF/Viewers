@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { commandsManager } from './../App.js';
 
-import './ToolContextMenu.css';
+import { ContextMenu } from '@ohif/ui';
 
 const toolTypes = [
   'Angle',
@@ -24,11 +24,13 @@ const ToolContextMenu = ({
 }) => {
   const defaultDropdownItems = [
     {
+      label: 'Delete measurement',
       actionType: 'Delete',
       action: ({ nearbyToolData, eventData }) =>
         onDelete(nearbyToolData, eventData),
     },
     {
+      label: 'Relabel',
       actionType: 'setLabel',
       action: ({ nearbyToolData, eventData }) => {
         const { tool: measurementData } = nearbyToolData;
@@ -51,7 +53,10 @@ const ToolContextMenu = ({
       availableToolTypes: toolTypes,
     });
 
-    // Annotate tools for touch events already have a press handle to edit it, has a better UX for deleting it
+    /*
+     * Annotate tools for touch events already have a press handle to edit it,
+     * has a better UX for deleting it.
+     */
     if (
       isTouchEvent &&
       nearbyToolData &&
@@ -63,21 +68,10 @@ const ToolContextMenu = ({
     let dropdownItems = [];
     if (nearbyToolData) {
       defaultDropdownItems.forEach(item => {
-        item.params = {
-          eventData,
-          nearbyToolData,
-        };
-
-        if (item.actionType === 'Delete') {
-          item.text = 'Delete measurement';
-        }
-
-        if (item.actionType === 'setLabel') {
-          item.text = 'Relabel';
-        }
+        item.params = { eventData, nearbyToolData };
 
         if (item.actionType === 'setDescription') {
-          item.text = `${
+          item.label = `${
             nearbyToolData.tool.description ? 'Edit' : 'Add'
           } Description`;
         }
@@ -89,7 +83,7 @@ const ToolContextMenu = ({
     return dropdownItems;
   };
 
-  const itemOnClickHandler = (action, params, onClose) => {
+  const onClickHandler = ({ action, params }) => {
     action(params);
     if (onClose) {
       onClose();
@@ -99,23 +93,9 @@ const ToolContextMenu = ({
   const dropdownItems = getDropdownItems(eventData, isTouchEvent);
 
   return (
-    dropdownItems.length &&
-    eventData && (
-      <div className="ToolContextMenu">
-        <ul className="bounded">
-          {dropdownItems.map(({ params, action, text, actionType }) => (
-            <li key={actionType}>
-              <button
-                className="form-action"
-                onClick={() => itemOnClickHandler(action, params, onClose)}
-              >
-                <span key={actionType}>{text}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    )
+    <div className="ToolContextMenu">
+      <ContextMenu items={dropdownItems} onClick={onClickHandler} />;
+    </div>
   );
 };
 
@@ -123,6 +103,9 @@ ToolContextMenu.propTypes = {
   isTouchEvent: PropTypes.bool.isRequired,
   eventData: PropTypes.object,
   onClose: PropTypes.func,
+  onSetDescription: PropTypes.func,
+  onSetLabel: PropTypes.func,
+  onDelete: PropTypes.func,
 };
 
 ToolContextMenu.defaultProps = {

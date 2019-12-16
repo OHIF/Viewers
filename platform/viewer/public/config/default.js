@@ -70,5 +70,5 @@ window.config = {
     // ~ Cornerstone Tools
     { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
   ],
-  cornerstoneExtensionConfig: { tools: {} },
+  cornerstoneExtensionConfig: {},
 };
