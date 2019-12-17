@@ -1,5 +1,6 @@
-import { log, studies, utils } from '@ohif/core';
-
+import log from '../log';
+import studies from '../studies';
+import utils from '../utils';
 import {
   retrieveMeasurementFromSR,
   stowSRFromMeasurements,

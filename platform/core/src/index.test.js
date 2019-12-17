@@ -28,6 +28,7 @@ describe('Top level exports', () => {
       'object',
       'log',
       'DICOMWeb',
+      'DICOMSR',
       'OHIF', //
       'measurements',
       'hangingProtocols',

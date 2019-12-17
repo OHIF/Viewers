@@ -1,7 +1,7 @@
 import * as dcmjs from 'dcmjs';
-import { DICOMWeb } from '@ohif/core';
 import { api } from 'dicomweb-client';
 
+import DICOMWeb from '../DICOMWeb';
 import parseDicomStructuredReport from './parseDicomStructuredReport';
 import parseMeasurementsData from './parseMeasurementsData';
 import getAllDisplaySets from './utils/getAllDisplaySets';
