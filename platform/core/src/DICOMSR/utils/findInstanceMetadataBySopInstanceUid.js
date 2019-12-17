@@ -11,7 +11,9 @@ const findInstanceMetadataBySopInstanceUid = (displaySets, sopInstanceUid) => {
   displaySets.find(displaySet => {
     if (!displaySet.images) return false;
 
-    instanceFound = displaySet.images.find(instanceMetadata => instanceMetadata._sopInstanceUID === sopInstanceUid);
+    instanceFound = displaySet.images.find(
+      instanceMetadata => instanceMetadata._sopInstanceUID === sopInstanceUid
+    );
 
     return !!instanceFound;
   });

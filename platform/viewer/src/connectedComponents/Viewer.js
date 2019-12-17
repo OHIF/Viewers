@@ -12,7 +12,6 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
-import DICOMSR from '../lib/DICOMSR';
 
 // Contexts
 import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
@@ -81,8 +80,8 @@ class Viewer extends Component {
 
     OHIF.measurements.MeasurementApi.setConfiguration({
       dataExchange: {
-        retrieve: DICOMSR.retrieveMeasurements,
-        store: DICOMSR.storeMeasurements,
+        retrieve: OHIF.DICOMSR.retrieveMeasurements,
+        store: OHIF.DICOMSR.storeMeasurements,
       },
       server,
     });

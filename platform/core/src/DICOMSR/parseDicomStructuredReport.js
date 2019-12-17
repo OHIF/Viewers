@@ -1,4 +1,5 @@
 import * as dcmjs from 'dcmjs';
+
 import findInstanceMetadataBySopInstanceUid from './utils/findInstanceMetadataBySopInstanceUid';
 
 /**
@@ -37,7 +38,12 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
       const { studyInstanceUid, patientId } = study;
       const { seriesInstanceUid } = series;
       const { sopInstanceUid, frameIndex } = measurement;
-      const imagePath = getImagePath(studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex);
+      const imagePath = getImagePath(
+        studyInstanceUid,
+        seriesInstanceUid,
+        sopInstanceUid,
+        frameIndex
+      );
 
       const imageId = instanceMetadata.getImageId();
       if (!imageId) {
@@ -75,8 +81,15 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
  * @param {string} frameIndex
  * @returns
  */
-const getImagePath = (studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex) => {
-  return [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join('_');
-}
+const getImagePath = (
+  studyInstanceUid,
+  seriesInstanceUid,
+  sopInstanceUid,
+  frameIndex
+) => {
+  return [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join(
+    '_'
+  );
+};
 
 export default parseDicomStructuredReport;
