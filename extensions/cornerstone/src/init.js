@@ -32,9 +32,9 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
  * @param {Object|Array} configuration.csToolsConfig
  */
 export default function init({ servicesManager, configuration }) {
-  const callInputDialog = (data, event, callback) => {
-    const { UIDialogService } = servicesManager.services;
+  const { UIDialogService, MeasurementService } = servicesManager.services;
 
+  const callInputDialog = (data, event, callback) => {
     if (UIDialogService) {
       let dialogId = UIDialogService.create({
         centralize: true,
@@ -101,6 +101,26 @@ export default function init({ servicesManager, configuration }) {
     // Segmentation
     csTools.BrushTool,
   ];
+
+  /* Measurement Service Events */
+  cornerstone.events.addEventListener(
+    cornerstone.EVENTS.ELEMENT_ENABLED,
+    event => {
+      MeasurementService.subscribe(
+        csTools.EVENTS.MEASUREMENT_ADDED,
+        updatedAnnotation =>
+          console.log(
+            '[subscribe] Measurement added or updated',
+            updatedAnnotation
+          )
+      );
+      const element = event.detail.element;
+      element.addEventListener(csTools.EVENTS.MEASUREMENT_ADDED, event => {
+        console.log('[addOrUpdate] Adding new measurement...', event.detail);
+        MeasurementService.addOrUpdate({ id: 1, annotation: event.detail });
+      });
+    }
+  );
 
   /* Add extension tools configuration here. */
   const internalToolsConfig = {
