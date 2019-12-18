@@ -2,10 +2,7 @@ import ServicesManager from './ServicesManager.js';
 import UINotificationService from './UINotificationService';
 import UIModalService from './UIModalService';
 import UIDialogService from './UIDialogService';
-import {
-  MeasurementService,
-  MeasurementServiceAPI,
-} from './MeasurementService';
+import MeasurementService from './MeasurementService';
 
 export {
   UINotificationService,
@@ -13,5 +10,4 @@ export {
   UIDialogService,
   ServicesManager,
   MeasurementService,
-  MeasurementServiceAPI,
 };

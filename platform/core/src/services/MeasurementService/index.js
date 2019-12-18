@@ -1,4 +1,8 @@
-import MeasurementService from './MeasurementService.js';
-import MeasurementServiceAPI from './MeasurementServiceAPI';
+import MeasurementService from './MeasurementService';
 
-export { MeasurementService, MeasurementServiceAPI };
+export default {
+  name: 'MeasurementService',
+  create: ({ configuration = {} }) => {
+    return new MeasurementService();
+  },
+};

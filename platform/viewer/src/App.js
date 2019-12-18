@@ -24,7 +24,6 @@ import {
   UIModalService,
   UIDialogService,
   MeasurementService,
-  MeasurementServiceAPI,
   utils,
   redux as reduxOHIF,
 } from '@ohif/core';
@@ -153,14 +152,6 @@ class App extends Component {
       UIModalService,
       MeasurementService,
     } = servicesManager.services;
-
-    /*
-     * This api class sets the service like providers, it should be called after rendering
-     * to avoid not implemented methods being called.
-     */
-    const measurementServiceAPI = new MeasurementServiceAPI({
-      service: MeasurementService,
-    });
 
     if (this._userManager) {
       return (
