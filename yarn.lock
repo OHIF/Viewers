@@ -6545,6 +6545,16 @@ dcmjs@^0.8.2:
     loglevelnext "^3.0.1"
     ndarray "^1.0.18"
 
+dcmjs@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.8.3.tgz#fff1b030b6cb2d6e2afb1aa99840bfa853724c31"
+  integrity sha512-eXQjqgtJf9+oseraKDNDm2A5F3Th4B2GJeZtjStj0IFXxjlbPOzdq3PfCyxdwfRaKOBIwr0q3YK/Vfs2CpQY8Q==
+  dependencies:
+    "@babel/polyfill" "^7.6.0"
+    "@babel/runtime" "^7.6.3"
+    loglevelnext "^3.0.1"
+    ndarray "^1.0.18"
+
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.1, debug@^2.6.3, debug@^2.6.6, debug@^2.6.8, debug@^2.6.9:
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"

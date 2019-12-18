@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.2.0...@ohif/core@2.2.1) (2019-12-18)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [2.2.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.1.1...@ohif/core@2.2.0) (2019-12-16)
+
+
+### Features
+
+* 🎸 Expose extension config to modules ([#1279](https://github.com/OHIF/Viewers/issues/1279)) ([4ea239a](https://github.com/OHIF/Viewers/commit/4ea239a9535ef297e23387c186e537ab273744ea)), closes [#1268](https://github.com/OHIF/Viewers/issues/1268)
+
+
+
+
+
 ## [2.1.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.1.0...@ohif/core@2.1.1) (2019-12-16)
 
 **Note:** Version bump only for package @ohif/core
