@@ -1,5 +1,10 @@
-import { log, studies, utils } from '@ohif/core';
-import { retrieveMeasurementFromSR, stowSRFromMeasurements } from './handleStructuredReport';
+import log from '../log';
+import studies from '../studies';
+import utils from '../utils';
+import {
+  retrieveMeasurementFromSR,
+  stowSRFromMeasurements,
+} from './handleStructuredReport';
 import findMostRecentStructuredReport from './utils/findMostRecentStructuredReport';
 
 /**
@@ -65,7 +70,9 @@ const storeMeasurements = async (measurementData, filter, server) => {
       message: 'Measurements were saved with success',
     };
   } catch (error) {
-    log.error(`[DICOMSR] Error while saving the measurements: ${error.message}`);
+    log.error(
+      `[DICOMSR] Error while saving the measurements: ${error.message}`
+    );
     throw new Error('Error while saving the measurements.');
   }
 };

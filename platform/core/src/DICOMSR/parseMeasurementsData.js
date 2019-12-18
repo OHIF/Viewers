@@ -1,6 +1,8 @@
 import * as dcmjs from 'dcmjs';
-import { log, measurements } from '@ohif/core';
 import cornerstone from 'cornerstone-core';
+
+import log from '../log';
+import measurements from '../measurements';
 import isToolSupported from './utils/isToolSupported';
 
 /**
