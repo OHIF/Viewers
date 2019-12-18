@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { MeasurementTable } from '@ohif/ui';
-import OHIF from '@ohif/core';
+import OHIF, { DICOMSR } from '@ohif/core';
 import moment from 'moment';
 import cornerstone from 'cornerstone-core';
 
@@ -89,7 +89,7 @@ function getDataForEachMeasurementNumber(
  * @returns {string}
  */
 function getWarningsForMeasurement(toolName) {
-  const isToolSupported = OHIF.DICOMSR.isToolSupported(toolName);
+  const isToolSupported = DICOMSR.isToolSupported(toolName);
 
   return {
     hasWarnings: !isToolSupported,
