@@ -107,6 +107,7 @@ export default function init({ servicesManager, configuration }) {
     cornerstone.EVENTS.ELEMENT_ENABLED,
     event => {
       MeasurementService.subscribe(
+        /* Should subscription event names be handled outside like here? Where to keep available subscription event names? */
         csTools.EVENTS.MEASUREMENT_ADDED,
         updatedAnnotation =>
           console.log(
@@ -117,7 +118,12 @@ export default function init({ servicesManager, configuration }) {
       const element = event.detail.element;
       element.addEventListener(csTools.EVENTS.MEASUREMENT_ADDED, event => {
         console.log('[addOrUpdate] Adding new measurement...', event.detail);
-        MeasurementService.addOrUpdate({ id: 1, annotation: event.detail });
+        MeasurementService.addOrUpdate({
+          id: 1,
+          annotation: event.detail,
+          /* Should subscription event names be handled outside like here? Where to keep available subscription event names? */
+          broadcastEventName: csTools.EVENTS.MEASUREMENT_ADDED,
+        });
       });
     }
   );

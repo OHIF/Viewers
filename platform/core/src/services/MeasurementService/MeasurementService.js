@@ -25,8 +25,12 @@ const serviceImplementation = {
  *
  * @param {MeasurementSchema} schema { id, annotation }
  */
-function _addOrUpdate({ id, annotation }) {
-  return serviceImplementation._addOrUpdate({ id, annotation });
+function _addOrUpdate({ id, annotation, broadcastEventName }) {
+  return serviceImplementation._addOrUpdate({
+    id,
+    annotation,
+    broadcastEventName,
+  });
 }
 
 /**

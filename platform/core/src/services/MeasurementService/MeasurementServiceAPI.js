@@ -1,5 +1,4 @@
 import log from '../../log';
-import csTools from 'cornerstone-tools';
 
 export default class MeasurementServiceAPI {
   constructor({ service }) {
@@ -19,7 +18,7 @@ export default class MeasurementServiceAPI {
    *
    * @param {MeasurementSchema} schema { id, annotation }
    */
-  addOrUpdate({ id, annotation }) {
+  addOrUpdate({ id, annotation, broadcastEventName }) {
     const isMeasurementValid = this._checkMeasurementValidity(annotation);
 
     if (!isMeasurementValid) {
@@ -45,7 +44,8 @@ export default class MeasurementServiceAPI {
 
     /* Simple broadcast change */
     if (Object.keys(this.listeners).length > 0) {
-      this.listeners[csTools.EVENTS.MEASUREMENT_ADDED].forEach(callback => {
+      /* Should subscription event names be handled outside like here? Where to keep available subscription event names? */
+      this.listeners[broadcastEventName].forEach(callback => {
         callback(this.measurements[measurementId]);
       });
     }
