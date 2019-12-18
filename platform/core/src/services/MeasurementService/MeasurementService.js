@@ -2,14 +2,14 @@ import log from '../../log';
 import guid from '../../utils/guid';
 
 const EVENTS = {
-  MEASUREMENT_UPDATED: 'event@measurement_updated',
-  MEASUREMENT_ADDED: 'event@measurement_added',
+  MEASUREMENT_UPDATED: 'event::measurement_updated',
+  MEASUREMENT_ADDED: 'event::measurement_added',
 };
 
 const CONTEXTS = {
-  ALL: 'context@all',
-  VIEWER: 'context@viewer',
-  CORNERSTONE: 'context@cornerstone',
+  ALL: 'context::all',
+  VIEWER: 'context::viewer',
+  CORNERSTONE: 'context::cornerstone',
 };
 
 class MeasurementService {
@@ -45,7 +45,6 @@ class MeasurementService {
     let internalId = id;
     if (!internalId) {
       internalId = guid();
-
       log.warn(`Measurement ID not set. Using random string ID: ${internalId}`);
     }
 
@@ -55,15 +54,28 @@ class MeasurementService {
       data,
     };
 
-    this.measurements[internalId] = measurement;
-
-    if (Object.keys(this.listeners).length > 0) {
-      this.listeners[EVENTS.MEASUREMENT_ADDED].forEach(listener => {
-        listener.callback(this.measurements[internalId]);
-      });
+    if (this.measurements[internalId]) {
+      log.warn(`Measurement already defined. Updating measurement.`);
+      this.measurements[internalId] = measurement;
+      this._broadcastChange(internalId, EVENTS.MEASUREMENT_UPDATED);
+    } else {
+      log.warn(`Measurement added.`);
+      this.measurements[internalId] = measurement;
+      this._broadcastChange(internalId, EVENTS.MEASUREMENT_ADDED);
     }
 
     return measurement;
+  }
+
+  _broadcastChange(measurementInternalId, event) {
+    const hasListeners = Object.keys(this.listeners).length > 0;
+    const hasCallbacks = Array.isArray(this.listeners[event]);
+
+    if (hasListeners && hasCallbacks) {
+      this.listeners[event].forEach(listener => {
+        listener.callback(this.measurements[measurementInternalId]);
+      });
+    }
   }
 
   /**

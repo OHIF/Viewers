@@ -109,7 +109,18 @@ export default function init({ servicesManager, configuration }) {
       MeasurementService.subscribe(
         MeasurementService.getEvents().MEASUREMENT_ADDED,
         measurement =>
-          console.log('[subscribe] Measurement added or updated', measurement)
+          console.log(
+            '[subscribe::MEASUREMENT_ADDED] Measurement added',
+            measurement
+          )
+      );
+      MeasurementService.subscribe(
+        MeasurementService.getEvents().MEASUREMENT_UPDATED,
+        measurement =>
+          console.log(
+            '[subscribe::MEASUREMENT_UPDATED] Measurement updated',
+            measurement
+          )
       );
       event.detail.element.addEventListener(
         csTools.EVENTS.MEASUREMENT_ADDED,
