@@ -260,9 +260,11 @@ function _getVisibleToolbarButtons() {
   toolbarModules.forEach(extension => {
     const { definitions, defaultContext } = extension.module;
     definitions.forEach(definition => {
-      const context = definition.context || defaultContext;
+      const { context, options = {} } = definition;
+      const { isHidden = false } = options;
+      const _context = context || defaultContext;
 
-      if (this.props.activeContexts.includes(context)) {
+      if (this.props.activeContexts.includes(_context) && !isHidden) {
         toolbarButtonDefinitions.push(definition);
       }
     });
