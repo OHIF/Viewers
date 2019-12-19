@@ -266,7 +266,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     let iconName;
     //Click on one of the secondary tools from the overlay
-    cy.get('.tooltip-inner > :nth-child(1)')
+    cy.get('[data-cy="magnify"]')
       .click()
       .then($magnifyBtn => {
         cy.wrap($magnifyBtn)
@@ -407,9 +407,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .as('toolbarOverlay')
       .should('be.visible');
     //Click on Clear button
-    cy.get('.tooltip-inner')
-      .contains('Clear')
-      .click();
+    cy.get('[data-cy="clear"]').click();
 
     //Verify if measurements were removed from the measurements panel
     cy.get('.measurementItem').should('not.exist');
@@ -446,9 +444,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .should('be.visible')
       .then(() => {
         //Click Eraser button
-        cy.get('.tooltip-inner')
-          .contains('Eraser')
-          .click({ force: true });
+        cy.get('[data-cy="eraser"]').click({ force: true });
       });
 
     //Erase measurement #1 and Verify if it was removed from the measurements panel
@@ -471,9 +467,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('.tooltip-toolbar-overlay').should('be.visible');
 
     // Click on Invert button
-    cy.get('.tooltip-inner')
-      .contains('Invert')
-      .click();
+    cy.get('[data-cy="invert"]').click();
 
     // Visual comparison
     cy.screenshot('Invert tool - Should Invert Canvas');
@@ -488,9 +482,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .should('be.visible')
       .then(() => {
         //Click on Rotate button
-        cy.get('.tooltip-inner')
-          .contains('Rotate')
-          .click({ force: true });
+        cy.get('[data-cy="rotate right"]').click({ force: true });
       });
 
     // Visual comparison
@@ -505,9 +497,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('.tooltip-toolbar-overlay').should('be.visible');
 
     //Click on Flip H button
-    cy.get('.tooltip-inner')
-      .contains('Flip H')
-      .click();
+    cy.get('[data-cy="flip h"]').click();
 
     // Visual comparison
     cy.screenshot('Flip H tool - Should Flip Image on Y axis');
@@ -521,9 +511,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('.tooltip-toolbar-overlay').should('be.visible');
 
     //Click on Flip V button
-    cy.get('.tooltip-inner')
-      .contains('Flip V')
-      .click();
+    cy.get('[data-cy="flip v"]').click();
 
     // Visual comparison
     cy.screenshot('Flip V tool - Should Flip Image on X axis');
