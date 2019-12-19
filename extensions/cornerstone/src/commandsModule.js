@@ -2,6 +2,7 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import OHIF from '@ohif/core';
 
+import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
 import { getEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 const scroll = cornerstoneTools.import('util/scroll');
@@ -242,6 +243,9 @@ const commandsModule = ({ servicesManager }) => {
       cornerstoneTools.removeToolState(element, toolType, tool);
       cornerstone.updateImage(element);
     },
+    setCornerstoneLayout: () => {
+      setCornerstoneLayout();
+    }
   };
 
   const definitions = {
@@ -345,6 +349,11 @@ const commandsModule = ({ servicesManager }) => {
     // TOOLS
     setToolActive: {
       commandFn: actions.setToolActive,
+      storeContexts: [],
+      options: {},
+    },
+    setCornerstoneLayout: {
+      commandFn: actions.setCornerstoneLayout,
       storeContexts: [],
       options: {},
     },

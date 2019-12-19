@@ -121,7 +121,7 @@ const definitions = [
     icon: 'times',
     //
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
-    commandName: 'exitMpr2d',
+    commandName: 'setCornerstoneLayout',
   }
 ];
 
