@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.2.1...@ohif/viewer@3.2.2) (2019-12-19)
+
+
+### Bug Fixes
+
+* 🐛 Fix drag-n-drop of local files into OHIF ([#1319](https://github.com/OHIF/Viewers/issues/1319)) ([23305ce](https://github.com/OHIF/Viewers/commit/23305cec9c0f514e73a8dd17f984ffc87ad8d131)), closes [#1307](https://github.com/OHIF/Viewers/issues/1307)
+
+
+
+
+
 ## [3.2.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.2.0...@ohif/viewer@3.2.1) (2019-12-18)
 
 **Note:** Version bump only for package @ohif/viewer
