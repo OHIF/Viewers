@@ -1,3 +1,5 @@
+import VTKMPRToolbarComponent from './toolbarComponents/VTKMPRToolbarComponent';
+
 // TODO: A way to add Icons that don't already exist?
 // - Register them and add
 // - Include SVG Source/Inline?
@@ -242,32 +244,9 @@ const definitions = [
     label: '2D MPR',
     icon: 'cube',
     //
+    CustomComponent: VTKMPRToolbarComponent,
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
     commandName: 'mpr2d',
-    // Missing implementation on when we should show this button. we only show when:
-    // function _shouldRenderMpr2DButton() {
-    //   const { viewportSpecificData, studies, activeViewportIndex } = this.props;
-
-    //   if (!viewportSpecificData[activeViewportIndex]) {
-    //     return;
-    //   }
-
-    //   const { displaySetInstanceUid, studyInstanceUid } = viewportSpecificData[
-    //     activeViewportIndex
-    //   ];
-
-    //   const displaySet = _getDisplaySet(
-    //     studies,
-    //     studyInstanceUid,
-    //     displaySetInstanceUid
-    //   );
-
-    //   if (!displaySet) {
-    //     return;
-    //   }
-
-    //   return displaySet.isReconstructable;
-    // }
   }
 ];
 

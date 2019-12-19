@@ -32,7 +32,7 @@ export default {
     return OHIFCornerstoneViewport;
   },
   getToolbarModule({ extensionsManager }) {
-    return toolbarModule({ extensionsManager });
+    return toolbarModule;
   },
   getCommandsModule({ servicesManager }) {
     return commandsModule({ servicesManager });
