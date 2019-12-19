@@ -117,6 +117,7 @@ export default class ExtensionManager {
       const extensionModule = getModuleFn({
         servicesManager: this._servicesManager,
         commandsManager: this._commandsManager,
+        extensionManager: this,
         appConfig: this._appConfig,
         configuration,
       });
