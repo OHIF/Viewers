@@ -237,6 +237,38 @@ const definitions = [
       },
     ],
   },
+  {
+    id: '2DMPR',
+    label: '2D MPR',
+    icon: 'cube',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'mpr2d',
+    // Missing implementation on when we should show this button. we only show when:
+    // function _shouldRenderMpr2DButton() {
+    //   const { viewportSpecificData, studies, activeViewportIndex } = this.props;
+
+    //   if (!viewportSpecificData[activeViewportIndex]) {
+    //     return;
+    //   }
+
+    //   const { displaySetInstanceUid, studyInstanceUid } = viewportSpecificData[
+    //     activeViewportIndex
+    //   ];
+
+    //   const displaySet = _getDisplaySet(
+    //     studies,
+    //     studyInstanceUid,
+    //     displaySetInstanceUid
+    //   );
+
+    //   if (!displaySet) {
+    //     return;
+    //   }
+
+    //   return displaySet.isReconstructable;
+    // }
+  }
 ];
 
 export default {

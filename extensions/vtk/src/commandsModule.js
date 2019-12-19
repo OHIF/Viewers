@@ -6,6 +6,7 @@ import {
   vtkSVGCrosshairsWidget,
 } from 'react-vtkjs-viewport';
 
+import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
 import setMPRLayout from './utils/setMPRLayout.js';
 import setViewportToVTK from './utils/setViewportToVTK.js';
 import Constants from 'vtk.js/Sources/Rendering/Core/VolumeMapper/Constants.js';
@@ -274,6 +275,9 @@ const commandsModule = ({ commandsManager }) => {
         });
       });
     },
+    exitMpr2d: () => {
+      setCornerstoneLayout();
+    }
   };
 
   window.vtkActions = actions;
@@ -354,6 +358,11 @@ const commandsModule = ({ commandsManager }) => {
       storeContexts: ['viewports'],
       options: {},
       context: 'VIEWER',
+    },
+    exitMpr2d: {
+      commandFn: actions.exitMpr2d,
+      storeContexts: [],
+      options: {},
     },
   };
 
