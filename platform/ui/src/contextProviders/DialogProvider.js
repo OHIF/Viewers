@@ -152,6 +152,7 @@ const DialogProvider = ({ children, service }) => {
         onStart,
         onStop,
         onDrag,
+        showOverlay,
       } = dialog;
 
       let position =
@@ -160,7 +161,7 @@ const DialogProvider = ({ children, service }) => {
         position = centerPositions.find(position => position.id === id);
       }
 
-      return (
+      const dragableItem = () => (
         <Draggable
           key={id}
           disabled={!isDraggable}
@@ -217,6 +218,16 @@ const DialogProvider = ({ children, service }) => {
           </div>
         </Draggable>
       );
+
+      return (
+        showOverlay ? (
+          <div className="Overlay" key={id}>
+            {dragableItem()}
+          </div>
+        ) : (
+            dragableItem()
+          )
+      );
     });
 
   /**
@@ -238,13 +249,11 @@ const DialogProvider = ({ children, service }) => {
 
   return (
     <DialogContext.Provider value={{ create, dismiss, dismissAll, isEmpty }}>
-      <div className="DraggableArea">
-        {dialogs.some(dialog => dialog.showOverlay) ? (
-          <div className="Overlay active">{renderDialogs()}</div>
-        ) : (
-          renderDialogs()
-        )}
-      </div>
+      {!isEmpty() &&
+        <div className="DraggableArea">
+          {renderDialogs()}
+        </div>
+      }
       {children}
     </DialogContext.Provider>
   );
