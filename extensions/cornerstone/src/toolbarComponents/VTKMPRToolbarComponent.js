@@ -5,7 +5,7 @@ import { ToolbarButton } from '@ohif/ui';
 
 let isVisible = true;
 
-const _updateVisibleState = (studies, viewportSpecificData = {}, activeViewportIndex) => {
+const _isDisplaySetReconstructable = (studies, viewportSpecificData = {}, activeViewportIndex) => {
   if (!viewportSpecificData[activeViewportIndex]) {
     return false;
   };
@@ -58,11 +58,18 @@ function VTKMPRToolbarComponent({
   // Maybe use studyMeatadataManager?
   const { studies } = parentContext.props;
 
-  isVisible = _updateVisibleState(
+  // TODO: We should be using extensionManager coming from toolbarModule, not parentContext
+  const { extensionManager } = parentContext;
+
+  const isDisplaySetReconstructable = _isDisplaySetReconstructable(
     studies,
     viewportSpecificData,
     activeViewportIndex,
   );
+  const isVTKExtensionRegistered = extensionManager.registeredExtensionIds.includes('vtk');
+
+  isVisible = isDisplaySetReconstructable && isVTKExtensionRegistered;
+
 
   return (
     <React.Fragment>

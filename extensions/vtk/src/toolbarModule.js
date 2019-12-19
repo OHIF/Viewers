@@ -6,8 +6,6 @@ const TOOLBAR_BUTTON_TYPES = {
 };
 
 const getDefinitions = (extensionManager) => {
-  const isCornerstoneExtensionRegistered = extensionManager.registeredExtensionIds.includes('cornerstone');
-
   return [
     {
       id: 'Crosshairs',
@@ -125,9 +123,6 @@ const getDefinitions = (extensionManager) => {
       //
       type: TOOLBAR_BUTTON_TYPES.COMMAND,
       commandName: 'setCornerstoneLayout',
-      options: {
-        isHidden: isCornerstoneExtensionRegistered,
-      }
     }
   ];
 };

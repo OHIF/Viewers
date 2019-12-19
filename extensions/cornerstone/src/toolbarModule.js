@@ -37,8 +37,6 @@ const enums = {
 };
 
 const getDefinitions = (extensionManager) => {
-  const isVTKExtensionRegistered = extensionManager.registeredExtensionIds.includes('vtk');
-
   return [
     {
       id: 'StackScroll',
@@ -250,9 +248,6 @@ const getDefinitions = (extensionManager) => {
       CustomComponent: VTKMPRToolbarComponent,
       type: TOOLBAR_BUTTON_TYPES.COMMAND,
       commandName: 'mpr2d',
-      options: {
-        isHidden: !isVTKExtensionRegistered,
-      }
     }
   ];
 };
