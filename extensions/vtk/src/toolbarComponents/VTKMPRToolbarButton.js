@@ -36,14 +36,13 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
   return displaySet.isReconstructable;
 };
 
-function VTKMPRToolbarComponent({
+function VTKMPRToolbarButton({
   parentContext,
   toolbarClickCallback,
   button,
   activeButtons,
   isActive,
   className,
-  extensionManager,
 }) {
   const { id, label, icon } = button;
   const { viewportSpecificData, activeViewportIndex } = useSelector(state => {
@@ -56,14 +55,10 @@ function VTKMPRToolbarComponent({
     }
   });
 
-  const isDisplaySetReconstructable = _isDisplaySetReconstructable(
+  isVisible = _isDisplaySetReconstructable(
     viewportSpecificData,
     activeViewportIndex,
   );
-  const isVTKExtensionRegistered = extensionManager.registeredExtensionIds.includes('vtk');
-
-  isVisible = isDisplaySetReconstructable && isVTKExtensionRegistered;
-
 
   return (
     <React.Fragment>
@@ -80,14 +75,13 @@ function VTKMPRToolbarComponent({
   );
 }
 
-VTKMPRToolbarComponent.propTypes = {
+VTKMPRToolbarButton.propTypes = {
   parentContext: PropTypes.object.isRequired,
   toolbarClickCallback: PropTypes.func.isRequired,
   button: PropTypes.object.isRequired,
   activeButtons: PropTypes.array.isRequired,
   isActive: PropTypes.bool,
   className: PropTypes.string,
-  extensionManager: PropTypes.object,
 };
 
-export default VTKMPRToolbarComponent;
+export default VTKMPRToolbarButton;

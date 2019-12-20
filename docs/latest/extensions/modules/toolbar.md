@@ -25,9 +25,8 @@ export default {
    * @param {object} params
    * @param {ServicesManager} params.servicesManager
    * @param {CommandsManager} params.commandsManager
-   * @param {ExtensionManager} params.extensionManager
    */
-  getToolbarModule({ servicesManager, commandsManager, extensionManager }) {
+  getToolbarModule({ servicesManager, commandsManager }) {
     return {
       definitions: [
         /* Array of definitions */

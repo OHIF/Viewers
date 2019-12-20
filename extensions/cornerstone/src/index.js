@@ -31,8 +31,8 @@ export default {
   getViewportModule() {
     return OHIFCornerstoneViewport;
   },
-  getToolbarModule({ extensionManager }) {
-    return toolbarModule(extensionManager);
+  getToolbarModule() {
+    return toolbarModule;
   },
   getCommandsModule({ servicesManager }) {
     return commandsModule({ servicesManager });

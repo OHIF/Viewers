@@ -17,8 +17,8 @@ const vtkExtension = {
   getViewportModule() {
     return OHIFVTKViewport;
   },
-  getToolbarModule({ extensionManager }) {
-    return toolbarModule(extensionManager);
+  getToolbarModule() {
+    return toolbarModule;
   },
   getCommandsModule({ commandsManager }) {
     return commandsModule({ commandsManager });
