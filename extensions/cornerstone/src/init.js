@@ -124,11 +124,15 @@ export default function init({ servicesManager, configuration }) {
 
     let parsedProps = { ...props };
 
+    /**
+     * drawHandles - Never/Always show handles
+     * drawHandlesOnHover - Only show handles on handle hover (pointNearHandle)
+     */
     if (configuration.hideHandles !== false && annotations.includes(tool)) {
       if (props.configuration) {
-        parsedProps.configuration.drawHandles = false;
+        parsedProps.configuration.drawHandlesOnHover = false;
       } else {
-        parsedProps.configuration = { drawHandles: false };
+        parsedProps.configuration = { drawHandlesOnHover: false };
       }
     }
 
