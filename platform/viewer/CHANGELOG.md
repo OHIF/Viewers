@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.2...@ohif/viewer@3.3.3) (2019-12-20)
+
+
+### Bug Fixes
+
+* 🐛 1241: Make Plugin switch part of ToolbarModule ([#1322](https://github.com/OHIF/Viewers/issues/1322)) ([6540e36](https://github.com/OHIF/Viewers/commit/6540e36818944ac2eccc696186366ae495b33a04)), closes [#1241](https://github.com/OHIF/Viewers/issues/1241)
+
+
+
+
+
 ## [3.3.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.1...@ohif/viewer@3.3.2) (2019-12-20)
 
 **Note:** Version bump only for package @ohif/viewer
