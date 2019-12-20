@@ -248,6 +248,15 @@ const getDefinitions = (extensionManager) => {
       CustomComponent: args => VTKMPRToolbarComponent({ ...args, extensionManager }),
       type: TOOLBAR_BUTTON_TYPES.COMMAND,
       commandName: 'mpr2d',
+    },
+    {
+      id: 'Exit2DMPR',
+      label: 'Exit 2D MPR',
+      icon: 'times',
+      //
+      type: TOOLBAR_BUTTON_TYPES.COMMAND,
+      commandName: 'setCornerstoneLayout',
+      context: 'ACTIVE_VIEWPORT::VTK',
     }
   ];
 };

@@ -116,14 +116,6 @@ const getDefinitions = (extensionManager) => {
         },
       ],
     },
-    {
-      id: 'Exit2DMPR',
-      label: 'Exit 2D MPR',
-      icon: 'times',
-      //
-      type: TOOLBAR_BUTTON_TYPES.COMMAND,
-      commandName: 'setCornerstoneLayout',
-    }
   ];
 };
 
