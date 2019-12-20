@@ -354,7 +354,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     setCornerstoneLayout: {
       commandFn: actions.setCornerstoneLayout,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
       context: 'VIEWER',
     },
