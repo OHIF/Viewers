@@ -124,7 +124,7 @@ export default function init({ servicesManager, configuration }) {
 
     let parsedProps = { ...props };
 
-    if (configuration.hideHandles && annotations.includes(tool)) {
+    if (configuration.hideHandles !== false && annotations.includes(tool)) {
       if (props.configuration) {
         parsedProps.configuration.drawHandles = false;
       } else {
