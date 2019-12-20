@@ -76,31 +76,35 @@ export default function init({ servicesManager, configuration }) {
 
   initCornerstoneTools(defaultCsToolsConfig);
 
-  // ~~ Toooools 🙌
-  const tools = [
-    csTools.PanTool,
-    csTools.ZoomTool,
-    csTools.WwwcTool,
-    csTools.WwwcRegionTool,
-    csTools.MagnifyTool,
-    csTools.StackScrollTool,
-    csTools.StackScrollMouseWheelTool,
-    // Touch
-    csTools.PanMultiTouchTool,
-    csTools.ZoomTouchPinchTool,
-    // Annotations
-    csTools.ArrowAnnotateTool,
-    csTools.EraserTool,
-    csTools.BidirectionalTool,
-    csTools.LengthTool,
-    csTools.AngleTool,
-    csTools.FreehandRoiTool,
-    csTools.EllipticalRoiTool,
-    csTools.DragProbeTool,
-    csTools.RectangleRoiTool,
-    // Segmentation
-    csTools.BrushTool,
-  ];
+  const toolsGroupedByType = {
+    touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],
+    annotations: [
+      csTools.ArrowAnnotateTool,
+      csTools.EraserTool,
+      csTools.BidirectionalTool,
+      csTools.LengthTool,
+      csTools.AngleTool,
+      csTools.FreehandRoiTool,
+      csTools.EllipticalRoiTool,
+      csTools.DragProbeTool,
+      csTools.RectangleRoiTool,
+    ],
+    segmentation: [csTools.BrushTool],
+    other: [
+      csTools.PanTool,
+      csTools.ZoomTool,
+      csTools.WwwcTool,
+      csTools.WwwcRegionTool,
+      csTools.MagnifyTool,
+      csTools.StackScrollTool,
+      csTools.StackScrollMouseWheelTool,
+    ],
+  };
+
+  let tools = [];
+  Object.keys(toolsGroupedByType).forEach(toolsGroup =>
+    tools.push(...toolsGroupedByType[toolsGroup])
+  );
 
   /* Add extension tools configuration here. */
   const internalToolsConfig = {
@@ -114,13 +118,48 @@ export default function init({ servicesManager, configuration }) {
     },
   };
 
+  /* Abstract tools configuration using extension configuration. */
+  const parseToolProps = (props, tool) => {
+    const { annotations } = toolsGroupedByType;
+    // An alternative approach would be to remove the `drawHandlesOnHover` config
+    // from the supported configuration properties in `cornerstone-tools`
+    const toolsWithHideableHandles = annotations.filter(
+      tool => !['RectangleRoiTool', 'EllipticalRoiTool'].includes(tool.name)
+    );
+
+    let parsedProps = { ...props };
+
+    /**
+     * drawHandles - Never/Always show handles
+     * drawHandlesOnHover - Only show handles on handle hover (pointNearHandle)
+     *
+     * Does not apply to tools where handles aren't placed in predictable
+     * locations.
+     */
+    if (
+      configuration.hideHandles !== false &&
+      toolsWithHideableHandles.includes(tool)
+    ) {
+      if (props.configuration) {
+        parsedProps.configuration.drawHandlesOnHover = true;
+      } else {
+        parsedProps.configuration = { drawHandlesOnHover: true };
+      }
+    }
+
+    return parsedProps;
+  };
+
   /* Add tools with its custom props through extension configuration. */
   tools.forEach(tool => {
     const toolName = tool.name.replace('Tool', '');
     const externalToolsConfig = configuration.tools || {};
     const externalToolProps = externalToolsConfig[toolName] || {};
     const internalToolProps = internalToolsConfig[toolName] || {};
-    const props = merge(internalToolProps, externalToolProps);
+    const props = merge(
+      internalToolProps,
+      parseToolProps(externalToolProps, tool)
+    );
     csTools.addTool(tool, props);
   });
 
