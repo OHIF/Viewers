@@ -30,6 +30,7 @@ docker/dcm4che/dcm4che-arc
 
 # Cypress test results
 videos/
+screenshots/
 
 # Locize settings
 .locize
