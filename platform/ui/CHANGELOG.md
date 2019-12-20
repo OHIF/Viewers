@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.5](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.4...@ohif/ui@1.1.5) (2019-12-19)
+
+
+### Bug Fixes
+
+* 🐛 Fix drag-n-drop of local files into OHIF ([#1319](https://github.com/OHIF/Viewers/issues/1319)) ([23305ce](https://github.com/OHIF/Viewers/commit/23305cec9c0f514e73a8dd17f984ffc87ad8d131)), closes [#1307](https://github.com/OHIF/Viewers/issues/1307)
+
+
+
+
+
 ## [1.1.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.3...@ohif/ui@1.1.4) (2019-12-16)
 
 **Note:** Version bump only for package @ohif/ui
