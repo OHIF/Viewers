@@ -245,7 +245,7 @@ const getDefinitions = (extensionManager) => {
       label: '2D MPR',
       icon: 'cube',
       //
-      CustomComponent: VTKMPRToolbarComponent,
+      CustomComponent: args => VTKMPRToolbarComponent({ ...args, extensionManager }),
       type: TOOLBAR_BUTTON_TYPES.COMMAND,
       commandName: 'mpr2d',
     }

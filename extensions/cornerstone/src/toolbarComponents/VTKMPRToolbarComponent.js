@@ -41,6 +41,7 @@ function VTKMPRToolbarComponent({
   activeButtons,
   isActive,
   className,
+  extensionManager,
 }) {
   const { id, label, icon } = button;
 
@@ -57,9 +58,6 @@ function VTKMPRToolbarComponent({
   // TODO: Refactor this and find a better way to get current studies
   // Maybe use studyMeatadataManager?
   const { studies } = parentContext.props;
-
-  // TODO: We should be using extensionManager coming from toolbarModule, not parentContext
-  const { extensionManager } = parentContext;
 
   const isDisplaySetReconstructable = _isDisplaySetReconstructable(
     studies,
@@ -93,6 +91,7 @@ VTKMPRToolbarComponent.propTypes = {
   activeButtons: PropTypes.array.isRequired,
   isActive: PropTypes.bool,
   className: PropTypes.string,
+  extensionManager: PropTypes.object,
 };
 
 export default VTKMPRToolbarComponent;
