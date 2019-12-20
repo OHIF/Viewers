@@ -2,10 +2,13 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { ToolbarButton } from '@ohif/ui';
+import { utils } from '@ohif/core';
+
+const { studyMetadataManager } = utils;
 
 let isVisible = true;
 
-const _isDisplaySetReconstructable = (studies, viewportSpecificData = {}, activeViewportIndex) => {
+const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportIndex) => {
   if (!viewportSpecificData[activeViewportIndex]) {
     return false;
   };
@@ -14,18 +17,17 @@ const _isDisplaySetReconstructable = (studies, viewportSpecificData = {}, active
     activeViewportIndex
   ];
 
+  const studies = studyMetadataManager.all();
 
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.studyInstanceUID === studyInstanceUid
   );
 
   if (!study) {
     return false;
   }
 
-  const displaySet = study.displaySets.find(set => {
-    return set.displaySetInstanceUid === displaySetInstanceUid;
-  });
+  const displaySet = study._displaySets.find(set => set.displaySetInstanceUid === displaySetInstanceUid);
 
   if (!displaySet) {
     return false;
@@ -44,7 +46,6 @@ function VTKMPRToolbarComponent({
   extensionManager,
 }) {
   const { id, label, icon } = button;
-
   const { viewportSpecificData, activeViewportIndex } = useSelector(state => {
     const { viewports = {} } = state;
     const { viewportSpecificData, activeViewportIndex } = viewports;
@@ -55,12 +56,7 @@ function VTKMPRToolbarComponent({
     }
   });
 
-  // TODO: Refactor this and find a better way to get current studies
-  // Maybe use studyMeatadataManager?
-  const { studies } = parentContext.props;
-
   const isDisplaySetReconstructable = _isDisplaySetReconstructable(
-    studies,
     viewportSpecificData,
     activeViewportIndex,
   );

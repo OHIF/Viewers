@@ -47,9 +47,6 @@ class ToolbarRow extends Component {
       activeButtons: [],
     };
 
-    // TODO: We should not need to add this here, we should be able to access extension manager throught getToolbaModule
-    this.extensionManager = extensionManager;
-
     this._handleBuiltIn = _handleBuiltIn.bind(this);
 
     const panelModules = extensionManager.modules[MODULE_TYPES.PANEL];
