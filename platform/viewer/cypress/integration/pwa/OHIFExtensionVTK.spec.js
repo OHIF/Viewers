@@ -27,7 +27,7 @@ describe('OHIF VTK Extension', () => {
       .wait(1000); // TODO: Once issue #1167 is fixed, the wait command should be removed. (https://github.com/OHIF/Viewers/issues/1167)
 
     //Select 2D MPR button
-    cy.get('.PluginSwitch > .toolbar-button').click();
+    cy.get('.ToolbarRow > :nth-child(12)').click();
 
     //Wait Reformatting Images
     cy.waitVTKReformatting();

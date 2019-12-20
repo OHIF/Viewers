@@ -44,10 +44,10 @@ export function initRouteAliases() {
 
 //Creating aliases for VTK tools buttons
 export function initVTKToolsAliases() {
-  cy.get('.PluginSwitch > .toolbar-button').as('twodmprBtn');
-  cy.get('.ToolbarRow > :nth-child(2)').as('crosshairsBtn');
-  cy.get('.ToolbarRow > :nth-child(3)').as('wwwcBtn');
-  cy.get('.ToolbarRow > :nth-child(4)').as('rotateBtn');
+  cy.get('.ToolbarRow > :nth-child(2)').as('twodmprBtn');
+  cy.get('.ToolbarRow > :nth-child(3)').as('crosshairsBtn');
+  cy.get('.ToolbarRow > :nth-child(4)').as('wwwcBtn');
+  cy.get('.ToolbarRow > :nth-child(5)').as('rotateBtn');
   cy.get('.slab-thickness').as('slabSlider');
   cy.get('.select-ohif').as('modeDropdown');
   cy.get('.ohif-check-label').as('modeCheckbox');
