@@ -182,6 +182,7 @@ describe('ExtensionManager.js', () => {
           expect(extension[module].mock.calls[0][0]).toEqual({
             servicesManager,
             commandsManager,
+            extensionManager,
             appConfig,
             configuration: extensionConfiguration,
           });
@@ -226,7 +227,7 @@ describe('ExtensionManager.js', () => {
           return {
             definitions: {
               exampleDefinition: {
-                commandFn: () => {},
+                commandFn: () => { },
                 storeContexts: [],
                 options: {},
               },
