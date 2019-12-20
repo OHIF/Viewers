@@ -13,8 +13,6 @@ describe('Top level exports', () => {
       'UINotificationService',
       'UIModalService',
       'UIDialogService',
-      'UIContextMenuService',
-      'UILabellingFlowService',
       //
       'utils',
       'studies',
@@ -30,6 +28,7 @@ describe('Top level exports', () => {
       'object',
       'log',
       'DICOMWeb',
+      'DICOMSR',
       'OHIF', //
       'measurements',
       'hangingProtocols',

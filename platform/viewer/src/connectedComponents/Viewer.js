@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import { MODULE_TYPES } from '@ohif/core';
-import OHIF from '@ohif/core';
+import OHIF, { DICOMSR } from '@ohif/core';
+import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedHeader from './ConnectedHeader.js';
 import ConnectedToolbarRow from './ConnectedToolbarRow.js';
@@ -11,7 +12,6 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
-import DICOMSR from '../lib/DICOMSR';
 
 // Contexts
 import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
@@ -69,6 +69,7 @@ class Viewer extends Component {
     // window.store.getState().viewports.activeViewportIndex
     activeViewportIndex: PropTypes.number.isRequired,
     isStudyLoaded: PropTypes.bool,
+    dialog: PropTypes.object,
   };
 
   constructor(props) {
@@ -103,6 +104,12 @@ class Viewer extends Component {
     selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
     thumbnails: [],
   };
+
+  componentWillUnmount() {
+    if (this.props.dialog) {
+      this.props.dialog.dismissAll();
+    }
+  }
 
   retrieveTimepoints = filter => {
     OHIF.log.info('retrieveTimepoints');
@@ -297,11 +304,11 @@ class Viewer extends Component {
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
-              )}
+              <ConnectedStudyBrowser
+                studies={this.state.thumbnails}
+                studyMetadata={this.props.studies}
+              />
+            )}
           </SidePanel>
 
           {/* MAIN */}
@@ -324,7 +331,7 @@ class Viewer extends Component {
   }
 }
 
-export default Viewer;
+export default withDialog(Viewer);
 
 /**
  * What types are these? Why do we have "mapping" dropped in here instead of in
@@ -337,7 +344,7 @@ export default Viewer;
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function (studies) {
+const _mapStudiesToThumbnails = function(studies) {
   return studies.map(study => {
     const { studyInstanceUid } = study;
 

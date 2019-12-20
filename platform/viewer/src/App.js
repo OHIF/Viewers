@@ -8,20 +8,12 @@ import { hot } from 'react-hot-loader/root';
 
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 
-import ToolContextMenu from './connectedComponents/ToolContextMenu';
-import LabellingFlow from './components/Labelling/LabellingFlow';
-
 import {
   SnackbarProvider,
   ModalProvider,
   DialogProvider,
   OHIFModal,
 } from '@ohif/ui';
-
-import {
-  LabellingFlowProvider,
-  ContextMenuProvider,
-} from './appCustomProviders';
 
 import {
   CommandsManager,
@@ -31,8 +23,6 @@ import {
   UINotificationService,
   UIModalService,
   UIDialogService,
-  UIContextMenuService,
-  UILabellingFlowService,
   utils,
   redux as reduxOHIF,
 } from '@ohif/core';
@@ -74,10 +64,7 @@ const commandsManagerConfig = {
 const commandsManager = new CommandsManager(commandsManagerConfig);
 const hotkeysManager = new HotkeysManager(commandsManager);
 const servicesManager = new ServicesManager();
-const extensionManager = new ExtensionManager({
-  commandsManager,
-  servicesManager,
-});
+let extensionManager;
 /** ~~~~~~~~~~~~~ End Application Setup */
 
 // TODO[react] Use a provider when the whole tree is React
@@ -135,16 +122,11 @@ class App extends Component {
     } = this._appConfig;
 
     this.initUserManager(oidc);
-    _initServices([
-      UINotificationService,
-      UIModalService,
-      UIDialogService,
-      UIContextMenuService,
-      UILabellingFlowService,
-    ]);
+    _initServices([UINotificationService, UIModalService, UIDialogService]);
     _initExtensions(
       [...defaultExtensions, ...extensions],
-      cornerstoneExtensionConfig
+      cornerstoneExtensionConfig,
+      this._appConfig
     );
 
     /*
@@ -161,9 +143,7 @@ class App extends Component {
     const {
       UINotificationService,
       UIDialogService,
-      UILabellingFlowService,
       UIModalService,
-      UIContextMenuService,
     } = servicesManager.services;
 
     if (this._userManager) {
@@ -181,21 +161,9 @@ class App extends Component {
                             modal={OHIFModal}
                             service={UIModalService}
                           >
-                            <LabellingFlowProvider
-                              service={UILabellingFlowService}
-                              labellingComponent={LabellingFlow}
-                              commandsManager={commandsManager}
-                            >
-                              <ContextMenuProvider
-                                service={UIContextMenuService}
-                                contextMenuComponent={ToolContextMenu}
-                                commandsManager={commandsManager}
-                              >
-                                <OHIFStandaloneViewer
-                                  userManager={this._userManager}
-                                />
-                              </ContextMenuProvider>
-                            </LabellingFlowProvider>
+                            <OHIFStandaloneViewer
+                              userManager={this._userManager}
+                            />
                           </ModalProvider>
                         </DialogProvider>
                       </SnackbarProvider>
@@ -218,19 +186,7 @@ class App extends Component {
                 <SnackbarProvider service={UINotificationService}>
                   <DialogProvider service={UIDialogService}>
                     <ModalProvider modal={OHIFModal} service={UIModalService}>
-                      <LabellingFlowProvider
-                        service={UILabellingFlowService}
-                        labellingComponent={LabellingFlow}
-                        commandsManager={commandsManager}
-                      >
-                        <ContextMenuProvider
-                          service={UIContextMenuService}
-                          contextMenuComponent={ToolContextMenu}
-                          commandsManager={commandsManager}
-                        >
-                          <OHIFStandaloneViewer />
-                        </ContextMenuProvider>
-                      </LabellingFlowProvider>
+                      <OHIFStandaloneViewer />
                     </ModalProvider>
                   </DialogProvider>
                 </SnackbarProvider>
@@ -283,7 +239,13 @@ function _initServices(services) {
 /**
  * @param
  */
-function _initExtensions(extensions, cornerstoneExtensionConfig) {
+function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
+  extensionManager = new ExtensionManager({
+    commandsManager,
+    servicesManager,
+    appConfig,
+  });
+
   const requiredExtensions = [
     GenericViewerCommands,
     [OHIFCornerstoneExtension, cornerstoneExtensionConfig],

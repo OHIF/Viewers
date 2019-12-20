@@ -5,6 +5,7 @@ import { ServicesManager } from './services';
 import classes, { CommandsManager, HotkeysManager } from './classes/';
 
 import DICOMWeb from './DICOMWeb';
+import DICOMSR from './DICOMSR';
 import cornerstone from './cornerstone.js';
 import hangingProtocols from './hanging-protocols';
 import header from './header.js';
@@ -23,8 +24,6 @@ import {
   UINotificationService,
   UIModalService,
   UIDialogService,
-  UIContextMenuService,
-  UILabellingFlowService,
 } from './services';
 
 const OHIF = {
@@ -48,6 +47,7 @@ const OHIF = {
   object,
   log,
   DICOMWeb,
+  DICOMSR,
   viewer: {},
   measurements,
   hangingProtocols,
@@ -55,8 +55,6 @@ const OHIF = {
   UINotificationService,
   UIModalService,
   UIDialogService,
-  UIContextMenuService,
-  UILabellingFlowService,
 };
 
 export {
@@ -80,14 +78,13 @@ export {
   object,
   log,
   DICOMWeb,
+  DICOMSR,
   measurements,
   hangingProtocols,
   //
   UINotificationService,
   UIModalService,
   UIDialogService,
-  UIContextMenuService,
-  UILabellingFlowService,
 };
 
 export { OHIF };

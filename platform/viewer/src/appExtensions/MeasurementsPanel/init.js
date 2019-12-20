@@ -3,6 +3,9 @@ import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import throttle from 'lodash.throttle';
 
+import LabellingFlow from '../../components/Labelling/LabellingFlow';
+import ToolContextMenu from '../../connectedComponents/ToolContextMenu';
+
 const {
   onAdded,
   onRemoved,
@@ -29,10 +32,7 @@ export default function init({
   commandsManager,
   configuration,
 }) {
-  const {
-    UIContextMenuService,
-    UILabellingFlowService,
-  } = servicesManager.services;
+  const { UIDialogService } = servicesManager.services;
 
   // TODO: MEASUREMENT_COMPLETED (not present in initial implementation)
   const onMeasurementsChanged = (action, event) => {
@@ -46,21 +46,109 @@ export default function init({
     'labelmapModified'
   );
 
-  const onRightClick = event => {
-    if (UIContextMenuService) {
-      UIContextMenuService.show({ event: event.detail });
+  const _getDefaultPosition = event => ({
+    x: (event && event.currentPoints.client.x) || 0,
+    y: (event && event.currentPoints.client.y) || 0,
+  });
+
+  const _updateLabellingHandler = (labellingData, measurementData) => {
+    const { location, description, response } = labellingData;
+
+    if (location) {
+      measurementData.location = location;
     }
+
+    measurementData.description = description || '';
+
+    if (response) {
+      measurementData.response = response;
+    }
+
+    commandsManager.runCommand(
+      'updateTableWithNewMeasurementData',
+      measurementData
+    );
+  };
+
+  const showLabellingDialog = (props, contentProps, measurementData) => {
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
+    }
+
+    UIDialogService.create({
+      id: 'labelling',
+      isDraggable: false,
+      showOverlay: true,
+      centralize: true,
+      content: LabellingFlow,
+      contentProps: {
+        measurementData,
+        labellingDoneCallback: () =>
+          UIDialogService.dismiss({ id: 'labelling' }),
+        updateLabelling: labellingData =>
+          _updateLabellingHandler(labellingData, measurementData),
+        ...contentProps,
+      },
+      ...props,
+    });
+  };
+
+  const onRightClick = event => {
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
+    }
+
+    UIDialogService.dismiss({ id: 'context-menu' });
+    UIDialogService.create({
+      id: 'context-menu',
+      isDraggable: false,
+      preservePosition: false,
+      defaultPosition: _getDefaultPosition(event.detail),
+      content: ToolContextMenu,
+      contentProps: {
+        eventData: event.detail,
+        onDelete: (nearbyToolData, eventData) => {
+          const element = eventData.element;
+          commandsManager.runCommand('removeToolState', {
+            element,
+            toolType: nearbyToolData.toolType,
+            tool: nearbyToolData.tool,
+          });
+        },
+        onClose: () => UIDialogService.dismiss({ id: 'context-menu' }),
+        onSetLabel: (eventData, measurementData) => {
+          showLabellingDialog(
+            { centralize: true, isDraggable: false },
+            { skipAddLabelButton: true, editLocation: true },
+            measurementData
+          );
+        },
+        onSetDescription: (eventData, measurementData) => {
+          showLabellingDialog(
+            { defaultPosition: _getDefaultPosition(eventData) },
+            { editDescriptionOnDialog: true },
+            measurementData
+          );
+        },
+      },
+    });
   };
 
   const onTouchPress = event => {
-    if (UIContextMenuService) {
-      UIContextMenuService.show({
-        event: event.detail,
-        props: {
-          isTouchEvent: true,
-        },
-      });
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
     }
+
+    UIDialogService.create({
+      eventData: event.detail,
+      content: ToolContextMenu,
+      contentProps: {
+        isTouchEvent: true,
+      },
+    });
   };
 
   const onTouchStart = () => resetLabelligAndContextMenu();
@@ -68,10 +156,13 @@ export default function init({
   const onMouseClick = () => resetLabelligAndContextMenu();
 
   const resetLabelligAndContextMenu = () => {
-    if (UILabellingFlowService && UIContextMenuService) {
-      UILabellingFlowService.hide();
-      UIContextMenuService.hide();
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
     }
+
+    UIDialogService.dismiss({ id: 'context-menu' });
+    UIDialogService.dismiss({ id: 'labelling' });
   };
 
   // TODO: This makes scrolling painfully slow

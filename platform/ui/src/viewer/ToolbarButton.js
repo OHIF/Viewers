@@ -23,8 +23,14 @@ export function ToolbarButton(props) {
     }
   };
 
+  const cypressSelectorId = props.label.toLowerCase();
+
   return (
-    <div className={className} onClick={handleClick}>
+    <div
+      className={className}
+      onClick={handleClick}
+      data-cy={cypressSelectorId}
+    >
       {iconProps && <Icon {...iconProps} />}
       <div className="toolbar-button-label">
         {t(label)}

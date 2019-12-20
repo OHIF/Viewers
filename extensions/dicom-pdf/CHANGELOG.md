@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-pdf@1.0.0...@ohif/extension-dicom-pdf@1.0.1) (2019-12-16)
+
+
+### Bug Fixes
+
+* 🐛 Update ohif pdf extension to optionally use pdfjs ([#1162](https://github.com/OHIF/Viewers/issues/1162)) ([31e542d](https://github.com/OHIF/Viewers/commit/31e542dfd973c3e982ede6d02d79bfe65175e792)), closes [#1049](https://github.com/OHIF/Viewers/issues/1049)
+
+
+
+
+
 # [1.0.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-pdf@0.50.4...@ohif/extension-dicom-pdf@1.0.0) (2019-09-27)
 
 
