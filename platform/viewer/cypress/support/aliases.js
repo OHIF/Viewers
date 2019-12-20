@@ -44,6 +44,7 @@ export function initRouteAliases() {
 
 //Creating aliases for VTK tools buttons
 export function initVTKToolsAliases() {
+  cy.get('[data-cy="exit 2d mpr"]').as('exit2dmprBtn');
   cy.get('[data-cy="crosshairs"]').as('crosshairsBtn');
   cy.get('[data-cy="wwwc"]').as('wwwcBtn');
   cy.get('[data-cy="rotate"]').as('rotateBtn');
