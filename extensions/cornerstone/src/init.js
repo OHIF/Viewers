@@ -130,9 +130,9 @@ export default function init({ servicesManager, configuration }) {
      */
     if (configuration.hideHandles !== false && annotations.includes(tool)) {
       if (props.configuration) {
-        parsedProps.configuration.drawHandlesOnHover = false;
+        parsedProps.configuration.drawHandlesOnHover = true;
       } else {
-        parsedProps.configuration = { drawHandlesOnHover: false };
+        parsedProps.configuration = { drawHandlesOnHover: true };
       }
     }
 
