@@ -1,9 +1,8 @@
 import { connect } from 'react-redux';
 import { MeasurementTable } from '@ohif/ui';
-import OHIF from '@ohif/core';
+import OHIF, { DICOMSR } from '@ohif/core';
 import moment from 'moment';
 import cornerstone from 'cornerstone-core';
-import DICOMSR from './../../lib/DICOMSR';
 
 import jumpToRowItem from './jumpToRowItem.js';
 
@@ -32,9 +31,7 @@ function groupBy(list, props) {
  */
 function getAllTools(toolGroups = []) {
   let tools = [];
-  toolGroups.forEach(
-    toolGroup => (tools = tools.concat(toolGroup.childTools))
-  );
+  toolGroups.forEach(toolGroup => (tools = tools.concat(toolGroup.childTools)));
 
   return tools;
 }
