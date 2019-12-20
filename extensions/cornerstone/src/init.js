@@ -121,14 +121,25 @@ export default function init({ servicesManager, configuration }) {
   /* Abstract tools configuration using extension configuration. */
   const parseToolProps = (props, tool) => {
     const { annotations } = toolsGroupedByType;
+    // An alternative approach would be to remove the `drawHandlesOnHover` config
+    // from the supported configuration properties in `cornerstone-tools`
+    const toolsWithHideableHandles = annotations.filter(tool =>
+      ['RectangleRoiTool', 'EllipticalRoiTool'].includes(tool.name)
+    );
 
     let parsedProps = { ...props };
 
     /**
      * drawHandles - Never/Always show handles
      * drawHandlesOnHover - Only show handles on handle hover (pointNearHandle)
+     *
+     * Does not apply to tools where handles aren't placed in predictable
+     * locations.
      */
-    if (configuration.hideHandles !== false && annotations.includes(tool)) {
+    if (
+      configuration.hideHandles !== false &&
+      toolsWithHideableHandles.includes(tool)
+    ) {
       if (props.configuration) {
         parsedProps.configuration.drawHandlesOnHover = true;
       } else {
