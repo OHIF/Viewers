@@ -77,6 +77,7 @@ class OHIFVTKViewport extends Component {
     }),
     viewportIndex: PropTypes.number,
     children: PropTypes.node,
+    commandsManager: PropTypes.object,
   };
 
   static id = 'OHIFVTKViewport';
@@ -386,6 +387,7 @@ class OHIFVTKViewport extends Component {
                 this.state.paintFilterBackgroundImageData
               }
               viewportIndex={this.props.viewportIndex}
+              commandsManager={this.props.commandsManager}
             />
           )}
         </div>

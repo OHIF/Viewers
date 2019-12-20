@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { View2D } from 'react-vtkjs-viewport';
 import PropTypes from 'prop-types';
 
@@ -11,21 +11,18 @@ const VTKViewport = props => {
     const { setViewportActive, viewportIndex, activeViewportIndex } = props;
 
     if (viewportIndex !== activeViewportIndex) {
+      // set in Connected
       setViewportActive();
     }
   });
 
   useEffect(() => {
-    // todo: new prop for callback that fetches vtk api object
-    // todo: wire up clalback w/ commands manager
-
-    // const viewportUid = commandsManager.run(
-    //   'getVtkApiForViewportIndex',
-    //   props.viewportIndex
-    // );
     const handleScrollEvent = evt => {
-      console.log(evt.detail.uid);
-      const viewportUid = '';
+      const vtkViewportApiReference =
+        props.commandsManager.runCommand('getVtkApiForViewportIndex', {
+          index: props.viewportIndex,
+        }) || {};
+      const viewportUid = vtkViewportApiReference.uid;
       const viewportWasScrolled = viewportUid === evt.detail.uid;
 
       if (viewportWasScrolled) {
@@ -36,7 +33,7 @@ const VTKViewport = props => {
     window.addEventListener('vtkscrollevent', handleScrollEvent);
     return () =>
       window.removeEventListener('vtkscrollevent', handleScrollEvent);
-  }, [setViewportActiveHandler]);
+  }, [props.commandsManager, props.viewportIndex, setViewportActiveHandler]);
 
   return (
     <div
@@ -53,6 +50,7 @@ VTKViewport.propTypes = {
   setViewportActive: PropTypes.func.isRequired,
   viewportIndex: PropTypes.number.isRequired,
   activeViewportIndex: PropTypes.number.isRequired,
+  commandsManager: PropTypes.object,
 };
 
 export default VTKViewport;
