@@ -387,24 +387,18 @@ describe('OHIF User Preferences', () => {
     });
 
     it('checks new hotkeys for "Next" and "Previous" Image on Viewport', function() {
-      // Go go hotkeys tab
+      // Update hotkeys for 'Next/Previous Viewport'
       cy.get('@userPreferencesHotkeysTab')
         .click()
         .should('have.class', 'active');
-
-      // Set new hotkey for 'Next Image Viewport' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
-        'Next Image Viewport',
+        'Next Viewport',
         '{shift}{rightarrow}'
       );
-
-      // Set new hotkey for 'Previous Image Viewport' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
-        'Previous Image Viewport',
+        'Previous Viewport',
         '{shift}{leftarrow}'
       );
-
-      // Save new hotkeys
       cy.get('@saveBtn')
         .scrollIntoView()
         .click();
@@ -413,20 +407,25 @@ describe('OHIF User Preferences', () => {
       cy.setLayout(3, 1);
       cy.waitViewportImageLoading();
 
-      // Rotate Right and Invert colors on Viewport #1
-      cy.get('body').type('RI');
-      // Check that image was rotated
+      // Reset, Rotate Right and Invert colors on Viewport #1
+      cy.get('body').type(' ');
+      cy.get('body').type('r');
+      cy.get('body').type('i');
+
+      // Shift active viewport to next
+      // Reset, Rotate Left and Invert colors on Viewport #2
+      cy.get('body').type('{shift}{rightarrow}');
+      cy.get('body').type(' ');
+      cy.get('body').type('l');
+      cy.get('body').type('i');
+
+      // Verify 1st viewport was rotated
       cy.get('@viewportInfoMidTop').should('contains.text', 'R');
 
-      //Move to Next Viewport
-      cy.get('body').type('{shift}{rightarrow}');
-      // Rotate Left and Invert colors on Viewport #2
-      cy.get('body').type('LI');
-      // Get overlay information from viewport #2
+      // Verify 2nd viewport was rotated
       cy.get(
         ':nth-child(2) > .viewport-wrapper > .viewport-element > .ViewportOrientationMarkers.noselect > .top-mid.orientation-marker'
       ).as('viewport2InfoMidTop');
-      // Check that image was rotated
       cy.get('@viewport2InfoMidTop').should('contains.text', 'P');
 
       //Move to Previous Viewport
