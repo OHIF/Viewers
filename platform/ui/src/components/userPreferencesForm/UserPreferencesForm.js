@@ -26,31 +26,6 @@ import { GeneralPreferences } from './GeneralPreferences';
  */
 
 /**
- * Create tabs obj.
- * @returns {TabObject[]} Array of TabObjs.
- */
-const createTabs = () => {
-  return [
-    {
-      name: 'Hotkeys',
-      Component: HotKeysPreferences,
-      props: {},
-    },
-    {
-      name: 'General',
-      Component: GeneralPreferences,
-      props: {},
-    },
-    {
-      name: 'Window Level',
-      Component: WindowLevelPreferences,
-      props: {},
-      hidden: true,
-    },
-  ];
-};
-
-/**
  * Main form component to render preferences tabs and buttons
  * @param {object} props component props
  * @param {string} props.name Tab`s name
@@ -67,29 +42,33 @@ function UserPreferencesForm({
   windowLevelData,
   hotkeyDefinitions,
   generalPreferences,
-  hotkeysManager,
   defaultLanguage,
   hotkeyDefaults,
   hotkeyRecord,
 }) {
-  const [tabs, setTabs] = useState(createTabs());
-
-  const createTabsState = (
-    windowLevelData,
-    hotkeyDefinitions,
-    generalPreferences
-  ) => {
-    return {
-      Hotkeys: { hotkeyDefinitions, hotkeyRecord },
-      'Window Level': { windowLevelData },
-      General: { generalPreferences },
-    };
-  };
-
-  const [tabsState, setTabsState] = useState(
-    createTabsState(windowLevelData, hotkeyDefinitions, generalPreferences)
-  );
-
+  const [tabs, setTabs] = useState([
+    {
+      name: 'Hotkeys',
+      Component: HotKeysPreferences,
+      props: {},
+    },
+    {
+      name: 'General',
+      Component: GeneralPreferences,
+      props: {},
+    },
+    {
+      name: 'Window Level',
+      Component: WindowLevelPreferences,
+      props: {},
+      hidden: true,
+    },
+  ]);
+  const [tabsState, setTabsState] = useState({
+    Hotkeys: { hotkeyDefinitions, hotkeyRecord },
+    'Window Level': { windowLevelData },
+    General: { generalPreferences },
+  });
   const [tabsError, setTabsError] = useState(
     tabs.reduce((acc, tab) => {
       acc[tab.name] = false;
@@ -115,6 +94,9 @@ function UserPreferencesForm({
     return Object.values(tabsError).reduce((acc, value) => acc || value);
   };
 
+  /**
+   *
+   */
   const onResetPreferences = () => {
     const defaultHotKeyDefitions = {};
 
@@ -123,15 +105,12 @@ function UserPreferencesForm({
       defaultHotKeyDefitions[commandName] = { ...values };
     });
 
-    // update local state
+    // Reset local state
     setTabsState({
       ...tabsState,
       Hotkeys: { hotkeyDefinitions: defaultHotKeyDefitions, hotkeyRecord },
       General: { generalPreferences: { language: defaultLanguage } },
     });
-
-    // update tabs state
-    setTabs(createTabs());
 
     // reset errors
     setTabsError(
@@ -160,13 +139,6 @@ function UserPreferencesForm({
       type: 'success',
     });
   };
-
-  // update local state if prop values changes
-  useEffect(() => {
-    setTabsState(
-      createTabsState(windowLevelData, hotkeyDefinitions, generalPreferences)
-    );
-  }, [windowLevelData, hotkeyDefinitions, generalPreferences]);
 
   return translationsAreReady ? (
     <div className="UserPreferencesForm">
@@ -214,7 +186,6 @@ UserPreferencesForm.propTypes = {
   windowLevelData: PropTypes.object,
   hotkeyDefinitions: PropTypes.object,
   generalPreferences: PropTypes.object,
-  hotkeysManager: PropTypes.object,
   defaultLanguage: PropTypes.string,
   hotkeyDefaults: PropTypes.array,
   hotkeyRecord: PropTypes.func,
