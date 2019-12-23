@@ -9,9 +9,8 @@ const { setUserPreferences } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
   const { defaultLanguage } = i18n;
-  const { hotkeyDefinitions, windowLevelData = {}, generalPreferences } =
-    state.preferences || {};
-  const { hotkeyDefaults, record } = hotkeysManager;
+  const { windowLevelData = {}, generalPreferences } = state.preferences || {};
+  const { hotkeyDefinitions, hotkeyDefaults, record } = hotkeysManager;
 
   return {
     onClose: ownProps.hide,
@@ -43,7 +42,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(
         setUserPreferences({
           windowLevelData,
-          hotkeyDefinitions,
           generalPreferences,
         })
       );
