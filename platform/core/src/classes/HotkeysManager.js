@@ -136,11 +136,13 @@ export class HotkeysManager {
     if (previouslyRegisteredDefinition) {
       const previouslyRegisteredKeys = previouslyRegisteredDefinition.keys;
       this._unbindHotkeys(commandName, previouslyRegisteredKeys);
+      log.info(`Unbinding ${commandName} from ${previouslyRegisteredKeys}`);
     }
 
     // Set definition & bind
     this.hotkeyDefinitions[commandName] = { keys, label };
     this._bindHotkeys(commandName, keys);
+    log.info(`Binding ${commandName} to ${keys}`);
   }
 
   /**
@@ -197,6 +199,7 @@ export class HotkeysManager {
   _unbindHotkeys(commandName, keys) {
     const isKeyDefined = keys !== '' && keys !== undefined;
     if (!isKeyDefined) {
+      log.warn('no key defined');
       return;
     }
 
