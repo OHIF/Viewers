@@ -268,7 +268,8 @@ function _initHotkeys(appConfigHotkeys) {
   );
 
   // TODO: hotkeysManager.isValidDefinitionObject(/* */)
-  if (userPreferredHotkeys && !Object.keys(userPreferredHotkeys).length) {
+  if (userPreferredHotkeys && Object.keys(userPreferredHotkeys).length > 0) {
+    console.log('setting...');
     hotkeysManager.setHotkeys(userPreferredHotkeys);
   }
 

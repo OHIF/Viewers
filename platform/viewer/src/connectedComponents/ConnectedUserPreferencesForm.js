@@ -29,6 +29,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     onSave: ({ windowLevelData, hotkeyDefinitions, generalPreferences }) => {
       // TODO improve this strategy on windowLevel implementation
       hotkeysManager.setHotkeys(hotkeyDefinitions);
+      localStorage.setItem(
+        'hotkey-definitions',
+        JSON.stringify(hotkeyDefinitions)
+      );
 
       const { language } = generalPreferences;
 

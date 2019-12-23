@@ -40,10 +40,10 @@ function UserPreferencesForm({
   onSave,
   onResetToDefaults,
   windowLevelData,
-  hotkeyDefinitions,
   generalPreferences,
   defaultLanguage,
   hotkeyDefaults,
+  hotkeyDefinitions,
   hotkeyRecord,
 }) {
   const [tabs, setTabs] = useState([
