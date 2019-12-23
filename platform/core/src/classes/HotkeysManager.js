@@ -25,11 +25,12 @@ export class HotkeysManager {
     this._commandsManager = commandsManager;
   }
 
+  /**
+   * Exposes Mousetrap.js's `.record` method, added by the record plugin.
+   *
+   * @param {*} event
+   */
   record(event) {
-    // initialize record plugin
-    hotkeys.record(hotkeys);
-
-    // return mousetrap object with the plugin injected
     return hotkeys.record(event);
   }
 
