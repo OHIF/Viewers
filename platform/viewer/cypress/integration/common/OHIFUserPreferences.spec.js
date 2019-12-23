@@ -386,64 +386,6 @@ describe('OHIF User Preferences', () => {
       cy.get('@viewportInfoMidTop').should('contains.text', 'A');
     });
 
-    it('checks new hotkeys for "Next" and "Previous" Image on Viewport', function() {
-      // Go go hotkeys tab
-      cy.get('@userPreferencesHotkeysTab')
-        .click()
-        .should('have.class', 'active');
-
-      // Set new hotkey for 'Next Image Viewport' function
-      cy.setNewHotkeyShortcutOnUserPreferencesModal(
-        'Next Image Viewport',
-        '{shift}{rightarrow}'
-      );
-
-      // Set new hotkey for 'Previous Image Viewport' function
-      cy.setNewHotkeyShortcutOnUserPreferencesModal(
-        'Previous Image Viewport',
-        '{shift}{leftarrow}'
-      );
-
-      // Save new hotkeys
-      cy.get('@saveBtn')
-        .scrollIntoView()
-        .click();
-
-      // Set 3 viewports layout
-      cy.setLayout(3, 1);
-      cy.waitViewportImageLoading();
-
-      // Rotate Right and Invert colors on Viewport #1
-      cy.get('body').type('RI');
-      // Check that image was rotated
-      cy.get('@viewportInfoMidTop').should('contains.text', 'R');
-
-      //Move to Next Viewport
-      cy.get('body').type('{shift}{rightarrow}');
-      // Rotate Left and Invert colors on Viewport #2
-      cy.get('body').type('LI');
-      // Get overlay information from viewport #2
-      cy.get(
-        ':nth-child(2) > .viewport-wrapper > .viewport-element > .ViewportOrientationMarkers.noselect > .top-mid.orientation-marker'
-      ).as('viewport2InfoMidTop');
-      // Check that image was rotated
-      cy.get('@viewport2InfoMidTop').should('contains.text', 'P');
-
-      //Move to Previous Viewport
-      cy.get('body').type('{shift}{leftarrow}');
-      // Reset viewport #1 with spacebar hotkey
-      cy.get('body').type(' ');
-      cy.get('@viewportInfoMidTop').should('contains.text', 'A');
-
-      // Visual comparison
-      cy.screenshot('Viewport Navigation - 2nd viewport inverted and rotated');
-      cy.percyCanvasSnapshot(
-        'Viewport Navigation - 2nd viewport inverted and rotated'
-      );
-      // Set 1 viewport layout
-      cy.setLayout(1, 1);
-    });
-
     it('checks error message when duplicated hotkeys are inserted', function() {
       // Go go hotkeys tab
       cy.get('@userPreferencesHotkeysTab').click();
@@ -462,7 +404,7 @@ describe('OHIF User Preferences', () => {
           .as('errorMsg')
           .should(
             'have.text',
-            '"Next Image Viewport" is already using the "right" shortcut.'
+            '"Next Viewport" is already using the "right" shortcut.'
           );
       });
       //Cancel hotkeys

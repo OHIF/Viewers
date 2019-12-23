@@ -41,9 +41,9 @@ export default {
     column: 1,
   },
   nextDisplaySet: { label: 'Next Series', keys: ['PAGEDOWN'], column: 1 },
-  nextPanel: { label: 'Next Image Viewport', keys: ['RIGHT'], column: 1 },
+  nextPanel: { label: 'Next Viewport', keys: ['RIGHT'], column: 1 },
   previousPanel: {
-    label: 'Previous Image Viewport',
+    label: 'Previous Viewport',
     keys: ['LEFT'],
     column: 1,
   },
