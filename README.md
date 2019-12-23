@@ -271,8 +271,8 @@ MIT © [OHIF](https://github.com/OHIF)
 <!-- Badges -->
 [lerna-image]: https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg
 [lerna-url]: https://lerna.js.org/
-[netlify-image]: https://api.netlify.com/api/v1/badges/a5d369ab-18a6-41c3-bcde-83805205ac7f/deploy-status
-[netlify-url]: https://app.netlify.com/sites/ohif/deploys
+[netlify-image]: https://api.netlify.com/api/v1/badges/32708787-c9b0-4634-b50f-7ca41952da77/deploy-status
+[netlify-url]: https://app.netlify.com/sites/ohif-dev/deploys
 [all-contributors-image]: https://img.shields.io/badge/all_contributors-0-orange.svg?style=flat-square
 [circleci-image]: https://circleci.com/gh/OHIF/Viewers.svg?style=svg
 [circleci-url]: https://circleci.com/gh/OHIF/Viewers

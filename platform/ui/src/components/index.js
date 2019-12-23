@@ -13,6 +13,7 @@ import { RoundedButtonGroup } from './roundedButtonGroup';
 import { SelectTree } from './selectTree';
 import { SimpleDialog } from './simpleDialog';
 import { OHIFModal } from './ohifModal';
+import { ContextMenu } from './contextMenu';
 import {
   PageToolbar,
   StudyList,
@@ -23,6 +24,7 @@ import { ToolbarSection } from './toolbarSection';
 import { Tooltip } from './tooltip';
 
 export {
+  ContextMenu,
   Checkbox,
   CineDialog,
   ViewportDownloadForm,

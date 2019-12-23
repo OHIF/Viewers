@@ -11,28 +11,26 @@
  * @property {string} [customClassName=null] The custom class to style the modal.
  */
 
-const uiModalServicePublicAPI = {
-  name: 'UIModalService',
-  hide,
-  show,
+const name = 'UIModalService';
+
+const publicAPI = {
+  name,
+  hide: _hide,
+  show: _show,
   setServiceImplementation,
 };
 
-const uiModalServiceImplementation = {
+const serviceImplementation = {
   _hide: () => console.warn('hide() NOT IMPLEMENTED'),
   _show: () => console.warn('show() NOT IMPLEMENTED'),
 };
-
-function createUIModalService() {
-  return uiModalServicePublicAPI;
-}
 
 /**
  * Show a new UI modal;
  *
  * @param {ModalProps} props { content, contentProps, shouldCloseOnEsc, isOpen, closeButton, title, customClassName }
  */
-function show({
+function _show({
   content = null,
   contentProps = null,
   shouldCloseOnEsc = false,
@@ -41,7 +39,7 @@ function show({
   title = null,
   customClassName = null,
 }) {
-  return uiModalServiceImplementation._show({
+  return serviceImplementation._show({
     content,
     contentProps,
     shouldCloseOnEsc,
@@ -57,8 +55,8 @@ function show({
  *
  * @returns void
  */
-function hide() {
-  return uiModalServiceImplementation._hide();
+function _hide() {
+  return serviceImplementation._hide();
 }
 
 /**
@@ -74,11 +72,16 @@ function setServiceImplementation({
   show: showImplementation,
 }) {
   if (hideImplementation) {
-    uiModalServiceImplementation._hide = hideImplementation;
+    serviceImplementation._hide = hideImplementation;
   }
   if (showImplementation) {
-    uiModalServiceImplementation._show = showImplementation;
+    serviceImplementation._show = showImplementation;
   }
 }
 
-export default createUIModalService;
+export default {
+  name,
+  create: ({ configuration = {} }) => {
+    return publicAPI;
+  },
+};

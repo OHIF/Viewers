@@ -36,7 +36,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       // set new language
       i18n.changeLanguage(language);
 
-      ownProps.hide();
+      if (ownProps.hide) {
+        ownProps.hide();
+      }
+
       dispatch(
         setUserPreferences({
           windowLevelData,

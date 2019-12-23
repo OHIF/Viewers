@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.2.1...@ohif/core@2.3.0) (2019-12-20)
+
+
+### Features
+
+* 🎸 Configuration so viewer tools can nix handles ([#1304](https://github.com/OHIF/Viewers/issues/1304)) ([63594d3](https://github.com/OHIF/Viewers/commit/63594d36b0bdba59f0901095aed70b75fb05172d)), closes [#1223](https://github.com/OHIF/Viewers/issues/1223)
+
+
+
+
+
+## [2.2.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.2.0...@ohif/core@2.2.1) (2019-12-18)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [2.2.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.1.1...@ohif/core@2.2.0) (2019-12-16)
+
+
+### Features
+
+* 🎸 Expose extension config to modules ([#1279](https://github.com/OHIF/Viewers/issues/1279)) ([4ea239a](https://github.com/OHIF/Viewers/commit/4ea239a9535ef297e23387c186e537ab273744ea)), closes [#1268](https://github.com/OHIF/Viewers/issues/1268)
+
+
+
+
+
+## [2.1.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.1.0...@ohif/core@2.1.1) (2019-12-16)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [2.1.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.0.2...@ohif/core@2.1.0) (2019-12-11)
+
+
+### Features
+
+* 🎸 DICOM SR STOW on MeasurementAPI ([#954](https://github.com/OHIF/Viewers/issues/954)) ([ebe1af8](https://github.com/OHIF/Viewers/commit/ebe1af8d4f75d2483eba869655906d7829bd9666)), closes [#758](https://github.com/OHIF/Viewers/issues/758)
+
+
+
+
+
+## [2.0.2](https://github.com/OHIF/Viewers/compare/@ohif/core@2.0.1...@ohif/core@2.0.2) (2019-12-11)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.0.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.0.0...@ohif/core@2.0.1) (2019-12-09)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [2.0.0](https://github.com/OHIF/Viewers/compare/@ohif/core@1.13.3...@ohif/core@2.0.0) (2019-12-09)
+
+
+* feat!: Ability to configure cornerstone tools via extension configuration (#1229) ([55a5806](https://github.com/OHIF/Viewers/commit/55a580659ecb74ca6433461d8f9a05c2a2b69533)), closes [#1229](https://github.com/OHIF/Viewers/issues/1229)
+
+
+### BREAKING CHANGES
+
+* modifies the exposed react <App /> components props. The contract for providing configuration for the app has changed. Please reference updated documentation for guidance.
+
+
+
+
+
 ## [1.13.3](https://github.com/OHIF/Viewers/compare/@ohif/core@1.13.2...@ohif/core@1.13.3) (2019-12-06)
 
 **Note:** Version bump only for package @ohif/core

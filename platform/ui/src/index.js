@@ -1,4 +1,5 @@
 import {
+  ContextMenu,
   Checkbox,
   CineDialog,
   ViewportDownloadForm,
@@ -71,6 +72,7 @@ export {
   TextArea,
   TextInput,
   CineDialog,
+  ContextMenu,
   ViewportDownloadForm,
   ExpandableToolMenu,
   Icon,

@@ -7,10 +7,12 @@ export default class ServicesManager {
   }
 
   /**
+   * Registers a new service.
    *
    * @param {Object} service
+   * @param {Object} configuration
    */
-  registerService(service) {
+  registerService(service, configuration = {}) {
     if (!service) {
       log.warn(
         'Attempting to register a null/undefined service. Exiting early.'
@@ -18,32 +20,47 @@ export default class ServicesManager {
       return;
     }
 
-    let serviceName = service.name;
-
-    if (!serviceName) {
+    if (!service.name) {
       log.warn(`Service name not set. Exiting early.`);
       return;
     }
 
-    if (this.registeredServiceNames.includes(serviceName)) {
+    if (this.registeredServiceNames.includes(service.name)) {
       log.warn(
-        `Extension name ${serviceName} has already been registered. Exiting before duplicating services.`
+        `Service name ${service.name} has already been registered. Exiting before duplicating services.`
       );
       return;
     }
 
-    this.services[service.name] = service;
+    if (service.create) {
+      this.services[service.name] = service.create({
+        configuration,
+      });
+    } else {
+      log.warn(`Service create factory function not defined. Exiting early.`);
+      return;
+    }
 
-    // Track service registration
-    this.registeredServiceNames.push(serviceName);
+    /* Track service registration */
+    this.registeredServiceNames.push(service.name);
   }
 
   /**
-   * An array of services.
+   * An array of services, or an array of arrays that contains service
+   * configuration pairs.
    *
    * @param {Object[]} services - Array of services
    */
   registerServices(services) {
-    services.forEach(service => this.registerService(service));
+    services.forEach(service => {
+      const hasConfiguration = Array.isArray(service);
+
+      if (hasConfiguration) {
+        const [ohifService, configuration] = service;
+        this.registerService(ohifService, configuration);
+      } else {
+        this.registerService(service);
+      }
+    });
   }
 }

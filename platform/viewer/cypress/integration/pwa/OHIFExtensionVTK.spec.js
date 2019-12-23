@@ -24,10 +24,9 @@ describe('OHIF VTK Extension', () => {
     cy.get('[data-cy="thumbnail-list"]')
       .contains('CT WB 5.0  B35f')
       .drag('.viewport-drop-target')
-      .wait(1000); // TODO: Once issue #1167 is fixed, the wait command should be removed. (https://github.com/OHIF/Viewers/issues/1167)
 
     //Select 2D MPR button
-    cy.get('.PluginSwitch > .toolbar-button').click();
+    cy.get('[data-cy="2d mpr"]').click();
 
     //Wait Reformatting Images
     cy.waitVTKReformatting();

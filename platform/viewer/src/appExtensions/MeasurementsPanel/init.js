@@ -1,19 +1,10 @@
 import OHIF from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
-import {
-  getToolLabellingFlowCallback,
-  getOnRightClickCallback,
-  getOnTouchPressCallback,
-  getResetLabellingAndContextMenu,
-} from './labelingFlowCallbacks.js';
 import throttle from 'lodash.throttle';
-import { SimpleDialog } from '@ohif/ui';
 
-// TODO: This only works because we have a hard dependency on this extension
-// We need to decouple and make stuff like this possible w/o bundling this at
-// build time
-import store from './../../store';
+import LabellingFlow from '../../components/Labelling/LabellingFlow';
+import ToolContextMenu from '../../connectedComponents/ToolContextMenu';
 
 const {
   onAdded,
@@ -33,92 +24,15 @@ const MEASUREMENT_ACTION_MAP = {
  *
  *
  * @export
- * @param {*} configuration
+ * @param {Object} servicesManager
+ * @param {Object} configuration
  */
-export default function init({ servicesManager, configuration = {} }) {
+export default function init({
+  servicesManager,
+  commandsManager,
+  configuration,
+}) {
   const { UIDialogService } = servicesManager.services;
-  const callInputDialog = (data, event, callback) => {
-    let dialogId = UIDialogService.create({
-      content: SimpleDialog.InputDialog,
-      defaultPosition: {
-        x: (event && event.currentPoints.canvas.x) || 0,
-        y: (event && event.currentPoints.canvas.y) || 0,
-      },
-      showOverlay: true,
-      contentProps: {
-        title: 'Enter your annotation',
-        label: 'New label',
-        defaultValue: data ? data.text : '',
-        onClose: () => UIDialogService.dismiss({ id: dialogId }),
-        onSubmit: value => {
-          callback(value);
-          UIDialogService.dismiss({ id: dialogId });
-        },
-      },
-    });
-  };
-
-  // If these tools were already added by a different extension, we want to replace
-  // them with the same tools that have an alternative configuration. By passing in
-  // our custom `getMeasurementLocationCallback`, we can...
-  const toolLabellingFlowCallback = getToolLabellingFlowCallback(store);
-
-  // Removes all tools from all enabled elements w/ provided name
-  // Not commonly used API, so :eyes: for unknown side-effects
-  csTools.removeTool('Bidirectional');
-  csTools.removeTool('Length');
-  csTools.removeTool('Angle');
-  csTools.removeTool('FreehandRoi');
-  csTools.removeTool('EllipticalRoi');
-  csTools.removeTool('CircleRoi');
-  csTools.removeTool('RectangleRoi');
-  csTools.removeTool('ArrowAnnotate');
-
-  // Re-add each tool w/ our custom configuration
-  csTools.addTool(csTools.BidirectionalTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.LengthTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.AngleTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.FreehandRoiTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.EllipticalRoiTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.CircleRoiTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.RectangleRoiTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-    },
-  });
-  csTools.addTool(csTools.ArrowAnnotateTool, {
-    configuration: {
-      getMeasurementLocationCallback: toolLabellingFlowCallback,
-      getTextCallback: (callback, eventDetails) =>
-        callInputDialog(null, eventDetails, callback),
-      changeTextCallback: (data, eventDetails, callback) =>
-        callInputDialog(data, eventDetails, callback),
-    },
-  });
 
   // TODO: MEASUREMENT_COMPLETED (not present in initial implementation)
   const onMeasurementsChanged = (action, event) => {
@@ -131,15 +45,134 @@ export default function init({ servicesManager, configuration = {} }) {
     this,
     'labelmapModified'
   );
-  //
-  const onRightClick = getOnRightClickCallback(store);
-  const onTouchPress = getOnTouchPressCallback(store);
-  const onNewImage = getResetLabellingAndContextMenu(store);
-  const onMouseClick = getResetLabellingAndContextMenu(store);
-  const onTouchStart = getResetLabellingAndContextMenu(store);
 
-  // Because click gives us the native "mouse up", buttons will always be `0`
-  // Need to fallback to event.which;
+  const _getDefaultPosition = event => ({
+    x: (event && event.currentPoints.client.x) || 0,
+    y: (event && event.currentPoints.client.y) || 0,
+  });
+
+  const _updateLabellingHandler = (labellingData, measurementData) => {
+    const { location, description, response } = labellingData;
+
+    if (location) {
+      measurementData.location = location;
+    }
+
+    measurementData.description = description || '';
+
+    if (response) {
+      measurementData.response = response;
+    }
+
+    commandsManager.runCommand(
+      'updateTableWithNewMeasurementData',
+      measurementData
+    );
+  };
+
+  const showLabellingDialog = (props, contentProps, measurementData) => {
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
+    }
+
+    UIDialogService.create({
+      id: 'labelling',
+      isDraggable: false,
+      showOverlay: true,
+      centralize: true,
+      content: LabellingFlow,
+      contentProps: {
+        measurementData,
+        labellingDoneCallback: () =>
+          UIDialogService.dismiss({ id: 'labelling' }),
+        updateLabelling: labellingData =>
+          _updateLabellingHandler(labellingData, measurementData),
+        ...contentProps,
+      },
+      ...props,
+    });
+  };
+
+  const onRightClick = event => {
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
+    }
+
+    UIDialogService.dismiss({ id: 'context-menu' });
+    UIDialogService.create({
+      id: 'context-menu',
+      isDraggable: false,
+      preservePosition: false,
+      defaultPosition: _getDefaultPosition(event.detail),
+      content: ToolContextMenu,
+      contentProps: {
+        eventData: event.detail,
+        onDelete: (nearbyToolData, eventData) => {
+          const element = eventData.element;
+          commandsManager.runCommand('removeToolState', {
+            element,
+            toolType: nearbyToolData.toolType,
+            tool: nearbyToolData.tool,
+          });
+        },
+        onClose: () => UIDialogService.dismiss({ id: 'context-menu' }),
+        onSetLabel: (eventData, measurementData) => {
+          showLabellingDialog(
+            { centralize: true, isDraggable: false },
+            { skipAddLabelButton: true, editLocation: true },
+            measurementData
+          );
+        },
+        onSetDescription: (eventData, measurementData) => {
+          showLabellingDialog(
+            { defaultPosition: _getDefaultPosition(eventData) },
+            { editDescriptionOnDialog: true },
+            measurementData
+          );
+        },
+      },
+    });
+  };
+
+  const onTouchPress = event => {
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
+    }
+
+    UIDialogService.create({
+      eventData: event.detail,
+      content: ToolContextMenu,
+      contentProps: {
+        isTouchEvent: true,
+      },
+    });
+  };
+
+  const onTouchStart = () => resetLabelligAndContextMenu();
+
+  const onMouseClick = () => resetLabelligAndContextMenu();
+
+  const resetLabelligAndContextMenu = () => {
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
+    }
+
+    UIDialogService.dismiss({ id: 'context-menu' });
+    UIDialogService.dismiss({ id: 'labelling' });
+  };
+
+  // TODO: This makes scrolling painfully slow
+  // const onNewImage = ...
+
+  /*
+   * Because click gives us the native "mouse up", buttons will always be `0`
+   * Need to fallback to event.which;
+   *
+   */
   const handleClick = cornerstoneMouseClickEvent => {
     const mouseUpEvent = cornerstoneMouseClickEvent.detail.event;
     const isRightClick = mouseUpEvent.which === 3;
@@ -170,10 +203,11 @@ export default function init({ servicesManager, configuration = {} }) {
       csTools.EVENTS.LABELMAP_MODIFIED,
       onLabelmapModified
     );
-    //
+
     element.addEventListener(csTools.EVENTS.TOUCH_PRESS, onTouchPress);
     element.addEventListener(csTools.EVENTS.MOUSE_CLICK, handleClick);
     element.addEventListener(csTools.EVENTS.TOUCH_START, onTouchStart);
+
     // TODO: This makes scrolling painfully slow
     // element.addEventListener(cornerstone.EVENTS.NEW_IMAGE, onNewImage);
   }
@@ -197,10 +231,12 @@ export default function init({ servicesManager, configuration = {} }) {
       csTools.EVENTS.LABELMAP_MODIFIED,
       onLabelmapModified
     );
-    //
+
     element.removeEventListener(csTools.EVENTS.TOUCH_PRESS, onTouchPress);
     element.removeEventListener(csTools.EVENTS.MOUSE_CLICK, handleClick);
     element.removeEventListener(csTools.EVENTS.TOUCH_START, onTouchStart);
+
+    // TODO: This makes scrolling painfully slow
     // element.removeEventListener(cornerstone.EVENTS.NEW_IMAGE, onNewImage);
   }
 
