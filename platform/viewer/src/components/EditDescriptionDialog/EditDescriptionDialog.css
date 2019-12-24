@@ -1,0 +1,6 @@
+.editDescriptionDialog {
+  position: relative;
+  z-index: 300;
+  width: 320px;
+  transition: all 300ms linear;
+}

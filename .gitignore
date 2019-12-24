@@ -8,6 +8,7 @@ docs/_book
 src/version.js
 junit.xml
 coverage/
+.docz/
 
 # YALC (for Erik)
 .yalc
@@ -20,8 +21,16 @@ npm-debug.log
 package-lock.json
 yarn-error.log
 .DS_Store
+.env
 
 # Common Example Data Directories
 sampledata/
 example/deps/
 docker/dcm4che/dcm4che-arc
+
+# Cypress test results
+videos/
+screenshots/
+
+# Locize settings
+.locize

@@ -1,0 +1,87 @@
+---
+name: Translating
+route: /translating
+---
+
+# Translating
+
+**React Viewerbase** supports internationalization using
+[i18next](https://www.i18next.com/) through the npm package
+[@ohif/i18n](https://www.npmjs.com/package/@ohif/i18n), where is the main
+instance of i18n containing several languages and tools.
+
+## How to translate components
+
+All you need is to use the internal custom superset of
+[withTranslation HOC](https://react.i18next.com/latest/withtranslation-hoc),
+available at `src/utils/LanguageProvider.js`
+
+e.g.:
+
+```js
+import React from 'react';
+import { withTranslation } from '../utils/LanguageProvider.js';
+
+function MyComponent({ t }) {
+  return <p>{t('my translated text')}</p>;
+}
+
+export default withTranslation('MyNameSpace')(MyComponent);
+```
+
+---
+
+## Namespaces
+
+For further information about namespaces and how they work, please visit
+[OHIF Namespaces docs](https://docs.ohif.org/viewer/internationalization.html#namespaces).
+
+### How to get right the Namespace of a `@ohif/ui` component?
+
+Check the component's page in this site, the Namespace information should be on
+the bottom line.
+
+Also, a nameSpace is defined when exporting a component, this information can be
+found on exports trough the code, in case of missing in docs.
+
+E.g.
+
+```
+export default withTranslation('TheNamespaceYouAreLookingFor')(TheComponentYouWantToUse);
+```
+
+### How to use another Namespace inside the current Namespace?
+
+i18next provides a parsing feature able to get translations strings from any
+Namespace, like this following example getting data from `InnerSpace` Namespace:
+
+```
+$t(InnerSpace:Reset)
+export default withTranslation('OuterSpace')(TheComponent);
+```
+
+---
+
+## I18next Provider
+
+**@ohif/ui** pass down the `t` function trough the custom
+[withTranslation HOC](https://github.com/OHIF/Viewers/blob/master/platform/ui/src/utils/LanguageProvider.js).
+
+---
+
+## Extending and Overriding languages
+
+[How to Extend languages with @ohif/i18n](https://docs.ohif.org/viewer/internationalization.html#extending-languages-in-ohifi18n)
+
+## Changing the language
+
+The language choosing method is the same implemented in
+[OHIF Viewers](https://docs.ohif.org/viewer/internationalization.html#changing-the-language)
+
+> You can also change the language of the components displayed in this
+> documentation by choosing an option in the
+> [Docs Settings](https://react.ohif.org/docs-settings) section.
+
+## Debugging translations
+
+[How to Debug @ohif/i18n](https://docs.ohif.org/viewer/internationalization.html#debugging-translations)

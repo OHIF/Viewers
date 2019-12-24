@@ -1,0 +1,99 @@
+:root {
+  --text-secondary-color: #91B9CD;
+  --active-color: #20A5D6;
+  --primary-background-color: black;
+  --ui-border-color-dark: #3C5D80
+  --sidebar-transition: all 0.3s ease;
+}
+
+.ThumbnailEntry.active .ImageThumbnail
+  border-color: var(--active-color);
+  box-shadow: none
+  transition: var(--sidebar-transition);
+
+.ImageThumbnail
+  background-color: var(--primary-background-color);
+  box-shadow: inset 0 0 0 1px var(--ui-border-color-dark);
+  border: 5px solid transparent
+  border-radius: 12px
+  height: 135px
+  margin: 0 auto
+  padding 5px
+  position: relative
+  transition: var(--sidebar-transition);
+  width: 217px
+  -moz-background-clip: padding
+  -webkit-background-clip: padding
+  background-clip: padding-box
+
+  // Thumbnail Loading Indicator
+
+  .image-thumbnail-loading-indicator
+    position: absolute
+    left: 50%
+    top: 50%
+    margin: -22px 0 0 -22px
+    display: block
+    width: 44px
+    height: 44px
+
+    &:after
+      content: " "
+      display: block
+      width: 32px
+      height: 32px
+      margin: 1px
+      border-radius: 50%
+      border: 5px solid var(--ui-border-color-dark)
+      border-color: var(--ui-border-color-dark) transparent var(--ui-border-color-dark) transparent
+      animation: image-thumbnail-loading-indicator 1.2s linear infinite
+
+    @keyframes image-thumbnail-loading-indicator
+      0%
+        transform: rotate(0deg)
+      100%
+        transform: rotate(360deg)
+
+  // The End...
+
+.image-thumbnail-canvas
+  height: 100%
+  overflow: hidden
+  display: flex
+  justify-content: center
+
+  img
+    -webkit-user-drag: none
+    pointer-events: none
+
+.thumbnailLoadingIndicator
+  display: none
+  pointer-events: none
+  color: var(--text-secondary-color);
+  height: 20px
+  width: 100%
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  margin: auto
+  position: absolute
+
+  &.d-block
+    display: block;
+
+  p
+    text-align: center
+    font-size: 10pt
+
+.image-thumbnail-progress-bar
+  position: relative
+  width: 100%
+  height: 3px
+  top: -5px
+
+  .image-thumbnail-progress-bar-inner
+    height: 100%
+    width: 0
+    border-radius: 5px
+    background-color: var(--active-color);

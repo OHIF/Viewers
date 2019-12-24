@@ -1,0 +1,119 @@
+/* NOTE: the order of these styles DO matter */
+
+/* Will edit everything selected including everything between a range of dates */
+.CalendarDay__selected_span {
+  background: var(--datePicker-picker-background);
+  color: var(--datePicker-picker-text);
+  border-color: #e4e7e7;
+}
+
+/* Will edit selected date or the endpoints of a range of dates */
+.CalendarDay__selected {
+  background: var(--datePicker-picker-background);
+  color: var(--datePicker-picker-text);
+  border-color: #e4e7e7;
+}
+
+/* Will edit when hovered over. _span style also has this property */
+.CalendarDay__selected:hover,
+.CalendarDay__default:hover {
+  background: var(--datePicker-picker-background);
+  color: var(--datePicker-picker-text);
+  border-color: #e4e7e7;
+}
+
+/* Will edit when the second date (end date) in a range of dates
+is not yet selected. Edits the dates between your mouse and said date */
+.CalendarDay__hovered_span:hover,
+.CalendarDay__hovered_span {
+  background: var(--datePicker-picker-background);
+  color: var(--datePicker-picker-text);
+  border-color: #e4e7e7;
+}
+
+/* EXTERIOR INPUT STYLE */
+/* Container - placement */
+.DateRangePicker {
+  height: 40px;
+  margin: 0 5px 20px 5px;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+}
+/* Container - visual */
+.DateRangePickerInput {
+  width: calc(100% - 10px); /* Just use padding? */
+  background-color: var(--datePicker-input-background);
+  border-color: var(--datePicker-input-background);
+  color: var(--datePicker-picker-text-input);
+  height: 40px;
+}
+
+.DateRangePickerInput.DateRangePickerInput__withBorder {
+  border-radius: 4px;
+  background-color: var(--datePicker-input-background);
+}
+
+/* Input Container */
+.DateInput {
+  width: 97px;
+  height: 38px;
+  border-radius: 4px;
+  background-color: var(--datePicker-input-background);
+}
+
+/* Actual Input Element */
+.DateInput > .DateInput_input {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--datePicker-picker-text-input);
+  height: 38px;
+  font-size: 10pt;
+  padding: 0;
+}
+
+/* PRESETS */
+.PresetDateRangePicker_panel {
+  display: flex;
+  justify-content: space-between;
+}
+
+.PresetDateRangePicker_button {
+  margin: 0;
+  padding: 4px 8px;
+  color: #00a699;
+  background: var(--datePicker-picker-text-input);
+}
+
+.PresetDateRangePicker_button:hover {
+  background: #00a699;
+  color: var(--datePicker-picker-text-input);
+}
+
+.CalendarDay__blocked_out_of_range:hover {
+  background: #fff;
+  cursor: not-allowed;
+  color: var(--datePicker-picker-text-disabled);
+}
+
+.DateRangePicker_select {
+  background-color: white;
+  color: var(--datePicker-picker-text);
+  border: 1px solid #e4e7e7;
+  border-radius: 4px;
+  display: inline-block;
+  padding: 3px 20px 3px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  appearance: none;
+
+  background-image: linear-gradient(45deg, transparent 50%, gray 50%),
+    linear-gradient(135deg, gray 50%, transparent 50%);
+  background-position: calc(100% - 11px) 11px, calc(100% - 6px) calc(11px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.DateRangePicker_select:hover {
+  border-color: #c4c4c4;
+}

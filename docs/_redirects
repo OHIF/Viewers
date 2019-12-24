@@ -1,0 +1,3 @@
+# Netlify redirects
+# SPA rules for our docs
+/*    /index.html   200

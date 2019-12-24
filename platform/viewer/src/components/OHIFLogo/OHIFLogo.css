@@ -1,0 +1,33 @@
+.header-brand {
+  height: 30px;
+  text-decoration: none;
+  text-decoration-color: none;
+  display: flex;
+  align-items: center;
+  color: var(--text-primary-color);
+}
+
+.header-brand:hover,
+.header-brand:active,
+.header-band:visited {
+  color: var(--text-primary-color);
+  text-decoration: none;
+}
+
+.header-logo-text {
+  width: 224px;
+  height: auto;
+  margin-left: 8px;
+}
+
+.header-logo-image {
+  height: 30px;
+  width: 30px;
+  font-size: 30px;
+}
+
+@media only screen and (max-width: 768px) {
+  .header-logo-text {
+    display: none;
+  }
+}

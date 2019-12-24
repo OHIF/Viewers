@@ -1,0 +1,110 @@
+@import './../../design/styles/common/button.styl'
+@import './../../design/styles/common/global.styl'
+
+.InputDialog
+  .simpleDialog
+    position: relative
+
+.simpleDialog
+  position: relative;
+  z-index: 1000;
+  border: 0;
+  border-radius: 6px;
+  background-color: var(--ui-gray-darker);
+
+  .header
+    border-bottom: 3px solid var(--primary-background-color);
+    padding: 19px 22px 17px;
+    position: relative;
+
+    .title
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 24px;
+      padding-right: 40px;
+      color: var(--text-secondary-color);
+      margin: 0;
+
+    .closeBtn
+      -webkit-transform: translateY(-50%);
+      color: var(--text-secondary-color);
+      height: 20px;
+      opacity: 1;
+      overflow: hidden;
+      padding: 2px;
+      position: absolute;
+      right: 21px;
+      text-align: center;
+      text-shadow: none;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: color 0.3s ease;
+      width: 20px;
+
+    .closeIcon
+      color: transparent;
+      display: block;
+      font-size: 0;
+      height: 100%;
+      line-height: 0;
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+
+      &:after, &:before
+        content: ' ';
+        display: block;
+        height: 2px;
+        transition: background-color 0.3s ease;
+        width: 19px;
+        background-color: var(--text-secondary-color);
+
+      &:before
+        left: 1px;
+        position: absolute;
+        top: 1px;
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+        -webkit-transform-origin: 1px 50%;
+        transform-origin: 1px 50%;
+
+      &:after
+        right: 1px;
+        position: absolute;
+        top: 1px;
+        -webkit-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+        -webkit-transform-origin: calc(100% - 1px) 50%;
+        transform-origin: calc(100% - 1px) 50%;
+
+  .content
+    padding: 16px 22px 25px;
+    position: relative;
+    color: var(--text-primary-color);
+
+    .simpleDialogSelect, .simpleDialogInput
+      background-color: var(--input-background-color);
+      color: var(--text-primary-color);
+      border: 0;
+      border-radius: 2px;
+      font-size: 14px;
+      height: 30px;
+      width: 100%;
+      line-height: 16px;
+      padding: 8px 9px 6px;
+      margin-top: 10px;
+      display: block;
+
+    .simpleDialogLabelFor
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 16px;
+      margin: 10px 0 0 0;
+      color: var(--text-primary-color);
+
+  .footer
+    padding: 15px;
+    text-align: right;
+
+    .btn
+      margin-left: 5px;

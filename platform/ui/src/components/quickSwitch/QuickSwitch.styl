@@ -1,0 +1,209 @@
+.series-quick-switch
+  position: relative;
+
+  &:before
+    box-shadow: 0 0 0 5000px rgba(0, 0, 0, 0.8)
+    transition: opacity 0.3s ease
+    opacity: 0
+    content: ''
+
+  &:hover
+    z-index: 50
+
+    &:before
+      display: table;
+      opacity: 1
+      content: ''
+
+  &:not(.left):not(.right)
+    left: 50%
+    transform: translateX(-50%)
+
+  &.left
+    border-right: 1px solid var(--ui-border-color)
+    right: 0
+
+  &.right
+    left: 0
+
+    .series-switch
+      float: right
+
+    .study-switch
+      float: left
+
+    .study-browser
+      left: auto
+      right: 0
+      transform-origin: calc(100% - 1em) calc(1em + 17px)
+
+    .series-browser
+      left: 0
+      right: auto
+      transform-origin: 1em calc(1em + 15px)
+
+      .thumbnails-wrapper
+        transform-origin: 0% 0%
+
+      .thumbnail
+        float: left
+
+    .series-item
+      float: left
+
+  .title-label
+    color: var(--text-secondary-color)
+    font-size: 12px
+    font-weight: 500
+    line-height:  12px
+    opacity: 1
+    padding-bottom: 3px
+    text-align: center
+    transition: opacity 0.3s ease
+
+  .series-switch
+    padding-right: 10px;
+
+  .series-switch,
+  .study-switch
+    float: left
+    position: relative
+
+  .study-switch:hover:after
+    content: ''
+    display: block
+    height: 100px
+    left: 0
+    position: absolute
+    top: 0
+    width: 300px
+
+  .study-browser
+    left: 0
+    padding-top: 60px;
+    max-height: calc(100vh - 60px);
+    transform-origin: 1em calc(1em + 17px)
+    width: 300px
+
+    .study-browser-list
+      padding: 0 10px
+
+  .series-browser
+    max-height: 100vh
+    max-width: 720px
+    right: 0
+    transform-origin: calc(100% - 1em) calc(1em + 15px)
+
+    .thumbnails-wrapper
+      transition: transform 0.3s ease
+      transform-origin: 100% 0%
+
+    .thumbnail
+      float: right
+
+      .series-details
+        opacity: 0
+        transform: translateY(-100%)
+        transition: transform 0.3s ease, opacity 0.3s ease
+
+    .scrollable
+      padding-top: 15px
+      transition: padding-bottom 0.3s ease
+
+    .study-browser-series {
+      overflow hidden
+    }
+
+  .series-browser,
+  .study-browser
+    min-height: 120px
+    opacity: 0
+    position: absolute
+    top: 0
+    transform: scale(0)
+    transition: transform 0.3s ease , opacity 0.3s ease
+    z-index: 3
+
+  .series-box,
+  .study-box
+    height: 57px
+    width: 57px
+
+  .study-box
+    background-color: var(--ui-gray-dark)
+    border: solid 2px var(--ui-border-color-dark)
+    border-radius: 11px
+
+  .series-item
+    background-color: var(--box-background-color)
+    border-radius: 3px
+    float: right
+    height: 15px
+    margin: 2px
+    transition: opacity 0.3s ease
+    width: 15px
+
+    &.count
+      color: var(--text-primary-color)
+      background-color: transparent
+      font-size: 12px
+      font-weight: 500
+      line-height: 17px
+      text-align: center
+
+    &.active
+      background-color: var(--active-color)
+
+  &.series-triggered .series-browser,
+  .series-switch:hover .series-browser,
+  .study-switch:hover .study-browser
+    opacity: 1
+    transform: scale(1)
+
+  &.series-triggered .series-item,
+  .series-switch:hover .title-label
+    opacity: 0
+
+  &.series-triggered
+    .thumbnails-wrapper
+      transform: scale(0.9) translateY(80px)
+
+    .series-browser:not(:hover)
+      &>.scrollable
+        padding-bottom: 80px
+
+      &>.scrollNav
+        opacity: 0
+
+  .series-switch:hover .series-browser
+    .thumbnails-wrapper
+      transform: scale(1) translateY(0)
+
+    .thumbnail .series-details
+      opacity: 1
+      transform: translateY(0)
+      transition-delay: 0.3s
+
+  .study-browser-item.active .study-item-box
+    box-shadow: inset 0 0 0 3px var(--active-color)
+
+@media screen and (max-width: 1599px)
+  .series-quick-switch
+
+    .series-box,
+    .study-box
+      width: 36px
+      height: 36px
+
+    .study-box
+      border-radius: 7px
+
+    .series-item
+      height: 10px
+      margin: 1px
+      width: 10px
+
+      &.count
+        font-size: 10px
+        font-weight: 300
+        line-height: 10px

@@ -1,0 +1,84 @@
+---
+name: Icon
+menu: Elements
+route: /elements/icon
+---
+
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { Icon, ICONS } from './../index.js';
+
+# Icon
+
+## Basic usage
+
+<Playground>
+  <div
+    style={{
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'white',
+    }}
+  >
+    {Object.keys(ICONS)
+      .sort()
+      .map((name, i) => {
+        return (
+          <React.Fragment key={i}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                flexBasis: '150px',
+                margin: '2px',
+                backgroundColor: 'rgb(11, 95, 255)',
+                borderRadius: '4px',
+                padding: '8px',
+                alignItems: 'center',
+              }}
+            >
+              <Icon name={name} />
+              <div style={{ fontSize: '12px', wordWrap: 'break-word' }}>
+                {name}
+              </div>
+            </div>
+          </React.Fragment>
+        );
+      })}
+  </div>
+</Playground>
+
+The `<Icon />` component inherits the color of its parent, and sizing is based
+on its parent's `font-size`. Each icon has an `aria-labelledby` to assist screen
+readers.
+
+We use `airbnb`'s [`babel-plugin-inline-react-svg`][airbnb] to automate
+optimizing SVG files with [SVGO][svgo] and to create animatable React SVG
+components that can be requested asynchronously. You can configure SVGO's
+plugins [by following the advice laid out here][svgo-configure]
+
+## API
+
+<Props of={Icon} />
+
+The `Icon` component takes a single prop of `name`, which indicates which Icon
+should be displayed. Again, the icon responds to contextual text/font styles.
+
+## Attribution
+
+A large number of these icons are from [Font Awesome 5's free set.][fa-license]
+Some attribution is likely required, depending on your usage. Sometimes as
+little as a comment included side-by-side with the accompanying SVG icon.
+
+<!--
+  Links
+-->
+
+<!-- prettier-ignore-start -->
+[fa-license]: https://fontawesome.com/license
+[airbnb]: https://github.com/airbnb/babel-plugin-inline-react-svg
+[svgo]: https://github.com/svg/svgo/
+[svgo-configure]: https://github.com/airbnb/babel-plugin-inline-react-svg/issues/9#issuecomment-310178317)
+<!-- prettier-ignore-end -->

@@ -1,0 +1,25 @@
+# ABOUT:
+# https://docs.codecov.io/docs/codecov-yaml
+#
+#
+# COMMIT STATUS:
+# https://docs.codecov.io/docs/commit-status
+coverage:
+  status:
+    project:
+      default:
+        threshold: 0.5%
+      core:
+        flags: core
+        threshold: 0.5%
+      viewer:
+        flags: viewer
+        threshold: 0.5%
+    patch: off
+flags:
+  core:
+    paths:
+      - platform/core
+  viewer:
+    paths:
+      - platform/viewer

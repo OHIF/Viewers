@@ -1,0 +1,34 @@
+.input-ohif-container {
+  font-size: 1em;
+  color: var(--text-primary-color);
+  font-weight: 400;
+}
+
+.input-ohif-container .input-ohif {
+  display: inline-block;
+  height: 40px;
+  margin: 0 10px 20px;
+  padding: 0 20px;
+  cursor: pointer;
+  border: none;
+  background-color: var(--input-background-color);
+  color: var(--input-placeholder-color);
+  font-size: 10pt;
+  font-weight: normal;
+  width: auto;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.input-ohif-container .input-ohif-label {
+  padding: 5px;
+}
+
+.input-ohif-container .input-ohif:active,
+.input-ohif-container .input-ohif:focus {
+  background-color: var(--input-background-color);
+}
+
+.input-ohif-container .input-ohif.invisible {
+  visibility: hidden;
+}

@@ -1,4 +1,14 @@
-##### Looking for a Deploy Preview? - <a onclick="function redirect() { window.location.href='/demo/'; } redirect();">Deploy Preview for Viewer</a>
+<div class='row'>
+	<div class='column' style='text-align: right; padding: 0 20px'>
+		<strong>Looking for a Live Demo?</strong>
+		<a href="http://viewer.ohif.org/">Preview The OHIF Viewer</a>
+	</div>
+	<div class='column' style='text-align: left; padding: 0 20px'>
+		<a href="https://www.netlify.com">
+		  <img src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg"/>
+		</a>
+	</div>
+</div>
 
 > ATTENTION! You are looking at the docs for the `React` version of the OHIF
 > Viewer. If you're looking for the `Meteor` version's documentation (now
@@ -23,14 +33,14 @@ yourself unable to extend the viewer for your purposes, please reach out via our
 [GitHub issues][gh-issues]. We are actively seeking feedback on ways to improve
 our integration and extension points.
 
-## Where to Next?
+## Where to next?
 
 Check out these helpful links:
 
 - Ready to dive into some code? Check out our
-  [Getting Started Guide](./essentials/getting-started.md).
+  [Getting Started Guide](./development/getting-started.md).
 - We're an active, vibrant community.
-  [Learn how you can be more involved.](./contributing.md)
+  [Learn how you can be more involved.](./development/contributing.md)
 - Feeling lost? Read our [help page](./help.md).
 
 <!--

@@ -1,0 +1,57 @@
+---
+name: Svg
+menu: Elements
+route: /elements/svg
+---
+
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { Svg, SVGS } from './../index.js';
+
+# Svg
+
+## Basic usage
+
+<Playground>
+  <div
+    style={{
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'white',
+    }}
+  >
+    {Object.keys(SVGS)
+      .sort()
+      .map((name, i) => {
+        return (
+          <React.Fragment key={i}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                flexBasis: '25%',
+                minWidth: '100px',
+                margin: '16px',
+                backgroundColor: 'rgb(11, 95, 255)',
+                borderRadius: '8px',
+                padding: '16px',
+                alignItems: 'center',
+                fontSize: '33px',
+              }}
+            >
+              <Svg name={name} />
+              <div style={{ fontSize: '12px', wordWrap: 'break-word' }}>
+                {name}
+              </div>
+            </div>
+          </React.Fragment>
+        );
+      })}
+  </div>
+</Playground>
+
+## API
+
+<Props of={Svg} />

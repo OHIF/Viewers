@@ -4,6 +4,5 @@
   "proseWrap": "always",
   "tabWidth": 2,
   "semi": true,
-  "singleQuote": true,
-  "endOfLine": "lf"
+  "singleQuote": true
 }

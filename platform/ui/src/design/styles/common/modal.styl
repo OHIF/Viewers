@@ -1,0 +1,203 @@
+
+.modal-open
+  overflow: hidden;
+
+.modal
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1050;
+  -webkit-overflow-scrolling: touch;
+  outline: 0;
+  background: rgba(0,0,0,0.5);
+
+  .modal-dialog
+
+    .modal-content
+      background-color: var(--ui-gray-darker)
+      border-color: var(--ui-border-color)
+      color: var(--text-secondary-color)
+      border-radius(6px)
+      border: 0
+
+      .modal-header, .modal-footer
+        border-color: var(--ui-border-color)
+
+      .dialog-separator,
+      .dialog-separator-before,
+      .dialog-separator-after
+        position: relative
+        height: 40px;
+
+      .dialog-separator:before,
+      .dialog-separator:after,
+      .dialog-separator-before:before,
+      .dialog-separator-after:after
+        background-color: #000000
+        box-shadow(-50px 0 0 #000000\, 50px 0 0 #000000)
+        content: ' '
+        display: block
+        height: 3px
+        left: 0
+        position: absolute
+        width: 100%
+
+      .dialog-separator:before,
+      .dialog-separator-before:before
+        top: -3px
+
+      .dialog-separator:after,
+      .dialog-separator-after:after
+        bottom: -3px
+
+      .modal-body
+        color: var(--text-primary-color)
+        padding: 16px 22px 0px
+        position: relative
+
+        ::-webkit-scrollbar {
+          width: 6px;
+          background-color: var(--ui-gray-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background-color: var(--ui-gray-light);
+          border-radius: 5px;
+        }
+
+      .modal-header
+        border-bottom-width: 3px
+        border-bottom-style: solid
+        border-bottom-color: #000000
+        padding: 19px 22px 17px
+        position: relative
+
+        h4
+          color: var(--text-secondary-color)
+          font-size: 20px
+          font-weight: 500
+          line-height: 24px
+          padding-right: 24px
+
+      .modal-footer
+        border-top: 0
+        padding-top: 0
+
+    .card-round
+      background-color: var(--ui-gray-dark)
+      border-radius(5px)
+      padding: 10px
+
+    .modal-header
+      position: relative
+
+  // When fading in the modal, animate it to slide down
+  &.fade .modal-dialog
+    -webkit-transition: transform .3s ease-out;
+    -o-transition: transform .3s ease-out;
+    transition: transform .3s ease-out;
+    -webkit-transform: translate(0,-25%);
+    -ms-transform: translate(0,-25%);
+    -o-transform: translate(0,-25%);
+    transform: translate(0,-25%);
+
+  &.in .modal-dialog
+    transform: translate(0,0)
+
+.modal-open .modal
+  overflow-x: hidden;
+  overflow-y: auto;
+
+.modal-dialog
+  position: relative;
+  width: auto;
+  margin: 10px;
+
+.modal-content
+  position: relative;
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 6px;
+  -webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
+  box-shadow: 0 3px 9px rgba(0,0,0,.5);
+  background-clip: padding-box;
+  outline: 0;
+
+.modal-backdrop
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1050;
+  background-color: #fff;
+
+  &.fade
+    opacity: 0;
+
+  &.in
+    opacity: 0;
+
+.modal-header
+  padding: 15px;
+  border-bottom: 1px solid #e5e5e5;
+
+.modal-header .close
+  margin-top: -2px;
+
+.modal-title
+  margin: 0;
+  line-height: 1.42857143;
+
+.modal-body
+  position: relative;
+  padding: 15px;
+
+.modal-footer
+  padding: 15px;
+  text-align: right;
+  border-top: 1px solid #e5e5e5;
+
+  .btn+.btn
+    margin-left: 5px;
+    margin-bottom: 0;
+
+  .btn-group .btn+.btn
+    margin-left: -1px;
+
+  .btn-block+.btn-block
+    margin-left: 0;
+
+.modal-scrollbar-measure
+  position: absolute;
+  top: -9999px;
+  width: 50px;
+  height: 50px;
+  overflow: scroll;
+
+@media (min-width: 768px)
+  .modal-dialog
+    width: 600px;
+    margin: 30px auto;
+
+  .modal-content
+    -webkit-box-shadow: 0 5px 15px rgba(0,0,0,.5);
+    box-shadow: 0 5px 15px rgba(0,0,0,.5);
+
+@media (min-width: 992px)
+  .modal-lg
+    width: 900px;
+
+.button-close, .modal-dialog button.close
+  color: var(--text-secondary-color)
+  height: 25px
+  opacity: 1
+  overflow: hidden
+  text-align: center
+  text-shadow: none
+  width: 25px
+  font-size:25px
+  font-weight: lighter

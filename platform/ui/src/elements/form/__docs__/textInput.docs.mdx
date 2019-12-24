@@ -1,0 +1,27 @@
+---
+name: Form / Text Input
+menu: Elements
+route: /elements/form-textInput
+---
+
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { TextInput } from './../index.js';
+
+# Text Input
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{
+      value: 'test',
+    }}
+  >
+    {({ state, setState }) => <TextInput {...state} />}
+  </State>
+</Playground>
+
+## API
+
+<Props of={TextInput} />

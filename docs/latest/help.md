@@ -3,7 +3,7 @@
 We all need a little help sometimes. Don't let a few roadblocks stand in the way
 of you building something awesome.
 
-## Free
+## Community Support
 
 If you're a developer looking to contribute code, documentation, or discussion;
 we are more than happy to help provide clarification and answer questions via
@@ -21,7 +21,7 @@ resources and must be judicious with how we allocate them. If you find yourself
 in this situation and in need of assistance, it may be in your best interest to
 persue paid support.
 
-## Paid / Commercial
+## Commercial Support
 
 The Open Health Imaging Foundation does not offer commercial support, however,
 some community members do offer consulting services:

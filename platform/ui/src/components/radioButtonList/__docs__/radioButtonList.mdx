@@ -1,0 +1,74 @@
+---
+name: Radio Button List
+menu: Elements
+route: /components/radio-button-list
+---
+
+import { Playground, Props } from 'docz'
+import { State } from 'react-powerplug'
+import { RadioButtonList } from './../index'
+import NameSpace from '../../../__docs__/NameSpace'
+
+#Radio Button List
+
+## Basic usage
+
+<Playground>
+  <State
+    initial={{
+      description : [
+	      {
+			'label' : 'Button 1',
+			'id' : 'button1',
+			'checked' : false
+	      },
+	      {
+	      	'label' : 'Button 2',
+	      	'id' : 'button2',
+	      	'checked' : false,
+	      },
+	      {
+			'label' : 'Button 3',
+			'id' : 'button3',
+			'checked' : true,
+	      }
+      ]
+    }}
+  >
+    {({ state, setState }) => (
+      <React.Fragment>
+        <div>
+          <pre>{JSON.stringify(state, null, 2)}</pre>
+        </div>
+        <div style={{ maxWidth: '300px', margin: '0 auto' }}>
+          <RadioButtonList  description={[
+		      {
+				'label' : 'Button 1',
+				'id' : 'button1',
+				'checked' : false
+		      },
+		      {
+		      	'label' : 'Button 2',
+		      	'id' : 'button2',
+		      	'checked' : false,
+
+		      },
+		      {
+				'label' : 'Button 3',
+				'id' : 'coolButton3',
+				'checked' : true,
+		      }
+      ]}/>
+        </div>
+      </React.Fragment>
+    )}
+  </State>
+</Playground>
+
+## API
+
+<Props of={RadioButtonList} />
+
+## Translation Namespace
+
+<NameSpace name="RadioButtonList" />

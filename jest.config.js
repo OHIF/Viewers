@@ -1,21 +1,16 @@
+// Initiate all tests from root, but allow tests from each package root.
+// Share as much config as possible to reduce duplication.
+//
+// Borrowing from here:
+// https://github.com/facebook/jest/issues/3112#issuecomment-398581705
+const base = require("./jest.config.base.js");
+
 module.exports = {
-  verbose: true,
-  testMatch: ['<rootDir>/src/**/*.test.js'],
-  //
-  collectCoverage: false,
-  collectCoverageFrom: [
-    '<rootDir>/src/**/*.{js,jsx}',
-    '!<rootDir>/src/**/*.test.js',
-    '!**/node_modules/**',
-    '!**/__tests__/**',
+  ...base,
+  // https://jestjs.io/docs/en/configuration#projects-array-string-projectconfig
+  projects: [
+    // "<rootDir>/extensions/*/jest.config.js",
+    "<rootDir>/platform/*/jest.config.js"
   ],
-  reporters: ['default', 'jest-junit'],
-  //
-  moduleNameMapper: {
-    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-      '<rootDir>/src/__mocks__/fileMock.js',
-    '\\.(css|less)$': 'identity-obj-proxy',
-  },
-  setupFiles: ['<rootDir>/node_modules/jest-canvas-mock/lib/index.js'],
-  setupTestFrameworkScriptFile: '<rootDir>/src/__tests__/globalSetup.js',
-}
+  coverageDirectory: "<rootDir>/coverage/"
+};

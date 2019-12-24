@@ -1,0 +1,10 @@
+{
+  "AccessionNumber": "Mã phiểu",
+  "Empty": "Rỗng",
+  "MRN": "Mã Bệnh nhân",
+  "Modality": "Thiết bị",
+  "PatientName": "Tên Bệnh nhân",
+  "StudyDate": "Ngày chụp",
+  "StudyDescription": "Diễn giải",
+  "StudyList": "Danh sách"
+}

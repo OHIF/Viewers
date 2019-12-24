@@ -1,0 +1,47 @@
+@import './../../design/styles/common/button.styl'
+@import './../../design/styles/common/global.styl'
+
+$borderColor = rgba(77, 99, 110, 0.81)
+
+.layoutChooser-dropdown-menu
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  font-size: 14px;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+  box-shadow: 0 6px 12px rgba(0,0,0,.175);
+
+.layoutChooser
+  .selectedBefore
+    background-color: #5cc3eb
+
+  border: 1px solid $borderColor;
+  border-radius: 8px
+  padding: 5px 0;
+  position: absolute;
+  z-index: 5000
+
+  table
+    margin: 0 auto
+    border-spacing: 0;
+    border-collapse: collapse;
+    td
+      cursor: pointer
+      transition(background-color 0.1s ease)
+
+      &:hover, &.hover // Add the hover class here to be triggered by mouseenter/mouseleave
+        background-color: #209ac9

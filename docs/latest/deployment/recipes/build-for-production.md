@@ -1,7 +1,7 @@
 # Build for Production
 
 > If you've already followed the
-> ["Getting Started" Guide](/essentials/getting-started.md), you can skip ahead
+> ["Getting Started" Guide](/development/getting-started.md), you can skip ahead
 > to [Configuration](#configuration)
 
 ## Overview
@@ -19,9 +19,6 @@ _With Git:_
 ```bash
 # Clone the remote repository to your local machine
 git clone https://github.com/OHIF/Viewers.git
-
-# Make sure the local code reflects the `react` version of the OHIF Viewer
-git checkout react
 ```
 
 More on: _[`git clone`](https://git-scm.com/docs/git-clone),
@@ -29,7 +26,7 @@ More on: _[`git clone`](https://git-scm.com/docs/git-clone),
 
 _From .zip:_
 
-[OHIF/Viewers: react.zip](https://github.com/OHIF/Viewers/archive/react.zip)
+[OHIF/Viewers: react.zip](https://github.com/OHIF/Viewers/archive/master.zip)
 
 ### Restore Dependencies & Build
 
@@ -37,20 +34,24 @@ Open your terminal, and navigate to the directory containing the source files.
 Next run these commands:
 
 ```js
+// If you haven't already, enable yarn workspaces
+yarn config set workspaces-experimental true
+
 // Restore dependencies
 yarn install
 
 // Build source code for production
-yarn run build:web
+yarn run build
 ```
 
-If everything worked as expected, you should have a new `build/` directory in
-the project's folder. It should roughly resemble the following:
+If everything worked as expected, you should have a new `dist/` directory in the
+project's folder. It should roughly resemble the following:
 
 ```bash
-build
-├── config/
-├── static/
+<root>platform/viewer/dist/
+├── app-config.js
+├── app.bundle.js
+├── app.css
 ├── index.html
 ├── manifest.json
 ├── service-worker.js
@@ -64,61 +65,15 @@ how to configure the project for your own imaging archive below.
 
 ### Configuration
 
-> This step assumes you have an imaging archive. If you need assistance setting
-> one up, check out the [`Data Source` Guide](./../../essentials/data-source.md)
-> or a deployment recipe that contains an open source Image Archive
+The configuration for our viewer is in the `<root>platform/viewer/public/config`
+directory. Our build process knows which configuration file to use based on the
+`APP_CONFIG` environment variable. By default, its value is
+[`config/default.js`][default-config]. The majority of the viewer's features,
+and registered extension's features, are configured using this file.
 
-#### How it Works
-
-The configuration for our project is in the `/public/config` directory. Our
-build process knows which configuration file to use based on the
-`REACT_APP_CONFIG` environment variable. By default, its value is
-[`default.js`](https://github.com/OHIF/Viewers/blob/react/public/config/default.js).
-When we build, the `%REACT_APP_CONFIG%` value in
-our[`/public/index.html`](https://github.com/OHIF/Viewers/blob/react/public/index.html#L12-L15)
-file is substituted for the correct configuration file's name. This sets
-the`window.config` equal to our configuration file's value.
-
-#### How do I configure my project?
-
-The simplest way is to update the existing default config:
-
-_/public/config/default.js_
-
-```js
-window.config = {
-  routerBasename: '/',
-  relativeWebWorkerScriptsPath: '',
-  servers: {
-    dicomWeb: [
-      {
-        name: 'DCM4CHEE',
-        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoSupportsIncludeField: true,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-        requestOptions: {
-          requestFromBrowser: true,
-        },
-      },
-    ],
-  },
-}
-```
-
-You can also create a new config file and specify its path relative to the build
-output's root by setting the `REACT_APP_CONFIG` environment variable. You can
-set the value of this environment variable a few different ways:
-
-- [Add a temporary environment variable in your shell](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#adding-temporary-environment-variables-in-your-shell)
-- [Add environment specific variables in `.env` file(s)](https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables#adding-development-environment-variables-in-env)
-- Using the `cross-env` package in an npm script:
-  - `"build": "cross-env REACT_APP_CONFIG=config/my-config.js react-scripts build"`
-
-After updating the configuration, `yarn run build:web` to generate updated build
-output.
+The easiest way to apply your own configuration is to modify the `default.js`
+file. For more advanced cofiguration options, check out our
+[configuration essentials guide](/configuring/index.md).
 
 ## Next Steps
 
@@ -142,7 +97,7 @@ _Advanced_
 ### Testing Build Output Locally
 
 A quick way to test your build output locally is to spin up a small webserver.
-You can do this by running the following commands in the `build/` output
+You can do this by running the following commands in the `dist/` output
 directory:
 
 ```js
@@ -163,8 +118,7 @@ web application. For a starting point, check out this repository's own use of:
 
 - [CircleCI][circleci]: [config.yaml][circleci-config]
 - [Netlify][netlify]: [netlify.toml][netlify.toml] |
-  [generateStaticSite.sh][generatestaticsite.sh]
-- [Semantic-Release][semantic-release]: [.releaserc][releaserc]
+  [build-deploy-preview.sh][build-deploy-preview.sh]
 
 ## Troubleshooting
 
@@ -174,10 +128,8 @@ web application. For a starting point, check out this repository's own use of:
 
 <!-- prettier-ignore-start -->
 [circleci]: https://circleci.com/gh/OHIF/Viewers
-[circleci-config]: https://github.com/OHIF/Viewers/blob/react/.circleci/config.yml
+[circleci-config]: https://github.com/OHIF/Viewers/blob/master/.circleci/config.yml
 [netlify]: https://app.netlify.com/sites/ohif/deploys
-[netlify.toml]: https://github.com/OHIF/Viewers/blob/react/netlify.toml
-[generateStaticSite.sh]: https://github.com/OHIF/Viewers/blob/react/generateStaticSite.sh
-[semantic-release]: https://semantic-release.gitbook.io/semantic-release/
-[releaserc]: https://github.com/OHIF/Viewers/blob/react/.releaserc
+[netlify.toml]: https://github.com/OHIF/Viewers/blob/master/netlify.toml
+[build-deploy-preview.sh]: https://github.com/OHIF/Viewers/blob/master/.netlify/build-deploy-preview.sh
 <!-- prettier-ignore-end -->

@@ -1,0 +1,20 @@
+.dicom-uploader .button {
+  float: left;
+  margin: 5px;
+}
+
+.invisible-input {
+  position: absolute;
+  display: none;
+  z-index: -1000;
+  max-width: 0 !important;
+  max-height: 0 !important;
+}
+
+.dicom-uploader .table-header {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 28px;
+  text-align: left;
+  margin: 20px auto;
+}

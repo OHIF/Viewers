@@ -1,0 +1,69 @@
+.scrollArea
+  overflow: hidden
+  position: relative
+
+  .scrollable
+    max-height: inherit
+    overflow: hidden
+    zoom: 1
+
+    &.scrollX
+      overflow-x: scroll
+
+    &.scrollY
+      overflow-y: scroll
+
+  &.fit
+    height: 100%
+    width: 100%
+
+    .scrollable
+      bottom: 0
+      left: 0
+      max-height: none
+      position: absolute
+      right: 0
+      top: 0
+
+  .scrollNav
+    background-color: rgba(0, 0, 0, 0.75)
+    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.75)
+    cursor: pointer
+    height: 24px
+    left: 10px
+    opacity: 0
+    position: absolute
+    right: 10px
+    transition: all 0.3s ease
+    
+    .scrollNavIcon
+      color: var(--active-color);
+      display: block;
+      width: 18px;
+      height: 18px;
+      margin: 0 auto;
+      transition: color 0.3s ease;
+
+    &:hover
+      background-color: rgba(0, 0, 0, 0.9)
+      box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.9)
+
+      .scrollNavIcon
+        color: var(--hover-color)
+
+  .scrollNavUp
+    border-bottom-left-radius: 12px
+    border-bottom-right-radius: 12px
+    top: 0
+    transform: translateY(-24px)
+
+  .scrollNavDown
+    border-top-left-radius: 12px
+    border-top-right-radius: 12px
+    bottom: 0
+    transform: translateY(24px)
+
+  &.canScrollUp .scrollNavUp,
+  &.canScrollDown .scrollNavDown
+    opacity: 1
+    transform: translateY(0)

@@ -1,0 +1,121 @@
+.form-themed
+
+  table
+    color: var(--text-primary-color)
+
+    th, td
+      font-size: 15px
+      font-weight: normal
+
+    th
+      line-height: 60px
+
+    td
+      line-height: 18px
+      padding: 0;
+
+  // TODO: imported this from merged-styles.css
+  .p-r-1
+    padding-right: 1rem !important;
+
+  label
+    margin-bottom: 5px
+  // end TODO
+
+  label.wrapperLabel
+    cursor: pointer
+
+  label.wrapperLabel:not(.checkboxLabel)
+    cursor: pointer
+    display: flex
+    flex-direction: column
+
+    .wrapperText
+      display: block
+      order: -1
+      transition(color 0.3s ease)
+
+  .btn, input[type=text], input[type=password], input[type=number]
+    &[disabled], &.disabled
+      &, &:hover, &:active
+        background-color: var(--ui-gray-darker)
+        border-color: var(--ui-gray-light)
+        color: var(--text-primary-color)
+
+        & + .wrapperText
+          color: var(--text-primary-color)
+          cursor: auto
+
+  input[type=text], input[type=password], input[type=number]
+    background-color: var(--ui-gray)
+    border-color: var(--ui-border-color)
+    color: var(--text-primary-color)
+    font-weight: normal
+    transition(background-color 0.3s ease\, border-color 0.3s ease)
+
+    &:active, &:focus
+      background-color: var(--ui-gray-dark)
+      border: 2px solid var(--active-color)
+      box-shadow: none
+
+      & + .wrapperText
+        color: var(--active-color)
+
+  .btn-primary
+    background-color: var(--active-color)
+    border-collapse: var(--ui-border-color-active)
+    color: var(--ui-text-color-active)
+    transition(background-color 0.3s ease\, border-color 0.3s ease)
+
+    &:hover, &:active, &:focus, &:focus:active
+      // TODO: 0.8  opacity
+      background-color: var(--ui-active-color)
+      border-collapse: var(--ui-border-color-active)
+      color: var(--ui-text-color-active)
+
+  .form-control
+    background-color: #FFFFFF
+    border: 0
+    border-radius(2px)
+    font-size: 14px
+    height: 30px
+    line-height: 16px
+    padding: 8px 9px 6px
+
+.form-control
+  display: block;
+  width: 100%;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+
+  &:focus
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+
+  &::-ms-expand
+    border: 0;
+    background-color: transparent;
+
+  &[disabled],
+  &[readonly],
+  fieldset[disabled] &
+    background-color: @input-bg-disabled;
+    opacity: 1;
+
+  &[disabled],
+  fieldset[disabled] &
+    cursor: @cursor-disabled;
+
+input[type=range]
+  display: block;
+  width: 100%;

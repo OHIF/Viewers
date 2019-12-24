@@ -1,0 +1,108 @@
+@import './../../design/styles/common/global.styl'
+
+.selectTreeRoot
+  text-align: initial;
+  width: 320px;
+  max-height: inherit;
+  font-size: 14px;
+  line-height: 26px;
+
+  .treeContent
+    max-height: inherit;
+    overflow: hidden;
+    border: 1px solid #c4c4c4;
+    border-radius: 5px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+
+  .treeHeader
+    background-color: #c0c0c0;
+    border-bottom: 1px solid #c4c4c4;
+    color: #303030;
+    padding: 5px;
+    text-align: center;
+
+    .wrapperText
+      font-weight: bold;
+      padding-bottom: 2px;
+
+    .wrapperSearch
+      width: 100%;
+
+    .searchIcon
+      position: absolute;
+      width: 18px;
+      height: 15px;
+      margin: 7px 10px 13px 10px;
+      color: #a3a3a3;
+
+    .searchInput
+      width: 100%;
+      padding: 6px 12px 6px 35px;
+      background-color: #fff;
+      background-image: none;
+      border: 1px solid #9b9b9b;
+      border-radius: 4px;
+      font-size: 14px;
+      line-height: 1.42857143;
+      color: #555;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+      &:focus
+        outline: 0;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+          0 0 8px rgba(102, 175, 233, 0.6);
+
+  .wrapperText
+    white-space: nowrap;
+    cursor: pointer;
+
+  .selectTreeBreadcrumb
+    .wrapperLabel
+      cursor: pointer;
+      padding: 0 12px;
+      height: 41px;
+      width: 100%;
+      line-height: 41px;
+
+    .backIcon
+      padding-right: 10px;
+
+      svg
+        width: 14px;
+        height: 14px;
+        position: relative;
+        top: 2px;
+        color: #457fb0;
+
+  .treeOptions
+    overflow: auto;
+    height: 100%;
+
+    .selectTreeBreadcrumb + .treeInputsWrapper .treeInputs .treeLeaf
+      border: none;
+      height: initial;
+      line-height: 26px;
+
+    & > .treeInputsWrapper > .treeInputs .treeLeaf
+      border-bottom: 1px solid #ccc;
+      height: 41px;
+      line-height: 41px;
+
+  .treeNode, .treeLeaf
+    cursor: pointer;
+    display: block;
+    overflow: hidden;
+    font-weight: normal;
+    box-shadow: 0 0 0 200px transparent;
+    padding: 0 12px;
+
+  .treeNode
+    border-bottom: 1px solid #ccc;
+    height: 41px;
+    line-height: 41px;
+
+  .radioLabel .radioInput
+    display: none;
