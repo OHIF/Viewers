@@ -1,13 +1,25 @@
-export default function makeCancelable(thenable) {
+function isFunction(functionToCheck) {
+  return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
+}
+
+export default function makeCancelable(thenable, thenFn, catchFn) {
   let isCanceled = false;
   const promise = Promise.resolve(thenable).then(
-    function(result) {
+    function (result) {
       if (isCanceled) throw Object.freeze({ isCanceled });
-      return result;
+      if (isFunction(thenFn)) {
+        thenFn(result);
+      } else {
+        return result;
+      }
     },
-    function(error) {
+    function (error) {
       if (isCanceled) throw Object.freeze({ isCanceled, error });
-      throw error;
+      if (isFunction(catchFn)) {
+        catchFn(error);
+      } else {
+        throw error;
+      }
     }
   );
   return Object.assign(Object.create(promise), {
