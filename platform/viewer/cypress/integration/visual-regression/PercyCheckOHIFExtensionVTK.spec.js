@@ -1,4 +1,4 @@
-describe('OHIF VTK Extension', () => {
+describe('Visual Regression - OHIF VTK Extension', () => {
   before(() => {
     cy.openStudy('Juno');
     cy.waitDicomImage();
@@ -23,7 +23,7 @@ describe('OHIF VTK Extension', () => {
     // Drag and drop third thumbnail into first viewport
     cy.get('[data-cy="thumbnail-list"]')
       .contains('CT WB 5.0  B35f')
-      .drag('.viewport-drop-target')
+      .drag('.viewport-drop-target');
 
     //Select 2D MPR button
     cy.get('[data-cy="2d mpr"]').click();
@@ -35,28 +35,11 @@ describe('OHIF VTK Extension', () => {
   });
 
   it('checks if VTK buttons are displayed on the toolbar', () => {
-    cy.get('@crosshairsBtn')
-      .should('be.visible')
-      .contains('Crosshairs');
-    cy.get('@wwwcBtn')
-      .should('be.visible')
-      .contains('WWWC');
-    cy.get('@rotateBtn')
-      .should('be.visible')
-      .contains('Rotate');
-    cy.get('@slabSlider')
-      .should('be.visible')
-      .contains('Slab Thickness');
-    cy.get('@modeDropdown')
-      .should('be.visible')
-      .contains('MIP');
-    cy.get('@modeCheckbox').should('be.visible');
-    cy.get('@layoutBtn')
-      .should('be.visible')
-      .contains('Layout');
-
     // Visual comparison
     cy.screenshot('VTK initial state - Should display toolbar and 3 viewports');
+    cy.percyCanvasSnapshot(
+      'VTK initial state - Should display toolbar and 3 viewports'
+    );
   });
 
   it('checks Crosshairs tool', () => {
@@ -72,9 +55,11 @@ describe('OHIF VTK Extension', () => {
     cy.screenshot(
       "VTK Crosshairs tool - Should display crosshairs' green lines"
     );
+    cy.percyCanvasSnapshot(
+      "VTK Crosshairs tool - Should display crosshairs' green lines"
+    );
   });
 
-  /* TODO: Non-deterministic behavior (const expectedText = 'W: 350 L: -1044';)
   it('checks WWWC tool', () => {
     cy.get('@wwwcBtn').click();
 
@@ -84,18 +69,12 @@ describe('OHIF VTK Extension', () => {
       .trigger('mousemove', 'top', { which: 1 })
       .trigger('mousedown', 'center', { which: 1 })
       .trigger('mousemove', 'top', { which: 1 })
-      .trigger('mouseup', { which: 1 })
-      .then(() => {
-        const expectedText = 'W: 350 L: 40';
-        cy.get('.ViewportOverlay > div.bottom-right.overlay-element').should(
-          'contains.text',
-          expectedText
-        );
-      });
+      .trigger('mouseup', { which: 1 });
 
     // Visual comparison
     cy.screenshot('VTK WWWC tool - Canvas should be bright');
-  }); */
+    cy.percyCanvasSnapshot('VTK WWWC tool - Canvas should be bright');
+  });
 
   it('checks Rotate tool', () => {
     cy.get('@rotateBtn').click();
@@ -110,5 +89,6 @@ describe('OHIF VTK Extension', () => {
 
     // Visual comparison
     cy.screenshot('VTK Rotate tool - Should rotate image');
+    cy.percyCanvasSnapshot('VTK Rotate tool - Should rotate image');
   });
 });
