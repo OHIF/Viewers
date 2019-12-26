@@ -59,11 +59,30 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case SET_VIEWPORT_LAYOUT: {
+      const numOfViewports = action.numRows * action.numColumns;
+      let viewportSpecificData = cloneDeep(state.viewportSpecificData);
+      let { activeViewportIndex } = state;
+
+      // Delete specific data from removed viewports
+      if (numOfViewports < Object.keys(viewportSpecificData).length) {
+        Object.keys(viewportSpecificData).forEach(key => {
+          if (key >= numOfViewports) {
+            delete viewportSpecificData[key];
+          }
+        });
+      }
+
+      if (!viewportSpecificData[activeViewportIndex]) {
+        activeViewportIndex = DEFAULT_STATE.activeViewportIndex;
+      }
+
       return {
         ...state,
         numRows: action.numRows,
         numColumns: action.numColumns,
         layout: { viewports: [...action.viewports] },
+        viewportSpecificData,
+        activeViewportIndex,
       };
     }
 
