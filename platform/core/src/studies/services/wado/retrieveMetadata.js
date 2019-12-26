@@ -13,7 +13,7 @@ import RetrieveMetadataLoaderAsync from './retrieveMetadataLoaderAsync';
  */
 async function RetrieveMetadata(server, studyInstanceUid, filters = {}) {
   const RetrieveMetadataLoader =
-    server.enableStudyLazyLoad !== false
+    server.enableStudyLazyLoad != false
       ? RetrieveMetadataLoaderAsync
       : RetrieveMetadataLoaderSync;
 
