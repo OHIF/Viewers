@@ -1,4 +1,4 @@
-const makeCancelable = (promise) => {
+const makeCancelable = (promise, thenFn, catchFn) => {
   let cancel = () => { };
   const wrappedPromise = new Promise((resolve, reject) => {
     cancel = () => {
@@ -7,10 +7,22 @@ const makeCancelable = (promise) => {
     };
     promise.then(
       val => {
-        if (resolve) resolve(val);
+        if (resolve) {
+          if (thenFn) {
+            thenFn(val);
+          } else {
+            resolve(val);
+          }
+        }
       },
       error => {
-        if (reject) reject(error);
+        if (reject) {
+          if (catchFn) {
+            catchFn(error);
+          } else {
+            reject(error);
+          }
+        }
       }
     );
   });

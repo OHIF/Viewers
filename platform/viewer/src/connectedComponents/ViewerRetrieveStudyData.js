@@ -242,14 +242,16 @@ function ViewerRetrieveStudyData({
 
         // Attempt to load remaning series if any
         cancelableSeriesPromises[study.studyInstanceUid] = makeCancelable(
-          _loadRemainingSeries(studyMetadata)
-        ).then(result => {
-          if (result) {
-            studyDidLoad(study, studyMetadata, filters);
+          _loadRemainingSeries(studyMetadata),
+          result => {
+            if (result) {
+              studyDidLoad(study, studyMetadata, filters);
+            }
+          },
+          error => {
+            setError(true);
           }
-        }).catch(() => {
-          setError(true);
-        });
+        );
 
         return study;
       });
@@ -275,14 +277,15 @@ function ViewerRetrieveStudyData({
       }
 
       cancelableStudiesPromises[studyInstanceUids] = makeCancelable(
-        retrieveStudiesMetadata(...retrieveParams)
-      ).then(result => {
-        if (result) {
-          processStudies(result, filters);
-        }
-      }).catch(() => {
-        setError(true);
-      });
+        retrieveStudiesMetadata(...retrieveParams),
+        result => {
+          if (result) {
+            processStudies(result, filters);
+          }
+        },
+        error => {
+          setError(true);
+        });
     } catch (error) {
       if (error) {
         setError(true);
