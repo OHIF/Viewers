@@ -36,11 +36,14 @@ export default function init({
 
   // TODO: MEASUREMENT_COMPLETED (not present in initial implementation)
   const onMeasurementsChanged = (action, event) => {
+    if (action == 'completed') prompt('completed');
+
     return MEASUREMENT_ACTION_MAP[action](event);
   };
   const onMeasurementAdded = onMeasurementsChanged.bind(this, 'added');
   const onMeasurementRemoved = onMeasurementsChanged.bind(this, 'removed');
   const onMeasurementModified = onMeasurementsChanged.bind(this, 'modified');
+  const onMeasurementCompleted = onMeasurementsChanged.bind(this, 'completed');
   const onLabelmapModified = onMeasurementsChanged.bind(
     this,
     'labelmapModified'
@@ -200,6 +203,10 @@ export default function init({
       onMeasurementModified
     );
     element.addEventListener(
+      csTools.EVENTS.MEASUREMENT_COMPLETED,
+      onMeasurementCompleted
+    );
+    element.addEventListener(
       csTools.EVENTS.LABELMAP_MODIFIED,
       onLabelmapModified
     );
@@ -226,6 +233,10 @@ export default function init({
     element.removeEventListener(
       csTools.EVENTS.MEASUREMENT_MODIFIED,
       onMeasurementModified
+    );
+    element.removeEventListener(
+      csTools.EVENTS.MEASUREMENT_COMPLETED,
+      onMeasurementCompleted
     );
     element.removeEventListener(
       csTools.EVENTS.LABELMAP_MODIFIED,
