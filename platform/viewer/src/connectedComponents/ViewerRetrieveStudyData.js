@@ -242,16 +242,18 @@ function ViewerRetrieveStudyData({
 
         // Attempt to load remaning series if any
         cancelableSeriesPromises[study.studyInstanceUid] = makeCancelable(
-          _loadRemainingSeries(studyMetadata).then(
-            result => {
-              if (result) {
-                studyDidLoad(study, studyMetadata, filters);
-              }
-            },
-            () => {
-              setError(true);
-            })
+          _loadRemainingSeries(studyMetadata)
+        ).then(
+          result => {
+            if (result) {
+              studyDidLoad(study, studyMetadata, filters);
+            }
+          },
+          () => {
+            setError(true);
+          }
         );
+
         return study;
       });
 
@@ -276,67 +278,67 @@ function ViewerRetrieveStudyData({
       }
 
       cancelableStudiesPromises[studyInstanceUids] = makeCancelable(
-        retrieveStudiesMetadata(...retrieveParams).then(
-          result => {
-            if (result) {
-              processStudies(result, filters);
-            }
-          },
-          () => {
-            setError(true);
+        retrieveStudiesMetadata(...retrieveParams)
+      ).then(
+        result => {
+          if (result) {
+            processStudies(result, filters);
           }
-          }
-        )
-      )
-} catch (error) {
-  if (error) {
-    setError(true);
-  }
-}
+        },
+        () => {
+          setError(true);
+        }
+      );
+
+    } catch (error) {
+      if (error) {
+        setError(true);
+      }
+    }
   };
 
-const purgeCancellablePromises = () => {
-  for (let studyInstanceUids in cancelableStudiesPromises) {
-    if ('cancel' in cancelableStudiesPromises[studyInstanceUids]) {
-      cancelableStudiesPromises[studyInstanceUids].cancel();
+  const purgeCancellablePromises = () => {
+    for (let studyInstanceUids in cancelableStudiesPromises) {
+      if ('cancel' in cancelableStudiesPromises[studyInstanceUids]) {
+        cancelableStudiesPromises[studyInstanceUids].cancel();
+      }
     }
-  }
 
-  for (let studyInstanceUids in cancelableSeriesPromises) {
-    if ('cancel' in cancelableSeriesPromises[studyInstanceUids]) {
-      cancelableSeriesPromises[studyInstanceUids].cancel();
-      deleteStudyMetadataPromise(studyInstanceUids);
-      studyMetadataManager.remove(studyInstanceUids);
+    for (let studyInstanceUids in cancelableSeriesPromises) {
+      if ('cancel' in cancelableSeriesPromises[studyInstanceUids]) {
+        cancelableSeriesPromises[studyInstanceUids].cancel();
+        deleteStudyMetadataPromise(studyInstanceUids);
+        studyMetadataManager.remove(studyInstanceUids);
+      }
     }
-  }
-};
+  };
 
-useEffect(() => {
-  studyMetadataManager.purge();
-  purgeCancellablePromises();
-}, [studyInstanceUids]);
-
-useEffect(() => {
-  cancelableSeriesPromises = {};
-  cancelableStudiesPromises = {};
-  loadStudies();
-
-  return () => {
+  useEffect(() => {
+    studyMetadataManager.purge();
     purgeCancellablePromises();
-  };
-}, []);
+  }, [studyInstanceUids]);
 
-if (error) {
-  return <div>Error: {JSON.stringify(error)}</div>;
-}
+  useEffect(() => {
+    cancelableSeriesPromises = {};
+    cancelableStudiesPromises = {};
+    loadStudies();
 
-return (
-  <ConnectedViewer
-    studies={studies}
-    isStudyLoaded={isStudyLoaded}
-    studyInstanceUids={studyInstanceUids}
-  />
-);
+    return () => {
+      purgeCancellablePromises();
+    };
+  }, []);
+
+  if (error) {
+    return <div>Error: {JSON.stringify(error)}</div>;
+  }
+
+  return (
+    <ConnectedViewer
+      studies={studies}
+      isStudyLoaded={isStudyLoaded}
+      studyInstanceUids={studyInstanceUids}
+    />
+  );
 }
 
 ViewerRetrieveStudyData.propTypes = {
