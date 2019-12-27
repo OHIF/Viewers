@@ -13,6 +13,9 @@ const definitions = [
     icon: 'crosshairs',
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    options: {
+      defaultActive: true,
+    },
     commandName: 'enableCrosshairsTool',
     commandOptions: {},
   },
