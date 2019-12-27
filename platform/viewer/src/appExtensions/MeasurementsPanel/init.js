@@ -9,12 +9,14 @@ import ToolContextMenu from '../../connectedComponents/ToolContextMenu';
 
 const {
   onAdded,
+  onCompleted,
   onRemoved,
   onModified,
 } = OHIF.measurements.MeasurementHandlers;
 
 const MEASUREMENT_ACTION_MAP = {
   added: onAdded,
+  completed: onCompleted,
   removed: onRemoved,
   modified: throttle(event => {
     return onModified(event);
