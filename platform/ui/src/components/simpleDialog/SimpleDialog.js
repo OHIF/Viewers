@@ -1,6 +1,7 @@
 import React, { Component, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TextInput } from '@ohif/ui';
+import { useTranslation } from 'react-i18next';
 
 import './SimpleDialog.styl';
 
@@ -50,19 +51,23 @@ class SimpleDialog extends Component {
   static AnnotationDialog = ({ onClose, onSubmit }) => {
     let value = {};
 
+    const { t, ready: translationsAreReady } = useTranslation(
+      'AnnotationDialog'
+    );
+
     const onSubmitHandler = () => {
       onSubmit(value);
     };
 
-    return (
+    return translationsAreReady ? (
       <div className="AnnotationDialog">
         <SimpleDialog
-          headerTitle="Annotations"
+          headerTitle={t('annotations')}
           onClose={onClose}
           onConfirm={onSubmitHandler}
         >
           <label htmlFor="malignancy" className="simpleDialogLabelFor">
-            Malignancy
+            {t('malignancy')}
           </label>
           <select
             name="malignancy"
@@ -71,11 +76,11 @@ class SimpleDialog extends Component {
             onChange={event => (value.malignancy = event.target.value)}
           >
             <option value="undefined">--</option>
-            <option value="non-malignant">Benign</option>
-            <option value="malignant">Malignant</option>
+            <option value="non-malignant">{t('benign')}</option>
+            <option value="malignant">{t('malignant')}</option>
           </select>
           <label htmlFor="margins" className="simpleDialogLabelFor">
-            Margins
+            {t('margins')}
           </label>
           <select
             name="margins"
@@ -84,14 +89,14 @@ class SimpleDialog extends Component {
             onChange={event => (value.margins = event.target.value)}
           >
             <option value="undefined">--</option>
-            <option value="well-defined">Well-defined</option>
-            <option value="darkened">Darkened</option>
-            <option value="ill-defined">Ill-defined</option>
-            <option value="microlobulated">Microlobulated</option>
-            <option value="espiculado">Espiculado</option>
+            <option value="well-defined">{t('well-defined')}</option>
+            <option value="darkened">{t('darkened')}</option>
+            <option value="ill-defined">{t('ill-defined')}</option>
+            <option value="microlobulated">{t('microlobulated')}</option>
+            <option value="espiculado">{t('espiculado')}</option>
           </select>
           <label htmlFor="density" className="simpleDialogLabelFor">
-            Density
+            {t('density')}
           </label>
           <select
             name="density"
@@ -100,12 +105,12 @@ class SimpleDialog extends Component {
             onChange={event => (value.density = event.target.value)}
           >
             <option value="undefined">--</option>
-            <option value="superior">Superior</option>
-            <option value="similar">Similar</option>
-            <option value="inferior">Inferior</option>
+            <option value="superior">{t('superior')}</option>
+            <option value="similar">{t('similar')}</option>
+            <option value="inferior">{t('inferior')}</option>
           </select>
           <label htmlFor="morphology" className="simpleDialogLabelFor">
-            Morphology
+            {t('morphology')}
           </label>
           <select
             name="morphology"
@@ -114,14 +119,14 @@ class SimpleDialog extends Component {
             onChange={event => (value.morphology = event.target.value)}
           >
             <option value="undefined">--</option>
-            <option value="round">Round</option>
-            <option value="oval">Oval</option>
-            <option value="lobulate">Lobulate</option>
-            <option value="irregular">Irregular</option>
+            <option value="round">{t('round')}</option>
+            <option value="oval">{t('oval')}</option>
+            <option value="lobulate">{t('lobulate')}</option>
+            <option value="irregular">{t('irregular')}</option>
           </select>
         </SimpleDialog>
       </div>
-    );
+    ) : null;
   };
 
   render() {

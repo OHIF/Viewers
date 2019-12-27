@@ -40,7 +40,6 @@ export default function init({
       showAnnotationDialog();
     }
 
-    // TODO Add completed
     return MEASUREMENT_ACTION_MAP[action](event);
   };
   const onMeasurementAdded = onMeasurementsChanged.bind(this, 'added');
