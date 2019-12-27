@@ -96,7 +96,7 @@ const viewports = (state = DEFAULT_STATE, action) => {
       const {
         viewportSpecificData,
         activeViewportIndex,
-      } = handleViewportDeletions(action, state.activeViewportIndex, state.viewportSpecificData);
+      } = handleViewportDeletions(action, state.viewportSpecificData, state.activeViewportIndex);
 
       return {
         ...state,
@@ -117,7 +117,7 @@ const viewports = (state = DEFAULT_STATE, action) => {
       const {
         viewportSpecificData,
         activeViewportIndex,
-      } = handleViewportDeletions(action, state.activeViewportIndex, action.viewportSpecificData);
+      } = handleViewportDeletions(action, action.viewportSpecificData, state.activeViewportIndex);
 
       return {
         ...state,
