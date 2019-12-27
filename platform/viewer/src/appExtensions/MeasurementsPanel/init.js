@@ -1,4 +1,5 @@
 import OHIF from '@ohif/core';
+import { SimpleDialog } from '@ohif/ui';
 import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import throttle from 'lodash.throttle';
@@ -34,10 +35,12 @@ export default function init({
 }) {
   const { UIDialogService } = servicesManager.services;
 
-  // TODO: MEASUREMENT_COMPLETED (not present in initial implementation)
   const onMeasurementsChanged = (action, event) => {
-    if (action == 'completed') prompt('completed');
+    if (action == 'completed') {
+      showAnnotationDialog();
+    }
 
+    // TODO Add completed
     return MEASUREMENT_ACTION_MAP[action](event);
   };
   const onMeasurementAdded = onMeasurementsChanged.bind(this, 'added');
@@ -71,6 +74,28 @@ export default function init({
       'updateTableWithNewMeasurementData',
       measurementData
     );
+  };
+
+  const showAnnotationDialog = () => {
+    if (!UIDialogService) {
+      console.warn('Unable to show dialog; no UI Dialog Service available.');
+      return;
+    }
+
+    let dialogId = UIDialogService.create({
+      centralize: true,
+      isDraggable: false,
+      content: SimpleDialog.AnnotationDialog,
+      useLastPosition: false,
+      showOverlay: true,
+      contentProps: {
+        onClose: () => UIDialogService.dismiss({ id: dialogId }),
+        onSubmit: value => {
+          console.log(value);
+          UIDialogService.dismiss({ id: dialogId });
+        },
+      },
+    });
   };
 
   const showLabellingDialog = (props, contentProps, measurementData) => {
@@ -166,6 +191,8 @@ export default function init({
 
     UIDialogService.dismiss({ id: 'context-menu' });
     UIDialogService.dismiss({ id: 'labelling' });
+
+    showAnnotationDialog();
   };
 
   // TODO: This makes scrolling painfully slow

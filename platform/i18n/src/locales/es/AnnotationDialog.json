@@ -1,0 +1,21 @@
+{
+  "Annotations": "Anotaciones",
+  "Malignancy": "Malignidad",
+  "Benign": "Benigno",
+  "Malignant": "Maligno",
+  "Margins": "Márgenes",
+  "Well-defined": "Bien definido",
+  "Darkened": "Oscurecido",
+  "Ill-defined": "Mal definido",
+  "Microlobulated": "Microlobulado",
+  "Espiculado": "Espiculado",
+  "Density": "Densidad",
+  "Superior": "Superior",
+  "Similar": "Similar",
+  "Inferior": "Inferior",
+  "Morphology": "Morfología",
+  "Round": "Redonda",
+  "Oval": "Oval",
+  "Lobulate": "Lobulada",
+  "Irregular": "Irregular"
+}

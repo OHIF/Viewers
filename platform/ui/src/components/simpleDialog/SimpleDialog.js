@@ -47,6 +47,83 @@ class SimpleDialog extends Component {
     );
   };
 
+  static AnnotationDialog = ({ onClose, onSubmit }) => {
+    let value = {};
+
+    const onSubmitHandler = () => {
+      onSubmit(value);
+    };
+
+    return (
+      <div className="AnnotationDialog">
+        <SimpleDialog
+          headerTitle="Annotations"
+          onClose={onClose}
+          onConfirm={onSubmitHandler}
+        >
+          <label htmlFor="malignancy" className="simpleDialogLabelFor">
+            Malignancy
+          </label>
+          <select
+            name="malignancy"
+            id="malignancy"
+            className="simpleDialogSelect"
+            onChange={event => (value.malignancy = event.target.value)}
+          >
+            <option value="undefined">--</option>
+            <option value="non-malignant">Benign</option>
+            <option value="malignant">Malignant</option>
+          </select>
+          <label htmlFor="margins" className="simpleDialogLabelFor">
+            Margins
+          </label>
+          <select
+            name="margins"
+            id="margins"
+            className="simpleDialogSelect"
+            onChange={event => (value.margins = event.target.value)}
+          >
+            <option value="undefined">--</option>
+            <option value="well-defined">Well-defined</option>
+            <option value="darkened">Darkened</option>
+            <option value="ill-defined">Ill-defined</option>
+            <option value="microlobulated">Microlobulated</option>
+            <option value="espiculado">Espiculado</option>
+          </select>
+          <label htmlFor="density" className="simpleDialogLabelFor">
+            Density
+          </label>
+          <select
+            name="density"
+            id="density"
+            className="simpleDialogSelect"
+            onChange={event => (value.density = event.target.value)}
+          >
+            <option value="undefined">--</option>
+            <option value="superior">Superior</option>
+            <option value="similar">Similar</option>
+            <option value="inferior">Inferior</option>
+          </select>
+          <label htmlFor="morphology" className="simpleDialogLabelFor">
+            Morphology
+          </label>
+          <select
+            name="morphology"
+            id="morphology"
+            className="simpleDialogSelect"
+            onChange={event => (value.morphology = event.target.value)}
+          >
+            <option value="undefined">--</option>
+            <option value="round">Round</option>
+            <option value="oval">Oval</option>
+            <option value="lobulate">Lobulate</option>
+            <option value="irregular">Irregular</option>
+          </select>
+        </SimpleDialog>
+      </div>
+    );
+  };
+
   render() {
     return (
       <React.Fragment>
