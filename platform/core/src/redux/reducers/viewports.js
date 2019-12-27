@@ -36,7 +36,7 @@ const DEFAULT_STATE = {
  * @param {Number} currentActiveViewportIndex -
  * @returns
  */
-const handleViewportDeletions = (action, currentViewportSpecificData, currentActiveViewportIndex) => {
+const handleViewportDeletions = (action, currentViewportSpecificData = {}, currentActiveViewportIndex) => {
   const numberOfViewports = action.numRows * action.numColumns;
   const viewportSpecificData = cloneDeep(currentViewportSpecificData);
   let activeViewportIndex = currentActiveViewportIndex;
