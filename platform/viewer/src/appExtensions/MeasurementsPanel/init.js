@@ -191,8 +191,6 @@ export default function init({
 
     UIDialogService.dismiss({ id: 'context-menu' });
     UIDialogService.dismiss({ id: 'labelling' });
-
-    showAnnotationDialog();
   };
 
   // TODO: This makes scrolling painfully slow
