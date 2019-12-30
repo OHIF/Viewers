@@ -40,7 +40,9 @@ export default class RetrieveMetadataLoader {
         if (result && result.length) {
           break; // closes iterator in case data is retrieved successfully
         }
-      } catch (e) { }
+      } catch (e) {
+        throw e;
+      }
     }
 
     if (loaders.next().done && !result) {
@@ -51,8 +53,8 @@ export default class RetrieveMetadataLoader {
   }
 
   // Methods to be overwrite
-  async configLoad() { }
-  async preLoad() { }
-  async load(preLoadData) { }
-  async posLoad(loadData) { }
+  async configLoad() {}
+  async preLoad() {}
+  async load(preLoadData) {}
+  async posLoad(loadData) {}
 }
