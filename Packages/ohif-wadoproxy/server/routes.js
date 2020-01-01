@@ -105,7 +105,7 @@ Router.route(Settings.uri.replace(OHIF.utils.absoluteUrl(), ''), function() {
 
     Object.keys(request.headers).forEach(entry => {
         const value = request.headers[entry];
-        if (entry) {
+        if (entry && (entry !== "host" || Settings.includeHostHeader)) {
             options.headers[entry] = value;
         }
     });
