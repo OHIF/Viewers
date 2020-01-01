@@ -260,6 +260,26 @@ export const PublicServerConfig = new SimpleSchema({
     }
 });
 
+export const MailServerConfig = new SimpleSchema({
+    username:{
+        type: String,
+        label: 'Username',
+    },
+    password:{
+        type: String,
+        label: 'Password',
+    },
+    server:{
+        type: String,
+        label: 'Server',
+    },
+    port:{
+        type: Number,
+        label: 'Port',
+        defaultValue: 587
+    }
+});
+
 export const Servers = new SimpleSchema({
     dicomWeb: {
         type: [DICOMWebServer],
@@ -291,6 +311,11 @@ export const ServerConfiguration = new SimpleSchema({
     public: {
         type: PublicServerConfig,
         label: 'Public Server Configuration',
+    },
+    mailServerSettings: {
+        type: MailServerConfig,
+        label: 'Mail Server Settings',
+        optional: true
     },
     origin: {
         type: String,

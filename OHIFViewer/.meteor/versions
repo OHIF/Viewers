@@ -73,6 +73,8 @@ mdg:validation-error@0.5.1
 meteor@1.8.0
 meteor-base@1.2.0
 meteor-platform@1.2.6
+meteorhacks:async@1.0.0
+meteorhacks:npm@1.5.0
 minifier-css@1.2.16
 minifier-js@2.2.1
 minimongo@1.4.0
