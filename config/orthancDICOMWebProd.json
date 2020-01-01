@@ -1,0 +1,41 @@
+{
+  "servers": {
+    "dicomWeb": [
+      {
+        "name": "Orthanc",
+        "wadoUriRoot": "https://gtajesgenga-heroku-orthanc.herokuapp.com/wado",
+        "qidoRoot": "https://gtajesgenga-heroku-orthanc.herokuapp.com/dicom-web",
+        "wadoRoot": "https://gtajesgenga-heroku-orthanc.herokuapp.com/dicom-web",
+        "vtkRoot": "https://gtajesgenga-heroku-orthanc.herokuapp.com/vtk",
+        "qidoSupportsIncludeField": false,
+        "imageRendering": "wadouri",
+        "thumbnailRendering": "wadors",
+        "requestOptions": {
+          "auth": "orthanc:orthanc",
+          "logRequests": true,
+          "logResponses": true,
+          "logTiming": true
+        }
+      }
+    ]
+  },
+  "defaultServiceType": "dicomWeb",
+  "dropCollections": false,
+  "public": {
+    "verifyEmail": false,
+    "demoUserEnabled": false,
+    "ui": {
+      "studyListFunctionsEnabled": true,
+      "leftSidebarOpen": false,
+      "displaySetNavigationLoopOverSeries": false,
+      "displaySetNavigationMultipleViewports": true,
+      "autoPositionMeasurementsTextCallOuts": "TRLB",
+      "displaySeriesQuickSwitch": true,
+      "show3DViewport": true
+    }
+  },
+  "proxy": {
+    "enabled": true,
+    "includeHostHeader": false
+  }
+}
