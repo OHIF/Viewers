@@ -62,6 +62,7 @@ import powerOff from './icons/power-off.svg';
 import reset from './icons/reset.svg';
 import rotate from './icons/rotate.svg';
 import rotateRight from './icons/rotate-right.svg';
+import saveRegular from './icons/save-regular.svg';
 import search from './icons/search.svg';
 import searchPlus from './icons/search-plus.svg';
 import softTissue from './icons/soft-tissue.svg';
@@ -164,6 +165,7 @@ const ICONS = {
   'soft-tissue': softTissue,
   lung,
   liver,
+  save: saveRegular,
 };
 
 /**

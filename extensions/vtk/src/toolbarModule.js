@@ -1,4 +1,5 @@
 import SlabThicknessToolbarComponent from './toolbarComponents/SlabThicknessToolbarComponent';
+import VTKMPRToolbarButton from './toolbarComponents/VTKMPRToolbarButton';
 
 const TOOLBAR_BUTTON_TYPES = {
   COMMAND: 'command',
@@ -115,9 +116,19 @@ const definitions = [
       },
     ],
   },
+  {
+    id: '2DMPR',
+    label: '2D MPR',
+    icon: 'cube',
+    //
+    CustomComponent: VTKMPRToolbarButton,
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'mpr2d',
+    context: 'ACTIVE_VIEWPORT::CORNERSTONE',
+  },
 ];
 
 export default {
   definitions,
   defaultContext: 'ACTIVE_VIEWPORT::VTK',
-};
+}

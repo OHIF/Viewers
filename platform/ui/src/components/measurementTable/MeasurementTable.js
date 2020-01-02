@@ -1,7 +1,7 @@
 import './MeasurementTable.styl';
 
 import React, { Component } from 'react';
-import { withTranslation } from '../../utils/LanguageProvider';
+import { withTranslation } from '../../contextProviders';
 
 import { Icon } from './../../elements/Icon';
 import { MeasurementTableItem } from './MeasurementTableItem.js';
@@ -22,8 +22,9 @@ class MeasurementTable extends Component {
     onDeleteClick: PropTypes.func,
     onEditDescriptionClick: PropTypes.func,
     selectedMeasurementNumber: PropTypes.number,
-    overwallWarnings: PropTypes.object,
     t: PropTypes.func,
+    saveFunction: PropTypes.func,
+    onSaveComplete: PropTypes.func,
   };
 
   static defaultProps = {
@@ -38,8 +39,9 @@ class MeasurementTable extends Component {
   };
 
   render() {
-    const hasOverallWarnings =
-      this.props.overallWarnings.warningList.length > 0;
+    const { overallWarnings, saveFunction, t } = this.props;
+    const hasOverallWarnings = overallWarnings.warningList.length > 0;
+
     return (
       <div className="measurementTable">
         <div className="measurementTableHeader">
@@ -55,7 +57,7 @@ class MeasurementTable extends Component {
                   style={{}}
                 >
                   <div className="warningTitle">
-                    {this.props.t('Criteria nonconformities')}
+                    {t('Criteria nonconformities')}
                   </div>
                   <div className="warningContent">
                     {this.getWarningContent()}
@@ -75,9 +77,45 @@ class MeasurementTable extends Component {
         <ScrollableArea>
           <div>{this.getMeasurementsGroups()}</div>
         </ScrollableArea>
+        <div className="measurementTableFooter">
+          {saveFunction && (
+            <button
+              onClick={this.saveFunction}
+              className="saveBtn"
+              data-cy="save-measurements-btn"
+            >
+              <Icon name="save" width="14px" height="14px" />
+              Save measurements
+            </button>
+          )}
+        </div>
       </div>
     );
   }
+
+  saveFunction = async event => {
+    const { saveFunction, onSaveComplete } = this.props;
+    if (saveFunction) {
+      try {
+        const result = await saveFunction();
+        if (onSaveComplete) {
+          onSaveComplete({
+            title: 'STOW SR',
+            message: result.message,
+            type: 'success',
+          });
+        }
+      } catch (error) {
+        if (onSaveComplete) {
+          onSaveComplete({
+            title: 'STOW SR',
+            message: error.message,
+            type: 'error',
+          });
+        }
+      }
+    }
+  };
 
   getMeasurementsGroups = () => {
     return this.props.measurementCollection.map((measureGroup, index) => {
@@ -157,7 +195,7 @@ class MeasurementTable extends Component {
   };
 
   getWarningContent = () => {
-    const { warningList = '' } = this.props.overwallWarnings;
+    const { warningList = '' } = this.props.overallWarnings;
 
     if (Array.isArray(warningList)) {
       const listedWarnings = warningList.map((warn, index) => {

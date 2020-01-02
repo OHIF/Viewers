@@ -63,9 +63,18 @@ class ProjectsList extends Component {
     if (loading) {
       return loadingIcon;
     }
+
+    const lowerCaseFilter = filter.toLowerCase();
+    const filteredProjects = projects.filter(project =>   
+      typeof project.name  === 'string' &&
+      (filter === "" || project.name.toLowerCase().includes(lowerCaseFilter))
+    );
+
     const body = (
       <tbody id="ProjectList">
-        {projects.filter(project => (project.name.toLowerCase().includes(filter.toLowerCase()) || filter=="")).map(this.renderTableRow)}
+        {
+          filteredProjects.map(this.renderTableRow)
+        }
       </tbody>
     );
 

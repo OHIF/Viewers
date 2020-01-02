@@ -6,7 +6,7 @@ import log from './../log.js';
 jest.mock('./../log.js');
 
 describe('ExtensionManager.js', () => {
-  let extensionManager, commandsManager;
+  let extensionManager, commandsManager, servicesManager, appConfig;
 
   beforeEach(() => {
     commandsManager = {
@@ -14,7 +14,17 @@ describe('ExtensionManager.js', () => {
       getContext: jest.fn(),
       registerCommand: jest.fn(),
     };
-    extensionManager = new ExtensionManager({ commandsManager });
+    servicesManager = {
+      registerService: jest.fn(),
+    };
+    appConfig = {
+      testing: true,
+    };
+    extensionManager = new ExtensionManager({
+      servicesManager,
+      commandsManager,
+      appConfig,
+    });
     log.warn.mockClear();
     jest.clearAllMocks();
   });
@@ -37,9 +47,52 @@ describe('ExtensionManager.js', () => {
       // Assert
       expect(extensionManager.registerExtension.mock.calls.length).toBe(3);
     });
+
+    it('calls registerExtension() for each extension passing its configuration if tuple', () => {
+      const fakeConfiguration = { testing: true };
+      extensionManager.registerExtension = jest.fn();
+
+      // SUT
+      const fakeExtensions = [
+        { one: '1' },
+        [{ two: '2' }, fakeConfiguration],
+        { three: '3 ' },
+      ];
+      extensionManager.registerExtensions(fakeExtensions);
+
+      // Assert
+      expect(extensionManager.registerExtension.mock.calls[1][1]).toEqual(
+        fakeConfiguration
+      );
+    });
   });
 
   describe('registerExtension()', () => {
+    it('calls preRegistration() for extension', () => {
+      // SUT
+      const fakeExtension = { one: '1', preRegistration: jest.fn() };
+      extensionManager.registerExtension(fakeExtension);
+
+      // Assert
+      expect(fakeExtension.preRegistration.mock.calls.length).toBe(1);
+    });
+
+    it('calls preRegistration() passing dependencies and extension configuration to extension', () => {
+      const extensionConfiguration = { config: 'Some configuration' };
+
+      // SUT
+      const extension = { one: '1', preRegistration: jest.fn() };
+      extensionManager.registerExtension(extension, extensionConfiguration);
+
+      // Assert
+      expect(extension.preRegistration.mock.calls[0][0]).toEqual({
+        servicesManager,
+        commandsManager,
+        appConfig,
+        configuration: extensionConfiguration,
+      });
+    });
+
     it('logs a warning if the extension is null or undefined', () => {
       const undefinedExtension = undefined;
       const nullExtension = null;
@@ -110,6 +163,32 @@ describe('ExtensionManager.js', () => {
       );
     });
 
+    it('successfully passes dependencies to each module along with extension configuration', () => {
+      const extensionConfiguration = { testing: true };
+
+      const extension = {
+        id: 'hello-world',
+        getViewportModule: jest.fn(),
+        getSopClassHandlerModule: jest.fn(),
+        getPanelModule: jest.fn(),
+        getToolbarModule: jest.fn(),
+        getCommandsModule: jest.fn(),
+      };
+
+      extensionManager.registerExtension(extension, extensionConfiguration);
+
+      Object.keys(extension).forEach(module => {
+        if (typeof extension[module] === 'function') {
+          expect(extension[module].mock.calls[0][0]).toEqual({
+            servicesManager,
+            commandsManager,
+            appConfig,
+            configuration: extensionConfiguration,
+          });
+        }
+      });
+    });
+
     it('successfully registers a module for each module type', () => {
       const extension = {
         id: 'hello-world',
@@ -147,7 +226,7 @@ describe('ExtensionManager.js', () => {
           return {
             definitions: {
               exampleDefinition: {
-                commandFn: () => {},
+                commandFn: () => { },
                 storeContexts: [],
                 options: {},
               },

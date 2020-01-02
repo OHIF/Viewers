@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import { MODULE_TYPES } from '@ohif/core';
-import OHIF from '@ohif/core';
+import OHIF, { DICOMSR } from '@ohif/core';
+import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedHeader from './ConnectedHeader.js';
 import ConnectedToolbarRow from './ConnectedToolbarRow.js';
-import ConnectedLabellingOverlay from './ConnectedLabellingOverlay';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
@@ -58,21 +58,32 @@ class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.array,
     studyInstanceUids: PropTypes.array,
+    activeServer: PropTypes.shape({
+      type: PropTypes.string,
+      wadoRoot: PropTypes.string,
+    }),
     onTimepointsUpdated: PropTypes.func,
     onMeasurementsUpdated: PropTypes.func,
     // window.store.getState().viewports.viewportSpecificData
     viewports: PropTypes.object.isRequired,
     // window.store.getState().viewports.activeViewportIndex
     activeViewportIndex: PropTypes.number.isRequired,
+    isStudyLoaded: PropTypes.bool,
+    dialog: PropTypes.object,
   };
 
   constructor(props) {
     super(props);
+
+    const { activeServer } = this.props;
+    const server = Object.assign({}, activeServer);
+
     OHIF.measurements.MeasurementApi.setConfiguration({
       dataExchange: {
-        retrieve: this.retrieveMeasurements,
-        store: this.storeMeasurements,
+        retrieve: DICOMSR.retrieveMeasurements,
+        store: DICOMSR.storeMeasurements,
       },
+      server,
     });
 
     OHIF.measurements.TimepointApi.setConfiguration({
@@ -94,17 +105,11 @@ class Viewer extends Component {
     thumbnails: [],
   };
 
-  retrieveMeasurements = (patientId, timepointIds) => {
-    OHIF.log.info('retrieveMeasurements');
-    // TODO: Retrieve the measurements from the latest available SR
-    return Promise.resolve();
-  };
-
-  storeMeasurements = (measurementData, timepointIds) => {
-    OHIF.log.info('storeMeasurements');
-    // TODO: Store the measurements into a new SR sent to the active server
-    return Promise.resolve();
-  };
+  componentWillUnmount() {
+    if (this.props.dialog) {
+      this.props.dialog.dismissAll();
+    }
+  }
 
   retrieveTimepoints = filter => {
     OHIF.log.info('retrieveTimepoints');
@@ -172,7 +177,7 @@ class Viewer extends Component {
   };
 
   componentDidMount() {
-    const { studies } = this.props;
+    const { studies, isStudyLoaded } = this.props;
     const { TimepointApi, MeasurementApi } = OHIF.measurements;
     const currentTimepointId = 'TimepointId';
 
@@ -192,8 +197,11 @@ class Viewer extends Component {
       const patientId = studies[0] && studies[0].patientId;
 
       timepointApi.retrieveTimepoints({ patientId });
-      measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
-
+      if (isStudyLoaded) {
+        this.measurementApi.retrieveMeasurements(patientId, [
+          currentTimepointId,
+        ]);
+      }
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
       });
@@ -201,17 +209,18 @@ class Viewer extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.studies !== prevProps.studies) {
-      const { studies } = this.props;
-      const patientId = studies[0] && studies[0].patientId;
-      const currentTimepointId = this.currentTimepointId;
-
-      this.timepointApi.retrieveTimepoints({ patientId });
-      this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
-
+    const { studies, isStudyLoaded } = this.props;
+    if (studies !== prevProps.studies) {
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
       });
+    }
+    if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
+      const patientId = studies[0] && studies[0].patientId;
+      const { currentTimepointId } = this;
+
+      this.timepointApi.retrieveTimepoints({ patientId });
+      this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
     }
   }
 
@@ -317,13 +326,12 @@ class Viewer extends Component {
             )}
           </SidePanel>
         </div>
-        <ConnectedLabellingOverlay />
       </>
     );
   }
 }
 
-export default Viewer;
+export default withDialog(Viewer);
 
 /**
  * What types are these? Why do we have "mapping" dropped in here instead of in

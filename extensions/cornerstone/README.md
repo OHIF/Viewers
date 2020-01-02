@@ -67,6 +67,38 @@ Our Viewport wraps [cornerstonejs/react-cornerstone-viewport][react-viewport]
 and is connected the redux store. This module is the most prone to change as we
 hammer out our Viewport interface.
 
+## Tool Configuration
+
+Tools can be configured through extension configuration using the tools key:
+
+```js
+  ...
+  cornerstoneExtensionConfig: {
+    tools: {
+      ArrowAnnotate: {
+        configuration: {
+          getTextCallback: (callback, eventDetails) => callback(prompt('Enter your custom annotation')),
+        },
+      },
+    },
+  },
+  ...
+```
+
+## Annotate Tools Configuration
+
+*We currently support one property for annotation tools.*
+
+### Hide handles
+This extension configuration allows you to toggle on/off handle rendering for all annotate tools:
+
+```js
+  ...
+  cornerstoneExtensionConfig: {
+    hideHandles: true,
+  },
+  ...
+
 ## Resources
 
 ### Repositories

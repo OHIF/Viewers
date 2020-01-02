@@ -1,0 +1,126 @@
+.labellingComponent {
+  position: relative;
+  text-align: center;
+  z-index: 999;
+  transition: all 200ms linear;
+  max-height: 500px;
+}
+
+.labellingComponent .selectedLabel, .labellingComponent .selectedDescription {
+  padding: 5px;
+  background-color: white;
+  width: 150px;
+}
+
+.labellingComponent .addLabelButton {
+  color: #000000;
+  background-color: #20a5d6;
+  border: 2px solid #44626f;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 24px;
+  opacity: 1;
+  padding: 0 14px;
+  transition: opacity 0.3s ease;
+  outline: none;
+  cursor: pointer;
+}
+
+.labellingComponent .commonButton {
+  border: 1px solid #44626f;
+  color: #ffffff;
+  background-color: #000000;
+  border-radius: 16px;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 26px;
+  padding: 0 12px;
+  margin: 10px 5px 0 0;
+  outline: none;
+  cursor: pointer;
+}
+
+.labellingComponent .locationDescriptionWrapper {
+  background-color: #ffffff;
+  line-height: 46px;
+  height: 46px;
+  font-size: 13px;
+  position: relative;
+  width: 290px;
+  min-width: 260px;
+  padding: 0 12px;
+  margin: 0 auto;
+  display: inline-block;
+}
+
+.labellingComponent .locationDescriptionWrapper .location {
+  transition: all 300ms linear;
+  position: absolute;
+  white-space: nowrap;
+  bottom: 0;
+}
+
+.labellingComponent.editDescription .locationDescriptionWrapper .location {
+  bottom: 38px;
+}
+
+.labellingComponent .locationDescriptionWrapper #descriptionInput {
+  transition-delay: all 300ms linear;
+  visibility: hidden;
+  outline: none;
+  height: 46px;
+  width: 100%;
+  line-height: 20px;
+  font-size: 13px;
+  border: none;
+}
+
+.labellingComponent.editDescription .locationDescriptionWrapper #descriptionInput {
+  visibility: visible;
+}
+
+.labellingComponent.editDescription .location {
+  color: #337ab7;
+}
+
+.labellingComponent .commonButtons, .labellingComponent.editDescription .editDescriptionButtons {
+  display: block;
+  margin-left: 55px;
+}
+
+.labellingComponent.editDescription .commonButtons, .labellingComponent .editDescriptionButtons {
+  display: none;
+}
+
+.labellingComponent .commonButtons {
+  text-align: center;
+  margin-left: 55px;
+}
+
+.labellingComponent .commonButton.left {
+  float: left;
+}
+
+.labellingComponent .commonButton.right {
+  float: right;
+}
+
+.labellingComponent .checkIconWrapper {
+  display: inline-block;
+  background-color: #337ab7;
+  border-radius: 46px;
+  width: 46px;
+  height: 46px;
+  margin-right: 10px;
+  vertical-align: bottom;
+  cursor: pointer;
+}
+
+.labellingComponent .checkIcon {
+  width: 20px;
+  height: 20px;
+  margin: 13px;
+  fill: black;
+}

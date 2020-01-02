@@ -1,31 +1,39 @@
 # OHIF Viewers
 
-- Essentials
-  - [Getting Started](essentials/getting-started.md)
-  - [Installation](essentials/installation.md)
-  - [Data Source](essentials/data-source.md)
-  - [Configuration](essentials/configuration.md)
-  - [Themeing](essentials/themeing.md)
-  - [Translating](essentials/translating.md)
-  - [Troubleshooting](essentials/troubleshooting.md)
-- [Scope of Project](essentials/scope-of-project.md)
+- [Our Process](our-process.md)
+- Development
+  - [Getting Started](development/getting-started.md)
+  - [Contributing](development/contributing.md)
+  - [Continuous Integration](development/continous-integration.md)
+- [Configuring](configuring/index.md)
+  - [Data Source](configuring/data-source.md)
 
 ---
 
-- [Advanced](advanced/index.md)
-- [Architecture](advanced/architecture.md)
-  - [Overview](advanced/architecture.md#overview)
-  - [Business Logic](advanced/architecture.md#business-logic)
-  - [Component Library](advanced/architecture.md#react-component-library)
-  - [Extensions](advanced/architecture.md#misc-extensions)
-  - [Diagram](advanced/architecture.md#diagram)
-  - [Common Questions](advanced/architecture.md#common-questions)
-- [Extensions](advanced/extensions.md)
-  - [Overview](advanced/extensions.md#overview)
-  - [Modules](advanced/extensions.md#modules)
-  - [Registering](advanced/extensions.md#registering-extensions)
-  - [OHIF Maintained](advanced/extensions.md#ohif-maintained-extensions)
-- [Custom Tools](advanced/custom-tools.md)
+- [Architecture](architecture/index.md)
+- [Viewer](viewer/index.md)
+  - [Configuration](viewer/configuration.md)
+  - [Themeing](viewer/themeing.md)
+  - [Internationalization](viewer/internationalization.md)
+- [Extensions](extensions/index.md)
+  - [Registering](extensions/index.md#registering-an-extension)
+  - [Lifecycle Hooks](extensions/index.md#lifecycle-hooks)
+    - [preRegistration](extensions/lifecycle/pre-registration.md)
+  - [Modules](extensions/index.md#modules)
+    - [Commands](extensions/modules/commands.md)
+    - [Panel](extensions/modules/panel.md)
+    - [SOP Class Handler](extensions/modules/sop-class-handler.md)
+    - [Toolbar](extensions/modules/toolbar.md)
+    - [Viewport](extensions/modules/viewport.md)
+  - [Contexts](extensions/index.md#contexts)
+  - [ExtensionManager](extensions/index.md#extensionmanager)
+  - [OHIF Maintained](extensions/index.md#maintained-extensions)
+- [Services](services/index.md)
+  - [Default](services/default/index.md)
+  - [UI](services/ui/index.md)
+    - [Dialog Service](services/ui/ui-dialog-service.md)
+    - [Modal Service](services/ui/ui-modal-service.md)
+    - [Notification Service](services/ui/ui-notification-service.md)
 
 ---
 
@@ -45,7 +53,8 @@
 
 ---
 
-- [FAQ](frequently-asked-questions.md)
-- [Contributing](contributing/index.md)
-- [Browser Support](browser-support.md)
+- [FAQ](faq/index.md)
+  - [Scope of Project](faq/scope-of-project.md)
+  - [Browser Support](faq/browser-support.md)
+  - [PWA vs Packaged](faq/pwa-vs-packaged.md)
 - [Help](help.md)

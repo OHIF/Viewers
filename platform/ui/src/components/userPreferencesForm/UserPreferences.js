@@ -10,7 +10,7 @@ export class UserPreferences extends Component {
   static defaultProps = {
     hotkeyDefinitions: [],
     windowLevelData: {},
-    generalData: {},
+    generalPreferences: {},
   };
 
   // TODO: Make this more generic. Tabs should not be restricted to these entries
@@ -23,7 +23,8 @@ export class UserPreferences extends Component {
       })
     ).isRequired,
     windowLevelData: PropTypes.object.isRequired,
-    generalData: PropTypes.object.isRequired,
+    generalPreferences: PropTypes.object.isRequired,
+    updatePropValue: PropTypes.func.isRequired,
   };
 
   state = {
@@ -64,7 +65,10 @@ export class UserPreferences extends Component {
     return (
       <form className="form-themed themed">
         <div className="form-content">
-          <GeneralPreferences generalData={this.props.generalData} />
+          <GeneralPreferences
+            generalPreferences={this.props.generalPreferences}
+            updatePropValue={this.props.updatePropValue}
+          />
         </div>
       </form>
     );
@@ -90,8 +94,8 @@ export class UserPreferences extends Component {
 
   render() {
     return (
-      <div>
-        <div className="dialog-separator-after">
+      <div className="UserPreferences">
+        <div className="UserPreferences__selector">
           <ul className="nav nav-tabs">
             <li
               onClick={() => {

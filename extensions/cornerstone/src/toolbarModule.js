@@ -23,6 +23,17 @@ const TOOLBAR_BUTTON_TYPES = {
   BUILT_IN: 'builtIn',
 };
 
+const TOOLBAR_BUTTON_BEHAVIORS = {
+  CINE: 'CINE',
+  DOWNLOAD_SCREEN_SHOT: 'DOWNLOAD_SCREEN_SHOT',
+};
+
+/* TODO: Export enums through a extension manager. */
+const enums = {
+  TOOLBAR_BUTTON_TYPES,
+  TOOLBAR_BUTTON_BEHAVIORS,
+};
+
 const definitions = [
   {
     id: 'StackScroll',
@@ -102,7 +113,7 @@ const definitions = [
     //
     type: TOOLBAR_BUTTON_TYPES.BUILT_IN,
     options: {
-      behavior: 'CINE',
+      behavior: TOOLBAR_BUTTON_BEHAVIORS.CINE,
     },
   },
   {
@@ -220,11 +231,21 @@ const definitions = [
         //
         type: TOOLBAR_BUTTON_TYPES.BUILT_IN,
         options: {
-          behavior: 'DOWNLOAD_SCREEN_SHOT',
+          behavior: TOOLBAR_BUTTON_BEHAVIORS.DOWNLOAD_SCREEN_SHOT,
+          togglable: true,
         },
       },
     ],
   },
+  {
+    id: 'Exit2DMPR',
+    label: 'Exit 2D MPR',
+    icon: 'times',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'setCornerstoneLayout',
+    context: 'ACTIVE_VIEWPORT::VTK',
+  }
 ];
 
 export default {
