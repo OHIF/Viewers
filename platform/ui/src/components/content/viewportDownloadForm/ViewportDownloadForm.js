@@ -75,6 +75,7 @@ const ViewportDownloadForm = ({
     height: false,
     filename: false,
   });
+  const hasError = Object.values(error).includes(true);
 
   useEffect(() => {
     enableViewport(viewportElement);
@@ -362,8 +363,8 @@ const ViewportDownloadForm = ({
           />
         </div>
       ) : (
-        <div className="loading-image">{t('loadingPreview')}</div>
-      )}
+          <div className="loading-image">{t('loadingPreview')}</div>
+        )}
 
       <div className="actions">
         <div className="action-cancel">
@@ -373,7 +374,7 @@ const ViewportDownloadForm = ({
         </div>
         <div className="action-save">
           <button
-            disabled={Object.values(error).includes(true)}
+            disabled={hasError}
             onClick={downloadImage}
             className="btn btn-primary"
           >
