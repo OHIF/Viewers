@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { MODULE_TYPES } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+
+import { MODULE_TYPES } from '@ohif/core';
 import {
   ExpandableToolMenu,
   RoundedButtonGroup,
@@ -14,9 +15,7 @@ import './ToolbarRow.css';
 import { commandsManager, extensionManager } from './../App.js';
 
 import ConnectedCineDialog from './ConnectedCineDialog';
-import ConnectedViewportDownloadForm from './ConnectedViewportDownloadForm';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
-import ConnectedPluginSwitch from './ConnectedPluginSwitch.js';
 
 class ToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
@@ -124,7 +123,6 @@ class ToolbarRow extends Component {
           </div>
           {buttonComponents}
           <ConnectedLayoutButton />
-          <ConnectedPluginSwitch studies={this.props.studies} />
           <div
             className="pull-right m-t-1 rm-x-1"
             style={{ marginLeft: 'auto' }}
@@ -308,8 +306,7 @@ function _handleBuiltIn(button) {
   }
 
   if (options.behavior === 'DOWNLOAD_SCREEN_SHOT') {
-    modal.show({
-      content: ConnectedViewportDownloadForm,
+    commandsManager.runCommand('showDownloadViewportModal', {
       title: t('Download High Quality Image'),
     });
   }

@@ -238,7 +238,7 @@ class DicomHtmlViewport extends Component {
     } = this.props;
 
     if (viewportIndex !== activeViewportIndex) {
-      setViewportActive();
+      setViewportActive(viewportIndex);
     }
   };
 
