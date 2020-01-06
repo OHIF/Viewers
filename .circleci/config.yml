@@ -328,6 +328,7 @@ workflows:
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build
           start: yarn run test:e2e:serve
+          spec: 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
@@ -352,7 +353,7 @@ workflows:
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build:package
           start: yarn run test:e2e:serve
-          spec: 'cypress/integration/common/**/*'
+          spec: 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
@@ -381,7 +382,7 @@ workflows:
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build
           # start server --> verify running --> percy + chrome + cypress
-          command: yarn run test:e2e:dist
+          start: yarn run test:e2e:dist
           spec: 'cypress/integration/visual-regression/**/*'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
@@ -460,7 +461,6 @@ workflows:
           build: npx cross-env QUICK_BUILD=true yarn run build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist
-          spec: 'cypress/integration/visual-regression/**/*'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
