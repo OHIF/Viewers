@@ -14,6 +14,8 @@ if [ ! -z "$CLIENT_ID" ]
 	cp /usr/share/nginx/html/google.js /usr/share/nginx/html/app-config.js
 fi
 
+sed -i -- 's|ORTHANC_HOST|'${ORTHANC_HOST:-orthanc}'|g' /etc/nginx/conf.d/default.conf
+
 echo "Starting Nginx to serve the OHIF Viewer..."
 
 exec "$@"

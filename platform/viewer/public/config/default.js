@@ -8,11 +8,11 @@ window.config = {
   servers: {
     dicomWeb: [
       {
-        name: 'DCM4CHEE',
-        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        qidoSupportsIncludeField: true,
+        name: 'Orthanc',
+        wadoUriRoot: '/lw-workspace/proxy/dicom-web/wado',
+        qidoRoot: '/lw-workspace/proxy/dicom-web/',
+        wadoRoot: '/lw-workspace/proxy/dicom-web/',
+        qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
