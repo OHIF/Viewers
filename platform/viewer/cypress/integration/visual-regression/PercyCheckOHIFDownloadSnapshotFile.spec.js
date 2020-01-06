@@ -20,7 +20,6 @@ describe('Visual Regression - OHIF Download Snapshot File', () => {
     // Set Tablet resolution
     cy.viewport(1000, 660);
     // Visual comparison
-    cy.screenshot('Download Image Modal - Tablet experience');
     cy.percyCanvasSnapshot('Download Image Modal - Tablet experience');
   });
 
@@ -28,7 +27,6 @@ describe('Visual Regression - OHIF Download Snapshot File', () => {
     // Set Desktop resolution
     cy.viewport(1750, 720);
     // Visual comparison
-    cy.screenshot('Download Image Modal - Desktop experience');
     cy.percyCanvasSnapshot('Download Image Modal - Desktop experience');
   });
 
@@ -47,7 +45,6 @@ describe('Visual Regression - OHIF Download Snapshot File', () => {
     // Check image preview
     cy.get('[data-cy="image-preview"]').scrollIntoView();
     // Visual comparison
-    cy.screenshot('Download Image Modal - Show Annotations checked');
     cy.percyCanvasSnapshot('Download Image Modal - Show Annotations checked');
   });
 });

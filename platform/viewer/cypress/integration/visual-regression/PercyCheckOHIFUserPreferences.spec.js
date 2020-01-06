@@ -14,9 +14,6 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.get('@restoreBtn').scrollIntoView();
 
       // Visual comparison
-      cy.screenshot(
-        'User Preferences Modal - Hotkeys tab initial state in StudyList page'
-      );
       cy.percyCanvasSnapshot(
         'User Preferences Modal - Hotkeys tab initial state in StudyList page'
       );
@@ -32,9 +29,6 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.get('#language-select').should('be.visible');
 
       // Visual comparison
-      cy.screenshot(
-        'User Preferences Modal - General tab initial state in StudyList page'
-      );
       cy.percyCanvasSnapshot(
         'User Preferences Modal - General tab initial state in StudyList page'
       );
@@ -47,9 +41,6 @@ describe('Visual Regression - OHIF User Preferences', () => {
         .click();
 
       // Visual comparison
-      cy.screenshot(
-        'User Preferences Modal - Spanish selected in StudyList page'
-      );
       cy.percyCanvasSnapshot(
         'User Preferences Modal - Spanish selected in StudyList page'
       );
@@ -78,9 +69,6 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.get('@restoreBtn').scrollIntoView();
 
       // Visual comparison
-      cy.screenshot(
-        'User Preferences Modal - Hotkeys tab initial state in StudyViewer page'
-      );
       cy.percyCanvasSnapshot(
         'User Preferences Modal - Hotkeys tab initial state in StudyViewer page'
       );
@@ -93,9 +81,6 @@ describe('Visual Regression - OHIF User Preferences', () => {
         .should('have.class', 'active');
 
       // Visual comparison
-      cy.screenshot(
-        'User Preferences Modal - General tab initial state in StudyViewer page'
-      );
       cy.percyCanvasSnapshot(
         'User Preferences Modal - General tab initial state in StudyViewer page'
       );
@@ -108,9 +93,6 @@ describe('Visual Regression - OHIF User Preferences', () => {
         .click();
 
       // Visual comparison
-      cy.screenshot(
-        'User Preferences Modal - Spanish selected in StudyViewer page'
-      );
       cy.percyCanvasSnapshot(
         'User Preferences Modal - Spanish selected in StudyViewer page'
       );
@@ -147,9 +129,6 @@ describe('Visual Regression - OHIF User Preferences', () => {
         .click();
 
       // Visual comparison
-      cy.screenshot(
-        'User Preferences Modal - English selected in StudyViewer page'
-      );
       cy.percyCanvasSnapshot(
         'User Preferences Modal - English selected in StudyViewer page'
       );
@@ -199,7 +178,6 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.get('body').type(' ');
 
       // Visual comparison
-      cy.screenshot('Viewport Navigation - 2nd viewport inverted and rotated');
       cy.percyCanvasSnapshot(
         'Viewport Navigation - 2nd viewport inverted and rotated'
       );

@@ -388,9 +388,9 @@ workflows:
           no-workspace: true # Don't persist workspace
           post-steps:
             - store_artifacts:
-                path: platform/viewer/cypress/screenshots
+                path: platform/viewer/cypress/screenshots/visual-regression
             - store_artifacts:
-                path: platform/viewer/cypress/videos
+                path: platform/viewer/cypress/videos/visual-regression
           requires:
             - AWAIT_APPROVAL
 

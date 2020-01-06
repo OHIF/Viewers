@@ -18,7 +18,6 @@ describe('Visual Regression - OHIF Routes', function() {
       expect($route.status).to.be.eq(200);
     });
 
-    cy.screenshot('PTCT json study route');
     cy.percyCanvasSnapshot('PT/CT json study route');
   });
 });

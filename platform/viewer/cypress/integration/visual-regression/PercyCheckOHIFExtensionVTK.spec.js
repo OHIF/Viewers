@@ -36,7 +36,6 @@ describe('Visual Regression - OHIF VTK Extension', () => {
 
   it('checks if VTK buttons are displayed on the toolbar', () => {
     // Visual comparison
-    cy.screenshot('VTK initial state - Should display toolbar and 3 viewports');
     cy.percyCanvasSnapshot(
       'VTK initial state - Should display toolbar and 3 viewports'
     );
@@ -52,9 +51,6 @@ describe('Visual Regression - OHIF VTK Extension', () => {
       .trigger('mouseup');
 
     // Visual comparison
-    cy.screenshot(
-      "VTK Crosshairs tool - Should display crosshairs' green lines"
-    );
     cy.percyCanvasSnapshot(
       "VTK Crosshairs tool - Should display crosshairs' green lines"
     );
@@ -72,7 +68,6 @@ describe('Visual Regression - OHIF VTK Extension', () => {
       .trigger('mouseup', { which: 1 });
 
     // Visual comparison
-    cy.screenshot('VTK WWWC tool - Canvas should be bright');
     cy.percyCanvasSnapshot('VTK WWWC tool - Canvas should be bright');
   });
 
@@ -88,7 +83,6 @@ describe('Visual Regression - OHIF VTK Extension', () => {
       .trigger('mouseup', { which: 1 });
 
     // Visual comparison
-    cy.screenshot('VTK Rotate tool - Should rotate image');
     cy.percyCanvasSnapshot('VTK Rotate tool - Should rotate image');
   });
 });

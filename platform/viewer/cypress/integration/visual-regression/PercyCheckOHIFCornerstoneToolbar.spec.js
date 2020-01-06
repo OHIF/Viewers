@@ -25,7 +25,6 @@ describe('Visual Regression - OHIF Cornerstone Toolbar', () => {
       .trigger('mouseup', 'bottom');
 
     // Visual comparison
-    cy.screenshot('Pan tool moved the image inside the viewport');
     cy.percyCanvasSnapshot('Pan tool moved the image inside the viewport');
   });
 
@@ -39,7 +38,6 @@ describe('Visual Regression - OHIF Cornerstone Toolbar', () => {
     cy.get('[data-cy="invert"]').click();
 
     // Visual comparison
-    cy.screenshot('Invert tool - Should Invert Canvas');
     cy.percyCanvasSnapshot('Invert tool - Should Invert Canvas');
   });
 
@@ -55,7 +53,6 @@ describe('Visual Regression - OHIF Cornerstone Toolbar', () => {
       });
 
     // Visual comparison
-    cy.screenshot('Rotate tool - Should Rotate Image to Right');
     cy.percyCanvasSnapshot('Rotate tool - Should Rotate Image to Right');
   });
 
@@ -69,7 +66,6 @@ describe('Visual Regression - OHIF Cornerstone Toolbar', () => {
     cy.get('[data-cy="flip h"]').click();
 
     // Visual comparison
-    cy.screenshot('Flip H tool - Should Flip Image on Y axis');
     cy.percyCanvasSnapshot('Flip H tool - Should Flip Image on Y axis');
   });
 
@@ -83,7 +79,6 @@ describe('Visual Regression - OHIF Cornerstone Toolbar', () => {
     cy.get('[data-cy="flip v"]').click();
 
     // Visual comparison
-    cy.screenshot('Flip V tool - Should Flip Image on X axis');
     cy.percyCanvasSnapshot('Flip V tool - Should Flip Image on X axis');
   });
 });
