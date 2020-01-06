@@ -1,6 +1,6 @@
 window.config = {
   // default: '/'
-  routerBasename: '/',
+  routerBasename: '/lw-workspace/proxy/',
   whiteLabelling: {},
   extensions: [],
   showStudyList: true,
