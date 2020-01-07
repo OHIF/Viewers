@@ -390,7 +390,7 @@ workflows:
             - store_artifacts:
                 path: platform/viewer/cypress/screenshots/visual-regression
             - store_artifacts:
-                path: platform/viewer/cypress/videos/visual-regression
+                path: platform/viewer/cypress/videos
           requires:
             - AWAIT_APPROVAL
 
