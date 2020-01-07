@@ -114,7 +114,7 @@ const ViewportDownloadForm = ({
 
     newDimensions[dimension] = updatedDimension;
 
-    if (keepAspect) {
+    if (keepAspect && newDimensions[opositeDimension] !== '') {
       newDimensions[opositeDimension] = Math.round(newDimensions[dimension] * aspectMultiplier[opositeDimension]);
     }
 
