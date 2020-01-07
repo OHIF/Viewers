@@ -365,7 +365,9 @@ const ViewportDownloadForm = ({
           />
         </div>
       ) : (
-          <div className="loading-image">{t('loadingPreview')}</div>
+          <div className="loading-image">
+            <Icon name="circle-notch" className="icon-spin" />{t('loadingPreview')}
+          </div>
         )}
 
       <div className="actions">
