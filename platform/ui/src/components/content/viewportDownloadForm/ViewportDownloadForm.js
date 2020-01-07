@@ -40,7 +40,7 @@ const ViewportDownloadForm = ({
   maximumSize,
   canvasClass,
 }) => {
-  const [t] = useTranslation('Buttons');
+  const [t] = useTranslation('ViewportDownloadForm');
 
   const [filename, setFilename] = useState(DEFAULT_FILENAME);
   const [fileType, setFileType] = useState('jpg');
