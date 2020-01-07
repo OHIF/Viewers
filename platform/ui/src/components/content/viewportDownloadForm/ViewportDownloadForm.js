@@ -9,7 +9,8 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import './ViewportDownloadForm.styl';
-import { TextInput, Select } from '@ohif/ui';
+import { TextInput, Select, Icon } from '@ohif/ui';
+import classnames from 'classnames';
 
 const FILE_TYPE_OPTIONS = [
   {
@@ -246,42 +247,46 @@ const ViewportDownloadForm = ({
       <div className="title">{t('formTitle')}</div>
 
       <div className="file-info-container" data-cy="file-info-container">
-        <div className="col">
-          <div className="width">
-            <TextInput
-              type="number"
-              min={minimumSize}
-              max={maximumSize}
-              value={dimensions.width}
-              label={t('imageWidth')}
-              onChange={evt => onDimensionsChange(evt, 'width')}
-              data-cy="image-width"
-            />
-            {renderErrorHandler('width')}
-          </div>
-          <div className="height">
-            <TextInput
-              type="number"
-              min={minimumSize}
-              max={maximumSize}
-              value={dimensions.height}
-              label={t('imageHeight')}
-              onChange={evt => onDimensionsChange(evt, 'height')}
-              data-cy="image-height"
-            />
-            {renderErrorHandler('height')}
-          </div>
-          <div className="keep-aspect">
-            <label htmlFor="keep-aspect" className="form-check-label">
-              <input
-                id="keep-aspect"
-                type="checkbox"
-                className="form-check-input"
-                checked={keepAspect}
-                onChange={() => setKeepAspect(!keepAspect)}
+        <div className="dimension-wrapper">
+          <div className="dimensions">
+            <div className="width">
+              <TextInput
+                type="number"
+                min={minimumSize}
+                max={maximumSize}
+                value={dimensions.width}
+                label={t('imageWidth')}
+                onChange={evt => onDimensionsChange(evt, 'width')}
+                data-cy="image-width"
               />
-              {t('keepAspectRatio')}
-            </label>
+              {renderErrorHandler('width')}
+            </div>
+            <div className="height">
+              <TextInput
+                type="number"
+                min={minimumSize}
+                max={maximumSize}
+                value={dimensions.height}
+                label={t('imageHeight')}
+                onChange={evt => onDimensionsChange(evt, 'height')}
+                data-cy="image-height"
+              />
+              {renderErrorHandler('height')}
+            </div>
+          </div>
+          <div className="keep-aspect-wrapper">
+            <button
+              id="keep-aspect"
+              className={classnames(
+                "form-button btn",
+                keepAspect ? 'active' : ''
+              )}
+              checked={keepAspect}
+              alt={t('keepAspectRatio')}
+              onClick={() => setKeepAspect(!keepAspect)}
+            >
+              <Icon name={keepAspect ? 'link' : 'unlink'} />
+            </button>
           </div>
         </div>
 
@@ -348,8 +353,10 @@ const ViewportDownloadForm = ({
       </div>
 
       {viewportPreview.src ? (
-        <div className="preview">
-          <h4> {t('imagePreview')}</h4>
+        <div
+          className="preview"
+        >
+          <div className="preview-header"> {t('imagePreview')}</div>
           <img
             className="viewport-preview"
             src={viewportPreview.src}
