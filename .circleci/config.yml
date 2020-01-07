@@ -378,6 +378,7 @@ workflows:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           yarn: true
+          record: false
           store_artifacts: false
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build
