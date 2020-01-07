@@ -15,6 +15,7 @@ describe('Visual Regression - OHIF Cornerstone Hotkeys', () => {
     // Hotkey I
     cy.get('body').type('I');
     // Visual comparison
+    cy.screenshot('Hotkey I - Should Invert Image');
     cy.percyCanvasSnapshot('Hotkey I - Should Invert Image');
   });
 
@@ -26,6 +27,7 @@ describe('Visual Regression - OHIF Cornerstone Hotkeys', () => {
     cy.get('body').type(' ');
 
     // Visual comparison to make sure the 'inverted' image was reset
+    cy.screenshot('Hotkey SPACEBAR - Should Reset Image');
     cy.percyCanvasSnapshot('Hotkey SPACEBAR - Should Reset Image');
   });
 });
