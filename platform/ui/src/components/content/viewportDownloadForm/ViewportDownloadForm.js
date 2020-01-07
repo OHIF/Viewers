@@ -53,7 +53,10 @@ const ViewportDownloadForm = ({
   const [showAnnotations, setShowAnnotations] = useState(true);
 
   const [keepAspect, setKeepAspect] = useState(true);
-  const [lastImage, setLastImage] = useState();
+  const [aspectMultiplier, setAspectMultiplier] = useState({
+    width: 1,
+    height: 1
+  });
 
   const [viewportElement, setViewportElement] = useState();
   const [viewportElementDimensions, setViewportElementDimensions] = useState({
@@ -112,8 +115,7 @@ const ViewportDownloadForm = ({
     newDimensions[dimension] = updatedDimension;
 
     if (keepAspect) {
-      const multiplier = updatedDimension / lastImage[dimension];
-      newDimensions[opositeDimension] = Math.round(lastImage[opositeDimension] * multiplier);
+      newDimensions[opositeDimension] = Math.round(newDimensions[dimension] * aspectMultiplier[opositeDimension]);
     }
 
     // In current code, keepAspect is always `true`
@@ -144,6 +146,19 @@ const ViewportDownloadForm = ({
     return <div className="input-error">{error_messages[errorType]}</div>;
   };
 
+  const onKeepAspectToggle = () => {
+    const { width, height } = dimensions;
+    const aspectMultiplier = { ...aspectMultiplier };
+    if (!keepAspect) {
+      const base = Math.min(width, height);
+      aspectMultiplier.width = width / base;
+      aspectMultiplier.height = height / base;
+      setAspectMultiplier(aspectMultiplier);
+    }
+
+    setKeepAspect(!keepAspect);
+  }
+
   const validSize = value => (value >= minimumSize ? value : minimumSize);
   const loadAndUpdateViewports = useCallback(async () => {
     const { image, width: scaledWidth, height: scaledHeight } = await loadImage(
@@ -152,7 +167,6 @@ const ViewportDownloadForm = ({
       dimensions.width,
       dimensions.height,
     );
-    setLastImage(image);
 
     toggleAnnotations(showAnnotations, viewportElement);
 
@@ -281,11 +295,11 @@ const ViewportDownloadForm = ({
                 "form-button btn",
                 keepAspect ? 'active' : ''
               )}
-              checked={keepAspect}
+              data-cy="keep-aspect"
               alt={t('keepAspectRatio')}
-              onClick={() => setKeepAspect(!keepAspect)}
+              onClick={onKeepAspectToggle}
             >
-              <Icon name={keepAspect ? 'link' : 'unlink'} />
+              <Icon name={keepAspect ? 'link' : 'unlink'} alt={keepAspect ? 'Dismiss Aspect' : 'Keep Aspect'} />
             </button>
           </div>
         </div>
@@ -355,12 +369,14 @@ const ViewportDownloadForm = ({
       {viewportPreview.src ? (
         <div
           className="preview"
+          data-cy="image-preview"
         >
           <div className="preview-header"> {t('imagePreview')}</div>
           <img
             className="viewport-preview"
             src={viewportPreview.src}
             alt={t('imagePreview')}
+            data-cy="image-preview"
             data-cy="viewport-preview-img"
           />
         </div>

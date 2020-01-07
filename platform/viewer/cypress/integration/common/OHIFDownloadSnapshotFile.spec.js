@@ -16,7 +16,7 @@ describe('OHIF Download Snapshot File', () => {
       .click();
   });
 
-  it('checks displayed information for Tablet experience', function() {
+  it('checks displayed information for Tablet experience', function () {
     // Set Tablet resolution
     cy.viewport(1000, 660);
     // Visual comparison
@@ -24,7 +24,7 @@ describe('OHIF Download Snapshot File', () => {
     cy.percyCanvasSnapshot('Download Image Modal - Tablet experience');
   });
 
-  it('checks displayed information for Desktop experience', function() {
+  it('checks displayed information for Desktop experience', function () {
     // Set Desktop resolution
     cy.viewport(1750, 720);
     // Visual comparison
@@ -54,7 +54,7 @@ describe('OHIF Download Snapshot File', () => {
       .should('be.visible');
   });
 
-  it('cancel changes on download modal', function() {
+  it('cancel changes on download modal', function () {
     //Change Image Width, Filename and File Type
     cy.get('[data-cy="image-width"]')
       .clear()
@@ -93,7 +93,7 @@ describe('OHIF Download Snapshot File', () => {
   //   //Check error message
   // });
 
-  it('checks if "Show Annotations" checkbox will display annotations', function() {
+  it('checks if "Show Annotations" checkbox will display annotations', function () {
     // Close modal that is initially opened
     cy.get('[data-cy="close-button"]').click();
 
