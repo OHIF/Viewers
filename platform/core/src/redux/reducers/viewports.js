@@ -26,6 +26,40 @@ const DEFAULT_STATE = {
 };
 
 /**
+ *  Take the new number of rows and columns, delete all not used viewport data and also set
+ *  active viewport as default in case current one is not available anymore.
+ *
+ * @param {Object} action -
+ * @param {Number} action.numRows -
+ * @param {Number} action.numColumns -
+ * @param {Object} currentViewportSpecificData -
+ * @param {Number} currentActiveViewportIndex -
+ * @returns
+ */
+const handleViewportDeletions = (action, currentViewportSpecificData = {}, currentActiveViewportIndex) => {
+  const numberOfViewports = action.numRows * action.numColumns;
+  const viewportSpecificData = cloneDeep(currentViewportSpecificData);
+  let activeViewportIndex = currentActiveViewportIndex;
+
+  if (numberOfViewports < Object.keys(viewportSpecificData).length) {
+    Object.keys(viewportSpecificData).forEach(key => {
+      if (key >= numberOfViewports) {
+        delete viewportSpecificData[key];
+      }
+    });
+
+    if (!viewportSpecificData[currentActiveViewportIndex]) {
+      activeViewportIndex = DEFAULT_STATE.activeViewportIndex;
+    }
+  }
+
+  return {
+    viewportSpecificData,
+    activeViewportIndex,
+  }
+}
+
+/**
  * The definition of a viewport action.
  *
  * @typedef {Object} ViewportAction
@@ -59,11 +93,18 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case SET_VIEWPORT_LAYOUT: {
+      const {
+        viewportSpecificData,
+        activeViewportIndex,
+      } = handleViewportDeletions(action, state.viewportSpecificData, state.activeViewportIndex);
+
       return {
         ...state,
         numRows: action.numRows,
         numColumns: action.numColumns,
         layout: { viewports: [...action.viewports] },
+        viewportSpecificData,
+        activeViewportIndex,
       };
     }
 
@@ -73,12 +114,18 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case SET_VIEWPORT_LAYOUT_AND_DATA: {
+      const {
+        viewportSpecificData,
+        activeViewportIndex,
+      } = handleViewportDeletions(action, action.viewportSpecificData, state.activeViewportIndex);
+
       return {
         ...state,
         numRows: action.numRows,
         numColumns: action.numColumns,
         layout: { viewports: [...action.viewports] },
-        viewportSpecificData: cloneDeep(action.viewportSpecificData),
+        viewportSpecificData,
+        activeViewportIndex,
       };
     }
 
