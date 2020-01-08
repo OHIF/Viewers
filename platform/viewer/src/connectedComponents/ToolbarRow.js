@@ -88,13 +88,20 @@ class ToolbarRow extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    // TODO: This does not compare the arrays correctly
     const activeContextsChanged =
       prevProps.activeContexts !== this.props.activeContexts;
 
+    const newState = {};
+
     if (activeContextsChanged) {
-      this.setState({
-        toolbarButtons: _getVisibleToolbarButtons.call(this),
-      });
+      newState.toolbarButtons = _getVisibleToolbarButtons.call(this);
+
+      if (_isActiveContextChanged(prevProps.activeContexts, this.props.activeContexts)) {
+        newState.activeButtons = _getDefaultActiveButtons(newState.toolbarButtons);
+      }
+
+      this.setState(newState);
     }
   }
 
@@ -139,6 +146,24 @@ class ToolbarRow extends Component {
       </>
     );
   }
+}
+
+function _getDefaultActiveButtons(toolbarButtons) {
+  const activeButtons = [];
+
+  const defaultActiveButton = toolbarButtons.find(button => button.options && button.options.defaultActive);
+
+  if (defaultActiveButton)
+    activeButtons.push(defaultActiveButton);
+
+  return activeButtons;
+}
+
+function _isActiveContextChanged(prevActiveContexts, activeContexts) {
+  const hasSizeDifferences = prevActiveContexts.length !== activeContexts.length;
+  const hasSameElements = prevActiveContexts.every(e => activeContexts.includes(e));
+
+  return hasSizeDifferences || !hasSameElements;
 }
 
 function _getCustomButtonComponent(button, activeButtons) {
@@ -242,7 +267,7 @@ function _handleToolbarButtonClick(button, evt, props) {
   //       For the active tools after we apply our updates?
   if (button.type === 'setToolActive') {
     const toggables = activeButtons.filter(
-      ({ options }) => options && !options.togglable
+      ({ options }) => options && options.togglable
     );
     this.setState({ activeButtons: [...toggables, button] });
   } else if (button.type === 'builtIn') {
