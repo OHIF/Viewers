@@ -28,7 +28,10 @@ describe('Visual Regression - OHIF VTK Extension', () => {
 
   afterEach(() => {
     //Select Exit 2D MPR button
-    cy.get('[data-cy="exit 2d mpr"]').click();
+    cy.get('[data-cy="exit 2d mpr"]').should($btn => {
+      expect($btn).to.be.visible;
+      $btn.click();
+    });
     //Select 2D MPR button
     cy.get('[data-cy="2d mpr"]').click();
   });
