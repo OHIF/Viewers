@@ -99,15 +99,6 @@ const definitions = [
     commandOptions: { toolName: 'ArrowAnnotate' },
   },
   {
-    id: 'Angle',
-    label: 'Angle',
-    icon: 'angle-left',
-    //
-    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-    commandName: 'setToolActive',
-    commandOptions: { toolName: 'Angle' },
-  },
-  {
     id: 'Reset',
     label: 'Reset',
     icon: 'reset',
