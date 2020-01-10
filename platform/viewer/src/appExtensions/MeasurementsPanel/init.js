@@ -39,7 +39,7 @@ export default function init({
 
   const onMeasurementsChanged = (action, event) => {
     if (action == 'completed') {
-      showAnnotationDialog(event.detail.toolName);
+      showAnnotationDialog(event.detail.measurementData);
     }
 
     return MEASUREMENT_ACTION_MAP[action](event);
@@ -77,7 +77,7 @@ export default function init({
     );
   };
 
-  const showAnnotationDialog = toolName => {
+  const showAnnotationDialog = measurementData => {
     if (!UIDialogService) {
       console.warn('Unable to show dialog; no UI Dialog Service available.');
       return;
@@ -102,14 +102,23 @@ export default function init({
       showOverlay: true,
       contentProps: {
         onClose: () => UIDialogService.dismiss({ id: dialogId }),
-        onSubmit: value => {
-          console.log(value); // TODO when confirmed, send via HTTP POST
-          let csv = Object.keys(value)
-            .map(function(k) {
-              return value[k];
-            })
-            .join(',');
-          console.log(csv);
+        onSubmit: annotations => {
+          const dict = {
+            sopInstanceUid: measurementData.sopInstanceUid,
+            handles: {
+              start: {
+                x: measurementData.handles.start.x,
+                y: measurementData.handles.start.y,
+              },
+              end: {
+                x: measurementData.handles.end.x,
+                y: measurementData.handles.end.y,
+              },
+            },
+            annotations: annotations,
+          };
+          console.log(dict);
+          // TODO send via POST (HTTP), @roci
           UIDialogService.dismiss({ id: dialogId });
         },
       },
