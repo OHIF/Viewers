@@ -88,26 +88,17 @@ class ToolbarRow extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    // TODO: This does not compare the arrays correctly
-    const activeContextsChanged =
-      prevProps.activeContexts !== this.props.activeContexts;
-
     const newState = {};
+    const hasActiveContextChanged = _hasActiveContextChanged(
+      prevProps.activeContexts,
+      this.props.activeContexts
+    );
 
-    if (activeContextsChanged) {
+    if (hasActiveContextChanged) {
       newState.toolbarButtons = _getVisibleToolbarButtons.call(this);
-
-      if (
-        _isActiveContextChanged(
-          prevProps.activeContexts,
-          this.props.activeContexts
-        )
-      ) {
-        newState.activeButtons = _getDefaultActiveButtons(
-          newState.toolbarButtons
-        );
-      }
-
+      newState.activeButtons = _getDefaultActiveButtons(
+        newState.toolbarButtons
+      );
       this.setState(newState);
     }
   }
@@ -169,7 +160,7 @@ function _getDefaultActiveButtons(toolbarButtons) {
   return activeButtons;
 }
 
-function _isActiveContextChanged(prevActiveContexts, activeContexts) {
+function _hasActiveContextChanged(prevActiveContexts, activeContexts) {
   const hasSizeDifferences =
     prevActiveContexts.length !== activeContexts.length;
   const hasSameElements = prevActiveContexts.every(e =>
