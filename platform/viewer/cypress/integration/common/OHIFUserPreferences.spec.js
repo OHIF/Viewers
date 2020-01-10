@@ -24,10 +24,7 @@ describe('OHIF User Preferences', () => {
 
       // Visual comparison
       cy.screenshot(
-        'User Preferences Modal - Hotkeys tab initial state in Study Viewer page'
-      );
-      cy.percyCanvasSnapshot(
-        'User Preferences Modal - Hotkeys tab initial state in Study Viewer page'
+        'User Preferences Modal - Hotkeys tab initial state in Study List page'
       );
       cy.get('[data-cy="close-button"]').click();
     });
@@ -42,16 +39,10 @@ describe('OHIF User Preferences', () => {
 
       // Visual comparison
       cy.screenshot(
-        'User Preferences Modal - General tab initial state in Study Viewer page'
+        'User Preferences Modal - General tab initial state in Study List page'
       );
-      cy.percyCanvasSnapshot(
-        'User Preferences Modal - General tab initial state in Study Viewer page'
-      );
-      // Select Spanish and Save
-      cy.get('#language-select').select('Spanish');
-      cy.get('@saveBtn')
-        .scrollIntoView()
-        .click();
+      // Set language to Spanish and save
+      cy.setLanguage('Spanish');
 
       // Header should be translated to Spanish
       cy.get('.research-use')
@@ -161,11 +152,8 @@ describe('OHIF User Preferences', () => {
       // Go to General tab
       cy.get('@userPreferencesGeneralTab').click();
 
-      // Select Spanish and Save
-      cy.get('#language-select').select('Spanish');
-      cy.get('@saveBtn')
-        .scrollIntoView()
-        .click();
+      // Set language to Spanish
+      cy.setLanguage('Spanish');
 
       // Go to Study Viewer page
       cy.openStudy('MISTER^MR');
@@ -191,7 +179,9 @@ describe('OHIF User Preferences', () => {
         .should('contain.text', 'Preferencias');
 
       // Check if new hotkey is working on viewport
-      cy.get('body').type('{shift}Q', { release: false });
+      cy.get('body').type('{shift}Q', {
+        release: false,
+      });
       cy.get('@viewportInfoMidTop').should('contains.text', 'R');
     });
   });
@@ -225,10 +215,7 @@ describe('OHIF User Preferences', () => {
 
       // Visual comparison
       cy.screenshot(
-        'User Preferences Modal - Hotkeys tab initial state in Study List page'
-      );
-      cy.percyCanvasSnapshot(
-        'User Preferences Modal - Hotkeys tab initial state in Study List page'
+        'User Preferences Modal - Hotkeys tab initial state in Study Viewer page'
       );
       cy.get('[data-cy="close-button"]').click(); //close User Preferences modal
     });
@@ -243,16 +230,10 @@ describe('OHIF User Preferences', () => {
 
       // Visual comparison
       cy.screenshot(
-        'User Preferences Modal - General tab initial state in Study List page'
+        'User Preferences Modal - General tab initial state in Study Viewer page'
       );
-      cy.percyCanvasSnapshot(
-        'User Preferences Modal - General tab initial state in Study List page'
-      );
-      // Select Spanish and Save
-      cy.get('#language-select').select('Spanish');
-      cy.get('@saveBtn')
-        .scrollIntoView()
-        .click();
+      // Set language to Spanish
+      cy.setLanguage('Spanish');
 
       // Header should be translated to Spanish
       cy.get('.research-use')
@@ -310,19 +291,11 @@ describe('OHIF User Preferences', () => {
       // Language dropdown should be displayed
       cy.get('#language-select').should('be.visible');
 
-      // Select Spanish and Save
-      cy.get('#language-select').select('Spanish');
-      cy.get('@saveBtn')
-        .scrollIntoView()
-        .click();
+      // Set language to Spanish
+      cy.setLanguage('Spanish');
 
-      //Open Preferences again
-      cy.get('[data-cy="options-menu"]')
-        .scrollIntoView()
-        .click();
-      cy.get('[data-cy="dd-item-menu"]')
-        .last()
-        .click();
+      // Open User Preferences modal
+      cy.openPreferences();
 
       // Go to general tab
       cy.get('@userPreferencesGeneralTab').click();
@@ -437,9 +410,7 @@ describe('OHIF User Preferences', () => {
 
       // Visual comparison
       cy.screenshot('Viewport Navigation - 2nd viewport inverted and rotated');
-      cy.percyCanvasSnapshot(
-        'Viewport Navigation - 2nd viewport inverted and rotated'
-      );
+
       // Set 1 viewport layout
       cy.setLayout(1, 1);
     });

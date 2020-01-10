@@ -119,7 +119,6 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     // Visual comparison
     cy.screenshot('Pan tool moved the image inside the viewport');
-    cy.percyCanvasSnapshot('Pan tool moved the image inside the viewport');
   });
 
   it('checks if Length annotation can be added on viewport and on measurements panel', () => {
@@ -471,7 +470,6 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     // Visual comparison
     cy.screenshot('Invert tool - Should Invert Canvas');
-    cy.percyCanvasSnapshot('Invert tool - Should Invert Canvas');
   });
 
   it('check if Rotate tool will change the image orientation in the viewport', () => {
@@ -487,7 +485,6 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     // Visual comparison
     cy.screenshot('Rotate tool - Should Rotate Image to Right');
-    cy.percyCanvasSnapshot('Rotate tool - Should Rotate Image to Right');
   });
 
   it('check if Flip H tool will flip the image horizontally in the viewport', () => {
@@ -501,7 +498,6 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     // Visual comparison
     cy.screenshot('Flip H tool - Should Flip Image on Y axis');
-    cy.percyCanvasSnapshot('Flip H tool - Should Flip Image on Y axis');
   });
 
   it('check if Flip V tool will flip the image vertically in the viewport', () => {
@@ -515,6 +511,5 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     // Visual comparison
     cy.screenshot('Flip V tool - Should Flip Image on X axis');
-    cy.percyCanvasSnapshot('Flip V tool - Should Flip Image on X axis');
   });
 });
