@@ -21,7 +21,6 @@ describe('OHIF Download Snapshot File', () => {
     cy.viewport(1000, 660);
     // Visual comparison
     cy.screenshot('Download Image Modal - Tablet experience');
-    cy.percyCanvasSnapshot('Download Image Modal - Tablet experience');
   });
 
   it('checks displayed information for Desktop experience', function () {
@@ -29,7 +28,6 @@ describe('OHIF Download Snapshot File', () => {
     cy.viewport(1750, 720);
     // Visual comparison
     cy.screenshot('Download Image Modal - Desktop experience');
-    cy.percyCanvasSnapshot('Download Image Modal - Desktop experience');
     //Check if all elements are displayed
     cy.get('[data-cy=modal-header]')
       .as('downloadImageModal')
@@ -109,7 +107,6 @@ describe('OHIF Download Snapshot File', () => {
     cy.get('[data-cy="image-preview"]').scrollIntoView();
     // Visual comparison
     cy.screenshot('Download Image Modal - Show Annotations checked');
-    cy.percyCanvasSnapshot('Download Image Modal - Show Annotations checked');
     //Compare classes that exists on Image Preview with Annotations and Without Annotation
     cy.get('[data-cy="modal-content"]')
       .find('canvas')
