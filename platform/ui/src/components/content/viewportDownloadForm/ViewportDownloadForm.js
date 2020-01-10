@@ -100,7 +100,7 @@ const ViewportDownloadForm = ({
    * @param {string} dimension - "height" | "width"
    */
   const onDimensionsChange = (event, dimension) => {
-    const opositeDimension = dimension === 'height' ? 'width' : 'height';
+    const oppositeDimension = dimension === 'height' ? 'width' : 'height';
     const sanitizedTargetValue = event.target.value.replace(/\D/, '');
     const isEmpty = sanitizedTargetValue === '';
     const newDimensions = { ...dimensions };
@@ -114,9 +114,9 @@ const ViewportDownloadForm = ({
 
     newDimensions[dimension] = updatedDimension;
 
-    if (keepAspect && newDimensions[opositeDimension] !== '') {
-      newDimensions[opositeDimension] = Math.round(
-        newDimensions[dimension] * aspectMultiplier[opositeDimension]
+    if (keepAspect && newDimensions[oppositeDimension] !== '') {
+      newDimensions[oppositeDimension] = Math.round(
+        newDimensions[dimension] * aspectMultiplier[oppositeDimension]
       );
     }
 
@@ -163,7 +163,7 @@ const ViewportDownloadForm = ({
 
   const validSize = value => (value >= minimumSize ? value : minimumSize);
   const loadAndUpdateViewports = useCallback(async () => {
-    const { image, width: scaledWidth, height: scaledHeight } = await loadImage(
+    const { width: scaledWidth, height: scaledHeight } = await loadImage(
       activeViewport,
       viewportElement,
       dimensions.width,
