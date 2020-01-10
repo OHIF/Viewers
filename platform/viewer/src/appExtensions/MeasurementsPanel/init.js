@@ -83,11 +83,11 @@ export default function init({
       return;
     }
 
-    switch (toolName) {
-      case 'RectangleRoi': // TODO substitute by an ANNOTATION_TYPE env. var.
+    switch (process.env.ANNOTATION_TYPE) {
+      case 'MAMA':
         var content = SimpleDialog.AnnotationMAMADialog;
         break;
-      case 'RectangleRoi':
+      case 'APA':
         var content = SimpleDialog.AnnotationAPADialog;
         break;
       default:

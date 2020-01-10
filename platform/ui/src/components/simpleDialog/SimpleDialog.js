@@ -60,7 +60,7 @@ class SimpleDialog extends Component {
     };
 
     return translationsAreReady ? (
-      <div className="AnnotationDialog">
+      <div className="AnnotationMAMADialog">
         <SimpleDialog
           headerTitle={t('annotations')}
           onClose={onClose}

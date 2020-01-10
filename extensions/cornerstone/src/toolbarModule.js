@@ -72,17 +72,8 @@ const definitions = [
     commandOptions: { toolName: 'Pan' },
   },
   {
-    id: 'MAMA',
-    label: 'MAMA',
-    icon: 'crosshairs',
-    //
-    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-    commandName: 'setToolActive',
-    commandOptions: { toolName: 'RectangleRoi' },
-  },
-  {
-    id: 'APA',
-    label: 'APA',
+    id: process.env.ANNOTATION_TYPE,
+    label: process.env.ANNOTATION_TYPE,
     icon: 'crosshairs',
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
