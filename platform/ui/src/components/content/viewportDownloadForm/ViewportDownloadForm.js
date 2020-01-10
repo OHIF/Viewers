@@ -55,7 +55,7 @@ const ViewportDownloadForm = ({
   const [keepAspect, setKeepAspect] = useState(true);
   const [aspectMultiplier, setAspectMultiplier] = useState({
     width: 1,
-    height: 1
+    height: 1,
   });
 
   const [viewportElement, setViewportElement] = useState();
@@ -96,9 +96,9 @@ const ViewportDownloadForm = ({
   };
 
   /**
-  * @param {object} event - Input change event
-  * @param {string} dimension - "height" | "width"
-  */
+   * @param {object} event - Input change event
+   * @param {string} dimension - "height" | "width"
+   */
   const onDimensionsChange = (event, dimension) => {
     const opositeDimension = dimension === 'height' ? 'width' : 'height';
     const sanitizedTargetValue = event.target.value.replace(/\D/, '');
@@ -115,7 +115,9 @@ const ViewportDownloadForm = ({
     newDimensions[dimension] = updatedDimension;
 
     if (keepAspect && newDimensions[opositeDimension] !== '') {
-      newDimensions[opositeDimension] = Math.round(newDimensions[dimension] * aspectMultiplier[opositeDimension]);
+      newDimensions[opositeDimension] = Math.round(
+        newDimensions[dimension] * aspectMultiplier[opositeDimension]
+      );
     }
 
     // In current code, keepAspect is always `true`
@@ -157,7 +159,7 @@ const ViewportDownloadForm = ({
     }
 
     setKeepAspect(!keepAspect);
-  }
+  };
 
   const validSize = value => (value >= minimumSize ? value : minimumSize);
   const loadAndUpdateViewports = useCallback(async () => {
@@ -165,7 +167,7 @@ const ViewportDownloadForm = ({
       activeViewport,
       viewportElement,
       dimensions.width,
-      dimensions.height,
+      dimensions.height
     );
 
     toggleAnnotations(showAnnotations, viewportElement);
@@ -173,7 +175,7 @@ const ViewportDownloadForm = ({
     const scaledDimensions = {
       height: validSize(scaledHeight),
       width: validSize(scaledWidth),
-    }
+    };
 
     setViewportElementDimensions(scaledDimensions);
     setDownloadCanvas(state => ({
@@ -197,7 +199,6 @@ const ViewportDownloadForm = ({
       width: validSize(viewportElementWidth),
       height: validSize(viewportElementHeight),
     }));
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [
     activeViewport,
     viewportElement,
@@ -229,8 +230,6 @@ const ViewportDownloadForm = ({
       refreshViewport.current = null;
       loadAndUpdateViewports();
     }, REFRESH_VIEWPORT_TIMEOUT);
-
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [
     activeViewport,
     viewportElement,
@@ -292,14 +291,17 @@ const ViewportDownloadForm = ({
             <button
               id="keep-aspect"
               className={classnames(
-                "form-button btn",
+                'form-button btn',
                 keepAspect ? 'active' : ''
               )}
               data-cy="keep-aspect"
               alt={t('keepAspectRatio')}
               onClick={onKeepAspectToggle}
             >
-              <Icon name={keepAspect ? 'link' : 'unlink'} alt={keepAspect ? 'Dismiss Aspect' : 'Keep Aspect'} />
+              <Icon
+                name={keepAspect ? 'link' : 'unlink'}
+                alt={keepAspect ? 'Dismiss Aspect' : 'Keep Aspect'}
+              />
             </button>
           </div>
         </div>
@@ -367,10 +369,7 @@ const ViewportDownloadForm = ({
       </div>
 
       {viewportPreview.src ? (
-        <div
-          className="preview"
-          data-cy="image-preview"
-        >
+        <div className="preview" data-cy="image-preview">
           <div className="preview-header"> {t('imagePreview')}</div>
           <img
             className="viewport-preview"
@@ -381,10 +380,11 @@ const ViewportDownloadForm = ({
           />
         </div>
       ) : (
-          <div className="loading-image">
-            <Icon name="circle-notch" className="icon-spin" />{t('loadingPreview')}
-          </div>
-        )}
+        <div className="loading-image">
+          <Icon name="circle-notch" className="icon-spin" />
+          {t('loadingPreview')}
+        </div>
+      )}
 
       <div className="actions">
         <div className="action-cancel">
