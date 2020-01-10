@@ -1,6 +1,9 @@
 # Viewer: Configuration
 
-We maintain a number of common viewer application configurations at [`<root>/platform/viewer/public/configs`][config-dir]. How these values are passed to the viewer depend on how it's deployed, but the two most common paths are:
+We maintain a number of common viewer application configurations at
+[`<root>/platform/viewer/public/configs`][config-dir]. How these values are
+passed to the viewer depend on how it's deployed, but the two most common paths
+are:
 
 - `index.html` looks for `https://your-website.com/app-config.js` OR
 - `index.html` passes the values to `OHIF.installViewer()`
@@ -42,8 +45,16 @@ window.config = {
       keys: ['v'],
     },
   ],
-  // Config to pass to the bundled cornerstone extension
-  cornerstoneExtensionConfig: {},
+  /* Configuration passed to the bundled cornerstone extension
+   *
+   * The cornerstone extension is currently tightly coupled to the platform.
+   * Until we're able to decouple it, this key will serve as a workaround to
+   * pass it configuration.
+   */
+  cornerstoneExtensionConfig: {
+    /* Whether to show/hide annotation "handles" */
+    hideHandles: true,
+  },
 };
 ```
 

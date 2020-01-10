@@ -80,6 +80,7 @@ export default function init({
       id: 'labelling',
       isDraggable: false,
       showOverlay: true,
+      centralize: true,
       content: LabellingFlow,
       contentProps: {
         measurementData,

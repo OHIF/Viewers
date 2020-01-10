@@ -24,10 +24,9 @@ describe('OHIF VTK Extension', () => {
     cy.get('[data-cy="thumbnail-list"]')
       .contains('CT WB 5.0  B35f')
       .drag('.viewport-drop-target')
-      .wait(1000); // TODO: Once issue #1167 is fixed, the wait command should be removed. (https://github.com/OHIF/Viewers/issues/1167)
 
     //Select 2D MPR button
-    cy.get('.PluginSwitch > .toolbar-button').click();
+    cy.get('[data-cy="2d mpr"]').click();
 
     //Wait Reformatting Images
     cy.waitVTKReformatting();
@@ -58,9 +57,6 @@ describe('OHIF VTK Extension', () => {
 
     // Visual comparison
     cy.screenshot('VTK initial state - Should display toolbar and 3 viewports');
-    cy.percyCanvasSnapshot(
-      'VTK initial state - Should display toolbar and 3 viewports'
-    );
   });
 
   it('checks Crosshairs tool', () => {
@@ -74,9 +70,6 @@ describe('OHIF VTK Extension', () => {
 
     // Visual comparison
     cy.screenshot(
-      "VTK Crosshairs tool - Should display crosshairs' green lines"
-    );
-    cy.percyCanvasSnapshot(
       "VTK Crosshairs tool - Should display crosshairs' green lines"
     );
   });
@@ -102,7 +95,6 @@ describe('OHIF VTK Extension', () => {
 
     // Visual comparison
     cy.screenshot('VTK WWWC tool - Canvas should be bright');
-    cy.percyCanvasSnapshot('VTK WWWC tool - Canvas should be bright');
   }); */
 
   it('checks Rotate tool', () => {
@@ -118,6 +110,5 @@ describe('OHIF VTK Extension', () => {
 
     // Visual comparison
     cy.screenshot('VTK Rotate tool - Should rotate image');
-    cy.percyCanvasSnapshot('VTK Rotate tool - Should rotate image');
   });
 });

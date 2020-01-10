@@ -85,6 +85,20 @@ Tools can be configured through extension configuration using the tools key:
   ...
 ```
 
+## Annotate Tools Configuration
+
+*We currently support one property for annotation tools.*
+
+### Hide handles
+This extension configuration allows you to toggle on/off handle rendering for all annotate tools:
+
+```js
+  ...
+  cornerstoneExtensionConfig: {
+    hideHandles: true,
+  },
+  ...
+
 ## Resources
 
 ### Repositories

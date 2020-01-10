@@ -234,7 +234,7 @@ const commandsModule = ({ commandsManager }) => {
           },
         },
         {
-          // Sagital
+          // Sagittal
           orientation: {
             sliceNormal: [1, 0, 0],
             viewUp: [0, 0, 1],

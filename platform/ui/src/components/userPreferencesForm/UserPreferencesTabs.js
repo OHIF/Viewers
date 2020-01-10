@@ -43,6 +43,7 @@ const renderTabsHeader = (tabs, activeTabIndex, onHeaderChanged) => {
     ? tabs.map((tab, index) => {
         const { name, hidden = false } = tab;
 
+        const cypressSelectorId = name.toLowerCase();
         const tabClass =
           index === activeTabIndex ? 'nav-link active' : 'nav-link';
         return !hidden ? (
@@ -52,6 +53,7 @@ const renderTabsHeader = (tabs, activeTabIndex, onHeaderChanged) => {
               onHeaderChanged(index);
             }}
             className={tabClass}
+            data-cy={cypressSelectorId}
           >
             <button>{name}</button>
           </li>

@@ -5962,10 +5962,10 @@ cornerstone-math@^0.1.8:
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.8.tgz#68ab1f9e4fdcd7c5cb23a0d2eb4263f9f894f1c5"
   integrity sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw==
 
-cornerstone-tools@^4.8.0:
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-4.8.0.tgz#1972546e13e9a09b8aa25a3541ffc345283eec01"
-  integrity sha512-PO7/jYbVwc+ddF9JW/o/JXqNPFZV7y1PUTzlRATC9FeXLXNKIkSFBCF5SA1EGJoyjzRYGDBgTZuTYhfm96AlAA==
+cornerstone-tools@^4.9.0:
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-4.9.0.tgz#8b68603c32aceb84baf860f4dd0d36ac176e8b75"
+  integrity sha512-6yHzXm4qn7VuHMRiaV/oS3khdMidtTho6P1OIYICqZ2pmorsH8jN8LvNgqz+Ky9Nf+wvrvi7ul8ZzcD1sJTkWA==
   dependencies:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.7"
@@ -6539,6 +6539,16 @@ dcmjs@^0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.8.2.tgz#e1107273764de0a3052244b79d999fd870e58650"
   integrity sha512-HEd1Rq12qxZXVXr5B4xgl/foCWaXxioO5v42FLgiUjKrbQR6iKIVcZsmE+3/AvAurcHiQFfW5vk5K4AY7eAp5A==
+  dependencies:
+    "@babel/polyfill" "^7.6.0"
+    "@babel/runtime" "^7.6.3"
+    loglevelnext "^3.0.1"
+    ndarray "^1.0.18"
+
+dcmjs@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.8.3.tgz#fff1b030b6cb2d6e2afb1aa99840bfa853724c31"
+  integrity sha512-eXQjqgtJf9+oseraKDNDm2A5F3Th4B2GJeZtjStj0IFXxjlbPOzdq3PfCyxdwfRaKOBIwr0q3YK/Vfs2CpQY8Q==
   dependencies:
     "@babel/polyfill" "^7.6.0"
     "@babel/runtime" "^7.6.3"

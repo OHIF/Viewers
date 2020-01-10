@@ -3,6 +3,103 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.7...@ohif/viewer@3.3.8) (2020-01-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.3.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.6...@ohif/viewer@3.3.7) (2020-01-08)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.3.6](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.5...@ohif/viewer@3.3.6) (2020-01-07)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.3.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.4...@ohif/viewer@3.3.5) (2020-01-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.3.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.3...@ohif/viewer@3.3.4) (2019-12-30)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.3.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.2...@ohif/viewer@3.3.3) (2019-12-20)
+
+
+### Bug Fixes
+
+* 🐛 1241: Make Plugin switch part of ToolbarModule ([#1322](https://github.com/OHIF/Viewers/issues/1322)) ([6540e36](https://github.com/OHIF/Viewers/commit/6540e36818944ac2eccc696186366ae495b33a04)), closes [#1241](https://github.com/OHIF/Viewers/issues/1241)
+
+
+
+
+
+## [3.3.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.1...@ohif/viewer@3.3.2) (2019-12-20)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.3.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.0...@ohif/viewer@3.3.1) (2019-12-20)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [3.3.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.2.2...@ohif/viewer@3.3.0) (2019-12-20)
+
+
+### Features
+
+* 🎸 Configuration so viewer tools can nix handles ([#1304](https://github.com/OHIF/Viewers/issues/1304)) ([63594d3](https://github.com/OHIF/Viewers/commit/63594d36b0bdba59f0901095aed70b75fb05172d)), closes [#1223](https://github.com/OHIF/Viewers/issues/1223)
+
+
+
+
+
+## [3.2.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.2.1...@ohif/viewer@3.2.2) (2019-12-19)
+
+
+### Bug Fixes
+
+* 🐛 Fix drag-n-drop of local files into OHIF ([#1319](https://github.com/OHIF/Viewers/issues/1319)) ([23305ce](https://github.com/OHIF/Viewers/commit/23305cec9c0f514e73a8dd17f984ffc87ad8d131)), closes [#1307](https://github.com/OHIF/Viewers/issues/1307)
+
+
+
+
+
+## [3.2.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.2.0...@ohif/viewer@3.2.1) (2019-12-18)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 # [3.2.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.1.12...@ohif/viewer@3.2.0) (2019-12-16)
 
 

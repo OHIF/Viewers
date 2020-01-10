@@ -226,7 +226,7 @@ describe('ExtensionManager.js', () => {
           return {
             definitions: {
               exampleDefinition: {
-                commandFn: () => {},
+                commandFn: () => { },
                 storeContexts: [],
                 options: {},
               },

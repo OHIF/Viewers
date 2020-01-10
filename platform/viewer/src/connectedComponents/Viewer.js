@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import { MODULE_TYPES } from '@ohif/core';
-import OHIF from '@ohif/core';
+import OHIF, { DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedHeader from './ConnectedHeader.js';
@@ -12,7 +12,6 @@ import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
-import DICOMSR from '../lib/DICOMSR';
 
 // Contexts
 import WhiteLabellingContext from '../context/WhiteLabellingContext.js';

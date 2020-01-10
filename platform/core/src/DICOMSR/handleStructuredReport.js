@@ -1,10 +1,10 @@
 import * as dcmjs from 'dcmjs';
-import { DICOMWeb } from '@ohif/core';
+import { api } from 'dicomweb-client';
+
+import DICOMWeb from '../DICOMWeb';
 import parseDicomStructuredReport from './parseDicomStructuredReport';
 import parseMeasurementsData from './parseMeasurementsData';
 import getAllDisplaySets from './utils/getAllDisplaySets';
-
-import { api } from 'dicomweb-client';
 
 const VERSION_NAME = 'dcmjs-0.0';
 const TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.1';
@@ -34,7 +34,10 @@ const retrieveMeasurementFromSR = async (series, studies, serverUrl) => {
 
   const part10SRArrayBuffer = await dicomWeb.retrieveInstance(options);
   const displaySets = getAllDisplaySets(studies);
-  const measurementsData = parseDicomStructuredReport(part10SRArrayBuffer, displaySets);
+  const measurementsData = parseDicomStructuredReport(
+    part10SRArrayBuffer,
+    displaySets
+  );
 
   return measurementsData;
 };
@@ -47,13 +50,10 @@ const retrieveMeasurementFromSR = async (series, studies, serverUrl) => {
  * @returns {Promise}
  */
 const stowSRFromMeasurements = async (measurements, serverUrl) => {
-  const { dataset } = parseMeasurementsData(
-    measurements
-  );
+  const { dataset } = parseMeasurementsData(measurements);
   const { DicomMetaDictionary, DicomDict } = dcmjs.data;
   const meta = {
-    FileMetaInformationVersion:
-      dataset._meta.FileMetaInformationVersion.Value,
+    FileMetaInformationVersion: dataset._meta.FileMetaInformationVersion.Value,
     MediaStorageSOPClassUID: dataset.SOPClassUID,
     MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
     TransferSyntaxUID: TRANSFER_SYNTAX_UID,
