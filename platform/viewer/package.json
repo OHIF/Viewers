@@ -1,6 +1,6 @@
 {
   "name": "@ohif/viewer",
-  "version": "3.3.7",
+  "version": "3.3.8",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "dev:viewer": "yarn run dev",
     "start": "yarn run dev",
     "test:e2e": "cypress open",
-    "test:e2e:ci": "percy exec -- cypress run --record --browser chrome",
+    "test:e2e:ci": "percy exec -- cypress run --config video=false --record --browser chrome --spec 'cypress/integration/visual-regression/**/*'",
     "test:e2e:dist": "start-server-and-test test:e2e:serve http://localhost:3000 test:e2e:ci",
     "test:e2e:serve": "serve -n -l 3000 -s dist",
     "test:unit": "jest --watchAll",
@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@ffmpeg-installer/ffmpeg": "1.0.20",
     "@ohif/core": "^2.3.2",
     "@ohif/extension-cornerstone": "^2.2.1",
     "@ohif/extension-dicom-html": "^1.1.0",
