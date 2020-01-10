@@ -39,7 +39,7 @@ export default function init({
 
   const onMeasurementsChanged = (action, event) => {
     if (action == 'completed') {
-      showAnnotationDialog();
+      showAnnotationDialog(event.detail.toolName);
     }
 
     return MEASUREMENT_ACTION_MAP[action](event);
@@ -77,22 +77,39 @@ export default function init({
     );
   };
 
-  const showAnnotationDialog = () => {
+  const showAnnotationDialog = toolName => {
     if (!UIDialogService) {
       console.warn('Unable to show dialog; no UI Dialog Service available.');
       return;
     }
 
+    switch (toolName) {
+      case 'RectangleRoi': // TODO substitute by an ANNOTATION_TYPE env. var.
+        var content = SimpleDialog.AnnotationMAMADialog;
+        break;
+      case 'RectangleRoi':
+        var content = SimpleDialog.AnnotationAPADialog;
+        break;
+      default:
+        return;
+    }
+
     let dialogId = UIDialogService.create({
       centralize: true,
       isDraggable: false,
-      content: SimpleDialog.AnnotationDialog,
+      content: content,
       useLastPosition: false,
       showOverlay: true,
       contentProps: {
         onClose: () => UIDialogService.dismiss({ id: dialogId }),
         onSubmit: value => {
-          console.log(value);
+          console.log(value); // TODO when confirmed, send via HTTP POST
+          let csv = Object.keys(value)
+            .map(function(k) {
+              return value[k];
+            })
+            .join(',');
+          console.log(csv);
           UIDialogService.dismiss({ id: dialogId });
         },
       },

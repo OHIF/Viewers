@@ -48,7 +48,7 @@ class SimpleDialog extends Component {
     );
   };
 
-  static AnnotationDialog = ({ onClose, onSubmit }) => {
+  static AnnotationMAMADialog = ({ onClose, onSubmit }) => {
     let value = {};
 
     const { t, ready: translationsAreReady } = useTranslation(
@@ -79,6 +79,7 @@ class SimpleDialog extends Component {
             <option value="non-malignant">{t('benign')}</option>
             <option value="malignant">{t('malignant')}</option>
           </select>
+          <br />
           <label htmlFor="margins" className="simpleDialogLabelFor">
             {t('margins')}
           </label>
@@ -95,6 +96,7 @@ class SimpleDialog extends Component {
             <option value="microlobulated">{t('microlobulated')}</option>
             <option value="espiculado">{t('espiculado')}</option>
           </select>
+          <br />
           <label htmlFor="density" className="simpleDialogLabelFor">
             {t('density')}
           </label>
@@ -109,6 +111,7 @@ class SimpleDialog extends Component {
             <option value="similar">{t('similar')}</option>
             <option value="inferior">{t('inferior')}</option>
           </select>
+          <br />
           <label htmlFor="morphology" className="simpleDialogLabelFor">
             {t('morphology')}
           </label>
@@ -123,6 +126,60 @@ class SimpleDialog extends Component {
             <option value="oval">{t('oval')}</option>
             <option value="lobulate">{t('lobulate')}</option>
             <option value="irregular">{t('irregular')}</option>
+          </select>
+        </SimpleDialog>
+      </div>
+    ) : null;
+  };
+
+  static AnnotationAPADialog = ({ onClose, onSubmit }) => {
+    let value = {};
+
+    const { t, ready: translationsAreReady } = useTranslation(
+      'AnnotationDialog'
+    );
+
+    const onSubmitHandler = () => {
+      onSubmit(value);
+    };
+
+    return translationsAreReady ? (
+      <div className="AnnotationAPADialog">
+        <SimpleDialog
+          headerTitle={t('apa-annotations')}
+          onClose={onClose}
+          onConfirm={onSubmitHandler}
+        >
+          <label htmlFor="type" className="simpleDialogLabelFor">
+            {t('type')}
+          </label>
+          <select
+            name="type"
+            id="type"
+            className="simpleDialogSelect"
+            onChange={event => (value.type = event.target.value)}
+          >
+            <option value="undefined">--</option>
+            <option value="CDI">CDI</option>
+            <option value="CLI">CLI</option>
+            <option value="CDS">CDS</option>
+            <option value="FA">FA</option>
+            <option value="CLS">CLS</option>
+          </select>
+          <br />
+          <label htmlFor="histologicalGrade" className="simpleDialogLabelFor">
+            {t('histological-grade')}
+          </label>
+          <select
+            name="histologicalGrade"
+            id="histologicalGrade"
+            className="simpleDialogSelect"
+            onChange={event => (value.histologicalGrade = event.target.value)}
+          >
+            <option value="undefined">--</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
           </select>
         </SimpleDialog>
       </div>

@@ -17,5 +17,8 @@
   "round": "Redonda",
   "oval": "Oval",
   "lobulate": "Lobulada",
-  "irregular": "Irregular"
+  "irregular": "Irregular",
+  "apa-annotations": "Anotaciones APA",
+  "type": "Tipo",
+  "histological-grade": "Grado histológico"
 }

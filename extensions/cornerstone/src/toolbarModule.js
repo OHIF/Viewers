@@ -72,6 +72,24 @@ const definitions = [
     commandOptions: { toolName: 'Pan' },
   },
   {
+    id: 'MAMA',
+    label: 'MAMA',
+    icon: 'crosshairs',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'RectangleRoi' },
+  },
+  {
+    id: 'APA',
+    label: 'APA',
+    icon: 'crosshairs',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'RectangleRoi' },
+  },
+  {
     id: 'Length',
     label: 'Length',
     icon: 'measure-temp',
@@ -245,7 +263,7 @@ const definitions = [
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
     commandName: 'setCornerstoneLayout',
     context: 'ACTIVE_VIEWPORT::VTK',
-  }
+  },
 ];
 
 export default {
