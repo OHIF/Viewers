@@ -1,6 +1,6 @@
 {
   "name": "@ohif/viewer",
-  "version": "3.3.7",
+  "version": "3.3.8",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@ffmpeg-installer/ffmpeg": "1.0.20",
     "@ohif/core": "^2.3.2",
     "@ohif/extension-cornerstone": "^2.2.1",
     "@ohif/extension-dicom-html": "^1.1.0",
@@ -54,7 +55,6 @@
     "@ohif/i18n": "^0.52.4",
     "@ohif/ui": "^1.1.8",
     "@tanem/react-nprogress": "^1.1.25",
-    "@ffmpeg-installer/ffmpeg": "1.0.20",
     "classnames": "^2.2.6",
     "core-js": "^3.2.1",
     "cornerstone-core": "^2.2.8",
