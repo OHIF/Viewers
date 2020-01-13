@@ -15,7 +15,7 @@ class GoogleCloudApi {
   }
 
   get urlBase() {
-    return `https://healthcare.googleapis.com/v1beta1`;
+    return window.config.healthcareApiEndpoint;
   }
 
   get urlBaseProject() {
