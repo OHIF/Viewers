@@ -105,13 +105,15 @@ export default function(Mousetrap) {
    *
    * @returns void
    */
-  function _recordCurrentCombo() {
+  function _recordCurrentCombo({ shouldRestartRecordTimer = false }) {
     _recordedSequence.push(_currentRecordedKeys);
     _currentRecordedKeys = [];
     _recordedCharacterKey = false;
     _finishRecording();
-    // comenting method below for the record to be more "real-time" w/o delay
-    // _restartRecordTimer();
+
+    if (shouldRestartRecordTimer) {
+      _restartRecordTimer();
+    }
   }
 
   /**
@@ -124,9 +126,7 @@ export default function(Mousetrap) {
    * @returns void
    */
   function _normalizeSequence(sequence) {
-    let i;
-
-    for (i = 0; i < sequence.length; ++i) {
+    for (let i = 0; i < sequence.length; ++i) {
       sequence[i].sort(function(x, y) {
         // modifier keys always come first, in alphabetical order
         if (x.length > 1 && y.length === 1) {

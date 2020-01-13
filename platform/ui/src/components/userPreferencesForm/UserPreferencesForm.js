@@ -1,6 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useSnackbarContext } from '@ohif/ui';
 
@@ -46,7 +44,7 @@ function UserPreferencesForm({
   hotkeyDefinitions,
   hotkeyRecord,
 }) {
-  const [tabs, setTabs] = useState([
+  const tabs = useRef([
     {
       name: 'Hotkeys',
       Component: HotKeysPreferences,
@@ -94,21 +92,18 @@ function UserPreferencesForm({
     return Object.values(tabsError).reduce((acc, value) => acc || value);
   };
 
-  /**
-   *
-   */
   const onResetPreferences = () => {
-    const defaultHotKeyDefitions = {};
+    const defaultHotKeyDefinitions = {};
 
     hotkeyDefaults.map(item => {
       const { commandName, ...values } = item;
-      defaultHotKeyDefitions[commandName] = { ...values };
+      defaultHotKeyDefinitions[commandName] = { ...values };
     });
 
     // Reset local state
     setTabsState({
       ...tabsState,
-      Hotkeys: { hotkeyDefinitions: defaultHotKeyDefitions, hotkeyRecord },
+      Hotkeys: { hotkeyDefinitions: defaultHotKeyDefinitions, hotkeyRecord },
       General: { generalPreferences: { language: defaultLanguage } },
     });
 
@@ -126,6 +121,13 @@ function UserPreferencesForm({
       ),
       type: 'info',
     });
+
+    if (
+      onResetToDefaults &&
+      {}.toString.call(onResetToDefaults) === '[object Function]'
+    ) {
+      onResetToDefaults();
+    }
   };
 
   const onSavePreferences = event => {

@@ -6,11 +6,12 @@ import recordPlugin from './recordPlugin';
 
 Mousetrap.pause = pausePlugin;
 
-// Initialize record plugin
+// The Mousetrap plugin is initialized by itself once we import
 // https://github.com/ccampbell/mousetrap/blob/master/plugins/record/mousetrap-record.js#L189-L201
 //
 // Adds: .record(callback)
 // Adds: .handleKey()
+
 recordPlugin(Mousetrap);
 
 export default Mousetrap;
