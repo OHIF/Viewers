@@ -57,9 +57,6 @@ describe('OHIF VTK Extension', () => {
 
     // Visual comparison
     cy.screenshot('VTK initial state - Should display toolbar and 3 viewports');
-    cy.percyCanvasSnapshot(
-      'VTK initial state - Should display toolbar and 3 viewports'
-    );
   });
 
   it('checks Crosshairs tool', () => {
@@ -73,9 +70,6 @@ describe('OHIF VTK Extension', () => {
 
     // Visual comparison
     cy.screenshot(
-      "VTK Crosshairs tool - Should display crosshairs' green lines"
-    );
-    cy.percyCanvasSnapshot(
       "VTK Crosshairs tool - Should display crosshairs' green lines"
     );
   });
@@ -101,7 +95,6 @@ describe('OHIF VTK Extension', () => {
 
     // Visual comparison
     cy.screenshot('VTK WWWC tool - Canvas should be bright');
-    cy.percyCanvasSnapshot('VTK WWWC tool - Canvas should be bright');
   }); */
 
   it('checks Rotate tool', () => {
@@ -117,6 +110,5 @@ describe('OHIF VTK Extension', () => {
 
     // Visual comparison
     cy.screenshot('VTK Rotate tool - Should rotate image');
-    cy.percyCanvasSnapshot('VTK Rotate tool - Should rotate image');
   });
 });
