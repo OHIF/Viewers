@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSnackbarContext } from '@ohif/ui';
 
@@ -44,7 +44,7 @@ function UserPreferencesForm({
   hotkeyDefinitions,
   hotkeyRecord,
 }) {
-  const tabs = useRef([
+  const tabs = [
     {
       name: 'Hotkeys',
       Component: HotKeysPreferences,
@@ -61,7 +61,7 @@ function UserPreferencesForm({
       props: {},
       hidden: true,
     },
-  ]);
+  ];
   const [tabsState, setTabsState] = useState({
     Hotkeys: { hotkeyDefinitions, hotkeyRecord },
     'Window Level': { windowLevelData },
