@@ -45,13 +45,13 @@ class MeasurementService {
     let internalId = id;
     if (!internalId) {
       internalId = guid();
-      log.warn(`Measurement ID not set. Using random string ID: ${internalId}`);
+      log.warn(`Measurement ID not set. Using generated UID: ${internalId}`);
     }
 
     const measurement = {
       id,
       modifiedTimestamp: Math.floor(Date.now() / 1000),
-      data,
+      ...data,
     };
 
     if (this.measurements[internalId]) {
@@ -64,7 +64,7 @@ class MeasurementService {
       this._broadcastChange(internalId, EVENTS.MEASUREMENT_ADDED);
     }
 
-    return measurement;
+    return measurement.id;
   }
 
   _broadcastChange(measurementInternalId, event) {

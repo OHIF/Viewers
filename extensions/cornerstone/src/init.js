@@ -17,7 +17,7 @@ function fallbackMetaDataProvider(type, imageId) {
   const wadoRoot = window.store.getState().servers.servers[0].wadoRoot;
   const wadoRsImageId = `wadors:${wadoRoot}/studies/${qs.studyUID}/series/${
     qs.seriesUID
-  }/instances/${qs.objectUID}/frames/${qs.frame || 1}`;
+    }/instances/${qs.objectUID}/frames/${qs.frame || 1}`;
 
   return cornerstone.metaData.get(type, wadoRsImageId);
 }
@@ -106,31 +106,71 @@ export default function init({ servicesManager, configuration }) {
     tools.push(...toolsGroupedByType[toolsGroup])
   );
 
+  const mapCornerstoneAnnotationToMeasurementServiceFormat = eventData => {
+    const { toolType, element, measurementData } = eventData;
+
+    const validToolType = toolType => !['Length'].includes(toolType);
+    if (validToolType(toolType)) {
+      return { error: 'Invalid tool type' };
+    }
+
+    const enabledElement = cornerstone.getEnabledElement(element);
+    const imageId = enabledElement.image.imageId;
+    const sopInstance = cornerstone.metaData.get('instance', imageId);
+    const sopInstanceUid = sopInstance.sopInstanceUid;
+    const frameOfReferenceUid = sopInstance.frameOfReferenceUID;
+    const series = cornerstone.metaData.get('series', imageId);
+    const seriesInstanceUid = series.seriesInstanceUid;
+
+    const points = [];
+    points.push(measurementData.handles);
+
+    return {
+      imageId,
+      sopInstanceUid,
+      frameOfReferenceUID: frameOfReferenceUid,
+      referenceSeriesUID: seriesInstanceUid,
+      points, // points[] (x, y, z)
+    };
+  };
+
   /* Measurement Service Events */
   cornerstone.events.addEventListener(
     cornerstone.EVENTS.ELEMENT_ENABLED,
     event => {
-      MeasurementService.subscribe(
-        MeasurementService.getEvents().MEASUREMENT_ADDED,
-        measurement =>
-          console.log(
-            '[subscribe::MEASUREMENT_ADDED] Measurement added',
-            measurement
-          )
+      const {
+        MEASUREMENT_ADDED,
+        MEASUREMENT_UPDATED,
+      } = MeasurementService.getEvents();
+
+      MeasurementService.subscribe(MEASUREMENT_ADDED, measurement =>
+        console.log(
+          '[subscribe::MEASUREMENT_ADDED] Measurement added',
+          measurement
+        )
       );
-      MeasurementService.subscribe(
-        MeasurementService.getEvents().MEASUREMENT_UPDATED,
-        measurement =>
-          console.log(
-            '[subscribe::MEASUREMENT_UPDATED] Measurement updated',
-            measurement
-          )
+
+      MeasurementService.subscribe(MEASUREMENT_UPDATED, measurement =>
+        console.log(
+          '[subscribe::MEASUREMENT_UPDATED] Measurement updated',
+          measurement
+        )
       );
+
       event.detail.element.addEventListener(
         csTools.EVENTS.MEASUREMENT_ADDED,
         event => {
-          console.log('[addOrUpdate] Adding new measurement...', event.detail);
-          MeasurementService.addOrUpdate({ id: 1, data: event.detail });
+          console.log(
+            '[addOrUpdate | MEASUREMENT_COMPLETED] Adding new measurement...',
+            event.detail
+          );
+          const mapped = mapCornerstoneAnnotationToMeasurementServiceFormat(
+            event.detail
+          );
+          MeasurementService.addOrUpdate({
+            id: 1,
+            data: mapped,
+          });
         }
       );
     }
