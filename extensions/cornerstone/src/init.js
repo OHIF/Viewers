@@ -161,16 +161,13 @@ export default function init({ servicesManager, configuration }) {
         csTools.EVENTS.MEASUREMENT_ADDED,
         event => {
           console.log(
-            '[addOrUpdate | MEASUREMENT_COMPLETED] Adding new measurement...',
+            '[MEASUREMENT_ADDED] Adding new measurement...',
             event.detail
           );
-          const mapped = mapCornerstoneAnnotationToMeasurementServiceFormat(
+          const mappedMeasurement = mapCornerstoneAnnotationToMeasurementServiceFormat(
             event.detail
           );
-          MeasurementService.addOrUpdate({
-            id: 1,
-            data: mapped,
-          });
+          MeasurementService.addOrUpdate({ data: mappedMeasurement });
         }
       );
     }
