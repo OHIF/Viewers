@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.8...@ohif/viewer@3.4.0) (2020-01-14)
+
+
+### Features
+
+* Custom Healthcare API endpoint ([#1367](https://github.com/OHIF/Viewers/issues/1367)) ([a5d6bc6](https://github.com/OHIF/Viewers/commit/a5d6bc6a51784ed3a8a40d4ae773de9099f116b9))
+
+
+
+
+
 ## [3.3.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.7...@ohif/viewer@3.3.8) (2020-01-10)
 
 **Note:** Version bump only for package @ohif/viewer
