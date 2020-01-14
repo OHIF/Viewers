@@ -169,13 +169,12 @@ export default function init({ servicesManager, configuration }) {
           const measurementServiceId = MeasurementService.addOrUpdate({
             ...mappedMeasurement,
             id: measurementData._measurementServiceId,
-          });
+          }, 'cornerstone');
           if (!measurementData._measurementServiceId) {
-            console.log('adding id', measurementServiceId);
             addMeasurementServiceId(measurementServiceId, eventData);
           }
         } catch (error) {
-          console.error('Failed to add or update measurement in measurement service:', error);
+          console.warn('Failed to add or update measurement in measurement service:', error);
         }
       };
 

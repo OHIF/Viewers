@@ -37,21 +37,22 @@ class MeasurementService {
     return { ...this.events };
   }
 
-  registerEvent(event) {
-    this.events[event] = `event@${event}`;
+  registerEvent(eventName) {
+    this.events[eventName] = `event::${eventName}`;
   }
 
   /**
    * Adds or update persisted measurements.
    *
    * @param {MeasurementSchema} measurement
+   * @param {string} context
    */
-  addOrUpdate(measurement) {
+  addOrUpdate(measurement, context = 'all') {
     const { id } = measurement;
 
     if (!this._isValidMeasurement(measurement)) {
       log.warn(
-        'Attempting to add or update a null/undefined measurement. Exiting early.'
+        `Attempting to add or update a invalid measurement in '${context}' context. Exiting early.`
       );
       return;
     }
@@ -59,7 +60,7 @@ class MeasurementService {
     let internalId = id;
     if (!internalId) {
       internalId = guid();
-      log.warn(`Measurement ID not set. Using generated UID: ${internalId}`);
+      log.warn(`Measurement ID not set in '${context}' context. Using generated UID: ${internalId}`);
     }
 
     const newMeasurement = {
@@ -68,26 +69,47 @@ class MeasurementService {
       id: internalId,
     };
 
-    if (this.measurements[internalId]) {
-      log.warn(`Measurement already defined. Updating measurement.`);
-      this.measurements[internalId] = newMeasurement;
-      this._broadcastChange(internalId, EVENTS.MEASUREMENT_UPDATED);
+    /* Create measurements context */
+    if (!this.measurements[context]) {
+      this.measurements[context] = {};
+    }
+
+    /* Create listeners context */
+    if (!this.listeners[context]) {
+      this.listeners[context] = {};
+    }
+
+    if (this.measurements[context][internalId]) {
+      log.warn(`Measurement already defined in '${context}' context. Updating measurement.`);
+      this.measurements[context][internalId] = newMeasurement;
+      this._broadcastChange(internalId, EVENTS.MEASUREMENT_UPDATED, context);
     } else {
-      log.warn(`Measurement added.`);
-      this.measurements[internalId] = newMeasurement;
-      this._broadcastChange(internalId, EVENTS.MEASUREMENT_ADDED);
+      log.warn(`Measurement added in '${context}' context.`);
+      this.measurements[context][internalId] = newMeasurement;
+      this._broadcastChange(internalId, EVENTS.MEASUREMENT_ADDED, context);
     }
 
     return newMeasurement.id;
   }
 
-  _broadcastChange(measurementInternalId, event) {
-    const hasListeners = Object.keys(this.listeners).length > 0;
-    const hasCallbacks = Array.isArray(this.listeners[event]);
+  /**
+   * Broadcasts measurement changes to a given context.
+   *
+   * @param {string} measurementId
+   * @param {string} eventName
+   * @param {string} context
+   */
+  _broadcastChange(measurementId, eventName, context) {
+    if (!this.listeners[context]) {
+      return;
+    }
+
+    const hasListeners = Object.keys(this.listeners[context]).length > 0;
+    const hasCallbacks = Array.isArray(this.listeners[context][eventName]);
 
     if (hasListeners && hasCallbacks) {
-      this.listeners[event].forEach(listener => {
-        listener.callback(this.measurements[measurementInternalId]);
+      this.listeners[context][eventName].forEach(listener => {
+        listener.callback(this.measurements[context][measurementId]);
       });
     }
   }
@@ -95,36 +117,51 @@ class MeasurementService {
   /**
    * Subscribe to measurement updates.
    *
-   * @param {string} event
+   * @param {string} eventName
    * @param {Function} callback
    * @param {string} context
    */
-  subscribe(event, callback, context = CONTEXTS.ALL) {
-    if (this._isValidEvent(event)) {
+  subscribe(eventName, callback, context = 'all') {
+    if (this._isValidEvent(eventName)) {
       const listenerId = guid();
 
-      if (Array.isArray(this.listeners[event])) {
-        this.listeners[event].push({ id: listenerId, callback });
-      } else {
-        this.listeners[event] = [{ id: listenerId, callback }];
+      /* Create new listeners context if needed */
+      if (!this.listeners[context]) {
+        this.listeners[context] = {};
       }
 
-      return { unsubscribe: () => this._unsubscribe(event, listenerId) };
+      if (Array.isArray(this.listeners[context][eventName])) {
+        this.listeners[context][eventName].push({ id: listenerId, callback });
+      } else {
+        this.listeners[context][eventName] = [{ id: listenerId, callback }];
+      }
+
+      return {
+        unsubscribe: () => this._unsubscribe(eventName, listenerId, context)
+      };
     } else {
-      throw new Error(`Event ${event} not supported.`);
+      throw new Error(`Event ${eventName} not supported in '${context}' context.`);
     }
   }
 
   /**
    * Unsubscribe to measurement updates.
+   *
+   * @param {string} eventName
+   * @param {string} listenerId
+   * @param {string} context
    */
-  _unsubscribe(event, listenerId) {
-    if (Array.isArray(this.listeners[event])) {
-      this.listeners[event] = this.listeners[event].filter(
+  _unsubscribe(eventName, listenerId, context) {
+    if (!this.listeners[context]) {
+      return;
+    }
+
+    if (Array.isArray(this.listeners[context][eventName])) {
+      this.listeners[context][eventName] = this.listeners[context][eventName].filter(
         ({ id }) => id !== listenerId
       );
     } else {
-      this.listeners[event] = undefined;
+      this.listeners[context][eventName] = undefined;
     }
   }
 
@@ -134,16 +171,34 @@ class MeasurementService {
    * @param {MeasurementSchema} measurementData
    */
   _isValidMeasurement(measurementData) {
-    return measurementData === measurementData;
+    const MEASUREMENT_SCHEMA_KEYS = [
+      'id',
+      'sopInstanceUID',
+      'frameOfReferenceUID',
+      'referenceSeriesUID',
+      'label',
+      'description',
+      'unit',
+      'points',
+    ];
+
+    Object.keys(measurementData).forEach(key => {
+      if (!MEASUREMENT_SCHEMA_KEYS.includes(key)) {
+        log.warn(`Invalid measurement key: ${key}`);
+        return false;
+      }
+    });
+
+    return true;
   }
 
   /**
    * Check if a given measurement service event is valid.
    *
-   * @param {string} event
+   * @param {string} eventName
    */
-  _isValidEvent(event) {
-    return Object.values(this.events).includes(event);
+  _isValidEvent(eventName) {
+    return Object.values(this.events).includes(eventName);
   }
 }
 
