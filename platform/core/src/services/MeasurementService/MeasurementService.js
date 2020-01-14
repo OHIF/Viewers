@@ -12,6 +12,20 @@ const CONTEXTS = {
   CORNERSTONE: 'context::cornerstone',
 };
 
+/**
+ * A UI Element Position
+ *
+ * @typedef {Object} MeasurementSchema
+ * @property {number} id -
+ * @property {string} sopInstanceUID -
+ * @property {string} frameOfReferenceUID -
+ * @property {string} referenceSeriesUID -
+ * @property {string} label -
+ * @property {string} description -
+ * @property {string} unit -
+ * @property {Array} points -
+ */
+
 class MeasurementService {
   constructor() {
     this.measurements = {};
@@ -30,12 +44,12 @@ class MeasurementService {
   /**
    * Adds or update persisted measurements.
    *
-   * @param {Object} measurement
-   * @param {string} measurement.id
-   * @param {MeasurementSchema} measurement.data
+   * @param {MeasurementSchema} measurement
    */
-  addOrUpdate({ id, data }) {
-    if (!this._isValidMeasurement(data)) {
+  addOrUpdate(measurement) {
+    const { id } = measurement;
+
+    if (!this._isValidMeasurement(measurement)) {
       log.warn(
         'Attempting to add or update a null/undefined measurement. Exiting early.'
       );
@@ -48,23 +62,23 @@ class MeasurementService {
       log.warn(`Measurement ID not set. Using generated UID: ${internalId}`);
     }
 
-    const measurement = {
-      id,
+    const newMeasurement = {
+      ...measurement,
       modifiedTimestamp: Math.floor(Date.now() / 1000),
-      ...data,
+      id: internalId,
     };
 
     if (this.measurements[internalId]) {
       log.warn(`Measurement already defined. Updating measurement.`);
-      this.measurements[internalId] = measurement;
+      this.measurements[internalId] = newMeasurement;
       this._broadcastChange(internalId, EVENTS.MEASUREMENT_UPDATED);
     } else {
       log.warn(`Measurement added.`);
-      this.measurements[internalId] = measurement;
+      this.measurements[internalId] = newMeasurement;
       this._broadcastChange(internalId, EVENTS.MEASUREMENT_ADDED);
     }
 
-    return measurement.id;
+    return newMeasurement.id;
   }
 
   _broadcastChange(measurementInternalId, event) {

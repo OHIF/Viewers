@@ -106,33 +106,36 @@ export default function init({ servicesManager, configuration }) {
     tools.push(...toolsGroupedByType[toolsGroup])
   );
 
-  const mapCornerstoneAnnotationToMeasurementServiceFormat = eventData => {
-    const { toolType, element, measurementData } = eventData;
+  const mapAnnotationToMeasurementServiceFormat = eventData =>
+    new Promise((resolve, reject) => {
+      const { element, measurementData } = eventData;
+      const { toolType } = measurementData;
 
-    const validToolType = toolType => !['Length'].includes(toolType);
-    if (validToolType(toolType)) {
-      return { error: 'Invalid tool type' };
-    }
+      const invalidToolType = toolType => !['Length'].includes(toolType);
+      if (invalidToolType(toolType)) {
+        reject('Invalid tool type');
+      }
 
-    const enabledElement = cornerstone.getEnabledElement(element);
-    const imageId = enabledElement.image.imageId;
-    const sopInstance = cornerstone.metaData.get('instance', imageId);
-    const sopInstanceUid = sopInstance.sopInstanceUid;
-    const frameOfReferenceUid = sopInstance.frameOfReferenceUID;
-    const series = cornerstone.metaData.get('series', imageId);
-    const seriesInstanceUid = series.seriesInstanceUid;
+      const enabledElement = cornerstone.getEnabledElement(element);
+      const imageId = enabledElement.image.imageId;
+      const sopInstance = cornerstone.metaData.get('instance', imageId);
+      const sopInstanceUid = sopInstance.sopInstanceUid;
+      const frameOfReferenceUid = sopInstance.frameOfReferenceUID;
+      const series = cornerstone.metaData.get('series', imageId);
+      const seriesInstanceUid = series.seriesInstanceUid;
 
-    const points = [];
-    points.push(measurementData.handles);
+      const points = [];
+      points.push(measurementData.handles);
 
-    return {
-      imageId,
-      sopInstanceUid,
-      frameOfReferenceUID: frameOfReferenceUid,
-      referenceSeriesUID: seriesInstanceUid,
-      points, // points[] (x, y, z)
-    };
-  };
+      resolve({
+        id: measurementData._id,
+        sopInstanceUID: sopInstanceUid,
+        frameOfReferenceUID: frameOfReferenceUid,
+        referenceSeriesUID: seriesInstanceUid,
+        unit: measurementData.unit,
+        points, // points[] (x, y, z)
+      });
+    });
 
   /* Measurement Service Events */
   cornerstone.events.addEventListener(
@@ -157,17 +160,47 @@ export default function init({ servicesManager, configuration }) {
         )
       );
 
+      const addOrUpdateMeasurement = async eventData => {
+        try {
+          const { measurementData } = eventData;
+          const mappedMeasurement = await mapAnnotationToMeasurementServiceFormat(
+            eventData
+          );
+          const measurementServiceId = MeasurementService.addOrUpdate({
+            ...mappedMeasurement,
+            id: measurementData._measurementServiceId,
+          });
+          if (!measurementData._measurementServiceId) {
+            console.log('adding id', measurementServiceId);
+            addMeasurementServiceId(measurementServiceId, eventData);
+          }
+        } catch (error) {
+          console.error('Failed to add or update measurement in measurement service:', error);
+        }
+      };
+
+      const addMeasurementServiceId = (id, eventData) => {
+        const { measurementData } = eventData;
+        Object.assign(measurementData, { _measurementServiceId: id });
+      };
+
       event.detail.element.addEventListener(
-        csTools.EVENTS.MEASUREMENT_ADDED,
-        event => {
+        csTools.EVENTS.MEASUREMENT_MODIFIED, event => {
+          console.log(
+            '[MEASUREMENT_MODIFIED] Updating measurement...',
+            event.detail
+          );
+          addOrUpdateMeasurement(event.detail);
+        }
+      );
+
+      event.detail.element.addEventListener(
+        csTools.EVENTS.MEASUREMENT_ADDED, event => {
           console.log(
             '[MEASUREMENT_ADDED] Adding new measurement...',
             event.detail
           );
-          const mappedMeasurement = mapCornerstoneAnnotationToMeasurementServiceFormat(
-            event.detail
-          );
-          MeasurementService.addOrUpdate({ data: mappedMeasurement });
+          addOrUpdateMeasurement(event.detail);
         }
       );
     }
