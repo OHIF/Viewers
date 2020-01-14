@@ -9,7 +9,7 @@ const { setUserPreferences } = OHIF.redux.actions;
 
 const mapStateToProps = (state, ownProps) => {
   const { defaultLanguage } = i18n;
-  const { windowLevelData = {}, generalPreferences } = state.preferences || {};
+  const { windowLevelData = {}, generalPreferences = {} } = state.preferences || {};
   const { hotkeyDefinitions, hotkeyDefaults, record } = hotkeysManager;
 
   return {
