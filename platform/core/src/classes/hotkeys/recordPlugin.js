@@ -105,15 +105,11 @@ export default function(Mousetrap) {
    *
    * @returns void
    */
-  function _recordCurrentCombo({ shouldRestartRecordTimer = false }) {
+  function _recordCurrentCombo() {
     _recordedSequence.push(_currentRecordedKeys);
     _currentRecordedKeys = [];
     _recordedCharacterKey = false;
     _finishRecording();
-
-    if (shouldRestartRecordTimer) {
-      _restartRecordTimer();
-    }
   }
 
   /**
