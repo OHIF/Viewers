@@ -8,6 +8,7 @@ import 'regenerator-runtime/runtime';
 import App from './App.js';
 import React from 'react';
 import ReactDOM from 'react-dom';
+// test
 
 /**
  * EXTENSIONS
