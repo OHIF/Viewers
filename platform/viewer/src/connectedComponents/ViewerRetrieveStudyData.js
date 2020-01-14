@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { metadata, studies, utils, log } from '@ohif/core';
-import usePrevious from '../customHooks/usePrevious';
 
 import ConnectedViewer from './ConnectedViewer.js';
 import PropTypes from 'prop-types';
@@ -129,9 +128,9 @@ const _addSeriesToStudy = (studyMetadata, series) => {
 const _updateMetaDataManager = (study, studyMetadata, series) => {
   updateMetaDataManager(study, series);
 
-  const { studyInstanceUid } = study;
+  const { studyInstanceUID } = study;
 
-  if (!studyMetadataManager.get(studyInstanceUid)) {
+  if (!studyMetadataManager.get(studyInstanceUID)) {
     studyMetadataManager.add(studyMetadata);
   }
 };
@@ -315,15 +314,9 @@ function ViewerRetrieveStudyData({
     }
   };
 
-  const prevStudyInstanceUids = usePrevious(studyInstanceUids);
-
   useEffect(() => {
-    const hasStudyInstanceUidsChanged = !(prevStudyInstanceUids && prevStudyInstanceUids.every(e => studyInstanceUids.includes(e)));
-
-    if (hasStudyInstanceUidsChanged) {
-      studyMetadataManager.purge();
-      purgeCancellablePromises();
-    }
+    studyMetadataManager.purge();
+    purgeCancellablePromises();
   }, [studyInstanceUids]);
 
   useEffect(() => {
