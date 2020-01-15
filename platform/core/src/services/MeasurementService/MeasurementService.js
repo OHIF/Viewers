@@ -186,7 +186,7 @@ class MeasurementService {
       'description',
       'type',
       'unit',
-      'area',
+      'area', // TODO: Add concept names instead (descriptor)
       'points',
       'source',
       'sourceToolType',

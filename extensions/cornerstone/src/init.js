@@ -156,7 +156,7 @@ export default function init({ servicesManager, configuration }) {
         label: measurementData.text,
         description: measurementData.description,
         unit: measurementData.unit,
-        area: measurementData.cachedStats && measurementData.cachedStats.area,
+        area: measurementData.cachedStats && measurementData.cachedStats.area, // TODO: Add concept names instead (descriptor)
         type: TOOL_TYPE_TO_VALUE_TYPE[toolType],
         points: _getPointsFromHandles(measurementData.handles),
         source: 'CornerstoneTools', // TODO: multiple vendors
