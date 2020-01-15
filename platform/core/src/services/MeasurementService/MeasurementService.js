@@ -6,12 +6,6 @@ const EVENTS = {
   MEASUREMENT_ADDED: 'event::measurement_added',
 };
 
-const CONTEXTS = {
-  ALL: 'context::all',
-  VIEWER: 'context::viewer',
-  CORNERSTONE: 'context::cornerstone',
-};
-
 /**
  * A UI Element Position
  *
@@ -32,6 +26,14 @@ class MeasurementService {
     this.listeners = {};
     this.events = EVENTS;
   }
+
+  static VALUE_TYPES = {
+    POLYLINE: 'value_type::polyline',
+    POINT: 'value_type::point',
+    ELLIPSE: 'value_type::ellipse',
+    MULTIPOINT: 'value_type::multipoint',
+    CIRCLE: 'value_type::circle'
+  };
 
   getEvents() {
     return { ...this.events };
@@ -80,11 +82,11 @@ class MeasurementService {
     }
 
     if (this.measurements[context][internalId]) {
-      log.warn(`Measurement already defined in '${context}' context. Updating measurement.`);
+      log.warn(`Measurement already defined in '${context}' context. Updating measurement.`, newMeasurement);
       this.measurements[context][internalId] = newMeasurement;
       this._broadcastChange(internalId, EVENTS.MEASUREMENT_UPDATED, context);
     } else {
-      log.warn(`Measurement added in '${context}' context.`);
+      log.warn(`Measurement added in '${context}' context.`, newMeasurement);
       this.measurements[context][internalId] = newMeasurement;
       this._broadcastChange(internalId, EVENTS.MEASUREMENT_ADDED, context);
     }
@@ -179,6 +181,8 @@ class MeasurementService {
       'label',
       'description',
       'unit',
+      'source',
+      'sourceToolType',
       'points',
     ];
 
@@ -203,4 +207,4 @@ class MeasurementService {
 }
 
 export default MeasurementService;
-export { EVENTS, CONTEXTS };
+export { EVENTS };

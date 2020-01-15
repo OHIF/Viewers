@@ -111,8 +111,9 @@ export default function init({ servicesManager, configuration }) {
       const { element, measurementData } = eventData;
       const { toolType } = measurementData;
 
-      const invalidToolType = toolType => !['Length'].includes(toolType);
-      if (invalidToolType(toolType)) {
+      const supportedToolTypes = ['Length', 'EllipticalRoi', 'RectangleRoi', 'ArrowAnnotate'];
+      const validToolType = toolType => supportedToolTypes.includes(toolType);
+      if (!validToolType(toolType)) {
         reject('Invalid tool type');
       }
 
@@ -124,16 +125,39 @@ export default function init({ servicesManager, configuration }) {
       const series = cornerstone.metaData.get('series', imageId);
       const seriesInstanceUid = series.seriesInstanceUid;
 
+      const _getPointsFromHandles = handles => {
+        let points = [];
+        Object.keys(handles).map(handle => {
+          if (['start', 'end'].includes(handle)) {
+            if (handles[handle].x) points.push(handles[handle].x);
+            if (handles[handle].y) points.push(handles[handle].y);
+          }
+        });
+        return points;
+      };
+
       const points = [];
       points.push(measurementData.handles);
+
+      const TOOL_TYPE_TO_VALUE_TYPE = {
+        Length: MeasurementService.constructor.VALUE_TYPES.POLYLINE, // TODO: Relocate static value types
+        EllipticalRoi: MeasurementService.constructor.VALUE_TYPES.ELLIPSE,
+        RectangleRoi: MeasurementService.constructor.VALUE_TYPES.POLYLINE,
+        ArrowAnnotate: MeasurementService.constructor.VALUE_TYPES.POINT,
+      };
 
       resolve({
         id: measurementData._id,
         sopInstanceUID: sopInstanceUid,
         frameOfReferenceUID: frameOfReferenceUid,
         referenceSeriesUID: seriesInstanceUid,
+        label: measurementData.text,
+        description: measurementData.description,
         unit: measurementData.unit,
-        points, // points[] (x, y, z)
+        type: TOOL_TYPE_TO_VALUE_TYPE[toolType],
+        source: 'CornerstoneTools', // TODO: multiple vendors
+        sourceToolType: toolType,
+        points: _getPointsFromHandles(measurementData.handles),
       });
     });
 
