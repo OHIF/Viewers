@@ -7,7 +7,7 @@ const EVENTS = {
 };
 
 /**
- * A UI Element Position
+ * Measurement schema
  *
  * @typedef {Object} MeasurementSchema
  * @property {number} id -
@@ -16,8 +16,12 @@ const EVENTS = {
  * @property {string} referenceSeriesUID -
  * @property {string} label -
  * @property {string} description -
+ * @property {string} type -
  * @property {string} unit -
+ * @property {number} area -
  * @property {Array} points -
+ * @property {string} source -
+ * @property {string} sourceToolType -
  */
 
 class MeasurementService {
@@ -180,10 +184,12 @@ class MeasurementService {
       'referenceSeriesUID',
       'label',
       'description',
+      'type',
       'unit',
+      'area',
+      'points',
       'source',
       'sourceToolType',
-      'points',
     ];
 
     Object.keys(measurementData).forEach(key => {

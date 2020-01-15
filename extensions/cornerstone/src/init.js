@@ -111,6 +111,8 @@ export default function init({ servicesManager, configuration }) {
       const { element, measurementData } = eventData;
       const { toolType } = measurementData;
 
+      console.log(measurementData);
+
       const supportedToolTypes = ['Length', 'EllipticalRoi', 'RectangleRoi', 'ArrowAnnotate'];
       const validToolType = toolType => supportedToolTypes.includes(toolType);
       if (!validToolType(toolType)) {
@@ -154,10 +156,11 @@ export default function init({ servicesManager, configuration }) {
         label: measurementData.text,
         description: measurementData.description,
         unit: measurementData.unit,
+        area: measurementData.cachedStats && measurementData.cachedStats.area,
         type: TOOL_TYPE_TO_VALUE_TYPE[toolType],
+        points: _getPointsFromHandles(measurementData.handles),
         source: 'CornerstoneTools', // TODO: multiple vendors
         sourceToolType: toolType,
-        points: _getPointsFromHandles(measurementData.handles),
       });
     });
 
