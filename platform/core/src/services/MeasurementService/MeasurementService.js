@@ -106,10 +106,6 @@ class MeasurementService {
    * @param {string} context
    */
   _broadcastChange(measurementId, eventName, context) {
-    if (!this.listeners[context]) {
-      return;
-    }
-
     const hasListeners = Object.keys(this.listeners[context]).length > 0;
     const hasCallbacks = Array.isArray(this.listeners[context][eventName]);
 
@@ -129,6 +125,7 @@ class MeasurementService {
    */
   subscribe(eventName, callback, context = 'all') {
     if (this._isValidEvent(eventName)) {
+      console.warn(`Subscribing to '${eventName}' event using '${context}' context.`);
       const listenerId = guid();
 
       /* Create new listeners context if needed */

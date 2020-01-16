@@ -108,15 +108,13 @@ export default function init({ servicesManager, configuration }) {
 
   const mapAnnotationToMeasurementServiceFormat = eventData =>
     new Promise((resolve, reject) => {
-      const { element, measurementData } = eventData;
-      const { toolType } = measurementData;
-
-      console.log(measurementData);
+      const { toolName, element, measurementData } = eventData;
 
       const supportedToolTypes = ['Length', 'EllipticalRoi', 'RectangleRoi', 'ArrowAnnotate'];
-      const validToolType = toolType => supportedToolTypes.includes(toolType);
-      if (!validToolType(toolType)) {
-        reject('Invalid tool type');
+      const validToolType = toolName => supportedToolTypes.includes(toolName);
+
+      if (!validToolType(toolName)) {
+        return reject('Invalid tool type');
       }
 
       const enabledElement = cornerstone.getEnabledElement(element);
@@ -148,7 +146,7 @@ export default function init({ servicesManager, configuration }) {
         ArrowAnnotate: MeasurementService.constructor.VALUE_TYPES.POINT,
       };
 
-      resolve({
+      return resolve({
         id: measurementData._id,
         sopInstanceUID: sopInstanceUid,
         frameOfReferenceUID: frameOfReferenceUid,
@@ -157,10 +155,60 @@ export default function init({ servicesManager, configuration }) {
         description: measurementData.description,
         unit: measurementData.unit,
         area: measurementData.cachedStats && measurementData.cachedStats.area, // TODO: Add concept names instead (descriptor)
-        type: TOOL_TYPE_TO_VALUE_TYPE[toolType],
+        type: TOOL_TYPE_TO_VALUE_TYPE[toolName],
         points: _getPointsFromHandles(measurementData.handles),
         source: 'CornerstoneTools', // TODO: multiple vendors
-        sourceToolType: toolType,
+        sourceToolType: toolName,
+      });
+    });
+
+  const mapMeasurementServiceFormatToAnnotation = ({
+    source,
+    sourceToolType,
+    label,
+    description,
+    type,
+    points,
+    unit,
+    sopInstanceUID,
+    frameOfReferenceUID,
+    referenceSeriesUID,
+  }) =>
+    new Promise((resolve, reject) => {
+      if (!['CornerstoneTools'].includes(source)) {
+        return reject('Invalid measurement');
+      }
+
+      let toolType = sourceToolType;
+
+      if (!toolType) {
+        switch (type) {
+          case MeasurementService.constructor.VALUE_TYPES.POLYLINE:
+            if (points.length === 2) toolType = 'Length';
+            break;
+          case MeasurementService.constructor.VALUE_TYPES.POINT:
+            if (label) toolType = 'ArrowAnnotate';
+            break;
+          default:
+            break;
+        }
+      }
+
+      const _getHandlesFromPoints = points => {
+        return points;
+      };
+
+      return resolve({
+        toolName: toolType,
+        measurementData: {
+          sopInstanceUid: sopInstanceUID,
+          frameOfReferenceUid: frameOfReferenceUID,
+          seriesInstanceUid: referenceSeriesUID,
+          unit,
+          label,
+          description,
+          handles: _getHandlesFromPoints(points),
+        },
       });
     });
 
@@ -173,18 +221,27 @@ export default function init({ servicesManager, configuration }) {
         MEASUREMENT_UPDATED,
       } = MeasurementService.getEvents();
 
-      MeasurementService.subscribe(MEASUREMENT_ADDED, measurement =>
-        console.log(
-          '[subscribe::MEASUREMENT_ADDED] Measurement added',
-          measurement
-        )
+      MeasurementService.subscribe(
+        MEASUREMENT_ADDED,
+        measurement =>
+          console.log(
+            '[subscriber::MEASUREMENT_ADDED] Measurement added',
+            measurement
+          ),
+        'cornerstone'
       );
 
-      MeasurementService.subscribe(MEASUREMENT_UPDATED, measurement =>
-        console.log(
-          '[subscribe::MEASUREMENT_UPDATED] Measurement updated',
-          measurement
-        )
+      MeasurementService.subscribe(
+        MEASUREMENT_UPDATED,
+        async measurement => {
+          console.log(
+            '[subscriber::MEASUREMENT_UPDATED] Measurement updated',
+            measurement
+          );
+          const mappedMeasurement = await mapMeasurementServiceFormatToAnnotation(measurement);
+          console.log('Mapped annotation:', mappedMeasurement);
+        },
+        'cornerstone'
       );
 
       const addOrUpdateMeasurement = async eventData => {
