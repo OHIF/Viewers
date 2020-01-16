@@ -1,4 +1,4 @@
-describe('OHIF Cornerstone Hotkeys', () => {
+describe('OHIF Load Local File', () => {
   beforeEach(() => {
     cy.visit('/local');
   });
