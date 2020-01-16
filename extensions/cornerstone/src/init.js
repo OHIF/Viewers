@@ -165,6 +165,7 @@ export default function init({ servicesManager, configuration }) {
     });
 
   const mapMeasurementServiceFormatToAnnotation = ({
+    id,
     source,
     sourceToolType,
     label,
@@ -177,10 +178,6 @@ export default function init({ servicesManager, configuration }) {
     referenceSeriesUID,
   }) =>
     new Promise((resolve, reject) => {
-      if (!['CornerstoneTools'].includes(source)) {
-        return reject('Invalid measurement');
-      }
-
       let toolType = sourceToolType;
 
       if (!toolType) {
@@ -212,6 +209,7 @@ export default function init({ servicesManager, configuration }) {
           label,
           description,
           handles: _getHandlesFromPoints(points),
+          _measurementServiceId: id
         },
       });
     });
@@ -238,12 +236,14 @@ export default function init({ servicesManager, configuration }) {
       MeasurementService.subscribe(
         MEASUREMENT_UPDATED,
         async measurement => {
-          console.log(
-            '[subscriber::MEASUREMENT_UPDATED] Measurement updated',
-            measurement
-          );
-          const mappedMeasurement = await mapMeasurementServiceFormatToAnnotation(measurement);
-          console.log('Mapped annotation:', mappedMeasurement);
+          if (['CornerstoneTools'].includes(measurement.source)) {
+            console.log(
+              '[subscriber::MEASUREMENT_UPDATED] Measurement updated',
+              measurement
+            );
+            const mappedMeasurement = await mapMeasurementServiceFormatToAnnotation(measurement);
+            console.log('Mapped annotation to be saved:', mappedMeasurement);
+          }
         },
         'cornerstone'
       );
