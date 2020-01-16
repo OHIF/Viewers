@@ -129,8 +129,10 @@ export default function init({ servicesManager, configuration }) {
         let points = [];
         Object.keys(handles).map(handle => {
           if (['start', 'end'].includes(handle)) {
-            if (handles[handle].x) points.push(handles[handle].x);
-            if (handles[handle].y) points.push(handles[handle].y);
+            let point = {};
+            if (handles[handle].x) point.x = handles[handle].x;
+            if (handles[handle].y) point.y = handles[handle].y;
+            points.push(point);
           }
         });
         return points;
@@ -195,7 +197,9 @@ export default function init({ servicesManager, configuration }) {
       }
 
       const _getHandlesFromPoints = points => {
-        return points;
+        return points
+          .map((p, i) => (i % 10 === 0 ? { start: p } : { end: p }))
+          .reduce((obj, item) => Object.assign(obj, { ...item }), {});
       };
 
       return resolve({
