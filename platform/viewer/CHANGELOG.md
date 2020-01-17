@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.4.0...@ohif/viewer@3.4.1) (2020-01-15)
+
+
+### Bug Fixes
+
+* 🐛 Metadata is being mistakenly purged ([#1360](https://github.com/OHIF/Viewers/issues/1360)) ([b9a66d4](https://github.com/OHIF/Viewers/commit/b9a66d44241f2896ef184511287fb4984671e16d)), closes [#1326](https://github.com/OHIF/Viewers/issues/1326)
+
+
+
+
+
 # [3.4.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.3.8...@ohif/viewer@3.4.0) (2020-01-14)
 
 
