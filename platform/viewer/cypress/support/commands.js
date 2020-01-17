@@ -169,7 +169,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy=thumbnail-list]', { timeout: 10000 }).should($itemList => {
+  cy.get('[data-cy=thumbnail-list]', { timeout: 15000 }).should($itemList => {
     expect($itemList.length >= seriesToWait).to.be.true;
   });
 });
