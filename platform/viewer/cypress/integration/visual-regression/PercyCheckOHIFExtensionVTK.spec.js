@@ -23,10 +23,12 @@ describe('Visual Regression - OHIF VTK Extension', () => {
 
   beforeEach(() => {
     cy.initVTKToolsAliases();
-    cy.wait(100); //Wait toolbar to finish loading
+    cy.wait(1000); //Wait toolbar to finish loading
   });
 
   afterEach(() => {
+    cy.wait(5000); //wait screen loads back after screenshot
+
     //Select Exit 2D MPR button
     cy.get('[data-cy="exit 2d mpr"]').should($btn => {
       expect($btn).to.be.visible;
