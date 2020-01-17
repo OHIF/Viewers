@@ -5,6 +5,7 @@ import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import queryString from 'query-string';
 import initCornerstoneTools from './initCornerstoneTools.js';
+import MeasurementServiceFormatter from './utils/MeasurementServiceFormatter';
 
 function fallbackMetaDataProvider(type, imageId) {
   if (!imageId.includes('wado?requestType=WADO')) {
@@ -33,6 +34,7 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
  */
 export default function init({ servicesManager, configuration }) {
   const { UIDialogService, MeasurementService } = servicesManager.services;
+  const measurementServiceFormatter = new MeasurementServiceFormatter(MeasurementService);
 
   const callInputDialog = (data, event, callback) => {
     if (UIDialogService) {
@@ -106,114 +108,6 @@ export default function init({ servicesManager, configuration }) {
     tools.push(...toolsGroupedByType[toolsGroup])
   );
 
-  const mapAnnotationToMeasurementServiceFormat = eventData =>
-    new Promise((resolve, reject) => {
-      const { toolName, element, measurementData } = eventData;
-
-      const supportedToolTypes = ['Length', 'EllipticalRoi', 'RectangleRoi', 'ArrowAnnotate'];
-      const validToolType = toolName => supportedToolTypes.includes(toolName);
-
-      if (!validToolType(toolName)) {
-        return reject('Invalid tool type');
-      }
-
-      const enabledElement = cornerstone.getEnabledElement(element);
-      const imageId = enabledElement.image.imageId;
-      const sopInstance = cornerstone.metaData.get('instance', imageId);
-      const sopInstanceUid = sopInstance.sopInstanceUid;
-      const frameOfReferenceUid = sopInstance.frameOfReferenceUID;
-      const series = cornerstone.metaData.get('series', imageId);
-      const seriesInstanceUid = series.seriesInstanceUid;
-
-      const _getPointsFromHandles = handles => {
-        let points = [];
-        Object.keys(handles).map(handle => {
-          if (['start', 'end'].includes(handle)) {
-            let point = {};
-            if (handles[handle].x) point.x = handles[handle].x;
-            if (handles[handle].y) point.y = handles[handle].y;
-            points.push(point);
-          }
-        });
-        return points;
-      };
-
-      const points = [];
-      points.push(measurementData.handles);
-
-      const TOOL_TYPE_TO_VALUE_TYPE = {
-        Length: MeasurementService.constructor.VALUE_TYPES.POLYLINE, // TODO: Relocate static value types
-        EllipticalRoi: MeasurementService.constructor.VALUE_TYPES.ELLIPSE,
-        RectangleRoi: MeasurementService.constructor.VALUE_TYPES.POLYLINE,
-        ArrowAnnotate: MeasurementService.constructor.VALUE_TYPES.POINT,
-      };
-
-      return resolve({
-        id: measurementData._id,
-        sopInstanceUID: sopInstanceUid,
-        frameOfReferenceUID: frameOfReferenceUid,
-        referenceSeriesUID: seriesInstanceUid,
-        label: measurementData.text,
-        description: measurementData.description,
-        unit: measurementData.unit,
-        area: measurementData.cachedStats && measurementData.cachedStats.area, // TODO: Add concept names instead (descriptor)
-        type: TOOL_TYPE_TO_VALUE_TYPE[toolName],
-        points: _getPointsFromHandles(measurementData.handles),
-        source: 'CornerstoneTools', // TODO: multiple vendors
-        sourceToolType: toolName,
-      });
-    });
-
-  const mapMeasurementServiceFormatToAnnotation = ({
-    id,
-    source,
-    sourceToolType,
-    label,
-    description,
-    type,
-    points,
-    unit,
-    sopInstanceUID,
-    frameOfReferenceUID,
-    referenceSeriesUID,
-  }) =>
-    new Promise((resolve, reject) => {
-      let toolType = sourceToolType;
-
-      if (!toolType) {
-        switch (type) {
-          case MeasurementService.constructor.VALUE_TYPES.POLYLINE:
-            if (points.length === 2) toolType = 'Length';
-            break;
-          case MeasurementService.constructor.VALUE_TYPES.POINT:
-            if (label) toolType = 'ArrowAnnotate';
-            break;
-          default:
-            break;
-        }
-      }
-
-      const _getHandlesFromPoints = points => {
-        return points
-          .map((p, i) => (i % 10 === 0 ? { start: p } : { end: p }))
-          .reduce((obj, item) => Object.assign(obj, { ...item }), {});
-      };
-
-      return resolve({
-        toolName: toolType,
-        measurementData: {
-          sopInstanceUid: sopInstanceUID,
-          frameOfReferenceUid: frameOfReferenceUID,
-          seriesInstanceUid: referenceSeriesUID,
-          unit,
-          label,
-          description,
-          handles: _getHandlesFromPoints(points),
-          _measurementServiceId: id
-        },
-      });
-    });
-
   /* Measurement Service Events */
   cornerstone.events.addEventListener(
     cornerstone.EVENTS.ELEMENT_ENABLED,
@@ -241,7 +135,7 @@ export default function init({ servicesManager, configuration }) {
               '[subscriber::MEASUREMENT_UPDATED] Measurement updated',
               measurement
             );
-            const mappedMeasurement = await mapMeasurementServiceFormatToAnnotation(measurement);
+            const mappedMeasurement = await measurementServiceFormatter.toAnnotation(measurement);
             console.log('Mapped annotation to be saved:', mappedMeasurement);
           }
         },
@@ -251,7 +145,7 @@ export default function init({ servicesManager, configuration }) {
       const addOrUpdateMeasurement = async eventData => {
         try {
           const { measurementData } = eventData;
-          const mappedMeasurement = await mapAnnotationToMeasurementServiceFormat(
+          const mappedMeasurement = await measurementServiceFormatter.toMeasurement(
             eventData
           );
           const measurementServiceId = MeasurementService.addOrUpdate({

@@ -39,18 +39,32 @@ class MeasurementService {
     CIRCLE: 'value_type::circle',
   };
 
+  /**
+   * Get registered events;
+   *
+   * @return {Object} events object
+   */
   getEvents() {
     return { ...this.events };
   }
 
-  _arrayOfObjects = obj => {
-    return Object.entries(obj).map(e => ({ [e[0]]: e[1] }));
-  };
-
+  /**
+   * Get all measurement by context.
+   *
+   * @param {string} context
+   * @return {MeasurementSchema[]} measurements
+   */
   getMeasurements(context = 'all') {
     return this._arrayOfObjects(this.measurements[context]);
   }
 
+  /**
+   * Get specific measurement by its id or/and context.
+   *
+   * @param {string} id
+   * @param {string} context
+   * @return {MeasurementSchema} measurement
+   */
   getMeasurement(id, context) {
     if (context) {
       return this.measurements[context][id];;
@@ -69,6 +83,12 @@ class MeasurementService {
     return measurement;
   }
 
+  /**
+   * Register a new subscription event name.
+   *
+   * @param {string} eventName
+   * @return void
+   */
   registerEvent(eventName) {
     this.events[eventName] = `event::${eventName}`;
   }
@@ -78,6 +98,7 @@ class MeasurementService {
    *
    * @param {MeasurementSchema} measurement
    * @param {string} context
+   * @return {string} measurement id
    */
   addOrUpdate(measurement, context = 'all') {
     const { id } = measurement;
@@ -130,6 +151,7 @@ class MeasurementService {
    * @param {string} measurementId
    * @param {string} eventName
    * @param {string} context
+   * @return void
    */
   _broadcastChange(measurementId, eventName, context) {
     const hasListeners = Object.keys(this.listeners[context]).length > 0;
@@ -148,6 +170,7 @@ class MeasurementService {
    * @param {string} eventName
    * @param {Function} callback
    * @param {string} context
+   * @return {Object} observable actions
    */
   subscribe(eventName, callback, context = 'all') {
     if (this._isValidEvent(eventName)) {
@@ -179,14 +202,16 @@ class MeasurementService {
    * @param {string} eventName
    * @param {string} listenerId
    * @param {string} context
+   * @return void
    */
   _unsubscribe(eventName, listenerId, context) {
     if (!this.listeners[context]) {
       return;
     }
 
-    if (Array.isArray(this.listeners[context][eventName])) {
-      this.listeners[context][eventName] = this.listeners[context][eventName].filter(
+    const listenersOfContext = this.listeners[context][eventName];
+    if (Array.isArray(listenersOfContext)) {
+      this.listeners[context][eventName] = listenersOfContext.filter(
         ({ id }) => id !== listenerId
       );
     } else {
@@ -198,6 +223,7 @@ class MeasurementService {
    * Check if a given measurement data is valid.
    *
    * @param {MeasurementSchema} measurementData
+   * @return {boolean} measurement validation
    */
   _isValidMeasurement(measurementData) {
     const MEASUREMENT_SCHEMA_KEYS = [
@@ -229,10 +255,20 @@ class MeasurementService {
    * Check if a given measurement service event is valid.
    *
    * @param {string} eventName
+   * @return {boolean} event name validation
    */
   _isValidEvent(eventName) {
     return Object.values(this.events).includes(eventName);
   }
+
+  /**
+   * Converts object of objects to array.
+   *
+   * @return {Array} Array of objects
+   */
+  _arrayOfObjects = obj => {
+    return Object.entries(obj).map(e => ({ [e[0]]: e[1] }));
+  };
 }
 
 export default MeasurementService;
