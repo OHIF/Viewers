@@ -36,11 +36,37 @@ class MeasurementService {
     POINT: 'value_type::point',
     ELLIPSE: 'value_type::ellipse',
     MULTIPOINT: 'value_type::multipoint',
-    CIRCLE: 'value_type::circle'
+    CIRCLE: 'value_type::circle',
   };
 
   getEvents() {
     return { ...this.events };
+  }
+
+  _arrayOfObjects = obj => {
+    return Object.entries(obj).map(e => ({ [e[0]]: e[1] }));
+  };
+
+  getMeasurements(context = 'all') {
+    return this._arrayOfObjects(this.measurements[context]);
+  }
+
+  getMeasurement(id, context) {
+    if (context) {
+      return this.measurements[context][id];;
+    }
+
+    let measurement = null;
+    if (!context) {
+      const contexts = Object.keys(this.measurements);
+      contexts.forEach(context => {
+        const contextMeasurements = this.measurements[context];
+        if (Object.keys(contextMeasurements[id]).length > 0) {
+          measurement = this.measurements[context][id];
+        }
+      });
+    }
+    return measurement;
   }
 
   registerEvent(eventName) {
