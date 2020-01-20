@@ -1,29 +1,26 @@
 import React, { Component } from 'react';
-import { log, metadata, studies, utils } from '@ohif/core';
-
+import { log } from '@ohif/core';
 import PropTypes from 'prop-types';
-import ConnectedViewer from '../connectedComponents/ConnectedViewer';
-import { extensionManager } from './../App.js';
 import qs from 'querystring';
 
-const { OHIFStudyMetadata } = metadata;
-const { retrieveStudiesMetadata } = studies;
-const { studyMetadataManager, updateMetaDataManager } = utils;
+import ConnectedViewerRetrieveStudyData from '../connectedComponents/ConnectedViewerRetrieveStudyData';
+import NotFound from '../routes/NotFound';
 
 class StandaloneRouting extends Component {
   state = {
     studies: null,
+    server: null,
+    studyInstanceUids: null,
+    seriesInstanceUids: null,
     error: null,
   };
-
-  studyInstanceUids = [];
 
   static propTypes = {
     location: PropTypes.object,
     store: PropTypes.object,
   };
 
-  static parseQueryAndFetchStudies(query) {
+  static parseQueryAndRetrieveDICOMWebData(query) {
     return new Promise((resolve, reject) => {
       const url = query.url;
 
@@ -61,20 +58,10 @@ class StandaloneRouting extends Component {
           const studyInstanceUids = query.studyInstanceUids.split(';');
           const seriesInstanceUids = [];
 
-          retrieveStudiesMetadata(
-            server,
-            studyInstanceUids,
-            seriesInstanceUids
-          ).then(
-            studies => {
-              resolve(studies);
-            },
-            error => {
-              reject(error);
-            }
-          );
+          resolve({ server, studyInstanceUids, seriesInstanceUids });
         } else {
-          resolve(data.studies);
+          log.warn('Invalid servers or no study instance uids specified');
+          reject(new Error('Invalid servers or no study instance uids specified'));
         }
       });
 
@@ -96,53 +83,47 @@ class StandaloneRouting extends Component {
 
       // Remove ? prefix which is included for some reason
       search = search.slice(1, search.length);
-
       const query = qs.parse(search);
-      const studies = await StandaloneRouting.parseQueryAndFetchStudies(query);
 
-      studyMetadataManager.purge();
+      const {
+        server,
+        studyInstanceUids,
+        seriesInstanceUids,
+      } = await StandaloneRouting.parseQueryAndRetrieveDICOMWebData(query);
 
-      // Map studies to new format, update metadata manager?
-      const uniqueStudyUids = new Set();
-      const updatedStudies = studies.map(study => {
-        const studyMetadata = new OHIFStudyMetadata(
-          study,
-          study.studyInstanceUid
-        );
-        const sopClassHandlerModules =
-          extensionManager.modules['sopClassHandlerModule'];
-
-        study.displaySets =
-          study.displaySets ||
-          studyMetadata.createDisplaySets(sopClassHandlerModules);
-        studyMetadata.setDisplaySets(study.displaySets);
-
-        // Updates WADO-RS metaDataManager
-        updateMetaDataManager(study);
-
-        studyMetadataManager.add(studyMetadata);
-        uniqueStudyUids.add(study.studyInstanceUid);
-
-        return study;
-      });
-
-      this.studyInstanceUids = Array.from(uniqueStudyUids);
-      this.setState({ studies: updatedStudies });
+      this.setState({ server, studyInstanceUids, seriesInstanceUids });
     } catch (error) {
-      this.setState({ error });
+      this.setState({ error: error.message });
     }
   }
 
   render() {
     if (this.state.error) {
-      return <div>Error: {JSON.stringify(this.state.error)}</div>;
-    } else if (!this.state.studies) {
-      return <div>Loading...</div>;
+      return (
+        <NotFound message={`Error: ${JSON.stringify(this.state.error)}`} />
+      );
+    } else if (!this.state.server) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            color: 'white',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          Loading...
+        </div>
+      );
     }
+
     return (
-      <ConnectedViewer
+      <ConnectedViewerRetrieveStudyData
         studies={this.state.studies}
-        studyInstanceUids={this.studyInstanceUids}
+        studyInstanceUids={this.state.studyInstanceUids}
+        seriesInstanceUids={this.state.seriesInstanceUids}
+        server={this.state.server}
       />
     );
   }
