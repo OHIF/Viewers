@@ -56,7 +56,7 @@ class StandaloneRouting extends Component {
           server.type = 'dicomWeb';
 
           const studyInstanceUids = query.studyInstanceUids.split(';');
-          const seriesInstanceUids = [];
+          const seriesInstanceUids = query.seriesInstanceUids ? query.seriesInstanceUids.split(';') : [];
 
           resolve({ server, studyInstanceUids, seriesInstanceUids });
         } else {
@@ -98,23 +98,10 @@ class StandaloneRouting extends Component {
   }
 
   render() {
-    if (this.state.error) {
+    const message = this.state.error ? `Error: ${JSON.stringify(this.state.error)}` : 'Loading...';
+    if (this.state.error || !this.state.server) {
       return (
-        <NotFound message={`Error: ${JSON.stringify(this.state.error)}`} />
-      );
-    } else if (!this.state.server) {
-      return (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            color: 'white',
-            alignItems: 'center',
-            height: '100%',
-          }}
-        >
-          Loading...
-        </div>
+        <NotFound message={message} showGoBackButton={this.state.error} />
       );
     }
 
