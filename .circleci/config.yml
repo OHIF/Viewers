@@ -459,8 +459,7 @@ workflows:
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build
           # start server --> verify running --> percy + chrome + cypress
-          start: yarn run test:e2e:dist
-          spec: 'cypress/integration/visual-regression/**/*'
+          command: yarn run test:e2e:dist
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace
           post-steps:
