@@ -6,7 +6,8 @@ describe('OHIF Save Measurements', function() {
 
   beforeEach(() => {
     // Drags Study thumbnail into viewport
-    cy.get('[data-cy="thumbnail-list"]:nth-child(1)')
+    cy.get('[data-cy="thumbnail-list"]')
+      .contains('Rheuma')
       .scrollIntoView()
       .drag('.viewport-drop-target');
 
@@ -56,7 +57,9 @@ describe('OHIF Save Measurements', function() {
         cy.get('.sb-success').should('be.visible');
 
         // Reload the page
-        cy.reload();
+        cy.reload()
+          .wait(1000) //Wait page to load
+          .expectMinimumThumbnails(2); //wait all thumbnails to load
 
         //Verify that recently added measurement was retrieved
         cy.get('@measurementsBtn').click();
@@ -105,8 +108,7 @@ describe('OHIF Save Measurements', function() {
     cy.get('.sb-error')
       .should('be.visible')
       .and('contains.text', 'Error while saving the measurements');
-    // Close message overlay
-    cy.get('.sb-closeIcon').click();
+
     // Close Measurements panel
     cy.get('@measurementsBtn').click();
   });
@@ -135,7 +137,9 @@ describe('OHIF Save Measurements', function() {
       .and('contains.text', 'Measurements were saved with success');
 
     // Reload the page
-    cy.reload();
+    cy.reload()
+      .wait(1000) //Wait page to load
+      .expectMinimumThumbnails(2); //wait all thumbnails to load
 
     //Verify that measurement for unsupported tool was not saved
     cy.get('@measurementsBtn').click();
