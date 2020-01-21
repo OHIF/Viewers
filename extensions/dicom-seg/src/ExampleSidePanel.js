@@ -1,55 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { utils } from '@ohif/core';
 import PropTypes from 'prop-types';
-import { Icon } from '@ohif/ui';
-//
 import cornerstoneTools from 'cornerstone-tools';
 import classnames from 'classnames';
 import moment from 'moment';
-import { Range } from '@ohif/ui';
+
+import { utils } from '@ohif/core';
+import { Icon, Range } from '@ohif/ui';
+
 import './ExampleSidePanel.css';
 
 const { studyMetadataManager } = utils;
 
-function ExampleSidePanel(props) {
-  const {
-    studies,
-    viewports, // viewportSpecificData
-    activeIndex, // activeViewportIndex
-  } = props;
+const segmentationModule = cornerstoneTools.getModule('segmentation');
+const DEFAULT_BRUSH_RADIUS = segmentationModule.getters.radius || 10;
 
-  const segModule = cornerstoneTools.getModule('segmentation');
-  const viewport = viewports[activeIndex];
-  const {
-    studyInstanceUid,
-    seriesInstanceUid,
-    displaySetInstanceUid,
-  } = viewport;
-  // This technically defaults to 10 if undefined (bug?)
-  const [brushRadius, setBrushRadius] = useState(
-    segModule.getters.radius || 10
-  );
+/**
+ * ExampleSidePanel component
+ *
+ * @param {Object} props
+ * @param {Array} props.studies
+ * @param {Array} props.viewports - viewportSpecificData
+ * @param {number} props.activeIndex - activeViewportIndex
+ * @returns component
+ */
+const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
+  /* TODO: This technically defaults to 10 if undefined (bug?) */
+  const [brushRadius, setBrushRadius] = useState(DEFAULT_BRUSH_RADIUS);
   const [brushColor, setBrushColor] = useState('rgba(221, 85, 85, 1)');
 
-  // meta
-  const studyMetadata = studyMetadataManager.get(studyInstanceUid);
-  const displaySet = studyMetadata.findDisplaySet(
-    displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
-  );
-  const firstImageId = displaySet.images[0].getImageId();
+  const viewport = viewports[activeIndex];
+  const firstImageId = _getFirstImageId(viewport);
+  const { studyInstanceUid, seriesInstanceUid } = viewport;
 
-  // CORNERSTONE TOOLS
+  /* CornerstoneTools */
   const [brushStackState, setBrushStackState] = useState(
-    segModule.state.series[firstImageId]
+    segmentationModule.state.series[firstImageId]
   );
-  const [updateCount, setUpdateCount] = useState(0);
+  const [counter, setCounter] = useState(0);
 
   useEffect(() => {
-    const labelmapModifiedHandler = function(evt) {
-      console.warn('labelmap modified', evt);
-      const segmentationModule = cornerstoneTools.getModule('segmentation');
+    const labelmapModifiedHandler = event => {
+      console.warn('labelmap modified', event);
       setBrushStackState(segmentationModule.state.series[firstImageId]);
-      setUpdateCount(updateCount + 1);
+      setCounter(counter + 1);
     };
 
     // These are specific to each element;
@@ -92,8 +85,8 @@ function ExampleSidePanel(props) {
   // If the port is cornerstone, just need to call a re-render.
   // If the port is vtkjs, its a bit more tricky as we now need to create a new
 
-  const labelmapList = referencedSegDisplaysets.map(ds => {
-    const { labelmapIndex, seriesDate, seriesTime } = ds;
+  const labelmapList = referencedSegDisplaysets.map(displaySet => {
+    const { labelmapIndex, seriesDate, seriesTime } = displaySet;
 
     // Map to display representation
     const dateStr = `${seriesDate}:${seriesTime}`.split('.')[0];
@@ -102,7 +95,7 @@ function ExampleSidePanel(props) {
       labelmapIndex === brushStackState.activeLabelmapIndex;
     const displayDate = date.format('ddd, MMM Do YYYY');
     const displayTime = date.format('h:mm:ss a');
-    const displayDescription = ds.seriesDescription;
+    const displayDescription = displaySet.seriesDescription;
 
     return (
       <li
@@ -116,13 +109,13 @@ function ExampleSidePanel(props) {
           const activatedLabelmapIndex = await _setActiveLabelmap(
             viewport,
             studies,
-            ds,
+            displaySet,
             firstImageId,
             brushStackState.activeLabelmapIndex
           );
 
           // TODO: Notify of change?
-          setUpdateCount(updateCount + 1);
+          setCounter(counter + 1);
         }}
       >
         <Icon
@@ -180,7 +173,7 @@ function ExampleSidePanel(props) {
       .sort((a, b) => a - b);
 
     const colorLutTable =
-      segModule.state.colorLutTables[labelmap3D.colorLUTIndex];
+      segmentationModule.state.colorLutTables[labelmap3D.colorLUTIndex];
     const hasLabelmapMeta = labelmap3D.metadata && labelmap3D.metadata.data;
 
     for (let i = 0; i < uniqueSegmentIndexes.length; i++) {
@@ -219,16 +212,16 @@ function ExampleSidePanel(props) {
     // Show default name
   }
 
-  function updateBrushSize(evt) {
+  const updateBrushSize = evt => {
     const updatedRadius = Number(evt.target.value);
 
     if (updatedRadius !== brushRadius) {
       setBrushRadius(updatedRadius);
-      segModule.setters.radius(updatedRadius);
+      segmentationModule.setters.radius(updatedRadius);
     }
-  }
+  };
 
-  function incrementSegment(shouldIncrement = true) {
+  const incrementSegment = (shouldIncrement = true) => {
     if (shouldIncrement) {
       labelmap3D.activeSegmentIndex++;
     } else {
@@ -239,19 +232,19 @@ function ExampleSidePanel(props) {
 
     const color = getActiveSegmentColor();
     setBrushColor(color);
-  }
+  };
 
-  function getActiveSegmentColor() {
+  const getActiveSegmentColor = () => {
     if (!brushStackState) {
       return 'rgba(255, 255, 255, 1)';
     }
 
     const colorLutTable =
-      segModule.state.colorLutTables[labelmap3D.colorLUTIndex];
+      segmentationModule.state.colorLutTables[labelmap3D.colorLUTIndex];
     const color = colorLutTable[labelmap3D.activeSegmentIndex];
 
     return `rgba(${color.join(',')})`;
-  }
+  };
 
   return (
     <div className="labelmap-container">
@@ -336,12 +329,14 @@ function ExampleSidePanel(props) {
       <ul className="unlist">{segmentList}</ul>
     </div>
   );
-}
+};
 
 ExampleSidePanel.propTypes = {
-  // An object, with int index keys?
-  // Maps to: state.viewports.viewportSpecificData, in `viewer`
-  // Passed in MODULE_TYPES.PANEL when specifying component in viewer
+  /*
+   * An object, with int index keys?
+   * Maps to: state.viewports.viewportSpecificData, in `viewer`
+   * Passed in MODULE_TYPES.PANEL when specifying component in viewer
+   */
   viewports: PropTypes.shape({
     displaySetInstanceUid: PropTypes.string,
     framRate: PropTypes.any,
@@ -357,11 +352,19 @@ ExampleSidePanel.propTypes = {
     seriesTime: PropTypes.string,
     sopClassUids: PropTypes.arrayOf(PropTypes.string),
     studyInstanceUid: PropTypes.string,
-    // dom:
   }),
+  activeIndex: PropTypes.number.isRequired,
   studies: PropTypes.array.isRequired,
 };
 ExampleSidePanel.defaultProps = {};
+
+const _getFirstImageId = ({ studyInstanceUid, displaySetInstanceUid }) => {
+  const studyMetadata = studyMetadataManager.get(studyInstanceUid);
+  const displaySet = studyMetadata.findDisplaySet(
+    displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
+  );
+  return displaySet.images[0].getImageId();
+};
 
 /**
  * Returns SEG Displaysets that reference the target series, sorted by dateTime
@@ -370,26 +373,23 @@ ExampleSidePanel.defaultProps = {};
  * @param {string} seriesInstanceUid
  * @returns Array
  */
-function _getReferencedSegDisplaysets(studyInstanceUid, seriesInstanceUid) {
-  // Referenced DisplaySets
+const _getReferencedSegDisplaysets = (studyInstanceUid, seriesInstanceUid) => {
+  /* Referenced DisplaySets */
   const studyMetadata = studyMetadataManager.get(studyInstanceUid);
   const referencedDisplaysets = studyMetadata.getDerivedDatasets({
     referencedSeriesInstanceUID: seriesInstanceUid,
     modality: 'SEG',
   });
 
-  // Sort
-  function sortNumber(a, b) {
+  /* Sort */
+  referencedDisplaysets.sort((a, b) => {
     const aNumber = Number(`${a.seriesDate}${a.seriesTime}`);
     const bNumber = Number(`${b.seriesDate}${b.seriesTime}`);
-
     return aNumber - bNumber;
-  }
-
-  referencedDisplaysets.sort(sortNumber);
+  });
 
   return referencedDisplaysets;
-}
+};
 
 /**
  *
@@ -401,13 +401,13 @@ function _getReferencedSegDisplaysets(studyInstanceUid, seriesInstanceUid) {
  * @param {*} activeLabelmapIndex
  * @returns
  */
-async function _setActiveLabelmap(
+const _setActiveLabelmap = async (
   viewportSpecificData,
   studies,
   displaySet,
   firstImageId,
   activeLabelmapIndex
-) {
+) => {
   if (displaySet.labelmapIndex === activeLabelmapIndex) {
     console.warn(`${activeLabelmapIndex} is already the active labelmap`);
     return;
@@ -425,6 +425,6 @@ async function _setActiveLabelmap(
   brushStackState.activeLabelmapIndex = displaySet.labelmapIndex;
 
   return displaySet.labelmapIndex;
-}
+};
 
 export default ExampleSidePanel;
