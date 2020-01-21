@@ -11,6 +11,7 @@ export class TableListItem extends Component {
     itemClass: PropTypes.string,
     itemIndex: PropTypes.number,
     itemKey: PropTypes.oneOfType(['number', 'string']),
+    itemMeta: PropTypes.node,
     onItemClick: PropTypes.func.isRequired,
   };
 
@@ -22,6 +23,7 @@ export class TableListItem extends Component {
       >
         <div className="itemIndex">
           {this.props.itemIndex}
+          {this.props.itemMeta}
           <span className="warning-icon">
             <Icon name="exclamation-triangle" />
           </span>

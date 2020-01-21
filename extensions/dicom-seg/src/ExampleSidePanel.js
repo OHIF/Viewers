@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import moment from 'moment';
 
 import { utils } from '@ohif/core';
-import { Icon, Range } from '@ohif/ui';
+import { Icon, Range, ScrollableArea, TableList, TableListItem } from '@ohif/ui';
 
 import './ExampleSidePanel.css';
 
@@ -27,6 +27,7 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
   /* TODO: This technically defaults to 10 if undefined (bug?) */
   const [brushRadius, setBrushRadius] = useState(DEFAULT_BRUSH_RADIUS);
   const [brushColor, setBrushColor] = useState('rgba(221, 85, 85, 1)');
+  const [selectedSegment, setSelectedSegment] = useState();
 
   const viewport = viewports[activeIndex];
   const firstImageId = _getFirstImageId(viewport);
@@ -72,7 +73,7 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
   const labelmap3D =
     brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
 
-  // Get list of SEG labelmaps specific to active viewport (reference series)
+  /* Get list of SEG labelmaps specific to active viewport (reference series) */
   const referencedSegDisplaysets = _getReferencedSegDisplaysets(
     studyInstanceUid,
     seriesInstanceUid
@@ -195,16 +196,39 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
         }
       }
 
-      segmentList.push(
-        <li key={segmentNumber} className="segment-list-item">
+      const ColouredCircle = () => {
+        return (
           <div
             className="segment-color"
             style={{ backgroundColor: `rgba(${color.join(',')})` }}
-          >
-            {segmentNumber}
+          ></div>
+        );
+      };
+
+      const sameSegment = selectedSegment === segmentNumber;
+      const setCurrentSelectedSegment = () => {
+        setSelectedSegment(sameSegment ? null : segmentNumber);
+      };
+
+      segmentList.push(
+        <TableListItem
+          key={segmentNumber}
+          itemKey={segmentNumber}
+          itemIndex={segmentNumber}
+          itemClass={`segment-item ${sameSegment && 'selected'}`}
+          itemMeta={<ColouredCircle />}
+          onItemClick={setCurrentSelectedSegment}
+        >
+          <div>
+            <div className="segment-label">{segmentLabel}</div>
+            <div>
+              <div className="segment-info">
+                {segmentLabel ? segmentLabel : '...'}
+              </div>
+            </div>
+            <div className="segment-actions"></div>
           </div>
-          <div className="segment-label">{segmentLabel}</div>
-        </li>
+        </TableListItem>
       );
     }
 
@@ -252,6 +276,15 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
     const color = colorLutTable[labelmap3D.activeSegmentIndex];
 
     return `rgba(${color.join(',')})`;
+  };
+
+  const SegmentsHeader = () => {
+    return (
+      <React.Fragment>
+        <div className="tableListHeaderTitle">Segments</div>
+        <div className="numberOfItems">{segmentList.length}</div>
+      </React.Fragment>
+    );
   };
 
   return (
@@ -313,8 +346,9 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
         {labelmapList}
       </ul>
 
-      <h3 style={{ marginTop: '32px', marginLeft: '16px' }}>Segments</h3>
-      <ul className="unlist">{segmentList}</ul>
+      <ScrollableArea>
+        <TableList customHeader={<SegmentsHeader />}>{segmentList}</TableList>
+      </ScrollableArea>
     </div>
   );
 };

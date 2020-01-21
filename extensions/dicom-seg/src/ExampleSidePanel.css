@@ -10,6 +10,11 @@
 .labelmap-container {
   color: white;
   min-height: 200px;
+  background-color: var(--primary-background-color);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .labelmap-list {
@@ -31,12 +36,8 @@
   background-color: var(--active-color);
 }
 
-.segment-list-item {
-  display: flex;
-  padding: 2px 16px;
-}
-
 .segment-color {
+  margin-top: 10px;
   border-radius: 100%;
   width: 24px;
   height: 24px;
@@ -45,7 +46,53 @@
   line-height: 25px;
 }
 
-.segment-label {
-  flex-grow: 1;
-  line-height: 25px;
+.segment-item .segment-info {
+  display: inline-block;
+  margin-top: 9px;
+  padding-left: 9px;
+  width: 90px;
+  border-left: 1px solid var(--text-secondary-color);
+  color: var(--text-primary-color);
+}
+
+.segment-item .segment-label {
+  margin-top: 9px;
+  overflow: hidden;
+  max-width: calc(100% - 50px);
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
+.segment-item.selected .segment-actions {
+  height: 35px;
+  visibility: visible;
+}
+
+.segment-item .segment-actions {
+  margin-left: -1px;
+  background-color: var(--ui-gray-darker);
+  height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  visibility: hidden;
+  padding-left: 14px;
+}
+
+.segment-item .segment-actions .btnAction {
+  background-color: transparent;
+  border: none;
+  color: var(--default-color);
+  cursor: pointer;
+  line-height: 35px;
+  height: 35px;
+  transition: all 0.3s ease;
+}
+
+segment-item .segment-actions .btnAction:hover, segment-item .segment-actions .btnAction:active {
+  color: var(--text-primary-color);
+}
+
+segment-item .segment-actions .btnAction i {
+  margin-right: 4px;
 }
