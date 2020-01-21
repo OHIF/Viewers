@@ -88,7 +88,7 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
   const labelmapList = referencedSegDisplaysets.map(displaySet => {
     const { labelmapIndex, seriesDate, seriesTime } = displaySet;
 
-    // Map to display representation
+    /* Map to display representation */
     const dateStr = `${seriesDate}:${seriesTime}`.split('.')[0];
     const date = moment(dateStr, 'YYYYMMDD:HHmmss');
     const isActiveLabelmap =
@@ -103,8 +103,10 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
         className={classnames('labelmap-item', {
           isActive: isActiveLabelmap,
         })}
-        // CLICK BLOCKED BY DRAGGABLEAREA
-        // Specific to UIDialogService
+        /*
+         * TODO: CLICK BLOCKED BY DRAGGABLEAREA
+         * Specific to UIDialogService
+         */
         onClick={async () => {
           const activatedLabelmapIndex = await _setActiveLabelmap(
             viewport,
@@ -221,15 +223,21 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
     }
   };
 
-  const incrementSegment = (shouldIncrement = true) => {
-    if (shouldIncrement) {
-      labelmap3D.activeSegmentIndex++;
-    } else {
-      if (labelmap3D.activeSegmentIndex > 1) {
-        labelmap3D.activeSegmentIndex--;
-      }
+  const decrementSegment = event => {
+    event.preventDefault();
+    if (labelmap3D.activeSegmentIndex > 1) {
+      labelmap3D.activeSegmentIndex--;
     }
+    setActiveSegmentColor();
+  };
 
+  const incrementSegment = event => {
+    event.preventDefault();
+    labelmap3D.activeSegmentIndex++;
+    setActiveSegmentColor();
+  };
+
+  const setActiveSegmentColor = () => {
     const color = getActiveSegmentColor();
     setBrushColor(color);
   };
@@ -251,12 +259,7 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
       <h2 style={{ marginLeft: '16px' }}>Segmentation</h2>
 
       <form style={{ padding: '0px 16px' }}>
-        <div
-          style={{
-            display: 'flex',
-            marginBottom: '16px',
-          }}
-        >
+        <div style={{ display: 'flex', marginBottom: '16px' }}>
           <div
             style={{
               borderRadius: '100%',
@@ -278,22 +281,10 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
               flexGrow: '1',
             }}
           >
-            <button
-              className="db-button"
-              onClick={evt => {
-                evt.preventDefault();
-                incrementSegment();
-              }}
-            >
+            <button className="db-button" onClick={incrementSegment}>
               Next
             </button>
-            <button
-              className="db-button"
-              onClick={evt => {
-                evt.preventDefault();
-                incrementSegment(false);
-              }}
-            >
+            <button className="db-button" onClick={decrementSegment}>
               Previous
             </button>
           </div>
@@ -302,10 +293,7 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
         <div>
           <label
             htmlFor="brush-radius"
-            style={{
-              display: 'block',
-              marginBottom: '8px',
-            }}
+            style={{ display: 'block', marginBottom: '8px' }}
           >
             Brush Radius
           </label>
