@@ -1,4 +1,4 @@
-import ExampleSidePanel from './ExampleSidePanel.js';
+import SegmentationPanel from './SegmentationPanel.js';
 
 export default {
   menuOptions: [
@@ -11,7 +11,7 @@ export default {
   components: [
     {
       id: 'example-side-panel',
-      component: ExampleSidePanel,
+      component: SegmentationPanel,
     },
   ],
   defaultContext: ['VIEWER'],

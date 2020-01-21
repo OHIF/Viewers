@@ -17,6 +17,11 @@
   flex-direction: column;
 }
 
+.labelmap-list-container {
+  min-height: 100px;
+  max-height: 200px;
+}
+
 .labelmap-list {
   display: flex;
   flex-direction: column;
@@ -24,7 +29,7 @@
 
 .labelmap-item {
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   cursor: pointer;
   border-bottom: 1px solid var(--ui-gray-light);
   padding: 8px 16px;
@@ -95,4 +100,50 @@ segment-item .segment-actions .btnAction:hover, segment-item .segment-actions .b
 
 segment-item .segment-actions .btnAction i {
   margin-right: 4px;
+}
+
+.segmentation-icon {
+  margin-right: '8px';
+  margin-top: '12px';
+  min-width: '14px';
+}
+
+.segmentation-meta {
+  display: 'flex';
+  flex-direction: 'column';
+  flex-grow: '1';
+  overflow: 'hidden';
+  margin-left: 10px;
+}
+
+.segmentation-meta-title {
+  text-overflow: 'ellipsis';
+  overflow: 'hidden';
+  white-space: 'nowrap';
+}
+
+.selector-form {
+  padding: '0px 16px';
+}
+
+.selector-form div {
+  display: 'flex';
+  margin-bottom: '16px';
+}
+
+.selector-buttons {
+  display: 'flex';
+  flex-direction: 'column';
+  flex-grow: '1';
+}
+
+.selector-active-segment {
+  border-radius: '100%';
+  background-color: brushColor;
+  width: '32px';
+  height: '32px';
+  margin-top: '8px';
+  margin-right: '8px';
+  text-align: 'center';
+  line-height: '32px';
 }

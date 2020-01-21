@@ -5,9 +5,15 @@ import classnames from 'classnames';
 import moment from 'moment';
 
 import { utils } from '@ohif/core';
-import { Icon, Range, ScrollableArea, TableList, TableListItem } from '@ohif/ui';
+import {
+  Icon,
+  Range,
+  ScrollableArea,
+  TableList,
+  TableListItem,
+} from '@ohif/ui';
 
-import './ExampleSidePanel.css';
+import './SegmentationPanel.css';
 
 const { studyMetadataManager } = utils;
 
@@ -15,7 +21,7 @@ const segmentationModule = cornerstoneTools.getModule('segmentation');
 const DEFAULT_BRUSH_RADIUS = segmentationModule.getters.radius || 10;
 
 /**
- * ExampleSidePanel component
+ * SegmentationPanel component
  *
  * @param {Object} props
  * @param {Array} props.studies
@@ -23,7 +29,7 @@ const DEFAULT_BRUSH_RADIUS = segmentationModule.getters.radius || 10;
  * @param {number} props.activeIndex - activeViewportIndex
  * @returns component
  */
-const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
+const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
   /* TODO: This technically defaults to 10 if undefined (bug?) */
   const [brushRadius, setBrushRadius] = useState(DEFAULT_BRUSH_RADIUS);
   const [brushColor, setBrushColor] = useState('rgba(221, 85, 85, 1)');
@@ -98,60 +104,60 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
     const displayTime = date.format('h:mm:ss a');
     const displayDescription = displaySet.seriesDescription;
 
-    return (
-      <li
-        key={`${seriesDate}${seriesTime}`}
-        className={classnames('labelmap-item', {
-          isActive: isActiveLabelmap,
-        })}
-        /*
-         * TODO: CLICK BLOCKED BY DRAGGABLEAREA
-         * Specific to UIDialogService
-         */
-        onClick={async () => {
-          const activatedLabelmapIndex = await _setActiveLabelmap(
-            viewport,
-            studies,
-            displaySet,
-            firstImageId,
-            brushStackState.activeLabelmapIndex
-          );
+    return {
+      title: displayDescription,
+      description: displayDate,
+      isActive: isActiveLabelmap,
+      className: classnames('labelmap-item', {
+        isActive: isActiveLabelmap,
+      }),
+      /*
+       * TODO: CLICK BLOCKED BY DRAGGABLEAREA
+       * Specific to UIDialogService
+       */
+      onClick: async () => {
+        const activatedLabelmapIndex = await _setActiveLabelmap(
+          viewport,
+          studies,
+          displaySet,
+          firstImageId,
+          brushStackState.activeLabelmapIndex
+        );
 
-          // TODO: Notify of change?
-          setCounter(counter + 1);
-        }}
-      >
+        // TODO: Notify of change?
+        setCounter(counter + 1);
+      },
+    };
+  });
+
+  const SegmentationItem = ({
+    onClick,
+    className,
+    title,
+    isActive,
+    description,
+  }) => {
+    return (
+      <li className={className} onClick={onClick}>
         <Icon
-          style={{
-            marginRight: '8px',
-            marginTop: '12px',
-            minWidth: '14px',
-            color: isActiveLabelmap ? '#FFF' : '#000',
-          }}
+          className="segmentation-icon"
+          style={{ color: isActive ? '#FFF' : '#000' }}
           name="star"
         />
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            flexGrow: '1',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {displayDescription}
-          </div>
-          <div style={{ color: '#BABABA' }}>{displayDate}</div>
+        <div className="segmentation-meta">
+          <div className="segmentation-meta-title">{title}</div>
+          <div style={{ color: '#BABABA' }}>{description}</div>
         </div>
       </li>
     );
-  });
+  };
+  SegmentationItem.propTypes = {
+    onClick: PropTypes.func,
+    className: PropTypes.string,
+    isActive: PropTypes.bool,
+    title: PropTypes.string,
+    description: PropTypes.string,
+  };
 
   const segmentList = [];
 
@@ -289,63 +295,53 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
 
   return (
     <div className="labelmap-container">
-      <h2 style={{ marginLeft: '16px' }}>Segmentation</h2>
+      {false && <h2 style={{ marginLeft: '16px' }}>Segmentation</h2>}
 
-      <form style={{ padding: '0px 16px' }}>
-        <div style={{ display: 'flex', marginBottom: '16px' }}>
-          <div
-            style={{
-              borderRadius: '100%',
-              backgroundColor: brushColor,
-              width: '32px',
-              height: '32px',
-              marginTop: '8px',
-              marginRight: '8px',
-              textAlign: 'center',
-              lineHeight: '32px',
-            }}
-          >
-            {labelmap3D.activeSegmentIndex}
+      <form className="selector-form">
+        {false && (
+          <div>
+            <div className="selector-active-segment">
+              {labelmap3D.activeSegmentIndex}
+            </div>
+            <div className="selector-buttons">
+              <button className="db-button" onClick={incrementSegment}>
+                Next
+              </button>
+              <button className="db-button" onClick={decrementSegment}>
+                Previous
+              </button>
+            </div>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              flexGrow: '1',
-            }}
-          >
-            <button className="db-button" onClick={incrementSegment}>
-              Next
-            </button>
-            <button className="db-button" onClick={decrementSegment}>
-              Previous
-            </button>
-          </div>
-        </div>
+        )}
 
-        <div>
-          <label
-            htmlFor="brush-radius"
-            style={{ display: 'block', marginBottom: '8px' }}
-          >
-            Brush Radius
-          </label>
-          <Range
-            value={brushRadius}
-            min={1}
-            max={50}
-            step={1}
-            onChange={updateBrushSize}
-            id="brush-radius"
-          />
-        </div>
+        {false && (
+          <div>
+            <label
+              htmlFor="brush-radius"
+              style={{ display: 'block', marginBottom: '8px' }}
+            >
+              Brush Radius
+            </label>
+            <Range
+              value={brushRadius}
+              min={1}
+              max={50}
+              step={1}
+              onChange={updateBrushSize}
+              id="brush-radius"
+            />
+          </div>
+        )}
       </form>
 
-      <h3 style={{ marginTop: '32px', marginLeft: '16px' }}>Labelmaps</h3>
-      <ul className="unlist labelmap-list" style={{ marginBottom: '24px' }}>
-        {labelmapList}
-      </ul>
-
+      <h3 style={{ marginLeft: '16px' }}>Segmentations</h3>
+      <div className="labelmap-list-container">
+        <ScrollableArea>
+          <ul className="unlist labelmap-list" style={{ marginBottom: '24px' }}>
+            {labelmapList.map((item, index) => <SegmentationItem {...item} key={index} />)}
+          </ul>
+        </ScrollableArea>
+      </div>
       <ScrollableArea>
         <TableList customHeader={<SegmentsHeader />}>{segmentList}</TableList>
       </ScrollableArea>
@@ -353,7 +349,7 @@ const ExampleSidePanel = ({ studies, viewports, activeIndex }) => {
   );
 };
 
-ExampleSidePanel.propTypes = {
+SegmentationPanel.propTypes = {
   /*
    * An object, with int index keys?
    * Maps to: state.viewports.viewportSpecificData, in `viewer`
@@ -378,7 +374,7 @@ ExampleSidePanel.propTypes = {
   activeIndex: PropTypes.number.isRequired,
   studies: PropTypes.array.isRequired,
 };
-ExampleSidePanel.defaultProps = {};
+SegmentationPanel.defaultProps = {};
 
 const _getFirstImageId = ({ studyInstanceUid, displaySetInstanceUid }) => {
   const studyMetadata = studyMetadataManager.get(studyInstanceUid);
@@ -449,4 +445,4 @@ const _setActiveLabelmap = async (
   return displaySet.labelmapIndex;
 };
 
-export default ExampleSidePanel;
+export default SegmentationPanel;
