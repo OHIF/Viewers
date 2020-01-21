@@ -13,6 +13,7 @@ class StandaloneRouting extends Component {
     studyInstanceUids: null,
     seriesInstanceUids: null,
     error: null,
+    loading: true,
   };
 
   static propTypes = {
@@ -40,7 +41,11 @@ class StandaloneRouting extends Component {
 
       // When the JSON has been returned, parse it into a JavaScript Object
       // and render the OHIF Viewer with this data
-      oReq.addEventListener('load', () => {
+      oReq.addEventListener('load', event => {
+        if (event.target.status === 404) {
+          reject(new Error('No JSON data found'));
+        }
+
         // Parse the response content
         // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseText
         if (!oReq.responseText) {
@@ -51,7 +56,12 @@ class StandaloneRouting extends Component {
         log.info(JSON.stringify(oReq.responseText, null, 2));
 
         const data = JSON.parse(oReq.responseText);
-        if (data.servers && query.studyInstanceUids) {
+        if (data.servers) {
+          if (!query.studyInstanceUids) {
+            log.warn('No study instance uids specified');
+            reject(new Error('No study instance uids specified'));
+          }
+
           const server = data.servers.dicomWeb[0];
           server.type = 'dicomWeb';
 
@@ -60,8 +70,7 @@ class StandaloneRouting extends Component {
 
           resolve({ server, studyInstanceUids, seriesInstanceUids });
         } else {
-          log.warn('Invalid servers or no study instance uids specified');
-          reject(new Error('Invalid servers or no study instance uids specified'));
+          resolve({ studies: data.studies, studyInstanceUids: [] });
         }
       });
 
@@ -87,22 +96,27 @@ class StandaloneRouting extends Component {
 
       const {
         server,
+        studies,
         studyInstanceUids,
         seriesInstanceUids,
       } = await StandaloneRouting.parseQueryAndRetrieveDICOMWebData(query);
 
-      this.setState({ server, studyInstanceUids, seriesInstanceUids });
+      this.setState({
+        studies,
+        server,
+        studyInstanceUids,
+        seriesInstanceUids,
+        loading: false,
+      });
     } catch (error) {
-      this.setState({ error: error.message });
+      this.setState({ error: error.message, loading: false });
     }
   }
 
   render() {
     const message = this.state.error ? `Error: ${JSON.stringify(this.state.error)}` : 'Loading...';
-    if (this.state.error || !this.state.server) {
-      return (
-        <NotFound message={message} showGoBackButton={this.state.error} />
-      );
+    if (this.state.error || this.state.loading) {
+      return <NotFound message={message} showGoBackButton={this.state.error} />;
     }
 
     return (

@@ -171,6 +171,7 @@ const _loadRemainingSeries = studyMetadata => {
 };
 
 function ViewerRetrieveStudyData({
+  defaultStudies = [],
   server,
   studyInstanceUids,
   seriesInstanceUids,
@@ -228,8 +229,9 @@ function ViewerRetrieveStudyData({
    * @param {Array} studiesData Array of studies retrieved from server
    * @param {Object} [filters] - Object containing filters to be applied
    * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
+   * @param {boolean} loadRemainingSeries - Load remaining series conditional
    */
-  const processStudies = (studiesData, filters) => {
+  const processStudies = (studiesData, filters, loadRemainingSeries = true) => {
     if (Array.isArray(studiesData) && studiesData.length > 0) {
       // Map studies to new format, update metadata manager?
       const studies = studiesData.map(study => {
@@ -241,25 +243,27 @@ function ViewerRetrieveStudyData({
         _updateStudyDisplaySets(study, studyMetadata);
         _updateMetaDataManager(study, studyMetadata);
 
-        // Attempt to load remaning series if any
-        cancelableSeriesPromises[study.studyInstanceUid] = makeCancelable(
-          _loadRemainingSeries(studyMetadata)
-        )
-          .then(result => {
-            if (result && !result.isCanceled) {
-              studyDidLoad(study, studyMetadata, filters);
-            }
-          })
-          .catch(error => {
-            if (error && !error.isCanceled) {
-              setError(true);
-            }
-          });
+        if (loadRemainingSeries) {
+          // Attempt to load remaning series if any
+          cancelableSeriesPromises[study.studyInstanceUid] = makeCancelable(
+            _loadRemainingSeries(studyMetadata)
+          )
+            .then(result => {
+              if (result && !result.isCanceled) {
+                studyDidLoad(study, studyMetadata, filters);
+              }
+            })
+            .catch(error => {
+              if (error && !error.isCanceled) {
+                setError(true);
+              }
+            });
+        }
 
         return study;
       });
 
-      setStudies(studies);
+      return loadRemainingSeries ? setStudies(studies) : studies;
     }
   };
 
@@ -340,9 +344,13 @@ function ViewerRetrieveStudyData({
     return <div>Error: {JSON.stringify(error)}</div>;
   }
 
+  const getStudies = () => {
+    return defaultStudies.length ? processStudies(defaultStudies, null, false) : studies;
+  };
+
   return (
     <ConnectedViewer
-      studies={studies}
+      studies={getStudies()}
       isStudyLoaded={isStudyLoaded}
       studyInstanceUids={studyInstanceUids}
     />
@@ -352,6 +360,7 @@ function ViewerRetrieveStudyData({
 ViewerRetrieveStudyData.propTypes = {
   studyInstanceUids: PropTypes.array.isRequired,
   seriesInstanceUids: PropTypes.array,
+  defaultStudies: PropTypes.array,
   server: PropTypes.object,
   clearViewportSpecificData: PropTypes.func.isRequired,
 };
