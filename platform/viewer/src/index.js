@@ -48,8 +48,8 @@ const appProps = {
     OHIFDicomPDFExtension,
     OHIFDicomSegExtension,
     OHIFCornerstoneSphericalGrowcutExtention,
-  ];
-}
+  ],
+};
 
 /** Create App */
 const app = React.createElement(App, appProps, null);
