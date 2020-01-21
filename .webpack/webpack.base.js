@@ -72,12 +72,17 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
     },
     plugins: [
       new webpack.DefinePlugin({
+        /* Application */
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
         'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
         'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
         'process.env.VERSION_NUMBER': JSON.stringify(PACKAGE.version || ''),
         'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
+        /* i18n */
+        'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
+        'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
+        'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
       }),
     ],
     // Fix: https://github.com/webpack-contrib/css-loader/issues/447#issuecomment-285598881

@@ -10,9 +10,9 @@ describe('Top level exports', () => {
       'HotkeysManager',
       'ServicesManager',
       //
-      'createUINotificationService',
-      'createUIModalService',
-      'createUIDialogService',
+      'UINotificationService',
+      'UIModalService',
+      'UIDialogService',
       //
       'utils',
       'studies',
@@ -28,6 +28,7 @@ describe('Top level exports', () => {
       'object',
       'log',
       'DICOMWeb',
+      'DICOMSR',
       'OHIF', //
       'measurements',
       'hangingProtocols',

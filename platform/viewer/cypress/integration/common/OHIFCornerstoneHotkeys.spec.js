@@ -47,7 +47,6 @@ describe('OHIF Cornerstone Hotkeys', () => {
     cy.get('body').type('I');
     // Visual comparison
     cy.screenshot('Hotkey I - Should Invert Image');
-    cy.percyCanvasSnapshot('Hotkey I - Should Invert Image');
   });
 
   it('checks if hotkeys "+", "-" and "=" can zoom in, out and fit to viewport', () => {
@@ -77,14 +76,11 @@ describe('OHIF Cornerstone Hotkeys', () => {
 
     // Visual comparison to make sure the 'inverted' image was reset
     cy.screenshot('Hotkey SPACEBAR - Should Reset Image');
-    cy.percyCanvasSnapshot('Hotkey SPACEBAR - Should Reset Image');
   });
 
   it('uses hotkeys "RightArrow" and "LeftArrow" to navigate between multiple viewports', () => {
-    //Click on Layout button
-    cy.get('@layoutBtn').click();
-    //Select 3 viewports
-    cy.get('tbody > :nth-child(1) > :nth-child(3)').click();
+    //Select viewport layout (3,1)
+    cy.setLayout(3, 1);
     cy.waitViewportImageLoading();
 
     // Press multiples hotkeys on viewport #1

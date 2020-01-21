@@ -24,10 +24,7 @@ describe('OHIF User Preferences', () => {
 
       // Visual comparison
       cy.screenshot(
-        'User Preferences Modal - Hotkeys tab initial state in Study Viewer page'
-      );
-      cy.percyCanvasSnapshot(
-        'User Preferences Modal - Hotkeys tab initial state in Study Viewer page'
+        'User Preferences Modal - Hotkeys tab initial state in Study List page'
       );
       cy.get('[data-cy="close-button"]').click();
     });
@@ -42,16 +39,10 @@ describe('OHIF User Preferences', () => {
 
       // Visual comparison
       cy.screenshot(
-        'User Preferences Modal - General tab initial state in Study Viewer page'
+        'User Preferences Modal - General tab initial state in Study List page'
       );
-      cy.percyCanvasSnapshot(
-        'User Preferences Modal - General tab initial state in Study Viewer page'
-      );
-      // Select Spanish and Save
-      cy.get('#language-select').select('Spanish');
-      cy.get('@saveBtn')
-        .scrollIntoView()
-        .click();
+      // Set language to Spanish and save
+      cy.setLanguage('Spanish');
 
       // Header should be translated to Spanish
       cy.get('.research-use')
@@ -59,90 +50,88 @@ describe('OHIF User Preferences', () => {
         .should('have.text', 'SOLO USO PARA INVESTIGACIÓN');
 
       // Options menu should be translated
-      cy.get('[data-cy="options-menu"]').should('have.text', 'Opciones');
+      cy.get('[data-cy="options-menu"]')
+        .should('have.text', 'Opciones')
+        .click();
 
-      //TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
-      //Once the issue is fixed, the following code should be uncommented
-      // cy.get('[data-cy="about-item-menu"]')
-      //   .first()
-      //   .should('have.text', 'Acerca de');
-      // cy.get('[data-cy="about-item-menu"]')
-      //   .last()
-      //   .should('have.text', 'Preferencias');
+      cy.get('[data-cy="dd-item-menu"]')
+        .first()
+        .should('contain.text', 'Acerca de');
+      cy.get('[data-cy="dd-item-menu"]')
+        .last()
+        .should('contain.text', 'Preferencias');
+
+      // Close Options menu
+      cy.get('[data-cy="options-menu"]').click();
     });
 
     it('checks if user can cancel the language selection and application will be in English', function() {
-      cy.get('@userPreferencesGeneralTab')
-        .click()
-        .should('have.class', 'active');
+      // Set language to English and save
+      cy.setLanguage('English');
 
-      // Language dropdown should be displayed
-      cy.get('#language-select').should('be.visible');
+      // Set language to Spanish and cancel
+      cy.setLanguage('Spanish', false);
 
-      // Select Spanish and Cancel
-      cy.get('#language-select').select('Spanish');
-      cy.get('@cancelBtn')
+      // Header should be kept in English
+      cy.get('.research-use')
+        .scrollIntoView()
+        .should('have.text', 'INVESTIGATIONAL USE ONLY');
+
+      // Options menu should be translated
+      cy.get('[data-cy="options-menu"]')
+        .should('have.text', 'Options')
+        .click();
+
+      cy.get('[data-cy="dd-item-menu"]')
+        .first()
+        .should('contain.text', 'About');
+      cy.get('[data-cy="dd-item-menu"]')
+        .last()
+        .should('contain.text', 'Preferences');
+
+      // Close Options menu
+      cy.get('[data-cy="options-menu"]').click();
+    });
+
+    it('checks if user can restore to default the language selection and application will be in English', function() {
+      // Set language to Spanish
+      cy.setLanguage('Spanish');
+
+      //Open Preferences again
+      cy.openPreferences();
+
+      // Go to general tab
+      cy.get('@userPreferencesGeneralTab').click();
+
+      cy.get('@restoreBtn')
         .scrollIntoView()
         .click();
 
-      // TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
-      // Once the issue is fixed, the following code should be uncommented
-      // // Header should be kept in English
-      // cy.get('.research-use')
-      //   .scrollIntoView()
-      //   .should('have.text', 'INVESTIGATIONAL USE ONLY');
-      //
-      // // Options menu should be translated
-      // cy.get('[data-cy="options-menu"]').should('have.text', 'Options');
-      //
-      // cy.get('[data-cy="about-item-menu"]')
-      //   .first()
-      //   .should('have.text', 'About');
-      // cy.get('[data-cy="about-item-menu"]')
-      //   .last()
-      //   .should('have.text', 'Preferences');
+      // Save
+      cy.get('@saveBtn')
+        .scrollIntoView()
+        .click();
+
+      // Header should be in English
+      cy.get('.research-use')
+        .scrollIntoView()
+        .should('have.text', 'INVESTIGATIONAL USE ONLY');
+
+      // Options menu should be in English
+      cy.get('[data-cy="options-menu"]')
+        .should('have.text', 'Options')
+        .click();
+
+      cy.get('[data-cy="dd-item-menu"]')
+        .first()
+        .should('contain.text', 'About');
+      cy.get('[data-cy="dd-item-menu"]')
+        .last()
+        .should('contain.text', 'Preferences');
+
+      // Close options Menu
+      cy.get('[data-cy="options-menu"]').click();
     });
-
-    // TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
-    // Once the issue is fixed, the following code should be uncommented
-    // it('checks if user can restore to default the language selection and application will be in English', function() {
-    //   cy.get('@userPreferencesGeneralTab')
-    //     .click()
-    //     .should('have.class', 'active');
-
-    //   // Language dropdown should be displayed
-    //   cy.get('#language-select').should('be.visible');
-
-    //   // Select Spanish and Save
-    //   cy.get('#language-select').select('Spanish');
-    //   cy.get('@saveBtn')
-    //     .scrollIntoView()
-    //     .click();
-
-    //   //Open Preferences again
-    //   cy.openPreferences();
-
-    //   // Go to general tab
-    //   cy.get('@userPreferencesGeneralTab').click();
-
-    //   cy.get('@restoreBtn')
-    //     .scrollIntoView()
-    //     .click();
-
-    // Header should be in English
-    // cy.get('.research-use')
-    //   .scrollIntoView()
-    //   .should('have.text', 'INVESTIGATIONAL USE ONLY');
-    //
-    // Options menu should be in English
-    //   cy.get('[data-cy="options-menu"]').should('have.text', 'Options');
-    //   cy.get('[data-cy="about-item-menu"]')
-    //     .first()
-    //     .should('have.text', 'About');
-    //   cy.get('[data-cy="about-item-menu"]')
-    //     .last()
-    //     .should('have.text', 'Preferences');
-    //  });
 
     it('checks if Preferences set in Study List Page will be consistent on Viewer Page', function() {
       // Go go hotkeys tab
@@ -163,11 +152,8 @@ describe('OHIF User Preferences', () => {
       // Go to General tab
       cy.get('@userPreferencesGeneralTab').click();
 
-      // Select Spanish and Save
-      cy.get('#language-select').select('Spanish');
-      cy.get('@saveBtn')
-        .scrollIntoView()
-        .click();
+      // Set language to Spanish
+      cy.setLanguage('Spanish');
 
       // Go to Study Viewer page
       cy.openStudy('MISTER^MR');
@@ -185,19 +171,17 @@ describe('OHIF User Preferences', () => {
       cy.get('[data-cy="options-menu"]')
         .should('have.text', 'Opciones')
         .click();
-      cy.get('[data-cy="about-item-menu"]')
+      cy.get('[data-cy="dd-item-menu"]')
         .first()
         .should('contain.text', 'Acerca de');
-      cy.get('[data-cy="options-menu"]').click(); //Close Options overlay
-
-      //TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
-      //Once the issue is fixed, the following code should be uncommented
-      // cy.get('[data-cy="about-item-menu"]')
-      //   .last()
-      //   .should('have.text', 'Preferencias');
+      cy.get('[data-cy="dd-item-menu"]')
+        .last()
+        .should('contain.text', 'Preferencias');
 
       // Check if new hotkey is working on viewport
-      cy.get('body').type('{shift}Q', { release: false });
+      cy.get('body').type('{shift}Q', {
+        release: false,
+      });
       cy.get('@viewportInfoMidTop').should('contains.text', 'R');
     });
   });
@@ -231,10 +215,7 @@ describe('OHIF User Preferences', () => {
 
       // Visual comparison
       cy.screenshot(
-        'User Preferences Modal - Hotkeys tab initial state in Study List page'
-      );
-      cy.percyCanvasSnapshot(
-        'User Preferences Modal - Hotkeys tab initial state in Study List page'
+        'User Preferences Modal - Hotkeys tab initial state in Study Viewer page'
       );
       cy.get('[data-cy="close-button"]').click(); //close User Preferences modal
     });
@@ -249,16 +230,10 @@ describe('OHIF User Preferences', () => {
 
       // Visual comparison
       cy.screenshot(
-        'User Preferences Modal - General tab initial state in Study List page'
+        'User Preferences Modal - General tab initial state in Study Viewer page'
       );
-      cy.percyCanvasSnapshot(
-        'User Preferences Modal - General tab initial state in Study List page'
-      );
-      // Select Spanish and Save
-      cy.get('#language-select').select('Spanish');
-      cy.get('@saveBtn')
-        .scrollIntoView()
-        .click();
+      // Set language to Spanish
+      cy.setLanguage('Spanish');
 
       // Header should be translated to Spanish
       cy.get('.research-use')
@@ -266,19 +241,49 @@ describe('OHIF User Preferences', () => {
         .should('have.text', 'SOLO USO PARA INVESTIGACIÓN');
 
       // Options menu should be translated
-      cy.get('[data-cy="options-menu"]').should('have.text', 'Opciones');
+      cy.get('[data-cy="options-menu"]')
+        .should('have.text', 'Opciones')
+        .click();
 
-      //TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
-      //Once the issue is fixed, the following code should be uncommented
-      // cy.get('[data-cy="about-item-menu"]')
-      //   .first()
-      //   .should('have.text', 'Acerca de');
-      // cy.get('[data-cy="about-item-menu"]')
-      //   .last()
-      //   .should('have.text', 'Preferencias');
+      cy.get('[data-cy="dd-item-menu"]')
+        .first()
+        .should('contain.text', 'Acerca de');
+      cy.get('[data-cy="dd-item-menu"]')
+        .last()
+        .should('contain.text', 'Preferencias');
+
+      // Close Options menu
+      cy.get('[data-cy="options-menu"]').click();
     });
 
     it('checks if user can cancel the language selection and application will be in English', function() {
+      // Set language to English and save
+      cy.setLanguage('English');
+
+      // Set language to Spanish and cancel
+      cy.setLanguage('Spanish', false);
+
+      // Header should be kept in English
+      cy.get('.research-use')
+        .scrollIntoView()
+        .should('have.text', 'INVESTIGATIONAL USE ONLY');
+
+      // Options menu should be translated
+      cy.get('[data-cy="options-menu"]')
+        .should('have.text', 'Options')
+        .click();
+
+      cy.get('[data-cy="dd-item-menu"]')
+        .first()
+        .should('contain.text', 'About');
+      cy.get('[data-cy="dd-item-menu"]')
+        .last()
+        .should('contain.text', 'Preferences');
+      // Close Options menu
+      cy.get('[data-cy="options-menu"]').click();
+    });
+
+    it('checks if user can restore to default the language selection and application will be in English', function() {
       cy.get('@userPreferencesGeneralTab')
         .click()
         .should('have.class', 'active');
@@ -286,75 +291,42 @@ describe('OHIF User Preferences', () => {
       // Language dropdown should be displayed
       cy.get('#language-select').should('be.visible');
 
-      // Select Spanish and Cancel
-      cy.get('#language-select').select('Spanish');
-      cy.get('@cancelBtn')
+      // Set language to Spanish
+      cy.setLanguage('Spanish');
+
+      // Open User Preferences modal
+      cy.openPreferences();
+
+      // Go to general tab
+      cy.get('@userPreferencesGeneralTab').click();
+
+      cy.get('@restoreBtn')
         .scrollIntoView()
         .click();
 
-      // TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
-      // Once the issue is fixed, the following code should be uncommented
-      // // Header should be kept in English
-      // cy.get('.research-use')
-      //   .scrollIntoView()
-      //   .should('have.text', 'INVESTIGATIONAL USE ONLY');
-      //
-      // // Options menu should be translated
-      // cy.get('[data-cy="options-menu"]').should('have.text', 'Options');
-      //
-      // cy.get('[data-cy="about-item-menu"]')
-      //   .first()
-      //   .should('have.text', 'About');
-      // cy.get('[data-cy="about-item-menu"]')
-      //   .last()
-      //   .should('have.text', 'Preferences');
+      cy.get('@saveBtn')
+        .scrollIntoView()
+        .click();
+
+      // Header should be in English
+      cy.get('.research-use')
+        .scrollIntoView()
+        .should('have.text', 'INVESTIGATIONAL USE ONLY');
+
+      // Options menu should be in English
+      cy.get('[data-cy="options-menu"]')
+        .should('have.text', 'Options')
+        .click();
+      cy.get('[data-cy="dd-item-menu"]')
+        .first()
+        .should('contain.text', 'About');
+      cy.get('[data-cy="dd-item-menu"]')
+        .last()
+        .should('contain.text', 'Preferences');
+
+      // Close Options menu
+      cy.get('[data-cy="options-menu"]').click();
     });
-
-    // TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
-    // Once the issue is fixed, the following code should be uncommented
-    // it('checks if user can restore to default the language selection and application will be in English', function() {
-    //   cy.get('@userPreferencesGeneralTab')
-    //     .click()
-    //     .should('have.class', 'active');
-
-    //   // Language dropdown should be displayed
-    //   cy.get('#language-select').should('be.visible');
-
-    //   // Select Spanish and Save
-    //   cy.get('#language-select').select('Spanish');
-    //   cy.get('@saveBtn')
-    //     .scrollIntoView()
-    //     .click();
-
-    //   //Open Preferences again
-    //   cy.get('[data-cy="options-menu"]')
-    //     .scrollIntoView()
-    //     .click();
-    //   cy.get('[data-cy="about-item-menu"]')
-    //     .last()
-    //     .click();
-
-    //   // Go to general tab
-    //   cy.get('@userPreferencesGeneralTab').click();
-
-    //   cy.get('@restoreBtn')
-    //     .scrollIntoView()
-    //     .click();
-
-    // Header should be in English
-    // cy.get('.research-use')
-    //   .scrollIntoView()
-    //   .should('have.text', 'INVESTIGATIONAL USE ONLY');
-    //
-    // Options menu should be in English
-    //   cy.get('[data-cy="options-menu"]').should('have.text', 'Options');
-    //   cy.get('[data-cy="about-item-menu"]')
-    //     .first()
-    //     .should('have.text', 'About');
-    //   cy.get('[data-cy="about-item-menu"]')
-    //     .last()
-    //     .should('have.text', 'Preferences');
-    //});
 
     it('checks new hotkeys for "Rotate Right" and "Rotate Left"', function() {
       // Go go hotkeys tab
@@ -438,9 +410,7 @@ describe('OHIF User Preferences', () => {
 
       // Visual comparison
       cy.screenshot('Viewport Navigation - 2nd viewport inverted and rotated');
-      cy.percyCanvasSnapshot(
-        'Viewport Navigation - 2nd viewport inverted and rotated'
-      );
+
       // Set 1 viewport layout
       cy.setLayout(1, 1);
     });

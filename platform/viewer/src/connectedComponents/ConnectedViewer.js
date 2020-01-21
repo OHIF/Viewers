@@ -4,10 +4,17 @@ import OHIF from '@ohif/core';
 
 const { setTimepoints, setMeasurements } = OHIF.redux.actions;
 
-const mapStateToProps = (state, ownProps) => {
+const getActiveServer = servers => {
+  const isActive = a => a.active === true;
+  return servers.servers.find(isActive);
+};
+
+const mapStateToProps = state => {
+  const { viewports, servers } = state;
   return {
-    viewports: state.viewports.viewportSpecificData,
-    activeViewportIndex: state.viewports.activeViewportIndex,
+    viewports: viewports.viewportSpecificData,
+    activeViewportIndex: viewports.activeViewportIndex,
+    activeServer: getActiveServer(servers),
   };
 };
 

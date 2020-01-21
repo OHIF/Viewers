@@ -16,18 +16,32 @@ describe('ServicesManager.js', () => {
     it('calls registerService() for each service', () => {
       servicesManager.registerService = jest.fn();
 
-      const fakeServices = [
-        { name: 'UINotificationTestService', hide: jest.fn() },
-        { name: 'UIModalTestService', hide: jest.fn() },
-      ];
-
-      servicesManager.registerServices(fakeServices);
+      servicesManager.registerServices([
+        { name: 'UINotificationTestService', create: jest.fn() },
+        { name: 'UIModalTestService', create: jest.fn() },
+      ]);
 
       expect(servicesManager.registerService.mock.calls.length).toBe(2);
+    });
+
+    it('calls registerService() for each service passing its configuration if tuple', () => {
+      servicesManager.registerService = jest.fn();
+      const fakeConfiguration = { testing: true };
+
+      servicesManager.registerServices([
+        { name: 'UINotificationTestService', create: jest.fn() },
+        [{ name: 'UIModalTestService', create: jest.fn() }, fakeConfiguration],
+      ]);
+
+      expect(servicesManager.registerService.mock.calls[1][1]).toEqual(
+        fakeConfiguration
+      );
     });
   });
 
   describe('registerService()', () => {
+    const fakeService = { name: 'UINotificationService', create: jest.fn() };
+
     it('logs a warning if the service is null or undefined', () => {
       const undefinedService = undefined;
       const nullService = null;
@@ -39,8 +53,8 @@ describe('ServicesManager.js', () => {
     });
 
     it('logs a warning if the service does not have a name', () => {
-      const serviceWithEmptyName = { name: '', hide: jest.fn() };
-      const serviceWithoutName = { hide: jest.fn() };
+      const serviceWithEmptyName = { name: '', create: jest.fn() };
+      const serviceWithoutName = { create: jest.fn() };
 
       servicesManager.registerService(serviceWithEmptyName);
       servicesManager.registerService(serviceWithoutName);
@@ -48,23 +62,37 @@ describe('ServicesManager.js', () => {
       expect(log.warn.mock.calls.length).toBe(2);
     });
 
+    it('logs a warning if the service does not have a create factory function', () => {
+      const serviceWithoutCreate = { name: 'UINotificationService' };
+
+      servicesManager.registerService(serviceWithoutCreate);
+
+      expect(log.warn.mock.calls.length).toBe(1);
+    });
+
     it('tracks which services have been registered', () => {
-      const service = {
-        name: 'UINotificationService',
-      };
+      servicesManager.registerService(fakeService);
 
-      servicesManager.registerService(service);
-
-      expect(servicesManager.registeredServiceNames).toContain(service.name);
+      expect(servicesManager.registeredServiceNames).toContain(
+        fakeService.name
+      );
     });
 
     it('logs a warning if the service has an name that has already been registered', () => {
-      const service = { name: 'UINotificationService' };
-
-      servicesManager.registerService(service);
-      servicesManager.registerService(service);
+      servicesManager.registerService(fakeService);
+      servicesManager.registerService(fakeService);
 
       expect(log.warn.mock.calls.length).toBe(1);
+    });
+
+    it('pass dependencies and configuration to service create factory function', () => {
+      const configuration = { config: 'Some configuration' };
+
+      servicesManager.registerService(fakeService, configuration);
+
+      expect(fakeService.create.mock.calls[0][0]).toEqual({
+        configuration,
+      });
     });
   });
 });

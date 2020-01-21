@@ -12,7 +12,6 @@ describe('OHIF Study Viewer Page', function() {
 
   it('checks if series thumbnails are being displayed', function() {
     cy.screenshot('Series Thumbnails - Should Display Thumbnails');
-    cy.percyCanvasSnapshot('Series Thumbnails - Should Display Thumbnails');
 
     cy.get('[data-cy="thumbnail-list"]')
       .its('length')
@@ -270,7 +269,7 @@ describe('OHIF Study Viewer Page', function() {
     cy.get('[data-cy="options-menu"]')
       .first()
       .click();
-    cy.get('[data-cy="about-item-menu"]')
+    cy.get('[data-cy="dd-item-menu"]')
       .first()
       .click();
     cy.get('[data-cy="about-modal"]')
@@ -293,7 +292,6 @@ describe('OHIF Study Viewer Page', function() {
 
     // Visual comparison
     cy.screenshot('About modal - Should display modal');
-    cy.percyCanvasSnapshot('About modal - Should display modal');
 
     //close modal
     cy.get('[data-cy="close-button"]').click();

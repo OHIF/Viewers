@@ -168,7 +168,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy=thumbnail-list]', { timeout: 10000 }).should($itemList => {
+  cy.get('[data-cy=thumbnail-list]', { timeout: 20000 }).should($itemList => {
     expect($itemList.length >= seriesToWait).to.be.true;
   });
 });
@@ -209,7 +209,7 @@ Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
 //Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
   //Click on More button
-  cy.get('.expandableToolMenu')
+  cy.get('[data-cy="more"]')
     .as('moreBtn')
     .click();
   //Verify if overlay is displayed
@@ -219,11 +219,11 @@ Cypress.Commands.add('resetViewport', () => {
     }
   });
   //Click on Clear button
-  cy.get('.tooltip-inner > :nth-child(10)')
+  cy.get('[data-cy="clear"]')
     .as('clearBtn')
     .click();
   //Click on Reset button
-  cy.get('.ToolbarRow > :nth-child(9)')
+  cy.get('[data-cy="reset"]')
     .as('resetBtn')
     .click();
 });
@@ -294,9 +294,8 @@ Cypress.Commands.add('initStudyListAliasesOnTablet', () => {
 Cypress.Commands.add(
   'addLengthMeasurement',
   (firstClick = [150, 100], secondClick = [130, 170]) => {
-    cy.initCornerstoneToolsAliases();
-    cy.get('@lengthBtn').click();
-    cy.addLine('@viewport', firstClick, secondClick);
+    cy.get('[data-cy="length"]').click();
+    cy.addLine('.viewport-element', firstClick, secondClick);
   }
 );
 
@@ -304,9 +303,8 @@ Cypress.Commands.add(
 Cypress.Commands.add(
   'addAngleMeasurement',
   (initPos = [180, 390], midPos = [300, 410], finalPos = [180, 450]) => {
-    cy.initCornerstoneToolsAliases();
-    cy.get('@angleBtn').click();
-    cy.addAngle('@viewport', initPos, midPos, finalPos);
+    cy.get('[data-cy="angle"]').click();
+    cy.addAngle('.viewport-element', initPos, midPos, finalPos);
   }
 );
 
@@ -379,7 +377,7 @@ Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
 });
 
 Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
-  cy.get('.btn-group > .toolbar-button').click();
+  cy.get('[data-cy="layout"]').click();
 
   cy.get('.layoutChooser')
     .find('tr')
@@ -437,15 +435,19 @@ Cypress.Commands.add('initPreferencesModalAliases', () => {
 Cypress.Commands.add('openPreferences', () => {
   cy.log('Open User Preferences Modal');
   // Open User Preferences modal
-  cy.get('[data-cy="options-menu"]')
-    .scrollIntoView()
-    .click()
-    .then(() => {
-      cy.get('[data-cy="about-item-menu"]')
-        .last()
+  cy.get('body').then(body => {
+    if (body.find('.OHIFModal').length === 0) {
+      cy.get('[data-cy="options-menu"]')
+        .scrollIntoView()
         .click()
-        .wait(200);
-    });
+        .then(() => {
+          cy.get('[data-cy="dd-item-menu"]')
+            .last()
+            .click()
+            .wait(200);
+        });
+    }
+  });
 });
 
 Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
@@ -456,10 +458,7 @@ Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
 
   cy.log('Reset to Default Preferences');
   cy.get('@restoreBtn').click();
-
-  //TODO: the following code is blocked by issue 1193: https://github.com/OHIF/Viewers/issues/1193
-  //Once the issue is fixed, the following code should be uncommented
-  //cy.get('@saveBtn').click();
+  cy.get('@saveBtn').click();
 });
 
 Cypress.Commands.add(
@@ -467,11 +466,46 @@ Cypress.Commands.add(
   (function_label, shortcut) => {
     // Within scopes all `.get` and `.contains` to within the matched elements
     // dom instead of checking from document
-    cy.get('.HotKeysPreferences').within(() => {
-      cy.contains(function_label) // label we're looking for
-        .parent()
-        .find('input') // closest input to that label
-        .type(shortcut, { force: true }); // Set new shortcut for that function
-    });
+    cy.get('.HotKeysPreferences')
+      .within(() => {
+        cy.contains(function_label) // label we're looking for
+          .parent()
+          .find('input') // closest input to that label
+          .type(shortcut, { force: true }); // Set new shortcut for that function
+      })
+      .blur();
   }
 );
+
+Cypress.Commands.add('openDownloadImageModal', () => {
+  // Click on More button
+  cy.get('[data-cy="more"]')
+    .as('moreBtn')
+    .click();
+
+  // Click on Download button
+  cy.get('[data-cy="download"]')
+    .as('downloadBtn')
+    .click();
+});
+
+Cypress.Commands.add('setLanguage', (language, save = true) => {
+  cy.openPreferences();
+
+  cy.get('@userPreferencesGeneralTab')
+    .click()
+    .should('have.class', 'active');
+
+  // Language dropdown should be displayed
+  cy.get('#language-select').should('be.visible');
+
+  // Select Language and Save/Cancel
+  cy.get('#language-select')
+    .select(language)
+    .then(() => {
+      const toClick = save ? '@saveBtn' : '@cancelBtn';
+      cy.get(toClick)
+        .scrollIntoView()
+        .click();
+    });
+});

@@ -10,9 +10,9 @@ your Viewer will display).
 ## Overview
 
 Our goal is to make deployment as simple and painless as possible; however,
-there is an inherent amount of complexity in customizing, optimizing, and
-deploying web applications. If you find yourself a little lost, please don't
-hesitate to [reach out for help](/help.md)
+there is an inherent amount of complexity in configuring and deploying web
+applications. If you find yourself a little lost, please don't hesitate to
+[reach out for help](/help.md)
 
 ## Deployment Scenarios
 
@@ -35,8 +35,7 @@ benefits, but comes at the cost of time and complexity. Some benefits include:
 
 _Today:_
 
-- Leverage [extensions](/advanced/extensions.md) to drop-in powerful new
-  features
+- Leverage [extensions](/extensions/index.md) to drop-in powerful new features
 - Add routes and customize the viewer's workflow
 - Finer control over styling and whitelabeling
 
@@ -97,12 +96,12 @@ support it yet, but it is gaining wider adoption.
 If you have an existing archive and intend to host the OHIF Viewer at the same
 domain name as your archive, then connecting the two is as simple as following
 the steps layed out in our
-[Configuration Essentials Guide](./../essentials/configuration.md).
+[Configuration Essentials Guide](./../configuring/index.md).
 
 #### What if I don't have an imaging archive?
 
 We provide some guidance on configuring a local image archive in our
-[Data Source Essentials](./../essentials/data-source.md) guide. Hosting an
+[Data Source Essentials](./../configuring/data-source.md) guide. Hosting an
 archive remotely is a little trickier. You can check out some of our
 [advanced recipes](#recipes) for modeled setups that may work for you.
 
@@ -143,7 +142,7 @@ The OHIF Viewer can be configured to work with authorization servers that
 support one or more of the OpenID-Connect authorization flows. The Viewer finds
 it's OpenID-Connect settings on the `oidc` configuration key. You can set these
 values following the instructions laid out in the
-[Configuration Essentials Guide](./../essentials/configuration.md).
+[Configuration Essentials Guide](./../configuring/index.md).
 
 _Example OpenID-Connect Settings:_
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { metadata, studies, utils, log } from '@ohif/core';
+import usePrevious from '../customHooks/usePrevious';
 
 import ConnectedViewer from './ConnectedViewer.js';
 import PropTypes from 'prop-types';
@@ -128,9 +129,9 @@ const _addSeriesToStudy = (studyMetadata, series) => {
 const _updateMetaDataManager = (study, studyMetadata, series) => {
   updateMetaDataManager(study, series);
 
-  const { studyInstanceUID } = study;
+  const { studyInstanceUid } = study;
 
-  if (!studyMetadataManager.get(studyInstanceUID)) {
+  if (!studyMetadataManager.get(studyInstanceUid)) {
     studyMetadataManager.add(studyMetadata);
   }
 };
@@ -178,6 +179,7 @@ function ViewerRetrieveStudyData({
   // hooks
   const [error, setError] = useState(false);
   const [studies, setStudies] = useState([]);
+  const [isStudyLoaded, setIsStudyLoaded] = useState(false);
   const snackbarContext = useSnackbarContext();
   const { appConfig = {} } = useContext(AppContext);
   const { filterQueryParam: isFilterStrategy = false } = appConfig;
@@ -218,6 +220,7 @@ function ViewerRetrieveStudyData({
     );
 
     setStudies([...studies, study]);
+    setIsStudyLoaded(true);
   };
 
   /**
@@ -312,9 +315,15 @@ function ViewerRetrieveStudyData({
     }
   };
 
+  const prevStudyInstanceUids = usePrevious(studyInstanceUids);
+
   useEffect(() => {
-    studyMetadataManager.purge();
-    purgeCancellablePromises();
+    const hasStudyInstanceUidsChanged = !(prevStudyInstanceUids && prevStudyInstanceUids.every(e => studyInstanceUids.includes(e)));
+
+    if (hasStudyInstanceUidsChanged) {
+      studyMetadataManager.purge();
+      purgeCancellablePromises();
+    }
   }, [studyInstanceUids]);
 
   useEffect(() => {
@@ -332,7 +341,11 @@ function ViewerRetrieveStudyData({
   }
 
   return (
-    <ConnectedViewer studies={studies} studyInstanceUids={studyInstanceUids} />
+    <ConnectedViewer
+      studies={studies}
+      isStudyLoaded={isStudyLoaded}
+      studyInstanceUids={studyInstanceUids}
+    />
   );
 }
 

@@ -119,7 +119,6 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     // Visual comparison
     cy.screenshot('Pan tool moved the image inside the viewport');
-    cy.percyCanvasSnapshot('Pan tool moved the image inside the viewport');
   });
 
   it('checks if Length annotation can be added on viewport and on measurements panel', () => {
@@ -266,7 +265,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     let iconName;
     //Click on one of the secondary tools from the overlay
-    cy.get('.tooltip-inner > :nth-child(1)')
+    cy.get('[data-cy="magnify"]')
       .click()
       .then($magnifyBtn => {
         cy.wrap($magnifyBtn)
@@ -407,9 +406,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .as('toolbarOverlay')
       .should('be.visible');
     //Click on Clear button
-    cy.get('.tooltip-inner')
-      .contains('Clear')
-      .click();
+    cy.get('[data-cy="clear"]').click();
 
     //Verify if measurements were removed from the measurements panel
     cy.get('.measurementItem').should('not.exist');
@@ -446,9 +443,7 @@ describe('OHIF Cornerstone Toolbar', () => {
       .should('be.visible')
       .then(() => {
         //Click Eraser button
-        cy.get('.tooltip-inner')
-          .contains('Eraser')
-          .click({ force: true });
+        cy.get('[data-cy="eraser"]').click({ force: true });
       });
 
     //Erase measurement #1 and Verify if it was removed from the measurements panel
@@ -471,13 +466,10 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('.tooltip-toolbar-overlay').should('be.visible');
 
     // Click on Invert button
-    cy.get('.tooltip-inner')
-      .contains('Invert')
-      .click();
+    cy.get('[data-cy="invert"]').click();
 
     // Visual comparison
     cy.screenshot('Invert tool - Should Invert Canvas');
-    cy.percyCanvasSnapshot('Invert tool - Should Invert Canvas');
   });
 
   it('check if Rotate tool will change the image orientation in the viewport', () => {
@@ -488,14 +480,11 @@ describe('OHIF Cornerstone Toolbar', () => {
       .should('be.visible')
       .then(() => {
         //Click on Rotate button
-        cy.get('.tooltip-inner')
-          .contains('Rotate')
-          .click({ force: true });
+        cy.get('[data-cy="rotate right"]').click({ force: true });
       });
 
     // Visual comparison
     cy.screenshot('Rotate tool - Should Rotate Image to Right');
-    cy.percyCanvasSnapshot('Rotate tool - Should Rotate Image to Right');
   });
 
   it('check if Flip H tool will flip the image horizontally in the viewport', () => {
@@ -505,13 +494,10 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('.tooltip-toolbar-overlay').should('be.visible');
 
     //Click on Flip H button
-    cy.get('.tooltip-inner')
-      .contains('Flip H')
-      .click();
+    cy.get('[data-cy="flip h"]').click();
 
     // Visual comparison
     cy.screenshot('Flip H tool - Should Flip Image on Y axis');
-    cy.percyCanvasSnapshot('Flip H tool - Should Flip Image on Y axis');
   });
 
   it('check if Flip V tool will flip the image vertically in the viewport', () => {
@@ -521,12 +507,9 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('.tooltip-toolbar-overlay').should('be.visible');
 
     //Click on Flip V button
-    cy.get('.tooltip-inner')
-      .contains('Flip V')
-      .click();
+    cy.get('[data-cy="flip v"]').click();
 
     // Visual comparison
     cy.screenshot('Flip V tool - Should Flip Image on X axis');
-    cy.percyCanvasSnapshot('Flip V tool - Should Flip Image on X axis');
   });
 });

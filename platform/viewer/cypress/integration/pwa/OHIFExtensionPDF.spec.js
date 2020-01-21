@@ -23,6 +23,5 @@ describe('OHIF PDF Extension', () => {
     // This won't work unless we switch to an extension that renders using `canvas`
     // Currently, we rely on the browser's built-in implementation
     cy.screenshot('PDF Extension - Should load PDF file');
-    cy.percyCanvasSnapshot('PDF Extension - Should load PDF file');
   });
 });
