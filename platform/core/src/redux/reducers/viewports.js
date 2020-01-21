@@ -11,16 +11,12 @@ import {
   SET_VIEWPORT_LAYOUT_AND_DATA,
 } from './../constants/ActionTypes.js';
 
-const DEFAULT_STATE = {
+export const DEFAULT_STATE = {
   numRows: 1,
   numColumns: 1,
   activeViewportIndex: 0,
   layout: {
-    viewports: [
-      {
-        // plugin: 'cornerstone',
-      },
-    ],
+    viewports: [{}],
   },
   viewportSpecificData: {},
 };
@@ -29,35 +25,48 @@ const DEFAULT_STATE = {
  *  Take the new number of rows and columns, delete all not used viewport data and also set
  *  active viewport as default in case current one is not available anymore.
  *
- * @param {Object} action -
- * @param {Number} action.numRows -
- * @param {Number} action.numColumns -
- * @param {Object} currentViewportSpecificData -
- * @param {Number} currentActiveViewportIndex -
+ * @param {Number} numRows
+ * @param {Number} numColumns
+ * @param {Object} currentViewportSpecificData
  * @returns
  */
-const handleViewportDeletions = (action, currentViewportSpecificData = {}, currentActiveViewportIndex) => {
-  const numberOfViewports = action.numRows * action.numColumns;
+const findActiveViewportSpecificData = (
+  numRows,
+  numColumns,
+  currentViewportSpecificData = {}
+) => {
+  const numberOfViewports = numRows * numColumns;
   const viewportSpecificData = cloneDeep(currentViewportSpecificData);
-  let activeViewportIndex = currentActiveViewportIndex;
 
   if (numberOfViewports < Object.keys(viewportSpecificData).length) {
     Object.keys(viewportSpecificData).forEach(key => {
-      if (key >= numberOfViewports) {
+      if (key > numberOfViewports - 1) {
         delete viewportSpecificData[key];
       }
     });
-
-    if (!viewportSpecificData[currentActiveViewportIndex]) {
-      activeViewportIndex = DEFAULT_STATE.activeViewportIndex;
-    }
   }
 
-  return {
-    viewportSpecificData,
-    activeViewportIndex,
-  }
-}
+  return viewportSpecificData;
+};
+/**
+ *  Take new number of rows and columns and make sure the current active viewport index is still available, if not, return the default
+ *
+ * @param {Number} numRows
+ * @param {Number} numColumns
+ * @param {Number} currentActiveViewportIndex
+ * @returns
+ */
+const getActiveViewportIndex = (
+  numRows,
+  numColumns,
+  currentActiveViewportIndex
+) => {
+  const numberOfViewports = numRows * numColumns;
+
+  return currentActiveViewportIndex > numberOfViewports - 1
+    ? DEFAULT_STATE.activeViewportIndex
+    : currentActiveViewportIndex;
+};
 
 /**
  * The definition of a viewport action.
@@ -84,7 +93,12 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case SET_VIEWPORT_ACTIVE: {
-      return { ...state, activeViewportIndex: action.viewportIndex };
+      const activeViewportIndex = getActiveViewportIndex(
+        state.numRows,
+        state.numColumns,
+        action.viewportIndex
+      );
+      return { ...state, activeViewportIndex };
     }
 
     /**
@@ -93,10 +107,17 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case SET_VIEWPORT_LAYOUT: {
-      const {
-        viewportSpecificData,
-        activeViewportIndex,
-      } = handleViewportDeletions(action, state.viewportSpecificData, state.activeViewportIndex);
+      const { numRows, numColumns } = action;
+      const viewportSpecificData = findActiveViewportSpecificData(
+        numRows,
+        numColumns,
+        state.viewportSpecificData
+      );
+      const activeViewportIndex = getActiveViewportIndex(
+        numRows,
+        numColumns,
+        state.activeViewportIndex
+      );
 
       return {
         ...state,
@@ -114,10 +135,17 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case SET_VIEWPORT_LAYOUT_AND_DATA: {
-      const {
-        viewportSpecificData,
-        activeViewportIndex,
-      } = handleViewportDeletions(action, action.viewportSpecificData, state.activeViewportIndex);
+      const { numRows, numColumns } = action;
+      const viewportSpecificData = findActiveViewportSpecificData(
+        numRows,
+        numColumns,
+        action.viewportSpecificData
+      );
+      const activeViewportIndex = getActiveViewportIndex(
+        numRows,
+        numColumns,
+        state.activeViewportIndex
+      );
 
       return {
         ...state,
