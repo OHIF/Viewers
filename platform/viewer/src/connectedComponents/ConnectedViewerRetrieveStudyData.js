@@ -10,7 +10,6 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     server: ownProps.server || activeServer,
-    defaultStudies: ownProps.studies,
   };
 };
 const mapDispatchToProps = dispatch => {

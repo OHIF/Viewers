@@ -1,10 +1,17 @@
 import React, { Component } from 'react';
-import { log } from '@ohif/core';
+import { log, redux, metadata, utils } from '@ohif/core';
 import PropTypes from 'prop-types';
 import qs from 'querystring';
 
+import { extensionManager } from './../App.js';
+import ConnectedViewer from '../connectedComponents/ConnectedViewer';
 import ConnectedViewerRetrieveStudyData from '../connectedComponents/ConnectedViewerRetrieveStudyData';
 import NotFound from '../routes/NotFound';
+
+const { studyMetadataManager, updateMetaDataManager } = utils;
+const { OHIFStudyMetadata } = metadata;
+
+const { setServers } = redux.actions;
 
 class StandaloneRouting extends Component {
   state = {
@@ -57,6 +64,10 @@ class StandaloneRouting extends Component {
 
         const data = JSON.parse(oReq.responseText);
         if (data.servers) {
+          if (data.servers.length) {
+            setServers(data.servers);
+          }
+
           if (!query.studyInstanceUids) {
             log.warn('No study instance uids specified');
             reject(new Error('No study instance uids specified'));
@@ -94,12 +105,22 @@ class StandaloneRouting extends Component {
       search = search.slice(1, search.length);
       const query = qs.parse(search);
 
-      const {
+      let {
         server,
         studies,
         studyInstanceUids,
         seriesInstanceUids,
       } = await StandaloneRouting.parseQueryAndRetrieveDICOMWebData(query);
+
+      if (studies) {
+        console.log('wtf');
+        const {
+          studies: updatedStudies,
+          studyInstanceUids: updatedStudiesInstanceUids,
+        } = _mapStudiesToNewFormat(studies);
+        studies = updatedStudies;
+        studyInstanceUids = updatedStudiesInstanceUids;
+      }
 
       this.setState({
         studies,
@@ -119,15 +140,44 @@ class StandaloneRouting extends Component {
       return <NotFound message={message} showGoBackButton={this.state.error} />;
     }
 
-    return (
-      <ConnectedViewerRetrieveStudyData
-        studies={this.state.studies}
-        studyInstanceUids={this.state.studyInstanceUids}
-        seriesInstanceUids={this.state.seriesInstanceUids}
-        server={this.state.server}
-      />
-    );
+    return this.state.studies ? (
+      <ConnectedViewer studies={this.state.studies} />
+    ) : (
+        <ConnectedViewerRetrieveStudyData
+          studyInstanceUids={this.state.studyInstanceUids}
+          seriesInstanceUids={this.state.seriesInstanceUids}
+          server={this.state.server}
+        />
+      );
   }
 }
+
+const _mapStudiesToNewFormat = studies => {
+  studyMetadataManager.purge();
+
+  /* Map studies to new format, update metadata manager? */
+  const uniqueStudyUids = new Set();
+  const updatedStudies = studies.map(study => {
+    const studyMetadata = new OHIFStudyMetadata(study, study.studyInstanceUid);
+
+    const sopClassHandlerModules = extensionManager.modules['sopClassHandlerModule'];
+    study.displaySets = study.displaySets ||
+      studyMetadata.createDisplaySets(sopClassHandlerModules);
+    studyMetadata.setDisplaySets(study.displaySets);
+
+    /* Updates WADO-RS metaDataManager */
+    updateMetaDataManager(study);
+
+    studyMetadataManager.add(studyMetadata);
+    uniqueStudyUids.add(study.studyInstanceUid);
+
+    return study;
+  });
+
+  return {
+    studies: updatedStudies,
+    studyInstanceUids: Array.from(uniqueStudyUids)
+  };
+};
 
 export default StandaloneRouting;
