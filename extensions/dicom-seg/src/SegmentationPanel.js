@@ -297,8 +297,8 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     <div className="labelmap-container">
       {false && <h2 style={{ marginLeft: '16px' }}>Segmentation</h2>}
 
-      <form className="selector-form">
-        {false && (
+      {false &&
+        (<form className="selector-form">
           <div>
             <div
               className="selector-active-segment"
@@ -307,35 +307,31 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
               {labelmap3D.activeSegmentIndex}
             </div>
             <div className="selector-buttons">
-              <button className="db-button" onClick={incrementSegment}>
-                Next
-              </button>
-              <button className="db-button" onClick={decrementSegment}>
-                Previous
-              </button>
+              <button onClick={incrementSegment}>Next</button>
+              <button onClick={decrementSegment}>Previous</button>
             </div>
           </div>
-        )}
 
-        {false && (
-          <div>
-            <label
-              htmlFor="brush-radius"
-              style={{ display: 'block', marginBottom: '8px' }}
-            >
-              Brush Radius
-            </label>
-            <Range
-              value={brushRadius}
-              min={1}
-              max={50}
-              step={1}
-              onChange={updateBrushSize}
-              id="brush-radius"
-            />
-          </div>
+          {false && (
+            <div>
+              <label
+                htmlFor="brush-radius"
+                style={{ display: 'block', marginBottom: '8px' }}
+              >
+                Brush Radius
+              </label>
+              <Range
+                value={brushRadius}
+                min={1}
+                max={50}
+                step={1}
+                onChange={updateBrushSize}
+                id="brush-radius"
+              />
+            </div>
+          )}
+        </form>
         )}
-      </form>
 
       <h3 style={{ marginLeft: '16px' }}>Segmentations</h3>
       <div className="labelmap-list-container">

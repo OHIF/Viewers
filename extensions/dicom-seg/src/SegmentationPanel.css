@@ -104,46 +104,54 @@ segment-item .segment-actions .btnAction i {
 }
 
 .segmentation-icon {
-  margin-right: '8px';
-  margin-top: '12px';
-  min-width: '14px';
+  margin-right: 8px;
+  margin-top: 12px;
+  min-width: 14px;
 }
 
 .segmentation-meta {
-  display: 'flex';
-  flex-direction: 'column';
-  flex-grow: '1';
-  overflow: 'hidden';
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
   margin-left: 10px;
 }
 
 .segmentation-meta-title {
-  text-overflow: 'ellipsis';
-  overflow: 'hidden';
-  white-space: 'nowrap';
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .selector-form {
-  padding: '0px 16px';
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.selector-form div {
-  display: 'flex';
-  margin-bottom: '16px';
+.selector-form>div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .selector-buttons {
-  display: 'flex';
-  flex-direction: 'column';
-  flex-grow: '1';
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.selector-buttons:first-child {
+  margin-right: 10px;
 }
 
 .selector-active-segment {
-  border-radius: '100%';
-  width: '32px';
-  height: '32px';
-  margin-top: '8px';
-  margin-right: '8px';
-  text-align: 'center';
-  line-height: '32px';
+  border-radius: 100%;
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  line-height: 32px;
 }
