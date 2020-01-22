@@ -5,7 +5,13 @@ import moment from 'moment';
 import Select from 'react-select';
 
 import { utils } from '@ohif/core';
-import { Range, ScrollableArea, TableList, TableListItem } from '@ohif/ui';
+import {
+  Range,
+  ScrollableArea,
+  TableList,
+  TableListItem,
+  Icon,
+} from '@ohif/ui';
 
 import './SegmentationPanel.css';
 
@@ -132,7 +138,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
           brushStackState.activeLabelmapIndex
         );
 
-        // TODO: Notify of change?
+        /* TODO: Notify of change? */
         setCounter(counter + 1);
       },
     };
@@ -214,7 +220,20 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
                 {segmentLabel ? segmentLabel : '...'}
               </div>
             </div>
-            <div className="segment-actions"></div>
+            <div className="segment-actions">
+              <button className="btnAction" onClick={() => console.log('Relabelling...')}>
+                <span style={{ marginRight: '4px' }}>
+                  <Icon name="edit" width="14px" height="14px" />
+                </span>
+                Relabel
+              </button>
+              <button className="btnAction" onClick={() => console.log('Editing description...')}>
+                <span style={{ marginRight: '4px' }}>
+                  <Icon name="edit" width="14px" height="14px" />
+                </span>
+                Description
+              </button>
+            </div>
           </div>
         </TableListItem>
       );
@@ -279,45 +298,43 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
 
   return (
     <div className="labelmap-container">
-      {false && <h2 style={{ marginLeft: '16px' }}>Segmentation</h2>}
-
-      {false && (
-        <form className="selector-form">
-          <div>
-            <div
-              className="selector-active-segment"
-              style={{ backgroundColor: brushColor }}
-            >
-              {labelmap3D.activeSegmentIndex}
-            </div>
-            <div className="selector-buttons">
-              <button onClick={incrementSegment}>Next</button>
-              <button onClick={decrementSegment}>Previous</button>
-            </div>
+      <form className="selector-form">
+        <div>
+          <div
+            className="selector-active-segment"
+            style={{ backgroundColor: brushColor }}
+          >
+            {labelmap3D.activeSegmentIndex}
           </div>
+          <div className="selector-buttons">
+            <button className="db-button" onClick={decrementSegment}>
+              Previous
+            </button>
+            <button className="db-button" onClick={incrementSegment}>
+              Next
+            </button>
+          </div>
+        </div>
 
-          {false && (
-            <div>
-              <label
-                htmlFor="brush-radius"
-                style={{ display: 'block', marginBottom: '8px' }}
-              >
-                Brush Radius
-              </label>
-              <Range
-                value={brushRadius}
-                min={1}
-                max={50}
-                step={1}
-                onChange={updateBrushSize}
-                id="brush-radius"
-              />
-            </div>
-          )}
-        </form>
-      )}
+        <div>
+          <label
+            htmlFor="brush-radius"
+            style={{ display: 'block', marginBottom: '8px' }}
+          >
+            Brush Radius
+          </label>
+          <Range
+            value={brushRadius}
+            min={1}
+            max={50}
+            step={1}
+            onChange={updateBrushSize}
+            id="brush-radius"
+          />
+        </div>
+      </form>
 
-      <h3 style={{ marginLeft: '16px' }}>Segmentations</h3>
+      <h3>Segmentations</h3>
       <div className="segmentations">
         <Select
           defaultValue={labelmapList[brushStackState.activeLabelmapIndex]}
@@ -453,11 +470,11 @@ const segmentationSelectStyles = {
   }),
   option: (base, state) => ({
     ...base,
-    '&:first-child': {
+    '&:first-of-type': {
       borderTopLeftRadius: 5,
       borderTopRightRadius: 5,
     },
-    '&:last-child': {
+    '&:last-of-type': {
       borderBottomLeftRadius: 5,
       borderBottomRightRadius: 5,
     },

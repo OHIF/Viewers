@@ -8,6 +8,10 @@
   flex-direction: column;
 }
 
+.labelmap-container h3 {
+  padding-left: 20px;
+}
+
 .segmentation-item {
   display: flex;
   justify-content: start;
@@ -53,7 +57,7 @@
 }
 
 .segmentations {
-  padding: 16px;
+  padding: 0 20px 20px 20px;
 }
 
 .segment-item .segment-actions {
@@ -76,11 +80,11 @@
   transition: all 0.3s ease;
 }
 
-segment-item .segment-actions .btnAction:hover, segment-item .segment-actions .btnAction:active {
+.segment-item .segment-actions .btnAction:hover, segment-item .segment-actions .btnAction:active {
   color: var(--text-primary-color);
 }
 
-segment-item .segment-actions .btnAction i {
+.segment-item .segment-actions .btnAction i {
   margin-right: 4px;
 }
 
@@ -111,29 +115,33 @@ segment-item .segment-actions .btnAction i {
 }
 
 .selector-form {
-  margin-top: 15px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  padding: 20px;
+  height: 150px;
 }
 
 .selector-form>div {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
   width: 100%;
 }
 
+.selector-form>div:first-of-type {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 .selector-buttons {
-  flex: 1;
+  margin-left: 10px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  flex-grow: 1;
 }
 
-.selector-buttons:first-child {
-  margin-right: 10px;
+.selector-buttons button:last-of-type {
+  margin-left: 5px;
 }
 
 .selector-active-segment {
