@@ -58,6 +58,7 @@
   width: 90px;
   border-left: 1px solid var(--text-secondary-color);
   color: var(--text-primary-color);
+  width: 100%;
 }
 
 .segment-item .segment-label {
@@ -139,7 +140,6 @@ segment-item .segment-actions .btnAction i {
 
 .selector-active-segment {
   border-radius: '100%';
-  background-color: brushColor;
   width: '32px';
   height: '32px';
   margin-top: '8px';

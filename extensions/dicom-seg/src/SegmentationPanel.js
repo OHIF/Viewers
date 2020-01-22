@@ -300,7 +300,10 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
       <form className="selector-form">
         {false && (
           <div>
-            <div className="selector-active-segment">
+            <div
+              className="selector-active-segment"
+              style={{ backgroundColor: brushColor }}
+            >
               {labelmap3D.activeSegmentIndex}
             </div>
             <div className="selector-buttons">
