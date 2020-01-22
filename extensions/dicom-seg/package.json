@@ -29,14 +29,15 @@
   },
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
-    "dcmjs": "^0.6.1",
     "cornerstone-core": "^2.2.8",
     "cornerstone-tools": "^4.0.9",
+    "dcmjs": "^0.6.1",
     "prop-types": "^15.6.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
   "dependencies": {
-    "@babel/runtime": "^7.5.5"
+    "@babel/runtime": "^7.5.5",
+    "react-select": "^3.0.8"
   }
 }

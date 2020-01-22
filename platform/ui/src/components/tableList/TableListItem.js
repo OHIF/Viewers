@@ -12,6 +12,7 @@ export class TableListItem extends Component {
     itemIndex: PropTypes.number,
     itemKey: PropTypes.oneOfType(['number', 'string']),
     itemMeta: PropTypes.node,
+    itemMetaClass: PropTypes.string,
     onItemClick: PropTypes.func.isRequired,
   };
 
@@ -21,7 +22,7 @@ export class TableListItem extends Component {
         className={`tableListItem ${this.props.itemClass}`}
         onClick={this.onItemClick}
       >
-        <div className="itemIndex">
+        <div className={`itemIndex ${this.props.itemMetaClass}`}>
           {this.props.itemIndex}
           {this.props.itemMeta}
           <span className="warning-icon">

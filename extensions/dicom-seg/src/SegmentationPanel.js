@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
-import classnames from 'classnames';
 import moment from 'moment';
+import Select from 'react-select';
 
 import { utils } from '@ohif/core';
-import {
-  Icon,
-  Range,
-  ScrollableArea,
-  TableList,
-  TableListItem,
-} from '@ohif/ui';
+import { Range, ScrollableArea, TableList, TableListItem } from '@ohif/ui';
 
 import './SegmentationPanel.css';
 
@@ -85,6 +79,23 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     seriesInstanceUid
   );
 
+  const SegmentationItem = ({ onClick, title, description }) => {
+    return (
+      <li className="segmentation-item" onClick={onClick}>
+        <div className="segmentation-meta">
+          <div className="segmentation-meta-title">{title}</div>
+          <div className="segmentation-meta-description">{description}</div>
+        </div>
+      </li>
+    );
+  };
+
+  SegmentationItem.propTypes = {
+    onClick: PropTypes.func,
+    title: PropTypes.string,
+    description: PropTypes.string,
+  };
+
   // 2. UseEffect to update state? or to a least trigger a re-render
   // 4. Toggle visibility of labelmap?
   // 5. Toggle visibility of seg?
@@ -105,12 +116,9 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     const displayDescription = displaySet.seriesDescription;
 
     return {
+      value: labelmapIndex,
       title: displayDescription,
       description: displayDate,
-      isActive: isActiveLabelmap,
-      className: classnames('labelmap-item', {
-        isActive: isActiveLabelmap,
-      }),
       /*
        * TODO: CLICK BLOCKED BY DRAGGABLEAREA
        * Specific to UIDialogService
@@ -130,41 +138,14 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     };
   });
 
-  const SegmentationItem = ({
-    onClick,
-    className,
-    title,
-    isActive,
-    description,
-  }) => {
-    return (
-      <li className={className} onClick={onClick}>
-        <Icon
-          className="segmentation-icon"
-          style={{ color: isActive ? '#FFF' : '#000' }}
-          name="star"
-        />
-        <div className="segmentation-meta">
-          <div className="segmentation-meta-title">{title}</div>
-          <div style={{ color: '#BABABA' }}>{description}</div>
-        </div>
-      </li>
-    );
-  };
-  SegmentationItem.propTypes = {
-    onClick: PropTypes.func,
-    className: PropTypes.string,
-    isActive: PropTypes.bool,
-    title: PropTypes.string,
-    description: PropTypes.string,
-  };
-
   const segmentList = [];
 
   if (labelmap3D) {
-    // Newly created segments have no `meta`
-    // So we instead build a list of all segment indexes in use
-    // Then find any associated metadata
+    /*
+     * Newly created segments have no `meta`
+     * So we instead build a list of all segment indexes in use
+     * Then find any associated metadata
+     */
     const uniqueSegmentIndexes = labelmap3D.labelmaps2D
       .reduce((acc, labelmap2D) => {
         if (labelmap2D) {
@@ -192,7 +173,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
       let segmentLabel = '(unlabeled)';
       let segmentNumber = segmentIndex;
 
-      // META
+      /* Meta */
       if (hasLabelmapMeta) {
         const segmentMeta = labelmap3D.metadata.data[segmentIndex];
 
@@ -223,6 +204,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
           itemIndex={segmentNumber}
           itemClass={`segment-item ${sameSegment && 'selected'}`}
           itemMeta={<ColouredCircle />}
+          itemMetaClass="segment-color-section"
           onItemClick={setCurrentSelectedSegment}
         >
           <div>
@@ -238,10 +220,12 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
       );
     }
 
-    // Let's iterate over segmentIndexes ^ above
-    // If meta has a match, use it to show info
-    // If now, add "no-meta" class
-    // Show default name
+    /*
+     * Let's iterate over segmentIndexes ^ above
+     * If meta has a match, use it to show info
+     * If now, add "no-meta" class
+     * Show default name
+     */
   }
 
   const updateBrushSize = evt => {
@@ -297,8 +281,8 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     <div className="labelmap-container">
       {false && <h2 style={{ marginLeft: '16px' }}>Segmentation</h2>}
 
-      {false &&
-        (<form className="selector-form">
+      {false && (
+        <form className="selector-form">
           <div>
             <div
               className="selector-active-segment"
@@ -331,15 +315,16 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
             </div>
           )}
         </form>
-        )}
+      )}
 
       <h3 style={{ marginLeft: '16px' }}>Segmentations</h3>
-      <div className="labelmap-list-container">
-        <ScrollableArea>
-          <ul className="unlist labelmap-list" style={{ marginBottom: '24px' }}>
-            {labelmapList.map((item, index) => <SegmentationItem {...item} key={index} />)}
-          </ul>
-        </ScrollableArea>
+      <div className="segmentations">
+        <Select
+          defaultValue={labelmapList[brushStackState.activeLabelmapIndex]}
+          formatOptionLabel={SegmentationItem}
+          options={labelmapList}
+          styles={segmentationSelectStyles}
+        />
       </div>
       <ScrollableArea>
         <TableList customHeader={<SegmentsHeader />}>{segmentList}</TableList>
@@ -376,11 +361,16 @@ SegmentationPanel.propTypes = {
 SegmentationPanel.defaultProps = {};
 
 const _getFirstImageId = ({ studyInstanceUid, displaySetInstanceUid }) => {
-  const studyMetadata = studyMetadataManager.get(studyInstanceUid);
-  const displaySet = studyMetadata.findDisplaySet(
-    displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
-  );
-  return displaySet.images[0].getImageId();
+  try {
+    const studyMetadata = studyMetadataManager.get(studyInstanceUid);
+    const displaySet = studyMetadata.findDisplaySet(
+      displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
+    );
+    return displaySet.images[0].getImageId();
+  } catch (error) {
+    console.error('Failed to retrieve image metadata');
+    return null;
+  }
 };
 
 /**
@@ -442,6 +432,40 @@ const _setActiveLabelmap = async (
   brushStackState.activeLabelmapIndex = displaySet.labelmapIndex;
 
   return displaySet.labelmapIndex;
+};
+
+const segmentationSelectStyles = {
+  control: (base, state) => ({
+    ...base,
+    background: '#151A1F',
+    borderRadius: state.isFocused ? '5px 5px 5px 5px' : 5,
+    borderColor: state.isFocused ? 'white' : '#9CCEF9',
+    boxShadow: state.isFocused ? null : null,
+    minHeight: '50px',
+    '&:hover': {
+      borderColor: state.isFocused ? 'white' : '#9CCEF9',
+    },
+  }),
+  menu: base => ({
+    ...base,
+    borderRadius: 5,
+    background: '#151A1F',
+  }),
+  option: (base, state) => ({
+    ...base,
+    '&:first-child': {
+      borderTopLeftRadius: 5,
+      borderTopRightRadius: 5,
+    },
+    '&:last-child': {
+      borderBottomLeftRadius: 5,
+      borderBottomRightRadius: 5,
+    },
+    background: state.isSelected ? '#16202B' : '#151A1F',
+    '&:hover': {
+      background: '#16202B',
+    },
+  }),
 };
 
 export default SegmentationPanel;
