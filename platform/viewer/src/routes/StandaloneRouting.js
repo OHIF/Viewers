@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { log, redux, metadata, utils } from '@ohif/core';
+import { log, metadata, utils } from '@ohif/core';
 import PropTypes from 'prop-types';
 import qs from 'querystring';
 
@@ -10,8 +10,6 @@ import NotFound from '../routes/NotFound';
 
 const { studyMetadataManager, updateMetaDataManager } = utils;
 const { OHIFStudyMetadata } = metadata;
-
-const { setServers } = redux.actions;
 
 class StandaloneRouting extends Component {
   state = {
@@ -26,9 +24,10 @@ class StandaloneRouting extends Component {
   static propTypes = {
     location: PropTypes.object,
     store: PropTypes.object,
+    setServers: PropTypes.func,
   };
 
-  static parseQueryAndRetrieveDICOMWebData(query) {
+  parseQueryAndRetrieveDICOMWebData(query) {
     return new Promise((resolve, reject) => {
       const url = query.url;
 
@@ -64,10 +63,6 @@ class StandaloneRouting extends Component {
 
         const data = JSON.parse(oReq.responseText);
         if (data.servers) {
-          if (data.servers.length) {
-            setServers(data.servers);
-          }
-
           if (!query.studyInstanceUids) {
             log.warn('No study instance uids specified');
             reject(new Error('No study instance uids specified'));
@@ -75,6 +70,9 @@ class StandaloneRouting extends Component {
 
           const server = data.servers.dicomWeb[0];
           server.type = 'dicomWeb';
+
+          log.warn('Activating server', server);
+          this.props.activateServer(server);
 
           const studyInstanceUids = query.studyInstanceUids.split(';');
           const seriesInstanceUids = query.seriesInstanceUids ? query.seriesInstanceUids.split(';') : [];
@@ -110,10 +108,9 @@ class StandaloneRouting extends Component {
         studies,
         studyInstanceUids,
         seriesInstanceUids,
-      } = await StandaloneRouting.parseQueryAndRetrieveDICOMWebData(query);
+      } = await this.parseQueryAndRetrieveDICOMWebData(query);
 
       if (studies) {
-        console.log('wtf');
         const {
           studies: updatedStudies,
           studyInstanceUids: updatedStudiesInstanceUids,
@@ -176,7 +173,7 @@ const _mapStudiesToNewFormat = studies => {
 
   return {
     studies: updatedStudies,
-    studyInstanceUids: Array.from(uniqueStudyUids)
+    studyInstanceUids: Array.from(uniqueStudyUids),
   };
 };
 
