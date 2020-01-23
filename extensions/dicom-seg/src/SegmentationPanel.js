@@ -47,6 +47,10 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
   const [counter, setCounter] = useState(0);
 
   useEffect(() => {
+    setBrushStackState(segmentationModule.state.series[firstImageId]);
+  }, [studies, viewports, activeIndex, firstImageId]);
+
+  useEffect(() => {
     const labelmapModifiedHandler = event => {
       console.warn('labelmap modified', event);
       setBrushStackState(segmentationModule.state.series[firstImageId]);
@@ -82,12 +86,6 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
   const labelmap3D =
     brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
 
-  /* Get list of SEG labelmaps specific to active viewport (reference series) */
-  const referencedSegDisplaysets = _getReferencedSegDisplaysets(
-    studyInstanceUid,
-    seriesInstanceUid
-  );
-
   /*
    * 2. UseEffect to update state? or to a least trigger a re-render
    * 4. Toggle visibility of labelmap?
@@ -97,44 +95,54 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
    * If the port is vtkjs, its a bit more tricky as we now need to create a new
    */
 
-  const labelmapList = referencedSegDisplaysets.map((displaySet, index) => {
-    const { labelmapIndex, seriesDate, seriesTime } = displaySet;
+  const getLabelmapList = () => {
+    /* Get list of SEG labelmaps specific to active viewport (reference series) */
+    const referencedSegDisplaysets = _getReferencedSegDisplaysets(
+      studyInstanceUid,
+      seriesInstanceUid
+    );
 
-    /* Map to display representation */
-    const dateStr = `${seriesDate}:${seriesTime}`.split('.')[0];
-    const date = moment(dateStr, 'YYYYMMDD:HHmmss');
-    const isActiveLabelmap =
-      labelmapIndex === brushStackState.activeLabelmapIndex;
-    const displayDate = date.format('ddd, MMM Do YYYY');
-    const displayTime = date.format('h:mm:ss a');
-    const displayDescription = displaySet.seriesDescription;
+    return referencedSegDisplaysets.map((displaySet, index) => {
+      const { labelmapIndex, seriesDate, seriesTime } = displaySet;
 
-    return {
-      value: labelmapIndex,
-      title: displayDescription,
-      description: displayDate,
-      /*
-       * TODO: CLICK BLOCKED BY DRAGGABLEAREA
-       * Specific to UIDialogService
-       */
-      onClick: async () => {
-        const activatedLabelmapIndex = await _setActiveLabelmap(
-          viewport,
-          studies,
-          displaySet,
-          firstImageId,
-          brushStackState.activeLabelmapIndex
-        );
+      /* Map to display representation */
+      const dateStr = `${seriesDate}:${seriesTime}`.split('.')[0];
+      const date = moment(dateStr, 'YYYYMMDD:HHmmss');
+      const isActiveLabelmap =
+        labelmapIndex === brushStackState.activeLabelmapIndex;
+      const displayDate = date.format('ddd, MMM Do YYYY');
+      const displayTime = date.format('h:mm:ss a');
+      const displayDescription = displaySet.seriesDescription;
 
-        cornerstone.getEnabledElements().forEach(enabledElement => {
-          cornerstone.updateImage(enabledElement.element);
-        });
+      return {
+        value: labelmapIndex,
+        title: displayDescription,
+        description: displayDate,
+        /*
+         * TODO: CLICK BLOCKED BY DRAGGABLEAREA
+         * Specific to UIDialogService
+         */
+        onClick: async () => {
+          const activatedLabelmapIndex = await _setActiveLabelmap(
+            viewport,
+            studies,
+            displaySet,
+            firstImageId,
+            brushStackState.activeLabelmapIndex
+          );
 
-        /* TODO: Notify of change? */
-        setCounter(counter + 1);
-      },
-    };
-  });
+          cornerstone.getEnabledElements().forEach(enabledElement => {
+            cornerstone.updateImage(enabledElement.element);
+          });
+
+          /* TODO: Notify of change? */
+          setCounter(counter + 1);
+        },
+      };
+    });
+  };
+
+  const labelmapList = getLabelmapList();
 
   const segmentList = [];
 
@@ -301,7 +309,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
       <h3>Segmentations</h3>
       <div className="segmentations">
         <Select
-          defaultValue={labelmapList.find(i => i.value === brushStackState.activeLabelmapIndex)}
+          value={labelmapList.find(i => i.value === brushStackState.activeLabelmapIndex) || null}
           formatOptionLabel={SegmentationItem}
           options={labelmapList}
           styles={segmentationSelectStyles}
