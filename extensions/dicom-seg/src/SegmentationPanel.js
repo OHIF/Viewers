@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
+import cornerstone from 'cornerstone-core';
 import moment from 'moment';
 import Select from 'react-select';
 
@@ -124,6 +125,10 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
           firstImageId,
           brushStackState.activeLabelmapIndex
         );
+
+        cornerstone.getEnabledElements().forEach(enabledElement => {
+          cornerstone.updateImage(enabledElement.element);
+        });
 
         /* TODO: Notify of change? */
         setCounter(counter + 1);
@@ -282,15 +287,17 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
 
   return (
     <div className="labelmap-container">
-      <form className="selector-form">
-        <BrushColorSelector
-          defaultColor={brushColor}
-          index={labelmap3D.activeSegmentIndex}
-          onNext={incrementSegment}
-          onPrev={decrementSegment}
-        />
-        <BrushRadius value={brushRadius} onChange={updateBrushSize} />
-      </form>
+      {false && (
+        <form className="selector-form">
+          <BrushColorSelector
+            defaultColor={brushColor}
+            index={labelmap3D.activeSegmentIndex}
+            onNext={incrementSegment}
+            onPrev={decrementSegment}
+          />
+          <BrushRadius value={brushRadius} onChange={updateBrushSize} />
+        </form>
+      )}
       <h3>Segmentations</h3>
       <div className="segmentations">
         <Select
