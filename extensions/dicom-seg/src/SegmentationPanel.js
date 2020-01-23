@@ -78,7 +78,6 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     return null;
   }
 
-  console.log('wtf', brushStackState.activeLabelmapIndex);
   const labelmap3D =
     brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
 
