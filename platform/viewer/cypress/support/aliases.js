@@ -17,7 +17,7 @@ export function initCornerstoneToolsAliases() {
 //Creating aliases for Common page elements
 export function initCommonElementsAliases() {
   cy.get(
-    '.pull-right > .RoundedButtonGroup > .roundedButtonWrapper > .roundedButton'
+    '.pull-right > .RoundedButtonGroup > .roundedButtonWrapper:first-of-type > .roundedButton'
   ).as('measurementsBtn');
   cy.get('.viewport-element').as('viewport');
   cy.get('section.sidepanel.from-right').as('measurementsPanel');
