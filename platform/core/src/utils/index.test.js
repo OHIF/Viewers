@@ -12,6 +12,7 @@ describe('Top level exports', () => {
       'b64toBlob',
       'StackManager',
       'studyMetadataManager',
+      'loadAndCacheDerivedDisplaySets',
       // Updates WADO-RS metaDataManager
       'updateMetaDataManager',
       'DICOMTagDescriptions',
