@@ -4,6 +4,7 @@ import { MeasurementTable, MeasurementTableItem } from './measurementTable';
 import { Overlay, OverlayTrigger } from './overlayTrigger';
 import { TableList, TableListItem } from './tableList';
 import { AboutContent, UserPreferencesForm } from './userPreferencesForm';
+import { UserPreferences } from './userPreferences';
 
 import { Checkbox } from './checkbox';
 import { CineDialog } from './cineDialog';
@@ -50,5 +51,6 @@ export {
   Tooltip,
   AboutContent,
   UserPreferencesForm,
+  UserPreferences,
   OHIFModal,
 };

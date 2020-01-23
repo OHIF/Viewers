@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
+
 import PropTypes from 'prop-types';
 
-import ConnectedUserPreferencesForm from '../../connectedComponents/ConnectedUserPreferencesForm';
-import { Dropdown, AboutContent, withModal } from '@ohif/ui';
+import { Dropdown, AboutContent, withModal, UserPreferences } from '@ohif/ui';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import './Header.css';
 
 // Context
 import AppContext from './../../context/AppContext';
+
+import { hotkeysManager } from '../../App';
 
 function Header(props) {
   const {
@@ -42,7 +44,8 @@ function Header(props) {
         },
         onClick: () =>
           show({
-            content: ConnectedUserPreferencesForm,
+            content: UserPreferences,
+            contentProps: { hotkeysManager },
             title: t('User Preferences'),
           }),
       },
