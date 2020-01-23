@@ -88,6 +88,11 @@
   margin-right: 4px;
 }
 
+.brush-radius label {
+  display: block;
+  margin-bottom: 8px;
+}
+
 .segmentation-icon {
   margin-right: 8px;
   margin-top: 12px;

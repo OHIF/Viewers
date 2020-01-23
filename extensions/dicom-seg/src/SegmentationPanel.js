@@ -52,9 +52,11 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
       setCounter(counter + 1);
     };
 
-    // These are specific to each element;
-    // Need to iterate cornerstone-tools tracked enabled elements?
-    // Then only care about the one tied to active viewport?
+    /*
+     * These are specific to each element;
+     * Need to iterate cornerstone-tools tracked enabled elements?
+     * Then only care about the one tied to active viewport?
+     */
     cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
       enabledElement.addEventListener(
         'cornersontetoolslabelmapmodified',
@@ -76,6 +78,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     return null;
   }
 
+  console.log('wtf', brushStackState.activeLabelmapIndex);
   const labelmap3D =
     brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
 
@@ -85,31 +88,16 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     seriesInstanceUid
   );
 
-  const SegmentationItem = ({ onClick, title, description }) => {
-    return (
-      <li className="segmentation-item" onClick={onClick}>
-        <div className="segmentation-meta">
-          <div className="segmentation-meta-title">{title}</div>
-          <div className="segmentation-meta-description">{description}</div>
-        </div>
-      </li>
-    );
-  };
+  /*
+   * 2. UseEffect to update state? or to a least trigger a re-render
+   * 4. Toggle visibility of labelmap?
+   * 5. Toggle visibility of seg?
+   *
+   * If the port is cornerstone, just need to call a re-render.
+   * If the port is vtkjs, its a bit more tricky as we now need to create a new
+   */
 
-  SegmentationItem.propTypes = {
-    onClick: PropTypes.func,
-    title: PropTypes.string,
-    description: PropTypes.string,
-  };
-
-  // 2. UseEffect to update state? or to a least trigger a re-render
-  // 4. Toggle visibility of labelmap?
-  // 5. Toggle visibility of seg?
-
-  // If the port is cornerstone, just need to call a re-render.
-  // If the port is vtkjs, its a bit more tricky as we now need to create a new
-
-  const labelmapList = referencedSegDisplaysets.map(displaySet => {
+  const labelmapList = referencedSegDisplaysets.map((displaySet, index) => {
     const { labelmapIndex, seriesDate, seriesTime } = displaySet;
 
     /* Map to display representation */
@@ -221,13 +209,19 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
               </div>
             </div>
             <div className="segment-actions">
-              <button className="btnAction" onClick={() => console.log('Relabelling...')}>
+              <button
+                className="btnAction"
+                onClick={() => console.log('Relabelling...')}
+              >
                 <span style={{ marginRight: '4px' }}>
                   <Icon name="edit" width="14px" height="14px" />
                 </span>
                 Relabel
               </button>
-              <button className="btnAction" onClick={() => console.log('Editing description...')}>
+              <button
+                className="btnAction"
+                onClick={() => console.log('Editing description...')}
+              >
                 <span style={{ marginRight: '4px' }}>
                   <Icon name="edit" width="14px" height="14px" />
                 </span>
@@ -287,64 +281,30 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     return `rgba(${color.join(',')})`;
   };
 
-  const SegmentsHeader = () => {
-    return (
-      <React.Fragment>
-        <div className="tableListHeaderTitle">Segments</div>
-        <div className="numberOfItems">{segmentList.length}</div>
-      </React.Fragment>
-    );
-  };
-
   return (
     <div className="labelmap-container">
       <form className="selector-form">
-        <div>
-          <div
-            className="selector-active-segment"
-            style={{ backgroundColor: brushColor }}
-          >
-            {labelmap3D.activeSegmentIndex}
-          </div>
-          <div className="selector-buttons">
-            <button className="db-button" onClick={decrementSegment}>
-              Previous
-            </button>
-            <button className="db-button" onClick={incrementSegment}>
-              Next
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <label
-            htmlFor="brush-radius"
-            style={{ display: 'block', marginBottom: '8px' }}
-          >
-            Brush Radius
-          </label>
-          <Range
-            value={brushRadius}
-            min={1}
-            max={50}
-            step={1}
-            onChange={updateBrushSize}
-            id="brush-radius"
-          />
-        </div>
+        <BrushColorSelector
+          defaultColor={brushColor}
+          index={labelmap3D.activeSegmentIndex}
+          onNext={incrementSegment}
+          onPrev={decrementSegment}
+        />
+        <BrushRadius value={brushRadius} onChange={updateBrushSize} />
       </form>
-
       <h3>Segmentations</h3>
       <div className="segmentations">
         <Select
-          defaultValue={labelmapList[brushStackState.activeLabelmapIndex]}
+          defaultValue={labelmapList.find(i => i.value === brushStackState.activeLabelmapIndex)}
           formatOptionLabel={SegmentationItem}
           options={labelmapList}
           styles={segmentationSelectStyles}
         />
       </div>
       <ScrollableArea>
-        <TableList customHeader={<SegmentsHeader />}>{segmentList}</TableList>
+        <TableList customHeader={<SegmentsHeader count={segmentList.length} />}>
+          {segmentList}
+        </TableList>
       </ScrollableArea>
     </div>
   );
@@ -484,5 +444,64 @@ const segmentationSelectStyles = {
     },
   }),
 };
+
+const SegmentationItem = ({ onClick, title, description }) => {
+  return (
+    <li className="segmentation-item" onClick={onClick}>
+      <div className="segmentation-meta">
+        <div className="segmentation-meta-title">{title}</div>
+        <div className="segmentation-meta-description">{description}</div>
+      </div>
+    </li>
+  );
+};
+
+SegmentationItem.propTypes = {
+  onClick: PropTypes.func,
+  title: PropTypes.string,
+  description: PropTypes.string,
+};
+
+const BrushColorSelector = ({ defaultColor, index, onNext, onPrev }) => (
+  <div>
+    <div
+      className="selector-active-segment"
+      style={{ backgroundColor: defaultColor }}
+    >
+      {index}
+    </div>
+    <div className="selector-buttons">
+      <button className="db-button" onClick={onPrev}>
+        Previous
+      </button>
+      <button className="db-button" onClick={onNext}>
+        Next
+      </button>
+    </div>
+  </div>
+);
+
+const SegmentsHeader = ({ count }) => {
+  return (
+    <React.Fragment>
+      <div className="tableListHeaderTitle">Segments</div>
+      <div className="numberOfItems">{count}</div>
+    </React.Fragment>
+  );
+};
+
+const BrushRadius = ({ value, onChange }) => (
+  <div className="brush-radius">
+    <label htmlFor="brush-radius">Brush Radius</label>
+    <Range
+      value={value}
+      min={1}
+      max={50}
+      step={1}
+      onChange={onChange}
+      id="brush-radius"
+    />
+  </div>
+);
 
 export default SegmentationPanel;
