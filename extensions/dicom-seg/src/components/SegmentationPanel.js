@@ -15,6 +15,7 @@ import {
 } from '@ohif/ui';
 
 import './SegmentationPanel.css';
+import SegmentationSettings from './SegmentationSettings';
 
 const { studyMetadataManager } = utils;
 
@@ -35,6 +36,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
   const [brushRadius, setBrushRadius] = useState(DEFAULT_BRUSH_RADIUS);
   const [brushColor, setBrushColor] = useState('rgba(221, 85, 85, 1)');
   const [selectedSegment, setSelectedSegment] = useState();
+  const [showSegSettings, setShowSegSettings] = useState(false);
 
   const viewport = viewports[activeIndex];
   const firstImageId = _getFirstImageId(viewport);
@@ -288,35 +290,46 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     return `rgba(${color.join(',')})`;
   };
 
-  return (
-    <div className="labelmap-container">
-      {false && (
-        <form className="selector-form">
-          <BrushColorSelector
-            defaultColor={brushColor}
-            index={labelmap3D.activeSegmentIndex}
-            onNext={incrementSegment}
-            onPrev={decrementSegment}
-          />
-          <BrushRadius value={brushRadius} onChange={updateBrushSize} />
-        </form>
-      )}
-      <h3>Segmentations</h3>
-      <div className="segmentations">
-        <Select
-          value={labelmapList.find(i => i.value === brushStackState.activeLabelmapIndex) || null}
-          formatOptionLabel={SegmentationItem}
-          options={labelmapList}
-          styles={segmentationSelectStyles}
+  if (showSegSettings) {
+    return <SegmentationSettings onBack={() => setShowSegSettings(false)} />;
+  } else {
+    return (
+      <div className="labelmap-container">
+        <Icon
+          className="cog-icon"
+          name="cog"
+          width="25px"
+          height="25px"
+          onClick={() => setShowSegSettings(true)}
         />
+        {false && (
+          <form className="selector-form">
+            <BrushColorSelector
+              defaultColor={brushColor}
+              index={labelmap3D.activeSegmentIndex}
+              onNext={incrementSegment}
+              onPrev={decrementSegment}
+            />
+            <BrushRadius value={brushRadius} onChange={updateBrushSize} />
+          </form>
+        )}
+        <h3>Segmentations</h3>
+        <div className="segmentations">
+          <Select
+            value={labelmapList.find(i => i.value === brushStackState.activeLabelmapIndex) || null}
+            formatOptionLabel={SegmentationItem}
+            options={labelmapList}
+            styles={segmentationSelectStyles}
+          />
+        </div>
+        <ScrollableArea>
+          <TableList customHeader={<SegmentsHeader count={segmentList.length} />}>
+            {segmentList}
+          </TableList>
+        </ScrollableArea>
       </div>
-      <ScrollableArea>
-        <TableList customHeader={<SegmentsHeader count={segmentList.length} />}>
-          {segmentList}
-        </TableList>
-      </ScrollableArea>
-    </div>
-  );
+    );
+  }
 };
 
 SegmentationPanel.propTypes = {

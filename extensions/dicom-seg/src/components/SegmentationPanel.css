@@ -10,6 +10,7 @@
 
 .labelmap-container h3 {
   padding-left: 20px;
+  margin-top: 0;
 }
 
 .segmentation-item {
@@ -90,6 +91,17 @@
 .brush-radius label {
   display: block;
   margin-bottom: 8px;
+}
+
+.cog-icon {
+  margin: 20px 20px 0 0;
+  align-self: flex-end;
+  color: var(--default-color);
+  cursor: pointer;
+}
+
+.cog-icon:hover {
+  color: var(--hover-color);
 }
 
 .segmentation-icon {
