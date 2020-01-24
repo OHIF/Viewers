@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useContext } from 'react';
 import { OidcProvider } from 'redux-oidc';
 import { I18nextProvider } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -52,7 +52,6 @@ import store from './store';
 import WhiteLabellingContext from './context/WhiteLabellingContext';
 import UserManagerContext from './context/UserManagerContext';
 import AppContext from './context/AppContext';
-import UserPreferencesContext from './context/UserPreferencesContext';
 
 /** ~~~~~~~~~~~~~ Application Setup */
 const commandsManagerConfig = {
@@ -149,32 +148,30 @@ class App extends Component {
     if (this._userManager) {
       return (
         <AppContext.Provider value={{ appConfig: this._appConfig }}>
-          <UserPreferencesContext.Provider>
-            <Provider store={store}>
-              <I18nextProvider i18n={i18n}>
-                <OidcProvider store={store} userManager={this._userManager}>
-                  <UserManagerContext.Provider value={this._userManager}>
-                    <Router basename={routerBasename}>
-                      <WhiteLabellingContext.Provider value={whiteLabelling}>
-                        <SnackbarProvider service={UINotificationService}>
-                          <DialogProvider service={UIDialogService}>
-                            <ModalProvider
-                              modal={OHIFModal}
-                              service={UIModalService}
-                            >
-                              <OHIFStandaloneViewer
-                                userManager={this._userManager}
-                              />
-                            </ModalProvider>
-                          </DialogProvider>
-                        </SnackbarProvider>
-                      </WhiteLabellingContext.Provider>
-                    </Router>
-                  </UserManagerContext.Provider>
-                </OidcProvider>
-              </I18nextProvider>
-            </Provider>
-          </UserPreferencesContext.Provider>
+          <Provider store={store}>
+            <I18nextProvider i18n={i18n}>
+              <OidcProvider store={store} userManager={this._userManager}>
+                <UserManagerContext.Provider value={this._userManager}>
+                  <Router basename={routerBasename}>
+                    <WhiteLabellingContext.Provider value={whiteLabelling}>
+                      <SnackbarProvider service={UINotificationService}>
+                        <DialogProvider service={UIDialogService}>
+                          <ModalProvider
+                            modal={OHIFModal}
+                            service={UIModalService}
+                          >
+                            <OHIFStandaloneViewer
+                              userManager={this._userManager}
+                            />
+                          </ModalProvider>
+                        </DialogProvider>
+                      </SnackbarProvider>
+                    </WhiteLabellingContext.Provider>
+                  </Router>
+                </UserManagerContext.Provider>
+              </OidcProvider>
+            </I18nextProvider>
+          </Provider>
         </AppContext.Provider>
       );
     }
