@@ -131,10 +131,6 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
             brushStackState.activeLabelmapIndex
           );
 
-          cornerstone.getEnabledElements().forEach(enabledElement => {
-            cornerstone.updateImage(enabledElement.element);
-          });
-
           /* TODO: Notify of change? */
           setCounter(counter + 1);
         },
@@ -200,6 +196,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
 
       const sameSegment = selectedSegment === segmentNumber;
       const setCurrentSelectedSegment = () => {
+        _setActiveSegment(firstImageId, segmentNumber, labelmap3D.activeSegmentIndex);
         setSelectedSegment(sameSegment ? null : segmentNumber);
       };
 
@@ -420,7 +417,41 @@ const _setActiveLabelmap = async (
 
   brushStackState.activeLabelmapIndex = displaySet.labelmapIndex;
 
+  cornerstone.getEnabledElements().forEach(enabledElement => {
+    cornerstone.updateImage(enabledElement.element);
+  });
+
   return displaySet.labelmapIndex;
+};
+
+/**
+ *
+ * @param {*} firstImageId
+ * @param {*} activeSegmentIndex
+ * @returns
+ */
+const _setActiveSegment = (
+  firstImageId,
+  segmentIndex,
+  activeSegmentIndex
+) => {
+  if (segmentIndex === activeSegmentIndex) {
+    console.warn(`${activeSegmentIndex} is already the active segment`);
+    return;
+  }
+
+  const { state } = cornerstoneTools.getModule('segmentation');
+  const brushStackState = state.series[firstImageId];
+
+  const labelmap3D =
+    brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
+  labelmap3D.activeSegmentIndex = segmentIndex;
+
+  cornerstone.getEnabledElements().forEach(enabledElement => {
+    cornerstone.updateImage(enabledElement.element);
+  });
+
+  return segmentIndex;
 };
 
 const segmentationSelectStyles = {
