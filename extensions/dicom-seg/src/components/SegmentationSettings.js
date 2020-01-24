@@ -1,17 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Range } from '@ohif/ui';
 
 import './SegmentationSettings.css';
 
-const SegmentationSettings = ({ segmentation, onBack }) => {
-  const [state, setState] = useState({
-    segmentFill: true,
-    segmentOutline: true,
-    renderInactiveSegs: true,
-  });
+const SegmentationSettings = ({ configuration, onBack, onChange }) => {
+  const [state, setState] = useState({ ...configuration });
+
+  useEffect(() => {
+    setState(state => ({ ...state, ...configuration }));
+  }, [configuration]);
+
+  useEffect(() => {
+    onChange(state);
+  }, [state]);
 
   const check = field => {
-    setState(state => ({ ...state, [field]: !state[field] }))
+    setState(state => ({ ...state, [field]: !state[field] }));
+  };
+
+  const save = (field, value) => {
+    setState(state => ({ ...state, [field]: value }));
   };
 
   return (
@@ -24,37 +32,88 @@ const SegmentationSettings = ({ segmentation, onBack }) => {
       </div>
       <div
         className="settings-group"
-        style={{ marginBottom: state.segmentFill ? 30 : 0 }}
+        style={{ marginBottom: state.renderFill ? 30 : 0 }}
       >
         <CustomCheck
           label="Segment Fill"
-          checked={state.segmentFill}
-          onChange={() => check('segmentFill')}
+          checked={state.renderFill}
+          onChange={() => check('renderFill')}
         />
-        {state.segmentFill && <CustomRange label="Opacity" showPercentage />}
+        {state.renderFill && (
+          <CustomRange
+            label="Opacity"
+            step={1}
+            min={0}
+            max={100}
+            value={state.fillAlpha * 100}
+            onChange={event => save('fillAlpha', parseFloat(event.target.value / 100))}
+            showPercentage
+          />
+        )}
       </div>
       <div
         className="settings-group"
-        style={{ marginBottom: state.segmentOutline ? 30 : 0 }}
+        style={{ marginBottom: state.renderOutline ? 30 : 0 }}
       >
         <CustomCheck
           label="Segment Outline"
-          checked={state.segmentOutline}
-          onChange={() => check('segmentOutline')}
+          checked={state.renderOutline}
+          onChange={() => check('renderOutline')}
         />
-        {state.segmentOutline && <CustomRange label="Opacity" showPercentage />}
-        {state.segmentOutline && <CustomRange label="Width" showValue />}
+        {state.renderOutline && (
+          <CustomRange
+            value={state.outlineAlpha * 100}
+            label="Opacity"
+            showPercentage
+            step={1}
+            min={0}
+            max={100}
+            onChange={event => save('outlineAlpha', parseFloat(event.target.value / 100))}
+          />
+        )}
+        {state.renderOutline && (
+          <CustomRange
+            value={state.outlineWidth}
+            label="Width"
+            showValue
+            step={1}
+            min={0}
+            max={100}
+            onChange={event => save('outlineWidth', parseInt(event.target.value))}
+          />
+        )}
       </div>
       <div
         className="settings-group"
-        style={{ marginBottom: state.renderInactiveSegs ? 30 : 0 }}
+        style={{ marginBottom: state.shouldRenderInactiveLabelmaps ? 30 : 0 }}
       >
         <CustomCheck
           label="Render inactive segmentations"
-          checked={state.renderInactiveSegs}
-          onChange={() => check('renderInactiveSegs')}
+          checked={state.shouldRenderInactiveLabelmaps}
+          onChange={() => check('shouldRenderInactiveLabelmaps')}
         />
-        {state.renderInactiveSegs && <CustomRange label="Opacity" showPercentage />}
+        {state.shouldRenderInactiveLabelmaps && (
+          <>
+            <CustomRange
+              label="Fill Opacity"
+              showPercentage
+              step={1}
+              min={0}
+              max={100}
+              value={state.fillAlphaInactive * 100}
+              onChange={event => save('fillAlphaInactive', parseFloat(event.target.value / 100))}
+            />
+            <CustomRange
+              label="Outline Opacity"
+              showPercentage
+              step={1}
+              min={0}
+              max={100}
+              value={state.outlineAlphaInactive * 100}
+              onChange={event => save('outlineAlphaInactive', parseFloat(event.target.value / 100))}
+            />
+          </>
+        )}
       </div>
     </div>
   );
@@ -71,20 +130,20 @@ const CustomCheck = ({ label, checked, onChange }) => {
   );
 };
 
-const CustomRange = ({ label, value, onChange, showPercentage, showValue }) => (
-  <div className="range">
-    <label htmlFor="range">{label}</label>
-    <Range
-      value={value}
-      min={1}
-      max={50}
-      step={1}
-      onChange={onChange}
-      id="range"
-      showPercentage={showPercentage}
-      showValue={showValue}
-    />
-  </div>
-);
+const CustomRange = props => {
+  const { label, onChange } = props;
+  return (
+    <div className="range">
+      <label htmlFor="range">{label}</label>
+      <Range
+        {...props}
+        onChange={event => {
+          event.persist();
+          onChange(event);
+        }}
+      />
+    </div>
+  );
+};
 
 export default SegmentationSettings;

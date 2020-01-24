@@ -22,6 +22,12 @@ const { studyMetadataManager } = utils;
 const segmentationModule = cornerstoneTools.getModule('segmentation');
 const DEFAULT_BRUSH_RADIUS = segmentationModule.getters.radius || 10;
 
+const refreshViewport = () => {
+  cornerstone.getEnabledElements().forEach(enabledElement => {
+    cornerstone.updateImage(enabledElement.element);
+  });
+};
+
 /**
  * SegmentationPanel component
  *
@@ -290,8 +296,29 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     return `rgba(${color.join(',')})`;
   };
 
+  const updateConfiguration = newConfiguration => {
+    /* Supported configuration */
+    configuration.renderFill = newConfiguration.renderFill;
+    configuration.renderOutline = newConfiguration.renderOutline;
+    configuration.shouldRenderInactiveLabelmaps = newConfiguration.shouldRenderInactiveLabelmaps;
+    configuration.fillAlpha = newConfiguration.fillAlpha;
+    configuration.outlineAlpha = newConfiguration.outlineAlpha;
+    configuration.outlineWidth = newConfiguration.outlineWidth;
+    configuration.fillAlphaInactive = newConfiguration.fillAlphaInactive;
+    configuration.outlineAlphaInactive = newConfiguration.outlineAlphaInactive;
+    refreshViewport();
+  };
+
+  const { configuration } = segmentationModule;
+
   if (showSegSettings) {
-    return <SegmentationSettings onBack={() => setShowSegSettings(false)} />;
+    return (
+      <SegmentationSettings
+        configuration={configuration}
+        onBack={() => setShowSegSettings(false)}
+        onChange={updateConfiguration}
+      />
+    );
   } else {
     return (
       <div className="labelmap-container">
@@ -430,9 +457,7 @@ const _setActiveLabelmap = async (
 
   brushStackState.activeLabelmapIndex = displaySet.labelmapIndex;
 
-  cornerstone.getEnabledElements().forEach(enabledElement => {
-    cornerstone.updateImage(enabledElement.element);
-  });
+  refreshViewport();
 
   return displaySet.labelmapIndex;
 };
@@ -460,9 +485,7 @@ const _setActiveSegment = (
     brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
   labelmap3D.activeSegmentIndex = segmentIndex;
 
-  cornerstone.getEnabledElements().forEach(enabledElement => {
-    cornerstone.updateImage(enabledElement.element);
-  });
+  refreshViewport();
 
   return segmentIndex;
 };
