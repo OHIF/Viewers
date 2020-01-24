@@ -43,7 +43,6 @@
 }
 
 .segment-item .segment-label {
-  margin-top: 9px;
   overflow: hidden;
   max-width: calc(100% - 50px);
   text-overflow: ellipsis;
@@ -155,4 +154,11 @@
   height: 32px;
   text-align: center;
   line-height: 32px;
+}
+
+.tableList .tableListHeader .numberOfItems {
+  float: unset;
+  max-width: unset;
+  flex: unset;
+  margin-right: 16px;
 }

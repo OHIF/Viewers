@@ -214,12 +214,10 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
           onItemClick={setCurrentSelectedSegment}
         >
           <div>
-            <div className="segment-label">{segmentLabel}</div>
-            <div>
-              <div className="segment-info">
-                {segmentLabel ? segmentLabel : '...'}
-              </div>
+            <div className="segment-label" style={{ marginBottom: 4 }}>
+              {segmentLabel}
             </div>
+            {false && <div className="segment-info">{'...'}</div>}
             <div className="segment-actions">
               <button
                 className="btnAction"
@@ -428,13 +426,14 @@ const _setActiveLabelmap = async (
 const segmentationSelectStyles = {
   control: (base, state) => ({
     ...base,
+    cursor: 'pointer',
     background: '#151A1F',
     borderRadius: state.isFocused ? '5px 5px 5px 5px' : 5,
-    borderColor: state.isFocused ? 'white' : '#9CCEF9',
+    borderColor: state.isFocused ? '#20a5d6' : '#9CCEF9',
     boxShadow: state.isFocused ? null : null,
     minHeight: '50px',
     '&:hover': {
-      borderColor: state.isFocused ? 'white' : '#9CCEF9',
+      borderColor: '#20a5d6',
     },
   }),
   menu: base => ({
@@ -444,6 +443,7 @@ const segmentationSelectStyles = {
   }),
   option: (base, state) => ({
     ...base,
+    cursor: 'pointer',
     '&:first-of-type': {
       borderTopLeftRadius: 5,
       borderTopRightRadius: 5,
