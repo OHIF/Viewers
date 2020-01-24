@@ -43,7 +43,7 @@ describe('OHIF Study List', function() {
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('@searchResult').should($list => {
-        expect($list.length).to.be.eq(17);
+        expect($list.length).to.be.eq(16);
         expect($list).to.contain('MR');
       });
     });
@@ -132,7 +132,7 @@ describe('OHIF Study List', function() {
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('@searchResult').should($list => {
-        expect($list.length).to.be.eq(17);
+        expect($list.length).to.be.eq(16);
         expect($list).to.contain('MR');
       });
     });
