@@ -11,24 +11,17 @@ import { TabFooter } from './TabFooter';
  * It renders the General Preferences content
  *
  * @param {object} props component props
- * @param {string} props.name Tab`s name
+ * @param {function} props.t
  * @param {function} props.onClose
  * @param {object} props.generalPreferences
- * @param {string} props.defaultLanguage
  */
-function GeneralPreferences({
-  name,
-  onClose,
-  t,
-  generalPreferences,
-  defaultLanguage,
-}) {
+function GeneralPreferences({ onClose, t, generalPreferences }) {
   const { language: currentLanguage = i18n.language } = generalPreferences;
 
   const [language, setLanguage] = useState(currentLanguage);
 
   const onResetPreferences = () => {
-    setLanguage(defaultLanguage);
+    setLanguage(i18n.defaultLanguage);
   };
 
   const onSave = () => {
@@ -57,11 +50,9 @@ function GeneralPreferences({
 }
 
 GeneralPreferences.propTypes = {
-  defaultLanguage: PropTypes.any,
-  generalPreferences: PropTypes.any,
-  name: PropTypes.string,
-  hide: PropTypes.func,
+  onClose: PropTypes.func,
   t: PropTypes.func,
+  generalPreferences: PropTypes.any,
 };
 
 export { GeneralPreferences };
