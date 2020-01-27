@@ -18,10 +18,7 @@ const VTKViewport = props => {
 
   useEffect(() => {
     const handleScrollEvent = evt => {
-      const vtkViewportApiReference =
-        props.commandsManager.runCommand('getVtkApiForViewportIndex', {
-          index: props.viewportIndex,
-        }) || {};
+      const vtkViewportApiReference = props.onScroll(props.viewportIndex) || {};
       const viewportUid = vtkViewportApiReference.uid;
       const viewportWasScrolled = viewportUid === evt.detail.uid;
 
@@ -33,7 +30,7 @@ const VTKViewport = props => {
     window.addEventListener('vtkscrollevent', handleScrollEvent);
     return () =>
       window.removeEventListener('vtkscrollevent', handleScrollEvent);
-  }, [props.commandsManager, props.viewportIndex, setViewportActiveHandler]);
+  }, [props, props.onScroll, props.viewportIndex, setViewportActiveHandler]);
 
   return (
     <div
@@ -50,7 +47,12 @@ VTKViewport.propTypes = {
   setViewportActive: PropTypes.func.isRequired,
   viewportIndex: PropTypes.number.isRequired,
   activeViewportIndex: PropTypes.number.isRequired,
-  commandsManager: PropTypes.object,
+  /* Receives viewportIndex */
+  onScroll: PropTypes.func,
+};
+
+VTKViewport.defaultProps = {
+  onScroll: () => {},
 };
 
 export default VTKViewport;
