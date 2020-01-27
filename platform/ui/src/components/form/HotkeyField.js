@@ -6,7 +6,6 @@ const emptyFunc = () => {};
 function HotkeyField({
   name = '',
   value = '',
-  type = 'text',
   className = '',
   onChange = emptyFunc,
   onBlur = emptyFunc,
@@ -17,7 +16,7 @@ function HotkeyField({
       name={name}
       value={value}
       readOnly={true}
-      type={type}
+      type="text"
       className={className}
       onChange={onChange}
       onBlur={onBlur}
@@ -29,7 +28,6 @@ function HotkeyField({
 HotkeyField.propTypes = {
   name: PropTypes.string,
   value: PropTypes.string,
-  type: PropTypes.string,
   className: PropTypes.string,
   onChange: PropTypes.func,
   onBlur: PropTypes.func,
