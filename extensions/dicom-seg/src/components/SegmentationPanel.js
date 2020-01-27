@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
@@ -77,6 +77,8 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
       )
     );
 
+    document.addEventListener('side-panel-change', handleSidePanelChange);
+
     return () => {
       cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
         enabledElement.removeEventListener(
@@ -84,8 +86,14 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
           labelmapModifiedHandler
         )
       );
+
+      document.removeEventListener('side-panel-change', handleSidePanelChange);
     };
   });
+
+  const handleSidePanelChange = () => {
+    setShowSegSettings(false);
+  };
 
   if (!brushStackState) {
     return null;

@@ -34,7 +34,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
       </div>
       <div
         className="settings-group"
-        style={{ marginBottom: state.renderFill ? 20 : 0 }}
+        style={{ marginBottom: state.renderFill ? 15 : 0 }}
       >
         <CustomCheck
           label="Segment Fill"
@@ -55,7 +55,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
       </div>
       <div
         className="settings-group"
-        style={{ marginBottom: state.renderOutline ? 20 : 0 }}
+        style={{ marginBottom: state.renderOutline ? 15 : 0 }}
       >
         <CustomCheck
           label="Segment Outline"
@@ -87,7 +87,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
       </div>
       <div
         className="settings-group"
-        style={{ marginBottom: state.shouldRenderInactiveLabelmaps ? 20 : 0 }}
+        style={{ marginBottom: state.shouldRenderInactiveLabelmaps ? 15 : 0 }}
       >
         <CustomCheck
           label="Render inactive segmentations"
