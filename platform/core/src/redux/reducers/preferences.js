@@ -1,25 +1,25 @@
 import cloneDeep from 'lodash.clonedeep';
 
 const defaultState = {
-  // Top level key
-  viewer: {
-    // First tab
-    hotKeysData: {
-      // hotkeyName, label, keys, column
-      // zoom: { label: 'Zoom', command: 'Z', column: 0 },
-    },
-    // Second tab
-    windowLevelData: {
-      // order, description, window (int), level (int)
-      // 0: { description: 'Soft tissue', window: '', level: '' },
-    },
+  // First tab
+  hotkeyDefinitions: [
+    // commandName, label, keys
+    // [{ zoom: { label: 'Zoom', keys: ['z'] }}]
+  ],
+  // Second tab
+  windowLevelData: {
+    // order, description, window (int), level (int)
+    // 0: { description: 'Soft tissue', window: '', level: '' },
+  },
+  generalPreferences: {
+    // language: 'en-US'
   },
 };
 
 const preferences = (state, action) => {
   switch (action.type) {
     case 'SET_USER_PREFERENCES': {
-      const newState = action.state ? action.state : cloneDeep(defaultState);
+      const newState = action.state || cloneDeep(defaultState);
 
       return Object.assign({}, state, newState);
     }

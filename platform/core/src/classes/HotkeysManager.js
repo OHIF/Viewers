@@ -43,19 +43,68 @@ export class HotkeysManager {
   }
 
   /**
-   * Registers a list of hotkeydefinitions. Optionally, sets the
-   * default hotkey bindings for all provided definitions. These
+   * Registers a list of hotkeydefinitions.
+   *
+   * @param {HotkeyDefinition[] | Object} hotkeyDefinitions Contains hotkeys definitions
+   */
+  setHotkeys(hotkeyDefinitions) {
+    const definitions = Array.isArray(hotkeyDefinitions)
+      ? [...hotkeyDefinitions]
+      : this._parseToArrayLike(hotkeyDefinitions);
+
+    definitions.forEach(definition => this.registerHotkeys(definition));
+  }
+
+  /**
+   * Set default hotkey bindings. These
    * values are used in `this.restoreDefaultBindings`.
    *
-   * @param {HotkeyDefinition[]} hotkeyDefinitions
-   * @param {Boolean} [isDefaultDefinitions]
+   * @param {HotkeyDefinition[] | Object} hotkeyDefinitions Contains hotkeys definitions
    */
-  setHotkeys(hotkeyDefinitions, isDefaultDefinitions = false) {
-    hotkeyDefinitions.forEach(definition => this.registerHotkeys(definition));
+  setDefaultHotKeys(hotkeyDefinitions) {
+    const definitions = Array.isArray(hotkeyDefinitions)
+      ? [...hotkeyDefinitions]
+      : this._parseToArrayLike(hotkeyDefinitions);
 
-    if (isDefaultDefinitions) {
-      this.hotkeyDefaults = hotkeyDefinitions;
-    }
+    this.hotkeyDefaults = definitions;
+  }
+
+  /**
+   * It parses given object containing hotkeyDefinition to array like.
+   * Each property of given object will be mapped to an object of an array. And its property name will be the value of a property named as commandName
+   *
+   * @param {HotkeyDefinition[] | Object} hotkeyDefinitions Contains hotkeys definitions
+   * @returns {HotkeyDefinition[]}
+   */
+  _parseToArrayLike(hotkeyDefinitionsObj) {
+    const copy = { ...hotkeyDefinitionsObj };
+    return Object.entries(copy).map(entryValue =>
+      this._parseToHotKeyObj(entryValue[0], entryValue[1])
+    );
+  }
+
+  /**
+   * Return HotkeyDefinition object like based on given property name and property value
+   * @param {string} propertyName property name of hotkey definition object
+   * @param {object} propertyValue property value of hotkey definition object
+   *
+   * @example
+   *
+   * const hotKeyObj = {hotKeyDefA: {keys:[],....}}
+   *
+   * const parsed = _parseToHotKeyObj(Object.keys(hotKeyDefA)[0], hotKeyObj[hotKeyDefA]);
+   *  {
+   *   commandName: hotKeyDefA,
+   *   keys: [],
+   *   ....
+   *  }
+   *
+   */
+  _parseToHotKeyObj(propertyName, propertyValue) {
+    return {
+      commandName: propertyName,
+      ...propertyValue,
+    };
   }
 
   /**

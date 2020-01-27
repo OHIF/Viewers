@@ -1,10 +1,10 @@
 {
   "baseUrl": "http://localhost:3000",
-  "video": false,
   "chromeWebSecurity": false,
   "waitForAnimations": true,
   "defaultCommandTimeout": 10000,
   "requestTimeout": 10000,
   "responseTimeout": 10000,
-  "projectId": "4oe38f"
+  "projectId": "4oe38f",
+  "video": false
 }

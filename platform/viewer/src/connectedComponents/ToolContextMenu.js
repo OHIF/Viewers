@@ -1,11 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
-// This whole component should live in the Measurements Extension :thinking:
-import getMeasurementLocationCallback from '../appExtensions/MeasurementsPanel/getMeasurementLocationCallback';
+import { commandsManager } from './../App.js';
 
-import './ToolContextMenu.css';
+import { ContextMenu } from '@ohif/ui';
 
 const toolTypes = [
   'Angle',
@@ -17,232 +14,102 @@ const toolTypes = [
   'RectangleRoi',
 ];
 
-let defaultDropdownItems = [
-  {
-    actionType: 'Delete',
-    action: ({ nearbyToolData, eventData }) => {
-      const element = eventData.element;
-
-      cornerstoneTools.removeToolState(
-        element,
-        nearbyToolData.toolType,
-        nearbyToolData.tool
-      );
-      cornerstone.updateImage(element);
+const ToolContextMenu = ({
+  onSetLabel,
+  onSetDescription,
+  isTouchEvent,
+  eventData,
+  onClose,
+  onDelete,
+}) => {
+  const defaultDropdownItems = [
+    {
+      label: 'Delete measurement',
+      actionType: 'Delete',
+      action: ({ nearbyToolData, eventData }) =>
+        onDelete(nearbyToolData, eventData),
     },
-  },
-  {
-    actionType: 'setLabel',
-    action: ({ nearbyToolData, eventData }) => {
-      const { tool } = nearbyToolData;
-
-      const options = {
-        skipAddLabelButton: true,
-        editLocation: true,
-      };
-
-      getMeasurementLocationCallback(eventData, tool, options);
+    {
+      label: 'Relabel',
+      actionType: 'setLabel',
+      action: ({ nearbyToolData, eventData }) => {
+        const { tool: measurementData } = nearbyToolData;
+        onSetLabel(eventData, measurementData);
+      },
     },
-  },
-  {
-    actionType: 'setDescription',
-    action: ({ nearbyToolData, eventData }) => {
-      const { tool } = nearbyToolData;
-
-      const options = {
-        editDescriptionOnDialog: true,
-      };
-
-      getMeasurementLocationCallback(eventData, tool, options);
+    {
+      actionType: 'setDescription',
+      action: ({ nearbyToolData, eventData }) => {
+        const { tool: measurementData } = nearbyToolData;
+        onSetDescription(eventData, measurementData);
+      },
     },
-  },
-];
+  ];
 
-function getNearbyToolData(element, coords, toolTypes) {
-  const nearbyTool = {};
-  let pointNearTool = false;
+  const getDropdownItems = (eventData, isTouchEvent = false) => {
+    const nearbyToolData = commandsManager.runCommand('getNearbyToolData', {
+      element: eventData.element,
+      canvasCoordinates: eventData.currentPoints.canvas,
+      availableToolTypes: toolTypes,
+    });
 
-  toolTypes.forEach(toolType => {
-    const toolData = cornerstoneTools.getToolState(element, toolType);
-    if (!toolData) {
+    /*
+     * Annotate tools for touch events already have a press handle to edit it,
+     * has a better UX for deleting it.
+     */
+    if (
+      isTouchEvent &&
+      nearbyToolData &&
+      nearbyToolData.toolType === 'arrowAnnotate'
+    ) {
       return;
     }
 
-    toolData.data.forEach(function(data, index) {
-      // TODO: Fix this, it's ugly
-      let toolInterface = cornerstoneTools.getToolForElement(element, toolType);
-      if (!toolInterface) {
-        toolInterface = cornerstoneTools.getToolForElement(
-          element,
-          `${toolType}Tool`
-        );
-      }
+    let dropdownItems = [];
+    if (nearbyToolData) {
+      defaultDropdownItems.forEach(item => {
+        item.params = { eventData, nearbyToolData };
 
-      if (!toolInterface) {
-        throw new Error('Tool not found.');
-      }
-
-      if (toolInterface.pointNearTool(element, data, coords)) {
-        pointNearTool = true;
-        nearbyTool.tool = data;
-        nearbyTool.index = index;
-        nearbyTool.toolType = toolType;
-      }
-    });
-
-    if (pointNearTool) {
-      return false;
-    }
-  });
-
-  return pointNearTool ? nearbyTool : undefined;
-}
-
-function getDropdownItems(eventData, isTouchEvent = false) {
-  const nearbyToolData = getNearbyToolData(
-    eventData.element,
-    eventData.currentPoints.canvas,
-    toolTypes
-  );
-
-  // Annotate tools for touch events already have a press handle to edit it, has a better UX for deleting it
-  if (
-    isTouchEvent &&
-    nearbyToolData &&
-    nearbyToolData.toolType === 'arrowAnnotate'
-  ) {
-    return;
-  }
-
-  let dropdownItems = [];
-  if (nearbyToolData) {
-    defaultDropdownItems.forEach(function(item) {
-      item.params = {
-        eventData,
-        nearbyToolData,
-      };
-
-      if (item.actionType === 'Delete') {
-        item.text = 'Delete measurement';
-      }
-
-      if (item.actionType === 'setLabel') {
-        item.text = 'Relabel';
-      }
-
-      if (item.actionType === 'setDescription') {
-        item.text = `${
-          nearbyToolData.tool.description ? 'Edit' : 'Add'
-        } Description`;
-      }
-
-      dropdownItems.push(item);
-    });
-  }
-
-  return dropdownItems;
-}
-
-class ToolContextMenu extends Component {
-  static propTypes = {
-    isTouchEvent: PropTypes.bool.isRequired,
-    eventData: PropTypes.object,
-    onClose: PropTypes.func,
-    visible: PropTypes.bool.isRequired,
-  };
-
-  static defaultProps = {
-    visible: true,
-    isTouchEvent: false,
-  };
-
-  constructor(props) {
-    super(props);
-
-    this.mainElement = React.createRef();
-  }
-
-  render() {
-    if (!this.props.eventData) {
-      return null;
-    }
-
-    const { isTouchEvent, eventData } = this.props;
-    const dropdownItems = getDropdownItems(eventData, isTouchEvent);
-
-    // Skip if there is no dropdown item
-    if (!dropdownItems.length) {
-      return '';
-    }
-
-    const dropdownComponents = dropdownItems.map(item => {
-      const itemOnClick = event => {
-        item.action(item.params);
-        if (this.props.onClose) {
-          this.props.onClose();
+        if (item.actionType === 'setDescription') {
+          item.label = `${
+            nearbyToolData.tool.description ? 'Edit' : 'Add'
+          } Description`;
         }
-      };
 
-      return (
-        <li key={item.actionType}>
-          <button className="form-action" onClick={itemOnClick}>
-            <span key={item.actionType}>{item.text}</span>
-          </button>
-        </li>
-      );
-    });
+        dropdownItems.push(item);
+      });
+    }
 
-    const position = {
-      top: `${eventData.currentPoints.canvas.y}px`,
-      left: `${eventData.currentPoints.canvas.x}px`,
-    };
+    return dropdownItems;
+  };
 
-    return (
-      <div className="ToolContextMenu" style={position} ref={this.mainElement}>
-        <ul className="bounded">{dropdownComponents}</ul>
-      </div>
-    );
-  }
-
-  componentDidMount = () => {
-    if (this.mainElement.current) {
-      this.updateElementPosition();
+  const onClickHandler = ({ action, params }) => {
+    action(params);
+    if (onClose) {
+      onClose();
     }
   };
 
-  componentDidUpdate = () => {
-    if (this.mainElement.current) {
-      this.updateElementPosition();
-    }
-  };
+  const dropdownItems = getDropdownItems(eventData, isTouchEvent);
 
-  updateElementPosition = () => {
-    const {
-      offsetParent,
-      offsetTop,
-      offsetHeight,
-      offsetWidth,
-      offsetLeft,
-    } = this.mainElement.current;
+  return (
+    <div className="ToolContextMenu">
+      <ContextMenu items={dropdownItems} onClick={onClickHandler} />;
+    </div>
+  );
+};
 
-    const { eventData } = this.props;
+ToolContextMenu.propTypes = {
+  isTouchEvent: PropTypes.bool.isRequired,
+  eventData: PropTypes.object,
+  onClose: PropTypes.func,
+  onSetDescription: PropTypes.func,
+  onSetLabel: PropTypes.func,
+  onDelete: PropTypes.func,
+};
 
-    if (offsetTop + offsetHeight > offsetParent.offsetHeight) {
-      const offBoundPixels =
-        offsetTop + offsetHeight - offsetParent.offsetHeight;
-      const top = eventData.currentPoints.canvas.y - offBoundPixels;
-
-      this.mainElement.current.style.top = `${top > 0 ? top : 0}px`;
-    }
-
-    if (offsetLeft + offsetWidth > offsetParent.offsetWidth) {
-      const offBoundPixels =
-        offsetLeft + offsetWidth - offsetParent.offsetWidth;
-      const left = eventData.currentPoints.canvas.x - offBoundPixels;
-
-      this.mainElement.current.style.left = `${left > 0 ? left : 0}px`;
-    }
-  };
-}
+ToolContextMenu.defaultProps = {
+  isTouchEvent: false,
+};
 
 export default ToolContextMenu;

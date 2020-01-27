@@ -2,12 +2,14 @@ import MODULE_TYPES from './MODULE_TYPES.js';
 import log from './../log.js';
 
 export default class ExtensionManager {
-  constructor({ commandsManager }) {
+  constructor({ commandsManager, servicesManager, appConfig = {} }) {
     this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
     //
     this._commandsManager = commandsManager;
+    this._servicesManager = servicesManager;
+    this._appConfig = appConfig;
 
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
@@ -25,7 +27,7 @@ export default class ExtensionManager {
       const hasConfiguration = Array.isArray(extension);
 
       if (hasConfiguration) {
-        const [ohifExtension, configuration] = extensions;
+        const [ohifExtension, configuration] = extension;
         this.registerExtension(ohifExtension, configuration);
       } else {
         this.registerExtension(extension);
@@ -66,7 +68,12 @@ export default class ExtensionManager {
 
     // preRegistrationHook
     if (extension.preRegistration) {
-      extension.preRegistration(configuration);
+      extension.preRegistration({
+        servicesManager: this._servicesManager,
+        commandsManager: this._commandsManager,
+        appConfig: this._appConfig,
+        configuration,
+      });
     }
 
     // Register Modules
@@ -74,7 +81,8 @@ export default class ExtensionManager {
       const extensionModule = this._getExtensionModule(
         moduleType,
         extension,
-        extensionId
+        extensionId,
+        configuration
       );
 
       if (extensionModule) {
@@ -97,7 +105,7 @@ export default class ExtensionManager {
    * @param {Object} extension
    * @param {string} extensionId - Used for logging warnings
    */
-  _getExtensionModule(moduleType, extension, extensionId) {
+  _getExtensionModule(moduleType, extension, extensionId, configuration) {
     const getModuleFnName = 'get' + _capitalizeFirstCharacter(moduleType);
     const getModuleFn = extension[getModuleFnName];
 
@@ -106,7 +114,12 @@ export default class ExtensionManager {
     }
 
     try {
-      const extensionModule = getModuleFn();
+      const extensionModule = getModuleFn({
+        servicesManager: this._servicesManager,
+        commandsManager: this._commandsManager,
+        appConfig: this._appConfig,
+        configuration,
+      });
 
       if (!extensionModule) {
         log.warn(
