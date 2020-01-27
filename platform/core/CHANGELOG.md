@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.4](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.3...@ohif/core@2.3.4) (2020-01-27)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.3.3](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.2...@ohif/core@2.3.3) (2020-01-24)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.3.2](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.1...@ohif/core@2.3.2) (2020-01-06)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.3.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.0...@ohif/core@2.3.1) (2019-12-30)
+
+
+### Bug Fixes
+
+* 🐛 1241: Make Plugin switch part of ToolbarModule ([#1322](https://github.com/OHIF/Viewers/issues/1322)) ([6540e36](https://github.com/OHIF/Viewers/commit/6540e36818944ac2eccc696186366ae495b33a04)), closes [#1241](https://github.com/OHIF/Viewers/issues/1241)
+
+
+
+
+
 # [2.3.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.2.1...@ohif/core@2.3.0) (2019-12-20)
 
 
