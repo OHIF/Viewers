@@ -32,11 +32,11 @@
 
 .settings-group .range {
   display: flex;
-  padding: 15px 20px;
+  padding: 20px 15px;
 }
 
 .settings-group .range:not(:last-of-type) {
-  margin-bottom: 10px;
+  padding-bottom: 0;
 }
 
 .settings-group .range label {
@@ -64,11 +64,6 @@
 .custom-check input {
   width: 15px;
   height: 15px;
-}
-
-.custom-check span {
-  min-width: 90px;
-  max-width: 90px;
 }
 
 .settings-group {
