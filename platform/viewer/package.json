@@ -45,7 +45,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@ffmpeg-installer/ffmpeg": "1.0.20",
     "@ohif/core": "^2.3.4",
     "@ohif/extension-cornerstone": "^2.2.1",
     "@ohif/extension-dicom-html": "^1.1.0",
