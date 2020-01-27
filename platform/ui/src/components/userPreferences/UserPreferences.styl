@@ -14,10 +14,13 @@
 
 .UserPreferences
   .tabsContent
+    min-height: 650px
     display: none
 
     &.active
-      display: block
+      display: flex
+      flex-direction: column;
+      justify-content: space-between;
 
   .footer
     display: flex
