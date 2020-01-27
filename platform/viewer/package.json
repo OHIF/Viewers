@@ -1,6 +1,6 @@
 {
   "name": "@ohif/viewer",
-  "version": "3.4.2",
+  "version": "3.4.4",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -46,13 +46,13 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@ffmpeg-installer/ffmpeg": "1.0.20",
-    "@ohif/core": "^2.3.2",
+    "@ohif/core": "^2.3.4",
     "@ohif/extension-cornerstone": "^2.2.1",
     "@ohif/extension-dicom-html": "^1.1.0",
     "@ohif/extension-cornerstone-spherical-growcut": "^0.0.1",
     "@ohif/extension-dicom-microscopy": "^0.50.6",
     "@ohif/extension-dicom-pdf": "^1.0.1",
-    "@ohif/extension-vtk": "^1.2.7",
+    "@ohif/extension-vtk": "^1.2.9",
     "@ohif/i18n": "^0.52.4",
     "@ohif/ui": "^1.1.8",
     "@ohif/extension-dicom-seg": "^0.0.1",
