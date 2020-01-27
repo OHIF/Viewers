@@ -1,3 +1,4 @@
+import { api } from 'dicomweb-client';
 import DICOMWeb from '../../../DICOMWeb';
 
 const WADOProxy = {
@@ -20,6 +21,43 @@ function parseFloatArray(obj) {
 
   return result;
 }
+
+/**
+ * Simple cache schema for retrieved color palettes.
+ */
+const paletteColorCache = {
+  count: 0,
+  maxAge: 24 * 60 * 60 * 1000, // 24h cache?
+  entries: {},
+  isValidUID: function(paletteUID) {
+    return typeof paletteUID === 'string' && paletteUID.length > 0;
+  },
+  get: function(paletteUID) {
+    let entry = null;
+    if (this.entries.hasOwnProperty(paletteUID)) {
+      entry = this.entries[paletteUID];
+      // check how the entry is...
+      if (Date.now() - entry.time > this.maxAge) {
+        // entry is too old... remove entry.
+        delete this.entries[paletteUID];
+        this.count--;
+        entry = null;
+      }
+    }
+    return entry;
+  },
+  add: function(entry) {
+    if (this.isValidUID(entry.uid)) {
+      let paletteUID = entry.uid;
+      if (this.entries.hasOwnProperty(paletteUID) !== true) {
+        this.count++; // increment cache entry count...
+      }
+      entry.time = Date.now();
+      this.entries[paletteUID] = entry;
+      // @TODO: Add logic to get rid of old entries and reduce memory usage...
+    }
+  },
+};
 
 /**
  * Create a plain JS object that describes a study (a study descriptor object)
