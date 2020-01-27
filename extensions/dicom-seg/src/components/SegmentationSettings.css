@@ -32,7 +32,7 @@
 
 .settings-group .range {
   display: flex;
-  padding-left: 20px;
+  padding: 15px 20px;
 }
 
 .settings-group .range:not(:last-of-type) {
@@ -51,24 +51,27 @@
   padding: 0 20px 0 20px;
 }
 
-.custom-check {
-  margin-bottom: 10px;
-}
-
 .custom-check label {
   font-weight: bold;
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid black;
+  padding: 10px 15px;
 }
 
 .custom-check input {
-  margin-left: 10px;
-  width: 25px;
-  height: 25px;
+  width: 15px;
+  height: 15px;
 }
 
 .custom-check span {
   min-width: 90px;
   max-width: 90px;
+}
+
+.settings-group {
+  background-color: var(--ui-gray-dark);
+  border-radius: 12px;
 }
