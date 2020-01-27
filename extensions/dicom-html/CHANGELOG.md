@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.0.2...@ohif/extension-dicom-html@1.1.0) (2019-12-11)
+
+
+### Features
+
+* 🎸 DICOM SR STOW on MeasurementAPI ([#954](https://github.com/OHIF/Viewers/issues/954)) ([ebe1af8](https://github.com/OHIF/Viewers/commit/ebe1af8d4f75d2483eba869655906d7829bd9666)), closes [#758](https://github.com/OHIF/Viewers/issues/758)
+
+
+
+
+
+## [1.0.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.0.1...@ohif/extension-dicom-html@1.0.2) (2019-12-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
 ## [1.0.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.0.0...@ohif/extension-dicom-html@1.0.1) (2019-10-29)
 
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import SnackbarItem from './SnackbarItem';
 import './Snackbar.css';
-import { useSnackbarContext } from '../../utils/SnackbarProvider';
+import { useSnackbarContext } from '../../contextProviders';
 
 const SnackbarContainer = () => {
   const { snackbarItems, hide } = useSnackbarContext();
@@ -37,8 +37,8 @@ const SnackbarContainer = () => {
 
           return (
             <div key={pos} className={`sb-container sb-${pos}`}>
-              {items[pos].map(item => (
-                <div key={item.id}>{renderItem(item)}</div>
+              {items[pos].map((item, index) => (
+                <div key={item.id + index}>{renderItem(item)}</div>
               ))}
             </div>
           );

@@ -1,4 +1,5 @@
 import {
+  ContextMenu,
   Checkbox,
   CineDialog,
   ViewportDownloadForm,
@@ -24,7 +25,7 @@ import {
   Tooltip,
   AboutContent,
   UserPreferences,
-  UserPreferencesModal,
+  UserPreferencesForm,
   OHIFModal,
 } from './components';
 import { useDebounce, useMedia } from './hooks';
@@ -49,15 +50,18 @@ import { ScrollableArea } from './ScrollableArea/ScrollableArea.js';
 import Toolbar from './viewer/Toolbar.js';
 import ToolbarButton from './viewer/ToolbarButton.js';
 import ViewerbaseDragDropContext from './utils/viewerbaseDragDropContext.js';
-import SnackbarProvider, {
+import {
+  SnackbarProvider,
   useSnackbarContext,
   withSnackbar,
-} from './utils/SnackbarProvider';
-import ModalProvider, {
+  DialogProvider,
+  useDialog,
+  withDialog,
+  ModalProvider,
+  ModalConsumer,
   useModal,
   withModal,
-  ModalConsumer,
-} from './utils/ModalProvider';
+} from './contextProviders';
 
 export {
   // Elements
@@ -69,6 +73,7 @@ export {
   TextArea,
   TextInput,
   CineDialog,
+  ContextMenu,
   ViewportDownloadForm,
   ExpandableToolMenu,
   Icon,
@@ -101,7 +106,7 @@ export {
   Tooltip,
   AboutContent,
   UserPreferences,
-  UserPreferencesModal,
+  UserPreferencesForm,
   ViewerbaseDragDropContext,
   SnackbarProvider,
   useSnackbarContext,
@@ -111,6 +116,9 @@ export {
   ModalConsumer,
   withModal,
   OHIFModal,
+  DialogProvider,
+  withDialog,
+  useDialog,
   // Hooks
   useDebounce,
   useMedia,

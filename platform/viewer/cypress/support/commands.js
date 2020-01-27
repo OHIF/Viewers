@@ -7,6 +7,7 @@ import {
   initVTKToolsAliases,
   initStudyListAliasesOnDesktop,
   initStudyListAliasesOnTablet,
+  initPreferencesModalAliases,
 } from './aliases.js';
 
 // ***********************************************
@@ -90,6 +91,25 @@ Cypress.Commands.add('waitStudyList', () => {
   });
 });
 
+Cypress.Commands.add('waitVTKReformatting', () => {
+  // Wait for start reformatting
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 10000 }).should($grid => {
+    expect($grid).to.contain.text('Reform');
+  });
+
+  // Wait for finish reformatting
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
+    expect($grid).not.to.contain.text('Reform');
+  });
+});
+
+Cypress.Commands.add('waitViewportImageLoading', () => {
+  // Wait for finish loading
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 20000 }).should($grid => {
+    expect($grid).not.to.contain.text('Load');
+  });
+});
+
 /**
  * Command to perform a drag and drop action. Before using this command, we must get the element that should be dragged first.
  * Example of usage: cy.get(element-to-be-dragged).drag(dropzone-element)
@@ -148,7 +168,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy=thumbnail-list]', { timeout: 10000 }).should($itemList => {
+  cy.get('[data-cy=thumbnail-list]', { timeout: 20000 }).should($itemList => {
     expect($itemList.length >= seriesToWait).to.be.true;
   });
 });
@@ -188,10 +208,10 @@ Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
 
 //Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
-  cy.initCornerstoneToolsAliases();
-
   //Click on More button
-  cy.get('@moreBtn').click();
+  cy.get('[data-cy="more"]')
+    .as('moreBtn')
+    .click();
   //Verify if overlay is displayed
   cy.get('body').then(body => {
     if (body.find('.tooltip-toolbar-overlay').length == 0) {
@@ -199,11 +219,13 @@ Cypress.Commands.add('resetViewport', () => {
     }
   });
   //Click on Clear button
-  cy.get('.tooltip-inner > :nth-child(10)')
+  cy.get('[data-cy="clear"]')
     .as('clearBtn')
     .click();
   //Click on Reset button
-  cy.get('@resetBtn').click();
+  cy.get('[data-cy="reset"]')
+    .as('resetBtn')
+    .click();
 });
 
 Cypress.Commands.add('imageZoomIn', () => {
@@ -262,9 +284,8 @@ Cypress.Commands.add('initStudyListAliasesOnTablet', () => {
 Cypress.Commands.add(
   'addLengthMeasurement',
   (firstClick = [150, 100], secondClick = [130, 170]) => {
-    cy.initCornerstoneToolsAliases();
-    cy.get('@lengthBtn').click();
-    cy.addLine('@viewport', firstClick, secondClick);
+    cy.get('[data-cy="length"]').click();
+    cy.addLine('.viewport-element', firstClick, secondClick);
   }
 );
 
@@ -272,9 +293,8 @@ Cypress.Commands.add(
 Cypress.Commands.add(
   'addAngleMeasurement',
   (initPos = [180, 390], midPos = [300, 410], finalPos = [180, 450]) => {
-    cy.initCornerstoneToolsAliases();
-    cy.get('@angleBtn').click();
-    cy.addAngle('@viewport', initPos, midPos, finalPos);
+    cy.get('[data-cy="angle"]').click();
+    cy.addAngle('.viewport-element', initPos, midPos, finalPos);
   }
 );
 
@@ -347,9 +367,7 @@ Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
 });
 
 Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
-  cy.get('.toolbar-button-label')
-    .contains('Layout')
-    .click();
+  cy.get('[data-cy="layout"]').click();
 
   cy.get('.layoutChooser')
     .find('tr')
@@ -398,3 +416,86 @@ function canvasToImage(selectorOrEl) {
   canvas.parentElement.appendChild(image);
   canvas.style = 'display: none';
 }
+
+//Initialize aliases for User Preferences modal
+Cypress.Commands.add('initPreferencesModalAliases', () => {
+  initPreferencesModalAliases();
+});
+
+Cypress.Commands.add('openPreferences', () => {
+  cy.log('Open User Preferences Modal');
+  // Open User Preferences modal
+  cy.get('body').then(body => {
+    if (body.find('.OHIFModal').length === 0) {
+      cy.get('[data-cy="options-menu"]')
+        .scrollIntoView()
+        .click()
+        .then(() => {
+          cy.get('[data-cy="dd-item-menu"]')
+            .last()
+            .click()
+            .wait(200);
+        });
+    }
+  });
+});
+
+Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
+  // Open User Preferences modal
+  cy.openPreferences();
+
+  cy.initPreferencesModalAliases();
+
+  cy.log('Reset to Default Preferences');
+  cy.get('@restoreBtn').click();
+  cy.get('@saveBtn').click();
+});
+
+Cypress.Commands.add(
+  'setNewHotkeyShortcutOnUserPreferencesModal',
+  (function_label, shortcut) => {
+    // Within scopes all `.get` and `.contains` to within the matched elements
+    // dom instead of checking from document
+    cy.get('.HotKeysPreferences')
+      .within(() => {
+        cy.contains(function_label) // label we're looking for
+          .parent()
+          .find('input') // closest input to that label
+          .type(shortcut, { force: true }); // Set new shortcut for that function
+      })
+      .blur();
+  }
+);
+
+Cypress.Commands.add('openDownloadImageModal', () => {
+  // Click on More button
+  cy.get('[data-cy="more"]')
+    .as('moreBtn')
+    .click();
+
+  // Click on Download button
+  cy.get('[data-cy="download"]')
+    .as('downloadBtn')
+    .click();
+});
+
+Cypress.Commands.add('setLanguage', (language, save = true) => {
+  cy.openPreferences();
+
+  cy.get('@userPreferencesGeneralTab')
+    .click()
+    .should('have.class', 'active');
+
+  // Language dropdown should be displayed
+  cy.get('#language-select').should('be.visible');
+
+  // Select Language and Save/Cancel
+  cy.get('#language-select')
+    .select(language)
+    .then(() => {
+      const toClick = save ? '@saveBtn' : '@cancelBtn';
+      cy.get(toClick)
+        .scrollIntoView()
+        .click();
+    });
+});

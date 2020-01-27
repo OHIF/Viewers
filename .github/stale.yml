@@ -9,13 +9,13 @@ daysUntilClose: 7
 exemptLabels:
   - 'Story :raised_hands:'
   - 'Bug: Verified :bug:'
-  - 'Task: CI/Tooling 🤖'
+  - 'Task: CI/Tooling :robot:'
   - 'Task: Docs 📖'
   - 'Task: Docs :book:'
   - 'Task: Refactor 🛠'
   - 'Task: Tests :microscope:'
   - 'PR: Awaiting Review 👀'
-  - 'Triage 🏳️'
+  - 'Triage :white_flag:'
   - 'Announcement 🎉'
 # Label to use when marking an issue as stale
 staleLabel: 'Stale :baguette_bread:'
