@@ -22,6 +22,8 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
     setState(state => ({ ...state, [field]: value }));
   };
 
+  const toFloat = value => parseFloat(value / 100).toFixed(2);
+
   return (
     <div className="segmentation-settings">
       <div className="settings-title">
@@ -46,7 +48,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
             min={0}
             max={100}
             value={state.fillAlpha * 100}
-            onChange={event => save('fillAlpha', parseFloat(event.target.value / 100))}
+            onChange={event => save('fillAlpha', toFloat(event.target.value))}
             showPercentage
           />
         )}
@@ -68,7 +70,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
             step={1}
             min={0}
             max={100}
-            onChange={event => save('outlineAlpha', parseFloat(event.target.value / 100))}
+            onChange={event => save('outlineAlpha', toFloat(event.target.value))}
           />
         )}
         {state.renderOutline && (
@@ -101,7 +103,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
               min={0}
               max={100}
               value={state.fillAlphaInactive * 100}
-              onChange={event => save('fillAlphaInactive', parseFloat(event.target.value / 100))}
+              onChange={event => save('fillAlphaInactive', toFloat(event.target.value))}
             />
             <CustomRange
               label="Outline Opacity"
@@ -110,7 +112,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
               min={0}
               max={100}
               value={state.outlineAlphaInactive * 100}
-              onChange={event => save('outlineAlphaInactive', parseFloat(event.target.value / 100))}
+              onChange={event => save('outlineAlphaInactive', toFloat(event.target.value))}
             />
           </>
         )}
