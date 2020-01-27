@@ -31,7 +31,7 @@ function GeneralPreferences({ onClose, t, generalPreferences }) {
   const hasErrors = () => false;
 
   return (
-    <div className="">
+    <React.Fragment>
       <div className="">
         <label htmlFor="language-select" className="p-r-1">
           Language
@@ -45,7 +45,7 @@ function GeneralPreferences({ onClose, t, generalPreferences }) {
         hasErrors={hasErrors}
         t={t}
       />
-    </div>
+    </React.Fragment>
   );
 }
 

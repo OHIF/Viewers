@@ -1,52 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer, useContext } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 // Style
 import './UserPreferences.styl';
 
+import { useSelector } from 'react-redux';
+
 // Tabs
-// import { HotKeysPreferences } from './HotKeysPreferences';
-// import { WindowLevelPreferences } from './WindowLevelPreferences';
-import { Component as HotKeysPreferences } from './Component';
-import { Component as WindowLevelPreferences } from './Component';
+import { HotKeysPreferences } from './HotKeysPreferences';
+import { WindowLevelPreferences } from './WindowLevelPreferences';
 import { GeneralPreferences } from './GeneralPreferences';
 
 import { useTranslation } from 'react-i18next';
 
-function UserPreferences({
-  hide,
-  hotkeysManager,
-  userPreferencesContext = {},
-}) {
-  const {
-    generalPreferences = {},
-    windowLevelHotkeys = {},
-  } = userPreferencesContext;
+const tabs = [
+  {
+    name: 'Hotkeys',
+    Component: HotKeysPreferences,
+    getProps(tabsProps) {
+      const { hotkeysManager } = tabsProps;
+      return {
+        hotkeysManager,
+      };
+    },
+  },
+  {
+    name: 'General',
+    Component: GeneralPreferences,
+    getProps(tabsProps) {
+      const {
+        preferencesState: { generalPreferences },
+      } = tabsProps;
+      return {
+        generalPreferences,
+      };
+    },
+  },
+  {
+    name: 'Window Level',
+    Component: WindowLevelPreferences,
+    getProps(tabsProps) {
+      const { hotkeysManager, preferencesState } = tabsProps;
+      return {
+        hotkeysManager,
+        preferencesState,
+      };
+    },
+  },
+];
 
+function UserPreferences({ hide, hotkeysManager }) {
   const { t, ready: translationsAreReady } = useTranslation(
     'UserPreferencesModal'
   );
 
-  const tabs = [
-    {
-      name: 'Hotkeys',
-      Component: HotKeysPreferences,
-      props: { hotkeysManager },
-    },
-    {
-      name: 'General',
-      Component: GeneralPreferences,
-      props: { generalPreferences },
-    },
-    {
-      name: 'Window Level',
-      Component: WindowLevelPreferences,
-      props: { windowLevelHotkeys, hotkeysManager },
-    },
-  ];
-
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
+
+  const { preferences: preferencesState } = useSelector(state => {
+    const { preferences } = state;
+
+    return {
+      preferences,
+    };
+  });
 
   return (
     translationsAreReady &&
@@ -81,7 +98,8 @@ function UserPreferences({
           </div>
         </div>
         {tabs.map((tab, index) => {
-          const { name, Component, props, hidden } = tab;
+          const { name, Component, getProps, hidden } = tab;
+          const props = getProps({ hotkeysManager, preferencesState });
           return (
             !hidden && (
               <div
