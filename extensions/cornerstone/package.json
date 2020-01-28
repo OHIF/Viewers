@@ -32,7 +32,7 @@
     "@ohif/ui": "^0.50.0",
     "cornerstone-core": "^2.2.8",
     "cornerstone-math": "^0.1.8",
-    "cornerstone-tools": "^4.9.0",
+    "cornerstone-tools": "^4.12.0",
     "cornerstone-wado-image-loader": "^3.0.0",
     "dcmjs": "^0.8.2",
     "dicom-parser": "^1.8.3",
