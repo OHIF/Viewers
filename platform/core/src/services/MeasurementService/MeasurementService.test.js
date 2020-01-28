@@ -8,6 +8,10 @@ describe('MeasurementService.js', () => {
   let measurement;
   let context;
 
+  beforeAll(() => {
+    measurementService = new MeasurementService();
+  });
+
   beforeEach(() => {
     context = 'TestEnv';
     measurement = {
@@ -18,12 +22,11 @@ describe('MeasurementService.js', () => {
       description: 'Description',
       unit: 'mm',
       area: 123,
-      type: MeasurementService.VALUE_TYPES.ELLIPSE,
+      type: measurementService.getValueTypes().ELLIPSE,
       points: [],
       source: 'TestEnv',
       sourceToolType: 'EllipseRoi',
     };
-    measurementService = new MeasurementService();
     log.warn.mockClear();
     jest.clearAllMocks();
   });
@@ -145,17 +148,6 @@ describe('MeasurementService.js', () => {
       measurementService.addOrUpdate(measurement, context);
 
       expect(updateCallbackWasCalled).toBe(false);
-    });
-  });
-
-  describe('registerEvent()', () => {
-    it('registers a new event', () => {
-      measurementService.registerEvent('testing_event');
-      const events = measurementService.getEvents();
-      expect(events).toEqual({
-        ...events,
-        testing_event: 'event::testing_event',
-      });
     });
   });
 });

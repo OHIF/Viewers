@@ -20,18 +20,14 @@ const SUPPORTED_TOOLS = ['Length', 'EllipticalRoi', 'RectangleRoi', 'ArrowAnnota
  * @property {string} sourceToolType -
  */
 
-class MeasurementServiceFormatter {
-  constructor(measurementService) {
-    this.measurementService = measurementService;
-  }
-
+const measurementServiceFormatter = measurementService => {
   /**
    * Maps measurement service format object to cornerstone annotation object.
    *
    * @param {MeasurementSchema} measurement
    * @return {Object} cornerstone annotation data
    */
-  toAnnotation({
+  const toAnnotation = ({
     id,
     source,
     sourceToolType,
@@ -43,25 +39,10 @@ class MeasurementServiceFormatter {
     sopInstanceUID,
     frameOfReferenceUID,
     referenceSeriesUID,
-  }) {
+  }) => {
     return new Promise((resolve, reject) => {
-      let toolType = sourceToolType;
-
-      if (!toolType) {
-        switch (type) {
-          case this.measurementService.constructor.VALUE_TYPES.POLYLINE:
-            if (points.length === 2) toolType = 'Length';
-            break;
-          case this.measurementService.constructor.VALUE_TYPES.POINT:
-            if (label) toolType = 'ArrowAnnotate';
-            break;
-          default:
-            break;
-        }
-      }
-
       return resolve({
-        toolName: toolType,
+        toolName: sourceToolType,
         measurementData: {
           sopInstanceUid: sopInstanceUID,
           frameOfReferenceUid: frameOfReferenceUID,
@@ -69,12 +50,12 @@ class MeasurementServiceFormatter {
           unit,
           text: label,
           description,
-          handles: this._getHandlesFromPoints(points),
+          handles: _getHandlesFromPoints(points),
           _measurementServiceId: id,
         },
       });
     });
-  }
+  };
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
@@ -82,42 +63,42 @@ class MeasurementServiceFormatter {
    * @param {Object} cornerstone event data
    * @return {MeasurementSchema} measurement
    */
-  toMeasurement(eventData) {
-    return new Promise((resolve, reject) => {
-      const { toolName, element, measurementData } = eventData;
+  const toMeasurement = eventData => {
+    const { toolType, toolName, element, measurementData } = eventData;
+    const tool = toolType || toolName;
 
-      const validToolType = toolName => SUPPORTED_TOOLS.includes(toolName);
+    const validToolType = toolName => SUPPORTED_TOOLS.includes(toolName);
 
-      if (!validToolType(toolName)) {
-        return reject('Invalid tool type');
-      }
+    if (!validToolType(tool)) {
+      throw new Error('Tool not supported');
+    }
 
-      const {
-        sopInstanceUid,
-        frameOfReferenceUid,
-        seriesInstanceUid,
-      } = this._getAttributes(element);
+    const {
+      sopInstanceUid,
+      frameOfReferenceUid,
+      seriesInstanceUid,
+    } = _getAttributes(element);
 
-      const points = [];
-      points.push(measurementData.handles);
+    const points = [];
+    points.push(measurementData.handles);
 
-      return resolve({
-        sopInstanceUID: sopInstanceUid,
-        frameOfReferenceUID: frameOfReferenceUid,
-        referenceSeriesUID: seriesInstanceUid,
-        label: measurementData.text,
-        description: measurementData.description,
-        unit: measurementData.unit,
-        area: measurementData.cachedStats && measurementData.cachedStats.area, /* TODO: Add concept names instead (descriptor) */
-        type: this._getValueTypeFromToolType(toolName),
-        points: this._getPointsFromHandles(measurementData.handles),
-        source: 'CornerstoneTools', /* TODO: multiple vendors */
-        sourceToolType: toolName,
-      });
-    });
-  }
+    return {
+      id: measurementData._measurementServiceId,
+      sopInstanceUID: sopInstanceUid,
+      frameOfReferenceUID: frameOfReferenceUid,
+      referenceSeriesUID: seriesInstanceUid,
+      label: measurementData.text,
+      description: measurementData.description,
+      unit: measurementData.unit,
+      area: measurementData.cachedStats && measurementData.cachedStats.area, /* TODO: Add concept names instead (descriptor) */
+      type: _getValueTypeFromToolType(toolType),
+      points: _getPointsFromHandles(measurementData.handles),
+      source: 'CornerstoneTools', /* TODO: multiple vendors */
+      sourceToolType: toolType,
+    };
+  };
 
-  _getAttributes(element) {
+  const _getAttributes = element => {
     const enabledElement = cornerstone.getEnabledElement(element);
     const imageId = enabledElement.image.imageId;
     const sopInstance = cornerstone.metaData.get('instance', imageId);
@@ -127,14 +108,10 @@ class MeasurementServiceFormatter {
     const seriesInstanceUid = series.seriesInstanceUid;
 
     return { sopInstanceUid, frameOfReferenceUid, seriesInstanceUid };
-  }
+  };
 
-  _getValueTypeFromToolType(toolType) {
-    const {
-      POLYLINE,
-      ELLIPSE,
-      POINT,
-    } = this.measurementService.constructor.VALUE_TYPES;
+  const _getValueTypeFromToolType = toolType => {
+    const { POLYLINE, ELLIPSE, POINT } = measurementService.getValueTypes();
 
     /* TODO: Relocate static value types */
     const TOOL_TYPE_TO_VALUE_TYPE = {
@@ -145,9 +122,9 @@ class MeasurementServiceFormatter {
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
-  }
+  };
 
-  _getPointsFromHandles(handles) {
+  const _getPointsFromHandles = handles => {
     let points = [];
     Object.keys(handles).map(handle => {
       if (['start', 'end'].includes(handle)) {
@@ -158,13 +135,18 @@ class MeasurementServiceFormatter {
       }
     });
     return points;
-  }
+  };
 
-  _getHandlesFromPoints(points) {
+  const _getHandlesFromPoints = points => {
     return points
       .map((p, i) => (i % 10 === 0 ? { start: p } : { end: p }))
       .reduce((obj, item) => Object.assign(obj, { ...item }), {});
-  }
-}
+  };
 
-export default MeasurementServiceFormatter;
+  return {
+    toAnnotation,
+    toMeasurement,
+  };
+};
+
+export default measurementServiceFormatter;

@@ -5,7 +5,7 @@ import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import queryString from 'query-string';
 import initCornerstoneTools from './initCornerstoneTools.js';
-import MeasurementServiceFormatter from './utils/MeasurementServiceFormatter';
+import measurementServiceFormatter from './utils/MeasurementServiceFormatter';
 
 function fallbackMetaDataProvider(type, imageId) {
   if (!imageId.includes('wado?requestType=WADO')) {
@@ -34,7 +34,7 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
  */
 export default function init({ servicesManager, configuration }) {
   const { UIDialogService, MeasurementService } = servicesManager.services;
-  const measurementServiceFormatter = new MeasurementServiceFormatter(MeasurementService);
+  const { toAnnotation, toMeasurement } = measurementServiceFormatter(MeasurementService);
 
   const callInputDialog = (data, event, callback) => {
     if (UIDialogService) {
@@ -108,6 +108,19 @@ export default function init({ servicesManager, configuration }) {
     tools.push(...toolsGroupedByType[toolsGroup])
   );
 
+  /* Add mapping criterias to measurement service */
+  const LengthCriteria = {
+    valueType: MeasurementService.getValueTypes().POLYLINE,
+    sourceToolType: 'Length',
+    points: 2,
+  };
+  MeasurementService.addMapping(
+    'CornerstoneTools',
+    LengthCriteria,
+    toAnnotation,
+    toMeasurement
+  );
+
   /* Measurement Service Events */
   cornerstone.events.addEventListener(
     cornerstone.EVENTS.ELEMENT_ENABLED,
@@ -124,35 +137,30 @@ export default function init({ servicesManager, configuration }) {
             '[subscriber::MEASUREMENT_ADDED] Measurement added',
             measurement
           ),
-        'cornerstone'
+        'CornerstoneTools'
       );
 
       MeasurementService.subscribe(
         MEASUREMENT_UPDATED,
-        async measurement => {
-          if (['CornerstoneTools'].includes(measurement.source)) {
+        async ({ source, measurement }) => {
+          if (!['CornerstoneTools'].includes(source)) {
+            const annotation = MeasurementService.getAnnotation('CornerstoneTools', measurement.id);
+
             console.log(
               '[subscriber::MEASUREMENT_UPDATED] Measurement updated',
-              measurement
+              annotation
             );
-            const mappedMeasurement = await measurementServiceFormatter.toAnnotation(measurement);
-            console.log('Mapped annotation to be saved:', mappedMeasurement);
+            console.log('Mapped annotation to be saved:', annotation);
           }
         },
-        'cornerstone'
+        'CornerstoneTools'
       );
 
       const addOrUpdateMeasurement = async eventData => {
         try {
-          const { measurementData } = eventData;
-          const mappedMeasurement = await measurementServiceFormatter.toMeasurement(
-            eventData
-          );
-          const measurementServiceId = MeasurementService.addOrUpdate({
-            ...mappedMeasurement,
-            id: measurementData._measurementServiceId,
-          }, 'cornerstone');
-          if (!measurementData._measurementServiceId) {
+          const measurementServiceId = MeasurementService.addOrUpdate('CornerstoneTools', eventData, 'CornerstoneTools');
+
+          if (!eventData.measurementData._measurementServiceId) {
             addMeasurementServiceId(measurementServiceId, eventData);
           }
         } catch (error) {

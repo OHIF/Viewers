@@ -16,17 +16,6 @@ describe('MeasurementServiceFormatter.js', () => {
       frameOfReferenceUid: '123',
       seriesInstanceUid: '123',
     };
-    measurementService = {
-      constructor: {
-        VALUE_TYPES: {
-          POLYLINE: 'value_type::polyline',
-          POINT: 'value_type::point',
-          ELLIPSE: 'value_type::ellipse',
-          MULTIPOINT: 'value_type::multipoint',
-          CIRCLE: 'value_type::circle',
-        }
-      }
-    };
     measurementServiceFormatter = new MeasurementServiceFormatter(measurementService);
     measurementServiceFormatter._getAttributes = jest.fn(() => attributes);
     handles = { start: { x: 1, y: 2 }, end: { x: 1, y: 2 } };
@@ -68,7 +57,7 @@ describe('MeasurementServiceFormatter.js', () => {
       description: 'Test',
       unit: 'mm',
       area: 123,
-      type: measurementService.constructor.VALUE_TYPES.POINT,
+      type: measurementService.getValueTypes().POINT,
       points: points,
       source: 'CornerstoneTools',
       sourceToolType: 'ArrowAnnotate',

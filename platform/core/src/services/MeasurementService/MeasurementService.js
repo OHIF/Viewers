@@ -1,11 +1,6 @@
 import log from '../../log';
 import guid from '../../utils/guid';
 
-const EVENTS = {
-  MEASUREMENT_UPDATED: 'event::measurement_updated',
-  MEASUREMENT_ADDED: 'event::measurement_added',
-};
-
 /**
  * Measurement schema
  *
@@ -26,26 +21,38 @@ const EVENTS = {
 
 class MeasurementService {
   constructor() {
+    this.mappings = {};
     this.measurements = {};
     this.listeners = {};
-    this.events = EVENTS;
+    this.valueTypes = {
+      POLYLINE: 'value_type::polyline',
+      POINT: 'value_type::point',
+      ELLIPSE: 'value_type::ellipse',
+      MULTIPOINT: 'value_type::multipoint',
+      CIRCLE: 'value_type::circle',
+    };
+    this.events = {
+      MEASUREMENT_UPDATED: 'event::measurement_updated',
+      MEASUREMENT_ADDED: 'event::measurement_added',
+    };
   }
 
-  static VALUE_TYPES = {
-    POLYLINE: 'value_type::polyline',
-    POINT: 'value_type::point',
-    ELLIPSE: 'value_type::ellipse',
-    MULTIPOINT: 'value_type::multipoint',
-    CIRCLE: 'value_type::circle',
-  };
+  /**
+   * Get all available value types.
+   *
+   * @return {Object} value types
+   */
+  getValueTypes() {
+    return this.valueTypes;
+  }
 
   /**
-   * Get registered events;
+   * Get all available events.
    *
-   * @return {Object} events object
+   * @return {Object} events
    */
   getEvents() {
-    return { ...this.events };
+    return this.events;
   }
 
   /**
@@ -67,7 +74,7 @@ class MeasurementService {
    */
   getMeasurement(id, context) {
     if (context) {
-      return this.measurements[context][id];;
+      return this.measurements[context][id];
     }
 
     let measurement = null;
@@ -84,13 +91,62 @@ class MeasurementService {
   }
 
   /**
-   * Register a new subscription event name.
+   * Add a new measurement matching criteria along with mapping functions.
    *
-   * @param {string} eventName
    * @return void
    */
-  registerEvent(eventName) {
-    this.events[eventName] = `event::${eventName}`;
+  addMapping(
+    sourceName,
+    matchingCriteria,
+    toSourceSchema,
+    toMeasurementSchema
+  ) {
+    if (!sourceName) {
+      log.warn('Source name not provided. Exiting early.');
+      return;
+    }
+
+    if (!matchingCriteria) {
+      log.warn('Matching criteria not provided. Exiting early.');
+      return;
+    }
+
+    if (!toSourceSchema) {
+      log.warn('Source mapping function not provided. Exiting early.');
+      return;
+    }
+
+    if (!toMeasurementSchema) {
+      log.warn('Measurement mapping function not provided. Exiting early.');
+      return;
+    }
+
+    const mapping = { matchingCriteria, toSourceSchema, toMeasurementSchema };
+
+    if (Array.isArray(this.mappings[sourceName])) {
+      this.mappings[sourceName].push(mapping);
+    } else {
+      this.mappings[sourceName] = [mapping];
+    }
+
+    log.warn(`New '${sourceName}' measurement mapping added.`);
+  }
+
+  getAnnotation(sourceName, measurementId) {
+    const measurement = this.getMeasurement(measurementId);
+    const sourceMappings = this.mappings[sourceName];
+    const matchedCriteriaMapping = sourceMappings.find(({ matchingCriteria }) => {
+      return measurement.points && measurement.points.length === matchingCriteria.points;
+    });
+
+    if (matchedCriteriaMapping) {
+      return {
+        measurement,
+        annotation: matchedCriteriaMapping.toSourceSchema(measurement),
+      };
+    }
+
+    return null;
   }
 
   /**
@@ -100,8 +156,41 @@ class MeasurementService {
    * @param {string} context
    * @return {string} measurement id
    */
-  addOrUpdate(measurement, context = 'all') {
-    const { id } = measurement;
+  addOrUpdate(sourceName, sourceMeasurement, context = 'all') {
+    if (!sourceName) {
+      log.warn(`No measurement source name provided. Exiting early.`);
+      return;
+    }
+
+    if (!(Array.isArray(this.mappings[sourceName]) && this.mappings[sourceName].length)) {
+      log.warn(`No measurement mappings found for '${sourceName}' source name. Exiting early.`);
+      return;
+    }
+
+    let measurement = {};
+    try {
+      const sourceMappings = this.mappings[sourceName];
+      const { matchingCriteria } = sourceMappings.find(({ matchingCriteria, toMeasurementSchema }) => {
+
+        try {
+          measurement = toMeasurementSchema(sourceMeasurement);
+        } catch (error) {
+          log.error(error.message);
+        }
+
+        return measurement.points && measurement.points.length === matchingCriteria.points;
+      });
+
+      if (!matchingCriteria) {
+        log.warn(`No matching criterias for measurement.`);
+        return;
+      }
+
+      measurement.type = matchingCriteria.valueType;
+    } catch (error) {
+      log.error(`Failed to map '${sourceName}' measurement to measurement service format:`, error.message);
+      return;
+    }
 
     if (!this._isValidMeasurement(measurement)) {
       log.warn(
@@ -110,7 +199,7 @@ class MeasurementService {
       return;
     }
 
-    let internalId = id;
+    let internalId = measurement.id;
     if (!internalId) {
       internalId = guid();
       log.warn(`Measurement ID not set in '${context}' context. Using generated UID: ${internalId}`);
@@ -135,11 +224,11 @@ class MeasurementService {
     if (this.measurements[context][internalId]) {
       log.warn(`Measurement already defined in '${context}' context. Updating measurement.`, newMeasurement);
       this.measurements[context][internalId] = newMeasurement;
-      this._broadcastChange(internalId, EVENTS.MEASUREMENT_UPDATED, context);
+      this._broadcastChange(this.events.MEASUREMENT_UPDATED, sourceName, newMeasurement, context);
     } else {
       log.warn(`Measurement added in '${context}' context.`, newMeasurement);
       this.measurements[context][internalId] = newMeasurement;
-      this._broadcastChange(internalId, EVENTS.MEASUREMENT_ADDED, context);
+      this._broadcastChange(this.events.MEASUREMENT_ADDED, sourceName, newMeasurement, context);
     }
 
     return newMeasurement.id;
@@ -153,13 +242,13 @@ class MeasurementService {
    * @param {string} context
    * @return void
    */
-  _broadcastChange(measurementId, eventName, context) {
+  _broadcastChange(eventName, source, measurement, context) {
     const hasListeners = Object.keys(this.listeners[context]).length > 0;
     const hasCallbacks = Array.isArray(this.listeners[context][eventName]);
 
     if (hasListeners && hasCallbacks) {
       this.listeners[context][eventName].forEach(listener => {
-        listener.callback(this.measurements[context][measurementId]);
+        listener.callback({ source, measurement });
       });
     }
   }
@@ -272,4 +361,3 @@ class MeasurementService {
 }
 
 export default MeasurementService;
-export { EVENTS };
