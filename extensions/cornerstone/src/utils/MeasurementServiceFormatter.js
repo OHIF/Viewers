@@ -93,7 +93,7 @@ const measurementServiceFormatter = measurementService => {
       area: measurementData.cachedStats && measurementData.cachedStats.area, /* TODO: Add concept names instead (descriptor) */
       type: _getValueTypeFromToolType(toolType),
       points: _getPointsFromHandles(measurementData.handles),
-      source: 'CornerstoneTools', /* TODO: multiple vendors */
+      source: 'cornerstone',
       sourceToolType: toolType,
     };
   };

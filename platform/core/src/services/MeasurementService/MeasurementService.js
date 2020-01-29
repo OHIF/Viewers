@@ -53,36 +53,24 @@ class MeasurementService {
   }
 
   /**
-   * Get all measurement by context.
+   * Get all measurements.
    *
-   * @param {string} context
    * @return {MeasurementSchema[]} measurements
    */
-  getMeasurements(context = 'all') {
-    return this._arrayOfObjects(this.measurements[context]);
+  getMeasurements() {
+    return this._arrayOfObjects(this.measurements);
   }
 
   /**
-   * Get specific measurement by its id or/and context.
+   * Get specific measurement by its id.
    *
    * @param {string} id
-   * @param {string} context
    * @return {MeasurementSchema} measurement
    */
-  getMeasurement(id, context) {
-    if (context) {
-      return this.measurements[context][id];
-    }
-
+  getMeasurement(id) {
     let measurement = null;
-    if (!context) {
-      const contexts = Object.keys(this.measurements);
-      contexts.forEach(context => {
-        const contextMeasurements = this.measurements[context];
-        if (Object.keys(contextMeasurements[id]).length > 0) {
-          measurement = this.measurements[context][id];
-        }
-      });
+    if (Object.keys(this.measurements[id]).length > 0) {
+      measurement = this.measurements[id];
     }
     return measurement;
   }
@@ -150,10 +138,9 @@ class MeasurementService {
    * Adds or update persisted measurements.
    *
    * @param {MeasurementSchema} measurement
-   * @param {string} context
    * @return {string} measurement id
    */
-  addOrUpdate(sourceName, sourceMeasurement, context = 'all') {
+  addOrUpdate(sourceName, sourceMeasurement) {
     if (!sourceName) {
       log.warn(`No measurement source name provided. Exiting early.`);
       return;
@@ -191,7 +178,7 @@ class MeasurementService {
 
     if (!this._isValidMeasurement(measurement)) {
       log.warn(
-        `Attempting to add or update a invalid measurement in '${context}' context. Exiting early.`
+        `Attempting to add or update a invalid measurement provided by '${sourceName}'. Exiting early.`
       );
       return;
     }
@@ -199,7 +186,7 @@ class MeasurementService {
     let internalId = measurement.id;
     if (!internalId) {
       internalId = guid();
-      log.warn(`Measurement ID not set in '${context}' context. Using generated UID: ${internalId}`);
+      log.warn(`Measurement ID not set previously. Using generated UID: ${internalId}`);
     }
 
     const newMeasurement = {
@@ -208,46 +195,17 @@ class MeasurementService {
       id: internalId,
     };
 
-    /* Create measurements context */
-    if (!this.measurements[context]) {
-      this.measurements[context] = {};
-    }
-
-    /* Create listeners context */
-    if (!this.listeners[context]) {
-      this.listeners[context] = {};
-    }
-
-    if (this.measurements[context][internalId]) {
-      log.warn(`Measurement already defined in '${context}' context. Updating measurement.`, newMeasurement);
-      this.measurements[context][internalId] = newMeasurement;
-      this._broadcastChange(this.EVENTS.MEASUREMENT_UPDATED, sourceName, newMeasurement, context);
+    if (this.measurements[internalId]) {
+      log.warn(`Measurement already defined. Updating measurement.`, newMeasurement);
+      this.measurements[internalId] = newMeasurement;
+      this._broadcastChange(this.EVENTS.MEASUREMENT_UPDATED, sourceName, newMeasurement);
     } else {
-      log.warn(`Measurement added in '${context}' context.`, newMeasurement);
-      this.measurements[context][internalId] = newMeasurement;
-      this._broadcastChange(this.EVENTS.MEASUREMENT_ADDED, sourceName, newMeasurement, context);
+      log.warn(`Measurement added.`, newMeasurement);
+      this.measurements[internalId] = newMeasurement;
+      this._broadcastChange(this.EVENTS.MEASUREMENT_ADDED, sourceName, newMeasurement);
     }
 
     return newMeasurement.id;
-  }
-
-  /**
-   * Broadcasts measurement changes to a given context.
-   *
-   * @param {string} measurementId
-   * @param {string} eventName
-   * @param {string} context
-   * @return void
-   */
-  _broadcastChange(eventName, source, measurement, context) {
-    const hasListeners = Object.keys(this.listeners[context]).length > 0;
-    const hasCallbacks = Array.isArray(this.listeners[context][eventName]);
-
-    if (hasListeners && hasCallbacks) {
-      this.listeners[context][eventName].forEach(listener => {
-        listener.callback({ source, measurement });
-      });
-    }
   }
 
   /**
@@ -255,30 +213,43 @@ class MeasurementService {
    *
    * @param {string} eventName
    * @param {Function} callback
-   * @param {string} context
    * @return {Object} observable actions
    */
-  subscribe(eventName, callback, context = 'all') {
+  subscribe(eventName, callback) {
     if (this._isValidEvent(eventName)) {
-      console.warn(`Subscribing to '${eventName}' event using '${context}' context.`);
+      console.warn(`Subscribing to '${eventName}'.`);
       const listenerId = guid();
 
-      /* Create new listeners context if needed */
-      if (!this.listeners[context]) {
-        this.listeners[context] = {};
-      }
-
-      if (Array.isArray(this.listeners[context][eventName])) {
-        this.listeners[context][eventName].push({ id: listenerId, callback });
+      const subscription = { id: listenerId, callback };
+      if (Array.isArray(this.listeners[eventName])) {
+        this.listeners[eventName].push(subscription);
       } else {
-        this.listeners[context][eventName] = [{ id: listenerId, callback }];
+        this.listeners[eventName] = [subscription];
       }
 
       return {
-        unsubscribe: () => this._unsubscribe(eventName, listenerId, context)
+        unsubscribe: () => this._unsubscribe(eventName, listenerId),
       };
     } else {
-      throw new Error(`Event ${eventName} not supported in '${context}' context.`);
+      throw new Error(`Event ${eventName} not supported.`);
+    }
+  }
+
+  /**
+   * Broadcasts measurement changes.
+   *
+   * @param {string} measurementId
+   * @param {string} eventName
+   * @return void
+   */
+  _broadcastChange(eventName, source, measurement) {
+    const hasListeners = Object.keys(this.listeners).length > 0;
+    const hasCallbacks = Array.isArray(this.listeners[eventName]);
+
+    if (hasListeners && hasCallbacks) {
+      this.listeners[eventName].forEach(listener => {
+        listener.callback({ source, measurement });
+      });
     }
   }
 
@@ -287,21 +258,20 @@ class MeasurementService {
    *
    * @param {string} eventName
    * @param {string} listenerId
-   * @param {string} context
    * @return void
    */
-  _unsubscribe(eventName, listenerId, context) {
-    if (!this.listeners[context]) {
+  _unsubscribe(eventName, listenerId) {
+    if (!this.listeners[eventName]) {
       return;
     }
 
-    const listenersOfContext = this.listeners[context][eventName];
-    if (Array.isArray(listenersOfContext)) {
-      this.listeners[context][eventName] = listenersOfContext.filter(
+    const listeners = this.listeners[eventName];
+    if (Array.isArray(listeners)) {
+      this.listeners[eventName] = listeners.filter(
         ({ id }) => id !== listenerId
       );
     } else {
-      this.listeners[context][eventName] = undefined;
+      this.listeners[eventName] = undefined;
     }
   }
 

@@ -59,7 +59,7 @@ describe('MeasurementServiceFormatter.js', () => {
       area: 123,
       type: measurementService.VALUE_TYPES.POINT,
       points: points,
-      source: 'CornerstoneTools',
+      source: 'cornerstone',
       sourceToolType: 'ArrowAnnotate',
     };
     jest.clearAllMocks();

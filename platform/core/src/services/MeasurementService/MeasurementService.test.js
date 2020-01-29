@@ -6,14 +6,12 @@ jest.mock('../../log.js');
 describe('MeasurementService.js', () => {
   let measurementService;
   let measurement;
-  let context;
 
   beforeAll(() => {
     measurementService = new MeasurementService();
   });
 
   beforeEach(() => {
-    context = 'TestEnv';
     measurement = {
       sopInstanceUID: '123',
       frameOfReferenceUID: '1234',
@@ -55,11 +53,10 @@ describe('MeasurementService.js', () => {
   });
 
   describe('addOrUpdate()', () => {
-    it('adds new measurements with specific context', () => {
+    it('adds new measurements', () => {
       measurementService.addOrUpdate(measurement);
       measurementService.addOrUpdate(measurement);
-      const context = 'all';
-      const measurements = measurementService.getMeasurements(context);
+      const measurements = measurementService.getMeasurements();
       expect(measurements.length).toBe(2);
     });
     it('adds new measurement with provided id', () => {
@@ -89,63 +86,56 @@ describe('MeasurementService.js', () => {
     });
     it('broadcasts changes', () => {
       measurementService._broadcastChange = jest.fn();
-      measurementService.addOrUpdate(measurement, context);
+      measurementService.addOrUpdate(measurement);
       expect(measurementService._broadcastChange).toHaveBeenCalled();
     });
   });
 
   describe('subscribe()', () => {
-    it('subscribers receive broadcasted add event with specified context', () => {
+    it('subscribers receive broadcasted add event', () => {
       const { MEASUREMENT_ADDED } = measurementService.EVENTS;
       let addCallbackWasCalled = false;
 
       /* Subscribe to add event */
       measurementService.subscribe(
         MEASUREMENT_ADDED,
-        () => (addCallbackWasCalled = true),
-        context
-      );
+        () => (addCallbackWasCalled = true));
 
       /* Add new measurement */
-      measurementService.addOrUpdate(measurement, context);
+      measurementService.addOrUpdate(measurement);
 
       expect(addCallbackWasCalled).toBe(true);
     });
-    it('subscribers receive broadcasted update event with specified context', () => {
+    it('subscribers receive broadcasted update event', () => {
       const { MEASUREMENT_UPDATED } = measurementService.EVENTS;
       let updateCallbackWasCalled = false;
 
       /* Subscribe to update event */
       measurementService.subscribe(
         MEASUREMENT_UPDATED,
-        () => (updateCallbackWasCalled = true),
-        context
-      );
+        () => (updateCallbackWasCalled = true));
 
       /* Create measurement */
-      const id = measurementService.addOrUpdate(measurement, context);
+      const id = measurementService.addOrUpdate(measurement);
 
       /* Update measurement */
-      measurementService.addOrUpdate({ id, ...measurement }, context);
+      measurementService.addOrUpdate({ id, ...measurement });
 
       expect(updateCallbackWasCalled).toBe(true);
     });
-    it('unsubscribes a listener with specified context', () => {
+    it('unsubscribes a listener', () => {
       let updateCallbackWasCalled = false;
       const { MEASUREMENT_ADDED } = measurementService.EVENTS;
 
       /* Subscribe to Add event */
-      const { unsubscribe } = measurementService.subscribe(
-        MEASUREMENT_ADDED,
-        () => (updateCallbackWasCalled = true),
-        context
-      );
+      const { unsubscribe } = measurementService
+        .subscribe(MEASUREMENT_ADDED, () => (updateCallbackWasCalled = true));
 
       /* Unsubscribe */
       unsubscribe();
 
       /* Create measurement */
-      measurementService.addOrUpdate(measurement, context);
+      measurementService.addOrUpdate(measurement);
 
       expect(updateCallbackWasCalled).toBe(false);
     });

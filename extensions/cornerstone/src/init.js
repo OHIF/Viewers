@@ -116,7 +116,7 @@ export default function init({ servicesManager, configuration }) {
     points: 2,
   };
   MeasurementService.addMapping(
-    'CornerstoneTools',
+    'cornerstone',
     LengthCriteria,
     toAnnotation,
     toMeasurement
@@ -137,15 +137,14 @@ export default function init({ servicesManager, configuration }) {
           console.log(
             '[subscriber::MEASUREMENT_ADDED] Measurement added',
             measurement
-          ),
-        'CornerstoneTools'
+          )
       );
 
       MeasurementService.subscribe(
         MEASUREMENT_UPDATED,
         async ({ source, measurement }) => {
-          if (!['CornerstoneTools'].includes(source)) {
-            const annotation = MeasurementService.getAnnotation('CornerstoneTools', measurement.id);
+          if (!['cornerstone'].includes(source)) {
+            const annotation = MeasurementService.getAnnotation('cornerstone', measurement.id);
 
             console.log(
               '[subscriber::MEASUREMENT_UPDATED] Measurement updated',
@@ -153,13 +152,12 @@ export default function init({ servicesManager, configuration }) {
             );
             console.log('Mapped annotation to be saved:', annotation);
           }
-        },
-        'CornerstoneTools'
+        }
       );
 
       const addOrUpdateMeasurement = async eventData => {
         try {
-          const measurementServiceId = MeasurementService.addOrUpdate('CornerstoneTools', eventData, 'CornerstoneTools');
+          const measurementServiceId = MeasurementService.addOrUpdate('cornerstone', eventData);
 
           if (!eventData.measurementData._measurementServiceId) {
             addMeasurementServiceId(measurementServiceId, eventData);
