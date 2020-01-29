@@ -2,6 +2,15 @@ import log from '../../log';
 import guid from '../../utils/guid';
 
 /**
+ * Measurement source schema
+ *
+ * @typedef {Object} MeasurementSource
+ * @property {number} id -
+ * @property {string} name -
+ * @property {string} version -
+ */
+
+/**
  * Measurement schema
  *
  * @typedef {Object} Measurement
@@ -15,20 +24,23 @@ import guid from '../../utils/guid';
  * @property {string} unit -
  * @property {number} area -
  * @property {Array} points -
- * @property {string} source -
- * @property {string} sourceToolType -
- * @property {string} sourceVersion -
+ * @property {MeasurementSource} source -
  */
 
-
-/**
- * Measurement source schema
- *
- * @typedef {Object} MeasurementSource
- * @property {number} id -
- * @property {string} name -
- * @property {string} version -
- */
+/* Measurement schema keys for object validation. */
+const MEASUREMENT_SCHEMA_KEYS = [
+  'id',
+  'sopInstanceUID',
+  'frameOfReferenceUID',
+  'referenceSeriesUID',
+  'label',
+  'description',
+  'type',
+  'unit',
+  'area', // TODO: Add concept names instead (descriptor)
+  'points',
+  'source',
+];
 
 const EVENTS = {
   MEASUREMENT_UPDATED: 'event::measurement_updated',
@@ -66,7 +78,7 @@ class MeasurementService {
   /**
    * Get all measurements.
    *
-   * @return {Measurement[]} measurements
+   * @return {Measurement[]} Array of measurements
    */
   getMeasurements() {
     return this._arrayOfObjects(this.measurements);
@@ -75,8 +87,8 @@ class MeasurementService {
   /**
    * Get specific measurement by its id.
    *
-   * @param {string} id
-   * @return {Measurement} measurement
+   * @param {string} id If of the measurement
+   * @return {Measurement} Measurement instance
    */
   getMeasurement(id) {
     let measurement = null;
@@ -89,9 +101,9 @@ class MeasurementService {
   /**
    * Create a new source.
    *
-   * @param {string} name
-   * @param {string} version
-   * @return {MeasurementSource} measurement source
+   * @param {string} name Name of the source
+   * @param {string} version Source name
+   * @return {MeasurementSource} Measurement source instance
    */
   createSource(name, version) {
     if (!name) {
@@ -105,7 +117,17 @@ class MeasurementService {
     }
 
     const id = guid();
-    const source = { id, name, version };
+    const source = {
+      id,
+      name,
+      version,
+    };
+    source.addOrUpdate = (definition, measurement) => {
+      return this.addOrUpdate(source, definition, measurement);
+    };
+    source.getAnnotation = (definition, measurementId) => {
+      return this.getAnnotation(source, definition, measurementId);
+    };
 
     log.warn(`New '${name}@${version}' source added.`);
     this.sources[id] = source;
@@ -116,11 +138,11 @@ class MeasurementService {
   /**
    * Add a new measurement matching criteria along with mapping functions.
    *
-   * @param {MeasurementSource} source
-   * @param {string} definition
-   * @param {MatchingCriteria} matchingCriteria
-   * @param {Function} toSourceSchema
-   * @param {Function} toMeasurementSchema
+   * @param {MeasurementSource} source Measurement source instance
+   * @param {string} definition Definition of the measurement (Annotation Type)
+   * @param {MatchingCriteria} matchingCriteria The matching criteria
+   * @param {Function} toSourceSchema Mapping function to source schema
+   * @param {Function} toMeasurementSchema Mapping function to measurement schema
    * @return void
    */
   addMapping(
@@ -163,16 +185,16 @@ class MeasurementService {
       this.mappings[source.id] = [mapping];
     }
 
-    log.warn(`New measurement mapping added to source '${source.name}@${source.version}'.`);
+    log.warn(`New measurement mapping added to source '${this._getSourceInfo(source)}'.`);
   }
 
   /**
    * Get annotation for specific source.
    *
-   * @param {MeasurementSource} source
+   * @param {MeasurementSource} source Measurement source instance
    * @param {string} definition The source definition
    * @param {string} measurementId The measurement service measurement id
-   * @return {Object} source measurement schema
+   * @return {Object} Source measurement schema
    */
   getAnnotation(source, definition, measurementId) {
     if (!this._isValidSource(source)) {
@@ -202,63 +224,56 @@ class MeasurementService {
 
     if (matchedCriteriaMapping) {
       const { toSourceSchema, definition } = matchedCriteriaMapping;
-      return {
-        measurement,
-        annotation: toSourceSchema(measurement, definition),
-      };
+      return toSourceSchema(measurement, definition);
     }
   }
 
   /**
    * Adds or update persisted measurements.
    *
-   * @param {MeasurementSource} source The measurement source
+   * @param {MeasurementSource} source The measurement source instance
+   * @param {string} definition The source definition
    * @param {Measurement} measurement The source measurement
-   * @return {string} measurement id
+   * @return {string} A measurement id
    */
-  addOrUpdate(source, sourceMeasurement) {
+  addOrUpdate(source, definition, sourceMeasurement) {
     if (!this._isValidSource(source)) {
       log.warn('Invalid source. Exiting early.');
       return;
     }
 
+    const sourceInfo = this._getSourceInfo(source);
+
+    if (!definition) {
+      log.warn('No source definition provided. Exiting early.');
+      return;
+    }
+
     if (!this._sourceHasMappings(source)) {
-      log.warn(`No measurement mappings found for '${source.name}@${source.version}' source. Exiting early.`);
+      log.warn(`No measurement mappings found for '${sourceInfo}' source. Exiting early.`);
       return;
     }
 
     let measurement = {};
     try {
       const sourceMappings = this.mappings[source.id];
-      const { matchingCriteria } = sourceMappings.find(
-        ({ matchingCriteria, toMeasurementSchema }) => {
-          try {
-            measurement = toMeasurementSchema(sourceMeasurement);
-          } catch (error) {
-            log.error(error.message);
-          }
-
-          return (
-            measurement.points &&
-            measurement.points.length === matchingCriteria.points
-          );
-        }
+      const { toMeasurementSchema } = sourceMappings.find(
+        mapping => mapping.definition === definition
       );
 
-      if (!matchingCriteria) {
-        log.warn(`No matching criteria for measurement.`);
-        return;
-      }
+      /* Convert measurement */
+      measurement = toMeasurementSchema(sourceMeasurement);
 
-      measurement.type = matchingCriteria.valueType;
+      /* Assign measurement source instance */
+      measurement.source = source;
     } catch (error) {
-      log.error(`Failed to map '${source.name}@${source.version}' measurement to measurement service format:`, error.message);
+      log.error(`Failed to map '${sourceInfo}' measurement for definition ${definition}:`, error.message);
       return;
     }
 
     if (!this._isValidMeasurement(measurement)) {
       log.warn(
-        `Attempting to add or update a invalid measurement provided by '${source.name}@${source.version}'. Exiting early.`
+        `Attempting to add or update a invalid measurement provided by '${sourceInfo}'. Exiting early.`
       );
       return;
     }
@@ -266,7 +281,7 @@ class MeasurementService {
     let internalId = measurement.id;
     if (!internalId) {
       internalId = guid();
-      log.warn(`Measurement ID not set previously. Using generated UID: ${internalId}`);
+      log.warn(`Measurement ID not found. Generating UID: ${internalId}`);
     }
 
     const newMeasurement = {
@@ -291,16 +306,16 @@ class MeasurementService {
   /**
    * Subscribe to measurement updates.
    *
-   * @param {string} eventName
-   * @param {Function} callback
-   * @return {Object} observable actions
+   * @param {string} eventName The name of the event
+   * @param {Function} callback Events callback
+   * @return {Object} Observable object with actions
    */
   subscribe(eventName, callback) {
     if (this._isValidEvent(eventName)) {
-      console.warn(`Subscribing to '${eventName}'.`);
       const listenerId = guid();
-
       const subscription = { id: listenerId, callback };
+
+      console.warn(`Subscribing to '${eventName}'.`);
       if (Array.isArray(this.listeners[eventName])) {
         this.listeners[eventName].push(subscription);
       } else {
@@ -316,10 +331,20 @@ class MeasurementService {
   }
 
   /**
+   * Returns formatted string with source info.
+   *
+   * @param {MeasurementSource} source Measurement source
+   * @return {string} Source information
+   */
+  _getSourceInfo(source) {
+    return `${source.name}@${source.version}`;
+  }
+
+  /**
    * Checks if given source is valid.
    *
-   * @param {MeasurementSource} source
-   * @return {boolean}
+   * @param {MeasurementSource} source Measurement source
+   * @return {boolean} Measurement source validation
    */
   _isValidSource(source) {
     return source && this.sources[source.id];
@@ -329,7 +354,7 @@ class MeasurementService {
    * Checks if a given source has mappings.
    *
    * @param {MeasurementSource} source The measurement source
-   * @return {boolean}
+   * @return {boolean} Validation if source has mappings
    */
   _sourceHasMappings(source) {
     return (
@@ -359,8 +384,8 @@ class MeasurementService {
   /**
    * Unsubscribe to measurement updates.
    *
-   * @param {string} eventName
-   * @param {string} listenerId
+   * @param {string} eventName The name of the event
+   * @param {string} listenerId The listeners id
    * @return void
    */
   _unsubscribe(eventName, listenerId) {
@@ -381,26 +406,10 @@ class MeasurementService {
   /**
    * Check if a given measurement data is valid.
    *
-   * @param {Measurement} measurementData
-   * @return {boolean} measurement validation
+   * @param {Measurement} measurementData Measurement data
+   * @return {boolean} Measurement validation
    */
   _isValidMeasurement(measurementData) {
-    const MEASUREMENT_SCHEMA_KEYS = [
-      'id',
-      'sopInstanceUID',
-      'frameOfReferenceUID',
-      'referenceSeriesUID',
-      'label',
-      'description',
-      'type',
-      'unit',
-      'area', // TODO: Add concept names instead (descriptor)
-      'points',
-      'source',
-      'sourceToolType',
-      'sourceVersion',
-    ];
-
     Object.keys(measurementData).forEach(key => {
       if (!MEASUREMENT_SCHEMA_KEYS.includes(key)) {
         log.warn(`Invalid measurement key: ${key}`);
@@ -414,8 +423,8 @@ class MeasurementService {
   /**
    * Check if a given measurement service event is valid.
    *
-   * @param {string} eventName
-   * @return {boolean} event name validation
+   * @param {string} eventName The name of the event
+   * @return {boolean} Event name validation
    */
   _isValidEvent(eventName) {
     return Object.values(this.EVENTS).includes(eventName);

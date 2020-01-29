@@ -111,6 +111,7 @@ export default function init({ servicesManager, configuration }) {
 
   /* MeasurementService configuration */
   const csToolsVer4MeasurementSource = MeasurementService.createSource('CornerstoneTools', '4');
+  const { addOrUpdate, getAnnotation } = csToolsVer4MeasurementSource;
 
   /* Add mapping criterias to measurement service */
   const matchingCriteria = {
@@ -134,38 +135,38 @@ export default function init({ servicesManager, configuration }) {
         MEASUREMENT_UPDATED,
       } = MeasurementService.EVENTS;
 
-      MeasurementService.subscribe(MEASUREMENT_ADDED, measurement =>
-        console.log(
-          '[subscriber::MEASUREMENT_ADDED] Measurement added',
-          measurement
-        )
-      );
+      MeasurementService.subscribe(
+        MEASUREMENT_ADDED,
+        ({ source, measurement }) => {
+          if (![csToolsVer4MeasurementSource.id].includes(source.id)) {
+            const annotation = getAnnotation('Length', measurement.id);
+
+            console.log(
+              '[subscriber::MEASUREMENT_ADDED] Measurement added',
+              measurement,
+            );
+            console.log('Mapped annotation to be saved:', annotation);
+          }
+        });
 
       MeasurementService.subscribe(
         MEASUREMENT_UPDATED,
-        async ({ source, measurement }) => {
+        ({ source, measurement }) => {
           if (![csToolsVer4MeasurementSource.id].includes(source.id)) {
-            const annotation = MeasurementService.getAnnotation(
-              csToolsVer4MeasurementSource,
-              'Length',
-              measurement.id
-            );
+            const annotation = getAnnotation('Length', measurement.id);
 
             console.log(
               '[subscriber::MEASUREMENT_UPDATED] Measurement updated',
-              annotation
+              measurement
             );
             console.log('Mapped annotation to be saved:', annotation);
           }
         }
       );
 
-      const addOrUpdateMeasurement = async eventData => {
+      const addOrUpdateMeasurement = eventData => {
         try {
-          const measurementServiceId = MeasurementService.addOrUpdate(
-            csToolsVer4MeasurementSource,
-            eventData
-          );
+          const measurementServiceId = addOrUpdate('Length', eventData);
 
           if (!eventData.measurementData._measurementServiceId) {
             addMeasurementServiceId(measurementServiceId, eventData);
@@ -181,11 +182,9 @@ export default function init({ servicesManager, configuration }) {
       };
 
       event.detail.element.addEventListener(
-        csTools.EVENTS.MEASUREMENT_MODIFIED, event => {
-          console.log(
-            '[MEASUREMENT_MODIFIED] Updating measurement...',
-            event.detail
-          );
+        csTools.EVENTS.MEASUREMENT_MODIFIED,
+        event => {
+          console.log('[MEASUREMENT_MODIFIED] Updating measurement...', event.detail);
           addOrUpdateMeasurement(event.detail);
         }
       );

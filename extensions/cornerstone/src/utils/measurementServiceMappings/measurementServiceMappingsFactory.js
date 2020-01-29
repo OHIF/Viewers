@@ -6,9 +6,9 @@ const measurementServiceMappingsFactory = measurementService => {
   /**
    * Maps measurement service format object to cornerstone annotation object.
    *
-   * @param {Measurement} measurement The measurement
+   * @param {Measurement} measurement The measurement instance
    * @param {string} definition The source definition
-   * @return {Object} cornerstone annotation data
+   * @return {Object} Cornerstone annotation data
    */
   const toAnnotation = (measurement, definition) => {
     const {
@@ -40,10 +40,10 @@ const measurementServiceMappingsFactory = measurementService => {
   /**
    * Maps cornerstone annotation event data to measurement service format.
    *
-   * @param {Object} cornerstone event data
-   * @return {Measurement} measurement
+   * @param {Object} cornerstone Cornerstone event data
+   * @return {Measurement} Measurement instance
    */
-  const toMeasurement = (eventData, valueTypes) => {
+  const toMeasurement = eventData => {
     const { toolType, toolName, element, measurementData } = eventData;
     const tool = toolType || toolName;
 
@@ -73,8 +73,6 @@ const measurementServiceMappingsFactory = measurementService => {
       area: measurementData.cachedStats && measurementData.cachedStats.area, /* TODO: Add concept names instead (descriptor) */
       type: _getValueTypeFromToolType(toolType),
       points: _getPointsFromHandles(measurementData.handles),
-      source: 'cornerstone',
-      sourceToolType: toolType,
     };
   };
 
