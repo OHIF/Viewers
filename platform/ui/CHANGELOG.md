@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.8](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.7...@ohif/ui@1.1.8) (2020-01-08)
+
+
+### Bug Fixes
+
+* measurements panel css and delete button visibility ([#1352](https://github.com/OHIF/Viewers/issues/1352)) ([7ab0bbb](https://github.com/OHIF/Viewers/commit/7ab0bbb32581dcba16ee16b49b92406e2856ac76))
+
+
+
+
+
 ## [1.1.7](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.6...@ohif/ui@1.1.7) (2019-12-20)
 
 **Note:** Version bump only for package @ohif/ui
