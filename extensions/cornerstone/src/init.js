@@ -109,15 +109,18 @@ export default function init({ servicesManager, configuration }) {
     tools.push(...toolsGroupedByType[toolsGroup])
   );
 
+  /* MeasurementService configuration */
+  const csToolsVer4MeasurementSource = MeasurementService.createSource('CornerstoneTools', '4');
+
   /* Add mapping criterias to measurement service */
-  const LengthCriteria = {
+  const matchingCriteria = {
     valueType: MeasurementService.VALUE_TYPES.POLYLINE,
-    sourceToolType: 'Length',
     points: 2,
   };
   MeasurementService.addMapping(
-    'cornerstone',
-    LengthCriteria,
+    csToolsVer4MeasurementSource,
+    'Length',
+    matchingCriteria,
     toAnnotation,
     toMeasurement
   );
@@ -131,20 +134,22 @@ export default function init({ servicesManager, configuration }) {
         MEASUREMENT_UPDATED,
       } = MeasurementService.EVENTS;
 
-      MeasurementService.subscribe(
-        MEASUREMENT_ADDED,
-        measurement =>
-          console.log(
-            '[subscriber::MEASUREMENT_ADDED] Measurement added',
-            measurement
-          )
+      MeasurementService.subscribe(MEASUREMENT_ADDED, measurement =>
+        console.log(
+          '[subscriber::MEASUREMENT_ADDED] Measurement added',
+          measurement
+        )
       );
 
       MeasurementService.subscribe(
         MEASUREMENT_UPDATED,
         async ({ source, measurement }) => {
-          if (!['cornerstone'].includes(source)) {
-            const annotation = MeasurementService.getAnnotation('cornerstone', measurement.id);
+          if (![csToolsVer4MeasurementSource.id].includes(source.id)) {
+            const annotation = MeasurementService.getAnnotation(
+              csToolsVer4MeasurementSource,
+              'Length',
+              measurement.id
+            );
 
             console.log(
               '[subscriber::MEASUREMENT_UPDATED] Measurement updated',
@@ -157,7 +162,10 @@ export default function init({ servicesManager, configuration }) {
 
       const addOrUpdateMeasurement = async eventData => {
         try {
-          const measurementServiceId = MeasurementService.addOrUpdate('cornerstone', eventData);
+          const measurementServiceId = MeasurementService.addOrUpdate(
+            csToolsVer4MeasurementSource,
+            eventData
+          );
 
           if (!eventData.measurementData._measurementServiceId) {
             addMeasurementServiceId(measurementServiceId, eventData);

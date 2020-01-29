@@ -6,44 +6,42 @@ const measurementServiceMappingsFactory = measurementService => {
   /**
    * Maps measurement service format object to cornerstone annotation object.
    *
-   * @param {MeasurementSchema} measurement
+   * @param {Measurement} measurement The measurement
+   * @param {string} definition The source definition
    * @return {Object} cornerstone annotation data
    */
-  const toAnnotation = ({
-    id,
-    source,
-    sourceToolType,
-    label,
-    description,
-    type,
-    points,
-    unit,
-    sopInstanceUID,
-    frameOfReferenceUID,
-    referenceSeriesUID,
-  }) => {
-    return new Promise((resolve, reject) => {
-      return resolve({
-        toolName: sourceToolType,
-        measurementData: {
-          sopInstanceUid: sopInstanceUID,
-          frameOfReferenceUid: frameOfReferenceUID,
-          seriesInstanceUid: referenceSeriesUID,
-          unit,
-          text: label,
-          description,
-          handles: _getHandlesFromPoints(points),
-          _measurementServiceId: id,
-        },
-      });
-    });
+  const toAnnotation = (measurement, definition) => {
+    const {
+      id,
+      label,
+      description,
+      points,
+      unit,
+      sopInstanceUID,
+      frameOfReferenceUID,
+      referenceSeriesUID,
+    } = measurement;
+
+    return {
+      toolName: definition,
+      measurementData: {
+        sopInstanceUid: sopInstanceUID,
+        frameOfReferenceUid: frameOfReferenceUID,
+        seriesInstanceUid: referenceSeriesUID,
+        unit,
+        text: label,
+        description,
+        handles: _getHandlesFromPoints(points),
+        _measurementServiceId: id,
+      },
+    };
   };
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
    *
    * @param {Object} cornerstone event data
-   * @return {MeasurementSchema} measurement
+   * @return {Measurement} measurement
    */
   const toMeasurement = (eventData, valueTypes) => {
     const { toolType, toolName, element, measurementData } = eventData;
