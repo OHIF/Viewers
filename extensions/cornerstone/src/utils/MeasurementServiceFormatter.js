@@ -111,7 +111,7 @@ const measurementServiceFormatter = measurementService => {
   };
 
   const _getValueTypeFromToolType = toolType => {
-    const { POLYLINE, ELLIPSE, POINT } = measurementService.getValueTypes();
+    const { POLYLINE, ELLIPSE, POINT } = measurementService.VALUE_TYPES;
 
     /* TODO: Relocate static value types */
     const TOOL_TYPE_TO_VALUE_TYPE = {

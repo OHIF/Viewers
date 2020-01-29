@@ -22,7 +22,7 @@ describe('MeasurementService.js', () => {
       description: 'Description',
       unit: 'mm',
       area: 123,
-      type: measurementService.getValueTypes().ELLIPSE,
+      type: measurementService.VALUE_TYPES.ELLIPSE,
       points: [],
       source: 'TestEnv',
       sourceToolType: 'EllipseRoi',
@@ -96,7 +96,7 @@ describe('MeasurementService.js', () => {
 
   describe('subscribe()', () => {
     it('subscribers receive broadcasted add event with specified context', () => {
-      const { MEASUREMENT_ADDED } = measurementService.getEvents();
+      const { MEASUREMENT_ADDED } = measurementService.EVENTS;
       let addCallbackWasCalled = false;
 
       /* Subscribe to add event */
@@ -112,7 +112,7 @@ describe('MeasurementService.js', () => {
       expect(addCallbackWasCalled).toBe(true);
     });
     it('subscribers receive broadcasted update event with specified context', () => {
-      const { MEASUREMENT_UPDATED } = measurementService.getEvents();
+      const { MEASUREMENT_UPDATED } = measurementService.EVENTS;
       let updateCallbackWasCalled = false;
 
       /* Subscribe to update event */
@@ -132,7 +132,7 @@ describe('MeasurementService.js', () => {
     });
     it('unsubscribes a listener with specified context', () => {
       let updateCallbackWasCalled = false;
-      const { MEASUREMENT_ADDED } = measurementService.getEvents();
+      const { MEASUREMENT_ADDED } = measurementService.EVENTS;
 
       /* Subscribe to Add event */
       const { unsubscribe } = measurementService.subscribe(

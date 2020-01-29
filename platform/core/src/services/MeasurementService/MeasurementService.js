@@ -17,42 +17,39 @@ import guid from '../../utils/guid';
  * @property {Array} points -
  * @property {string} source -
  * @property {string} sourceToolType -
+ * @property {string} sourceVersion -
  */
+
+const EVENTS = {
+  MEASUREMENT_UPDATED: 'event::measurement_updated',
+  MEASUREMENT_ADDED: 'event::measurement_added',
+};
+
+const VALUE_TYPES = {
+  POLYLINE: 'value_type::polyline',
+  POINT: 'value_type::point',
+  ELLIPSE: 'value_type::ellipse',
+  MULTIPOINT: 'value_type::multipoint',
+  CIRCLE: 'value_type::circle',
+};
 
 class MeasurementService {
   constructor() {
     this.mappings = {};
     this.measurements = {};
     this.listeners = {};
-    this.valueTypes = {
-      POLYLINE: 'value_type::polyline',
-      POINT: 'value_type::point',
-      ELLIPSE: 'value_type::ellipse',
-      MULTIPOINT: 'value_type::multipoint',
-      CIRCLE: 'value_type::circle',
-    };
-    this.events = {
-      MEASUREMENT_UPDATED: 'event::measurement_updated',
-      MEASUREMENT_ADDED: 'event::measurement_added',
-    };
-  }
-
-  /**
-   * Get all available value types.
-   *
-   * @return {Object} value types
-   */
-  getValueTypes() {
-    return this.valueTypes;
-  }
-
-  /**
-   * Get all available events.
-   *
-   * @return {Object} events
-   */
-  getEvents() {
-    return this.events;
+    Object.defineProperty(this, 'EVENTS', {
+      value: EVENTS,
+      writable: false,
+      enumerable: true,
+      configurable: false,
+    });
+    Object.defineProperty(this, 'VALUE_TYPES', {
+      value: VALUE_TYPES,
+      writable: false,
+      enumerable: true,
+      configurable: false,
+    });
   }
 
   /**
@@ -224,11 +221,11 @@ class MeasurementService {
     if (this.measurements[context][internalId]) {
       log.warn(`Measurement already defined in '${context}' context. Updating measurement.`, newMeasurement);
       this.measurements[context][internalId] = newMeasurement;
-      this._broadcastChange(this.events.MEASUREMENT_UPDATED, sourceName, newMeasurement, context);
+      this._broadcastChange(this.EVENTS.MEASUREMENT_UPDATED, sourceName, newMeasurement, context);
     } else {
       log.warn(`Measurement added in '${context}' context.`, newMeasurement);
       this.measurements[context][internalId] = newMeasurement;
-      this._broadcastChange(this.events.MEASUREMENT_ADDED, sourceName, newMeasurement, context);
+      this._broadcastChange(this.EVENTS.MEASUREMENT_ADDED, sourceName, newMeasurement, context);
     }
 
     return newMeasurement.id;
@@ -328,6 +325,7 @@ class MeasurementService {
       'points',
       'source',
       'sourceToolType',
+      'sourceVersion'
     ];
 
     Object.keys(measurementData).forEach(key => {
@@ -347,7 +345,7 @@ class MeasurementService {
    * @return {boolean} event name validation
    */
   _isValidEvent(eventName) {
-    return Object.values(this.events).includes(eventName);
+    return Object.values(this.EVENTS).includes(eventName);
   }
 
   /**
@@ -361,3 +359,4 @@ class MeasurementService {
 }
 
 export default MeasurementService;
+export { EVENTS, VALUE_TYPES };

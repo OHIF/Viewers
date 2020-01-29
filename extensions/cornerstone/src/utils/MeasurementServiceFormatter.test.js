@@ -57,7 +57,7 @@ describe('MeasurementServiceFormatter.js', () => {
       description: 'Test',
       unit: 'mm',
       area: 123,
-      type: measurementService.getValueTypes().POINT,
+      type: measurementService.VALUE_TYPES.POINT,
       points: points,
       source: 'CornerstoneTools',
       sourceToolType: 'ArrowAnnotate',

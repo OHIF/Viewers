@@ -111,7 +111,7 @@ export default function init({ servicesManager, configuration }) {
 
   /* Add mapping criterias to measurement service */
   const LengthCriteria = {
-    valueType: MeasurementService.getValueTypes().POLYLINE,
+    valueType: MeasurementService.VALUE_TYPES.POLYLINE,
     sourceToolType: 'Length',
     points: 2,
   };
@@ -129,7 +129,7 @@ export default function init({ servicesManager, configuration }) {
       const {
         MEASUREMENT_ADDED,
         MEASUREMENT_UPDATED,
-      } = MeasurementService.getEvents();
+      } = MeasurementService.EVENTS;
 
       MeasurementService.subscribe(
         MEASUREMENT_ADDED,
