@@ -1,7 +1,8 @@
-import MeasurementServiceFormatter from './MeasurementServiceFormatter.js';
+import measurementServiceMappingsFactory from './measurementServiceMappingsFactory';
+import { MeasurementService as MeasurementServiceFactory } from '@ohif/core';
 
-describe('MeasurementServiceFormatter.js', () => {
-  let measurementServiceFormatter;
+describe('measurementServiceMappings.js', () => {
+  let measurementServiceMappings;
   let handles;
   let points;
   let eventData;
@@ -16,8 +17,9 @@ describe('MeasurementServiceFormatter.js', () => {
       frameOfReferenceUid: '123',
       seriesInstanceUid: '123',
     };
-    measurementServiceFormatter = new MeasurementServiceFormatter(measurementService);
-    measurementServiceFormatter._getAttributes = jest.fn(() => attributes);
+    measurementService = new MeasurementServiceFactory.create();
+    measurementServiceMappings = measurementServiceMappingsFactory(measurementService);
+    measurementServiceMappings._getAttributes = jest.fn(() => attributes);
     handles = { start: { x: 1, y: 2 }, end: { x: 1, y: 2 } };
     points = [{ x: 1, y: 2 }, { x: 1, y: 2 }];
     eventData = {
@@ -67,28 +69,28 @@ describe('MeasurementServiceFormatter.js', () => {
 
   describe('toAnnotation()', () => {
     it('map measurement service format to annotation', async () => {
-      const mappedMeasurement = await measurementServiceFormatter.toAnnotation({ id: 1, ...measurement });
+      const mappedMeasurement = await measurementServiceMappings.toAnnotation({ id: 1, ...measurement });
       expect(mappedMeasurement).toEqual(annotation);
     });
   });
 
   describe('toMeasurement()', () => {
     it('map annotation to measurement service format', async () => {
-      const mappedAnnotation = await measurementServiceFormatter.toMeasurement(eventData);
+      const mappedAnnotation = await measurementServiceMappings.toMeasurement(eventData);
       expect(mappedAnnotation).toEqual(measurement);
     });
   });
 
   describe('_getPointsFromHandles()', () => {
     it('converts handles to points', () => {
-      const convertedHandles = measurementServiceFormatter._getPointsFromHandles(handles);
+      const convertedHandles = measurementServiceMappings._getPointsFromHandles(handles);
       expect(convertedHandles).toEqual(points);
     });
   });
 
   describe('_getHandlesFromPoints()', () => {
     it('converts points to handles', () => {
-      const convertedPoints = measurementServiceFormatter._getHandlesFromPoints(points);
+      const convertedPoints = measurementServiceMappings._getHandlesFromPoints(points);
       expect(convertedPoints).toEqual(handles);
     });
   });

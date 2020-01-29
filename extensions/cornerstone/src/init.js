@@ -5,7 +5,7 @@ import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import queryString from 'query-string';
 import initCornerstoneTools from './initCornerstoneTools.js';
-import measurementServiceFormatter from './utils/MeasurementServiceFormatter';
+import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 
 function fallbackMetaDataProvider(type, imageId) {
   if (!imageId.includes('wado?requestType=WADO')) {
@@ -34,7 +34,7 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
  */
 export default function init({ servicesManager, configuration }) {
   const { UIDialogService, MeasurementService } = servicesManager.services;
-  const { toAnnotation, toMeasurement } = measurementServiceFormatter(MeasurementService);
+  const { toAnnotation, toMeasurement } = measurementServiceMappingsFactory(MeasurementService);
 
   const callInputDialog = (data, event, callback) => {
     if (UIDialogService) {

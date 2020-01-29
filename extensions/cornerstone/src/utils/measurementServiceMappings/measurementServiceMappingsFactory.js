@@ -2,25 +2,7 @@ import cornerstone from 'cornerstone-core';
 
 const SUPPORTED_TOOLS = ['Length', 'EllipticalRoi', 'RectangleRoi', 'ArrowAnnotate'];
 
-/**
- * Measurement schema
- *
- * @typedef {Object} MeasurementSchema
- * @property {number} id -
- * @property {string} sopInstanceUID -
- * @property {string} frameOfReferenceUID -
- * @property {string} referenceSeriesUID -
- * @property {string} label -
- * @property {string} description -
- * @property {string} type -
- * @property {string} unit -
- * @property {number} area -
- * @property {Array} points -
- * @property {string} source -
- * @property {string} sourceToolType -
- */
-
-const measurementServiceFormatter = measurementService => {
+const measurementServiceMappingsFactory = measurementService => {
   /**
    * Maps measurement service format object to cornerstone annotation object.
    *
@@ -63,7 +45,7 @@ const measurementServiceFormatter = measurementService => {
    * @param {Object} cornerstone event data
    * @return {MeasurementSchema} measurement
    */
-  const toMeasurement = eventData => {
+  const toMeasurement = (eventData, valueTypes) => {
     const { toolType, toolName, element, measurementData } = eventData;
     const tool = toolType || toolName;
 
@@ -149,4 +131,4 @@ const measurementServiceFormatter = measurementService => {
   };
 };
 
-export default measurementServiceFormatter;
+export default measurementServiceMappingsFactory;
