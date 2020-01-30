@@ -84,6 +84,44 @@ class OHIFStandaloneViewer extends Component {
             render={() => <CallbackPage userManager={userManager} />}
           />
           <Route
+            path="/login"
+            component={() => {
+              const queryParams = new URLSearchParams(
+                this.props.location.search
+              );
+              const iss = queryParams.get('iss');
+              const loginHint = queryParams.get('login_hint');
+              const targetLinkUri = queryParams.get('target_link_uri');
+              const oidcAuthority =
+                appConfig.oidc !== null && appConfig.oidc[0].authority;
+              if (iss !== oidcAuthority) {
+                console.error(
+                  'iss of /login does not match the oidc authority'
+                );
+                return null;
+              }
+
+              userManager.removeUser().then(() => {
+                if (targetLinkUri !== null) {
+                  sessionStorage.setItem(
+                    'ohif-redirect-to',
+                    new URL(targetLinkUri).pathname
+                  );
+                } else {
+                  sessionStorage.setItem('ohif-redirect-to', '/');
+                }
+
+                if (loginHint !== null) {
+                  userManager.signinRedirect({ login_hint: loginHint });
+                } else {
+                  userManager.signinRedirect();
+                }
+              });
+
+              return null;
+            }}
+          />
+          <Route
             component={() => {
               userManager.getUser().then(user => {
                 if (user) {

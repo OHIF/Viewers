@@ -19,7 +19,7 @@ const DICOMFileLoader = new (class extends FileLoader {
         dicomData.meta
       );
     } catch (e) {
-      console.log('Error on getting dicom file dataset. It defaults to empty');
+      console.error('Error reading dicom file', e);
     }
     // Set imageId on dataset to be consumed later on
     dataset.imageId = imageId;
