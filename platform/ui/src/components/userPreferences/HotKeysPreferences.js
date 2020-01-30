@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 import { TabFooter } from './TabFooter';
-import HotKeyPreferencesRow from './HotkeyPreferenceRow';
+import HotkeyField from './HotkeyField';
 import { hotkeysValidators } from './hotkeysValidators';
 
 const initialState = hotkeyDefinitions => ({
@@ -39,14 +40,13 @@ const validateCommandKey = ({ commandName, pressedKeys, hotkeys }) => {
  * @param {function} props.onTabStateChanged Callback function to communicate parent in case its states changes
  * @param {function} props.onTabErrorChanged Callback Function in case any error on tab
  */
-function HotKeysPreferences({ onClose, t, hotkeysManager }) {
-  const {
-    hotkeyDefinitions,
-    hotkeyDefaults,
-    record: hotkeyRecord,
-    setHotkeys,
-  } = hotkeysManager;
-
+function HotKeysPreferences({
+  onClose,
+  t,
+  hotkeyDefinitions,
+  hotkeyDefaults,
+  setHotkeys,
+}) {
   const [state, setState] = useState(initialState(hotkeyDefinitions));
 
   const onResetPreferences = () => {
@@ -66,7 +66,7 @@ function HotKeysPreferences({ onClose, t, hotkeysManager }) {
     localStorage.setItem('hotkey-definitions', JSON.stringify(values));
   };
 
-  const onHotKeyChanged = (commandName, hotkeyDefinition, keys) => {
+  const onHotkeyChanged = (commandName, hotkeyDefinition, keys) => {
     const { errorMessage } = validateCommandKey({
       commandName,
       pressedKeys: keys,
@@ -105,19 +105,36 @@ function HotKeysPreferences({ onClose, t, hotkeysManager }) {
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(state.hotkeys).map(hotkey => (
-                  <HotKeyPreferencesRow
-                    key={hotkey[0]}
-                    commandName={hotkey[0]}
-                    hotkeys={hotkey[1].keys}
-                    label={hotkey[1].label}
-                    errorMessage={state.errors[hotkey[0]]}
-                    hotkeyRecord={hotkeyRecord}
-                    onHotkeyChanged={keys =>
-                      onHotKeyChanged(hotkey[0], hotkey[1], keys)
-                    }
-                  ></HotKeyPreferencesRow>
-                ))}
+                {Object.entries(state.hotkeys).map(hotkey => {
+                  const commandName = hotkey[0];
+                  const hotkeyDefinition = hotkey[1];
+                  const { keys, label } = hotkeyDefinition;
+                  const errorMessage = state.errors[hotkey[0]];
+                  const handleChange = keys => {
+                    onHotkeyChanged(commandName, hotkeyDefinition, keys);
+                  };
+
+                  return (
+                    <tr key={commandName}>
+                      <td className="text-right p-r-1">{label}</td>
+                      <td>
+                        <label
+                          data-key="defaultTool"
+                          className={classnames(
+                            'wrapperLabel',
+                            errorMessage ? 'state-error' : ''
+                          )}
+                        >
+                          <HotkeyField
+                            value={keys}
+                            handleChange={handleChange}
+                          ></HotkeyField>
+                          <span className="errorMessage">{errorMessage}</span>
+                        </label>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
