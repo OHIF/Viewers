@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import moment from 'moment';
-import Select from 'react-select';
 
 import { utils } from '@ohif/core';
+import { ScrollableArea, TableList, Icon } from '@ohif/ui';
+
 import {
-  Range,
-  ScrollableArea,
-  TableList,
-  TableListItem,
-  Icon,
-} from '@ohif/ui';
+  BrushColorSelector,
+  BrushRadius,
+  SegmentationItem,
+  SegmentItem,
+  SegmentationSelect,
+} from './index';
 
 import './SegmentationPanel.css';
 import SegmentationSettings from './SegmentationSettings';
@@ -43,6 +44,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
   const [brushColor, setBrushColor] = useState('rgba(221, 85, 85, 1)');
   const [selectedSegment, setSelectedSegment] = useState();
   const [showSegSettings, setShowSegSettings] = useState(false);
+  const [selectedSegmentation, setSelectedSegmentation] = useState();
 
   const viewport = viewports[activeIndex];
   const firstImageId = _getFirstImageId(viewport);
@@ -58,6 +60,10 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
   }, [studies, viewports, activeIndex, firstImageId]);
 
   useEffect(() => {
+    if (brushStackState) {
+      setSelectedSegmentation(brushStackState.activeLabelmapIndex);
+    }
+
     const labelmapModifiedHandler = event => {
       console.warn('labelmap modified', event);
       setBrushStackState(segmentationModule.state.series[firstImageId]);
@@ -140,6 +146,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
             firstImageId,
             brushStackState.activeLabelmapIndex
           );
+          setSelectedSegmentation(activatedLabelmapIndex);
         },
       };
     });
@@ -192,15 +199,6 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
         }
       }
 
-      const ColouredCircle = () => {
-        return (
-          <div
-            className="segment-color"
-            style={{ backgroundColor: `rgba(${color.join(',')})` }}
-          ></div>
-        );
-      };
-
       const sameSegment = selectedSegment === segmentNumber;
       const setCurrentSelectedSegment = () => {
         _setActiveSegment(firstImageId, segmentNumber, labelmap3D.activeSegmentIndex);
@@ -208,42 +206,14 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
       };
 
       segmentList.push(
-        <TableListItem
+        <SegmentItem
           key={segmentNumber}
-          itemKey={segmentNumber}
-          itemIndex={segmentNumber}
           itemClass={`segment-item ${sameSegment && 'selected'}`}
-          itemMeta={<ColouredCircle />}
-          itemMetaClass="segment-color-section"
-          onItemClick={setCurrentSelectedSegment}
-        >
-          <div>
-            <div className="segment-label" style={{ marginBottom: 4 }}>
-              {segmentLabel}
-            </div>
-            {false && <div className="segment-info">{'...'}</div>}
-            <div className="segment-actions">
-              <button
-                className="btnAction"
-                onClick={() => console.log('Relabelling...')}
-              >
-                <span style={{ marginRight: '4px' }}>
-                  <Icon name="edit" width="14px" height="14px" />
-                </span>
-                Relabel
-              </button>
-              <button
-                className="btnAction"
-                onClick={() => console.log('Editing description...')}
-              >
-                <span style={{ marginRight: '4px' }}>
-                  <Icon name="edit" width="14px" height="14px" />
-                </span>
-                Description
-              </button>
-            </div>
-          </div>
-        </TableListItem>
+          onClick={setCurrentSelectedSegment}
+          label={segmentLabel}
+          index={segmentNumber}
+          color={color}
+        />
       );
     }
 
@@ -341,11 +311,10 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
         )}
         <h3>Segmentations</h3>
         <div className="segmentations">
-          <Select
-            value={labelmapList.find(i => i.value === brushStackState.activeLabelmapIndex) || null}
+          <SegmentationSelect
+            value={labelmapList.find(i => i.value === selectedSegmentation) || null}
             formatOptionLabel={SegmentationItem}
             options={labelmapList}
-            styles={segmentationSelectStyles}
           />
         </div>
         <ScrollableArea>
@@ -467,11 +436,7 @@ const _setActiveLabelmap = async (
  * @param {*} activeSegmentIndex
  * @returns
  */
-const _setActiveSegment = (
-  firstImageId,
-  segmentIndex,
-  activeSegmentIndex
-) => {
+const _setActiveSegment = (firstImageId, segmentIndex, activeSegmentIndex) => {
   if (segmentIndex === activeSegmentIndex) {
     console.warn(`${activeSegmentIndex} is already the active segment`);
     return;
@@ -489,78 +454,6 @@ const _setActiveSegment = (
   return segmentIndex;
 };
 
-const segmentationSelectStyles = {
-  control: (base, state) => ({
-    ...base,
-    cursor: 'pointer',
-    background: '#151A1F',
-    borderRadius: state.isFocused ? '5px 5px 5px 5px' : 5,
-    borderColor: state.isFocused ? '#20a5d6' : '#9CCEF9',
-    boxShadow: state.isFocused ? null : null,
-    minHeight: '50px',
-    '&:hover': {
-      borderColor: '#20a5d6',
-    },
-  }),
-  menu: base => ({
-    ...base,
-    borderRadius: 5,
-    background: '#151A1F',
-  }),
-  option: (base, state) => ({
-    ...base,
-    cursor: 'pointer',
-    '&:first-of-type': {
-      borderTopLeftRadius: 5,
-      borderTopRightRadius: 5,
-    },
-    '&:last-of-type': {
-      borderBottomLeftRadius: 5,
-      borderBottomRightRadius: 5,
-    },
-    background: state.isSelected ? '#16202B' : '#151A1F',
-    '&:hover': {
-      background: '#16202B',
-    },
-  }),
-};
-
-const SegmentationItem = ({ onClick, title, description }) => {
-  return (
-    <li className="segmentation-item" onClick={onClick}>
-      <div className="segmentation-meta">
-        <div className="segmentation-meta-title">{title}</div>
-        <div className="segmentation-meta-description">{description}</div>
-      </div>
-    </li>
-  );
-};
-
-SegmentationItem.propTypes = {
-  onClick: PropTypes.func,
-  title: PropTypes.string,
-  description: PropTypes.string,
-};
-
-const BrushColorSelector = ({ defaultColor, index, onNext, onPrev }) => (
-  <div>
-    <div
-      className="selector-active-segment"
-      style={{ backgroundColor: defaultColor }}
-    >
-      {index}
-    </div>
-    <div className="selector-buttons">
-      <button className="db-button" onClick={onPrev}>
-        Previous
-      </button>
-      <button className="db-button" onClick={onNext}>
-        Next
-      </button>
-    </div>
-  </div>
-);
-
 const SegmentsHeader = ({ count }) => {
   return (
     <React.Fragment>
@@ -569,19 +462,5 @@ const SegmentsHeader = ({ count }) => {
     </React.Fragment>
   );
 };
-
-const BrushRadius = ({ value, onChange }) => (
-  <div className="brush-radius">
-    <label htmlFor="brush-radius">Brush Radius</label>
-    <Range
-      value={value}
-      min={1}
-      max={50}
-      step={1}
-      onChange={onChange}
-      id="brush-radius"
-    />
-  </div>
-);
 
 export default SegmentationPanel;
