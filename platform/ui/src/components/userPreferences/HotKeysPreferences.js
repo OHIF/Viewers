@@ -3,12 +3,30 @@ import PropTypes from 'prop-types';
 
 import { TabFooter } from './TabFooter';
 import HotKeyPreferencesRow from './HotkeyPreferenceRow';
-import { validateCommandKey } from './validateCommandKey';
+import { hotkeysValidators } from './hotkeysValidators';
 
 const initialState = hotkeyDefinitions => ({
   hotkeys: { ...hotkeyDefinitions },
   errors: {},
 });
+
+const validateCommandKey = ({ commandName, pressedKeys, hotkeys }) => {
+  for (const validator of hotkeysValidators) {
+    const validation = validator({
+      commandName,
+      pressedKeys,
+      hotkeys,
+    });
+    if (validation && validation.hasError) {
+      return validation;
+    }
+  }
+
+  return {
+    hasError: false,
+    errorMessage: undefined,
+  };
+};
 
 /**
  * HotKeysPreferences tab
