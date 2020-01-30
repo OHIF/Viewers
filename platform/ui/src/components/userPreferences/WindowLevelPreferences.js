@@ -11,6 +11,7 @@ function WindowLevelPreferences({ name, onClose, t }) {
   return (
     <React.Fragment>
       <div className="">Component content: {name}</div>
+      <div className="">TDB!</div>
       <TabFooter
         onResetPreferences={onResetPreferences}
         onSave={onSave}

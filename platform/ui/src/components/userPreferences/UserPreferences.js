@@ -18,20 +18,20 @@ const tabs = [
   {
     name: 'Hotkeys',
     Component: HotKeysPreferences,
-    getProps(tabsProps) {
-      const { hotkeysManager } = tabsProps;
+    getProps({ hotkeysManager = {} }) {
+      const { hotkeyDefinitions, hotkeyDefaults, setHotkeys } = hotkeysManager;
       return {
-        hotkeysManager,
+        hotkeyDefinitions,
+        hotkeyDefaults,
+        setHotkeys,
       };
     },
   },
   {
     name: 'General',
     Component: GeneralPreferences,
-    getProps(tabsProps) {
-      const {
-        preferencesState: { generalPreferences },
-      } = tabsProps;
+    getProps({ preferencesState = {} }) {
+      const { generalPreferences } = preferencesState;
       return {
         generalPreferences,
       };
@@ -40,8 +40,7 @@ const tabs = [
   {
     name: 'Window Level',
     Component: WindowLevelPreferences,
-    getProps(tabsProps) {
-      const { hotkeysManager, preferencesState } = tabsProps;
+    getProps({ hotkeysManager, preferencesState }) {
       return {
         hotkeysManager,
         preferencesState,
