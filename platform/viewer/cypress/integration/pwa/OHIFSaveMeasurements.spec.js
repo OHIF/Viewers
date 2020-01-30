@@ -1,16 +1,11 @@
 describe('OHIF Save Measurements', function() {
   before(() => {
-    cy.openStudy('Fall 1');
-    cy.expectMinimumThumbnails(2);
+    cy.openStudy('MISTER^MR');
+    cy.waitDicomImage();
+    cy.expectMinimumThumbnails(5);
   });
 
   beforeEach(() => {
-    // Drags Study thumbnail into viewport
-    cy.get('[data-cy="thumbnail-list"]')
-      .contains('Rheuma')
-      .scrollIntoView()
-      .drag('.viewport-drop-target');
-
     // Wait image to load on viewport
     cy.wait(2000);
 

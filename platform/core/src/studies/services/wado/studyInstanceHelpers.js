@@ -1,3 +1,4 @@
+import { api } from 'dicomweb-client';
 import DICOMWeb from '../../../DICOMWeb';
 
 const WADOProxy = {
@@ -20,6 +21,43 @@ function parseFloatArray(obj) {
 
   return result;
 }
+
+/**
+ * Simple cache schema for retrieved color palettes.
+ */
+const paletteColorCache = {
+  count: 0,
+  maxAge: 24 * 60 * 60 * 1000, // 24h cache?
+  entries: {},
+  isValidUID: function(paletteUID) {
+    return typeof paletteUID === 'string' && paletteUID.length > 0;
+  },
+  get: function(paletteUID) {
+    let entry = null;
+    if (this.entries.hasOwnProperty(paletteUID)) {
+      entry = this.entries[paletteUID];
+      // check how the entry is...
+      if (Date.now() - entry.time > this.maxAge) {
+        // entry is too old... remove entry.
+        delete this.entries[paletteUID];
+        this.count--;
+        entry = null;
+      }
+    }
+    return entry;
+  },
+  add: function(entry) {
+    if (this.isValidUID(entry.uid)) {
+      let paletteUID = entry.uid;
+      if (this.entries.hasOwnProperty(paletteUID) !== true) {
+        this.count++; // increment cache entry count...
+      }
+      entry.time = Date.now();
+      this.entries[paletteUID] = entry;
+      // @TODO: Add logic to get rid of old entries and reduce memory usage...
+    }
+  },
+};
 
 /**
  * Create a plain JS object that describes a study (a study descriptor object)
@@ -299,40 +337,41 @@ async function makeSOPInstance(server, study, instance) {
   return sopInstance;
 }
 
+/**
+ * Convert String to ArrayBuffer
+ *
+ * @param {String} str Input String
+ * @return {ArrayBuffer} Output converted ArrayBuffer
+ */
+function str2ab(str) {
+  const strLen = str.length;
+  const bytes = new Uint8Array(strLen);
+
+  for (let i = 0; i < strLen; i++) {
+    bytes[i] = str.charCodeAt(i);
+  }
+
+  return bytes.buffer;
+}
+
 function getPaletteColor(server, instance, tag, lutDescriptor) {
   const numLutEntries = lutDescriptor[0];
   const bits = lutDescriptor[2];
-
-  let uri = WADOProxy.convertURL(instance[tag].BulkDataURI, server);
-
-  // TODO: Workaround for dcm4chee behind SSL-terminating proxy returning
-  // incorrect bulk data URIs
-  if (server.wadoRoot.indexOf('https') === 0 && !uri.includes('https')) {
-    uri = uri.replace('http', 'https');
-  }
-
-  const config = {
-    url: server.wadoRoot, //BulkDataURI is absolute, so this isn't used
-    headers: DICOMWeb.getAuthorizationHeader(server),
-  };
-  const dicomWeb = new api.DICOMwebClient(config);
-  const options = {
-    BulkDataURI: uri,
-  };
 
   const readUInt16 = (byteArray, position) => {
     return byteArray[position] + byteArray[position + 1] * 256;
   };
 
-  const arrayBufferToPaletteColorLUT = result => {
-    const arraybuffer = result[0];
+  const arrayBufferToPaletteColorLUT = arraybuffer => {
     const byteArray = new Uint8Array(arraybuffer);
     const lut = [];
 
-    for (let i = 0; i < numLutEntries; i++) {
-      if (bits === 16) {
+    if (bits === 16) {
+      for (let i = 0; i < numLutEntries; i++) {
         lut[i] = readUInt16(byteArray, i * 2);
-      } else {
+      }
+    } else {
+      for (let i = 0; i < numLutEntries; i++) {
         lut[i] = byteArray[i];
       }
     }
@@ -340,7 +379,38 @@ function getPaletteColor(server, instance, tag, lutDescriptor) {
     return lut;
   };
 
-  return dicomWeb.retrieveBulkData(options).then(arrayBufferToPaletteColorLUT);
+  if (instance[tag].BulkDataURI) {
+    let uri = WADOProxy.convertURL(instance[tag].BulkDataURI, server);
+
+    // TODO: Workaround for dcm4chee behind SSL-terminating proxy returning
+    // incorrect bulk data URIs
+    if (server.wadoRoot.indexOf('https') === 0 && !uri.includes('https')) {
+      uri = uri.replace('http', 'https');
+    }
+
+    const config = {
+      url: server.wadoRoot, //BulkDataURI is absolute, so this isn't used
+      headers: DICOMWeb.getAuthorizationHeader(server),
+    };
+    const dicomWeb = new api.DICOMwebClient(config);
+    const options = {
+      BulkDataURI: uri,
+    };
+
+    return dicomWeb
+      .retrieveBulkData(options)
+      .then(result => result[0])
+      .then(arrayBufferToPaletteColorLUT);
+  } else if (instance[tag].InlineBinary) {
+    const inlineBinaryData = atob(instance[tag].InlineBinary);
+    const arraybuf = str2ab(inlineBinaryData);
+
+    return arrayBufferToPaletteColorLUT(arraybuf);
+  }
+
+  throw new Error(
+    'Palette Color LUT was not provided as InlineBinary or BulkDataURI'
+  );
 }
 
 /**
