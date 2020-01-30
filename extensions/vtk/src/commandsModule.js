@@ -103,6 +103,9 @@ const commandsModule = ({ commandsManager }) => {
   }
 
   const actions = {
+    getVtkApis: ({ index }) => {
+      return apis[index];
+    },
     axial: async ({ viewports }) => {
       const api = await _getActiveViewportVTKApi(viewports);
 
@@ -266,11 +269,12 @@ const commandsModule = ({ commandsManager }) => {
           'crosshairsWidget'
         );
 
+        const uid = api.uid;
         const istyle = vtkInteractorStyleMPRCrosshairs.newInstance();
 
         api.setInteractorStyle({
           istyle,
-          configuration: { apis, apiIndex },
+          configuration: { apis, apiIndex, uid },
         });
       });
     },
@@ -296,55 +300,45 @@ const commandsModule = ({ commandsManager }) => {
     },
     enableRotateTool: {
       commandFn: actions.enableRotateTool,
-      storeContexts: [],
       options: {},
     },
     enableCrosshairsTool: {
       commandFn: actions.enableCrosshairsTool,
-      storeContexts: [],
       options: {},
     },
     enableLevelTool: {
       commandFn: actions.enableLevelTool,
-      storeContexts: [],
       options: {},
     },
     setBlendModeToComposite: {
       commandFn: actions.setBlendModeToComposite,
-      storeContexts: [],
       options: { blendMode: BlendMode.COMPOSITE_BLEND },
     },
     setBlendModeToMaximumIntensity: {
       commandFn: actions.setBlendModeToMaximumIntensity,
-      storeContexts: [],
       options: { blendMode: BlendMode.MAXIMUM_INTENSITY_BLEND },
     },
     setBlendModeToMinimumIntensity: {
       commandFn: actions.setBlendMode,
-      storeContexts: [],
       options: { blendMode: BlendMode.MINIMUM_INTENSITY_BLEND },
     },
     setBlendModeToAverageIntensity: {
       commandFn: actions.setBlendMode,
-      storeContexts: [],
       options: { blendMode: BlendMode.AVERAGE_INTENSITY_BLEND },
     },
     setSlabThickness: {
       // TODO: How do we pass in a function argument?
       commandFn: actions.setSlabThickness,
-      storeContexts: [],
       options: {},
     },
     increaseSlabThickness: {
       commandFn: actions.changeSlabThickness,
-      storeContexts: [],
       options: {
         change: 3,
       },
     },
     decreaseSlabThickness: {
       commandFn: actions.changeSlabThickness,
-      storeContexts: [],
       options: {
         change: -3,
       },
@@ -353,6 +347,10 @@ const commandsModule = ({ commandsManager }) => {
       commandFn: actions.mpr2d,
       storeContexts: ['viewports'],
       options: {},
+      context: 'VIEWER',
+    },
+    getVtkApiForViewportIndex: {
+      commandFn: actions.getVtkApis,
       context: 'VIEWER',
     },
   };
