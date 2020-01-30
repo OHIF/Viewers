@@ -77,6 +77,11 @@ class OHIFVTKViewport extends Component {
     }),
     viewportIndex: PropTypes.number,
     children: PropTypes.node,
+    onScroll: PropTypes.func,
+  };
+
+  static defaultProps = {
+    onScroll: () => {},
   };
 
   static id = 'OHIFVTKViewport';
@@ -386,6 +391,7 @@ class OHIFVTKViewport extends Component {
                 this.state.paintFilterBackgroundImageData
               }
               viewportIndex={this.props.viewportIndex}
+              onScroll={this.props.onScroll}
             />
           )}
         </div>

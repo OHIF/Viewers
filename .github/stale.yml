@@ -12,10 +12,11 @@ exemptLabels:
   - 'Task: CI/Tooling :robot:'
   - 'Task: Docs 📖'
   - 'Task: Docs :book:'
-  - 'Task: Refactor 🛠'
+  - 'Task: Refactor :hammer_and_wrench:'
   - 'Task: Tests :microscope:'
   - 'PR: Awaiting Review 👀'
   - 'Triage :white_flag:'
+  - 'Extension: Discussion'
   - 'Announcement 🎉'
 # Label to use when marking an issue as stale
 staleLabel: 'Stale :baguette_bread:'
