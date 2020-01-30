@@ -52,7 +52,6 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
   const [brushStackState, setBrushStackState] = useState(
     segmentationModule.state.series[firstImageId]
   );
-  const [counter, setCounter] = useState(0);
 
   useEffect(() => {
     setBrushStackState(segmentationModule.state.series[firstImageId]);
@@ -62,7 +61,6 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     const labelmapModifiedHandler = event => {
       console.warn('labelmap modified', event);
       setBrushStackState(segmentationModule.state.series[firstImageId]);
-      setCounter(counter + 1);
     };
 
     /*
@@ -134,10 +132,6 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
         value: labelmapIndex,
         title: displayDescription,
         description: displayDate,
-        /*
-         * TODO: CLICK BLOCKED BY DRAGGABLEAREA
-         * Specific to UIDialogService
-         */
         onClick: async () => {
           const activatedLabelmapIndex = await _setActiveLabelmap(
             viewport,
@@ -146,9 +140,6 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
             firstImageId,
             brushStackState.activeLabelmapIndex
           );
-
-          /* TODO: Notify of change? */
-          setCounter(counter + 1);
         },
       };
     });

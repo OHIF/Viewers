@@ -63,60 +63,66 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
           onChange={() => check('renderOutline')}
         />
         {state.renderOutline && (
-          <CustomRange
-            value={state.outlineAlpha * 100}
-            label="Opacity"
-            showPercentage
-            step={1}
-            min={0}
-            max={100}
-            onChange={event => save('outlineAlpha', toFloat(event.target.value))}
-          />
-        )}
-        {state.renderOutline && (
-          <CustomRange
-            value={state.outlineWidth}
-            label="Width"
-            showValue
-            step={1}
-            min={0}
-            max={100}
-            onChange={event => save('outlineWidth', parseInt(event.target.value))}
-          />
-        )}
-      </div>
-      <div
-        className="settings-group"
-        style={{ marginBottom: state.shouldRenderInactiveLabelmaps ? 15 : 0 }}
-      >
-        <CustomCheck
-          label="Render inactive segmentations"
-          checked={state.shouldRenderInactiveLabelmaps}
-          onChange={() => check('shouldRenderInactiveLabelmaps')}
-        />
-        {state.shouldRenderInactiveLabelmaps && (
           <>
             <CustomRange
-              label="Fill Opacity"
+              value={state.outlineAlpha * 100}
+              label="Opacity"
               showPercentage
               step={1}
               min={0}
               max={100}
-              value={state.fillAlphaInactive * 100}
-              onChange={event => save('fillAlphaInactive', toFloat(event.target.value))}
+              onChange={event => save('outlineAlpha', toFloat(event.target.value))}
             />
             <CustomRange
-              label="Outline Opacity"
-              showPercentage
+              value={state.outlineWidth}
+              label="Width"
+              showValue
               step={1}
               min={0}
-              max={100}
-              value={state.outlineAlphaInactive * 100}
-              onChange={event => save('outlineAlphaInactive', toFloat(event.target.value))}
+              max={5}
+              onChange={event => save('outlineWidth', parseInt(event.target.value))}
             />
           </>
         )}
       </div>
+      {(state.renderFill || state.renderOutline) && (
+        <div
+          className="settings-group"
+          style={{ marginBottom: state.shouldRenderInactiveLabelmaps ? 15 : 0 }}
+        >
+          <CustomCheck
+            label="Render inactive segmentations"
+            checked={state.shouldRenderInactiveLabelmaps}
+            onChange={() => check('shouldRenderInactiveLabelmaps')}
+          />
+          {state.shouldRenderInactiveLabelmaps && (
+            <>
+              {state.renderFill && (
+                <CustomRange
+                  label="Fill Opacity"
+                  showPercentage
+                  step={1}
+                  min={0}
+                  max={100}
+                  value={state.fillAlphaInactive * 100}
+                  onChange={event => save('fillAlphaInactive', toFloat(event.target.value))}
+                />
+              )}
+              {state.renderOutline && (
+                <CustomRange
+                  label="Outline Opacity"
+                  showPercentage
+                  step={1}
+                  min={0}
+                  max={100}
+                  value={state.outlineAlphaInactive * 100}
+                  onChange={event => save('outlineAlphaInactive', toFloat(event.target.value))}
+                />
+              )}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };
