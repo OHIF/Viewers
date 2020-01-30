@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.13](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.12...@ohif/extension-vtk@1.2.13) (2020-01-30)
+
+
+### Bug Fixes
+
+* Set VTK viewport as active by interaction  ([#1139](https://github.com/OHIF/Viewers/issues/1139)) ([686d12d](https://github.com/OHIF/Viewers/commit/686d12da5c9d3d435b1e326c2a5caee36e2ed27c))
+
+
+
+
+
 ## [1.2.12](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.11...@ohif/extension-vtk@1.2.12) (2020-01-30)
 
 **Note:** Version bump only for package @ohif/extension-vtk
