@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { TabFooter } from './TabFooter';
 import HotKeyPreferencesRow from './HotkeyPreferenceRow';
+import { validateCommandKey } from './validateCommandKey';
 
 const initialState = hotkeyDefinitions => ({
   hotkeys: { ...hotkeyDefinitions },
@@ -38,7 +39,7 @@ function HotKeysPreferences({ onClose, t, hotkeysManager }) {
       defaultHotKeyDefinitions[commandName] = { ...values };
     });
 
-    setState(defaultHotKeyDefinitions);
+    setState(initialState(defaultHotKeyDefinitions));
   };
 
   const onSave = values => {
@@ -48,15 +49,26 @@ function HotKeysPreferences({ onClose, t, hotkeysManager }) {
   };
 
   const onHotKeyChanged = (commandName, hotkeyDefinition, keys) => {
+    const { errorMessage } = validateCommandKey({
+      commandName,
+      pressedKeys: keys,
+      hotkeys: state.hotkeys,
+    });
+
     setState(prevState => ({
       hotkeys: {
         ...prevState.hotkeys,
         [commandName]: { ...hotkeyDefinition, keys },
       },
+      errors: {
+        ...prevState.errors,
+        [commandName]: errorMessage,
+      },
     }));
   };
 
   const hasErrors = () => {
+    // TODO: Update this function
     return !!Object.keys(state.errors).length;
   };
 
@@ -81,13 +93,11 @@ function HotKeysPreferences({ onClose, t, hotkeysManager }) {
                     commandName={hotkey[0]}
                     hotkeys={hotkey[1].keys}
                     label={hotkey[1].label}
-                    originalHotKeys={state.hotkeys}
-                    tabError={false}
+                    errorMessage={state.errors[hotkey[0]]}
                     hotkeyRecord={hotkeyRecord}
-                    onSuccessChanged={keys =>
+                    onHotkeyChanged={keys =>
                       onHotKeyChanged(hotkey[0], hotkey[1], keys)
                     }
-                    onFailureChanged={() => {}}
                   ></HotKeyPreferencesRow>
                 ))}
               </tbody>
