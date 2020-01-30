@@ -1,6 +1,6 @@
 {
   "name": "@ohif/viewer",
-  "version": "3.4.5",
+  "version": "3.4.12",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -45,20 +45,20 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@ohif/core": "^2.3.4",
-    "@ohif/extension-cornerstone": "^2.2.1",
+    "@ohif/core": "^2.3.6",
+    "@ohif/extension-cornerstone": "^2.2.2",
     "@ohif/extension-dicom-html": "^1.1.0",
     "@ohif/extension-dicom-microscopy": "^0.50.6",
     "@ohif/extension-dicom-pdf": "^1.0.1",
-    "@ohif/extension-vtk": "^1.2.9",
-    "@ohif/i18n": "^0.52.4",
-    "@ohif/ui": "^1.1.8",
+    "@ohif/extension-vtk": "^1.2.12",
+    "@ohif/i18n": "^0.52.5",
+    "@ohif/ui": "^1.1.9",
     "@tanem/react-nprogress": "^1.1.25",
     "classnames": "^2.2.6",
     "core-js": "^3.2.1",
     "cornerstone-core": "^2.2.8",
     "cornerstone-math": "^0.1.8",
-    "cornerstone-tools": "^4.9.0",
+    "cornerstone-tools": "^4.12.0",
     "cornerstone-wado-image-loader": "^3.0.0",
     "dcmjs": "^0.8.2",
     "dicom-parser": "^1.8.3",
@@ -88,7 +88,7 @@
     "cypress": "^3.8.0",
     "gh-pages": "2.0.1",
     "identity-obj-proxy": "3.0.x",
-    "lodash": "4.17.11",
+    "lodash": "4.17.15",
     "lodash.clonedeep": "4.5.0"
   }
 }
