@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.9](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.8...@ohif/ui@1.1.9) (2020-01-30)
+
+
+### Bug Fixes
+
+* download tool fixes & improvements ([#1235](https://github.com/OHIF/Viewers/issues/1235)) ([b9574b6](https://github.com/OHIF/Viewers/commit/b9574b6efcfeb85cde35b5cae63282f8e1b35be6))
+
+
+
+
+
 ## [1.1.8](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.7...@ohif/ui@1.1.8) (2020-01-08)
 
 
