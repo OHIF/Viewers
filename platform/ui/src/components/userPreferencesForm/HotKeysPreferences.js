@@ -49,13 +49,13 @@ const getHotKeysArrayColumns = (keysObj = {}, columnSize) => {
  * @param {function} props.onTabErrorChanged Callback Function in case any error on tab
  */
 function HotKeysPreferences({
-  hotkeyDefinitions,
-  name,
-  tabError,
-  onTabStateChanged,
-  onTabErrorChanged,
-  hotkeyRecord,
+  name = '',
+  tabError = {},
+  onTabStateChanged = () => {},
+  onTabErrorChanged = () => {},
+  hotkeysManager,
 }) {
+  const { hotkeyRecord, hotkeyDefinitions } = hotkeysManager;
   const [tabState, setTabState] = useState(hotkeyDefinitions);
   const [tabErrorCounter, setTabErrorCounter] = useState(0);
 
