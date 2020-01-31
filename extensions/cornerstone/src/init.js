@@ -97,6 +97,7 @@ export default function init({ servicesManager, configuration }) {
       csTools.MagnifyTool,
       csTools.StackScrollTool,
       csTools.StackScrollMouseWheelTool,
+      csTools.OverlayTool,
     ],
   };
 
@@ -178,4 +179,5 @@ export default function init({ servicesManager, configuration }) {
   csTools.setToolActive('StackScrollMouseWheel', {}); // TODO: Empty options should not be required
   csTools.setToolActive('PanMultiTouch', { pointers: 2 }); // TODO: Better error if no options
   csTools.setToolActive('ZoomTouchPinch', {});
+  csTools.setToolEnabled('Overlay', {});
 }

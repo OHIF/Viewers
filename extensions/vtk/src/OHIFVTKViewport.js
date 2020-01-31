@@ -74,6 +74,11 @@ class OHIFVTKViewport extends Component {
     }),
     viewportIndex: PropTypes.number,
     children: PropTypes.node,
+    onScroll: PropTypes.func,
+  };
+
+  static defaultProps = {
+    onScroll: () => {},
   };
 
   static id = 'OHIFVTKViewport';
@@ -432,6 +437,7 @@ class OHIFVTKViewport extends Component {
                 outlineThickness,
                 renderOutline: true,
               }}
+              onScroll={this.props.onScroll}
             />
           )}
         </div>
