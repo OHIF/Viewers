@@ -29,33 +29,6 @@ const definitions = [
         commandOptions: { toolName: 'SphericalBrush' },
       },
       {
-        id: 'FreehandScissors',
-        label: 'Freehand Scissors',
-        icon: 'edit',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'FreehandScissors' },
-      },
-      {
-        id: 'RectangleScissors',
-        label: 'Rectangle Scissors',
-        icon: 'square-o',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'RectangleScissors' },
-      },
-      {
-        id: 'CircleScissors',
-        label: 'Circle Scissors',
-        icon: 'circle-o',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'CircleScissors' },
-      },
-      {
         id: 'CorrectionScissors',
         label: 'Correction Scissors',
         icon: 'scissors',
