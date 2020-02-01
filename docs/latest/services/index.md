@@ -2,7 +2,7 @@
 
 - [Overview](#overview)
 - [Kinds of Services](#kinds-of-services)
-  - [Services (default)](#services-default)
+  - [Data Services](#data-services)
   - [UI Services](#ui-services)
 - [Related Patterns](#related-patterns)
 
@@ -26,12 +26,12 @@ example, a UI service often receives its implementation from a React Context
 Provider. You can read more about the different kinds of services and what makes
 them different below:
 
-### Services (default)
+### Data Services
 
 Services are a work in progress. As we are still in the progress of creating a
 non-ui maintained service, this usage may change.
 
-[You can read more about default services: here](./default/index.md)
+[You can read more about data services: here](./data/index.md)
 
 ### UI Services
 
