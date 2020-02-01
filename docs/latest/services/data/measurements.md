@@ -7,6 +7,13 @@ in seamlessly translating between measurement representations.
 
 ## Overview
 
+<div style="text-align: center;">
+  <a href="/assets/img/measurement-service-diagram.png">
+    <img src="/assets/img/measurement-service-diagram.png" alt="Measurement Service Diagram" style="margin: 0 auto; max-width: 500px;" />
+  </a>
+  <div><i>Diagram</i></div>
+</div>
+
 There are many possible ways to represent a single measurement. Take, for
 example, a single point of interest. It can be encoded as:
 
@@ -57,6 +64,57 @@ those challenges.
 When attempting to map measurements to tools, we take different approaches
 depending on the information made available to us.
 
+#### Scenarios
+
+Simplest:
+
+- csTools creates
+- adds to MeasurementService
+- Saves to DICOM SR
+
+```js
+const MeasurementService = createMeasurementService();
+const { EVENTS, VALUE_TYPES } = MeasurementService;
+
+const measurementSource = MeasurementService.createSource('csTools', '4');
+const { addMapping, addOrUpdate } = measurementSource;
+
+addMapping(
+  'Length',
+  { numPoints: 2, valueType: VALUE_TYPES.POLYLINE },
+  () => {}, // toSourceSchema
+  () => {} // toMeasurementSchema
+);
+
+const measurementId = addOrUpdate('Length', {
+  handles: [{ start: { x1, y1 }, end: { x2, y2 } }],
+});
+
+// ...
+```
+
+Moderate:
+
+- vtk requests measurement
+
+```js
+const vtkMeasurementSource = MeasurementService.createSource('vtk', '1');
+const { addMapping, addOrUpdate } = measurementSource;
+
+addMapping(
+  'Length',
+  { numPoints: 2, valueType: VALUE_TYPES.POLYLINE },
+  () => {}, // toSourceSchema
+  () => {} // toMeasurementSchema
+);
+
+MeasurementService.getSourceSchema(vtkMeasurementSource, measurementId);
+```
+
+Difficult:
+
+- Read from unknown DICOM SR / author (no known source)
+
 #### Unknown Source
 
 ```js
@@ -91,16 +149,6 @@ const measurementId = MeasurementService.addOrUpdate({
   type: MeasurementService.VALUE_TYPES.POLYLINE,
   points: [1, 1, 1, 2], // x1, y1, x2, y2
 });
-```
-
-```js
-// Instantiate
-const MeasurementService = createMeasurementService({
-  /* config */
-});
-
-const measurementSource = MeasurementService.createSource('csTools', '4');
-const { addOrUpdate, getAnnotation } = measurementSource;
 ```
 
 ## API
