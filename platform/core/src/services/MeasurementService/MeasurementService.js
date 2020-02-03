@@ -81,7 +81,8 @@ class MeasurementService {
    * @return {Measurement[]} Array of measurements
    */
   getMeasurements() {
-    return this._arrayOfObjects(this.measurements);
+    const measurements = this._arrayOfObjects(this.measurements);
+    return measurements && measurements.map(m => this.measurements[Object.keys(m)[0]]);
   }
 
   /**
@@ -92,7 +93,7 @@ class MeasurementService {
    */
   getMeasurement(id) {
     let measurement = null;
-    if (Object.keys(this.measurements[id]).length > 0) {
+    if (this.measurements[id] && Object.keys(this.measurements[id]).length > 0) {
       measurement = this.measurements[id];
     }
     return measurement;
@@ -278,7 +279,7 @@ class MeasurementService {
       return;
     }
 
-    let internalId = measurement.id;
+    let internalId = sourceMeasurement.id;
     if (!internalId) {
       internalId = guid();
       log.warn(`Measurement ID not found. Generating UID: ${internalId}`);

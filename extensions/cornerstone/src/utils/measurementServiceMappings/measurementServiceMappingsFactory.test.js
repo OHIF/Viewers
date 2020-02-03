@@ -1,15 +1,15 @@
 import measurementServiceMappingsFactory from './measurementServiceMappingsFactory';
-import { MeasurementService as MeasurementServiceFactory } from '@ohif/core';
 
 describe('measurementServiceMappings.js', () => {
-  let measurementServiceMappings;
+  let mappings;
   let handles;
   let points;
   let eventData;
   let measurement;
   let annotation;
   let attributes;
-  let measurementService;
+  let measurementServiceMock;
+  let definition = 'Length';
 
   beforeEach(() => {
     attributes = {
@@ -17,13 +17,23 @@ describe('measurementServiceMappings.js', () => {
       frameOfReferenceUid: '123',
       seriesInstanceUid: '123',
     };
-    measurementService = new MeasurementServiceFactory.create();
-    measurementServiceMappings = measurementServiceMappingsFactory(measurementService);
-    measurementServiceMappings._getAttributes = jest.fn(() => attributes);
+    measurementServiceMock = {
+      VALUE_TYPES: {
+        POLYLINE: 'value_type::polyline',
+        POINT: 'value_type::point',
+        ELLIPSE: 'value_type::ellipse',
+        MULTIPOINT: 'value_type::multipoint',
+        CIRCLE: 'value_type::circle',
+      },
+    };
+    mappings = {
+      ...measurementServiceMappingsFactory(measurementServiceMock),
+      _getAttributes: jest.fn(() => attributes),
+    };
     handles = { start: { x: 1, y: 2 }, end: { x: 1, y: 2 } };
     points = [{ x: 1, y: 2 }, { x: 1, y: 2 }];
     eventData = {
-      toolName: 'ArrowAnnotate',
+      toolName: definition,
       element: null,
       measurementData: {
         sopInstanceUid: '123',
@@ -39,7 +49,7 @@ describe('measurementServiceMappings.js', () => {
       },
     };
     annotation = {
-      toolName: 'ArrowAnnotate',
+      toolName: definition,
       measurementData: {
         sopInstanceUid: '123',
         frameOfReferenceUid: '123',
@@ -59,39 +69,27 @@ describe('measurementServiceMappings.js', () => {
       description: 'Test',
       unit: 'mm',
       area: 123,
-      type: measurementService.VALUE_TYPES.POINT,
+      type: measurementServiceMock.VALUE_TYPES.POINT,
       points: points,
-      source: 'cornerstone',
-      sourceToolType: 'ArrowAnnotate',
+      source: {},
     };
     jest.clearAllMocks();
   });
 
   describe('toAnnotation()', () => {
     it('map measurement service format to annotation', async () => {
-      const mappedMeasurement = await measurementServiceMappings.toAnnotation({ id: 1, ...measurement });
+      const mappedMeasurement = await mappings.toAnnotation(
+        { id: 1, ...measurement },
+        definition
+      );
       expect(mappedMeasurement).toEqual(annotation);
     });
   });
 
   describe('toMeasurement()', () => {
     it('map annotation to measurement service format', async () => {
-      const mappedAnnotation = await measurementServiceMappings.toMeasurement(eventData);
+      const mappedAnnotation = await mappings.toMeasurement(eventData);
       expect(mappedAnnotation).toEqual(measurement);
-    });
-  });
-
-  describe('_getPointsFromHandles()', () => {
-    it('converts handles to points', () => {
-      const convertedHandles = measurementServiceMappings._getPointsFromHandles(handles);
-      expect(convertedHandles).toEqual(points);
-    });
-  });
-
-  describe('_getHandlesFromPoints()', () => {
-    it('converts points to handles', () => {
-      const convertedPoints = measurementServiceMappings._getHandlesFromPoints(points);
-      expect(convertedPoints).toEqual(handles);
     });
   });
 });
