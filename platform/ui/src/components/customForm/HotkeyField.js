@@ -40,29 +40,28 @@ const getKeys = ({ sequence, modifier_keys }) => {
  * @param {function} props.handleChange Callback function to communicate parent once value is changed
  * @param {string} props.classNames string caontaining classes to be added in the input field
  * @param {Array[]} props.modifier_keys
- * @param {Array[]} props.allowed_keys
  */
-function HotkeyField({
-  keys,
-  handleChange,
-  classNames,
-  modifier_keys,
-  allowed_keys,
-}) {
+function HotkeyField({ keys, handleChange, classNames, modifier_keys }) {
   const inputValue = formatKeysForInput(keys);
 
   const onInputKeyDown = event => {
+    const { key = '' } = event;
+    const lowerCaseKey = key.toLowerCase();
+
     // Prevent ESC key from propagating and closing the modal
-    if (event.key === 'Escape') {
+    if (lowerCaseKey === 'escape') {
       event.stopPropagation();
     }
 
-    hotkeyRecord(sequence => {
-      const keys = getKeys({ sequence, modifier_keys });
+    if (!modifier_keys.includes(lowerCaseKey)) {
+      handleChange([lowerCaseKey]);
+    } else {
+      hotkeyRecord(sequence => {
+        const keys = getKeys({ sequence, modifier_keys });
 
-      // TODO: Validate allowedKeys
-      handleChange(keys);
-    });
+        handleChange(keys);
+      });
+    }
   };
 
   return (

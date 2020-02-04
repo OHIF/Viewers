@@ -147,7 +147,6 @@ function HotkeysPreferences({
                           <HotkeyField
                             keys={keys}
                             modifier_keys={MODIFIER_KEYS}
-                            allowed_keys={ALLOWED_KEYS}
                             handleChange={handleChange}
                             classNames={'hotkeyInput'}
                           ></HotkeyField>
