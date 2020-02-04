@@ -4,27 +4,6 @@ import reducer, { DEFAULT_STATE } from './viewports.js';
 import * as types from './../constants/ActionTypes.js';
 
 describe('viewports reducer', () => {
-  //   it('should replace servers on SET_SERVERS', () => {
-  //     const initialState = {
-  //       servers: [{ id: 'one' }, { id: 'two' }, { id: 'three' }, { id: 'four' }],
-  //     };
-
-  //     const action = {
-  //       type: types.SET_SERVERS,
-  //       servers: [{ id: 'un' }, { id: 'deux' }, { id: 'trois' }],
-  //     };
-
-  //     const expectedState = {
-  //       servers: action.servers,
-  //     };
-
-  //     Reducer(reducer)
-  //       .withState(initialState)
-  //       .expect(action)
-  //       .toReturnState(expectedState);
-  //   });
-  // });
-
   it('should return the initial state', () => {
     expect(reducer(undefined, {})).toEqual(DEFAULT_STATE);
   });
