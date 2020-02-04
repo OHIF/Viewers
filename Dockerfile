@@ -62,4 +62,4 @@ COPY --from=builder /usr/src/app/platform/viewer/dist /usr/share/nginx/html
 EXPOSE 80
 EXPOSE 443
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+#CMD ["nginx", "-g", "daemon off;"]

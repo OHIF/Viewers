@@ -1,0 +1,84 @@
+kind: pipeline
+name: staging
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+#- name: build
+#  pull: always
+#  image: node:8.16
+#  commands:
+#  - apt-get update
+#  - apt-get --assume-yes install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+#  - export NODE_OPTIONS="--max-old-space-size=4096"
+#  - yarn install
+#  - yarn build
+#  when:	
+#    branch: develop
+#    event: push
+
+#- name: build_demo
+#  pull: always
+#  image: node:8.16
+#  commands:
+#  - apt-get update
+#  - apt-get --assume-yes install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+#  - export NODE_OPTIONS="--max-old-space-size=4096"
+#  - yarn install
+#  - yarn build
+  #when:	
+  #  branch: master
+  #  event: push
+
+- name: publish
+  pull: always
+  image: plugins/docker
+  settings:
+    username: 
+      from_secret: DOCKER_USERNAME
+    password: 
+      from_secret: DOCKER_PASSWORD
+    repo: registry-intl.ap-southeast-5.aliyuncs.com/imdglobalservices/sirs-dicom-viewer
+    tags: latest
+    registry: registry-intl.ap-southeast-5.aliyuncs.com
+#  when:	
+#    branch: develop
+#    event: push
+
+#- name: publish_demo
+#  pull: always
+#  image: plugins/docker
+#  settings:
+#    username: 
+#      from_secret: DOCKER_USERNAME
+#    password: 
+#      from_secret: DOCKER_PASSWORD
+#    repo: registry-intl.ap-southeast-5.aliyuncs.com/imdglobalservices/sirs-frontend
+#    tags:
+#    - '0.2'
+#    registry: registry-intl.ap-southeast-5.aliyuncs.com
+  #when:	
+  #  branch: master
+  #  event: push
+
+#- name: notify
+#  image: plugins/slack
+#  when:
+#    status: [ success, failure ]
+#    branch: develop
+#    event: push
+#  settings:
+#    webhook: 
+#      from_secret: SLACK_WEBHOOK
+#    channel: sirs-dev-update
+#    template: >
+#      {{#success build.status}}
+#        Frontend build number {{build.number}} has been successfully deployed! You may need to wait 5 minutes before it ready.
+#      {{else}}
+#        Frontend build number {{build.number}} is broken! Please check! <@here>
+#      {{/success}}
+
+#node:
+#  app: frontend
