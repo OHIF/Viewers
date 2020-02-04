@@ -25,26 +25,28 @@ const SegmentItem = ({ index, label, onClick, itemClass, color }) => (
         {label}
       </div>
       {false && <div className="segment-info">{'...'}</div>}
-      <div className="segment-actions">
-        <button
-          className="btnAction"
-          onClick={() => console.log('Relabelling...')}
-        >
-          <span style={{ marginRight: '4px' }}>
-            <Icon name="edit" width="14px" height="14px" />
-          </span>
-          Relabel
-          </button>
-        <button
-          className="btnAction"
-          onClick={() => console.log('Editing description...')}
-        >
-          <span style={{ marginRight: '4px' }}>
-            <Icon name="edit" width="14px" height="14px" />
-          </span>
-          Description
-          </button>
-      </div>
+      {false && (
+        <div className="segment-actions">
+          <button
+            className="btnAction"
+            onClick={() => console.log('Relabelling...')}
+          >
+            <span style={{ marginRight: '4px' }}>
+              <Icon name="edit" width="14px" height="14px" />
+            </span>
+            Relabel
+            </button>
+          <button
+            className="btnAction"
+            onClick={() => console.log('Editing description...')}
+          >
+            <span style={{ marginRight: '4px' }}>
+              <Icon name="edit" width="14px" height="14px" />
+            </span>
+            Description
+            </button>
+        </div>
+      )}
     </div>
   </TableListItem>
 );

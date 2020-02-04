@@ -21,7 +21,8 @@ import SegmentationSettings from './SegmentationSettings';
 const { studyMetadataManager } = utils;
 
 const segmentationModule = cornerstoneTools.getModule('segmentation');
-const DEFAULT_BRUSH_RADIUS = segmentationModule.getters.radius || 10;
+const { configuration } = segmentationModule;
+const DEFAULT_BRUSH_RADIUS = configuration.radius || 10;
 
 const refreshViewport = () => {
   cornerstone.getEnabledElements().forEach(enabledElement => {
@@ -39,8 +40,9 @@ const refreshViewport = () => {
  * @returns component
  */
 const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
-  /* TODO: This technically defaults to 10 if undefined (bug?) */
   const [brushRadius, setBrushRadius] = useState(DEFAULT_BRUSH_RADIUS);
+
+  /* TODO: We shouldn't hardcode this color, in the future the SEG may set the colorLUT to whatever it wants. */
   const [brushColor, setBrushColor] = useState('rgba(221, 85, 85, 1)');
   const [selectedSegment, setSelectedSegment] = useState();
   const [showSegSettings, setShowSegSettings] = useState(false);
@@ -277,8 +279,6 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     configuration.outlineAlphaInactive = newConfiguration.outlineAlphaInactive;
     refreshViewport();
   };
-
-  const { configuration } = segmentationModule;
 
   if (showSegSettings) {
     return (
