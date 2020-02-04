@@ -6,6 +6,17 @@ platform:
   arch: amd64
 
 steps:
+- name: publish
+  pull: always
+  image: plugins/docker
+  settings:
+    username: 
+      from_secret: DOCKER_USERNAME
+    password: 
+      from_secret: DOCKER_PASSWORD
+    repo: registry-intl.ap-southeast-5.aliyuncs.com/imdglobalservices/sirs-dicom-viewer
+    tags: latest
+    registry: registry-intl.ap-southeast-5.aliyuncs.com
 #- name: build
 #  pull: always
 #  image: node:8.16
@@ -32,17 +43,7 @@ steps:
   #  branch: master
   #  event: push
 
-- name: publish
-  pull: always
-  image: plugins/docker
-  settings:
-    username: 
-      from_secret: DOCKER_USERNAME
-    password: 
-      from_secret: DOCKER_PASSWORD
-    repo: registry-intl.ap-southeast-5.aliyuncs.com/imdglobalservices/sirs-dicom-viewer
-    tags: latest
-    registry: registry-intl.ap-southeast-5.aliyuncs.com
+
 #  when:	
 #    branch: develop
 #    event: push
