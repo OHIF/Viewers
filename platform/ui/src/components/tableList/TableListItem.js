@@ -10,7 +10,10 @@ export class TableListItem extends Component {
     children: PropTypes.node,
     itemClass: PropTypes.string,
     itemIndex: PropTypes.number,
-    itemKey: PropTypes.oneOfType(['number', 'string']),
+    itemKey: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]),
     onItemClick: PropTypes.func.isRequired,
   };
 

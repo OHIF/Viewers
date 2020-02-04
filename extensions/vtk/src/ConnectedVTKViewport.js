@@ -1,6 +1,6 @@
 import OHIF from '@ohif/core';
-import { View2D } from 'react-vtkjs-viewport';
 import { connect } from 'react-redux';
+import VTKViewport from './VTKViewport';
 
 const { setViewportActive, setViewportSpecificData } = OHIF.redux.actions;
 
@@ -18,6 +18,7 @@ const mapStateToProps = (state, ownProps) => {
   const pluginDetails = viewportLayout.vtk || {};
 
   return {
+    activeViewportIndex: state.viewports.activeViewportIndex,
     layout: state.viewports.layout,
     isActive,
     ...pluginDetails,
@@ -75,6 +76,6 @@ const ConnectedVTKViewport = connect(
   mapStateToProps,
   mapDispatchToProps,
   mergeProps
-)(View2D);
+)(VTKViewport);
 
 export default ConnectedVTKViewport;
