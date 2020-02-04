@@ -150,7 +150,7 @@ When creating tests, place the test file "next to" the file you're testing.
 index.js;
 
 // Test for file
-index.test.js;
+index.medinesia.js;
 ```
 
 As you add and modify code, `jest` will watch for uncommitted changes and run

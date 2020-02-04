@@ -8,6 +8,7 @@ import Dropzone from 'react-dropzone';
 import filesToStudies from '../lib/filesToStudies';
 import './ViewerLocalFileData.css';
 import { withTranslation } from 'react-i18next';
+import axios from 'axios';
 
 const { OHIFStudyMetadata } = metadata;
 const { studyMetadataManager, updateMetaDataManager } = utils;
@@ -60,6 +61,41 @@ class ViewerLocalFileData extends Component {
     loading: false,
     error: null,
   };
+
+  componentDidMount () {
+    const { params } = this.props.match
+    if (params) {
+      const { imgUrl } = params
+      if (imgUrl) {
+        this.setState({
+          loading: true
+        })
+
+        axios.get(decodeURIComponent(imgUrl), {
+          responseType: 'blob',
+          headers: {
+            'Content-Type': 'application/dicom',
+          }
+        }).then(response => {
+          return filesToStudies([response.data])
+        }).then(studies => {
+          const updatedStudies = this.updateStudies(studies);
+
+          if (!updatedStudies) {
+            this.setState({
+              loading: false
+            })
+          } else {
+            this.setState({ studies: updatedStudies, loading: false });
+          }
+        }).catch(e => {
+          this.setState({
+            loading: false
+          })
+        })
+      }
+    }
+  }
 
   updateStudies = studies => {
     // Render the viewer when the data is ready
@@ -119,6 +155,7 @@ class ViewerLocalFileData extends Component {
           <div {...getRootProps()} style={{ width: '100%', height: '100%' }}>
             {this.state.studies ? (
               <ConnectedViewer
+                isStudyLoaded={true}
                 studies={this.state.studies}
                 studyInstanceUids={
                   this.state.studies &&
