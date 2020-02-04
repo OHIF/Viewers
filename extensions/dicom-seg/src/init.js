@@ -6,22 +6,8 @@ import csTools from 'cornerstone-tools';
  * @param {Object|Array} configuration.csToolsConfig
  */
 export default function init({ servicesManager, configuration = {} }) {
-  const {
-    BrushTool,
-    SphericalBrushTool,
-    FreehandScissorsTool,
-    RectangleScissorsTool,
-    CircleScissorsTool,
-    CorrectionScissorsTool,
-  } = csTools;
-  const tools = [
-    BrushTool,
-    SphericalBrushTool,
-    FreehandScissorsTool,
-    RectangleScissorsTool,
-    CircleScissorsTool,
-    CorrectionScissorsTool,
-  ];
+  const { BrushTool, SphericalBrushTool, CorrectionScissorsTool } = csTools;
+  const tools = [BrushTool, SphericalBrushTool, CorrectionScissorsTool];
 
   tools.forEach(tool => csTools.addTool(tool));
 
