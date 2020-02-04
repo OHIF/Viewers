@@ -155,7 +155,6 @@ export class CommandsManager {
    * @param {String} [contextName]
    */
   runCommand(commandName, options = {}, contextName) {
-    log.info(`running ${commandName}, for context: ${contextName}`);
     const definition = this.getCommand(commandName, contextName);
     if (!definition) {
       log.warn(`Command "${commandName}" not found in current context`);
