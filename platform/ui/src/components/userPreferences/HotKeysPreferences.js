@@ -9,6 +9,8 @@ import { MODIFIER_KEYS, ALLOWED_KEYS } from './hotkeysConfig';
 
 import { useSnackbarContext } from '@ohif/ui';
 
+import './HotkeysPreferences.styl';
+
 const initialState = hotkeyDefinitions => ({
   hotkeys: { ...hotkeyDefinitions },
   errors: {},

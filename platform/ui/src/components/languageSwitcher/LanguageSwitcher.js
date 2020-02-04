@@ -4,21 +4,8 @@ import PropTypes from 'prop-types';
 import './LanguageSwitcher.styl';
 import { withTranslation } from '../../contextProviders';
 
-const LanguageSwitcher = ({ language, onLanguageChange }) => {
-  const parseLanguage = lang => lang.split('-')[0];
-
-  const languages = [
-    // TODO: list of available languages should come from i18n.options.resources
-    {
-      value: 'en',
-      label: 'English',
-    },
-    {
-      value: 'es',
-      label: 'Spanish',
-    },
-  ];
-
+const parseLanguage = lang => lang.split('-')[0];
+const LanguageSwitcher = ({ language, onLanguageChange, languages }) => {
   const onChange = event => {
     const { value } = event.target;
     onLanguageChange(parseLanguage(value));
@@ -43,6 +30,7 @@ const LanguageSwitcher = ({ language, onLanguageChange }) => {
 
 LanguageSwitcher.propTypes = {
   language: PropTypes.string.isRequired,
+  languages: PropTypes.array.isRequired,
   onLanguageChange: PropTypes.func.isRequired,
 };
 

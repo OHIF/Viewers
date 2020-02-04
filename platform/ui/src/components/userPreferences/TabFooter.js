@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import './TabFooter.styl';
+
 function TabFooter({ onResetPreferences, onSave, onClose, hasErrors, t }) {
   return (
     <div className="footer">

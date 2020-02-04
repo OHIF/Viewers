@@ -1,16 +1,4 @@
 @import './../../design/styles/common/navbar.styl'
-@import './../../design/styles/common/global.styl'
-@import './../../design/styles/common/modal.styl'
-@import './../../design/styles/common/button.styl'
-
-.close
-  float: right
-  font-size: 21px
-  font-weight: 700
-  line-height: 1
-  color: #000
-  text-shadow: 0 1px 0 #fff
-  opacity: .2
 
 .UserPreferences
   .UserPreferencesTabs
@@ -23,11 +11,6 @@
       border-bottom: 3px solid black
       padding: 0 25px
 
-  .errorMessage
-    color: var(--state-error-text)
-    font-size: 10px
-    text-transform: uppercase
-
   .tabsContent
     min-height: 650px
     display: none
@@ -36,84 +19,3 @@
       display: flex
       flex-direction: column
       justify-content: space-between
-
-  .footer
-    display: flex
-    flex-direction: row
-    justify-content: space-between
-    padding: 20px 20px 0 20px
-    margin: 0 -20px
-    border-top: 3px solid var(--primary-background-color)
-
-    div
-      button:last-child
-        margin-left: 10px
-
-  .HotkeysPreferences
-    display: flex
-    padding: 20px
-
-    .hotkeyTable
-      display: flex
-      flex-direction: row
-      flex-basis: 0
-      flex-grow: 1.5
-
-      .hotkeyColumn
-        display: flex
-        flex-direction: column
-        flex-basis: 0
-        flex-grow: 1.5
-
-        .hotkeyHeader
-          display: flex
-          flex-direction: row
-          margin-bottom: 10px
-
-          .headerItemText
-            flex-basis: 0
-            flex-grow: 1.5
-            padding: 5px 15px 5px 0
-
-        .hotkeyRow
-          display: flex
-
-          .wrapperHotkeyInput
-            margin-bottom: 5px
-            cursor: pointer
-            display: flex
-            flex-direction: column
-            flex-basis: 0
-            flex-grow: 1.5
-
-          .hotkeyInput
-            font-weight: 400
-            cursor: pointer
-            transition: background-color .3s ease,border-color .3s ease
-            background-color: var(--ui-gray)
-            color: var(--text-primary-color)
-            border-color: var(--ui-border-coolor)
-            border: 0
-            border-radius: 2px
-            font-size: 14px
-            height: 30px
-            width: 100%
-            line-height: 16px
-            padding: 8px 9px 6px
-            text-align: center
-
-          .hotkeyInput:focus
-            border-color: var(--active-color)
-            background-color: var(--ui-gray-dark)
-            box-shadow: 0 0 0 2px var(--active-color) !important
-            outline: 0
-
-          .hotkeyLabel
-            padding: 5px 15px 5px 0
-            text-align: right
-            flex-basis: 0
-            flex-grow: 1.5
-
-          .stateError
-            .hotkeyInput
-              background-color: var(--state-error)

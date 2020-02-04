@@ -6,6 +6,20 @@ import i18n from '@ohif/i18n';
 import LanguageSwitcher from '../languageSwitcher';
 import { TabFooter } from './TabFooter';
 
+import './GeneralPreferences.styl';
+
+const languages = [
+  // TODO: list of available languages should come from i18n.options.resources
+  {
+    value: 'en',
+    label: 'English',
+  },
+  {
+    value: 'es',
+    label: 'Spanish',
+  },
+];
+
 /**
  * General Preferences tab
  * It renders the General Preferences content
@@ -32,11 +46,17 @@ function GeneralPreferences({ onClose, t, generalPreferences }) {
 
   return (
     <React.Fragment>
-      <div className="">
-        <label htmlFor="language-select" className="p-r-1">
-          Language
-        </label>
-        <LanguageSwitcher language={language} onLanguageChange={setLanguage} />
+      <div className="GeneralPreferences">
+        <div className="language">
+          <label htmlFor="language-select" className="languageLabel">
+            Language
+          </label>
+          <LanguageSwitcher
+            language={language}
+            onLanguageChange={setLanguage}
+            languages={languages}
+          />
+        </div>
       </div>
       <TabFooter
         onResetPreferences={onResetPreferences}
