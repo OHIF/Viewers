@@ -18,7 +18,7 @@ function TabFooter({ onResetPreferences, onSave, onClose, hasErrors, t }) {
         <button
           className="btn btn-primary"
           data-cy="save-btn"
-          disabled={hasErrors()}
+          disabled={hasErrors}
           onClick={onSave}
         >
           {t('Save')}
@@ -32,7 +32,7 @@ TabFooter.propTypes = {
   onResetPreferences: PropTypes.func,
   onSave: PropTypes.func,
   onClose: PropTypes.func,
-  hasErrors: PropTypes.func,
+  hasErrors: PropTypes.bool,
   t: PropTypes.func,
 };
 

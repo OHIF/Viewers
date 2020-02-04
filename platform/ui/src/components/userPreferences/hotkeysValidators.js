@@ -1,4 +1,4 @@
-import { MODIFIER_KEYS, disallowedCombinations } from './hotkeysConfig';
+import { MODIFIER_KEYS, DISALLOWED_COMBINATIONS } from './hotkeysConfig';
 import isEqual from 'lodash.isequal';
 
 const formatPressedKeys = pressedKeysArray => pressedKeysArray.join('+');
@@ -72,7 +72,7 @@ const disallowedValidator = ({ pressedKeys = [] }) => {
     pressedKeys.slice(0, pressedKeys.length - 1)
   );
 
-  const disallowedCombination = disallowedCombinations[modifierCommand];
+  const disallowedCombination = DISALLOWED_COMBINATIONS[modifierCommand];
   const hasDisallowedCombinations = disallowedCombination
     ? disallowedCombination.includes(lastPressedKey)
     : false;

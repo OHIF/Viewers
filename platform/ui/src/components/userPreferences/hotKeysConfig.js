@@ -4,7 +4,7 @@ const range = (start, end) => {
 
 export const MODIFIER_KEYS = ['ctrl', 'alt', 'shift'];
 
-export const disallowedCombinations = {
+export const DISALLOWED_COMBINATIONS = {
   '': [],
   alt: ['space'],
   shift: [],
@@ -36,7 +36,7 @@ export const disallowedCombinations = {
   'ctrl+shift': ['q', 'w', 'r', 't', 'p', 'a', 'h', 'v', 'b', 'n'],
 };
 
-export const allowedKeys = [
+export const ALLOWED_KEYS = [
   ...[8, 13, 27, 32, 46], // backspace, enter, escape, space, delete
   ...[12, 106, 107, 109, 110, 111], // Numpad keys
   ...range(218, 220), // [\]
@@ -47,7 +47,7 @@ export const allowedKeys = [
   ...range(64, 91), // A-Z
 ];
 
-export const specialKeys = {
+export const SPECIAL_KEYS = {
   8: 'backspace',
   9: 'tab',
   13: 'return',

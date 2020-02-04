@@ -28,7 +28,7 @@ function GeneralPreferences({ onClose, t, generalPreferences }) {
     i18n.changeLanguage(language);
   };
 
-  const hasErrors = () => false;
+  const hasErrors = false;
 
   return (
     <React.Fragment>

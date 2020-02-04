@@ -6,7 +6,7 @@ import { TabFooter } from './TabFooter';
 function WindowLevelPreferences({ name, onClose, t }) {
   const onResetPreferences = () => {};
   const onSave = () => {};
-  const hasErrors = () => {};
+  const hasErrors = false;
 
   return (
     <React.Fragment>

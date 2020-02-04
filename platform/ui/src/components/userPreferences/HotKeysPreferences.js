@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import { TabFooter } from './TabFooter';
-import HotkeyField from './HotkeyField';
+import { HotkeyField } from '../customForm';
 import { hotkeysValidators } from './hotkeysValidators';
+import { MODIFIER_KEYS, ALLOWED_KEYS } from './hotkeysConfig';
 
 const initialState = hotkeyDefinitions => ({
   hotkeys: { ...hotkeyDefinitions },
@@ -35,10 +36,11 @@ const validateCommandKey = ({ commandName, pressedKeys, hotkeys }) => {
  *
  * It stores current state and whenever it changes, component messages parent of new value (through function callback)
  * @param {object} props component props
- * @param {string} props.name Tab`s name
- * @param {object} props.hotkeyDefinitions Data for initial state
- * @param {function} props.onTabStateChanged Callback function to communicate parent in case its states changes
- * @param {function} props.onTabErrorChanged Callback Function in case any error on tab
+ * @param {string} props.onClose
+ * @param {object} props.t
+ * @param {object} porps.hotkeyDefinitions
+ * @param {object} porps.hotkeyDefaults
+ * @param {object} porps.setHotkeys
  */
 function HotKeysPreferences({
   onClose,
@@ -60,10 +62,12 @@ function HotKeysPreferences({
     setState(initialState(defaultHotKeyDefinitions));
   };
 
-  const onSave = values => {
-    setHotkeys(values);
+  const onSave = () => {
+    const { hotkeys } = state;
 
-    localStorage.setItem('hotkey-definitions', JSON.stringify(values));
+    setHotkeys(hotkeys);
+
+    localStorage.setItem('hotkey-definitions', JSON.stringify(hotkeys));
   };
 
   const onHotkeyChanged = (commandName, hotkeyDefinition, keys) => {
@@ -85,11 +89,7 @@ function HotKeysPreferences({
     }));
   };
 
-  const hasErrors = () => {
-    // TODO: Update this function
-    return !!Object.keys(state.errors).length;
-  };
-
+  const hasErrors = Object.keys(state.errors).some(key => !!state.errors[key]);
   const hasHotkeys = Object.keys(state.hotkeys).length;
 
   return (
@@ -126,8 +126,11 @@ function HotKeysPreferences({
                           )}
                         >
                           <HotkeyField
-                            value={keys}
+                            keys={keys}
+                            modifier_keys={MODIFIER_KEYS}
+                            allowed_keys={ALLOWED_KEYS}
                             handleChange={handleChange}
+                            classNames={'form-control hotkey text-center'}
                           ></HotkeyField>
                           <span className="errorMessage">{errorMessage}</span>
                         </label>

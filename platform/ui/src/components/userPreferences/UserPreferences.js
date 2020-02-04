@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useContext } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -8,7 +8,7 @@ import './UserPreferences.styl';
 import { useSelector } from 'react-redux';
 
 // Tabs
-import { HotKeysPreferences } from './HotKeysPreferences';
+import { HotKeysPreferences } from './HotkeysPreferences';
 import { WindowLevelPreferences } from './WindowLevelPreferences';
 import { GeneralPreferences } from './GeneralPreferences';
 
