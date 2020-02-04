@@ -9,7 +9,7 @@
       "message": "chore(release): publish"
     },
     "version": {
-      "allowBranch": "master",
+      "allowBranch": "develop",
       "conventionalCommits": true,
       "createRelease": "github",
       "yes": true,
