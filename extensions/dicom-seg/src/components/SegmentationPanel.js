@@ -20,6 +20,8 @@ import SegmentationSettings from './SegmentationSettings';
 
 const { studyMetadataManager } = utils;
 
+/* TODO: wrap get/set interactions with the cornerstoneTools
+ * store with context to make these kind of things less blurry. */
 const segmentationModule = cornerstoneTools.getModule('segmentation');
 const { configuration } = segmentationModule;
 const DEFAULT_BRUSH_RADIUS = configuration.radius || 10;
@@ -306,7 +308,12 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
               onNext={incrementSegment}
               onPrev={decrementSegment}
             />
-            <BrushRadius value={brushRadius} onChange={updateBrushSize} />
+            <BrushRadius
+              value={brushRadius}
+              onChange={updateBrushSize}
+              min={configuration.minRadius}
+              max={configuration.maxRadius}
+            />
           </form>
         )}
         <h3>Segmentations</h3>
