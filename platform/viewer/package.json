@@ -48,7 +48,6 @@
     "@ohif/core": "^2.3.7",
     "@ohif/extension-cornerstone": "^2.2.2",
     "@ohif/extension-dicom-html": "^1.1.0",
-    "@ohif/extension-cornerstone-spherical-growcut": "^0.0.1",
     "@ohif/extension-dicom-microscopy": "^0.50.6",
     "@ohif/extension-dicom-pdf": "^1.0.1",
     "@ohif/extension-vtk": "^1.2.13",
