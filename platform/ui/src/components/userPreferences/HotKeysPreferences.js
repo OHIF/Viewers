@@ -33,7 +33,7 @@ const validateCommandKey = ({ commandName, pressedKeys, hotkeys }) => {
 };
 
 /**
- * HotKeysPreferences tab
+ * HotkeysPreferences tab
  * It renders all hotkeys displayed into columns/rows
  *
  * It stores current state and whenever it changes, component messages parent of new value (through function callback)
@@ -44,7 +44,7 @@ const validateCommandKey = ({ commandName, pressedKeys, hotkeys }) => {
  * @param {object} porps.hotkeyDefaults
  * @param {object} porps.setHotkeys
  */
-function HotKeysPreferences({
+function HotkeysPreferences({
   onClose,
   t,
   hotkeyDefinitions,
@@ -103,37 +103,45 @@ function HotKeysPreferences({
   const hasErrors = Object.keys(state.errors).some(key => !!state.errors[key]);
   const hasHotkeys = Object.keys(state.hotkeys).length;
 
+  const splitedHotkeys = [];
+  if (hasHotkeys) {
+    const arrayHotkeys = Object.entries(state.hotkeys);
+    const halfwayThrough = Math.ceil(arrayHotkeys.length / 2);
+    splitedHotkeys.push(arrayHotkeys.slice(0, halfwayThrough));
+    splitedHotkeys.push(
+      arrayHotkeys.slice(halfwayThrough, arrayHotkeys.length)
+    );
+  }
+
   return (
     <React.Fragment>
-      <div className="HotKeysPreferences">
+      <div className="HotkeysPreferences">
         {hasHotkeys && (
-          <div className="column">
-            <table className="full-width">
-              <thead>
-                <tr>
-                  <th className="text-right p-r-1">Function</th>
-                  <th className="text-center">Shortcut</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(state.hotkeys).map(hotkey => {
-                  const commandName = hotkey[0];
-                  const hotkeyDefinition = hotkey[1];
-                  const { keys, label } = hotkeyDefinition;
-                  const errorMessage = state.errors[hotkey[0]];
-                  const handleChange = keys => {
-                    onHotkeyChanged(commandName, hotkeyDefinition, keys);
-                  };
+          <div className="hotkeyTable">
+            {splitedHotkeys.map((hotkeys, index) => {
+              return (
+                <div className="hotkeyColumn" key={index}>
+                  <div className="hotkeyHeader">
+                    <div className="headerItemText text-right">Function</div>
+                    <div className="headerItemText text-center">Shortcut</div>
+                  </div>
+                  {hotkeys.map(hotkey => {
+                    const commandName = hotkey[0];
+                    const hotkeyDefinition = hotkey[1];
+                    const { keys, label } = hotkeyDefinition;
+                    const errorMessage = state.errors[hotkey[0]];
+                    const handleChange = keys => {
+                      onHotkeyChanged(commandName, hotkeyDefinition, keys);
+                    };
 
-                  return (
-                    <tr key={commandName}>
-                      <td className="text-right p-r-1">{label}</td>
-                      <td>
-                        <label
+                    return (
+                      <div key={commandName} className="hotkeyRow">
+                        <div className="hotkeyLabel">{label}</div>
+                        <div
                           data-key="defaultTool"
                           className={classnames(
-                            'wrapperLabel',
-                            errorMessage ? 'state-error' : ''
+                            'wrapperHotkeyInput',
+                            errorMessage ? 'stateError' : ''
                           )}
                         >
                           <HotkeyField
@@ -141,16 +149,16 @@ function HotKeysPreferences({
                             modifier_keys={MODIFIER_KEYS}
                             allowed_keys={ALLOWED_KEYS}
                             handleChange={handleChange}
-                            classNames={'form-control hotkey text-center'}
+                            classNames={'hotkeyInput'}
                           ></HotkeyField>
                           <span className="errorMessage">{errorMessage}</span>
-                        </label>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -165,10 +173,10 @@ function HotKeysPreferences({
   );
 }
 
-HotKeysPreferences.propTypes = {
+HotkeysPreferences.propTypes = {
   hide: PropTypes.func,
   t: PropTypes.func,
   hotkeysManager: PropTypes.object,
 };
 
-export { HotKeysPreferences };
+export { HotkeysPreferences };

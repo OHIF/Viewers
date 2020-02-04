@@ -4,67 +4,116 @@
 @import './../../design/styles/common/button.styl'
 
 .close
-  float: right;
-  font-size: 21px;
-  font-weight: 700;
-  line-height: 1;
-  color: #000;
-  text-shadow: 0 1px 0 #fff;
-  opacity: .2;
+  float: right
+  font-size: 21px
+  font-weight: 700
+  line-height: 1
+  color: #000
+  text-shadow: 0 1px 0 #fff
+  opacity: .2
 
 .UserPreferences
+  .UserPreferencesTabs
+    display: flex
+    flex-direction: column
+    margin-left: -20px
+    margin-right: -20px
+
+    &__selector
+      border-bottom: 3px solid black
+      padding: 0 25px
+
+  .errorMessage
+    color: var(--state-error-text)
+    font-size: 10px
+    text-transform: uppercase
+
   .tabsContent
     min-height: 650px
     display: none
 
     &.active
       display: flex
-      flex-direction: column;
-      justify-content: space-between;
+      flex-direction: column
+      justify-content: space-between
 
   .footer
     display: flex
     flex-direction: row
     justify-content: space-between
+    padding: 20px 20px 0 20px
+    margin: 0 -20px
+    border-top: 3px solid var(--primary-background-color)
 
     div
       button:last-child
         margin-left: 10px
 
-.UserPreferencesTabs
-  display: flex
-  flex-direction: column
-
-  &__selector
-    border-bottom: 3px solid black
-
-  .errorMessage
-    color: var(--state-error-text)
-    font-size: 10px
-    text-transform: uppercase;
-
-  .form-content
-    border-bottom: 3px solid var(--primary-background-color)
-    margin-bottom: 20px
-    margin-left: -20px
-    margin-right: -20px
-    max-height: 70vh
-    overflow-y: auto
+  .HotkeysPreferences
+    display: flex
     padding: 20px
-    min-height: 500px
 
-  .popover
-    width: 300px
+    .hotkeyTable
+      display: flex
+      flex-direction: row
+      flex-basis: 0
+      flex-grow: 1.5
 
-.HotKeysPreferences
-  display: flex;
+      .hotkeyColumn
+        display: flex
+        flex-direction: column
+        flex-basis: 0
+        flex-grow: 1.5
 
-  .column
-    width: 50%;
-    padding-right: 15px;
-    padding-left: 15px;
+        .hotkeyHeader
+          display: flex
+          flex-direction: row
+          margin-bottom: 10px
 
-  .column-full
-    width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
+          .headerItemText
+            flex-basis: 0
+            flex-grow: 1.5
+            padding: 5px 15px 5px 0
+
+        .hotkeyRow
+          display: flex
+
+          .wrapperHotkeyInput
+            margin-bottom: 5px
+            cursor: pointer
+            display: flex
+            flex-direction: column
+            flex-basis: 0
+            flex-grow: 1.5
+
+          .hotkeyInput
+            font-weight: 400
+            cursor: pointer
+            transition: background-color .3s ease,border-color .3s ease
+            background-color: var(--ui-gray)
+            color: var(--text-primary-color)
+            border-color: var(--ui-border-coolor)
+            border: 0
+            border-radius: 2px
+            font-size: 14px
+            height: 30px
+            width: 100%
+            line-height: 16px
+            padding: 8px 9px 6px
+            text-align: center
+
+          .hotkeyInput:focus
+            border-color: var(--active-color)
+            background-color: var(--ui-gray-dark)
+            box-shadow: 0 0 0 2px var(--active-color) !important
+            outline: 0
+
+          .hotkeyLabel
+            padding: 5px 15px 5px 0
+            text-align: right
+            flex-basis: 0
+            flex-grow: 1.5
+
+          .stateError
+            .hotkeyInput
+              background-color: var(--state-error)

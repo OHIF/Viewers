@@ -8,7 +8,7 @@ import './UserPreferences.styl';
 import { useSelector } from 'react-redux';
 
 // Tabs
-import { HotKeysPreferences } from './HotkeysPreferences';
+import { HotkeysPreferences } from './HotkeysPreferences';
 import { WindowLevelPreferences } from './WindowLevelPreferences';
 import { GeneralPreferences } from './GeneralPreferences';
 
@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 const tabs = [
   {
     name: 'Hotkeys',
-    Component: HotKeysPreferences,
+    Component: HotkeysPreferences,
     getProps({ hotkeysManager = {}, setHotkeys }) {
       const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
       return {
