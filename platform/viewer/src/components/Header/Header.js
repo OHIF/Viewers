@@ -26,6 +26,10 @@ function Header(props) {
 
   const [options, setOptions] = useState([]);
 
+  const setHotkeys = hotkeys => {
+    hotkeysManager.setHotkeys(hotkeys);
+  };
+
   useEffect(() => {
     const optionsValue = [
       {
@@ -45,7 +49,7 @@ function Header(props) {
         onClick: () =>
           show({
             content: UserPreferences,
-            contentProps: { hotkeysManager },
+            contentProps: { hotkeysManager, setHotkeys },
             title: t('User Preferences'),
           }),
       },

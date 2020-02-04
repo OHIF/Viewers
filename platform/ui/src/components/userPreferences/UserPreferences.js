@@ -18,8 +18,8 @@ const tabs = [
   {
     name: 'Hotkeys',
     Component: HotKeysPreferences,
-    getProps({ hotkeysManager = {} }) {
-      const { hotkeyDefinitions, hotkeyDefaults, setHotkeys } = hotkeysManager;
+    getProps({ hotkeysManager = {}, setHotkeys }) {
+      const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
       return {
         hotkeyDefinitions,
         hotkeyDefaults,
@@ -49,7 +49,7 @@ const tabs = [
   },
 ];
 
-function UserPreferences({ hide, hotkeysManager }) {
+function UserPreferences({ hide, hotkeysManager, setHotkeys }) {
   const { t, ready: translationsAreReady } = useTranslation(
     'UserPreferencesModal'
   );
@@ -98,7 +98,11 @@ function UserPreferences({ hide, hotkeysManager }) {
         </div>
         {tabs.map((tab, index) => {
           const { name, Component, getProps, hidden } = tab;
-          const props = getProps({ hotkeysManager, preferencesState });
+          const props = getProps({
+            hotkeysManager,
+            preferencesState,
+            setHotkeys,
+          });
           return (
             !hidden && (
               <div

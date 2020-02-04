@@ -7,6 +7,8 @@ import { HotkeyField } from '../customForm';
 import { hotkeysValidators } from './hotkeysValidators';
 import { MODIFIER_KEYS, ALLOWED_KEYS } from './hotkeysConfig';
 
+import { useSnackbarContext } from '@ohif/ui';
+
 const initialState = hotkeyDefinitions => ({
   hotkeys: { ...hotkeyDefinitions },
   errors: {},
@@ -51,6 +53,8 @@ function HotKeysPreferences({
 }) {
   const [state, setState] = useState(initialState(hotkeyDefinitions));
 
+  const snackbar = useSnackbarContext();
+
   const onResetPreferences = () => {
     const defaultHotKeyDefinitions = {};
 
@@ -68,6 +72,13 @@ function HotKeysPreferences({
     setHotkeys(hotkeys);
 
     localStorage.setItem('hotkey-definitions', JSON.stringify(hotkeys));
+
+    onClose();
+
+    snackbar.show({
+      message: t('SaveMessage'),
+      type: 'success',
+    });
   };
 
   const onHotkeyChanged = (commandName, hotkeyDefinition, keys) => {
