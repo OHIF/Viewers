@@ -3,7 +3,7 @@ import { LayoutButton, LayoutChooser } from './layoutButton';
 import { MeasurementTable, MeasurementTableItem } from './measurementTable';
 import { Overlay, OverlayTrigger } from './overlayTrigger';
 import { TableList, TableListItem } from './tableList';
-import { AboutContent, UserPreferencesForm } from './userPreferencesForm';
+import { AboutContent } from './content/aboutContent/AboutContent';
 import { UserPreferences } from './userPreferences';
 
 import { Checkbox } from './checkbox';
@@ -50,7 +50,6 @@ export {
   ToolbarSection,
   Tooltip,
   AboutContent,
-  UserPreferencesForm,
   UserPreferences,
   OHIFModal,
 };
