@@ -261,12 +261,14 @@ const _connectToolsToMeasurementService = measurementService => {
 
       const addOrUpdateMeasurement = csToolsAnnotation => {
         try {
-          const csTool =
-            csToolsAnnotation.toolName ||
-            csToolsAnnotation.measurementData.toolType;
-          const measurementServiceId = addOrUpdate(csTool, csToolsAnnotation);
+          const { toolName, toolType, measurementData } = csToolsAnnotation;
+          const csTool = toolName || measurementData.toolType || toolType;
+          const measurementServiceId = addOrUpdate(csTool, {
+            ...csToolsAnnotation,
+            id: measurementData._measurementServiceId,
+          });
 
-          if (!csToolsAnnotation.measurementData._measurementServiceId) {
+          if (!measurementData._measurementServiceId) {
             addMeasurementServiceId(measurementServiceId, csToolsAnnotation);
           }
         } catch (error) {

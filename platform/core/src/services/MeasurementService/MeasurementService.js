@@ -82,7 +82,10 @@ class MeasurementService {
    */
   getMeasurements() {
     const measurements = this._arrayOfObjects(this.measurements);
-    return measurements && measurements.map(m => this.measurements[Object.keys(m)[0]]);
+    return (
+      measurements &&
+      measurements.map(m => this.measurements[Object.keys(m)[0]])
+    );
   }
 
   /**
@@ -93,9 +96,12 @@ class MeasurementService {
    */
   getMeasurement(id) {
     let measurement = null;
-    if (this.measurements[id] && Object.keys(this.measurements[id]).length > 0) {
+    const measurements = this.measurements[id];
+
+    if (measurements && Object.keys(measurements).length > 0) {
       measurement = this.measurements[id];
     }
+
     return measurement;
   }
 
@@ -130,7 +136,7 @@ class MeasurementService {
       return this.getAnnotation(source, definition, measurementId);
     };
 
-    log.warn(`New '${name}@${version}' source added.`);
+    log.info(`New '${name}@${version}' source added.`);
     this.sources[id] = source;
 
     return source;
@@ -163,6 +169,11 @@ class MeasurementService {
       return;
     }
 
+    if (!definition) {
+      log.warn('Definition not provided. Exiting early.');
+      return;
+    }
+
     if (!toSourceSchema) {
       log.warn('Source mapping function not provided. Exiting early.');
       return;
@@ -186,7 +197,7 @@ class MeasurementService {
       this.mappings[source.id] = [mapping];
     }
 
-    log.warn(`New measurement mapping added to source '${this._getSourceInfo(source)}'.`);
+    log.info(`New measurement mapping added to source '${this._getSourceInfo(source)}'.`);
   }
 
   /**
@@ -209,22 +220,10 @@ class MeasurementService {
     }
 
     const measurement = this.getMeasurement(measurementId);
-    const sourceMappings = this.mappings[source.id];
-    const sourceMappingsByDefinition = sourceMappings.filter(
-      mapping => mapping.definition === definition
-    );
+    const matchingMapping = this._getMatchingMapping(source, definition, measurement);
 
-    const matchedCriteriaMapping = sourceMappingsByDefinition.find(
-      ({ matchingCriteria }) => {
-        return (
-          measurement.points &&
-          measurement.points.length === matchingCriteria.points
-        );
-      },
-    );
-
-    if (matchedCriteriaMapping) {
-      const { toSourceSchema, definition } = matchedCriteriaMapping;
+    if (matchingMapping) {
+      const { toSourceSchema, definition } = matchingMapping;
       return toSourceSchema(measurement, definition);
     }
   }
@@ -292,11 +291,11 @@ class MeasurementService {
     };
 
     if (this.measurements[internalId]) {
-      log.warn(`Measurement already defined. Updating measurement.`, newMeasurement);
+      log.info(`Measurement already defined. Updating measurement.`, newMeasurement);
       this.measurements[internalId] = newMeasurement;
       this._broadcastChange(this.EVENTS.MEASUREMENT_UPDATED, source, newMeasurement);
     } else {
-      log.warn(`Measurement added.`, newMeasurement);
+      log.info(`Measurement added.`, newMeasurement);
       this.measurements[internalId] = newMeasurement;
       this._broadcastChange(this.EVENTS.MEASUREMENT_ADDED, source, newMeasurement);
     }
@@ -316,7 +315,7 @@ class MeasurementService {
       const listenerId = guid();
       const subscription = { id: listenerId, callback };
 
-      console.warn(`Subscribing to '${eventName}'.`);
+      console.info(`Subscribing to '${eventName}'.`);
       if (Array.isArray(this.listeners[eventName])) {
         this.listeners[eventName].push(subscription);
       } else {
@@ -329,6 +328,30 @@ class MeasurementService {
     } else {
       throw new Error(`Event ${eventName} not supported.`);
     }
+  }
+
+  /**
+   * Get measurement mapping function if matching criteria.
+   *
+   * @param {MeasurementSource} source Measurement source instance
+   * @param {string} definition The source definition
+   * @param {string} measurement The measurement serice measurement
+   * @return {Object} The mapping based on matched criteria
+   */
+  _getMatchingMapping(source, definition, measurement) {
+    const sourceMappings = this.mappings[source.id];
+
+    const sourceMappingsByDefinition = sourceMappings.filter(
+      mapping => mapping.definition === definition
+    );
+
+    /* Criteria Matching */
+    return sourceMappingsByDefinition.find(({ matchingCriteria }) => {
+      return (
+        measurement.points &&
+        measurement.points.length === matchingCriteria.points
+      );
+    });
   }
 
   /**

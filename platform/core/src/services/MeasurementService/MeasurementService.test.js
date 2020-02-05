@@ -1,7 +1,11 @@
 import MeasurementService from './MeasurementService.js';
 import log from '../../log';
 
-jest.mock('../../log.js');
+jest.mock('../../log.js', () => ({
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+}));
 
 describe('MeasurementService.js', () => {
   let measurementService;
@@ -15,12 +19,12 @@ describe('MeasurementService.js', () => {
 
   beforeEach(() => {
     measurementService = new MeasurementService();
-    source = measurementService.createSource('test', '1');
+    source = measurementService.createSource('Test', '1');
+    definition = 'Length';
     annotation = {
-      toolName: 'Length',
+      toolName: definition,
       measurementData: {},
     };
-    definition = 'Length';
     measurement = {
       sopInstanceUID: '123',
       frameOfReferenceUID: '1234',
@@ -30,7 +34,7 @@ describe('MeasurementService.js', () => {
       unit: 'mm',
       area: 123,
       type: measurementService.VALUE_TYPES.POLYLINE,
-      points: [],
+      points: [{ x: 1, y: 2 }, { x: 1, y: 2 }],
       source: source,
     };
     toAnnotation = () => annotation;
@@ -39,15 +43,128 @@ describe('MeasurementService.js', () => {
       valueType: measurementService.VALUE_TYPES.POLYLINE,
       points: 2,
     };
-    measurementService.addMapping(
-      source,
-      'Length',
-      matchingCriteria,
-      toAnnotation,
-      toMeasurement
-    );
     log.warn.mockClear();
     jest.clearAllMocks();
+  });
+
+  describe('createSource()', () => {
+    it('creates new source', () => {
+      measurementService.createSource('Testing', '1');
+    });
+
+    it('returns warning if no name provided', () => {
+      measurementService.createSource(null, '1');
+
+      expect(log.warn.mock.calls.length).toBe(1);
+    });
+
+    it('returns warning if no version provided', () => {
+      measurementService.createSource('Testing', null);
+
+      expect(log.warn.mock.calls.length).toBe(1);
+    });
+  });
+
+  describe('addMapping()', () => {
+    it('adds new mapping', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+    });
+
+    it('returns warning if no matching criteria provided', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        null,
+        toAnnotation,
+        toMeasurement
+      );
+
+      expect(log.warn.mock.calls.length).toBe(1);
+    });
+
+    it('returns warning if invalid source provided', () => {
+      const invalidSoure = {};
+
+      measurementService.addMapping(
+        invalidSoure,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
+      expect(log.warn.mock.calls.length).toBe(1);
+    });
+
+    it('returns warning if no source provided', () => {
+      measurementService.addMapping(
+        null /* source */,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
+      expect(log.warn.mock.calls.length).toBe(1);
+    });
+
+    it('returns warning if no definition provided', () => {
+      measurementService.addMapping(
+        source,
+        null /* definition */,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
+      expect(log.warn.mock.calls.length).toBe(1);
+    });
+
+    it('returns warning if no measurement mapping function provided', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        null /* toAnnotation */,
+        toMeasurement
+      );
+
+      expect(log.warn.mock.calls.length).toBe(1);
+    });
+
+    it('returns warning if no annotation mapping function provided', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        null /* toMeasurement */
+      );
+
+      expect(log.warn.mock.calls.length).toBe(1);
+    });
+  });
+
+  describe('getAnnotation()', () => {
+    it('get annotation based on matched criteria', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+      const measurementId = source.addOrUpdate(definition, annotation);
+      const mappedAnnotation = source.getAnnotation(definition, measurementId);
+
+      expect(annotation).toBe(mappedAnnotation);
+    });
   });
 
   describe('getMeasurements()', () => {
@@ -57,6 +174,14 @@ describe('MeasurementService.js', () => {
         label: 'Label2',
         unit: 'HU',
       };
+
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
 
       source.addOrUpdate(definition, measurement);
       source.addOrUpdate(definition, anotherMeasurement);
@@ -70,6 +195,14 @@ describe('MeasurementService.js', () => {
 
   describe('getMeasurement()', () => {
     it('return measurement with given id', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
       const id = source.addOrUpdate(definition, measurement);
       const returnedMeasurement = measurementService.getMeasurement(id);
 
@@ -82,6 +215,14 @@ describe('MeasurementService.js', () => {
 
   describe('addOrUpdate()', () => {
     it('adds new measurements', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
       source.addOrUpdate(definition, measurement);
       source.addOrUpdate(definition, measurement);
 
@@ -90,8 +231,36 @@ describe('MeasurementService.js', () => {
       expect(measurements.length).toBe(2);
     });
 
+    it('fails to add new measurements when no mapping', () => {
+      source.addOrUpdate(definition, measurement);
+
+      expect(log.warn.mock.calls.length).toBe(1);
+    });
+
+    it('fails to add new measurements when invalid mapping function', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        1 /* Invalid */
+      );
+
+      source.addOrUpdate(definition, measurement);
+
+      expect(log.error.mock.calls.length).toBe(1);
+    });
+
     it('adds new measurement with custom id', () => {
       const newMeasurement = { id: 1, ...measurement };
+
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
 
       /* Add new measurement */
       source.addOrUpdate(definition, newMeasurement);
@@ -107,12 +276,28 @@ describe('MeasurementService.js', () => {
     it('returns warning if adding invalid measurement', () => {
       measurement.invalidProperty = {};
 
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
       source.addOrUpdate(definition, measurement);
 
-      expect(log.warn.mock.calls.length).toBe(3);
+      expect(log.warn.mock.calls.length).toBe(2);
     });
 
     it('updates existent measurement', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
       const id = source.addOrUpdate(definition, measurement);
 
       measurement.unit = 'HU';
@@ -126,6 +311,14 @@ describe('MeasurementService.js', () => {
 
   describe('subscribe()', () => {
     it('subscribers receive broadcasted add event', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
       const { MEASUREMENT_ADDED } = measurementService.EVENTS;
       let addCallbackWasCalled = false;
 
@@ -142,6 +335,14 @@ describe('MeasurementService.js', () => {
     });
 
     it('subscribers receive broadcasted update event', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
       const { MEASUREMENT_UPDATED } = measurementService.EVENTS;
       let updateCallbackWasCalled = false;
 
@@ -161,6 +362,14 @@ describe('MeasurementService.js', () => {
     });
 
     it('unsubscribes a listener', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
       let updateCallbackWasCalled = false;
       const { MEASUREMENT_ADDED } = measurementService.EVENTS;
 
