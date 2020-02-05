@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { TabFooter } from './TabFooter';
-import { HotkeyField } from '../customForm';
+import { useSnackbarContext, TabFooter, HotkeyField } from '@ohif/ui';
+import { useTranslation } from 'react-i18next';
+
 import { hotkeysValidators } from './hotkeysValidators';
 import { MODIFIER_KEYS } from './hotkeysConfig';
 
-import { useSnackbarContext } from '@ohif/ui';
+import { hotkeysManager } from '../../App';
 
 import './HotkeysPreferences.styl';
 /**
@@ -74,18 +75,11 @@ const splitHotkeys = hotkeys => {
  * It stores current state and whenever it changes, component messages parent of new value (through function callback)
  * @param {object} props component props
  * @param {string} props.onClose
- * @param {object} props.t
- * @param {object} props.hotkeyDefinitions
- * @param {object} props.hotkeyDefaults
- * @param {object} props.setHotkeys
  */
-function HotkeysPreferences({
-  onClose,
-  t,
-  hotkeyDefinitions,
-  hotkeyDefaults,
-  setHotkeys,
-}) {
+function HotkeysPreferences({ onClose }) {
+  const { t } = useTranslation('UserPreferencesModal');
+  const { hotkeyDefaults, hotkeyDefinitions } = hotkeysManager;
+
   const [state, setState] = useState(initialState(hotkeyDefinitions));
 
   const snackbar = useSnackbarContext();
@@ -104,7 +98,7 @@ function HotkeysPreferences({
   const onSave = () => {
     const { hotkeys } = state;
 
-    setHotkeys(hotkeys);
+    hotkeysManager.setHotkeys(hotkeys);
 
     localStorage.setItem('hotkey-definitions', JSON.stringify(hotkeys));
 
@@ -190,7 +184,7 @@ function HotkeysPreferences({
       <TabFooter
         onResetPreferences={onResetPreferences}
         onSave={onSave}
-        onClose={onClose}
+        onCancel={onClose}
         hasErrors={hasErrors}
         t={t}
       />
@@ -199,12 +193,7 @@ function HotkeysPreferences({
 }
 
 HotkeysPreferences.propTypes = {
-  hide: PropTypes.func,
-  t: PropTypes.func,
-  hotkeysManager: PropTypes.object,
-  hotkeyDefinitions: PropTypes.object,
-  hotkeyDefaults: PropTypes.object,
-  setHotkeys: PropTypes.func,
+  onClose: PropTypes.func,
 };
 
 export { HotkeysPreferences };

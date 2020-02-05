@@ -3,7 +3,16 @@ import PropTypes from 'prop-types';
 
 import './TabFooter.styl';
 
-function TabFooter({ onResetPreferences, onSave, onClose, hasErrors, t }) {
+// In case translate is not passed
+const translate = word => word;
+
+function TabFooter({
+  onResetPreferences,
+  onSave,
+  onClose,
+  hasErrors,
+  t = translate,
+}) {
   return (
     <div className="footer">
       <button

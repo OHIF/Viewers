@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import './LanguageSwitcher.styl';
-import { withTranslation } from '../../contextProviders';
 
 const parseLanguage = lang => lang.split('-')[0];
 const LanguageSwitcher = ({ language, onLanguageChange, languages }) => {
@@ -34,4 +33,4 @@ LanguageSwitcher.propTypes = {
   onLanguageChange: PropTypes.func.isRequired,
 };
 
-export default withTranslation('UserPreferencesModal')(LanguageSwitcher);
+export { LanguageSwitcher };

@@ -4,14 +4,14 @@ import { withTranslation } from 'react-i18next';
 
 import PropTypes from 'prop-types';
 
-import { Dropdown, AboutContent, withModal, UserPreferences } from '@ohif/ui';
+import { Dropdown, AboutContent, withModal } from '@ohif/ui';
+
+import { UserPreferences } from './../UserPreferences';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import './Header.css';
 
 // Context
 import AppContext from './../../context/AppContext';
-
-import { hotkeysManager } from '../../App';
 
 function Header(props) {
   const {
@@ -25,10 +25,6 @@ function Header(props) {
   } = props;
 
   const [options, setOptions] = useState([]);
-
-  const setHotkeys = hotkeys => {
-    hotkeysManager.setHotkeys(hotkeys);
-  };
 
   useEffect(() => {
     const optionsValue = [
@@ -49,7 +45,6 @@ function Header(props) {
         onClick: () =>
           show({
             content: UserPreferences,
-            contentProps: { hotkeysManager, setHotkeys },
             title: t('User Preferences'),
           }),
       },

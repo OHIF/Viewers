@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { TabFooter } from './TabFooter';
+import { TabFooter } from '@ohif/ui';
+import { useTranslation } from 'react-i18next';
 
-function WindowLevelPreferences({ name, onClose, t }) {
+function WindowLevelPreferences({ onClose }) {
+  const { t } = useTranslation('UserPreferencesModal');
   const onResetPreferences = () => {};
   const onSave = () => {};
   const hasErrors = false;
@@ -24,9 +26,7 @@ function WindowLevelPreferences({ name, onClose, t }) {
 }
 
 WindowLevelPreferences.propTypes = {
-  name: PropTypes.string,
-  hide: PropTypes.func,
-  t: PropTypes.func,
+  onClose: PropTypes.func,
 };
 
 export { WindowLevelPreferences };
