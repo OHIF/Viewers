@@ -43,9 +43,12 @@ const measurementServiceMappingsFactory = measurementService => {
    * @param {Object} cornerstone Cornerstone event data
    * @return {Measurement} Measurement instance
    */
-  const toMeasurement = eventData => {
-    const { toolType, toolName, element, measurementData } = eventData;
-    const tool = toolType || toolName;
+  const toMeasurement = csToolsAnnotation => {
+    const { element, measurementData } = csToolsAnnotation;
+    const tool =
+      csToolsAnnotation.toolType ||
+      csToolsAnnotation.toolName ||
+      measurementData.toolType;
 
     const validToolType = toolName => SUPPORTED_TOOLS.includes(toolName);
 
@@ -71,7 +74,7 @@ const measurementServiceMappingsFactory = measurementService => {
       description: measurementData.description,
       unit: measurementData.unit,
       area: measurementData.cachedStats && measurementData.cachedStats.area, /* TODO: Add concept names instead (descriptor) */
-      type: _getValueTypeFromToolType(toolType),
+      type: _getValueTypeFromToolType(tool),
       points: _getPointsFromHandles(measurementData.handles),
     };
   };

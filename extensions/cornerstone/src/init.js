@@ -263,10 +263,8 @@ const _connectToolsToMeasurementService = measurementService => {
         try {
           const { toolName, toolType, measurementData } = csToolsAnnotation;
           const csTool = toolName || measurementData.toolType || toolType;
-          const measurementServiceId = addOrUpdate(csTool, {
-            ...csToolsAnnotation,
-            id: measurementData._measurementServiceId,
-          });
+          csToolsAnnotation.id = measurementData._measurementServiceId;
+          const measurementServiceId = addOrUpdate(csTool, csToolsAnnotation);
 
           if (!measurementData._measurementServiceId) {
             addMeasurementServiceId(measurementServiceId, csToolsAnnotation);

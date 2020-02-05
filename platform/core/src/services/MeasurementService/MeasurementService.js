@@ -223,6 +223,7 @@ class MeasurementService {
     const matchingMapping = this._getMatchingMapping(source, definition, measurement);
 
     if (matchingMapping) {
+      log.info('Matching mapping found:', matchingMapping);
       const { toSourceSchema, definition } = matchingMapping;
       return toSourceSchema(measurement, definition);
     }
