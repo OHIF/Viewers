@@ -5,17 +5,30 @@ import classnames from 'classnames';
 import { TabFooter } from './TabFooter';
 import { HotkeyField } from '../customForm';
 import { hotkeysValidators } from './hotkeysValidators';
-import { MODIFIER_KEYS, ALLOWED_KEYS } from './hotkeysConfig';
+import { MODIFIER_KEYS } from './hotkeysConfig';
 
 import { useSnackbarContext } from '@ohif/ui';
 
 import './HotkeysPreferences.styl';
-
+/**
+ * Take hotkeyDefenintions and build an initialState to be used into the component state
+ *
+ * @param {Object} hotkeyDefinitions
+ * @returns {Object} initialState
+ */
 const initialState = hotkeyDefinitions => ({
   hotkeys: { ...hotkeyDefinitions },
   errors: {},
 });
-
+/**
+ * Take the updated command and keys and validate the changes with all validators
+ *
+ * @param {Object} arguments
+ * @param {string} arguments.commandName command name string to be updated
+ * @param {array} arguments.pressedKeys new array of keys to be added for the commandName
+ * @param {array} arguments.hotkeys all hotkeys currently into the app
+ * @returns {Object} {errorMessage} errorMessage coming from any of the validator or undefined if none
+ */
 const validateCommandKey = ({ commandName, pressedKeys, hotkeys }) => {
   for (const validator of hotkeysValidators) {
     const validation = validator({
@@ -29,9 +42,29 @@ const validateCommandKey = ({ commandName, pressedKeys, hotkeys }) => {
   }
 
   return {
-    hasError: false,
     errorMessage: undefined,
   };
+};
+
+/**
+ * Take all hotkeys and split the list into two lists
+ *
+ * @param {array} hotkeys list of all hotkeys
+ * @returns {array} array containing two arrays of keys
+ */
+const splitHotkeys = hotkeys => {
+  const splitedHotkeys = [];
+  const arrayHotkeys = Object.entries(hotkeys);
+
+  if (arrayHotkeys.length) {
+    const halfwayThrough = Math.ceil(arrayHotkeys.length / 2);
+    splitedHotkeys.push(arrayHotkeys.slice(0, halfwayThrough));
+    splitedHotkeys.push(
+      arrayHotkeys.slice(halfwayThrough, arrayHotkeys.length)
+    );
+  }
+
+  return splitedHotkeys;
 };
 
 /**
@@ -42,9 +75,9 @@ const validateCommandKey = ({ commandName, pressedKeys, hotkeys }) => {
  * @param {object} props component props
  * @param {string} props.onClose
  * @param {object} props.t
- * @param {object} porps.hotkeyDefinitions
- * @param {object} porps.hotkeyDefaults
- * @param {object} porps.setHotkeys
+ * @param {object} props.hotkeyDefinitions
+ * @param {object} props.hotkeyDefaults
+ * @param {object} props.setHotkeys
  */
 function HotkeysPreferences({
   onClose,
@@ -104,16 +137,7 @@ function HotkeysPreferences({
 
   const hasErrors = Object.keys(state.errors).some(key => !!state.errors[key]);
   const hasHotkeys = Object.keys(state.hotkeys).length;
-
-  const splitedHotkeys = [];
-  if (hasHotkeys) {
-    const arrayHotkeys = Object.entries(state.hotkeys);
-    const halfwayThrough = Math.ceil(arrayHotkeys.length / 2);
-    splitedHotkeys.push(arrayHotkeys.slice(0, halfwayThrough));
-    splitedHotkeys.push(
-      arrayHotkeys.slice(halfwayThrough, arrayHotkeys.length)
-    );
-  }
+  const splitedHotkeys = splitHotkeys(state.hotkeys);
 
   return (
     <React.Fragment>
@@ -178,6 +202,9 @@ HotkeysPreferences.propTypes = {
   hide: PropTypes.func,
   t: PropTypes.func,
   hotkeysManager: PropTypes.object,
+  hotkeyDefinitions: PropTypes.object,
+  hotkeyDefaults: PropTypes.object,
+  setHotkeys: PropTypes.func,
 };
 
 export { HotkeysPreferences };

@@ -9,6 +9,7 @@ const { hotkeyRecord } = utils;
  * Take the pressed key array and return the readable string for the keys
  *
  * @param {Array} [keys=[]]
+ * @returns {string} string representation of an array of keys
  */
 const formatKeysForInput = (keys = []) => keys.join('+');
 

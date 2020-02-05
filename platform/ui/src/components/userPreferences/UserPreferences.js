@@ -40,6 +40,7 @@ const tabs = [
   {
     name: 'Window Level',
     Component: WindowLevelPreferences,
+    hidden: true,
     getProps({ hotkeysManager, preferencesState }) {
       return {
         hotkeysManager,
@@ -124,6 +125,8 @@ function UserPreferences({ hide, hotkeysManager, setHotkeys }) {
 
 UserPreferences.propTypes = {
   hide: PropTypes.func,
+  hotkeysManager: PropTypes.object,
+  setHotkeys: PropTypes.func,
 };
 
 export { UserPreferences };
