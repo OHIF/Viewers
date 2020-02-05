@@ -1,4 +1,4 @@
-import hotkeys from '../utils/hotkeys';
+import hotkeys from './../utils/hotkeys';
 import log from './../log.js';
 
 /**

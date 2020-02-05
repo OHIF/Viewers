@@ -1,10 +1,10 @@
 import CommandsManager from './CommandsManager.js';
 import HotkeysManager from './HotkeysManager.js';
-import hotkeys from './hotkeys';
+import hotkeys from './../utils/hotkeys';
 import log from './../log.js';
 
 jest.mock('./CommandsManager.js');
-jest.mock('./hotkeys');
+jest.mock('./../utils/hotkeys');
 jest.mock('./../log.js');
 
 describe('HotkeysManager', () => {
@@ -60,7 +60,10 @@ describe('HotkeysManager', () => {
   });
 
   describe('enable()', () => {
-    beforeEach(() => hotkeys.unpause.mockClear());
+    beforeEach(() => {
+      hotkeys.unpause = jest.fn();
+      hotkeys.unpause.mockClear();
+    });
 
     it('sets isEnabled property to true', () => {
       hotkeysManager.disable();
