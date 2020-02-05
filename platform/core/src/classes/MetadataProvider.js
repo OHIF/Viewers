@@ -75,7 +75,7 @@ class MetadataProvider {
 
     // If there is sufficient information, populate
     // the imagePlane object for easier use in the Viewer
-    metadata.imagePlane = this.getImagePlane(instanceMetadata);
+    metadata.imagePlaneModule = this.getImagePlane(instanceMetadata);
 
     // Add the metadata to the imageId lookup object
     this.metadataLookup.set(imageId, metadata);
@@ -256,8 +256,8 @@ class MetadataProvider {
       );
     }
 
-    imageMetadata.imagePlane =
-      imageMetadata.imagePlane || this.getImagePlane(imageMetadata.instance);
+    imageMetadata.imagePlaneModule =
+      imageMetadata.imagePlaneModule || this.getImagePlane(imageMetadata.instance);
   }
 
   /**
