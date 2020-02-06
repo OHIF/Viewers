@@ -103,10 +103,11 @@ describe('OHIF Study Viewer Page', function() {
       })
       .trigger('mouseup', x1, y1, {
         which: 3,
+      })
+      .then(() => {
+        //Contextmenu is visible
+        cy.get('.ToolContextMenu').should('be.visible');
       });
-
-    //Contextmenu is visible
-    cy.get('.ToolContextMenu').should('be.visible');
 
     //Click "Delete measurement"
     cy.get('.form-action')

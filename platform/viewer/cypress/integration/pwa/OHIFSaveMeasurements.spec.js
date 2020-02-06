@@ -46,10 +46,12 @@ describe('OHIF Save Measurements', function() {
       .last()
       .then($measurementSizeLabel => {
         // Save new measurement
-        cy.get('[data-cy="save-measurements-btn"]').click();
-
-        // Verify that success message overlay is displayed
-        cy.get('.sb-success').should('be.visible');
+        cy.get('[data-cy="save-measurements-btn"]')
+          .click()
+          .then(() => {
+            // Verify that success message overlay is displayed
+            cy.get('.sb-success').should('be.visible');
+          });
 
         // Reload the page
         cy.reload()
