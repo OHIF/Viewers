@@ -13,6 +13,8 @@ import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
 
+import exportPDF from '../utils/reports/exportPDF';
+
 // Contexts
 import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
 import UserManagerContext from '../context/UserManagerContext';
@@ -208,7 +210,7 @@ class Viewer extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps) {
     const { studies, isStudyLoaded } = this.props;
     if (studies !== prevProps.studies) {
       this.setState({
@@ -219,8 +221,10 @@ class Viewer extends Component {
       const patientId = studies[0] && studies[0].patientId;
       const { currentTimepointId } = this;
 
-      this.timepointApi.retrieveTimepoints({ patientId });
-      this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
+      await this.timepointApi.retrieveTimepoints({ patientId });
+      await this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
+
+      exportPDF(this.measurementApi, this.timepointApi);
     }
   }
 
@@ -304,11 +308,11 @@ class Viewer extends Component {
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
-              <ConnectedStudyBrowser
-                studies={this.state.thumbnails}
-                studyMetadata={this.props.studies}
-              />
-            )}
+                <ConnectedStudyBrowser
+                  studies={this.state.thumbnails}
+                  studyMetadata={this.props.studies}
+                />
+              )}
           </SidePanel>
 
           {/* MAIN */}
@@ -344,7 +348,7 @@ export default withDialog(Viewer);
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function(studies) {
+const _mapStudiesToThumbnails = function (studies) {
   return studies.map(study => {
     const { studyInstanceUid } = study;
 
