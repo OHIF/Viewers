@@ -6,11 +6,21 @@ import classnames from 'classnames';
 import './TabComponents.styl';
 
 /**
+ * Single tab data information
+ *
+ * @typedef {Object} tabData
+ * @property {string} name - name of the tab
+ * @property {Object} Component - tab component to be rendered
+ * @property {Object} customProps - tab custom properties
+ * @property {bool} hidden - bool to define if tab is hidden of not
+ */
+
+/**
  * Take a list of components data and render then into tabs
  *
  * @param {Object} props
- * @param {array} props.tabs
- * @param {Object} props.customProps
+ * @param {[tabData]} props.tabs array of tab data
+ * @param {Object} props.customProps common custom properties
  */
 function TabComponents({ tabs, customProps = {} }) {
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
@@ -47,7 +57,7 @@ function TabComponents({ tabs, customProps = {} }) {
           </div>
         </div>
         {tabs.map((tab, index) => {
-          const { Component, hidden } = tab;
+          const { Component, customProps: tabCustomProps, hidden } = tab;
           return (
             !hidden && (
               <div
@@ -57,7 +67,7 @@ function TabComponents({ tabs, customProps = {} }) {
                   index === currentTabIndex && 'active'
                 )}
               >
-                <Component {...customProps} />
+                <Component {...customProps} {...tabCustomProps} />
               </div>
             )
           );
@@ -68,7 +78,14 @@ function TabComponents({ tabs, customProps = {} }) {
 }
 
 TabComponents.propTypes = {
-  tabs: PropTypes.array,
+  tabs: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      Component: PropTypes.any,
+      customProps: PropTypes.object,
+      hidden: PropTypes.bool,
+    })
+  ),
   customProps: PropTypes.object,
 };
 
