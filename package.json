@@ -13,11 +13,13 @@
   "scripts": {
     "cm": "npx git-cz",
     "build": "lerna run build:viewer --stream",
+    "build:lt": "lerna run build:viewer:lesion-tracker --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package": "lerna run build:viewer:package --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
     "dev": "lerna run dev:viewer --stream",
+    "dev:lt": "lerna run dev:viewer:lesion-tracker --stream",
     "dev:project": ".scripts/dev.sh",
     "dev:orthanc": "lerna run dev:orthanc --stream",
     "orthanc:up": "docker-compose -f .docker/Nginx-Orthanc/docker-compose.yml up",
