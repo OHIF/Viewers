@@ -1,35 +1,61 @@
-// https://medium.com/@netxm/testing-redux-reducers-with-jest-6653abbfe3e1
-import reducer from './viewports.js';
+import { Reducer } from 'redux-testkit';
+
+import reducer, { DEFAULT_STATE } from './viewports.js';
 import * as types from './../constants/ActionTypes.js';
 
 describe('viewports reducer', () => {
   it('should return the initial state', () => {
-    expect(reducer(undefined, {})).toEqual({
-      activeViewportIndex: 0,
-      numRows: 1,
-      numColumns: 1,
-      layout: {
-        viewports: [{}],
-      },
-      viewportSpecificData: {},
-    });
+    expect(reducer(undefined, {})).toEqual(DEFAULT_STATE);
   });
 
-  it('should handle SET_VIEWPORT_ACTIVE', () => {
-    const setViewportActiveAction = {
+  it('should handle SET_VIEWPORT_ACTIVE with inexistent viewport index', () => {
+    const initialState = {
+      numRows: 4,
+      numColumns: 4,
+      activeViewportIndex: 0,
+    };
+
+    const action = {
       type: types.SET_VIEWPORT_ACTIVE,
       viewportIndex: 100,
     };
 
-    const updatedState = reducer({}, setViewportActiveAction);
+    const expectedToChangeInState = {
+      activeViewportIndex: 0,
+    };
 
-    expect(updatedState.activeViewportIndex).toEqual(
-      setViewportActiveAction.viewportIndex
-    );
+    Reducer(reducer)
+      .withState(initialState)
+      .expect(action)
+      .toChangeInState(expectedToChangeInState);
+  });
+
+  it('should handle SET_VIEWPORT_ACTIVE with existent viewport index', () => {
+    const initialState = {
+      numRows: 4,
+      numColumns: 4,
+      activeViewportIndex: 0,
+    };
+
+    const action = {
+      type: types.SET_VIEWPORT_ACTIVE,
+      viewportIndex: 5,
+    };
+
+    const expectedToChangeInState = {
+      activeViewportIndex: 5,
+    };
+
+    Reducer(reducer)
+      .withState(initialState)
+      .expect(action)
+      .toChangeInState(expectedToChangeInState);
   });
 
   it('should handle SET_VIEWPORT_LAYOUT', () => {
-    const setViewportLayoutAction = {
+    const initialState = DEFAULT_STATE;
+
+    const action = {
       type: types.SET_VIEWPORT_LAYOUT,
       numRows: 1,
       numColumns: 2,
@@ -43,18 +69,193 @@ describe('viewports reducer', () => {
       ],
     };
 
-    const updatedState = reducer({}, setViewportLayoutAction);
+    const expectedToChangeInState = {
+      numRows: 1,
+      numColumns: 2,
+      layout: {
+        viewports: [
+          {
+            plugin: 'cornerstone',
+          },
+          {
+            plugin: 'vtk',
+          },
+        ],
+      },
+    };
 
-    expect(updatedState.numRows).toEqual(setViewportLayoutAction.numRows);
-    expect(updatedState.numColumns).toEqual(setViewportLayoutAction.numColumns);
-    expect(updatedState.layout.viewports).toEqual(
-      setViewportLayoutAction.viewports
-    );
+    Reducer(reducer)
+      .withState(initialState)
+      .expect(action)
+      .toChangeInState(expectedToChangeInState);
   });
 
-  // If there were previous keys, this would have
-  // "merge" behavior, not a clear & set
-  // May be worth another test?
+  it('should handle SET_VIEWPORT_LAYOUT when we reduce the number of viewports', () => {
+    const initialState = {
+      numRows: 1,
+      numColumns: 2,
+      viewportSpecificData: {
+        0: { viewportData0: 'viewportData0' },
+        1: { viewportData1: 'viewportData1' },
+      },
+      layout: {
+        viewports: [],
+      },
+      activeViewportIndex: 0,
+    };
+
+    const action = {
+      type: types.SET_VIEWPORT_LAYOUT,
+      numRows: 1,
+      numColumns: 1,
+      viewports: [],
+    };
+
+    const expectedState = {
+      numRows: 1,
+      numColumns: 1,
+      viewportSpecificData: {
+        0: { viewportData0: 'viewportData0' },
+      },
+      layout: {
+        viewports: [],
+      },
+      activeViewportIndex: 0,
+    };
+
+    Reducer(reducer)
+      .withState(initialState)
+      .expect(action)
+      .toReturnState(expectedState);
+  });
+
+  it('should handle SET_VIEWPORT_LAYOUT_AND_DATA', () => {
+    const initialState = {
+      numRows: 1,
+      numColumns: 1,
+      viewportSpecificData: {
+        0: { viewportData0: 'data0' },
+      },
+      layout: {
+        viewports: [{ plugin: 'cornerstone' }],
+      },
+      activeViewportIndex: 0,
+    };
+
+    const action = {
+      type: types.SET_VIEWPORT_LAYOUT_AND_DATA,
+      numRows: 1,
+      numColumns: 2,
+      viewports: [{ plugin: 'cornerstone' }, { plugin: 'cornerstone' }],
+      viewportSpecificData: {
+        0: { viewportData0: 'NEWdata0' },
+        1: { viewportData1: 'NEWdata1' },
+      },
+    };
+
+    const expectedState = {
+      numRows: 1,
+      numColumns: 2,
+      viewportSpecificData: {
+        0: { viewportData0: 'NEWdata0' },
+        1: { viewportData1: 'NEWdata1' },
+      },
+      layout: {
+        viewports: [{ plugin: 'cornerstone' }, { plugin: 'cornerstone' }],
+      },
+      activeViewportIndex: 0,
+    };
+
+    Reducer(reducer)
+      .withState(initialState)
+      .expect(action)
+      .toReturnState(expectedState);
+  });
+
+  it('should handle SET_VIEWPORT_LAYOUT_AND_DATA when we reduce the number of viewports', () => {
+    const initialState = {
+      numRows: 1,
+      numColumns: 3,
+      viewportSpecificData: {
+        0: { viewportData0: 'vtkData0' },
+        1: { viewportData1: 'vtkData1' },
+        2: { viewportData2: 'vtkData2' },
+      },
+      layout: {
+        viewports: [{ plugin: 'vtk' }, { plugin: 'vtk' }, { plugin: 'vtk' }],
+      },
+      activeViewportIndex: 0,
+    };
+
+    const action = {
+      type: types.SET_VIEWPORT_LAYOUT_AND_DATA,
+      numRows: 1,
+      numColumns: 1,
+      viewports: [{ plugin: 'cornerstone' }],
+      viewportSpecificData: {
+        0: { viewportData0: 'cornerstoneData0' },
+      },
+    };
+
+    const expectedState = {
+      numRows: 1,
+      numColumns: 1,
+      viewportSpecificData: {
+        0: { viewportData0: 'cornerstoneData0' },
+      },
+      layout: {
+        viewports: [{ plugin: 'cornerstone' }],
+      },
+      activeViewportIndex: 0,
+    };
+
+    Reducer(reducer)
+      .withState(initialState)
+      .expect(action)
+      .toReturnState(expectedState);
+  });
+
+  it('should handle SET_VIEWPORT when we only set one viewport specific data', () => {
+    const initialState = {
+      numRows: 1,
+      numColumns: 2,
+      viewportSpecificData: {
+        0: { viewportData0: 'data0' },
+        1: { viewportData1: 'data1' },
+      },
+      layout: {
+        viewports: [{ plugin: 'cornerstone' }, { plugin: 'cornerstone' }],
+      },
+      activeViewportIndex: 0,
+    };
+
+    const action = {
+      type: types.SET_VIEWPORT,
+      viewportIndex: 1,
+      viewportSpecificData: {
+        viewportData1: 'NEWdata1',
+      },
+    };
+
+    const expectedState = {
+      numRows: 1,
+      numColumns: 2,
+      viewportSpecificData: {
+        0: { viewportData0: 'data0' },
+        1: { viewportData1: 'NEWdata1' },
+      },
+      layout: {
+        viewports: [{ plugin: 'cornerstone' }, { plugin: 'cornerstone' }],
+      },
+      activeViewportIndex: 0,
+    };
+
+    Reducer(reducer)
+      .withState(initialState)
+      .expect(action)
+      .toReturnState(expectedState);
+  });
+
   it('should handle SET_VIEWPORT', () => {
     const viewportToSet = 0;
     const setViewportAction = {
