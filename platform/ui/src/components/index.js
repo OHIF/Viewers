@@ -6,7 +6,7 @@ import { TableList, TableListItem } from './tableList';
 import { AboutContent } from './content/aboutContent/AboutContent';
 import { TabComponents, TabFooter } from './tabComponents';
 import { HotkeyField } from './customForm';
-import { LanguageSwitcher } from './LanguageSwitcher';
+import { LanguageSwitcher } from './languageSwitcher';
 
 import { Checkbox } from './checkbox';
 import { CineDialog } from './cineDialog';
