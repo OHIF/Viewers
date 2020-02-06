@@ -29,7 +29,7 @@ module.exports = (env, argv) => {
     },
     output: {
       path: ROOT_DIR,
-      library: 'OHIFExtDicomPdf',
+      library: 'OHIFExtLesionTracker',
       libraryTarget: 'umd',
       libraryExport: 'default',
       filename: pkg.main,
