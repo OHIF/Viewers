@@ -1,8 +1,7 @@
-import { BaseReport } from './base';
+import BaseReport from './BaseReport';
 
-export class MeasurementReport extends BaseReport {
+export default class MeasurementReport extends BaseReport {
   constructor(options) {
-    console.log('options', options);
     super(options);
   }
 

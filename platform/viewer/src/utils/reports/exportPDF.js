@@ -1,9 +1,9 @@
 import { utils } from '@ohif/core';
 import csTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
-import { MeasurementReport } from './measurement';
-import { formatPatientName, getLocationLabel } from './helpers';
 
+import MeasurementReport from './MeasurementReport';
+import { formatPatientName, getLocationLabel } from './helpers';
 const { studyMetadataManager } = utils;
 
 const exportPdf = (measurementApi, timepointApi) => {
@@ -40,7 +40,10 @@ const exportPdf = (measurementApi, timepointApi) => {
   /* measurementApi.fetch('targets', { timepointId });
      measurementApi.fetch('nonTargets', { timepointId });
      targets.concat(nonTargets); */
-  const measurements = measurementApi.fetch('allTools', tool => tool.timepointId === timepointId);
+  const measurements = measurementApi.fetch(
+    'allTools',
+    tool => tool.timepointId === timepointId
+  );
 
   const iterator = measurements[Symbol.iterator]();
   const printMeasurements = callback => {

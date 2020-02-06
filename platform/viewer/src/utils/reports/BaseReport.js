@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import assignIn from 'lodash.assignin';
 
-export class BaseReport {
+export default class BaseReport {
   constructor(options) {
     const defaultOptions = {
       width: 595.28,
