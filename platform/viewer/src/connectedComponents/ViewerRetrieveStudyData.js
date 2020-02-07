@@ -253,6 +253,7 @@ function ViewerRetrieveStudyData({
           .catch(error => {
             if (error && !error.isCanceled) {
               setError(true);
+              log.error(error);
             }
           });
 
@@ -290,11 +291,13 @@ function ViewerRetrieveStudyData({
         .catch(error => {
           if (error && !error.isCanceled) {
             setError(true);
+            log.error(error);
           }
         });
     } catch (error) {
       if (error) {
         setError(true);
+        log.error(error);
       }
     }
   };
