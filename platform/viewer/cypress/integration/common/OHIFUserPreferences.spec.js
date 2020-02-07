@@ -30,9 +30,8 @@ describe('OHIF User Preferences', () => {
     });
 
     it('checks translation by selecting Spanish language', function() {
-      cy.get('@userPreferencesGeneralTab')
-        .click()
-        .should('have.class', 'active');
+      cy.changePreferencesTab('@userPreferencesGeneralTab');
+      cy.get('@userPreferencesGeneralTab').should('have.class', 'active');
 
       // Language dropdown should be displayed
       cy.get('#language-select').should('be.visible');
@@ -101,7 +100,7 @@ describe('OHIF User Preferences', () => {
       cy.openPreferences();
 
       // Go to general tab
-      cy.get('@userPreferencesGeneralTab').click();
+      cy.changePreferencesTab('@userPreferencesGeneralTab');
 
       cy.get('@restoreBtn')
         .scrollIntoView()
@@ -135,9 +134,8 @@ describe('OHIF User Preferences', () => {
 
     it('checks if Preferences set in Study List Page will be consistent on Viewer Page', function() {
       // Go go hotkeys tab
-      cy.get('@userPreferencesHotkeysTab')
-        .click()
-        .should('have.class', 'active');
+      cy.changePreferencesTab('@userPreferencesHotkeysTab');
+      cy.get('@userPreferencesHotkeysTab').should('have.class', 'active');
 
       // Set new hotkey for 'Rotate Right' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal('Rotate Right', '{shift}Q');
@@ -150,7 +148,7 @@ describe('OHIF User Preferences', () => {
       cy.openPreferences();
 
       // Go to General tab
-      cy.get('@userPreferencesGeneralTab').click();
+      cy.changePreferencesTab('@userPreferencesGeneralTab');
 
       // Set language to Spanish
       cy.setLanguage('Spanish');
@@ -221,9 +219,8 @@ describe('OHIF User Preferences', () => {
     });
 
     it('checks translation by selecting Spanish language', function() {
-      cy.get('@userPreferencesGeneralTab')
-        .click()
-        .should('have.class', 'active');
+      cy.changePreferencesTab('@userPreferencesGeneralTab');
+      cy.get('@userPreferencesGeneralTab').should('have.class', 'active');
 
       // Language dropdown should be displayed
       cy.get('#language-select').should('be.visible');
@@ -284,9 +281,8 @@ describe('OHIF User Preferences', () => {
     });
 
     it('checks if user can restore to default the language selection and application will be in English', function() {
-      cy.get('@userPreferencesGeneralTab')
-        .click()
-        .should('have.class', 'active');
+      cy.changePreferencesTab('@userPreferencesGeneralTab');
+      cy.get('@userPreferencesGeneralTab').should('have.class', 'active');
 
       // Language dropdown should be displayed
       cy.get('#language-select').should('be.visible');
@@ -298,7 +294,7 @@ describe('OHIF User Preferences', () => {
       cy.openPreferences();
 
       // Go to general tab
-      cy.get('@userPreferencesGeneralTab').click();
+      cy.changePreferencesTab('@userPreferencesGeneralTab');
 
       cy.get('@restoreBtn')
         .scrollIntoView()
@@ -330,9 +326,8 @@ describe('OHIF User Preferences', () => {
 
     it('checks new hotkeys for "Rotate Right" and "Rotate Left"', function() {
       // Go go hotkeys tab
-      cy.get('@userPreferencesHotkeysTab')
-        .click()
-        .should('have.class', 'active');
+      cy.changePreferencesTab('@userPreferencesHotkeysTab');
+      cy.get('@userPreferencesHotkeysTab').should('have.class', 'active');
 
       // Set new hotkey for 'Rotate Right' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
@@ -361,9 +356,8 @@ describe('OHIF User Preferences', () => {
 
     it('checks new hotkeys for "Next" and "Previous" Image on Viewport', function() {
       // Update hotkeys for 'Next/Previous Viewport'
-      cy.get('@userPreferencesHotkeysTab')
-        .click()
-        .should('have.class', 'active');
+      cy.changePreferencesTab('@userPreferencesHotkeysTab');
+      cy.get('@userPreferencesHotkeysTab').should('have.class', 'active');
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
         'Next Viewport',
         '{shift}{rightarrow}'
@@ -416,24 +410,18 @@ describe('OHIF User Preferences', () => {
 
     it('checks error message when duplicated hotkeys are inserted', function() {
       // Go go hotkeys tab
-      cy.get('@userPreferencesHotkeysTab').click();
+      cy.changePreferencesTab('@userPreferencesHotkeysTab');
 
       // Set duplicated hotkey for 'Rotate Right' function
-      cy.setNewHotkeyShortcutOnUserPreferencesModal(
-        'Rotate Right',
-        '{rightarrow}'
-      );
+      cy.setNewHotkeyShortcutOnUserPreferencesModal('Rotate Right', '{i}');
 
       // Check error message
-      cy.get('.HotKeysPreferences').within(() => {
+      cy.get('.HotkeysPreferences').within(() => {
         cy.contains('Rotate Right') // label we're looking for
           .parent()
           .find('.errorMessage')
           .as('errorMsg')
-          .should(
-            'have.text',
-            '"Next Viewport" is already using the "right" shortcut.'
-          );
+          .should('have.text', '"Invert" is already using the "i" shortcut.');
       });
       //Cancel hotkeys
       cy.get('@cancelBtn')
@@ -443,13 +431,13 @@ describe('OHIF User Preferences', () => {
 
     it('checks error message when invalid hotkey is inserted', function() {
       // Go go hotkeys tab
-      cy.get('@userPreferencesHotkeysTab').click();
+      cy.changePreferencesTab('@userPreferencesHotkeysTab');
 
       // Set invalid hotkey for 'Rotate Right' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal('Rotate Right', '{ctrl}Z');
 
       // Check error message
-      cy.get('.HotKeysPreferences').within(() => {
+      cy.get('.HotkeysPreferences').within(() => {
         cy.contains('Rotate Right') // label we're looking for
           .parent()
           .find('.errorMessage')
@@ -463,14 +451,14 @@ describe('OHIF User Preferences', () => {
         .click();
     });
 
-    it('checks error message when only modifier keys are inserted', function() {
+    it.only('checks error message when only modifier keys are inserted', function() {
       // Go go hotkeys tab
-      cy.get('@userPreferencesHotkeysTab').click();
+      cy.changePreferencesTab('@userPreferencesHotkeysTab');
 
       // Set invalid modifier key: ctrl
       cy.setNewHotkeyShortcutOnUserPreferencesModal('Zoom Out', '{ctrl}');
       // Check error message
-      cy.get('.HotKeysPreferences').within(() => {
+      cy.get('.HotkeysPreferences').within(() => {
         cy.contains('Zoom Out') // label we're looking for
           .parent()
           .find('.errorMessage')
@@ -505,7 +493,7 @@ describe('OHIF User Preferences', () => {
 
     it('checks if user can cancel changes made on User Preferences Hotkeys tab', function() {
       // Go go hotkeys tab
-      cy.get('@userPreferencesHotkeysTab').click();
+      cy.changePreferencesTab('@userPreferencesHotkeysTab');
 
       // Set new hotkey for 'Rotate Right' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
@@ -522,7 +510,7 @@ describe('OHIF User Preferences', () => {
       cy.openPreferences();
 
       //Check that hotkey for 'Rotate Right' function was not changed
-      cy.get('.HotKeysPreferences').within(() => {
+      cy.get('.HotkeysPreferences').within(() => {
         cy.contains('Rotate Right') // label we're looking for
           .parent()
           .find('input')
@@ -533,7 +521,7 @@ describe('OHIF User Preferences', () => {
 
     it('checks if user can reset to default values on User Preferences Hotkeys tab', function() {
       // Go go hotkeys tab
-      cy.get('@userPreferencesHotkeysTab').click();
+      cy.changePreferencesTab('@userPreferencesHotkeysTab');
 
       // Set new hotkey for 'Rotate Right' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
@@ -558,7 +546,7 @@ describe('OHIF User Preferences', () => {
       cy.openPreferences();
 
       //Check that hotkey for 'Rotate Right' function was not changed
-      cy.get('.HotKeysPreferences').within(() => {
+      cy.get('.HotkeysPreferences').within(() => {
         cy.contains('Rotate Right') // label we're looking for
           .parent()
           .find('input')
