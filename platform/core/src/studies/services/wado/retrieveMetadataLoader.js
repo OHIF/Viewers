@@ -46,7 +46,7 @@ export default class RetrieveMetadataLoader {
     }
 
     if (loaders.next().done && !result) {
-      throw 'cant find data';
+      throw new Error('RetrieveMetadataLoader failed');
     }
 
     return result;
