@@ -25,6 +25,7 @@ class MeasurementTable extends Component {
     t: PropTypes.func,
     saveFunction: PropTypes.func,
     onSaveComplete: PropTypes.func,
+    lesionTracker: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -32,6 +33,7 @@ class MeasurementTable extends Component {
       warningList: [],
     },
     readOnly: false,
+    lesionTracker: false,
   };
 
   state = {
@@ -39,11 +41,11 @@ class MeasurementTable extends Component {
   };
 
   render() {
-    const { overallWarnings, saveFunction, t } = this.props;
+    const { overallWarnings, saveFunction, t, lesionTracker } = this.props;
     const hasOverallWarnings = overallWarnings.warningList.length > 0;
 
     return (
-      <div className="measurementTable">
+      <div className={`measurementTable ${lesionTracker && 'lesionTracker'}`}>
         <div className="measurementTableHeader">
           {hasOverallWarnings && (
             <OverlayTrigger
@@ -194,11 +196,48 @@ class MeasurementTable extends Component {
   };
 
   getTimepointsHeader = () => {
-    return this.props.timepoints.map((timepoint, index) => {
+    const { timepoints, t, lesionTracker } = this.props;
+
+    return timepoints.map((timepoint, index) => {
       return (
         <div key={index} className="measurementTableHeaderItem">
-          <div className="timepointLabel">{this.props.t(timepoint.key)}</div>
+          <div className="timepointLabel">{t(timepoint.key)}</div>
           <div className="timepointDate">{timepoint.date}</div>
+          {lesionTracker && timepoints.length > 1 && index === 0 && (
+            <div className="caseProgressContainer">
+              <form className="caseProgress" data-key="">
+                <div className="radialProgress">
+                  <svg
+                    id="svg"
+                    width="26"
+                    height="26"
+                    viewport="0 0 26 26"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      r="11"
+                      cx="13"
+                      cy="13"
+                      fill="transparent"
+                      strokeDasharray="69.11503837897544"
+                      strokeDashoffset="0"
+                    ></circle>
+                    <circle
+                      id="bar"
+                      r="11"
+                      cx="13"
+                      cy="13"
+                      fill="transparent"
+                      strokeDasharray="69.11503837897544"
+                      style={{ strokeDashoffset: '69.11503837897544px' }}
+                    ></circle>
+                  </svg>
+                  <div className="progressArea">1</div>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
       );
     });
