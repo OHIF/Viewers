@@ -29,20 +29,7 @@ const languages = [
  */
 function GeneralPreferences({ onClose }) {
   const { t } = useTranslation('UserPreferencesModal');
-
   const snackbar = useSnackbarContext();
-
-  // const { preferences: preferencesState } = useSelector(state => {
-  //   const { preferences } = state;
-
-  //   return {
-  //     preferences,
-  //   };
-  // });
-  // const { generalPreferences } = preferencesState;
-
-  // const { language: currentLanguage = i18n.language } = generalPreferences;
-
   const currentLanguage = i18n.language;
 
   const [language, setLanguage] = useState(currentLanguage);
