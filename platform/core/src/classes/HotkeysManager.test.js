@@ -142,20 +142,18 @@ describe('HotkeysManager', () => {
         expectedHotkeyDefinition
       );
     });
-    it('calls hotkeys.bind for all keys in array', () => {
-      const definition = { commandName: 'dance', keys: ['h', 'e', 'l', 'o'] };
+    it('calls hotkeys.bind for the group of keys', () => {
+      const definition = { commandName: 'dance', keys: ['shift', 'e'] };
 
       hotkeysManager.registerHotkeys(definition);
 
-      expect(hotkeys.bind.mock.calls.length).toBe(definition.keys.length);
-      definition.keys.forEach((key, i) =>
-        expect(hotkeys.bind.mock.calls[i][0]).toBe(key)
-      );
+      expect(hotkeys.bind.mock.calls.length).toBe(1);
+      expect(hotkeys.bind.mock.calls[0][0]).toBe('shift+e');
     });
     it('calls hotkeys.unbind if commandName was previously registered, for each previously registered set of keys', () => {
       const firstDefinition = {
         commandName: 'dance',
-        keys: ['h', 'e', 'l', 'o'],
+        keys: ['alt', 'e'],
       };
       const secondDefinition = { commandName: 'dance', keys: 'a' };
 
@@ -164,12 +162,8 @@ describe('HotkeysManager', () => {
       // Second call
       hotkeysManager.registerHotkeys(secondDefinition);
 
-      expect(hotkeys.unbind.mock.calls.length).toBe(
-        firstDefinition.keys.length
-      );
-      firstDefinition.keys.forEach((key, i) =>
-        expect(hotkeys.unbind.mock.calls[i][0]).toBe(key)
-      );
+      expect(hotkeys.unbind.mock.calls.length).toBe(1);
+      expect(hotkeys.unbind.mock.calls[0][0]).toBe('alt+e');
     });
   });
 

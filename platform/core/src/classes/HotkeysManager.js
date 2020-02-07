@@ -179,8 +179,8 @@ export class HotkeysManager {
 
     const isKeyArray = keys instanceof Array;
     if (isKeyArray) {
-      const keysCombo = keys.join('+');
-      hotkeys.bind(keysCombo, evt => {
+      const combinedKeys = keys.join('+');
+      hotkeys.bind(combinedKeys, evt => {
         this._commandsManager.runCommand(commandName, { evt });
       });
       return;
@@ -202,13 +202,13 @@ export class HotkeysManager {
   _unbindHotkeys(commandName, keys) {
     const isKeyDefined = keys !== '' && keys !== undefined;
     if (!isKeyDefined) {
-      log.warn('no key defined');
       return;
     }
 
     const isKeyArray = keys instanceof Array;
     if (isKeyArray) {
-      keys.forEach(key => this._unbindHotkeys(commandName, key));
+      const combinedKeys = keys.join('+');
+      this._unbindHotkeys(commandName, combinedKeys);
       return;
     }
 
