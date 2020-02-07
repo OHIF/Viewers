@@ -26,7 +26,6 @@ import OHIFVTKExtension from '@ohif/extension-vtk';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
-import OHIFLesionTrackerExtension from '@ohif/extension-lesion-tracker';
 
 /*
  * Default Settings
@@ -44,7 +43,6 @@ const appProps = {
     OHIFDicomHtmlExtension,
     OHIFDicomMicroscopyExtension,
     OHIFDicomPDFExtension,
-    OHIFLesionTrackerExtension,
   ],
 };
 
