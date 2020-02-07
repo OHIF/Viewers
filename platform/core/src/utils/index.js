@@ -12,7 +12,7 @@ import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
 import * as urlUtil from './urlUtil';
 import makeCancelable from './makeCancelable';
-import { hotkeyRecord } from './hotkeys';
+import hotkeys from './hotkeys';
 
 const utils = {
   guid,
@@ -30,7 +30,7 @@ const utils = {
   DicomLoaderService,
   urlUtil,
   makeCancelable,
-  hotkeyRecord,
+  hotkeys,
 };
 
 export {
@@ -49,7 +49,7 @@ export {
   DicomLoaderService,
   urlUtil,
   makeCancelable,
-  hotkeyRecord,
+  hotkeys,
 };
 
 export default utils;

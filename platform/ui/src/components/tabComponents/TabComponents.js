@@ -6,6 +6,19 @@ import classnames from 'classnames';
 import './TabComponents.styl';
 
 /**
+ * Take name of the tab and create the data-cy value for it
+ *
+ * @param {string} [name=''] tab name
+ * @returns {string} data-cy value
+ */
+const getDataCy = (name = '') => {
+  return name
+    .split(' ')
+    .join('-')
+    .toLowerCase();
+};
+
+/**
  * Single tab data information
  *
  * @typedef {Object} tabData
@@ -45,7 +58,7 @@ function TabComponents({ tabs, customProps = {} }) {
                           'nav-link',
                           index === currentTabIndex && 'active'
                         )}
-                        data-cy={name.toLowerCase()}
+                        data-cy={getDataCy(name)}
                       >
                         <button>{name}</button>
                       </li>

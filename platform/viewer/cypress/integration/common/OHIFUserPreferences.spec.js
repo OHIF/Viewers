@@ -451,7 +451,7 @@ describe('OHIF User Preferences', () => {
         .click();
     });
 
-    it.only('checks error message when only modifier keys are inserted', function() {
+    it('checks error message when only modifier keys are inserted', function() {
       // Go go hotkeys tab
       cy.changePreferencesTab('@userPreferencesHotkeysTab');
 

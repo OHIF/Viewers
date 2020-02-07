@@ -3,7 +3,22 @@ import PropTypes from 'prop-types';
 
 import { utils } from '@ohif/core';
 
-const { hotkeyRecord } = utils;
+const { hotkeys } = utils;
+
+const range = (start, end) => {
+  return new Array(end - start).fill().map((d, i) => i + start);
+};
+
+export const ALLOWED_KEYS = [
+  ...[8, 13, 27, 32, 46], // backspace, enter, escape, space, delete
+  ...[12, 106, 107, 109, 110, 111], // Numpad keys
+  ...range(218, 220), // [\]
+  ...range(185, 190), // ;=,-./
+  ...range(111, 131), // F1-F19
+  ...range(32, 41), // arrow keys, home/end, pg dn/up
+  ...range(47, 58), // 0-9
+  ...range(64, 91), // A-Z
+];
 
 /**
  * Take the pressed key array and return the readable string for the keys
@@ -46,7 +61,7 @@ function HotkeyField({ keys, handleChange, classNames, modifier_keys }) {
   const inputValue = formatKeysForInput(keys);
 
   const onInputKeyDown = event => {
-    const { key = '' } = event;
+    const { key = '', keyCode, ctrlKey, shiftKey, altKey, metaKey } = event;
     const lowerCaseKey = key.toLowerCase();
 
     // Prevent ESC key from propagating and closing the modal
@@ -54,15 +69,18 @@ function HotkeyField({ keys, handleChange, classNames, modifier_keys }) {
       event.stopPropagation();
     }
 
-    if (!modifier_keys.includes(lowerCaseKey)) {
-      handleChange([lowerCaseKey]);
-    } else {
-      hotkeyRecord(sequence => {
-        const keys = getKeys({ sequence, modifier_keys });
+    event.stopPropagation();
 
-        handleChange(keys);
-      });
-    }
+    hotkeys.record(sequence => {
+      const keys = getKeys({ sequence, modifier_keys });
+      hotkeys.unpause();
+      handleChange(keys);
+    });
+  };
+
+  const onFocus = () => {
+    hotkeys.pause();
+    hotkeys.startRecording();
   };
 
   return (
@@ -72,6 +90,7 @@ function HotkeyField({ keys, handleChange, classNames, modifier_keys }) {
       value={inputValue}
       className={classNames}
       onKeyDown={onInputKeyDown}
+      onFocus={onFocus}
     />
   );
 }

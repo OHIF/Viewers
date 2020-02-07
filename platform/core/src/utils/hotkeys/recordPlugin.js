@@ -187,6 +187,28 @@ export default function(Mousetrap) {
     };
   };
 
+  /**
+   * stop recording
+   *
+   * @param {Function} callback
+   * @returns void
+   */
+  Mousetrap.prototype.stopRecord = function() {
+    var self = this;
+    self.recording = false;
+  };
+
+  /**
+   * start recording
+   *
+   * @param {Function} callback
+   * @returns void
+   */
+  Mousetrap.prototype.startRecording = function() {
+    var self = this;
+    self.recording = true;
+  };
+
   Mousetrap.prototype.handleKey = function() {
     var self = this;
     _handleKey.apply(self, arguments);
