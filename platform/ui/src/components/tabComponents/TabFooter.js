@@ -9,7 +9,7 @@ const translate = word => word;
 function TabFooter({
   onResetPreferences,
   onSave,
-  onClose,
+  onCancel,
   hasErrors,
   t = translate,
 }) {
@@ -23,7 +23,11 @@ function TabFooter({
         {t('Reset to Defaults')}
       </button>
       <div>
-        <div onClick={onClose} data-cy="cancel-btn" className="btn btn-default">
+        <div
+          onClick={onCancel}
+          data-cy="cancel-btn"
+          className="btn btn-default"
+        >
           {t('Cancel')}
         </div>
         <button
@@ -42,7 +46,7 @@ function TabFooter({
 TabFooter.propTypes = {
   onResetPreferences: PropTypes.func,
   onSave: PropTypes.func,
-  onClose: PropTypes.func,
+  onCancel: PropTypes.func,
   hasErrors: PropTypes.bool,
   t: PropTypes.func,
 };

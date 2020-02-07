@@ -17,7 +17,7 @@ function WindowLevelPreferences({ onClose }) {
       <TabFooter
         onResetPreferences={onResetPreferences}
         onSave={onSave}
-        onClose={onClose}
+        onCancel={onClose}
         hasErrors={hasErrors}
         t={t}
       />
