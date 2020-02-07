@@ -179,7 +179,10 @@ export class HotkeysManager {
 
     const isKeyArray = keys instanceof Array;
     if (isKeyArray) {
-      keys.forEach(key => this._bindHotkeys(commandName, key));
+      const keysCombo = keys.join('+');
+      hotkeys.bind(keysCombo, evt => {
+        this._commandsManager.runCommand(commandName, { evt });
+      });
       return;
     }
 
