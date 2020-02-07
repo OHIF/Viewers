@@ -52,13 +52,13 @@ describe('MeasurementService.js', () => {
       measurementService.createSource('Testing', '1');
     });
 
-    it('returns warning if no name provided', () => {
+    it('logs warning and return early if no name provided', () => {
       measurementService.createSource(null, '1');
 
       expect(log.warn.mock.calls.length).toBe(1);
     });
 
-    it('returns warning if no version provided', () => {
+    it('logs warning and return early if no version provided', () => {
       measurementService.createSource('Testing', null);
 
       expect(log.warn.mock.calls.length).toBe(1);
@@ -76,7 +76,7 @@ describe('MeasurementService.js', () => {
       );
     });
 
-    it('returns warning if no matching criteria provided', () => {
+    it('logs warning and return early if no matching criteria provided', () => {
       measurementService.addMapping(
         source,
         definition,
@@ -88,7 +88,7 @@ describe('MeasurementService.js', () => {
       expect(log.warn.mock.calls.length).toBe(1);
     });
 
-    it('returns warning if invalid source provided', () => {
+    it('logs warning and return early if invalid source provided', () => {
       const invalidSoure = {};
 
       measurementService.addMapping(
@@ -102,7 +102,7 @@ describe('MeasurementService.js', () => {
       expect(log.warn.mock.calls.length).toBe(1);
     });
 
-    it('returns warning if no source provided', () => {
+    it('logs warning and return early if no source provided', () => {
       measurementService.addMapping(
         null /* source */,
         definition,
@@ -114,7 +114,7 @@ describe('MeasurementService.js', () => {
       expect(log.warn.mock.calls.length).toBe(1);
     });
 
-    it('returns warning if no definition provided', () => {
+    it('logs warning and return early if no definition provided', () => {
       measurementService.addMapping(
         source,
         null /* definition */,
@@ -126,7 +126,7 @@ describe('MeasurementService.js', () => {
       expect(log.warn.mock.calls.length).toBe(1);
     });
 
-    it('returns warning if no measurement mapping function provided', () => {
+    it('logs warning and return early if no measurement mapping function provided', () => {
       measurementService.addMapping(
         source,
         definition,
@@ -138,7 +138,7 @@ describe('MeasurementService.js', () => {
       expect(log.warn.mock.calls.length).toBe(1);
     });
 
-    it('returns warning if no annotation mapping function provided', () => {
+    it('logs warning and return early if no annotation mapping function provided', () => {
       measurementService.addMapping(
         source,
         definition,
@@ -168,7 +168,7 @@ describe('MeasurementService.js', () => {
   });
 
   describe('getMeasurements()', () => {
-    it('return all measurements', () => {
+    it('return all measurement service measurements', () => {
       const anotherMeasurement = {
         ...measurement,
         label: 'Label2',
@@ -194,7 +194,7 @@ describe('MeasurementService.js', () => {
   });
 
   describe('getMeasurement()', () => {
-    it('return measurement with given id', () => {
+    it('return measurement service measurement with given id', () => {
       measurementService.addMapping(
         source,
         definition,
@@ -273,7 +273,7 @@ describe('MeasurementService.js', () => {
       expect(newMeasurement).toEqual(savedMeasurement);
     });
 
-    it('returns warning if adding invalid measurement', () => {
+    it('logs warning and return if adding invalid measurement', () => {
       measurement.invalidProperty = {};
 
       measurementService.addMapping(
