@@ -5,21 +5,6 @@ import { utils } from '@ohif/core';
 
 const { hotkeys } = utils;
 
-const range = (start, end) => {
-  return new Array(end - start).fill().map((d, i) => i + start);
-};
-
-export const ALLOWED_KEYS = [
-  ...[8, 13, 27, 32, 46], // backspace, enter, escape, space, delete
-  ...[12, 106, 107, 109, 110, 111], // Numpad keys
-  ...range(218, 220), // [\]
-  ...range(185, 190), // ;=,-./
-  ...range(111, 131), // F1-F19
-  ...range(32, 41), // arrow keys, home/end, pg dn/up
-  ...range(47, 58), // 0-9
-  ...range(64, 91), // A-Z
-];
-
 /**
  * Take the pressed key array and return the readable string for the keys
  *
@@ -61,7 +46,7 @@ function HotkeyField({ keys, handleChange, classNames, modifier_keys }) {
   const inputValue = formatKeysForInput(keys);
 
   const onInputKeyDown = event => {
-    const { key = '', keyCode, ctrlKey, shiftKey, altKey, metaKey } = event;
+    const { key = '' } = event;
     const lowerCaseKey = key.toLowerCase();
 
     // Prevent ESC key from propagating and closing the modal
