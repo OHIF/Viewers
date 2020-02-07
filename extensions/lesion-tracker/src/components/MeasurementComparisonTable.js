@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { MeasurementTable, RoundedButtonGroup } from '@ohif/ui';
 
-import './LesionTrackerPanel.css';
+import './MeasurementComparisonTable.css';
 
 const overallWarnings = {
   warningList: [
@@ -143,13 +143,13 @@ const buttons = [
   { value: 'key-timepoints', label: 'Key Timepoints' },
 ];
 
-const LesionTrackerPanel = () => {
+const MeasurementComparisonTable = () => {
   const [selectedRightSidePanel, setSelectedRightSidePanel] = useState('comparison');
 
   const isComparison = selectedRightSidePanel === 'comparison';
 
   return (
-    <div className="LesionTrackerPanel">
+    <div className="MeasurementComparisonTable">
       <RoundedButtonGroup
         options={buttons}
         value={selectedRightSidePanel}
@@ -168,4 +168,4 @@ const LesionTrackerPanel = () => {
   );
 };
 
-export default LesionTrackerPanel;
+export default MeasurementComparisonTable;

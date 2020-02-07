@@ -177,9 +177,7 @@ class MeasurementTable extends Component {
             className="tableListHeaderSelector"
             onClick={measureGroup.selectorAction}
           >
-            <svg viewBox="0 0 12 13">
-              <path d="M6.5 7L6.5 12C6.5 12.28 6.28 12.5 6 12.5 5.72 12.5 5.5 12.28 5.5 12L5.5 7 0.5 7C0.22 7 0 6.78 0 6.5 0 6.22 0.22 6 0.5 6L5.5 6 5.5 1C5.5 0.72 5.72 0.5 6 0.5 6.28 0.5 6.5 0.72 6.5 1L6.5 6 11.5 6C11.78 6 12 6.22 12 6.5 12 6.78 11.78 7 11.5 7L6.5 7Z" id="Combined-Shape"></path>
-            </svg>
+            <Icon name="plus" />
           </div>
         )}
         <div className="tableListHeaderTitle">
@@ -205,7 +203,7 @@ class MeasurementTable extends Component {
           <div className="timepointDate">{timepoint.date}</div>
           {lesionTracker && timepoints.length > 1 && index === 0 && (
             <div className="caseProgressContainer">
-              <form className="caseProgress" data-key="">
+              <div className="caseProgress">
                 <div className="radialProgress">
                   <svg
                     id="svg"
@@ -230,12 +228,12 @@ class MeasurementTable extends Component {
                       cy="13"
                       fill="transparent"
                       strokeDasharray="69.11503837897544"
-                      style={{ strokeDashoffset: '69.11503837897544px' }}
+                      strokeDashoffset="69.11503837897544"
                     ></circle>
                   </svg>
                   <div className="progressArea">1</div>
                 </div>
-              </form>
+              </div>
             </div>
           )}
         </div>

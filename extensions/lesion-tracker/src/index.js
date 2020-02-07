@@ -1,4 +1,4 @@
-import LesionTrackerPanel from './components/LesionTrackerPanel';
+import MeasurementComparisonTable from './components/MeasurementComparisonTable';
 
 export default {
   /**
@@ -16,14 +16,14 @@ export default {
       menuOptions: [
         {
           icon: 'th-list',
-          label: 'Lesion Tracker',
+          label: 'Measurements',
           target: 'lesion-tracker-panel',
         },
       ],
       components: [
         {
           id: 'lesion-tracker-panel',
-          component: LesionTrackerPanel,
+          component: MeasurementComparisonTable,
         },
       ],
       defaultContext: ['VIEWER']
