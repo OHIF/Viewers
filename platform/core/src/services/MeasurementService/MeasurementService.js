@@ -219,6 +219,9 @@ class MeasurementService {
       return;
     }
 
+    const mapping = this._getMappingByMeasurementSource(measurementId, definition);
+    if (mapping) return mapping.toSourceSchema(measurement, definition);
+
     const measurement = this.getMeasurement(measurementId);
     const matchingMapping = this._getMatchingMapping(source, definition, measurement);
 
@@ -328,6 +331,15 @@ class MeasurementService {
       };
     } else {
       throw new Error(`Event ${eventName} not supported.`);
+    }
+  }
+
+  _getMappingByMeasurementSource(measurementId, definition) {
+    const measurement = this.getMeasurement(measurementId);
+    if (this._isValidSource(measurement.source)) {
+      return this.mappings[measurement.source.id].find(
+        m => m.definition === definition
+      );
     }
   }
 

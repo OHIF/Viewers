@@ -48,7 +48,7 @@ describe('MeasurementService.js', () => {
   });
 
   describe('createSource()', () => {
-    it('creates new source', () => {
+    it('creates new source with name and version', () => {
       measurementService.createSource('Testing', '1');
     });
 
@@ -157,6 +157,20 @@ describe('MeasurementService.js', () => {
         source,
         definition,
         matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+      const measurementId = source.addOrUpdate(definition, annotation);
+      const mappedAnnotation = source.getAnnotation(definition, measurementId);
+
+      expect(annotation).toBe(mappedAnnotation);
+    });
+
+    it('get annotation based on source and definition', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        {},
         toAnnotation,
         toMeasurement
       );
