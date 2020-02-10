@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.6.0...@ohif/viewer@3.6.1) (2020-02-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [3.6.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.5.1...@ohif/viewer@3.6.0) (2020-02-10)
+
+
+### Features
+
+* 🎸 MeasurementService ([#1314](https://github.com/OHIF/Viewers/issues/1314)) ([0c37a40](https://github.com/OHIF/Viewers/commit/0c37a406d963569af8c3be24c697dafd42712dfc))
+
+
+
+
+
 ## [3.5.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.5.0...@ohif/viewer@3.5.1) (2020-02-07)
 
 **Note:** Version bump only for package @ohif/viewer
