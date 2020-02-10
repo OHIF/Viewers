@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-import { MeasurementTable, RoundedButtonGroup } from '@ohif/ui';
+import { MeasurementTable, RoundedButtonGroup, Icon } from '@ohif/ui';
+import CircularProgressIcon from './CircularProgressIcon';
 
 import './MeasurementComparisonTable.css';
 
@@ -148,6 +149,40 @@ const MeasurementComparisonTable = () => {
 
   const isComparison = selectedRightSidePanel === 'comparison';
 
+  const CustomHeader = ({ t, ...measureGroup }) => {
+    return (
+      <React.Fragment>
+        {measureGroup.selectorAction && (
+          <div
+            className="tableListHeaderSelector"
+            onClick={measureGroup.selectorAction}
+          >
+            <Icon name="plus" />
+          </div>
+        )}
+        <div className="tableListHeaderTitle">{t(measureGroup.groupName)}</div>
+        {measureGroup.maxMeasurements && (
+          <div className="maxMeasurements">
+            {t('MAX')} {measureGroup.maxMeasurements}
+          </div>
+        )}
+        <div className="numberOfItems">{measureGroup.measurements.length}</div>
+      </React.Fragment>
+    );
+  };
+
+  const CustomTimepointsHeader = ({ timepoints, t }) => {
+    return timepoints.map((timepoint, index) => {
+      return (
+        <div key={index} className="measurementTableHeaderItem">
+          <div className="timepointLabel">{t(timepoint.key)}</div>
+          <div className="timepointDate">{timepoint.date}</div>
+          {timepoints.length > 1 && index === 0 && <CircularProgressIcon />}
+        </div>
+      );
+    });
+  };
+
   return (
     <div className="MeasurementComparisonTable">
       <RoundedButtonGroup
@@ -156,7 +191,8 @@ const MeasurementComparisonTable = () => {
         onValueChanged={value => setSelectedRightSidePanel(value)}
       />
       <MeasurementTable
-        lesionTracker
+        customHeader={CustomHeader}
+        customTimepointsHeader={CustomTimepointsHeader}
         timepoints={isComparison ? baselineTimepoint : comparisonTimepoints}
         overallWarnings={overallWarnings}
         measurementCollection={isComparison ? baselineCollections : comparisonCollections}

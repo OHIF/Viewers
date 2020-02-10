@@ -25,7 +25,8 @@ class MeasurementTable extends Component {
     t: PropTypes.func,
     saveFunction: PropTypes.func,
     onSaveComplete: PropTypes.func,
-    lesionTracker: PropTypes.bool,
+    customHeader: PropTypes.func,
+    customTimepointsHeader: PropTypes.func,
   };
 
   static defaultProps = {
@@ -33,7 +34,6 @@ class MeasurementTable extends Component {
       warningList: [],
     },
     readOnly: false,
-    lesionTracker: false,
   };
 
   state = {
@@ -170,16 +170,13 @@ class MeasurementTable extends Component {
   };
 
   getCustomHeader = measureGroup => {
+    if (this.props.customHeader) {
+      const CustomHeader = this.props.customHeader;
+      return <CustomHeader {...this.props} {...measureGroup} />;
+    }
+
     return (
       <React.Fragment>
-        {measureGroup.selectorAction && (
-          <div
-            className="tableListHeaderSelector"
-            onClick={measureGroup.selectorAction}
-          >
-            <Icon name="plus" />
-          </div>
-        )}
         <div className="tableListHeaderTitle">
           {this.props.t(measureGroup.groupName)}
         </div>
@@ -194,48 +191,18 @@ class MeasurementTable extends Component {
   };
 
   getTimepointsHeader = () => {
-    const { timepoints, t, lesionTracker } = this.props;
+    const { timepoints, t } = this.props;
+
+    if (this.props.customTimepointsHeader) {
+      const CustomTimepointsHeader = this.props.customTimepointsHeader;
+      return <CustomTimepointsHeader {...this.props} />;
+    }
 
     return timepoints.map((timepoint, index) => {
       return (
         <div key={index} className="measurementTableHeaderItem">
           <div className="timepointLabel">{t(timepoint.key)}</div>
           <div className="timepointDate">{timepoint.date}</div>
-          {lesionTracker && timepoints.length > 1 && index === 0 && (
-            <div className="caseProgressContainer">
-              <div className="caseProgress">
-                <div className="radialProgress">
-                  <svg
-                    id="svg"
-                    width="26"
-                    height="26"
-                    viewport="0 0 26 26"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle
-                      r="11"
-                      cx="13"
-                      cy="13"
-                      fill="transparent"
-                      strokeDasharray="69.11503837897544"
-                      strokeDashoffset="0"
-                    ></circle>
-                    <circle
-                      id="bar"
-                      r="11"
-                      cx="13"
-                      cy="13"
-                      fill="transparent"
-                      strokeDasharray="69.11503837897544"
-                      strokeDashoffset="69.11503837897544"
-                    ></circle>
-                  </svg>
-                  <div className="progressArea">1</div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       );
     });
