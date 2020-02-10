@@ -3,61 +3,68 @@ import axios from 'axios';
 class API {
   constructor() {
     const api = axios.create();
-    api.interceptors.response.use(this.handleSuccess, this.handleError);
+
     this.api = api;
   }
 
-  handleSuccess = response => {
-    return response;
+  GET = async ({ url, options = {} }) => {
+    try {
+      const response = await this.api.request({
+        method: 'get',
+        url,
+        ...options,
+      });
+
+      return response;
+    } catch (error) {
+      return Promise.reject(error.message || 'Error!');
+    }
   };
 
-  handleError = error => {
-    // maybe we can use error.response.status to return/call specific actions depending on the error status
-    return Promise.reject(error.message || 'Error!');
+  PUT = async ({ url, data, options = {} }) => {
+    try {
+      const response = await this.api.request({
+        method: 'put',
+        url,
+        responseType: 'json',
+        data,
+        ...options,
+      });
+      return response;
+    } catch (error) {
+      return Promise.reject(error.message || 'Error!');
+    }
   };
 
-  get = async (path, options = {}) => {
-    const response = await this.api.request({
-      method: 'get',
-      url: path,
-      ...options,
-    });
-    return response;
+  POST = async ({ url, data, options = {} }) => {
+    try {
+      const response = await this.api.request({
+        method: 'POST',
+        url,
+        responseType: 'json',
+        data,
+        ...options,
+      });
+      return response;
+    } catch (error) {
+      return Promise.reject(error.message || 'Error!');
+    }
   };
 
-  put = async (path, data, options = {}) => {
-    const response = await this.api.request({
-      method: 'put',
-      url: path,
-      responseType: 'json',
-      data,
-      ...options,
-    });
-    return response;
-  };
+  DELETE = async ({ url, data = {}, options = {} }) => {
+    try {
+      const response = await this.api.request({
+        method: 'DELETE',
+        url,
+        responseType: 'json',
+        data,
+        ...options,
+      });
 
-  post = async (path, data, options = {}) => {
-    const response = await this.api.request({
-      method: 'POST',
-      url: path,
-      responseType: 'json',
-      data,
-      ...options,
-    });
-
-    return response;
-  };
-
-  delete = async (path, data, options = {}) => {
-    const response = await this.api.request({
-      method: 'POST',
-      url: path,
-      responseType: 'json',
-      data,
-      ...options,
-    });
-
-    return response;
+      return response;
+    } catch (error) {
+      return Promise.reject(error.message || 'Error!');
+    }
   };
 }
 
