@@ -122,13 +122,13 @@ const comparisonCollections = currentCollections.map((group, index) => {
 
 const comparisonTimepoints = [
   {
-    key: 'Comparison',
-    date: '15-Jun-18',
-  },
-  {
     key: 'Current',
     date: '10-Apr-18',
   },
+  {
+    key: 'Comparison',
+    date: '15-Jun-18',
+  }
 ];
 
 const MeasurementComparisonTable = () => {

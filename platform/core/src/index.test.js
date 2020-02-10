@@ -13,6 +13,7 @@ describe('Top level exports', () => {
       'UINotificationService',
       'UIModalService',
       'UIDialogService',
+      'MeasurementService',
       //
       'utils',
       'studies',
