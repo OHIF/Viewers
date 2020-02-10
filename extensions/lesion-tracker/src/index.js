@@ -8,6 +8,8 @@
 //   )
 // );
 
+import { LTStudyBrowser } from './LTStudyBrowser';
+
 export default {
   /**
    * Only required property. Should be a unique value across all extensions.
@@ -20,7 +22,23 @@ export default {
    * @param {CommandsManager} params.commandsManager
    */
   getPanelModule({ servicesManager, commandsManager }) {
-    return undefined;
+    return {
+      menuOptions: [
+        {
+          icon: 'list',
+          label: 'Studies',
+          from: 'left',
+          target: 'lesion-tracker-study-browser',
+        },
+      ],
+      components: [
+        {
+          id: 'lesion-tracker-study-browser',
+          component: LTStudyBrowser,
+        },
+      ],
+      defaultContext: ['ACTIVE_VIEWPORT:VIEWER'],
+    };
     // {
     // TODO:
     // - Right, alternative StudyBrowser
