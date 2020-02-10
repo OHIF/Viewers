@@ -97,11 +97,13 @@ class Viewer extends Component {
     });
   }
 
+  // TODO: fix how we select the sidePanels and avoid this hardCoding
+  // TODO: remove lesion tracker study browser hardcoded
   state = {
     isLeftSidePanelOpen: true,
     isRightSidePanelOpen: false,
     selectedRightSidePanel: '',
-    selectedLeftSidePanel: 'studies', // TODO: Don't hardcode this
+    selectedLeftSidePanel: 'lesion-tracker-study-browser', // TODO: Don't hardcode this
     thumbnails: [],
   };
 
