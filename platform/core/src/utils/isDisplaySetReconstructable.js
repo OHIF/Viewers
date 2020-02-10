@@ -67,6 +67,12 @@ function processSingleframe(instances) {
   if (instances.length > 2) {
     const firstIpp = _getImagePositionPatient(firstImage);
     const lastIpp = _getImagePositionPatient(instances[instances.length - 1]);
+
+    // We can't reconstruct if we are missing imagePositionPatient values
+    if (!firstIpp || !lastIpp) {
+      return { value: false };
+    }
+
     const averageSpacingBetweenFrames =
       _getPerpendicularDistance(firstIpp, lastIpp) / (instances.length - 1);
 
@@ -136,8 +142,13 @@ function _getSpacingIssue(spacing, averageSpacing) {
 }
 
 function _getImagePositionPatient(instance) {
-  return instance
-    .getTagValue('x00200032')
+  const tagValue = instance
+    .getTagValue('x00200032');
+  if (!tagValue) {
+    return;
+  }
+
+  return tagValue
     .split('\\')
     .map(element => Number(element));
 }

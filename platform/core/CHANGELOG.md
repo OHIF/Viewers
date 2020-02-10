@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.9...@ohif/core@2.4.0) (2020-02-10)
+
+
+### Features
+
+* 🎸 MeasurementService ([#1314](https://github.com/OHIF/Viewers/issues/1314)) ([0c37a40](https://github.com/OHIF/Viewers/commit/0c37a406d963569af8c3be24c697dafd42712dfc))
+
+
+
+
+
+## [2.3.9](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.8...@ohif/core@2.3.9) (2020-02-07)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.3.8](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.7...@ohif/core@2.3.8) (2020-02-06)
+
+
+### Bug Fixes
+
+* Remove trash data from redux storage after updates ([#1358](https://github.com/OHIF/Viewers/issues/1358)) ([7b2d44f](https://github.com/OHIF/Viewers/commit/7b2d44f2c18241ea521b8d3652aee32e36eaddb8))
+
+
+
+
+
 ## [2.3.7](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.6...@ohif/core@2.3.7) (2020-01-30)
 
 

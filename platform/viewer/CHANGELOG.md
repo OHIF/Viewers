@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.6.0...@ohif/viewer@3.6.1) (2020-02-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [3.6.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.5.1...@ohif/viewer@3.6.0) (2020-02-10)
+
+
+### Features
+
+* 🎸 MeasurementService ([#1314](https://github.com/OHIF/Viewers/issues/1314)) ([0c37a40](https://github.com/OHIF/Viewers/commit/0c37a406d963569af8c3be24c697dafd42712dfc))
+
+
+
+
+
+## [3.5.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.5.0...@ohif/viewer@3.5.1) (2020-02-07)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [3.5.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.4.14...@ohif/viewer@3.5.0) (2020-02-06)
+
+
+### Features
+
+* lesion-tracker extension ([#1420](https://github.com/OHIF/Viewers/issues/1420)) ([73e4409](https://github.com/OHIF/Viewers/commit/73e440968ce4699d081a9c9f2d21dd68095b3056))
+
+
+
+
+
+## [3.4.14](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.4.13...@ohif/viewer@3.4.14) (2020-02-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [3.4.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.4.12...@ohif/viewer@3.4.13) (2020-01-30)
 
 **Note:** Version bump only for package @ohif/viewer
