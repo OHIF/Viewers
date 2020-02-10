@@ -25,8 +25,6 @@ class MeasurementTable extends Component {
     t: PropTypes.func,
     saveFunction: PropTypes.func,
     onSaveComplete: PropTypes.func,
-    customHeader: PropTypes.func,
-    customTimepointsHeader: PropTypes.func,
   };
 
   static defaultProps = {
@@ -41,11 +39,11 @@ class MeasurementTable extends Component {
   };
 
   render() {
-    const { overallWarnings, saveFunction, t, lesionTracker } = this.props;
+    const { overallWarnings, saveFunction, t } = this.props;
     const hasOverallWarnings = overallWarnings.warningList.length > 0;
 
     return (
-      <div className={`measurementTable ${lesionTracker && 'lesionTracker'}`}>
+      <div className="measurementTable">
         <div className="measurementTableHeader">
           {hasOverallWarnings && (
             <OverlayTrigger
@@ -170,11 +168,6 @@ class MeasurementTable extends Component {
   };
 
   getCustomHeader = measureGroup => {
-    if (this.props.customHeader) {
-      const CustomHeader = this.props.customHeader;
-      return <CustomHeader {...this.props} {...measureGroup} />;
-    }
-
     return (
       <React.Fragment>
         <div className="tableListHeaderTitle">
@@ -192,11 +185,6 @@ class MeasurementTable extends Component {
 
   getTimepointsHeader = () => {
     const { timepoints, t } = this.props;
-
-    if (this.props.customTimepointsHeader) {
-      const CustomTimepointsHeader = this.props.customTimepointsHeader;
-      return <CustomTimepointsHeader {...this.props} />;
-    }
 
     return timepoints.map((timepoint, index) => {
       return (
