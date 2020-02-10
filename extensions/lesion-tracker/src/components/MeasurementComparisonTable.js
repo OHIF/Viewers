@@ -74,7 +74,7 @@ const additionalFindings = [
   },
 ];
 
-const baselineCollections = [
+const currentCollections = [
   {
     selectorAction: () => { },
     maxMeasurements: 3,
@@ -88,7 +88,7 @@ const baselineCollections = [
   },
 ];
 
-const followupCollections = [
+const comparisonColletions = [
   {
     selectorAction: () => { },
     maxMeasurements: 3,
@@ -102,11 +102,11 @@ const followupCollections = [
   },
 ];
 
-const comparisonCollections = baselineCollections.map((group, index) => {
+const comparisonCollections = currentCollections.map((group, index) => {
   return {
     ...group,
     measurements: group.measurements.map((measurement, measurementIndex) => {
-      const comparisonCollection = followupCollections[index].measurements;
+      const comparisonCollection = comparisonColletions[index].measurements;
       if (measurementIndex < comparisonCollection.length) {
         return {
           ...measurement,
