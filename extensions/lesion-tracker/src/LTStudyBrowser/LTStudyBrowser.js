@@ -44,8 +44,7 @@ const getRoundedButtonsData = tabs => {
   return tabs.map((tabData, index) => {
     return {
       value: index,
-      icon: 'th',
-      bottomLabel: tabData.name,
+      label: tabData.name,
     };
   });
 };
