@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { useCallback, useReducer } from 'react';
 import { API } from '../api';
 
 const ACTIONS = {
@@ -34,8 +34,7 @@ const dataFetchReducer = (state, action) => {
   }
 };
 
-const useApi = initialUrl => {
-  const [url, setUrl] = useState(initialUrl);
+const useApi = (method = 'GET', data = {}, options = {}) => {
   const [state, dispatch] = useReducer(dataFetchReducer, {
     isLoading: false,
     isError: false,
@@ -43,25 +42,41 @@ const useApi = initialUrl => {
     data: {},
   });
 
-  useEffect(() => {
-    if (!url) {
-      return;
+  const fetchData = async (method = 'GET', url, data = {}, options = {}) => {
+    dispatch({ type: ACTIONS.LOADING });
+
+    try {
+      const result = await API[method]({
+        url,
+        data,
+        options,
+      });
+
+      dispatch({ type: ACTIONS.SUCCESS, payload: result });
+    } catch (error) {
+      dispatch({ type: ACTIONS.ERROR, payload: error });
     }
+  };
 
-    const fetchData = async () => {
-      dispatch({ type: ACTIONS.LOADING });
+  const api = useCallback(
+    {
+      GET: url => {
+        fetchData('GET', url);
+      },
+      POST: (url, data = {}, options = {}) => {
+        fetchData('POST', url, data, options);
+      },
+      PUT: (url, data = {}, options = {}) => {
+        fetchData('PUT', url, data, options);
+      },
+      DELETE: (url, data = {}, options = {}) => {
+        fetchData('DELETE', url, data, options);
+      },
+    },
+    []
+  );
 
-      try {
-        const result = await API.get(url);
-        dispatch({ type: ACTIONS.SUCCESS, payload: result.data });
-      } catch (error) {
-        dispatch({ type: ACTIONS.ERROR, payload: error });
-      }
-    };
-    fetchData();
-  }, [url]);
-
-  return [state, setUrl];
+  return { state, api };
 };
 
 export const withApi = Component => {
