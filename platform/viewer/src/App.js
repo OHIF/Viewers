@@ -23,6 +23,7 @@ import {
   UINotificationService,
   UIModalService,
   UIDialogService,
+  MeasurementService,
   utils,
   redux as reduxOHIF,
 } from '@ohif/core';
@@ -122,7 +123,12 @@ class App extends Component {
     } = this._appConfig;
 
     this.initUserManager(oidc);
-    _initServices([UINotificationService, UIModalService, UIDialogService]);
+    _initServices([
+      UINotificationService,
+      UIModalService,
+      UIDialogService,
+      MeasurementService,
+    ]);
     _initExtensions(
       [...defaultExtensions, ...extensions],
       cornerstoneExtensionConfig,
@@ -144,6 +150,7 @@ class App extends Component {
       UINotificationService,
       UIDialogService,
       UIModalService,
+      MeasurementService,
     } = servicesManager.services;
 
     if (this._userManager) {
