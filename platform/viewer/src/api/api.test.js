@@ -25,7 +25,7 @@ describe('API', () => {
     mockAxios.request.mockRejectedValue(new Error(errorMessage));
 
     try {
-      await API.GET({ url: 'aseasdasd' });
+      await API.GET({ url: 'invalidUrl' });
     } catch (err) {
       expect(mockAxios.request).toHaveBeenCalled();
       expect(err).toEqual(errorMessage);
