@@ -32,6 +32,7 @@ function StudyList(props) {
     studies,
     sort,
     onSort: handleSort,
+    clearFilters,
     filterValues,
     onFilterChange: handleFilterChange,
     onSelectItem: handleSelectItem,
@@ -106,8 +107,15 @@ function StudyList(props) {
       fieldName: 'allFields',
       inputType: 'text',
       size: 100,
+      clearable: true,
     },
   ];
+
+  const clearTableMeta = {
+    displayText: t('Clear filters'),
+    fieldName: 'clearFilters',
+    size: 50,
+  };
 
   const tableMeta = getContentFromUseMediaValue(
     displaySize,
@@ -140,6 +148,11 @@ function StudyList(props) {
             sortDirection={sort.direction}
             studyListDateFilterNumDays={studyListDateFilterNumDays}
           />
+        </tr>
+        <tr>
+          <span onClick={clearFilters} className="btn clear-filters">
+            {clearTableMeta.displayText}
+          </span>
         </tr>
       </thead>
       <tbody className="table-body" data-cy="study-list-results">
@@ -220,6 +233,7 @@ StudyList.propTypes = {
     studyDateTo: PropTypes.any,
     studyDateFrom: PropTypes.any,
   }).isRequired,
+  clearFilters: PropTypes.func.isRequired,
   onFilterChange: PropTypes.func.isRequired,
   studyListDateFilterNumDays: PropTypes.number,
   displaySize: PropTypes.string,

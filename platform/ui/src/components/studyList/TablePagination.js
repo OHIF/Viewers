@@ -3,6 +3,16 @@ import PropTypes from 'prop-types';
 import './PaginationArea.styl';
 import { withTranslation } from '../../contextProviders';
 
+const isPreviousDisabled = (currentPage, isLoading, hasErrors) => {
+  return currentPage === 0 || isLoading || hasErrors;
+};
+
+const isNextDisabled = (recordCount, rowsPerPage, isLoading, hasErrors) => {
+  return (
+    recordCount === 0 || rowsPerPage > recordCount || isLoading || hasErrors
+  );
+};
+
 class TablePagination extends PureComponent {
   static defaultProps = {
     pageOptions: [5, 10, 25, 50, 100],
@@ -19,6 +29,8 @@ class TablePagination extends PureComponent {
     prevPageFunc: PropTypes.func,
     onRowsPerPageChange: PropTypes.func,
     recordCount: PropTypes.number.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+    hasErrors: PropTypes.bool.isRequired,
   };
 
   nextPage = () => {
@@ -33,6 +45,13 @@ class TablePagination extends PureComponent {
     this.props.onRowsPerPageChange(parseInt(event.target.value));
   };
 
+  renderCurrentPage() {
+    if (this.props.isLoading || this.props.hasErrors) {
+      return '-';
+    }
+
+    return this.props.currentPage;
+  }
   renderPaginationButtons() {
     return (
       <div className="col-xs-8 col-sm-9 col-md-9">
@@ -42,19 +61,26 @@ class TablePagination extends PureComponent {
               <li className="page-item prev">
                 <button
                   onClick={this.prevPage}
-                  disabled={this.props.currentPage === 0}
+                  disabled={isPreviousDisabled(
+                    this.props.currentPage,
+                    this.props.isLoading,
+                    this.props.hasErrors
+                  )}
                   className="btn page-link"
                 >
                   {this.props.t('Previous')}
                 </button>
               </li>
+              <li className="current-page">{this.renderCurrentPage()}</li>
               <li className="page-item next">
                 <button
                   onClick={this.nextPage}
-                  disabled={
-                    this.props.recordCount === 0 ||
-                    this.props.rowsPerPage > this.props.recordCount
-                  }
+                  disabled={isNextDisabled(
+                    this.props.recordCount,
+                    this.props.rowsPerPage,
+                    this.props.isLoading,
+                    this.props.hasErrors
+                  )}
                   className="btn page-link"
                 >
                   {this.props.t('Next')}
@@ -72,6 +98,7 @@ class TablePagination extends PureComponent {
       <div className="form-inline form-group rows-per-page">
         <span>{this.props.t('Show')}</span>
         <select
+          disabled={this.props.isLoading || this.props.hasErrors}
           onChange={this.onRowsPerPageChange}
           defaultValue={this.props.rowsPerPage}
         >

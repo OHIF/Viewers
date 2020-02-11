@@ -77,10 +77,18 @@ function TableSearchFilter(props) {
 
   return translationsAreReady
     ? meta.map((field, i) => {
-        const { displayText, fieldName, inputType } = field;
+        const {
+          displayText,
+          fieldName,
+          inputType: fieldInputType,
+          clearable,
+        } = field;
         const isSortField = sortFieldName === fieldName;
         const sortIcon = isSortField ? sortIconForSortField : sortIcons[0];
-
+        let inputType = fieldInputType;
+        if (clearable && inputType === 'text') {
+          inputType = 'search';
+        }
         return (
           <th key={`${fieldName}-${i}`}>
             <label
@@ -90,15 +98,16 @@ function TableSearchFilter(props) {
               {`${displayText}`}
               <Icon name={sortIcon} style={{ fontSize: '12px' }} />
             </label>
-            {inputType === 'text' && (
+            {fieldInputType === 'text' && (
               <input
-                type="text"
+                type={inputType}
                 id={`filter-${fieldName}`}
                 className="form-control studylist-search"
                 value={values[fieldName]}
-                onChange={e => onValueChange(fieldName, e.target.value)}
+                onChange={e => onValueChange({ [fieldName]: e.target.value })}
               />
             )}
+
             {inputType === 'date-range' && (
               // https://github.com/airbnb/react-dates
               <CustomDateRangePicker
@@ -109,8 +118,10 @@ function TableSearchFilter(props) {
                 endDateId="end-date"
                 // TODO: We need a dynamic way to determine which fields values to update
                 onDatesChange={({ startDate, endDate, preset = false }) => {
-                  onValueChange('studyDateFrom', startDate);
-                  onValueChange('studyDateTo', endDate);
+                  onValueChange({
+                    studyDateFrom: startDate,
+                    studyDateTo: endDate,
+                  });
                 }}
                 focusedInput={focusedInput}
                 onFocusChange={updatedVal => setFocusedInput(updatedVal)}
