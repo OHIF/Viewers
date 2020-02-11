@@ -178,15 +178,11 @@ export class HotkeysManager {
     }
 
     const isKeyArray = keys instanceof Array;
-    if (isKeyArray) {
-      const combinedKeys = keys.join('+');
-      hotkeys.bind(combinedKeys, evt => {
-        this._commandsManager.runCommand(commandName, { evt });
-      });
-      return;
-    }
+    const combinedKeys = isKeyArray ? keys.join('+') : keys;
 
-    hotkeys.bind(keys, evt => {
+    hotkeys.bind(combinedKeys, evt => {
+      evt.preventDefault();
+      evt.stopPropagation();
       this._commandsManager.runCommand(commandName, { evt });
     });
   }

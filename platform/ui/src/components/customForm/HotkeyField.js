@@ -46,13 +46,8 @@ function HotkeyField({ keys, handleChange, classNames, modifier_keys }) {
   const inputValue = formatKeysForInput(keys);
 
   const onInputKeyDown = event => {
-    const { key = '' } = event;
-    const lowerCaseKey = key.toLowerCase();
-
-    // Prevent ESC key from propagating and closing the modal
-    if (lowerCaseKey === 'escape') {
-      event.stopPropagation();
-    }
+    event.stopPropagation();
+    event.preventDefault();
 
     hotkeys.record(sequence => {
       const keys = getKeys({ sequence, modifier_keys });
