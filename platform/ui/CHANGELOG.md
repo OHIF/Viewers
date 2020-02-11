@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.9...@ohif/ui@1.2.0) (2020-02-10)
+
+
+### Features
+
+* Lesion tracker right panel ([#1428](https://github.com/OHIF/Viewers/issues/1428)) ([98a649b](https://github.com/OHIF/Viewers/commit/98a649b455ffc712938fc5035cdef40695e58440))
+
+
+
+
+
 ## [1.1.9](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.8...@ohif/ui@1.1.9) (2020-01-30)
 
 
