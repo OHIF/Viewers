@@ -1,4 +1,4 @@
-import OHIF from '@ohif/core';
+import OHIF, { utils } from '@ohif/core';
 import { SimpleDialog } from '@ohif/ui';
 import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
@@ -6,6 +6,7 @@ import merge from 'lodash.merge';
 import queryString from 'query-string';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
+const { studyMetadataManager } = utils;
 
 function fallbackMetaDataProvider(type, imageId) {
   if (!imageId.includes('wado?requestType=WADO')) {
@@ -221,6 +222,31 @@ const _connectToolsToMeasurementService = measurementService => {
     getAnnotation,
   } = csToolsVer4MeasurementSource;
 
+  const _getImageId = ({
+    studyInstanceUID,
+    referenceSeriesUID,
+    sopInstanceUID,
+    frameNumber,
+  }) => {
+    const studyMetadata = studyMetadataManager.get(studyInstanceUID);
+    const series = studyMetadata.getSeriesByUID(referenceSeriesUID);
+    const instance = series.getInstanceByUID(sopInstanceUID);
+    return instance.getImageId(frameNumber);
+  };
+
+  /* TODO: Update cstools state with provided data, creating or updating cstools measurements. */
+  const _addImageIdToolState = (imageId, definition, data) => {
+    console.log('_addImageIdToolState: imageId', imageId);
+    console.log('_addImageIdToolState: definition', definition);
+    console.log('_addImageIdToolState: data', data);
+  };
+
+  const _getToolType = csToolsAnnotation => {
+    const { toolName, toolType, measurementData } = csToolsAnnotation;
+    const csTool = toolName || measurementData.toolType || toolType;
+    return csTool;
+  };
+
   /* Measurement Service Events */
   cornerstone.events.addEventListener(
     cornerstone.EVENTS.ELEMENT_ENABLED,
@@ -233,7 +259,7 @@ const _connectToolsToMeasurementService = measurementService => {
       measurementService.subscribe(
         MEASUREMENT_ADDED,
         ({ source, measurement }) => {
-          if (![sourceId].includes(source.id)) {
+          if ([sourceId].includes(source.id)) {
             const annotation = getAnnotation('Length', measurement.id);
 
             console.log(
@@ -241,8 +267,14 @@ const _connectToolsToMeasurementService = measurementService => {
               measurement
             );
             console.log('Mapped annotation:', annotation);
+
+            const imageId = _getImageId(measurement);
+            const toolType = _getToolType(annotation);
+
+            _addImageIdToolState(imageId, toolType, annotation.measurementData);
           }
-        });
+        }
+      );
 
       measurementService.subscribe(
         MEASUREMENT_UPDATED,
@@ -255,11 +287,16 @@ const _connectToolsToMeasurementService = measurementService => {
               measurement
             );
             console.log('Mapped annotation:', annotation);
+
+            const imageId = _getImageId(measurement);
+            const toolType = _getToolType(annotation);
+
+            _addImageIdToolState(imageId, toolType, annotation.measurementData);
           }
         }
       );
 
-      const addOrUpdateMeasurement = csToolsAnnotation => {
+      const _addOrUpdateMeasurement = csToolsAnnotation => {
         try {
           const { toolName, toolType, measurementData } = csToolsAnnotation;
           const csTool = toolName || measurementData.toolType || toolType;
@@ -267,14 +304,14 @@ const _connectToolsToMeasurementService = measurementService => {
           const measurementServiceId = addOrUpdate(csTool, csToolsAnnotation);
 
           if (!measurementData._measurementServiceId) {
-            addMeasurementServiceId(measurementServiceId, csToolsAnnotation);
+            _addMeasurementServiceId(measurementServiceId, csToolsAnnotation);
           }
         } catch (error) {
           console.warn('Failed to add or update measurement:', error);
         }
       };
 
-      const addMeasurementServiceId = (id, csToolsAnnotation) => {
+      const _addMeasurementServiceId = (id, csToolsAnnotation) => {
         const { measurementData } = csToolsAnnotation;
         Object.assign(measurementData, { _measurementServiceId: id });
       };
@@ -287,7 +324,7 @@ const _connectToolsToMeasurementService = measurementService => {
           csToolsEvtName,
           ({ detail: csToolsAnnotation }) => {
             console.log(`Cornerstone Element Event: ${csToolsEvtName}`);
-            addOrUpdateMeasurement(csToolsAnnotation);
+            _addOrUpdateMeasurement(csToolsAnnotation);
           }
         );
       });

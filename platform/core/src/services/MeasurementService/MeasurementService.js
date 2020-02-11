@@ -18,6 +18,8 @@ import guid from '../../utils/guid';
  * @property {string} sopInstanceUID -
  * @property {string} frameOfReferenceUID -
  * @property {string} referenceSeriesUID -
+ * @property {string} studyInstanceUID -
+ * @property {number} frameNumber -
  * @property {string} label -
  * @property {string} description -
  * @property {string} type -
@@ -33,6 +35,8 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'sopInstanceUID',
   'frameOfReferenceUID',
   'referenceSeriesUID',
+  'studyInstanceUID',
+  'frameNumber',
   'label',
   'description',
   'type',
@@ -219,10 +223,11 @@ class MeasurementService {
       return;
     }
 
+    const measurement = this.getMeasurement(measurementId);
+
     const mapping = this._getMappingByMeasurementSource(measurementId, definition);
     if (mapping) return mapping.toSourceSchema(measurement, definition);
 
-    const measurement = this.getMeasurement(measurementId);
     const matchingMapping = this._getMatchingMapping(source, definition, measurement);
 
     if (matchingMapping) {

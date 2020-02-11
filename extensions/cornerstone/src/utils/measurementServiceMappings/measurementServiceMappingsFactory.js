@@ -1,6 +1,12 @@
-import cornerstone from 'cornerstone-core';
+import { measurements } from '@ohif/core';
+const { getImageAttributes } = measurements;
 
-const SUPPORTED_TOOLS = ['Length', 'EllipticalRoi', 'RectangleRoi', 'ArrowAnnotate'];
+const SUPPORTED_TOOLS = [
+  'Length',
+  'EllipticalRoi',
+  'RectangleRoi',
+  'ArrowAnnotate',
+];
 
 const measurementServiceMappingsFactory = measurementService => {
   /**
@@ -20,11 +26,16 @@ const measurementServiceMappingsFactory = measurementService => {
       sopInstanceUID,
       frameOfReferenceUID,
       referenceSeriesUID,
+      studyInstanceUID,
+      frameNumber,
     } = measurement;
 
     return {
       toolName: definition,
       measurementData: {
+        toolType: definition,
+        studyInstanceUid: studyInstanceUID,
+        frameIndex: frameNumber,
         sopInstanceUid: sopInstanceUID,
         frameOfReferenceUid: frameOfReferenceUID,
         seriesInstanceUid: referenceSeriesUID,
@@ -45,6 +56,7 @@ const measurementServiceMappingsFactory = measurementService => {
    */
   const toMeasurement = csToolsAnnotation => {
     const { element, measurementData } = csToolsAnnotation;
+
     const tool =
       csToolsAnnotation.toolType ||
       csToolsAnnotation.toolName ||
@@ -56,39 +68,36 @@ const measurementServiceMappingsFactory = measurementService => {
       throw new Error('Tool not supported');
     }
 
+    /*
+     * TODO: These attributes will be added later after cstools events were fired.
+     * This is why we also get them here.
+     */
     const {
       sopInstanceUid,
       frameOfReferenceUid,
       seriesInstanceUid,
-    } = _getAttributes(element);
+      studyInstanceUid,
+      frameIndex,
+    } = getImageAttributes(element);
 
     const points = [];
     points.push(measurementData.handles);
 
     return {
       id: measurementData._measurementServiceId,
+      studyInstanceUID: studyInstanceUid,
+      frameNumber: frameIndex,
       sopInstanceUID: sopInstanceUid,
       frameOfReferenceUID: frameOfReferenceUid,
       referenceSeriesUID: seriesInstanceUid,
       label: measurementData.text,
       description: measurementData.description,
       unit: measurementData.unit,
-      area: measurementData.cachedStats && measurementData.cachedStats.area, /* TODO: Add concept names instead (descriptor) */
+      /* TODO: Add concept names instead (descriptor) */
+      area: measurementData.cachedStats && measurementData.cachedStats.area,
       type: _getValueTypeFromToolType(tool),
       points: _getPointsFromHandles(measurementData.handles),
     };
-  };
-
-  const _getAttributes = element => {
-    const enabledElement = cornerstone.getEnabledElement(element);
-    const imageId = enabledElement.image.imageId;
-    const sopInstance = cornerstone.metaData.get('instance', imageId);
-    const sopInstanceUid = sopInstance.sopInstanceUid;
-    const frameOfReferenceUid = sopInstance.frameOfReferenceUID;
-    const series = cornerstone.metaData.get('series', imageId);
-    const seriesInstanceUid = series.seriesInstanceUid;
-
-    return { sopInstanceUid, frameOfReferenceUid, seriesInstanceUid };
   };
 
   const _getValueTypeFromToolType = toolType => {
