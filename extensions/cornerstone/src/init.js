@@ -328,6 +328,16 @@ const _connectToolsToMeasurementService = measurementService => {
           }
         );
       });
+
+      event.detail.element.addEventListener(
+        csTools.EVENTS.MEASUREMENT_REMOVED,
+        ({ detail: csToolsAnnotation }) => {
+          const measurementId = csToolsAnnotation.measurementData._measurementServiceId;
+          if (measurementId) {
+            measurementService.remove(measurementId);
+          }
+        }
+      );
     }
   );
 };

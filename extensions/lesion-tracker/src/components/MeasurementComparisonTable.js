@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { MeasurementTable } from '@ohif/ui';
 
@@ -116,18 +117,20 @@ const MeasurementComparisonTable = props => {
     );
   }; */
 
+  const convertMeasurementsToTableData = measurements => {
+    return measurements.map(({ id, label }, index) => {
+      return {
+        measurementId: id,
+        measurementNumber: id,
+        itemNumber: index,
+        label: '(No description)',
+        data: [{ displayText: label || id }],
+      };
+    });
+  };
+
   useEffect(() => {
-    setMeasurements(
-      props.measurements.map(({ id }, index) => {
-        return {
-          measurementId: id,
-          measurementNumber: id,
-          itemNumber: index,
-          label: '(No description)',
-          data: [{ displayText: id }],
-        };
-      })
-    );
+    setMeasurements(convertMeasurementsToTableData(props.measurements));
   }, [props.measurements]);
 
   useEffect(() => {
@@ -174,6 +177,11 @@ const MeasurementComparisonTable = props => {
       </div>
     </div>
   );
+};
+
+MeasurementComparisonTable.propTypes = {
+  measurements: PropTypes.array,
+  additionalFindings: PropTypes.array,
 };
 
 export default MeasurementComparisonTable;

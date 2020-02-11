@@ -27,15 +27,20 @@ export default {
     const {
       MEASUREMENT_ADDED,
       MEASUREMENT_UPDATED,
+      MEASUREMENT_REMOVED,
     } = MeasurementService.EVENTS;
 
     const ExtendedMeasurementComparisonTable = () => {
       const [measurements, setMeasurements] = useState([]);
 
+      const updateMeasurements = () => {
+        const measurements = MeasurementService.getMeasurements();
+        setMeasurements(measurements);
+      };
+
       useEffect(() => {
         MeasurementService.subscribe(MEASUREMENT_ADDED, () => {
-          const measurements = MeasurementService.getMeasurements();
-          setMeasurements(measurements);
+          updateMeasurements();
           UINotificationService.show({
             title: 'Lesion Tracker Comparison Table',
             message: 'Measurement added, updating measurement table.',
@@ -43,8 +48,11 @@ export default {
         });
 
         MeasurementService.subscribe(MEASUREMENT_UPDATED, () => {
-          const measurements = MeasurementService.getMeasurements();
-          setMeasurements(measurements);
+          updateMeasurements();
+        });
+
+        MeasurementService.subscribe(MEASUREMENT_REMOVED, () => {
+          updateMeasurements();
         });
       }, []);
 

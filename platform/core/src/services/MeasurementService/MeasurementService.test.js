@@ -323,6 +323,23 @@ describe('MeasurementService.js', () => {
     });
   });
 
+  describe('remove()', () => {
+    it('removes a added measurement by its id', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
+      const id = source.addOrUpdate(definition, measurement);
+      measurementService.remove(id);
+      const measurements = measurementService.getMeasurements();
+      expect(measurements.length).toBe(0);
+    });
+  });
+
   describe('subscribe()', () => {
     it('subscribers receive broadcasted add event', () => {
       measurementService.addMapping(

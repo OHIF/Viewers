@@ -49,6 +49,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
 const EVENTS = {
   MEASUREMENT_UPDATED: 'event::measurement_updated',
   MEASUREMENT_ADDED: 'event::measurement_added',
+  MEASUREMENT_REMOVED: 'event::measurement_removed',
 };
 
 const VALUE_TYPES = {
@@ -107,6 +108,22 @@ class MeasurementService {
     }
 
     return measurement;
+  }
+
+  /**
+   * Remove a measurement by its id.
+   *
+   * @param {string} id If of the measurement
+   * @return void
+   */
+  remove(id) {
+    try {
+      delete this.measurements[id];
+      this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED);
+      console.info(`Measurement #${id} removed successfully.`);
+    } catch (error) {
+      console.error(`Failed to remove measurement #${id}.`);
+    }
   }
 
   /**
