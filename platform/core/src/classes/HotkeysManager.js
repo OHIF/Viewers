@@ -57,11 +57,15 @@ export class HotkeysManager {
    * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
    */
   setHotkeys(hotkeyDefinitions = []) {
-    const definitions = Array.isArray(hotkeyDefinitions)
-      ? [...hotkeyDefinitions]
-      : this._parseToArrayLike(hotkeyDefinitions);
+    try {
+      const definitions = this._getValidDefinitions(hotkeyDefinitions);
 
-    definitions.forEach(definition => this.registerHotkeys(definition));
+      definitions.forEach(definition => this.registerHotkeys(definition));
+    } catch (error) {
+      log.warn(
+        'HotkeysManager failed to register hotkey definitions, this feature will be unavailable'
+      );
+    }
   }
 
   /**
@@ -71,11 +75,23 @@ export class HotkeysManager {
    * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
    */
   setDefaultHotKeys(hotkeyDefinitions = []) {
+    const definitions = this._getValidDefinitions(hotkeyDefinitions);
+
+    this.hotkeyDefaults = definitions;
+  }
+
+  /**
+   * Take hotkey definitions that can be an array or object and make sure that it
+   * returns an array of hotkeys
+   *
+   * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
+   */
+  _getValidDefinitions(hotkeyDefinitions) {
     const definitions = Array.isArray(hotkeyDefinitions)
       ? [...hotkeyDefinitions]
       : this._parseToArrayLike(hotkeyDefinitions);
 
-    this.hotkeyDefaults = definitions;
+    return definitions;
   }
 
   /**

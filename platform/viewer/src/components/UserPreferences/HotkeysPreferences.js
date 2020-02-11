@@ -136,7 +136,7 @@ function HotkeysPreferences({ onClose }) {
   return (
     <React.Fragment>
       <div className="HotkeysPreferences">
-        {hasHotkeys && (
+        {hasHotkeys ? (
           <div className="hotkeyTable">
             {splitedHotkeys.map((hotkeys, index) => {
               return (
@@ -179,6 +179,8 @@ function HotkeysPreferences({ onClose }) {
               );
             })}
           </div>
+        ) : (
+          'Hotkeys definitions is empty'
         )}
       </div>
       <TabFooter
