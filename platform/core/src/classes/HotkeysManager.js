@@ -54,9 +54,9 @@ export class HotkeysManager {
   /**
    * Registers a list of hotkeydefinitions.
    *
-   * @param {HotkeyDefinition[] | Object} hotkeyDefinitions Contains hotkeys definitions
+   * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
    */
-  setHotkeys(hotkeyDefinitions) {
+  setHotkeys(hotkeyDefinitions = []) {
     const definitions = Array.isArray(hotkeyDefinitions)
       ? [...hotkeyDefinitions]
       : this._parseToArrayLike(hotkeyDefinitions);
@@ -68,9 +68,9 @@ export class HotkeysManager {
    * Set default hotkey bindings. These
    * values are used in `this.restoreDefaultBindings`.
    *
-   * @param {HotkeyDefinition[] | Object} hotkeyDefinitions Contains hotkeys definitions
+   * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
    */
-  setDefaultHotKeys(hotkeyDefinitions) {
+  setDefaultHotKeys(hotkeyDefinitions = []) {
     const definitions = Array.isArray(hotkeyDefinitions)
       ? [...hotkeyDefinitions]
       : this._parseToArrayLike(hotkeyDefinitions);
@@ -82,10 +82,10 @@ export class HotkeysManager {
    * It parses given object containing hotkeyDefinition to array like.
    * Each property of given object will be mapped to an object of an array. And its property name will be the value of a property named as commandName
    *
-   * @param {HotkeyDefinition[] | Object} hotkeyDefinitions Contains hotkeys definitions
+   * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions={}] Contains hotkeys definitions
    * @returns {HotkeyDefinition[]}
    */
-  _parseToArrayLike(hotkeyDefinitionsObj) {
+  _parseToArrayLike(hotkeyDefinitionsObj = {}) {
     const copy = { ...hotkeyDefinitionsObj };
     return Object.entries(copy).map(entryValue =>
       this._parseToHotKeyObj(entryValue[0], entryValue[1])
