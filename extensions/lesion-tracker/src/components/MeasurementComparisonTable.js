@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { MeasurementTable } from '@ohif/ui';
 
@@ -74,52 +74,6 @@ const additionalFindings = [
   },
 ];
 
-const currentCollections = [
-  {
-    selectorAction: () => { },
-    maxMeasurements: 3,
-    groupName: 'Measurements',
-    measurements: measurements,
-  },
-  {
-    selectorAction: () => { },
-    groupName: 'Additional Findings',
-    measurements: additionalFindings,
-  },
-];
-
-const comparisonColletions = [
-  {
-    selectorAction: () => { },
-    maxMeasurements: 3,
-    groupName: 'Measurements',
-    measurements: measurements,
-  },
-  {
-    selectorAction: () => { },
-    groupName: 'Additional Findings',
-    measurements: additionalFindings,
-  },
-];
-
-const comparisonCollections = currentCollections.map((group, index) => {
-  return {
-    ...group,
-    measurements: group.measurements.map((measurement, measurementIndex) => {
-      const comparisonCollection = comparisonColletions[index].measurements;
-      if (measurementIndex < comparisonCollection.length) {
-        return {
-          ...measurement,
-          data: [
-            ...measurement.data,
-            ...comparisonCollection[measurementIndex].data,
-          ],
-        };
-      }
-    }),
-  };
-});
-
 const comparisonTimepoints = [
   {
     key: 'Current',
@@ -131,13 +85,87 @@ const comparisonTimepoints = [
   }
 ];
 
-const MeasurementComparisonTable = () => {
+const MeasurementComparisonTable = props => {
+  const [measurements, setMeasurements] = useState(props.measurements || []);
+  const [additionalFindings, setAdditionalFindings] = useState(props.additionalFindings || []);
+
+  const [comparisonGroups, setComparisonGroups] = useState([]);
+  const [currentGroups, setCurrentGroups] = useState([]);
+
+  /* const refreshComparisonGroups = () => {
+    setComparisonGroups(
+      currentGroups.map((group, index) => {
+        return {
+          ...group,
+          measurements: group.measurements.map(
+            (measurement, measurementIndex) => {
+              const comparisonCollection = comparisonGroups[index].measurements;
+              if (measurementIndex < comparisonCollection.length) {
+                return {
+                  ...measurement,
+                  data: [
+                    ...measurement.data,
+                    ...comparisonCollection[measurementIndex].data,
+                  ],
+                };
+              }
+            }
+          ),
+        };
+      })
+    );
+  }; */
+
+  useEffect(() => {
+    setMeasurements(
+      props.measurements.map(({ id }, index) => {
+        return {
+          measurementId: id,
+          measurementNumber: id,
+          itemNumber: index,
+          label: '(No description)',
+          data: [{ displayText: id }],
+        };
+      })
+    );
+  }, [props.measurements]);
+
+  useEffect(() => {
+    setCurrentGroups([
+      {
+        selectorAction: () => { },
+        maxMeasurements: 3,
+        groupName: 'Measurements',
+        measurements: measurements,
+      },
+      {
+        selectorAction: () => { },
+        groupName: 'Additional Findings',
+        measurements: additionalFindings,
+      },
+    ]);
+
+    setComparisonGroups([
+      {
+        selectorAction: () => { },
+        maxMeasurements: 3,
+        groupName: 'Measurements',
+        measurements: measurements,
+      },
+      {
+        selectorAction: () => { },
+        groupName: 'Additional Findings',
+        measurements: additionalFindings,
+      },
+    ]);
+  }, [measurements, additionalFindings]);
+
   return (
     <div className="MeasurementComparisonTable">
       <MeasurementTable
         timepoints={comparisonTimepoints}
         overallWarnings={overallWarnings}
-        measurementCollection={comparisonCollections}
+        measurementCollection={comparisonGroups}
         onRelabelClick={() => { }}
         onEditDescriptionClick={() => { }}
       />
