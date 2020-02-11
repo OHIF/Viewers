@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import './PaginationArea.styl';
 import { withTranslation } from '../../contextProviders';
 
-const isPreviousDisabled = (currentPage, isLoading, hasErrors) => {
-  return currentPage === 0 || isLoading || hasErrors;
+const isPreviousDisabled = (currentPage, isLoading, hasError) => {
+  return currentPage === 0 || isLoading || hasError;
 };
 
-const isNextDisabled = (recordCount, rowsPerPage, isLoading, hasErrors) => {
+const isNextDisabled = (recordCount, rowsPerPage, isLoading, hasError) => {
   return (
-    recordCount === 0 || rowsPerPage > recordCount || isLoading || hasErrors
+    recordCount === 0 || rowsPerPage > recordCount || isLoading || hasError
   );
 };
 
@@ -30,7 +30,7 @@ class TablePagination extends PureComponent {
     onRowsPerPageChange: PropTypes.func,
     recordCount: PropTypes.number.isRequired,
     isLoading: PropTypes.bool.isRequired,
-    hasErrors: PropTypes.bool.isRequired,
+    hasError: PropTypes.bool.isRequired,
   };
 
   nextPage = () => {
@@ -46,7 +46,7 @@ class TablePagination extends PureComponent {
   };
 
   renderCurrentPage() {
-    if (this.props.isLoading || this.props.hasErrors) {
+    if (this.props.isLoading || this.props.hasError) {
       return '-';
     }
 
@@ -64,7 +64,7 @@ class TablePagination extends PureComponent {
                   disabled={isPreviousDisabled(
                     this.props.currentPage,
                     this.props.isLoading,
-                    this.props.hasErrors
+                    this.props.hasError
                   )}
                   className="btn page-link"
                 >
@@ -79,7 +79,7 @@ class TablePagination extends PureComponent {
                     this.props.recordCount,
                     this.props.rowsPerPage,
                     this.props.isLoading,
-                    this.props.hasErrors
+                    this.props.hasError
                   )}
                   className="btn page-link"
                 >
@@ -98,7 +98,7 @@ class TablePagination extends PureComponent {
       <div className="form-inline form-group rows-per-page">
         <span>{this.props.t('Show')}</span>
         <select
-          disabled={this.props.isLoading || this.props.hasErrors}
+          disabled={this.props.isLoading || this.props.hasError}
           onChange={this.onRowsPerPageChange}
           defaultValue={this.props.rowsPerPage}
         >

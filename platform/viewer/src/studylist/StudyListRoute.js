@@ -29,7 +29,10 @@ import UserManagerContext from '../context/UserManagerContext';
 import WhiteLabellingContext from '../context/WhiteLabellingContext';
 import AppContext from '../context/AppContext';
 
-const { urlUtil: UrlUtil } = OHIF.utils;
+const {
+  urlUtil: UrlUtil,
+  getContentFromArrayMap: getContentFromUseMediaValue,
+} = OHIF.utils;
 
 const DEFAULT_FILTERS = {
   studyDateTo: null,
@@ -119,9 +122,6 @@ function StudyListRoute(props) {
     ['large', 'medium', 'small'],
     'small'
   );
-  // ~~ DEBOUNCED INPUT
-  //const debouncedSort = useDebounce(sort, 200);
-  //const debouncedFilters = useDebounce(filterValues, 250);
 
   // Google Cloud Adapter for DICOM Store Picking
   const { appConfig = {} } = appContext;
@@ -130,48 +130,6 @@ function StudyListRoute(props) {
   if (isGoogleCHAIntegrationEnabled && activeModalId !== 'DicomStorePicker') {
     setActiveModalId('DicomStorePicker');
   }
-
-  // Called when relevant state/props are updated
-  // Watches filters and sort, debounced
-  /*
-  useEffect(
-    () => {
-      const fetchStudies = async () => {
-        try {
-          setSearchStatus({ error: null, isSearchingForStudies: true });
-
-          const response = await getStudyList(
-            server,
-            debouncedFilters,
-            debouncedSort,
-            rowsPerPage,
-            pageNumber,
-            displaySize
-          );
-
-          setStudies(response);
-          setSearchStatus({ error: null, isSearchingForStudies: false });
-        } catch (error) {
-          console.warn(error);
-          setSearchStatus({ error: true, isFetching: false });
-        }
-      };
-
-      if (server) {
-        fetchStudies();
-      }
-    },
-    // TODO: Can we update studies directly?
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      debouncedFilters,
-      debouncedSort,
-      rowsPerPage,
-      pageNumber,
-      displaySize,
-      server,
-    ]
-  );*/
 
   const fetchData = useCallback(
     debounce(async newStudyListSessionProps => {
@@ -219,18 +177,8 @@ function StudyListRoute(props) {
   );
 
   useEffect(() => {
-    debugger;
     fetchStudies(studyListSessionProps);
-  }, []);
-
-  // TODO: Update Server
-  // if (this.props.server !== prevProps.server) {
-  //   this.setState({
-  //     modalComponentId: null,
-  //     searchData: null,
-  //     studies: null,
-  //   });
-  // }
+  }, [server, displaySize]);
 
   const onDrop = async acceptedFiles => {
     try {
@@ -402,6 +350,18 @@ function StudyListRoute(props) {
     displaySize,
   ]);
 
+  const clearFilterMeta = {
+    displayText: t('Clear filters'),
+    fieldName: 'clearFilters',
+    size: 50,
+  };
+
+  const clearFilter = getContentFromUseMediaValue(
+    displaySize,
+    { large: clearFilterMeta, medium: clearFilterMeta, small: null },
+    clearFilterMeta
+  );
+
   return (
     <>
       {studyListFunctionsEnabled ? (
@@ -443,7 +403,13 @@ function StudyListRoute(props) {
         </div>
       </div>
 
-      <div className="table-head-background" />
+      <div className="table-head-background">
+        {clearFilter && (
+          <div onClick={clearFilters} className="btn clear-filters">
+            {clearFilter.displayText}
+          </div>
+        )}
+      </div>
       <div className="study-list-container">
         {/* STUDY LIST OR DROP ZONE? */}
         {memoizedList}
@@ -455,8 +421,8 @@ function StudyListRoute(props) {
           onRowsPerPageChange={rows => setRowsPerPageSessionStorage(rows)}
           rowsPerPage={rowsPerPage}
           recordCount={studies.length}
-          isLoading={searchStatus.isSearchingForStudies}
-          hasError={searchStatus.error === true}
+          isLoading={searchStatus && searchStatus.isSearchingForStudies}
+          hasError={searchStatus && searchStatus.error === true}
         />
       </div>
     </>

@@ -2,23 +2,14 @@ import './StudyList.styl';
 
 import React from 'react';
 import classNames from 'classnames';
+import OHIF from '@ohif/core';
 import TableSearchFilter from './TableSearchFilter.js';
 import PropTypes from 'prop-types';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
 import { useTranslation } from 'react-i18next';
 
-const getContentFromUseMediaValue = (
-  displaySize,
-  contentArrayMap,
-  defaultContent
-) => {
-  const content =
-    displaySize in contentArrayMap
-      ? contentArrayMap[displaySize]
-      : defaultContent;
+const { getContentFromArrayMap: getContentFromUseMediaValue } = OHIF.utils;
 
-  return content;
-};
 /**
  *
  *
@@ -111,12 +102,6 @@ function StudyList(props) {
     },
   ];
 
-  const clearTableMeta = {
-    displayText: t('Clear filters'),
-    fieldName: 'clearFilters',
-    size: 50,
-  };
-
   const tableMeta = getContentFromUseMediaValue(
     displaySize,
     { large: largeTableMeta, medium: mediumTableMeta, small: smallTableMeta },
@@ -148,11 +133,6 @@ function StudyList(props) {
             sortDirection={sort.direction}
             studyListDateFilterNumDays={studyListDateFilterNumDays}
           />
-        </tr>
-        <tr>
-          <span onClick={clearFilters} className="btn clear-filters">
-            {clearTableMeta.displayText}
-          </span>
         </tr>
       </thead>
       <tbody className="table-body" data-cy="study-list-results">

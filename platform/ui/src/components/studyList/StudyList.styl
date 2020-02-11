@@ -77,7 +77,7 @@ placeholder-color(c)
  * Spans width of page to create a distinct area for table filters
  */
 .table-head-background
-  height: 121px
+  height: 120px
   position: absolute
   width: 100%
 
@@ -93,6 +93,16 @@ placeholder-color(c)
     height: 100%
     top: 0
     z-index: 1
+
+  div.clear-filters
+    z-index: 3;
+    position: absolute;
+    top: calc(50% - 8px);
+    right: 0;
+    padding-right: 3%;
+    height: 50%;
+    text-align: end;
+    color: var(--table-text-primary-color);
 
   &:after
     background-color: var(--ui-border-color-active)
@@ -232,6 +242,17 @@ table.table
   .study-list-container .filters label
     padding: 8px;
 
+  .table-head-background
+    height: 92px;
+
 @media only screen and (max-width: 500px)
   .hide-xs
     display: none;
+
+@media only screen and (min-width: 769px) and (max-width: 999px)
+  .table-head-background
+    height: 119px;
+
+@media only screen and (max-width: 1749px)
+  .table-head-background > div.clear-filters
+    padding-right: 1%;
