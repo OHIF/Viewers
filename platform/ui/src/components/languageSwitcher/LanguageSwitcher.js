@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 
 import './LanguageSwitcher.styl';
 
-const parseLanguage = lang => lang.split('-')[0];
 const LanguageSwitcher = ({ language, onLanguageChange, languages }) => {
   const onChange = event => {
     const { value } = event.target;
-    onLanguageChange(parseLanguage(value));
+    onLanguageChange(value);
   };
 
   return (
@@ -15,7 +14,7 @@ const LanguageSwitcher = ({ language, onLanguageChange, languages }) => {
       name="language-select"
       id="language-select"
       className="language-select"
-      value={parseLanguage(language)}
+      value={language}
       onChange={onChange}
     >
       {languages.map(lng => (

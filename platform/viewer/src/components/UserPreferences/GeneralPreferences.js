@@ -8,18 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 import './GeneralPreferences.styl';
 
-const languages = [
-  // TODO: list of available languages should come from i18n.options.resources
-  {
-    value: 'en',
-    label: 'English',
-  },
-  {
-    value: 'es',
-    label: 'Spanish',
-  },
-];
-
 /**
  * General Preferences tab
  * It renders the General Preferences content
@@ -31,6 +19,7 @@ function GeneralPreferences({ onClose }) {
   const { t } = useTranslation('UserPreferencesModal');
   const snackbar = useSnackbarContext();
   const currentLanguage = i18n.language;
+  const { availableLanguages } = i18n;
 
   const [language, setLanguage] = useState(currentLanguage);
 
@@ -61,7 +50,7 @@ function GeneralPreferences({ onClose }) {
           <LanguageSwitcher
             language={language}
             onLanguageChange={setLanguage}
-            languages={languages}
+            languages={availableLanguages}
           />
         </div>
       </div>
