@@ -1,7 +1,11 @@
 describe('Visual Regression - OHIF User Preferences', () => {
   context('Study List Page', function() {
     before(() => {
-      cy.visit('/');
+      cy.visit('/', {
+        onBeforeLoad: win => {
+          win.sessionStorage.clear();
+        },
+      });
     });
 
     beforeEach(() => {

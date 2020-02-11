@@ -59,7 +59,11 @@ Cypress.Commands.add('openStudy', patientName => {
  */
 Cypress.Commands.add('openStudyModality', modality => {
   cy.initRouteAliases();
-  cy.visit('/');
+  cy.visit('/', {
+    onBeforeLoad: win => {
+      win.sessionStorage.clear();
+    },
+  });
 
   cy.get('#filter-accessionOrModalityOrDescription')
     .type(modality)
@@ -82,7 +86,11 @@ Cypress.Commands.add('isPageLoaded', (url = '/viewer/') => {
 
 Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
-  cy.visit('/');
+  cy.visit('/', {
+    onBeforeLoad: win => {
+      win.sessionStorage.clear();
+    },
+  });
   cy.wait('@getStudies');
 });
 
