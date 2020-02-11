@@ -64,14 +64,14 @@ describe('OHIF User Preferences', () => {
       cy.get('[data-cy="options-menu"]').click();
     });
 
-    it('checks if user can cancel the language selection and application will be in English', function() {
+    it('checks if user can cancel the language selection and application will be in "English (USA)"', function() {
       // Set language to English and save
-      cy.setLanguage('English');
+      cy.setLanguage('English (USA)');
 
       // Set language to Spanish and cancel
       cy.setLanguage('Spanish', false);
 
-      // Header should be kept in English
+      // Header should be kept in "English (USA)"
       cy.get('.research-use')
         .scrollIntoView()
         .should('have.text', 'INVESTIGATIONAL USE ONLY');
@@ -92,7 +92,7 @@ describe('OHIF User Preferences', () => {
       cy.get('[data-cy="options-menu"]').click();
     });
 
-    it('checks if user can restore to default the language selection and application will be in English', function() {
+    it('checks if user can restore to default the language selection and application will be in "English (USA)"', function() {
       // Set language to Spanish
       cy.setLanguage('Spanish');
 
@@ -111,12 +111,12 @@ describe('OHIF User Preferences', () => {
         .scrollIntoView()
         .click();
 
-      // Header should be in English
+      // Header should be in "English (USA)"
       cy.get('.research-use')
         .scrollIntoView()
         .should('have.text', 'INVESTIGATIONAL USE ONLY');
 
-      // Options menu should be in English
+      // Options menu should be in "English (USA)"
       cy.get('[data-cy="options-menu"]')
         .should('have.text', 'Options')
         .click();
@@ -253,14 +253,14 @@ describe('OHIF User Preferences', () => {
       cy.get('[data-cy="options-menu"]').click();
     });
 
-    it('checks if user can cancel the language selection and application will be in English', function() {
+    it('checks if user can cancel the language selection and application will be in "English (USA)"', function() {
       // Set language to English and save
-      cy.setLanguage('English');
+      cy.setLanguage('English (USA)');
 
       // Set language to Spanish and cancel
       cy.setLanguage('Spanish', false);
 
-      // Header should be kept in English
+      // Header should be kept in "English (USA)"
       cy.get('.research-use')
         .scrollIntoView()
         .should('have.text', 'INVESTIGATIONAL USE ONLY');
@@ -280,7 +280,7 @@ describe('OHIF User Preferences', () => {
       cy.get('[data-cy="options-menu"]').click();
     });
 
-    it('checks if user can restore to default the language selection and application will be in English', function() {
+    it('checks if user can restore to default the language selection and application will be in "English (USA)', function() {
       cy.changePreferencesTab('@userPreferencesGeneralTab');
       cy.get('@userPreferencesGeneralTab').should('have.class', 'active');
 
@@ -304,12 +304,12 @@ describe('OHIF User Preferences', () => {
         .scrollIntoView()
         .click();
 
-      // Header should be in English
+      // Header should be in "English (USA)""
       cy.get('.research-use')
         .scrollIntoView()
         .should('have.text', 'INVESTIGATIONAL USE ONLY');
 
-      // Options menu should be in English
+      // Options menu should be in "English (USA)"
       cy.get('[data-cy="options-menu"]')
         .should('have.text', 'Options')
         .click();
