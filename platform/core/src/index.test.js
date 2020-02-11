@@ -16,6 +16,7 @@ describe('Top level exports', () => {
       'MeasurementService',
       //
       'utils',
+      'hotkeys',
       'studies',
       'redux',
       'classes',
