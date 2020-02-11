@@ -5,13 +5,14 @@ const formatPressedKeys = pressedKeysArray => pressedKeysArray.join('+');
 
 const findConflictingCommand = (hotkeys, currentCommandName, pressedKeys) => {
   let firstConflictingCommand = undefined;
-  const currentHotkeys = [formatPressedKeys(pressedKeys)];
+  const formatedPressedHotkeys = formatPressedKeys(pressedKeys);
 
   for (const commandName in hotkeys) {
     const toolHotkeys = hotkeys[commandName].keys;
+    const formatedToolHotkeys = formatPressedKeys(toolHotkeys);
 
     if (
-      isEqual(toolHotkeys, currentHotkeys) &&
+      formatedPressedHotkeys === formatedToolHotkeys &&
       commandName !== currentCommandName
     ) {
       firstConflictingCommand = hotkeys[commandName];
