@@ -6,6 +6,8 @@ import mockData from './mockData.js';
 import { AllStudies } from './AllStudies.js';
 import { ViewingStudies } from './ViewingStudies.js';
 
+import './LTStudyBrowser.styl';
+
 const findStudy = ({ studies, studyInstanceUid }) => {
   return studies.find(study => study.studyInstanceUid === studyInstanceUid);
 };
