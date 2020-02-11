@@ -1,5 +1,4 @@
 import { MODIFIER_KEYS, DISALLOWED_COMBINATIONS } from './hotkeysConfig';
-import isEqual from 'lodash.isequal';
 
 const formatPressedKeys = pressedKeysArray => pressedKeysArray.join('+');
 
