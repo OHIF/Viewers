@@ -54,8 +54,6 @@ function HotkeyField({ keys, handleChange, classNames, modifier_keys }) {
       event.stopPropagation();
     }
 
-    event.stopPropagation();
-
     hotkeys.record(sequence => {
       const keys = getKeys({ sequence, modifier_keys });
       hotkeys.unpause();
