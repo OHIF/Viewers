@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import asyncComponent from './asyncComponent.js';
 
 const MeasurementComparisonTable = asyncComponent(() =>
@@ -39,6 +40,8 @@ export default {
       };
 
       useEffect(() => {
+        updateMeasurements();
+
         MeasurementService.subscribe(MEASUREMENT_ADDED, () => {
           updateMeasurements();
           UINotificationService.show({
@@ -47,16 +50,20 @@ export default {
           });
         });
 
-        MeasurementService.subscribe(MEASUREMENT_UPDATED, () => {
-          updateMeasurements();
-        });
-
-        MeasurementService.subscribe(MEASUREMENT_REMOVED, () => {
-          updateMeasurements();
+        [MEASUREMENT_UPDATED, MEASUREMENT_REMOVED].forEach(event => {
+          MeasurementService.subscribe(event, () => updateMeasurements());
         });
       }, []);
 
-      return <MeasurementComparisonTable measurements={measurements} />;
+      return (
+        <MeasurementComparisonTable
+          measurements={measurements}
+          onItemClick={(event, measurementData) => {
+            const measurement = measurements.find(m => m.id === measurementData.measurementId);
+            // TODO: Implement jump to measurement (update viewport)
+          }}
+        />
+      );
     };
 
     return {

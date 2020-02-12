@@ -86,11 +86,11 @@ class MeasurementService {
    * @return {Measurement[]} Array of measurements
    */
   getMeasurements() {
-    const measurements = this._arrayOfObjects(this.measurements);
-    return (
-      measurements &&
-      measurements.map(m => this.measurements[Object.keys(m)[0]])
-    );
+    let measurements = this._arrayOfObjects(this.measurements);
+    measurements =
+      measurements.length &&
+      measurements.map(m => this.measurements[Object.keys(m)[0]]);
+    return measurements || [];
   }
 
   /**

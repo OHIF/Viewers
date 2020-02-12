@@ -8,9 +8,9 @@ jest.mock('cornerstone-core', () => ({
   metaData: {
     ...jest.requireActual('cornerstone-core').metaData,
     get: () => ({
-      sopInstanceUid: "123",
-      frameOfReferenceUID: "123",
-      seriesInstanceUid: "123",
+      sopInstanceUid: '123',
+      frameOfReferenceUID: '123',
+      seriesInstanceUid: '123',
     }),
   },
 }));
