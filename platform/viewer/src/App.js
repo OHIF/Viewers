@@ -62,8 +62,8 @@ const commandsManagerConfig = {
 
 /** Managers */
 const commandsManager = new CommandsManager(commandsManagerConfig);
-const hotkeysManager = new HotkeysManager(commandsManager);
 const servicesManager = new ServicesManager();
+const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
 let extensionManager;
 /** ~~~~~~~~~~~~~ End Application Setup */
 

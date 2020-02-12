@@ -11,7 +11,7 @@ import log from './../log.js';
  */
 
 export class HotkeysManager {
-  constructor(commandsManager) {
+  constructor(commandsManager, servicesManager) {
     this.hotkeyDefinitions = {};
     this.hotkeyDefaults = [];
     this.isEnabled = true;
@@ -22,6 +22,7 @@ export class HotkeysManager {
       );
     }
 
+    this._servicesManager = servicesManager;
     this._commandsManager = commandsManager;
   }
 
@@ -62,9 +63,12 @@ export class HotkeysManager {
 
       definitions.forEach(definition => this.registerHotkeys(definition));
     } catch (error) {
-      log.warn(
-        'HotkeysManager failed to register hotkey definitions, this feature will be unavailable'
-      );
+      const { UINotificationService } = this._servicesManager.services;
+      UINotificationService.show({
+        title: 'Hotkeys Manager',
+        message: 'Erro while setting hotkeys',
+        type: 'error',
+      });
     }
   }
 
