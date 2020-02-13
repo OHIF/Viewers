@@ -8,6 +8,8 @@ import { HotkeysPreferences } from './HotkeysPreferences';
 import { WindowLevelPreferences } from './WindowLevelPreferences';
 import { GeneralPreferences } from './GeneralPreferences';
 
+import './UserPreferences.styl';
+
 const tabs = [
   {
     name: 'Hotkeys',
@@ -25,7 +27,7 @@ const tabs = [
     name: 'Window Level',
     Component: WindowLevelPreferences,
     customProps: {},
-    hidden: true,
+    hidden: false,
   },
 ];
 
