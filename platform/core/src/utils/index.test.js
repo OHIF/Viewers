@@ -19,6 +19,7 @@ describe('Top level exports', () => {
       'urlUtil',
       'makeCancelable',
       'getContentFromArrayMap',
+      'hotkeys',
     ].sort();
 
     const exports = Object.keys(utils.default).sort();

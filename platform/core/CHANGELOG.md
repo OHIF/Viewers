@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.4.0...@ohif/core@2.4.1) (2020-02-12)
+
+
+### Bug Fixes
+
+* Combined Hotkeys for special characters ([#1233](https://github.com/OHIF/Viewers/issues/1233)) ([2f30e7a](https://github.com/OHIF/Viewers/commit/2f30e7a821a238144c49c56f37d8e5565540b4bd))
+
+
+
+
+
 # [2.4.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.9...@ohif/core@2.4.0) (2020-02-10)
 
 

@@ -13,6 +13,7 @@ import b64toBlob from './b64toBlob.js';
 import * as urlUtil from './urlUtil';
 import makeCancelable from './makeCancelable';
 import getContentFromArrayMap from './getContentFromArrayMap';
+import hotkeys from './hotkeys';
 
 const utils = {
   guid,
@@ -31,6 +32,7 @@ const utils = {
   urlUtil,
   makeCancelable,
   getContentFromArrayMap,
+  hotkeys,
 };
 
 export {
@@ -50,6 +52,7 @@ export {
   urlUtil,
   makeCancelable,
   getContentFromArrayMap,
+  hotkeys,
 };
 
 export default utils;
