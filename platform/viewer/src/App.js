@@ -40,7 +40,11 @@ import {
 } from './utils/index.js';
 
 /** Extensions */
-import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
+import {
+  GenericViewerCommands,
+  MeasurementsPanel,
+  GenericRoutesModule,
+} from './appExtensions';
 
 /** Viewer */
 import OHIFStandaloneViewer from './OHIFStandaloneViewer';
@@ -254,6 +258,7 @@ function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
 
   const requiredExtensions = [
     GenericViewerCommands,
+    GenericRoutesModule,
     [OHIFCornerstoneExtension, cornerstoneExtensionConfig],
     /* WARNING: MUST BE REGISTERED _AFTER_ OHIFCornerstoneExtension */
     MeasurementsPanel,

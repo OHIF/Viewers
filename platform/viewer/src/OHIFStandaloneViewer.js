@@ -6,6 +6,7 @@ import { NProgress } from '@tanem/react-nprogress';
 import { CSSTransition } from 'react-transition-group';
 import { connect } from 'react-redux';
 import { ViewerbaseDragDropContext } from '@ohif/ui';
+import { MODULE_TYPES } from '@ohif/core';
 import { SignoutCallbackComponent } from 'redux-oidc';
 import asyncComponent from './components/AsyncComponent.js';
 import * as RoutesUtil from './routes/routesUtil';
@@ -15,6 +16,8 @@ import { Bar, Container } from './components/LoadingBar/';
 import './OHIFStandaloneViewer.css';
 import './variables.css';
 import './theme-tide.css';
+
+import { extensionManager } from './App.js';
 // Contexts
 import AppContext from './context/AppContext';
 const CallbackPage = asyncComponent(() =>
@@ -144,7 +147,11 @@ class OHIFStandaloneViewer extends Component {
      *
      * See http://reactcommunity.org/react-transition-group/with-react-router/
      */
-    const routes = RoutesUtil.getRoutes(appConfig);
+    const modules = extensionManager.modules;
+    const routes = RoutesUtil.getRoutes(
+      appConfig,
+      modules[MODULE_TYPES.ROUTES]
+    );
 
     const currentPath = this.props.location.pathname;
     const noMatchingRoutes = !routes.find(r =>
