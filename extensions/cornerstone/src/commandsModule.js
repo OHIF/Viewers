@@ -372,7 +372,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
-      storeContexts: [],
+      storeContexts: ['viewports'],
       options: {},
     },
   };

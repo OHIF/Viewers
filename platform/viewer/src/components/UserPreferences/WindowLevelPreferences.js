@@ -21,16 +21,14 @@ function WindowLevelPreferences({ onClose }) {
   });
 
   const [state, setState] = useState({
-    values: windowLevelData,
+    values: { ...windowLevelData },
   });
 
   const { t } = useTranslation('UserPreferencesModal');
   const onResetPreferences = () => {};
   const hasErrors = false;
   const onSave = () => {
-    dispatch(actions.setUserPreferences(state.values));
-
-    localStorage.setItem('window-level-data', JSON.stringify(state.values));
+    dispatch(actions.setUserPreferences({ windowLevelData: state.values }));
 
     onClose();
 

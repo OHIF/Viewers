@@ -140,7 +140,6 @@ class App extends Component {
      */
     _initHotkeys(appConfigHotkeys);
     _initServers(servers);
-    _initUserPreferences();
     initWebWorkers();
   }
 
@@ -290,18 +289,6 @@ function _initServers(servers) {
   if (servers) {
     utils.addServers(servers, store);
   }
-}
-
-function _initUserPreferences() {
-  const windowLevelData = JSON.parse(
-    localStorage.getItem('window-level-data') || '{}'
-  );
-
-  const preferences = {
-    windowLevelData,
-  };
-
-  utils.addUserPreferences({ store, preferences });
 }
 
 function _isAbsoluteUrl(url) {

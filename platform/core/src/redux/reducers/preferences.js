@@ -18,25 +18,13 @@ const defaultState = {
   },
 };
 
-const preferences = (state, action) => {
+const preferences = (state = defaultState, action) => {
   switch (action.type) {
     case 'SET_USER_PREFERENCES': {
-      const newState = cloneDeep(defaultState);
-      if (action.state) {
-        Object.keys(action.state).forEach(key => {
-          if (action.state[key] && typeof action.state[key] === 'object') {
-            newState[key] = {
-              ...newState[key],
-              ...action.state[key],
-            };
-          }
-        });
-      }
-
-      return Object.assign({}, state, newState);
+      return Object.assign({}, state, action.state);
     }
     default:
-      return cloneDeep(state) || cloneDeep(defaultState);
+      return state;
   }
 };
 
