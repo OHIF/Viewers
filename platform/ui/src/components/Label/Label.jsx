@@ -2,7 +2,7 @@ import React from 'react';
 import t from 'prop-types';
 
 const Label = ({ children, spacing, className, text, ...rest }) => {
-  const baseClasses = 'block text-gray-700 text-sm font-bold';
+  const baseClasses = 'flex flex-1 flex-col text-gray-700 text-sm font-bold';
 
   const getClasses = () => {
     const classes = [];
@@ -12,12 +12,10 @@ const Label = ({ children, spacing, className, text, ...rest }) => {
   };
 
   return (
-    <div>
-      <label className={getClasses()}>
-        {text}
-        {children}
-      </label>
-    </div>
+    <label className={getClasses()}>
+      {text}
+      {children}
+    </label>
   );
 };
 
