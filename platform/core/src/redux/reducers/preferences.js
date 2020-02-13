@@ -1,5 +1,3 @@
-import cloneDeep from 'lodash.clonedeep';
-
 const defaultState = {
   windowLevelData: {
     1: { description: 'Soft tissue', window: '550', level: '40' },
@@ -28,4 +26,5 @@ const preferences = (state = defaultState, action) => {
   }
 };
 
+export { defaultState };
 export default preferences;
