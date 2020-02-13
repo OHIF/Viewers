@@ -19,6 +19,19 @@ window.config = {
       },
     ],
   },
+  routesValidationMode: 'log', //[log, silent, fail]
+  routes: {
+    studyList: {
+      path: '/listB',
+      //context: 'CHANGE_TRACKING', // ACTIVE_CONTEXT, ['VIEWER', 'ACTIVE_VIEWPORT:CORNERSTONE', 'ROUTE:CHANGE_TRACKING']
+      //allowList: [],
+      //blockList: ['']
+    },
+    viewer: {
+      path: '/viewer',
+      //template: 'OWNList', //
+    },
+  },
   // Extensions should be able to suggest default values for these?
   // Or we can require that these be explicitly set
   hotkeys: [
