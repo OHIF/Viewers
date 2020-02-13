@@ -1,17 +1,43 @@
 import React from 'react';
 import Label from '../Label';
 
-const Input = ({ label, ...rest }) => {
-  return (
-    <>
-      <Label text="Label">
-        <input
-          className="transition duration-300 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          {...rest}
-        />
-      </Label>
-    </>
+const Input = ({
+  label,
+  containerClassName = '',
+  className = '',
+  transparent = defaults.transparent,
+  ...rest
+}) => {
+  const getClasses = () => {
+    const classes = [];
+
+    classes.push(transparentClasses[transparent]);
+
+    return classes.join(' ');
+  };
+
+  const input = (
+    <input
+      className={`shadow transition duration-300 appearance-none border rounded w-full py-2 px-3 text-sm text-gray-700 hover:border-gray-500 leading-tight focus:border-gray-500 focus:outline-none ${getClasses()} ${className}`}
+      id="id"
+      {...rest}
+    />
   );
+
+  const renderElement = () => {
+    return label ? <Label text="Label">{input}</Label> : input;
+  };
+
+  return <div className={`flex ${containerClassName}`}>{renderElement()}</div>;
+};
+
+const defaults = {
+  transparent: false,
+};
+
+const transparentClasses = {
+  true: 'bg-transparent',
+  false: '',
 };
 
 export default Input;
