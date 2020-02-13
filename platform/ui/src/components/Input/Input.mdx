@@ -19,12 +19,15 @@ import Input from './';
   {() => {
     const [inputValue, setInputValue] = React.useState('');
     return (
-      <Input
-        label="Label"
-        value={inputValue}
-        placeholder="Type something..."
-        onChange={e => setInputValue(e.target.value)}
-      />
+      <div className="m-5 bg-black">
+        <Input
+          transparent
+          containerClassName="mb-3"
+          label="Label"
+          placeholder="With Label"
+        />
+        <Input placeholder="Without label" />
+      </div>
     );
   }}
 </Playground>
