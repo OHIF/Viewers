@@ -20,12 +20,12 @@ window.config = {
     // ~ Global
     {
       commandName: 'incrementActiveViewport',
-      label: 'Next Image Viewport',
+      label: 'Next Viewport',
       keys: ['right'],
     },
     {
       commandName: 'decrementActiveViewport',
-      label: 'Previous Image Viewport',
+      label: 'Previous Viewport',
       keys: ['left'],
     },
     // Supported Keys: https://craig.is/killing/mice
