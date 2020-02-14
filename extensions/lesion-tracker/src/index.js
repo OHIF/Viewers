@@ -60,6 +60,12 @@ export default {
           measurements={measurements}
           onItemClick={(event, measurementData) => {
             const measurement = measurements.find(m => m.id === measurementData.measurementId);
+            commandsManager.runCommand('jumpToMeasurement', {
+              sopInstanceUid: measurement.sopInstanceUID,
+              frameIndex: measurement.frameNumber,
+              studyInstanceUid: measurement.studyInstanceUID,
+            });
+            // MeasurementService.getAnnotation();
             // TODO: Implement jump to measurement (update viewport)
           }}
         />

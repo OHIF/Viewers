@@ -1,11 +1,14 @@
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
-import OHIF from '@ohif/core';
+import OHIF, { utils } from '@ohif/core';
 
 import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
 import { getEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
+
 const scroll = cornerstoneTools.import('util/scroll');
+const { setViewportSpecificData } = OHIF.redux.actions;
+const { studyMetadataManager } = utils;
 
 const commandsModule = ({ servicesManager }) => {
   const actions = {
@@ -245,10 +248,39 @@ const commandsModule = ({ servicesManager }) => {
     },
     setCornerstoneLayout: () => {
       setCornerstoneLayout();
-    }
+    },
+    jumpToMeasurement: ({
+      viewports,
+      studyInstanceUid,
+      sopInstanceUid,
+      frameIndex,
+    }) => {
+      const study = studyMetadataManager.get(studyInstanceUid);
+
+      const displaySet = study.findDisplaySet(ds => {
+        return ds.images.find(i => i.getSOPInstanceUID() === sopInstanceUid)
+      });
+
+      displaySet.sopInstanceUid = sopInstanceUid;
+      displaySet.frameIndex = frameIndex;
+      displaySet.timestamp = Date.now();
+
+      /* TODO: Add timepointmanager and update viewports for baseline/followup */
+
+      window.store.dispatch(setViewportSpecificData(viewports.activeViewportIndex, displaySet));
+
+      cornerstone.getEnabledElements().forEach(({ element }) => {
+        cornerstone.updateImage(element);
+      });
+    },
   };
 
   const definitions = {
+    jumpToMeasurement: {
+      commandFn: actions.jumpToMeasurement,
+      storeContexts: ['viewports'],
+      options: {},
+    },
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
       storeContexts: [],

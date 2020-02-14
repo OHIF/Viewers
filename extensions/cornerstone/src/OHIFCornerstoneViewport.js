@@ -29,6 +29,7 @@ specialCaseHandlers[
 class OHIFCornerstoneViewport extends Component {
   state = {
     viewportData: null,
+    timestamp: null
   };
 
   static defaultProps = {
@@ -220,9 +221,13 @@ class OHIFCornerstoneViewport extends Component {
     const { studies, displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
+    if (displaySet.timestamp !== this.state.timestamp) {
+      this.setState({ timestamp: displaySet.timestamp });
+    }
+
     if (
       displaySet.displaySetInstanceUid !==
-        prevDisplaySet.displaySetInstanceUid ||
+      prevDisplaySet.displaySetInstanceUid ||
       displaySet.sopInstanceUid !== prevDisplaySet.sopInstanceUid ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
@@ -261,6 +266,7 @@ class OHIFCornerstoneViewport extends Component {
     return (
       <>
         <ConnectedCornerstoneViewport
+          key={this.state.timestamp}
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
