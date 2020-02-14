@@ -115,10 +115,17 @@ const sizeClasses = {
 };
 
 Button.propTypes = {
+  children: PropTypes.node,
   size: PropTypes.oneOf(['small', 'medium', 'large']),
   radius: PropTypes.oneOf(['small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
   color: PropTypes.oneOf(['default', 'primary', 'secondary']),
+  disabled: PropTypes.bool,
+  elevation: PropTypes.bool,
+  type: PropTypes.string,
+  startIcon: PropTypes.node,
+  endIcon: PropTypes.node,
+  className: PropTypes.node,
 };
 
 export default Button;
