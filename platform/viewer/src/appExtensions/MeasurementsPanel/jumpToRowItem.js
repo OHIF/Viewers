@@ -100,7 +100,7 @@ export default function jumpToRowItem(
 
     viewportSpecificData.push({
       viewportIndex,
-      displaySet
+      displaySet,
     });
   });
 

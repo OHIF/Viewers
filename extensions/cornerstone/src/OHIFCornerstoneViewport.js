@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import debounce from 'lodash.debounce';
 
 import cornerstone from 'cornerstone-core';
-import OHIF from '@ohif/core';
+import OHIF, { measurements } from '@ohif/core';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
+const { getImageAttributes } = measurements;
 
 const { StackManager } = OHIF.utils;
 
 class OHIFCornerstoneViewport extends Component {
   state = {
     imageIds: null,
-    currentImageIdIndex: null,
-    timestamp: null
+    currentImageIdIndex: null
   };
 
   static defaultProps = {
@@ -31,7 +32,7 @@ class OHIFCornerstoneViewport extends Component {
         displaySetInstanceUid: PropTypes.string.isRequired,
         sopClassUids: PropTypes.arrayOf(PropTypes.string),
         sopInstanceUid: PropTypes.string.string,
-        frameIndex: PropTypes.number
+        frameIndex: PropTypes.number,
       }).isRequired
     }),
     customProps: PropTypes.object,
@@ -147,14 +148,10 @@ class OHIFCornerstoneViewport extends Component {
       frameIndex,
     } = displaySet;
     const prevDisplaySet = prevProps.viewportData.displaySet;
-
-    // TODO: Discuss, shouldComponentUpdate check (dirtyBool)
-    if (displaySet.timestamp !== this.state.timestamp) {
-      this.setState({ timestamp: displaySet.timestamp });
-    }
-
-    // These values drill down and identify the location of the image that
-    // should be displayed. DisplaySet --> SopInstance --> Frame
+    /*
+     * These values drill down and identify the location of the image that
+     * should be displayed. DisplaySet --> SopInstance --> Frame
+     */
     const displaySetChanged = displaySet.displaySetInstanceUid !==
       prevDisplaySet.displaySetInstanceUid;
     const sopInstanceChanged = displaySet.sopInstanceUid !== prevDisplaySet.sopInstanceUid;
@@ -184,12 +181,26 @@ class OHIFCornerstoneViewport extends Component {
       // frameRate = 0,
     } = this.state;
 
+    const onStackScrollStop = debounce(event => {
+      const { imageId: newImageId } = event.detail.image;
+      const newCurrentImageIdIndex = this.state.imageIds.indexOf(newImageId);
+      this.setState({ currentImageIdIndex: newCurrentImageIdIndex });
+      console.log('onStackScrollStop', newCurrentImageIdIndex);
+    }, 1000);
+
     return (
       <ConnectedCornerstoneViewport
-        key={this.state.timestamp}
         viewportIndex={viewportIndex}
         imageIds={imageIds}
         imageIdIndex={currentImageIdIndex}
+        // ~~
+        eventListeners={[
+          {
+            target: 'element',
+            eventName: cornerstone.EVENTS.NEW_IMAGE,
+            handler: onStackScrollStop
+          }
+        ]}
         // ~~ Connected (From REDUX)
         // frameRate={frameRate}
         // isPlaying={false}
