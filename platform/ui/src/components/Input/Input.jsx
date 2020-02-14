@@ -4,6 +4,7 @@ import Label from '../Label';
 const Input = ({
   label,
   containerClassName = '',
+  labelClassName = '',
   className = '',
   transparent = defaults.transparent,
   ...rest
@@ -25,14 +26,20 @@ const Input = ({
   );
 
   const renderElement = () => {
-    return label ? <Label text="Label">{input}</Label> : input;
+    return label ? (
+      <Label className={labelClassName} text="Label">
+        {input}
+      </Label>
+    ) : (
+      input
+    );
   };
 
   return <div className={`flex ${containerClassName}`}>{renderElement()}</div>;
 };
 
 const defaults = {
-  transparent: false,
+  transparent: true,
 };
 
 const transparentClasses = {
