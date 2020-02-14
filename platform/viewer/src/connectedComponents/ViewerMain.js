@@ -150,9 +150,7 @@ class ViewerMain extends Component {
             studies={this.props.studies}
             viewportData={viewportData}
             setViewportData={this.setViewportData}
-          >
-            {/* Children to add to each viewport that support children */}
-          </ConnectedViewportGrid>
+          />
         )}
       </div>
     );

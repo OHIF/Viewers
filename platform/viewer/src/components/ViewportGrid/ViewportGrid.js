@@ -8,7 +8,7 @@ import ViewportPane from './ViewportPane.js';
 import DefaultViewport from './DefaultViewport.js';
 import EmptyViewport from './EmptyViewport.js';
 
-const ViewportGrid = function(props) {
+const ViewportGrid = function (props) {
   const {
     activeViewportIndex,
     availablePlugins,
@@ -19,7 +19,6 @@ const ViewportGrid = function(props) {
     setViewportData,
     studies,
     viewportData,
-    children,
   } = props;
 
   const rowSize = 100 / numRows;
@@ -59,7 +58,6 @@ const ViewportGrid = function(props) {
     const ViewportComponent = _getViewportComponent(
       data, // Why do we pass this as `ViewportData`, when that's not really what it is?
       viewportIndex,
-      children,
       availablePlugins,
       pluginName,
       defaultPluginName
@@ -113,7 +111,6 @@ ViewportGrid.propTypes = {
   availablePlugins: PropTypes.object.isRequired,
   setViewportData: PropTypes.func.isRequired,
   studies: PropTypes.array,
-  children: PropTypes.node,
   defaultPlugin: PropTypes.string,
   numRows: PropTypes.number.isRequired,
   numColumns: PropTypes.number.isRequired,
@@ -140,13 +137,11 @@ ViewportGrid.defaultProps = {
  * @param {*} plugin
  * @param {*} viewportData
  * @param {*} viewportIndex
- * @param {*} children
  * @returns
  */
 function _getViewportComponent(
   viewportData,
   viewportIndex,
-  children,
   availablePlugins,
   pluginName,
   defaultPluginName
@@ -166,7 +161,6 @@ function _getViewportComponent(
       <ViewportComponent
         viewportData={viewportData}
         viewportIndex={viewportIndex}
-        children={[children]}
       />
     );
   }
