@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
 
 import { StudyItem } from '@ohif/ui';
-
+import { ThumbnailsList } from './ThumbnailsList';
 import { getStudyData } from './utils';
 
 import './ViewingStudies.styl';
@@ -21,6 +21,13 @@ function ViewingStudies({ currentStudy, comparisonStudy }) {
           studyData={getStudyData(currentStudy)}
           active={activeStudyUid === currentStudy.studyInstanceUid}
         />
+        {activeStudyUid === currentStudy.studyInstanceUid && (
+          <ThumbnailsList
+            onThumbnailClick={() => {}}
+            onThumbnailDoubleClick={() => {}}
+            studies={[currentStudy]}
+          />
+        )}
       </div>
       <div className="ComparisonStudyWrapper">
         <div className="studyWrapperHeader">Comparison</div>
@@ -31,6 +38,13 @@ function ViewingStudies({ currentStudy, comparisonStudy }) {
           studyData={getStudyData(comparisonStudy)}
           active={activeStudyUid === comparisonStudy.studyInstanceUid}
         />
+        {activeStudyUid === comparisonStudy.studyInstanceUid && (
+          <ThumbnailsList
+            onThumbnailClick={() => {}}
+            onThumbnailDoubleClick={() => {}}
+            studies={[comparisonStudy]}
+          />
+        )}
       </div>
     </div>
   );

@@ -13,6 +13,17 @@ const mockData = {
           seriesTime: '000000.000',
         },
       ],
+      thumbnails: [
+        {
+          imageId:
+            'wadors:https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs/studies/1.2.826.0.13854362241694438965858641723883466450351448/series/1.2.826.0.13251432571622157432418024103657242430176808/instances/1.2.826.0.15850417012072555929373700124625600151309139/frames/1',
+          displaySetInstanceUid: 'f69f648c-223e-db7f-c4af-b8906641a66e',
+          seriesDescription: 'FLAIR',
+          seriesNumber: 1,
+          instanceNumber: 2,
+          numImageFrames: 36,
+        },
+      ],
       seriesMap: {
         '1.3.6.1.4.1.5962.99.1.5128099.2103784727.1533308485539.5.0': {
           seriesInstanceUid:
@@ -41,6 +52,17 @@ const mockData = {
           seriesNumber: 365,
           seriesDate: '1993.04.30',
           seriesTime: '11:27:24',
+        },
+      ],
+      thumbnails: [
+        {
+          imageId:
+            'wadors:https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs/studies/1.2.826.0.13854362241694438965858641723883466450351448/series/1.2.826.0.13251432571622157432418024103657242430176808/instances/1.2.826.0.15850417012072555929373700124625600151309139/frames/1',
+          displaySetInstanceUid: 'f69f648c-223e-db7f-c4af-b8906641a66e',
+          seriesDescription: 'FLAIR',
+          seriesNumber: 1,
+          instanceNumber: 2,
+          numImageFrames: 36,
         },
       ],
       seriesMap: {
@@ -72,6 +94,17 @@ const mockData = {
           seriesNumber: 3513,
           seriesDate: '1999.05.05',
           seriesTime: '10:52:34.530000',
+        },
+      ],
+      thumbnails: [
+        {
+          imageId:
+            'wadors:https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs/studies/1.2.826.0.13854362241694438965858641723883466450351448/series/1.2.826.0.13251432571622157432418024103657242430176808/instances/1.2.826.0.15850417012072555929373700124625600151309139/frames/1',
+          displaySetInstanceUid: 'f69f648c-223e-db7f-c4af-b8906641a66e',
+          seriesDescription: 'FLAIR',
+          seriesNumber: 1,
+          instanceNumber: 2,
+          numImageFrames: 36,
         },
       ],
       seriesMap: {

@@ -1,14 +1,12 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import moment from 'moment';
 
 import { StudyItem } from '@ohif/ui';
-
 import { getStudyData } from './utils';
 
 function AllStudies({ studies }) {
   return (
-    <div className="ViewingStudies">
+    <div className="AllStudies" style={{ 'magin-bottom': '10px' }}>
       {studies.map((study, index) => (
         <StudyItem
           key={index}
@@ -21,6 +19,8 @@ function AllStudies({ studies }) {
   );
 }
 
-AllStudies.propTypes;
+AllStudies.propTypes = {
+  studies: PropTypes.array,
+};
 
 export { AllStudies };
