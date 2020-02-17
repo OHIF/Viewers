@@ -4,6 +4,15 @@ import PropTypes from 'prop-types';
 import { StudyItem } from './StudyItem.js';
 import './StudiesList.styl';
 
+const getStudyData = study => {
+  return {
+    studyDate: study.studyDate,
+    studyDescription: study.studyDescription,
+    modalities: study.studyDescription,
+    studyAvailable: study.studyAvailable,
+  };
+};
+
 export class StudiesList extends Component {
   static propTypes = {
     class: PropTypes.string,
@@ -25,7 +34,7 @@ export class StudiesList extends Component {
       return (
         <StudyItem
           key={index}
-          studyData={studyData}
+          studyData={getStudyData(studyData)}
           active={
             studyData.studyInstanceUid === this.props.activeStudyInstanceUid
           }
