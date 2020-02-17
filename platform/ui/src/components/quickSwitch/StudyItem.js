@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import './StudiesItem.styl';
+import './StudyItem.styl';
 
-export class StudiesItem extends Component {
+export class StudyItem extends Component {
   static propTypes = {
     onClick: PropTypes.func.isRequired,
-    studyData: PropTypes.object.isRequired,
+    studyData: PropTypes.shape({
+      studyDate: PropTypes.string,
+      studyDescription: PropTypes.string,
+      modalities: PropTypes.string,
+      studyAvailable: PropTypes.bool,
+    }),
     active: PropTypes.bool,
   };
 
@@ -26,12 +31,7 @@ export class StudiesItem extends Component {
       >
         <div className="studyItemBox">
           <div className="studyModality">
-            <div
-              className="studyModalityText"
-              style={this.getModalitiesStyle()}
-            >
-              {modalities}
-            </div>
+            <div className="studyModalityText">{modalities}</div>
           </div>
           <div className="studyText">
             {hasDescriptionAndDate ? (
@@ -53,8 +53,4 @@ export class StudiesItem extends Component {
       </div>
     );
   }
-
-  getModalitiesStyle = () => {
-    return {};
-  };
 }

@@ -12,7 +12,7 @@ import {
 import { Checkbox } from './checkbox';
 import { CineDialog } from './cineDialog';
 import { ViewportDownloadForm } from './content/viewportDownloadForm';
-import { QuickSwitch } from './quickSwitch';
+import { QuickSwitch, StudyItem } from './quickSwitch';
 import { RoundedButtonGroup } from './roundedButtonGroup';
 import { SelectTree } from './selectTree';
 import { SimpleDialog } from './simpleDialog';
@@ -45,6 +45,7 @@ export {
   SimpleDialog,
   StudyBrowser,
   StudyList,
+  StudyItem,
   TableList,
   TableListItem,
   Thumbnail,

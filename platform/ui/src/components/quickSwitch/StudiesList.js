@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { StudiesItem } from './StudiesItem.js';
+import { StudyItem } from './StudyItem.js';
 import './StudiesList.styl';
 
 export class StudiesList extends Component {
@@ -23,7 +23,7 @@ export class StudiesList extends Component {
   getBrowserItems = () => {
     return this.props.studyListData.map((studyData, index) => {
       return (
-        <StudiesItem
+        <StudyItem
           key={index}
           studyData={studyData}
           active={
