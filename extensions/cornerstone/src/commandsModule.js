@@ -263,7 +263,6 @@ const commandsModule = ({ servicesManager }) => {
 
       displaySet.sopInstanceUid = sopInstanceUid;
       displaySet.frameIndex = frameIndex;
-      displaySet.timestamp = Date.now();
 
       /* TODO: Add timepointmanager and update viewports for baseline/followup */
 

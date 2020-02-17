@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
 import cornerstone from 'cornerstone-core';
-import OHIF, { measurements } from '@ohif/core';
+import OHIF from '@ohif/core';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
-const { getImageAttributes } = measurements;
 
 const { StackManager } = OHIF.utils;
+const { setViewportSpecificData } = OHIF.redux.actions;
 
 class OHIFCornerstoneViewport extends Component {
   state = {
@@ -183,9 +183,15 @@ class OHIFCornerstoneViewport extends Component {
 
     const onStackScrollStop = debounce(event => {
       const { imageId: newImageId } = event.detail.image;
-      const newCurrentImageIdIndex = this.state.imageIds.indexOf(newImageId);
-      this.setState({ currentImageIdIndex: newCurrentImageIdIndex });
-      console.log('onStackScrollStop', newCurrentImageIdIndex);
+
+      const { sopInstanceUid } =
+        cornerstone.metaData.get('generalImageModule', newImageId) || {};
+
+      window.store.dispatch(setViewportSpecificData(
+        viewportIndex, {
+        ...this.props.viewportData.displaySet,
+        sopInstanceUid
+      }));
     }, 1000);
 
     return (
