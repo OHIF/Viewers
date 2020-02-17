@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import debounce from 'lodash.debounce';
 
 import cornerstone from 'cornerstone-core';
 import OHIF from '@ohif/core';
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 
 const { StackManager } = OHIF.utils;
-const { setViewportSpecificData } = OHIF.redux.actions;
 
 class OHIFCornerstoneViewport extends Component {
   state = {
@@ -168,6 +166,10 @@ class OHIFCornerstoneViewport extends Component {
     }
   }
 
+  getCurrentDisplaySet() {
+    return this.props.viewportData.displaySet;
+  }
+
   render() {
     if (!this.state.imageIds) {
       return null;
@@ -181,32 +183,12 @@ class OHIFCornerstoneViewport extends Component {
       // frameRate = 0,
     } = this.state;
 
-    const onStackScrollStop = debounce(event => {
-      const { imageId: newImageId } = event.detail.image;
-
-      const { sopInstanceUid } =
-        cornerstone.metaData.get('generalImageModule', newImageId) || {};
-
-      window.store.dispatch(setViewportSpecificData(
-        viewportIndex, {
-        ...this.props.viewportData.displaySet,
-        sopInstanceUid
-      }));
-    }, 1000);
-
     return (
       <ConnectedCornerstoneViewport
         viewportIndex={viewportIndex}
         imageIds={imageIds}
         imageIdIndex={currentImageIdIndex}
-        // ~~
-        eventListeners={[
-          {
-            target: 'element',
-            eventName: cornerstone.EVENTS.NEW_IMAGE,
-            handler: onStackScrollStop
-          }
-        ]}
+        getCurrentDisplaySet={this.getCurrentDisplaySet.bind(this)}
         // ~~ Connected (From REDUX)
         // frameRate={frameRate}
         // isPlaying={false}

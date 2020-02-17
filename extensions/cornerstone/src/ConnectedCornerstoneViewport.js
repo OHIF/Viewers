@@ -3,6 +3,8 @@ import OHIF from '@ohif/core';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 import { setEnabledElement } from './state';
+import debounce from 'lodash.debounce';
+import cornerstone from 'cornerstone-core';
 
 const { setViewportActive, setViewportSpecificData } = OHIF.redux.actions;
 const {
@@ -64,7 +66,29 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   const { viewportIndex } = ownProps;
 
+  const onStackScrollStop = debounce(event => {
+    const currentDisplaySet = ownProps.getCurrentDisplaySet();
+    const { imageId: newImageId } = event.detail.image;
+
+    const { sopInstanceUid } =
+      cornerstone.metaData.get('generalImageModule', newImageId) || {};
+
+    dispatch(setViewportSpecificData(
+      viewportIndex, {
+      ...currentDisplaySet,
+      sopInstanceUid
+    }));
+  }, 1000);
+
   return {
+    eventListeners: [
+      {
+        target: 'element',
+        eventName: cornerstone.EVENTS.NEW_IMAGE,
+        handler: onStackScrollStop
+      }
+    ],
+
     setViewportActive: () => {
       dispatch(setViewportActive(viewportIndex));
     },
