@@ -8,36 +8,30 @@ import { ViewingStudies } from './ViewingStudies.js';
 
 import './LTStudyBrowser.styl';
 
-const findStudy = ({ studies, studyInstanceUid }) => {
+const findStudy = (studies, studyInstanceUid) => {
   return studies.find(study => study.studyInstanceUid === studyInstanceUid);
 };
 
-const getKeyStimpointStudies = ({ currentStudy, comparisonStudy, studies }) => {
-  return [
-    findStudy({ studies, currentStudy }),
-    findStudy({ studies, comparisonStudy }),
-  ];
+const filterStudies = (studies, filteredStudiesUids = []) => {
+  return studies.filter(
+    study => !filteredStudiesUids.includes(study.studyInstanceUid)
+  );
 };
 
 const tabs = [
   {
     name: 'Viewing',
     Component: ViewingStudies,
-    getProps: ({ currentStudy, comparisonStudy, studies }) => ({
-      studies: getKeyStimpointStudies({
-        currentStudy,
-        comparisonStudy,
-        studies,
-      }),
-      currentStudy,
-      comparisonStudy,
+    getProps: ({ currentStudyUid, comparisonStudyUid, studies }) => ({
+      currentStudy: findStudy(studies, currentStudyUid),
+      comparisonStudy: findStudy(studies, comparisonStudyUid),
     }),
   },
   {
     name: 'All Studies',
     Component: AllStudies,
-    getProps: ({ studies }) => ({
-      studies,
+    getProps: ({ currentStudyUid, comparisonStudyUid, studies }) => ({
+      studies: filterStudies(studies, [currentStudyUid, comparisonStudyUid]),
     }),
   },
 ];
@@ -45,17 +39,17 @@ const tabs = [
 const getRoundedButtonsData = tabs => {
   return tabs.map((tabData, index) => {
     return {
-      value: index,
+      value: `${index}`,
       label: tabData.name,
     };
   });
 };
 
 function LTStudyBrowser({}) {
-  const [currentTab, setCurrentTab] = useState(0);
+  const [currentTab, setCurrentTab] = useState('0');
 
   const { Component, getProps } = tabs[currentTab];
-  const componentProps = getProps({ ...mockData });
+  const componentProps = getProps(mockData);
 
   return (
     <div className="LTStudyBrowser">
