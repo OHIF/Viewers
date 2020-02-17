@@ -17,9 +17,6 @@ class OHIFCornerstoneViewport extends Component {
     customProps: {},
   };
 
-  /** INTERFACE FOR PLATFORM/VIEWER PROJECT
-   *  - Our "Generic Viewport" interface
-   */
   static propTypes = {
     viewportIndex: PropTypes.number.isRequired,
     /** viewportSpecificData from REDUX */
