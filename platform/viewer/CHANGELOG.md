@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.6.2...@ohif/viewer@3.6.3) (2020-02-14)
+
+
+### Bug Fixes
+
+* Creating 2 commands to activate zoom tool and also to move between displaySets ([#1446](https://github.com/OHIF/Viewers/issues/1446)) ([06a4af0](https://github.com/OHIF/Viewers/commit/06a4af06faaecf6fa06ccd90cdfa879ee8d53053))
+
+
+
+
+
 ## [3.6.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.6.1...@ohif/viewer@3.6.2) (2020-02-12)
 
 
