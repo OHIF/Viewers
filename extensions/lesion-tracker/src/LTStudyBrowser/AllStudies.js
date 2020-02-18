@@ -6,7 +6,7 @@ import { getStudyData } from './utils';
 
 function AllStudies({ studies }) {
   return (
-    <div className="AllStudies" style={{ 'magin-bottom': '10px' }}>
+    <div className="AllStudies">
       {studies.map((study, index) => (
         <StudyItem
           key={index}
