@@ -20,12 +20,12 @@ window.config = {
   hotkeys: [
     {
       commandName: 'incrementActiveViewport',
-      label: 'Next Image Viewport',
+      label: 'Next Viewport',
       keys: ['right'],
     },
     {
       commandName: 'decrementActiveViewport',
-      label: 'Previous Image Viewport',
+      label: 'Previous Viewport',
       keys: ['left'],
     },
     { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'] },
@@ -48,12 +48,12 @@ window.config = {
     { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
     { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
     {
-      commandName: 'nextViewportDisplaySet',
+      commandName: 'previousViewportDisplaySet',
       label: 'Previous Series',
       keys: ['pagedown'],
     },
     {
-      commandName: 'previousViewportDisplaySet',
+      commandName: 'nextViewportDisplaySet',
       label: 'Next Series',
       keys: ['pageup'],
     },
