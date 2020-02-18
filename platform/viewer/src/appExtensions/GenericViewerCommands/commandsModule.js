@@ -1,14 +1,11 @@
 import { redux } from '@ohif/core';
 import store from './../../store';
-const { setViewportActive } = redux.actions;
 
 import { commandsManager } from './../../App.js';
 
+const { setViewportActive, setActiveViewportSpecificData } = redux.actions;
+
 const actions = {
-  updateViewportDisplaySet: ({ direction }) => {
-    // TODO
-    // console.warn('updateDisplaySet: ', direction);
-  },
   updateActiveViewport: ({ viewports, direction }) => {
     const { viewportSpecificData, activeViewportIndex } = viewports;
     const maxIndex = Object.keys(viewportSpecificData).length - 1;
@@ -32,6 +29,35 @@ const actions = {
         level,
       });
     }
+  },
+  updateViewportDisplaySet: ({ viewports, direction }) => {
+    const viewportSpecificData = { ...viewports.viewportSpecificData };
+    const activeViewport = viewportSpecificData[viewports.activeViewportIndex];
+    const studyMetadata = utils.studyMetadataManager.get(
+      activeViewport.studyInstanceUid
+    );
+
+    if (!studyMetadata) {
+      return;
+    }
+
+    const allDisplaySets = studyMetadata.getDisplaySets();
+    const currentDisplaySetIndex = allDisplaySets.findIndex(
+      displaySet =>
+        displaySet.displaySetInstanceUid ===
+        activeViewport.displaySetInstanceUid
+    );
+    if (currentDisplaySetIndex < 0) {
+      return;
+    }
+
+    const newDisplaySetIndex = currentDisplaySetIndex + direction;
+    const newDisplaySetData = allDisplaySets[newDisplaySetIndex];
+    if (!newDisplaySetData) {
+      return;
+    }
+
+    store.dispatch(setActiveViewportSpecificData(newDisplaySetData));
   },
 };
 
@@ -92,6 +118,16 @@ const definitions = {
     commandFn: actions.setWindowLevelPreset,
     storeContexts: ['viewports'],
     options: { preset: 9 },
+  },
+  nextViewportDisplaySet: {
+    commandFn: actions.updateViewportDisplaySet,
+    storeContexts: ['viewports'],
+    options: { direction: 1 },
+  },
+  previousViewportDisplaySet: {
+    commandFn: actions.updateViewportDisplaySet,
+    storeContexts: ['viewports'],
+    options: { direction: -1 },
   },
 };
 

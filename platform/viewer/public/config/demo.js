@@ -48,12 +48,12 @@ window.config = {
     { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
     { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
     {
-      commandName: 'nextViewportDisplaySet',
+      commandName: 'previousViewportDisplaySet',
       label: 'Previous Series',
       keys: ['pagedown'],
     },
     {
-      commandName: 'previousViewportDisplaySet',
+      commandName: 'nextViewportDisplaySet',
       label: 'Next Series',
       keys: ['pageup'],
     },
