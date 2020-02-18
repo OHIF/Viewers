@@ -7,7 +7,6 @@ describe('Top level exports', () => {
       'ObjectPath',
       'absoluteUrl',
       'addServers',
-      'addUserPreferences',
       'sortBy',
       'writeScript',
       'b64toBlob',

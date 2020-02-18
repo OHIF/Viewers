@@ -13,14 +13,12 @@ import b64toBlob from './b64toBlob.js';
 import * as urlUtil from './urlUtil';
 import makeCancelable from './makeCancelable';
 import hotkeys from './hotkeys';
-import addUserPreferences from './addUserPreferences.js';
 
 const utils = {
   guid,
   ObjectPath,
   absoluteUrl,
   addServers,
-  addUserPreferences,
   sortBy,
   writeScript,
   b64toBlob,
@@ -40,7 +38,6 @@ export {
   ObjectPath,
   absoluteUrl,
   addServers,
-  addUserPreferences,
   sortBy,
   writeScript,
   b64toBlob,
