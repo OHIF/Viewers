@@ -1,3 +1,1 @@
-export default {
-  studies: 'url',
-};
+export default {};
