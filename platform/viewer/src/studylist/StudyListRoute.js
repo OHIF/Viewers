@@ -71,7 +71,7 @@ function parseFilterValues(filterValues) {
   parseDateProp('studyDate');
 }
 
-const getInitialStudyListSessionProps = () => {
+const getInitialStudyListPropertiesState = () => {
   return {
     sort: DEFAULT_SORT,
     filters: DEFAULT_FILTERS,
@@ -80,7 +80,7 @@ const getInitialStudyListSessionProps = () => {
   };
 };
 
-const mergeStudyListSessionProps = (currentProps, newProps) => {
+const mergeStudyListPropertiesState = (currentProps, newProps) => {
   return {
     ...currentProps,
     ...newProps,
@@ -91,16 +91,16 @@ function StudyListRoute(props) {
   const { history, server, user, studyListFunctionsEnabled } = props;
   const [t] = useTranslation('Common');
   // ~~ STATE
-  const [studyListSessionProps, setStudyListSessionProps] = useSessionStorage(
-    'studyListProps',
-    getInitialStudyListSessionProps()
-  );
+  const [
+    studyListPropertiesState,
+    setStudyListPropertiesState,
+  ] = useSessionStorage('studyListProps', getInitialStudyListPropertiesState());
   const {
     sort,
     filters: filterValues,
     rowsPerPage,
     pageNumber,
-  } = studyListSessionProps;
+  } = studyListPropertiesState;
 
   parseFilterValues(filterValues);
 
@@ -132,14 +132,14 @@ function StudyListRoute(props) {
   }
 
   const fetchData = useCallback(
-    debounce(async newStudyListSessionProps => {
+    debounce(async newStudyListPropertiesState => {
       setSearchStatus({ error: null, isSearchingForStudies: true });
       const {
         sort,
         filters,
         rowsPerPage,
         pageNumber,
-      } = newStudyListSessionProps;
+      } = newStudyListPropertiesState;
 
       const response = await getStudyList(
         server,
@@ -157,14 +157,14 @@ function StudyListRoute(props) {
   );
 
   const fetchStudies = useCallback(
-    async (newStudyListSessionProps, forceFlush = false) => {
+    async (newStudyListPropertiesState, forceFlush = false) => {
       if (!server) {
         return;
       }
 
       try {
-        setStudyListSessionProps(newStudyListSessionProps);
-        fetchData(newStudyListSessionProps);
+        setStudyListPropertiesState(newStudyListPropertiesState);
+        fetchData(newStudyListPropertiesState);
         if (forceFlush) {
           fetchData.flush();
         }
@@ -177,7 +177,7 @@ function StudyListRoute(props) {
   );
 
   useEffect(() => {
-    fetchStudies(studyListSessionProps);
+    fetchStudies(studyListPropertiesState);
   }, [server, displaySize]);
 
   const onDrop = async acceptedFiles => {
@@ -244,13 +244,13 @@ function StudyListRoute(props) {
           direction: sortDirection,
         },
       };
-      const newStudyListSessionProps = mergeStudyListSessionProps(
-        studyListSessionProps,
+      const newStudyListPropertiesState = mergeStudyListPropertiesState(
+        studyListPropertiesState,
         newProps
       );
-      fetchStudies(newStudyListSessionProps, false);
+      fetchStudies(newStudyListPropertiesState, false);
     },
-    [studyListSessionProps]
+    [studyListPropertiesState]
   );
 
   const handleFilterChange = useCallback(
@@ -263,13 +263,13 @@ function StudyListRoute(props) {
         pageNumber: DEFAULT_PAGE_NUMBER,
       };
 
-      const newStudyListSessionProps = mergeStudyListSessionProps(
-        studyListSessionProps,
+      const newStudyListPropertiesState = mergeStudyListPropertiesState(
+        studyListPropertiesState,
         newProps
       );
-      fetchStudies(newStudyListSessionProps, false);
+      fetchStudies(newStudyListPropertiesState, false);
     },
-    [studyListSessionProps]
+    [studyListPropertiesState]
   );
 
   const clearFilters = useCallback(() => {
@@ -278,12 +278,12 @@ function StudyListRoute(props) {
       pageNumber: DEFAULT_PAGE_NUMBER,
     };
 
-    const newStudyListSessionProps = mergeStudyListSessionProps(
-      studyListSessionProps,
+    const newStudyListPropertiesState = mergeStudyListPropertiesState(
+      studyListPropertiesState,
       newProps
     );
-    fetchStudies(newStudyListSessionProps);
-  }, [studyListSessionProps]);
+    fetchStudies(newStudyListPropertiesState);
+  }, [studyListPropertiesState]);
 
   const setPageNumberSessionStorage = useCallback(
     pageNumber => {
@@ -291,13 +291,13 @@ function StudyListRoute(props) {
         pageNumber,
       };
 
-      const newStudyListSessionProps = mergeStudyListSessionProps(
-        studyListSessionProps,
+      const newStudyListPropertiesState = mergeStudyListPropertiesState(
+        studyListPropertiesState,
         newProps
       );
-      fetchStudies(newStudyListSessionProps);
+      fetchStudies(newStudyListPropertiesState);
     },
-    [studyListSessionProps]
+    [studyListPropertiesState]
   );
 
   const setRowsPerPageSessionStorage = useCallback(
@@ -306,13 +306,13 @@ function StudyListRoute(props) {
         rowsPerPage,
       };
 
-      const newStudyListSessionProps = mergeStudyListSessionProps(
-        studyListSessionProps,
+      const newStudyListPropertiesState = mergeStudyListPropertiesState(
+        studyListPropertiesState,
         newProps
       );
-      fetchStudies(newStudyListSessionProps);
+      fetchStudies(newStudyListPropertiesState);
     },
-    [studyListSessionProps]
+    [studyListPropertiesState]
   );
 
   const memoizedList = useMemo(() => {
