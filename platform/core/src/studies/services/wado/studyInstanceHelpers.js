@@ -145,6 +145,7 @@ async function makeSOPInstance(server, study, instance) {
     wadoRoot: server.wadoRoot,
     imageRendering: server.imageRendering,
     thumbnailRendering: server.thumbnailRendering,
+    _instanceRaw: instance,
   };
 
   series.instances.push(sopInstance);
@@ -190,7 +191,7 @@ async function makeSOPInstance(server, study, instance) {
  */
 async function addInstancesToStudy(server, study, sopInstanceList) {
   return Promise.all(
-    sopInstanceList.map(function (sopInstance) {
+    sopInstanceList.map(function(sopInstance) {
       return makeSOPInstance(server, study, sopInstance);
     })
   );
