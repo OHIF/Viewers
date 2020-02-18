@@ -1,11 +1,27 @@
 .LTStudyBrowser
-  padding: 0 10px;
+  padding: 0 10px
+  height: 100%
+  width: 100%
+  display: flex
+  flex-direction: column
+  flex-wrap: nowrap
+
+  .tabContents
+    overflow: auto
+    min-height: 2em
+    flex-grow: 1
+    -ms-overflow-style: none
+
+    &::-webkit-scrollbar
+      display: none
 
   .tabButtons
     display: flex
     justify-content: center
     padding: 20px 0
+    margin-bottom: 10px
     border-bottom: 1px solid #44626f
+    flex-shrink: 0
 
   .studyItemBox
     background-color: transparent

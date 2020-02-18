@@ -60,7 +60,7 @@ function LTStudyBrowser({}) {
           onValueChanged={value => setCurrentTab(value)}
         />
       </div>
-      <div>
+      <div className="tabContents">
         <Component {...componentProps} />
       </div>
     </div>

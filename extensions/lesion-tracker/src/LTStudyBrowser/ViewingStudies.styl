@@ -1,8 +1,16 @@
 .ViewingStudies
   .studyWrapperHeader
     color: var(--text-secondary-color)
-    margin: 10px
+    margin: 0 10px 10px 10px
+    text-transform: uppercase
 
   .CurrentStudyWrapper,
   .ComparisonStudyWrapper
     border-bottom: 1px solid #44626f
+    margin-bottom: 10px
+
+  .studyBrowseItem.active .studyItemBox
+    border-color: transparent
+
+  .studyBrowseItem:hover .studyItemBox
+    border-color: var(--active-color)
