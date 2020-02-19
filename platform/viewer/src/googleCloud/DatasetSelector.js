@@ -22,6 +22,7 @@ class DatasetSelector extends Component {
     user: PropTypes.object,
     canClose: PropTypes.string,
     setServers: PropTypes.func.isRequired,
+    title: PropTypes.string,
   };
 
   onProjectSelect = project => {
@@ -119,38 +120,41 @@ class DatasetSelector extends Component {
     }
 
     return (
-      <>
-        {projectBreadcrumbs}
-        {!project && (
-          <ProjectPicker
-            accessToken={accessToken}
-            onSelect={onProjectSelect}
-          />
-        )}
+      <div>
+        <div className="datasetSelectorTitle">{this.props.title}</div>
+        <div className="datasetSelectorContent">
+          {projectBreadcrumbs}
+          {!project && (
+            <ProjectPicker
+              accessToken={accessToken}
+              onSelect={onProjectSelect}
+            />
+          )}
 
-        {project && !location && (
-          <LocationPicker
-            accessToken={accessToken}
-            project={project}
-            onSelect={onLocationSelect}
-          />
-        )}
-        {project && location && !dataset && (
-          <DatasetPicker
-            accessToken={accessToken}
-            project={project}
-            location={location}
-            onSelect={onDatasetSelect}
-          />
-        )}
-        {project && location && dataset && (
-          <DicomStorePicker
-            accessToken={accessToken}
-            dataset={dataset}
-            onSelect={onDicomStoreSelect}
-          />
-        )}
-      </>
+          {project && !location && (
+            <LocationPicker
+              accessToken={accessToken}
+              project={project}
+              onSelect={onLocationSelect}
+            />
+          )}
+          {project && location && !dataset && (
+            <DatasetPicker
+              accessToken={accessToken}
+              project={project}
+              location={location}
+              onSelect={onDatasetSelect}
+            />
+          )}
+          {project && location && dataset && (
+            <DicomStorePicker
+              accessToken={accessToken}
+              dataset={dataset}
+              onSelect={onDicomStoreSelect}
+            />
+          )}
+        </div>
+      </div>
     );
   }
 }
