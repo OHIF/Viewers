@@ -1,79 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-const Button = ({
-  children,
-  variant = defaults.variant,
-  color = defaults.color,
-  size = defaults.size,
-  radius = defaults.radius,
-  disabled = defaults.disabled,
-  elevation,
-  type = defaults.type,
-  startIcon: startIconProp,
-  endIcon: endIconProp,
-  className,
-  ...rest
-}) => {
-  const hasIcon = startIconProp || endIconProp;
-  const getClasses = () => {
-    const classes = [];
-    let buttonElevation;
-
-    if (variant === 'text') {
-      if (elevation) {
-        buttonElevation = elevation;
-      } else {
-        buttonElevation = false;
-      }
-    } else {
-      buttonElevation = defaults.elevation;
-    }
-
-    classes.push(variantClasses[variant][color]);
-    classes.push(radiusClasses[radius]);
-    classes.push(sizeClasses[size]);
-    classes.push(disabledClasses[disabled]);
-    classes.push(elevationClasses[buttonElevation]);
-    classes.push(className);
-
-    if (hasIcon) {
-      classes.push(baseIconClasses);
-    }
-
-    return classes.join(' ');
-  };
-
-  const baseIconClasses = 'inline-flex items-center';
-  const baseClasses =
-    'outline-none transition duration-300 ease-in-out rounded font-bold focus:outline-none';
-
-  const startIcon = startIconProp && (
-    <div className="mr-2">{startIconProp}</div>
-  );
-
-  const endIcon = endIconProp && <div className="ml-2">{endIconProp}</div>;
-
-  return (
-    <button className={`${baseClasses} ${getClasses()}`} type={type} {...rest}>
-      {startIcon}
-      {children}
-      {endIcon}
-    </button>
-  );
-};
+import classnames from 'classnames';
 
 const defaults = {
-  variant: 'outlined',
+  variant: 'contained',
   color: 'default',
   size: 'medium',
   radius: 'medium',
   disabled: false,
-  elevation: true,
   type: 'button',
 };
 
 const radiusClasses = {
+  none: '',
   small: 'rounded-sm',
   medium: 'rounded-md',
   large: 'rounded-lg',
@@ -83,11 +22,6 @@ const radiusClasses = {
 const disabledClasses = {
   true: 'cursor-not-allowed',
   false: '',
-};
-
-const elevationClasses = {
-  true: 'shadow',
-  false: 'shadow-none',
 };
 
 const variantClasses = {
@@ -114,14 +48,55 @@ const sizeClasses = {
   large: 'py-3 px-6 text-lg',
 };
 
+const Button = ({
+  children,
+  variant = defaults.variant,
+  color = defaults.color,
+  size = defaults.size,
+  radius = defaults.radius,
+  disabled = defaults.disabled,
+  type = defaults.type,
+  startIcon: startIconProp,
+  endIcon: endIconProp,
+  className,
+  ...rest
+}) => {
+  const baseClasses =
+    'inline-flex items-center outline-none transition duration-300 ease-in-out font-bold focus:outline-none';
+
+  const startIcon = startIconProp && (
+    <div className="mr-2">{startIconProp}</div>
+  );
+
+  const endIcon = endIconProp && <div className="ml-2">{endIconProp}</div>;
+
+  return (
+    <button
+      className={classnames(
+        baseClasses,
+        variantClasses[variant][color],
+        radiusClasses[radius],
+        sizeClasses[size],
+        disabledClasses[disabled],
+        className
+      )}
+      type={type}
+      {...rest}
+    >
+      {startIcon}
+      {children}
+      {endIcon}
+    </button>
+  );
+};
+
 Button.propTypes = {
   children: PropTypes.node,
   size: PropTypes.oneOf(['small', 'medium', 'large']),
-  radius: PropTypes.oneOf(['small', 'medium', 'large', 'full']),
+  radius: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
   color: PropTypes.oneOf(['default', 'primary', 'secondary']),
   disabled: PropTypes.bool,
-  elevation: PropTypes.bool,
   type: PropTypes.string,
   startIcon: PropTypes.node,
   endIcon: PropTypes.node,

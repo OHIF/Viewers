@@ -18,6 +18,7 @@
     "README.md"
   ],
   "scripts": {
+    "start": "yarn run dev",
     "dev": "concurrently \"npm run watch:css\" \"docz dev\"",
     "build": "concurrently \"npm run build:css\" \"docz build\"",
     "serve": "docz serve",
@@ -25,8 +26,13 @@
     "watch:css": "postcss src/styles/tailwind.css -o src/gatsby-theme-docz/app.css -w"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.27",
+    "@emotion/styled": "^10.0.27",
+    "classnames": "^2.2.6",
     "concurrently": "^5.1.0",
-    "docz": "latest",
+    "docz": "^2.2.0",
+    "gatsby-plugin-sass": "^2.1.28",
+    "node-sass": "^4.13.1",
     "prop-types": "^15.7.2",
     "react": "^16.11.0",
     "react-dom": "^16.11.0"

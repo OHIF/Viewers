@@ -1,0 +1,213 @@
+$default: #aaa;
+$primary: #00a;
+$secondary: #a00;
+$hoverOpacity: 40%;
+
+.baseButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-color: transparent;
+  outline: 0;
+  border: 0;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+  -moz-appearance: none;
+  appearance: none;
+  text-decoration: none;
+  box-sizing: border-box;
+  min-width: 64px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  color: inherit;
+  transition: all 300ms ease;
+
+  &:hover {
+    text-decoration: none;
+    background-color: lighten($default, $hoverOpacity / 2);
+  }
+
+  &:active,
+  &:focus {
+    outline: none;
+  }
+
+  &:disabled {
+    color: $default;
+    cursor: not-allowed;
+  }
+}
+
+/* Styles applied to the root element if `variant="text"`. */
+.text {
+  padding: 6px 8px;
+
+  &:hover {
+    background-color: lighten($default, $hoverOpacity / 2);
+  }
+}
+
+/* Styles applied to the root element if `variant="text"` and `color="primary"`. */
+.textPrimary {
+  color: $primary;
+
+  &:hover {
+    background-color: lighten($primary, $hoverOpacity);
+  }
+}
+
+/* Styles applied to the root element if `variant="text"` and `color="secondary"`. */
+.textSecondary {
+  color: $secondary;
+
+  &:hover {
+    background-color: lighten($secondary, $hoverOpacity);
+  }
+}
+
+/* Styles applied to the root element if `variant="outlined"`. */
+.outlined {
+  padding: 5px 15px;
+  border: 1px solid $default;
+
+  &:disabled {
+    border: 1px solid $default;
+  }
+}
+
+/* Styles applied to the root element if `variant="outlined"` and `color="primary"`. */
+.outlinedPrimary {
+  color: $primary;
+  border: 1px solid lighten($primary, $hoverOpacity);
+
+  &:hover {
+    border: 1px solid $primary;
+    background-color: lighten($primary, $hoverOpacity);
+  }
+}
+
+/* Styles applied to the root element if `variant="outlined"` and `color="secondary"`. */
+.outlinedSecondary {
+  color: $secondary;
+  border: 1px solid lighten($secondary, $hoverOpacity);
+
+  &:hover {
+    border: 1px solid $secondary;
+    background-color: lighten($secondary, $hoverOpacity);
+  }
+
+  &:disabled {
+    border: 1px solid $default;
+  }
+}
+
+/* Styles applied to the root element if `variant="contained"`. */
+.contained {
+  color: #fff;
+  background-color: $default;
+
+  &:disabled {
+    color: lighten($default, $hoverOpacity);
+    background-color: $default;
+  }
+
+  &:hover {
+    background-color: darken($default, $hoverOpacity / 2);
+
+    &:disabled {
+      color: lighten($default, $hoverOpacity);
+      background-color: $default;
+    }
+  }
+}
+
+/* Styles applied to the root element if `variant="contained"` and `color="primary"`. */
+.containedPrimary {
+  color: white;
+  background-color: $primary;
+
+  &:hover {
+    background-color: darken($primary, $hoverOpacity / 2);
+  }
+}
+
+/* Styles applied to the root element if `variant="contained"` and `color="secondary"`. */
+.containedSecondary {
+  color: white;
+  background-color: $secondary;
+
+  &:hover {
+    background-color: darken($secondary, $hoverOpacity / 2);
+  }
+}
+
+/* Styles applied to the root element if `size="small"` and `variant="text"`. */
+.textSizeSmall {
+  padding: 4px 5px;
+  font-size: 13px;
+}
+
+/* Styles applied to the root element if `size="medium"` and `variant="text"`. */
+.textSizeMedium {
+  padding: 6px 9px;
+  font-size: 14px;
+}
+
+/* Styles applied to the root element if `size="large"` and `variant="text"`. */
+.textSizeLarge {
+  padding: 8px 11px;
+  font-size: 15px;
+}
+
+/* Styles applied to the root element if `size="small"` and `variant="outlined"`. */
+.outlinedSizeSmall {
+  padding: 3px 9px;
+  font-size: 13px;
+}
+
+/* Styles applied to the root element if `size="medium"` and `variant="outlined"`. */
+.outlinedSizeMedium {
+  padding: 5px 15px;
+  font-size: 14px;
+}
+
+/* Styles applied to the root element if `size="large"` and `variant="outlined"`. */
+.outlinedSizeLarge {
+  padding: 7px 21px;
+  font-size: 15px;
+}
+
+/* Styles applied to the root element if `size="small"` and `variant="contained"`. */
+.containedSizeSmall {
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+/* Styles applied to the root element if `size="medium"` and `variant="contained"`. */
+.containedSizeMedium {
+  padding: 6px 16px;
+  font-size: 13px;
+}
+
+/* Styles applied to the root element if `size="large"` and `variant="contained"`. */
+.containedSizeLarge {
+  padding: 8px 22px;
+  font-size: 15px;
+}
+
+/* Styles applied to the startIcon element if supplied. */
+.startIcon {
+  display: inherit;
+  margin-right: 8px;
+  margin-left: -4px;
+}
+
+/* Styles applied to the endIcon element if supplied. */
+.endIcon {
+  display: inherit;
+  margin-right: -4px;
+  margin-left: 8px;
+}
