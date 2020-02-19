@@ -10,14 +10,15 @@ import { MODULE_TYPES } from '@ohif/core';
 import { SignoutCallbackComponent } from 'redux-oidc';
 import asyncComponent from './components/AsyncComponent.js';
 import * as RoutesUtil from './routes/routesUtil';
+import { MODULE_TYPES } from '@ohif/core';
 
 import NotFound from './routes/NotFound.js';
 import { Bar, Container } from './components/LoadingBar/';
 import './OHIFStandaloneViewer.css';
 import './variables.css';
 import './theme-tide.css';
-
 import { extensionManager } from './App.js';
+
 // Contexts
 import AppContext from './context/AppContext';
 const CallbackPage = asyncComponent(() =>

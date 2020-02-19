@@ -2,84 +2,282 @@ import OHIF from '@ohif/core';
 const { urlUtil: UrlUtil } = OHIF.utils;
 
 const reload = () => window.location.reload();
+const isTemplateNameEqual = (templateNameA, templateNameB) => {
+  return (
+    templateNameA &&
+    templateNameA &&
+    templateNameA.toLowerCase() === templateNameB.toLowerCase()
+  );
+};
+/**
+ *
+ * @typedef RouteDefinition It defines the route in overall terms
+ * @type {object}
+ * @property {string} template identifier for given routeDefinition
+ * @property {string} path it defines path for given routeDefinition
+ *
+ *
+ * @typedef RoutesDefinitions Array of Routes Definitions
+ * @type {RouteDefinition[]}
+ *
+ * @typedef RouteTemplateExtensionModuleItem It defines a route in terms of React application level. I.e it shall contain component, props and other React Component related properties
+ * @type {object}
+ * @property {string} template identifier for given routeTemplateModule
+ * @property {*} component react component to be used
+ * @property {object} props use the related props when creating given component
+ *
+ * @typedef RouteTemplateExtension
+ * @type {object}
+ * @property {RouteTemplateExtensionModuleItem[]} module contains routes templates items for given route template extension
+ *
+ *
+ * @typedef RouteTemplateExtensions extensions defined for routeTemplate type
+ * @type {object<*, RouteTemplateExtension>}
+ *
+ */
 
-const findRouteTemplateModule = (routesTemplateModules, templateKey) => {
-  for (let routesTemplateModuleKey in routesTemplateModules) {
-    const _module = routesTemplateModules[routesTemplateModuleKey].module;
-    if (_module && templateKey in _module) {
-      return _module[templateKey];
+/**
+ * @type {RoutesDefinitions}
+ * @description Default Routes Definitions. In case there is no definition at app config level, this will be used.
+ * At same way, if there is a RouteDefinition at app config level then it will be used instead of any existing definition from default values.
+ */
+const defaultRoutesDefinitions = [
+  {
+    template: 'Viewer',
+    path: '/viewer/:studyInstanceUids',
+  },
+  {
+    template: 'standAloneViewer',
+    path: '/viewer',
+  },
+  {
+    template: 'StudyList',
+    path: ['/', '/studylist'],
+  },
+  {
+    template: 'Local',
+    path: '/local',
+  },
+  {
+    template: 'IHEInvokeImageDisplay',
+    path: '/IHEInvokeImageDisplay',
+  },
+  {
+    template: 'GCloudViewer',
+    path:
+      '/projects/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUids',
+  },
+  {
+    template: 'GCloudStudyList',
+    path:
+      '/projects/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore',
+  },
+];
+const RoutesTemplateUtils = {
+  /**
+   * Find RouteTemplateModule of given templateName from routesTemplateModulesExtensions param.
+   * Returns undefined in case not found.
+   * @param {RouteTemplateExtensions} routesTemplateModulesExtensions structure to look into
+   * @param {string} templateName identifier to look for
+   * @return {RouteTemplateModule} found template module
+   */
+  findRouteTemplateModule: (routesTemplateModulesExtensions, templateName) => {
+    for (let moduleExtensionKey in routesTemplateModulesExtensions) {
+      const _module =
+        routesTemplateModulesExtensions[moduleExtensionKey].module;
+
+      if (_module) {
+        for (let routeTemplateModule of _module) {
+          if (isTemplateNameEqual(routeTemplateModule.template, templateName)) {
+            return routeTemplateModule;
+          }
+        }
+      }
     }
-  }
+  },
 };
 
-const pathUniquenessValidation = routesDefinitions => {
-  const pathMappings = [];
-  for (let routeDefinitionKey in routesDefinitions) {
-    const routeDefinition = routesDefinitions[routeDefinitionKey];
-    const currentPath = routeDefinition.path;
-    const arrayLikeCurrentPath = !Array.isArray(currentPath)
-      ? [currentPath]
-      : currentPath;
+const PathValidationUtils = {
+  /**
+   * Validation method for path. Validate if paths are unique.
+   *
+   * @param {RoutesDefinitions} routesDefinitions
+   * @return {boolean} return true in case validation pass
+   * @throws Will throw an error validation fails and ROUTES_VALIDATION_MODE is set to fail mode.
+   */
+  uniquenessValidation: routesDefinitions => {
+    const existingPaths = [];
+    let valid = true;
 
-    arrayLikeCurrentPath.forEach(_currentPath => {
-      if (_currentPath && _currentPath in pathMappings) {
-        handleValidation(
-          `RoutesDefinition error: Path ${_currentPath} already registered`
-        );
-      } else if (_currentPath) {
-        pathMappings[_currentPath] = true;
+    for (let routeDefinition of routesDefinitions) {
+      const currentPath = routeDefinition.path;
+      const arrayLikeCurrentPath = !Array.isArray(currentPath)
+        ? [currentPath]
+        : currentPath;
+
+      arrayLikeCurrentPath.forEach(_currentPath => {
+        if (_currentPath && _currentPath in existingPaths) {
+          ValidationUtils.handleValidation(
+            `RoutesDefinition error: Path ${_currentPath} already registered`
+          );
+          valid = false;
+        } else if (_currentPath) {
+          existingPaths[_currentPath] = true;
+        }
+      });
+    }
+
+    return valid;
+  },
+};
+const ValidationUtils = {
+  /**
+   *
+   * @typedef ValidatorsGenerator Generate validator methods.
+   * @type {function}
+   * @yields {function} validator function
+   */
+
+  /**
+   * It handles a unsuccessfully validation. It can log message or throw an exception
+   *
+   * @param {string} message error message
+   * @throws Will throw an error validation fails and ROUTES_VALIDATION_MODE is set to fail mode.
+   */
+  handleValidation: message => {
+    const routesValidationMode = process.env.ROUTES_VALIDATION_MODE;
+    switch (routesValidationMode) {
+      case 'silent':
+        break;
+      case 'log':
+        console.error(message);
+        break;
+      case 'fail':
+        throw new Error(message);
+      default:
+        console.log(message);
+    }
+  },
+
+  /**
+   * Method to run set of pre validations methods.
+   *
+   * @param {RoutesDefinitions} routesDefinitions
+   * @return {boolean} return true in case validation pass
+   * @throws Will throw an error validation fails and ROUTES_VALIDATION_MODE is set to fail mode.
+   */
+  preValidation: routesDefinitions => {
+    function* validators() {
+      yield PathValidationUtils.uniquenessValidation;
+    }
+    return ValidationUtils.runValidation(validators, routesDefinitions);
+  },
+
+  /**
+   * Generic method to run validations.
+   *
+   * @param {ValidatorsGenerator} validators Iterable structure with validators to be processed
+   * @param {RoutesDefinitions} routesDefinitions
+   * @throws Will throw an error validation fails and ROUTES_VALIDATION_MODE is set to fail mode.
+   */
+  runValidation: (validators, routesDefinitions) => {
+    for (let validator of validators()) {
+      const valid = validator(routesDefinitions);
+      // no need to wait, break immediately
+      if (!valid) {
+        return false;
+      }
+    }
+
+    return true;
+  },
+};
+
+const RoutesDefinitionsUtils = {
+  /**
+   * Join definitions. Definitions on definitionsB has higher precedence.
+   * It will return RoutesDefinitions which it is on second param combined to what is on first param (except if there is already on second param)
+   *
+   * @param {RoutesDefinitions} definitionsA
+   * @param {RoutesDefinitions} definitionsB
+   * @return {RoutesDefinitions} joint of params.
+   *
+   */
+  mergeRoutesDefinitions: (definitionsA = [], definitionsB = []) => {
+    const result = [...definitionsB];
+    const existingTemplate = [];
+
+    definitionsB.forEach(definition => {
+      existingTemplate[definition.template] = true;
+    });
+
+    definitionsA.forEach(definition => {
+      if (!existingTemplate[definition.template]) {
+        result.push(definition);
       }
     });
-  }
 
-  return true;
-};
-const handleValidation = message => {
-  const routesValidationMode = process.env.ROUTES_VALIDATION_MODE;
-  switch (routesValidationMode) {
-    case 'silent':
-      break;
-    case 'log':
-      console.error(message);
-      break;
-    case 'fail':
-      throw new Error(message);
-    default:
-      console.log(message);
-  }
-};
-
-const preValidation = routesDefinitions => {
-  function* validators() {
-    yield pathUniquenessValidation;
-  }
-
-  runValidation(validators, routesDefinitions);
-};
-
-const runValidation = (validators, routesDefinitions) => {
-  for (let validator of validators()) {
-    const valid = validator(routesDefinitions);
-    if (!valid) {
-      return;
+    return result;
+  },
+  /**
+   * Get definitions to be used.
+   * Result will contain everything from defaultRoutesDefinitions combined what is appConfig.routes.
+   * Routes definition from appConfig has higher precedence
+   * @param {object} appConfig app configuration containing routes (RoutesDefinitions)
+   * @param {RoutesDefinitions} defaultRoutesDefinitions
+   * @return {RoutesDefinitions}
+   */
+  getRoutesDefinitions: (appConfig, defaultRoutesDefinitions) => {
+    return RoutesDefinitionsUtils.mergeRoutesDefinitions(
+      defaultRoutesDefinitions,
+      appConfig.routes
+    );
+  },
+  /**
+   * Find routeDefinition for given param templateName into routeDefinitions.
+   * Returns undefined in case not found.
+   * @param {RoutesDefinitions} routeDefinitions structure to look into
+   * @param {string} templateName identifier to look for
+   * @return {(RoutesDefinition|undefined)}
+   */
+  findRouteDefinition: (routeDefinitions, templateName) => {
+    for (let routeDefinition of routeDefinitions) {
+      if (isTemplateNameEqual(routeDefinition.template, templateName)) {
+        return routeDefinition;
+      }
     }
-  }
+  },
 };
-const getRoutes = (appConfig, routesTemplateModules) => {
+
+/**
+ * @typedef RouteType It defines an object to be consumed by application and build routes with it.
+ * @type {object}
+ * @property {string} path path for given routeType
+ * @property {*} component React Component to be rendered in case this route should display
+ * @property {object} props React Component props to be passed to component
+ *
+ * It will return an array of possible routes.
+ * It combines route definitions and route template to produce a single route entry.
+ *
+ * It uses default configuration for definitions @see {@link defaultRoutesDefinitions} and also can use specific configuration (from params)
+ *
+ * @param {*} appConfig app configuration. Any specific route definition must come here
+ * @param {RouteTemplateExtensions} routesTemplateModulesExtensions it contains routes templates extension (default and any specific one)
+ * @return {RouteType[]}
+ */
+const getRoutes = (appConfig, routesTemplateModulesExtensions) => {
   const routes = [];
   const routesExistingMap = [];
 
-  const routesDefinitions = {
-    ...defaultRoutesDefinitions,
-    ...(appConfig.routes || {}),
-  };
+  const routesDefinitions = RoutesDefinitionsUtils.getRoutesDefinitions(
+    appConfig,
+    defaultRoutesDefinitions
+  );
 
   try {
-    preValidation(routesDefinitions);
+    ValidationUtils.preValidation(routesDefinitions);
 
-    for (let templateKey in routesDefinitions) {
-      const routeDefinition = routesDefinitions[templateKey];
-
+    for (let routeDefinition of routesDefinitions) {
       if (!routeDefinition) {
         continue;
       }
@@ -89,9 +287,9 @@ const getRoutes = (appConfig, routesTemplateModules) => {
         continue;
       }
 
-      const routeModule = findRouteTemplateModule(
-        routesTemplateModules,
-        templateKey
+      const routeModule = RoutesTemplateUtils.findRouteTemplateModule(
+        routesTemplateModulesExtensions,
+        routeDefinition.template
       );
 
       if (routeModule) {
@@ -129,21 +327,51 @@ const parsePath = (path, server, params) => {
 };
 
 const parseViewerPath = (appConfig = {}, server = {}, params) => {
-  let viewerPath = ROUTES_DEF.default.viewer.path;
+  const routesDefinitions = RoutesDefinitionsUtils.getRoutesDefinitions(
+    appConfig,
+    defaultRoutesDefinitions
+  );
+
+  let viewerRouteDefinition = RoutesDefinitionsUtils.findRouteDefinition(
+    routesDefinitions,
+    'viewer'
+  );
+  let viewerPath = viewerRouteDefinition.path;
   if (appConfig.enableGoogleCloudAdapter) {
-    viewerPath = ROUTES_DEF.gcloud.viewer.path;
+    viewerRouteDefinition = RoutesDefinitionsUtils.findRouteDefinition(
+      routesDefinitions,
+      'GCloudViewer'
+    );
+    viewerPath = viewerRouteDefinition.path;
   }
 
-  return parsePath(viewerPath, server, params);
+  const _viewerPath = Array.isArray(viewerPath) ? viewerPath[0] : viewerPath;
+  return parsePath(_viewerPath, server, params);
 };
 
 const parseStudyListPath = (appConfig = {}, server = {}, params) => {
-  let studyListPath = ROUTES_DEF.default.list.path;
+  const routesDefinitions = RoutesDefinitionsUtils.getRoutesDefinitions(
+    appConfig,
+    defaultRoutesDefinitions
+  );
+
+  let viewerRouteDefinition = RoutesDefinitionsUtils.findRouteDefinition(
+    routesDefinitions,
+    'StudyList'
+  );
+  let studyListPath = viewerRouteDefinition.path;
   if (appConfig.enableGoogleCloudAdapter) {
-    studyListPath = ROUTES_DEF.gcloud.list.path || studyListPath;
+    viewerRouteDefinition = RoutesDefinitionsUtils.utilsfindRouteDefinition(
+      routesDefinitions,
+      'GCloudStudyList'
+    );
+    studyListPath = viewerRouteDefinition.path || studyListPath;
   }
 
-  return parsePath(studyListPath, server, params);
+  const _studyListPath = Array.isArray(studyListPath)
+    ? studyListPath[0]
+    : studyListPath;
+  return parsePath(_studyListPath, server, params);
 };
 
 export { getRoutes, parseViewerPath, parseStudyListPath, reload };

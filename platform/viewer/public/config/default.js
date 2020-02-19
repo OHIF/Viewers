@@ -19,14 +19,16 @@ window.config = {
       },
     ],
   },
-  routes: {
-    studyList: {
+  routes: [
+    {
+      template: 'StudyList',
       path: '/listB',
     },
-    viewer: {
-      path: '/viewer',
+    {
+      template: 'Viewer',
+      path: '/viewerB/:studyInstanceUids',
     },
-  },
+  ],
   // Extensions should be able to suggest default values for these?
   // Or we can require that these be explicitly set
   hotkeys: [

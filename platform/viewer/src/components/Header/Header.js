@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 
@@ -7,11 +7,12 @@ import PropTypes from 'prop-types';
 import { Dropdown, AboutContent, withModal } from '@ohif/ui';
 
 import { UserPreferences } from './../UserPreferences';
+import * as RoutesUtil from '../../routes/routesUtil';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import './Header.css';
 
 // Context
-import AppContext from './../../context/AppContext';
+import AppContext from '../../context/AppContext';
 
 function Header(props) {
   const {
@@ -22,6 +23,7 @@ function Header(props) {
     home,
     location,
     children,
+    server,
   } = props;
 
   const [options, setOptions] = useState([]);
@@ -61,10 +63,11 @@ function Header(props) {
     setOptions(optionsValue);
   }, [setOptions, show, t, user, userManager]);
 
-  const { appConfig = {} } = AppContext;
+  const { appConfig = {} } = useContext(AppContext);
   const showStudyList =
     appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
 
+  const listPath = RoutesUtil.parseStudyListPath(appConfig, server);
   // ANTD -- Hamburger, Drawer, Menu
   return (
     <>
@@ -86,7 +89,7 @@ function Header(props) {
             <Link
               className="header-btn header-studyListLinkSection"
               to={{
-                pathname: '/',
+                pathname: listPath,
                 state: { studyLink: location.pathname },
               }}
             >
@@ -111,6 +114,7 @@ Header.propTypes = {
   t: PropTypes.func.isRequired,
   userManager: PropTypes.object,
   user: PropTypes.object,
+  server: PropTypes.object,
   modal: PropTypes.object,
 };
 
