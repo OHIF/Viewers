@@ -1,0 +1,180 @@
+---
+name: ButtonEmotion
+menu: Components
+route: components/button-emotion
+---
+
+import { Playground, Props } from 'docz';
+import Button from './';
+
+# ButtonEmotion
+
+Buttons are used to execute actions when users interacts with them.
+
+## Properties
+
+<Props of={Button} />
+
+## Contained Buttons
+
+<Playground>
+  <>
+    <Button variant="contained" style={{ margin: 5 }}>
+      Default
+    </Button>
+    <Button variant="contained" color="primary" style={{ margin: 5 }}>
+      Primary
+    </Button>
+    <Button variant="contained" color="secondary" style={{ margin: 5 }}>
+      Secondary
+    </Button>
+  </>
+</Playground>
+
+## Outlined Buttons
+
+<Playground>
+  <>
+    <Button variant="outlined" style={{ margin: 5 }}>
+      Default
+    </Button>
+    <Button variant="outlined" color="primary" style={{ margin: 5 }}>
+      Primary
+    </Button>
+    <Button variant="outlined" color="secondary" style={{ margin: 5 }}>
+      Secondary
+    </Button>
+  </>
+</Playground>
+
+## Text Buttons
+
+<Playground>
+  <>
+    <Button variant="text" style={{ margin: 5 }}>
+      Default
+    </Button>
+    <Button variant="text" color="primary" style={{ margin: 5 }}>
+      Primary
+    </Button>
+    <Button variant="text" color="secondary" style={{ margin: 5 }}>
+      Secondary
+    </Button>
+  </>
+</Playground>
+
+## Sizes
+
+<Playground>
+  <>
+    <div>
+      <Button variant="text" size="small" style={{ margin: 5 }}>
+        Small
+      </Button>
+      <Button variant="contained" size="medium" style={{ margin: 5 }}>
+        Medium
+      </Button>
+      <Button variant="outlined" size="large" style={{ margin: 5 }}>
+        Large
+      </Button>
+    </div>
+    <div>
+      <Button
+        variant="text"
+        size="small"
+        color="primary"
+        style={{ margin: 5 }}
+      >
+        Small
+      </Button>
+      <Button
+        variant="contained"
+        size="medium"
+        color="primary"
+        style={{ margin: 5 }}
+      >
+        Medium
+      </Button>
+      <Button
+        variant="outlined"
+        size="large"
+        color="primary"
+        style={{ margin: 5 }}
+      >
+        large
+      </Button>
+    </div>
+    <div>
+    <Button
+      variant="text"
+      size="small"
+      color="secondary"
+      style={{ margin: 5 }}
+    >
+      Small
+    </Button>
+    <Button
+      variant="contained"
+      size="medium"
+      color="secondary"
+      style={{ margin: 5 }}
+    >
+      Medium
+    </Button>
+    <Button
+      variant="outlined"
+      size="large"
+      color="secondary"
+      style={{ margin: 5 }}
+    >
+      Large
+    </Button>
+    </div>
+
+</>
+
+</Playground>
+
+## Buttons with icons
+
+<Playground>
+{() => {
+    return (
+         <div className="flex">
+        <Button
+      variant="contained"
+      color="primary"
+      style={{ margin: 5 }}
+      startIcon={
+    <svg
+      class="fill-current w-4 h-4"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+    >
+      <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+    </svg>
+  }
+    >
+      Download
+    </Button>
+     <Button
+      variant="contained"
+      color="primary"
+      style={{ margin: 5 }}
+      endIcon={
+    <svg
+      class="fill-current w-4 h-4"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+    >
+      <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+    </svg>
+  }
+    >
+      Download
+    </Button>
+      </div>
+    )
+  }}
+
+</Playground>

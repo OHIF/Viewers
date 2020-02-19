@@ -1,5 +1,5 @@
 import React from 'react';
-import t from 'prop-types';
+import PropTypes from 'prop-types';
 
 const Label = ({ children, spacing, className, text, ...rest }) => {
   const baseClasses = 'flex flex-1 flex-col text-gray-700 text-sm font-bold';
@@ -12,7 +12,7 @@ const Label = ({ children, spacing, className, text, ...rest }) => {
   };
 
   return (
-    <label className={getClasses()}>
+    <label className={getClasses()} {...rest}>
       {text}
       {children}
     </label>
@@ -27,6 +27,8 @@ const spacing = {
 
 Label.defaultProps = {};
 
-Label.prototypes = {};
+Label.propTypes = {
+  children: PropTypes.node,
+};
 
 export default Label;
