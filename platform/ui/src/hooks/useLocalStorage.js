@@ -1,3 +1,4 @@
+import { useState, useEffect, useCallback } from 'react';
 /**
  * @typedef StateType It defines state of hooks.
  * @type {[Object|string]}
