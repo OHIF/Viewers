@@ -4,5 +4,5 @@ export default {
   SOP_CLASS_HANDLER: 'sopClassHandlerModule',
   TOOLBAR: 'toolbarModule',
   VIEWPORT: 'viewportModule',
-  ROUTES: 'routesModule',
+  ROUTES: 'routesTemplateModule',
 };

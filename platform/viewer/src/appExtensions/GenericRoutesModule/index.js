@@ -1,8 +1,8 @@
-import routesModule from './routesModule.js';
+import routesTemplateModule from './routesTemplateModule.js';
 
 export default {
-  id: 'generic-routes-module',
-  getRoutesModule() {
-    return routesModule;
+  id: 'generic-routes-template-module',
+  getRoutesTemplateModule() {
+    return routesTemplateModule;
   },
 };

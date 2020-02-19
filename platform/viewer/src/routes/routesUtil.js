@@ -3,42 +3,16 @@ const { urlUtil: UrlUtil } = OHIF.utils;
 
 const reload = () => window.location.reload();
 
-const defaultRoutesDefinitions = {
-  viewer: {
-    path: '/viewer/:studyInstanceUids',
-  },
-  standAloneViewer: {
-    path: '/viewer',
-  },
-  studyList: {
-    path: ['/studylist', '/'],
-  },
-  local: {
-    path: '/local',
-  },
-  IHEInvokeImageDisplay: {
-    path: '/IHEInvokeImageDisplay',
-  },
-  gcloudViewer: {
-    path:
-      '/projects/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUids',
-  },
-  gcloudList: {
-    path:
-      '/projects/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore',
-  },
-};
-
-const findRouteModule = (routesModules, templateKey) => {
-  for (let routesModuleKey in routesModules) {
-    const _module = routesModules[routesModuleKey].module;
+const findRouteTemplateModule = (routesTemplateModules, templateKey) => {
+  for (let routesTemplateModuleKey in routesTemplateModules) {
+    const _module = routesTemplateModules[routesTemplateModuleKey].module;
     if (_module && templateKey in _module) {
       return _module[templateKey];
     }
   }
 };
 
-const pathUniquenessValidation = (routesDefinitions, routesValidationMode) => {
+const pathUniquenessValidation = routesDefinitions => {
   const pathMappings = [];
   for (let routeDefinitionKey in routesDefinitions) {
     const routeDefinition = routesDefinitions[routeDefinitionKey];
@@ -50,8 +24,7 @@ const pathUniquenessValidation = (routesDefinitions, routesValidationMode) => {
     arrayLikeCurrentPath.forEach(_currentPath => {
       if (_currentPath && _currentPath in pathMappings) {
         handleValidation(
-          `RoutesDefinition error: Path ${_currentPath} already registered`,
-          routesValidationMode
+          `RoutesDefinition error: Path ${_currentPath} already registered`
         );
       } else if (_currentPath) {
         pathMappings[_currentPath] = true;
@@ -61,7 +34,8 @@ const pathUniquenessValidation = (routesDefinitions, routesValidationMode) => {
 
   return true;
 };
-const handleValidation = (message, routesValidationMode) => {
+const handleValidation = message => {
+  const routesValidationMode = process.env.ROUTES_VALIDATION_MODE;
   switch (routesValidationMode) {
     case 'silent':
       break;
@@ -75,26 +49,25 @@ const handleValidation = (message, routesValidationMode) => {
   }
 };
 
-const preValidation = (routesDefinitions, routesValidationMode) => {
+const preValidation = routesDefinitions => {
   function* validators() {
     yield pathUniquenessValidation;
   }
 
-  runValidation(validators, routesDefinitions, routesValidationMode);
+  runValidation(validators, routesDefinitions);
 };
 
-const runValidation = (validators, routesDefinitions, routesValidationMode) => {
+const runValidation = (validators, routesDefinitions) => {
   for (let validator of validators()) {
-    const valid = validator(routesDefinitions, routesValidationMode);
+    const valid = validator(routesDefinitions);
     if (!valid) {
       return;
     }
   }
 };
-const getRoutes = (appConfig, routesModules) => {
+const getRoutes = (appConfig, routesTemplateModules) => {
   const routes = [];
   const routesExistingMap = [];
-  const { routesValidationMode } = appConfig;
 
   const routesDefinitions = {
     ...defaultRoutesDefinitions,
@@ -102,7 +75,7 @@ const getRoutes = (appConfig, routesModules) => {
   };
 
   try {
-    preValidation(routesDefinitions, routesValidationMode);
+    preValidation(routesDefinitions);
 
     for (let templateKey in routesDefinitions) {
       const routeDefinition = routesDefinitions[templateKey];
@@ -116,7 +89,10 @@ const getRoutes = (appConfig, routesModules) => {
         continue;
       }
 
-      const routeModule = findRouteModule(routesModules, templateKey);
+      const routeModule = findRouteTemplateModule(
+        routesTemplateModules,
+        templateKey
+      );
 
       if (routeModule) {
         const validRoute =
