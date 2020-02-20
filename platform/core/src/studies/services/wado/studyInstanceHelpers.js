@@ -1,5 +1,7 @@
 import { api } from 'dicomweb-client';
+
 import DICOMWeb from '../../../DICOMWeb';
+import getReferencedSeriesSequence from './getReferencedSeriesSequence';
 
 const WADOProxy = {
   convertURL: (url, server) => {
@@ -29,10 +31,10 @@ const paletteColorCache = {
   count: 0,
   maxAge: 24 * 60 * 60 * 1000, // 24h cache?
   entries: {},
-  isValidUID: function(paletteUID) {
+  isValidUID: function (paletteUID) {
     return typeof paletteUID === 'string' && paletteUID.length > 0;
   },
-  get: function(paletteUID) {
+  get: function (paletteUID) {
     let entry = null;
     if (this.entries.hasOwnProperty(paletteUID)) {
       entry = this.entries[paletteUID];
@@ -46,7 +48,7 @@ const paletteColorCache = {
     }
     return entry;
   },
-  add: function(entry) {
+  add: function (entry) {
     if (this.isValidUID(entry.uid)) {
       let paletteUID = entry.uid;
       if (this.entries.hasOwnProperty(paletteUID) !== true) {
@@ -156,41 +158,6 @@ function getFrameIncrementPointer(element) {
 
   const value = element.Value[0];
   return frameIncrementPointerNames[value];
-}
-
-function getReferencedSeriesSequence(instance) {
-  const referencedSeriesSequenceRaw = instance['00081115'];
-
-  const referencedSeriesSequence = [];
-
-  if (referencedSeriesSequenceRaw && referencedSeriesSequenceRaw.Value) {
-    referencedSeriesSequenceRaw.Value.forEach(referencedSeries => {
-      const referencedSeriesInstanceUID = DICOMWeb.getString(
-        referencedSeries['0020000E']
-      );
-
-      const referencedInstanceSequenceRaw = referencedSeries['0008114A'];
-      const referencedInstanceSequence = [];
-
-      referencedInstanceSequenceRaw.Value.forEach(referencedInstance => {
-        referencedInstanceSequence.push({
-          referencedSOPClassUID: DICOMWeb.getString(
-            referencedInstance['00081150']
-          ),
-          referencedSOPInstanceUID: DICOMWeb.getString(
-            referencedInstance['00081155']
-          ),
-        });
-      });
-
-      referencedSeriesSequence.push({
-        referencedSeriesInstanceUID,
-        referencedInstanceSequence,
-      });
-    });
-  }
-
-  return referencedSeriesSequence;
 }
 
 function getRadiopharmaceuticalInfo(instance) {
@@ -501,7 +468,7 @@ async function getPaletteColors(server, instance, lutDescriptor) {
  */
 async function addInstancesToStudy(server, study, sopInstanceList) {
   return Promise.all(
-    sopInstanceList.map(function(sopInstance) {
+    sopInstanceList.map(function (sopInstance) {
       return makeSOPInstance(server, study, sopInstance);
     })
   );
