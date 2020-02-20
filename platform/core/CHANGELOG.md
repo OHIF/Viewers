@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.4.0...@ohif/core@2.4.1) (2020-02-12)
+
+
+### Bug Fixes
+
+* Combined Hotkeys for special characters ([#1233](https://github.com/OHIF/Viewers/issues/1233)) ([2f30e7a](https://github.com/OHIF/Viewers/commit/2f30e7a821a238144c49c56f37d8e5565540b4bd))
+
+
+
+
+
+# [2.4.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.9...@ohif/core@2.4.0) (2020-02-10)
+
+
+### Features
+
+* 🎸 MeasurementService ([#1314](https://github.com/OHIF/Viewers/issues/1314)) ([0c37a40](https://github.com/OHIF/Viewers/commit/0c37a406d963569af8c3be24c697dafd42712dfc))
+
+
+
+
+
+## [2.3.9](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.8...@ohif/core@2.3.9) (2020-02-07)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 ## [2.3.8](https://github.com/OHIF/Viewers/compare/@ohif/core@2.3.7...@ohif/core@2.3.8) (2020-02-06)
 
 

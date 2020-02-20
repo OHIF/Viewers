@@ -84,7 +84,12 @@ export function initPreferencesModalAliases() {
   cy.get('.OHIFModal').as('preferencesModal');
   cy.get('[data-cy="hotkeys"]').as('userPreferencesHotkeysTab');
   cy.get('[data-cy="general"]').as('userPreferencesGeneralTab');
-  cy.get('[data-cy="reset-default-btn"]').as('restoreBtn');
-  cy.get('[data-cy="cancel-btn"]').as('cancelBtn');
-  cy.get('[data-cy="save-btn"]').as('saveBtn');
+  initPreferencesModalFooterBtnAliases();
+}
+
+//Creating aliases for User Preferences modal
+export function initPreferencesModalFooterBtnAliases() {
+  cy.get('.active [data-cy="reset-default-btn"]').as('restoreBtn');
+  cy.get('.active [data-cy="cancel-btn"]').as('cancelBtn');
+  cy.get('.active [data-cy="save-btn"]').as('saveBtn');
 }

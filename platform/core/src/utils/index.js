@@ -13,6 +13,7 @@ import b64toBlob from './b64toBlob.js';
 import loadAndCacheDerivedDisplaySets from './loadAndCacheDerivedDisplaySets.js';
 import * as urlUtil from './urlUtil';
 import makeCancelable from './makeCancelable';
+import hotkeys from './hotkeys';
 
 const utils = {
   guid,
@@ -31,6 +32,7 @@ const utils = {
   urlUtil,
   loadAndCacheDerivedDisplaySets,
   makeCancelable,
+  hotkeys,
 };
 
 export {
@@ -50,6 +52,7 @@ export {
   urlUtil,
   loadAndCacheDerivedDisplaySets,
   makeCancelable,
+  hotkeys,
 };
 
 export default utils;

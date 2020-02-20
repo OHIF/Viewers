@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.3.0...@ohif/extension-cornerstone@2.3.1) (2020-02-14)
+
+
+### Bug Fixes
+
+* Creating 2 commands to activate zoom tool and also to move between displaySets ([#1446](https://github.com/OHIF/Viewers/issues/1446)) ([06a4af0](https://github.com/OHIF/Viewers/commit/06a4af06faaecf6fa06ccd90cdfa879ee8d53053))
+
+
+
+
+
+# [2.3.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.2.2...@ohif/extension-cornerstone@2.3.0) (2020-02-10)
+
+
+### Features
+
+* 🎸 MeasurementService ([#1314](https://github.com/OHIF/Viewers/issues/1314)) ([0c37a40](https://github.com/OHIF/Viewers/commit/0c37a406d963569af8c3be24c697dafd42712dfc))
+
+
+
+
+
 ## [2.2.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.2.1...@ohif/extension-cornerstone@2.2.2) (2020-01-28)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone

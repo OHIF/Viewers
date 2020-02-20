@@ -3,11 +3,10 @@ import { LayoutButton, LayoutChooser } from './layoutButton';
 import { MeasurementTable, MeasurementTableItem } from './measurementTable';
 import { Overlay, OverlayTrigger } from './overlayTrigger';
 import { TableList, TableListItem } from './tableList';
-import {
-  AboutContent,
-  UserPreferences,
-  UserPreferencesForm,
-} from './userPreferencesForm';
+import { AboutContent } from './content/aboutContent/AboutContent';
+import { TabComponents, TabFooter } from './tabComponents';
+import { HotkeyField } from './customForm';
+import { LanguageSwitcher } from './languageSwitcher';
 
 import { Checkbox } from './checkbox';
 import { CineDialog } from './cineDialog';
@@ -48,12 +47,14 @@ export {
   TableList,
   TableListItem,
   Thumbnail,
+  TabComponents,
+  TabFooter,
+  HotkeyField,
+  LanguageSwitcher,
   TableSearchFilter,
   TablePagination,
   ToolbarSection,
   Tooltip,
   AboutContent,
-  UserPreferences,
-  UserPreferencesForm,
   OHIFModal,
 };

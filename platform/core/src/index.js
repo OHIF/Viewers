@@ -18,12 +18,13 @@ import string from './string.js';
 import studies from './studies/';
 import ui from './ui';
 import user from './user.js';
-import utils from './utils/';
+import utils, { hotkeys } from './utils/';
 
 import {
   UINotificationService,
   UIModalService,
   UIDialogService,
+  MeasurementService,
 } from './services';
 
 const OHIF = {
@@ -35,6 +36,7 @@ const OHIF = {
   ServicesManager,
   //
   utils,
+  hotkeys,
   studies,
   redux,
   classes,
@@ -55,6 +57,7 @@ const OHIF = {
   UINotificationService,
   UIModalService,
   UIDialogService,
+  MeasurementService,
 };
 
 export {
@@ -66,6 +69,7 @@ export {
   ServicesManager,
   //
   utils,
+  hotkeys,
   studies,
   redux,
   classes,
@@ -85,6 +89,7 @@ export {
   UINotificationService,
   UIModalService,
   UIDialogService,
+  MeasurementService,
 };
 
 export { OHIF };
