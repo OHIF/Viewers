@@ -265,7 +265,7 @@ const parseStudyListPath = (appConfig = {}, server = {}, params) => {
   );
   let studyListPath = viewerRouteDefinition.path;
   if (appConfig.enableGoogleCloudAdapter) {
-    viewerRouteDefinition = RoutesDefinitionsUtils.utilsfindRouteDefinition(
+    viewerRouteDefinition = RoutesDefinitionsUtils.findRouteDefinition(
       routesDefinitions,
       'GCloudStudyList'
     );
