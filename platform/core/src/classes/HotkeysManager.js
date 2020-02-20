@@ -91,8 +91,9 @@ export class HotkeysManager {
           message: 'Error while setting hotkeys',
           type: 'error',
         });
+      } else {
+        log.warn('Hotkeys Manager | Error while setting hotkeys');
       }
-      log.warn('Hotkeys Manager | Error while setting hotkeys');
     }
   }
 
