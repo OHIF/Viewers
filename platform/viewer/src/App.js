@@ -267,22 +267,18 @@ function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
  * @param {Object} appConfigHotkeys - Default hotkeys, as defined by app config
  */
 function _initHotkeys(appConfigHotkeys) {
-  // TODO: Use something more resilient
-  // TODO: Mozilla has a special library for this
+  // Adding config custom hotkeys into default
+  if (appConfigHotkeys) {
+    hotkeysManager.addDefaultHotkeys(appConfigHotkeys);
+  }
+
   const userPreferredHotkeys = JSON.parse(
     localStorage.getItem('hotkey-definitions') || '{}'
   );
 
-  // TODO: hotkeysManager.isValidDefinitionObject(/* */)
-  const hasUserPreferences =
-    userPreferredHotkeys && Object.keys(userPreferredHotkeys).length > 0;
-  if (hasUserPreferences) {
+  if (Object.keys(userPreferredHotkeys).length) {
     hotkeysManager.setHotkeys(userPreferredHotkeys);
-  } else {
-    hotkeysManager.setHotkeys(appConfigHotkeys);
   }
-
-  hotkeysManager.setDefaultHotKeys(appConfigHotkeys);
 }
 
 function _initServers(servers) {

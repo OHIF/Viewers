@@ -21,59 +21,6 @@ window.config = {
   },
   // Extensions should be able to suggest default values for these?
   // Or we can require that these be explicitly set
-  hotkeys: [
-    // ~ Global
-    {
-      commandName: 'incrementActiveViewport',
-      label: 'Next Viewport',
-      keys: ['right'],
-    },
-    {
-      commandName: 'decrementActiveViewport',
-      label: 'Previous Viewport',
-      keys: ['left'],
-    },
-    // Supported Keys: https://craig.is/killing/mice
-    // ~ Cornerstone Extension
-    { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'] },
-    { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
-    { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
-    {
-      commandName: 'flipViewportVertical',
-      label: 'Flip Horizontally',
-      keys: ['h'],
-    },
-    {
-      commandName: 'flipViewportHorizontal',
-      label: 'Flip Vertically',
-      keys: ['v'],
-    },
-    { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'] },
-    { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'] },
-    { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },
-    { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
-    // clearAnnotations
-    { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
-    { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
-    // firstImage
-    // lastImage
-    {
-      commandName: 'previousViewportDisplaySet',
-      label: 'Previous Series',
-      keys: ['pagedown'],
-    },
-    {
-      commandName: 'nextViewportDisplaySet',
-      label: 'Next Series',
-      keys: ['pageup'],
-    },
-    // ~ Cornerstone Tools
-    {
-      commandName: 'setToolActive',
-      label: 'Zoom',
-      keys: ['z'],
-      commandOptions: { toolName: 'Zoom' },
-    },
-  ],
+  hotkeys: [],
   cornerstoneExtensionConfig: {},
 };

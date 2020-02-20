@@ -1,4 +1,5 @@
 import hotkeys from './../utils/hotkeys';
+import { defaultHotkeys } from './defaultHotkeys';
 import log from './../log.js';
 
 /**
@@ -11,10 +12,17 @@ import log from './../log.js';
  * @property {Object} commandOptions - Options to be passed to commandManager
  */
 
+const isValidHotkeyDefinition = ({ commandName, keys }) => {
+  const isCommandNameValid = typeof commandName === 'string';
+  const isKeysValid = Array.isArray(keys) && keys.length > 0;
+
+  return isCommandNameValid && isKeysValid;
+};
+
 export class HotkeysManager {
   constructor(commandsManager, servicesManager) {
-    this.hotkeyDefinitions = {};
-    this.hotkeyDefaults = [];
+    this.hotkeyDefinitions = [];
+    this.hotkeyDefaults = defaultHotkeys;
     this.isEnabled = true;
 
     if (!commandsManager) {
@@ -25,6 +33,8 @@ export class HotkeysManager {
 
     this._servicesManager = servicesManager;
     this._commandsManager = commandsManager;
+
+    this.setDefaultHotkeys();
   }
 
   /**
@@ -54,128 +64,52 @@ export class HotkeysManager {
   }
 
   /**
-   * Registers a list of hotkeydefinitions.
+   * Registers the new list of hotkey definitions.
    *
-   * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
+   * @param {HotkeyDefinition[]} [hotkeyDefinitions=[]] Contains hotkeys definitions
    */
   setHotkeys(hotkeyDefinitions = []) {
     try {
-      const definitions = this._getValidDefinitions(hotkeyDefinitions);
+      this._unbindAndClearCurrentHotkeys();
 
-      definitions.forEach(definition => this.registerHotkeys(definition));
+      hotkeyDefinitions.forEach(hotkeyDefinition => {
+        const { commandName, keys, commandOptions } = hotkeyDefinition;
+
+        if (!isValidHotkeyDefinition({ commandName, keys })) {
+          return;
+        }
+        // Push hotkeyDefinition and bind it only if its valid
+        this.hotkeyDefinitions.push(hotkeyDefinition);
+
+        this._bindHotkeys(commandName, keys, commandOptions);
+      });
     } catch (error) {
       const { UINotificationService } = this._servicesManager.services;
-      UINotificationService.show({
-        title: 'Hotkeys Manager',
-        message: 'Erro while setting hotkeys',
-        type: 'error',
-      });
+      if (UINotificationService) {
+        UINotificationService.show({
+          title: 'Hotkeys Manager',
+          message: 'Error while setting hotkeys',
+          type: 'error',
+        });
+      }
+      log.warn('Hotkeys Manager | Error while setting hotkeys');
     }
   }
 
   /**
-   * Set default hotkey bindings. These
-   * values are used in `this.restoreDefaultBindings`.
-   *
-   * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
+   * Set default hotkeys bindings
    */
-  setDefaultHotKeys(hotkeyDefinitions = []) {
-    const definitions = this._getValidDefinitions(hotkeyDefinitions);
-
-    this.hotkeyDefaults = definitions;
-  }
-
-  /**
-   * Take hotkey definitions that can be an array or object and make sure that it
-   * returns an array of hotkeys
-   *
-   * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
-   */
-  _getValidDefinitions(hotkeyDefinitions) {
-    const definitions = Array.isArray(hotkeyDefinitions)
-      ? [...hotkeyDefinitions]
-      : this._parseToArrayLike(hotkeyDefinitions);
-
-    return definitions;
-  }
-
-  /**
-   * It parses given object containing hotkeyDefinition to array like.
-   * Each property of given object will be mapped to an object of an array. And its property name will be the value of a property named as commandName
-   *
-   * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions={}] Contains hotkeys definitions
-   * @returns {HotkeyDefinition[]}
-   */
-  _parseToArrayLike(hotkeyDefinitionsObj = {}) {
-    const copy = { ...hotkeyDefinitionsObj };
-    return Object.entries(copy).map(entryValue =>
-      this._parseToHotKeyObj(entryValue[0], entryValue[1])
-    );
-  }
-
-  /**
-   * Return HotkeyDefinition object like based on given property name and property value
-   * @param {string} propertyName property name of hotkey definition object
-   * @param {object} propertyValue property value of hotkey definition object
-   *
-   * @example
-   *
-   * const hotKeyObj = {hotKeyDefA: {keys:[],....}}
-   *
-   * const parsed = _parseToHotKeyObj(Object.keys(hotKeyDefA)[0], hotKeyObj[hotKeyDefA]);
-   *  {
-   *   commandName: hotKeyDefA,
-   *   keys: [],
-   *   ....
-   *  }
-   *
-   */
-  _parseToHotKeyObj(propertyName, propertyValue) {
-    return {
-      commandName: propertyName,
-      ...propertyValue,
-    };
-  }
-
-  /**
-   * (unbinds and) binds the specified command to one or more key combinations.
-   * When a hotkey combination is triggered, the command name and active contexts
-   * are used to locate the correct command to call.
-   *
-   * @param {HotkeyDefinition} commandName
-   * @param {String} extension
-   * @returns {undefined}
-   */
-  registerHotkeys(
-    { commandName, keys, label, commandOptions } = {},
-    extension
-  ) {
-    if (!commandName) {
-      log.warn(`No command was defined for hotkey "${keys}"`);
-      return;
-    }
-
-    const previouslyRegisteredDefinition = this.hotkeyDefinitions[commandName];
-
-    if (previouslyRegisteredDefinition) {
-      const previouslyRegisteredKeys = previouslyRegisteredDefinition.keys;
-      this._unbindHotkeys(commandName, previouslyRegisteredKeys);
-      log.info(`Unbinding ${commandName} from ${previouslyRegisteredKeys}`);
-    }
-
-    // Set definition & bind
-    this.hotkeyDefinitions[commandName] = { keys, label, commandOptions };
-    this._bindHotkeys(commandName, keys, commandOptions);
-    log.info(`Binding ${commandName} to ${keys}`);
-  }
-
-  /**
-   * Uses most recent
-   *
-   * @returns {undefined}
-   */
-  restoreDefaultBindings() {
+  setDefaultHotkeys() {
     this.setHotkeys(this.hotkeyDefaults);
+  }
+
+  /**
+   * Add hotkeys into default values
+   *
+   * @param {HotkeyDefinition[]} [hotkeyDefinitions=[]] Contains hotkeys definitions
+   */
+  addDefaultHotkeys(hotkeyDefinitions = []) {
+    this.hotkeyDefaults = this.hotkeyDefaults.concat(hotkeyDefinitions);
   }
 
   /**
@@ -188,6 +122,31 @@ export class HotkeysManager {
   }
 
   /**
+   *  Get the string that MouseTrap will use to bind
+   *
+   * @param {Array | String} keys
+   * @returns
+   * @memberof HotkeysManager
+   */
+  _getHotkeyKey(keys) {
+    const isKeyArray = keys instanceof Array;
+    return isKeyArray ? keys.join('+') : keys;
+  }
+
+  /**
+   * Unbind all current hotkeys and clear current hotkeys definitions
+   *
+   * @memberof HotkeysManager
+   */
+  _unbindAndClearCurrentHotkeys() {
+    this.hotkeyDefinitions.forEach(({ keys }) => {
+      this._unbindHotkeys(keys);
+    });
+
+    this.hotkeyDefinitions = [];
+  }
+
+  /**
    * Binds one or more set of hotkey combinations for a given command
    *
    * @private
@@ -197,13 +156,7 @@ export class HotkeysManager {
    * @returns {undefined}
    */
   _bindHotkeys(commandName, keys, commandOptions) {
-    const isKeyDefined = keys === '' || keys === undefined;
-    if (isKeyDefined) {
-      return;
-    }
-
-    const isKeyArray = keys instanceof Array;
-    const combinedKeys = isKeyArray ? keys.join('+') : keys;
+    const combinedKeys = this._getHotkeyKey(keys);
 
     hotkeys.bind(combinedKeys, evt => {
       evt.preventDefault();
@@ -216,24 +169,13 @@ export class HotkeysManager {
    * unbinds one or more set of hotkey combinations for a given command
    *
    * @private
-   * @param {string} commandName - The name of the previously bound command
    * @param {string[]} keys - One or more sets of previously bound keys
    * @returns {undefined}
    */
-  _unbindHotkeys(commandName, keys) {
-    const isKeyDefined = keys !== '' && keys !== undefined;
-    if (!isKeyDefined) {
-      return;
-    }
+  _unbindHotkeys(keys) {
+    const combinedKeys = this._getHotkeyKey(keys);
 
-    const isKeyArray = keys instanceof Array;
-    if (isKeyArray) {
-      const combinedKeys = keys.join('+');
-      this._unbindHotkeys(commandName, combinedKeys);
-      return;
-    }
-
-    hotkeys.unbind(keys);
+    hotkeys.unbind(combinedKeys);
   }
 }
 

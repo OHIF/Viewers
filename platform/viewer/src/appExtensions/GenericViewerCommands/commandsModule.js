@@ -14,6 +14,10 @@ const actions = {
     store.dispatch(setViewportActive(newIndex));
   },
   updateViewportDisplaySet: ({ viewports, direction }) => {
+    if (!direction) {
+      return;
+    }
+
     const viewportSpecificData = { ...viewports.viewportSpecificData };
     const activeViewport = viewportSpecificData[viewports.activeViewportIndex];
     const studyMetadata = utils.studyMetadataManager.get(
@@ -51,20 +55,15 @@ const definitions = {
     storeContexts: ['viewports'],
     options: { direction: 1 },
   },
-  decrementActiveViewport: {
+  updateViewportDisplaySet: {
     commandFn: actions.updateActiveViewport,
     storeContexts: ['viewports'],
     options: { direction: -1 },
   },
-  nextViewportDisplaySet: {
+  updateViewportDisplaySet: {
     commandFn: actions.updateViewportDisplaySet,
     storeContexts: ['viewports'],
-    options: { direction: 1 },
-  },
-  previousViewportDisplaySet: {
-    commandFn: actions.updateViewportDisplaySet,
-    storeContexts: ['viewports'],
-    options: { direction: -1 },
+    options: {},
   },
 };
 
