@@ -1,7 +1,7 @@
 {
   "name": "@ohif/extension-dicom-seg",
   "version": "0.0.1",
-  "description": "OHIF extension for rendering structured reports to HTML",
+  "description": "OHIF extension for viewing segmentations in the 2D MPR view",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
