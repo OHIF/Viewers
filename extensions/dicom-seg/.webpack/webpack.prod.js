@@ -13,17 +13,6 @@ module.exports = (env, argv) => {
 
   return merge(commonConfig, {
     devtool: 'source-map',
-    stats: {
-      colors: true,
-      hash: true,
-      timings: true,
-      assets: true,
-      chunks: false,
-      chunkModules: false,
-      modules: false,
-      children: false,
-      warnings: true,
-    },
     optimization: {
       minimize: true,
       sideEffects: true,
