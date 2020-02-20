@@ -10,7 +10,6 @@ import { MODULE_TYPES } from '@ohif/core';
 import { SignoutCallbackComponent } from 'redux-oidc';
 import asyncComponent from './components/AsyncComponent.js';
 import * as RoutesUtil from './routes/routesUtil';
-import { MODULE_TYPES } from '@ohif/core';
 
 import NotFound from './routes/NotFound.js';
 import { Bar, Container } from './components/LoadingBar/';
