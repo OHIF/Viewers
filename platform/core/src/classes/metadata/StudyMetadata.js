@@ -552,6 +552,22 @@ export class StudyMetadata extends Metadata {
   }
 
   /**
+   * Get the first image id given display instance uid.
+   * @return {string} The image id.
+   */
+  getFirstImageId(displaySetInstanceUid) {
+    try {
+      const displaySet = this.findDisplaySet(
+        displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
+      );
+      return displaySet.images[0].getImageId();
+    } catch (error) {
+      console.error('Failed to retrieve image metadata');
+      return null;
+    }
+  }
+
+  /**
    * Get the first instance of the current study retaining a consistent result across multiple calls.
    * @return {InstanceMetadata} An instance of the InstanceMetadata class or null if it does not exist.
    */

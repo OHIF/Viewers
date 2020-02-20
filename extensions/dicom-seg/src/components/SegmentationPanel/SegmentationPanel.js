@@ -51,8 +51,10 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
   const [selectedSegmentation, setSelectedSegmentation] = useState();
 
   const viewport = viewports[activeIndex];
-  const firstImageId = _getFirstImageId(viewport);
-  const { studyInstanceUid, seriesInstanceUid } = viewport;
+
+  const { studyInstanceUid, seriesInstanceUid, displaySetInstanceUid } = viewport;
+  const studyMetadata = studyMetadataManager.get(studyInstanceUid);
+  const firstImageId = studyMetadata.getFirstImageId(displaySetInstanceUid);
 
   /* CornerstoneTools */
   const [brushStackState, setBrushStackState] = useState(
@@ -337,38 +339,25 @@ SegmentationPanel.propTypes = {
    * Passed in MODULE_TYPES.PANEL when specifying component in viewer
    */
   viewports: PropTypes.shape({
-    displaySetInstanceUid: PropTypes.string,
+    displaySetInstanceUid,
     framRate: PropTypes.any,
     instanceNumber: PropTypes.number,
     isMultiFrame: PropTypes.bool,
     isReconstructable: PropTypes.bool,
-    modality: PropTypes.string,
+    modality: PropTypes.string.isRequired,
     plugin: PropTypes.string,
-    seriesDate: PropTypes.string,
-    seriesDescription: PropTypes.string,
-    seriesInstanceUid: PropTypes.string,
+    seriesDate: PropTypes.string.isRequired,
+    seriesDescription: PropTypes.string.isRequired,
+    seriesInstanceUid: PropTypes.string.isRequired,
     seriesNumber: PropTypes.any,
-    seriesTime: PropTypes.string,
+    seriesTime: PropTypes.string.isRequired,
     sopClassUids: PropTypes.arrayOf(PropTypes.string),
-    studyInstanceUid: PropTypes.string,
+    studyInstanceUid: PropTypes.string.isRequired,
   }),
   activeIndex: PropTypes.number.isRequired,
   studies: PropTypes.array.isRequired,
 };
 SegmentationPanel.defaultProps = {};
-
-const _getFirstImageId = ({ studyInstanceUid, displaySetInstanceUid }) => {
-  try {
-    const studyMetadata = studyMetadataManager.get(studyInstanceUid);
-    const displaySet = studyMetadata.findDisplaySet(
-      displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
-    );
-    return displaySet.images[0].getImageId();
-  } catch (error) {
-    console.error('Failed to retrieve image metadata');
-    return null;
-  }
-};
 
 /**
  * Returns SEG Displaysets that reference the target series, sorted by dateTime
