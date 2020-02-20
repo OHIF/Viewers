@@ -78,7 +78,7 @@ export class StudyMetadata extends Metadata {
     Object.defineProperty(this, 'studyInstanceUID', {
       configurable: false,
       enumerable: false,
-      get: function() {
+      get: function () {
         return this.getStudyInstanceUID();
       },
     });
@@ -207,8 +207,11 @@ export class StudyMetadata extends Metadata {
 
   /**
    * Returns a list of derived datasets in the study, filtered by the given filter.
-   * @param {object} filter An object containing search filters with
-   * optional fields for the modality, referencedSeriesInstanceUID and referencedFrameOfReferenceUID.
+   * @param {object} filter An object containing search filters
+   * @param {object} filter.modality
+   * @param {object} filter.referencedSeriesInstanceUID
+   * @param {object} filter.referencedFrameOfReferenceUID
+   * @return {Array} filtered derived display sets
    */
   getDerivedDatasets(filter) {
     const {
