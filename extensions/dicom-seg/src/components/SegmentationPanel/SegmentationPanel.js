@@ -41,7 +41,7 @@ const refreshViewport = () => {
  * @param {number} props.activeIndex - activeViewportIndex
  * @returns component
  */
-const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
+const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
   const [brushRadius, setBrushRadius] = useState(DEFAULT_BRUSH_RADIUS);
 
   /* TODO: We shouldn't hardcode this color, in the future the SEG may set the colorLUT to whatever it wants. */
@@ -58,6 +58,10 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
   const [brushStackState, setBrushStackState] = useState(
     segmentationModule.state.series[firstImageId]
   );
+
+  useEffect(() => {
+    setShowSegSettings(showSegSettings && !isOpen);
+  }, [isOpen]);
 
   useEffect(() => {
     setBrushStackState(segmentationModule.state.series[firstImageId]);
@@ -85,8 +89,6 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
       )
     );
 
-    document.addEventListener('side-panel-change', handleSidePanelChange);
-
     return () => {
       cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
         enabledElement.removeEventListener(
@@ -94,14 +96,8 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
           labelmapModifiedHandler
         )
       );
-
-      document.removeEventListener('side-panel-change', handleSidePanelChange);
     };
   });
-
-  const handleSidePanelChange = () => {
-    setShowSegSettings(false);
-  };
 
   if (!brushStackState) {
     return null;

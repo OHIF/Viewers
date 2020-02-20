@@ -286,9 +286,6 @@ class Viewer extends Component {
               updatedState[openKey] = !updatedState[openKey];
             }
 
-            const sidePanelChange = new CustomEvent('side-panel-change');
-            document.dispatchEvent(sidePanelChange);
-
             this.setState(updatedState);
           }}
           studies={this.props.studies}
@@ -324,6 +321,7 @@ class Viewer extends Component {
           <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
             {VisiblePanelRight && (
               <VisiblePanelRight
+                isOpen={this.state.isRightSidePanelOpen}
                 viewports={this.props.viewports}
                 studies={this.props.studies}
                 activeIndex={this.props.activeViewportIndex}
