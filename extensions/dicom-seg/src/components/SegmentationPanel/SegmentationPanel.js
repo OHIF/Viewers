@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import moment from 'moment';
-
-import { utils } from '@ohif/core';
+import { utils, log } from '@ohif/core';
 import { ScrollableArea, TableList, Icon } from '@ohif/ui';
 
 import {
@@ -75,7 +74,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     }
 
     const labelmapModifiedHandler = event => {
-      console.warn('labelmap modified', event);
+      log.warn('labelmap modified', event);
       setBrushStackState(segmentationModule.state.series[firstImageId]);
     };
 
@@ -339,20 +338,20 @@ SegmentationPanel.propTypes = {
    * Passed in MODULE_TYPES.PANEL when specifying component in viewer
    */
   viewports: PropTypes.shape({
-    displaySetInstanceUid,
+    displaySetInstanceUid: PropTypes.string,
     framRate: PropTypes.any,
     instanceNumber: PropTypes.number,
     isMultiFrame: PropTypes.bool,
     isReconstructable: PropTypes.bool,
-    modality: PropTypes.string.isRequired,
+    modality: PropTypes.string,
     plugin: PropTypes.string,
-    seriesDate: PropTypes.string.isRequired,
-    seriesDescription: PropTypes.string.isRequired,
-    seriesInstanceUid: PropTypes.string.isRequired,
+    seriesDate: PropTypes.string,
+    seriesDescription: PropTypes.string,
+    seriesInstanceUid: PropTypes.string,
     seriesNumber: PropTypes.any,
-    seriesTime: PropTypes.string.isRequired,
+    seriesTime: PropTypes.string,
     sopClassUids: PropTypes.arrayOf(PropTypes.string),
-    studyInstanceUid: PropTypes.string.isRequired,
+    studyInstanceUid: PropTypes.string,
   }),
   activeIndex: PropTypes.number.isRequired,
   studies: PropTypes.array.isRequired,
@@ -402,7 +401,7 @@ const _setActiveLabelmap = async (
   activeLabelmapIndex
 ) => {
   if (displaySet.labelmapIndex === activeLabelmapIndex) {
-    console.warn(`${activeLabelmapIndex} is already the active labelmap`);
+    log.warn(`${activeLabelmapIndex} is already the active labelmap`);
     return;
   }
 
@@ -430,7 +429,7 @@ const _setActiveLabelmap = async (
  */
 const _setActiveSegment = (firstImageId, segmentIndex, activeSegmentIndex) => {
   if (segmentIndex === activeSegmentIndex) {
-    console.warn(`${activeSegmentIndex} is already the active segment`);
+    log.info(`${activeSegmentIndex} is already the active segment`);
     return;
   }
 
