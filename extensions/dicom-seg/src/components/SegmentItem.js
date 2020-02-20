@@ -1,7 +1,7 @@
 import React from 'react';
 import { TableListItem, Icon } from '@ohif/ui';
 
-const ColouredCircle = ({ color }) => {
+const ColoredCircle = ({ color }) => {
   return (
     <div
       className="segment-color"
@@ -16,7 +16,7 @@ const SegmentItem = ({ index, label, onClick, itemClass, color }) => (
     itemKey={index}
     itemIndex={index}
     itemClass={itemClass}
-    itemMeta={<ColouredCircle color={color} />}
+    itemMeta={<ColoredCircle color={color} />}
     itemMetaClass="segment-color-section"
     onItemClick={onClick}
   >
