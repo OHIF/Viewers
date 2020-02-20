@@ -74,10 +74,6 @@ const commandsModule = ({ servicesManager }) => {
       }
       cornerstoneTools.setToolActive(toolName, { mouseButtonMask: 1 });
     },
-    updateViewportDisplaySet: ({ direction }) => {
-      // TODO
-      console.warn('updateDisplaySet: ', direction);
-    },
     clearAnnotations: ({ viewports }) => {
       const element = getEnabledElement(viewports.activeViewportIndex);
       if (!element) {
@@ -245,7 +241,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     setCornerstoneLayout: () => {
       setCornerstoneLayout();
-    }
+    },
   };
 
   const definitions = {
@@ -334,23 +330,16 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: ['viewports'],
       options: {},
     },
-    // TODO: First/Last image
-    // Next/Previous series/DisplaySet
-    nextViewportDisplaySet: {
-      commandFn: actions.updateViewportDisplaySet,
-      storeContexts: [],
-      options: { direction: 1 },
-    },
-    previousViewportDisplaySet: {
-      commandFn: actions.updateViewportDisplaySet,
-      storeContexts: [],
-      options: { direction: -1 },
-    },
     // TOOLS
     setToolActive: {
       commandFn: actions.setToolActive,
       storeContexts: [],
       options: {},
+    },
+    setZoomTool: {
+      commandFn: actions.setToolActive,
+      storeContexts: [],
+      options: { toolName: 'Zoom' },
     },
     setCornerstoneLayout: {
       commandFn: actions.setCornerstoneLayout,
