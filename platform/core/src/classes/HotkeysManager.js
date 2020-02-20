@@ -8,6 +8,7 @@ import log from './../log.js';
  * @property {String} commandName - Command to call
  * @property {String} label - Display name for hotkey
  * @property {String[]} keys - Keys to bind; Follows Mousetrap.js binding syntax
+ * @property {Object} commandOptions - Options to be passed to commandManager
  */
 
 export class HotkeysManager {
@@ -145,7 +146,10 @@ export class HotkeysManager {
    * @param {String} extension
    * @returns {undefined}
    */
-  registerHotkeys({ commandName, keys, label } = {}, extension) {
+  registerHotkeys(
+    { commandName, keys, label, commandOptions } = {},
+    extension
+  ) {
     if (!commandName) {
       log.warn(`No command was defined for hotkey "${keys}"`);
       return;
@@ -160,8 +164,8 @@ export class HotkeysManager {
     }
 
     // Set definition & bind
-    this.hotkeyDefinitions[commandName] = { keys, label };
-    this._bindHotkeys(commandName, keys);
+    this.hotkeyDefinitions[commandName] = { keys, label, commandOptions };
+    this._bindHotkeys(commandName, keys, commandOptions);
     log.info(`Binding ${commandName} to ${keys}`);
   }
 
@@ -189,9 +193,10 @@ export class HotkeysManager {
    * @private
    * @param {string} commandName - The name of the command to trigger when hotkeys are used
    * @param {string[]} keys - One or more key combinations that should trigger command
+   * @param {object} commandOptions - Any additional command options
    * @returns {undefined}
    */
-  _bindHotkeys(commandName, keys) {
+  _bindHotkeys(commandName, keys, commandOptions) {
     const isKeyDefined = keys === '' || keys === undefined;
     if (isKeyDefined) {
       return;
@@ -203,7 +208,7 @@ export class HotkeysManager {
     hotkeys.bind(combinedKeys, evt => {
       evt.preventDefault();
       evt.stopPropagation();
-      this._commandsManager.runCommand(commandName, { evt });
+      this._commandsManager.runCommand(commandName, { evt, ...commandOptions });
     });
   }
 

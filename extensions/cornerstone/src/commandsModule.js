@@ -336,11 +336,6 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: {},
     },
-    setZoomTool: {
-      commandFn: actions.setToolActive,
-      storeContexts: [],
-      options: { toolName: 'Zoom' },
-    },
     setCornerstoneLayout: {
       commandFn: actions.setCornerstoneLayout,
       storeContexts: [],

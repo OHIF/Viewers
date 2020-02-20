@@ -68,7 +68,12 @@ window.config = {
       keys: ['pageup'],
     },
     // ~ Cornerstone Tools
-    { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
+    {
+      commandName: 'setToolActive',
+      label: 'Zoom',
+      keys: ['z'],
+      commandOptions: { toolName: 'Zoom' },
+    },
   ],
   cornerstoneExtensionConfig: {},
 };
