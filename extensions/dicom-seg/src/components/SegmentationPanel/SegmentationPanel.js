@@ -270,15 +270,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
   };
 
   const updateConfiguration = newConfiguration => {
-    /* Supported configuration */
-    configuration.renderFill = newConfiguration.renderFill;
-    configuration.renderOutline = newConfiguration.renderOutline;
-    configuration.shouldRenderInactiveLabelmaps = newConfiguration.shouldRenderInactiveLabelmaps;
-    configuration.fillAlpha = newConfiguration.fillAlpha;
-    configuration.outlineAlpha = newConfiguration.outlineAlpha;
-    configuration.outlineWidth = newConfiguration.outlineWidth;
-    configuration.fillAlphaInactive = newConfiguration.fillAlphaInactive;
-    configuration.outlineAlphaInactive = newConfiguration.outlineAlphaInactive;
+    configuration = { ...configuration, ...newConfiguration };
     refreshViewport();
   };
 

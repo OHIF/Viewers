@@ -19,6 +19,11 @@ export class TableListItem extends Component {
     onItemClick: PropTypes.func.isRequired,
   };
 
+  static defaultProps = {
+    itemMeta: null,
+    itemMetaClass: ''
+  };
+
   render() {
     return (
       <div
