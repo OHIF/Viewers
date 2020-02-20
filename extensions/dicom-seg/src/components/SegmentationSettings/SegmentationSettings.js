@@ -25,7 +25,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
     <div className="dcmseg-segmentation-settings">
       <div className="settings-title">
         <h3>Segmentations Settings</h3>
-        <button className="db-button" onClick={onBack}>
+        <button className="return-button" onClick={onBack}>
           Back
         </button>
       </div>

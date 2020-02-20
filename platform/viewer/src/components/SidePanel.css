@@ -40,29 +40,6 @@
   width: 100%;
 }
 
-.db-button {
-  color: #333;
-  background-color: #fff;
-  padding: 4px 12px;
-  line-height: 1.4;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  cursor: pointer;
-  user-select: none;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  transition: all 0.15s ease;
-}
-
-.db-button:hover,
-.db-button:active,
-.db-button.active {
-  background-color: var(--active-color);
-  border-color: var(--ui-border-color-active);
-  color: #fff;
-}
-
 @media only screen and (max-width: 768px) {
   /* Account for "Investigational Use" banner height */
   .FlexboxLayout {

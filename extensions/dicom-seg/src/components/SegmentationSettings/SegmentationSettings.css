@@ -70,3 +70,26 @@
   background-color: var(--ui-gray-dark);
   border-radius: 5px;
 }
+
+.dcmseg-segmentation-settings .return-button {
+  color: #333;
+  background-color: #fff;
+  padding: 4px 12px;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.dcmseg-segmentation-settings .return-button:hover,
+.dcmseg-segmentation-settings .return-button:active,
+.dcmseg-segmentation-settings .return-button.active {
+  background-color: var(--active-color);
+  border-color: var(--ui-border-color-active);
+  color: #fff;
+}
