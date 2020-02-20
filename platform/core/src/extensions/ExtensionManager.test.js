@@ -215,7 +215,7 @@ describe('ExtensionManager.js', () => {
 
       extensionManager.registerExtension(extension);
 
-      // Registers 1 module per module type
+      // It registers 1 module per module type
       Object.keys(extensionManager.modules).forEach(moduleType => {
         const modulesForType = extensionManager.modules[moduleType];
         expect(modulesForType.length).toBe(1);
