@@ -11,16 +11,49 @@ import { MODIFIER_KEYS } from './hotkeysConfig';
 import { hotkeysManager } from '../../App';
 
 import './HotkeysPreferences.styl';
+
 /**
  * Take hotkeyDefenintions and build an initialState to be used into the component state
  *
  * @param {Object} hotkeyDefinitions
  * @returns {Object} initialState
  */
-const initialState = hotkeyDefinitions => ({
-  hotkeys: { ...hotkeyDefinitions },
-  errors: {},
-});
+const initialState = hotkeyDefinitions => {
+  const hotkeys = _parseToHotkeyObject(hotkeyDefinitions);
+  return {
+    hotkeys,
+    errors: {},
+  };
+};
+
+/**
+ *
+ *
+ * @param {array} hotkeys
+ * @returns {object} hotkeyObject
+ */
+const _parseToHotkeyObject = hotkeys => {
+  const hotkeyObject = {};
+  hotkeys.forEach((hotkey, index) => {
+    hotkeyObject[index] = hotkey;
+  });
+
+  return hotkeyObject;
+};
+
+/**
+ *
+ *
+ * @param {Object} hotkeys
+ * @returns {array} hotkeysArray
+ */
+const _parseToHotkeyArray = hotkeys => {
+  const hotkeysArray = [];
+  Object.values(hotkeys).forEach(hotkey => hotkeysArray.push(hotkey));
+
+  return hotkeysArray;
+};
+
 /**
  * Take the updated command and keys and validate the changes with all validators
  *
@@ -85,22 +118,16 @@ function HotkeysPreferences({ onClose }) {
   const snackbar = useSnackbarContext();
 
   const onResetPreferences = () => {
-    const defaultHotKeyDefinitions = {};
-
-    hotkeyDefaults.map(item => {
-      const { commandName, ...values } = item;
-      defaultHotKeyDefinitions[commandName] = { ...values };
-    });
-
-    setState(initialState(defaultHotKeyDefinitions));
+    setState(initialState(hotkeyDefaults));
   };
 
   const onSave = () => {
     const { hotkeys } = state;
+    const hotkeyArray = _parseToHotkeyArray(hotkeys);
 
-    hotkeysManager.setHotkeys(hotkeys);
+    hotkeysManager.setHotkeys(hotkeyArray);
 
-    localStorage.setItem('hotkey-definitions', JSON.stringify(hotkeys));
+    localStorage.setItem('hotkey-definitions', JSON.stringify(hotkeyArray));
 
     onClose();
 
@@ -110,9 +137,9 @@ function HotkeysPreferences({ onClose }) {
     });
   };
 
-  const onHotkeyChanged = (commandName, hotkeyDefinition, keys) => {
+  const onHotkeyChanged = (hotkeyIndex, hotkeyDefinition, keys) => {
     const { errorMessage } = validateCommandKey({
-      commandName,
+      commandName: hotkeyDefinition.commandName,
       pressedKeys: keys,
       hotkeys: state.hotkeys,
     });
@@ -120,11 +147,11 @@ function HotkeysPreferences({ onClose }) {
     setState(prevState => ({
       hotkeys: {
         ...prevState.hotkeys,
-        [commandName]: { ...hotkeyDefinition, keys },
+        [hotkeyIndex]: { ...hotkeyDefinition, keys },
       },
       errors: {
         ...prevState.errors,
-        [commandName]: errorMessage,
+        [hotkeyIndex]: errorMessage,
       },
     }));
   };
@@ -146,16 +173,16 @@ function HotkeysPreferences({ onClose }) {
                     <div className="headerItemText text-center">Shortcut</div>
                   </div>
                   {hotkeys.map(hotkey => {
-                    const commandName = hotkey[0];
+                    const hotkeyIndex = hotkey[0];
                     const hotkeyDefinition = hotkey[1];
                     const { keys, label } = hotkeyDefinition;
                     const errorMessage = state.errors[hotkey[0]];
                     const handleChange = keys => {
-                      onHotkeyChanged(commandName, hotkeyDefinition, keys);
+                      onHotkeyChanged(hotkeyIndex, hotkeyDefinition, keys);
                     };
 
                     return (
-                      <div key={commandName} className="hotkeyRow">
+                      <div key={hotkeyIndex} className="hotkeyRow">
                         <div className="hotkeyLabel">{label}</div>
                         <div
                           data-key="defaultTool"
