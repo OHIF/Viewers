@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Range } from '@ohif/ui';
 
 import './SegmentationSettings.css';
 
 const SegmentationSettings = ({ configuration, onBack, onChange }) => {
   const [state, setState] = useState({ ...configuration });
-
-  useEffect(() => {
-    setState(state => ({ ...state, ...configuration }));
-  }, [configuration]);
 
   useEffect(() => {
     onChange(state);
@@ -152,6 +149,21 @@ const CustomRange = props => {
       />
     </div>
   );
+};
+
+SegmentationSettings.propTypes = {
+  configuration: PropTypes.shape({
+    renderFill: PropTypes.bool,
+    renderOutline: PropTypes.bool,
+    shouldRenderInactiveLabelmaps: PropTypes.bool,
+    fillAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), /* TODO: why fillAlpha is string? */
+    outlineAlpha: PropTypes.number,
+    outlineWidth: PropTypes.number,
+    fillAlphaInactive: PropTypes.number,
+    outlineAlphaInactive: PropTypes.number,
+  }).isRequired,
+  onBack: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
 export default SegmentationSettings;

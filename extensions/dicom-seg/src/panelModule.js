@@ -5,12 +5,12 @@ export default {
     {
       icon: 'list',
       label: 'Segmentations',
-      target: 'example-side-panel',
+      target: 'segmentation-panel',
     },
   ],
   components: [
     {
-      id: 'example-side-panel',
+      id: 'segmentation-panel',
       component: SegmentationPanel,
     },
   ],
