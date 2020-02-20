@@ -80,7 +80,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
      */
     cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
       enabledElement.addEventListener(
-        'cornersontetoolslabelmapmodified',
+        'cornerstonetoolslabelmapmodified',
         labelmapModifiedHandler
       )
     );
@@ -90,7 +90,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     return () => {
       cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
         enabledElement.removeEventListener(
-          'cornersontetoolslabelmapmodified',
+          'cornerstonetoolslabelmapmodified',
           labelmapModifiedHandler
         )
       );
