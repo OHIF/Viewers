@@ -13,6 +13,7 @@ import b64toBlob from './b64toBlob.js';
 import * as urlUtil from './urlUtil';
 import makeCancelable from './makeCancelable';
 import hotkeys from './hotkeys';
+import { pathValidation } from './routeValidation';
 
 const utils = {
   guid,
@@ -31,6 +32,7 @@ const utils = {
   urlUtil,
   makeCancelable,
   hotkeys,
+  pathValidation,
 };
 
 export {
@@ -50,6 +52,7 @@ export {
   urlUtil,
   makeCancelable,
   hotkeys,
+  pathValidation,
 };
 
 export default utils;

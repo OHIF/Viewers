@@ -1,5 +1,5 @@
 import OHIF from '@ohif/core';
-const { urlUtil: UrlUtil } = OHIF.utils;
+const { urlUtil: UrlUtil, pathValidation: PathValidationUtils } = OHIF.utils;
 
 const reload = () => window.location.reload();
 const isTemplateNameEqual = (templateNameA, templateNameB) => {
@@ -97,102 +97,6 @@ const RoutesTemplateUtils = {
   },
 };
 
-const PathValidationUtils = {
-  /**
-   * Validation method for path. Validate if paths are unique.
-   *
-   * @param {RoutesDefinitions} routesDefinitions
-   * @return {boolean} return true in case validation pass
-   * @throws Will throw an error validation fails and ROUTES_VALIDATION_MODE is set to fail mode.
-   */
-  uniquenessValidation: routesDefinitions => {
-    const existingPaths = [];
-    let valid = true;
-
-    for (let routeDefinition of routesDefinitions) {
-      const currentPath = routeDefinition.path;
-      const arrayLikeCurrentPath = !Array.isArray(currentPath)
-        ? [currentPath]
-        : currentPath;
-
-      arrayLikeCurrentPath.forEach(_currentPath => {
-        if (_currentPath && _currentPath in existingPaths) {
-          ValidationUtils.handleValidation(
-            `RoutesDefinition error: Path ${_currentPath} already registered`
-          );
-          valid = false;
-        } else if (_currentPath) {
-          existingPaths[_currentPath] = true;
-        }
-      });
-    }
-
-    return valid;
-  },
-};
-const ValidationUtils = {
-  /**
-   *
-   * @typedef ValidatorsGenerator Generate validator methods.
-   * @type {function}
-   * @yields {function} validator function
-   */
-
-  /**
-   * It handles a unsuccessfully validation. It can log message or throw an exception
-   *
-   * @param {string} message error message
-   * @throws Will throw an error validation fails and ROUTES_VALIDATION_MODE is set to fail mode.
-   */
-  handleValidation: message => {
-    const routesValidationMode = process.env.ROUTES_VALIDATION_MODE;
-    switch (routesValidationMode) {
-      case 'silent':
-        break;
-      case 'log':
-        console.error(message);
-        break;
-      case 'fail':
-        throw new Error(message);
-      default:
-        console.log(message);
-    }
-  },
-
-  /**
-   * Method to run set of pre validations methods.
-   *
-   * @param {RoutesDefinitions} routesDefinitions
-   * @return {boolean} return true in case validation pass
-   * @throws Will throw an error validation fails and ROUTES_VALIDATION_MODE is set to fail mode.
-   */
-  preValidation: routesDefinitions => {
-    function* validators() {
-      yield PathValidationUtils.uniquenessValidation;
-    }
-    return ValidationUtils.runValidation(validators, routesDefinitions);
-  },
-
-  /**
-   * Generic method to run validations.
-   *
-   * @param {ValidatorsGenerator} validators Iterable structure with validators to be processed
-   * @param {RoutesDefinitions} routesDefinitions
-   * @throws Will throw an error validation fails and ROUTES_VALIDATION_MODE is set to fail mode.
-   */
-  runValidation: (validators, routesDefinitions) => {
-    for (let validator of validators()) {
-      const valid = validator(routesDefinitions);
-      // no need to wait, break immediately
-      if (!valid) {
-        return false;
-      }
-    }
-
-    return true;
-  },
-};
-
 const RoutesDefinitionsUtils = {
   /**
    * Join definitions. Definitions on definitionsB has higher precedence.
@@ -275,7 +179,7 @@ const getRoutes = (appConfig, routesTemplateModulesExtensions) => {
   );
 
   try {
-    ValidationUtils.preValidation(routesDefinitions);
+    PathValidationUtils.runPreValidation(routesDefinitions);
 
     for (let routeDefinition of routesDefinitions) {
       if (!routeDefinition) {
