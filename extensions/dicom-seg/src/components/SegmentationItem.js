@@ -13,9 +13,13 @@ const SegmentationItem = ({ onClick, title, description }) => {
 };
 
 SegmentationItem.propTypes = {
-  onClick: PropTypes.func,
-  title: PropTypes.string,
-  description: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+};
+
+SegmentationItem.defaultProps = {
+  description: ''
 };
 
 export default SegmentationItem;

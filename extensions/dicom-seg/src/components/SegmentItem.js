@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { TableListItem, Icon } from '@ohif/ui';
 
 const ColoredCircle = ({ color }) => {
@@ -8,6 +9,10 @@ const ColoredCircle = ({ color }) => {
       style={{ backgroundColor: `rgba(${color.join(',')})` }}
     ></div>
   );
+};
+
+ColoredCircle.propTypes = {
+  color: PropTypes.array.isRequired,
 };
 
 const SegmentItem = ({ index, label, onClick, itemClass, color }) => (
@@ -50,5 +55,18 @@ const SegmentItem = ({ index, label, onClick, itemClass, color }) => (
     </div>
   </TableListItem>
 );
+
+SegmentItem.propTypes = {
+  index: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  label: PropTypes.string.isRequired,
+  onClick: PropTypes.func,
+  itemClass: PropTypes.string,
+  color: PropTypes.array.isRequired,
+};
+
+SegmentItem.defaultProps = {
+  itemClass: '',
+  onClick: () => { }
+};
 
 export default SegmentItem;
