@@ -6,6 +6,7 @@ import classes, { CommandsManager, HotkeysManager } from './classes/';
 
 import DICOMWeb from './DICOMWeb';
 import DICOMSR from './DICOMSR';
+import DICOMSR2 from './DICOMSR2';
 import cornerstone from './cornerstone.js';
 import hangingProtocols from './hanging-protocols';
 import header from './header.js';
@@ -50,6 +51,7 @@ const OHIF = {
   log,
   DICOMWeb,
   DICOMSR,
+  DICOMSR2,
   viewer: {},
   measurements,
   hangingProtocols,
@@ -83,6 +85,7 @@ export {
   log,
   DICOMWeb,
   DICOMSR,
+  DICOMSR2,
   measurements,
   hangingProtocols,
   //
