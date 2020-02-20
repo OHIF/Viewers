@@ -25,7 +25,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
   const toFloat = value => parseFloat(value / 100).toFixed(2);
 
   return (
-    <div className="segmentation-settings">
+    <div className="dcmseg-segmentation-settings">
       <div className="settings-title">
         <h3>Segmentations Settings</h3>
         <button className="db-button" onClick={onBack}>

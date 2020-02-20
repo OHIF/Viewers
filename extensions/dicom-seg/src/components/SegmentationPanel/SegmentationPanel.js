@@ -13,10 +13,10 @@ import {
   SegmentationItem,
   SegmentItem,
   SegmentationSelect,
-} from './index';
+} from '../index';
 
 import './SegmentationPanel.css';
-import SegmentationSettings from './SegmentationSettings';
+import SegmentationSettings from '../SegmentationSettings/SegmentationSettings';
 
 const { studyMetadataManager } = utils;
 
@@ -292,7 +292,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex }) => {
     );
   } else {
     return (
-      <div className="labelmap-container">
+      <div className="dcmseg-segmentation-panel">
         <Icon
           className="cog-icon"
           name="cog"

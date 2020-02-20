@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import './SegmentationItem.css';
+
 const SegmentationItem = ({ onClick, title, description }) => {
   return (
-    <li className="segmentation-item" onClick={onClick}>
+    <li className="dcmseg-segmentation-item" onClick={onClick}>
       <div className="segmentation-meta">
         <div className="segmentation-meta-title">{title}</div>
         <div className="segmentation-meta-description">{description}</div>

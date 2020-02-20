@@ -1,15 +1,15 @@
-.segmentation-settings {
+.dcmseg-segmentation-settings {
   display: flex;
   flex-direction: column;
   padding: 20px;
 }
 
-.range label {
+.dcmseg-segmentation-settings .range label {
   display: block;
   margin-bottom: 8px;
 }
 
-.settings-title {
+.dcmseg-segmentation-settings .settings-title {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -17,41 +17,41 @@
   padding-bottom: 20px;
 }
 
-.settings-title h3 {
+.dcmseg-segmentation-settings .settings-title h3 {
   color: var(--text-primary-color);
   margin: 0;
   padding: 0;
 }
 
-.settings-group {
+.dcmseg-segmentation-settings .settings-group {
   display: flex;
   flex-direction: column;
   color: var(--text-primary-color);
   font-size: 12px;
 }
 
-.settings-group .range {
+.dcmseg-segmentation-settings .settings-group .range {
   display: flex;
   padding: 20px 15px;
 }
 
-.settings-group .range:not(:last-of-type) {
+.dcmseg-segmentation-settings .settings-group .range:not(:last-of-type) {
   padding-bottom: 0;
 }
 
-.settings-group .range label {
+.dcmseg-segmentation-settings .settings-group .range label {
   margin: 0;
   display: unset;
   min-width: 40px;
   max-width: 40px;
 }
 
-.settings-group .range input {
+.dcmseg-segmentation-settings .settings-group .range input {
   width: 100%;
   padding: 0 20px 0 20px;
 }
 
-.custom-check label {
+.dcmseg-segmentation-settings .custom-check label {
   font-weight: bold;
   display: flex;
   flex-direction: row;
@@ -61,12 +61,12 @@
   padding: 10px 15px;
 }
 
-.custom-check input {
+.dcmseg-segmentation-settings .custom-check input {
   width: 15px;
   height: 15px;
 }
 
-.settings-group {
+.dcmseg-segmentation-settings .settings-group {
   background-color: var(--ui-gray-dark);
   border-radius: 5px;
 }

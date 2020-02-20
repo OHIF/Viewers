@@ -1,4 +1,4 @@
-import SegmentationPanel from './components/SegmentationPanel.js';
+import SegmentationPanel from './components/SegmentationPanel/SegmentationPanel.js';
 
 export default {
   menuOptions: [
