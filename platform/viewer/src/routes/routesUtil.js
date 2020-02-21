@@ -22,7 +22,7 @@ const isTemplateNameEqual = (templateNameA, templateNameB) => {
  *
  * @typedef RouteTemplateExtensionModuleItem It defines a route in terms of React application level. I.e it shall contain component, props and other React Component related properties
  * @type {object}
- * @property {string} template identifier for given routeTemplateModule
+ * @property {string} template identifier for given routeTemplatesModule
  * @property {*} component react component to be used
  * @property {object} props use the related props when creating given component
  *
@@ -31,7 +31,7 @@ const isTemplateNameEqual = (templateNameA, templateNameB) => {
  * @property {RouteTemplateExtensionModuleItem[]} module contains routes templates items for given route template extension
  *
  *
- * @typedef RouteTemplateExtensions extensions defined for routeTemplate type
+ * @typedef RouteTemplatesExtensions extensions defined for routeTemplate type
  * @type {object<*, RouteTemplateExtension>}
  *
  */
@@ -73,23 +73,25 @@ const defaultRoutesDefinitions = [
       '/projects/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore',
   },
 ];
-const RoutesTemplateUtils = {
+const RouteTemplatesUtils = {
   /**
-   * Find RouteTemplateModule of given templateName from routesTemplateModulesExtensions param.
+   * Find RouteTemplatesModule of given templateName from routeTemplatesModulesExtensions param.
    * Returns undefined in case not found.
-   * @param {RouteTemplateExtensions} routesTemplateModulesExtensions structure to look into
+   * @param {RouteTemplatesExtensions} routeTemplatesModulesExtensions structure to look into
    * @param {string} templateName identifier to look for
-   * @return {RouteTemplateModule} found template module
+   * @return {RouteTemplatesModule} found template module
    */
-  findRouteTemplateModule: (routesTemplateModulesExtensions, templateName) => {
-    for (let moduleExtensionKey in routesTemplateModulesExtensions) {
+  findRouteTemplatesModule: (routeTemplatesModulesExtensions, templateName) => {
+    for (let moduleExtensionKey in routeTemplatesModulesExtensions) {
       const _module =
-        routesTemplateModulesExtensions[moduleExtensionKey].module;
+        routeTemplatesModulesExtensions[moduleExtensionKey].module;
 
       if (_module) {
-        for (let routeTemplateModule of _module) {
-          if (isTemplateNameEqual(routeTemplateModule.template, templateName)) {
-            return routeTemplateModule;
+        for (let routeTemplatesModule of _module) {
+          if (
+            isTemplateNameEqual(routeTemplatesModule.template, templateName)
+          ) {
+            return routeTemplatesModule;
           }
         }
       }
@@ -166,10 +168,10 @@ const RoutesDefinitionsUtils = {
  * It uses default configuration for definitions @see {@link defaultRoutesDefinitions} and also can use specific configuration (from params)
  *
  * @param {*} appConfig app configuration. Any specific route definition must come here
- * @param {RouteTemplateExtensions} routesTemplateModulesExtensions it contains routes templates extension (default and any specific one)
+ * @param {RouteTemplatesExtensions} routeTemplatesModulesExtensions it contains routes templates extension (default and any specific one)
  * @return {RouteType[]}
  */
-const getRoutes = (appConfig, routesTemplateModulesExtensions) => {
+const getRoutes = (appConfig, routeTemplatesModulesExtensions) => {
   const routes = [];
   const routesExistingMap = [];
 
@@ -191,8 +193,8 @@ const getRoutes = (appConfig, routesTemplateModulesExtensions) => {
         continue;
       }
 
-      const routeModule = RoutesTemplateUtils.findRouteTemplateModule(
-        routesTemplateModulesExtensions,
+      const routeModule = RouteTemplatesUtils.findRouteTemplatesModule(
+        routeTemplatesModulesExtensions,
         routeDefinition.template
       );
 

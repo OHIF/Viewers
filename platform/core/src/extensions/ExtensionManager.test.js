@@ -173,7 +173,7 @@ describe('ExtensionManager.js', () => {
         getPanelModule: jest.fn(),
         getToolbarModule: jest.fn(),
         getCommandsModule: jest.fn(),
-        getRoutesTemplateModule: jest.fn(),
+        getRouteTemplatesModule: jest.fn(),
       };
 
       extensionManager.registerExtension(extension, extensionConfiguration);
@@ -208,7 +208,7 @@ describe('ExtensionManager.js', () => {
         getCommandsModule: () => {
           return {};
         },
-        getRoutesTemplateModule: () => {
+        getRouteTemplatesModule: () => {
           return {};
         },
       };

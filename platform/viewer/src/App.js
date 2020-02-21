@@ -43,7 +43,7 @@ import {
 import {
   GenericViewerCommands,
   MeasurementsPanel,
-  GenericRoutesTemplateModule,
+  GenericRouteTemplatesModule,
 } from './appExtensions';
 
 /** Viewer */
@@ -258,7 +258,7 @@ function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
 
   const requiredExtensions = [
     GenericViewerCommands,
-    GenericRoutesTemplateModule,
+    GenericRouteTemplatesModule,
     [OHIFCornerstoneExtension, cornerstoneExtensionConfig],
     /* WARNING: MUST BE REGISTERED _AFTER_ OHIFCornerstoneExtension */
     MeasurementsPanel,
