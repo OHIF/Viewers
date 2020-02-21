@@ -2,13 +2,6 @@ import OHIF from '@ohif/core';
 const { urlUtil: UrlUtil, pathValidation: PathValidationUtils } = OHIF.utils;
 
 const reload = () => window.location.reload();
-const isTemplateNameEqual = (templateNameA, templateNameB) => {
-  return (
-    templateNameA &&
-    templateNameA &&
-    templateNameA.toLowerCase() === templateNameB.toLowerCase()
-  );
-};
 /**
  *
  * @typedef RouteDefinition It defines the route in overall terms
@@ -73,85 +66,6 @@ const defaultRoutesDefinitions = [
       '/projects/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore',
   },
 ];
-const RouteTemplatesUtils = {
-  /**
-   * Find RouteTemplatesModule of given templateName from routeTemplatesModulesExtensions param.
-   * Returns undefined in case not found.
-   * @param {RouteTemplatesExtensions} routeTemplatesModulesExtensions structure to look into
-   * @param {string} templateName identifier to look for
-   * @return {RouteTemplatesModule} found template module
-   */
-  findRouteTemplatesModule: (routeTemplatesModulesExtensions, templateName) => {
-    for (let moduleExtensionKey in routeTemplatesModulesExtensions) {
-      const _module =
-        routeTemplatesModulesExtensions[moduleExtensionKey].module;
-
-      if (_module) {
-        for (let routeTemplatesModule of _module) {
-          if (isTemplateNameEqual(routeTemplatesModule.name, templateName)) {
-            return routeTemplatesModule;
-          }
-        }
-      }
-    }
-  },
-};
-
-const RoutesDefinitionsUtils = {
-  /**
-   * Join definitions. Definitions on definitionsB has higher precedence.
-   * It will return RoutesDefinitions which it is on second param combined to what is on first param (except if there is already on second param)
-   *
-   * @param {RoutesDefinitions} definitionsA
-   * @param {RoutesDefinitions} definitionsB
-   * @return {RoutesDefinitions} joint of params.
-   *
-   */
-  mergeRoutesDefinitions: (definitionsA = [], definitionsB = []) => {
-    const result = [...definitionsB];
-    const existingTemplate = [];
-
-    definitionsB.forEach(definition => {
-      existingTemplate[definition.name] = true;
-    });
-
-    definitionsA.forEach(definition => {
-      if (!existingTemplate[definition.name]) {
-        result.push(definition);
-      }
-    });
-
-    return result;
-  },
-  /**
-   * Get definitions to be used.
-   * Result will contain everything from defaultRoutesDefinitions combined what is appConfig.routes.
-   * Routes definition from appConfig has higher precedence
-   * @param {object} appConfig app configuration containing routes (RoutesDefinitions)
-   * @param {RoutesDefinitions} defaultRoutesDefinitions
-   * @return {RoutesDefinitions}
-   */
-  getRoutesDefinitions: (appConfig, defaultRoutesDefinitions) => {
-    return RoutesDefinitionsUtils.mergeRoutesDefinitions(
-      defaultRoutesDefinitions,
-      appConfig.routes
-    );
-  },
-  /**
-   * Find routeDefinition for given param templateName into routeDefinitions.
-   * Returns undefined in case not found.
-   * @param {RoutesDefinitions} routeDefinitions structure to look into
-   * @param {string} templateName identifier to look for
-   * @return {(RoutesDefinition|undefined)}
-   */
-  findRouteDefinition: (routeDefinitions, templateName) => {
-    for (let routeDefinition of routeDefinitions) {
-      if (isTemplateNameEqual(routeDefinition.name, templateName)) {
-        return routeDefinition;
-      }
-    }
-  },
-};
 
 /**
  * @typedef RouteType It defines an object to be consumed by application and build routes with it.
@@ -173,7 +87,7 @@ const getRoutes = (appConfig, routeTemplatesModulesExtensions) => {
   const routes = [];
   const routesExistingMap = [];
 
-  const routesDefinitions = RoutesDefinitionsUtils.getRoutesDefinitions(
+  const routesDefinitions = _getRoutesDefinitions(
     appConfig,
     defaultRoutesDefinitions
   );
@@ -191,7 +105,7 @@ const getRoutes = (appConfig, routeTemplatesModulesExtensions) => {
         continue;
       }
 
-      const routeModule = RouteTemplatesUtils.findRouteTemplatesModule(
+      const routeModule = _findRouteTemplatesModule(
         routeTemplatesModulesExtensions,
         routeDefinition.name
       );
@@ -231,18 +145,15 @@ const parsePath = (path, server, params) => {
 };
 
 const parseViewerPath = (appConfig = {}, server = {}, params) => {
-  const routesDefinitions = RoutesDefinitionsUtils.getRoutesDefinitions(
+  const routesDefinitions = _getRoutesDefinitions(
     appConfig,
     defaultRoutesDefinitions
   );
 
-  let viewerRouteDefinition = RoutesDefinitionsUtils.findRouteDefinition(
-    routesDefinitions,
-    'viewer'
-  );
+  let viewerRouteDefinition = _findRouteDefinition(routesDefinitions, 'viewer');
   let viewerPath = viewerRouteDefinition.path;
   if (appConfig.enableGoogleCloudAdapter) {
-    viewerRouteDefinition = RoutesDefinitionsUtils.findRouteDefinition(
+    viewerRouteDefinition = _findRouteDefinition(
       routesDefinitions,
       'GCloudViewer'
     );
@@ -254,18 +165,18 @@ const parseViewerPath = (appConfig = {}, server = {}, params) => {
 };
 
 const parseStudyListPath = (appConfig = {}, server = {}, params) => {
-  const routesDefinitions = RoutesDefinitionsUtils.getRoutesDefinitions(
+  const routesDefinitions = _getRoutesDefinitions(
     appConfig,
     defaultRoutesDefinitions
   );
 
-  let viewerRouteDefinition = RoutesDefinitionsUtils.findRouteDefinition(
+  let viewerRouteDefinition = _findRouteDefinition(
     routesDefinitions,
     'StudyList'
   );
   let studyListPath = viewerRouteDefinition.path;
   if (appConfig.enableGoogleCloudAdapter) {
-    viewerRouteDefinition = RoutesDefinitionsUtils.findRouteDefinition(
+    viewerRouteDefinition = _findRouteDefinition(
       routesDefinitions,
       'GCloudStudyList'
     );
@@ -277,5 +188,88 @@ const parseStudyListPath = (appConfig = {}, server = {}, params) => {
     : studyListPath;
   return parsePath(_studyListPath, server, params);
 };
+
+/**
+ * Find RouteTemplatesModule of given templateName from routeTemplatesModulesExtensions param.
+ * Returns undefined in case not found.
+ * @param {RouteTemplatesExtensions} routeTemplatesModulesExtensions structure to look into
+ * @param {string} templateName identifier to look for
+ * @return {RouteTemplatesModule} found template module
+ */
+function _findRouteTemplatesModule(
+  routeTemplatesModulesExtensions,
+  templateName
+) {
+  for (let moduleExtensionKey in routeTemplatesModulesExtensions) {
+    const _module = routeTemplatesModulesExtensions[moduleExtensionKey].module;
+
+    if (_module) {
+      for (let routeTemplatesModule of _module) {
+        if (_isTemplateNameEqual(routeTemplatesModule.name, templateName)) {
+          return routeTemplatesModule;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Join definitions. Definitions on definitionsB has higher precedence.
+ * It will return RoutesDefinitions which it is on second param combined to what is on first param (except if there is already on second param)
+ *
+ * @param {RoutesDefinitions} definitionsA
+ * @param {RoutesDefinitions} definitionsB
+ * @return {RoutesDefinitions} joint of params.
+ *
+ */
+function _mergeRoutesDefinitions(definitionsA = [], definitionsB = []) {
+  const result = [...definitionsB];
+  const existingTemplate = [];
+
+  definitionsB.forEach(definition => {
+    existingTemplate[definition.name] = true;
+  });
+
+  definitionsA.forEach(definition => {
+    if (!existingTemplate[definition.name]) {
+      result.push(definition);
+    }
+  });
+
+  return result;
+}
+/**
+ * Get definitions to be used.
+ * Result will contain everything from defaultRoutesDefinitions combined what is appConfig.routes.
+ * Routes definition from appConfig has higher precedence
+ * @param {object} appConfig app configuration containing routes (RoutesDefinitions)
+ * @param {RoutesDefinitions} defaultRoutesDefinitions
+ * @return {RoutesDefinitions}
+ */
+function _getRoutesDefinitions(appConfig, defaultRoutesDefinitions) {
+  return _mergeRoutesDefinitions(defaultRoutesDefinitions, appConfig.routes);
+}
+/**
+ * Find routeDefinition for given param templateName into routeDefinitions.
+ * Returns undefined in case not found.
+ * @param {RoutesDefinitions} routeDefinitions structure to look into
+ * @param {string} templateName identifier to look for
+ * @return {(RoutesDefinition|undefined)}
+ */
+function _findRouteDefinition(routeDefinitions, templateName) {
+  for (let routeDefinition of routeDefinitions) {
+    if (_isTemplateNameEqual(routeDefinition.name, templateName)) {
+      return routeDefinition;
+    }
+  }
+}
+
+function _isTemplateNameEqual(templateNameA, templateNameB) {
+  return (
+    templateNameA &&
+    templateNameA &&
+    templateNameA.toLowerCase() === templateNameB.toLowerCase()
+  );
+}
 
 export { getRoutes, parseViewerPath, parseStudyListPath, reload };
