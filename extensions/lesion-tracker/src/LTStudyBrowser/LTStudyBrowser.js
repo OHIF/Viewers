@@ -42,13 +42,19 @@ function LTStudyBrowser() {
   const { Component, getProps } = tabs[currentTab];
   const componentProps = getProps(mockData);
 
+  const handleValueChanged = value => {
+    if (value) {
+      setCurrentTab(value);
+    }
+  };
+
   return (
     <div className="LTStudyBrowser">
       <div className="tabButtons">
         <RoundedButtonGroup
           value={currentTab}
           options={getRoundedButtonsData(tabs)}
-          onValueChanged={value => setCurrentTab(value)}
+          onValueChanged={handleValueChanged}
         />
       </div>
       <div className="tabContents">
