@@ -5,7 +5,16 @@ import { Range } from '@ohif/ui';
 import './SegmentationSettings.css';
 
 const SegmentationSettings = ({ configuration, onBack, onChange }) => {
-  const [state, setState] = useState({ ...configuration });
+  const [state, setState] = useState({
+    renderFill: configuration.renderFill,
+    renderOutline: configuration.renderOutline,
+    shouldRenderInactiveLabelmaps: configuration.shouldRenderInactiveLabelmaps,
+    fillAlpha: configuration.fillAlpha,
+    outlineAlpha: configuration.outlineAlpha,
+    outlineWidth: configuration.outlineWidth,
+    fillAlphaInactive: configuration.fillAlphaInactive,
+    outlineAlphaInactive: configuration.outlineAlphaInactive
+  });
 
   useEffect(() => {
     onChange(state);
