@@ -254,6 +254,10 @@ class MeasurementService {
     }
   }
 
+  update(id, measurement) {
+
+  }
+
   /**
    * Adds or update persisted measurements.
    *
@@ -334,12 +338,14 @@ class MeasurementService {
    *
    * @param {string} eventName The name of the event
    * @param {Function} callback Events callback
+   * @param {Object} options Subscription options
+   * @param {String[]} options.sourceBlacklist Ignore events coming from specified source ids
    * @return {Object} Observable object with actions
    */
-  subscribe(eventName, callback) {
+  subscribe(eventName, callback, options = {}) {
     if (this._isValidEvent(eventName)) {
       const listenerId = guid();
-      const subscription = { id: listenerId, callback };
+      const subscription = { id: listenerId, callback, options };
 
       console.info(`Subscribing to '${eventName}'.`);
       if (Array.isArray(this.listeners[eventName])) {
@@ -435,7 +441,10 @@ class MeasurementService {
 
     if (hasListeners && hasCallbacks) {
       this.listeners[eventName].forEach(listener => {
-        listener.callback({ source, measurement });
+        const sourceBlacklist = listener.options.sourceBlacklist;
+        if (!sourceBlacklist || !sourceBlacklist.includes(source.id)) {
+          listener.callback({ source, measurement });
+        }
       });
     }
   }

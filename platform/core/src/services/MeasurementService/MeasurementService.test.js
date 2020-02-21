@@ -365,6 +365,31 @@ describe('MeasurementService.js', () => {
       expect(addCallbackWasCalled).toBe(true);
     });
 
+    it('subscribers wont receive events from their own changes if sourceBlacklist subscription option specified', () => {
+      measurementService.addMapping(
+        source,
+        definition,
+        matchingCriteria,
+        toAnnotation,
+        toMeasurement
+      );
+
+      const { MEASUREMENT_ADDED } = measurementService.EVENTS;
+      let addCallbackWasCalled = false;
+
+      /* Subscribe to add event */
+      measurementService.subscribe(
+        MEASUREMENT_ADDED,
+        () => (addCallbackWasCalled = true),
+        { sourceBlacklist: [source.id] }
+      );
+
+      /* Add new measurement */
+      source.addOrUpdate(definition, measurement);
+
+      expect(addCallbackWasCalled).toBe(false);
+    });
+
     it('subscribers receive broadcasted update event', () => {
       measurementService.addMapping(
         source,

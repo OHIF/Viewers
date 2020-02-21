@@ -250,28 +250,25 @@ const _connectToolsToMeasurementService = measurementService => {
       } = measurementService.EVENTS;
 
       const _addOrUpdateCornerstoneTool = (source, measurement) => {
-        const eventOriginIsCornerstoneExtension = sourceId === source.id;
-        if (!eventOriginIsCornerstoneExtension) {
-          const annotation = getAnnotation('Length', measurement.id);
+        const annotation = getAnnotation('Length', measurement.id);
 
-          const imageId = _getImageId(measurement);
-          const toolType = _getToolType(annotation);
+        const imageId = _getImageId(measurement);
+        const toolType = _getToolType(annotation);
 
-          /* TODO: Create or update tools with image id, tooltype and annotation. */
+        /* TODO: Create or update tools with image id, tooltype and annotation. */
 
-          console.log('Mapped annotation:', annotation);
-        }
+        console.log('Mapped annotation:', annotation);
       };
 
       measurementService.subscribe(MEASUREMENT_ADDED, ({ source, measurement }) => {
         _addOrUpdateCornerstoneTool(source, measurement);
         console.log('MEASUREMENT_ADDED');
-      });
+      }, { sourceBlacklist: [sourceId] });
 
       measurementService.subscribe(MEASUREMENT_UPDATED, ({ source, measurement }) => {
         _addOrUpdateCornerstoneTool(source, measurement);
         console.log('MEASUREMENT_UPDATED');
-      });
+      }, { sourceBlacklist: [sourceId] });
 
       const _addOrUpdateMeasurement = csToolsAnnotation => {
         try {
