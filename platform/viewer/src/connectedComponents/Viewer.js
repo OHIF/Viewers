@@ -21,7 +21,27 @@ import './Viewer.css';
 
 class Viewer extends Component {
   static propTypes = {
-    studies: PropTypes.array,
+    studies: PropTypes.arrayOf(
+      PropTypes.shape({
+        studyInstanceUid: PropTypes.string.isRequired,
+        studyDate: PropTypes.string,
+        displaySets: PropTypes.arrayOf(
+          PropTypes.shape({
+            displaySetInstanceUid: PropTypes.string.isRequired,
+            seriesDescription: PropTypes.string,
+            seriesNumber: PropTypes.number,
+            instanceNumber: PropTypes.number,
+            numImageFrames: PropTypes.number,
+            modality: PropTypes.string.isRequired,
+            images: PropTypes.arrayOf(
+              PropTypes.shape({
+                getImageId: PropTypes.func.isRequired,
+              })
+            ),
+          })
+        ),
+      })
+    ),
     studyInstanceUids: PropTypes.array,
     activeServer: PropTypes.shape({
       type: PropTypes.string,
