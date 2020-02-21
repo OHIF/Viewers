@@ -1,5 +1,4 @@
 import init from './init.js';
-import commandsModule from './commandsModule.js';
 import toolbarModule from './toolbarModule.js';
 import panelModule from './panelModule.js';
 import sopClassHandlerModule from './OHIFDicomSegSopClassHandler.js';
@@ -22,9 +21,6 @@ export default {
   },
   getToolbarModule({ servicesManager }) {
     return toolbarModule;
-  },
-  getCommandsModule({ servicesManager }) {
-    return commandsModule;
   },
   getPanelModule({ servicesManager }) {
     return panelModule;
