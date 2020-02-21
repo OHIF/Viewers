@@ -30,16 +30,16 @@ const ViewerLocalFileData = asyncComponent(() =>
 
 const ROUTES_DEF = [
   {
-    template: 'Viewer',
-    component: ViewerRouting,
+    name: 'Viewer',
+    template: ViewerRouting,
   },
   {
-    template: 'StandAloneViewer',
-    component: StandaloneRouting,
+    name: 'StandAloneViewer',
+    template: StandaloneRouting,
   },
   {
-    template: 'StudyList',
-    component: StudyListRouting,
+    name: 'StudyList',
+    template: StudyListRouting,
     condition: appConfig => {
       return appConfig.showStudyList !== undefined
         ? appConfig.showStudyList
@@ -47,23 +47,23 @@ const ROUTES_DEF = [
     },
   },
   {
-    template: 'Local',
-    component: ViewerLocalFileData,
+    name: 'Local',
+    template: ViewerLocalFileData,
   },
   {
-    template: 'IHEInvokeImageDisplay',
-    component: IHEInvokeImageDisplay,
+    name: 'IHEInvokeImageDisplay',
+    template: IHEInvokeImageDisplay,
   },
   {
-    template: 'GCloudViewer',
-    component: ViewerRouting,
+    name: 'GCloudViewer',
+    template: ViewerRouting,
     condition: appConfig => {
       return !!appConfig.enableGoogleCloudAdapter;
     },
   },
   {
-    template: 'GCloudStudyList',
-    component: StudyListRouting,
+    name: 'GCloudStudyList',
+    template: StudyListRouting,
     condition: appConfig => {
       const showList =
         appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;

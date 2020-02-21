@@ -88,9 +88,7 @@ const RouteTemplatesUtils = {
 
       if (_module) {
         for (let routeTemplatesModule of _module) {
-          if (
-            isTemplateNameEqual(routeTemplatesModule.template, templateName)
-          ) {
+          if (isTemplateNameEqual(routeTemplatesModule.name, templateName)) {
             return routeTemplatesModule;
           }
         }
@@ -114,11 +112,11 @@ const RoutesDefinitionsUtils = {
     const existingTemplate = [];
 
     definitionsB.forEach(definition => {
-      existingTemplate[definition.template] = true;
+      existingTemplate[definition.name] = true;
     });
 
     definitionsA.forEach(definition => {
-      if (!existingTemplate[definition.template]) {
+      if (!existingTemplate[definition.name]) {
         result.push(definition);
       }
     });
@@ -148,7 +146,7 @@ const RoutesDefinitionsUtils = {
    */
   findRouteDefinition: (routeDefinitions, templateName) => {
     for (let routeDefinition of routeDefinitions) {
-      if (isTemplateNameEqual(routeDefinition.template, templateName)) {
+      if (isTemplateNameEqual(routeDefinition.name, templateName)) {
         return routeDefinition;
       }
     }
@@ -195,7 +193,7 @@ const getRoutes = (appConfig, routeTemplatesModulesExtensions) => {
 
       const routeModule = RouteTemplatesUtils.findRouteTemplatesModule(
         routeTemplatesModulesExtensions,
-        routeDefinition.template
+        routeDefinition.name
       );
 
       if (routeModule) {
@@ -208,7 +206,7 @@ const getRoutes = (appConfig, routeTemplatesModulesExtensions) => {
           routesExistingMap[routeDefinition.path] = true;
           routes.push({
             path: routeDefinition.path,
-            Component: routeModule.component,
+            Component: routeModule.template,
             props: routeModule.props,
           });
         }

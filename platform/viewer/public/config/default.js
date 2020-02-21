@@ -21,11 +21,11 @@ window.config = {
   },
   routes: [
     {
-      template: 'StudyList',
+      name: 'StudyList',
       path: '/listB',
     },
     {
-      template: 'Viewer',
+      name: 'Viewer',
       path: '/viewerB/:studyInstanceUids',
     },
   ],

@@ -3,90 +3,90 @@ import routeValidation from './routeValidation';
 
 const validPathDefinition1 = [
   {
-    template: 'one',
+    name: 'one',
     path: '/one',
   },
   {
-    template: 'two',
+    name: 'two',
     path: '/two',
   },
   {
-    template: 'three',
+    name: 'three',
     path: '/three',
   },
 ];
 
 const validPathDefinition2 = [
   {
-    template: 'one',
+    name: 'one',
     path: '/one',
   },
   {
-    template: 'two',
+    name: 'two',
     path: ['/two', '/four'],
   },
   {
-    template: 'three',
+    name: 'three',
     path: '/three',
   },
 ];
 
 const duplicatedPathDefinition1 = [
   {
-    template: 'one',
+    name: 'one',
     path: '/one',
   },
   {
-    template: 'two',
+    name: 'two',
     path: '/one',
   },
   {
-    template: 'three',
+    name: 'three',
     path: '/three',
   },
 ];
 
 const duplicatedPathDefinition2 = [
   {
-    template: 'one',
+    name: 'one',
     path: '/one',
   },
   {
-    template: 'two',
+    name: 'two',
     path: ['/one'],
   },
   {
-    template: 'three',
+    name: 'three',
     path: '/three',
   },
 ];
 
 const duplicatedPathDefinition3 = [
   {
-    template: 'one',
+    name: 'one',
     path: '/one',
   },
   {
-    template: 'two',
+    name: 'two',
     path: ['/one', '/two'],
   },
   {
-    template: 'three',
+    name: 'three',
     path: '/three',
   },
 ];
 
 const duplicatedPathDefinition4 = [
   {
-    template: 'one',
+    name: 'one',
     path: '/one',
   },
   {
-    template: 'two',
+    name: 'two',
     path: ['/two', '/two'],
   },
   {
-    template: 'three',
+    name: 'three',
     path: '/three',
   },
 ];

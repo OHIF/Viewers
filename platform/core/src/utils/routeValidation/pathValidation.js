@@ -4,7 +4,7 @@ import RouteValidation from './routeValidation';
  *
  * @typedef RouteDefinition It defines the route in overall terms
  * @type {object}
- * @property {string} template identifier for given routeDefinition
+ * @property {string} name identifier for given routeDefinition
  * @property {string} path it defines path for given routeDefinition
  *
  *
