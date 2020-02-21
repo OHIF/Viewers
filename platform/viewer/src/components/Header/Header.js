@@ -67,7 +67,6 @@ function Header(props) {
   const showStudyList =
     appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
 
-  const listPath = RoutesUtil.parseStudyListPath(appConfig, server);
   // ANTD -- Hamburger, Drawer, Menu
   return (
     <>
@@ -89,7 +88,7 @@ function Header(props) {
             <Link
               className="header-btn header-studyListLinkSection"
               to={{
-                pathname: listPath,
+                pathname: '/',
                 state: { studyLink: location.pathname },
               }}
             >

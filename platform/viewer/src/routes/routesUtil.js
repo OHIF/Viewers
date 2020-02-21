@@ -133,17 +133,6 @@ const getRoutes = (appConfig, routeTemplatesModulesExtensions) => {
   return routes;
 };
 
-const parsePath = (path, server, params) => {
-  let _path = path;
-  const _paramsCopy = Object.assign({}, server, params);
-
-  for (let key in _paramsCopy) {
-    _path = UrlUtil.paramString.replaceParam(_path, key, _paramsCopy[key]);
-  }
-
-  return _path;
-};
-
 const parseViewerPath = (appConfig = {}, server = {}, params) => {
   const routesDefinitions = _getRoutesDefinitions(
     appConfig,
@@ -161,7 +150,7 @@ const parseViewerPath = (appConfig = {}, server = {}, params) => {
   }
 
   const _viewerPath = Array.isArray(viewerPath) ? viewerPath[0] : viewerPath;
-  return parsePath(_viewerPath, server, params);
+  return _parsePath(_viewerPath, server, params);
 };
 
 const parseStudyListPath = (appConfig = {}, server = {}, params) => {
@@ -186,8 +175,19 @@ const parseStudyListPath = (appConfig = {}, server = {}, params) => {
   const _studyListPath = Array.isArray(studyListPath)
     ? studyListPath[0]
     : studyListPath;
-  return parsePath(_studyListPath, server, params);
+  return _parsePath(_studyListPath, server, params);
 };
+
+function _parsePath(path, server, params) {
+  let _path = path;
+  const _paramsCopy = Object.assign({}, server, params);
+
+  for (let key in _paramsCopy) {
+    _path = UrlUtil.paramString.replaceParam(_path, key, _paramsCopy[key]);
+  }
+
+  return _path;
+}
 
 /**
  * Find RouteTemplatesModule of given templateName from routeTemplatesModulesExtensions param.
