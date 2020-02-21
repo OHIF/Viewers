@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.3.1...@ohif/extension-cornerstone@2.4.0) (2020-02-20)
+
+
+### Features
+
+* [#1342](https://github.com/OHIF/Viewers/issues/1342) - Window level tab ([#1429](https://github.com/OHIF/Viewers/issues/1429)) ([ebc01a8](https://github.com/OHIF/Viewers/commit/ebc01a8ca238d5a3437b44d81f75aa8a5e8d0574))
+
+
+
+
+
 ## [2.3.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.3.0...@ohif/extension-cornerstone@2.3.1) (2020-02-14)
 
 
