@@ -234,13 +234,6 @@ const _connectToolsToMeasurementService = measurementService => {
     return instance.getImageId(frameNumber);
   };
 
-  /* TODO: Update cstools state with provided data, creating or updating cstools measurements. */
-  const _addImageIdToolState = (imageId, definition, data) => {
-    console.log('_addImageIdToolState: imageId', imageId);
-    console.log('_addImageIdToolState: definition', definition);
-    console.log('_addImageIdToolState: data', data);
-  };
-
   const _getToolType = csToolsAnnotation => {
     const { toolName, toolType, measurementData } = csToolsAnnotation;
     const csTool = toolName || measurementData.toolType || toolType;
@@ -256,45 +249,29 @@ const _connectToolsToMeasurementService = measurementService => {
         MEASUREMENT_UPDATED,
       } = measurementService.EVENTS;
 
-      measurementService.subscribe(
-        MEASUREMENT_ADDED,
-        ({ source, measurement }) => {
-          if ([sourceId].includes(source.id)) {
-            const annotation = getAnnotation('Length', measurement.id);
+      const _addOrUpdateCornerstoneTool = (source, measurement) => {
+        const eventOriginIsCornerstoneExtension = sourceId === source.id;
+        if (!eventOriginIsCornerstoneExtension) {
+          const annotation = getAnnotation('Length', measurement.id);
 
-            console.log(
-              'Measurement Service [Cornerstone]: Measurement added',
-              measurement
-            );
-            console.log('Mapped annotation:', annotation);
+          const imageId = _getImageId(measurement);
+          const toolType = _getToolType(annotation);
 
-            const imageId = _getImageId(measurement);
-            const toolType = _getToolType(annotation);
+          /* TODO: Create or update tools with image id, tooltype and annotation. */
 
-            _addImageIdToolState(imageId, toolType, annotation.measurementData);
-          }
+          console.log('Mapped annotation:', annotation);
         }
-      );
+      };
 
-      measurementService.subscribe(
-        MEASUREMENT_UPDATED,
-        ({ source, measurement }) => {
-          if (![sourceId].includes(source.id)) {
-            const annotation = getAnnotation('Length', measurement.id);
+      measurementService.subscribe(MEASUREMENT_ADDED, ({ source, measurement }) => {
+        _addOrUpdateCornerstoneTool(source, measurement);
+        console.log('MEASUREMENT_ADDED');
+      });
 
-            console.log(
-              'Measurement Service [Cornerstone]: Measurement updated',
-              measurement
-            );
-            console.log('Mapped annotation:', annotation);
-
-            const imageId = _getImageId(measurement);
-            const toolType = _getToolType(annotation);
-
-            _addImageIdToolState(imageId, toolType, annotation.measurementData);
-          }
-        }
-      );
+      measurementService.subscribe(MEASUREMENT_UPDATED, ({ source, measurement }) => {
+        _addOrUpdateCornerstoneTool(source, measurement);
+        console.log('MEASUREMENT_UPDATED');
+      });
 
       const _addOrUpdateMeasurement = csToolsAnnotation => {
         try {

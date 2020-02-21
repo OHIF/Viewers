@@ -289,9 +289,6 @@ class MeasurementService {
 
       /* Convert measurement */
       measurement = toMeasurementSchema(sourceMeasurement);
-
-      /* Assign measurement source instance */
-      measurement.source = source;
     } catch (error) {
       log.error(`Failed to map '${sourceInfo}' measurement for definition ${definition}:`, error.message);
       return;
@@ -310,18 +307,21 @@ class MeasurementService {
       log.warn(`Measurement ID not found. Generating UID: ${internalId}`);
     }
 
-    const newMeasurement = {
+    let newMeasurement = {
       ...measurement,
       modifiedTimestamp: Math.floor(Date.now() / 1000),
       id: internalId,
     };
 
     if (this.measurements[internalId]) {
+      newMeasurement = { ...this.measurements[internalId], ...newMeasurement };
       log.info(`Measurement already defined. Updating measurement.`, newMeasurement);
       this.measurements[internalId] = newMeasurement;
       this._broadcastChange(this.EVENTS.MEASUREMENT_UPDATED, source, newMeasurement);
     } else {
       log.info(`Measurement added.`, newMeasurement);
+      /* Assign measurement source instance */
+      newMeasurement.source = source;
       this.measurements[internalId] = newMeasurement;
       this._broadcastChange(this.EVENTS.MEASUREMENT_ADDED, source, newMeasurement);
     }
