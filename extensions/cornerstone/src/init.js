@@ -18,7 +18,7 @@ function fallbackMetaDataProvider(type, imageId) {
   const wadoRoot = window.store.getState().servers.servers[0].wadoRoot;
   const wadoRsImageId = `wadors:${wadoRoot}/studies/${qs.studyUID}/series/${
     qs.seriesUID
-    }/instances/${qs.objectUID}/frames/${qs.frame || 1}`;
+  }/instances/${qs.objectUID}/frames/${qs.frame || 1}`;
 
   return cornerstone.metaData.get(type, wadoRsImageId);
 }
@@ -81,7 +81,6 @@ export default function init({ servicesManager, configuration }) {
     touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],
     annotations: [
       csTools.ArrowAnnotateTool,
-      csTools.EraserTool,
       csTools.BidirectionalTool,
       csTools.LengthTool,
       csTools.AngleTool,
@@ -95,7 +94,6 @@ export default function init({ servicesManager, configuration }) {
       csTools.PanTool,
       csTools.ZoomTool,
       csTools.WwwcTool,
-      csTools.WwwcRegionTool,
       csTools.MagnifyTool,
       csTools.StackScrollTool,
       csTools.StackScrollMouseWheelTool,
@@ -189,7 +187,9 @@ export default function init({ servicesManager, configuration }) {
 
 const _initMeasurementService = measurementService => {
   /* Initialization */
-  const { toAnnotation, toMeasurement } = measurementServiceMappingsFactory(measurementService);
+  const { toAnnotation, toMeasurement } = measurementServiceMappingsFactory(
+    measurementService
+  );
   const csToolsVer4MeasurementSource = measurementService.createSource(
     'CornerstoneTools',
     '4'
@@ -214,7 +214,9 @@ const _initMeasurementService = measurementService => {
 };
 
 const _connectToolsToMeasurementService = measurementService => {
-  const csToolsVer4MeasurementSource = _initMeasurementService(measurementService);
+  const csToolsVer4MeasurementSource = _initMeasurementService(
+    measurementService
+  );
   const {
     id: sourceId,
     addOrUpdate,
@@ -242,7 +244,8 @@ const _connectToolsToMeasurementService = measurementService => {
             );
             console.log('Mapped annotation:', annotation);
           }
-        });
+        }
+      );
 
       measurementService.subscribe(
         MEASUREMENT_UPDATED,

@@ -131,15 +131,6 @@ const definitions = [
         commandOptions: { toolName: 'Magnify' },
       },
       {
-        id: 'WwwcRegion',
-        label: 'ROI Window',
-        icon: 'stop',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'WwwcRegion' },
-      },
-      {
         id: 'DragProbe',
         label: 'Probe',
         icon: 'dot-circle',
@@ -216,15 +207,6 @@ const definitions = [
         commandOptions: { toolName: 'Bidirectional' },
       },
       {
-        id: 'Eraser',
-        label: 'Eraser',
-        icon: 'eraser',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'Eraser' },
-      },
-      {
         id: 'Download',
         label: 'Download',
         icon: 'create-screen-capture',
@@ -245,7 +227,7 @@ const definitions = [
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
     commandName: 'setCornerstoneLayout',
     context: 'ACTIVE_VIEWPORT::VTK',
-  }
+  },
 ];
 
 export default {

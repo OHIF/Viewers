@@ -30,7 +30,6 @@ import edit from './icons/edit.svg';
 import ellipseCircle from './icons/ellipse-circle.svg';
 import ellipseH from './icons/ellipse-h.svg';
 import ellipseV from './icons/ellipse-v.svg';
-import eraser from './icons/eraser.svg';
 import exclamationCircle from './icons/exclamation-circle.svg';
 import exclamationTriangle from './icons/exclamation-triangle.svg';
 import fastBackward from './icons/fast-backward.svg';
@@ -73,7 +72,6 @@ import squareO from './icons/square-o.svg';
 import star from './icons/star.svg';
 import stepBackward from './icons/step-backward.svg';
 import stepForward from './icons/step-forward.svg';
-import stop from './icons/stop.svg';
 import sun from './icons/sun.svg';
 import th from './icons/th.svg';
 import thLarge from './icons/th-large.svg';
@@ -114,7 +112,6 @@ const ICONS = {
   'create-comment': createComment,
   'create-screen-capture': createScreenCapture,
   edit,
-  eraser,
   'fast-backward': fastBackward,
   'fast-forward': fastForward,
   'object-group': objectGroup,
@@ -134,7 +131,6 @@ const ICONS = {
   'lock-alt': lockAlt,
   'step-backward': stepBackward,
   'step-forward': stepForward,
-  stop,
   'th-large': thLarge,
   'th-list': thList,
   sun,
