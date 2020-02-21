@@ -245,7 +245,7 @@ const commandsModule = ({ servicesManager }) => {
     setCornerstoneLayout: () => {
       setCornerstoneLayout();
     },
-    jumpToMeasurement: ({
+    jumpToImage: ({
       viewports,
       studyInstanceUid,
       sopInstanceUid,
@@ -271,8 +271,8 @@ const commandsModule = ({ servicesManager }) => {
   };
 
   const definitions = {
-    jumpToMeasurement: {
-      commandFn: actions.jumpToMeasurement,
+    jumpToImage: {
+      commandFn: actions.jumpToImage,
       storeContexts: ['viewports'],
       options: {},
     },
