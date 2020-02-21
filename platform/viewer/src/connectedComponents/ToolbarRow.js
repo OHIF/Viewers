@@ -25,9 +25,14 @@ class ToolbarRow extends Component {
     isRightSidePanelOpen: PropTypes.bool.isRequired,
     selectedLeftSidePanel: PropTypes.string.isRequired,
     selectedRightSidePanel: PropTypes.string.isRequired,
-    handleSidePanelChange: PropTypes.func,
+    handleSidePanelChange: PropTypes.func.isRequired,
     activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
     studies: PropTypes.array,
+    t: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    studies: [],
   };
 
   constructor(props) {
@@ -50,30 +55,26 @@ class ToolbarRow extends Component {
     this._handleBuiltIn = _handleBuiltIn.bind(this);
 
     const panelModules = extensionManager.modules[MODULE_TYPES.PANEL];
+
     this.buttonGroups = {
-      left: [
-        // TODO: This should come from extensions, instead of being baked in
-        {
-          value: 'studies',
-          icon: 'th-large',
-          bottomLabel: this.props.t('Series'),
-        },
-      ],
+      left: [],
       right: [],
     };
 
+    // ~ FIND MENU OPTIONS
     panelModules.forEach(panelExtension => {
       const panelModule = panelExtension.module;
       const defaultContexts = Array.from(panelModule.defaultContext);
 
-      // MENU OPTIONS
       panelModule.menuOptions.forEach(menuOption => {
         const contexts = Array.from(menuOption.context || defaultContexts);
-
-        const activeContextIncludesAnyPanelContexts = this.props.activeContexts.some(
-          actx => contexts.includes(actx)
+        const hasActiveContext = this.props.activeContexts.some(actx =>
+          contexts.includes(actx)
         );
-        if (activeContextIncludesAnyPanelContexts) {
+        // TODO: what should `isDisabled` receive?
+        const isDisabled = menuOption.isDisabled();
+
+        if (hasActiveContext && !isDisabled) {
           const menuOptionEntry = {
             value: menuOption.target,
             icon: menuOption.icon,
@@ -84,6 +85,16 @@ class ToolbarRow extends Component {
           this.buttonGroups[from].push(menuOptionEntry);
         }
       });
+    });
+
+    //   });
+    // });
+
+    // TODO: This should come from extensions, instead of being baked in
+    this.buttonGroups.right.unshift({
+      value: 'studies',
+      icon: 'th-large',
+      bottomLabel: this.props.t('Series'),
     });
   }
 
