@@ -1,8 +1,6 @@
 import { MODULE_TYPES, utils } from '@ohif/core';
 import loadSegmentation from './loadSegmentation';
 
-import id from './id';
-
 // TODO: Should probably use dcmjs for this
 const SOP_CLASS_UIDS = {
   DICOM_SEG: '1.2.840.10008.5.1.4.1.1.66.4',
@@ -16,7 +14,7 @@ const OHIFDicomSegSopClassHandler = {
   id: 'OHIFDicomSegSopClassHandler',
   type: MODULE_TYPES.SOP_CLASS_HANDLER,
   sopClassUids,
-  getDisplaySetFromSeries: function(
+  getDisplaySetFromSeries: function (
     series,
     study,
     dicomWebClient,
@@ -30,7 +28,6 @@ const OHIFDicomSegSopClassHandler = {
     const { seriesDate, seriesTime, seriesDescription } = series.getData();
 
     const segDisplaySet = {
-      plugin: id,
       modality: 'SEG',
       displaySetInstanceUid: utils.guid(),
       wadoRoot: study.getData().wadoRoot,
@@ -50,7 +47,7 @@ const OHIFDicomSegSopClassHandler = {
       seriesDescription,
     };
 
-    segDisplaySet.load = function(referencedDisplaySet, studies) {
+    segDisplaySet.load = function (referencedDisplaySet, studies) {
       return loadSegmentation(
         segDisplaySet,
         referencedDisplaySet,

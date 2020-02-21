@@ -876,14 +876,6 @@
     core-js "^2.6.5"
     regenerator-runtime "^0.13.2"
 
-"@babel/polyfill@^7.2.5":
-  version "7.8.3"
-  resolved "https://registry.yarnpkg.com/@babel/polyfill/-/polyfill-7.8.3.tgz#2333fc2144a542a7c07da39502ceeeb3abe4debd"
-  integrity sha512-0QEgn2zkCzqGIkSWWAEmvxD7e00Nm9asTtQvi7HdlYvMhjy/J38V/1Y9ode0zEJeIuxAI0uftiAzqc7nVeWUGg==
-  dependencies:
-    core-js "^2.6.5"
-    regenerator-runtime "^0.13.2"
-
 "@babel/polyfill@^7.6.0":
   version "7.6.0"
   resolved "https://registry.yarnpkg.com/@babel/polyfill/-/polyfill-7.6.0.tgz#6d89203f8b6cd323e8d946e47774ea35dc0619cc"
@@ -6329,16 +6321,6 @@ dateformat@^3.0.0:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dcmjs@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.7.0.tgz#a8c469b666a136d81e73cbe7118bab3f846e3ce2"
-  integrity sha512-2XVnyfQ3Kp0rtomNoDiAJ78SWZazhmEEvbhYL8nMib/2Qf7VVfB/hLxoYi4XfDuNYW/3Wh8fRm+0j7/OLMAzmg==
-  dependencies:
-    "@babel/polyfill" "^7.2.5"
-    "@babel/runtime" "^7.3.1"
-    loglevelnext "^3.0.0"
-    ndarray "^1.0.18"
-
 dcmjs@^0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.8.2.tgz#e1107273764de0a3052244b79d999fd870e58650"
@@ -8878,11 +8860,6 @@ github-slugger@^1.0.0, github-slugger@^1.1.1:
   integrity sha512-SsZUjg/P03KPzQBt7OxJPasGw6NRO5uOgiZ5RGXVud5iSIZ0eNZeNp5rTwCxtavrRUa/A77j8mePVc5lEvk0KQ==
   dependencies:
     emoji-regex ">=6.0.0 <=6.1.1"
-
-gl-matrix@2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/gl-matrix/-/gl-matrix-2.3.2.tgz#aac808c74af7d5db05fe04cb60ca1a0fcb174d74"
-  integrity sha1-qsgIx0r31dsF/gTLYMoaD8sXTXQ=
 
 gl-matrix@3.0.0:
   version "3.0.0"
@@ -11998,7 +11975,7 @@ loglevelnext@^1.0.1, loglevelnext@^1.0.2:
     es6-symbol "^3.1.1"
     object.assign "^4.1.0"
 
-loglevelnext@^3.0.0, loglevelnext@^3.0.1:
+loglevelnext@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/loglevelnext/-/loglevelnext-3.0.1.tgz#e3e4659c4061c09264f6812c33586dc55a009a04"
   integrity sha512-JpjaJhIN1reaSb26SIxDGtE0uc67gPl19OMVHrr+Ggt6b/Vy60jmCtKgQBrygAH0bhRA2nkxgDvM+8QvR8r0YA==

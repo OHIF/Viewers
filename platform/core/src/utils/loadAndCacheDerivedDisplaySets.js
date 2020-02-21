@@ -44,7 +44,6 @@ import studyMetadataManager from './studyMetadataManager';
  * @param {boolean} referencedDisplaySet.isReconstructable
  * @param {string} referencedDisplaySet.studyInstanceUid
  * @param {Array} referencedDisplaySet.sopClassUids
- * @param {string} referencedDisplaySet.plugin
  * @param {Study[]} studies Collection of studies
  * @returns void
  */
@@ -66,21 +65,21 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
   }
 
   // Filter by type
-  const displaySetsPerPlugin = {};
+  const displaySetsPerModality = {};
 
   derivedDisplaySets.forEach(displaySet => {
-    const plugin = displaySet.plugin;
+    const modality = displaySet.modality;
 
-    if (displaySetsPerPlugin[plugin] === undefined) {
-      displaySetsPerPlugin[plugin] = [];
+    if (displaySetsPerModality[modality] === undefined) {
+      displaySetsPerModality[modality] = [];
     }
 
-    displaySetsPerPlugin[plugin].push(displaySet);
+    displaySetsPerModality[modality].push(displaySet);
   });
 
   // For each type, see if any are loaded, if not load the most recent.
-  Object.keys(displaySetsPerPlugin).forEach(key => {
-    const displaySets = displaySetsPerPlugin[key];
+  Object.keys(displaySetsPerModality).forEach(key => {
+    const displaySets = displaySetsPerModality[key];
     const isLoaded = displaySets.some(displaySet => displaySet.isLoaded);
 
     if (isLoaded) {

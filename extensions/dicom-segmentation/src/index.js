@@ -2,13 +2,12 @@ import init from './init.js';
 import toolbarModule from './toolbarModule.js';
 import panelModule from './panelModule.js';
 import sopClassHandlerModule from './OHIFDicomSegSopClassHandler.js';
-import id from './id.js';
 
 export default {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
-  id,
+  id: 'com.ohif.dicom-segmentation',
 
   /**
    *

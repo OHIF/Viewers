@@ -1,6 +1,6 @@
-# @ohif/dicom-seg
+# @ohif/dicom-segmentation
 
-![npm (scoped)](https://img.shields.io/npm/v/@ohif/dicom-seg.svg?style=flat-square)
+![npm (scoped)](https://img.shields.io/npm/v/@ohif/dicom-segmentation.svg?style=flat-square)
 
 This extension adds support to view and navigate the segments available in the DICOM SEG,
 allowing control over visibility of a given segment and providing metadata about the segment(s).
