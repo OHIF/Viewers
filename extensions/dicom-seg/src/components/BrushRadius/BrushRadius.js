@@ -19,7 +19,7 @@ const BrushRadius = ({ value, onChange, min, max, step }) => (
 );
 
 BrushRadius.propTypes = {
-  value: PropTypes.number,
+  value: PropTypes.number.isRequired,
   onChange: PropTypes.number,
   min: PropTypes.number,
   max: PropTypes.number,
@@ -27,7 +27,6 @@ BrushRadius.propTypes = {
 };
 
 BrushRadius.defaultProps = {
-  value: PropTypes.number.isRequired,
   onChange: () => { },
   min: 1,
   max: 50,
