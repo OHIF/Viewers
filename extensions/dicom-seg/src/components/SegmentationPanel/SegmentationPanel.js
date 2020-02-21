@@ -242,16 +242,18 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     if (labelmap3D.activeSegmentIndex > 1) {
       labelmap3D.activeSegmentIndex--;
     }
-    setActiveSegmentColor();
+    setSelectedSegment(labelmap3D.activeSegmentIndex);
+    updateActiveSegmentColor();
   };
 
   const incrementSegment = event => {
     event.preventDefault();
     labelmap3D.activeSegmentIndex++;
-    setActiveSegmentColor();
+    setSelectedSegment(labelmap3D.activeSegmentIndex);
+    updateActiveSegmentColor();
   };
 
-  const setActiveSegmentColor = () => {
+  const updateActiveSegmentColor = () => {
     const color = getActiveSegmentColor();
     setBrushColor(color);
   };
