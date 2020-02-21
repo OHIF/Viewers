@@ -1,12 +1,4 @@
-// SEE: Async imports (code-splitting)
-// import asyncComponent from './asyncComponent.js';
-// import OHIFDicomPDFSopClassHandler from './OHIFDicomPDFSopClassHandler.js';
-
-// const ConnectedOHIFDicomPDFViewer = asyncComponent(() =>
-//   import(
-//     /* webpackChunkName: "ConnectedOHIFDicomPDFViewer" */ './ConnectedOHIFDicomPDFViewer'
-//   )
-// );
+import MeasurementComparisonTable from './components/MeasurementComparisonTable';
 
 import { LTStudyBrowser } from './LTStudyBrowser';
 
@@ -29,6 +21,13 @@ export default {
           label: 'Studies',
           from: 'left',
           target: 'lesion-tracker-study-browser',
+          context: ['VIEWER'],
+        },
+        {
+          icon: 'th-list',
+          label: 'Measurements',
+          from: 'right',
+          target: 'lesion-tracker-panel',
         },
       ],
       components: [
@@ -36,36 +35,50 @@ export default {
           id: 'lesion-tracker-study-browser',
           component: LTStudyBrowser,
         },
+        {
+          id: 'lesion-tracker-panel',
+          component: MeasurementComparisonTable,
+        },
       ],
       defaultContext: ['ACTIVE_VIEWPORT:VIEWER'],
     };
-    // {
-    // TODO:
-    // - Right, alternative StudyBrowser
-    // - Left, alternative Measurements Table
-    // menuOptions: [
-    //   {
-    //     // A suggested icon
-    //     // Available icons determined by consuming app
-    //     icon: 'list',
-    //     // A suggested label
-    //     label: 'Magic',
-    //     // 'right' or 'left'
-    //     from: 'right',
-    //     // The target component to toggle open/close
-    //     target: 'target-component-id',
-    //     // Overrides `defaultContext`, if specified
-    //     context: ['ACTIVE_VIEWPORT:MAGIC'],
-    //   },
-    // ],
-    // components: [
-    //   {
-    //     id: 'target-component-id',
-    //     component: MyComponent,
-    //   },
-    // ],
-    // defaultContext: ['ROUTE:VIEWER'],
-    // };
+  },
+  // {
+  // TODO:
+  // - Right, alternative StudyBrowser
+  // - Left, alternative Measurements Table
+  // menuOptions: [
+  //   {
+  //     // A suggested icon
+  //     // Available icons determined by consuming app
+  //     icon: 'list',
+  //     // A suggested label
+  //     label: 'Magic',
+  //     // 'right' or 'left'
+  //     from: 'right',
+  //     // The target component to toggle open/close
+  //     target: 'target-component-id',
+  //     // Overrides `defaultContext`, if specified
+  //     context: ['ACTIVE_VIEWPORT:MAGIC'],
+  //   },
+  // ],
+  // components: [
+  //   {
+  //     id: 'target-component-id',
+  //     component: MyComponent,
+  //   },
+  // ],
+  // defaultContext: ['ROUTE:VIEWER'],
+  // };
+
+  /**
+   * @param {object} params
+   * @param {ServicesManager} params.servicesManager
+   * @param {CommandsManager} params.commandsManager
+   * @returns Object
+   */
+  getToolbarModule() {
+    return null;
   },
 
   /**
@@ -74,46 +87,7 @@ export default {
    * @param {CommandsManager} params.commandsManager
    * @returns Object
    */
-  getToolbarModule({ servicesManager, commandsManager }) {
-    // TODO: Zoom, Levels, Pan, More (see lesiontracker.ohif.org)
-    // These may be driven through configuration of `cornerstone` extension instead of defined here
-    return {
-      definitions: [
-        {
-          id: 'say-hell-world',
-          label: '🎉 HELLO WORLD 🎉',
-          icon: 'exclamation-triangle',
-          type: 'command',
-          commandName: 'sayHelloWorld',
-        },
-      ],
-      defaultContext: 'VIEWER',
-    };
-  },
-
-  /**
-   * @param {object} params
-   * @param {ServicesManager} params.servicesManager
-   * @param {CommandsManager} params.commandsManager
-   * @returns Object
-   */
-  getCommandsModule({ servicesManager }) {
-    const { UINotificationService } = servicesManager.services;
-    return {
-      definitions: {
-        sayHelloWorld: {
-          commandFn: function() {
-            console.log(UINotificationService);
-            UINotificationService.show({
-              title: 'What does a nosey pepper do?',
-              message: 'Gets jalapeno business!',
-            });
-          },
-          storeContexts: [],
-          options: {},
-        },
-      },
-      defaultContext: ['VIEWER'],
-    };
+  getCommandsModule() {
+    return null;
   },
 };

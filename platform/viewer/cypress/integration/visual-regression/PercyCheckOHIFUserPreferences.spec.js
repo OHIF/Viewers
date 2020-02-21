@@ -21,9 +21,8 @@ describe('Visual Regression - OHIF User Preferences', () => {
     });
 
     it('checks translation by selecting Spanish language', function() {
-      cy.get('@userPreferencesGeneralTab')
-        .click()
-        .should('have.class', 'active');
+      cy.changePreferencesTab('@userPreferencesGeneralTab');
+      cy.get('@userPreferencesGeneralTab').should('have.class', 'active');
 
       // Language dropdown should be displayed
       cy.get('#language-select').should('be.visible');
@@ -76,9 +75,8 @@ describe('Visual Regression - OHIF User Preferences', () => {
     });
 
     it('checks translation by selecting Spanish language', function() {
-      cy.get('@userPreferencesGeneralTab')
-        .click()
-        .should('have.class', 'active');
+      cy.changePreferencesTab('@userPreferencesGeneralTab');
+      cy.get('@userPreferencesGeneralTab').should('have.class', 'active');
 
       // Visual comparison
       cy.percyCanvasSnapshot(
@@ -102,9 +100,8 @@ describe('Visual Regression - OHIF User Preferences', () => {
     });
 
     it('checks if user can restore to default the language selection and application will be in English', function() {
-      cy.get('@userPreferencesGeneralTab')
-        .click()
-        .should('have.class', 'active');
+      cy.changePreferencesTab('@userPreferencesGeneralTab');
+      cy.get('@userPreferencesGeneralTab').should('have.class', 'active');
 
       // Set language to Spanish
       cy.setLanguage('Spanish');
@@ -113,7 +110,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.openPreferences();
 
       // Go to general tab
-      cy.get('@userPreferencesGeneralTab').click();
+      cy.changePreferencesTab('@userPreferencesGeneralTab');
 
       cy.get('@restoreBtn')
         .scrollIntoView()
@@ -139,9 +136,8 @@ describe('Visual Regression - OHIF User Preferences', () => {
 
     it('checks new hotkeys for "Next" and "Previous" Image on Viewport', function() {
       // Go go hotkeys tab
-      cy.get('@userPreferencesHotkeysTab')
-        .click()
-        .should('have.class', 'active');
+      cy.changePreferencesTab('@userPreferencesHotkeysTab');
+      cy.get('@userPreferencesHotkeysTab').should('have.class', 'active');
 
       // Set new hotkey for 'Next Image Viewport' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(

@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.2.1...@ohif/ui@1.3.0) (2020-02-20)
+
+
+### Features
+
+* [#1342](https://github.com/OHIF/Viewers/issues/1342) - Window level tab ([#1429](https://github.com/OHIF/Viewers/issues/1429)) ([ebc01a8](https://github.com/OHIF/Viewers/commit/ebc01a8ca238d5a3437b44d81f75aa8a5e8d0574))
+
+
+
+
+
+## [1.2.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.2.0...@ohif/ui@1.2.1) (2020-02-12)
+
+
+### Bug Fixes
+
+* Combined Hotkeys for special characters ([#1233](https://github.com/OHIF/Viewers/issues/1233)) ([2f30e7a](https://github.com/OHIF/Viewers/commit/2f30e7a821a238144c49c56f37d8e5565540b4bd))
+
+
+
+
+
+# [1.2.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.9...@ohif/ui@1.2.0) (2020-02-10)
+
+
+### Features
+
+* Lesion tracker right panel ([#1428](https://github.com/OHIF/Viewers/issues/1428)) ([98a649b](https://github.com/OHIF/Viewers/commit/98a649b455ffc712938fc5035cdef40695e58440))
+
+
+
+
+
 ## [1.1.9](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.1.8...@ohif/ui@1.1.9) (2020-01-30)
 
 
