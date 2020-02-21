@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.7.0...@ohif/viewer@3.7.1) (2020-02-21)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [3.7.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.6.3...@ohif/viewer@3.7.0) (2020-02-20)
+
+
+### Features
+
+* [#1342](https://github.com/OHIF/Viewers/issues/1342) - Window level tab ([#1429](https://github.com/OHIF/Viewers/issues/1429)) ([ebc01a8](https://github.com/OHIF/Viewers/commit/ebc01a8ca238d5a3437b44d81f75aa8a5e8d0574))
+
+
+
+
+
 ## [3.6.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.6.2...@ohif/viewer@3.6.3) (2020-02-14)
 
 

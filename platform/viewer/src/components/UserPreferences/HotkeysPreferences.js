@@ -168,9 +168,11 @@ function HotkeysPreferences({ onClose }) {
                             keys={keys}
                             modifier_keys={MODIFIER_KEYS}
                             handleChange={handleChange}
-                            classNames={'hotkeyInput'}
+                            classNames={'preferencesInput'}
                           ></HotkeyField>
-                          <span className="errorMessage">{errorMessage}</span>
+                          <span className="preferencesInputErrorMessage">
+                            {errorMessage}
+                          </span>
                         </div>
                       </div>
                     );

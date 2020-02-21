@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.5.0...@ohif/core@2.5.1) (2020-02-21)
+
+
+### Bug Fixes
+
+* 💡 Update log to warn ([#1454](https://github.com/OHIF/Viewers/issues/1454)) ([509a7b7](https://github.com/OHIF/Viewers/commit/509a7b7e57834a0653add98cc320b2a5dbefd51d)), closes [#1451](https://github.com/OHIF/Viewers/issues/1451)
+
+
+
+
+
+# [2.5.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.4.1...@ohif/core@2.5.0) (2020-02-20)
+
+
+### Features
+
+* [#1342](https://github.com/OHIF/Viewers/issues/1342) - Window level tab ([#1429](https://github.com/OHIF/Viewers/issues/1429)) ([ebc01a8](https://github.com/OHIF/Viewers/commit/ebc01a8ca238d5a3437b44d81f75aa8a5e8d0574))
+
+
+
+
+
 ## [2.4.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.4.0...@ohif/core@2.4.1) (2020-02-12)
 
 
