@@ -19,7 +19,8 @@ export default function transformPointsToImagePlane(points, imagePlane) {
 
   // 9 sets of simulataneous equations to choose from, choose which set to solve
   // Based on the largest component of each direction cosine.
-  // This avoids NaNs or floating point errors caused by dividing by very small numbers and ensures a safe mapping.
+  // This avoids NaNs or floating point errors caused by dividing by very small numbers and ensures a safe mapping
+  // when mapping between planes that are close to orthogonal.
 
   let ix = 0;
   let iy = 0;

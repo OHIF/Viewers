@@ -1,5 +1,14 @@
-//import csTools from 'cornerstone-tools';
-//import freehand3DModule from './tools/modules/freehand3D';
+import cornerstoneTools from 'cornerstone-tools';
+import RTStructDisplayTool from './tools/RTStructDisplayTool';
+import rtStructModule from './tools/modules/rtStructModule';
+
+import TOOL_NAMES from './utils/toolNames';
+
+const defaultConfig = {
+  TOOL_NAMES: {
+    RT_STRUCT_DISPLAY_TOOL: 'RTStructDisplayTool',
+  },
+};
 
 /**
  *
@@ -7,6 +16,10 @@
  * @param {Object|Array} configuration.csToolsConfig
  */
 export default function init({ servicesManager, configuration = {} }) {
-  //register('module', 'freehand3D', freehand3DModule);
-  //csTools.addTool(Freehand3DRoiTool);
+  const conifg = Object.assign({}, defaultConfig, configuration);
+
+  TOOL_NAMES.RT_STRUCT_DISPLAY_TOOL = conifg.TOOL_NAMES.RT_STRUCT_DISPLAY_TOOL;
+
+  cornerstoneTools.register('module', 'rtstruct', rtStructModule);
+  cornerstoneTools.addTool(RTStructDisplayTool);
 }
