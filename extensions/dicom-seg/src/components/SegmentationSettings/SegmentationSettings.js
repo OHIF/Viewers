@@ -162,14 +162,14 @@ const CustomRange = props => {
 
 SegmentationSettings.propTypes = {
   configuration: PropTypes.shape({
-    renderFill: PropTypes.bool,
-    renderOutline: PropTypes.bool,
-    shouldRenderInactiveLabelmaps: PropTypes.bool,
-    fillAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), /* TODO: why fillAlpha is string? */
-    outlineAlpha: PropTypes.number,
-    outlineWidth: PropTypes.number,
-    fillAlphaInactive: PropTypes.number,
-    outlineAlphaInactive: PropTypes.number,
+    renderFill: PropTypes.bool.isRequired,
+    renderOutline: PropTypes.bool.isRequired,
+    shouldRenderInactiveLabelmaps: PropTypes.bool.isRequired,
+    fillAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, /* TODO: why fillAlpha is string? */
+    outlineAlpha: PropTypes.number.isRequired,
+    outlineWidth: PropTypes.number.isRequired,
+    fillAlphaInactive: PropTypes.number.isRequired,
+    outlineAlphaInactive: PropTypes.number.isRequired,
   }).isRequired,
   onBack: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
