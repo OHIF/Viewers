@@ -166,7 +166,7 @@ SegmentationSettings.propTypes = {
     renderOutline: PropTypes.bool.isRequired,
     shouldRenderInactiveLabelmaps: PropTypes.bool.isRequired,
     fillAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, /* TODO: why fillAlpha is string? */
-    outlineAlpha: PropTypes.number.isRequired,
+    outlineAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, /* TODO: why fillAlpha is string? */
     outlineWidth: PropTypes.number.isRequired,
     fillAlphaInactive: PropTypes.number.isRequired,
     outlineAlphaInactive: PropTypes.number.isRequired,
