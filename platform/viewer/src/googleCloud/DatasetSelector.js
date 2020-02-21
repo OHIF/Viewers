@@ -22,7 +22,6 @@ class DatasetSelector extends Component {
     user: PropTypes.object,
     canClose: PropTypes.string,
     setServers: PropTypes.func.isRequired,
-    title: PropTypes.string,
   };
 
   onProjectSelect = project => {
