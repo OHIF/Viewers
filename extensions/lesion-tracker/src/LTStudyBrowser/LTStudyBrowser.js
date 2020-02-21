@@ -5,18 +5,9 @@ import { RoundedButtonGroup } from '@ohif/ui';
 import mockData from './mockData.js';
 import { AllStudies } from './AllStudies.js';
 import { ViewingStudies } from './ViewingStudies.js';
+import { findStudy, filterStudies } from './utils';
 
 import './LTStudyBrowser.styl';
-
-const findStudy = (studies, studyInstanceUid) => {
-  return studies.find(study => study.studyInstanceUid === studyInstanceUid);
-};
-
-const filterStudies = (studies, filteredStudiesUids = []) => {
-  return studies.filter(
-    study => !filteredStudiesUids.includes(study.studyInstanceUid)
-  );
-};
 
 const tabs = [
   {
@@ -45,7 +36,7 @@ const getRoundedButtonsData = tabs => {
   });
 };
 
-function LTStudyBrowser({}) {
+function LTStudyBrowser() {
   const [currentTab, setCurrentTab] = useState('0');
 
   const { Component, getProps } = tabs[currentTab];

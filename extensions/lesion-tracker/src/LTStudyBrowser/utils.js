@@ -24,4 +24,14 @@ const getStudyData = (study = {}) => {
   };
 };
 
-export { formatDate, getStudyData, getModalities };
+const findStudy = (studies, studyInstanceUid) => {
+  return studies.find(study => study.studyInstanceUid === studyInstanceUid);
+};
+
+const filterStudies = (studies, filteredStudiesUids = []) => {
+  return studies.filter(
+    study => !filteredStudiesUids.includes(study.studyInstanceUid)
+  );
+};
+
+export { formatDate, getStudyData, getModalities, findStudy, filterStudies };
