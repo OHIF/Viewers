@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import DatasetSelector from './DatasetSelector';
 import './googleCloud.css';
 import { withTranslation } from 'react-i18next';
-import { withModal } from '@ohif/ui';
 import * as GoogleCloudUtilServers from './utils/getServers';
 
 import { servicesManager } from './../App.js';
@@ -12,10 +11,9 @@ function DicomStorePickerModal({
   isOpen = false,
   setServers,
   onClose,
-  t,
   user,
   url,
-  show,
+  t,
 }) {
   const { UIModalService } = servicesManager.services;
 
@@ -48,12 +46,11 @@ function DicomStorePickerModal({
 }
 
 DicomStorePickerModal.propTypes = {
-  url: PropTypes.string,
-  user: PropTypes.object.isRequired,
-  setServers: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
+  setServers: PropTypes.func.isRequired,
   onClose: PropTypes.func,
-  show: PropTypes.func,
+  user: PropTypes.object.isRequired,
+  url: PropTypes.string,
 };
 
 export default withTranslation('Common')(DicomStorePickerModal);
