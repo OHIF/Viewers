@@ -98,6 +98,7 @@ class ToolbarRow extends Component {
     this.buttonGroups.right.unshift({
       value: 'studies',
       icon: 'th-large',
+      from: 'left',
       bottomLabel: this.props.t('Series'),
     });
   }
