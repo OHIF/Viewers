@@ -72,7 +72,9 @@ class ToolbarRow extends Component {
           contexts.includes(actx)
         );
         // TODO: what should `isDisabled` receive?
-        const isDisabled = menuOption.isDisabled();
+        // studies? activeViewport?
+        // It's a bit beefy to pass studies; probably only need to be reactive on `studyInstanceUIDs` and activeViewport?
+        const isDisabled = menuOption.isDisabled(this.props.studies);
 
         if (hasActiveContext && !isDisabled) {
           const menuOptionEntry = {
