@@ -29,6 +29,9 @@ class ToolbarRow extends Component {
     activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
     studies: PropTypes.array,
     t: PropTypes.func.isRequired,
+    // NOTE: withDialog, withModal HOCs
+    dialog: PropTypes.any,
+    modal: PropTypes.any,
   };
 
   static defaultProps = {
@@ -90,9 +93,6 @@ class ToolbarRow extends Component {
         }
       });
     });
-
-    //   });
-    // });
 
     // TODO: This should come from extensions, instead of being baked in
     this.buttonGroups.right.unshift({
@@ -237,6 +237,10 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
 }
 
 /**
+ * TODO: DEPRECATE
+ * This is used exclusively in `extensions/cornerstone/src`
+ * We have better ways with new UI Services to trigger "builtin" behaviors
+ *
  * A handy way for us to handle different button types. IE. firing commands for
  * buttons, or initiation built in behavior.
  *
@@ -288,7 +292,7 @@ function _getVisibleToolbarButtons() {
 
 function _handleBuiltIn(button) {
   /* TODO: Keep cine button active until its unselected. */
-  const { dialog, modal, t } = this.props;
+  const { dialog, t } = this.props;
   const { dialogId } = this.state;
   const { id, options } = button;
 
