@@ -95,10 +95,9 @@ class ToolbarRow extends Component {
     });
 
     // TODO: This should come from extensions, instead of being baked in
-    this.buttonGroups.right.unshift({
+    this.buttonGroups.left.unshift({
       value: 'studies',
       icon: 'th-large',
-      from: 'left',
       bottomLabel: this.props.t('Series'),
     });
   }
