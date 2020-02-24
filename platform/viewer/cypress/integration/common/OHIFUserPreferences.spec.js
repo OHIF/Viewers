@@ -423,7 +423,7 @@ describe('OHIF User Preferences', () => {
       cy.get('.HotkeysPreferences').within(() => {
         cy.contains('Rotate Right') // label we're looking for
           .parent()
-          .find('.errorMessage')
+          .find('.preferencesInputErrorMessage')
           .as('errorMsg')
           .should('have.text', '"Invert" is already using the "i" shortcut.');
       });
@@ -444,7 +444,7 @@ describe('OHIF User Preferences', () => {
       cy.get('.HotkeysPreferences').within(() => {
         cy.contains('Rotate Right') // label we're looking for
           .parent()
-          .find('.errorMessage')
+          .find('.preferencesInputErrorMessage')
           .as('errorMsg')
           .should('have.text', '"ctrl+z" shortcut combination is not allowed');
       });
@@ -465,7 +465,7 @@ describe('OHIF User Preferences', () => {
       cy.get('.HotkeysPreferences').within(() => {
         cy.contains('Zoom Out') // label we're looking for
           .parent()
-          .find('.errorMessage')
+          .find('.preferencesInputErrorMessage')
           .as('errorMsg')
           .should(
             'have.text',
