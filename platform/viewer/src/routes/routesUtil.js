@@ -1,5 +1,6 @@
 import OHIF from '@ohif/core';
-const { urlUtil: UrlUtil, pathValidation: PathValidationUtils } = OHIF.utils;
+
+const OHIF_UTILS = OHIF.utils;
 
 const reload = () => window.location.reload();
 /**
@@ -36,32 +37,32 @@ const reload = () => window.location.reload();
  */
 const defaultRoutesDefinitions = [
   {
-    template: 'Viewer',
+    name: 'Viewer',
     path: '/viewer/:studyInstanceUids',
   },
   {
-    template: 'standAloneViewer',
+    name: 'standAloneViewer',
     path: '/viewer',
   },
   {
-    template: 'StudyList',
+    name: 'StudyList',
     path: ['/', '/studylist'],
   },
   {
-    template: 'Local',
+    name: 'Local',
     path: '/local',
   },
   {
-    template: 'IHEInvokeImageDisplay',
+    name: 'IHEInvokeImageDisplay',
     path: '/IHEInvokeImageDisplay',
   },
   {
-    template: 'GCloudViewer',
+    name: 'GCloudViewer',
     path:
       '/projects/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore/study/:studyInstanceUids',
   },
   {
-    template: 'GCloudStudyList',
+    name: 'GCloudStudyList',
     path:
       '/projects/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore',
   },
@@ -84,57 +85,15 @@ const defaultRoutesDefinitions = [
  * @return {RouteType[]}
  */
 const getRoutes = (appConfig, routeTemplatesModulesExtensions) => {
-  const routes = [];
-  const routesExistingMap = [];
-
-  const routesDefinitions = _getRoutesDefinitions(
+  return OHIF_UTILS.getRoutes(
     appConfig,
+    routeTemplatesModulesExtensions,
     defaultRoutesDefinitions
   );
-
-  try {
-    PathValidationUtils.runPreValidation(routesDefinitions);
-
-    for (let routeDefinition of routesDefinitions) {
-      if (!routeDefinition) {
-        continue;
-      }
-
-      // allowed one route path only.
-      if (routesExistingMap[routeDefinition.path]) {
-        continue;
-      }
-
-      const routeModule = _findRouteTemplatesModule(
-        routeTemplatesModulesExtensions,
-        routeDefinition.name
-      );
-
-      if (routeModule) {
-        const validRoute =
-          typeof routeDefinition.condition === 'function'
-            ? routeDefinition.condition(appConfig)
-            : true;
-
-        if (validRoute) {
-          routesExistingMap[routeDefinition.path] = true;
-          routes.push({
-            path: routeDefinition.path,
-            Component: routeModule.template,
-            props: routeModule.props,
-          });
-        }
-      }
-    }
-  } catch (e) {
-    console.log(e);
-  }
-
-  return routes;
 };
 
 const parseViewerPath = (appConfig = {}, server = {}, params) => {
-  const routesDefinitions = _getRoutesDefinitions(
+  const routesDefinitions = OHIF_UTILS.getRoutesDefinitions(
     appConfig,
     defaultRoutesDefinitions
   );
@@ -154,7 +113,7 @@ const parseViewerPath = (appConfig = {}, server = {}, params) => {
 };
 
 const parseStudyListPath = (appConfig = {}, server = {}, params) => {
-  const routesDefinitions = _getRoutesDefinitions(
+  const routesDefinitions = OHIF_UTILS.getRoutesDefinitions(
     appConfig,
     defaultRoutesDefinitions
   );
@@ -177,78 +136,21 @@ const parseStudyListPath = (appConfig = {}, server = {}, params) => {
     : studyListPath;
   return _parsePath(_studyListPath, server, params);
 };
-
 function _parsePath(path, server, params) {
   let _path = path;
   const _paramsCopy = Object.assign({}, server, params);
 
   for (let key in _paramsCopy) {
-    _path = UrlUtil.paramString.replaceParam(_path, key, _paramsCopy[key]);
+    _path = OHIF_UTILS.urlUtil.paramString.replaceParam(
+      _path,
+      key,
+      _paramsCopy[key]
+    );
   }
 
   return _path;
 }
 
-/**
- * Find RouteTemplatesModule of given templateName from routeTemplatesModulesExtensions param.
- * Returns undefined in case not found.
- * @param {RouteTemplatesExtensions} routeTemplatesModulesExtensions structure to look into
- * @param {string} templateName identifier to look for
- * @return {RouteTemplatesModule} found template module
- */
-function _findRouteTemplatesModule(
-  routeTemplatesModulesExtensions,
-  templateName
-) {
-  for (let moduleExtensionKey in routeTemplatesModulesExtensions) {
-    const _module = routeTemplatesModulesExtensions[moduleExtensionKey].module;
-
-    if (_module) {
-      for (let routeTemplatesModule of _module) {
-        if (_isTemplateNameEqual(routeTemplatesModule.name, templateName)) {
-          return routeTemplatesModule;
-        }
-      }
-    }
-  }
-}
-
-/**
- * Join definitions. Definitions on definitionsB has higher precedence.
- * It will return RoutesDefinitions which it is on second param combined to what is on first param (except if there is already on second param)
- *
- * @param {RoutesDefinitions} definitionsA
- * @param {RoutesDefinitions} definitionsB
- * @return {RoutesDefinitions} joint of params.
- *
- */
-function _mergeRoutesDefinitions(definitionsA = [], definitionsB = []) {
-  const result = [...definitionsB];
-  const existingTemplate = [];
-
-  definitionsB.forEach(definition => {
-    existingTemplate[definition.name] = true;
-  });
-
-  definitionsA.forEach(definition => {
-    if (!existingTemplate[definition.name]) {
-      result.push(definition);
-    }
-  });
-
-  return result;
-}
-/**
- * Get definitions to be used.
- * Result will contain everything from defaultRoutesDefinitions combined what is appConfig.routes.
- * Routes definition from appConfig has higher precedence
- * @param {object} appConfig app configuration containing routes (RoutesDefinitions)
- * @param {RoutesDefinitions} defaultRoutesDefinitions
- * @return {RoutesDefinitions}
- */
-function _getRoutesDefinitions(appConfig, defaultRoutesDefinitions) {
-  return _mergeRoutesDefinitions(defaultRoutesDefinitions, appConfig.routes);
-}
 /**
  * Find routeDefinition for given param templateName into routeDefinitions.
  * Returns undefined in case not found.
@@ -258,18 +160,10 @@ function _getRoutesDefinitions(appConfig, defaultRoutesDefinitions) {
  */
 function _findRouteDefinition(routeDefinitions, templateName) {
   for (let routeDefinition of routeDefinitions) {
-    if (_isTemplateNameEqual(routeDefinition.name, templateName)) {
+    if (OHIF_UTILS.isTemplateNameEqual(routeDefinition.name, templateName)) {
       return routeDefinition;
     }
   }
-}
-
-function _isTemplateNameEqual(templateNameA, templateNameB) {
-  return (
-    templateNameA &&
-    templateNameA &&
-    templateNameA.toLowerCase() === templateNameB.toLowerCase()
-  );
 }
 
 export { getRoutes, parseViewerPath, parseStudyListPath, reload };

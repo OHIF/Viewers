@@ -1,95 +1,14 @@
 import pathValidation from './pathValidation';
 import routeValidation from './routeValidation';
+import {
+  validPathDefinition1,
+  validPathDefinition2,
+  duplicatedNoHomePathDefinition1,
+  duplicatedNoHomePathDefinition2,
+  duplicatedNoHomePathDefinition3,
+  duplicatedNoHomePathDefinition4,
+} from './testData';
 
-const validPathDefinition1 = [
-  {
-    name: 'one',
-    path: '/one',
-  },
-  {
-    name: 'two',
-    path: '/two',
-  },
-  {
-    name: 'three',
-    path: '/three',
-  },
-];
-
-const validPathDefinition2 = [
-  {
-    name: 'one',
-    path: '/one',
-  },
-  {
-    name: 'two',
-    path: ['/two', '/four'],
-  },
-  {
-    name: 'three',
-    path: '/three',
-  },
-];
-
-const duplicatedPathDefinition1 = [
-  {
-    name: 'one',
-    path: '/one',
-  },
-  {
-    name: 'two',
-    path: '/one',
-  },
-  {
-    name: 'three',
-    path: '/three',
-  },
-];
-
-const duplicatedPathDefinition2 = [
-  {
-    name: 'one',
-    path: '/one',
-  },
-  {
-    name: 'two',
-    path: ['/one'],
-  },
-  {
-    name: 'three',
-    path: '/three',
-  },
-];
-
-const duplicatedPathDefinition3 = [
-  {
-    name: 'one',
-    path: '/one',
-  },
-  {
-    name: 'two',
-    path: ['/one', '/two'],
-  },
-  {
-    name: 'three',
-    path: '/three',
-  },
-];
-
-const duplicatedPathDefinition4 = [
-  {
-    name: 'one',
-    path: '/one',
-  },
-  {
-    name: 'two',
-    path: ['/two', '/two'],
-  },
-  {
-    name: 'three',
-    path: '/three',
-  },
-];
 describe('Path Validation', () => {
   it('Module should export an object', () => {
     expect(typeof pathValidation).toBe('object');
@@ -97,13 +16,15 @@ describe('Path Validation', () => {
   it('Module structure should extend PathValidation class', () => {
     expect(pathValidation instanceof routeValidation).toBe(true);
   });
-  it('Module structure should implement preValidators, runPreValidation and uniquenessValidation methods', () => {
+  it('Module structure should implement preValidators, runPreValidation, uniquenessValidation and existingHomeValidation methods', () => {
     expect('preValidators' in pathValidation).toBe(true);
     expect(typeof pathValidation.preValidators).toBe('function');
     expect('runPreValidation' in pathValidation).toBe(true);
     expect(typeof pathValidation.runPreValidation).toBe('function');
     expect('uniquenessValidation' in pathValidation).toBe(true);
     expect(typeof pathValidation.uniquenessValidation).toBe('function');
+    expect('existingHomeValidation' in pathValidation).toBe(true);
+    expect(typeof pathValidation.existingHomeValidation).toBe('function');
   });
   describe('preValidators method', () => {
     it('method should yield pre validators', () => {
@@ -115,11 +36,15 @@ describe('Path Validation', () => {
       expect(
         validator.next().value === pathValidation.uniquenessValidation
       ).toBe(true);
+      expect(
+        validator.next().value === pathValidation.existingHomeValidation
+      ).toBe(true);
     });
   });
   describe('runPreValidation method', () => {
     it('method should run pre validators', () => {
       function* mockPreValidatorsGenerator() {
+        yield () => true;
         yield () => true;
       }
       const mockPreValidators = jest.fn();
@@ -142,16 +67,51 @@ describe('Path Validation', () => {
     });
     it('method should return false or throw exception in case fail', () => {
       let result = pathValidation.uniquenessValidation(
-        duplicatedPathDefinition1
+        duplicatedNoHomePathDefinition1
       );
       expect(result).toBe(false);
-      result = pathValidation.uniquenessValidation(duplicatedPathDefinition2);
+      result = pathValidation.uniquenessValidation(
+        duplicatedNoHomePathDefinition2
+      );
       expect(result).toBe(false);
-      result = pathValidation.uniquenessValidation(duplicatedPathDefinition3);
+      result = pathValidation.uniquenessValidation(
+        duplicatedNoHomePathDefinition3
+      );
       expect(result).toBe(false);
-      result = pathValidation.uniquenessValidation(duplicatedPathDefinition4);
+      result = pathValidation.uniquenessValidation(
+        duplicatedNoHomePathDefinition4
+      );
       expect(result).toBe(false);
       result = pathValidation.uniquenessValidation([]);
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('existingHomeValidation method', () => {
+    it('method should return true in case success', () => {
+      let result = pathValidation.existingHomeValidation(validPathDefinition1);
+      expect(result).toBe(true);
+      result = pathValidation.existingHomeValidation(validPathDefinition2);
+      expect(result).toBe(true);
+    });
+    it('method should return false or throw exception in case fail', () => {
+      let result = pathValidation.existingHomeValidation(
+        duplicatedNoHomePathDefinition1
+      );
+      expect(result).toBe(false);
+      result = pathValidation.existingHomeValidation(
+        duplicatedNoHomePathDefinition2
+      );
+      expect(result).toBe(false);
+      result = pathValidation.existingHomeValidation(
+        duplicatedNoHomePathDefinition3
+      );
+      expect(result).toBe(false);
+      result = pathValidation.existingHomeValidation(
+        duplicatedNoHomePathDefinition4
+      );
+      expect(result).toBe(false);
+      result = pathValidation.existingHomeValidation([]);
       expect(result).toBe(false);
     });
   });

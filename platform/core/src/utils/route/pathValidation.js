@@ -22,6 +22,7 @@ class PathValidation extends RouteValidation {
    */
   preValidators = function*() {
     yield this.uniquenessValidation;
+    yield this.existingHomeValidation;
   };
 
   /**
@@ -64,6 +65,29 @@ class PathValidation extends RouteValidation {
     }
 
     return valid && routesDefinitions.length > 0;
+  };
+
+  existingHomeValidation = (routesDefinitions = []) => {
+    let valid = false;
+    for (let routeDefinition of routesDefinitions) {
+      const currentPath = routeDefinition.path;
+
+      const arrayLikeCurrentPath = !Array.isArray(currentPath)
+        ? [currentPath]
+        : currentPath;
+
+      for (let _currentPath of arrayLikeCurrentPath) {
+        if (_currentPath === '/') {
+          return true;
+        }
+      }
+    }
+    // in case not found
+    this.onValidationFail(
+      `RoutesDefinition error: There is no home path registered. We strongly recommend to set up it.`
+    );
+
+    return false;
   };
 }
 

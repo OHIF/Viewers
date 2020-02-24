@@ -13,7 +13,12 @@ import b64toBlob from './b64toBlob.js';
 import * as urlUtil from './urlUtil';
 import makeCancelable from './makeCancelable';
 import hotkeys from './hotkeys';
-import { pathValidation } from './routeValidation';
+import {
+  pathValidation,
+  getRoutes,
+  isTemplateNameEqual,
+  getRoutesDefinitions,
+} from './route';
 
 const utils = {
   guid,
@@ -33,6 +38,9 @@ const utils = {
   makeCancelable,
   hotkeys,
   pathValidation,
+  getRoutes,
+  isTemplateNameEqual,
+  getRoutesDefinitions,
 };
 
 export {
@@ -53,6 +61,9 @@ export {
   makeCancelable,
   hotkeys,
   pathValidation,
+  getRoutes,
+  isTemplateNameEqual,
+  getRoutesDefinitions,
 };
 
 export default utils;

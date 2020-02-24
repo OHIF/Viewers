@@ -20,6 +20,9 @@ describe('Top level exports', () => {
       'makeCancelable',
       'hotkeys',
       'pathValidation',
+      'getRoutes',
+      'isTemplateNameEqual',
+      'getRoutesDefinitions',
     ].sort();
 
     const exports = Object.keys(utils.default).sort();

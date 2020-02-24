@@ -1,4 +1,5 @@
 import routeValidation from './routeValidation';
+
 import log from '../../log.js';
 jest.mock('../../log.js');
 
