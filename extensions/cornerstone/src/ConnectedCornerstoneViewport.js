@@ -70,7 +70,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
 
     setViewportSpecificData: data => {
-      dispatch(setViewportSpecificData(viewportIndex, data));
+      dispatch(setViewportSpecificData(viewportIndex, data, { merge: true }));
     },
 
     /**
@@ -83,10 +83,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       const enabledElement = event.detail.element;
       setEnabledElement(viewportIndex, enabledElement);
       dispatch(
-        setViewportSpecificData(viewportIndex, {
-          // TODO: Hack to make sure our plugin info is available from the outset
-          plugin: 'cornerstone',
-        })
+        setViewportSpecificData(
+          viewportIndex,
+          {
+            // TODO: Hack to make sure our plugin info is available from the outset
+            plugin: 'cornerstone',
+          },
+          { merge: true }
+        )
       );
     },
 

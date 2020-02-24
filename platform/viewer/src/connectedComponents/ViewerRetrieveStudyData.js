@@ -7,12 +7,12 @@ import PropTypes from 'prop-types';
 import { extensionManager } from './../App.js';
 import { useSnackbarContext } from '@ohif/ui';
 
+// Contexts
+import AppContext from '../context/AppContext';
+
 const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
 const { retrieveStudiesMetadata, deleteStudyMetadataPromise } = studies;
 const { studyMetadataManager, makeCancelable } = utils;
-
-// Contexts
-import AppContext from '../context/AppContext';
 
 const _promoteToFront = (list, value, searchMethod) => {
   let response = [...list];
@@ -105,7 +105,11 @@ const _showUserMessage = (queryParamApplied, message, dialog = {}) => {
     return;
   }
 
-  const { show: showUserMessage = () => {} } = dialog;
+  const {
+    show: showUserMessage = () => {
+      /* No-op */
+    },
+  } = dialog;
   showUserMessage({
     message,
   });
@@ -173,11 +177,11 @@ function ViewerRetrieveStudyData({
   studyInstanceUIDs,
   seriesInstanceUIDs,
   clearViewportSpecificData,
+  options,
 }) {
   // hooks
   const [error, setError] = useState(false);
   const [studies, setStudies] = useState([]);
-  const [isStudyLoaded, setIsStudyLoaded] = useState(false);
   const snackbarContext = useSnackbarContext();
   const { appConfig = {} } = useContext(AppContext);
   const { filterQueryParam: isFilterStrategy = false } = appConfig;
@@ -217,8 +221,14 @@ function ViewerRetrieveStudyData({
       snackbarContext
     );
 
-    setStudies([...studies, study]);
-    setIsStudyLoaded(true);
+    setStudies(studies => {
+      return studies.map(item => {
+        if (item.study === study) {
+          item.isLoaded = true;
+        }
+        return item;
+      });
+    });
   };
 
   /**
@@ -231,16 +241,14 @@ function ViewerRetrieveStudyData({
     if (Array.isArray(studiesData) && studiesData.length > 0) {
       // Map studies to new format, update metadata manager?
       const studies = studiesData.map(study => {
-        const studyMetadata = new OHIFStudyMetadata(
-          study,
-          study.StudyInstanceUID
-        );
+        const { StudyInstanceUID } = study;
+        const studyMetadata = new OHIFStudyMetadata(study, StudyInstanceUID);
 
         _updateStudyDisplaySets(study, studyMetadata);
         _updateStudyMetadataManager(study, studyMetadata);
 
         // Attempt to load remaning series if any
-        cancelableSeriesPromises[study.StudyInstanceUID] = makeCancelable(
+        cancelableSeriesPromises[StudyInstanceUID] = makeCancelable(
           _loadRemainingSeries(studyMetadata)
         )
           .then(result => {
@@ -255,7 +263,11 @@ function ViewerRetrieveStudyData({
             }
           });
 
-        return study;
+        return {
+          isLoaded: false,
+          StudyInstanceUID,
+          study,
+        };
       });
 
       setStudies(studies);
@@ -328,6 +340,7 @@ function ViewerRetrieveStudyData({
       studyMetadataManager.purge();
       purgeCancellablePromises();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studyInstanceUIDs]);
 
   useEffect(() => {
@@ -346,9 +359,10 @@ function ViewerRetrieveStudyData({
 
   return (
     <ConnectedViewer
-      studies={studies}
-      isStudyLoaded={isStudyLoaded}
+      studies={studies.map(item => item.study)}
+      isStudyLoaded={studies.length > 0 && studies.every(item => item.isLoaded)}
       studyInstanceUIDs={studyInstanceUIDs}
+      options={options}
     />
   );
 }
@@ -357,6 +371,7 @@ ViewerRetrieveStudyData.propTypes = {
   studyInstanceUIDs: PropTypes.array.isRequired,
   seriesInstanceUIDs: PropTypes.array,
   server: PropTypes.object,
+  options: PropTypes.object,
   clearViewportSpecificData: PropTypes.func.isRequired,
 };
 

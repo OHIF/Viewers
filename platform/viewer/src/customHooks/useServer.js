@@ -1,10 +1,9 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import GoogleCloudApi from '../googleCloud/api/GoogleCloudApi';
 import usePrevious from './usePrevious';
 
 import * as GoogleCloudUtilServers from '../googleCloud/utils/getServers';
 import { useSelector, useDispatch } from 'react-redux';
-import isEqual from 'lodash.isequal';
 
 // Contexts
 import AppContext from '../context/AppContext';

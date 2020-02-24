@@ -1,7 +1,10 @@
 import asyncComponent from '../components/AsyncComponent.js';
 
 import OHIF from '@ohif/core';
-const { urlUtil: UrlUtil } = OHIF.utils;
+const {
+  urlUtil: UrlUtil,
+  viewportLayoutUtils: ViewportLayoutUtils,
+} = OHIF.utils;
 
 // Dynamic Import Routes (CodeSplitting)
 const IHEInvokeImageDisplay = asyncComponent(() =>
@@ -19,7 +22,9 @@ const StudyListRouting = asyncComponent(() =>
   )
 );
 const StandaloneRouting = asyncComponent(() =>
-  import(/* webpackChunkName: "ConnectedStandaloneRouting" */ '../connectedComponents/ConnectedStandaloneRouting.js')
+  import(
+    /* webpackChunkName: "ConnectedStandaloneRouting" */ '../connectedComponents/ConnectedStandaloneRouting.js'
+  )
 );
 const ViewerLocalFileData = asyncComponent(() =>
   import(
@@ -33,6 +38,16 @@ const ROUTES_DEF = {
   default: {
     viewer: {
       path: '/viewer/:studyInstanceUIDs',
+      component: ViewerRouting,
+    },
+    longitudinalViewer: {
+      path: '/longitudinal-viewer/:studyInstanceUids',
+      options: {
+        layout: {
+          model: ViewportLayoutUtils.getStandardGridLayout(2, 2),
+          groups: [[0, 2], [1, 3]],
+        },
+      },
       component: ViewerRouting,
     },
     standaloneViewer: {
@@ -96,6 +111,7 @@ const getRoutes = appConfig => {
       if (validRoute) {
         routes.push({
           path: route.path,
+          options: route.options,
           Component: route.component,
         });
       }

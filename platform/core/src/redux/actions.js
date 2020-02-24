@@ -11,6 +11,7 @@ import {
   SET_VIEWPORT_LAYOUT,
   SET_VIEWPORT_LAYOUT_AND_DATA,
   SET_USER_PREFERENCES,
+  INIT_VIEWPORTS_LAYOUT,
 } from './constants/ActionTypes.js';
 
 /**
@@ -27,11 +28,13 @@ import {
  */
 export const setViewportSpecificData = (
   viewportIndex,
-  viewportSpecificData
+  viewportSpecificData,
+  options
 ) => ({
   type: SET_VIEWPORT,
   viewportIndex,
   viewportSpecificData,
+  options,
 });
 
 export const setViewportActive = viewportIndex => ({
@@ -73,6 +76,12 @@ export const clearViewportSpecificData = viewportIndex => ({
 export const setActiveViewportSpecificData = viewportSpecificData => ({
   type: SET_ACTIVE_SPECIFIC_DATA,
   viewportSpecificData,
+});
+
+export const initViewportsLayout = (model, groups) => ({
+  type: INIT_VIEWPORTS_LAYOUT,
+  model,
+  groups,
 });
 
 /**
@@ -131,6 +140,7 @@ const actions = {
   setLayout,
   clearViewportSpecificData,
   setActiveViewportSpecificData,
+  initViewportsLayout,
   /**
    * NOT-VIEWPORT
    */

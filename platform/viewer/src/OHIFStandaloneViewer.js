@@ -169,7 +169,7 @@ class OHIFStandaloneViewer extends Component {
         <Route exact path="/silent-refresh.html" onEnter={RoutesUtil.reload} />
         <Route exact path="/logout-redirect.html" onEnter={RoutesUtil.reload} />
         {!noMatchingRoutes &&
-          routes.map(({ path, Component }) => (
+          routes.map(({ path, options, Component }) => (
             <Route key={path} exact path={path}>
               {({ match }) => (
                 <CSSTransition
@@ -191,8 +191,8 @@ class OHIFStandaloneViewer extends Component {
                   {match === null ? (
                     <></>
                   ) : (
-                    <Component match={match} location={this.props.location} />
-                  )}
+                      <Component match={match} options={options} location={this.props.location} />
+                    )}
                 </CSSTransition>
               )}
             </Route>

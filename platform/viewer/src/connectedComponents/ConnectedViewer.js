@@ -2,7 +2,11 @@ import { connect } from 'react-redux';
 import Viewer from './Viewer.js';
 import OHIF from '@ohif/core';
 
-const { setTimepoints, setMeasurements } = OHIF.redux.actions;
+const {
+  setTimepoints,
+  setMeasurements,
+  initViewportsLayout,
+} = OHIF.redux.actions;
 
 const getActiveServer = servers => {
   const isActive = a => a.active === true;
@@ -20,6 +24,10 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
+    initViewportsLayout(layout) {
+      const { model, groups } = Object(layout);
+      dispatch(initViewportsLayout(model, groups));
+    },
     onTimepointsUpdated: timepoints => {
       dispatch(setTimepoints(timepoints));
     },

@@ -11,6 +11,7 @@ import b64toBlob from './b64toBlob.js';
 import * as urlUtil from './urlUtil';
 import makeCancelable from './makeCancelable';
 import hotkeys from './hotkeys';
+import * as viewportLayoutUtils from './viewportLayoutUtils';
 
 const utils = {
   guid,
@@ -26,6 +27,7 @@ const utils = {
   urlUtil,
   makeCancelable,
   hotkeys,
+  viewportLayoutUtils,
 };
 
 export {

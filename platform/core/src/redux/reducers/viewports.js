@@ -1,104 +1,56 @@
-import cloneDeep from 'lodash.clonedeep';
-import merge from 'lodash.merge';
-
 import {
   CLEAR_VIEWPORT,
+  INIT_VIEWPORTS_LAYOUT,
   SET_ACTIVE_SPECIFIC_DATA,
-  SET_SPECIFIC_DATA,
   SET_VIEWPORT,
   SET_VIEWPORT_ACTIVE,
   SET_VIEWPORT_LAYOUT,
   SET_VIEWPORT_LAYOUT_AND_DATA,
 } from './../constants/ActionTypes.js';
-
-export const DEFAULT_STATE = {
-  numRows: 1,
-  numColumns: 1,
-  activeViewportIndex: 0,
-  layout: {
-    viewports: [{}],
-  },
-  viewportSpecificData: {},
-};
+import * as viewportState from '../../utils/viewportState';
 
 /**
- *  Take the new number of Rows and Columns, delete all not used viewport data and also set
- *  active viewport as default in case current one is not available anymore.
- *
- * @param {Number} numRows
- * @param {Number} numColumns
- * @param {Object} currentViewportSpecificData
- * @returns
+ * Constants
  */
-const findActiveViewportSpecificData = (
-  numRows,
-  numColumns,
-  currentViewportSpecificData = {}
-) => {
-  const numberOfViewports = numRows * numColumns;
-  const viewportSpecificData = cloneDeep(currentViewportSpecificData);
 
-  if (numberOfViewports < Object.keys(viewportSpecificData).length) {
-    Object.keys(viewportSpecificData).forEach(key => {
-      if (key > numberOfViewports - 1) {
-        delete viewportSpecificData[key];
-      }
-    });
-  }
-
-  return viewportSpecificData;
-};
-/**
- *  Take new number of Rows and Columns and make sure the current active viewport index is still available, if not, return the default
- *
- * @param {Number} numRows
- * @param {Number} numColumns
- * @param {Number} currentActiveViewportIndex
- * @returns
- */
-const getActiveViewportIndex = (
-  numRows,
-  numColumns,
-  currentActiveViewportIndex
-) => {
-  const numberOfViewports = numRows * numColumns;
-
-  return currentActiveViewportIndex > numberOfViewports - 1
-    ? DEFAULT_STATE.activeViewportIndex
-    : currentActiveViewportIndex;
-};
-
-/**
- * The definition of a viewport action.
- *
- * @typedef {Object} ViewportAction
- * @property {string} type -
- * @property {Object} data -
- * @property {Object} layout -
- * @property {number} viewportIndex -
- * @property {Object} viewportSpecificData -
- */
+export const DEFAULT_STATE = viewportState.createState({
+  custom: { initialized: false },
+});
 
 /**
  * @param {Object} [state=DEFAULT_STATE] The current viewport state.
  * @param {ViewportAction} action A viewport action.
  */
 const viewports = (state = DEFAULT_STATE, action) => {
-  let useActiveViewport = false;
-
   switch (action.type) {
+    /**
+     * Init Viewports State
+     */
+
+    case INIT_VIEWPORTS_LAYOUT: {
+      if (state.custom && !state.custom.initialized) {
+        const { model, groups } = action;
+        return viewportState.createState({
+          layout: viewportState.createCustomLayout(model, {}, groups),
+          custom: { initialized: true },
+        });
+      }
+      return state;
+    }
+
     /**
      * Sets the active viewport index.
      *
      * @return {Object} New state.
      */
     case SET_VIEWPORT_ACTIVE: {
-      const activeViewportIndex = getActiveViewportIndex(
-        state.numRows,
-        state.numColumns,
-        action.viewportIndex
-      );
-      return { ...state, activeViewportIndex };
+      const { layout, viewportSpecificData, custom } = state;
+      return viewportState.createState({
+        layout,
+        activeViewportIndex: action.viewportIndex,
+        viewportSpecificData,
+        custom,
+      });
     }
 
     /**
@@ -107,26 +59,22 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case SET_VIEWPORT_LAYOUT: {
-      const { numRows, numColumns } = action;
-      const viewportSpecificData = findActiveViewportSpecificData(
-        numRows,
-        numColumns,
-        state.viewportSpecificData
+      const { activeViewportIndex, viewportSpecificData, custom } = state;
+      const layout = viewportState.createStandardLayout(
+        action.numRows,
+        action.numColumns,
+        action.viewports
       );
-      const activeViewportIndex = getActiveViewportIndex(
-        numRows,
-        numColumns,
-        state.activeViewportIndex
-      );
-
-      return {
-        ...state,
-        numRows: action.numRows,
-        numColumns: action.numColumns,
-        layout: { viewports: [...action.viewports] },
+      const data = viewportState.buildViewportDataList(
         viewportSpecificData,
+        viewportState.getViewportCount(layout)
+      );
+      return viewportState.createState({
+        data,
+        layout,
         activeViewportIndex,
-      };
+        custom,
+      });
     }
 
     /**
@@ -135,26 +83,22 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case SET_VIEWPORT_LAYOUT_AND_DATA: {
-      const { numRows, numColumns } = action;
-      const viewportSpecificData = findActiveViewportSpecificData(
-        numRows,
-        numColumns,
-        action.viewportSpecificData
+      const { activeViewportIndex, custom } = state;
+      const layout = viewportState.createStandardLayout(
+        action.numRows,
+        action.numColumns,
+        action.viewports
       );
-      const activeViewportIndex = getActiveViewportIndex(
-        numRows,
-        numColumns,
-        state.activeViewportIndex
+      const data = viewportState.buildViewportDataList(
+        copy(action.viewportSpecificData),
+        viewportState.getViewportCount(layout)
       );
-
-      return {
-        ...state,
-        numRows: action.numRows,
-        numColumns: action.numColumns,
-        layout: { viewports: [...action.viewports] },
-        viewportSpecificData,
+      return viewportState.createState({
+        data,
+        layout,
         activeViewportIndex,
-      };
+        custom,
+      });
     }
 
     /**
@@ -163,49 +107,84 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case SET_VIEWPORT: {
-      const layout = cloneDeep(state.layout);
+      let { viewportIndex, viewportSpecificData, options } = action;
+      let { layout, activeViewportIndex, custom } = state;
 
-      let viewportSpecificData = cloneDeep(state.viewportSpecificData);
-      viewportSpecificData[action.viewportIndex] = merge(
-        {},
-        viewportSpecificData[action.viewportIndex],
-        action.viewportSpecificData
+      const data = viewportState.buildViewportDataList(
+        state.viewportSpecificData,
+        viewportState.getViewportCount(layout)
       );
 
-      if (action.viewportSpecificData && action.viewportSpecificData.plugin) {
-        layout.viewports[action.viewportIndex].plugin =
-          action.viewportSpecificData.plugin;
+      options = Object(options);
+      viewportIndex = viewportState.getViewportIndex(
+        layout,
+        Math.trunc(viewportIndex),
+        Math.trunc(options.viewportGroup)
+      );
+
+      if (data && viewportIndex >= 0 && viewportIndex < data.length) {
+        let viewportSpecificDataCopy = copy(viewportSpecificData);
+        if (options.merge) {
+          viewportSpecificDataCopy = Object.assign(
+            copy(data[viewportIndex]),
+            viewportSpecificDataCopy
+          );
+        }
+        data[viewportIndex] = viewportSpecificDataCopy;
       }
 
-      return { ...state, layout, viewportSpecificData };
+      if (viewportSpecificData && viewportSpecificData.plugin) {
+        layout = viewportState.setViewportSpecificAttributes(
+          layout,
+          viewportIndex,
+          { plugin: viewportSpecificData.plugin }
+        );
+      }
+
+      return viewportState.createState({
+        data,
+        layout,
+        activeViewportIndex,
+        custom,
+      });
     }
 
     /**
-     * Sets viewport specific data of active/any viewport.
+     * Sets viewport specific data for active viewport.
      *
      * @return {Object} New state.
      */
-    case SET_ACTIVE_SPECIFIC_DATA:
-      useActiveViewport = true;
-    // Allow fall-through
-    // eslint-disable-next-line
-    case SET_SPECIFIC_DATA: {
-      const layout = cloneDeep(state.layout);
-      const viewportIndex = useActiveViewport
-        ? state.activeViewportIndex
-        : action.viewportIndex;
+    case SET_ACTIVE_SPECIFIC_DATA: {
+      const { viewportSpecificData } = action;
+      let { layout, activeViewportIndex, custom } = state;
 
-      let viewportSpecificData = cloneDeep(state.viewportSpecificData);
-      viewportSpecificData[viewportIndex] = {
-        ...action.viewportSpecificData,
-      };
+      const data = viewportState.buildViewportDataList(
+        state.viewportSpecificData,
+        viewportState.getViewportCount(layout)
+      );
 
-      if (action.viewportSpecificData && action.viewportSpecificData.plugin) {
-        layout.viewports[viewportIndex].plugin =
-          action.viewportSpecificData.plugin;
+      if (
+        data &&
+        activeViewportIndex >= 0 &&
+        activeViewportIndex < data.length
+      ) {
+        data[activeViewportIndex] = copy(viewportSpecificData);
       }
 
-      return { ...state, layout, viewportSpecificData };
+      if (viewportSpecificData && viewportSpecificData.plugin) {
+        layout = viewportState.setViewportSpecificAttributes(
+          layout,
+          activeViewportIndex,
+          { plugin: viewportSpecificData.plugin }
+        );
+      }
+
+      return viewportState.createState({
+        data,
+        layout,
+        activeViewportIndex,
+        custom,
+      });
     }
 
     /**
@@ -214,14 +193,29 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case CLEAR_VIEWPORT: {
-      let viewportSpecificData = cloneDeep(state.viewportSpecificData);
+      let { viewportIndex } = action;
+      let { layout } = state;
+      const viewportCount = viewportState.getViewportCount(layout);
 
-      if (action.viewportIndex) {
-        viewportSpecificData[action.viewportIndex] = {};
-        return { ...state, viewportSpecificData };
-      } else {
-        return DEFAULT_STATE;
+      // Make sure viewport index is a proper integer
+      viewportIndex = Math.trunc(viewportIndex);
+
+      if (viewportIndex >= 0 && viewportIndex < viewportCount) {
+        const { activeViewportIndex, custom } = state;
+        const data = viewportState.buildViewportDataList(
+          state.viewportSpecificData,
+          viewportCount
+        );
+        data[viewportIndex] = undefined;
+        return viewportState.createState({
+          data,
+          layout,
+          activeViewportIndex,
+          custom,
+        });
       }
+
+      return DEFAULT_STATE;
     }
 
     /**
@@ -234,5 +228,19 @@ const viewports = (state = DEFAULT_STATE, action) => {
     }
   }
 };
+
+/**
+ * Utils
+ */
+
+function copy(subject) {
+  if (subject !== undefined) {
+    return JSON.parse(JSON.stringify(subject));
+  }
+}
+
+/**
+ * Exports
+ */
 
 export default viewports;

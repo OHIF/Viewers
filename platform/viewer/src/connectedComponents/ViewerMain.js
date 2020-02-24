@@ -11,6 +11,7 @@ class ViewerMain extends Component {
     studies: PropTypes.array,
     viewportSpecificData: PropTypes.object.isRequired,
     layout: PropTypes.object.isRequired,
+    // @TODO: Add a reducer to set multiple viewport data in a batch operation
     setViewportSpecificData: PropTypes.func.isRequired,
     clearViewportSpecificData: PropTypes.func.isRequired,
   };
@@ -20,9 +21,31 @@ class ViewerMain extends Component {
 
     this.state = {
       displaySets: [],
+      displaySetGroups: [],
     };
   }
 
+  updateDisplaySets(callback) {
+    const { studies } = this.props;
+    if (studies) {
+      const displaySets = [];
+      const displaySetGroups = [];
+      studies.forEach(study => {
+        const group = [];
+        study.displaySets.forEach(dSet => {
+          if (!dSet.plugin) {
+            dSet.plugin = 'cornerstone';
+          }
+          group.push(dSet);
+          displaySets.push(dSet);
+        });
+        displaySetGroups.push(group);
+      });
+      this.setState({ displaySets, displaySetGroups }, callback);
+    }
+  }
+
+  // @TODO: Deletion?
   getDisplaySets(studies) {
     const displaySets = [];
     studies.forEach(study => {
@@ -56,38 +79,59 @@ class ViewerMain extends Component {
     //window.addEventListener('beforeunload', unloadHandlers.beforeUnload);
 
     // Get all the display sets for the viewer studies
-    if (this.props.studies) {
-      const displaySets = this.getDisplaySets(this.props.studies);
-      this.setState({ displaySets }, this.fillEmptyViewportPanes);
-    }
+    this.updateDisplaySets(this.fillEmptyViewportPanes.bind(this, true));
   }
 
   componentDidUpdate(prevProps) {
-    const prevViewportAmount = prevProps.layout.viewports.length;
-    const viewportAmount = this.props.layout.viewports.length;
+    const prevLayoutId = prevProps.layout.model.id;
+    const currLayoutId = this.props.layout.model.id;
+    const studiesChanged = this.props.studies !== prevProps.studies;
     const isVtk = this.props.layout.viewports.some(vp => !!vp.vtk);
 
-    if (
-      this.props.studies !== prevProps.studies ||
-      (viewportAmount !== prevViewportAmount && !isVtk)
-    ) {
+    if (studiesChanged || (currLayoutId !== prevLayoutId && !isVtk)) {
       const displaySets = this.getDisplaySets(this.props.studies);
       this.setState({ displaySets }, this.fillEmptyViewportPanes);
+      this.updateDisplaySets(
+        this.fillEmptyViewportPanes.bind(this, studiesChanged)
+      );
     }
   }
 
-  fillEmptyViewportPanes = () => {
+  fillEmptyViewportPanes = forceUpdate => {
     const dirtyViewportPanes = [];
     const { layout, viewportSpecificData } = this.props;
-    const { displaySets } = this.state;
+    const { displaySets, displaySetGroups } = this.state;
 
     if (!displaySets || !displaySets.length) {
+      return;
+    }
+
+    if (
+      forceUpdate &&
+      layout.groups &&
+      layout.groups.length > 1 &&
+      layout.groups.length === displaySetGroups.length
+    ) {
+      layout.groups.forEach((group, j) => {
+        const displaySetGroup = displaySetGroups[j];
+        const displaySetGroupLimit = displaySetGroup.length - 1;
+        for (let i = 0, limit = group.viewports.length; i < limit; ++i) {
+          const ds = displaySetGroup[Math.min(displaySetGroupLimit, i)];
+          this.setViewportData({
+            viewportIndex: i,
+            viewportGroup: j,
+            StudyInstanceUID: ds.StudyInstanceUID,
+            displaySetInstanceUID: ds.displaySetInstanceUID,
+          });
+        }
+      });
       return;
     }
 
     for (let i = 0; i < layout.viewports.length; i++) {
       const viewportPane = viewportSpecificData[i];
       const isNonEmptyViewport =
+        !forceUpdate &&
         viewportPane &&
         viewportPane.StudyInstanceUID &&
         viewportPane.displaySetInstanceUID;
@@ -125,6 +169,7 @@ class ViewerMain extends Component {
 
   setViewportData = ({
     viewportIndex,
+    viewportGroup,
     StudyInstanceUID,
     displaySetInstanceUID,
   }) => {
@@ -134,7 +179,9 @@ class ViewerMain extends Component {
       displaySetInstanceUID
     );
 
-    this.props.setViewportSpecificData(viewportIndex, displaySet);
+    this.props.setViewportSpecificData(viewportIndex, displaySet, {
+      viewportGroup,
+    });
   };
 
   render() {

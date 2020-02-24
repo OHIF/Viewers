@@ -49,12 +49,14 @@ class Viewer extends Component {
     }),
     onTimepointsUpdated: PropTypes.func,
     onMeasurementsUpdated: PropTypes.func,
+    initViewportsLayout: PropTypes.func,
     // window.store.getState().viewports.viewportSpecificData
     viewports: PropTypes.object.isRequired,
     // window.store.getState().viewports.activeViewportIndex
     activeViewportIndex: PropTypes.number.isRequired,
     isStudyLoaded: PropTypes.bool,
     dialog: PropTypes.object,
+    options: PropTypes.object,
   };
 
   constructor(props) {
@@ -62,6 +64,10 @@ class Viewer extends Component {
 
     const { activeServer } = this.props;
     const server = Object.assign({}, activeServer);
+
+    if (props.options && props.initViewportsLayout) {
+      props.initViewportsLayout(Object(props.options).layout);
+    }
 
     OHIF.measurements.MeasurementApi.setConfiguration({
       dataExchange: {

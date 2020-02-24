@@ -16,6 +16,7 @@ describe('Top level exports', () => {
       'urlUtil',
       'makeCancelable',
       'hotkeys',
+      'viewportLayoutUtils',
     ].sort();
 
     const exports = Object.keys(utils.default).sort();

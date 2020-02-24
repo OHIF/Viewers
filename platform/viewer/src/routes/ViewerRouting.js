@@ -18,7 +18,11 @@ const getSeriesInstanceUIDs = (seriesInstanceUIDs, routeLocation) => {
   return UrlUtil.paramString.parseParam(_seriesInstanceUIDs);
 };
 
-function ViewerRouting({ match: routeMatch, location: routeLocation }) {
+function ViewerRouting({
+  match: routeMatch,
+  location: routeLocation,
+  options: routeOptions,
+}) {
   const {
     project,
     location,
@@ -37,6 +41,7 @@ function ViewerRouting({ match: routeMatch, location: routeLocation }) {
       <ConnectedViewerRetrieveStudyData
         studyInstanceUIDs={studyUIDs}
         seriesInstanceUIDs={seriesUIDs}
+        options={routeOptions}
       />
     );
   }
@@ -55,6 +60,8 @@ ViewerRouting.propTypes = {
       project: PropTypes.string,
     }),
   }),
+  location: PropTypes.object,
+  options: PropTypes.object,
 };
 
 export default ViewerRouting;
