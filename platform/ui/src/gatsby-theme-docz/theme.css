@@ -1,0 +1,7 @@
+/**
+  OVERRIDE DOCZ THEME
+*/
+
+[data-testid='live-preview'] {
+  padding: 10px;
+}

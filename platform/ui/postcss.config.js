@@ -1,7 +1,10 @@
 const tailwindcss = require('tailwindcss');
-const configs = require('../../postcss.config.js');
+const commonConfigs = require('../../postcss.config.js');
 
 module.exports = {
-  ...configs,
-  plugins: [tailwindcss('./tailwind.js'), require('autoprefixer')],
+  ...commonConfigs,
+  plugins: [
+    tailwindcss('./src/gatsby-theme-docz/tailwind.js'),
+    require('autoprefixer'),
+  ],
 };

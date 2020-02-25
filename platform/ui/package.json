@@ -19,18 +19,15 @@
   ],
   "scripts": {
     "start": "yarn run dev",
-    "dev": "concurrently \"npm run watch:css\" \"docz dev\"",
-    "build": "concurrently \"npm run build:css\" \"docz build\"",
-    "serve": "docz serve",
-    "build:css": "postcss src/styles/tailwind.css -o src/gatsby-theme-docz/app.css",
-    "watch:css": "postcss src/styles/tailwind.css -o src/gatsby-theme-docz/app.css -w"
+    "build:styles": "postcss src/styles/tailwind.css -o src/gatsby-theme-docz/app.css",
+    "dev": "docz dev",
+    "build": "docz build",
+    "serve": "docz serve"
   },
   "dependencies": {
-    "@emotion/core": "^10.0.27",
-    "@emotion/styled": "^10.0.27",
     "classnames": "^2.2.6",
-    "concurrently": "^5.1.0",
     "docz": "^2.2.0",
+    "gatsby-plugin-postcss": "^2.1.20",
     "gatsby-plugin-sass": "^2.1.28",
     "node-sass": "^4.13.1",
     "prop-types": "^15.7.2",
