@@ -8,8 +8,6 @@ import OHIFError from '../OHIFError.js';
 
 const UNDEFINED = 'undefined';
 const STRING = 'string';
-const STUDY_INSTANCE_UID = 'x0020000d';
-const SERIES_INSTANCE_UID = 'x0020000e';
 
 export class InstanceMetadata extends Metadata {
   constructor(data, uid) {
@@ -67,21 +65,21 @@ export class InstanceMetadata extends Metadata {
    * Returns the StudyInstanceUID of the current instance. This method is basically a shorthand the full "getTagValue" method call.
    */
   getStudyInstanceUID() {
-    return this.getTagValue(STUDY_INSTANCE_UID, null);
+    return this.getTagValue('StudyInstanceUID', null);
   }
 
   /**
    * Returns the SeriesInstanceUID of the current instance. This method is basically a shorthand the full "getTagValue" method call.
    */
   getSeriesInstanceUID() {
-    return this.getTagValue(SERIES_INSTANCE_UID, null);
+    return this.getTagValue('SeriesInstanceUID', null);
   }
 
   /**
    * Returns the SOPInstanceUID of the current instance.
    */
   getSOPInstanceUID() {
-    return this._sopInstanceUID;
+    return this.getTagValue('SOPInstanceUID', null);
   }
 
   // @TODO: Improve this... (E.g.: blob data)
@@ -125,13 +123,6 @@ export class InstanceMetadata extends Metadata {
     }
 
     return typeof value === STRING ? parseInt(value) : value;
-  }
-
-  /**
-   * @deprecated Please use getTagValue instead.
-   */
-  getRawValue(tagOrProperty, defaultValue) {
-    return this.getTagValue(tagOrProperty, defaultValue);
   }
 
   /**

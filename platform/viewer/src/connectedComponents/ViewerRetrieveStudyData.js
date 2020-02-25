@@ -9,7 +9,7 @@ import { useSnackbarContext } from '@ohif/ui';
 
 const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
 const { retrieveStudiesMetadata, deleteStudyMetadataPromise } = studies;
-const { studyMetadataManager, updateMetaDataManager, makeCancelable } = utils;
+const { studyMetadataManager, makeCancelable } = utils;
 
 // Contexts
 import AppContext from '../context/AppContext';
@@ -61,7 +61,7 @@ const _promoteStudyDisplaySet = (study, studyMetadata, filters) => {
     const { seriesInstanceUID } = filters;
 
     const _seriesLookup = (valueToCompare, displaySet) => {
-      return displaySet.seriesInstanceUid === valueToCompare;
+      return displaySet.SeriesInstanceUID === valueToCompare;
     };
     const promotedResponse = _promoteToFront(
       studyMetadata.getDisplaySets(),
@@ -94,7 +94,7 @@ const _isQueryParamApplied = (study, filters = {}, isFilterStrategy) => {
   const { seriesList = [], displaySets = [] } = study;
   const firstSeries = isFilterStrategy ? seriesList[0] : displaySets[0];
 
-  if (!firstSeries || firstSeries.seriesInstanceUid !== seriesInstanceUID) {
+  if (!firstSeries || firstSeries.SeriesInstanceUID !== seriesInstanceUID) {
     applied = false;
   }
 
@@ -105,7 +105,7 @@ const _showUserMessage = (queryParamApplied, message, dialog = {}) => {
     return;
   }
 
-  const { show: showUserMessage = () => { } } = dialog;
+  const { show: showUserMessage = () => {} } = dialog;
   showUserMessage({
     message,
   });
@@ -123,15 +123,13 @@ const _addSeriesToStudy = (studyMetadata, series) => {
     false
   );
   study.displaySets = studyMetadata.getDisplaySets();
-  _updateMetaDataManager(study, series.seriesInstanceUid);
+  _updateStudyMetadataManager(study, studyMetadata);
 };
 
-const _updateMetaDataManager = (study, studyMetadata, series) => {
-  updateMetaDataManager(study, series);
+const _updateStudyMetadataManager = (study, studyMetadata) => {
+  const { StudyInstanceUID } = study;
 
-  const { studyInstanceUid } = study;
-
-  if (!studyMetadataManager.get(studyInstanceUid)) {
+  if (!studyMetadataManager.get(StudyInstanceUID)) {
     studyMetadataManager.add(studyMetadata);
   }
 };
@@ -235,14 +233,14 @@ function ViewerRetrieveStudyData({
       const studies = studiesData.map(study => {
         const studyMetadata = new OHIFStudyMetadata(
           study,
-          study.studyInstanceUid
+          study.StudyInstanceUID
         );
 
         _updateStudyDisplaySets(study, studyMetadata);
-        _updateMetaDataManager(study, studyMetadata);
+        _updateStudyMetadataManager(study, studyMetadata);
 
         // Attempt to load remaning series if any
-        cancelableSeriesPromises[study.studyInstanceUid] = makeCancelable(
+        cancelableSeriesPromises[study.StudyInstanceUID] = makeCancelable(
           _loadRemainingSeries(studyMetadata)
         )
           .then(result => {
@@ -321,7 +319,10 @@ function ViewerRetrieveStudyData({
   const prevStudyInstanceUids = usePrevious(studyInstanceUids);
 
   useEffect(() => {
-    const hasStudyInstanceUidsChanged = !(prevStudyInstanceUids && prevStudyInstanceUids.every(e => studyInstanceUids.includes(e)));
+    const hasStudyInstanceUidsChanged = !(
+      prevStudyInstanceUids &&
+      prevStudyInstanceUids.every(e => studyInstanceUids.includes(e))
+    );
 
     if (hasStudyInstanceUidsChanged) {
       studyMetadataManager.purge();

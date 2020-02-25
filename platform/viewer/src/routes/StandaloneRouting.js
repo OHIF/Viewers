@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { log, metadata, utils } from '@ohif/core';
+import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import qs from 'querystring';
 
@@ -8,7 +8,8 @@ import ConnectedViewer from '../connectedComponents/ConnectedViewer';
 import ConnectedViewerRetrieveStudyData from '../connectedComponents/ConnectedViewerRetrieveStudyData';
 import NotFound from '../routes/NotFound';
 
-const { studyMetadataManager, updateMetaDataManager } = utils;
+const { log, metadata, utils } = OHIF;
+const { studyMetadataManager } = utils;
 const { OHIFStudyMetadata } = metadata;
 
 class StandaloneRouting extends Component {
@@ -75,10 +76,39 @@ class StandaloneRouting extends Component {
           this.props.activateServer(server);
 
           const studyInstanceUids = query.studyInstanceUids.split(';');
-          const seriesInstanceUids = query.seriesInstanceUids ? query.seriesInstanceUids.split(';') : [];
+          const seriesInstanceUids = query.seriesInstanceUids
+            ? query.seriesInstanceUids.split(';')
+            : [];
 
           resolve({ server, studyInstanceUids, seriesInstanceUids });
         } else {
+          // Parse data here and add to metadata provider.
+          const metadataProvider = OHIF.cornerstone.metadataProvider;
+
+          let StudyInstanceUID;
+          let SeriesInstanceUID;
+
+          data.studies.forEach(study => {
+            StudyInstanceUID = study.StudyInstanceUID;
+
+            study.seriesList.forEach(series => {
+              SeriesInstanceUID = series.SeriesInstanceUID;
+
+              series.instances.forEach(instance => {
+                const { url: imageId, data: naturalizedDicom } = instance;
+
+                // Add instance to metadata provider.
+                metadataProvider.addInstance(naturalizedDicom);
+                // Add imageId specific mapping to this data as the URL isn't necessarliy WADO-URI.
+                metadataProvider.addImageIdToUids(imageId, {
+                  StudyInstanceUID,
+                  SeriesInstanceUID,
+                  SOPInstanceUID: naturalizedDicom.SOPInstanceUID,
+                });
+              });
+            });
+          });
+
           resolve({ studies: data.studies, studyInstanceUids: [] });
         }
       });
@@ -132,7 +162,9 @@ class StandaloneRouting extends Component {
   }
 
   render() {
-    const message = this.state.error ? `Error: ${JSON.stringify(this.state.error)}` : 'Loading...';
+    const message = this.state.error
+      ? `Error: ${JSON.stringify(this.state.error)}`
+      : 'Loading...';
     if (this.state.error || this.state.loading) {
       return <NotFound message={message} showGoBackButton={this.state.error} />;
     }
@@ -140,12 +172,12 @@ class StandaloneRouting extends Component {
     return this.state.studies ? (
       <ConnectedViewer studies={this.state.studies} />
     ) : (
-        <ConnectedViewerRetrieveStudyData
-          studyInstanceUids={this.state.studyInstanceUids}
-          seriesInstanceUids={this.state.seriesInstanceUids}
-          server={this.state.server}
-        />
-      );
+      <ConnectedViewerRetrieveStudyData
+        studyInstanceUids={this.state.studyInstanceUids}
+        seriesInstanceUids={this.state.seriesInstanceUids}
+        server={this.state.server}
+      />
+    );
   }
 }
 
@@ -155,18 +187,17 @@ const _mapStudiesToNewFormat = studies => {
   /* Map studies to new format, update metadata manager? */
   const uniqueStudyUids = new Set();
   const updatedStudies = studies.map(study => {
-    const studyMetadata = new OHIFStudyMetadata(study, study.studyInstanceUid);
+    const studyMetadata = new OHIFStudyMetadata(study, study.StudyInstanceUID);
 
-    const sopClassHandlerModules = extensionManager.modules['sopClassHandlerModule'];
-    study.displaySets = study.displaySets ||
+    const sopClassHandlerModules =
+      extensionManager.modules['sopClassHandlerModule'];
+    study.displaySets =
+      study.displaySets ||
       studyMetadata.createDisplaySets(sopClassHandlerModules);
     studyMetadata.setDisplaySets(study.displaySets);
 
-    /* Updates WADO-RS metaDataManager */
-    updateMetaDataManager(study);
-
     studyMetadataManager.add(studyMetadata);
-    uniqueStudyUids.add(study.studyInstanceUid);
+    uniqueStudyUids.add(study.StudyInstanceUID);
 
     return study;
   });

@@ -98,7 +98,7 @@ export class QuickSwitch extends Component {
       seriesListData = this.props.seriesListData;
     } else if (this.state.activeStudyInstanceUid) {
       const study = this.props.studyListData.find(
-        study => study.studyInstanceUid === this.state.activeStudyInstanceUid
+        study => study.StudyInstanceUID === this.state.activeStudyInstanceUid
       );
 
       seriesListData = study.thumbnails;
@@ -126,7 +126,7 @@ export class QuickSwitch extends Component {
       this.props.onStudySelected(studyDataSelected);
     }
     this.setState({
-      activeStudyInstanceUid: studyDataSelected.studyInstanceUid,
+      activeStudyInstanceUid: studyDataSelected.StudyInstanceUID,
       seriesQuickSwitchOpen: true,
     });
   };

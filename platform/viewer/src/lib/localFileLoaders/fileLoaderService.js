@@ -36,13 +36,13 @@ class FileLoaderService extends FileLoader {
     };
 
     const studiesGrouped = Object.values(
-      groupBy(studies, 'studyInstanceUid', 'seriesList')
+      groupBy(studies, 'StudyInstanceUID', 'seriesList')
     );
 
     const result = studiesGrouped.map(studyGroup => {
       const seriesGrouped = groupBy(
         studyGroup.seriesList,
-        'seriesInstanceUid',
+        'SeriesInstanceUID',
         'instances'
       );
       studyGroup.seriesList = Object.values(seriesGrouped);

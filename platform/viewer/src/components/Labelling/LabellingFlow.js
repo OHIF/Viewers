@@ -151,7 +151,7 @@ const LabellingFlow = ({
         return (
           <SelectTree
             items={OHIFLabellingData}
-            columns={1}
+            Columns={1}
             onSelected={selectTreeSelectCallback}
             selectTreeFirstTitle="Assign Label"
           />

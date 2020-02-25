@@ -1,35 +1,35 @@
 import getModalities from './getModalities';
 
 describe('getModalities', () => {
-  test('should return an empty object when modality and modalitiesInStudy are not present', () => {
-    const modality = null;
+  test('should return an empty object when Modality and modalitiesInStudy are not present', () => {
+    const Modality = null;
     const modalitiesInStudy = null;
 
-    expect(getModalities(modality, modalitiesInStudy)).toEqual({});
+    expect(getModalities(Modality, modalitiesInStudy)).toEqual({});
   });
 
-  test('should return an empty object when modality and modalitiesInStudy are not present', () => {
-    const modality = null;
+  test('should return an empty object when Modality and modalitiesInStudy are not present', () => {
+    const Modality = null;
     const modalitiesInStudy = null;
 
-    expect(getModalities(modality, modalitiesInStudy)).toEqual({});
+    expect(getModalities(Modality, modalitiesInStudy)).toEqual({});
   });
 
-  test('should return modalities in Study when modality is not defined', () => {
-    const modality = null;
+  test('should return modalities in Study when Modality is not defined', () => {
+    const Modality = null;
 
     const modalitiesInStudy = {
       Value: ['MOCKED_VALUE'],
       vr: 'MOCKED_VALUE',
     };
 
-    expect(getModalities(modality, modalitiesInStudy)).toEqual(
+    expect(getModalities(Modality, modalitiesInStudy)).toEqual(
       modalitiesInStudy
     );
   });
 
   test('should return only the modalitues that exists in modalitiesInStudy', () => {
-    const modality = {
+    const Modality = {
       Value: ['DESIRED_VALUE'],
       vr: 'DESIRED_VR',
     };
@@ -39,11 +39,11 @@ describe('getModalities', () => {
       vr: 'DESIRED_VR',
     };
 
-    expect(getModalities(modality, modalitiesInStudy)).toEqual(modality);
+    expect(getModalities(Modality, modalitiesInStudy)).toEqual(Modality);
   });
 
-  test('should return the seek modality when the desired modality does not exist in modalitiesInStudy', () => {
-    const modality = {
+  test('should return the seek Modality when the desired Modality does not exist in modalitiesInStudy', () => {
+    const Modality = {
       Value: ['DESIRED_VALUE'],
       vr: 'DESIRED_VR',
     };
@@ -53,11 +53,11 @@ describe('getModalities', () => {
       vr: 'DESIRED_VR',
     };
 
-    expect(getModalities(modality, modalitiesInStudy)).toEqual(modality);
+    expect(getModalities(Modality, modalitiesInStudy)).toEqual(Modality);
   });
 
-  test('should return the seek modality when the desired modality does not exist in modalitiesInStudy VR', () => {
-    const modality = {
+  test('should return the seek Modality when the desired Modality does not exist in modalitiesInStudy VR', () => {
+    const Modality = {
       Value: ['DESIRED_VALUE'],
       vr: 'DESIRED_VR',
     };
@@ -67,7 +67,7 @@ describe('getModalities', () => {
       vr: 'ANOTHER_VR',
     };
 
-    expect(getModalities(modality, modalitiesInStudy)).toEqual(
+    expect(getModalities(Modality, modalitiesInStudy)).toEqual(
       modalitiesInStudy
     );
   });

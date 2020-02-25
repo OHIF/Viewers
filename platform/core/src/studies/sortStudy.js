@@ -15,16 +15,16 @@ function seriesInfoSortingCriteria(firstSeries, secondSeries) {
   if (a.isLowPriority && !b.isLowPriority) {
     return 1;
   }
-  return a.seriesNumber - b.seriesNumber;
+  return a.SeriesNumber - b.SeriesNumber;
 }
 
 const seriesSortCriteria = {
-  default: (a, b) => a.seriesNumber - b.seriesNumber,
+  default: (a, b) => a.SeriesNumber - b.SeriesNumber,
   seriesInfoSortingCriteria,
 };
 
 const instancesSortCriteria = {
-  default: (a, b) => a.instanceNumber - b.instanceNumber,
+  default: (a, b) => a.InstanceNumber - b.InstanceNumber,
 };
 
 const sortingCriteria = {

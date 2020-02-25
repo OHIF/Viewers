@@ -1,6 +1,11 @@
 import cornerstone from 'cornerstone-core';
 
-const SUPPORTED_TOOLS = ['Length', 'EllipticalRoi', 'RectangleRoi', 'ArrowAnnotate'];
+const SUPPORTED_TOOLS = [
+  'Length',
+  'EllipticalRoi',
+  'RectangleRoi',
+  'ArrowAnnotate',
+];
 
 const measurementServiceMappingsFactory = measurementService => {
   /**
@@ -18,16 +23,16 @@ const measurementServiceMappingsFactory = measurementService => {
       points,
       unit,
       sopInstanceUID,
-      frameOfReferenceUID,
+      FrameOfReferenceUID,
       referenceSeriesUID,
     } = measurement;
 
     return {
       toolName: definition,
       measurementData: {
-        sopInstanceUid: sopInstanceUID,
-        frameOfReferenceUid: frameOfReferenceUID,
-        seriesInstanceUid: referenceSeriesUID,
+        SOPInstanceUID: sopInstanceUID,
+        frameOfReferenceUid: FrameOfReferenceUID,
+        SeriesInstanceUID: referenceSeriesUID,
         unit,
         text: label,
         description,
@@ -57,9 +62,9 @@ const measurementServiceMappingsFactory = measurementService => {
     }
 
     const {
-      sopInstanceUid,
-      frameOfReferenceUid,
-      seriesInstanceUid,
+      SOPInstanceUID,
+      FrameOfReferenceUID,
+      SeriesInstanceUID,
     } = _getAttributes(element);
 
     const points = [];
@@ -67,13 +72,16 @@ const measurementServiceMappingsFactory = measurementService => {
 
     return {
       id: measurementData._measurementServiceId,
-      sopInstanceUID: sopInstanceUid,
-      frameOfReferenceUID: frameOfReferenceUid,
-      referenceSeriesUID: seriesInstanceUid,
+      sopInstanceUID: SOPInstanceUID,
+      FrameOfReferenceUID,
+      referenceSeriesUID: SeriesInstanceUID,
       label: measurementData.text,
       description: measurementData.description,
       unit: measurementData.unit,
-      area: measurementData.cachedStats && measurementData.cachedStats.area, /* TODO: Add concept names instead (descriptor) */
+      area:
+        measurementData.cachedStats &&
+        measurementData.cachedStats
+          .area /* TODO: Add concept names instead (descriptor) */,
       type: _getValueTypeFromToolType(tool),
       points: _getPointsFromHandles(measurementData.handles),
     };
@@ -82,13 +90,13 @@ const measurementServiceMappingsFactory = measurementService => {
   const _getAttributes = element => {
     const enabledElement = cornerstone.getEnabledElement(element);
     const imageId = enabledElement.image.imageId;
-    const sopInstance = cornerstone.metaData.get('instance', imageId);
-    const sopInstanceUid = sopInstance.sopInstanceUid;
-    const frameOfReferenceUid = sopInstance.frameOfReferenceUID;
-    const series = cornerstone.metaData.get('series', imageId);
-    const seriesInstanceUid = series.seriesInstanceUid;
+    const instance = cornerstone.metaData.get('instance', imageId);
 
-    return { sopInstanceUid, frameOfReferenceUid, seriesInstanceUid };
+    return {
+      SOPInstanceUID: instance.SOPInstanceUID,
+      FrameOfReferenceUID: instance.FrameOfReferenceUID,
+      SeriesInstanceUID: instance.SeriesInstanceUID,
+    };
   };
 
   const _getValueTypeFromToolType = toolType => {

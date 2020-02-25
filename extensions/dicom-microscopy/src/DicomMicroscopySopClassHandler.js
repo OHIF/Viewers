@@ -16,12 +16,12 @@ const DicomMicroscopySopClassHandler = {
 
     return {
       plugin: 'microscopy',
-      modality: 'SM',
+      Modality: 'SM',
       displaySetInstanceUid: utils.guid(),
       dicomWebClient,
-      sopInstanceUid: instance.getSOPInstanceUID(),
-      seriesInstanceUid: series.getSeriesInstanceUID(),
-      studyInstanceUid: study.getStudyInstanceUID(),
+      SOPInstanceUID: instance.getSOPInstanceUID(),
+      SeriesInstanceUID: series.getSeriesInstanceUID(),
+      StudyInstanceUID: study.getStudyInstanceUID(),
     };
   },
 };

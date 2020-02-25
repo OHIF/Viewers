@@ -10,7 +10,7 @@ import './ViewerLocalFileData.css';
 import { withTranslation } from 'react-i18next';
 
 const { OHIFStudyMetadata } = metadata;
-const { studyMetadataManager, updateMetaDataManager } = utils;
+const { studyMetadataManager } = utils;
 
 const dropZoneLinkDialog = (onDrop, i18n, dir) => {
   return (
@@ -69,7 +69,7 @@ class ViewerLocalFileData extends Component {
     const updatedStudies = studies.map(study => {
       const studyMetadata = new OHIFStudyMetadata(
         study,
-        study.studyInstanceUid
+        study.StudyInstanceUID
       );
       const sopClassHandlerModules =
         extensionManager.modules['sopClassHandlerModule'];
@@ -82,8 +82,6 @@ class ViewerLocalFileData extends Component {
       studyMetadata.forEachDisplaySet(displayset => {
         displayset.localFile = true;
       });
-      // Updates WADO-RS metaDataManager
-      updateMetaDataManager(study);
 
       studyMetadataManager.add(studyMetadata);
 
@@ -122,7 +120,7 @@ class ViewerLocalFileData extends Component {
                 studies={this.state.studies}
                 studyInstanceUids={
                   this.state.studies &&
-                  this.state.studies.map(a => a.studyInstanceUid)
+                  this.state.studies.map(a => a.StudyInstanceUID)
                 }
               />
             ) : (

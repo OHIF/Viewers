@@ -6,9 +6,9 @@ import cornerstoneTools from 'cornerstone-tools';
 
 const { StackManager, DicomLoaderService } = OHIF.utils;
 
-function getDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
+function getDisplaySet(studies, StudyInstanceUID, displaySetInstanceUid) {
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.StudyInstanceUID === StudyInstanceUID
   );
 
   const displaySet = study.displaySets.find(set => {
@@ -18,13 +18,13 @@ function getDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
   return displaySet;
 }
 
-function getDisplaySetsBySeries(studies, studyInstanceUid, seriesInstanceUid) {
+function getDisplaySetsBySeries(studies, StudyInstanceUID, SeriesInstanceUID) {
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.StudyInstanceUID === StudyInstanceUID
   );
 
   return study.displaySets.filter(set => {
-    return set.seriesInstanceUid === seriesInstanceUid;
+    return set.SeriesInstanceUID === SeriesInstanceUID;
   });
 }
 
@@ -54,15 +54,15 @@ function addSegMetadataToCornerstoneToolState(
 
 async function handleSegmentationStorage(
   studies,
-  studyInstanceUid,
+  StudyInstanceUID,
   displaySetInstanceUid
 ) {
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.StudyInstanceUID === StudyInstanceUID
   );
   const displaySet = getDisplaySet(
     studies,
-    studyInstanceUid,
+    StudyInstanceUID,
     displaySetInstanceUid
   );
 
@@ -77,16 +77,16 @@ async function handleSegmentationStorage(
 
   dataset._meta = dcmjs.data.DicomMetaDictionary.namifyDataset(dicomData.meta);
 
-  const seriesInstanceUid = dataset.ReferencedSeriesSequence.SeriesInstanceUID;
+  const SeriesInstanceUID = dataset.ReferencedSeriesSequence.SeriesInstanceUID;
   const displaySets = getDisplaySetsBySeries(
     studies,
-    studyInstanceUid,
-    seriesInstanceUid
+    StudyInstanceUID,
+    SeriesInstanceUID
   );
 
   if (displaySets.length > 1) {
     console.warn(
-      'More than one display set with the same seriesInstanceUid. This is not supported yet...'
+      'More than one display set with the same SeriesInstanceUID. This is not supported yet...'
     );
   }
 
@@ -119,7 +119,7 @@ async function handleSegmentationStorage(
   stack.currentImageIdIndex = 0;
 
   return {
-    studyInstanceUid,
+    StudyInstanceUID,
     displaySetInstanceUid,
     stack,
   };

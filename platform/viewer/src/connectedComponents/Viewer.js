@@ -120,12 +120,12 @@ class Viewer extends Component {
     if (this.props.studies) {
       latestDate = new Date('1000-01-01').toISOString();
       this.props.studies.forEach(study => {
-        const studyDate = moment(study.studyDate, 'YYYYMMDD').toISOString();
-        if (studyDate < earliestDate) {
-          earliestDate = studyDate;
+        const StudyDate = moment(study.StudyDate, 'YYYYMMDD').toISOString();
+        if (StudyDate < earliestDate) {
+          earliestDate = StudyDate;
         }
-        if (studyDate > latestDate) {
-          latestDate = studyDate;
+        if (StudyDate > latestDate) {
+          latestDate = StudyDate;
         }
       });
     }
@@ -136,7 +136,7 @@ class Viewer extends Component {
         timepointType: 'baseline',
         timepointId: 'TimepointId',
         studyInstanceUids: this.props.studyInstanceUids,
-        patientId: filter.patientId,
+        PatientId: filter.PatientId,
         earliestDate,
         latestDate,
         isLocked: false,
@@ -159,7 +159,7 @@ class Viewer extends Component {
     return Promise.resolve();
   };
 
-  disassociateStudy = (timepointIds, studyInstanceUid) => {
+  disassociateStudy = (timepointIds, StudyInstanceUID) => {
     OHIF.log.info('disassociateStudy');
     return Promise.resolve();
   };
@@ -194,11 +194,11 @@ class Viewer extends Component {
     this.measurementApi = measurementApi;
 
     if (studies) {
-      const patientId = studies[0] && studies[0].patientId;
+      const PatientId = studies[0] && studies[0].PatientId;
 
-      timepointApi.retrieveTimepoints({ patientId });
+      timepointApi.retrieveTimepoints({ PatientId });
       if (isStudyLoaded) {
-        this.measurementApi.retrieveMeasurements(patientId, [
+        this.measurementApi.retrieveMeasurements(PatientId, [
           currentTimepointId,
         ]);
       }
@@ -216,11 +216,11 @@ class Viewer extends Component {
       });
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
-      const patientId = studies[0] && studies[0].patientId;
+      const PatientId = studies[0] && studies[0].PatientId;
       const { currentTimepointId } = this;
 
-      this.timepointApi.retrieveTimepoints({ patientId });
-      this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
+      this.timepointApi.retrieveTimepoints({ PatientId });
+      this.measurementApi.retrieveMeasurements(PatientId, [currentTimepointId]);
     }
   }
 
@@ -346,21 +346,21 @@ export default withDialog(Viewer);
  */
 const _mapStudiesToThumbnails = function(studies) {
   return studies.map(study => {
-    const { studyInstanceUid } = study;
+    const { StudyInstanceUID } = study;
 
     const thumbnails = study.displaySets.map(displaySet => {
       const {
         displaySetInstanceUid,
-        seriesDescription,
-        seriesNumber,
-        instanceNumber,
+        SeriesDescription,
+        SeriesNumber,
+        InstanceNumber,
         numImageFrames,
       } = displaySet;
 
       let imageId;
       let altImageText;
 
-      if (displaySet.modality && displaySet.modality === 'SEG') {
+      if (displaySet.Modality && displaySet.Modality === 'SEG') {
         // TODO: We want to replace this with a thumbnail showing
         // the segmentation map on the image, but this is easier
         // and better than what we have right now.
@@ -370,22 +370,22 @@ const _mapStudiesToThumbnails = function(studies) {
 
         imageId = displaySet.images[imageIndex].getImageId();
       } else {
-        altImageText = displaySet.modality ? displaySet.modality : 'UN';
+        altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }
 
       return {
         imageId,
         altImageText,
         displaySetInstanceUid,
-        seriesDescription,
-        seriesNumber,
-        instanceNumber,
+        SeriesDescription,
+        SeriesNumber,
+        InstanceNumber,
         numImageFrames,
       };
     });
 
     return {
-      studyInstanceUid,
+      StudyInstanceUID,
       thumbnails,
     };
   });

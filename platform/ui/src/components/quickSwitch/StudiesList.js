@@ -27,7 +27,7 @@ export class StudiesList extends Component {
           key={index}
           studyData={studyData}
           active={
-            studyData.studyInstanceUid === this.props.activeStudyInstanceUid
+            studyData.StudyInstanceUID === this.props.activeStudyInstanceUid
           }
           onClick={event => this.props.onClick(studyData)}
         />

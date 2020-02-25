@@ -69,12 +69,12 @@ const ViewportGrid = function(props) {
       <ViewportPane
         onDrop={({
           viewportIndex,
-          studyInstanceUid,
+          StudyInstanceUID,
           displaySetInstanceUid,
         }) => {
           setViewportData({
             viewportIndex,
-            studyInstanceUid,
+            StudyInstanceUID,
             displaySetInstanceUid,
           });
         }}

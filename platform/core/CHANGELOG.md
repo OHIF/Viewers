@@ -346,7 +346,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* application crash if patientName is an object ([#1138](https://github.com/OHIF/Viewers/issues/1138)) ([64cf3b3](https://github.com/OHIF/Viewers/commit/64cf3b324da2383a927af1df2d46db2fca5318aa))
+* application crash if PatientName is an object ([#1138](https://github.com/OHIF/Viewers/issues/1138)) ([64cf3b3](https://github.com/OHIF/Viewers/commit/64cf3b324da2383a927af1df2d46db2fca5318aa))
 
 
 
