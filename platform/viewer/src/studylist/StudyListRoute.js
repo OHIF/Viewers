@@ -218,7 +218,7 @@ function StudyListRoute(props) {
                 user={user}
                 userManager={userManager}
               >
-                {whiteLabelling.logoComponent}
+                {(typeof whiteLabelling.logoComponent === 'function' ? whiteLabelling.logoComponent(React) : whiteLabelling.logoComponent)}
               </ConnectedHeader>
             )}
           </UserManagerContext.Consumer>

@@ -246,7 +246,7 @@ class Viewer extends Component {
             <UserManagerContext.Consumer>
               {userManager => (
                 <ConnectedHeader home={false} userManager={userManager}>
-                  {whiteLabelling.logoComponent}
+                  {(typeof whiteLabelling.logoComponent === 'function' ? whiteLabelling.logoComponent(React) : whiteLabelling.logoComponent)}
                 </ConnectedHeader>
               )}
             </UserManagerContext.Consumer>
