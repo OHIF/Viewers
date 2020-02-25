@@ -57,13 +57,13 @@ export function initVTKToolsAliases() {
 //Creating aliases for Study List page elements on Desktop experience
 export function initStudyListAliasesOnDesktop() {
   cy.get('.study-count').as('studyCount');
-  cy.get('#filter-patientName').as('patientName');
-  cy.get('#filter-patientId').as('MRN');
-  cy.get('#filter-accessionNumber').as('accessionNumber');
+  cy.get('#filter-PatientName').as('PatientName');
+  cy.get('#filter-PatientId').as('MRN');
+  cy.get('#filter-AccessionNumber').as('AccessionNumber');
   cy.get('#start-date').as('studyListStartDate');
   cy.get('#end-date').as('studyListEndDate');
   cy.get('#filter-modalities').as('modalities');
-  cy.get('#filter-studyDescription').as('studyDescription');
+  cy.get('#filter-StudyDescription').as('StudyDescription');
   cy.get('[data-cy="study-list-results"] > tr').as('searchResult');
 }
 

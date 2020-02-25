@@ -85,7 +85,7 @@ const getImageLoaderType = imageId => {
   );
 };
 
-const DicomLoaderService = new (class {
+class DicomLoaderService {
   getLocalData(dataset, studies) {
     if (dataset && dataset.localFile) {
       // Use referenced imageInstance
@@ -155,9 +155,9 @@ const DicomLoaderService = new (class {
 
   getDataByDatasetType(dataset) {
     const {
-      studyInstanceUid,
-      seriesInstanceUid,
-      sopInstanceUid,
+      StudyInstanceUID,
+      SeriesInstanceUID,
+      SOPInstanceUID,
       authorizationHeaders,
       wadoRoot,
       wadoUri,
@@ -166,9 +166,9 @@ const DicomLoaderService = new (class {
     if (!someInvalidStrings(wadoRoot)) {
       return wadorsRetriever(
         wadoRoot,
-        studyInstanceUid,
-        seriesInstanceUid,
-        sopInstanceUid,
+        StudyInstanceUID,
+        SeriesInstanceUID,
+        SOPInstanceUID,
         authorizationHeaders
       );
     } else if (!someInvalidStrings(wadoUri)) {
@@ -194,6 +194,8 @@ const DicomLoaderService = new (class {
     // in case of no valid loader
     throw new Error('Invalid dicom data loader');
   }
-})();
+}
 
-export default DicomLoaderService;
+const dicomLoaderService = new DicomLoaderService();
+
+export default dicomLoaderService;

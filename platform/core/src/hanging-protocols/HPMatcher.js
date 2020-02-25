@@ -6,24 +6,19 @@ import { CustomAttributeRetrievalCallbacks } from './customAttributes';
 /**
  * Import Constants
  */
-const { StudySummary, InstanceMetadata } = metadata;
+const { InstanceMetadata } = metadata;
 
 /**
  * Match a Metadata instance against rules using Validate.js for validation.
- * @param  {StudySummary|InstanceMetadata} metadataInstance Metadata instance object
+ * @param  {InstanceMetadata} metadataInstance Metadata instance object
  * @param  {Array} rules Array of MatchingRules instances (StudyMatchingRule|SeriesMatchingRule|ImageMatchingRule) for the match
  * @return {Object}      Matching Object with score and details (which rule passed or failed)
  */
 const match = (metadataInstance, rules) => {
   // Make sure the supplied data is valid.
-  if (
-    !(
-      metadataInstance instanceof StudySummary ||
-      metadataInstance instanceof InstanceMetadata
-    )
-  ) {
+  if (!(metadataInstance instanceof InstanceMetadata)) {
     throw new OHIFError(
-      'HPMatcher::match metadataInstance must be an instance of StudySummary or InstanceMetadata'
+      'HPMatcher::match metadataInstance must be an instance of InstanceMetadata'
     );
   }
 

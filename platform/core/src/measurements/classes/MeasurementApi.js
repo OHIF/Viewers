@@ -99,8 +99,8 @@ export default class MeasurementApi {
     const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
 
     // Stop here if the metadata for the measurement's study is not loaded yet
-    const { studyInstanceUid } = measurement;
-    const metadata = studyMetadataManager.get(studyInstanceUid);
+    const { StudyInstanceUID } = measurement;
+    const metadata = studyMetadataManager.get(StudyInstanceUID);
     if (!metadata) return;
 
     // Iterate each child tool if the current tool has children
@@ -221,7 +221,7 @@ export default class MeasurementApi {
     this.options.onMeasurementsUpdated(Object.assign({}, this.tools));
   }
 
-  retrieveMeasurements(patientId, timepointIds) {
+  retrieveMeasurements(PatientId, timepointIds) {
     const retrievalFn = configuration.dataExchange.retrieve;
     const { server } = configuration;
     if (typeof retrievalFn !== 'function') {
@@ -297,9 +297,9 @@ export default class MeasurementApi {
       : null;
     const timepoints = this.timepointApi.all(timepointFilter);
     const timepointIds = timepoints.map(t => t.timepointId);
-    const patientId = timepoints[0].patientId;
+    const PatientId = timepoints[0].PatientId;
     const filter = {
-      patientId,
+      PatientId,
       timepointIds,
     };
 
@@ -691,8 +691,8 @@ export default class MeasurementApi {
 
     // Get the timepoint
     let timepoint;
-    if (measurement.studyInstanceUid) {
-      timepoint = this.timepointApi.study(measurement.studyInstanceUid)[0];
+    if (measurement.StudyInstanceUID) {
+      timepoint = this.timepointApi.study(measurement.StudyInstanceUID)[0];
     } else {
       const { timepointId } = measurement;
       timepoint = this.timepointApi.timepoints.find(
@@ -807,7 +807,7 @@ export default class MeasurementApi {
         toolId: toolType,
         toolItemId: addedMeasurement._id,
         timepointId: timepoint.timepointId,
-        studyInstanceUid: addedMeasurement.studyInstanceUid,
+        StudyInstanceUID: addedMeasurement.StudyInstanceUID,
         createdAt: addedMeasurement.createdAt,
         lesionNamingNumber: addedMeasurement.lesionNamingNumber,
         measurementNumber: addedMeasurement.measurementNumber,

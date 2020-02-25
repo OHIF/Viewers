@@ -6,13 +6,13 @@
 //     {
 //       getInstanceCount: jest.fn().mockReturnValue(1),
 //       getData: jest.fn().mockReturnValue({
-//         seriesDate: '2019-06-04',
+//         SeriesDate: '2019-06-04',
 //       }),
 //     },
 //     {
 //       getInstanceCount: jest.fn().mockReturnValue(1),
 //       getData: jest.fn().mockReturnValue({
-//         seriesDate: '2018-06-04',
+//         SeriesDate: '2018-06-04',
 //       }),
 //     },
 //   ];
@@ -25,7 +25,7 @@
 //     getStudyInstanceUID: jest.fn(),
 //   };
 
-//   it('sorts displaySets by seriesNumber, then by seriesDate', () => {
+//   it('sorts displaySets by SeriesNumber, then by SeriesDate', () => {
 //     const displaySets = createStacks(studyMetadata);
 
 //     expect(displaySets.length).toBe(2);

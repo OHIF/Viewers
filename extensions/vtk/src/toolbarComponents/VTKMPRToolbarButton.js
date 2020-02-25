@@ -13,14 +13,14 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
     return false;
   };
 
-  const { displaySetInstanceUid, studyInstanceUid } = viewportSpecificData[
+  const { displaySetInstanceUid, StudyInstanceUID } = viewportSpecificData[
     activeViewportIndex
   ];
 
   const studies = studyMetadataManager.all();
 
   const study = studies.find(
-    study => study.studyInstanceUID === studyInstanceUid
+    study => study.studyInstanceUID === StudyInstanceUID
   );
 
   if (!study) {

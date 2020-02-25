@@ -41,10 +41,10 @@ import studies from './studies.js'
                 }}
                 onStudySelected={(selectedStudy) => {
                     const { studyListData } = state;
-                    const selectedId = selectedStudy.studyInstanceUid;
+                    const selectedId = selectedStudy.StudyInstanceUID;
 
                     studyListData.forEach(study => {
-                        study.active = study.studyInstanceUid === selectedId;
+                        study.active = study.StudyInstanceUID === selectedId;
                     });
 
                     setState({ studyListData });

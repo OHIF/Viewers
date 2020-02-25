@@ -37,9 +37,9 @@ class ViewerMain extends Component {
     return displaySets;
   }
 
-  findDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
+  findDisplaySet(studies, StudyInstanceUID, displaySetInstanceUid) {
     const study = studies.find(study => {
-      return study.studyInstanceUid === studyInstanceUid;
+      return study.StudyInstanceUID === StudyInstanceUID;
     });
 
     if (!study) {
@@ -89,12 +89,12 @@ class ViewerMain extends Component {
       const viewportPane = viewportSpecificData[i];
       const isNonEmptyViewport =
         viewportPane &&
-        viewportPane.studyInstanceUid &&
+        viewportPane.StudyInstanceUID &&
         viewportPane.displaySetInstanceUid;
 
       if (isNonEmptyViewport) {
         dirtyViewportPanes.push({
-          studyInstanceUid: viewportPane.studyInstanceUid,
+          StudyInstanceUID: viewportPane.StudyInstanceUID,
           displaySetInstanceUid: viewportPane.displaySetInstanceUid,
         });
 
@@ -113,10 +113,10 @@ class ViewerMain extends Component {
     }
 
     dirtyViewportPanes.forEach((vp, i) => {
-      if (vp && vp.studyInstanceUid) {
+      if (vp && vp.StudyInstanceUID) {
         this.setViewportData({
           viewportIndex: i,
-          studyInstanceUid: vp.studyInstanceUid,
+          StudyInstanceUID: vp.StudyInstanceUID,
           displaySetInstanceUid: vp.displaySetInstanceUid,
         });
       }
@@ -125,12 +125,12 @@ class ViewerMain extends Component {
 
   setViewportData = ({
     viewportIndex,
-    studyInstanceUid,
+    StudyInstanceUID,
     displaySetInstanceUid,
   }) => {
     const displaySet = this.findDisplaySet(
       this.props.studies,
-      studyInstanceUid,
+      StudyInstanceUID,
       displaySetInstanceUid
     );
 

@@ -9,12 +9,12 @@ import {
 } from './studyInstanceHelpers';
 
 /**
- * Map seriesList to an array of seriesInstanceUid
+ * Map seriesList to an array of SeriesInstanceUID
  * @param {Arrays} seriesList list of Series Instance UIDs
  * @returns {Arrays} A list of Series Instance UIDs
  */
 function mapStudySeries(seriesList) {
-  return seriesList.map(series => getSeriesInfo(series).seriesInstanceUid);
+  return seriesList.map(series => getSeriesInfo(series).SeriesInstanceUID);
 }
 
 function attachSeriesLoader(server, study, seriesLoader) {

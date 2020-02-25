@@ -16,17 +16,17 @@ function StudyBrowser(props) {
       <div className="scrollable-study-thumbnails">
         {studies
           .map((study, studyIndex) => {
-            const { studyInstanceUid } = study;
+            const { StudyInstanceUID } = study;
             return study.thumbnails.map((thumb, thumbIndex) => {
               // TODO: Thumb has more props than we care about?
               const {
                 altImageText,
                 displaySetInstanceUid,
                 imageId,
-                instanceNumber,
+                InstanceNumber,
                 numImageFrames,
-                seriesDescription,
-                seriesNumber,
+                SeriesDescription,
+                SeriesNumber,
                 stackPercentComplete,
               } = thumb;
 
@@ -41,15 +41,15 @@ function StudyBrowser(props) {
                     key={`${studyIndex}_${thumbIndex}`}
                     id={`${studyIndex}_${thumbIndex}`} // Unused?
                     // Study
-                    studyInstanceUid={studyInstanceUid} // used by drop
+                    StudyInstanceUID={StudyInstanceUID} // used by drop
                     // Thumb
                     altImageText={altImageText}
                     imageId={imageId}
-                    instanceNumber={instanceNumber}
+                    InstanceNumber={InstanceNumber}
                     displaySetInstanceUid={displaySetInstanceUid} // used by drop
                     numImageFrames={numImageFrames}
-                    seriesDescription={seriesDescription}
-                    seriesNumber={seriesNumber}
+                    SeriesDescription={SeriesDescription}
+                    SeriesNumber={SeriesNumber}
                     stackPercentComplete={stackPercentComplete}
                     // Events
                     onClick={onThumbnailClick.bind(
@@ -73,16 +73,16 @@ const noop = () => {};
 StudyBrowser.propTypes = {
   studies: PropTypes.arrayOf(
     PropTypes.shape({
-      studyInstanceUid: PropTypes.string.isRequired,
+      StudyInstanceUID: PropTypes.string.isRequired,
       thumbnails: PropTypes.arrayOf(
         PropTypes.shape({
           altImageText: PropTypes.string,
           displaySetInstanceUid: PropTypes.string.isRequired,
           imageId: PropTypes.string,
-          instanceNumber: PropTypes.number,
+          InstanceNumber: PropTypes.number,
           numImageFrames: PropTypes.number,
-          seriesDescription: PropTypes.string,
-          seriesNumber: PropTypes.number,
+          SeriesDescription: PropTypes.string,
+          SeriesNumber: PropTypes.number,
           stackPercentComplete: PropTypes.number,
         })
       ),

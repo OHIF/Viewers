@@ -4,7 +4,7 @@
 
 1. Study List allows to sort each column. To sort studies, click the desired column header.
 2. Study List is filterable for each column and you can filter by more than one column by typing in the column field. To filter a column, type the text in the desired column header field and press Enter.
-3. Pagination is provided for the Study List at the bottom of the page. You can change the number of rows per page or the current page.
+3. Pagination is provided for the Study List at the bottom of the page. You can change the number of Rows per page or the current page.
 
 ## Study List Context Menu
 

@@ -25,8 +25,8 @@ class DicomMicroscopyViewport extends Component {
     const dicomWebClient = displaySet.dicomWebClient;
 
     const searchInstanceOptions = {
-      studyInstanceUID: displaySet.studyInstanceUid,
-      seriesInstanceUID: displaySet.seriesInstanceUid,
+      studyInstanceUID: displaySet.StudyInstanceUID,
+      seriesInstanceUID: displaySet.SeriesInstanceUID,
     };
 
     dicomWebClient
@@ -36,16 +36,16 @@ class DicomMicroscopyViewport extends Component {
         for (let i = 0; i < instances.length; i++) {
           const sopInstanceUID = instances[i]['00080018']['Value'][0];
           const retrieveInstanceOptions = {
-            studyInstanceUID: displaySet.studyInstanceUid,
-            seriesInstanceUID: displaySet.seriesInstanceUid,
+            studyInstanceUID: displaySet.StudyInstanceUID,
+            seriesInstanceUID: displaySet.SeriesInstanceUID,
             sopInstanceUID,
           };
 
           const promise = dicomWebClient
             .retrieveInstanceMetadata(retrieveInstanceOptions)
             .then(metadata => {
-              const imageType = metadata[0]['00080008']['Value'];
-              if (imageType[2] === 'VOLUME') {
+              const ImageType = metadata[0]['00080008']['Value'];
+              if (ImageType[2] === 'VOLUME') {
                 return metadata[0];
               }
             });
@@ -56,13 +56,15 @@ class DicomMicroscopyViewport extends Component {
       .then(async metadata => {
         metadata = metadata.filter(m => m);
 
-        const { api } = await import(/* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer');
+        const { api } = await import(
+          /* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer'
+        );
         const microscopyViewer = api.VLWholeSlideMicroscopyImageViewer;
 
         this.viewer = new microscopyViewer({
           client: dicomWebClient,
           metadata,
-          retrieveRendered: false
+          retrieveRendered: false,
         });
 
         this.viewer.render({ container });

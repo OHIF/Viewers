@@ -1,9 +1,9 @@
-export default function getModalities(modality, modalitiesInStudy) {
-  if (!modality && !modalitiesInStudy) {
+export default function getModalities(Modality, modalitiesInStudy) {
+  if (!Modality && !modalitiesInStudy) {
     return {};
   }
 
-  const modalities = modality || {
+  const modalities = Modality || {
     vr: 'CS',
     Value: [],
   };

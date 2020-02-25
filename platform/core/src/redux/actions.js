@@ -110,9 +110,9 @@ export const setMeasurements = state => ({
   state,
 });
 
-export const setStudyData = (studyInstanceUid, data) => ({
+export const setStudyData = (StudyInstanceUID, data) => ({
   type: 'SET_STUDY_DATA',
-  studyInstanceUid,
+  StudyInstanceUID,
   data,
 });
 

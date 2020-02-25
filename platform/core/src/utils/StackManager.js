@@ -1,9 +1,9 @@
 import OHIFError from '../classes/OHIFError.js';
 import getImageId from './getImageId';
+import metadataProvider from '../classes/MetadataProvider.js';
 
 let stackMap = {};
 let configuration = {};
-let stackManagerMetaDataProvider;
 const stackUpdatedCallbacks = [];
 
 /**
@@ -15,13 +15,7 @@ const stackUpdatedCallbacks = [];
  * @param  {Object} displaySet            The set of images to make the stack from
  * @return {Array}                        Array with image IDs
  */
-function createAndAddStack(
-  stackMap,
-  study,
-  displaySet,
-  stackUpdatedCallbacks,
-  metadataProvider
-) {
+function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
   const images = displaySet.images;
   if (!images) {
     return;
@@ -41,24 +35,49 @@ function createAndAddStack(
       imageIndex: imageIndex + 1,
     };
 
-    const numberOfFrames = image.numberOfFrames;
-    if (numberOfFrames > 1) {
-      for (let i = 0; i < numberOfFrames; i++) {
+    const NumberOfFrames = image.NumberOfFrames;
+
+    if (NumberOfFrames > 1) {
+      for (let i = 0; i < NumberOfFrames; i++) {
         metaData.frameNumber = i;
         imageId = getImageId(image, i);
         imageIds.push(imageId);
-        metadataProvider.addMetadata(imageId, metaData);
+
+        const {
+          StudyInstanceUID,
+          SeriesInstanceUID,
+          SOPInstanceUID,
+        } = instance.getData().data;
+
+        metadataProvider.addImageIdToUids(imageId, {
+          StudyInstanceUID,
+          SeriesInstanceUID,
+          SOPInstanceUID,
+        });
       }
     } else {
       metaData.frameNumber = 1;
       imageId = getImageId(image);
       imageIds.push(imageId);
-      metadataProvider.addMetadata(imageId, metaData);
+
+      const naturalizedInstance = instance.getData().data;
+
+      const {
+        StudyInstanceUID,
+        SeriesInstanceUID,
+        SOPInstanceUID,
+      } = naturalizedInstance;
+
+      metadataProvider.addImageIdToUids(imageId, {
+        StudyInstanceUID,
+        SeriesInstanceUID,
+        SOPInstanceUID,
+      });
     }
   });
 
   const stack = {
-    studyInstanceUid: study.studyInstanceUid,
+    StudyInstanceUID: study.StudyInstanceUID,
     displaySetInstanceUid: displaySet.displaySetInstanceUid,
     imageIds,
     frameRate: displaySet.frameRate,
@@ -80,9 +99,6 @@ configuration = {
  * come in, you can register a callback with addStackUpdatedCallback.
  */
 const StackManager = {
-  setMetadataProvider(provider) {
-    stackManagerMetaDataProvider = provider;
-  },
   /**
    * Removes all current stacks
    */
@@ -96,18 +112,11 @@ const StackManager = {
    * @return {Array} Array with image IDs
    */
   makeAndAddStack(study, displaySet) {
-    if (!stackManagerMetaDataProvider) {
-      throw new Error(
-        'Please call StackManager.setMetadataProvider(provider) first.'
-      );
-    }
-
     return configuration.createAndAddStack(
       stackMap,
       study,
       displaySet,
-      stackUpdatedCallbacks,
-      stackManagerMetaDataProvider
+      stackUpdatedCallbacks
     );
   },
   /**
