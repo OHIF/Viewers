@@ -12,6 +12,8 @@
 
 const name = 'UINotificationService';
 
+const serviceShowRequestQueue = [];
+
 const publicAPI = {
   name,
   hide: _hide,
@@ -21,7 +23,11 @@ const publicAPI = {
 
 const serviceImplementation = {
   _hide: () => console.warn('hide() NOT IMPLEMENTED'),
-  _show: () => console.warn('show() NOT IMPLEMENTED'),
+  _show: showArguments => {
+    serviceShowRequestQueue.push(showArguments);
+
+    console.warn('show() NOT IMPLEMENTED');
+  },
 };
 
 /**
@@ -76,6 +82,11 @@ function setServiceImplementation({
   }
   if (showImplementation) {
     serviceImplementation._show = showImplementation;
+
+    while (serviceShowRequestQueue.length > 0) {
+      const showArguments = serviceShowRequestQueue.pop();
+      serviceImplementation._show(showArguments);
+    }
   }
 }
 

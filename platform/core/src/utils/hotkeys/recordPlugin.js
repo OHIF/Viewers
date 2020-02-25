@@ -66,7 +66,7 @@ export default function(Mousetrap) {
         _recordCurrentCombo();
       }
 
-      for (i = 0; i < modifiers.length; ++i) {
+      for (let i = 0; i < modifiers.length; ++i) {
         _recordKey(modifiers[i]);
       }
       _recordKey(character);
@@ -85,10 +85,8 @@ export default function(Mousetrap) {
    * @returns void
    */
   function _recordKey(key) {
-    var i;
-
     // one-off implementation of Array.indexOf, since IE6-9 don't support it
-    for (i = 0; i < _currentRecordedKeys.length; ++i) {
+    for (let i = 0; i < _currentRecordedKeys.length; ++i) {
       if (_currentRecordedKeys[i] === key) {
         return;
       }
@@ -111,7 +109,7 @@ export default function(Mousetrap) {
     _recordedSequence.push(_currentRecordedKeys);
     _currentRecordedKeys = [];
     _recordedCharacterKey = false;
-    _restartRecordTimer();
+    _finishRecording();
   }
 
   /**
@@ -124,9 +122,7 @@ export default function(Mousetrap) {
    * @returns void
    */
   function _normalizeSequence(sequence) {
-    var i;
-
-    for (i = 0; i < sequence.length; ++i) {
+    for (let i = 0; i < sequence.length; ++i) {
       sequence[i].sort(function(x, y) {
         // modifier keys always come first, in alphabetical order
         if (x.length > 1 && y.length === 1) {
@@ -189,6 +185,28 @@ export default function(Mousetrap) {
       self.recording = false;
       callback.apply(self, arguments);
     };
+  };
+
+  /**
+   * stop recording
+   *
+   * @param {Function} callback
+   * @returns void
+   */
+  Mousetrap.prototype.stopRecord = function() {
+    var self = this;
+    self.recording = false;
+  };
+
+  /**
+   * start recording
+   *
+   * @param {Function} callback
+   * @returns void
+   */
+  Mousetrap.prototype.startRecording = function() {
+    var self = this;
+    self.recording = true;
   };
 
   Mousetrap.prototype.handleKey = function() {

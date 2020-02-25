@@ -53,7 +53,6 @@ import store from './store';
 import WhiteLabellingContext from './context/WhiteLabellingContext';
 import UserManagerContext from './context/UserManagerContext';
 import AppContext from './context/AppContext';
-const { setUserPreferences } = reduxOHIF.actions;
 
 /** ~~~~~~~~~~~~~ Application Setup */
 const commandsManagerConfig = {
@@ -63,8 +62,8 @@ const commandsManagerConfig = {
 
 /** Managers */
 const commandsManager = new CommandsManager(commandsManagerConfig);
-const hotkeysManager = new HotkeysManager(commandsManager);
 const servicesManager = new ServicesManager();
+const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
 let extensionManager;
 /** ~~~~~~~~~~~~~ End Application Setup */
 
@@ -116,7 +115,7 @@ class App extends Component {
 
     const {
       servers,
-      hotkeys,
+      hotkeys: appConfigHotkeys,
       cornerstoneExtensionConfig,
       extensions,
       oidc,
@@ -139,7 +138,7 @@ class App extends Component {
      * Must run after extension commands are registered
      * if there is no hotkeys from localStorage set up from config.
      */
-    _initHotkeys(hotkeys);
+    _initHotkeys(appConfigHotkeys);
     _initServers(servers);
     initWebWorkers();
   }
@@ -263,30 +262,27 @@ function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
   extensionManager.registerExtensions(mergedExtensions);
 }
 
-function _initHotkeys(hotkeys) {
-  const { hotkeyDefinitions = {} } = store.getState().preferences || {};
-  let updateStore = false;
-  let hotkeysToUse = hotkeyDefinitions;
+/**
+ *
+ * @param {Object} appConfigHotkeys - Default hotkeys, as defined by app config
+ */
+function _initHotkeys(appConfigHotkeys) {
+  // TODO: Use something more resilient
+  // TODO: Mozilla has a special library for this
+  const userPreferredHotkeys = JSON.parse(
+    localStorage.getItem('hotkey-definitions') || '{}'
+  );
 
-  if (!Object.keys(hotkeyDefinitions).length) {
-    hotkeysToUse = hotkeys;
-    updateStore = true;
+  // TODO: hotkeysManager.isValidDefinitionObject(/* */)
+  const hasUserPreferences =
+    userPreferredHotkeys && Object.keys(userPreferredHotkeys).length > 0;
+  if (hasUserPreferences) {
+    hotkeysManager.setHotkeys(userPreferredHotkeys);
+  } else {
+    hotkeysManager.setHotkeys(appConfigHotkeys);
   }
 
-  if (hotkeysToUse) {
-    hotkeysManager.setHotkeys(hotkeysToUse);
-
-    /* Set hotkeys default based on app config. */
-    hotkeysManager.setDefaultHotKeys(hotkeys);
-
-    if (updateStore) {
-      const { hotkeyDefinitions } = hotkeysManager;
-      const windowLevelData = {};
-      store.dispatch(
-        setUserPreferences({ windowLevelData, hotkeyDefinitions })
-      );
-    }
-  }
+  hotkeysManager.setDefaultHotKeys(appConfigHotkeys);
 }
 
 function _initServers(servers) {

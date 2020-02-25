@@ -9,6 +9,7 @@ import {
   initStudyListAliasesOnDesktop,
   initStudyListAliasesOnTablet,
   initPreferencesModalAliases,
+  initPreferencesModalFooterBtnAliases,
 } from './aliases.js';
 
 // ***********************************************
@@ -169,13 +170,13 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy=thumbnail-list]', { timeout: 20000 }).should($itemList => {
+  cy.get('[data-cy=thumbnail-list]', { timeout: 50000 }).should($itemList => {
     expect($itemList.length >= seriesToWait).to.be.true;
   });
 });
 
 //Command to wait DICOM image to load into the viewport
-Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
+Cypress.Commands.add('waitDicomImage', (timeout = 50000) => {
   const loaded = cy.isPageLoaded();
 
   if (loaded) {
@@ -441,6 +442,12 @@ Cypress.Commands.add('openPreferences', () => {
   });
 });
 
+Cypress.Commands.add('changePreferencesTab', tabAlias => {
+  cy.initPreferencesModalAliases();
+  cy.get(tabAlias).click();
+  initPreferencesModalFooterBtnAliases();
+});
+
 Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
   // Open User Preferences modal
   cy.openPreferences();
@@ -457,7 +464,7 @@ Cypress.Commands.add(
   (function_label, shortcut) => {
     // Within scopes all `.get` and `.contains` to within the matched elements
     // dom instead of checking from document
-    cy.get('.HotKeysPreferences')
+    cy.get('.HotkeysPreferences')
       .within(() => {
         cy.contains(function_label) // label we're looking for
           .parent()
@@ -487,16 +494,16 @@ Cypress.Commands.add('setLanguage', (language, save = true) => {
     .click()
     .should('have.class', 'active');
 
+  initPreferencesModalFooterBtnAliases();
+
   // Language dropdown should be displayed
   cy.get('#language-select').should('be.visible');
 
   // Select Language and Save/Cancel
-  cy.get('#language-select')
-    .select(language)
-    .then(() => {
-      const toClick = save ? '@saveBtn' : '@cancelBtn';
-      cy.get(toClick)
-        .scrollIntoView()
-        .click();
-    });
+  cy.get('#language-select').select(language);
+
+  const toClick = save ? '@saveBtn' : '@cancelBtn';
+  cy.get(toClick)
+    .scrollIntoView()
+    .click();
 });
