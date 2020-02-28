@@ -9,6 +9,9 @@ cd .. # Up to project root
 yarn -v
 node -v
 
+# Not sure why we have to do this:
+yarn global add lerna
+
 # Build && Move PWA Output
 # yarn run build:ci
 # mkdir -p ./.netlify/www/pwa
@@ -18,10 +21,7 @@ node -v
 # yarn run build:package
 
 # Build && Move Docz Output
-yarn global add lerna
 yarn run build:ui
-lerna run build:ui --stream
-lerna run build:viewer:ci --stream
 mkdir -p ./.netlify/www/ui
 mv platform/ui/.docz/dist/* .netlify/www/ui -v
 
