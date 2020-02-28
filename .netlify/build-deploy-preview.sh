@@ -9,10 +9,6 @@ cd .. # Up to project root
 yarn -v
 node -v
 
-# Install build deps and all monorepo package dependencies. Yarn Workspaces
-# should also symlink all projects appropriately
-yarn install --no-ignore-optional --pure-lockfile
-
 # Build && Move PWA Output
 # yarn run build:ci
 # mkdir -p ./.netlify/www/pwa
