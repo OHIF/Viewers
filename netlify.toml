@@ -19,8 +19,8 @@
 
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.
-# [context.production]
-#  ignore = "exit 0" # Never build production; We'll let our CI do that
+[context.production]
+  ignore = "exit 0" # Never build production; We'll let our CI do that
 
 # Deploy Preview context: all deploys generated from a pull/merge request will
 # inherit these settings.
