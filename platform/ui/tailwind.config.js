@@ -25,7 +25,8 @@ module.exports = {
         light: '#a2a0af',
         main: '#333',
         dark: '#000',
-        contrastText: '',
+        // Previously '' (empty string)
+        contrastText: '#fff',
       },
 
       darkBlue: {
