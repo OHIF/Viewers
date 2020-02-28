@@ -30,6 +30,12 @@ jobs:
   UNIT_TESTS:
     <<: *defaults
     steps:
+      # Only run for PRs against one of these branches
+      # master, release, or build/*
+      - run:
+          ([[ $CIRCLE_PULL_REQUESTS == "" ]]) && echo $CIRCLE_BRANCH | grep -Evq
+          "^(master)|(release)|(build\/.+)$" && echo "not a PR / branch to
+          build" && circleci step halt || echo "will build"
       # Update yarn
       - run: yarn -v
       # Checkout code and ALL Git Tags
