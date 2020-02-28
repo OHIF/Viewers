@@ -4,4 +4,10 @@
 
 [data-testid='live-preview'] {
   padding: 10px;
+  background: #000;
+}
+
+[data-testid='main-container'] h2 {
+  margin: 20px 0;
+  font-weight: bold;
 }

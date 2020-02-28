@@ -15,22 +15,6 @@ Buttons are used to execute actions when users interacts with them.
 
 <Props of={Button} />
 
-## Contained Buttons
-
-<Playground>
-  <>
-    <Button variant="contained" className="m-1">
-      Default
-    </Button>
-    <Button variant="contained" color="primary" className="m-1">
-      Primary
-    </Button>
-    <Button variant="contained" color="secondary" className="m-1">
-      Secondary
-    </Button>
-  </>
-</Playground>
-
 ## Outlined Buttons
 
 <Playground>
@@ -44,8 +28,32 @@ Buttons are used to execute actions when users interacts with them.
     <Button variant="outlined" color="secondary" className="m-1">
       Secondary
     </Button>
+    <Button variant="outlined" color="white" className="m-1">
+      White
+    </Button>
   </>
 </Playground>
+
+## Contained Buttons
+
+<Playground>
+  <>
+    <Button variant="contained" className="m-1">
+      Default
+    </Button>
+    <Button variant="contained" color="primary" className="m-1">
+      Primary
+    </Button>
+    <Button variant="contained" color="secondary" className="m-1">
+      Secondary
+    </Button>
+    <Button variant="contained" color="white" className="m-1">
+      White
+    </Button>
+  </>
+</Playground>
+
+
 
 ## Text Buttons
 
@@ -60,6 +68,159 @@ Buttons are used to execute actions when users interacts with them.
     <Button variant="text" color="secondary" className="m-1">
       Secondary
     </Button>
+    <Button variant="text" color="white" className="m-1">
+      White
+    </Button>
+  </>
+</Playground>
+
+## Rounded Buttons
+
+<Playground>
+  <>
+    <div className="mb-2">
+      <Button variant="contained" rounded="none" className="m-1">
+        Non Rounded
+      </Button>
+      <Button variant="contained" rounded="small" className="m-1">
+        Small Rounded
+      </Button>
+      <Button variant="contained" rounded="medium" className="m-1">
+        Medium Rounded
+      </Button>
+      <Button variant="contained" rounded="large" className="m-1">
+        Large Rounded
+      </Button>
+      <Button variant="contained" rounded="full" className="m-1">
+        Full Rounded
+      </Button>
+    </div>
+    <div className="mb-2">
+      <Button
+        variant="contained"
+        rounded="none"
+        color="primary"
+        className="m-1"
+      >
+        Non Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="small"
+        color="primary"
+        className="m-1"
+      >
+        Small Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="medium"
+        color="primary"
+        className="m-1"
+      >
+        Medium Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="large"
+        color="primary"
+        className="m-1"
+      >
+        Large Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="full"
+        color="primary"
+        className="m-1"
+      >
+        Full Rounded
+      </Button>
+    </div>
+    <div className="mb-2">
+      <Button
+        variant="contained"
+        rounded="none"
+        color="secondary"
+        className="m-1"
+      >
+        Non Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="small"
+        color="secondary"
+        className="m-1"
+      >
+        Small Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="medium"
+        color="secondary"
+        className="m-1"
+      >
+        Medium Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="large"
+        color="secondary"
+        className="m-1"
+      >
+        Large Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="full"
+        color="secondary"
+        className="m-1"
+      >
+        Full Rounded
+      </Button>
+    </div>
+    <div className="mb-2">
+      <Button
+        variant="contained"
+        rounded="none"
+        color="white"
+        className="m-1"
+      >
+        Non Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="small"
+        color="white"
+        className="m-1"
+      >
+        Small Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="medium"
+        color="white"
+        className="m-1"
+      >
+        Medium Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="large"
+        color="white"
+        className="m-1"
+      >
+        Large Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="full"
+        color="white"
+        className="m-1"
+      >
+        Full Rounded
+      </Button>
+    </div>
   </>
 </Playground>
 
@@ -68,19 +229,19 @@ Buttons are used to execute actions when users interacts with them.
 <Playground>
   <>
     <div>
-      <Button variant="text" size="small" className="m-1">
+      <Button variant="contained" size="small" className="m-1">
         Small
       </Button>
       <Button variant="contained" size="medium" className="m-1">
         Medium
       </Button>
-      <Button variant="outlined" size="large" className="m-1">
+      <Button variant="contained" size="large" className="m-1">
         Large
       </Button>
     </div>
     <div>
       <Button
-        variant="text"
+        variant="contained"
         size="small"
         color="primary"
         className="m-1"
@@ -96,39 +257,65 @@ Buttons are used to execute actions when users interacts with them.
         Medium
       </Button>
       <Button
-        variant="outlined"
+        variant="contained"
         size="large"
         color="primary"
         className="m-1"
       >
-        large
+        Large
       </Button>
     </div>
     <div>
-    <Button
-      variant="text"
-      size="small"
-      color="secondary"
-      className="m-1"
-    >
-      Small
-    </Button>
-    <Button
-      variant="contained"
-      size="medium"
-      color="secondary"
-      className="m-1"
-    >
-      Medium
-    </Button>
-    <Button
-      variant="outlined"
-      size="large"
-      color="secondary"
-      className="m-1"
-    >
-      Large
-    </Button>
+      <Button
+        variant="contained"
+        size="small"
+        color="secondary"
+        className="m-1"
+      >
+        Small
+      </Button>
+      <Button
+        variant="contained"
+        size="medium"
+        color="secondary"
+        className="m-1"
+      >
+        Medium
+      </Button>
+      <Button
+        variant="contained"
+        size="large"
+        color="secondary"
+        className="m-1"
+      >
+        Large
+      </Button>
+    </div>
+    <div>
+      <Button
+        variant="contained"
+        size="small"
+        color="white"
+        className="m-1"
+      >
+        Small
+      </Button>
+      <Button
+        variant="contained"
+        size="medium"
+        color="white"
+        className="m-1"
+      >
+        Medium
+      </Button>
+      <Button
+        variant="contained"
+        size="large"
+        color="white"
+        className="m-1"
+      >
+        Large
+      </Button>
     </div>
 
 </>
@@ -147,7 +334,6 @@ Buttons are used to execute actions when users interacts with them.
       className="m-1"
       startIcon={
     <svg
-      class="fill-current w-4 h-4"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
     >
@@ -163,12 +349,22 @@ Buttons are used to execute actions when users interacts with them.
       className="m-1"
       endIcon={
     <svg
-      class="fill-current w-4 h-4"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
     >
       <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
     </svg>
+  }
+    >
+      Download
+    </Button>
+    <Button
+      variant="outlined"
+      rounded="full"
+      color="default"
+      className="m-1"
+      endIcon={
+    <svg height="512pt" viewBox="0 0 512 512" width="512pt" xmlns="http://www.w3.org/2000/svg"><path d="m277.332031 128c0 11.78125-9.550781 21.332031-21.332031 21.332031s-21.332031-9.550781-21.332031-21.332031 9.550781-21.332031 21.332031-21.332031 21.332031 9.550781 21.332031 21.332031zm0 0"/><path d="m256 405.332031c-8.832031 0-16-7.167969-16-16v-165.332031h-21.332031c-8.832031 0-16-7.167969-16-16s7.167969-16 16-16h37.332031c8.832031 0 16 7.167969 16 16v181.332031c0 8.832031-7.167969 16-16 16zm0 0"/><path d="m256 512c-141.164062 0-256-114.835938-256-256s114.835938-256 256-256 256 114.835938 256 256-114.835938 256-256 256zm0-480c-123.519531 0-224 100.480469-224 224s100.480469 224 224 224 224-100.480469 224-224-100.480469-224-224-224zm0 0"/><path d="m304 405.332031h-96c-8.832031 0-16-7.167969-16-16s7.167969-16 16-16h96c8.832031 0 16 7.167969 16 16s-7.167969 16-16 16zm0 0"/></svg>
   }
     >
       Download
