@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "start": "yarn run dev",
-    "build:styles": "postcss src/styles/tailwind.css -o src/gatsby-theme-docz/app.css",
+    "build:ui": "docz build",
     "dev": "docz dev",
     "build": "docz build",
     "serve": "docz serve"

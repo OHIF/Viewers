@@ -14,12 +14,17 @@ node -v
 yarn install --no-ignore-optional --pure-lockfile
 
 # Build && Move PWA Output
-yarn run build:ci
-mkdir -p ./.netlify/www/pwa
-mv platform/viewer/dist/* .netlify/www/pwa -v
+# yarn run build:ci
+# mkdir -p ./.netlify/www/pwa
+# mv platform/viewer/dist/* .netlify/www/pwa -v
 
 # Build && Move script output
 # yarn run build:package
+
+# Build && Move Docz Output
+yarn run build:ui
+mkdir -p ./.netlify/www/ui
+mv platform/ui/.docz/dist/* .netlify/www/ui -v
 
 echo 'Nothing left to see here. Go home, folks.'
 
