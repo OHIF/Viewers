@@ -312,8 +312,9 @@ workflows:
             branches:
               ignore:
                 - master
-                - feature/*
+                - feat/*
                 - hotfix/*
+
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
