@@ -5,9 +5,6 @@
     "packages": [
       "platform/*",
       "extensions/*"
-    ],
-    "nohoist": [
-      "**/tailwindcss"
     ]
   },
   "engines": {

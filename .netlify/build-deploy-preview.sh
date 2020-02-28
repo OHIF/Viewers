@@ -10,7 +10,7 @@ yarn -v
 node -v
 
 # Not sure why we have to do this:
-yarn global add lerna
+# yarn global add lerna
 
 # Build && Move PWA Output
 # yarn run build:ci
