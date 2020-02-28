@@ -27,7 +27,7 @@
 [context.deploy-preview]
   base = ""
   publish = ".netlify/www/"
-  command = "chmod +x .netlify/build-deploy-preview.sh && .netlify/build-deploy-preview.sh"
+  command = ".netlify/build-deploy-preview.sh"
 
 [[headers]]
   # Define which paths this specific [[headers]] block will cover.

@@ -22,7 +22,10 @@ yarn install --no-ignore-optional --pure-lockfile
 # yarn run build:package
 
 # Build && Move Docz Output
+yarn global add lerna
 yarn run build:ui
+lerna run build:ui --stream
+lerna run build:viewer:ci --stream
 mkdir -p ./.netlify/www/ui
 mv platform/ui/.docz/dist/* .netlify/www/ui -v
 

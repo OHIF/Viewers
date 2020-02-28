@@ -4,3 +4,5 @@
 
 # PWA Demo
 /pwa/* /pwa/index.html 200
+# UI Demo
+/ui/* /ui/index.html 200
