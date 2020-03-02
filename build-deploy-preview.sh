@@ -11,6 +11,22 @@ echo 'My yarn version is... '
 yarn -v
 node -v
 
+# Make sure we can hit yarn packages
+# yarn global bin
+# yarn config get prefix
+# yarn config set prefix ~/.yarn
+# export PATH="$PATH:`yarn global bin`"
+
+echo '~~ Revving our engines'
+
+yarn list
+
+echo 'shouldnt be required'
+
+yarn global add lerna
+
+yarn list
+
 # Build && Move PWA Output
 # yarn run build:ci
 # mkdir -p ./.netlify/www/pwa
@@ -20,7 +36,7 @@ node -v
 # yarn run build:package
 
 # Build && Move Docz Output
-yarn run build:ui:deploy-preview
+yarn run build:ui
 mkdir -p ./.netlify/www/ui
 mv platform/ui/.docz/dist/* .netlify/www/ui -v
 

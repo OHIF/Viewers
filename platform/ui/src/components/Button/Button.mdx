@@ -1,0 +1,180 @@
+---
+name: Button
+menu: Components
+route: components/button
+---
+
+import { Playground, Props } from 'docz';
+import Button from './';
+
+# Button
+
+Buttons are used to execute actions when users interacts with them.
+
+## Properties
+
+<Props of={Button} />
+
+## Contained Buttons
+
+<Playground>
+  <>
+    <Button variant="contained" className="m-1">
+      Default
+    </Button>
+    <Button variant="contained" color="primary" className="m-1">
+      Primary
+    </Button>
+    <Button variant="contained" color="secondary" className="m-1">
+      Secondary
+    </Button>
+  </>
+</Playground>
+
+## Outlined Buttons
+
+<Playground>
+  <>
+    <Button variant="outlined" className="m-1">
+      Default
+    </Button>
+    <Button variant="outlined" color="primary" className="m-1">
+      Primary
+    </Button>
+    <Button variant="outlined" color="secondary" className="m-1">
+      Secondary
+    </Button>
+  </>
+</Playground>
+
+## Text Buttons
+
+<Playground>
+  <>
+    <Button variant="text" className="m-1">
+      Default
+    </Button>
+    <Button variant="text" color="primary" className="m-1">
+      Primary
+    </Button>
+    <Button variant="text" color="secondary" className="m-1">
+      Secondary
+    </Button>
+  </>
+</Playground>
+
+## Sizes
+
+<Playground>
+  <>
+    <div>
+      <Button variant="text" size="small" className="m-1">
+        Small
+      </Button>
+      <Button variant="contained" size="medium" className="m-1">
+        Medium
+      </Button>
+      <Button variant="outlined" size="large" className="m-1">
+        Large
+      </Button>
+    </div>
+    <div>
+      <Button
+        variant="text"
+        size="small"
+        color="primary"
+        className="m-1"
+      >
+        Small
+      </Button>
+      <Button
+        variant="contained"
+        size="medium"
+        color="primary"
+        className="m-1"
+      >
+        Medium
+      </Button>
+      <Button
+        variant="outlined"
+        size="large"
+        color="primary"
+        className="m-1"
+      >
+        large
+      </Button>
+    </div>
+    <div>
+    <Button
+      variant="text"
+      size="small"
+      color="secondary"
+      className="m-1"
+    >
+      Small
+    </Button>
+    <Button
+      variant="contained"
+      size="medium"
+      color="secondary"
+      className="m-1"
+    >
+      Medium
+    </Button>
+    <Button
+      variant="outlined"
+      size="large"
+      color="secondary"
+      className="m-1"
+    >
+      Large
+    </Button>
+    </div>
+
+</>
+
+</Playground>
+
+## Buttons with icons
+
+<Playground>
+{() => {
+    return (
+         <div className="flex">
+        <Button
+      variant="contained"
+      color="primary"
+      className="m-1"
+      startIcon={
+    <svg
+      class="fill-current w-4 h-4"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+    >
+      <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+    </svg>
+  }
+    >
+      Download
+    </Button>
+     <Button
+      variant="contained"
+      color="primary"
+      className="m-1"
+      endIcon={
+    <svg
+      class="fill-current w-4 h-4"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+    >
+      <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+    </svg>
+  }
+    >
+      Download
+    </Button>
+      </div>
+    )
+  }}
+
+</Playground>

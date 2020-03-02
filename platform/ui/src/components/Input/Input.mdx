@@ -1,0 +1,33 @@
+---
+name: Input
+menu: Components
+route: components/input
+---
+
+import { Playground, Props } from 'docz';
+import Input from './';
+
+# Input
+
+## Properties
+
+<Props of={Input} />
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const [inputValue, setInputValue] = React.useState('');
+    return (
+      <div>
+        <Input
+          transparent
+          containerClassName="mb-3"
+          label="Label"
+          placeholder="With Label"
+        />
+        <Input placeholder="Without label" />
+      </div>
+    );
+  }}
+</Playground>
