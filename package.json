@@ -91,6 +91,7 @@
     "lerna": "^3.15.0",
     "lint-staged": "^9.0.2",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "pnp-webpack-plugin": "^1.6.4",
     "postcss-import": "^12.0.1",
     "postcss-loader": "^3.0.0",
     "postcss-preset-env": "^6.6.0",
@@ -121,8 +122,5 @@
       "prettier --write",
       "git add"
     ]
-  },
-  "resolutions": {
-    "**/@babel/runtime": "7.7.6"
   }
 }

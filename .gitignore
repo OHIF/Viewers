@@ -9,7 +9,7 @@ src/version.js
 junit.xml
 coverage/
 .docz/
-.yarn/
+.yarn/cache
 
 # YALC (for Erik)
 .yalc
