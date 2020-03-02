@@ -30,7 +30,7 @@
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
     "react": "^16.11.0",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.11.0"
   },
   "dependencies": {
     "@babel/runtime": "7.7.6",

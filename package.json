@@ -44,7 +44,8 @@
   "dependencies": {
     "@babel/runtime": "7.7.6",
     "core-js": "^3.2.1",
-    "react": "16.11.0"
+    "react": "16.11.0",
+    "react-dom": "16.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.0",
@@ -89,7 +90,6 @@
     "postcss-loader": "^3.0.0",
     "postcss-preset-env": "^6.6.0",
     "prettier": "^1.18.2",
-    "react-dom": "^16.8.6",
     "react-hot-loader": "^4.12.11",
     "redux-testkit": "^1.0.6",
     "serve": "^11.1.0",
