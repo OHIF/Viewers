@@ -253,6 +253,7 @@ jobs:
       - run: npx lerna version
       - run: yarn run build:package-all
       - run: npx lerna publish from-package
+      - run: npx lerna run ci:generateSuccessVersion --stream
       - persist_to_workspace:
           root: ~/repo
           paths: .
@@ -284,7 +285,7 @@ jobs:
           name: Build and push Docker image
           command: |
             # This file will exist if a new version was published by
-            # our command in the previous job. Created in npm postpublish hook
+            # our command in the previous job. Created in npm ci:generateSuccessVersion script
             # in the `platform/viewer` project.
             if [[ ! -e platform/viewer/success_version.txt ]]; then
               exit 0

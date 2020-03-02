@@ -34,7 +34,7 @@
     "test:e2e:serve": "serve -n -l 3000 -s dist",
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage",
-    "postpublish": "node -p -e \"require('./package.json').version\" > success_version.txt"
+    "ci:generateSuccessVersion": "node -p -e \"require('./package.json').version\" > success_version.txt"
   },
   "files": [
     "dist",
