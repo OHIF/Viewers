@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Basic Docz example
 
 ## Using `create-docz-app`
@@ -39,3 +40,24 @@ yarn build # npm run build
 ```sh
 yarn serve # npm run serve
 ```
+=======
+# @ohif/ui
+
+React component library powered by `docz`
+
+## Commands
+
+```sh
+# Install
+yarn # npm i
+
+# Develop
+yarn dev # npm run dev
+
+# Build
+yarn build # npm run build
+
+# Serve (the "build" output)
+yarn serve # npm run serve
+```
+>>>>>>> 4a8675655... feat: nuke UI project; start new with updated tooling BREAKING_CHANGE (#1468)

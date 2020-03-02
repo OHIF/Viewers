@@ -1,23 +1,19 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const baseClasses =
-  'text-center items-center outline-none transition duration-300 ease-in-out font-bold focus:outline-none';
-
 const defaults = {
-  color: 'default',
-  disabled: false,
-  fullWidth: false,
-  rounded: 'medium',
-  size: 'medium',
-  type: 'button',
   variant: 'contained',
+  color: 'default',
+  size: 'medium',
+  radius: 'medium',
+  disabled: false,
+  type: 'button',
 };
 
-const roundedClasses = {
+const radiusClasses = {
   none: '',
-  small: 'rounded',
+  small: 'rounded-sm',
   medium: 'rounded-md',
   large: 'rounded-lg',
   full: 'rounded-full',
@@ -30,46 +26,26 @@ const disabledClasses = {
 
 const variantClasses = {
   text: {
-    default:
-      'text-primary-light hover:bg-primary-light hover:text-white active:opacity-80 focus:bg-primary-light focus:text-white',
-    primary:
-      'text-primary-main hover:bg-primary-main hover:text-white active:opacity-80 focus:bg-primary-main focus:text-white',
-    secondary:
-      'text-darkBlue-100 hover:bg-darkBlue-100 hover:text-white active:opacity-80 focus:bg-darkBlue-100 focus:text-white',
-    white:
-      'text-white hover:bg-white hover:text-black active:opacity-80 focus:bg-white focus:text-black',
+    default: 'hover:bg-gray-200 text-black',
+    primary: 'hover:bg-blue-100 text-blue-900',
+    secondary: 'hover:bg-blue-100 text-blue-300',
   },
   outlined: {
-    default:
-      'border bg-trasparent border-primary-light text-primary-light hover:opacity-80 active:opacity-100 focus:opacity-80',
-    primary:
-      'border bg-transparent border-primary-main text-primary-main hover:opacity-80 active:opacity-100 focus:opacity-80',
-    secondary:
-      'border bg-transparent border-darkBlue-100 text-darkBlue-100 hover:opacity-80 active:opacity-100 focus:opacity-80',
-    white:
-      'border bg-transparent border-white text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    default: 'border border-black text-black hover:bg-gray-200',
+    primary: 'border border-blue-900 text-blue-900 hover:bg-blue-100',
+    secondary: 'border border-blue-300 text-blue-300 hover:bg-blue-100',
   },
   contained: {
-    default:
-      'bg-primary-light text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
-    primary:
-      'bg-primary-main text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
-    secondary:
-      'bg-darkBlue-100 text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
-    white:
-      'bg-white text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
+    default: 'bg-black hover:bg-gray-800 text-white',
+    primary: 'bg-blue-900 hover:bg-blue-800 text-white',
+    secondary: 'bg-blue-300 hover:bg-blue-500 text-black',
   },
 };
 
 const sizeClasses = {
-  small: 'py-1 px-3 text-base',
-  medium: 'py-1 px-4 text-lg',
-  large: 'py-1 px-6 text-xl',
-};
-
-const fullWidthClasses = {
-  true: 'flex w-full',
-  false: 'inline-flex',
+  small: 'py-1 px-2 text-sm',
+  medium: 'py-2 px-4 text-base',
+  large: 'py-3 px-6 text-lg',
 };
 
 const Button = ({
@@ -77,52 +53,33 @@ const Button = ({
   variant = defaults.variant,
   color = defaults.color,
   size = defaults.size,
-  rounded = defaults.rounded,
+  radius = defaults.radius,
   disabled = defaults.disabled,
   type = defaults.type,
-  fullWidth = defaults.fullWidth,
   startIcon: startIconProp,
   endIcon: endIconProp,
   className,
   ...rest
 }) => {
+  const baseClasses =
+    'inline-flex items-center outline-none transition duration-300 ease-in-out font-bold focus:outline-none';
+
   const startIcon = startIconProp && (
-    <div className="mr-2">
-      {React.cloneElement(startIconProp, {
-        className: classnames('w-4 h-4 fill-current'),
-      })}
-    </div>
+    <div className="mr-2">{startIconProp}</div>
   );
 
-  const endIcon = endIconProp && (
-    <div className="ml-2">
-      {React.cloneElement(endIconProp, {
-        className: classnames('w-4 h-4 fill-current'),
-      })}
-    </div>
-  );
-  const buttonElement = useRef(null);
-
-  const handleOnClick = e => {
-    buttonElement.current.blur();
-    if (rest.onClick) {
-      rest.onClick(e);
-    }
-  };
+  const endIcon = endIconProp && <div className="ml-2">{endIconProp}</div>;
 
   return (
     <button
       className={classnames(
         baseClasses,
         variantClasses[variant][color],
-        roundedClasses[rounded],
+        radiusClasses[radius],
         sizeClasses[size],
-        fullWidthClasses[fullWidth],
         disabledClasses[disabled],
         className
       )}
-      ref={buttonElement}
-      onClick={handleOnClick}
       type={type}
       {...rest}
     >
@@ -136,10 +93,9 @@ const Button = ({
 Button.propTypes = {
   children: PropTypes.node,
   size: PropTypes.oneOf(['small', 'medium', 'large']),
-  rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
+  radius: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
-  color: PropTypes.oneOf(['default', 'primary', 'secondary', 'white']),
-  fullWidth: PropTypes.bool,
+  color: PropTypes.oneOf(['default', 'primary', 'secondary']),
   disabled: PropTypes.bool,
   type: PropTypes.string,
   startIcon: PropTypes.node,

@@ -24,17 +24,16 @@
     "dev:dicom-html": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
-    "prepublishOnly": "yarn run build",
     "start": "yarn run dev"
   },
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
     "dcmjs": "^0.12.3",
     "prop-types": "^15.6.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0"
   },
   "dependencies": {
-    "@babel/runtime": "^7.5.5"
+    "@babel/runtime": "7.7.6"
   }
 }
