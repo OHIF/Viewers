@@ -81,7 +81,6 @@ const IconButton = ({
   disabled = defaults.disabled,
   type = defaults.type,
   fullWidth = defaults.fullWidth,
-
   className,
   ...rest
 }) => {
@@ -126,8 +125,6 @@ IconButton.propTypes = {
   fullWidth: PropTypes.bool,
   disabled: PropTypes.bool,
   type: PropTypes.string,
-  startIcon: PropTypes.node,
-  endIcon: PropTypes.node,
   className: PropTypes.node,
 };
 
