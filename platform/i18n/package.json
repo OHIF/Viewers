@@ -24,7 +24,6 @@
     "dev:i18n": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
-    "prepublishOnly": "yarn run build",
     "pullTranslations": "./pullTranslations.sh",
     "test:unit": "echo 'platform/i18n: missing unit tests'",
     "test:unit:ci": "echo 'platform/i18n: missing unit tests'"
@@ -32,8 +31,8 @@
   "peerDependencies": {
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
+    "react": ">=16.11.0",
+    "react-dom": ">=16.11.0",
     "react-i18next": "^10.11.0"
   },
   "dependencies": {

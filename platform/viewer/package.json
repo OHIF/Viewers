@@ -34,7 +34,6 @@
     "test:e2e:serve": "serve -n -l 3000 -s dist",
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage",
-    "prepublishOnly": "yarn run build:package",
     "postpublish": "node -p -e \"require('./package.json').version\" > success_version.txt"
   },
   "files": [

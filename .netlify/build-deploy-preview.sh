@@ -20,7 +20,7 @@ node -v
 # yarn run build:package
 
 # Build && Move Docz Output
-yarn run build:ui
+yarn run build:ui:deploy-preview
 mkdir -p ./.netlify/www/ui
 mv platform/ui/.docz/dist/* .netlify/www/ui -v
 
