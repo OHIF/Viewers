@@ -13,7 +13,7 @@
 [build.environment]
   NODE_ENV = "production"
   NODE_VERSION = "10.16.0"
-  YARN_VERSION = "1.22.0"
+  YARN_VERSION = "1.18.0" # 1.22.0
   RUBY_VERSION = "2.6.2"
   YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
 
