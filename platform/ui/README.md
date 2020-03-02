@@ -1,41 +1,19 @@
-# Basic Docz example
+# @ohif/ui
 
-## Using `create-docz-app`
+React component library powered by `docz`
 
-```sh
-npx create-docz-app docz-app-basic
-# or
-yarn create docz-app docz-app-basic
-```
-
-## Download manually
+## Commands
 
 ```sh
-curl https://codeload.github.com/doczjs/docz/tar.gz/master | tar -xz --strip=2 docz-master/examples/basic
-mv basic docz-basic-example
-cd docz-basic-example
-```
-
-## Setup
-
-```sh
+# Install
 yarn # npm i
-```
 
-## Run
-
-```sh
+# Develop
 yarn dev # npm run dev
-```
 
-## Build
-
-```sh
+# Build
 yarn build # npm run build
-```
 
-## Serve built app
-
-```sh
+# Serve (the "build" output)
 yarn serve # npm run serve
 ```

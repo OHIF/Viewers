@@ -80,7 +80,7 @@ const Button = ({
   rounded = defaults.rounded,
   disabled = defaults.disabled,
   type = defaults.type,
-  fullWidth = defaults.fullWidth,
+  fullWidth = defaults.fullWidth,,
   startIcon: startIconProp,
   endIcon: endIconProp,
   className,
