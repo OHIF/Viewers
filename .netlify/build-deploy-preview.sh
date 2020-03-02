@@ -6,6 +6,7 @@ cd "$(dirname "$0")"
 cd .. # Up to project root
 
 # Helpful to verify which versions we're using
+echo 'My yarn version is... '
 yarn -v
 node -v
 
