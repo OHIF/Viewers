@@ -10,6 +10,7 @@ const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 // ~~ PLUGINS
 const TerserJSPlugin = require('terser-webpack-plugin');
+const PnpWebpackPlugin = require('pnp-webpack-plugin'); // Required until Webpack@5
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
 const QUICK_BUILD = process.env.QUICK_BUILD;
@@ -71,6 +72,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       symlinks: true,
     },
     plugins: [
+      PnpWebpackPlugin,
       new webpack.DefinePlugin({
         /* Application */
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
@@ -81,10 +83,17 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
         /* i18n */
         'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
-        'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
-        'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
+        'process.env.LOCIZE_PROJECTID': JSON.stringify(
+          process.env.LOCIZE_PROJECTID || ''
+        ),
+        'process.env.LOCIZE_API_KEY': JSON.stringify(
+          process.env.LOCIZE_API_KEY || ''
+        ),
       }),
     ],
+    resolveLoader: {
+      plugins: [PnpWebpackPlugin.moduleLoader(module)],
+    },
     // Fix: https://github.com/webpack-contrib/css-loader/issues/447#issuecomment-285598881
     // For issue in cornerstone-wado-image-loader
     node: {
