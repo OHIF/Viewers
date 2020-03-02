@@ -28,7 +28,7 @@
 [context.deploy-preview]
   base = ""
   publish = ".netlify/www/"
-  command = "yarn list && build-deploy-preview.sh"
+  command = ".netlify/build-deploy-preview.sh"
 
 [[headers]]
   # Define which paths this specific [[headers]] block will cover.
