@@ -56,6 +56,7 @@ const Button = ({
   radius = defaults.radius,
   disabled = defaults.disabled,
   type = defaults.type,
+  fullWidth = defaults.fullWidth,
   startIcon: startIconProp,
   endIcon: endIconProp,
   className,
