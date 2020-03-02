@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.7.2...@ohif/viewer@3.7.3) (2020-03-02)
+
+
+### Bug Fixes
+
+* GCloud dataset picker dialog broken ([#1453](https://github.com/OHIF/Viewers/issues/1453)) ([64dfbea](https://github.com/OHIF/Viewers/commit/64dfbeab7af98277efefadd334df14db79e32a4f))
+
+
+
+
+
 ## [3.7.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.7.1...@ohif/viewer@3.7.2) (2020-02-29)
 
 
