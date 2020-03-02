@@ -17,7 +17,7 @@
     "build": "lerna run build:viewer --stream",
     "build:lt": "lerna run build:viewer:lesion-tracker --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
-    "build:ui": "lerna run build:ui --stream",
+    "build:ui:deploy-preview": "lerna run build:ui:deploy-preview --stream",
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package": "lerna run build:viewer:package --stream",
     "build:package-all": "lerna run build:package --parallel --stream",

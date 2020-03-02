@@ -19,9 +19,10 @@
   ],
   "scripts": {
     "start": "yarn run dev",
-    "build:ui": "docz build",
-    "dev": "docz dev",
     "build": "docz build",
+    "build:ui:ci": "docz build",
+    "build:ui:deploy-preview": "docz build --base=/ui/",
+    "dev": "docz dev",
     "serve": "docz serve"
   },
   "dependencies": {
