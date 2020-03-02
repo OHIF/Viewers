@@ -10,8 +10,8 @@ echo 'My yarn version is... '
 yarn -v
 node -v
 
-# Not sure why we have to do this:
-# yarn global add lerna
+echo 'Reinstall / symlinks'
+yarn
 
 # Build && Move PWA Output
 # yarn run build:ci
