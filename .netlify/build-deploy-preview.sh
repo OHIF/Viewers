@@ -11,14 +11,6 @@ echo 'My yarn version is... '
 yarn -v
 node -v
 
-# Make sure we can hit yarn packages
-yarn global bin
-yarn config get prefix
-yarn config set prefix ~/.yarn
-export PATH="$PATH:`yarn global bin`"
-
-echo '~~ Revving our engines'
-
 # Build && Move PWA Output
 # yarn run build:ci
 # mkdir -p ./.netlify/www/pwa
