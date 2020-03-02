@@ -49,7 +49,8 @@
   "dependencies": {
     "@babel/runtime": "7.7.6",
     "lodash.throttle": "^4.1.1",
-    "react-vtkjs-viewport": "^0.8.3"
+    "react-vtkjs-viewport": "^0.8.3",
+    "vtk.js": "^13.10.0"
   },
   "devDependencies": {
     "@ohif/core": "^2.5.1",
