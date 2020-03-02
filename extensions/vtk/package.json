@@ -39,7 +39,7 @@
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
     "prop-types": "^15.7.2",
-    "react": "^16.8.6",
+    "react": "^16.11.0",
     "react-dom": "^16.8.6",
     "react-i18next": "^10.11.0",
     "react-redux": "^7.1.0",

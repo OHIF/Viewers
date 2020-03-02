@@ -42,7 +42,7 @@
     "README.md"
   ],
   "peerDependencies": {
-    "react": "^16.8.6",
+    "react": "^16.11.0",
     "react-dom": "^16.8.6"
   },
   "dependencies": {
