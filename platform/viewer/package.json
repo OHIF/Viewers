@@ -84,11 +84,12 @@
     "redux-logger": "^3.0.6",
     "redux-oidc": "3.1.x",
     "redux-thunk": "^2.3.0",
-    "reselect": "^4.0.0",
-    "vtk.js": "^11.7.2"
+    "reselect": "^4.0.0"
   },
   "devDependencies": {
+    "@percy/cypress": "^2.3.0",
     "cypress": "^3.8.0",
+    "cypress-file-upload": "^3.5.3",
     "gh-pages": "2.0.1",
     "identity-obj-proxy": "3.0.x",
     "lodash": "4.17.15",
