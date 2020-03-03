@@ -101,7 +101,7 @@ Button.propTypes = {
   type: PropTypes.string,
   startIcon: PropTypes.node,
   endIcon: PropTypes.node,
-  className: PropTypes.node,
+  className: PropTypes.string,
 };
 
 export default Button;
