@@ -7,7 +7,7 @@
   background: #000;
 }
 
-[data-testid='main-container'] h2 {
+[data-testid='main-container'] > h2 {
   margin: 20px 0;
   font-weight: bold;
 }
