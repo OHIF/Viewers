@@ -1,0 +1,65 @@
+---
+name: Typography
+menu: Components
+route: components/typography
+---
+
+import { Playground, Props } from 'docz';
+import Typography from './';
+
+# Typography
+
+Use typography to display text using the available props for customizing your
+content.
+
+## Import
+
+```javascript
+import { Typography } from '@ohfi/ui';
+```
+
+## Properties
+
+<Props of={Typography} />
+
+## Basic usage
+
+<Playground>
+  <Typography variant="h1">
+    h1. The five boxing wizards jump quickly.
+  </Typography>
+  <Typography variant="h2">
+    h2. The five boxing wizards jump quickly.
+  </Typography>
+  <Typography variant="h3">
+    h3. The five boxing wizards jump quickly.
+  </Typography>
+  <Typography variant="h4">
+    h4. The five boxing wizards jump quickly.
+  </Typography>
+  <Typography variant="h5">
+    h5. The five boxing wizards jump quickly.
+  </Typography>
+  <Typography variant="h6">
+    h6. The five boxing wizards jump quickly.
+  </Typography>
+  <Typography variant="subtitle">
+    subtitle. The five boxing wizards jump quickly.
+  </Typography>
+  <Typography variant="body">
+    body. The five boxing wizards jump quickly.
+  </Typography>
+</Playground>
+
+## Changing the HTML element
+
+There are different semantic elements to be used in the Typography component.
+You can use the prop `component` to associate the component to be rendered with
+a semantic element. The style of a Typography is independent of the semantic
+element.
+
+<Playground>
+  <Typography variant="h1" component="h2">
+    This is a h2 using the h1 styles.
+  </Typography>
+</Playground>
