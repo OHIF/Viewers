@@ -1,4 +1,4 @@
-import { redux } from '@ohif/core';
+import { redux, utils } from '@ohif/core';
 import store from './../../store';
 
 const commandsModule = ({ commandsManager }) => {
@@ -77,16 +77,6 @@ const commandsModule = ({ commandsManager }) => {
       commandFn: actions.updateViewportDisplaySet,
       storeContexts: ['viewports'],
       options: {},
-    },
-    nextViewportDisplaySet: {
-      commandFn: actions.updateViewportDisplaySet,
-      storeContexts: ['viewports'],
-      options: { direction: 1 },
-    },
-    previousViewportDisplaySet: {
-      commandFn: actions.updateViewportDisplaySet,
-      storeContexts: ['viewports'],
-      options: { direction: -1 },
     },
     // Window level Presets
     windowLevelPreset1: {
