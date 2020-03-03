@@ -16,6 +16,9 @@ const tabs = [
     getProps: ({ currentStudyUid, comparisonStudyUid, studies }) => ({
       currentStudy: findStudy(studies, currentStudyUid),
       comparisonStudy: findStudy(studies, comparisonStudyUid),
+      onStudyClick: () => {},
+      onSeriesClick: () => {},
+      onSeriesDoubleClick: () => {},
     }),
   },
   {
@@ -23,6 +26,9 @@ const tabs = [
     Component: AllStudies,
     getProps: ({ currentStudyUid, comparisonStudyUid, studies }) => ({
       studies: filterStudies(studies, [currentStudyUid, comparisonStudyUid]),
+      onStudyClick: () => {},
+      onSeriesClick: () => {},
+      onSeriesDoubleClick: () => {},
     }),
   },
 ];

@@ -7,44 +7,67 @@ import { getStudyData } from './utils';
 
 import './ViewingStudies.styl';
 
-function ViewingStudies({ currentStudy, comparisonStudy }) {
+function ViewingStudies({
+  currentStudy,
+  comparisonStudy,
+  onStudyClick,
+  onSeriesClick,
+  onSeriesDoubleClick,
+}) {
   const [activeStudyUid, setActiveStudyUid] = useState('');
+
+  const handleStudyClick = study => {
+    if (study.studyInstanceUid === activeStudyUid) {
+      setActiveStudyUid('');
+    } else {
+      setActiveStudyUid(study.studyInstanceUid);
+    }
+
+    if (onStudyClick) {
+      onStudyClick(study);
+    }
+  };
+
+  const handleThumbnailClick = thumbnail => {
+    if (onSeriesClick) {
+      onSeriesClick(thumbnail);
+    }
+  };
+
+  const handleThumbnailDoubleClick = thumbnail => {
+    if (onSeriesClick) {
+      onSeriesDoubleClick(thumbnail);
+    }
+  };
+
+  const studyContent = study => {
+    return (
+      <React.Fragment>
+        <StudyItem
+          onClick={() => handleStudyClick(study)}
+          studyData={getStudyData(study)}
+          active={activeStudyUid === study.studyInstanceUid}
+        />
+        {activeStudyUid === study.studyInstanceUid && (
+          <ThumbnailsList
+            onThumbnailClick={handleThumbnailClick}
+            onThumbnailDoubleClick={handleThumbnailDoubleClick}
+            studies={[study]}
+          />
+        )}
+      </React.Fragment>
+    );
+  };
 
   return (
     <div className="ViewingStudies">
       <div className="CurrentStudyWrapper">
         <div className="studyWrapperHeader">Current</div>
-        <StudyItem
-          onClick={() => {
-            setActiveStudyUid(currentStudy.studyInstanceUid);
-          }}
-          studyData={getStudyData(currentStudy)}
-          active={activeStudyUid === currentStudy.studyInstanceUid}
-        />
-        {activeStudyUid === currentStudy.studyInstanceUid && (
-          <ThumbnailsList
-            onThumbnailClick={() => {}}
-            onThumbnailDoubleClick={() => {}}
-            studies={[currentStudy]}
-          />
-        )}
+        {studyContent(currentStudy)}
       </div>
       <div className="ComparisonStudyWrapper">
         <div className="studyWrapperHeader">Comparison</div>
-        <StudyItem
-          onClick={() => {
-            setActiveStudyUid(comparisonStudy.studyInstanceUid);
-          }}
-          studyData={getStudyData(comparisonStudy)}
-          active={activeStudyUid === comparisonStudy.studyInstanceUid}
-        />
-        {activeStudyUid === comparisonStudy.studyInstanceUid && (
-          <ThumbnailsList
-            onThumbnailClick={() => {}}
-            onThumbnailDoubleClick={() => {}}
-            studies={[comparisonStudy]}
-          />
-        )}
+        {studyContent(comparisonStudy)}
       </div>
     </div>
   );
@@ -53,6 +76,9 @@ function ViewingStudies({ currentStudy, comparisonStudy }) {
 ViewingStudies.propTypes = {
   currentStudy: PropTypes.object,
   comparisonStudy: PropTypes.object,
+  onStudyClick: PropTypes.func,
+  onSeriesClick: PropTypes.func,
+  onSeriesDoubleClick: PropTypes.func,
 };
 
 export { ViewingStudies };
