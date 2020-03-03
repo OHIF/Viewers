@@ -43,33 +43,6 @@ export default {
       defaultContext: ['ACTIVE_VIEWPORT:VIEWER'],
     };
   },
-  // {
-  // TODO:
-  // - Right, alternative StudyBrowser
-  // - Left, alternative Measurements Table
-  // menuOptions: [
-  //   {
-  //     // A suggested icon
-  //     // Available icons determined by consuming app
-  //     icon: 'list',
-  //     // A suggested label
-  //     label: 'Magic',
-  //     // 'right' or 'left'
-  //     from: 'right',
-  //     // The target component to toggle open/close
-  //     target: 'target-component-id',
-  //     // Overrides `defaultContext`, if specified
-  //     context: ['ACTIVE_VIEWPORT:MAGIC'],
-  //   },
-  // ],
-  // components: [
-  //   {
-  //     id: 'target-component-id',
-  //     component: MyComponent,
-  //   },
-  // ],
-  // defaultContext: ['ROUTE:VIEWER'],
-  // };
 
   /**
    * @param {object} params
