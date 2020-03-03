@@ -46,7 +46,7 @@ function TabComponents({ tabs, customProps = {} }) {
             <div className="dialog-separator-after">
               <ul className="nav nav-tabs">
                 {tabs.map((tab, index) => {
-                  const { name, hidden } = tab;
+                  const { name, hidden = false } = tab;
                   return (
                     !hidden && (
                       <li
@@ -70,7 +70,11 @@ function TabComponents({ tabs, customProps = {} }) {
           </div>
         </div>
         {tabs.map((tab, index) => {
-          const { Component, customProps: tabCustomProps, hidden } = tab;
+          const {
+            Component,
+            customProps: tabCustomProps,
+            hidden = false,
+          } = tab;
           return (
             !hidden && (
               <div

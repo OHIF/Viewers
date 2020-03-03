@@ -242,6 +242,18 @@ const commandsModule = ({ servicesManager }) => {
     setCornerstoneLayout: () => {
       setCornerstoneLayout();
     },
+    setWindowLevel: ({ viewports, window, level }) => {
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+
+      if (enabledElement) {
+        let viewport = cornerstone.getViewport(enabledElement);
+        viewport.voi = {
+          windowWidth: Number(window),
+          windowCenter: Number(level),
+        };
+        cornerstone.setViewport(enabledElement, viewport);
+      }
+    },
   };
 
   const definitions = {
@@ -341,6 +353,11 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: {},
       context: 'VIEWER',
+    },
+    setWindowLevel: {
+      commandFn: actions.setWindowLevel,
+      storeContexts: ['viewports'],
+      options: {},
     },
   };
 

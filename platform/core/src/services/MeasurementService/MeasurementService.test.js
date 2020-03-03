@@ -262,7 +262,7 @@ describe('MeasurementService.js', () => {
 
       source.addOrUpdate(definition, measurement);
 
-      expect(log.error.mock.calls.length).toBe(1);
+      expect(log.warn.mock.calls.length).toBe(1);
     });
 
     it('adds new measurement with custom id', () => {

@@ -271,7 +271,7 @@ class MeasurementService {
       /* Assign measurement source instance */
       measurement.source = source;
     } catch (error) {
-      log.error(`Failed to map '${sourceInfo}' measurement for definition ${definition}:`, error.message);
+      log.warn(`Failed to map '${sourceInfo}' measurement for definition ${definition}:`, error.message);
       return;
     }
 
