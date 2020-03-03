@@ -13,6 +13,8 @@ module.exports = {
       transparent: 'transparent',
       black: '#000',
       white: '#fff',
+      initial: 'initial',
+      inherit: 'inherit',
 
       primary: {
         light: '#5acde7',
