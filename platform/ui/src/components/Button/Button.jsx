@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const baseClasses =
-  'text-center items-center outline-none transition duration-300 ease-in-out font-bold focus:outline-none';
+  'leading-none font-sans text-center justify-center items-center outline-none transition duration-300 ease-in-out focus:outline-none';
 
 const defaults = {
   color: 'default',
@@ -31,40 +31,40 @@ const disabledClasses = {
 const variantClasses = {
   text: {
     default:
-      'text-primary-light hover:bg-primary-light hover:text-white active:opacity-80 focus:bg-primary-light focus:text-white',
+      'text-custom-aquaBright hover:bg-custom-aquaBright hover:text-white active:opacity-80 focus:bg-custom-aquaBright focus:text-white',
     primary:
-      'text-primary-main hover:bg-primary-main hover:text-white active:opacity-80 focus:bg-primary-main focus:text-white',
+      'text-custom-blue hover:bg-custom-blue hover:text-white active:opacity-80 focus:bg-custom-blue focus:text-white',
     secondary:
-      'text-darkBlue-100 hover:bg-darkBlue-100 hover:text-white active:opacity-80 focus:bg-darkBlue-100 focus:text-white',
+      'text-custom-violetPale hover:bg-custom-violetPale hover:text-white active:opacity-80 focus:bg-custom-violetPale focus:text-white',
     white:
       'text-white hover:bg-white hover:text-black active:opacity-80 focus:bg-white focus:text-black',
   },
   outlined: {
     default:
-      'border bg-trasparent border-primary-light text-primary-light hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border bg-trasparent border-custom-aquaBright text-custom-aquaBright hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary:
-      'border bg-transparent border-primary-main text-primary-main hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border bg-transparent border-custom-blue text-custom-blue hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
-      'border bg-transparent border-darkBlue-100 text-darkBlue-100 hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border bg-transparent border-custom-violetPale text-custom-violetPale hover:opacity-80 active:opacity-100 focus:opacity-80',
     white:
       'border bg-transparent border-white text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
   contained: {
     default:
-      'bg-primary-light text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'bg-custom-aquaBright text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary:
-      'bg-primary-main text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'bg-custom-blue text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
-      'bg-darkBlue-100 text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'bg-custom-violetPale text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     white:
       'bg-white text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
 };
 
 const sizeClasses = {
-  small: 'py-1 px-3 text-base',
-  medium: 'py-1 px-4 text-lg',
-  large: 'py-1 px-6 text-xl',
+  small: 'py-2 px-2 text-base',
+  medium: 'py-2 px-2 text-lg',
+  large: 'py-2 px-6 text-xl',
 };
 
 const fullWidthClasses = {

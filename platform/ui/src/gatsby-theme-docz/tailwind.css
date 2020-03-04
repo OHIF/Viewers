@@ -1,3 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* IMPORT CUSTOM FONT */
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
