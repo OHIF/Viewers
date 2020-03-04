@@ -1,6 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
 import merge from 'lodash.merge';
-
 import {
   CLEAR_VIEWPORT,
   SET_ACTIVE_SPECIFIC_DATA,
@@ -177,7 +176,12 @@ const viewports = (state = DEFAULT_STATE, action) => {
           action.viewportSpecificData.plugin;
       }
 
-      return { ...state, layout, viewportSpecificData };
+      return {
+        ...state,
+        layout,
+        viewportSpecificData,
+        activeViewportIndex: action.viewportIndex,
+      };
     }
 
     /**
