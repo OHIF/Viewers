@@ -1,28 +1,21 @@
 import OHIF from '@ohif/core';
 import { SimpleDialog } from '@ohif/ui';
 import cornerstone from 'cornerstone-core';
-import {
-  default as cornerstoneTools,
-  default as csTools,
-} from 'cornerstone-tools';
+import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import queryString from 'query-string';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import { getEnabledElement } from './state';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 
-const draw = cornerstoneTools.importInternal('drawing/draw');
-const drawLine = cornerstoneTools.importInternal('drawing/drawLine');
-const convertToVector3 = cornerstoneTools.importInternal(
-  'util/convertToVector3'
-);
-const planeIntersection = cornerstoneTools.importInternal(
-  'util/planePlaneIntersection'
-);
-const projectPatientPointToImagePlane = cornerstoneTools.importInternal(
+const draw = csTools.importInternal('drawing/draw');
+const drawLine = csTools.importInternal('drawing/drawLine');
+const convertToVector3 = csTools.importInternal('util/convertToVector3');
+const planeIntersection = csTools.importInternal('util/planePlaneIntersection');
+const projectPatientPointToImagePlane = csTools.importInternal(
   'util/projectPatientPointToImagePlane'
 );
-const getNewContext = cornerstoneTools.importInternal('drawing/getNewContext');
+const getNewContext = csTools.importInternal('drawing/getNewContext');
 
 function fallbackMetaDataProvider(type, imageId) {
   if (!imageId.includes('wado?requestType=WADO')) {
@@ -515,9 +508,7 @@ const _enableReferenceLines = () => {
       ) {
         previousLayout = { numColumns, numRows };
 
-        const enabledElements = [
-          ...cornerstoneTools.store.state.enabledElements,
-        ];
+        const enabledElements = [...csTools.store.state.enabledElements];
 
         // We have all the elements
         if (enabledElements.length === viewportCount) {
@@ -539,7 +530,7 @@ const _enableReferenceLines = () => {
       if (previousLayout !== undefined) {
         previousLayout = undefined;
         unbindEnabledElementsEventListeners(
-          cornerstoneTools.store.state.enabledElements
+          csTools.store.state.enabledElements
         );
       }
     }
