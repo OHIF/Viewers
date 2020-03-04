@@ -36,7 +36,7 @@ function StudyListRoute(props) {
     studyDateTo: null,
     studyDateFrom: null,
     PatientName: '',
-    PatientId: '',
+    PatientID: '',
     AccessionNumber: '',
     StudyDate: '',
     modalities: '',
@@ -279,7 +279,7 @@ function StudyListRoute(props) {
 
 StudyListRoute.propTypes = {
   filters: PropTypes.object,
-  PatientId: PropTypes.string,
+  PatientID: PropTypes.string,
   server: PropTypes.object,
   user: PropTypes.object,
   history: PropTypes.object,
@@ -342,11 +342,11 @@ async function getStudyList(
   const studyDateTo = filters.studyDateTo || new Date();
 
   const mappedFilters = {
-    PatientId: filters.PatientId,
+    PatientID: filters.PatientID,
     PatientName: filters.PatientName,
     AccessionNumber: filters.AccessionNumber,
     StudyDescription: filters.StudyDescription,
-    modalitiesInStudy: filters.modalities,
+    ModalitiesInStudy: filters.modalities,
     // NEVER CHANGE
     studyDateFrom,
     studyDateTo,
@@ -372,7 +372,7 @@ async function getStudyList(
       // numberOfStudyRelatedInstances: "3"
       // numberOfStudyRelatedSeries: "3"
       // PatientBirthdate: undefined
-      PatientId: study.PatientId, // "NOID"
+      PatientID: study.PatientID, // "NOID"
       PatientName, // "NAME^NONE"
       // PatientSex: "M"
       // referringPhysicianName: undefined
@@ -486,11 +486,11 @@ async function _fetchStudies(
     const firstSet = _getQueryFiltersForValue(
       filters,
       [
-        'PatientId',
+        'PatientID',
         'PatientName',
         'AccessionNumber',
         'StudyDescription',
-        'modalitiesInStudy',
+        'ModalitiesInStudy',
       ],
       allFields
     );
@@ -501,13 +501,13 @@ async function _fetchStudies(
   } else if (displaySize === 'medium') {
     const firstSet = _getQueryFiltersForValue(
       filters,
-      ['PatientId', 'PatientName'],
+      ['PatientID', 'PatientName'],
       patientNameOrId
     );
 
     const secondSet = _getQueryFiltersForValue(
       filters,
-      ['AccessionNumber', 'StudyDescription', 'modalitiesInStudy'],
+      ['AccessionNumber', 'StudyDescription', 'ModalitiesInStudy'],
       accessionOrModalityOrDescription
     );
 
@@ -557,11 +557,11 @@ function _getQueryFiltersForValue(filters, fields, value) {
   fields.forEach(field => {
     const filter = Object.assign(
       {
-        PatientId: '',
+        PatientID: '',
         PatientName: '',
         AccessionNumber: '',
         StudyDescription: '',
-        modalitiesInStudy: '',
+        ModalitiesInStudy: '',
       },
       filters
     );

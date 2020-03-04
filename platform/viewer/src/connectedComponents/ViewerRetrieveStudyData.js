@@ -91,8 +91,8 @@ const _isQueryParamApplied = (study, filters = {}, isFilterStrategy) => {
     return applied;
   }
 
-  const { seriesList = [], displaySets = [] } = study;
-  const firstSeries = isFilterStrategy ? seriesList[0] : displaySets[0];
+  const { series = [], displaySets = [] } = study;
+  const firstSeries = isFilterStrategy ? series[0] : displaySets[0];
 
   if (!firstSeries || firstSeries.SeriesInstanceUID !== seriesInstanceUID) {
     applied = false;

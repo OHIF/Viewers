@@ -37,7 +37,7 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
       );
 
       const { _study: study, _series: series } = instanceMetadata;
-      const { StudyInstanceUID, PatientId } = study;
+      const { StudyInstanceUID, PatientID } = study;
       const { SeriesInstanceUID } = series;
       const { sopInstanceUid, frameIndex } = measurement;
       const imagePath = getImagePath(
@@ -60,7 +60,7 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
         imagePath,
         SeriesInstanceUID,
         StudyInstanceUID,
-        PatientId,
+        PatientID,
         measurementNumber: ++measurementNumber,
         timepointId: currentTimepointId,
         toolType: toolName,

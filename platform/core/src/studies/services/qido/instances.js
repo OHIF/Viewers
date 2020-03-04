@@ -12,7 +12,7 @@ import { api } from 'dicomweb-client';
  */
 function resultDataToStudyMetadata(server, StudyInstanceUID, resultData) {
   const seriesMap = {};
-  const seriesList = [];
+  const series = [];
 
   resultData.forEach(function(instance) {
     // Use seriesMap to cache series data
@@ -32,7 +32,7 @@ function resultDataToStudyMetadata(server, StudyInstanceUID, resultData) {
 
       // Save this data in the seriesMap cache variable
       seriesMap[SeriesInstanceUID] = series;
-      seriesList.push(series);
+      series.push(series);
     }
 
     // The uri for the dicomweb
@@ -63,7 +63,7 @@ function resultDataToStudyMetadata(server, StudyInstanceUID, resultData) {
       InstanceNumber: DICOMWeb.getString(instance['00200013']),
     });
   });
-  return seriesList;
+  return series;
 }
 
 /**
@@ -71,7 +71,7 @@ function resultDataToStudyMetadata(server, StudyInstanceUID, resultData) {
  * @param server
  * @param StudyInstanceUID
  * @throws ECONNREFUSED
- * @returns {{wadoUriRoot: String, StudyInstanceUID: String, seriesList: Array}}
+ * @returns {{wadoUriRoot: String, StudyInstanceUID: String, series: Array}}
  */
 export default function Instances(server, StudyInstanceUID) {
   // TODO: Are we using this function anywhere?? Can we remove it?
@@ -93,11 +93,7 @@ export default function Instances(server, StudyInstanceUID) {
     return {
       wadoUriRoot: server.wadoUriRoot,
       StudyInstanceUID: StudyInstanceUID,
-      seriesList: resultDataToStudyMetadata(
-        server,
-        StudyInstanceUID,
-        result.data
-      ),
+      series: resultDataToStudyMetadata(server, StudyInstanceUID, result.data),
     };
   });
 }

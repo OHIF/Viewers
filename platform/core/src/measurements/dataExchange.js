@@ -1,6 +1,6 @@
 import log from '../log';
 
-export const retrieveMeasurements = (PatientId, timepointIds) => {
+export const retrieveMeasurements = (PatientID, timepointIds) => {
   log.error('retrieveMeasurements');
   return Promise.resolve();
 };

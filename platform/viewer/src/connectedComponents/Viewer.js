@@ -121,7 +121,7 @@ class Viewer extends Component {
         timepointType: 'baseline',
         timepointId: 'TimepointId',
         studyInstanceUids: this.props.studyInstanceUids,
-        PatientId: filter.PatientId,
+        PatientID: filter.PatientID,
         earliestDate,
         latestDate,
         isLocked: false,
@@ -179,11 +179,11 @@ class Viewer extends Component {
     this.measurementApi = measurementApi;
 
     if (studies) {
-      const PatientId = studies[0] && studies[0].PatientId;
+      const PatientID = studies[0] && studies[0].PatientID;
 
-      timepointApi.retrieveTimepoints({ PatientId });
+      timepointApi.retrieveTimepoints({ PatientID });
       if (isStudyLoaded) {
-        this.measurementApi.retrieveMeasurements(PatientId, [
+        this.measurementApi.retrieveMeasurements(PatientID, [
           currentTimepointId,
         ]);
       }
@@ -201,11 +201,11 @@ class Viewer extends Component {
       });
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
-      const PatientId = studies[0] && studies[0].PatientId;
+      const PatientID = studies[0] && studies[0].PatientID;
       const { currentTimepointId } = this;
 
-      this.timepointApi.retrieveTimepoints({ PatientId });
-      this.measurementApi.retrieveMeasurements(PatientId, [currentTimepointId]);
+      this.timepointApi.retrieveTimepoints({ PatientID });
+      this.measurementApi.retrieveMeasurements(PatientID, [currentTimepointId]);
     }
   }
 

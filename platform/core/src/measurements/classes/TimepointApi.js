@@ -55,7 +55,7 @@ export default class TimepointApi {
     });
     const filteredTimepoints = sortedTimepoints.find(
       tp =>
-        tp.PatientId === timepoint.PatientId &&
+        tp.PatientID === timepoint.PatientID &&
         tp.timepointType === timepoint.timepointType
     );
 

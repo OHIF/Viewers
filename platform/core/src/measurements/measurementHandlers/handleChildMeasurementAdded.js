@@ -38,7 +38,7 @@ export default function({ eventData, tool, toolGroupId, toolGroup }) {
   const parentMeasurement = collection.find(
     t =>
       t.toolType === tool.parentTool &&
-      t.PatientId === imageAttributes.PatientId &&
+      t.PatientID === imageAttributes.PatientID &&
       t[tool.attribute] === null
   );
 
@@ -63,7 +63,7 @@ export default function({ eventData, tool, toolGroupId, toolGroup }) {
       toolType: tool.parentTool,
       lesionNamingNumber: measurementData.lesionNamingNumber,
       userId: user.getUserId(),
-      PatientId: imageAttributes.PatientId,
+      PatientID: imageAttributes.PatientID,
       StudyInstanceUID: imageAttributes.StudyInstanceUID,
     };
 

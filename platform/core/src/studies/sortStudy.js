@@ -33,18 +33,18 @@ const sortingCriteria = {
 };
 
 /**
- * Sorts given seriesList (given param is modified)
+ * Sorts given series (given param is modified)
  * The default criteria is based on series number in ascending order.
  *
- * @param {Array} seriesList List of series
+ * @param {Array} series List of series
  * @param {function} seriesSortingCriteria method for sorting
- * @returns {Array} sorted seriesList object
+ * @returns {Array} sorted series object
  */
 const sortStudySeries = (
-  seriesList,
+  series,
   seriesSortingCriteria = seriesSortCriteria.default
 ) => {
-  return seriesList.sort(seriesSortingCriteria);
+  return series.sort(seriesSortingCriteria);
 };
 
 /**
@@ -78,14 +78,14 @@ export default function sortStudy(
   seriesSortingCriteria = seriesSortCriteria.default,
   instancesSortingCriteria = instancesSortCriteria.default
 ) {
-  if (!study || !study.seriesList) {
+  if (!study || !study.series) {
     throw new Error('Insufficient study data was provided to sortStudy');
   }
 
-  sortStudySeries(study.seriesList, seriesSortingCriteria);
+  sortStudySeries(study.series, seriesSortingCriteria);
 
   if (deepSort) {
-    study.seriesList.forEach(series => {
+    study.series.forEach(series => {
       sortStudyInstances(series.instances, instancesSortingCriteria);
     });
   }

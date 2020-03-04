@@ -49,7 +49,7 @@ function StudyList(props) {
     },
     {
       displayText: t('MRN'),
-      fieldName: 'PatientId',
+      fieldName: 'PatientID',
       inputType: 'text',
       size: 378,
     },
@@ -182,7 +182,7 @@ function StudyList(props) {
               onClick={StudyInstanceUID => handleSelectItem(StudyInstanceUID)}
               AccessionNumber={study.AccessionNumber || ''}
               modalities={study.modalities}
-              PatientId={study.PatientId || ''}
+              PatientID={study.PatientID || ''}
               PatientName={study.PatientName || ''}
               StudyDate={study.StudyDate}
               StudyDescription={study.StudyDescription || ''}
@@ -209,7 +209,7 @@ StudyList.propTypes = {
   // ~~ FILTERS
   filterValues: PropTypes.shape({
     PatientName: PropTypes.string.isRequired,
-    PatientId: PropTypes.string.isRequired,
+    PatientID: PropTypes.string.isRequired,
     AccessionNumber: PropTypes.string.isRequired,
     StudyDate: PropTypes.string.isRequired,
     modalities: PropTypes.string.isRequired,
@@ -232,7 +232,7 @@ function TableRow(props) {
     AccessionNumber,
     isHighlighted,
     modalities,
-    PatientId,
+    PatientID,
     PatientName,
     StudyDate,
     StudyDescription,
@@ -251,7 +251,7 @@ function TableRow(props) {
       <td className={classNames({ 'empty-value': !PatientName })}>
         {PatientName || `(${t('Empty')})`}
       </td>
-      <td>{PatientId}</td>
+      <td>{PatientID}</td>
       <td>{AccessionNumber}</td>
       <td>{StudyDate}</td>
       <td className={classNames({ 'empty-value': !modalities })}>
@@ -268,7 +268,7 @@ function TableRow(props) {
     >
       <td className={classNames({ 'empty-value': !PatientName })}>
         {PatientName || `(${t('Empty')})`}
-        <div style={{ color: '#60656f' }}>{PatientId}</div>
+        <div style={{ color: '#60656f' }}>{PatientID}</div>
       </td>
       <td>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -336,7 +336,7 @@ function TableRow(props) {
             <div style={{ fontWeight: 500, paddingTop: '3px' }}>
               {PatientName || `(${t('Empty')})`}
             </div>
-            <div style={{ color: '#60656f' }}>{PatientId}</div>
+            <div style={{ color: '#60656f' }}>{PatientID}</div>
           </div>
 
           {/* DESCRIPTION */}
@@ -394,7 +394,7 @@ TableRow.propTypes = {
   AccessionNumber: PropTypes.string.isRequired,
   isHighlighted: PropTypes.bool,
   modalities: PropTypes.string,
-  PatientId: PropTypes.string.isRequired,
+  PatientID: PropTypes.string.isRequired,
   PatientName: PropTypes.string.isRequired,
   StudyDate: PropTypes.string.isRequired,
   StudyDescription: PropTypes.string.isRequired,

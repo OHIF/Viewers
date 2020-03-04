@@ -36,10 +36,10 @@ function getQIDOQueryParams(filter, serverSupportsQIDOIncludeField) {
 
   const parameters = {
     PatientName: filter.PatientName,
-    PatientID: filter.PatientId,
+    PatientID: filter.PatientID,
     AccessionNumber: filter.AccessionNumber,
     StudyDescription: filter.StudyDescription,
-    ModalitiesInStudy: filter.modalitiesInStudy,
+    ModalitiesInStudy: filter.ModalitiesInStudy,
     limit: filter.limit,
     offset: filter.offset,
     fuzzymatching: filter.fuzzymatching,
@@ -93,7 +93,7 @@ function resultDataToStudies(resultData) {
       referringPhysicianName: DICOMWeb.getString(study['00080090']),
       // 00081190 = URL
       PatientName: DICOMWeb.getName(study['00100010']),
-      PatientId: DICOMWeb.getString(study['00100020']),
+      PatientID: DICOMWeb.getString(study['00100020']),
       PatientBirthdate: DICOMWeb.getString(study['00100030']),
       patientSex: DICOMWeb.getString(study['00100040']),
       studyId: DICOMWeb.getString(study['00200010']),
@@ -101,7 +101,7 @@ function resultDataToStudies(resultData) {
       numberOfStudyRelatedInstances: DICOMWeb.getString(study['00201208']),
       StudyDescription: DICOMWeb.getString(study['00081030']),
       // Modality: DICOMWeb.getString(study['00080060']),
-      // modalitiesInStudy: DICOMWeb.getString(study['00080061']),
+      // ModalitiesInStudy: DICOMWeb.getString(study['00080061']),
       modalities: DICOMWeb.getString(
         DICOMWeb.getModalities(study['00080060'], study['00080061'])
       ),

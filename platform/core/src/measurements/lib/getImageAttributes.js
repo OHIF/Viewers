@@ -5,10 +5,10 @@ export default function(element) {
   const enabledElement = cornerstone.getEnabledElement(element);
   const imageId = enabledElement.image.imageId;
 
-  // Get StudyInstanceUID & PatientId
+  // Get StudyInstanceUID & PatientID
   const {
     StudyInstanceUID,
-    PatientID: PatientId,
+    PatientID,
     SeriesInstanceUID,
     SOPInstanceUID,
   } = cornerstone.metaData.get('instance', imageId);
@@ -25,7 +25,7 @@ export default function(element) {
   ].join('_');
 
   return {
-    PatientId,
+    PatientID,
     StudyInstanceUID,
     SeriesInstanceUID,
     SOPInstanceUID,

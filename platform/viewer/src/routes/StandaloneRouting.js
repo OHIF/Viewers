@@ -91,7 +91,7 @@ class StandaloneRouting extends Component {
           data.studies.forEach(study => {
             StudyInstanceUID = study.StudyInstanceUID;
 
-            study.seriesList.forEach(series => {
+            study.series.forEach(series => {
               SeriesInstanceUID = series.SeriesInstanceUID;
 
               series.instances.forEach(instance => {

@@ -8,9 +8,8 @@ import guid from '../../utils/guid';
 import studyMetadataManager from '../../utils/studyMetadataManager';
 import { measurementApiDefaultConfig } from './../configuration.js';
 
-
 const configuration = {
-  ...measurementApiDefaultConfig
+  ...measurementApiDefaultConfig,
 };
 
 export default class MeasurementApi {
@@ -221,7 +220,7 @@ export default class MeasurementApi {
     this.options.onMeasurementsUpdated(Object.assign({}, this.tools));
   }
 
-  retrieveMeasurements(PatientId, timepointIds) {
+  retrieveMeasurements(PatientID, timepointIds) {
     const retrievalFn = configuration.dataExchange.retrieve;
     const { server } = configuration;
     if (typeof retrievalFn !== 'function') {
@@ -297,9 +296,9 @@ export default class MeasurementApi {
       : null;
     const timepoints = this.timepointApi.all(timepointFilter);
     const timepointIds = timepoints.map(t => t.timepointId);
-    const PatientId = timepoints[0].PatientId;
+    const PatientID = timepoints[0].PatientID;
     const filter = {
-      PatientId,
+      PatientID,
       timepointIds,
     };
 

@@ -12,7 +12,7 @@ export class QuickSwitch extends Component {
     side: PropTypes.string,
     studyListData: PropTypes.array.isRequired,
     onSeriesSelected: PropTypes.func.isRequired,
-    seriesListData: PropTypes.array,
+    seriesData: PropTypes.array,
     onStudySelected: PropTypes.func,
     activeStudyInstanceUid: PropTypes.string,
     activeDisplaySetInstanceUid: PropTypes.string,
@@ -55,9 +55,7 @@ export class QuickSwitch extends Component {
 
     return (
       <div
-        className={`series-quick-switch clearfix noselect ${
-          this.state.sideClass
-        } ${quickSwitchClass}`}
+        className={`series-quick-switch clearfix noselect ${this.state.sideClass} ${quickSwitchClass}`}
         onMouseLeave={this.hideSeriesSwitch}
       >
         <div className="series-switch" onMouseEnter={this.showSeriesSwitch}>
@@ -92,21 +90,21 @@ export class QuickSwitch extends Component {
   }
 
   getSeriesItems = () => {
-    let seriesListData;
+    let seriesData;
 
-    if (this.props.seriesListData) {
-      seriesListData = this.props.seriesListData;
+    if (this.props.seriesData) {
+      seriesData = this.props.seriesData;
     } else if (this.state.activeStudyInstanceUid) {
       const study = this.props.studyListData.find(
         study => study.StudyInstanceUID === this.state.activeStudyInstanceUid
       );
 
-      seriesListData = study.thumbnails;
+      seriesData = study.thumbnails;
     } else {
-      seriesListData = this.props.studyListData[0].thumbnails;
+      seriesData = this.props.studyListData[0].thumbnails;
     }
 
-    return seriesListData || [];
+    return seriesData || [];
   };
 
   getSmallListItems = () => {

@@ -58,7 +58,7 @@ export function initVTKToolsAliases() {
 export function initStudyListAliasesOnDesktop() {
   cy.get('.study-count').as('studyCount');
   cy.get('#filter-PatientName').as('PatientName');
-  cy.get('#filter-PatientId').as('MRN');
+  cy.get('#filter-PatientID').as('MRN');
   cy.get('#filter-AccessionNumber').as('AccessionNumber');
   cy.get('#start-date').as('studyListStartDate');
   cy.get('#end-date').as('studyListEndDate');

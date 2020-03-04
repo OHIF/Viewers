@@ -26,7 +26,7 @@ export default function(searchData) {
     .filter(function(study) {
       const all = [
         'PatientName',
-        'PatientId',
+        'PatientID',
         'AccessionNumber',
         'modalities',
         'StudyDescription',
