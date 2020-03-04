@@ -8,7 +8,7 @@ export default function isDisplaySetReconstructable(instances) {
     return { value: false };
   }
 
-  const firstInstance = instances[0].getData().data;
+  const firstInstance = instances[0].getData().metadata;
 
   const Modality = firstInstance.Modality;
   const isMultiframe = firstInstance.NumberOfFrames > 1;
@@ -35,7 +35,7 @@ function processMultiframe(instance) {
 }
 
 function processSingleframe(instances) {
-  const firstImage = instances[0].getData().data;
+  const firstImage = instances[0].getData().metadata;
   const firstImageRows = firstImage.Rows;
   const firstImageColumns = firstImage.Columns;
   const firstImageSamplesPerPixel = firstImage.SamplesPerPixel;
@@ -47,7 +47,7 @@ function processSingleframe(instances) {
   // -- Have a different number of components within a displaySet.
   // -- Have different orientations within a displaySet.
   for (let i = 1; i < instances.length; i++) {
-    const instance = instances[i].getData().data;
+    const instance = instances[i].getData().metadata;
     const {
       Rows,
       Columns,
@@ -71,7 +71,7 @@ function processSingleframe(instances) {
   // If spacing is on a uniform grid but we are missing frames,
   // Allow reconstruction, but pass back the number of missing frames.
   if (instances.length > 2) {
-    const lastIpp = instances[instances.length - 1].getData().data
+    const lastIpp = instances[instances.length - 1].getData().metadata
       .ImagePositionPatient;
 
     // We can't reconstruct if we are missing ImagePositionPatient values
@@ -86,7 +86,7 @@ function processSingleframe(instances) {
     let previousImagePositionPatient = firstImagePositionPatient;
 
     for (let i = 1; i < instances.length; i++) {
-      const instance = instances[i].getData().data;
+      const instance = instances[i].getData().metadata;
       const { ImagePositionPatient } = instance;
 
       const spacingBetweenFrames = _getPerpendicularDistance(

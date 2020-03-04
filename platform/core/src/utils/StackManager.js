@@ -47,7 +47,7 @@ function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
           StudyInstanceUID,
           SeriesInstanceUID,
           SOPInstanceUID,
-        } = instance.getData().data;
+        } = instance.getData().metadata;
 
         metadataProvider.addImageIdToUids(imageId, {
           StudyInstanceUID,
@@ -60,7 +60,7 @@ function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
       imageId = getImageId(image);
       imageIds.push(imageId);
 
-      const naturalizedInstance = instance.getData().data;
+      const naturalizedInstance = instance.getData().metadata;
 
       const {
         StudyInstanceUID,

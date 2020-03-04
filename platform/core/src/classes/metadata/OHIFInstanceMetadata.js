@@ -55,7 +55,7 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
       return this._cache[tagOrProperty];
     }
 
-    const instanceData = this._instance.data;
+    const instanceData = this._instance.metadata;
 
     // Search property value in the whole study metadata chain...
     let rawValue;
@@ -79,7 +79,7 @@ export class OHIFInstanceMetadata extends InstanceMetadata {
   // Override
   tagExists(tagOrProperty) {
     return (
-      tagOrProperty in this._instance.data ||
+      tagOrProperty in this._instance.metadata ||
       tagOrProperty in this._series ||
       tagOrProperty in this._study
     );
