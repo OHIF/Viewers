@@ -62,9 +62,15 @@ const variantClasses = {
 };
 
 const sizeClasses = {
-  small: 'py-1 px-3 text-base',
+  small: 'py-2 px-2 text-base',
   medium: 'py-3 px-3 text-lg',
-  large: 'py-1 px-6 text-xl',
+  large: 'py-4 px-4 text-xl',
+};
+
+const iconSizeClasses = {
+  small: 'w-4 h-4',
+  medium: 'w-5 h-5',
+  large: 'w-6 h-6',
 };
 
 const fullWidthClasses = {
@@ -110,7 +116,7 @@ const IconButton = ({
       {...rest}
     >
       {React.cloneElement(children, {
-        className: classnames('w-4 h-4 fill-current'),
+        className: classnames(iconSizeClasses[size], 'fill-current'),
       })}
     </button>
   );
