@@ -95,6 +95,7 @@ export default function init({ servicesManager, configuration }) {
       csTools.ZoomTool,
       csTools.WwwcTool,
       csTools.MagnifyTool,
+      csTools.WwwcRegionTool,
       csTools.StackScrollTool,
       csTools.StackScrollMouseWheelTool,
       csTools.OverlayTool,
