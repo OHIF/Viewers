@@ -131,6 +131,15 @@ const definitions = [
         commandOptions: { toolName: 'Magnify' },
       },
       {
+        id: 'WwwcRegion',
+        label: 'ROI Window',
+        icon: 'stop',
+        //
+        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'WwwcRegion' },
+      },
+      {
         id: 'DragProbe',
         label: 'Probe',
         icon: 'dot-circle',

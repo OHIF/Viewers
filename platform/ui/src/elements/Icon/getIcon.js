@@ -34,6 +34,7 @@ import exclamationCircle from './icons/exclamation-circle.svg';
 import exclamationTriangle from './icons/exclamation-triangle.svg';
 import fastBackward from './icons/fast-backward.svg';
 import fastForward from './icons/fast-forward.svg';
+import stop from './icons/stop.svg';
 import info from './icons/info.svg';
 import inlineEdit from './icons/inline-edit.svg';
 import level from './icons/level.svg';
@@ -131,6 +132,7 @@ const ICONS = {
   'lock-alt': lockAlt,
   'step-backward': stepBackward,
   'step-forward': stepForward,
+  stop,
   'th-large': thLarge,
   'th-list': thList,
   sun,
