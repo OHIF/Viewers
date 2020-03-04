@@ -4,7 +4,7 @@ const studies = [
   {
     StudyInstanceUID: '11111.111111.111111.11111',
     PatientName: 'John Doe',
-    PatientId: '1',
+    PatientID: '1',
     AccessionNumber: '1234567',
     StudyDate: '19930201',
     modalities: 'MR',
@@ -13,7 +13,7 @@ const studies = [
   {
     StudyInstanceUID: '2222.222222.22222.22222',
     PatientName: 'José Silva',
-    PatientId: '2',
+    PatientID: '2',
     AccessionNumber: '7654321',
     StudyDate: moment().format('YYYYMMDD'),
     modalities: 'CT',
@@ -22,7 +22,7 @@ const studies = [
   {
     StudyInstanceUID: '3333.333333.33333.33333',
     PatientName: 'Antônio Jefferson',
-    PatientId: '3',
+    PatientID: '3',
     AccessionNumber: '732311',
     StudyDate: moment()
       .subtract(14, 'days')
@@ -33,7 +33,7 @@ const studies = [
   {
     StudyInstanceUID: '444444.44444.44444.4444',
     PatientName: 'Antonio da Silva',
-    PatientId: '4',
+    PatientID: '4',
     AccessionNumber: '732311',
     StudyDate: moment()
       .subtract(1, 'months')
@@ -44,7 +44,7 @@ const studies = [
   {
     StudyInstanceUID: '55555.55555.55555.55555',
     PatientName: 'Bezerra Souza',
-    PatientId: '5',
+    PatientID: '5',
     AccessionNumber: '5134543',
     StudyDate: moment()
       .subtract(6, 'days')
@@ -55,7 +55,7 @@ const studies = [
   {
     StudyInstanceUID: '66666.66666.66666.6666',
     PatientName: 'Geraldo Roger',
-    PatientId: '6',
+    PatientID: '6',
     AccessionNumber: '5315135',
     StudyDate: moment()
       .subtract(7, 'days')
@@ -66,7 +66,7 @@ const studies = [
   {
     StudyInstanceUID: '77777.77777.77777.77777',
     PatientName: '',
-    PatientId: '7',
+    PatientID: '7',
     AccessionNumber: '5315136',
     StudyDate: moment()
       .subtract(5, 'days')

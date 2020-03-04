@@ -23,7 +23,7 @@ import studies from './studies.js'
                 studyListData={state.studyListData}
                 // If this is always activeStudy's thumbnails,
                 // Why do we need to specify this?
-                seriesListData={
+                seriesData={
                     state.studyListData.find((study) => {
                         return !!study.active;
                     }).thumbnails}

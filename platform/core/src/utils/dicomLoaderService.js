@@ -20,8 +20,8 @@ const findImageIdOnStudies = (studies, displaySetInstanceUid) => {
     );
     return displaySet;
   });
-  const { seriesList = [] } = study;
-  const { instances = [] } = seriesList[0] || {};
+  const { series = [] } = study;
+  const { instances = [] } = series[0] || {};
   const instance = instances[0];
 
   return getImageId(instance);

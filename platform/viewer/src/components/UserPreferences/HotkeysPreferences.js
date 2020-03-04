@@ -70,7 +70,7 @@ const splitHotkeys = hotkeys => {
 
 /**
  * HotkeysPreferences tab
- * It renders all hotkeys displayed into Columns/Rows
+ * It renders all hotkeys displayed into columns/rows
  *
  * It stores current state and whenever it changes, component messages parent of new value (through function callback)
  * @param {object} props component props

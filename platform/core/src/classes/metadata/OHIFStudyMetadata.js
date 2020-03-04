@@ -22,7 +22,7 @@ export class OHIFStudyMetadata extends StudyMetadata {
     });
 
     // populate internal list of series
-    study.seriesList.forEach(series => {
+    study.series.forEach(series => {
       this.addSeries(new OHIFSeriesMetadata(series, study));
     });
   }

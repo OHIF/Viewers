@@ -11,14 +11,14 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 function createStudy(server, aSopInstance) {
   // TODO: Pass a reference ID to the server instead of including the URLs here
   return {
-    seriesList: [],
+    series: [],
     seriesMap: Object.create(null),
     seriesLoader: null,
     wadoUriRoot: server.wadoUriRoot,
     wadoRoot: server.wadoRoot,
     qidoRoot: server.qidoRoot,
     PatientName: DICOMWeb.getName(aSopInstance['00100010']),
-    PatientId: DICOMWeb.getString(aSopInstance['00100020']),
+    PatientID: DICOMWeb.getString(aSopInstance['00100020']),
     PatientAge: DICOMWeb.getNumber(aSopInstance['00101010']),
     PatientSize: DICOMWeb.getNumber(aSopInstance['00101020']),
     PatientWeight: DICOMWeb.getNumber(aSopInstance['00101030']),
@@ -111,7 +111,7 @@ async function makeSOPInstance(server, study, instance) {
       instances: [],
     };
     study.seriesMap[SeriesInstanceUID] = series;
-    study.seriesList.push(series);
+    study.series.push(series);
   }
 
   const wadouri = buildInstanceWadoUrl(

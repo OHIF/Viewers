@@ -368,14 +368,14 @@ Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
   });
 });
 
-Cypress.Commands.add('setLayout', (Columns = 1, Rows = 1) => {
+Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
   cy.get('[data-cy="layout"]').click();
 
   cy.get('.layoutChooser')
     .find('tr')
-    .eq(Rows - 1)
+    .eq(rows - 1)
     .find('td')
-    .eq(Columns - 1)
+    .eq(columns - 1)
     .click();
 
   cy.wait(1000);

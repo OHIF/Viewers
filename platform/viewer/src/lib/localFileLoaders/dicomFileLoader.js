@@ -54,18 +54,11 @@ const DICOMFileLoader = new (class extends FileLoader {
       SeriesInstanceUID,
       SeriesDescription,
       SeriesNumber,
-      // SOPInstanceUID,
-      // SOPClassUID,
-      // Rows,
-      // Columns,
-      // NumberOfFrames,
-      // InstanceNumber,
       imageId,
-      //Modality,
     } = dataset;
 
     const instance = {
-      data: dataset,
+      metadata: dataset,
       url: imageId,
     };
 
@@ -77,29 +70,27 @@ const DICOMFileLoader = new (class extends FileLoader {
     };
 
     const study = {
-      StudyInstanceUID: StudyInstanceUID,
-      StudyDate: StudyDate,
-      StudyTime: StudyTime,
-      AccessionNumber: AccessionNumber,
-      ReferringPhysicianName: ReferringPhysicianName,
-      PatientName: PatientName,
-      PatientId: PatientID,
+      StudyInstanceUID,
+      StudyDate,
+      StudyTime,
+      AccessionNumber,
+      ReferringPhysicianName,
+      PatientName,
+      PatientID,
       PatientBirthDate,
-      PatientSex: PatientSex,
-      StudyId: StudyID,
-      StudyDescription: StudyDescription,
+      PatientSex,
+      StudyID,
+      StudyDescription,
       /*
       TODO: in case necessary to uncomment this block, double check every property
       numberOfStudyRelatedSeries: NumberOfStudyRelatedSeries || DICOMWeb.getString(dataset['00201206']),
       numberOfStudyRelatedInstances: NumberOfStudyRelatedInstances || DICOMWeb.getString(dataset['00201208']),
       Modality: Modality || DICOMWeb.getString(dataset['00080060']),
-      modalitiesInStudy: ModalitiesInStudy || DICOMWeb.getString(dataset['00080061']),
+      ModalitiesInStudy: ModalitiesInStudy || DICOMWeb.getString(dataset['00080061']),
       modalities:
       */
-      seriesList: [series],
+      series: [series],
     };
-
-    console.log(imageId);
 
     return study;
   }

@@ -25,12 +25,12 @@ const PDFFileLoader = new (class extends FileLoader {
       AccessionNumber: '',
       referringPhysicianName: '',
       PatientName: '',
-      PatientId: '',
+      PatientID: '',
       PatientBirthdate: '',
       PatientSex: '',
       studyId: '',
       StudyDescription: '',
-      seriesList: [
+      series: [
         {
           SeriesInstanceUID: '',
           SeriesDescription: '',

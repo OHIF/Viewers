@@ -69,7 +69,7 @@ class TablePagination extends PureComponent {
 
   renderRowsPerPageDropdown() {
     return (
-      <div className="form-inline form-group Rows-per-page">
+      <div className="form-inline form-group rows-per-page">
         <span>{this.props.t('Show')}</span>
         <select
           onChange={this.onRowsPerPageChange}
@@ -91,7 +91,7 @@ class TablePagination extends PureComponent {
   render() {
     return (
       <div className="pagination-area">
-        <div className="Rows-dropdown">{this.renderRowsPerPageDropdown()}</div>
+        <div className="rows-dropdown">{this.renderRowsPerPageDropdown()}</div>
         <div className="pagination-buttons">
           <div className="form-inline form-group page-number pull-right">
             {this.renderPaginationButtons()}
