@@ -95,7 +95,7 @@ class StandaloneRouting extends Component {
               SeriesInstanceUID = series.SeriesInstanceUID;
 
               series.instances.forEach(instance => {
-                const { url: imageId, data: naturalizedDicom } = instance;
+                const { url: imageId, metadata: naturalizedDicom } = instance;
 
                 // Add instance to metadata provider.
                 metadataProvider.addInstance(naturalizedDicom);
