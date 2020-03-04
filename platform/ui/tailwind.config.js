@@ -14,31 +14,24 @@ module.exports = {
       black: '#000',
       white: '#fff',
 
-      primary: {
-        light: '#5acde7',
-        main: '#0142b4',
-        dark: '#03123f',
-        contrastText: '#fff',
+      /** CUSTOM THEME COLORS */
+      custom: {
+        dark: '#1f1f27',
+        aquaBright: '#5acce6',
+        navyDark: '#090c29',
+        navy: '#041c4a',
+        violetDark: '#2b166b',
+        violetPale: '#3a3f99',
+        blue: '#0944b3',
+        blueBright: '#348cfd',
+        aquaPale: '#7bb2ce',
+        white: '#ffffff',
+        grayBright: '#e1e1e1',
+        grayLight: '#a19fad',
+        gray: '#726f7e',
       },
+      /** END CUSTOM THEME COLORS */
 
-      secondary: {
-        light: '#a2a0af',
-        main: '#333',
-        dark: '#000',
-        contrastText: '#fff',
-      },
-
-      darkBlue: {
-        100: '#260d6b',
-        200: '#0c3ebf',
-        300: '#07287f',
-        400: '#011c63',
-        500: '#001449',
-        600: '#03123f',
-        700: '#0c0629',
-        800: '#020424',
-        900: '#010216',
-      },
       gray: {
         100: '#f7fafc',
         200: '#edf2f7',
@@ -252,6 +245,7 @@ module.exports = {
     },
     fontFamily: {
       sans: [
+        'Lato',
         'system-ui',
         '-apple-system',
         'BlinkMacSystemFont',
@@ -280,7 +274,7 @@ module.exports = {
       xs: '0.65rem',
       sm: '0.75rem',
       base: '0.875rem',
-      lg: '1.125rem',
+      lg: '1rem',
       xl: '1.25rem',
       '2xl': '1.5rem',
       '3xl': '1.875rem',
