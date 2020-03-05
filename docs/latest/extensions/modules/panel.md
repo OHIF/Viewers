@@ -40,6 +40,10 @@ export default {
           from: 'right',
           // The target component to toggle open/close
           target: 'target-component-id',
+          // UI Hint; If the target panel is in a "disabled" state
+          isDisabled: studies => {
+            return false;
+          },
           // Overrides `defaultContext`, if specified
           context: ['ACTIVE_VIEWPORT:MAGIC'],
         },
