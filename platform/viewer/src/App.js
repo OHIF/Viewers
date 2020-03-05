@@ -269,15 +269,21 @@ function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
 function _initHotkeys(appConfigHotkeys) {
   // Adding config custom hotkeys into default
   if (appConfigHotkeys) {
-    hotkeysManager.addDefaultHotkeys(appConfigHotkeys);
+    const validHotkeys = hotkeysManager.getValidHotkeys(appConfigHotkeys);
+    hotkeysManager.replaceDefaultHotkeys(validHotkeys);
   }
 
   const userPreferredHotkeys = JSON.parse(
     localStorage.getItem('hotkey-definitions') || '{}'
   );
 
-  if (Object.keys(userPreferredHotkeys).length) {
-    hotkeysManager.setHotkeys(userPreferredHotkeys);
+  const validHotkeys = hotkeysManager.getValidHotkeys(userPreferredHotkeys);
+  localStorage.setItem('hotkey-definitions', JSON.stringify(validHotkeys));
+
+  if (validHotkeys.length > 0) {
+    hotkeysManager.setHotkeys(validHotkeys);
+  } else {
+    hotkeysManager.setDefaultHotkeys();
   }
 }
 

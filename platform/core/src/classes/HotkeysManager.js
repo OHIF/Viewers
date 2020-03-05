@@ -12,11 +12,14 @@ import log from './../log.js';
  * @property {Object} commandOptions - Options to be passed to commandManager
  */
 
-const isValidHotkeyDefinition = ({ commandName, keys }) => {
-  const isCommandNameValid = typeof commandName === 'string';
-  const isKeysValid = Array.isArray(keys) && keys.length > 0;
+const isValidHotkeyDefinition = ({ commandName, label, keys }) => {
+  const isCommandNameValid = commandName && typeof commandName === 'string';
+  const isKeysValid =
+    keys &&
+    ((Array.isArray(keys) && keys.length > 0) || typeof keys === 'string');
+  const isLabelValid = label && typeof label === 'string';
 
-  return isCommandNameValid && isKeysValid;
+  return isCommandNameValid && isKeysValid && isLabelValid;
 };
 
 export class HotkeysManager {
@@ -75,7 +78,7 @@ export class HotkeysManager {
       hotkeyDefinitions.forEach(hotkeyDefinition => {
         const { commandName, keys, commandOptions } = hotkeyDefinition;
 
-        if (!isValidHotkeyDefinition({ commandName, keys })) {
+        if (!isValidHotkeyDefinition(hotkeyDefinition)) {
           return;
         }
         // Push hotkeyDefinition and bind it only if its valid
@@ -105,12 +108,12 @@ export class HotkeysManager {
   }
 
   /**
-   * Add hotkeys into default values
+   * Replace hotkeys into default values
    *
    * @param {HotkeyDefinition[]} [hotkeyDefinitions=[]] Contains hotkeys definitions
    */
-  addDefaultHotkeys(hotkeyDefinitions = []) {
-    this.hotkeyDefaults = this.hotkeyDefaults.concat(hotkeyDefinitions);
+  replaceDefaultHotkeys(hotkeyDefinitions = []) {
+    this.hotkeyDefaults = hotkeyDefinitions;
   }
 
   /**
@@ -120,6 +123,21 @@ export class HotkeysManager {
     this.hotkeyDefaults = [];
     this.hotkeyDefinitions = {};
     hotkeys.reset();
+  }
+
+  /**
+   * Function to be use to filter invalid hotkeys
+   *
+   * @param {HotkeyDefinition} hotkeys
+   * @returns validHotkeys - Return an array of valid hotkeys or undefined
+   */
+  getValidHotkeys(hotkeys) {
+    let validHotkeys = [];
+    if (Array.isArray(hotkeys) && hotkeys.length) {
+      validHotkeys = hotkeys.filter(isValidHotkeyDefinition);
+    }
+
+    return validHotkeys;
   }
 
   /**
