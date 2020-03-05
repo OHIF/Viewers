@@ -13,10 +13,10 @@ const getImageId = imageObj => {
     : imageObj.url;
 };
 
-const findImageIdOnStudies = (studies, displaySetInstanceUid) => {
+const findImageIdOnStudies = (studies, displaySetInstanceUID) => {
   const study = studies.find(study => {
     const displaySet = study.displaySets.some(
-      displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
+      displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
     );
     return displaySet;
   });
@@ -94,7 +94,7 @@ class DicomLoaderService {
 
       // or Try to get it from studies
       if (someInvalidStrings(imageId)) {
-        imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUid);
+        imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUID);
       }
 
       if (!someInvalidStrings(imageId)) {

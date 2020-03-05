@@ -1,6 +1,6 @@
 import * as dcmjs from 'dcmjs';
 
-import findInstanceMetadataBySopInstanceUid from './utils/findInstanceMetadataBySopInstanceUid';
+import findInstanceMetadataBySopInstanceUID from './utils/findInstanceMetadataBySopInstanceUID';
 
 /**
  * Function to parse the part10 array buffer that comes from a DICOM Structured report into measurementData
@@ -31,19 +31,19 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
     measurementData[toolName] = [];
 
     measurements.forEach(measurement => {
-      const instanceMetadata = findInstanceMetadataBySopInstanceUid(
+      const instanceMetadata = findInstanceMetadataBySopInstanceUID(
         displaySets,
-        measurement.sopInstanceUid
+        measurement.sopInstanceUID
       );
 
       const { _study: study, _series: series } = instanceMetadata;
       const { StudyInstanceUID, PatientID } = study;
       const { SeriesInstanceUID } = series;
-      const { sopInstanceUid, frameIndex } = measurement;
+      const { sopInstanceUID, frameIndex } = measurement;
       const imagePath = getImagePath(
         StudyInstanceUID,
         SeriesInstanceUID,
-        sopInstanceUid,
+        sopInstanceUID,
         frameIndex
       );
 

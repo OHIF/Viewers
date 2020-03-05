@@ -42,7 +42,7 @@ describe('measurementServiceMappings.js', () => {
       measurementData: {
         _measurementServiceId: 1,
         SOPInstanceUID: '123',
-        frameOfReferenceUid: '123',
+        frameOfReferenceUID: '123',
         SeriesInstanceUID: '123',
         handles,
         text: 'Test',

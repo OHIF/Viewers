@@ -13,7 +13,7 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
     return false;
   };
 
-  const { displaySetInstanceUid, StudyInstanceUID } = viewportSpecificData[
+  const { displaySetInstanceUID, StudyInstanceUID } = viewportSpecificData[
     activeViewportIndex
   ];
 
@@ -27,7 +27,7 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
     return false;
   }
 
-  const displaySet = study._displaySets.find(set => set.displaySetInstanceUid === displaySetInstanceUid);
+  const displaySet = study._displaySets.find(set => set.displaySetInstanceUID === displaySetInstanceUID);
 
   if (!displaySet) {
     return false;

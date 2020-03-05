@@ -57,7 +57,7 @@ OHIF.viewer.functionList = {
 class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.array,
-    studyInstanceUids: PropTypes.array,
+    studyInstanceUIDs: PropTypes.array,
     activeServer: PropTypes.shape({
       type: PropTypes.string,
       wadoRoot: PropTypes.string,
@@ -135,7 +135,7 @@ class Viewer extends Component {
       {
         timepointType: 'baseline',
         timepointId: 'TimepointId',
-        studyInstanceUids: this.props.studyInstanceUids,
+        studyInstanceUIDs: this.props.studyInstanceUIDs,
         PatientID: filter.PatientID,
         earliestDate,
         latestDate,
@@ -350,7 +350,7 @@ const _mapStudiesToThumbnails = function(studies) {
 
     const thumbnails = study.displaySets.map(displaySet => {
       const {
-        displaySetInstanceUid,
+        displaySetInstanceUID,
         SeriesDescription,
         SeriesNumber,
         InstanceNumber,
@@ -376,7 +376,7 @@ const _mapStudiesToThumbnails = function(studies) {
       return {
         imageId,
         altImageText,
-        displaySetInstanceUid,
+        displaySetInstanceUID,
         SeriesDescription,
         SeriesNumber,
         InstanceNumber,

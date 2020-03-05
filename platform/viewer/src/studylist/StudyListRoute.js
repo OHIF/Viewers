@@ -251,7 +251,7 @@ function StudyListRoute(props) {
           studies={studies}
           onSelectItem={studyInstanceUID => {
             const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-              studyInstanceUids: studyInstanceUID,
+              studyInstanceUIDs: studyInstanceUID,
             });
             history.push(viewerPath);
           }}

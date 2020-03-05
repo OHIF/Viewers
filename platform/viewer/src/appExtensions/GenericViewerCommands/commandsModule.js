@@ -44,8 +44,8 @@ const commandsModule = ({ commandsManager }) => {
       const allDisplaySets = studyMetadata.getDisplaySets();
       const currentDisplaySetIndex = allDisplaySets.findIndex(
         displaySet =>
-          displaySet.displaySetInstanceUid ===
-          activeViewport.displaySetInstanceUid
+          displaySet.displaySetInstanceUID ===
+          activeViewport.displaySetInstanceUID
       );
       if (currentDisplaySetIndex < 0) {
         return;

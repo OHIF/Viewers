@@ -19,8 +19,8 @@ const VTKViewport = props => {
   useEffect(() => {
     const handleScrollEvent = evt => {
       const vtkViewportApiReference = props.onScroll(props.viewportIndex) || {};
-      const viewportUid = vtkViewportApiReference.uid;
-      const viewportWasScrolled = viewportUid === evt.detail.uid;
+      const viewportUID = vtkViewportApiReference.uid;
+      const viewportWasScrolled = viewportUID === evt.detail.uid;
 
       if (viewportWasScrolled) {
         setViewportActiveHandler();

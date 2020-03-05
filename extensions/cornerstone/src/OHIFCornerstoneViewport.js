@@ -50,7 +50,7 @@ class OHIFCornerstoneViewport extends Component {
    *
    * @param {Object[]} studies
    * @param {String} StudyInstanceUID
-   * @param {String} displaySetInstanceUid
+   * @param {String} displaySetInstanceUID
    * @param {String} [SOPInstanceUID]
    * @param {Number} [frameIndex=1]
    * @return {Object} CornerstoneTools Stack
@@ -58,7 +58,7 @@ class OHIFCornerstoneViewport extends Component {
   static getCornerstoneStack(
     studies,
     StudyInstanceUID,
-    displaySetInstanceUid,
+    displaySetInstanceUID,
     SOPInstanceUID,
     frameIndex = 0
   ) {
@@ -70,7 +70,7 @@ class OHIFCornerstoneViewport extends Component {
       throw new Error('StudyInstanceUID not provided.');
     }
 
-    if (!displaySetInstanceUid) {
+    if (!displaySetInstanceUID) {
       throw new Error('StudyInstanceUID not provided.');
     }
 
@@ -84,7 +84,7 @@ class OHIFCornerstoneViewport extends Component {
     }
 
     const displaySet = study.displaySets.find(set => {
-      return set.displaySetInstanceUid === displaySetInstanceUid;
+      return set.displaySetInstanceUID === displaySetInstanceUID;
     });
 
     if (!displaySet) {
@@ -123,7 +123,7 @@ class OHIFCornerstoneViewport extends Component {
   getViewportData = async (
     studies,
     StudyInstanceUID,
-    displaySetInstanceUid,
+    displaySetInstanceUID,
     SOPClassUID,
     SOPInstanceUID,
     frameIndex
@@ -138,7 +138,7 @@ class OHIFCornerstoneViewport extends Component {
         viewportData = await specialCaseHandler(
           studies,
           StudyInstanceUID,
-          displaySetInstanceUid,
+          displaySetInstanceUID,
           SOPInstanceUID,
           frameIndex
         );
@@ -147,14 +147,14 @@ class OHIFCornerstoneViewport extends Component {
         const stack = OHIFCornerstoneViewport.getCornerstoneStack(
           studies,
           StudyInstanceUID,
-          displaySetInstanceUid,
+          displaySetInstanceUID,
           SOPInstanceUID,
           frameIndex
         );
 
         viewportData = {
           StudyInstanceUID,
-          displaySetInstanceUid,
+          displaySetInstanceUID,
           stack,
         };
 
@@ -168,28 +168,28 @@ class OHIFCornerstoneViewport extends Component {
     const { studies, displaySet } = this.props.viewportData;
     const {
       StudyInstanceUID,
-      displaySetInstanceUid,
-      sopClassUids,
+      displaySetInstanceUID,
+      sopClassUIDs,
       SOPInstanceUID,
       frameIndex,
     } = displaySet;
 
-    if (!StudyInstanceUID || !displaySetInstanceUid) {
+    if (!StudyInstanceUID || !displaySetInstanceUID) {
       return;
     }
 
-    if (sopClassUids && sopClassUids.length > 1) {
+    if (sopClassUIDs && sopClassUIDs.length > 1) {
       console.warn(
-        'More than one SOPClassUid in the same series is not yet supported.'
+        'More than one SOPClassUID in the same series is not yet supported.'
       );
     }
 
-    const SOPClassUID = sopClassUids && sopClassUids[0];
+    const SOPClassUID = sopClassUIDs && sopClassUIDs[0];
 
     this.getViewportData(
       studies,
       StudyInstanceUID,
-      displaySetInstanceUid,
+      displaySetInstanceUID,
       SOPClassUID,
       SOPInstanceUID,
       frameIndex
@@ -209,8 +209,8 @@ class OHIFCornerstoneViewport extends Component {
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
     if (
-      displaySet.displaySetInstanceUid !==
-        prevDisplaySet.displaySetInstanceUid ||
+      displaySet.displaySetInstanceUID !==
+        prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {

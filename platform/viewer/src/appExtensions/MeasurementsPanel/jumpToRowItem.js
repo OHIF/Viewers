@@ -87,14 +87,14 @@ export default function jumpToRowItem(
     }
 
     const displaySet = study.findDisplaySet(displaySet => {
-      return displaySetContainsSopInstance(displaySet, data.sopInstanceUid);
+      return displaySetContainsSopInstance(displaySet, data.sopInstanceUID);
     });
 
     if (!displaySet) {
       throw new Error('Display set not found.');
     }
 
-    displaySet.SOPInstanceUID = data.sopInstanceUid;
+    displaySet.SOPInstanceUID = data.sopInstanceUID;
     if (data.frameIndex) {
       displaySet.frameIndex = data.frameIndex;
     }

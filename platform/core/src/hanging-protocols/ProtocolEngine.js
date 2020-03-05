@@ -456,7 +456,7 @@ export default class ProtocolEngine {
 
           // If the instance was found, set the displaySet ID
           if (displaySet) {
-            imageDetails.displaySetInstanceUid = displaySet.getUID();
+            imageDetails.displaySetInstanceUID = displaySet.getUID();
             imageDetails.imageId = instance.getImageId();
           }
 
@@ -654,13 +654,13 @@ export default class ProtocolEngine {
         currentViewportData.SOPInstanceUID = currentMatch.SOPInstanceUID;
         currentViewportData.currentImageIdIndex =
           currentMatch.currentImageIdIndex;
-        currentViewportData.displaySetInstanceUid =
-          currentMatch.displaySetInstanceUid;
+        currentViewportData.displaySetInstanceUID =
+          currentMatch.displaySetInstanceUID;
         currentViewportData.imageId = currentMatch.imageId;
       }
 
       // @TODO Why should we throw an exception when a best match is not found? This was aborting the whole process.
-      // if (!currentViewportData.displaySetInstanceUid) {
+      // if (!currentViewportData.displaySetInstanceUID) {
       //     throw new OHIFError('ProtocolEngine::updateViewports No matching display set found?');
       // }
 

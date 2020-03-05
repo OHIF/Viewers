@@ -55,10 +55,10 @@ function getQIDOQueryParams(filter, serverSupportsQIDOIncludeField) {
 
   // Build the StudyInstanceUID parameter
   if (filter.StudyInstanceUID) {
-    let studyUids = filter.StudyInstanceUID;
-    studyUids = Array.isArray(studyUids) ? studyUids.join() : studyUids;
-    studyUids = studyUids.replace(/[^0-9.]+/g, '\\');
-    parameters.StudyInstanceUID = studyUids;
+    let studyUIDs = filter.StudyInstanceUID;
+    studyUIDs = Array.isArray(studyUIDs) ? studyUIDs.join() : studyUIDs;
+    studyUIDs = studyUIDs.replace(/[^0-9.]+/g, '\\');
+    parameters.StudyInstanceUID = studyUIDs;
   }
 
   // Clean query params of undefined values.

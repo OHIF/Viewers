@@ -70,12 +70,12 @@ const ViewportGrid = function(props) {
         onDrop={({
           viewportIndex,
           StudyInstanceUID,
-          displaySetInstanceUid,
+          displaySetInstanceUID,
         }) => {
           setViewportData({
             viewportIndex,
             StudyInstanceUID,
-            displaySetInstanceUid,
+            displaySetInstanceUID,
           });
         }}
         viewportIndex={viewportIndex} // Needed by `setViewportData`

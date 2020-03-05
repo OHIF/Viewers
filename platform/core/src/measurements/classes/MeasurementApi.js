@@ -575,17 +575,17 @@ export default class MeasurementApi {
 
     const toolGroupId = this.toolsGroupsMap[measurementData.toolType];
 
-    // TODO: Remove TrialPatientLocationUid from here and override it somehow
+    // TODO: Remove TrialPatientLocationUID from here and override it somehow
     // by dependant applications. Here we should use the location attribute instead of the uid
     let filter;
     const uid =
       measurementData.additionalData &&
-      measurementData.additionalData.TrialPatientLocationUid;
+      measurementData.additionalData.TrialPatientLocationUID;
     if (uid) {
       filter = tool =>
         tool._id !== measurementData._id &&
         tool.additionalData &&
-        tool.additionalData.TrialPatientLocationUid === uid;
+        tool.additionalData.TrialPatientLocationUID === uid;
     } else {
       filter = tool =>
         tool._id !== measurementData._id &&
@@ -759,7 +759,7 @@ export default class MeasurementApi {
       measurement.lesionNamingNumber = found.lesionNamingNumber;
       measurement.measurementNumber = found.measurementNumber;
 
-      // TODO: Remove TrialPatientLocationUid from here and override it somehow
+      // TODO: Remove TrialPatientLocationUID from here and override it somehow
       // by dependant applications
 
       // Change the update object to set the same number, additionalData,
@@ -767,8 +767,8 @@ export default class MeasurementApi {
       updateObject.lesionNamingNumber = found.lesionNamingNumber;
       updateObject.measurementNumber = found.measurementNumber;
       updateObject.additionalData = measurement.additionalData || {};
-      updateObject.additionalData.TrialPatientLocationUid =
-        found.additionalData && found.additionalData.TrialPatientLocationUid;
+      updateObject.additionalData.TrialPatientLocationUID =
+        found.additionalData && found.additionalData.TrialPatientLocationUID;
       updateObject.location = found.location;
       updateObject.label = found.label;
       updateObject.description = found.description;

@@ -118,7 +118,7 @@ class ViewerLocalFileData extends Component {
             {this.state.studies ? (
               <ConnectedViewer
                 studies={this.state.studies}
-                studyInstanceUids={
+                studyInstanceUIDs={
                   this.state.studies &&
                   this.state.studies.map(a => a.StudyInstanceUID)
                 }

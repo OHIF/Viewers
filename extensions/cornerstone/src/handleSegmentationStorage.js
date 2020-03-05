@@ -6,13 +6,13 @@ import cornerstoneTools from 'cornerstone-tools';
 
 const { StackManager, DicomLoaderService } = OHIF.utils;
 
-function getDisplaySet(studies, StudyInstanceUID, displaySetInstanceUid) {
+function getDisplaySet(studies, StudyInstanceUID, displaySetInstanceUID) {
   const study = studies.find(
     study => study.StudyInstanceUID === StudyInstanceUID
   );
 
   const displaySet = study.displaySets.find(set => {
-    return set.displaySetInstanceUid === displaySetInstanceUid;
+    return set.displaySetInstanceUID === displaySetInstanceUID;
   });
 
   return displaySet;
@@ -39,7 +39,7 @@ function parseSeg(arrayBuffer, imageIds) {
 function addSegMetadataToCornerstoneToolState(
   segMetadata,
   toolState,
-  displaySetInstanceUid
+  displaySetInstanceUID
 ) {
   cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
     toolState
@@ -48,14 +48,14 @@ function addSegMetadataToCornerstoneToolState(
   const brushModule = cornerstoneTools.store.modules.brush;
 
   for (let i = 0; i < segMetadata.length; i++) {
-    brushModule.setters.metadata(displaySetInstanceUid, i, segMetadata[i]);
+    brushModule.setters.metadata(displaySetInstanceUID, i, segMetadata[i]);
   }
 }
 
 async function handleSegmentationStorage(
   studies,
   StudyInstanceUID,
-  displaySetInstanceUid
+  displaySetInstanceUID
 ) {
   const study = studies.find(
     study => study.StudyInstanceUID === StudyInstanceUID
@@ -63,7 +63,7 @@ async function handleSegmentationStorage(
   const displaySet = getDisplaySet(
     studies,
     StudyInstanceUID,
-    displaySetInstanceUid
+    displaySetInstanceUID
   );
 
   const arrayBuffer = await DicomLoaderService.findDicomDataPromise(
@@ -120,7 +120,7 @@ async function handleSegmentationStorage(
 
   return {
     StudyInstanceUID,
-    displaySetInstanceUid,
+    displaySetInstanceUID,
     stack,
   };
 }

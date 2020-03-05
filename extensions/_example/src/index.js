@@ -64,7 +64,7 @@ const commandsModule = {
  */
 const sopClassHandlerModule = {
   id: 'OHIFDicomHtmlSopClassHandler',
-  sopClassUids: Object.values({
+  sopClassUIDs: Object.values({
     BASIC_TEXT_SR: '1.2.840.10008.5.1.4.1.1.88.11',
     ENHANCED_SR: '1.2.840.10008.5.1.4.1.1.88.22',
     COMPREHENSIVE_SR: '1.2.840.10008.5.1.4.1.1.88.33',
@@ -78,7 +78,7 @@ const sopClassHandlerModule = {
 
     return {
       plugin: 'html',
-      displaySetInstanceUid: 0, //utils.guid(),
+      displaySetInstanceUID: 0, //utils.guid(),
       wadoRoot: study.getData().wadoRoot,
       wadoUri: instance.getData().wadouri,
       SOPInstanceUID: instance.getSOPInstanceUID(),
