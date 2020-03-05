@@ -5,7 +5,7 @@
  * @param {string} SOPInstanceUID - sopInstanceUID to look for
  * @returns {Object} - instance metadata found
  */
-const findInstanceMetadataBySopInstanceUid = (displaySets, SOPInstanceUID) => {
+const findInstanceMetadataBySopInstanceUID = (displaySets, SOPInstanceUID) => {
   let instanceFound;
 
   displaySets.find(displaySet => {
@@ -22,4 +22,4 @@ const findInstanceMetadataBySopInstanceUid = (displaySets, SOPInstanceUID) => {
   return instanceFound;
 };
 
-export default findInstanceMetadataBySopInstanceUid;
+export default findInstanceMetadataBySopInstanceUID;

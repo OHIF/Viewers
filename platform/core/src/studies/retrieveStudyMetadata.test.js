@@ -13,11 +13,11 @@ describe('retrieveStudyMetadata.js', () => {
   });
 
   it('throws an exception if no StudyInstanceUID parameter is provided', () => {
-    const callWithNoStudyInstanceUid = () => {
+    const callWithNoStudyInstanceUID = () => {
       retrieveStudyMetadata(fakeDicomWebServer, null);
     };
 
-    expect(callWithNoStudyInstanceUid).toThrow(Error);
+    expect(callWithNoStudyInstanceUID).toThrow(Error);
   });
 
   it('caches and returns the same promise for identical studyInstanceUIDs', () => {

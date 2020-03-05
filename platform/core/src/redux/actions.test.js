@@ -29,7 +29,7 @@ describe('actions', () => {
   describe('viewport action creators', () => {
     it('should create an action to set the viewport specific data', () => {
       const viewportSpecificData = {
-        displaySetInstanceUid: 'ef859a23-4631-93ab-d26b-7940a822c699',
+        displaySetInstanceUID: 'ef859a23-4631-93ab-d26b-7940a822c699',
         SeriesDate: '20151026',
         SeriesTime: '082611.370000',
         SeriesInstanceUID:
@@ -42,7 +42,7 @@ describe('actions', () => {
         InstanceNumber: 1,
         StudyInstanceUID:
           '1.3.6.1.4.1.25403.345050719074.3824.20170126085406.1',
-        sopClassUids: ['1.2.840.10008.5.1.4.1.1.2'],
+        sopClassUIDs: ['1.2.840.10008.5.1.4.1.1.2'],
         plugin: 'cornerstone',
         viewport: {
           zoomScale: null,

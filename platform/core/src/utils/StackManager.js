@@ -49,7 +49,7 @@ function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
           SOPInstanceUID,
         } = instance.getData().metadata;
 
-        metadataProvider.addImageIdToUids(imageId, {
+        metadataProvider.addImageIdToUIDs(imageId, {
           StudyInstanceUID,
           SeriesInstanceUID,
           SOPInstanceUID,
@@ -68,7 +68,7 @@ function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
         SOPInstanceUID,
       } = naturalizedInstance;
 
-      metadataProvider.addImageIdToUids(imageId, {
+      metadataProvider.addImageIdToUIDs(imageId, {
         StudyInstanceUID,
         SeriesInstanceUID,
         SOPInstanceUID,
@@ -78,13 +78,13 @@ function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
 
   const stack = {
     StudyInstanceUID: study.StudyInstanceUID,
-    displaySetInstanceUid: displaySet.displaySetInstanceUid,
+    displaySetInstanceUID: displaySet.displaySetInstanceUID,
     imageIds,
     frameRate: displaySet.frameRate,
     isClip: displaySet.isClip,
   };
 
-  stackMap[displaySet.displaySetInstanceUid] = stack;
+  stackMap[displaySet.displaySetInstanceUID] = stack;
 
   return stack;
 }
@@ -121,11 +121,11 @@ const StackManager = {
   },
   /**
    * Find a stack from the currently created stacks.
-   * @param displaySetInstanceUid The UID of the stack to find.
+   * @param displaySetInstanceUID The UID of the stack to find.
    * @returns {*} undefined if not found, otherwise the stack object is returned.
    */
-  findStack(displaySetInstanceUid) {
-    return stackMap[displaySetInstanceUid];
+  findStack(displaySetInstanceUID) {
+    return stackMap[displaySetInstanceUID];
   },
   /**
    * Find a stack or reate one if it has not been created yet
@@ -134,7 +134,7 @@ const StackManager = {
    * @return {Array} Array with image IDs
    */
   findOrCreateStack(study, displaySet) {
-    let stack = this.findStack(displaySet.displaySetInstanceUid);
+    let stack = this.findStack(displaySet.displaySetInstanceUID);
 
     if (!stack || !stack.imageIds) {
       stack = this.makeAndAddStack(study, displaySet);
@@ -143,9 +143,9 @@ const StackManager = {
     return stack;
   },
   /**
-   * Gets the underlying map of displaySetInstanceUid to stack object.
+   * Gets the underlying map of displaySetInstanceUID to stack object.
    * WARNING: Do not change this object. It directly affects the manager.
-   * @returns {{}} map of displaySetInstanceUid -> stack.
+   * @returns {{}} map of displaySetInstanceUID -> stack.
    */
   getAllStacks() {
     return stackMap;

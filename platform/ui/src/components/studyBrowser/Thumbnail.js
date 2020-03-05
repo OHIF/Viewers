@@ -53,7 +53,7 @@ function Thumbnail(props) {
     active,
     altImageText,
     error,
-    displaySetInstanceUid,
+    displaySetInstanceUID,
     imageId,
     imageSrc,
     InstanceNumber,
@@ -73,7 +73,7 @@ function Thumbnail(props) {
     // The only data it will have access to
     item: {
       StudyInstanceUID,
-      displaySetInstanceUid,
+      displaySetInstanceUID,
       type: 'thumbnail', // Has to match `dropTarget`'s type
     },
     canDrag: function(monitor) {
@@ -117,7 +117,7 @@ const noop = () => {};
 Thumbnail.propTypes = {
   supportsDrag: PropTypes.bool,
   id: PropTypes.string.isRequired,
-  displaySetInstanceUid: PropTypes.string.isRequired,
+  displaySetInstanceUID: PropTypes.string.isRequired,
   StudyInstanceUID: PropTypes.string.isRequired,
   imageSrc: PropTypes.string,
   imageId: PropTypes.string,

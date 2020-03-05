@@ -21,7 +21,7 @@ function StudyBrowser(props) {
               // TODO: Thumb has more props than we care about?
               const {
                 altImageText,
-                displaySetInstanceUid,
+                displaySetInstanceUID,
                 imageId,
                 InstanceNumber,
                 numImageFrames,
@@ -32,7 +32,7 @@ function StudyBrowser(props) {
 
               return (
                 <div
-                  key={thumb.displaySetInstanceUid}
+                  key={thumb.displaySetInstanceUID}
                   className="thumbnail-container"
                   data-cy="thumbnail-list"
                 >
@@ -46,7 +46,7 @@ function StudyBrowser(props) {
                     altImageText={altImageText}
                     imageId={imageId}
                     InstanceNumber={InstanceNumber}
-                    displaySetInstanceUid={displaySetInstanceUid} // used by drop
+                    displaySetInstanceUID={displaySetInstanceUID} // used by drop
                     numImageFrames={numImageFrames}
                     SeriesDescription={SeriesDescription}
                     SeriesNumber={SeriesNumber}
@@ -54,7 +54,7 @@ function StudyBrowser(props) {
                     // Events
                     onClick={onThumbnailClick.bind(
                       undefined,
-                      displaySetInstanceUid
+                      displaySetInstanceUID
                     )}
                     onDoubleClick={onThumbnailDoubleClick}
                   />
@@ -77,7 +77,7 @@ StudyBrowser.propTypes = {
       thumbnails: PropTypes.arrayOf(
         PropTypes.shape({
           altImageText: PropTypes.string,
-          displaySetInstanceUid: PropTypes.string.isRequired,
+          displaySetInstanceUID: PropTypes.string.isRequired,
           imageId: PropTypes.string,
           InstanceNumber: PropTypes.number,
           numImageFrames: PropTypes.number,

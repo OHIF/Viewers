@@ -107,9 +107,9 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
       result,
       sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
     );
-    const seriesInstanceUidsMap = mapStudySeries(seriesSorted);
+    const seriesInstanceUIDsMap = mapStudySeries(seriesSorted);
 
-    return seriesInstanceUidsMap;
+    return seriesInstanceUIDsMap;
   }
 
   async load(preLoadData) {

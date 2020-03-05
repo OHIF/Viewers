@@ -29,11 +29,11 @@ import studies from './studies.js'
                     }).thumbnails}
                 onSeriesSelected={(selectedSeries) => {
                     const { studyListData } = state;
-                    const selectedId = selectedSeries.displaySetInstanceUid;
+                    const selectedId = selectedSeries.displaySetInstanceUID;
 
                     studyListData.forEach(study => {
                         study.thumbnails.forEach(series => {
-                            series.active = series.displaySetInstanceUid  === selectedId;
+                            series.active = series.displaySetInstanceUID  === selectedId;
                         })
                     });
 

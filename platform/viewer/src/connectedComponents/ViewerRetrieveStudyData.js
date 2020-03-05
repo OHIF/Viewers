@@ -170,8 +170,8 @@ const _loadRemainingSeries = studyMetadata => {
 
 function ViewerRetrieveStudyData({
   server,
-  studyInstanceUids,
-  seriesInstanceUids,
+  studyInstanceUIDs,
+  seriesInstanceUIDs,
   clearViewportSpecificData,
 }) {
   // hooks
@@ -266,9 +266,9 @@ function ViewerRetrieveStudyData({
     try {
       const filters = {};
       // Use the first, discard others
-      const seriesInstanceUID = seriesInstanceUids && seriesInstanceUids[0];
+      const seriesInstanceUID = seriesInstanceUIDs && seriesInstanceUIDs[0];
 
-      const retrieveParams = [server, studyInstanceUids];
+      const retrieveParams = [server, studyInstanceUIDs];
 
       if (seriesInstanceUID) {
         filters.seriesInstanceUID = seriesInstanceUID;
@@ -278,7 +278,7 @@ function ViewerRetrieveStudyData({
         }
       }
 
-      cancelableStudiesPromises[studyInstanceUids] = makeCancelable(
+      cancelableStudiesPromises[studyInstanceUIDs] = makeCancelable(
         retrieveStudiesMetadata(...retrieveParams)
       )
         .then(result => {
@@ -301,34 +301,34 @@ function ViewerRetrieveStudyData({
   };
 
   const purgeCancellablePromises = () => {
-    for (let studyInstanceUids in cancelableStudiesPromises) {
-      if ('cancel' in cancelableStudiesPromises[studyInstanceUids]) {
-        cancelableStudiesPromises[studyInstanceUids].cancel();
+    for (let studyInstanceUIDs in cancelableStudiesPromises) {
+      if ('cancel' in cancelableStudiesPromises[studyInstanceUIDs]) {
+        cancelableStudiesPromises[studyInstanceUIDs].cancel();
       }
     }
 
-    for (let studyInstanceUids in cancelableSeriesPromises) {
-      if ('cancel' in cancelableSeriesPromises[studyInstanceUids]) {
-        cancelableSeriesPromises[studyInstanceUids].cancel();
-        deleteStudyMetadataPromise(studyInstanceUids);
-        studyMetadataManager.remove(studyInstanceUids);
+    for (let studyInstanceUIDs in cancelableSeriesPromises) {
+      if ('cancel' in cancelableSeriesPromises[studyInstanceUIDs]) {
+        cancelableSeriesPromises[studyInstanceUIDs].cancel();
+        deleteStudyMetadataPromise(studyInstanceUIDs);
+        studyMetadataManager.remove(studyInstanceUIDs);
       }
     }
   };
 
-  const prevStudyInstanceUids = usePrevious(studyInstanceUids);
+  const prevStudyInstanceUIDs = usePrevious(studyInstanceUIDs);
 
   useEffect(() => {
-    const hasStudyInstanceUidsChanged = !(
-      prevStudyInstanceUids &&
-      prevStudyInstanceUids.every(e => studyInstanceUids.includes(e))
+    const hasStudyInstanceUIDsChanged = !(
+      prevStudyInstanceUIDs &&
+      prevStudyInstanceUIDs.every(e => studyInstanceUIDs.includes(e))
     );
 
-    if (hasStudyInstanceUidsChanged) {
+    if (hasStudyInstanceUIDsChanged) {
       studyMetadataManager.purge();
       purgeCancellablePromises();
     }
-  }, [studyInstanceUids]);
+  }, [studyInstanceUIDs]);
 
   useEffect(() => {
     cancelableSeriesPromises = {};
@@ -348,14 +348,14 @@ function ViewerRetrieveStudyData({
     <ConnectedViewer
       studies={studies}
       isStudyLoaded={isStudyLoaded}
-      studyInstanceUids={studyInstanceUids}
+      studyInstanceUIDs={studyInstanceUIDs}
     />
   );
 }
 
 ViewerRetrieveStudyData.propTypes = {
-  studyInstanceUids: PropTypes.array.isRequired,
-  seriesInstanceUids: PropTypes.array,
+  studyInstanceUIDs: PropTypes.array.isRequired,
+  seriesInstanceUIDs: PropTypes.array,
   server: PropTypes.object,
   clearViewportSpecificData: PropTypes.func.isRequired,
 };

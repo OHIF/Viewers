@@ -23,16 +23,16 @@ class Viewer extends Component {
   static propTypes = {
     studies: PropTypes.arrayOf(
       PropTypes.shape({
-        studyInstanceUid: PropTypes.string.isRequired,
-        studyDate: PropTypes.string,
+        StudyInstanceUID: PropTypes.string.isRequired,
+        StudyDate: PropTypes.string,
         displaySets: PropTypes.arrayOf(
           PropTypes.shape({
-            displaySetInstanceUid: PropTypes.string.isRequired,
-            seriesDescription: PropTypes.string,
-            seriesNumber: PropTypes.number,
-            instanceNumber: PropTypes.number,
+            displaySetInstanceUID: PropTypes.string.isRequired,
+            SeriesDescription: PropTypes.string,
+            SeriesNumber: PropTypes.number,
+            InstanceNumber: PropTypes.number,
             numImageFrames: PropTypes.number,
-            modality: PropTypes.string.isRequired,
+            Modality: PropTypes.string.isRequired,
             images: PropTypes.arrayOf(
               PropTypes.shape({
                 getImageId: PropTypes.func.isRequired,
@@ -42,7 +42,7 @@ class Viewer extends Component {
         ),
       })
     ),
-    studyInstanceUids: PropTypes.array,
+    studyInstanceUIDs: PropTypes.array,
     activeServer: PropTypes.shape({
       type: PropTypes.string,
       wadoRoot: PropTypes.string,
@@ -120,7 +120,7 @@ class Viewer extends Component {
       {
         timepointType: 'baseline',
         timepointId: 'TimepointId',
-        studyInstanceUids: this.props.studyInstanceUids,
+        studyInstanceUIDs: this.props.studyInstanceUIDs,
         PatientID: filter.PatientID,
         earliestDate,
         latestDate,
@@ -335,7 +335,7 @@ const _mapStudiesToThumbnails = function(studies) {
 
     const thumbnails = study.displaySets.map(displaySet => {
       const {
-        displaySetInstanceUid,
+        displaySetInstanceUID,
         SeriesDescription,
         SeriesNumber,
         InstanceNumber,
@@ -361,7 +361,7 @@ const _mapStudiesToThumbnails = function(studies) {
       return {
         imageId,
         altImageText,
-        displaySetInstanceUid,
+        displaySetInstanceUID,
         SeriesDescription,
         SeriesNumber,
         InstanceNumber,

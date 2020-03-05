@@ -14,8 +14,8 @@ export class QuickSwitch extends Component {
     onSeriesSelected: PropTypes.func.isRequired,
     seriesData: PropTypes.array,
     onStudySelected: PropTypes.func,
-    activeStudyInstanceUid: PropTypes.string,
-    activeDisplaySetInstanceUid: PropTypes.string,
+    activeStudyInstanceUID: PropTypes.string,
+    activeDisplaySetInstanceUID: PropTypes.string,
   };
 
   constructor(props) {
@@ -24,26 +24,26 @@ export class QuickSwitch extends Component {
     this.state = {
       seriesQuickSwitchOpen: false,
       sideClass: this.props.side || '',
-      activeStudyInstanceUid: this.props.activeStudyInstanceUid,
-      activeDisplaySetInstanceUid: this.props.activeDisplaySetInstanceUid,
+      activeStudyInstanceUID: this.props.activeStudyInstanceUID,
+      activeDisplaySetInstanceUID: this.props.activeDisplaySetInstanceUID,
     };
   }
 
   componentDidUpdate(prevProps) {
     const props = this.props;
 
-    if (props.activeStudyInstanceUid !== prevProps.activeStudyInstanceUid) {
+    if (props.activeStudyInstanceUID !== prevProps.activeStudyInstanceUID) {
       this.setState({
-        activeStudyInstanceUid: props.activeStudyInstanceUid,
+        activeStudyInstanceUID: props.activeStudyInstanceUID,
       });
     }
 
     if (
-      props.activeDisplaySetInstanceUid !==
-      prevProps.activeDisplaySetInstanceUid
+      props.activeDisplaySetInstanceUID !==
+      prevProps.activeDisplaySetInstanceUID
     ) {
       this.setState({
-        activeDisplaySetInstanceUid: props.activeDisplaySetInstanceUid,
+        activeDisplaySetInstanceUID: props.activeDisplaySetInstanceUID,
       });
     }
   }
@@ -66,8 +66,8 @@ export class QuickSwitch extends Component {
               <SeriesList
                 seriesItems={this.getSeriesItems()}
                 onClick={this.onSeriesClick}
-                activeDisplaySetInstanceUid={
-                  this.state.activeDisplaySetInstanceUid
+                activeDisplaySetInstanceUID={
+                  this.state.activeDisplaySetInstanceUID
                 }
               />
             </ScrollableArea>
@@ -80,7 +80,7 @@ export class QuickSwitch extends Component {
               <StudiesList
                 studyListData={this.props.studyListData}
                 onClick={this.onStudyClick}
-                activeStudyInstanceUid={this.state.activeStudyInstanceUid}
+                activeStudyInstanceUID={this.state.activeStudyInstanceUID}
               />
             </ScrollableArea>
           </div>
@@ -94,9 +94,9 @@ export class QuickSwitch extends Component {
 
     if (this.props.seriesData) {
       seriesData = this.props.seriesData;
-    } else if (this.state.activeStudyInstanceUid) {
+    } else if (this.state.activeStudyInstanceUID) {
       const study = this.props.studyListData.find(
-        study => study.StudyInstanceUID === this.state.activeStudyInstanceUid
+        study => study.StudyInstanceUID === this.state.activeStudyInstanceUID
       );
 
       seriesData = study.thumbnails;
@@ -111,8 +111,8 @@ export class QuickSwitch extends Component {
     const seriesItems = this.getSeriesItems() || [];
     return seriesItems.map((seriesData, index) => {
       const active =
-        seriesData.displaySetInstanceUid ===
-        this.state.activeDisplaySetInstanceUid;
+        seriesData.displaySetInstanceUID ===
+        this.state.activeDisplaySetInstanceUID;
       return (
         <div key={index} className={`series-item ${active ? 'active' : ''}`} />
       );
@@ -124,14 +124,14 @@ export class QuickSwitch extends Component {
       this.props.onStudySelected(studyDataSelected);
     }
     this.setState({
-      activeStudyInstanceUid: studyDataSelected.StudyInstanceUID,
+      activeStudyInstanceUID: studyDataSelected.StudyInstanceUID,
       seriesQuickSwitchOpen: true,
     });
   };
 
   onSeriesClick = seriesDataSelected => {
     this.setState({
-      activeDisplaySetInstanceUid: seriesDataSelected.displaySetInstanceUid,
+      activeDisplaySetInstanceUID: seriesDataSelected.displaySetInstanceUID,
     });
 
     this.props.onSeriesSelected(seriesDataSelected);

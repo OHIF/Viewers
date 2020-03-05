@@ -110,14 +110,14 @@ export class StudyMetadata extends Metadata {
       return;
     }
 
-    const sopClassUids = getSopClassUids(series);
+    const sopClassUIDs = getSopClassUIDs(series);
 
     if (sopClassHandlerModules && sopClassHandlerModules.length > 0) {
       const displaySet = _getDisplaySetFromSopClassModule(
         sopClassHandlerModules,
         series,
         study,
-        sopClassUids
+        sopClassUIDs
       );
       if (displaySet) {
         displaySet.sopClassModule = true;
@@ -149,10 +149,10 @@ export class StudyMetadata extends Metadata {
         displaySet = makeDisplaySet(series, [instance]);
 
         displaySet.setAttributes({
-          sopClassUids,
+          sopClassUIDs,
           isClip: true,
           SeriesInstanceUID: series.getSeriesInstanceUID(),
-          StudyInstanceUID: study.getStudyInstanceUID(), // Include the study instance Uid for drag/drop purposes
+          StudyInstanceUID: study.getStudyInstanceUID(), // Include the study instance UID for drag/drop purposes
           numImageFrames: instance.getTagValue('NumberOfFrames'), // Override the default value of instances.length
           InstanceNumber: instance.getTagValue('InstanceNumber'), // Include the instance number
           AcquisitionDatetime: instance.getTagValue('AcquisitionDateTime'), // Include the acquisition datetime
@@ -161,8 +161,8 @@ export class StudyMetadata extends Metadata {
       } else if (isSingleImageModality(instance.Modality)) {
         displaySet = makeDisplaySet(series, [instance]);
         displaySet.setAttributes({
-          sopClassUids,
-          StudyInstanceUID: study.getStudyInstanceUID(), // Include the study instance Uid
+          sopClassUIDs,
+          StudyInstanceUID: study.getStudyInstanceUID(), // Include the study instance UID
           SeriesInstanceUID: series.getSeriesInstanceUID(),
           InstanceNumber: instance.getTagValue('InstanceNumber'), // Include the instance number
           AcquisitionDatetime: instance.getTagValue('AcquisitionDateTime'), // Include the acquisition datetime
@@ -177,7 +177,7 @@ export class StudyMetadata extends Metadata {
       const displaySet = makeDisplaySet(series, stackableInstances);
       displaySet.setAttribute('StudyInstanceUID', study.getStudyInstanceUID());
       displaySet.setAttributes({
-        sopClassUids,
+        sopClassUIDs,
       });
       displaySets.push(displaySet);
     }
@@ -591,7 +591,7 @@ const makeDisplaySet = (series, instances) => {
 
   // set appropriate attributes to image set...
   imageSet.setAttributes({
-    displaySetInstanceUid: imageSet.uid, // create a local alias for the imageSet UID
+    displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
     SeriesDate: seriesData.SeriesDate,
     SeriesTime: seriesData.SeriesTime,
     SeriesInstanceUID: series.getSeriesInstanceUID(),
@@ -638,53 +638,53 @@ const isSingleImageModality = Modality => {
   return Modality === 'CR' || Modality === 'MG' || Modality === 'DX';
 };
 
-function getSopClassUids(series) {
-  const uniqueSopClassUidsInSeries = new Set();
+function getSopClassUIDs(series) {
+  const uniqueSopClassUIDsInSeries = new Set();
   series.forEachInstance(instance => {
-    const instanceSopClassUid = instance.getTagValue('SOPClassUID');
+    const instanceSopClassUID = instance.getTagValue('SOPClassUID');
 
-    uniqueSopClassUidsInSeries.add(instanceSopClassUid);
+    uniqueSopClassUIDsInSeries.add(instanceSopClassUID);
   });
-  const sopClassUids = Array.from(uniqueSopClassUidsInSeries);
+  const sopClassUIDs = Array.from(uniqueSopClassUIDsInSeries);
 
-  return sopClassUids;
+  return sopClassUIDs;
 }
 
 /**
  * @private
  * @param {SeriesMetadata} series
  * @param {StudyMetadata} study
- * @param {string[]} sopClassUids
+ * @param {string[]} sopClassUIDs
  */
 function _getDisplaySetFromSopClassModule(
   sopClassHandlerExtensions, // TODO: Update Usage
   series,
   study,
-  sopClassUids
+  sopClassUIDs
 ) {
   // TODO: For now only use the plugins if all instances have the same SOPClassUID
-  if (sopClassUids.length !== 1) {
+  if (sopClassUIDs.length !== 1) {
     console.warn(
-      'getDisplaySetFromSopClassPlugin: More than one SOPClassUid in the same series is not yet supported.'
+      'getDisplaySetFromSopClassPlugin: More than one SOPClassUID in the same series is not yet supported.'
     );
     return;
   }
 
-  const SOPClassUID = sopClassUids[0];
+  const SOPClassUID = sopClassUIDs[0];
   const sopClassHandlerModules = sopClassHandlerExtensions.map(extension => {
     return extension.module;
   });
 
-  const handlersForSopClassUid = sopClassHandlerModules.filter(module => {
-    return module.sopClassUids.includes(SOPClassUID);
+  const handlersForSopClassUID = sopClassHandlerModules.filter(module => {
+    return module.sopClassUIDs.includes(SOPClassUID);
   });
 
   // TODO: Sort by something, so we can determine which plugin to use
-  if (!handlersForSopClassUid || !handlersForSopClassUid.length) {
+  if (!handlersForSopClassUID || !handlersForSopClassUID.length) {
     return;
   }
 
-  const plugin = handlersForSopClassUid[0];
+  const plugin = handlersForSopClassUID[0];
   const headers = DICOMWeb.getAuthorizationHeader();
   const dicomWebClient = new dwc({
     url: study.getData().wadoRoot,

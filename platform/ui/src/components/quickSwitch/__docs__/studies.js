@@ -12,7 +12,7 @@ export default [
         SeriesDescription: 'Anti-PD-1_Lung',
         SeriesNumber: '2',
         numImageFrames: 512,
-        displaySetInstanceUid: '10001-1',
+        displaySetInstanceUID: '10001-1',
         stackPercentComplete: 30,
       },
       {
@@ -22,7 +22,7 @@ export default [
         SeriesNumber: '2',
         InstanceNumber: '1',
         numImageFrames: 256,
-        displaySetInstanceUid: '10001-2',
+        displaySetInstanceUID: '10001-2',
         stackPercentComplete: 70,
       },
     ],
@@ -41,7 +41,7 @@ export default [
         active: true,
         SeriesNumber: '2',
         numImageFrames: 512,
-        displaySetInstanceUid: '10002-1',
+        displaySetInstanceUID: '10002-1',
         stackPercentComplete: 100,
       },
       {
@@ -50,7 +50,7 @@ export default [
         SeriesDescription: 'CPTAC-CM',
         SeriesNumber: '2',
         InstanceNumber: '1',
-        displaySetInstanceUid: '10002-2',
+        displaySetInstanceUID: '10002-2',
         numImageFrames: 256,
       },
       {
@@ -59,7 +59,7 @@ export default [
         SeriesDescription: 'CPTAC-HNSCC',
         SeriesNumber: '2',
         InstanceNumber: '1',
-        displaySetInstanceUid: '10002-3',
+        displaySetInstanceUID: '10002-3',
         numImageFrames: 256,
       },
       {
@@ -68,7 +68,7 @@ export default [
         SeriesDescription: 'CPTAC-LSCC',
         SeriesNumber: '2',
         InstanceNumber: '1',
-        displaySetInstanceUid: '10002-4',
+        displaySetInstanceUID: '10002-4',
         numImageFrames: 256,
       },
     ],

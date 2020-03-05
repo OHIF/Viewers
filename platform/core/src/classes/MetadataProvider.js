@@ -14,7 +14,7 @@ class MetadataProvider {
       writable: false,
       value: new Map(),
     });
-    Object.defineProperty(this, 'imageIdToUids', {
+    Object.defineProperty(this, 'imageIdToUIDs', {
       configurable: false,
       enumerable: false,
       writable: false,
@@ -65,12 +65,12 @@ class MetadataProvider {
     return instance;
   }
 
-  addImageIdToUids(imageId, uids) {
+  addImageIdToUIDs(imageId, uids) {
     // This method is a fallback for when you don't have WADO-URI or WADO-RS.
     // You can add instances fetched by any method by calling addInstance, and hook an imageId to point at it here.
     // An example would be dicom hosted at some random site.
 
-    this.imageIdToUids.set(imageId, uids);
+    this.imageIdToUIDs.set(imageId, uids);
   }
 
   _getAndCacheStudy(StudyInstanceUID) {
@@ -129,18 +129,24 @@ class MetadataProvider {
       SeriesInstanceUID,
       SOPInstanceUID
     );
-
-    //?frame=1
   }
 
   get(query, imageId, options = { fallback: false }) {
     const instance = this._getInstance(imageId);
 
-    if (query === 'instance') {
+    if (query === INSTANCE) {
       return instance;
     }
 
     return this.getTagFromInstance(query, instance, options);
+  }
+
+  getTag(query, imageId, options) {
+    return this.get(query, imageId, options);
+  }
+
+  getInstance(imageId) {
+    return this.get(INSTANCE, imageId);
   }
 
   getTagFromInstance(
@@ -471,7 +477,7 @@ class MetadataProvider {
       };
     } else {
       // Maybe its a non-standard imageId
-      return this.imageIdToUids.get(imageId);
+      return this.imageIdToUIDs.get(imageId);
     }
   }
 }
@@ -498,3 +504,5 @@ const WADO_IMAGE_LOADER_TAGS = {
   GENERAL_STUDY_MODULE: 'generalStudyModule',
   CINE_MODULE: 'cineModule',
 };
+
+const INSTANCE = 'instance';
