@@ -25,9 +25,17 @@ class ToolbarRow extends Component {
     isRightSidePanelOpen: PropTypes.bool.isRequired,
     selectedLeftSidePanel: PropTypes.string.isRequired,
     selectedRightSidePanel: PropTypes.string.isRequired,
-    handleSidePanelChange: PropTypes.func,
+    handleSidePanelChange: PropTypes.func.isRequired,
     activeContexts: PropTypes.arrayOf(PropTypes.string).isRequired,
     studies: PropTypes.array,
+    t: PropTypes.func.isRequired,
+    // NOTE: withDialog, withModal HOCs
+    dialog: PropTypes.any,
+    modal: PropTypes.any,
+  };
+
+  static defaultProps = {
+    studies: [],
   };
 
   constructor(props) {
@@ -50,30 +58,30 @@ class ToolbarRow extends Component {
     this._handleBuiltIn = _handleBuiltIn.bind(this);
 
     const panelModules = extensionManager.modules[MODULE_TYPES.PANEL];
+
     this.buttonGroups = {
-      left: [
-        // TODO: This should come from extensions, instead of being baked in
-        {
-          value: 'studies',
-          icon: 'th-large',
-          bottomLabel: this.props.t('Series'),
-        },
-      ],
+      left: [],
       right: [],
     };
 
+    // ~ FIND MENU OPTIONS
     panelModules.forEach(panelExtension => {
       const panelModule = panelExtension.module;
       const defaultContexts = Array.from(panelModule.defaultContext);
 
-      // MENU OPTIONS
       panelModule.menuOptions.forEach(menuOption => {
         const contexts = Array.from(menuOption.context || defaultContexts);
-
-        const activeContextIncludesAnyPanelContexts = this.props.activeContexts.some(
-          actx => contexts.includes(actx)
+        const hasActiveContext = this.props.activeContexts.some(actx =>
+          contexts.includes(actx)
         );
-        if (activeContextIncludesAnyPanelContexts) {
+
+        // It's a bit beefy to pass studies; probably only need to be reactive on `studyInstanceUIDs` and activeViewport?
+        // Note: This does not cleanly handle `studies` prop updating with panel open
+        const isDisabled =
+          typeof menuOption.isDisabled === 'function' &&
+          menuOption.isDisabled(this.props.studies);
+
+        if (hasActiveContext && !isDisabled) {
           const menuOptionEntry = {
             value: menuOption.target,
             icon: menuOption.icon,
@@ -84,6 +92,13 @@ class ToolbarRow extends Component {
           this.buttonGroups[from].push(menuOptionEntry);
         }
       });
+    });
+
+    // TODO: This should come from extensions, instead of being baked in
+    this.buttonGroups.left.unshift({
+      value: 'studies',
+      icon: 'th-large',
+      bottomLabel: this.props.t('Series'),
     });
   }
 
@@ -222,6 +237,10 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
 }
 
 /**
+ * TODO: DEPRECATE
+ * This is used exclusively in `extensions/cornerstone/src`
+ * We have better ways with new UI Services to trigger "builtin" behaviors
+ *
  * A handy way for us to handle different button types. IE. firing commands for
  * buttons, or initiation built in behavior.
  *
@@ -273,7 +292,7 @@ function _getVisibleToolbarButtons() {
 
 function _handleBuiltIn(button) {
   /* TODO: Keep cine button active until its unselected. */
-  const { dialog, modal, t } = this.props;
+  const { dialog, t } = this.props;
   const { dialogId } = this.state;
   const { id, options } = button;
 
