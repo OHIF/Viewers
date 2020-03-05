@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.3.0...@ohif/ui@1.3.1) (2020-02-29)
+
+
+### Bug Fixes
+
+* prevent the native context menu from appearing when right-clicking on a measurement or angle (https://github.com/OHIF/Viewers/issues/1406) ([#1469](https://github.com/OHIF/Viewers/issues/1469)) ([9b3be9b](https://github.com/OHIF/Viewers/commit/9b3be9b0c082c9a5b62f2a40f42e59381860fe73))
+
+
+
+
+
 # [1.3.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.2.1...@ohif/ui@1.3.0) (2020-02-20)
 
 

@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.7.4...@ohif/viewer@3.7.5) (2020-03-05)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.7.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.7.3...@ohif/viewer@3.7.4) (2020-03-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.7.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.7.2...@ohif/viewer@3.7.3) (2020-03-02)
+
+
+### Bug Fixes
+
+* GCloud dataset picker dialog broken ([#1453](https://github.com/OHIF/Viewers/issues/1453)) ([64dfbea](https://github.com/OHIF/Viewers/commit/64dfbeab7af98277efefadd334df14db79e32a4f))
+
+
+
+
+
+## [3.7.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.7.1...@ohif/viewer@3.7.2) (2020-02-29)
+
+
+### Bug Fixes
+
+* prevent the native context menu from appearing when right-clicking on a measurement or angle (https://github.com/OHIF/Viewers/issues/1406) ([#1469](https://github.com/OHIF/Viewers/issues/1469)) ([9b3be9b](https://github.com/OHIF/Viewers/commit/9b3be9b0c082c9a5b62f2a40f42e59381860fe73))
+
+
+
+
+
 ## [3.7.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.7.0...@ohif/viewer@3.7.1) (2020-02-21)
 
 **Note:** Version bump only for package @ohif/viewer
