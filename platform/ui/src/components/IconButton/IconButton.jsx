@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const baseClasses =
-  'min-w-md leading-none font-sans text-center justify-center items-center outline-none transition duration-300 ease-in-out focus:outline-none';
+  'text-center items-center justify-center outline-none transition duration-300 ease-in-out font-bold focus:outline-none';
 
 const defaults = {
   color: 'default',
@@ -31,7 +31,7 @@ const disabledClasses = {
 const variantClasses = {
   text: {
     default:
-      'text-custom-aquaBright hover:bg-custom-aquaBright hover:text-white active:opacity-80 focus:bg-custom-aquaBright focus:text-white',
+      'text-white hover:bg-custom-aquaBright hover:text-black active:opacity-80 focus:bg-custom-aquaBright focus:text-black',
     primary:
       'text-custom-blue hover:bg-custom-blue hover:text-white active:opacity-80 focus:bg-custom-blue focus:text-white',
     secondary:
@@ -41,7 +41,7 @@ const variantClasses = {
   },
   outlined: {
     default:
-      'border bg-trasparent border-custom-aquaBright text-custom-aquaBright hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border bg-trasparent border-custom-aquaBright text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary:
       'border bg-transparent border-custom-blue text-custom-blue hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
@@ -51,7 +51,7 @@ const variantClasses = {
   },
   contained: {
     default:
-      'bg-custom-aquaBright text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'bg-custom-aquaBright text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary:
       'bg-custom-blue text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
@@ -63,8 +63,14 @@ const variantClasses = {
 
 const sizeClasses = {
   small: 'py-2 px-2 text-base',
-  medium: 'py-2 px-2 text-lg',
-  large: 'py-2 px-6 text-xl',
+  medium: 'py-3 px-3 text-lg',
+  large: 'py-4 px-4 text-xl',
+};
+
+const iconSizeClasses = {
+  small: 'w-4 h-4',
+  medium: 'w-5 h-5',
+  large: 'w-6 h-6',
 };
 
 const fullWidthClasses = {
@@ -72,7 +78,7 @@ const fullWidthClasses = {
   false: 'inline-flex',
 };
 
-const Button = ({
+const IconButton = ({
   children,
   variant = defaults.variant,
   color = defaults.color,
@@ -81,26 +87,9 @@ const Button = ({
   disabled = defaults.disabled,
   type = defaults.type,
   fullWidth = defaults.fullWidth,
-  startIcon: startIconProp,
-  endIcon: endIconProp,
   className,
   ...rest
 }) => {
-  const startIcon = startIconProp && (
-    <div className="mr-2">
-      {React.cloneElement(startIconProp, {
-        className: classnames('w-4 h-4 fill-current'),
-      })}
-    </div>
-  );
-
-  const endIcon = endIconProp && (
-    <div className="ml-2">
-      {React.cloneElement(endIconProp, {
-        className: classnames('w-4 h-4 fill-current'),
-      })}
-    </div>
-  );
   const buttonElement = useRef(null);
 
   const handleOnClick = e => {
@@ -126,14 +115,14 @@ const Button = ({
       type={type}
       {...rest}
     >
-      {startIcon}
-      {children}
-      {endIcon}
+      {React.cloneElement(children, {
+        className: classnames(iconSizeClasses[size], 'fill-current'),
+      })}
     </button>
   );
 };
 
-Button.propTypes = {
+IconButton.propTypes = {
   children: PropTypes.node,
   size: PropTypes.oneOf(['small', 'medium', 'large']),
   rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
@@ -142,9 +131,7 @@ Button.propTypes = {
   fullWidth: PropTypes.bool,
   disabled: PropTypes.bool,
   type: PropTypes.string,
-  startIcon: PropTypes.node,
-  endIcon: PropTypes.node,
-  className: PropTypes.string,
+  className: PropTypes.node,
 };
 
-export default Button;
+export default IconButton;
