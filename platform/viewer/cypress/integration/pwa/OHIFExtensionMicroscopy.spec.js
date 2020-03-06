@@ -23,8 +23,5 @@ describe('OHIF Microscopy Extension', () => {
     cy.wait(3000); //Waiting for image to render before taking the snapshot
     // Visual comparison
     cy.screenshot('Microscopy Extension - Should display loaded canvas');
-    cy.percyCanvasSnapshot(
-      'Microscopy Extension - Should display loaded canvas'
-    );
   });
 });

@@ -6,7 +6,9 @@ describe('OHIF Routes', function() {
   });
 
   it('checks PT/CT json url study route', function() {
-    cy.visit('/viewer?url=https://s3.eu-central-1.amazonaws.com/ohif-viewer/JSON/PTCTStudy.json');
+    cy.visit(
+      '/viewer?url=https://s3.eu-central-1.amazonaws.com/ohif-viewer/JSON/PTCTStudy.json'
+    );
 
     cy.server();
     cy.route('GET', '**/PTCTStudy/**').as('getPTCTStudy');
@@ -15,8 +17,5 @@ describe('OHIF Routes', function() {
     cy.get('@getPTCTStudy').should($route => {
       expect($route.status).to.be.eq(200);
     });
-
-    cy.screenshot();
-    cy.percyCanvasSnapshot('PT/CT json study route');
   });
 });

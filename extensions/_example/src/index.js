@@ -21,7 +21,6 @@ export default {
   /**
    * MODULE GETTERS
    */
-
   getViewportModule() {
     return '... react component ...';
   },
@@ -98,6 +97,9 @@ const panelModule = {
       icon: 'th-list',
       label: 'Segments',
       target: 'segment-panel',
+      isDisabled: studies => {
+        return false;
+      },
     },
   ],
   components: [

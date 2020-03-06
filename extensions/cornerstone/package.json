@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "2.2.1",
+  "version": "2.4.1",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -25,14 +25,16 @@
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
-    "start": "yarn run dev"
+    "start": "yarn run dev",
+    "test:unit": "jest --watchAll",
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage"
   },
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
     "@ohif/ui": "^0.50.0",
     "cornerstone-core": "^2.2.8",
     "cornerstone-math": "^0.1.8",
-    "cornerstone-tools": "^4.9.0",
+    "cornerstone-tools": "^4.12.0",
     "cornerstone-wado-image-loader": "^3.0.0",
     "dcmjs": "^0.8.2",
     "dicom-parser": "^1.8.3",
@@ -50,6 +52,6 @@
     "lodash.merge": "^4.6.2",
     "lodash.throttle": "^4.1.1",
     "query-string": "^6.8.3",
-    "react-cornerstone-viewport": "2.x.x"
+    "react-cornerstone-viewport": "^2.3.6"
   }
 }

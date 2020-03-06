@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { metadata, studies, utils, log } from '@ohif/core';
+import usePrevious from '../customHooks/usePrevious';
 
 import ConnectedViewer from './ConnectedViewer.js';
 import PropTypes from 'prop-types';
@@ -128,9 +129,9 @@ const _addSeriesToStudy = (studyMetadata, series) => {
 const _updateMetaDataManager = (study, studyMetadata, series) => {
   updateMetaDataManager(study, series);
 
-  const { studyInstanceUID } = study;
+  const { studyInstanceUid } = study;
 
-  if (!studyMetadataManager.get(studyInstanceUID)) {
+  if (!studyMetadataManager.get(studyInstanceUid)) {
     studyMetadataManager.add(studyMetadata);
   }
 };
@@ -252,6 +253,7 @@ function ViewerRetrieveStudyData({
           .catch(error => {
             if (error && !error.isCanceled) {
               setError(true);
+              log.error(error);
             }
           });
 
@@ -289,11 +291,13 @@ function ViewerRetrieveStudyData({
         .catch(error => {
           if (error && !error.isCanceled) {
             setError(true);
+            log.error(error);
           }
         });
     } catch (error) {
       if (error) {
         setError(true);
+        log.error(error);
       }
     }
   };
@@ -314,9 +318,15 @@ function ViewerRetrieveStudyData({
     }
   };
 
+  const prevStudyInstanceUids = usePrevious(studyInstanceUids);
+
   useEffect(() => {
-    studyMetadataManager.purge();
-    purgeCancellablePromises();
+    const hasStudyInstanceUidsChanged = !(prevStudyInstanceUids && prevStudyInstanceUids.every(e => studyInstanceUids.includes(e)));
+
+    if (hasStudyInstanceUidsChanged) {
+      studyMetadataManager.purge();
+      purgeCancellablePromises();
+    }
   }, [studyInstanceUids]);
 
   useEffect(() => {

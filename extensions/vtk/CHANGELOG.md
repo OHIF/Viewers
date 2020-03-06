@@ -3,6 +3,153 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.21](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.20...@ohif/extension-vtk@1.2.21) (2020-02-29)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.20](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.19...@ohif/extension-vtk@1.2.20) (2020-02-21)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.19](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.18...@ohif/extension-vtk@1.2.19) (2020-02-20)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.18](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.17...@ohif/extension-vtk@1.2.18) (2020-02-12)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.17](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.16...@ohif/extension-vtk@1.2.17) (2020-02-10)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.16](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.15...@ohif/extension-vtk@1.2.16) (2020-02-10)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.15](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.14...@ohif/extension-vtk@1.2.15) (2020-02-07)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.13...@ohif/extension-vtk@1.2.14) (2020-02-06)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.13](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.12...@ohif/extension-vtk@1.2.13) (2020-01-30)
+
+
+### Bug Fixes
+
+* Set VTK viewport as active by interaction  ([#1139](https://github.com/OHIF/Viewers/issues/1139)) ([686d12d](https://github.com/OHIF/Viewers/commit/686d12da5c9d3d435b1e326c2a5caee36e2ed27c))
+
+
+
+
+
+## [1.2.12](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.11...@ohif/extension-vtk@1.2.12) (2020-01-30)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.11](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.10...@ohif/extension-vtk@1.2.11) (2020-01-28)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.10](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.9...@ohif/extension-vtk@1.2.10) (2020-01-28)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.9](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.8...@ohif/extension-vtk@1.2.9) (2020-01-27)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.8](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.7...@ohif/extension-vtk@1.2.8) (2020-01-24)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.7](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.6...@ohif/extension-vtk@1.2.7) (2020-01-08)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.5...@ohif/extension-vtk@1.2.6) (2020-01-07)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.4...@ohif/extension-vtk@1.2.5) (2020-01-06)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.2.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.3...@ohif/extension-vtk@1.2.4) (2019-12-30)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
 ## [1.2.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.2.2...@ohif/extension-vtk@1.2.3) (2019-12-20)
 
 
