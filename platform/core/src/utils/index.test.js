@@ -18,6 +18,7 @@ describe('Top level exports', () => {
       'DicomLoaderService',
       'urlUtil',
       'makeCancelable',
+      'getContentFromArrayMap',
       'hotkeys',
     ].sort();
 

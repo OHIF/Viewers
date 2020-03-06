@@ -30,7 +30,12 @@ import {
   AboutContent,
   OHIFModal,
 } from './components';
-import { useDebounce, useMedia } from './hooks';
+import {
+  useDebounce,
+  useMedia,
+  useLocalStorage,
+  useSessionStorage,
+} from './hooks';
 
 // Elements
 import {
@@ -126,4 +131,6 @@ export {
   // Hooks
   useDebounce,
   useMedia,
+  useLocalStorage,
+  useSessionStorage,
 };

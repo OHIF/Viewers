@@ -2,23 +2,14 @@ import './StudyList.styl';
 
 import React from 'react';
 import classNames from 'classnames';
+import OHIF from '@ohif/core';
 import TableSearchFilter from './TableSearchFilter.js';
 import PropTypes from 'prop-types';
 import { StudyListLoadingText } from './StudyListLoadingText.js';
 import { useTranslation } from 'react-i18next';
 
-const getContentFromUseMediaValue = (
-  displaySize,
-  contentArrayMap,
-  defaultContent
-) => {
-  const content =
-    displaySize in contentArrayMap
-      ? contentArrayMap[displaySize]
-      : defaultContent;
+const { getContentFromArrayMap: getContentFromUseMediaValue } = OHIF.utils;
 
-  return content;
-};
 /**
  *
  *
@@ -32,6 +23,7 @@ function StudyList(props) {
     studies,
     sort,
     onSort: handleSort,
+    clearFilters,
     filterValues,
     onFilterChange: handleFilterChange,
     onSelectItem: handleSelectItem,
@@ -106,6 +98,7 @@ function StudyList(props) {
       fieldName: 'allFields',
       inputType: 'text',
       size: 100,
+      clearable: true,
     },
   ];
 
@@ -220,6 +213,7 @@ StudyList.propTypes = {
     studyDateTo: PropTypes.any,
     studyDateFrom: PropTypes.any,
   }).isRequired,
+  clearFilters: PropTypes.func.isRequired,
   onFilterChange: PropTypes.func.isRequired,
   studyListDateFilterNumDays: PropTypes.number,
   displaySize: PropTypes.string,

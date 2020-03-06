@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+  useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import OHIF from '@ohif/core';
 import { withRouter } from 'react-router-dom';
@@ -7,12 +13,13 @@ import {
   StudyList,
   PageToolbar,
   TablePagination,
-  useDebounce,
   useMedia,
+  useSessionStorage,
 } from '@ohif/ui';
 import ConnectedHeader from '../connectedComponents/ConnectedHeader.js';
 import * as RoutesUtil from '../routes/routesUtil';
 import moment from 'moment';
+import debounce from 'lodash.debounce';
 import ConnectedDicomFilesUploader from '../googleCloud/ConnectedDicomFilesUploader';
 import ConnectedDicomStorePicker from '../googleCloud/ConnectedDicomStorePicker';
 import filesToStudies from '../lib/filesToStudies.js';
@@ -22,39 +29,88 @@ import UserManagerContext from '../context/UserManagerContext';
 import WhiteLabellingContext from '../context/WhiteLabellingContext';
 import AppContext from '../context/AppContext';
 
-const { urlUtil: UrlUtil } = OHIF.utils;
+const {
+  urlUtil: UrlUtil,
+  getContentFromArrayMap: getContentFromUseMediaValue,
+} = OHIF.utils;
+
+const DEFAULT_FILTERS = {
+  studyDateTo: null,
+  studyDateFrom: null,
+  patientName: '',
+  patientId: '',
+  accessionNumber: '',
+  studyDate: '',
+  modalities: '',
+  studyDescription: '',
+  //
+  patientNameOrId: '',
+  accessionOrModalityOrDescription: '',
+  //
+  allFields: '',
+};
+const DEFAULT_SORT = {
+  fieldName: 'patientName',
+  direction: 'desc',
+};
+const DEFAULT_ROWS_PER_PAGE = 25;
+const DEFAULT_PAGE_NUMBER = 0;
+const FETCH_DEBOUNCE_TIME = 225;
+
+function parseFilterValues(filterValues) {
+  const parseDateProp = dateKey => {
+    if (filterValues[dateKey] && filterValues[dateKey] !== '') {
+      filterValues[dateKey] = moment(filterValues[dateKey]);
+    } else {
+      filterValues[dateKey] = DEFAULT_FILTERS[dateKey];
+    }
+  };
+
+  parseDateProp('studyDateTo');
+  parseDateProp('studyDateFrom');
+  parseDateProp('studyDate');
+}
+
+const getInitialStudyListPropertiesState = () => {
+  return {
+    sort: DEFAULT_SORT,
+    filters: DEFAULT_FILTERS,
+    rowsPerPage: DEFAULT_ROWS_PER_PAGE,
+    pageNumber: DEFAULT_PAGE_NUMBER,
+  };
+};
+
+const mergeStudyListPropertiesState = (currentProps, newProps) => {
+  return {
+    ...currentProps,
+    ...newProps,
+  };
+};
 
 function StudyListRoute(props) {
   const { history, server, user, studyListFunctionsEnabled } = props;
   const [t] = useTranslation('Common');
   // ~~ STATE
-  const [sort, setSort] = useState({
-    fieldName: 'patientName',
-    direction: 'desc',
-  });
-  const [filterValues, setFilterValues] = useState({
-    studyDateTo: null,
-    studyDateFrom: null,
-    patientName: '',
-    patientId: '',
-    accessionNumber: '',
-    studyDate: '',
-    modalities: '',
-    studyDescription: '',
-    //
-    patientNameOrId: '',
-    accessionOrModalityOrDescription: '',
-    //
-    allFields: '',
-  });
+  const [
+    studyListPropertiesState,
+    setStudyListPropertiesState,
+  ] = useSessionStorage('studyListProps', getInitialStudyListPropertiesState());
+  const {
+    sort,
+    filters: filterValues,
+    rowsPerPage,
+    pageNumber,
+  } = studyListPropertiesState;
+
+  parseFilterValues(filterValues);
+
   const [studies, setStudies] = useState([]);
   const [searchStatus, setSearchStatus] = useState({
     isSearchingForStudies: false,
     error: null,
   });
   const [activeModalId, setActiveModalId] = useState(null);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
-  const [pageNumber, setPageNumber] = useState(0);
+
   const appContext = useContext(AppContext);
   // ~~ RESPONSIVE
   const displaySize = useMedia(
@@ -66,9 +122,6 @@ function StudyListRoute(props) {
     ['large', 'medium', 'small'],
     'small'
   );
-  // ~~ DEBOUNCED INPUT
-  const debouncedSort = useDebounce(sort, 200);
-  const debouncedFilters = useDebounce(filterValues, 250);
 
   // Google Cloud Adapter for DICOM Store Picking
   const { appConfig = {} } = appContext;
@@ -78,55 +131,54 @@ function StudyListRoute(props) {
     setActiveModalId('DicomStorePicker');
   }
 
-  // Called when relevant state/props are updated
-  // Watches filters and sort, debounced
-  useEffect(
-    () => {
-      const fetchStudies = async () => {
-        try {
-          setSearchStatus({ error: null, isSearchingForStudies: true });
+  const fetchData = useCallback(
+    debounce(async newStudyListPropertiesState => {
+      setSearchStatus({ error: null, isSearchingForStudies: true });
+      const {
+        sort,
+        filters,
+        rowsPerPage,
+        pageNumber,
+      } = newStudyListPropertiesState;
 
-          const response = await getStudyList(
-            server,
-            debouncedFilters,
-            debouncedSort,
-            rowsPerPage,
-            pageNumber,
-            displaySize
-          );
+      const response = await getStudyList(
+        server,
+        filters,
+        sort,
+        rowsPerPage,
+        pageNumber,
+        displaySize
+      );
 
-          setStudies(response);
-          setSearchStatus({ error: null, isSearchingForStudies: false });
-        } catch (error) {
-          console.warn(error);
-          setSearchStatus({ error: true, isFetching: false });
-        }
-      };
-
-      if (server) {
-        fetchStudies();
-      }
-    },
-    // TODO: Can we update studies directly?
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      debouncedFilters,
-      debouncedSort,
-      rowsPerPage,
-      pageNumber,
-      displaySize,
-      server,
-    ]
+      setStudies(response);
+      setSearchStatus({ error: null, isSearchingForStudies: false });
+    }, FETCH_DEBOUNCE_TIME),
+    [server, displaySize]
   );
 
-  // TODO: Update Server
-  // if (this.props.server !== prevProps.server) {
-  //   this.setState({
-  //     modalComponentId: null,
-  //     searchData: null,
-  //     studies: null,
-  //   });
-  // }
+  const fetchStudies = useCallback(
+    async (newStudyListPropertiesState, forceFlush = false) => {
+      if (!server) {
+        return;
+      }
+
+      try {
+        setStudyListPropertiesState(newStudyListPropertiesState);
+        fetchData(newStudyListPropertiesState);
+        if (forceFlush) {
+          fetchData.flush();
+        }
+      } catch (error) {
+        console.warn(error);
+        setSearchStatus({ error: true, isFetching: false });
+      }
+    },
+    [server, displaySize]
+  );
+
+  useEffect(() => {
+    fetchStudies(studyListPropertiesState);
+  }, [server, displaySize]);
 
   const onDrop = async acceptedFiles => {
     try {
@@ -172,33 +224,143 @@ function StudyListRoute(props) {
     );
   }
 
-  function handleSort(fieldName) {
-    let sortFieldName = fieldName;
-    let sortDirection = 'asc';
+  const handleSort = useCallback(
+    fieldName => {
+      let sortFieldName = fieldName;
+      let sortDirection = 'asc';
 
-    if (fieldName === sort.fieldName) {
-      if (sort.direction === 'asc') {
-        sortDirection = 'desc';
-      } else {
-        sortFieldName = null;
-        sortDirection = null;
+      if (fieldName === sort.fieldName) {
+        if (sort.direction === 'asc') {
+          sortDirection = 'desc';
+        } else {
+          sortFieldName = null;
+          sortDirection = null;
+        }
       }
-    }
 
-    setSort({
-      fieldName: sortFieldName,
-      direction: sortDirection,
-    });
-  }
-
-  function handleFilterChange(fieldName, value) {
-    setFilterValues(state => {
-      return {
-        ...state,
-        [fieldName]: value,
+      const newProps = {
+        sort: {
+          fieldName: sortFieldName,
+          direction: sortDirection,
+        },
       };
-    });
-  }
+      const newStudyListPropertiesState = mergeStudyListPropertiesState(
+        studyListPropertiesState,
+        newProps
+      );
+      fetchStudies(newStudyListPropertiesState, false);
+    },
+    [studyListPropertiesState]
+  );
+
+  const handleFilterChange = useCallback(
+    newFilterObj => {
+      const newProps = {
+        filters: {
+          ...filterValues,
+          ...newFilterObj,
+        },
+        pageNumber: DEFAULT_PAGE_NUMBER,
+      };
+
+      const newStudyListPropertiesState = mergeStudyListPropertiesState(
+        studyListPropertiesState,
+        newProps
+      );
+      fetchStudies(newStudyListPropertiesState, false);
+    },
+    [studyListPropertiesState]
+  );
+
+  const clearFilters = useCallback(() => {
+    const newProps = {
+      filters: DEFAULT_FILTERS,
+      pageNumber: DEFAULT_PAGE_NUMBER,
+    };
+
+    const newStudyListPropertiesState = mergeStudyListPropertiesState(
+      studyListPropertiesState,
+      newProps
+    );
+    fetchStudies(newStudyListPropertiesState);
+  }, [studyListPropertiesState]);
+
+  const setPageNumberSessionStorage = useCallback(
+    pageNumber => {
+      const newProps = {
+        pageNumber,
+      };
+
+      const newStudyListPropertiesState = mergeStudyListPropertiesState(
+        studyListPropertiesState,
+        newProps
+      );
+      fetchStudies(newStudyListPropertiesState);
+    },
+    [studyListPropertiesState]
+  );
+
+  const setRowsPerPageSessionStorage = useCallback(
+    rowsPerPage => {
+      const newProps = {
+        rowsPerPage,
+      };
+
+      const newStudyListPropertiesState = mergeStudyListPropertiesState(
+        studyListPropertiesState,
+        newProps
+      );
+      fetchStudies(newStudyListPropertiesState);
+    },
+    [studyListPropertiesState]
+  );
+
+  const memoizedList = useMemo(() => {
+    return (
+      <StudyList
+        isLoading={searchStatus.isSearchingForStudies}
+        hasError={searchStatus.error === true}
+        // Rows
+        studies={studies}
+        onSelectItem={studyInstanceUID => {
+          const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
+            studyInstanceUids: studyInstanceUID,
+          });
+          history.push(viewerPath);
+        }}
+        // Table Header
+        sort={sort}
+        onSort={handleSort}
+        clearFilters={clearFilters}
+        filterValues={filterValues}
+        onFilterChange={handleFilterChange}
+        studyListDateFilterNumDays={appConfig.studyListDateFilterNumDays}
+        displaySize={displaySize}
+      />
+    );
+  }, [
+    searchStatus,
+    studies,
+    sort,
+    filterValues,
+    pageNumber,
+    handleSort,
+    clearFilters,
+    handleFilterChange,
+    displaySize,
+  ]);
+
+  const clearFilterMeta = {
+    displayText: t('Clear filters'),
+    fieldName: 'clearFilters',
+    size: 50,
+  };
+
+  const clearFilter = getContentFromUseMediaValue(
+    displaySize,
+    { large: clearFilterMeta, medium: clearFilterMeta, small: null },
+    clearFilterMeta
+  );
 
   return (
     <>
@@ -241,36 +403,26 @@ function StudyListRoute(props) {
         </div>
       </div>
 
-      <div className="table-head-background" />
+      <div className="table-head-background">
+        {clearFilter && (
+          <div onClick={clearFilters} className="btn clear-filters">
+            {clearFilter.displayText}
+          </div>
+        )}
+      </div>
       <div className="study-list-container">
         {/* STUDY LIST OR DROP ZONE? */}
-        <StudyList
-          isLoading={searchStatus.isSearchingForStudies}
-          hasError={searchStatus.error === true}
-          // Rows
-          studies={studies}
-          onSelectItem={studyInstanceUID => {
-            const viewerPath = RoutesUtil.parseViewerPath(appConfig, server, {
-              studyInstanceUids: studyInstanceUID,
-            });
-            history.push(viewerPath);
-          }}
-          // Table Header
-          sort={sort}
-          onSort={handleSort}
-          filterValues={filterValues}
-          onFilterChange={handleFilterChange}
-          studyListDateFilterNumDays={appConfig.studyListDateFilterNumDays}
-          displaySize={displaySize}
-        />
+        {memoizedList}
         {/* PAGINATION FOOTER */}
         <TablePagination
           currentPage={pageNumber}
-          nextPageFunc={() => setPageNumber(pageNumber + 1)}
-          prevPageFunc={() => setPageNumber(pageNumber - 1)}
-          onRowsPerPageChange={rows => setRowsPerPage(rows)}
+          nextPageFunc={() => setPageNumberSessionStorage(pageNumber + 1)}
+          prevPageFunc={() => setPageNumberSessionStorage(pageNumber - 1)}
+          onRowsPerPageChange={rows => setRowsPerPageSessionStorage(rows)}
           rowsPerPage={rowsPerPage}
           recordCount={studies.length}
+          isLoading={searchStatus && searchStatus.isSearchingForStudies}
+          hasError={searchStatus && searchStatus.error === true}
         />
       </div>
     </>

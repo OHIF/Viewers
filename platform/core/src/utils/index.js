@@ -12,6 +12,7 @@ import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
 import * as urlUtil from './urlUtil';
 import makeCancelable from './makeCancelable';
+import getContentFromArrayMap from './getContentFromArrayMap';
 import hotkeys from './hotkeys';
 
 const utils = {
@@ -30,6 +31,7 @@ const utils = {
   DicomLoaderService,
   urlUtil,
   makeCancelable,
+  getContentFromArrayMap,
   hotkeys,
 };
 
@@ -49,6 +51,7 @@ export {
   DicomLoaderService,
   urlUtil,
   makeCancelable,
+  getContentFromArrayMap,
   hotkeys,
 };
 
