@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import classnames from 'classnames';
 import { Button } from '@ohif/ui';
 
+/** TODO: Icons should be imported from @ohif/ui */
 import ChevronRight from '../../../../../ui/src/assets/icons/chevron-right.svg';
 import ChevronDown from '../../../../../ui/src/assets/icons/chevron-down.svg';
 import InstancesActive from '../../../../../ui/src/assets/icons/instances-active.svg';
