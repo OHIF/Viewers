@@ -15,8 +15,13 @@ describe('Top level exports', () => {
       'loadAndCacheDerivedDisplaySets',
       'DicomLoaderService',
       'urlUtil',
+      'makeDeferred',
       'makeCancelable',
       'hotkeys',
+      'isDicomUid',
+      'resolveObjectPath',
+      'hierarchicalListUtils',
+      'progressTrackingUtils',
     ].sort();
 
     const exports = Object.keys(utils.default).sort();

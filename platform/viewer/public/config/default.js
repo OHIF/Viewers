@@ -115,6 +115,11 @@ window.config = {
       label: 'W/L Preset 9',
       keys: ['9'],
     },
+    {
+      commandName: 'downloadAndZipSeriesOnViewports',
+      label: 'Download and Zip Series On Viewports',
+      keys: ['d'],
+    },
   ],
   cornerstoneExtensionConfig: {},
   // Following property limits number of simultaneous series metadata requests.
