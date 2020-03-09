@@ -14,12 +14,6 @@ export class InstanceMetadata extends Metadata {
     super(data, uid);
     // Initialize Private Properties
     Object.defineProperties(this, {
-      _sopInstanceUID: {
-        configurable: true, // configurable so that it can be redefined in sub-classes...
-        enumerable: false,
-        writable: true,
-        value: null,
-      },
       _imageId: {
         configurable: true, // configurable so that it can be redefined in sub-classes...
         enumerable: false,
@@ -41,14 +35,14 @@ export class InstanceMetadata extends Metadata {
    */
   _definePublicProperties() {
     /**
-     * Property: this.sopInstanceUID
+     * Property: this.SOPInstanceUID
      * Same as this.getSOPInstanceUID()
      * It's specially useful in contexts where a method call is not suitable like in search criteria. For example:
      * sopInstanceCollection.findBy({
-     *   sopInstanceUID: '1.2.3.4.5.6.77777.8888888.99999999999.0'
+     *   SOPInstanceUID: '1.2.3.4.5.6.77777.8888888.99999999999.0'
      * });
      */
-    Object.defineProperty(this, 'sopInstanceUID', {
+    Object.defineProperty(this, 'SOPInstanceUID', {
       configurable: false,
       enumerable: false,
       get: function() {

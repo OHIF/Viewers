@@ -33,17 +33,17 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
     measurements.forEach(measurement => {
       const instanceMetadata = findInstanceMetadataBySopInstanceUID(
         displaySets,
-        measurement.sopInstanceUID
+        measurement.sopInstanceUid
       );
 
       const { _study: study, _series: series } = instanceMetadata;
       const { StudyInstanceUID, PatientID } = study;
       const { SeriesInstanceUID } = series;
-      const { sopInstanceUID, frameIndex } = measurement;
+      const { sopInstanceUid, frameIndex } = measurement;
       const imagePath = getImagePath(
         StudyInstanceUID,
         SeriesInstanceUID,
-        sopInstanceUID,
+        sopInstanceUid,
         frameIndex
       );
 
@@ -58,6 +58,7 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
       const toolData = Object.assign({}, measurement, {
         imageId,
         imagePath,
+        SOPInstanceUID: sopInstanceUid,
         SeriesInstanceUID,
         StudyInstanceUID,
         PatientID,

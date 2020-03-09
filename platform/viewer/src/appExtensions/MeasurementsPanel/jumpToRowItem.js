@@ -69,6 +69,10 @@ export default function jumpToRowItem(
   // Needs to update viewports.viewportData state to set image set data
 
   const displaySetContainsSopInstance = (displaySet, SOPInstanceUID) => {
+    if (!displaySet.images || !displaySet.images.length) {
+      return;
+    }
+
     return displaySet.images.find(
       image => image.getSOPInstanceUID() === SOPInstanceUID
     );
@@ -87,14 +91,14 @@ export default function jumpToRowItem(
     }
 
     const displaySet = study.findDisplaySet(displaySet => {
-      return displaySetContainsSopInstance(displaySet, data.sopInstanceUID);
+      return displaySetContainsSopInstance(displaySet, data.SOPInstanceUID);
     });
 
     if (!displaySet) {
       throw new Error('Display set not found.');
     }
 
-    displaySet.SOPInstanceUID = data.sopInstanceUID;
+    displaySet.SOPInstanceUID = data.SOPInstanceUID;
     if (data.frameIndex) {
       displaySet.frameIndex = data.frameIndex;
     }

@@ -22,16 +22,16 @@ const measurementServiceMappingsFactory = measurementService => {
       description,
       points,
       unit,
-      sopInstanceUID,
-      FrameOfReferenceUID,
+      sopInstanceUid,
+      frameOfReferenceUID,
       referenceSeriesUID,
     } = measurement;
 
     return {
       toolName: definition,
       measurementData: {
-        SOPInstanceUID: sopInstanceUID,
-        frameOfReferenceUID: FrameOfReferenceUID,
+        sopInstanceUid,
+        frameOfReferenceUID: frameOfReferenceUID,
         SeriesInstanceUID: referenceSeriesUID,
         unit,
         text: label,
@@ -72,7 +72,7 @@ const measurementServiceMappingsFactory = measurementService => {
 
     return {
       id: measurementData._measurementServiceId,
-      sopInstanceUID: SOPInstanceUID,
+      sopInstanceUid: SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
       label: measurementData.text,

@@ -15,7 +15,7 @@ import guid from '../../utils/guid';
  *
  * @typedef {Object} Measurement
  * @property {number} id -
- * @property {string} sopInstanceUID -
+ * @property {string} sopInstanceUid -
  * @property {string} FrameOfReferenceUID -
  * @property {string} referenceSeriesUID -
  * @property {string} label -
@@ -30,7 +30,7 @@ import guid from '../../utils/guid';
 /* Measurement schema keys for object validation. */
 const MEASUREMENT_SCHEMA_KEYS = [
   'id',
-  'sopInstanceUID',
+  'sopInstanceUid',
   'FrameOfReferenceUID',
   'referenceSeriesUID',
   'label',

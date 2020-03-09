@@ -52,7 +52,7 @@ describe('measurementServiceMappings.js', () => {
     };
     measurement = {
       id: 1,
-      sopInstanceUID: '123',
+      sopInstanceUid: '123',
       FrameOfReferenceUID: '123',
       referenceSeriesUID: '123',
       label: 'Test',

@@ -52,7 +52,7 @@ function getCornerstoneStack(studies, StudyInstanceUID, displaySetInstanceUID) {
 function retrieveDicomData(
   studyInstanceUID,
   seriesInstanceUID,
-  sopInstanceUID,
+  sopInstanceUid,
   wadoRoot
 ) {
   const config = {
@@ -64,7 +64,7 @@ function retrieveDicomData(
   const options = {
     studyInstanceUID,
     seriesInstanceUID,
-    sopInstanceUID,
+    sopInstanceUid,
   };
 
   return dicomWeb.retrieveInstance(options);
