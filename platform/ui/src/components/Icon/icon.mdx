@@ -1,0 +1,46 @@
+---
+name: Icon
+menu: Elements
+route: /elements/icon
+---
+
+import { Playground, Props } from 'docz';
+import { State } from 'react-powerplug';
+import { Icon, ICONS } from './../index.js';
+
+# Icon
+
+## Basic usage
+
+<Playground>
+  <div className="flex flex-wrap items-center content-center color-white">
+    {Object.keys(ICONS)
+      .sort()
+      .map((name, i) => {
+        return (
+          <React.Fragment key={i}>
+            <div className="flex flex-col m-1 p-4 items-center rounded">
+              <Icon name={name} />
+              <div className="break-normal">{name}</div>
+            </div>
+          </React.Fragment>
+        );
+      })}
+  </div>
+</Playground>
+
+The `<Icon />` component inherits the color of its parent, and sizing is based
+on its parent's `font-size`. Each icon has an `aria-labelledby` to assist screen
+readers.
+
+We use `airbnb`'s [`babel-plugin-inline-react-svg`][airbnb] to automate
+optimizing SVG files with [SVGO][svgo] and to create animatable React SVG
+components that can be requested asynchronously. You can configure SVGO's
+plugins [by following the advice laid out here][svgo-configure]
+
+## API
+
+<Props of={Icon} />
+
+The `Icon` component takes a single prop of `name`, which indicates which Icon
+should be displayed. Again, the icon responds to contextual text/font styles.
