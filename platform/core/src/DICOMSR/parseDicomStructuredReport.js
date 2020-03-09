@@ -1,6 +1,6 @@
 import * as dcmjs from 'dcmjs';
 
-import findInstanceMetadataBySopInstanceUID from './utils/findInstanceMetadataBySopInstanceUID';
+import findInstanceMetadataBySopInstanceUID from './utils/findInstanceMetadataBySopInstanceUid';
 
 /**
  * Function to parse the part10 array buffer that comes from a DICOM Structured report into measurementData
