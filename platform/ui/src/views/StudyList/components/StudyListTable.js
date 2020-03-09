@@ -71,7 +71,7 @@ const TableRow = () => {
                 {isOpened && (
                   <tr
                     className={classnames(
-                      'bg-custom-naxvyDark transition-all duration-300 ease-in-out overflow-hidden'
+                      'bg-black transition-all duration-300 ease-in-out overflow-hidden'
                     )}
                   >
                     <td colSpan="8" className="py-4 px-20">
@@ -122,7 +122,7 @@ const TableRow = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {new Array(10).fill('').map((el, i) => (
+                            {new Array(30).fill('').map((el, i) => (
                               <tr key={i}>
                                 <td
                                   className={classnames(...tdSeries, 'w-1/2')}
