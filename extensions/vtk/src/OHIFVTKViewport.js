@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { getImageData, loadImageData } from 'react-vtkjs-viewport';
-
 import ConnectedVTKViewport from './ConnectedVTKViewport';
 import LoadingIndicator from './LoadingIndicator.js';
 import OHIF from '@ohif/core';
@@ -13,15 +12,7 @@ import vtkVolume from 'vtk.js/Sources/Rendering/Core/Volume';
 import vtkVolumeMapper from 'vtk.js/Sources/Rendering/Core/VolumeMapper';
 
 const { StackManager } = OHIF.utils;
-
-// Metadata configuration
-const metadataProvider = new OHIF.cornerstone.MetadataProvider();
-
-cornerstone.metaData.addProvider(
-  metadataProvider.provider.bind(metadataProvider)
-);
-
-StackManager.setMetadataProvider(metadataProvider);
+const style = { width: '100%', height: '100%', position: 'relative' };
 
 const SOP_CLASSES = {
   SEGMENTATION_STORAGE: '1.2.840.10008.5.1.4.1.1.66.4',
@@ -68,10 +59,10 @@ class OHIFVTKViewport extends Component {
     viewportData: PropTypes.shape({
       studies: PropTypes.array,
       displaySet: PropTypes.shape({
-        studyInstanceUid: PropTypes.string,
-        displaySetInstanceUid: PropTypes.string,
-        sopClassUids: PropTypes.arrayOf(PropTypes.string),
-        sopInstanceUid: PropTypes.string,
+        StudyInstanceUID: PropTypes.string,
+        displaySetInstanceUID: PropTypes.string,
+        sopClassUIDs: PropTypes.arrayOf(PropTypes.string),
+        SOPInstanceUID: PropTypes.string,
         frameIndex: PropTypes.number,
       }),
     }),
@@ -97,18 +88,18 @@ class OHIFVTKViewport extends Component {
 
   static getCornerstoneStack(
     studies,
-    studyInstanceUid,
-    displaySetInstanceUid,
-    sopInstanceUid,
+    StudyInstanceUID,
+    displaySetInstanceUID,
+    SOPInstanceUID,
     frameIndex
   ) {
     // Create shortcut to displaySet
     const study = studies.find(
-      study => study.studyInstanceUid === studyInstanceUid
+      study => study.StudyInstanceUID === StudyInstanceUID
     );
 
     const displaySet = study.displaySets.find(set => {
-      return set.displaySetInstanceUid === displaySetInstanceUid;
+      return set.displaySetInstanceUID === displaySetInstanceUID;
     });
 
     // Get stack from Stack Manager
@@ -119,17 +110,14 @@ class OHIFVTKViewport extends Component {
 
     if (frameIndex !== undefined) {
       stack.currentImageIdIndex = frameIndex;
-    } else if (sopInstanceUid) {
+    } else if (SOPInstanceUID) {
       const index = stack.imageIds.findIndex(imageId => {
-        const sopCommonModule = cornerstone.metaData.get(
-          'sopCommonModule',
+        const imageIdSOPInstanceUID = cornerstone.metaData.get(
+          'SOPInstanceUID',
           imageId
         );
-        if (!sopCommonModule) {
-          return;
-        }
 
-        return sopCommonModule.sopInstanceUID === sopInstanceUid;
+        return imageIdSOPInstanceUID === SOPInstanceUID;
       });
 
       if (index > -1) {
@@ -144,31 +132,31 @@ class OHIFVTKViewport extends Component {
 
   getViewportData = (
     studies,
-    studyInstanceUid,
-    displaySetInstanceUid,
-    sopClassUid,
-    sopInstanceUid,
+    StudyInstanceUID,
+    displaySetInstanceUID,
+    SOPClassUID,
+    SOPInstanceUID,
     frameIndex
   ) => {
     const stack = OHIFVTKViewport.getCornerstoneStack(
       studies,
-      studyInstanceUid,
-      displaySetInstanceUid,
-      sopClassUid,
-      sopInstanceUid,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      SOPClassUID,
+      SOPInstanceUID,
       frameIndex
     );
 
     let imageDataObject;
     let labelmapDataObject;
 
-    switch (sopClassUid) {
+    switch (SOPClassUID) {
       case SOP_CLASSES.SEGMENTATION_STORAGE:
         throw new Error('Not yet implemented');
       /*
         const data = handleSegmentationStorage(
           stack.imageIds,
-          displaySetInstanceUid
+          displaySetInstanceUID
         );
 
         imageDataObject = data.referenceDataObject;
@@ -182,7 +170,7 @@ class OHIFVTKViewport extends Component {
         });
         */
       default:
-        imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid);
+        imageDataObject = getImageData(stack.imageIds, displaySetInstanceUID);
 
         return imageDataObject;
     }
@@ -194,25 +182,31 @@ class OHIFVTKViewport extends Component {
    * @param {object} imageDataObject
    * @param {object} imageDataObject.vtkImageData
    * @param {object} imageDataObject.imageMetaData0
-   * @param {number} [imageDataObject.imageMetaData0.windowWidth] - The volume's initial windowWidth
-   * @param {number} [imageDataObject.imageMetaData0.windowCenter] - The volume's initial windowCenter
-   * @param {string} imageDataObject.imageMetaData0.modality - CT, MR, PT, etc
-   * @param {string} displaySetInstanceUid
+   * @param {number} [imageDataObject.imageMetaData0.WindowWidth] - The volume's initial WindowWidth
+   * @param {number} [imageDataObject.imageMetaData0.WindowCenter] - The volume's initial WindowCenter
+   * @param {string} imageDataObject.imageMetaData0.Modality - CT, MR, PT, etc
+   * @param {string} displaySetInstanceUID
    * @returns vtkVolumeActor
    * @memberof OHIFVTKViewport
    */
-  getOrCreateVolume(imageDataObject, displaySetInstanceUid) {
-    if (volumeCache[displaySetInstanceUid]) {
-      return volumeCache[displaySetInstanceUid];
+  getOrCreateVolume(imageDataObject, displaySetInstanceUID) {
+    if (volumeCache[displaySetInstanceUID]) {
+      return volumeCache[displaySetInstanceUID];
     }
 
     const { vtkImageData, imageMetaData0 } = imageDataObject;
-    const { windowWidth, windowCenter, modality } = imageMetaData0;
+    // TODO -> Should update react-vtkjs-viewport and react-cornerstone-viewports
+    // internals to use naturalized DICOM JSON names.
+    const {
+      windowWidth: WindowWidth,
+      windowCenter: WindowCenter,
+      modality: Modality,
+    } = imageMetaData0;
 
     const { lower, upper } = _getRangeFromWindowLevels(
-      windowWidth,
-      windowCenter,
-      modality
+      WindowWidth,
+      WindowCenter,
+      Modality
     );
     const volumeActor = vtkVolume.newInstance();
     const volumeMapper = vtkVolumeMapper.newInstance();
@@ -236,7 +230,7 @@ class OHIFVTKViewport extends Component {
     // TODO: maybe we should auto adjust samples to 1000.
     volumeMapper.setMaximumSamplesPerRay(4000);
 
-    volumeCache[displaySetInstanceUid] = volumeActor;
+    volumeCache[displaySetInstanceUID] = volumeActor;
 
     return volumeActor;
   }
@@ -244,26 +238,26 @@ class OHIFVTKViewport extends Component {
   setStateFromProps() {
     const { studies, displaySet } = this.props.viewportData;
     const {
-      studyInstanceUid,
-      displaySetInstanceUid,
-      sopClassUids,
-      sopInstanceUid,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      sopClassUIDs,
+      SOPInstanceUID,
       frameIndex,
     } = displaySet;
 
-    if (sopClassUids.length > 1) {
+    if (sopClassUIDs.length > 1) {
       console.warn(
-        'More than one SOPClassUid in the same series is not yet supported.'
+        'More than one SOPClassUID in the same series is not yet supported.'
       );
     }
 
-    const sopClassUid = sopClassUids[0];
+    const SOPClassUID = sopClassUIDs[0];
     const imageDataObject = this.getViewportData(
       studies,
-      studyInstanceUid,
-      displaySetInstanceUid,
-      sopClassUid,
-      sopInstanceUid,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      SOPClassUID,
+      SOPInstanceUID,
       frameIndex
     );
 
@@ -277,7 +271,7 @@ class OHIFVTKViewport extends Component {
 
     const volumeActor = this.getOrCreateVolume(
       imageDataObject,
-      displaySetInstanceUid
+      displaySetInstanceUID
     );
 
     this.setState({
@@ -317,9 +311,9 @@ class OHIFVTKViewport extends Component {
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
     if (
-      displaySet.displaySetInstanceUid !==
-        prevDisplaySet.displaySetInstanceUid ||
-      displaySet.sopInstanceUid !== prevDisplaySet.sopInstanceUid ||
+      displaySet.displaySetInstanceUID !==
+        prevDisplaySet.displaySetInstanceUID ||
+      displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
       this.setStateFromProps();
@@ -331,7 +325,7 @@ class OHIFVTKViewport extends Component {
 
     const { isLoading, insertPixelDataPromises } = imageDataObject;
 
-    const numberOfFrames = insertPixelDataPromises.length;
+    const NumberOfFrames = insertPixelDataPromises.length;
 
     if (!isLoading) {
       this.setState({ isLoaded: true });
@@ -341,7 +335,7 @@ class OHIFVTKViewport extends Component {
     insertPixelDataPromises.forEach(promise => {
       promise.then(numberProcessed => {
         const percentComplete = Math.floor(
-          (numberProcessed * 100) / numberOfFrames
+          (numberProcessed * 100) / NumberOfFrames
         );
 
         if (percentComplete !== this.state.percentComplete) {
@@ -372,8 +366,6 @@ class OHIFVTKViewport extends Component {
         );
       });
     }
-
-    const style = { width: '100%', height: '100%', position: 'relative' };
 
     return (
       <>
@@ -409,19 +401,19 @@ class OHIFVTKViewport extends Component {
  * @private
  * @param {number} [width] - the width of our window
  * @param {number} [center] - the center of our window
- * @param {string} [modality] - 'PT', 'CT', etc.
+ * @param {string} [Modality] - 'PT', 'CT', etc.
  * @returns { lower, upper } - range
  */
-function _getRangeFromWindowLevels(width, center, modality = undefined) {
+function _getRangeFromWindowLevels(width, center, Modality = undefined) {
+  // For PET just set the range to 0-5 SUV
+  if (Modality === 'PT') {
+    return { lower: 0, upper: 5 };
+  }
+
   const levelsAreNotNumbers = isNaN(center) || isNaN(width);
 
   if (levelsAreNotNumbers) {
     return { lower: 0, upper: 512 };
-  }
-
-  // For PET just set the range to 0-5 SUV
-  if (modality === 'PT') {
-    return { lower: 0, upper: 5 };
   }
 
   return {

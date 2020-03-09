@@ -101,9 +101,9 @@ class DicomPDFViewport extends Component {
     let pdfByteArray = byteArray;
 
     if (dataSet) {
-      const sopClassUid = dataSet.string('x00080016');
+      const SOPClassUID = dataSet.string('x00080016');
 
-      if (sopClassUid !== SOP_CLASS_UIDS.ENCAPSULATED_PDF) {
+      if (SOPClassUID !== SOP_CLASS_UIDS.ENCAPSULATED_PDF) {
         throw new Error('This is not a DICOM-encapsulated PDF');
       }
 

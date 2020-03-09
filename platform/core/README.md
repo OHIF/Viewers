@@ -66,8 +66,8 @@ import { studies } from '@ohif/core';
 
 const studiesMetadata = await studies.retrieveStudiesMetadata(
   server, // Object
-  studyInstanceUids, // Array
-  seriesInstanceUids // Array (optional)
+  studyInstanceUIDs, // Array
+  seriesInstanceUIDs // Array (optional)
 );
 ```
 

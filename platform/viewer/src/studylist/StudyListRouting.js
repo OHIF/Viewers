@@ -15,8 +15,8 @@ function StudyListRouting({ match: routeMatch, location: routeLocation }) {
     location,
     dataset,
     dicomStore,
-    studyInstanceUids,
-    seriesInstanceUids,
+    studyInstanceUIDs,
+    seriesInstanceUIDs,
   } = routeMatch.params;
   const server = useServer({ project, location, dataset, dicomStore });
   const { appConfig = {} } = useContext(AppContext);

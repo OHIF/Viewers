@@ -15,8 +15,8 @@ import guid from '../../utils/guid';
  *
  * @typedef {Object} Measurement
  * @property {number} id -
- * @property {string} sopInstanceUID -
- * @property {string} frameOfReferenceUID -
+ * @property {string} sopInstanceUid -
+ * @property {string} FrameOfReferenceUID -
  * @property {string} referenceSeriesUID -
  * @property {string} label -
  * @property {string} description -
@@ -30,8 +30,8 @@ import guid from '../../utils/guid';
 /* Measurement schema keys for object validation. */
 const MEASUREMENT_SCHEMA_KEYS = [
   'id',
-  'sopInstanceUID',
-  'frameOfReferenceUID',
+  'SOPInstanceUID',
+  'FrameOfReferenceUID',
   'referenceSeriesUID',
   'label',
   'description',
@@ -197,7 +197,11 @@ class MeasurementService {
       this.mappings[source.id] = [mapping];
     }
 
-    log.info(`New measurement mapping added to source '${this._getSourceInfo(source)}'.`);
+    log.info(
+      `New measurement mapping added to source '${this._getSourceInfo(
+        source
+      )}'.`
+    );
   }
 
   /**
@@ -219,11 +223,18 @@ class MeasurementService {
       return;
     }
 
-    const mapping = this._getMappingByMeasurementSource(measurementId, definition);
+    const mapping = this._getMappingByMeasurementSource(
+      measurementId,
+      definition
+    );
     if (mapping) return mapping.toSourceSchema(measurement, definition);
 
     const measurement = this.getMeasurement(measurementId);
-    const matchingMapping = this._getMatchingMapping(source, definition, measurement);
+    const matchingMapping = this._getMatchingMapping(
+      source,
+      definition,
+      measurement
+    );
 
     if (matchingMapping) {
       log.info('Matching mapping found:', matchingMapping);
@@ -249,12 +260,15 @@ class MeasurementService {
     const sourceInfo = this._getSourceInfo(source);
 
     if (!definition) {
+      console.log('TEST');
       log.warn('No source definition provided. Exiting early.');
       return;
     }
 
     if (!this._sourceHasMappings(source)) {
-      log.warn(`No measurement mappings found for '${sourceInfo}' source. Exiting early.`);
+      log.warn(
+        `No measurement mappings found for '${sourceInfo}' source. Exiting early.`
+      );
       return;
     }
 
@@ -271,7 +285,10 @@ class MeasurementService {
       /* Assign measurement source instance */
       measurement.source = source;
     } catch (error) {
-      log.warn(`Failed to map '${sourceInfo}' measurement for definition ${definition}:`, error.message);
+      log.warn(
+        `Failed to map '${sourceInfo}' measurement for definition ${definition}:`,
+        error.message
+      );
       return;
     }
 
@@ -295,13 +312,24 @@ class MeasurementService {
     };
 
     if (this.measurements[internalId]) {
-      log.info(`Measurement already defined. Updating measurement.`, newMeasurement);
+      log.info(
+        `Measurement already defined. Updating measurement.`,
+        newMeasurement
+      );
       this.measurements[internalId] = newMeasurement;
-      this._broadcastChange(this.EVENTS.MEASUREMENT_UPDATED, source, newMeasurement);
+      this._broadcastChange(
+        this.EVENTS.MEASUREMENT_UPDATED,
+        source,
+        newMeasurement
+      );
     } else {
       log.info(`Measurement added.`, newMeasurement);
       this.measurements[internalId] = newMeasurement;
-      this._broadcastChange(this.EVENTS.MEASUREMENT_ADDED, source, newMeasurement);
+      this._broadcastChange(
+        this.EVENTS.MEASUREMENT_ADDED,
+        source,
+        newMeasurement
+      );
     }
 
     return newMeasurement.id;

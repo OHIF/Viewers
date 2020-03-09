@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { log, metadata, utils } from '@ohif/core';
+import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import qs from 'querystring';
 
@@ -8,15 +8,16 @@ import ConnectedViewer from '../connectedComponents/ConnectedViewer';
 import ConnectedViewerRetrieveStudyData from '../connectedComponents/ConnectedViewerRetrieveStudyData';
 import NotFound from '../routes/NotFound';
 
-const { studyMetadataManager, updateMetaDataManager } = utils;
+const { log, metadata, utils } = OHIF;
+const { studyMetadataManager } = utils;
 const { OHIFStudyMetadata } = metadata;
 
 class StandaloneRouting extends Component {
   state = {
     studies: null,
     server: null,
-    studyInstanceUids: null,
-    seriesInstanceUids: null,
+    studyInstanceUIDs: null,
+    seriesInstanceUIDs: null,
     error: null,
     loading: true,
   };
@@ -63,7 +64,7 @@ class StandaloneRouting extends Component {
 
         const data = JSON.parse(oReq.responseText);
         if (data.servers) {
-          if (!query.studyInstanceUids) {
+          if (!query.studyInstanceUIDs) {
             log.warn('No study instance uids specified');
             reject(new Error('No study instance uids specified'));
           }
@@ -74,12 +75,41 @@ class StandaloneRouting extends Component {
           log.warn('Activating server', server);
           this.props.activateServer(server);
 
-          const studyInstanceUids = query.studyInstanceUids.split(';');
-          const seriesInstanceUids = query.seriesInstanceUids ? query.seriesInstanceUids.split(';') : [];
+          const studyInstanceUIDs = query.studyInstanceUIDs.split(';');
+          const seriesInstanceUIDs = query.seriesInstanceUIDs
+            ? query.seriesInstanceUIDs.split(';')
+            : [];
 
-          resolve({ server, studyInstanceUids, seriesInstanceUids });
+          resolve({ server, studyInstanceUIDs, seriesInstanceUIDs });
         } else {
-          resolve({ studies: data.studies, studyInstanceUids: [] });
+          // Parse data here and add to metadata provider.
+          const metadataProvider = OHIF.cornerstone.metadataProvider;
+
+          let StudyInstanceUID;
+          let SeriesInstanceUID;
+
+          data.studies.forEach(study => {
+            StudyInstanceUID = study.StudyInstanceUID;
+
+            study.series.forEach(series => {
+              SeriesInstanceUID = series.SeriesInstanceUID;
+
+              series.instances.forEach(instance => {
+                const { url: imageId, metadata: naturalizedDicom } = instance;
+
+                // Add instance to metadata provider.
+                metadataProvider.addInstance(naturalizedDicom);
+                // Add imageId specific mapping to this data as the URL isn't necessarliy WADO-URI.
+                metadataProvider.addImageIdToUIDs(imageId, {
+                  StudyInstanceUID,
+                  SeriesInstanceUID,
+                  SOPInstanceUID: naturalizedDicom.SOPInstanceUID,
+                });
+              });
+            });
+          });
+
+          resolve({ studies: data.studies, studyInstanceUIDs: [] });
         }
       });
 
@@ -106,24 +136,24 @@ class StandaloneRouting extends Component {
       let {
         server,
         studies,
-        studyInstanceUids,
-        seriesInstanceUids,
+        studyInstanceUIDs,
+        seriesInstanceUIDs,
       } = await this.parseQueryAndRetrieveDICOMWebData(query);
 
       if (studies) {
         const {
           studies: updatedStudies,
-          studyInstanceUids: updatedStudiesInstanceUids,
+          studyInstanceUIDs: updatedStudiesInstanceUIDs,
         } = _mapStudiesToNewFormat(studies);
         studies = updatedStudies;
-        studyInstanceUids = updatedStudiesInstanceUids;
+        studyInstanceUIDs = updatedStudiesInstanceUIDs;
       }
 
       this.setState({
         studies,
         server,
-        studyInstanceUids,
-        seriesInstanceUids,
+        studyInstanceUIDs,
+        seriesInstanceUIDs,
         loading: false,
       });
     } catch (error) {
@@ -132,7 +162,9 @@ class StandaloneRouting extends Component {
   }
 
   render() {
-    const message = this.state.error ? `Error: ${JSON.stringify(this.state.error)}` : 'Loading...';
+    const message = this.state.error
+      ? `Error: ${JSON.stringify(this.state.error)}`
+      : 'Loading...';
     if (this.state.error || this.state.loading) {
       return <NotFound message={message} showGoBackButton={this.state.error} />;
     }
@@ -140,12 +172,12 @@ class StandaloneRouting extends Component {
     return this.state.studies ? (
       <ConnectedViewer studies={this.state.studies} />
     ) : (
-        <ConnectedViewerRetrieveStudyData
-          studyInstanceUids={this.state.studyInstanceUids}
-          seriesInstanceUids={this.state.seriesInstanceUids}
-          server={this.state.server}
-        />
-      );
+      <ConnectedViewerRetrieveStudyData
+        studyInstanceUIDs={this.state.studyInstanceUIDs}
+        seriesInstanceUIDs={this.state.seriesInstanceUIDs}
+        server={this.state.server}
+      />
+    );
   }
 }
 
@@ -153,27 +185,26 @@ const _mapStudiesToNewFormat = studies => {
   studyMetadataManager.purge();
 
   /* Map studies to new format, update metadata manager? */
-  const uniqueStudyUids = new Set();
+  const uniqueStudyUIDs = new Set();
   const updatedStudies = studies.map(study => {
-    const studyMetadata = new OHIFStudyMetadata(study, study.studyInstanceUid);
+    const studyMetadata = new OHIFStudyMetadata(study, study.StudyInstanceUID);
 
-    const sopClassHandlerModules = extensionManager.modules['sopClassHandlerModule'];
-    study.displaySets = study.displaySets ||
+    const sopClassHandlerModules =
+      extensionManager.modules['sopClassHandlerModule'];
+    study.displaySets =
+      study.displaySets ||
       studyMetadata.createDisplaySets(sopClassHandlerModules);
     studyMetadata.setDisplaySets(study.displaySets);
 
-    /* Updates WADO-RS metaDataManager */
-    updateMetaDataManager(study);
-
     studyMetadataManager.add(studyMetadata);
-    uniqueStudyUids.add(study.studyInstanceUid);
+    uniqueStudyUIDs.add(study.StudyInstanceUID);
 
     return study;
   });
 
   return {
     studies: updatedStudies,
-    studyInstanceUids: Array.from(uniqueStudyUids),
+    studyInstanceUIDs: Array.from(uniqueStudyUIDs),
   };
 };
 

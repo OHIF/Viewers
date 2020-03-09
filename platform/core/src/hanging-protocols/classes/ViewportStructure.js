@@ -45,9 +45,9 @@ export default class ViewportStructure {
     // Viewport structure can be updated later when we build more complex display layouts
     switch (this.type) {
       case 'grid':
-        // For the typical grid layout, we only need to multiply rows by columns to
+        // For the typical grid layout, we only need to multiply Rows by Columns to
         // obtain the number of viewports
-        return this.properties.rows * this.properties.columns;
+        return this.properties.Rows * this.properties.Columns;
     }
   }
 }

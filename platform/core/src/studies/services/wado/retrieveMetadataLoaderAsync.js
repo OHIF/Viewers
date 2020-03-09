@@ -9,12 +9,12 @@ import {
 } from './studyInstanceHelpers';
 
 /**
- * Map seriesList to an array of seriesInstanceUid
- * @param {Arrays} seriesList list of Series Instance UIDs
+ * Map series to an array of SeriesInstanceUID
+ * @param {Arrays} series list of Series Instance UIDs
  * @returns {Arrays} A list of Series Instance UIDs
  */
-function mapStudySeries(seriesList) {
-  return seriesList.map(series => getSeriesInfo(series).seriesInstanceUid);
+function mapStudySeries(series) {
+  return series.map(series => getSeriesInfo(series).SeriesInstanceUID);
 }
 
 function attachSeriesLoader(server, study, seriesLoader) {
@@ -107,9 +107,9 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
       result,
       sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
     );
-    const seriesInstanceUidsMap = mapStudySeries(seriesSorted);
+    const seriesInstanceUIDsMap = mapStudySeries(seriesSorted);
 
-    return seriesInstanceUidsMap;
+    return seriesInstanceUIDsMap;
   }
 
   async load(preLoadData) {

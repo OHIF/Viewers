@@ -16,23 +16,23 @@ function StudyBrowser(props) {
       <div className="scrollable-study-thumbnails">
         {studies
           .map((study, studyIndex) => {
-            const { studyInstanceUid } = study;
+            const { StudyInstanceUID } = study;
             return study.thumbnails.map((thumb, thumbIndex) => {
               // TODO: Thumb has more props than we care about?
               const {
                 altImageText,
-                displaySetInstanceUid,
+                displaySetInstanceUID,
                 imageId,
-                instanceNumber,
+                InstanceNumber,
                 numImageFrames,
-                seriesDescription,
-                seriesNumber,
+                SeriesDescription,
+                SeriesNumber,
                 stackPercentComplete,
               } = thumb;
 
               return (
                 <div
-                  key={thumb.displaySetInstanceUid}
+                  key={thumb.displaySetInstanceUID}
                   className="thumbnail-container"
                   data-cy="thumbnail-list"
                 >
@@ -41,20 +41,20 @@ function StudyBrowser(props) {
                     key={`${studyIndex}_${thumbIndex}`}
                     id={`${studyIndex}_${thumbIndex}`} // Unused?
                     // Study
-                    studyInstanceUid={studyInstanceUid} // used by drop
+                    StudyInstanceUID={StudyInstanceUID} // used by drop
                     // Thumb
                     altImageText={altImageText}
                     imageId={imageId}
-                    instanceNumber={instanceNumber}
-                    displaySetInstanceUid={displaySetInstanceUid} // used by drop
+                    InstanceNumber={InstanceNumber}
+                    displaySetInstanceUID={displaySetInstanceUID} // used by drop
                     numImageFrames={numImageFrames}
-                    seriesDescription={seriesDescription}
-                    seriesNumber={seriesNumber}
+                    SeriesDescription={SeriesDescription}
+                    SeriesNumber={SeriesNumber}
                     stackPercentComplete={stackPercentComplete}
                     // Events
                     onClick={onThumbnailClick.bind(
                       undefined,
-                      displaySetInstanceUid
+                      displaySetInstanceUID
                     )}
                     onDoubleClick={onThumbnailDoubleClick}
                   />
@@ -73,16 +73,16 @@ const noop = () => {};
 StudyBrowser.propTypes = {
   studies: PropTypes.arrayOf(
     PropTypes.shape({
-      studyInstanceUid: PropTypes.string.isRequired,
+      StudyInstanceUID: PropTypes.string.isRequired,
       thumbnails: PropTypes.arrayOf(
         PropTypes.shape({
           altImageText: PropTypes.string,
-          displaySetInstanceUid: PropTypes.string.isRequired,
+          displaySetInstanceUID: PropTypes.string.isRequired,
           imageId: PropTypes.string,
-          instanceNumber: PropTypes.number,
+          InstanceNumber: PropTypes.number,
           numImageFrames: PropTypes.number,
-          seriesDescription: PropTypes.string,
-          seriesNumber: PropTypes.number,
+          SeriesDescription: PropTypes.string,
+          SeriesNumber: PropTypes.number,
           stackPercentComplete: PropTypes.number,
         })
       ),

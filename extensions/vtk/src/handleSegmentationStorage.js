@@ -1,42 +1,42 @@
-import * as dcmjs from "dcmjs";
+import * as dcmjs from 'dcmjs';
 
-import OHIF from "@ohif/core";
-import { api } from "dicomweb-client";
+import OHIF from '@ohif/core';
+import { api } from 'dicomweb-client';
 
 const { StackManager } = OHIF.utils;
 
-function getDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
+function getDisplaySet(studies, StudyInstanceUID, displaySetInstanceUID) {
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.StudyInstanceUID === StudyInstanceUID
   );
 
   const displaySet = study.displaySets.find(set => {
-    return set.displaySetInstanceUid === displaySetInstanceUid;
+    return set.displaySetInstanceUID === displaySetInstanceUID;
   });
 
   return displaySet;
 }
 
-function getDisplaySetsBySeries(studies, studyInstanceUid, seriesInstanceUid) {
+function getDisplaySetsBySeries(studies, StudyInstanceUID, SeriesInstanceUID) {
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.StudyInstanceUID === StudyInstanceUID
   );
 
   return study.displaySets.filter(set => {
-    return set.seriesInstanceUid === seriesInstanceUid;
+    return set.SeriesInstanceUID === SeriesInstanceUID;
   });
 }
 
-function getCornerstoneStack(studies, studyInstanceUid, displaySetInstanceUid) {
+function getCornerstoneStack(studies, StudyInstanceUID, displaySetInstanceUID) {
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.StudyInstanceUID === StudyInstanceUID
   );
 
   // Create shortcut to displaySet
   const displaySet = getDisplaySet(
     studies,
-    studyInstanceUid,
-    displaySetInstanceUid
+    StudyInstanceUID,
+    displaySetInstanceUID
   );
 
   // Get stack from Stack Manager
@@ -52,19 +52,19 @@ function getCornerstoneStack(studies, studyInstanceUid, displaySetInstanceUid) {
 function retrieveDicomData(
   studyInstanceUID,
   seriesInstanceUID,
-  sopInstanceUID,
+  sopInstanceUid,
   wadoRoot
 ) {
   const config = {
     url: wadoRoot,
-    headers: DICOMWeb.getAuthorizationHeader()
+    headers: DICOMWeb.getAuthorizationHeader(),
   };
 
   const dicomWeb = new api.DICOMwebClient(config);
   const options = {
     studyInstanceUID,
     seriesInstanceUID,
-    sopInstanceUID
+    sopInstanceUid,
   };
 
   return dicomWeb.retrieveInstance(options);
@@ -72,30 +72,26 @@ function retrieveDicomData(
 
 async function handleSegmentationStorage(
   studies,
-  studyInstanceUid,
-  displaySetInstanceUid
+  StudyInstanceUID,
+  displaySetInstanceUID
 ) {
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.StudyInstanceUID === StudyInstanceUID
   );
   const displaySet = getDisplaySet(
     studies,
-    studyInstanceUid,
-    displaySetInstanceUid
+    StudyInstanceUID,
+    displaySetInstanceUID
   );
 
   // TODO: This is terrible but we need to use WADO-RS or we can't retrieve the SEG
   // from google cloud
   const wadoRoot = displaySet.images[0].getData().wadoRoot;
 
-  const StudyInstanceUID = displaySet.images[0].getStudyInstanceUID();
-  const SeriesInstanceUID = displaySet.images[0].getSeriesInstanceUID();
-  const SOPInstanceUID = displaySet.images[0].getSOPInstanceUID();
-
   const arrayBuffer = await retrieveDicomData(
-    StudyInstanceUID,
-    SeriesInstanceUID,
-    SOPInstanceUID,
+    displaySet.images[0].getStudyInstanceUID(),
+    displaySet.images[0].getSeriesInstanceUID(),
+    displaySet.images[0].getSOPInstanceUID(),
     wadoRoot
   );
 
@@ -108,16 +104,16 @@ async function handleSegmentationStorage(
 
   dataset._meta = dcmjs.data.DicomMetaDictionary.namifyDataset(dicomData.meta);
 
-  const seriesInstanceUid = dataset.ReferencedSeriesSequence.SeriesInstanceUID;
+  const SeriesInstanceUID = dataset.ReferencedSeriesSequence.SeriesInstanceUID;
   const displaySets = getDisplaySetsBySeries(
     studies,
-    studyInstanceUid,
-    seriesInstanceUid
+    StudyInstanceUID,
+    SeriesInstanceUID
   );
 
   if (displaySets.length > 1) {
     console.warn(
-      "More than one display set with the same seriesInstanceUid. This is not supported yet..."
+      'More than one display set with the same SeriesInstanceUID. This is not supported yet...'
     );
   }
 
@@ -125,7 +121,7 @@ async function handleSegmentationStorage(
   const imageIds = referenceDisplaySet.images.map(image => image.getImageId());
 
   if (!results) {
-    throw new Error("Fractional segmentations are not supported");
+    throw new Error('Fractional segmentations are not supported');
   }
 
   const cachedStack = StackManager.findOrCreateStack(
@@ -137,13 +133,13 @@ async function handleSegmentationStorage(
 
   return {
     referenceDataObject,
-    labelmapDataObject
+    labelmapDataObject,
   };
 
   return {
-    studyInstanceUid,
-    displaySetInstanceUid,
-    stack
+    StudyInstanceUID,
+    displaySetInstanceUID,
+    stack,
   };
 }
 

@@ -12,13 +12,13 @@ export class StudiesItem extends Component {
 
   render() {
     const {
-      studyDate,
-      studyDescription,
+      StudyDate,
+      StudyDescription,
       modalities,
       studyAvailable,
     } = this.props.studyData;
     const activeClass = this.props.active ? ' active' : '';
-    const hasDescriptionAndDate = studyDate && studyDescription;
+    const hasDescriptionAndDate = StudyDate && StudyDescription;
     return (
       <div
         className={`studyBrowseItem${activeClass}`}
@@ -36,8 +36,8 @@ export class StudiesItem extends Component {
           <div className="studyText">
             {hasDescriptionAndDate ? (
               <React.Fragment>
-                <div className="studyDate">{studyDate}</div>
-                <div className="studyDescription">{studyDescription}</div>
+                <div className="studyDate">{StudyDate}</div>
+                <div className="studyDescription">{StudyDescription}</div>
               </React.Fragment>
             ) : (
               <div className="studyAvailability">

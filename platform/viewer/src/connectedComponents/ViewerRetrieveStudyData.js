@@ -9,7 +9,7 @@ import { useSnackbarContext } from '@ohif/ui';
 
 const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
 const { retrieveStudiesMetadata, deleteStudyMetadataPromise } = studies;
-const { studyMetadataManager, updateMetaDataManager, makeCancelable } = utils;
+const { studyMetadataManager, makeCancelable } = utils;
 
 // Contexts
 import AppContext from '../context/AppContext';
@@ -61,7 +61,7 @@ const _promoteStudyDisplaySet = (study, studyMetadata, filters) => {
     const { seriesInstanceUID } = filters;
 
     const _seriesLookup = (valueToCompare, displaySet) => {
-      return displaySet.seriesInstanceUid === valueToCompare;
+      return displaySet.SeriesInstanceUID === valueToCompare;
     };
     const promotedResponse = _promoteToFront(
       studyMetadata.getDisplaySets(),
@@ -91,10 +91,10 @@ const _isQueryParamApplied = (study, filters = {}, isFilterStrategy) => {
     return applied;
   }
 
-  const { seriesList = [], displaySets = [] } = study;
-  const firstSeries = isFilterStrategy ? seriesList[0] : displaySets[0];
+  const { series = [], displaySets = [] } = study;
+  const firstSeries = isFilterStrategy ? series[0] : displaySets[0];
 
-  if (!firstSeries || firstSeries.seriesInstanceUid !== seriesInstanceUID) {
+  if (!firstSeries || firstSeries.SeriesInstanceUID !== seriesInstanceUID) {
     applied = false;
   }
 
@@ -105,7 +105,7 @@ const _showUserMessage = (queryParamApplied, message, dialog = {}) => {
     return;
   }
 
-  const { show: showUserMessage = () => { } } = dialog;
+  const { show: showUserMessage = () => {} } = dialog;
   showUserMessage({
     message,
   });
@@ -123,15 +123,13 @@ const _addSeriesToStudy = (studyMetadata, series) => {
     false
   );
   study.displaySets = studyMetadata.getDisplaySets();
-  _updateMetaDataManager(study, series.seriesInstanceUid);
+  _updateStudyMetadataManager(study, studyMetadata);
 };
 
-const _updateMetaDataManager = (study, studyMetadata, series) => {
-  updateMetaDataManager(study, series);
+const _updateStudyMetadataManager = (study, studyMetadata) => {
+  const { StudyInstanceUID } = study;
 
-  const { studyInstanceUid } = study;
-
-  if (!studyMetadataManager.get(studyInstanceUid)) {
+  if (!studyMetadataManager.get(StudyInstanceUID)) {
     studyMetadataManager.add(studyMetadata);
   }
 };
@@ -172,8 +170,8 @@ const _loadRemainingSeries = studyMetadata => {
 
 function ViewerRetrieveStudyData({
   server,
-  studyInstanceUids,
-  seriesInstanceUids,
+  studyInstanceUIDs,
+  seriesInstanceUIDs,
   clearViewportSpecificData,
 }) {
   // hooks
@@ -235,14 +233,14 @@ function ViewerRetrieveStudyData({
       const studies = studiesData.map(study => {
         const studyMetadata = new OHIFStudyMetadata(
           study,
-          study.studyInstanceUid
+          study.StudyInstanceUID
         );
 
         _updateStudyDisplaySets(study, studyMetadata);
-        _updateMetaDataManager(study, studyMetadata);
+        _updateStudyMetadataManager(study, studyMetadata);
 
         // Attempt to load remaning series if any
-        cancelableSeriesPromises[study.studyInstanceUid] = makeCancelable(
+        cancelableSeriesPromises[study.StudyInstanceUID] = makeCancelable(
           _loadRemainingSeries(studyMetadata)
         )
           .then(result => {
@@ -268,9 +266,9 @@ function ViewerRetrieveStudyData({
     try {
       const filters = {};
       // Use the first, discard others
-      const seriesInstanceUID = seriesInstanceUids && seriesInstanceUids[0];
+      const seriesInstanceUID = seriesInstanceUIDs && seriesInstanceUIDs[0];
 
-      const retrieveParams = [server, studyInstanceUids];
+      const retrieveParams = [server, studyInstanceUIDs];
 
       if (seriesInstanceUID) {
         filters.seriesInstanceUID = seriesInstanceUID;
@@ -280,7 +278,7 @@ function ViewerRetrieveStudyData({
         }
       }
 
-      cancelableStudiesPromises[studyInstanceUids] = makeCancelable(
+      cancelableStudiesPromises[studyInstanceUIDs] = makeCancelable(
         retrieveStudiesMetadata(...retrieveParams)
       )
         .then(result => {
@@ -303,31 +301,34 @@ function ViewerRetrieveStudyData({
   };
 
   const purgeCancellablePromises = () => {
-    for (let studyInstanceUids in cancelableStudiesPromises) {
-      if ('cancel' in cancelableStudiesPromises[studyInstanceUids]) {
-        cancelableStudiesPromises[studyInstanceUids].cancel();
+    for (let studyInstanceUIDs in cancelableStudiesPromises) {
+      if ('cancel' in cancelableStudiesPromises[studyInstanceUIDs]) {
+        cancelableStudiesPromises[studyInstanceUIDs].cancel();
       }
     }
 
-    for (let studyInstanceUids in cancelableSeriesPromises) {
-      if ('cancel' in cancelableSeriesPromises[studyInstanceUids]) {
-        cancelableSeriesPromises[studyInstanceUids].cancel();
-        deleteStudyMetadataPromise(studyInstanceUids);
-        studyMetadataManager.remove(studyInstanceUids);
+    for (let studyInstanceUIDs in cancelableSeriesPromises) {
+      if ('cancel' in cancelableSeriesPromises[studyInstanceUIDs]) {
+        cancelableSeriesPromises[studyInstanceUIDs].cancel();
+        deleteStudyMetadataPromise(studyInstanceUIDs);
+        studyMetadataManager.remove(studyInstanceUIDs);
       }
     }
   };
 
-  const prevStudyInstanceUids = usePrevious(studyInstanceUids);
+  const prevStudyInstanceUIDs = usePrevious(studyInstanceUIDs);
 
   useEffect(() => {
-    const hasStudyInstanceUidsChanged = !(prevStudyInstanceUids && prevStudyInstanceUids.every(e => studyInstanceUids.includes(e)));
+    const hasStudyInstanceUIDsChanged = !(
+      prevStudyInstanceUIDs &&
+      prevStudyInstanceUIDs.every(e => studyInstanceUIDs.includes(e))
+    );
 
-    if (hasStudyInstanceUidsChanged) {
+    if (hasStudyInstanceUIDsChanged) {
       studyMetadataManager.purge();
       purgeCancellablePromises();
     }
-  }, [studyInstanceUids]);
+  }, [studyInstanceUIDs]);
 
   useEffect(() => {
     cancelableSeriesPromises = {};
@@ -347,14 +348,14 @@ function ViewerRetrieveStudyData({
     <ConnectedViewer
       studies={studies}
       isStudyLoaded={isStudyLoaded}
-      studyInstanceUids={studyInstanceUids}
+      studyInstanceUIDs={studyInstanceUIDs}
     />
   );
 }
 
 ViewerRetrieveStudyData.propTypes = {
-  studyInstanceUids: PropTypes.array.isRequired,
-  seriesInstanceUids: PropTypes.array,
+  studyInstanceUIDs: PropTypes.array.isRequired,
+  seriesInstanceUIDs: PropTypes.array,
   server: PropTypes.object,
   clearViewportSpecificData: PropTypes.func.isRequired,
 };

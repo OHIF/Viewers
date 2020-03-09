@@ -19,7 +19,7 @@ export class StudyMetadataSource {
 
   /**
    * Load study info and study metadata for a given study into the viewer.
-   * @param {StudySummary|StudyMetadata} study of StudySummary or StudyMetadata object.
+   * @param {StudyMetadata} study StudyMetadata object.
    */
   loadStudy(study) {
     /**
