@@ -11,7 +11,7 @@ describe('OHIF Routes', function() {
     );
 
     cy.server();
-    cy.route('GET', '**/TESTStudy/**').as('getTESTStudy');
+    cy.route('GET', '**/MRStudy/**').as('getTESTStudy');
 
     cy.wait('@getTESTStudy.all');
     cy.get('@getTESTStudy').should($route => {
