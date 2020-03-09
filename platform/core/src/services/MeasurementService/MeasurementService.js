@@ -30,7 +30,7 @@ import guid from '../../utils/guid';
 /* Measurement schema keys for object validation. */
 const MEASUREMENT_SCHEMA_KEYS = [
   'id',
-  'sopInstanceUid',
+  'SOPInstanceUID',
   'FrameOfReferenceUID',
   'referenceSeriesUID',
   'label',
@@ -260,6 +260,7 @@ class MeasurementService {
     const sourceInfo = this._getSourceInfo(source);
 
     if (!definition) {
+      console.log('TEST');
       log.warn('No source definition provided. Exiting early.');
       return;
     }

@@ -26,7 +26,7 @@ describe('MeasurementService.js', () => {
       measurementData: {},
     };
     measurement = {
-      sopInstanceUID: '123',
+      SOPInstanceUID: '123',
       FrameOfReferenceUID: '1234',
       referenceSeriesUID: '12345',
       label: 'Label',
@@ -202,7 +202,6 @@ describe('MeasurementService.js', () => {
 
       const measurements = measurementService.getMeasurements();
 
-      expect(measurements.length).toEqual(2);
       expect(measurements.length).toEqual(2);
     });
   });
