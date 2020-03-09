@@ -58,7 +58,6 @@ export default function init({ servicesManager, configuration }) {
     touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],
     annotations: [
       csTools.ArrowAnnotateTool,
-      csTools.EraserTool,
       csTools.BidirectionalTool,
       csTools.LengthTool,
       csTools.AngleTool,
