@@ -28,17 +28,21 @@ const TableRow = () => {
   return (
     <>
       <tr>
-        <td className="border-0 p-0">
+        <td
+          className={classnames('border-0 p-0', {
+            'border-b border-custom-violetPale bg-custom-navyDark': isOpened,
+          })}
+        >
           <div
             className={classnames('w-full', {
-              'border border-custom-aquaBright rounded overflow-hidden': isOpened,
+              'border border-custom-aquaBright rounded overflow-hidden mb-2': isOpened,
             })}
           >
             <table className={classnames('w-full p-4')}>
               <tbody>
                 <tr
                   className={classnames(
-                    'cursor-pointer hover:bg-custom-violetDark transition duration-300 ease-in-out',
+                    'cursor-pointer hover:bg-custom-violetDark transition duration-300 ease-in-out bg-black',
                     {
                       'bg-custom-navyDark': !isOpened,
                     },
