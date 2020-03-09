@@ -23,12 +23,12 @@ const PDFFileLoader = new (class extends FileLoader {
       StudyDate: '',
       StudyTime: '',
       AccessionNumber: '',
-      referringPhysicianName: '',
+      ReferringPhysicianName: '',
       PatientName: '',
       PatientID: '',
       PatientBirthdate: '',
       PatientSex: '',
-      studyId: '',
+      StudyId: '',
       StudyDescription: '',
       series: [
         {
@@ -37,12 +37,14 @@ const PDFFileLoader = new (class extends FileLoader {
           SeriesNumber: '',
           instances: [
             {
-              SOPInstanceUID: '',
-              SOPClassUID: '1.2.840.10008.5.1.4.1.1.104.1',
-              Rows: '',
-              Columns: '',
-              NumberOfFrames: 0,
-              InstanceNumber: 1,
+              metadata: {
+                SOPInstanceUID: '',
+                SOPClassUID: '1.2.840.10008.5.1.4.1.1.104.1',
+                Rows: '',
+                Columns: '',
+                NumberOfFrames: 0,
+                InstanceNumber: 1,
+              },
               getImageId: () => imageId,
               isLocalFile: true,
             },
