@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.4.1...@ohif/extension-cornerstone@2.4.2) (2020-03-09)
+
+
+### Bug Fixes
+
+* Remove Eraser and ROI Window ([6c950a9](https://github.com/OHIF/Viewers/commit/6c950a9669f7fbf3c46e48679fa26ee514824156))
+
+
+
+
+
 ## [2.4.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.4.0...@ohif/extension-cornerstone@2.4.1) (2020-03-03)
 
 
