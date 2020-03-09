@@ -3,11 +3,11 @@ import classnames from 'classnames';
 import { Button } from '@ohif/ui';
 
 /** TODO: Icons should be imported from @ohif/ui */
-import ChevronRight from '../../../../../ui/src/assets/icons/chevron-right.svg';
-import ChevronDown from '../../../../../ui/src/assets/icons/chevron-down.svg';
-import InstancesActive from '../../../../../ui/src/assets/icons/instances-active.svg';
-import InstancesInactive from '../../../../../ui/src/assets/icons/instances-inactive.svg';
-import LaunchInfo from '../../../../../ui/src/assets/icons/launch-info.svg';
+import ChevronRight from '../../../assets/icons/chevron-right.svg';
+import ChevronDown from '../../../assets/icons/chevron-down.svg';
+import InstancesActive from '../../../assets/icons/instances-active.svg';
+import InstancesInactive from '../../../assets/icons/instances-inactive.svg';
+import LaunchInfo from '../../../assets/icons/launch-info.svg';
 
 const TableRow = () => {
   const [isOpened, setIsOpened] = useState(false);
