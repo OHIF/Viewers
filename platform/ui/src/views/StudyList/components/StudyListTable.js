@@ -18,11 +18,6 @@ const TableRow = () => {
     'px-4 py-2',
     { 'border-b border-custom-violetPale': !isOpened },
   ];
-  const thClasses = [
-    'px-2 py-1 text-base text-left border-r border-custom-navy',
-  ];
-  const tdSeries = ['px-2 py-1 text-base text-left border-custom-violetPale'];
-
   return (
     <>
       <tr>
@@ -102,59 +97,48 @@ const TableRow = () => {
                         </span>
                       </div>
                       <div className="mt-4">
-                        <table className="table-fixed w-full">
-                          <thead className="bg-custom-navy border-b border-custom-violetPale">
-                            <tr>
-                              <th className={classnames(...thClasses)}>
-                                Description
-                              </th>
-                              <th className={classnames(...thClasses)}>
-                                Series
-                              </th>
-                              <th className={classnames(...thClasses)}>
-                                Modality
-                              </th>
-                              <th className={classnames(...thClasses)}>
-                                Instances
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <div>
-                              {new Array(30).fill('').map((el, i) => (
-                                <tr key={i}>
-                                  <td
-                                    className={classnames(
-                                      ...tdSeries,
-                                      'border-r w-1/2'
-                                    )}
-                                  >
-                                    Patient Protocol
-                                  </td>
-                                  <td
-                                    className={classnames(
-                                      ...tdSeries,
-                                      'border-r w-1/3'
-                                    )}
-                                  >
-                                    #
-                                  </td>
-                                  <td
-                                    className={classnames(
-                                      ...tdSeries,
-                                      'border-r'
-                                    )}
-                                  >
-                                    CT
-                                  </td>
-                                  <td className={classnames(...tdSeries)}>
-                                    149
-                                  </td>
-                                </tr>
-                              ))}
-                            </div>
-                          </tbody>
-                        </table>
+                        <div className="w-full text-lg">
+                          <div className="bg-custom-navy border-b border-custom-violetPale flex">
+                            <div className="px-2 flex-1">Description</div>
+                            <div className="px-2 flex-0.3">Series</div>
+                            <div className="px-2 flex-0.3">Modality</div>
+                            <div className="px-2 flex-1">Instances</div>
+                          </div>
+                          <div className="mt-2 h-48 overflow-y-scroll custom-scrollbar">
+                            {new Array(30).fill('').map((el, i) => (
+                              <div className="w-full flex" key={i}>
+                                <div
+                                  className={classnames(
+                                    'border-r border-custom-violetPale px-2 flex-1'
+                                  )}
+                                >
+                                  Patient Protocol
+                                </div>
+                                <div
+                                  className={classnames(
+                                    'border-r border-custom-violetPale px-2 flex-0.3'
+                                  )}
+                                >
+                                  #
+                                </div>
+                                <div
+                                  className={classnames(
+                                    'border-r border-custom-violetPale px-2 flex-0.3'
+                                  )}
+                                >
+                                  CT
+                                </div>
+                                <div
+                                  className={classnames(
+                                    'border-r border-transparent pl-3 flex-1'
+                                  )}
+                                >
+                                  149
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </td>
                   </tr>
