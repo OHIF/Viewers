@@ -7,10 +7,12 @@ import chevronRight from './../../assets/icons/chevron-right.svg';
 import infoLink from './../../assets/icons/info-link.svg';
 import launchArrow from './../../assets/icons/launch-arrow.svg';
 import launchInfo from './../../assets/icons/launch-info.svg';
+import logoOhifSmall from './../../assets/icons/logo-ohif-small.svg';
+import notificationwarningDiamond from './../../assets/icons/notificationwarning-diamond.svg';
 import settings from './../../assets/icons/settings.svg';
+import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
-import sorting from './../../assets/icons/sorting.svg';
 
 const ICONS = {
   active: active,
@@ -20,6 +22,8 @@ const ICONS = {
   'info-link': infoLink,
   'launch-arrow': launchArrow,
   'launch-info': launchInfo,
+  'logo-ohif-small': logoOhifSmall,
+  'notificationwarning-diamond': notificationwarningDiamond,
   settings: settings,
   'sorting-active-down': sortingActiveDown,
   'sorting-active-up': sortingActiveUp,
