@@ -10,8 +10,8 @@ import './LayoutChooser.styl';
 
 class LayoutChooser extends PureComponent {
   static propTypes = {
-    rows: PropTypes.number.isRequired,
-    columns: PropTypes.number.isRequired,
+    Rows: PropTypes.number.isRequired,
+    Columns: PropTypes.number.isRequired,
     visible: PropTypes.bool.isRequired,
     selectedCell: PropTypes.object,
     boxSize: PropTypes.number.isRequired,
@@ -21,8 +21,8 @@ class LayoutChooser extends PureComponent {
   };
 
   static defaultProps = {
-    rows: 3,
-    columns: 3,
+    Rows: 3,
+    Columns: 3,
     visible: true,
     boxSize: 20,
     cellBorder: 1,
@@ -63,9 +63,9 @@ class LayoutChooser extends PureComponent {
   };
   highlightCells = currentCell => {
     let table = [];
-    for (let row = 0; row < this.props.rows; row++) {
+    for (let row = 0; row < this.props.Rows; row++) {
       let newRow = [];
-      for (let col = 0; col < this.props.columns; col++) {
+      for (let col = 0; col < this.props.Columns; col++) {
         let cell = { row: row, col: col };
         if (this.isRange(cell, currentCell)) {
           cell.className = 'hover';
@@ -83,11 +83,11 @@ class LayoutChooser extends PureComponent {
   };
 
   render() {
-    let columns = this.props.columns;
+    let Columns = this.props.Columns;
     const style = {
       display: this.props.visible ? 'block' : 'none',
       minWidth:
-        columns * this.props.boxSize + (columns + 5) * this.props.cellBorder,
+        Columns * this.props.boxSize + (Columns + 5) * this.props.cellBorder,
     };
     return (
       <div

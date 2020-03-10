@@ -5,19 +5,19 @@ describe('Visual Regression - OHIF Routes', function() {
     cy.openStudyList();
   });
 
-  it('checks PT/CT json url study route', function() {
+  it('checks TEST json url study route', function() {
     cy.visit(
-      '/viewer?url=https://s3.eu-central-1.amazonaws.com/ohif-viewer/JSON/PTCTStudy.json'
+      '/viewer?url=https://ohif-viewer.s3.eu-central-1.amazonaws.com/JSON/testJSON.json'
     );
 
     cy.server();
-    cy.route('GET', '**/PTCTStudy/**').as('getPTCTStudy');
+    cy.route('GET', '**/TESTStudy/**').as('getTESTStudy');
 
-    cy.wait('@getPTCTStudy.all');
-    cy.get('@getPTCTStudy').should($route => {
+    cy.wait('@getTESTStudy.all');
+    cy.get('@getTESTStudy').should($route => {
       expect($route.status).to.be.eq(200);
     });
 
-    cy.percyCanvasSnapshot('PT/CT json study route');
+    cy.percyCanvasSnapshot('TEST json study route');
   });
 });

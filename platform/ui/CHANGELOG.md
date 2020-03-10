@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.3.2...@ohif/ui@1.3.3) (2020-03-09)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.3.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.3.1...@ohif/ui@1.3.2) (2020-03-09)
+
+
+### Bug Fixes
+
+* Remove Eraser and ROI Window ([6c950a9](https://github.com/OHIF/Viewers/commit/6c950a9669f7fbf3c46e48679fa26ee514824156))
+
+
+
+
+
 ## [1.3.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.3.0...@ohif/ui@1.3.1) (2020-02-29)
 
 

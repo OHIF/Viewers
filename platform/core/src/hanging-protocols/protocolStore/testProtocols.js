@@ -14,8 +14,8 @@ function getMRTwoByTwoTest() {
   proto.locked = true;
   // Use http://localhost:3000/viewer/1.2.840.113619.2.5.1762583153.215519.978957063.78
 
-  var studyInstanceUid = new ProtocolMatchingRule(
-    'studyInstanceUid',
+  var StudyInstanceUID = new ProtocolMatchingRule(
+    'StudyInstanceUID',
     {
       equals: {
         value: '1.2.840.113619.2.5.1762583153.215519.978957063.78',
@@ -24,30 +24,30 @@ function getMRTwoByTwoTest() {
     true
   );
 
-  proto.addProtocolMatchingRule(studyInstanceUid);
+  proto.addProtocolMatchingRule(StudyInstanceUID);
 
   var oneByTwo = new ViewportStructure('grid', {
-    rows: 1,
-    columns: 2,
+    Rows: 1,
+    Columns: 2,
   });
 
   // Stage 1
   var left = new Viewport();
   var right = new Viewport();
 
-  var firstSeries = new SeriesMatchingRule('seriesNumber', {
+  var firstSeries = new SeriesMatchingRule('SeriesNumber', {
     equals: {
       value: 1,
     },
   });
 
-  var secondSeries = new SeriesMatchingRule('seriesNumber', {
+  var secondSeries = new SeriesMatchingRule('SeriesNumber', {
     equals: {
       value: 2,
     },
   });
 
-  var thirdImage = new ImageMatchingRule('instanceNumber', {
+  var thirdImage = new ImageMatchingRule('InstanceNumber', {
     equals: {
       value: 3,
     },
@@ -67,19 +67,19 @@ function getMRTwoByTwoTest() {
 
   // Stage 2
   var twoByOne = new ViewportStructure('grid', {
-    rows: 2,
-    columns: 1,
+    Rows: 2,
+    Columns: 1,
   });
   var left2 = new Viewport();
   var right2 = new Viewport();
 
-  var fourthSeries = new SeriesMatchingRule('seriesNumber', {
+  var fourthSeries = new SeriesMatchingRule('SeriesNumber', {
     equals: {
       value: 4,
     },
   });
 
-  var fifthSeries = new SeriesMatchingRule('seriesNumber', {
+  var fifthSeries = new SeriesMatchingRule('SeriesNumber', {
     equals: {
       value: 5,
     },
@@ -133,8 +133,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 1,
-            columns: 2,
+            Rows: 1,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -195,8 +195,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 1,
-            columns: 2,
+            Rows: 1,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -257,8 +257,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 2,
-            columns: 2,
+            Rows: 2,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -402,8 +402,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 1,
-            columns: 2,
+            Rows: 1,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -464,8 +464,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 1,
-            columns: 2,
+            Rows: 1,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -548,8 +548,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 2,
-            columns: 2,
+            Rows: 2,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -737,8 +737,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 1,
-            columns: 1,
+            Rows: 1,
+            Columns: 1,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -770,8 +770,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 2,
-            columns: 2,
+            Rows: 2,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -931,8 +931,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 1,
-            columns: 2,
+            Rows: 1,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -993,8 +993,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 1,
-            columns: 2,
+            Rows: 1,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -1044,8 +1044,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 1,
-            columns: 2,
+            Rows: 1,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -1127,8 +1127,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 1,
-            columns: 2,
+            Rows: 1,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -1190,8 +1190,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 1,
-            columns: 2,
+            Rows: 1,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -1275,8 +1275,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 2,
-            columns: 2,
+            Rows: 2,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },
@@ -1386,8 +1386,8 @@ function getDemoProtocols() {
         viewportStructure: {
           type: 'grid',
           properties: {
-            rows: 2,
-            columns: 2,
+            Rows: 2,
+            Columns: 2,
           },
           layoutTemplateName: 'gridLayout',
         },

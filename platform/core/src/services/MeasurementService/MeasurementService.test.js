@@ -26,8 +26,8 @@ describe('MeasurementService.js', () => {
       measurementData: {},
     };
     measurement = {
-      sopInstanceUID: '123',
-      frameOfReferenceUID: '1234',
+      SOPInstanceUID: '123',
+      FrameOfReferenceUID: '1234',
       referenceSeriesUID: '12345',
       label: 'Label',
       description: 'Description',
@@ -203,7 +203,6 @@ describe('MeasurementService.js', () => {
       const measurements = measurementService.getMeasurements();
 
       expect(measurements.length).toEqual(2);
-      expect(measurements.length).toEqual(2);
     });
   });
 
@@ -278,7 +277,9 @@ describe('MeasurementService.js', () => {
 
       /* Add new measurement */
       source.addOrUpdate(definition, newMeasurement);
-      const savedMeasurement = measurementService.getMeasurement(newMeasurement.id);
+      const savedMeasurement = measurementService.getMeasurement(
+        newMeasurement.id
+      );
 
       /* Clear dynamic data */
       delete newMeasurement.modifiedTimestamp;

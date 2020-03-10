@@ -247,6 +247,7 @@ const commandsModule = ({ servicesManager }) => {
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
+
         viewport.voi = {
           windowWidth: Number(window),
           windowCenter: Number(level),

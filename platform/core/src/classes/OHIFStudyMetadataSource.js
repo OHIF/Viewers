@@ -1,9 +1,8 @@
-import { studyMetadataManager, updateMetaDataManager } from '../utils';
+import { studyMetadataManager } from '../utils';
 
 import OHIFError from './OHIFError';
 import { StudyMetadata } from './metadata/StudyMetadata';
 import { StudyMetadataSource } from './StudyMetadataSource.js';
-import { StudySummary } from './metadata/StudySummary';
 import { retrieveStudyMetadata } from '../studies/retrieveStudyMetadata.js';
 
 export class OHIFStudyMetadataSource extends StudyMetadataSource {
@@ -19,12 +18,12 @@ export class OHIFStudyMetadataSource extends StudyMetadataSource {
 
   /**
    * Load study info (OHIF.viewer.Studies) and study metadata (OHIF.viewer.StudyMetadataList) for a given study.
-   * @param {StudySummary|StudyMetadata} study of StudySummary or StudyMetadata object.
+   * @param {StudyMetadata} study StudyMetadata object.
    */
   loadStudy(study) {
-    if (!(study instanceof StudyMetadata) && !(study instanceof StudySummary)) {
+    if (!(study instanceof StudyMetadata)) {
       throw new OHIFError(
-        'OHIFStudyMetadataSource::loadStudy study is not an instance of StudySummary or StudyMetadata'
+        'OHIFStudyMetadataSource::loadStudy study is not an instance of StudyMetadata'
       );
     }
 
@@ -33,7 +32,7 @@ export class OHIFStudyMetadataSource extends StudyMetadataSource {
 
       if (study instanceof StudyMetadata) {
         const alreadyLoaded = OHIF.viewer.Studies.findBy({
-          studyInstanceUid: studyInstanceUID,
+          StudyInstanceUID: studyInstanceUID,
         });
 
         if (!alreadyLoaded) {
@@ -49,7 +48,7 @@ export class OHIFStudyMetadataSource extends StudyMetadataSource {
           // Create study metadata object
           const studyMetadata = new StudyMetadata(
             studyInfo,
-            studyInfo.studyInstanceUid
+            studyInfo.StudyInstanceUID
           );
 
           // Get Study display sets
@@ -72,10 +71,6 @@ export class OHIFStudyMetadataSource extends StudyMetadataSource {
     // Set some studyInfo properties
     studyInfo.selected = true;
     studyInfo.displaySets = studyMetadata.getDisplaySets();
-
-    // Updates WADO-RS metaDataManager
-    updateMetaDataManager(studyInfo);
-
     studyMetadataManager.add(studyMetadata);
   }
 }
