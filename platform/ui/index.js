@@ -3,6 +3,7 @@ export {
   ButtonGroup,
   Icon,
   IconButton,
+  Svg,
   ThemeWrapper,
   Typography,
 } from './src/components';
