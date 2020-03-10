@@ -123,7 +123,7 @@ const TableRow = () => {
                               Instances
                             </div>
                           </div>
-                          <div className="mt-2 h-48 overflow-y-scroll custom-scrollbar">
+                          <div className="mt-2 h-48 overflow-y-scroll ohif-scrollbar">
                             {new Array(30).fill('').map((el, i) => (
                               <div className="w-full flex" key={i}>
                                 <div
