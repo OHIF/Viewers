@@ -18,6 +18,12 @@ const TableRow = () => {
     'px-4 py-2',
     { 'border-b border-custom-violetPale': !isOpened },
   ];
+  const seriesWidthClasses = {
+    normal: 'px-2 flex-1',
+    small: 'px-2 flex-0.3',
+  };
+  const seriesBodyClasses = 'border-r border-custom-violetPale';
+
   return (
     <>
       <tr>
@@ -35,7 +41,7 @@ const TableRow = () => {
               <tbody>
                 <tr
                   className={classnames(
-                    'cursor-pointer hover:bg-custom-violetDark transition duration-300 ease-in-out bg-black',
+                    'cursor-pointer hover:bg-custom-violetDark transition duration-300 bg-black',
                     {
                       'bg-custom-navyDark': !isOpened,
                     },
@@ -62,11 +68,7 @@ const TableRow = () => {
                   </td>
                 </tr>
                 {isOpened && (
-                  <tr
-                    className={classnames(
-                      'bg-black transition-all duration-300 ease-in-out overflow-hidden'
-                    )}
-                  >
+                  <tr className={classnames('bg-black')}>
                     <td colSpan="8" className="py-4 pl-20 pr-2">
                       <div>
                         <Button
@@ -93,46 +95,62 @@ const TableRow = () => {
                           Module 3
                         </Button>
                         <span className="ml-4 text-lg text-custom-grayBright">
+                          {/* ADD ICON HERE */}
                           Feedback text lorem ipsum dolor sit amet
                         </span>
                       </div>
                       <div className="mt-4">
                         <div className="w-full text-lg">
                           <div className="bg-custom-navy border-b border-custom-violetPale flex">
-                            <div className="px-2 flex-1">Description</div>
-                            <div className="px-2 flex-0.3">Series</div>
-                            <div className="px-2 flex-0.3">Modality</div>
-                            <div className="px-2 flex-1">Instances</div>
+                            <div
+                              className={classnames(seriesWidthClasses.normal)}
+                            >
+                              Description
+                            </div>
+                            <div
+                              className={classnames(seriesWidthClasses.small)}
+                            >
+                              Series
+                            </div>
+                            <div
+                              className={classnames(seriesWidthClasses.small)}
+                            >
+                              Modality
+                            </div>
+                            <div
+                              className={classnames(seriesWidthClasses.normal)}
+                            >
+                              Instances
+                            </div>
                           </div>
                           <div className="mt-2 h-48 overflow-y-scroll custom-scrollbar">
                             {new Array(30).fill('').map((el, i) => (
                               <div className="w-full flex" key={i}>
                                 <div
                                   className={classnames(
-                                    'border-r border-custom-violetPale px-2 flex-1'
+                                    seriesWidthClasses.normal,
+                                    seriesBodyClasses
                                   )}
                                 >
                                   Patient Protocol
                                 </div>
                                 <div
                                   className={classnames(
-                                    'border-r border-custom-violetPale px-2 flex-0.3'
+                                    seriesWidthClasses.small,
+                                    seriesBodyClasses
                                   )}
                                 >
                                   #
                                 </div>
                                 <div
                                   className={classnames(
-                                    'border-r border-custom-violetPale px-2 flex-0.3'
+                                    seriesWidthClasses.small,
+                                    seriesBodyClasses
                                   )}
                                 >
                                   CT
                                 </div>
-                                <div
-                                  className={classnames(
-                                    'border-r border-transparent pl-3 flex-1'
-                                  )}
-                                >
+                                <div className={classnames('pl-3 flex-1')}>
                                   149
                                 </div>
                               </div>
