@@ -21,9 +21,7 @@ const TableRow = () => {
   const thClasses = [
     'px-2 py-1 text-base text-left border-r border-custom-navy',
   ];
-  const tdSeries = [
-    'px-2 py-1 text-base text-left border-r border-custom-violetPale',
-  ];
+  const tdSeries = ['px-2 py-1 text-base text-left border-custom-violetPale'];
 
   return (
     <>
@@ -74,7 +72,7 @@ const TableRow = () => {
                       'bg-black transition-all duration-300 ease-in-out overflow-hidden'
                     )}
                   >
-                    <td colSpan="8" className="py-4 px-20">
+                    <td colSpan="8" className="py-4 pl-20 pr-2">
                       <div>
                         <Button
                           rounded="full"
@@ -104,7 +102,7 @@ const TableRow = () => {
                         </span>
                       </div>
                       <div className="mt-4">
-                        <table className="table-fixed w-2/3">
+                        <table className="table-fixed w-full">
                           <thead className="bg-custom-navy border-b border-custom-violetPale">
                             <tr>
                               <th className={classnames(...thClasses)}>
@@ -122,22 +120,39 @@ const TableRow = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {new Array(30).fill('').map((el, i) => (
-                              <tr key={i}>
-                                <td
-                                  className={classnames(...tdSeries, 'w-1/2')}
-                                >
-                                  Patient Protocol
-                                </td>
-                                <td
-                                  className={classnames(...tdSeries, 'w-1/3')}
-                                >
-                                  #
-                                </td>
-                                <td className={classnames(...tdSeries)}>CT</td>
-                                <td className={classnames(...tdSeries)}>149</td>
-                              </tr>
-                            ))}
+                            <div>
+                              {new Array(30).fill('').map((el, i) => (
+                                <tr key={i}>
+                                  <td
+                                    className={classnames(
+                                      ...tdSeries,
+                                      'border-r w-1/2'
+                                    )}
+                                  >
+                                    Patient Protocol
+                                  </td>
+                                  <td
+                                    className={classnames(
+                                      ...tdSeries,
+                                      'border-r w-1/3'
+                                    )}
+                                  >
+                                    #
+                                  </td>
+                                  <td
+                                    className={classnames(
+                                      ...tdSeries,
+                                      'border-r'
+                                    )}
+                                  >
+                                    CT
+                                  </td>
+                                  <td className={classnames(...tdSeries)}>
+                                    149
+                                  </td>
+                                </tr>
+                              ))}
+                            </div>
                           </tbody>
                         </table>
                       </div>
