@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="9" height="16" viewBox="0 0 9 16">
     <g fill="currentColor" fill-rule="evenodd">
-        <path d="M8.69 6.516L7.51 5.274 4.5 8.442 1.49 5.274 0.31 6.516 4.5 10.926z" transform="translate(0 5)"/>
         <path fill="currentColor" d="M8.69 1.516L7.51 0.274 4.499 3.442 1.49 0.274 0.31 1.516 4.5 5.926z" transform="translate(0 5) matrix(1 0 0 -1 0 6.2)"/>
     </g>
 </svg>

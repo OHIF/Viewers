@@ -13,25 +13,31 @@ import { ICONS } from './getIcon.js';
 ## Basic usage
 
 <Playground>
-  <div className="flex flex-wrap items-center content-center color-white">
-    {Object.keys(ICONS)
-      .sort()
-      .map((name, i) => {
-        return (
-          <React.Fragment key={i}>
-            <div className="flex flex-col m-1 p-4 items-center rounded">
-              <Icon name={name} />
-              <div className="break-normal">{name}</div>
-            </div>
-          </React.Fragment>
-        );
-      })}
-  </div>
+  <Icon name="active" className="text-custom-aquaBright m-4" />
 </Playground>
+
+## All Icons
+
+<div className="flex flex-wrap items-center content-center bg-black">
+  {Object.keys(ICONS)
+    .sort()
+    .map((name, i) => {
+      return (
+        <React.Fragment key={i}>
+          <div className="flex flex-col m-1 p-4 items-center">
+            <div className="rounded border border-custom-aquaBright p-4 m-2 w-20 h-20 flex items-center justify-center">
+              <Icon name={name} className="text-custom-aquaBright" />
+            </div>
+            <div className="break-normal text-white">{name}</div>
+          </div>
+        </React.Fragment>
+      );
+    })}
+</div>
 
 ## API
 
 <Props of={Icon} />
 
 The `Icon` component takes a single prop of `name`, which indicates which Icon
-should be displayed. Again, the icon responds to contextual text/font styles.
+should be displayed. The icon inherit the component text/font styles.
