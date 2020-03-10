@@ -28,6 +28,7 @@
     "classnames": "^2.2.6",
     "docz": "^2.2.0",
     "gatsby-plugin-postcss": "^2.1.20",
+    "gatsby-plugin-react-svg": "^3.0.0",
     "gatsby-plugin-sass": "^2.1.28",
     "node-sass": "^4.13.1",
     "prop-types": "^15.7.2",

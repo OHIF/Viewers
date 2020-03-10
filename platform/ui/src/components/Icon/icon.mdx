@@ -1,0 +1,43 @@
+---
+name: Icon
+menu: Components
+route: components/icon
+---
+
+import { Playground, Props } from 'docz';
+import Icon from './Icon';
+import { ICONS } from './getIcon';
+
+# Icon
+
+## Basic usage
+
+<Playground>
+  <Icon name="active" className="text-custom-aquaBright m-4" />
+</Playground>
+
+## All Icons
+
+<div className="flex flex-wrap items-center bg-black py-8">
+  {Object.keys(ICONS)
+    .sort()
+    .map((name, i) => {
+      return (
+        <React.Fragment key={i}>
+          <div className="flex flex-col items-center w-48 py-4">
+            <div className="flex items-center justify-center rounded border border-custom-aquaBright p-4 m-2 w-20 h-20">
+              <Icon name={name} className="text-custom-aquaBright" />
+            </div>
+            <div className="break-normal text-white">{name}</div>
+          </div>
+        </React.Fragment>
+      );
+    })}
+</div>
+
+## Properties
+
+<Props of={Icon} />
+
+The `Icon` component takes a single prop of `name`, which indicates which Icon
+should be displayed. The icon inherit the component text/font styles.
