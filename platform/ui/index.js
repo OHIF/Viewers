@@ -4,6 +4,7 @@ export {
   Icon,
   IconButton,
   Svg,
+  Input,
   ThemeWrapper,
   Typography,
 } from './src/components';

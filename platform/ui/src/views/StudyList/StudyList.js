@@ -8,7 +8,7 @@ const StudyList = () => {
   return (
     <div>
       <Header />
-      <StudyListFilter />
+      <StudyListFilter onFilterChange={() => {}} />
       <StudyListTable />
       <StudyListPagination />
     </div>

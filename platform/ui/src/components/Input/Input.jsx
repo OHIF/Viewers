@@ -27,7 +27,7 @@ const Input = ({
 
   const renderElement = () => {
     return label ? (
-      <Label className={labelClassName} text="Label">
+      <Label className={labelClassName} text={label}>
         {input}
       </Label>
     ) : (
