@@ -4,7 +4,6 @@ import active from './icons/active.svg';
 import cancel from './icons/cancel.svg';
 import chevronDown from './icons/chevron-down.svg';
 import chevronRight from './icons/chevron-right.svg';
-import inactive from './icons/inactive.svg';
 import infoLink from './icons/info-link.svg';
 import launchArrow from './icons/launch-arrow.svg';
 import launchInfo from './icons/launch-info.svg';
@@ -18,7 +17,6 @@ const ICONS = {
   cancel: cancel,
   'chevron-down': chevronDown,
   'chevron-right': chevronRight,
-  inactive: inactive,
   'info-link': infoLink,
   'launch-arrow': launchArrow,
   'launch-info': launchInfo,
