@@ -14,7 +14,7 @@ function Header({ appLogo = OHIFLogo(), children, t }) {
   return (
     <div className="bg-custom-navy flex flex-row justify-between p-2 text-white">
       <div className="flex items-center">
-        <div>{appLogo}</div>
+        <div className="mx-3">{appLogo}</div>
         <div>{children}</div>
       </div>
       <div className="flex items-center">

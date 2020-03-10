@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import getIcon from './getIcon';
 
 const Icon = ({ name, ...otherProps }) => {
-  return <React.Fragment>{getIcon(name, otherProps)}</React.Fragment>;
+  return <React.Fragment>{getIcon(name, { ...otherProps })}</React.Fragment>;
 };
 
 Icon.propTypes = {
