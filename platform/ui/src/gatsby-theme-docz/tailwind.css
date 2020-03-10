@@ -3,4 +3,24 @@
 @tailwind utilities;
 
 /* IMPORT CUSTOM FONT */
-@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  @apply w-2;
+}
+
+/* Track */
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply rounded;
+}
+
+/* Handle */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply rounded;
+  @apply bg-custom-blue;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:window-inactive {
+  @apply bg-custom-blue;
+}
