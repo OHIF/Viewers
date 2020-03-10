@@ -20,11 +20,11 @@ import moment from 'moment'
     <State initial={{
         searchData: {},
         studies: defaultStudies.filter(study => {
-            const studyDate = moment(study['studyDate'], 'YYYYMMDD');
+            const StudyDate = moment(study['StudyDate'], 'YYYYMMDD');
             const startDate = moment().subtract(5, 'days');
             const endDate = moment();
 
-            return studyDate.isBetween(startDate, endDate, 'days', '[]');
+            return StudyDate.isBetween(startDate, endDate, 'days', '[]');
         }).slice(0, 5)
     }}>
         {({ state, setState }) => (
@@ -35,9 +35,9 @@ import moment from 'moment'
                     pageOptions={[1, 2, 3, 5, 10, 15, 20, 25, 50, 100]}
                     studyListFunctionsEnabled={true}
                     onImport={(e) => alert('Import study mock ' + e)}
-                    onSelectItem={(studyInstanceUid) => { alert(studyInstanceUid + ' has selected! Now you can open your study.'); }}
+                    onSelectItem={(StudyInstanceUID) => { alert(StudyInstanceUID + ' has selected! Now you can open your study.'); }}
                     rowsPerPage={5}
-                    defaultSort={{ field: 'patientName', order: 'desc', }}
+                    defaultSort={{ field: 'PatientName', order: 'desc', }}
                     studyListDateFilterNumDays={7}
                     onSearch={onSearch.bind({ setState, defaultStudies })}
                 />

@@ -22,7 +22,7 @@ export const DEFAULT_STATE = {
 };
 
 /**
- *  Take the new number of rows and columns, delete all not used viewport data and also set
+ *  Take the new number of Rows and Columns, delete all not used viewport data and also set
  *  active viewport as default in case current one is not available anymore.
  *
  * @param {Number} numRows
@@ -49,7 +49,7 @@ const findActiveViewportSpecificData = (
   return viewportSpecificData;
 };
 /**
- *  Take new number of rows and columns and make sure the current active viewport index is still available, if not, return the default
+ *  Take new number of Rows and Columns and make sure the current active viewport index is still available, if not, return the default
  *
  * @param {Number} numRows
  * @param {Number} numColumns

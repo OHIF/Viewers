@@ -13,7 +13,7 @@ import { ProtocolStore } from './protocolStore/classes';
 /**
  * Import Constants
  */
-const { StudyMetadata, InstanceMetadata, StudySummary } = metadata;
+const { StudyMetadata, InstanceMetadata } = metadata;
 
 // Useful constants
 const ABSTRACT_PRIOR_VALUE = 'abstractPriorValue';
@@ -298,10 +298,7 @@ export default class ProtocolEngine {
         }
 
         // Invalid data
-        if (
-          !(priorStudy instanceof StudyMetadata) &&
-          !(priorStudy instanceof StudySummary)
-        ) {
+        if (!priorStudy instanceof StudyMetadata) {
           return;
         }
 
@@ -385,11 +382,9 @@ export default class ProtocolEngine {
           // This tests to make sure there is actually image data in this instance
           // TODO: Change this when we add PDF and MPEG support
           // See https://ohiforg.atlassian.net/browse/LT-227
-          // sopClassUid = x00080016
-          // rows = x00280010
           if (
-            !isImage(instance.getTagValue('x00080016')) &&
-            !instance.getTagValue('x00280010')
+            !isImage(instance.getTagValue('SOPClassUID')) &&
+            !instance.getTagValue('Rows')
           ) {
             return;
           }
@@ -436,19 +431,19 @@ export default class ProtocolEngine {
           const currentSOPInstanceUID = instance.getSOPInstanceUID();
 
           const imageDetails = {
-            studyInstanceUid: study.getStudyInstanceUID(),
-            seriesInstanceUid: series.getSeriesInstanceUID(),
-            sopInstanceUid: currentSOPInstanceUID,
+            StudyInstanceUID: study.getStudyInstanceUID(),
+            SeriesInstanceUID: series.getSeriesInstanceUID(),
+            SOPInstanceUID: currentSOPInstanceUID,
             currentImageIdIndex: index,
             matchingScore: totalMatchScore,
             matchDetails: matchDetails,
             sortingInfo: {
               score: totalMatchScore,
               study:
-                instance.getTagValue('x00080020') +
-                instance.getTagValue('x00080030'), // StudyDate = x00080020 StudyTime = x00080030
-              series: parseInt(instance.getTagValue('x00200011')), // TODO: change for seriesDateTime SeriesNumber = x00200011
-              instance: parseInt(instance.getTagValue('x00200013')), // TODO: change for acquisitionTime InstanceNumber = x00200013
+                instance.getTagValue('StudyDate') +
+                instance.getTagValue('StudyTime'),
+              series: parseInt(instance.getTagValue('SeriesNumber')), // TODO: change for seriesDateTime
+              instance: parseInt(instance.getTagValue('InstanceNumber')), // TODO: change for acquisitionTime
             },
           };
 
@@ -461,7 +456,7 @@ export default class ProtocolEngine {
 
           // If the instance was found, set the displaySet ID
           if (displaySet) {
-            imageDetails.displaySetInstanceUid = displaySet.getUID();
+            imageDetails.displaySetInstanceUID = displaySet.getUID();
             imageDetails.imageId = instance.getImageId();
           }
 
@@ -654,25 +649,25 @@ export default class ProtocolEngine {
       }
 
       if (currentMatch && currentMatch.imageId) {
-        currentViewportData.studyInstanceUid = currentMatch.studyInstanceUid;
-        currentViewportData.seriesInstanceUid = currentMatch.seriesInstanceUid;
-        currentViewportData.sopInstanceUid = currentMatch.sopInstanceUid;
+        currentViewportData.StudyInstanceUID = currentMatch.StudyInstanceUID;
+        currentViewportData.SeriesInstanceUID = currentMatch.SeriesInstanceUID;
+        currentViewportData.SOPInstanceUID = currentMatch.SOPInstanceUID;
         currentViewportData.currentImageIdIndex =
           currentMatch.currentImageIdIndex;
-        currentViewportData.displaySetInstanceUid =
-          currentMatch.displaySetInstanceUid;
+        currentViewportData.displaySetInstanceUID =
+          currentMatch.displaySetInstanceUID;
         currentViewportData.imageId = currentMatch.imageId;
       }
 
       // @TODO Why should we throw an exception when a best match is not found? This was aborting the whole process.
-      // if (!currentViewportData.displaySetInstanceUid) {
+      // if (!currentViewportData.displaySetInstanceUID) {
       //     throw new OHIFError('ProtocolEngine::updateViewports No matching display set found?');
       // }
 
       viewportData.push(currentViewportData);
     });
 
-    this.setLayout(layoutProps.rows, layoutProps.columns);
+    this.setLayout(layoutProps.Rows, layoutProps.Columns);
 
     if (typeof this.options.setViewportSpecificData !== 'function') {
       log.error(

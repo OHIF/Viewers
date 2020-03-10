@@ -8,23 +8,23 @@ import { retrieveStudyMetadata } from './retrieveStudyMetadata';
  * and waits for all of the results to be returned.
  *
  * @param {Object} server Object with server configuration parameters
- * @param {Array} studyInstanceUids The UIDs of the Studies to be retrieved
+ * @param {Array} studyInstanceUIDs The UIDs of the Studies to be retrieved
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
  * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
  * @returns {Promise} that will be resolved with the metadata or rejected with the error
  */
 export default function retrieveStudiesMetadata(
   server,
-  studyInstanceUids,
+  studyInstanceUIDs,
   filters
 ) {
   // Create an empty array to store the Promises for each metaData retrieval call
   const promises = [];
 
-  // Loop through the array of studyInstanceUids
-  studyInstanceUids.forEach(function(studyInstanceUid) {
+  // Loop through the array of studyInstanceUIDs
+  studyInstanceUIDs.forEach(function(StudyInstanceUID) {
     // Send the call and resolve or reject the related promise based on its outcome
-    const promise = retrieveStudyMetadata(server, studyInstanceUid, filters);
+    const promise = retrieveStudyMetadata(server, StudyInstanceUID, filters);
 
     // Add the current promise to the array of promises
     promises.push(promise);

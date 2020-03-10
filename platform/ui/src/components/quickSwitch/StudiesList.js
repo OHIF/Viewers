@@ -9,7 +9,7 @@ export class StudiesList extends Component {
     class: PropTypes.string,
     studyListData: PropTypes.array.isRequired,
     onClick: PropTypes.func.isRequired,
-    activeStudyInstanceUid: PropTypes.string,
+    activeStudyInstanceUID: PropTypes.string,
   };
 
   render() {
@@ -27,7 +27,7 @@ export class StudiesList extends Component {
           key={index}
           studyData={studyData}
           active={
-            studyData.studyInstanceUid === this.props.activeStudyInstanceUid
+            studyData.StudyInstanceUID === this.props.activeStudyInstanceUID
           }
           onClick={event => this.props.onClick(studyData)}
         />

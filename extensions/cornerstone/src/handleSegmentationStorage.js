@@ -6,25 +6,25 @@ import cornerstoneTools from 'cornerstone-tools';
 
 const { StackManager, DicomLoaderService } = OHIF.utils;
 
-function getDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
+function getDisplaySet(studies, StudyInstanceUID, displaySetInstanceUID) {
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.StudyInstanceUID === StudyInstanceUID
   );
 
   const displaySet = study.displaySets.find(set => {
-    return set.displaySetInstanceUid === displaySetInstanceUid;
+    return set.displaySetInstanceUID === displaySetInstanceUID;
   });
 
   return displaySet;
 }
 
-function getDisplaySetsBySeries(studies, studyInstanceUid, seriesInstanceUid) {
+function getDisplaySetsBySeries(studies, StudyInstanceUID, SeriesInstanceUID) {
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.StudyInstanceUID === StudyInstanceUID
   );
 
   return study.displaySets.filter(set => {
-    return set.seriesInstanceUid === seriesInstanceUid;
+    return set.SeriesInstanceUID === SeriesInstanceUID;
   });
 }
 
@@ -39,7 +39,7 @@ function parseSeg(arrayBuffer, imageIds) {
 function addSegMetadataToCornerstoneToolState(
   segMetadata,
   toolState,
-  displaySetInstanceUid
+  displaySetInstanceUID
 ) {
   cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
     toolState
@@ -48,22 +48,22 @@ function addSegMetadataToCornerstoneToolState(
   const brushModule = cornerstoneTools.store.modules.brush;
 
   for (let i = 0; i < segMetadata.length; i++) {
-    brushModule.setters.metadata(displaySetInstanceUid, i, segMetadata[i]);
+    brushModule.setters.metadata(displaySetInstanceUID, i, segMetadata[i]);
   }
 }
 
 async function handleSegmentationStorage(
   studies,
-  studyInstanceUid,
-  displaySetInstanceUid
+  StudyInstanceUID,
+  displaySetInstanceUID
 ) {
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.StudyInstanceUID === StudyInstanceUID
   );
   const displaySet = getDisplaySet(
     studies,
-    studyInstanceUid,
-    displaySetInstanceUid
+    StudyInstanceUID,
+    displaySetInstanceUID
   );
 
   const arrayBuffer = await DicomLoaderService.findDicomDataPromise(
@@ -77,16 +77,16 @@ async function handleSegmentationStorage(
 
   dataset._meta = dcmjs.data.DicomMetaDictionary.namifyDataset(dicomData.meta);
 
-  const seriesInstanceUid = dataset.ReferencedSeriesSequence.SeriesInstanceUID;
+  const SeriesInstanceUID = dataset.ReferencedSeriesSequence.SeriesInstanceUID;
   const displaySets = getDisplaySetsBySeries(
     studies,
-    studyInstanceUid,
-    seriesInstanceUid
+    StudyInstanceUID,
+    SeriesInstanceUID
   );
 
   if (displaySets.length > 1) {
     console.warn(
-      'More than one display set with the same seriesInstanceUid. This is not supported yet...'
+      'More than one display set with the same SeriesInstanceUID. This is not supported yet...'
     );
   }
 
@@ -119,8 +119,8 @@ async function handleSegmentationStorage(
   stack.currentImageIdIndex = 0;
 
   return {
-    studyInstanceUid,
-    displaySetInstanceUid,
+    StudyInstanceUID,
+    displaySetInstanceUID,
     stack,
   };
 }

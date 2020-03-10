@@ -70,12 +70,9 @@ const commandsModule = ({ commandsManager }) => {
     if (cornerstoneElement) {
       const imageId = cornerstoneElement.image.imageId;
 
-      const { modality } = cornerstone.metaData.get(
-        'generalSeriesModule',
-        imageId
-      );
+      const Modality = cornerstone.metaData.get('Modality', imageId);
 
-      if (modality !== 'PT') {
+      if (Modality !== 'PT') {
         const { windowWidth, windowCenter } = cornerstoneElement.viewport.voi;
 
         return {

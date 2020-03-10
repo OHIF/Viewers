@@ -29,7 +29,7 @@ describe('OHIF Save Measurements', function() {
     // Verify that success message overlay is displayed
     cy.get('.sb-success')
       .should('be.visible')
-      .and('contains.text', 'Measurements were saved with success');
+      .and('contains.text', 'Measurements saved successfully');
 
     // Visual test comparison
     cy.screenshot('Save Measurements - new measurement added');
@@ -129,7 +129,7 @@ describe('OHIF Save Measurements', function() {
     // Verify that success message overlay is displayed
     cy.get('.sb-success')
       .should('be.visible')
-      .and('contains.text', 'Measurements were saved with success');
+      .and('contains.text', 'Measurements saved successfully');
 
     // Reload the page
     cy.reload()

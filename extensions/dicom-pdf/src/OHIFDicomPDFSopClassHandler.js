@@ -8,19 +8,19 @@ const SOP_CLASS_UIDS = {
 const OHIFDicomPDFSopClassHandler = {
   id: 'OHIFDicomPDFSopClassHandlerPlugin',
   type: MODULE_TYPES.SOP_CLASS_HANDLER,
-  sopClassUids: [SOP_CLASS_UIDS.ENCAPSULATED_PDF],
+  sopClassUIDs: [SOP_CLASS_UIDS.ENCAPSULATED_PDF],
   getDisplaySetFromSeries(series, study, dicomWebClient, authorizationHeaders) {
     const instance = series.getFirstInstance();
 
     return {
       plugin: 'pdf',
-      modality: 'DOC',
-      displaySetInstanceUid: utils.guid(),
+      Modality: 'DOC',
+      displaySetInstanceUID: utils.guid(),
       wadoRoot: study.getData().wadoRoot,
       wadoUri: instance.getData().wadouri,
-      sopInstanceUid: instance.getSOPInstanceUID(),
-      seriesInstanceUid: series.getSeriesInstanceUID(),
-      studyInstanceUid: study.getStudyInstanceUID(),
+      SOPInstanceUID: instance.getSOPInstanceUID(),
+      SeriesInstanceUID: series.getSeriesInstanceUID(),
+      StudyInstanceUID: study.getStudyInstanceUID(),
       authorizationHeaders: authorizationHeaders,
     };
   },
