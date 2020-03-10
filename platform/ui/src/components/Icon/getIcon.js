@@ -1,5 +1,4 @@
 import React from 'react';
-import adjust from './icons/adjust.svg';
 // Icons
 import active from './icons/active.svg';
 import cancel from './icons/cancel.svg';
