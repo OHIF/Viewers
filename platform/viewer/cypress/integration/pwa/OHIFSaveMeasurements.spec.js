@@ -1,8 +1,18 @@
 describe('OHIF Save Measurements', function() {
   before(() => {
-    cy.openStudy('MISTER^MR');
-    cy.waitDicomImage();
-    cy.expectMinimumThumbnails(5);
+    cy.location('pathname').then($url => {
+      cy.log($url);
+      if (
+        $url == 'blank' ||
+        !$url.includes(
+          '/viewer/1.2.840.113619.2.5.1762583153.215519.978957063.78'
+        )
+      ) {
+        cy.openStudy('MISTER^MR');
+        cy.waitDicomImage();
+      }
+      cy.expectMinimumThumbnails(5);
+    });
   });
 
   beforeEach(() => {

@@ -1,8 +1,13 @@
 describe('OHIF Study Viewer Page', function() {
-  before(function() {
-    cy.openStudy('MISTER^MR');
-    cy.waitDicomImage();
-    cy.expectMinimumThumbnails(6);
+  before(() => {
+    cy.location('pathname').then($url => {
+      cy.log($url);
+      if ($url == 'blank' || !$url.includes('/viewer/')) {
+        cy.openStudy('MISTER^MR');
+        cy.waitDicomImage();
+      }
+      cy.expectMinimumThumbnails(5);
+    });
   });
 
   beforeEach(function() {
