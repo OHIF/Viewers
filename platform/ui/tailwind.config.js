@@ -31,6 +31,7 @@ module.exports = {
         grayBright: '#e1e1e1',
         grayLight: '#a19fad',
         gray: '#726f7e',
+        darkSlateBlue: '#2c3074',
       },
       /** END CUSTOM THEME COLORS */
 
