@@ -1,16 +1,16 @@
 import React from 'react';
 // Icons
-import active from './icons/active.svg';
-import cancel from './icons/cancel.svg';
-import chevronDown from './icons/chevron-down.svg';
-import chevronRight from './icons/chevron-right.svg';
-import infoLink from './icons/info-link.svg';
-import launchArrow from './icons/launch-arrow.svg';
-import launchInfo from './icons/launch-info.svg';
-import settings from './icons/settings.svg';
-import sortingActiveDown from './icons/sorting-active-down.svg';
-import sortingActiveUp from './icons/sorting-active-up.svg';
-import sorting from './icons/sorting.svg';
+import active from './../assets/icons/active.svg';
+import cancel from './../assets/icons/cancel.svg';
+import chevronDown from './../assets/icons/chevron-down.svg';
+import chevronRight from './../assets/icons/chevron-right.svg';
+import infoLink from './../assets/icons/info-link.svg';
+import launchArrow from './../assets/icons/launch-arrow.svg';
+import launchInfo from './../assets/icons/launch-info.svg';
+import settings from './../assets/icons/settings.svg';
+import sortingActiveDown from './../assets/icons/sorting-active-down.svg';
+import sortingActiveUp from './../assets/icons/sorting-active-up.svg';
+import sorting from './../assets/icons/sorting.svg';
 
 const ICONS = {
   active: active,
