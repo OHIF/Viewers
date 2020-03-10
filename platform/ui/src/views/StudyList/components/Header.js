@@ -1,6 +1,3 @@
-/**
- * THIS FILE LOCATION IS TEMPORARY AND SHOULD NOT BE PLACED HERE
- */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
