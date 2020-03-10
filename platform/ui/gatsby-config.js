@@ -1,3 +1,7 @@
 module.exports = {
-  plugins: ['gatsby-plugin-sass', `gatsby-plugin-postcss`],
+  plugins: [
+    'gatsby-plugin-react-svg',
+    'gatsby-plugin-sass',
+    `gatsby-plugin-postcss`,
+  ],
 };
