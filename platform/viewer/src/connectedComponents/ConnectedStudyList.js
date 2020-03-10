@@ -1,5 +1,5 @@
 import React from 'react';
-import StudyList from '../components/StudyList/StudyList';
+import { StudyList } from '@ohif/ui';
 
 const ConnectedStudyList = () => {
   return <StudyList />;
