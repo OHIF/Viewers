@@ -41,7 +41,7 @@ const variantClasses = {
   },
   outlined: {
     default:
-      'border bg-trasparent border-custom-aquaBright text-custom-aquaBright hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border bg-trasparent border-custom-aquaBright text-custom-aquaBright hover:bg-custom-aquaBright hover:text-black focus:text-black focus:bg-custom-aquaBright active:opacity-80',
     primary:
       'border bg-transparent border-custom-blue text-custom-blue hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
