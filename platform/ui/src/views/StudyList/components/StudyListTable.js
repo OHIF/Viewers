@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import classnames from 'classnames';
 import { Button } from '@ohif/ui';
 
-/** TODO: Icons should be imported from @ohif/ui */
+/** TODO: Icon component should be used instead of importing the icons directly */
 import ChevronRight from '../../../assets/icons/chevron-right.svg';
 import ChevronDown from '../../../assets/icons/chevron-down.svg';
 import InstancesActive from '../../../assets/icons/instances-active.svg';
