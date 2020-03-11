@@ -17,19 +17,23 @@ const Input = ({
   labelClassName = '',
   className = '',
   transparent = true,
-  id,
+  type = 'text',
+  value,
+  onChange,
   ...otherProps
 }) => {
   return (
     <div className={classnames('flex flex-col flex-1', containerClassName)}>
-      <Label className={labelClassName} text={label} for={id ? id : ''}></Label>
+      <Label className={labelClassName} text={label}></Label>
       <input
         className={classnames(
           className,
           baseInputClasses,
           transparentClasses[transparent]
         )}
-        id={id ? id : ''}
+        type={type}
+        value={value}
+        onChange={onChange}
         {...otherProps}
       />
     </div>
@@ -42,6 +46,9 @@ Input.propTypes = {
   labelClassName: PropTypes.string,
   className: PropTypes.string,
   transparent: PropTypes.bool,
+  type: PropTypes.string,
+  value: PropTypes.any,
+  onChange: PropTypes.func,
 };
 
 export default Input;
