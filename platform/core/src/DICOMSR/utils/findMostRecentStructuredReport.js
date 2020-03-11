@@ -37,9 +37,9 @@ const isStructuredReportSeries = series => {
   ];
 
   const firstInstance = series.getFirstInstance();
-  const sopClassUid = firstInstance._instance.sopClassUid;
+  const SOPClassUID = firstInstance.getData().metadata.SOPClassUID;
 
-  return supportedSopClassUIDs.includes(sopClassUid);
+  return supportedSopClassUIDs.includes(SOPClassUID);
 };
 
 /**
@@ -51,9 +51,9 @@ const isStructuredReportSeries = series => {
  */
 const compareSeriesDate = (series1, series2) => {
   return (
-    series1._data.seriesDate > series2._data.seriesDate ||
-    (series1._data.seriesDate === series2._data.seriesDate &&
-      series1._data.seriesTime > series2._data.seriesTime)
+    series1._data.SeriesDate > series2._data.SeriesDate ||
+    (series1._data.SeriesDate === series2._data.SeriesDate &&
+      series1._data.SeriesTime > series2._data.SeriesTime)
   );
 };
 

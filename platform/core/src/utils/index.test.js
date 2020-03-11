@@ -13,9 +13,6 @@ describe('Top level exports', () => {
       'StackManager',
       'studyMetadataManager',
       'loadAndCacheDerivedDisplaySets',
-      // Updates WADO-RS metaDataManager
-      'updateMetaDataManager',
-      'DICOMTagDescriptions',
       'DicomLoaderService',
       'urlUtil',
       'makeCancelable',

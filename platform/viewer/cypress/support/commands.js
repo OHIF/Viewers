@@ -43,31 +43,31 @@ import {
  *
  * @param {string} PatientName - Patient name that we would like to search for
  */
-Cypress.Commands.add('openStudy', patientName => {
+Cypress.Commands.add('openStudy', PatientName => {
   cy.openStudyList();
-  cy.get('#filter-patientNameOrId').type(patientName);
+  cy.get('#filter-patientNameOrId').type(PatientName);
   cy.wait('@getStudies');
   cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
-    .contains(patientName)
+    .contains(PatientName)
     .first()
     .click({ force: true });
 });
 
 /**
- * Command to search for a modality and open the study.
+ * Command to search for a Modality and open the study.
  *
- * @param {string} modality - Modality type that we would like to search for
+ * @param {string} Modality - Modality type that we would like to search for
  */
-Cypress.Commands.add('openStudyModality', modality => {
+Cypress.Commands.add('openStudyModality', Modality => {
   cy.initRouteAliases();
   cy.visit('/');
 
   cy.get('#filter-accessionOrModalityOrDescription')
-    .type(modality)
+    .type(Modality)
     .wait(2000);
 
   cy.get('[data-cy="study-list-results"]')
-    .contains(modality)
+    .contains(Modality)
     .first()
     .click();
 });

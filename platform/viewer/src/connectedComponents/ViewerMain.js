@@ -37,9 +37,9 @@ class ViewerMain extends Component {
     return displaySets;
   }
 
-  findDisplaySet(studies, studyInstanceUid, displaySetInstanceUid) {
+  findDisplaySet(studies, StudyInstanceUID, displaySetInstanceUID) {
     const study = studies.find(study => {
-      return study.studyInstanceUid === studyInstanceUid;
+      return study.StudyInstanceUID === StudyInstanceUID;
     });
 
     if (!study) {
@@ -47,7 +47,7 @@ class ViewerMain extends Component {
     }
 
     return study.displaySets.find(displaySet => {
-      return displaySet.displaySetInstanceUid === displaySetInstanceUid;
+      return displaySet.displaySetInstanceUID === displaySetInstanceUID;
     });
   }
 
@@ -90,13 +90,13 @@ class ViewerMain extends Component {
       const viewportPane = viewportSpecificData[i];
       const isNonEmptyViewport =
         viewportPane &&
-        viewportPane.studyInstanceUid &&
-        viewportPane.displaySetInstanceUid;
+        viewportPane.StudyInstanceUID &&
+        viewportPane.displaySetInstanceUID;
 
       if (isNonEmptyViewport) {
         dirtyViewportPanes.push({
-          studyInstanceUid: viewportPane.studyInstanceUid,
-          displaySetInstanceUid: viewportPane.displaySetInstanceUid,
+          StudyInstanceUID: viewportPane.StudyInstanceUID,
+          displaySetInstanceUID: viewportPane.displaySetInstanceUID,
         });
 
         continue;
@@ -106,7 +106,7 @@ class ViewerMain extends Component {
         displaySets.find(
           ds =>
             !dirtyViewportPanes.some(
-              v => v.displaySetInstanceUid === ds.displaySetInstanceUid
+              v => v.displaySetInstanceUID === ds.displaySetInstanceUID
             )
         ) || displaySets[displaySets.length - 1];
 
@@ -114,11 +114,11 @@ class ViewerMain extends Component {
     }
 
     dirtyViewportPanes.forEach((vp, i) => {
-      if (vp && vp.studyInstanceUid) {
+      if (vp && vp.StudyInstanceUID) {
         this.setViewportData({
           viewportIndex: i,
-          studyInstanceUid: vp.studyInstanceUid,
-          displaySetInstanceUid: vp.displaySetInstanceUid,
+          StudyInstanceUID: vp.StudyInstanceUID,
+          displaySetInstanceUID: vp.displaySetInstanceUID,
         });
       }
     });
@@ -126,13 +126,13 @@ class ViewerMain extends Component {
 
   setViewportData = ({
     viewportIndex,
-    studyInstanceUid,
-    displaySetInstanceUid,
+    StudyInstanceUID,
+    displaySetInstanceUID,
   }) => {
     const displaySet = this.findDisplaySet(
       this.props.studies,
-      studyInstanceUid,
-      displaySetInstanceUid
+      StudyInstanceUID,
+      displaySetInstanceUID
     );
 
     this.props.setViewportSpecificData(viewportIndex, displaySet);
