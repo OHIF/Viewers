@@ -73,7 +73,7 @@
     "dotenv": "^8.1.0",
     "eslint": "5.16.0",
     "eslint-config-prettier": "^6.4.0",
-    "eslint-config-react-app": "^4.0.1",
+    "eslint-config-react-app": "^5.2.0",
     "eslint-plugin-flowtype": "2.x",
     "eslint-plugin-import": "2.x",
     "eslint-plugin-jsx-a11y": "6.x",
