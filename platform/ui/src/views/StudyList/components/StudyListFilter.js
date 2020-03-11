@@ -108,7 +108,6 @@ const FilterLabel = ({
 const StudyListFilter = ({
   filtersMeta = defaultProps.filterMeta,
   filtersValues = defaultProps.filtersValues,
-  onFiltersValuesChange,
   numOfStudies = 0,
 }) => {
   const [currentFiltersValues, setcurrentFiltersValues] = useState(
@@ -228,7 +227,6 @@ StudyListFilter.propTypes = {
   }),
   filtersValues: PropTypes.object,
   numOfStudies: PropTypes.number,
-  onFiltersValuesChange: PropTypes.func,
 };
 
 export default StudyListFilter;
