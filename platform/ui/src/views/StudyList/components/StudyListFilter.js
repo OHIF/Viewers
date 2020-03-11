@@ -16,6 +16,11 @@ const StudyListFilter = ({
   onSortByChange,
   onFilterChange,
 }) => {
+  const inputProps = {
+    labelClassName: 'text-white text-sm pl-1',
+    className: 'border-custom-blue mt-2 bg-black',
+    containerClassName: 'mr-2',
+  };
   return (
     <div className="flex flex-col pt-5 pb-3 bg-custom-navyDark px-4">
       <div className="flex flex-row justify-between mb-5">
@@ -26,7 +31,8 @@ const StudyListFilter = ({
           <div className="flex flex-row items-end">
             <Button
               variant="text"
-              className="text-custom-blueBright text-xs"
+              size="small"
+              className="text-custom-blueBright"
               startIcon={<Icon name="info-link" className="w-2" />}
             >
               Learn more
@@ -44,61 +50,37 @@ const StudyListFilter = ({
       </div>
       <div className="flex flex-row">
         <Input
+          {...inputProps}
           label="Patient name"
-          labelClassName="text-white"
-          className="border-custom-blue mt-2"
-          containerClassName="mr-2"
           value={patientName}
+          id="patientName"
         />
+        <Input {...inputProps} label="MRN" value={mrn} id="mrn" />
         <Input
-          label="MRN"
-          labelClassName="text-white"
-          className="border-custom-blue mt-2"
-          containerClassName="mr-2"
-          value={mrn}
-        />
-        <Input
+          {...inputProps}
           label="Study date"
-          labelClassName="text-white"
-          className="border-custom-blue mt-2 rounded-r-none border-r-0"
-          containerClassName=""
           value={studyDate}
+          id="studyDate"
         />
         <Input
-          label="Study date"
-          labelClassName="text-white"
-          className="border-custom-blue mt-2 rounded-l-none"
-          containerClassName="mr-2"
-          value={studyDate}
-        />
-        <Input
+          {...inputProps}
           label="Description"
-          labelClassName="text-white"
-          className="border-custom-blue mt-2"
-          containerClassName="mr-2"
           value={description}
+          id="description"
         />
         <Input
+          {...inputProps}
           label="Modality"
-          labelClassName="text-white"
-          className="border-custom-blue mt-2"
-          containerClassName="mr-2"
           value={modality}
+          id="modality"
         />
         <Input
+          {...inputProps}
           label="Accession"
-          labelClassName="text-white"
-          className="border-custom-blue mt-2"
-          containerClassName="mr-2"
           value={accession}
+          id="accession"
         />
-        <Input
-          label="Instances"
-          labelClassName="text-white"
-          className="invisible mt-2"
-          containerClassName="mr-2"
-          value={instances}
-        />
+        <label className="text-white text-sm pl-1 flex flex-1">Instances</label>
       </div>
     </div>
   );
