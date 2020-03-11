@@ -175,7 +175,7 @@ const StudyListFilter = ({
               rounded="full"
               variant="outlined"
               color="primary"
-              className="text-custom-blueBright border-custom-blueBright mx-2"
+              className="text-custom-blueBright border-custom-blueBright mx-8"
               startIcon={<Icon name="cancel" />}
               onClick={clearFilters}
             >
