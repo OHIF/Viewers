@@ -196,7 +196,7 @@ const StudyListFilter = ({
             <FilterLabel
               key={name}
               label={displayName}
-              isSortable={isSortable && numOfStudies <= 100}
+              isSortable={isSortable && numOfStudies <= 100 && numOfStudies > 0}
               isBeingSorted={sortBy === name}
               sortDirection={sortDirection}
               onLabelClick={() => handleFilterLabelClick(name)}
