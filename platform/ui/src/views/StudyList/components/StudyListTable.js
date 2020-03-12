@@ -4,20 +4,11 @@ import classnames from 'classnames';
 import { format } from 'date-fns';
 import { Button, Icon, Typography } from '@ohif/ui';
 
-/** TODO: Icon component should be used instead of importing the icons directly */
-import ChevronRight from '../../../assets/icons/chevron-right.svg';
-import ChevronDown from '../../../assets/icons/chevron-down.svg';
-import InstancesActive from '../../../assets/icons/instances-active.svg';
-import InstancesInactive from '../../../assets/icons/instances-inactive.svg';
-import LaunchInfo from '../../../assets/icons/launch-info.svg';
-
-import { getModalities, getInstances } from '../../../utils';
-
 const TableRow = props => {
   const {
     AccessionNumber,
-    modalities,
-    instances,
+    Modalities,
+    Instances,
     StudyDescription,
     PatientId,
     PatientName,
@@ -27,8 +18,7 @@ const TableRow = props => {
 
   const [isOpened, setIsOpened] = useState(false);
   const toggleRow = () => setIsOpened(!isOpened);
-  const ChevronIcon = isOpened ? ChevronDown : ChevronRight;
-  const InstancesIcon = isOpened ? InstancesActive : InstancesInactive;
+  const ChevronIconName = isOpened ? 'chevron-down' : 'chevron-right';
   const tdClasses = [
     'px-4 py-2',
     { 'border-b border-custom-violetPale': !isOpened },
@@ -64,7 +54,7 @@ const TableRow = props => {
                   onClick={toggleRow}
                 >
                   <td className={classnames(...tdClasses)}>
-                    <ChevronIcon />
+                    <Icon name={ChevronIconName} />
                   </td>
                   <td className={classnames(...tdClasses)}>{PatientName}</td>
                   <td className={classnames(...tdClasses)}>{PatientId}</td>
@@ -74,13 +64,19 @@ const TableRow = props => {
                   <td className={classnames(...tdClasses)}>
                     {StudyDescription}
                   </td>
-                  <td className={classnames(...tdClasses)}>{modalities}</td>
+                  <td className={classnames(...tdClasses)}>{Modalities}</td>
                   <td className={classnames(...tdClasses)}>
                     {AccessionNumber}
                   </td>
                   <td className={classnames(...tdClasses)}>
-                    <InstancesIcon className="inline-flex mr-2" />
-                    {instances}
+                    <Icon
+                      name="series-active"
+                      className={classnames('inline-flex mr-2', {
+                        'text-custom-blueBright': isOpened,
+                        'text-custom-violetPale': !isOpened,
+                      })}
+                    />
+                    {Instances}
                   </td>
                 </tr>
                 {isOpened && (
@@ -90,7 +86,7 @@ const TableRow = props => {
                         <Button
                           rounded="full"
                           variant="outlined"
-                          endIcon={<LaunchInfo />}
+                          endIcon={<Icon name="launch-info" />}
                           className="mr-4"
                         >
                           Basic Viewer
@@ -98,7 +94,7 @@ const TableRow = props => {
                         <Button
                           rounded="full"
                           variant="outlined"
-                          endIcon={<LaunchInfo />}
+                          endIcon={<Icon name="launch-info" />}
                           className="mr-4"
                         >
                           Segmentation
@@ -106,7 +102,7 @@ const TableRow = props => {
                         <Button
                           rounded="full"
                           variant="outlined"
-                          endIcon={<LaunchInfo />}
+                          endIcon={<Icon name="launch-info" />}
                         >
                           Module 3
                         </Button>
@@ -191,8 +187,8 @@ const TableRow = props => {
 
 TableRow.propTypes = {
   AccessionNumber: PropTypes.string.isRequired,
-  modalities: PropTypes.string.isRequired,
-  instances: PropTypes.number.isRequired,
+  Modalities: PropTypes.string.isRequired,
+  Instances: PropTypes.number.isRequired,
   PatientId: PropTypes.string.isRequired,
   PatientName: PropTypes.string.isRequired,
   StudyDescription: PropTypes.string.isRequired,
@@ -209,8 +205,8 @@ const StudyListTable = ({ studies, numOfStudies }) => {
             <TableRow
               key={i}
               AccessionNumber={study.AccessionNumber || ''}
-              modalities={getModalities(study.series) || ''}
-              instances={getInstances(study.series) || ''}
+              Modalities={study.Modalities || ''}
+              Instances={study.Instances || ''}
               StudyDescription={study.StudyDescription || ''}
               PatientId={study.PatientId || ''}
               PatientName={study.PatientName || ''}
@@ -255,7 +251,18 @@ const StudyListTable = ({ studies, numOfStudies }) => {
 };
 
 StudyListTable.propTypes = {
-  studies: PropTypes.array.isRequired,
+  studies: PropTypes.arrayOf(
+    PropTypes.shape({
+      AccessionNumber: PropTypes.string.isRequired,
+      Modalities: PropTypes.string.isRequired,
+      Instances: PropTypes.number.isRequired,
+      PatientId: PropTypes.string.isRequired,
+      PatientName: PropTypes.string.isRequired,
+      StudyDescription: PropTypes.string.isRequired,
+      StudyDate: PropTypes.string.isRequired,
+      series: PropTypes.array.isRequired,
+    })
+  ).isRequired,
   numOfStudies: PropTypes.number.isRequired,
 };
 

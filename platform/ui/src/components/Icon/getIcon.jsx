@@ -1,6 +1,7 @@
 import React from 'react';
 // Icons
-import active from './../../assets/icons/active.svg';
+import seriesActive from './../../assets/icons/series-active.svg';
+import seriesInactive from './../../assets/icons/series-inactive.svg';
 import cancel from './../../assets/icons/cancel.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
@@ -16,7 +17,8 @@ import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
 
 const ICONS = {
-  active: active,
+  'series-active': seriesActive,
+  'series-inactive': seriesInactive,
   cancel: cancel,
   'chevron-down': chevronDown,
   'chevron-right': chevronRight,

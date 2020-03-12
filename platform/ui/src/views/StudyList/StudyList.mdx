@@ -4,8 +4,11 @@ menu: Views
 route: views/studyList
 ---
 
+import { useState } from 'react'
 import { Playground, Props } from 'docz';
 import StudyList from './';
+import Button from '../../components/Button';
+import { getMockedStudies } from '../../utils/'
 
 # StudyList
 
@@ -20,9 +23,24 @@ import { StudyList } from '@ohfi/ui';
 ## StudyList
 
 <Playground>
-  <>
-    <StudyList />
-  </>
+  {() => {
+    const [studies, setStudies] = useState([])
+    const handleStudyList = (number) => {
+      const studies = getMockedStudies(number)
+      setStudies(studies)
+    }
+    return (
+      <div>
+        <div className="bg-white p-4">
+          <Button className="mr-2" onClick={() => handleStudyList(0)}>0 Studies</Button>
+          <Button className="mr-2" onClick={() => handleStudyList(50)}>50 Studies</Button>
+          <Button className="mr-2" onClick={() => handleStudyList(100)}>100 Studies</Button>
+          <Button className="mr-2" onClick={() => handleStudyList(1000)}>1000 Studies</Button>
+        </div>
+        <StudyList studies={studies} />
+      </div>
+    );
+  }}
 </Playground>
 
 ## Properties
