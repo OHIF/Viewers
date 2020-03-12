@@ -162,7 +162,7 @@ const StudyListFilter = ({
               <Button
                 variant="text"
                 size="small"
-                color="primary"
+                color="inherit"
                 className="text-custom-blueBright underline"
                 startIcon={<Icon name="info-link" className="w-2" />}
               >
