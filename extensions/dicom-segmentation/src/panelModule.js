@@ -11,7 +11,6 @@ export default {
           return true;
         }
 
-        debugger;
         for (let i = 0; i < studies.length; i++) {
           const study = studies[i];
 

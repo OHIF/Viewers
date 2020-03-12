@@ -59,7 +59,6 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     displaySetInstanceUID,
   } = viewport;
 
-  debugger;
   const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
   const firstImageId = studyMetadata.getFirstImageId(displaySetInstanceUID);
 
