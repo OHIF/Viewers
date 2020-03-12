@@ -175,7 +175,7 @@ const StudyListFilter = ({
             ({ name, displayName, inputType, isSortable, gridCol }) => {
               return (
                 <div
-                  className={classnames(`w-${gridCol}/12`, 'pl-4 first:pl-12')}
+                  className={classnames(`w-${gridCol}/24`, 'pl-4 first:pl-12')}
                 >
                   <FilterLabel
                     key={name}

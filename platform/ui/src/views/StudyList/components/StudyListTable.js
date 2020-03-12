@@ -9,7 +9,7 @@ import LaunchInfo from '../../../assets/icons/launch-info.svg';
 
 const getGridColClass = (filtersMeta, name) => {
   const filter = filtersMeta.find(filter => filter.name === name);
-  return (filter && filter.gridCol && `w-${filter.gridCol}/12`) || '';
+  return (filter && filter.gridCol && `w-${filter.gridCol}/24`) || '';
 };
 
 const TableRow = ({ filtersMeta }) => {
