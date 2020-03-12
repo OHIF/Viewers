@@ -91,7 +91,10 @@ const FilterLabel = ({
         className
       )}
     >
-      <span className="flex flex-row" onClick={handleLabelClick}>
+      <span
+        className="flex flex-row items-center cursor-pointer"
+        onClick={handleLabelClick}
+      >
         {label}
         {isSortable && (
           <Icon
@@ -108,7 +111,7 @@ const FilterLabel = ({
 const StudyListFilter = ({
   filtersMeta = defaultProps.filterMeta,
   filtersValues = defaultProps.filtersValues,
-  numOfStudies = 0,
+  numOfStudies = 90,
 }) => {
   const [currentFiltersValues, setcurrentFiltersValues] = useState(
     filtersValues
@@ -116,11 +119,19 @@ const StudyListFilter = ({
   const { sortBy, sortDirection } = currentFiltersValues;
 
   const handleFilterLabelClick = name => {
+    let _sortDirection = 1;
+    if (sortBy === name) {
+      _sortDirection = sortDirection + 1;
+      if (_sortDirection > 1) {
+        _sortDirection = -1;
+      }
+    }
+
     if (numOfStudies <= 100) {
       setcurrentFiltersValues(prevState => ({
         ...prevState,
-        sortBy: name,
-        sortDirection: sortDirection === 1 || sortBy === name ? -1 : 1,
+        sortBy: _sortDirection !== 0 ? name : '',
+        sortDirection: _sortDirection,
       }));
     }
   };
