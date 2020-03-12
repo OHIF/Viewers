@@ -206,7 +206,7 @@ TableRow.propTypes = {
   study: PropTypes.object.isRequired,
 };
 
-const StudyListTable = ({ studies, totalStudies }) => {
+const StudyListTable = ({ studies, numOfStudies }) => {
   const renderTable = () => {
     return (
       <table className="w-full text-white">
@@ -234,7 +234,7 @@ const StudyListTable = ({ studies, totalStudies }) => {
     <>
       <div className="bg-black">
         <div className="container m-auto relative">
-          {totalStudies > 100 && (
+          {numOfStudies > 100 && (
             <div className="bg-custom-blue text-center text-base py-1 rounded-b sticky top-0">
               <p className="text-white">
                 Filter list to 100 studies or less to enable sorting
@@ -242,8 +242,8 @@ const StudyListTable = ({ studies, totalStudies }) => {
             </div>
           )}
 
-          {totalStudies > 0 && renderTable()}
-          {totalStudies === 0 && renderEmpty()}
+          {numOfStudies > 0 && renderTable()}
+          {numOfStudies === 0 && renderEmpty()}
         </div>
       </div>
     </>
@@ -252,7 +252,7 @@ const StudyListTable = ({ studies, totalStudies }) => {
 
 StudyListTable.propTypes = {
   studies: PropTypes.array.isRequired,
-  totalStudies: PropTypes.number.isRequired,
+  numOfStudies: PropTypes.number.isRequired,
 };
 
 export default StudyListTable;

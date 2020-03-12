@@ -14,13 +14,13 @@ const DEFAULT_MOCKED_STUDIES_LIMIT = 1000;
 
 const StudyList = ({ studies, perPage }) => {
   const studiesData = studies.slice(0, perPage);
-  const totalStudies = studies.length;
+  const numOfStudies = studies.length;
   return (
     <div className="bg-black h-screen">
       <Header />
-      <StudyListFilter numOfStudies={totalStudies} />
-      <StudyListTable studies={studiesData} totalStudies={totalStudies} />
-      {totalStudies > 0 && <StudyListPagination />}
+      <StudyListFilter numOfStudies={numOfStudies} />
+      <StudyListTable studies={studiesData} numOfStudies={numOfStudies} />
+      {numOfStudies > 0 && <StudyListPagination />}
     </div>
   );
 };
