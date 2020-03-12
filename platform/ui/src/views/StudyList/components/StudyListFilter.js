@@ -218,7 +218,7 @@ const StudyListFilter = ({
               </FilterLabel>
             );
           })}
-          <label className="text-white text-sm pl-1 flex flex-1">
+          <label className="text-white text-lg pl-1 flex flex-1">
             Instances
           </label>
         </div>
