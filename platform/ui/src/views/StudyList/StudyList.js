@@ -15,7 +15,6 @@ const DEFAULT_MOCKED_STUDIES_LIMIT = 1000;
 const StudyList = ({ studies, perPage }) => {
   const studiesData = studies.slice(0, perPage);
   const numOfStudies = studies.length;
-  alert(numOfStudies);
   return (
     <div className="bg-black h-screen">
       <Header />
