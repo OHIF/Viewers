@@ -13,12 +13,14 @@ import { ICONS } from './getIcon';
 ## Basic usage
 
 <Playground>
-  <Icon name="active" className="text-custom-aquaBright m-4" />
+  <div className="p-4">
+    <Icon name="active" className="text-custom-aquaBright m-4" />
+  </div>
 </Playground>
 
 ## All Icons
 
-<div className="flex flex-wrap items-center bg-black py-8">
+<div className="p-4 flex flex-wrap items-center bg-black py-8">
   {Object.keys(ICONS)
     .sort()
     .map((name, i) => {
