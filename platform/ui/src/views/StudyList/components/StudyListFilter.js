@@ -87,7 +87,7 @@ const FilterLabel = ({
   return (
     <label
       className={classnames(
-        'flex flex-col flex-1 text-white text-sm pl-1',
+        'flex flex-col flex-1 text-white text-lg pl-1',
         className
       )}
     >
