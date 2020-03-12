@@ -8,6 +8,7 @@ import infoLink from './../../assets/icons/info-link.svg';
 import launchArrow from './../../assets/icons/launch-arrow.svg';
 import launchInfo from './../../assets/icons/launch-info.svg';
 import logoOhifSmall from './../../assets/icons/logo-ohif-small.svg';
+import magnifier from './../../assets/icons/magnifier.svg';
 import notificationwarningDiamond from './../../assets/icons/notificationwarning-diamond.svg';
 import settings from './../../assets/icons/settings.svg';
 import sorting from './../../assets/icons/sorting.svg';
@@ -23,6 +24,7 @@ const ICONS = {
   'launch-arrow': launchArrow,
   'launch-info': launchInfo,
   'logo-ohif-small': logoOhifSmall,
+  magnifier: magnifier,
   'notificationwarning-diamond': notificationwarningDiamond,
   settings: settings,
   'sorting-active-down': sortingActiveDown,

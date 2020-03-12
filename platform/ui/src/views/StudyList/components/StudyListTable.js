@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Button } from '@ohif/ui';
+import { format } from 'date-fns';
+import { Button, Icon, Typography } from '@ohif/ui';
 
 /** TODO: Icon component should be used instead of importing the icons directly */
 import ChevronRight from '../../../assets/icons/chevron-right.svg';
@@ -9,7 +11,29 @@ import InstancesActive from '../../../assets/icons/instances-active.svg';
 import InstancesInactive from '../../../assets/icons/instances-inactive.svg';
 import LaunchInfo from '../../../assets/icons/launch-info.svg';
 
-const TableRow = () => {
+const getStudyModalities = series => {
+  const modalities = series.reduce((acc, item) => {
+    const { Modality } = item;
+    if (acc.includes(Modality)) {
+      return acc;
+    }
+
+    acc.push(Modality);
+    return acc;
+  }, []);
+
+  return modalities.join('/');
+};
+
+const getInstances = series => {
+  const instances = series.reduce((acc, item) => {
+    return acc + item.instances.length;
+  }, 0);
+
+  return instances;
+};
+
+const TableRow = ({ study }) => {
   const [isOpened, setIsOpened] = useState(false);
   const toggleRow = () => setIsOpened(!isOpened);
   const ChevronIcon = isOpened ? ChevronDown : ChevronRight;
@@ -23,7 +47,6 @@ const TableRow = () => {
     small: 'px-2 flex-0.3',
   };
   const seriesBodyClasses = 'border-r border-custom-violetPale';
-
   return (
     <>
       <tr>
@@ -52,25 +75,31 @@ const TableRow = () => {
                   <td className={classnames(...tdClasses)}>
                     <ChevronIcon />
                   </td>
-                  <td className={classnames(...tdClasses)}>Patient name</td>
-                  <td className={classnames(...tdClasses)}>11000002</td>
                   <td className={classnames(...tdClasses)}>
-                    Mar-29-2013 11:26 AM
+                    {study.PatientName}
                   </td>
                   <td className={classnames(...tdClasses)}>
-                    PET^1_PETCT_WB_AC (Adult)
+                    {study.PatientId}
                   </td>
-                  <td className={classnames(...tdClasses)}>CT/OT/PT</td>
+                  <td className={classnames(...tdClasses)}>
+                    {format(study.StudyDate, 'MMM-DD-YYYY')}
+                  </td>
+                  <td className={classnames(...tdClasses)}>
+                    {study.StudyDescription}
+                  </td>
+                  <td className={classnames(...tdClasses)}>
+                    {getStudyModalities(study.series)}
+                  </td>
                   <td className={classnames(...tdClasses)}>00000001</td>
                   <td className={classnames(...tdClasses)}>
                     <InstancesIcon className="inline-flex mr-2" />
-                    902
+                    {getInstances(study.series)}
                   </td>
                 </tr>
                 {isOpened && (
                   <tr className={classnames('bg-black')}>
                     <td colSpan="8" className="py-4 pl-20 pr-2">
-                      <div>
+                      <div className="flex">
                         <Button
                           rounded="full"
                           variant="outlined"
@@ -94,10 +123,13 @@ const TableRow = () => {
                         >
                           Module 3
                         </Button>
-                        <span className="ml-4 text-lg text-custom-grayBright">
-                          {/* ADD ICON HERE */}
+                        <div className="ml-5 text-lg text-custom-grayBright flex items-center">
+                          <Icon
+                            name="notificationwarning-diamond"
+                            className="mr-2 w-5 h-5"
+                          />
                           Feedback text lorem ipsum dolor sit amet
-                        </span>
+                        </div>
                       </div>
                       <div className="mt-4">
                         <div className="w-full text-lg">
@@ -124,7 +156,7 @@ const TableRow = () => {
                             </div>
                           </div>
                           <div className="mt-2 h-48 overflow-y-scroll ohif-scrollbar">
-                            {new Array(30).fill('').map((el, i) => (
+                            {study.series.map((seriesItem, i) => (
                               <div className="w-full flex" key={i}>
                                 <div
                                   className={classnames(
@@ -140,7 +172,7 @@ const TableRow = () => {
                                     seriesBodyClasses
                                   )}
                                 >
-                                  #
+                                  {seriesItem.SeriesNumber}
                                 </div>
                                 <div
                                   className={classnames(
@@ -148,10 +180,10 @@ const TableRow = () => {
                                     seriesBodyClasses
                                   )}
                                 >
-                                  CT
+                                  {seriesItem.Modality}
                                 </div>
                                 <div className={classnames('pl-3 flex-1')}>
-                                  149
+                                  {seriesItem.instances.length}
                                 </div>
                               </div>
                             ))}
@@ -170,27 +202,57 @@ const TableRow = () => {
   );
 };
 
-const StudyListTable = () => {
+TableRow.propTypes = {
+  study: PropTypes.object.isRequired,
+};
+
+const StudyListTable = ({ studies, totalStudies }) => {
+  const renderTable = () => {
+    return (
+      <table className="w-full text-white">
+        <tbody>
+          {studies.map((study, i) => (
+            <TableRow key={i} study={study} />
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
+  const renderEmpty = () => {
+    return (
+      <div className="flex flex-col items-center justify-center py-40">
+        <Icon name="magnifier" className="mb-4" />
+        <Typography className="text-custom-aquaBright" variant="h5">
+          No studies available
+        </Typography>
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="bg-black">
         <div className="container m-auto relative">
-          <div className="bg-custom-blue text-center text-base py-1 rounded-b sticky top-0">
-            <p className="text-white">
-              Filter list to 100 studies or less to enable sorting
-            </p>
-          </div>
-          <table className="w-full text-white">
-            <tbody>
-              {new Array(30).fill('').map((empty, i) => (
-                <TableRow key={i} />
-              ))}
-            </tbody>
-          </table>
+          {totalStudies > 100 && (
+            <div className="bg-custom-blue text-center text-base py-1 rounded-b sticky top-0">
+              <p className="text-white">
+                Filter list to 100 studies or less to enable sorting
+              </p>
+            </div>
+          )}
+
+          {totalStudies > 0 && renderTable()}
+          {totalStudies === 0 && renderEmpty()}
         </div>
       </div>
     </>
   );
+};
+
+StudyListTable.propTypes = {
+  studies: PropTypes.array.isRequired,
+  totalStudies: PropTypes.number.isRequired,
 };
 
 export default StudyListTable;
