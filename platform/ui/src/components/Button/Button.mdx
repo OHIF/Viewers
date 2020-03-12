@@ -22,8 +22,8 @@ import { Button } from '@ohfi/ui';
 ## Outlined Buttons
 
 <Playground>
-  <>
-    <Button variant="contained" className="m-1">
+  <div className="p-4">
+    <Button variant="outlined" className="m-1">
       Default
     </Button>
     <Button variant="contained" color="primary" className="m-1">
@@ -32,14 +32,17 @@ import { Button } from '@ohfi/ui';
     <Button variant="contained" color="secondary" className="m-1">
       Secondary
     </Button>
-  </>
+    <Button variant="outlined" color="white" className="m-1">
+      White
+    </Button>
+  </div>
 </Playground>
 
 ## Outlined Buttons
 
 <Playground>
-  <>
-    <Button variant="outlined" className="m-1">
+  <div className="p-4">
+    <Button variant="contained" className="m-1">
       Default
     </Button>
     <Button variant="outlined" color="primary" className="m-1">
@@ -48,13 +51,16 @@ import { Button } from '@ohfi/ui';
     <Button variant="outlined" color="secondary" className="m-1">
       Secondary
     </Button>
-  </>
+    <Button variant="contained" color="white" className="m-1">
+      White
+    </Button>
+  </div>
 </Playground>
 
 ## Text Buttons
 
 <Playground>
-  <>
+  <div className="p-4">
     <Button variant="text" className="m-1">
       Default
     </Button>
@@ -64,13 +70,166 @@ import { Button } from '@ohfi/ui';
     <Button variant="text" color="secondary" className="m-1">
       Secondary
     </Button>
-  </>
+    <Button variant="text" color="white" className="m-1">
+      White
+    </Button>
+  </div>
+</Playground>
+
+## Rounded Buttons
+
+<Playground>
+  <div className="p-4">
+    <div className="mb-2">
+      <Button variant="contained" rounded="none" className="m-1">
+        Non Rounded
+      </Button>
+      <Button variant="contained" rounded="small" className="m-1">
+        Small Rounded
+      </Button>
+      <Button variant="contained" rounded="medium" className="m-1">
+        Medium Rounded
+      </Button>
+      <Button variant="contained" rounded="large" className="m-1">
+        Large Rounded
+      </Button>
+      <Button variant="contained" rounded="full" className="m-1">
+        Full Rounded
+      </Button>
+    </div>
+    <div className="mb-2">
+      <Button
+        variant="contained"
+        rounded="none"
+        color="primary"
+        className="m-1"
+      >
+        Non Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="small"
+        color="primary"
+        className="m-1"
+      >
+        Small Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="medium"
+        color="primary"
+        className="m-1"
+      >
+        Medium Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="large"
+        color="primary"
+        className="m-1"
+      >
+        Large Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="full"
+        color="primary"
+        className="m-1"
+      >
+        Full Rounded
+      </Button>
+    </div>
+    <div className="mb-2">
+      <Button
+        variant="contained"
+        rounded="none"
+        color="secondary"
+        className="m-1"
+      >
+        Non Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="small"
+        color="secondary"
+        className="m-1"
+      >
+        Small Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="medium"
+        color="secondary"
+        className="m-1"
+      >
+        Medium Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="large"
+        color="secondary"
+        className="m-1"
+      >
+        Large Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="full"
+        color="secondary"
+        className="m-1"
+      >
+        Full Rounded
+      </Button>
+    </div>
+    <div className="mb-2">
+      <Button
+        variant="contained"
+        rounded="none"
+        color="white"
+        className="m-1"
+      >
+        Non Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="small"
+        color="white"
+        className="m-1"
+      >
+        Small Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="medium"
+        color="white"
+        className="m-1"
+      >
+        Medium Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="large"
+        color="white"
+        className="m-1"
+      >
+        Large Rounded
+      </Button>
+      <Button
+        variant="contained"
+        rounded="full"
+        color="white"
+        className="m-1"
+      >
+        Full Rounded
+      </Button>
+    </div>
+  </div>
 </Playground>
 
 ## Sizes
 
 <Playground>
-  <>
+  <div className="p-4">
     <div>
       <Button variant="text" size="small" className="m-1">
         Small
@@ -135,31 +294,18 @@ import { Button } from '@ohfi/ui';
     </Button>
     </div>
 
-</>
-
+</div>
 </Playground>
 
 ## Buttons with icons
 
 <Playground>
-  <div className="flex">
+  <div className="p-4 flex">
     <Button
       variant="contained"
       color="primary"
       className="m-1"
-<<<<<<< HEAD
-      startIcon={
-    <svg
-      class="fill-current w-4 h-4"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 20"
-    >
-      <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-    </svg>
-  }
-=======
       startIcon={<Icon name="settings" />}
->>>>>>> 98a130b58... feat: Icon component (#1499)
     >
       Settings
     </Button>
@@ -167,24 +313,6 @@ import { Button } from '@ohfi/ui';
       variant="contained"
       color="primary"
       className="m-1"
-<<<<<<< HEAD
-      endIcon={
-    <svg
-      class="fill-current w-4 h-4"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 20"
-    >
-      <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-    </svg>
-  }
-    >
-      Download
-    </Button>
-      </div>
-    )
-  }}
-
-=======
       endIcon={<Icon name="settings" />}
     >
       Download
@@ -199,7 +327,6 @@ import { Button } from '@ohfi/ui';
       Download
     </Button>
   </div>
->>>>>>> 98a130b58... feat: Icon component (#1499)
 </Playground>
 
 ## Icon Buttons
@@ -211,7 +338,7 @@ import { IconButton } from '@ohfi/ui';
 ```
 
 <Playground>
-  <div className="flex flex-col items-center">
+  <div className="p-4 flex flex-col items-center">
     <div className="">
       <IconButton className="m-2">
         <Icon name="settings" />
@@ -260,7 +387,7 @@ import { IconButton } from '@ohfi/ui';
 </Playground>
 
 <Playground>
-  <div>
+  <div className="p-4">
     <div className="">
       <IconButton className="m-2">
         <Icon name="settings" />
