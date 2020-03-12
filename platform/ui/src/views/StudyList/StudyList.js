@@ -15,6 +15,7 @@ const DEFAULT_MOCKED_STUDIES_LIMIT = 1000;
 const StudyList = ({ studies, perPage }) => {
   const studiesData = studies.slice(0, perPage);
   const numOfStudies = studies.length;
+  alert(numOfStudies);
   return (
     <div className="bg-black h-screen">
       <Header />
@@ -28,16 +29,16 @@ const StudyList = ({ studies, perPage }) => {
 const getMockedStudies = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const generateData = num => new Array(+num).fill(studyListMock.studies[0]);
-  const defaultStudiesNum =
-    DEFAULT_MOCKED_STUDIES_NUM > DEFAULT_MOCKED_STUDIES_LIMIT
-      ? DEFAULT_MOCKED_STUDIES_LIMIT
-      : DEFAULT_MOCKED_STUDIES_NUM;
+  const getStudiesNum = num =>
+    +num > DEFAULT_MOCKED_STUDIES_LIMIT ? DEFAULT_MOCKED_STUDIES_LIMIT : +num;
+  const defaultStudiesNum = getStudiesNum(DEFAULT_MOCKED_STUDIES_NUM);
 
   if (!urlParams) {
     return generateData(defaultStudiesNum);
   }
 
-  const studiesNum = urlParams.get('studiesNum') || defaultStudiesNum;
+  const studiesNum =
+    getStudiesNum(urlParams.get('studiesNum')) || defaultStudiesNum;
 
   return generateData(studiesNum);
 };
