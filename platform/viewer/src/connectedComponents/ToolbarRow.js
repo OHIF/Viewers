@@ -55,14 +55,22 @@ class ToolbarRow extends Component {
       activeButtons: [],
     };
 
+    this.seriesPerStudyCount = [];
+
     this._handleBuiltIn = _handleBuiltIn.bind(this);
 
+    this.updateButtonGroups();
+  }
+
+  updateButtonGroups() {
     const panelModules = extensionManager.modules[MODULE_TYPES.PANEL];
 
     this.buttonGroups = {
       left: [],
       right: [],
     };
+
+    debugger;
 
     // ~ FIND MENU OPTIONS
     panelModules.forEach(panelExtension => {
@@ -105,6 +113,29 @@ class ToolbarRow extends Component {
   componentDidUpdate(prevProps) {
     const activeContextsChanged =
       prevProps.activeContexts !== this.props.activeContexts;
+
+    const prevStudies = prevProps.studies;
+    const studies = this.props.studies;
+    const seriesPerStudyCount = this.seriesPerStudyCount;
+
+    let studiesUpdated = false;
+
+    if (prevStudies.length !== studies.length) {
+      studiesUpdated = true;
+    } else {
+      for (let i = 0; i < studies.length; i++) {
+        if (studies[i].series.length !== seriesPerStudyCount[i]) {
+          seriesPerStudyCount[i] = studies[i].series.length;
+
+          studiesUpdated = true;
+          break;
+        }
+      }
+    }
+
+    if (studiesUpdated) {
+      this.updateButtonGroups();
+    }
 
     if (activeContextsChanged) {
       this.setState({
