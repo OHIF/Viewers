@@ -36,7 +36,7 @@ export const Layout = ({ children }) => {
           />
           <div
             className={classnames('py-10 w-full', {
-              'px-4 overflow-hidden lg:px-20 lg:overflow-auto ': sidebarOpen,
+              'px-4 lg:px-20': sidebarOpen,
               'px-4 lg:px-8': !sidebarOpen,
             })}
           >
