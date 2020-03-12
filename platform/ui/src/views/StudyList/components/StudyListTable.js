@@ -221,7 +221,7 @@ const StudyListTable = ({ studies, totalStudies }) => {
 
   const renderEmpty = () => {
     return (
-      <div className="flex flex-col items-center justify-center py-40">
+      <div className="flex flex-col items-center justify-center pt-48">
         <Icon name="magnifier" className="mb-4" />
         <Typography className="text-custom-aquaBright" variant="h5">
           No studies available
