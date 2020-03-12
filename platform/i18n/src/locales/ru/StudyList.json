@@ -1,0 +1,10 @@
+{
+  "AccessionNumber": "# доступа",
+  "Empty": "Очистить",
+  "MRN": "MRN",
+  "Modality": "Модальность",
+  "PatientName": "Имя пациента",
+  "StudyDate": "Дата исследования",
+  "StudyDescription": "Описание",
+  "StudyList": "Список исследований"
+}

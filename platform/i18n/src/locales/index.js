@@ -6,6 +6,7 @@ import nl from './nl/';
 import pt_BR from './pt-BR/';
 import vi from './vi/';
 import zh from './zh/';
+import ru from './ru/';
 
 export default {
   ...ar,
@@ -16,4 +17,5 @@ export default {
   ...pt_BR,
   ...vi,
   ...zh,
+  ...ru,
 };
