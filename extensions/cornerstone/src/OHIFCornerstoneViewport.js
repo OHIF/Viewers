@@ -114,7 +114,6 @@ class OHIFCornerstoneViewport extends Component {
     studies,
     StudyInstanceUID,
     displaySetInstanceUID,
-    SOPClassUID,
     SOPInstanceUID,
     frameIndex
   ) => {
@@ -161,7 +160,6 @@ class OHIFCornerstoneViewport extends Component {
       studies,
       StudyInstanceUID,
       displaySetInstanceUID,
-      SOPClassUID,
       SOPInstanceUID,
       frameIndex
     ).then(viewportData => {
@@ -181,7 +179,7 @@ class OHIFCornerstoneViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-      prevDisplaySet.displaySetInstanceUID ||
+        prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {

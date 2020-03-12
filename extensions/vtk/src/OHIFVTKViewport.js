@@ -15,15 +15,6 @@ const segmentationModule = cornerstoneTools.getModule('segmentation');
 
 const { StackManager } = OHIF.utils;
 
-// Metadata configuration
-const metadataProvider = new OHIF.cornerstone.MetadataProvider();
-
-cornerstone.metaData.addProvider(
-  metadataProvider.provider.bind(metadataProvider)
-);
-
-StackManager.setMetadataProvider(metadataProvider);
-
 // TODO: Figure out where we plan to put this long term
 const volumeCache = {};
 const labelmapCache = {};
@@ -78,7 +69,7 @@ class OHIFVTKViewport extends Component {
   };
 
   static defaultProps = {
-    onScroll: () => { },
+    onScroll: () => {},
   };
 
   static id = 'OHIFVTKViewport';
@@ -354,7 +345,7 @@ class OHIFVTKViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-      prevDisplaySet.displaySetInstanceUID ||
+        prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {

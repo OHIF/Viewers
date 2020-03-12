@@ -6,48 +6,54 @@ const SOP_CLASS_UIDS = {
   DICOM_SEG: '1.2.840.10008.5.1.4.1.1.66.4',
 };
 
-const sopClassUids = Object.values(SOP_CLASS_UIDS);
+const sopClassUIDs = Object.values(SOP_CLASS_UIDS);
 
 // TODO: Handle the case where there is more than one SOP Class Handler for the
 // same SOP Class.
 const OHIFDicomSegSopClassHandler = {
   id: 'OHIFDicomSegSopClassHandler',
   type: MODULE_TYPES.SOP_CLASS_HANDLER,
-  sopClassUids,
-  getDisplaySetFromSeries: function (
+  sopClassUIDs,
+  getDisplaySetFromSeries: function(
     series,
     study,
     dicomWebClient,
     authorizationHeaders
   ) {
     const instance = series.getFirstInstance();
-    const referencedSeriesSequence = instance.getTagValue(
-      'ReferencedSeriesSequence'
-    );
-    const frameOfReferenceUID = instance.getTagValue('FrameOfReferenceUID');
-    const { seriesDate, seriesTime, seriesDescription } = series.getData();
+    const metadata = instance.getData().metadata;
+
+    const {
+      SeriesDate,
+      SeriesTime,
+      SeriesDescription,
+      FrameOfReferenceUID,
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      StudyInstanceUID,
+    } = metadata;
 
     const segDisplaySet = {
-      modality: 'SEG',
-      displaySetInstanceUid: utils.guid(),
+      Modality: 'SEG',
+      displaySetInstanceUID: utils.guid(),
       wadoRoot: study.getData().wadoRoot,
       wadoUri: instance.getData().wadouri,
-      sopInstanceUid: instance.getSOPInstanceUID(),
-      seriesInstanceUid: series.getSeriesInstanceUID(),
-      studyInstanceUid: study.getStudyInstanceUID(),
-      referencedSeriesSequence,
-      frameOfReferenceUID,
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      StudyInstanceUID,
+      FrameOfReferenceUID,
       authorizationHeaders,
+      metadata,
       isDerived: true,
-      referencedDisplaySetUid: null, // Assigned when loaded.
+      referencedDisplaySetUID: null, // Assigned when loaded.
       labelmapIndex: null, // Assigned when loaded.
       isLoaded: false,
-      seriesDate,
-      seriesTime,
-      seriesDescription,
+      SeriesDate,
+      SeriesTime,
+      SeriesDescription,
     };
 
-    segDisplaySet.load = function (referencedDisplaySet, studies) {
+    segDisplaySet.load = function(referencedDisplaySet, studies) {
       return loadSegmentation(
         segDisplaySet,
         referencedDisplaySet,

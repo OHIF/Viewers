@@ -53,9 +53,15 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
 
   const viewport = viewports[activeIndex];
 
-  const { studyInstanceUid, seriesInstanceUid, displaySetInstanceUid } = viewport;
-  const studyMetadata = studyMetadataManager.get(studyInstanceUid);
-  const firstImageId = studyMetadata.getFirstImageId(displaySetInstanceUid);
+  const {
+    StudyInstanceUID,
+    SeriesInstanceUID,
+    displaySetInstanceUID,
+  } = viewport;
+
+  debugger;
+  const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
+  const firstImageId = studyMetadata.getFirstImageId(displaySetInstanceUID);
 
   /* CornerstoneTools */
   const [brushStackState, setBrushStackState] = useState(
@@ -121,21 +127,21 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
   const getLabelmapList = () => {
     /* Get list of SEG labelmaps specific to active viewport (reference series) */
     const referencedSegDisplaysets = _getReferencedSegDisplaysets(
-      studyInstanceUid,
-      seriesInstanceUid
+      StudyInstanceUID,
+      SeriesInstanceUID
     );
 
     return referencedSegDisplaysets.map((displaySet, index) => {
-      const { labelmapIndex, seriesDate, seriesTime } = displaySet;
+      const { labelmapIndex, SeriesDate, SeriesTime } = displaySet;
 
       /* Map to display representation */
-      const dateStr = `${seriesDate}:${seriesTime}`.split('.')[0];
+      const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
       const date = moment(dateStr, 'YYYYMMDD:HHmmss');
       const isActiveLabelmap =
         labelmapIndex === brushStackState.activeLabelmapIndex;
       const displayDate = date.format('ddd, MMM Do YYYY');
       const displayTime = date.format('h:mm:ss a');
-      const displayDescription = displaySet.seriesDescription;
+      const displayDescription = displaySet.SeriesDescription;
 
       return {
         value: labelmapIndex,
@@ -204,7 +210,11 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
 
       const sameSegment = selectedSegment === segmentNumber;
       const setCurrentSelectedSegment = () => {
-        _setActiveSegment(firstImageId, segmentNumber, labelmap3D.activeSegmentIndex);
+        _setActiveSegment(
+          firstImageId,
+          segmentNumber,
+          labelmap3D.activeSegmentIndex
+        );
         setSelectedSegment(sameSegment ? null : segmentNumber);
       };
 
@@ -274,7 +284,8 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     /* Supported configuration */
     configuration.renderFill = newConfiguration.renderFill;
     configuration.renderOutline = newConfiguration.renderOutline;
-    configuration.shouldRenderInactiveLabelmaps = newConfiguration.shouldRenderInactiveLabelmaps;
+    configuration.shouldRenderInactiveLabelmaps =
+      newConfiguration.shouldRenderInactiveLabelmaps;
     configuration.fillAlpha = newConfiguration.fillAlpha;
     configuration.outlineAlpha = newConfiguration.outlineAlpha;
     configuration.outlineWidth = newConfiguration.outlineWidth;
@@ -320,13 +331,17 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
         <h3>Segmentations</h3>
         <div className="segmentations">
           <SegmentationSelect
-            value={labelmapList.find(i => i.value === selectedSegmentation) || null}
+            value={
+              labelmapList.find(i => i.value === selectedSegmentation) || null
+            }
             formatOptionLabel={SegmentationItem}
             options={labelmapList}
           />
         </div>
         <ScrollableArea>
-          <TableList customHeader={<SegmentsHeader count={segmentList.length} />}>
+          <TableList
+            customHeader={<SegmentsHeader count={segmentList.length} />}
+          >
             {segmentList}
           </TableList>
         </ScrollableArea>
@@ -342,20 +357,20 @@ SegmentationPanel.propTypes = {
    * Passed in MODULE_TYPES.PANEL when specifying component in viewer
    */
   viewports: PropTypes.shape({
-    displaySetInstanceUid: PropTypes.string,
-    framRate: PropTypes.any,
-    instanceNumber: PropTypes.number,
+    displaySetInstanceUID: PropTypes.string,
+    frameRate: PropTypes.any,
+    InstanceNumber: PropTypes.number,
     isMultiFrame: PropTypes.bool,
     isReconstructable: PropTypes.bool,
-    modality: PropTypes.string,
+    Modality: PropTypes.string,
     plugin: PropTypes.string,
-    seriesDate: PropTypes.string,
-    seriesDescription: PropTypes.string,
-    seriesInstanceUid: PropTypes.string,
-    seriesNumber: PropTypes.any,
-    seriesTime: PropTypes.string,
-    sopClassUids: PropTypes.arrayOf(PropTypes.string),
-    studyInstanceUid: PropTypes.string,
+    SeriesDate: PropTypes.string,
+    SeriesDescription: PropTypes.string,
+    SeriesInstanceUID: PropTypes.string,
+    SeriesNumber: PropTypes.any,
+    SeriesTime: PropTypes.string,
+    sopClassUIDs: PropTypes.arrayOf(PropTypes.string),
+    StudyInstanceUID: PropTypes.string,
   }),
   activeIndex: PropTypes.number.isRequired,
   studies: PropTypes.array.isRequired,
@@ -365,22 +380,22 @@ SegmentationPanel.defaultProps = {};
 /**
  * Returns SEG Displaysets that reference the target series, sorted by dateTime
  *
- * @param {string} studyInstanceUid
- * @param {string} seriesInstanceUid
+ * @param {string} StudyInstanceUID
+ * @param {string} SeriesInstanceUID
  * @returns Array
  */
-const _getReferencedSegDisplaysets = (studyInstanceUid, seriesInstanceUid) => {
+const _getReferencedSegDisplaysets = (StudyInstanceUID, SeriesInstanceUID) => {
   /* Referenced DisplaySets */
-  const studyMetadata = studyMetadataManager.get(studyInstanceUid);
+  const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
   const referencedDisplaysets = studyMetadata.getDerivedDatasets({
-    referencedSeriesInstanceUID: seriesInstanceUid,
-    modality: 'SEG',
+    referencedSeriesInstanceUID: SeriesInstanceUID,
+    Modality: 'SEG',
   });
 
   /* Sort */
   referencedDisplaysets.sort((a, b) => {
-    const aNumber = Number(`${a.seriesDate}${a.seriesTime}`);
-    const bNumber = Number(`${b.seriesDate}${b.seriesTime}`);
+    const aNumber = Number(`${a.SeriesDate}${a.SeriesTime}`);
+    const bNumber = Number(`${b.SeriesDate}${b.SeriesTime}`);
     return aNumber - bNumber;
   });
 

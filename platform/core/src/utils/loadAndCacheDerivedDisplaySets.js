@@ -48,16 +48,16 @@ import studyMetadataManager from './studyMetadataManager';
  * @returns void
  */
 const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
-  const { studyInstanceUid, seriesInstanceUid } = referencedDisplaySet;
+  const { StudyInstanceUID, SeriesInstanceUID } = referencedDisplaySet;
 
-  const studyMetadata = studyMetadataManager.get(studyInstanceUid);
+  const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
 
   if (!studyMetadata) {
     return;
   }
 
   const derivedDisplaySets = studyMetadata.getDerivedDatasets({
-    referencedSeriesInstanceUID: seriesInstanceUid,
+    referencedSeriesInstanceUID: SeriesInstanceUID,
   });
 
   if (!derivedDisplaySets.length) {
@@ -68,13 +68,13 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
   const displaySetsPerModality = {};
 
   derivedDisplaySets.forEach(displaySet => {
-    const modality = displaySet.modality;
+    const Modality = displaySet.Modality;
 
-    if (displaySetsPerModality[modality] === undefined) {
-      displaySetsPerModality[modality] = [];
+    if (displaySetsPerModality[Modality] === undefined) {
+      displaySetsPerModality[Modality] = [];
     }
 
-    displaySetsPerModality[modality].push(displaySet);
+    displaySetsPerModality[Modality].push(displaySet);
   });
 
   // For each type, see if any are loaded, if not load the most recent.
@@ -92,7 +92,7 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
 
     displaySets.forEach(displaySet => {
       const dateTime = Number(
-        `${displaySet.seriesDate}${displaySet.seriesTime}`
+        `${displaySet.SeriesDate}${displaySet.SeriesTime}`
       );
       if (dateTime > recentDateTime) {
         recentDateTime = dateTime;

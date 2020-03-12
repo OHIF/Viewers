@@ -10,7 +10,7 @@ export default async function loadSegmentation(
   referencedDisplaySet,
   studies
 ) {
-  const { studyInstanceUid } = referencedDisplaySet;
+  const { StudyInstanceUID } = referencedDisplaySet;
 
   // Set here is loading is asynchronous.
   // If this function throws its set back to false.
@@ -30,8 +30,8 @@ export default async function loadSegmentation(
 
   const imageIds = _getImageIdsForDisplaySet(
     studies,
-    studyInstanceUid,
-    referencedDisplaySet.seriesInstanceUid
+    StudyInstanceUID,
+    referencedDisplaySet.SeriesInstanceUID
   );
 
   const results = _parseSeg(segArrayBuffer, imageIds);
@@ -89,20 +89,20 @@ function _parseSeg(arrayBuffer, imageIds) {
 
 function _getImageIdsForDisplaySet(
   studies,
-  studyInstanceUid,
-  seriesInstanceUid
+  StudyInstanceUID,
+  SeriesInstanceUID
 ) {
   const study = studies.find(
-    study => study.studyInstanceUid === studyInstanceUid
+    study => study.StudyInstanceUID === StudyInstanceUID
   );
 
-  const displaySets = study.displaySets.filter(set => {
-    return set.seriesInstanceUid === seriesInstanceUid;
+  const displaySets = study.displaySets.filter(displaySet => {
+    return displaySet.SeriesInstanceUID === SeriesInstanceUID;
   });
 
   if (displaySets.length > 1) {
     console.warn(
-      'More than one display set with the same seriesInstanceUid. This is not supported yet...'
+      'More than one display set with the same SeriesInstanceUID. This is not supported yet...'
     );
     // TODO -> We could make check the instance list and see if any match?
     // Do we split the segmentation into two cornerstoneTools segmentations if there are images in both series?

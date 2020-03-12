@@ -78,7 +78,7 @@ export class StudyMetadata extends Metadata {
     Object.defineProperty(this, 'studyInstanceUID', {
       configurable: false,
       enumerable: false,
-      get: function () {
+      get: function() {
         return this.getStudyInstanceUID();
       },
     });
@@ -223,21 +223,26 @@ export class StudyMetadata extends Metadata {
 
     if (modality) {
       filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
-        displaySet => displaySet.modality === modality
+        displaySet => displaySet.Modality === Modality
       );
     }
 
     if (referencedSeriesInstanceUID) {
       filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
         displaySet => {
-          if (!displaySet.referencedSeriesSequence) {
+          if (!displaySet.metadata.ReferencedSeriesSequence) {
             return false;
           }
 
-          return displaySet.referencedSeriesSequence.some(
-            referencedSeries =>
-              referencedSeries.referencedSeriesInstanceUID ===
-              referencedSeriesInstanceUID
+          const ReferencedSeriesSequence = Array.isArray(
+            displaySet.metadata.ReferencedSeriesSequence
+          )
+            ? displaySet.metadata.ReferencedSeriesSequence
+            : [displaySet.metadata.ReferencedSeriesSequence];
+
+          return ReferencedSeriesSequence.some(
+            ReferencedSeries =>
+              ReferencedSeries.SeriesInstanceUID === referencedSeriesInstanceUID
           );
         }
       );
@@ -246,8 +251,8 @@ export class StudyMetadata extends Metadata {
     if (referencedFrameOfReferenceUID) {
       filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
         displaySet =>
-          displaySet.referencedFrameOfReferenceUID ===
-          referencedFrameOfReferenceUID
+          displaySet.ReferencedFrameOfReferenceUID ===
+          ReferencedFrameOfReferenceUID
       );
     }
 
@@ -555,10 +560,10 @@ export class StudyMetadata extends Metadata {
    * Get the first image id given display instance uid.
    * @return {string} The image id.
    */
-  getFirstImageId(displaySetInstanceUid) {
+  getFirstImageId(displaySetInstanceUID) {
     try {
       const displaySet = this.findDisplaySet(
-        displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
+        displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
       );
       return displaySet.images[0].getImageId();
     } catch (error) {

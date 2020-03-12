@@ -75,17 +75,17 @@ class ImageSet {
       referenceImagePositionPatient[2]
     );
 
-    const imageOrientationPatient = _getImageOrientationPatient(images[0]);
+    const ImageOrientationPatient = _getImageOrientationPatient(images[0]);
 
     const scanAxisNormal = new Vector3(
-      imageOrientationPatient[0],
-      imageOrientationPatient[1],
-      imageOrientationPatient[2]
+      ImageOrientationPatient[0],
+      ImageOrientationPatient[1],
+      ImageOrientationPatient[2]
     ).cross(
       new Vector3(
-        imageOrientationPatient[3],
-        imageOrientationPatient[4],
-        imageOrientationPatient[5]
+        ImageOrientationPatient[3],
+        ImageOrientationPatient[4],
+        ImageOrientationPatient[5]
       )
     );
 
@@ -113,17 +113,11 @@ class ImageSet {
 }
 
 function _getImagePositionPatient(image) {
-  return image
-    .getTagValue('x00200032')
-    .split('\\')
-    .map(Number);
+  return image.getData().metadata.ImagePositionPatient;
 }
 
 function _getImageOrientationPatient(image) {
-  return image
-    .getTagValue('x00200037')
-    .split('\\')
-    .map(Number);
+  return image.getData().metadata.ImageOrientationPatient;
 }
 
 export default ImageSet;
