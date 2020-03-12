@@ -6,6 +6,9 @@ export default {
       icon: 'list',
       label: 'Segmentations',
       target: 'segmentation-panel',
+      isDisabled: studies => {
+        debugger;
+      },
     },
   ],
   components: [
