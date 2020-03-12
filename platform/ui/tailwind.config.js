@@ -166,6 +166,9 @@ module.exports = {
       '48': '12rem',
       '56': '14rem',
       '64': '16rem',
+      '72': '18rem',
+      '80': '20rem',
+      '250px': '250px',
     },
     backgroundColor: theme => theme('colors'),
     backgroundPosition: {
@@ -307,6 +310,7 @@ module.exports = {
     inset: {
       '0': '0',
       auto: 'auto',
+      '81px': '81px',
     },
     letterSpacing: {
       tighter: '-0.05em',
@@ -374,6 +378,7 @@ module.exports = {
       lg: '8rem',
       xl: '10rem',
       full: '100%',
+      '250px': '250px',
     },
     objectPosition: {
       bottom: 'bottom',
