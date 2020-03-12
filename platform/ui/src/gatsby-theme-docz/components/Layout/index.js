@@ -7,7 +7,8 @@ import { Header } from '../Header';
 import { Sidebar } from '../Sidebar';
 import * as styles from 'gatsby-theme-docz/src/components/Layout/styles';
 
-const getSidebarStatus = () => window.location.pathname === '/';
+const getSidebarStatus = () =>
+  typeof window !== 'undefined' && window.location.pathname === '/';
 
 export const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(getSidebarStatus());
