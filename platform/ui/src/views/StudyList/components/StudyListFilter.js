@@ -162,7 +162,7 @@ const StudyListFilter = ({
               variant="text"
               size="small"
               color="primary"
-              className="text-custom-blueBright"
+              className="text-custom-blueBright underline"
               startIcon={<Icon name="info-link" className="w-2" />}
             >
               Learn more
