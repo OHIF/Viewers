@@ -62,7 +62,7 @@ const variantClasses = {
 };
 
 const sizeClasses = {
-  small: 'py-2 px-2 text-base',
+  small: 'py-2 px-2 text-sm',
   medium: 'py-2 px-2 text-lg',
   large: 'py-2 px-6 text-xl',
 };
@@ -113,13 +113,13 @@ const Button = ({
   return (
     <button
       className={classnames(
+        className,
         baseClasses,
         variantClasses[variant][color],
         roundedClasses[rounded],
         sizeClasses[size],
         fullWidthClasses[fullWidth],
-        disabledClasses[disabled],
-        className
+        disabledClasses[disabled]
       )}
       ref={buttonElement}
       onClick={handleOnClick}
@@ -138,7 +138,13 @@ Button.propTypes = {
   size: PropTypes.oneOf(['small', 'medium', 'large']),
   rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
-  color: PropTypes.oneOf(['default', 'primary', 'secondary', 'white']),
+  color: PropTypes.oneOf([
+    'default',
+    'primary',
+    'secondary',
+    'white',
+    'inherit',
+  ]),
   fullWidth: PropTypes.bool,
   disabled: PropTypes.bool,
   type: PropTypes.string,
