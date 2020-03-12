@@ -226,7 +226,7 @@ const StudyListTable = ({ filtersMeta }) => {
               Filter list to 100 studies or less to enable sorting
             </p>
           </div>
-          <table className="w-full text-white">
+          <table className="w-full text-white border-t-4 border-black">
             <tbody>
               {new Array(30).fill('').map((empty, i) => (
                 <TableRow key={i} filtersMeta={filtersMeta} />

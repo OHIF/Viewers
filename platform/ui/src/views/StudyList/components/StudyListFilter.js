@@ -124,7 +124,7 @@ const StudyListFilter = ({
   };
 
   return (
-    <div className="bg-custom-navyDark">
+    <div className="bg-custom-navyDark border-t-4 border-black">
       <div className="container m-auto relative flex flex-col pt-5 pb-3">
         <div className="flex flex-row justify-between mb-5 px-12">
           <div className="flex flex-row">
