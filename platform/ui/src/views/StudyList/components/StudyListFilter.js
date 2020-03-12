@@ -163,10 +163,13 @@ const StudyListFilter = ({
                 variant="text"
                 size="small"
                 color="inherit"
-                className="text-custom-blueBright underline"
+                className="text-custom-blueBright"
                 startIcon={<Icon name="info-link" className="w-2" />}
               >
-                Learn more
+                <span className="flex flex-col flex-1">
+                  <span>Learn more</span>
+                  <span className="opacity-50 pt-1 border-b border-custom-blueBright"></span>
+                </span>
               </Button>
             </div>
           </div>
