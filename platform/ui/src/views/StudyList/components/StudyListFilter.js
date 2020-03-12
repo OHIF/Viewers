@@ -87,7 +87,7 @@ const FilterLabel = ({
   return (
     <label
       className={classnames(
-        'flex flex-col flex-1 text-white text-lg pl-1',
+        'flex flex-col flex-1 text-white text-lg pl-1 select-none',
         className
       )}
     >
@@ -184,7 +184,7 @@ const StudyListFilter = ({
               </Button>
             </div>
           </div>
-          <div className="flex flex-row items-baseline">
+          <div className="flex flex-row">
             {isFiltering() && (
               <Button
                 rounded="full"
@@ -197,10 +197,13 @@ const StudyListFilter = ({
                 Clear filters
               </Button>
             )}
-            <Typography variant="h4" className="text-white mr-2">
+            <Typography variant="h4" className="mr-2">
               {numOfStudies > 100 ? '>100' : numOfStudies}
             </Typography>
-            <Typography variant="h6" className="text-custom-grayLight">
+            <Typography
+              variant="h6"
+              className="text-custom-grayLight self-end pb-1"
+            >
               Studies
             </Typography>
           </div>
