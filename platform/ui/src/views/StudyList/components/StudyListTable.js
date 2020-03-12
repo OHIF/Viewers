@@ -11,29 +11,21 @@ import InstancesActive from '../../../assets/icons/instances-active.svg';
 import InstancesInactive from '../../../assets/icons/instances-inactive.svg';
 import LaunchInfo from '../../../assets/icons/launch-info.svg';
 
-const getStudyModalities = series => {
-  const modalities = series.reduce((acc, item) => {
-    const { Modality } = item;
-    if (acc.includes(Modality)) {
-      return acc;
-    }
+import getModalities from '../../../utils/getModalities';
+import getInstances from '../../../utils/getInstances';
 
-    acc.push(Modality);
-    return acc;
-  }, []);
+const TableRow = props => {
+  const {
+    AccessionNumber,
+    modalities,
+    instances,
+    StudyDescription,
+    PatientId,
+    PatientName,
+    StudyDate,
+    series,
+  } = props;
 
-  return modalities.join('/');
-};
-
-const getInstances = series => {
-  const instances = series.reduce((acc, item) => {
-    return acc + item.instances.length;
-  }, 0);
-
-  return instances;
-};
-
-const TableRow = ({ study }) => {
   const [isOpened, setIsOpened] = useState(false);
   const toggleRow = () => setIsOpened(!isOpened);
   const ChevronIcon = isOpened ? ChevronDown : ChevronRight;
@@ -75,25 +67,21 @@ const TableRow = ({ study }) => {
                   <td className={classnames(...tdClasses)}>
                     <ChevronIcon />
                   </td>
+                  <td className={classnames(...tdClasses)}>{PatientName}</td>
+                  <td className={classnames(...tdClasses)}>{PatientId}</td>
                   <td className={classnames(...tdClasses)}>
-                    {study.PatientName}
+                    {format(StudyDate, 'MMM-DD-YYYY')}
                   </td>
                   <td className={classnames(...tdClasses)}>
-                    {study.PatientId}
+                    {StudyDescription}
                   </td>
+                  <td className={classnames(...tdClasses)}>{modalities}</td>
                   <td className={classnames(...tdClasses)}>
-                    {format(study.StudyDate, 'MMM-DD-YYYY')}
+                    {AccessionNumber}
                   </td>
-                  <td className={classnames(...tdClasses)}>
-                    {study.StudyDescription}
-                  </td>
-                  <td className={classnames(...tdClasses)}>
-                    {getStudyModalities(study.series)}
-                  </td>
-                  <td className={classnames(...tdClasses)}>00000001</td>
                   <td className={classnames(...tdClasses)}>
                     <InstancesIcon className="inline-flex mr-2" />
-                    {getInstances(study.series)}
+                    {instances}
                   </td>
                 </tr>
                 {isOpened && (
@@ -156,7 +144,7 @@ const TableRow = ({ study }) => {
                             </div>
                           </div>
                           <div className="mt-2 h-48 overflow-y-scroll ohif-scrollbar">
-                            {study.series.map((seriesItem, i) => (
+                            {series.map((seriesItem, i) => (
                               <div className="w-full flex" key={i}>
                                 <div
                                   className={classnames(
@@ -203,7 +191,14 @@ const TableRow = ({ study }) => {
 };
 
 TableRow.propTypes = {
-  study: PropTypes.object.isRequired,
+  AccessionNumber: PropTypes.string.isRequired,
+  modalities: PropTypes.string.isRequired,
+  instances: PropTypes.number.isRequired,
+  PatientId: PropTypes.string.isRequired,
+  PatientName: PropTypes.string.isRequired,
+  StudyDescription: PropTypes.string.isRequired,
+  StudyDate: PropTypes.string.isRequired,
+  series: PropTypes.array.isRequired,
 };
 
 const StudyListTable = ({ studies, numOfStudies }) => {
@@ -212,7 +207,17 @@ const StudyListTable = ({ studies, numOfStudies }) => {
       <table className="w-full text-white">
         <tbody>
           {studies.map((study, i) => (
-            <TableRow key={i} study={study} />
+            <TableRow
+              key={i}
+              AccessionNumber={study.AccessionNumber || ''}
+              modalities={getModalities(study.series) || ''}
+              instances={getInstances(study.series) || ''}
+              StudyDescription={study.StudyDescription || ''}
+              PatientId={study.PatientId || ''}
+              PatientName={study.PatientName || ''}
+              StudyDate={study.StudyDate || ''}
+              series={study.series || []}
+            />
           ))}
         </tbody>
       </table>
