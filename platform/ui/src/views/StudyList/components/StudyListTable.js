@@ -11,8 +11,7 @@ import InstancesActive from '../../../assets/icons/instances-active.svg';
 import InstancesInactive from '../../../assets/icons/instances-inactive.svg';
 import LaunchInfo from '../../../assets/icons/launch-info.svg';
 
-import getModalities from '../../../utils/getModalities';
-import getInstances from '../../../utils/getInstances';
+import { getModalities, getInstances } from '../../../utils';
 
 const TableRow = props => {
   const {

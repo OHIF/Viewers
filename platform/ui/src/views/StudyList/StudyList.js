@@ -6,11 +6,7 @@ import StudyListFilter from './components/StudyListFilter';
 import StudyListTable from './components/StudyListTable';
 import StudyListPagination from './components/StudyListPagination';
 
-import studyListMock from '../../mocks/studyList.json';
-
-/** Values can be env vars */
-const DEFAULT_MOCKED_STUDIES_NUM = 50;
-const DEFAULT_MOCKED_STUDIES_LIMIT = 1000;
+import { getMockedStudies } from '../../utils/';
 
 const StudyList = ({ studies, perPage }) => {
   const studiesData = studies.slice(0, perPage);
@@ -23,23 +19,6 @@ const StudyList = ({ studies, perPage }) => {
       {numOfStudies > 0 && <StudyListPagination />}
     </div>
   );
-};
-
-const getMockedStudies = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const generateData = num => new Array(+num).fill(studyListMock.studies[0]);
-  const getStudiesNum = num =>
-    +num > DEFAULT_MOCKED_STUDIES_LIMIT ? DEFAULT_MOCKED_STUDIES_LIMIT : +num;
-  const defaultStudiesNum = getStudiesNum(DEFAULT_MOCKED_STUDIES_NUM);
-
-  if (!urlParams) {
-    return generateData(defaultStudiesNum);
-  }
-
-  const studiesNum =
-    getStudiesNum(urlParams.get('studiesNum')) || defaultStudiesNum;
-
-  return generateData(studiesNum);
 };
 
 StudyList.defaultProps = {
