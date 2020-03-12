@@ -709,7 +709,7 @@ module.exports = {
     order: ['responsive'],
     outline: ['responsive', 'focus'],
     overflow: ['responsive'],
-    padding: ['responsive'],
+    padding: ['responsive', 'first'],
     placeholderColor: ['responsive', 'focus'],
     pointerEvents: ['responsive'],
     position: ['responsive'],

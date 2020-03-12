@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import classnames from 'classnames';
-import { Button } from '@ohif/ui';
+import { Button, Icon } from '@ohif/ui';
 
 /** TODO: Icon component should be used instead of importing the icons directly */
-import ChevronRight from '../../../assets/icons/chevron-right.svg';
-import ChevronDown from '../../../assets/icons/chevron-down.svg';
 import InstancesActive from '../../../assets/icons/instances-active.svg';
 import InstancesInactive from '../../../assets/icons/instances-inactive.svg';
 import LaunchInfo from '../../../assets/icons/launch-info.svg';
 
-const TableRow = () => {
+const getGridColClass = (filtersMeta, name) => {
+  const filter = filtersMeta.find(filter => filter.name === name);
+  return (filter && filter.gridCol && `w-${filter.gridCol}/12`) || '';
+};
+
+const TableRow = ({ filtersMeta }) => {
   const [isOpened, setIsOpened] = useState(false);
   const toggleRow = () => setIsOpened(!isOpened);
-  const ChevronIcon = isOpened ? ChevronDown : ChevronRight;
+  const ChevronIconName = isOpened ? 'chevron-down' : 'chevron-right';
   const InstancesIcon = isOpened ? InstancesActive : InstancesInactive;
   const tdClasses = [
     'px-4 py-2',
@@ -49,27 +52,70 @@ const TableRow = () => {
                   )}
                   onClick={toggleRow}
                 >
-                  <td className={classnames(...tdClasses)}>
-                    <ChevronIcon />
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'patientName')
+                    )}
+                  >
+                    <div className="flex flex-row items-center pl-1">
+                      <Icon name={ChevronIconName} className="mr-4" />
+                      Patient name
+                    </div>
                   </td>
-                  <td className={classnames(...tdClasses)}>Patient name</td>
-                  <td className={classnames(...tdClasses)}>11000002</td>
-                  <td className={classnames(...tdClasses)}>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'mrn')
+                    )}
+                  >
+                    11000002
+                  </td>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'studyDate')
+                    )}
+                  >
                     Mar-29-2013 11:26 AM
                   </td>
-                  <td className={classnames(...tdClasses)}>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'description')
+                    )}
+                  >
                     PET^1_PETCT_WB_AC (Adult)
                   </td>
-                  <td className={classnames(...tdClasses)}>CT/OT/PT</td>
-                  <td className={classnames(...tdClasses)}>00000001</td>
-                  <td className={classnames(...tdClasses)}>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'modality')
+                    )}
+                  >
+                    CT/OT/PT
+                  </td>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'accession')
+                    )}
+                  >
+                    00000001
+                  </td>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'instances')
+                    )}
+                  >
                     <InstancesIcon className="inline-flex mr-2" />
                     902
                   </td>
                 </tr>
                 {isOpened && (
                   <tr className={classnames('bg-black')}>
-                    <td colSpan="8" className="py-4 pl-20 pr-2">
+                    <td colSpan="7" className="py-4 pl-12 pr-2">
                       <div>
                         <Button
                           rounded="full"
@@ -170,7 +216,7 @@ const TableRow = () => {
   );
 };
 
-const StudyListTable = () => {
+const StudyListTable = ({ filtersMeta }) => {
   return (
     <>
       <div className="bg-black">
@@ -183,7 +229,7 @@ const StudyListTable = () => {
           <table className="w-full text-white">
             <tbody>
               {new Array(30).fill('').map((empty, i) => (
-                <TableRow key={i} />
+                <TableRow key={i} filtersMeta={filtersMeta} />
               ))}
             </tbody>
           </table>

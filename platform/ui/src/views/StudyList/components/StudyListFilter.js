@@ -11,45 +11,6 @@ const sortIconMap = {
 };
 
 const defaultProps = {
-  numOfStudies: 0,
-  filterMeta: [
-    {
-      name: 'patientName',
-      displayName: 'Patient Name',
-      inputType: 'text',
-      isSortable: true,
-    },
-    {
-      name: 'mrn',
-      displayName: 'MRN',
-      inputType: 'text',
-      isSortable: true,
-    },
-    {
-      name: 'studyDate',
-      displayName: 'Study date',
-      inputType: 'text',
-      isSortable: true,
-    },
-    {
-      name: 'description',
-      displayName: 'Description',
-      inputType: 'text',
-      isSortable: true,
-    },
-    {
-      name: 'modality',
-      displayName: 'Modality',
-      inputType: 'text',
-      isSortable: true,
-    },
-    {
-      name: 'accession',
-      displayName: 'Accession',
-      inputType: 'text',
-      isSortable: true,
-    },
-  ],
   filtersValues: {
     patientName: '',
     mrn: '',
@@ -70,6 +31,7 @@ const FilterLabel = ({
   isBeingSorted = false,
   sortDirection = 0,
   onLabelClick,
+  inputType,
   className,
   children,
 }) => {
@@ -103,13 +65,13 @@ const FilterLabel = ({
           />
         )}
       </span>
-      {children}
+      <span>{children}</span>
     </label>
   );
 };
 
 const StudyListFilter = ({
-  filtersMeta = defaultProps.filterMeta,
+  filtersMeta = [],
   filtersValues = defaultProps.filtersValues,
   numOfStudies = 90,
 }) => {
@@ -163,8 +125,8 @@ const StudyListFilter = ({
 
   return (
     <div className="bg-custom-navyDark">
-      <div className="container m-auto relative flex flex-col pt-5 pb-3 px-4">
-        <div className="flex flex-row justify-between mb-5">
+      <div className="container m-auto relative flex flex-col pt-5 pb-3">
+        <div className="flex flex-row justify-between mb-5 px-12">
           <div className="flex flex-row">
             <Typography variant="h4" className="text-custom-aquaBright mr-6">
               Study List
@@ -208,33 +170,38 @@ const StudyListFilter = ({
             </Typography>
           </div>
         </div>
-        <div className="flex flex-row">
-          {filtersMeta.map(({ name, displayName, inputType, isSortable }) => {
-            return (
-              <FilterLabel
-                key={name}
-                label={displayName}
-                isSortable={
-                  isSortable && numOfStudies <= 100 && numOfStudies > 0
-                }
-                isBeingSorted={sortBy === name}
-                sortDirection={sortDirection}
-                onLabelClick={() => handleFilterLabelClick(name)}
-                inputType={inputType}
-              >
-                <Input
-                  className="border-custom-blue mt-2 bg-black"
-                  type="text"
-                  containerClassName="mr-2"
-                  value={currentFiltersValues[name] || ''}
-                  onChange={event => handleFilterValueChange(event, name)}
-                />
-              </FilterLabel>
-            );
-          })}
-          <label className="text-white text-lg pl-1 flex flex-1">
-            Instances
-          </label>
+        <div className="flex flex-row w-full">
+          {filtersMeta.map(
+            ({ name, displayName, inputType, isSortable, gridCol }) => {
+              return (
+                <div
+                  className={classnames(`w-${gridCol}/12`, 'pl-4 first:pl-12')}
+                >
+                  <FilterLabel
+                    key={name}
+                    label={displayName}
+                    isSortable={
+                      isSortable && numOfStudies <= 100 && numOfStudies > 0
+                    }
+                    isBeingSorted={sortBy === name}
+                    sortDirection={sortDirection}
+                    onLabelClick={() => handleFilterLabelClick(name)}
+                    inputType={inputType}
+                  >
+                    {inputType !== 'none' && (
+                      <Input
+                        className="border-custom-blue mt-2 bg-black"
+                        type="text"
+                        containerClassName="mr-2"
+                        value={currentFiltersValues[name] || ''}
+                        onChange={event => handleFilterValueChange(event, name)}
+                      />
+                    )}
+                  </FilterLabel>
+                </div>
+              );
+            }
+          )}
         </div>
       </div>
     </div>
@@ -247,6 +214,7 @@ StudyListFilter.propTypes = {
     dsplayName: PropTypes.string,
     inputType: PropTypes.oneOf(['text', 'select', 'date-range', 'none']),
     isSortable: PropTypes.bool,
+    gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
   }),
   filtersValues: PropTypes.object,
   numOfStudies: PropTypes.number,
