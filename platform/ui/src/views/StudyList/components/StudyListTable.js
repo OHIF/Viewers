@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Button } from '@ohif/ui';
+import { format } from 'date-fns';
+import { Button, Icon, Typography } from '@ohif/ui';
 
-/** TODO: Icon component should be used instead of importing the icons directly */
-import ChevronRight from '../../../assets/icons/chevron-right.svg';
-import ChevronDown from '../../../assets/icons/chevron-down.svg';
-import InstancesActive from '../../../assets/icons/instances-active.svg';
-import InstancesInactive from '../../../assets/icons/instances-inactive.svg';
-import LaunchInfo from '../../../assets/icons/launch-info.svg';
+const TableRow = props => {
+  const {
+    AccessionNumber,
+    Modalities,
+    Instances,
+    StudyDescription,
+    PatientId,
+    PatientName,
+    StudyDate,
+    series,
+  } = props;
 
-const TableRow = () => {
   const [isOpened, setIsOpened] = useState(false);
   const toggleRow = () => setIsOpened(!isOpened);
-  const ChevronIcon = isOpened ? ChevronDown : ChevronRight;
-  const InstancesIcon = isOpened ? InstancesActive : InstancesInactive;
+  const ChevronIconName = isOpened ? 'chevron-down' : 'chevron-right';
   const tdClasses = [
     'px-4 py-2',
     { 'border-b border-custom-violetPale': !isOpened },
@@ -23,7 +28,6 @@ const TableRow = () => {
     small: 'px-2 flex-0.3',
   };
   const seriesBodyClasses = 'border-r border-custom-violetPale';
-
   return (
     <>
       <tr>
@@ -50,31 +54,39 @@ const TableRow = () => {
                   onClick={toggleRow}
                 >
                   <td className={classnames(...tdClasses)}>
-                    <ChevronIcon />
+                    <Icon name={ChevronIconName} />
                   </td>
-                  <td className={classnames(...tdClasses)}>Patient name</td>
-                  <td className={classnames(...tdClasses)}>11000002</td>
+                  <td className={classnames(...tdClasses)}>{PatientName}</td>
+                  <td className={classnames(...tdClasses)}>{PatientId}</td>
                   <td className={classnames(...tdClasses)}>
-                    Mar-29-2013 11:26 AM
+                    {format(StudyDate, 'MMM-DD-YYYY')}
                   </td>
                   <td className={classnames(...tdClasses)}>
-                    PET^1_PETCT_WB_AC (Adult)
+                    {StudyDescription}
                   </td>
-                  <td className={classnames(...tdClasses)}>CT/OT/PT</td>
-                  <td className={classnames(...tdClasses)}>00000001</td>
+                  <td className={classnames(...tdClasses)}>{Modalities}</td>
                   <td className={classnames(...tdClasses)}>
-                    <InstancesIcon className="inline-flex mr-2" />
-                    902
+                    {AccessionNumber}
+                  </td>
+                  <td className={classnames(...tdClasses)}>
+                    <Icon
+                      name="series-active"
+                      className={classnames('inline-flex mr-2', {
+                        'text-custom-blueBright': isOpened,
+                        'text-custom-violetPale': !isOpened,
+                      })}
+                    />
+                    {Instances}
                   </td>
                 </tr>
                 {isOpened && (
                   <tr className={classnames('bg-black')}>
                     <td colSpan="8" className="py-4 pl-20 pr-2">
-                      <div>
+                      <div className="flex">
                         <Button
                           rounded="full"
                           variant="outlined"
-                          endIcon={<LaunchInfo />}
+                          endIcon={<Icon name="launch-info" />}
                           className="mr-4"
                         >
                           Basic Viewer
@@ -82,7 +94,7 @@ const TableRow = () => {
                         <Button
                           rounded="full"
                           variant="outlined"
-                          endIcon={<LaunchInfo />}
+                          endIcon={<Icon name="launch-info" />}
                           className="mr-4"
                         >
                           Segmentation
@@ -90,14 +102,17 @@ const TableRow = () => {
                         <Button
                           rounded="full"
                           variant="outlined"
-                          endIcon={<LaunchInfo />}
+                          endIcon={<Icon name="launch-info" />}
                         >
                           Module 3
                         </Button>
-                        <span className="ml-4 text-lg text-custom-grayBright">
-                          {/* ADD ICON HERE */}
+                        <div className="ml-5 text-lg text-custom-grayBright flex items-center">
+                          <Icon
+                            name="notificationwarning-diamond"
+                            className="mr-2 w-5 h-5"
+                          />
                           Feedback text lorem ipsum dolor sit amet
-                        </span>
+                        </div>
                       </div>
                       <div className="mt-4">
                         <div className="w-full text-lg">
@@ -124,7 +139,7 @@ const TableRow = () => {
                             </div>
                           </div>
                           <div className="mt-2 h-48 overflow-y-scroll ohif-scrollbar">
-                            {new Array(30).fill('').map((el, i) => (
+                            {series.map((seriesItem, i) => (
                               <div className="w-full flex" key={i}>
                                 <div
                                   className={classnames(
@@ -140,7 +155,7 @@ const TableRow = () => {
                                     seriesBodyClasses
                                   )}
                                 >
-                                  #
+                                  {seriesItem.SeriesNumber}
                                 </div>
                                 <div
                                   className={classnames(
@@ -148,10 +163,10 @@ const TableRow = () => {
                                     seriesBodyClasses
                                   )}
                                 >
-                                  CT
+                                  {seriesItem.Modality}
                                 </div>
                                 <div className={classnames('pl-3 flex-1')}>
-                                  149
+                                  {seriesItem.instances.length}
                                 </div>
                               </div>
                             ))}
@@ -170,27 +185,85 @@ const TableRow = () => {
   );
 };
 
-const StudyListTable = () => {
+TableRow.propTypes = {
+  AccessionNumber: PropTypes.string.isRequired,
+  Modalities: PropTypes.string.isRequired,
+  Instances: PropTypes.number.isRequired,
+  PatientId: PropTypes.string.isRequired,
+  PatientName: PropTypes.string.isRequired,
+  StudyDescription: PropTypes.string.isRequired,
+  StudyDate: PropTypes.string.isRequired,
+  series: PropTypes.array.isRequired,
+};
+
+const StudyListTable = ({ studies, numOfStudies }) => {
+  const renderTable = () => {
+    return (
+      <table className="w-full text-white">
+        <tbody>
+          {studies.map((study, i) => (
+            <TableRow
+              key={i}
+              AccessionNumber={study.AccessionNumber || ''}
+              Modalities={study.Modalities || ''}
+              Instances={study.Instances || ''}
+              StudyDescription={study.StudyDescription || ''}
+              PatientId={study.PatientId || ''}
+              PatientName={study.PatientName || ''}
+              StudyDate={study.StudyDate || ''}
+              series={study.series || []}
+            />
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
+  const renderEmpty = () => {
+    return (
+      <div className="flex flex-col items-center justify-center pt-48">
+        <Icon name="magnifier" className="mb-4" />
+        <Typography className="text-custom-aquaBright" variant="h5">
+          No studies available
+        </Typography>
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="bg-black">
         <div className="container m-auto relative">
-          <div className="bg-custom-blue text-center text-base py-1 rounded-b sticky top-0">
-            <p className="text-white">
-              Filter list to 100 studies or less to enable sorting
-            </p>
-          </div>
-          <table className="w-full text-white">
-            <tbody>
-              {new Array(30).fill('').map((empty, i) => (
-                <TableRow key={i} />
-              ))}
-            </tbody>
-          </table>
+          {numOfStudies > 100 && (
+            <div className="bg-custom-blue text-center text-base py-1 rounded-b sticky top-0">
+              <p className="text-white">
+                Filter list to 100 studies or less to enable sorting
+              </p>
+            </div>
+          )}
+
+          {numOfStudies > 0 && renderTable()}
+          {numOfStudies === 0 && renderEmpty()}
         </div>
       </div>
     </>
   );
+};
+
+StudyListTable.propTypes = {
+  studies: PropTypes.arrayOf(
+    PropTypes.shape({
+      AccessionNumber: PropTypes.string.isRequired,
+      Modalities: PropTypes.string.isRequired,
+      Instances: PropTypes.number.isRequired,
+      PatientId: PropTypes.string.isRequired,
+      PatientName: PropTypes.string.isRequired,
+      StudyDescription: PropTypes.string.isRequired,
+      StudyDate: PropTypes.string.isRequired,
+      series: PropTypes.array.isRequired,
+    })
+  ).isRequired,
+  numOfStudies: PropTypes.number.isRequired,
 };
 
 export default StudyListTable;
