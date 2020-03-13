@@ -8,6 +8,7 @@ import studyMetadataManager from './studyMetadataManager';
 import writeScript from './writeScript.js';
 import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
+import loadAndCacheDerivedDisplaySets from './loadAndCacheDerivedDisplaySets.js';
 import * as urlUtil from './urlUtil';
 import makeCancelable from './makeCancelable';
 import hotkeys from './hotkeys';
@@ -24,6 +25,7 @@ const utils = {
   studyMetadataManager,
   DicomLoaderService,
   urlUtil,
+  loadAndCacheDerivedDisplaySets,
   makeCancelable,
   hotkeys,
 };
@@ -40,6 +42,7 @@ export {
   studyMetadataManager,
   DicomLoaderService,
   urlUtil,
+  loadAndCacheDerivedDisplaySets,
   makeCancelable,
   hotkeys,
 };

@@ -77,6 +77,7 @@ class ViewerMain extends Component {
   }
 
   fillEmptyViewportPanes = () => {
+    // TODO: Here is the entry point for filling viewports on load.
     const dirtyViewportPanes = [];
     const { layout, viewportSpecificData } = this.props;
     const { displaySets } = this.state;

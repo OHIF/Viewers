@@ -9,6 +9,7 @@ import arrowsAltH from './icons/arrows-alt-h.svg';
 import arrowsAltV from './icons/arrows-alt-v.svg';
 import bars from './icons/bars.svg';
 import brain from './icons/brain.svg';
+import brush from './icons/brush.svg';
 import caretDown from './icons/caret-down.svg';
 import caretUp from './icons/caret-up.svg';
 import check from './icons/check.svg';
@@ -63,12 +64,14 @@ import reset from './icons/reset.svg';
 import rotate from './icons/rotate.svg';
 import rotateRight from './icons/rotate-right.svg';
 import saveRegular from './icons/save-regular.svg';
+import scissors from './icons/scissors.svg';
 import search from './icons/search.svg';
 import searchPlus from './icons/search-plus.svg';
 import softTissue from './icons/soft-tissue.svg';
 import sort from './icons/sort.svg';
 import sortDown from './icons/sort-down.svg';
 import sortUp from './icons/sort-up.svg';
+import sphere from './icons/sphere.svg';
 import squareO from './icons/square-o.svg';
 import star from './icons/star.svg';
 import stepBackward from './icons/step-backward.svg';
@@ -84,11 +87,14 @@ import user from './icons/user.svg';
 import youtube from './icons/youtube.svg';
 
 const ICONS = {
+  brush,
+  scissors,
   user,
   sort,
   th,
   star,
   'sort-up': sortUp,
+  sphere,
   'sort-down': sortDown,
   info,
   cube,
