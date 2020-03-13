@@ -40,8 +40,6 @@ export default async function loadRTStruct(
   // global cornerstone tools state to attach measurements to.
   const toolState = globalImageIdSpecificToolStateManager.saveToolState();
 
-  debugger;
-
   const {
     StructureSetROISequence,
     ROIContourSequence,
@@ -51,14 +49,13 @@ export default async function loadRTStruct(
 
   // Define our structure set entry and add it to the rtstruct module state.
   const structureSet = {
-    structureSetLabel: StructureSetLabel,
-    seriesInstanceUid: rtStructDataset.SeriesInstanceUID,
+    StructureSetLabel: StructureSetLabel,
+    SeriesInstanceUID: rtStructDataset.SeriesInstanceUID,
     ROIContours: [],
-    referencedSeriesSequence: rtStructDisplaySet.referencedSeriesSequence,
+    referencedSeriesSequence:
+      rtStructDisplaySet.metadata.ReferencedSeriesSequence,
     visible: true,
   };
-
-  console.log(structureSet);
 
   rtStructModule.setters.structureSet(structureSet);
 
@@ -67,8 +64,6 @@ export default async function loadRTStruct(
     studyInstanceUid,
     seriesInstanceUid
   );
-
-  debugger;
 
   const rtStructDisplayToolName = TOOL_NAMES.RTSTRUCT_DISPLAY_TOOL;
 
@@ -129,6 +124,8 @@ export default async function loadRTStruct(
       imageIdSpecificToolData.push(measurementData);
     }
   }
+
+  debugger;
 
   _setToolEnabledIfNotEnabled(rtStructDisplayToolName);
 }
