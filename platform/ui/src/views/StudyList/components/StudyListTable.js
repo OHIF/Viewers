@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+
 import { format } from 'date-fns';
 import { Button, Icon, Typography } from '@ohif/ui';
+
+const getGridColClass = (filtersMeta, name) => {
+  const filter = filtersMeta.find(filter => filter.name === name);
+  return (filter && filter.gridCol && `w-${filter.gridCol}/24`) || '';
+};
 
 const TableRow = props => {
   const {
@@ -14,6 +20,7 @@ const TableRow = props => {
     PatientName,
     StudyDate,
     series,
+    filtersMeta,
   } = props;
 
   const [isOpened, setIsOpened] = useState(false);
@@ -53,22 +60,63 @@ const TableRow = props => {
                   )}
                   onClick={toggleRow}
                 >
-                  <td className={classnames(...tdClasses)}>
-                    <Icon name={ChevronIconName} />
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'patientName')
+                    )}
+                  >
+                    <div className="flex flex-row items-center pl-1">
+                      <Icon name={ChevronIconName} className="mr-4" />
+                      {PatientName}
+                    </div>
                   </td>
-                  <td className={classnames(...tdClasses)}>{PatientName}</td>
-                  <td className={classnames(...tdClasses)}>{PatientId}</td>
-                  <td className={classnames(...tdClasses)}>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'mrn')
+                    )}
+                  >
+                    {PatientId}
+                  </td>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'studyDate')
+                    )}
+                  >
                     {format(StudyDate, 'MMM-DD-YYYY')}
                   </td>
-                  <td className={classnames(...tdClasses)}>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'description')
+                    )}
+                  >
                     {StudyDescription}
                   </td>
-                  <td className={classnames(...tdClasses)}>{Modalities}</td>
-                  <td className={classnames(...tdClasses)}>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'modality')
+                    )}
+                  >
+                    {Modalities}
+                  </td>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'accession')
+                    )}
+                  >
                     {AccessionNumber}
                   </td>
-                  <td className={classnames(...tdClasses)}>
+                  <td
+                    className={classnames(
+                      ...tdClasses,
+                      getGridColClass(filtersMeta, 'instances')
+                    )}
+                  >
                     <Icon
                       name="series-active"
                       className={classnames('inline-flex mr-2', {
@@ -81,7 +129,7 @@ const TableRow = props => {
                 </tr>
                 {isOpened && (
                   <tr className={classnames('bg-black')}>
-                    <td colSpan="8" className="py-4 pl-20 pr-2">
+                    <td colSpan="7" className="py-4 pl-12 pr-2">
                       <div className="flex">
                         <Button
                           rounded="full"
@@ -196,10 +244,10 @@ TableRow.propTypes = {
   series: PropTypes.array.isRequired,
 };
 
-const StudyListTable = ({ studies, numOfStudies }) => {
+const StudyListTable = ({ studies, numOfStudies, filtersMeta }) => {
   const renderTable = () => {
     return (
-      <table className="w-full text-white">
+      <table className="w-full text-white border-t-4 border-black">
         <tbody>
           {studies.map((study, i) => (
             <TableRow
@@ -212,6 +260,7 @@ const StudyListTable = ({ studies, numOfStudies }) => {
               PatientName={study.PatientName || ''}
               StudyDate={study.StudyDate || ''}
               series={study.series || []}
+              filtersMeta={filtersMeta}
             />
           ))}
         </tbody>

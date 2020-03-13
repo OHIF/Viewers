@@ -7,6 +7,58 @@ import StudyListFilter from './components/StudyListFilter';
 import StudyListTable from './components/StudyListTable';
 import StudyListPagination from './components/StudyListPagination';
 
+const filtersMeta = [
+  {
+    name: 'patientName',
+    displayName: 'Patient Name',
+    inputType: 'text',
+    isSortable: true,
+    gridCol: 4,
+  },
+  {
+    name: 'mrn',
+    displayName: 'MRN',
+    inputType: 'text',
+    isSortable: true,
+    gridCol: 2,
+  },
+  {
+    name: 'studyDate',
+    displayName: 'Study date',
+    inputType: 'text',
+    isSortable: true,
+    gridCol: 3,
+  },
+  {
+    name: 'description',
+    displayName: 'Description',
+    inputType: 'text',
+    isSortable: true,
+    gridCol: 5,
+  },
+  {
+    name: 'modality',
+    displayName: 'Modality',
+    inputType: 'text',
+    isSortable: true,
+    gridCol: 3,
+  },
+  {
+    name: 'accession',
+    displayName: 'Accession',
+    inputType: 'text',
+    isSortable: true,
+    gridCol: 4,
+  },
+  {
+    name: 'instances',
+    displayName: 'Instances',
+    inputType: 'none',
+    isSortable: false,
+    gridCol: 3,
+  },
+];
+
 const StudyList = ({ studies, perPage }) => {
   const studiesData = studies.slice(0, perPage);
   const numOfStudies = studies.length;
@@ -18,8 +70,12 @@ const StudyList = ({ studies, perPage }) => {
       })}
     >
       <Header />
-      <StudyListFilter numOfStudies={numOfStudies} />
-      <StudyListTable studies={studiesData} numOfStudies={numOfStudies} />
+      <StudyListFilter numOfStudies={numOfStudies} filtersMeta={filtersMeta} />
+      <StudyListTable
+        studies={studiesData}
+        numOfStudies={numOfStudies}
+        filtersMeta={filtersMeta}
+      />
       {!isEmptyStudies && <StudyListPagination />}
     </div>
   );
