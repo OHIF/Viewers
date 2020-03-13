@@ -23,13 +23,14 @@ describe('OHIF Save Measurements', function() {
       .its('length')
       .should('be.at.least', 1);
 
+    // TODO: Don't save until we're using in-memory data store
     // Save new measurement
-    cy.get('[data-cy="save-measurements-btn"]').click();
+    // cy.get('[data-cy="save-measurements-btn"]').click();
 
     // Verify that success message overlay is displayed
-    cy.get('.sb-success')
-      .should('be.visible')
-      .and('contains.text', 'Measurements saved successfully');
+    // cy.get('.sb-success')
+    //   .should('be.visible')
+    //   .and('contains.text', 'Measurements saved successfully');
 
     // Visual test comparison
     cy.screenshot('Save Measurements - new measurement added');
