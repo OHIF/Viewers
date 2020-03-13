@@ -27,7 +27,7 @@ const filtersMeta = [
     displayName: 'Study date',
     inputType: 'text',
     isSortable: true,
-    gridCol: 4,
+    gridCol: 3,
   },
   {
     name: 'description',
@@ -48,7 +48,7 @@ const filtersMeta = [
     displayName: 'Accession',
     inputType: 'text',
     isSortable: true,
-    gridCol: 3,
+    gridCol: 4,
   },
   {
     name: 'instances',
