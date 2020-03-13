@@ -1,3 +1,5 @@
+import * as utils from './src/utils/';
+
 export {
   Button,
   ButtonGroup,
@@ -8,5 +10,7 @@ export {
   ThemeWrapper,
   Typography,
 } from './src/components';
+
+export { utils };
 
 export { StudyList } from './src/views';
