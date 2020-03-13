@@ -53,6 +53,10 @@ Cypress.Commands.add('openStudy', PatientName => {
     .click({ force: true });
 });
 
+Cypress.Commands.add('openStudyInViewer', StudyInstanceUID => {
+  cy.visit(`/viewer/${StudyInstanceUID}`);
+});
+
 /**
  * Command to search for a Modality and open the study.
  *

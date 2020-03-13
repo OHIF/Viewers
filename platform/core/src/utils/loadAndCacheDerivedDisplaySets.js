@@ -33,7 +33,7 @@ import studyMetadataManager from './studyMetadataManager';
  * @param {string} referencedDisplaySet.displaySetInstanceUid Display set instance uid
  * @param {string} referencedDisplaySet.seriesDate
  * @param {string} referencedDisplaySet.seriesTime
- * @param {string} referencedDisplaySet.SeriesInstanceUID
+ * @param {string} referencedDisplaySet.seriesInstanceUid
  * @param {string} referencedDisplaySet.seriesNumber
  * @param {string} referencedDisplaySet.seriesDescription
  * @param {number} referencedDisplaySet.numImageFrames

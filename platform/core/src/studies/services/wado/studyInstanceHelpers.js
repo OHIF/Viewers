@@ -191,7 +191,7 @@ async function makeSOPInstance(server, study, instance) {
  */
 async function addInstancesToStudy(server, study, sopInstanceList) {
   return Promise.all(
-    sopInstanceList.map(function(sopInstance) {
+    sopInstanceList.map(function (sopInstance) {
       return makeSOPInstance(server, study, sopInstance);
     })
   );
