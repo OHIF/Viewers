@@ -345,10 +345,11 @@ module.exports = {
       ...theme('spacing'),
       ...negative(theme('spacing')),
     }),
-    maxHeight: {
+    maxHeight: theme => ({
       full: '100%',
       screen: '100vh',
-    },
+      ...theme('spacing'),
+    }),
     maxWidth: (theme, { breakpoints }) => ({
       none: 'none',
       xs: '20rem',

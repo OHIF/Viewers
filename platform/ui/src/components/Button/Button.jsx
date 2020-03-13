@@ -50,7 +50,7 @@ const variantClasses = {
   },
   contained: {
     default:
-      'bg-custom-aquaBright text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'bg-custom-aquaBright text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary:
       'bg-custom-blue text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:

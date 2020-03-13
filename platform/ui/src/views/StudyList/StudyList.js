@@ -69,8 +69,13 @@ const StudyList = ({ studies, perPage }) => {
         'h-screen': isEmptyStudies,
       })}
     >
-      <Header />
-      <StudyListFilter numOfStudies={numOfStudies} filtersMeta={filtersMeta} />
+      <div className="sticky top-0 z-10">
+        <Header />
+        <StudyListFilter
+          numOfStudies={numOfStudies}
+          filtersMeta={filtersMeta}
+        />
+      </div>
       <StudyListTable
         studies={studiesData}
         numOfStudies={numOfStudies}
