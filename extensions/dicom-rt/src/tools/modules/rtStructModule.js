@@ -34,7 +34,7 @@ function setStructureSet(structureSetData) {
  */
 function getStructureSet(SeriesInstanceUID) {
   return state.StructureSets.find(
-    structureSet => structureSet.seriesInstanceUid === SeriesInstanceUID
+    structureSet => structureSet.SeriesInstanceUID === SeriesInstanceUID
   );
 }
 
@@ -68,8 +68,8 @@ function setHideStructureSet(SeriesInstanceUID) {
  * Shows the StructureSet.
  * @param {string} SeriesInstanceUID The SeriesInstanceUID of the StructureSet.
  */
-function setShowStructureSet(seriesInstanceUid) {
-  _setStructureSetVisible(seriesInstanceUid, true);
+function setShowStructureSet(SeriesInstanceUID) {
+  _setStructureSetVisible(SeriesInstanceUID, true);
 }
 
 /**
@@ -77,8 +77,8 @@ function setShowStructureSet(seriesInstanceUid) {
  * @param {string} SeriesInstanceUID The SeriesInstanceUID of the StructureSet.
  * @param {boolean} visible Whether the StructureSet should visible or not.
  */
-function _setStructureSetVisible(seriesInstanceUid, visible = true) {
-  const StructureSet = getStructureSet(seriesInstanceUid);
+function _setStructureSetVisible(SeriesInstanceUID, visible = true) {
+  const StructureSet = getStructureSet(SeriesInstanceUID);
 
   if (StructureSet) {
     StructureSet.visible = visible;
@@ -91,8 +91,8 @@ function _setStructureSetVisible(seriesInstanceUid, visible = true) {
  * Toggles the visibility of the StructureSet.
  * @param {string} SeriesInstanceUID The SeriesInstanceUID of the StructureSet.
  */
-function setToggleStructureSet(seriesInstanceUid) {
-  const StructureSet = getStructureSet(seriesInstanceUid);
+function setToggleStructureSet(SeriesInstanceUID) {
+  const StructureSet = getStructureSet(SeriesInstanceUID);
 
   if (StructureSet) {
     StructureSet.visible = !StructureSet.visible;
@@ -106,8 +106,8 @@ function setToggleStructureSet(seriesInstanceUid) {
  * @param {string} SeriesInstanceUID The SeriesInstanceUID of the StructureSet.
  * @param {number} ROINumber The ROINUmber of the ROIContour.
  */
-function setHideROIContour(seriesInstanceUid, ROINumber) {
-  _setROIContourVisible(seriesInstanceUid, ROINumber, false);
+function setHideROIContour(SeriesInstanceUID, ROINumber) {
+  _setROIContourVisible(SeriesInstanceUID, ROINumber, false);
 }
 
 /**
@@ -115,8 +115,8 @@ function setHideROIContour(seriesInstanceUid, ROINumber) {
  * @param {string} SeriesInstanceUID The SeriesInstanceUID of the StructureSet.
  * @param {number} ROINumber The ROINUmber of the ROIContour.
  */
-function setShowROIContour(seriesInstanceUid, ROINumber) {
-  _setROIContourVisible(seriesInstanceUid, ROINumber, true);
+function setShowROIContour(SeriesInstanceUID, ROINumber) {
+  _setROIContourVisible(SeriesInstanceUID, ROINumber, true);
 }
 
 /**
@@ -125,8 +125,8 @@ function setShowROIContour(seriesInstanceUid, ROINumber) {
  * @param {number} ROINumber The ROINUmber of the ROIContour.
  * @param {boolean} visible Whether the StructureSet should visible or not.
  */
-function _setROIContourVisible(seriesInstanceUid, ROINumber, visible = true) {
-  const ROIContour = getROIContour(seriesInstanceUid, ROINumber);
+function _setROIContourVisible(SeriesInstanceUID, ROINumber, visible = true) {
+  const ROIContour = getROIContour(SeriesInstanceUID, ROINumber);
 
   if (ROIContour) {
     ROIContour.visible = visible;
@@ -140,8 +140,8 @@ function _setROIContourVisible(seriesInstanceUid, ROINumber, visible = true) {
  * @param {string} SeriesInstanceUID The SeriesInstanceUID of the StructureSet.
  * @param {number} ROINumber The ROINUmber of the ROIContour.
  */
-function setToggleROIContour(seriesInstanceUid, ROINumber) {
-  const ROIContour = getROIContour(seriesInstanceUid, ROINumber);
+function setToggleROIContour(SeriesInstanceUID, ROINumber) {
+  const ROIContour = getROIContour(SeriesInstanceUID, ROINumber);
 
   if (ROIContour) {
     ROIContour.visible = !ROIContour.visible;
