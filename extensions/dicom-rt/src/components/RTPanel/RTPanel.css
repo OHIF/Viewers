@@ -1,0 +1,53 @@
+.dcmrt-panel {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--primary-background-color);
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+}
+
+.dcmrt-panel .dcmrt-panel-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color: white;
+}
+
+.dcmrt-panel .dcmrt-panel-header .cog-icon {
+  align-self: flex-end;
+  color: var(--default-color);
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.dcmrt-panel .dcmrt-panel-header .cog-icon:hover {
+  color: var(--hover-color);
+}
+
+.dcmrt-panel .panel-section {
+  display: flex;
+  flex-direction: column;
+  color: var(--text-primary-color);
+  font-size: 12px;
+}
+
+.dcmrt-panel .panel-section .header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--ui-gray-dark);
+  border-radius: 5px;
+  font-weight: bold;
+  padding: 0 20px 0 20px;
+}
+
+.dcmrt-panel .panel-section .header .eye-icon {
+  cursor: pointer;
+  color: var(--default-color);
+}
+
+.dcmrt-panel .panel-section .header .eye-icon:hover {
+  color: var(--hover-color);
+}

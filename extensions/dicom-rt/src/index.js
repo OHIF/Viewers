@@ -1,6 +1,7 @@
 import init from './init.js';
 import sopClassHandlerModule from './OHIFDicomRTStructSopClassHandler';
 import id from './id.js';
+import panelModule from './panelModule';
 
 export default {
   /**
@@ -16,6 +17,9 @@ export default {
    */
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
+  },
+  getPanelModule({ servicesManager }) {
+    return panelModule;
   },
   getSopClassHandlerModule({ servicesManager }) {
     return sopClassHandlerModule;
