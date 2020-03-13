@@ -425,56 +425,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     });
   });
 
-  it('checks if Eraser tool will remove the measurements added in the viewport', () => {
-    let totalmeasurements;
-
-    //Add measurements in the viewport
-    cy.addLengthMeasurement();
-    cy.addAngleMeasurement();
-
-    //Verify if measurement annotation was added into the measurements panel
-    cy.get('@measurementsBtn').click();
-
-    cy.get('.measurementItem')
-      .its('length')
-      .should('be.at.least', 2);
-
-    cy.get('@measurementsBtn')
-      .click()
-      .wait(2000);
-    //cy.isNotInViewport('@measurementsPanel'); //TO DO: check this intermittent behaviour
-
-    //Click More button
-    cy.get('@moreBtn').click();
-    //Verify if overlay is displayed
-    cy.get('.tooltip-toolbar-overlay')
-      .should('be.visible')
-      .then(() => {
-        //Click Eraser button
-        cy.get('[data-cy="eraser"]').click({
-          force: true,
-        });
-      });
-
-    //Erase measurement #1 and Verify if it was removed from the measurements panel
-    const [x1, y1] = [150, 100];
-    cy.get('@viewport').click(x1, y1, {
-      force: true,
-    });
-    cy.get('.measurementItem')
-      .its('length')
-      .should('be.eq', 1);
-
-    //Erase measurement #2 and Verify if it was removed from the measurements panel
-    const [x2, y2] = [180, 390];
-    cy.get('@viewport').click(x2, y2, {
-      force: true,
-    });
-
-    //Verify if measurements were removed from the measurements panel
-    cy.get('.measurementItem').should('not.exist');
-  });
-
   it('check if Invert tool will change the colors of the image in the viewport', () => {
     // Click on More button
     cy.get('@moreBtn').click();
