@@ -9,6 +9,11 @@ function refreshViewport() {
   });
 }
 
+const configuration = {
+  lineWidth: 3,
+  opacity: 1.0,
+};
+
 const state = {
   StructureSets: [],
 };
@@ -179,4 +184,5 @@ export default {
     toggleStructureSet: setToggleStructureSet,
   },
   state,
+  configuration,
 };

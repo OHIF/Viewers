@@ -36,6 +36,8 @@ export default class RTStructDisplayTool extends BaseTool {
       return;
     }
 
+    const { lineWidth, opacity } = rtstructModule.configuration;
+
     // We have tool data for this element - iterate over each one and draw it
     const context = getNewContext(eventData.canvasContext.canvas);
 
@@ -67,20 +69,12 @@ export default class RTStructDisplayTool extends BaseTool {
         continue;
       }
 
-      const color = ROIContourData.ROIDisplayColor;
+      const colorArray = ROIContourData.colorArray;
+      const color = `rgba(${colorArray[0]},${colorArray[1]},${
+        colorArray[2]
+      },${opacity})`;
 
-      // TODO -> Settings for this in menu.
-
-      // const colorComponents = color
-      //   .replace('rgb(', '')
-      //   .replace(')', '')
-      //   .split(',');
-
-      // const fillStyle = `rgba(${colorComponents[0]},${colorComponents[1]},${
-      //   colorComponents[2]
-      // },0.2)`;
-
-      // debugger;
+      lineWidth;
 
       draw(context, context => {
         drawJoinedLines(
@@ -90,8 +84,7 @@ export default class RTStructDisplayTool extends BaseTool {
           points,
           {
             color,
-            //fillStyle,
-            //shouldDrawLines: false,
+            lineWidth,
           }
         );
       });

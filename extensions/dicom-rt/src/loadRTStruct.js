@@ -175,9 +175,7 @@ function _setROIContourDataColor(ROIContour, ROIContourData) {
   }
 
   if (ROIDisplayColor) {
-    ROIContourData.ROIDisplayColor = `rgb(${ROIDisplayColor[0]},${
-      ROIDisplayColor[1]
-    },${ROIDisplayColor[2]})`;
+    ROIContourData.colorArray = [...ROIDisplayColor];
   } else {
     //Choose a color from the cornerstoneTools colorLUT
     // We sample from the default color LUT here (i.e. 0), as we have nothing else to go on.
@@ -187,7 +185,7 @@ function _setROIContourDataColor(ROIContour, ROIContourData) {
       ROIContourData.ROINumber
     );
 
-    ROIContourData.ROIDisplayColor = `rgb(${color[0]},${color[1]},${color[2]})`;
+    ROIContourData.colorArray = [...color];
   }
 }
 

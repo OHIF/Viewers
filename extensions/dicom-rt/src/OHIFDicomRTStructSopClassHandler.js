@@ -8,12 +8,12 @@ const SOP_CLASS_UIDS = {
   DICOM_RT_STRUCT: '1.2.840.10008.5.1.4.1.1.481.3',
 };
 
-const sopClassUids = Object.values(SOP_CLASS_UIDS);
+const sopClassUIDs = Object.values(SOP_CLASS_UIDS);
 
 const OHIFDicomRTStructSopClassHandler = {
   id: 'OHIFDicomRTStructSopClassHandler',
   type: MODULE_TYPES.SOP_CLASS_HANDLER,
-  sopClassUids,
+  sopClassUIDs,
   getDisplaySetFromSeries: function(
     series,
     study,
@@ -21,47 +21,48 @@ const OHIFDicomRTStructSopClassHandler = {
     authorizationHeaders
   ) {
     const instance = series.getFirstInstance();
-    const instanceData = instance.getData();
 
-    const frameOfReferenceUID = instance.getTagValue('FrameOfReferenceUID');
-    const { seriesDate, seriesTime, seriesDescription } = series.getData();
+    const metadata = instance.getData().metadata;
+    const {
+      SeriesDate,
+      SeriesTime,
+      SeriesDescription,
+      FrameOfReferenceUID,
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      StudyInstanceUID,
+    } = metadata;
 
     // TODO -> GET REFERENCED FRAME OF REFERENCE SEQUENCE.
 
     const rtStructDisplaySet = {
-      plugin: id,
-      modality: 'RTSTRUCT',
-      displaySetInstanceUid: utils.guid(),
+      Modality: 'RTSTRUCT',
+      displaySetInstanceUID: utils.guid(),
       wadoRoot: study.getData().wadoRoot,
       wadoUri: instance.getData().wadouri,
-      sopInstanceUid: instance.getSOPInstanceUID(),
-      seriesInstanceUid: series.getSeriesInstanceUID(),
-      studyInstanceUid: study.getStudyInstanceUID(),
-      frameOfReferenceUID,
+      SOPInstanceUID,
+      SeriesInstanceUID,
+      StudyInstanceUID,
+      FrameOfReferenceUID,
       authorizationHeaders,
+      metadata,
       isDerived: true,
-      referencedDisplaySetUid: null, // Assigned when loaded.
+      referencedDisplaySetUID: null, // Assigned when loaded.
       labelmapIndex: null, // Assigned when loaded.
       isLoaded: false,
-      seriesDate,
-      seriesTime,
-      seriesDescription,
+      SeriesDate,
+      SeriesTime,
+      SeriesDescription,
     };
 
-    const referencedSeriesSequence = instance.getTagValue(
-      'ReferencedSeriesSequence'
-    );
+    if (!metadata.ReferencedSeriesSequence) {
+      const ReferencedFrameOfReferenceSequence =
+        metadata.ReferencedFrameOfReferenceSequence;
 
-    if (referencedSeriesSequence) {
-      rtStructDisplaySet.referencedSeriesSequence = referencedSeriesSequence;
-    } else {
-      const referencedFrameOfReferenceSequence = _getReferencedFrameOfReferenceSequence(
-        instanceData._instanceRaw
-      );
-
-      if (referencedFrameOfReferenceSequence) {
-        rtStructDisplaySet.referencedSeriesSequence = _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
-          referencedFrameOfReferenceSequence
+      if (ReferencedFrameOfReferenceSequence) {
+        // TODO -> @dannyrb Do we augment metadata or add a (potentially large? fallback list in filterDerivedDisplaySets )
+        metadata.ReferencedSeriesSequence = _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
+          ReferencedFrameOfReferenceSequence
         );
       }
     }
@@ -82,38 +83,55 @@ const OHIFDicomRTStructSopClassHandler = {
 };
 
 function _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
-  referencedFrameOfReferenceSequence
+  ReferencedFrameOfReferenceSequence
 ) {
-  const referencedSeriesSequence = [];
+  debugger;
+  const ReferencedSeriesSequence = [];
 
-  referencedFrameOfReferenceSequence.forEach(referencedFrameOfReference => {
-    const { rtReferencedStudySequence } = referencedFrameOfReference;
+  _getSequenceAsArray(ReferencedFrameOfReferenceSequence).forEach(
+    referencedFrameOfReference => {
+      const { RTReferencedStudySequence } = referencedFrameOfReference;
 
-    rtReferencedStudySequence.forEach(rtReferencedStudy => {
-      const { rtReferencedSeriesSequence } = rtReferencedStudy;
+      _getSequenceAsArray(RTReferencedStudySequence).forEach(
+        rtReferencedStudy => {
+          const { RTReferencedSeriesSequence } = rtReferencedStudy;
 
-      rtReferencedSeriesSequence.forEach(rtReferencedSeries => {
-        const referencedInstanceSequence = [];
-        const { contourImageSequence, seriesInstanceUID } = rtReferencedSeries;
+          _getSequenceAsArray(RTReferencedSeriesSequence).forEach(
+            rtReferencedSeries => {
+              const ReferencedInstanceSequence = [];
+              const {
+                ContourImageSequence,
+                SeriesInstanceUID,
+              } = rtReferencedSeries;
 
-        contourImageSequence.forEach(contourImage => {
-          referencedInstanceSequence.push({
-            referencedSOPInstanceUID: contourImage.referencedSOPInstanceUID,
-            referencedSOPClassUID: contourImage.referencedSOPClassUID,
-          });
-        });
+              _getSequenceAsArray(ContourImageSequence).forEach(
+                contourImage => {
+                  ReferencedInstanceSequence.push({
+                    ReferencedSOPInstanceUID:
+                      contourImage.ReferencedSOPInstanceUID,
+                    ReferencedSOPClassUID: contourImage.ReferencedSOPClassUID,
+                  });
+                }
+              );
 
-        const referencedSeries = {
-          referencedSeriesInstanceUID: seriesInstanceUID,
-          referencedInstanceSequence,
-        };
+              const referencedSeries = {
+                SeriesInstanceUID,
+                ReferencedInstanceSequence,
+              };
 
-        referencedSeriesSequence.push(referencedSeries);
-      });
-    });
-  });
+              ReferencedSeriesSequence.push(referencedSeries);
+            }
+          );
+        }
+      );
+    }
+  );
 
-  return referencedSeriesSequence;
+  return ReferencedSeriesSequence;
+}
+
+function _getSequenceAsArray(sequence) {
+  return Array.isArray(sequence) ? sequence : [sequence];
 }
 
 function _getReferencedFrameOfReferenceSequence(instance) {
