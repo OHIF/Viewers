@@ -1,5 +1,6 @@
 import React from 'react';
 // Icons
+import arrowDown from './../../assets/icons/arrow-down.svg';
 import seriesActive from './../../assets/icons/series-active.svg';
 import seriesInactive from './../../assets/icons/series-inactive.svg';
 import cancel from './../../assets/icons/cancel.svg';
@@ -17,6 +18,7 @@ import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
 
 const ICONS = {
+  'arrow-down': arrowDown,
   'series-active': seriesActive,
   'series-inactive': seriesInactive,
   cancel: cancel,
