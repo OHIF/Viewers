@@ -9,6 +9,12 @@ import { ScrollableArea, TableList, Icon } from '@ohif/ui';
 import './RTPanel.css';
 import RTPanelSettings from '../RTSettings/RTSettings';
 
+const refreshViewport = () => {
+  cornerstone.getEnabledElements().forEach(enabledElement => {
+    cornerstone.updateImage(enabledElement.element);
+  });
+};
+
 /**
  * RTPanel component
  *
@@ -20,7 +26,7 @@ import RTPanelSettings from '../RTSettings/RTSettings';
  */
 const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
   const [showSettings, setShowSettings] = useState(false);
-  const configuration = cornerstoneTools.getModule('rtstruct').configuration;
+  const rtstructModule = cornerstoneTools.getModule('rtstruct');
 
   const PanelSection = ({ title }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -44,14 +50,15 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
   };
 
   const configurationChangeHandler = newConfiguration => {
-    configuration.lineWidth = newConfiguration.lineWidth;
-    configuration.opacity = newConfiguration.opacity;
+    rtstructModule.configuration.lineWidth = newConfiguration.lineWidth;
+    rtstructModule.configuration.opacity = newConfiguration.opacity;
+    refreshViewport();
   };
 
   if (showSettings) {
     return (
       <RTPanelSettings
-        configuration={configuration}
+        configuration={rtstructModule.configuration}
         onBack={() => setShowSettings(false)}
         onChange={configurationChangeHandler}
       />

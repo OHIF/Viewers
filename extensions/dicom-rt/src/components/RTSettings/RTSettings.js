@@ -5,7 +5,6 @@ import { Range } from '@ohif/ui';
 import './RTSettings.css';
 
 const RTSettings = ({ configuration, onBack, onChange }) => {
-  console.log(configuration);
   const [state, setState] = useState({
     lineWidth: configuration.lineWidth,
     opacity: configuration.opacity
