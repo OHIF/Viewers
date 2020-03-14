@@ -51,3 +51,7 @@
 .dcmrt-panel .panel-section .header .eye-icon:hover {
   color: var(--hover-color);
 }
+
+.dcmrt-panel .panel-section .header .eye-icon.expanded {
+  color: var(--active-color);
+}

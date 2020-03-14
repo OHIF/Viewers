@@ -7,6 +7,7 @@ import { utils, log } from '@ohif/core';
 import { ScrollableArea, TableList, Icon } from '@ohif/ui';
 
 import './RTPanel.css';
+import StructureSetItem from '../StructureSetItem/StructureSetItem';
 import RTPanelSettings from '../RTSettings/RTSettings';
 
 const refreshViewport = () => {
@@ -26,26 +27,48 @@ const refreshViewport = () => {
  */
 const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
   const [showSettings, setShowSettings] = useState(false);
-  const rtstructModule = cornerstoneTools.getModule('rtstruct');
+  const [structureSets, setStructureSets] = useState([1, 2, 3]);
+  const [selectedStructureSet, setSelectedStructureSet] = useState();
 
-  const PanelSection = ({ title }) => {
+  const rtstructModule = cornerstoneTools.getModule('rtstruct');
+  console.log(rtstructModule.state);
+
+  const PanelSection = ({ title, children }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     return (
       <div
         className="panel-section"
-        style={{ marginBottom: isExpanded ? 0 : 10 }}
+        style={{
+          marginBottom: isExpanded ? 0 : 10,
+          height: isExpanded ? '100%' : 'unset'
+        }}
       >
         <div className="header">
           <p>{title}</p>
           <Icon
-            className="eye-icon"
+            className={`eye-icon ${isExpanded && 'expanded'}`}
             name="eye"
             width="20px"
             height="20px"
             onClick={() => setIsExpanded(!isExpanded)}
           />
         </div>
+        {children}
       </div>
+    );
+  };
+
+  const toStructureSetItem = structureSet => {
+    const sameStructureSet = selectedStructureSet === 'identification of structure set';
+    return (
+      <StructureSetItem
+        key={1}
+        itemClass={`structure-set-item ${sameStructureSet && 'selected'}`}
+        onClick={() => setSelectedStructureSet(0)}
+        label={'test'}
+        index={1}
+        color={[221, 85, 85, 1]}
+      />
     );
   };
 
@@ -77,8 +100,20 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
           onClick={() => setShowSettings(true)}
         />
       </div>
-      <PanelSection title="My Structure Set" />
-      <PanelSection title="Other Sets" />
+      <PanelSection title="My Structure Set">
+        <ScrollableArea>
+          <TableList headless>
+            {structureSets.map(toStructureSetItem)}
+          </TableList>
+        </ScrollableArea>
+      </PanelSection>
+      <PanelSection title="Other Sets">
+        <ScrollableArea>
+          <TableList headless>
+            {structureSets.map(toStructureSetItem)}
+          </TableList>
+        </ScrollableArea>
+      </PanelSection>
     </div>
   );
 };
