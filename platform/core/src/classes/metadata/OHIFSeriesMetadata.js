@@ -18,7 +18,7 @@ export class OHIFSeriesMetadata extends SeriesMetadata {
       configurable: false,
       enumerable: false,
       writable: false,
-      value: series.seriesInstanceUid,
+      value: series.SeriesInstanceUID,
     });
 
     // populate internal list of instances...

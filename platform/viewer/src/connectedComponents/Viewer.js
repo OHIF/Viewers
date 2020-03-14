@@ -18,46 +18,31 @@ import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
 import UserManagerContext from '../context/UserManagerContext';
 
 import './Viewer.css';
-/**
- * Inits OHIF Hanging Protocol's onReady.
- * It waits for OHIF Hanging Protocol to be ready to instantiate the ProtocolEngine
- * Hanging Protocol will use OHIF LayoutManager to render viewports properly
- */
-/*const initHangingProtocol = () => {
-    // When Hanging Protocol is ready
-    HP.ProtocolStore.onReady(() => {
-
-        // Gets all StudyMetadata objects: necessary for Hanging Protocol to access study metadata
-        const studyMetadataList = OHIF.viewer.StudyMetadataList.all();
-
-        // Instantiate StudyMetadataSource: necessary for Hanging Protocol to get study metadata
-        const studyMetadataSource = new OHIF.studies.classes.OHIFStudyMetadataSource();
-
-        // Get prior studies map
-        const studyPriorsMap = OHIF.studylist.functions.getStudyPriorsMap(studyMetadataList);
-
-        // Creates Protocol Engine object with required arguments
-        const ProtocolEngine = new HP.ProtocolEngine(layoutManager, studyMetadataList, studyPriorsMap, studyMetadataSource);
-
-        // Sets up Hanging Protocol engine
-        HP.setEngine(ProtocolEngine);
-    });
-};*/
-
-/*const viewportUtils = OHIF.viewerbase.viewportUtils;
-
-OHIF.viewer.functionList = {
-    toggleCineDialog: viewportUtils.toggleCineDialog,
-    toggleCinePlay: viewportUtils.toggleCinePlay,
-    clearTools: viewportUtils.clearTools,
-    resetViewport: viewportUtils.resetViewport,
-    invert: viewportUtils.invert
-};*/
 
 class Viewer extends Component {
   static propTypes = {
-    studies: PropTypes.array,
-    studyInstanceUids: PropTypes.array,
+    studies: PropTypes.arrayOf(
+      PropTypes.shape({
+        StudyInstanceUID: PropTypes.string.isRequired,
+        StudyDate: PropTypes.string,
+        displaySets: PropTypes.arrayOf(
+          PropTypes.shape({
+            displaySetInstanceUID: PropTypes.string.isRequired,
+            SeriesDescription: PropTypes.string,
+            SeriesNumber: PropTypes.number,
+            InstanceNumber: PropTypes.number,
+            numImageFrames: PropTypes.number,
+            Modality: PropTypes.string.isRequired,
+            images: PropTypes.arrayOf(
+              PropTypes.shape({
+                getImageId: PropTypes.func.isRequired,
+              })
+            ),
+          })
+        ),
+      })
+    ),
+    studyInstanceUIDs: PropTypes.array,
     activeServer: PropTypes.shape({
       type: PropTypes.string,
       wadoRoot: PropTypes.string,
@@ -120,12 +105,12 @@ class Viewer extends Component {
     if (this.props.studies) {
       latestDate = new Date('1000-01-01').toISOString();
       this.props.studies.forEach(study => {
-        const studyDate = moment(study.studyDate, 'YYYYMMDD').toISOString();
-        if (studyDate < earliestDate) {
-          earliestDate = studyDate;
+        const StudyDate = moment(study.StudyDate, 'YYYYMMDD').toISOString();
+        if (StudyDate < earliestDate) {
+          earliestDate = StudyDate;
         }
-        if (studyDate > latestDate) {
-          latestDate = studyDate;
+        if (StudyDate > latestDate) {
+          latestDate = StudyDate;
         }
       });
     }
@@ -135,8 +120,8 @@ class Viewer extends Component {
       {
         timepointType: 'baseline',
         timepointId: 'TimepointId',
-        studyInstanceUids: this.props.studyInstanceUids,
-        patientId: filter.patientId,
+        studyInstanceUIDs: this.props.studyInstanceUIDs,
+        PatientID: filter.PatientID,
         earliestDate,
         latestDate,
         isLocked: false,
@@ -159,7 +144,7 @@ class Viewer extends Component {
     return Promise.resolve();
   };
 
-  disassociateStudy = (timepointIds, studyInstanceUid) => {
+  disassociateStudy = (timepointIds, StudyInstanceUID) => {
     OHIF.log.info('disassociateStudy');
     return Promise.resolve();
   };
@@ -194,11 +179,11 @@ class Viewer extends Component {
     this.measurementApi = measurementApi;
 
     if (studies) {
-      const patientId = studies[0] && studies[0].patientId;
+      const PatientID = studies[0] && studies[0].PatientID;
 
-      timepointApi.retrieveTimepoints({ patientId });
+      timepointApi.retrieveTimepoints({ PatientID });
       if (isStudyLoaded) {
-        this.measurementApi.retrieveMeasurements(patientId, [
+        this.measurementApi.retrieveMeasurements(PatientID, [
           currentTimepointId,
         ]);
       }
@@ -216,11 +201,11 @@ class Viewer extends Component {
       });
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
-      const patientId = studies[0] && studies[0].patientId;
+      const PatientID = studies[0] && studies[0].PatientID;
       const { currentTimepointId } = this;
 
-      this.timepointApi.retrieveTimepoints({ patientId });
-      this.measurementApi.retrieveMeasurements(patientId, [currentTimepointId]);
+      this.timepointApi.retrieveTimepoints({ PatientID });
+      this.measurementApi.retrieveMeasurements(PatientID, [currentTimepointId]);
     }
   }
 
@@ -301,14 +286,15 @@ class Viewer extends Component {
             {VisiblePanelLeft ? (
               <VisiblePanelLeft
                 viewports={this.props.viewports}
+                studies={this.props.studies}
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
-              <ConnectedStudyBrowser
-                studies={this.state.thumbnails}
-                studyMetadata={this.props.studies}
-              />
-            )}
+                <ConnectedStudyBrowser
+                  studies={this.state.thumbnails}
+                  studyMetadata={this.props.studies}
+                />
+              )}
           </SidePanel>
 
           {/* MAIN */}
@@ -320,7 +306,9 @@ class Viewer extends Component {
           <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
             {VisiblePanelRight && (
               <VisiblePanelRight
+                isOpen={this.state.isRightSidePanelOpen}
                 viewports={this.props.viewports}
+                studies={this.props.studies}
                 activeIndex={this.props.activeViewportIndex}
               />
             )}
@@ -344,23 +332,23 @@ export default withDialog(Viewer);
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function(studies) {
+const _mapStudiesToThumbnails = function (studies) {
   return studies.map(study => {
-    const { studyInstanceUid } = study;
+    const { StudyInstanceUID } = study;
 
     const thumbnails = study.displaySets.map(displaySet => {
       const {
-        displaySetInstanceUid,
-        seriesDescription,
-        seriesNumber,
-        instanceNumber,
+        displaySetInstanceUID,
+        SeriesDescription,
+        SeriesNumber,
+        InstanceNumber,
         numImageFrames,
       } = displaySet;
 
       let imageId;
       let altImageText;
 
-      if (displaySet.modality && displaySet.modality === 'SEG') {
+      if (displaySet.Modality && displaySet.Modality === 'SEG') {
         // TODO: We want to replace this with a thumbnail showing
         // the segmentation map on the image, but this is easier
         // and better than what we have right now.
@@ -370,22 +358,22 @@ const _mapStudiesToThumbnails = function(studies) {
 
         imageId = displaySet.images[imageIndex].getImageId();
       } else {
-        altImageText = displaySet.modality ? displaySet.modality : 'UN';
+        altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }
 
       return {
         imageId,
         altImageText,
-        displaySetInstanceUid,
-        seriesDescription,
-        seriesNumber,
-        instanceNumber,
+        displaySetInstanceUID,
+        SeriesDescription,
+        SeriesNumber,
+        InstanceNumber,
         numImageFrames,
       };
     });
 
     return {
-      studyInstanceUid,
+      StudyInstanceUID,
       thumbnails,
     };
   });

@@ -1,12 +1,15 @@
 import './ViewportGrid.css';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { utils } from '@ohif/core';
 //
 import ViewportPane from './ViewportPane.js';
 import DefaultViewport from './DefaultViewport.js';
 import EmptyViewport from './EmptyViewport.js';
+
+const { loadAndCacheDerivedDisplaySets } = utils;
 
 const ViewportGrid = function(props) {
   const {
@@ -30,6 +33,12 @@ const ViewportGrid = function(props) {
     return null;
   }
 
+  useEffect(() => {
+    viewportData.forEach(displaySet => {
+      loadAndCacheDerivedDisplaySets(displaySet, studies);
+    });
+  }, [viewportData]);
+
   const ViewportPanes = layout.viewports.map((layout, viewportIndex) => {
     const displaySet = viewportData[viewportIndex];
 
@@ -41,6 +50,8 @@ const ViewportGrid = function(props) {
       displaySet,
       studies,
     };
+
+    // JAMES TODO:
 
     // Use whichever plugin is currently in use in the panel
     // unless nothing is specified. If nothing is specified
@@ -69,13 +80,13 @@ const ViewportGrid = function(props) {
       <ViewportPane
         onDrop={({
           viewportIndex,
-          studyInstanceUid,
-          displaySetInstanceUid,
+          StudyInstanceUID,
+          displaySetInstanceUID,
         }) => {
           setViewportData({
             viewportIndex,
-            studyInstanceUid,
-            displaySetInstanceUid,
+            StudyInstanceUID,
+            displaySetInstanceUID,
           });
         }}
         viewportIndex={viewportIndex} // Needed by `setViewportData`

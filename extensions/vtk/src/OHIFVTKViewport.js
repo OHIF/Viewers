@@ -1,46 +1,34 @@
 import React, { Component } from 'react';
 import { getImageData, loadImageData } from 'react-vtkjs-viewport';
-
 import ConnectedVTKViewport from './ConnectedVTKViewport';
 import LoadingIndicator from './LoadingIndicator.js';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
-import handleSegmentationStorage from './handleSegmentationStorage.js';
+import cornerstoneTools from 'cornerstone-tools';
 import vtkDataArray from 'vtk.js/Sources/Common/Core/DataArray';
 import vtkImageData from 'vtk.js/Sources/Common/DataModel/ImageData';
 import vtkVolume from 'vtk.js/Sources/Rendering/Core/Volume';
 import vtkVolumeMapper from 'vtk.js/Sources/Rendering/Core/VolumeMapper';
 
+const segmentationModule = cornerstoneTools.getModule('segmentation');
+
 const { StackManager } = OHIF.utils;
-
-// Metadata configuration
-const metadataProvider = new OHIF.cornerstone.MetadataProvider();
-
-cornerstone.metaData.addProvider(
-  metadataProvider.provider.bind(metadataProvider)
-);
-
-StackManager.setMetadataProvider(metadataProvider);
-
-const SOP_CLASSES = {
-  SEGMENTATION_STORAGE: '1.2.840.10008.5.1.4.1.1.66.4',
-};
-
-const specialCaseHandlers = {};
-specialCaseHandlers[
-  SOP_CLASSES.SEGMENTATION_STORAGE
-] = handleSegmentationStorage;
 
 // TODO: Figure out where we plan to put this long term
 const volumeCache = {};
+const labelmapCache = {};
 
 /**
  * Create a labelmap image with the same dimensions as our background volume.
  *
  * @param backgroundImageData vtkImageData
  */
+/* TODO: Not currently used until we have drawing tools in vtkjs.
 function createLabelMapImageData(backgroundImageData) {
+  // TODO => Need to do something like this if we start drawing a new segmentation
+  // On a vtkjs viewport.
+
   const labelMapData = vtkImageData.newInstance(
     backgroundImageData.get('spacing', 'origin', 'direction')
   );
@@ -55,7 +43,7 @@ function createLabelMapImageData(backgroundImageData) {
   labelMapData.getPointData().setScalars(dataArray);
 
   return labelMapData;
-}
+} */
 
 class OHIFVTKViewport extends Component {
   state = {
@@ -68,15 +56,20 @@ class OHIFVTKViewport extends Component {
     viewportData: PropTypes.shape({
       studies: PropTypes.array,
       displaySet: PropTypes.shape({
-        studyInstanceUid: PropTypes.string,
-        displaySetInstanceUid: PropTypes.string,
-        sopClassUids: PropTypes.arrayOf(PropTypes.string),
-        sopInstanceUid: PropTypes.string,
+        StudyInstanceUID: PropTypes.string,
+        displaySetInstanceUID: PropTypes.string,
+        sopClassUIDs: PropTypes.arrayOf(PropTypes.string),
+        SOPInstanceUID: PropTypes.string,
         frameIndex: PropTypes.number,
       }),
     }),
     viewportIndex: PropTypes.number,
     children: PropTypes.node,
+    onScroll: PropTypes.func,
+  };
+
+  static defaultProps = {
+    onScroll: () => {},
   };
 
   static id = 'OHIFVTKViewport';
@@ -92,18 +85,18 @@ class OHIFVTKViewport extends Component {
 
   static getCornerstoneStack(
     studies,
-    studyInstanceUid,
-    displaySetInstanceUid,
-    sopInstanceUid,
+    StudyInstanceUID,
+    displaySetInstanceUID,
+    SOPInstanceUID,
     frameIndex
   ) {
     // Create shortcut to displaySet
     const study = studies.find(
-      study => study.studyInstanceUid === studyInstanceUid
+      study => study.StudyInstanceUID === StudyInstanceUID
     );
 
     const displaySet = study.displaySets.find(set => {
-      return set.displaySetInstanceUid === displaySetInstanceUid;
+      return set.displaySetInstanceUID === displaySetInstanceUID;
     });
 
     // Get stack from Stack Manager
@@ -114,17 +107,14 @@ class OHIFVTKViewport extends Component {
 
     if (frameIndex !== undefined) {
       stack.currentImageIdIndex = frameIndex;
-    } else if (sopInstanceUid) {
+    } else if (SOPInstanceUID) {
       const index = stack.imageIds.findIndex(imageId => {
-        const sopCommonModule = cornerstone.metaData.get(
-          'sopCommonModule',
+        const imageIdSOPInstanceUID = cornerstone.metaData.get(
+          'SOPInstanceUID',
           imageId
         );
-        if (!sopCommonModule) {
-          return;
-        }
 
-        return sopCommonModule.sopInstanceUID === sopInstanceUid;
+        return imageIdSOPInstanceUID === SOPInstanceUID;
       });
 
       if (index > -1) {
@@ -139,48 +129,73 @@ class OHIFVTKViewport extends Component {
 
   getViewportData = (
     studies,
-    studyInstanceUid,
-    displaySetInstanceUid,
-    sopClassUid,
-    sopInstanceUid,
+    StudyInstanceUID,
+    displaySetInstanceUID,
+    SOPClassUID,
+    SOPInstanceUID,
     frameIndex
   ) => {
     const stack = OHIFVTKViewport.getCornerstoneStack(
       studies,
-      studyInstanceUid,
-      displaySetInstanceUid,
-      sopClassUid,
-      sopInstanceUid,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      SOPClassUID,
+      SOPInstanceUID,
       frameIndex
     );
 
-    let imageDataObject;
+    const imageDataObject = getImageData(stack.imageIds, displaySetInstanceUID);
     let labelmapDataObject;
+    let labelmapColorLUT;
 
-    switch (sopClassUid) {
-      case SOP_CLASSES.SEGMENTATION_STORAGE:
-        throw new Error('Not yet implemented');
-      /*
-        const data = handleSegmentationStorage(
-          stack.imageIds,
-          displaySetInstanceUid
+    const firstImageId = stack.imageIds[0];
+    const { state } = segmentationModule;
+    const brushStackState = state.series[firstImageId];
+
+    if (brushStackState) {
+      const { activeLabelmapIndex } = brushStackState;
+      const labelmap3D = brushStackState.labelmaps3D[activeLabelmapIndex];
+
+      const vtkLabelmapID = `${firstImageId}_${activeLabelmapIndex}`;
+
+      if (labelmapCache[vtkLabelmapID]) {
+        labelmapDataObject = labelmapCache[vtkLabelmapID];
+      } else {
+        // TODO -> We need an imageId based getter in cornerstoneTools
+        const labelmapBuffer = labelmap3D.buffer;
+
+        // Create VTK Image Data with buffer as input
+        labelmapDataObject = vtkImageData.newInstance();
+
+        const dataArray = vtkDataArray.newInstance({
+          numberOfComponents: 1, // labelmap with single component
+          values: new Uint16Array(labelmapBuffer),
+        });
+
+        labelmapDataObject.getPointData().setScalars(dataArray);
+        labelmapDataObject.setDimensions(...imageDataObject.dimensions);
+        labelmapDataObject.setSpacing(
+          ...imageDataObject.vtkImageData.getSpacing()
+        );
+        labelmapDataObject.setOrigin(
+          ...imageDataObject.vtkImageData.getOrigin()
+        );
+        labelmapDataObject.setDirection(
+          ...imageDataObject.vtkImageData.getDirection()
         );
 
-        imageDataObject = data.referenceDataObject;
-        labelmapDataObject = data.labelmapDataObject;
+        // Cache the labelmap volume.
+        labelmapCache[vtkLabelmapID] = labelmapDataObject;
+      }
 
-        return loadImageData(imageDataObject).then(() => {
-          return {
-            data: imageDataObject.vtkImageData,
-            labelmap: labelmapDataObject,
-          };
-        });
-        */
-      default:
-        imageDataObject = getImageData(stack.imageIds, displaySetInstanceUid);
-
-        return imageDataObject;
+      labelmapColorLUT = state.colorLutTables[labelmap3D.colorLUTIndex];
     }
+
+    return {
+      imageDataObject,
+      labelmapDataObject,
+      labelmapColorLUT,
+    };
   };
 
   /**
@@ -189,25 +204,31 @@ class OHIFVTKViewport extends Component {
    * @param {object} imageDataObject
    * @param {object} imageDataObject.vtkImageData
    * @param {object} imageDataObject.imageMetaData0
-   * @param {number} [imageDataObject.imageMetaData0.windowWidth] - The volume's initial windowWidth
-   * @param {number} [imageDataObject.imageMetaData0.windowCenter] - The volume's initial windowCenter
-   * @param {string} imageDataObject.imageMetaData0.modality - CT, MR, PT, etc
-   * @param {string} displaySetInstanceUid
+   * @param {number} [imageDataObject.imageMetaData0.WindowWidth] - The volume's initial WindowWidth
+   * @param {number} [imageDataObject.imageMetaData0.WindowCenter] - The volume's initial WindowCenter
+   * @param {string} imageDataObject.imageMetaData0.Modality - CT, MR, PT, etc
+   * @param {string} displaySetInstanceUID
    * @returns vtkVolumeActor
    * @memberof OHIFVTKViewport
    */
-  getOrCreateVolume(imageDataObject, displaySetInstanceUid) {
-    if (volumeCache[displaySetInstanceUid]) {
-      return volumeCache[displaySetInstanceUid];
+  getOrCreateVolume(imageDataObject, displaySetInstanceUID) {
+    if (volumeCache[displaySetInstanceUID]) {
+      return volumeCache[displaySetInstanceUID];
     }
 
     const { vtkImageData, imageMetaData0 } = imageDataObject;
-    const { windowWidth, windowCenter, modality } = imageMetaData0;
+    // TODO -> Should update react-vtkjs-viewport and react-cornerstone-viewports
+    // internals to use naturalized DICOM JSON names.
+    const {
+      windowWidth: WindowWidth,
+      windowCenter: WindowCenter,
+      modality: Modality,
+    } = imageMetaData0;
 
     const { lower, upper } = _getRangeFromWindowLevels(
-      windowWidth,
-      windowCenter,
-      modality
+      WindowWidth,
+      WindowCenter,
+      Modality
     );
     const volumeActor = vtkVolume.newInstance();
     const volumeMapper = vtkVolumeMapper.newInstance();
@@ -231,7 +252,7 @@ class OHIFVTKViewport extends Component {
     // TODO: maybe we should auto adjust samples to 1000.
     volumeMapper.setMaximumSamplesPerRay(4000);
 
-    volumeCache[displaySetInstanceUid] = volumeActor;
+    volumeCache[displaySetInstanceUID] = volumeActor;
 
     return volumeActor;
   }
@@ -239,53 +260,61 @@ class OHIFVTKViewport extends Component {
   setStateFromProps() {
     const { studies, displaySet } = this.props.viewportData;
     const {
-      studyInstanceUid,
-      displaySetInstanceUid,
-      sopClassUids,
-      sopInstanceUid,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      sopClassUIDs,
+      SOPInstanceUID,
       frameIndex,
     } = displaySet;
 
-    if (sopClassUids.length > 1) {
+    if (sopClassUIDs.length > 1) {
       console.warn(
-        'More than one SOPClassUid in the same series is not yet supported.'
+        'More than one SOPClassUID in the same series is not yet supported.'
       );
     }
 
-    const sopClassUid = sopClassUids[0];
-    const imageDataObject = this.getViewportData(
+    const study = studies.find(
+      study => study.StudyInstanceUID === StudyInstanceUID
+    );
+
+    const dataDetails = {
+      studyDate: study.studyDate,
+      studyTime: study.studyTime,
+      studyDescription: study.studyDescription,
+      patientName: study.patientName,
+      patientId: study.patientId,
+      seriesNumber: String(displaySet.seriesNumber),
+      seriesDescription: displaySet.seriesDescription,
+    };
+
+    const {
+      imageDataObject,
+      labelmapDataObject,
+      labelmapColorLUT,
+    } = this.getViewportData(
       studies,
-      studyInstanceUid,
-      displaySetInstanceUid,
-      sopClassUid,
-      sopInstanceUid,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      SOPInstanceUID,
       frameIndex
     );
 
     this.imageDataObject = imageDataObject;
 
-    // TODO: Temporarily disabling this since it is not yet
-    // being used and hurts performance significantly.
-    /*if (!labelmap) {
+    /* TODO: Not currently used until we have drawing tools in vtkjs.
+    if (!labelmap) {
       labelmap = createLabelMapImageData(data);
-    }*/
+    } */
 
     const volumeActor = this.getOrCreateVolume(
       imageDataObject,
-      displaySetInstanceUid
+      displaySetInstanceUID
     );
-
-    this.setState({
-      paintFilterBackgroundImageData: imageDataObject.vtkImageData,
-      paintFilterLabelMapImageData: null, // TODO
-      percentComplete: 0,
-    });
 
     this.setState(
       {
-        paintFilterBackgroundImageData: imageDataObject.vtkImageData,
-        paintFilterLabelMapImageData: null, // TODO
         percentComplete: 0,
+        dataDetails,
       },
       () => {
         this.loadProgressively(imageDataObject);
@@ -297,6 +326,9 @@ class OHIFVTKViewport extends Component {
         setTimeout(() => {
           this.setState({
             volumes: [volumeActor],
+            paintFilterLabelMapImageData: labelmapDataObject,
+            paintFilterBackgroundImageData: imageDataObject.vtkImageData,
+            labelmapColorLUT,
           });
         }, 200);
       }
@@ -308,13 +340,13 @@ class OHIFVTKViewport extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { studies, displaySet } = this.props.viewportData;
+    const { displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
     if (
-      displaySet.displaySetInstanceUid !==
-        prevDisplaySet.displaySetInstanceUid ||
-      displaySet.sopInstanceUid !== prevDisplaySet.sopInstanceUid ||
+      displaySet.displaySetInstanceUID !==
+        prevDisplaySet.displaySetInstanceUID ||
+      displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
       this.setStateFromProps();
@@ -326,7 +358,7 @@ class OHIFVTKViewport extends Component {
 
     const { isLoading, insertPixelDataPromises } = imageDataObject;
 
-    const numberOfFrames = insertPixelDataPromises.length;
+    const NumberOfFrames = insertPixelDataPromises.length;
 
     if (!isLoading) {
       this.setState({ isLoaded: true });
@@ -336,7 +368,7 @@ class OHIFVTKViewport extends Component {
     insertPixelDataPromises.forEach(promise => {
       promise.then(numberProcessed => {
         const percentComplete = Math.floor(
-          (numberProcessed * 100) / numberOfFrames
+          (numberProcessed * 100) / NumberOfFrames
         );
 
         if (percentComplete !== this.state.percentComplete) {
@@ -348,12 +380,15 @@ class OHIFVTKViewport extends Component {
     });
 
     Promise.all(insertPixelDataPromises).then(() => {
-      this.setState({ isLoaded: true });
+      this.setState({
+        isLoaded: true,
+      });
     });
   }
 
   render() {
     let childrenWithProps = null;
+    const { configuration } = segmentationModule;
 
     // TODO: Does it make more sense to use Context?
     if (this.props.children && this.props.children.length) {
@@ -369,6 +404,10 @@ class OHIFVTKViewport extends Component {
     }
 
     const style = { width: '100%', height: '100%', position: 'relative' };
+
+    const visible = configuration.renderFill || configuration.renderOutline;
+    const opacity = configuration.fillAlpha;
+    const outlineThickness = configuration.outlineThickness;
 
     return (
       <>
@@ -386,6 +425,15 @@ class OHIFVTKViewport extends Component {
                 this.state.paintFilterBackgroundImageData
               }
               viewportIndex={this.props.viewportIndex}
+              dataDetails={this.state.dataDetails}
+              labelmapRenderingOptions={{
+                colorLUT: this.state.labelmapColorLUT,
+                globalOpacity: opacity,
+                visible,
+                outlineThickness,
+                renderOutline: true,
+              }}
+              onScroll={this.props.onScroll}
             />
           )}
         </div>
@@ -403,19 +451,19 @@ class OHIFVTKViewport extends Component {
  * @private
  * @param {number} [width] - the width of our window
  * @param {number} [center] - the center of our window
- * @param {string} [modality] - 'PT', 'CT', etc.
+ * @param {string} [Modality] - 'PT', 'CT', etc.
  * @returns { lower, upper } - range
  */
-function _getRangeFromWindowLevels(width, center, modality = undefined) {
+function _getRangeFromWindowLevels(width, center, Modality = undefined) {
+  // For PET just set the range to 0-5 SUV
+  if (Modality === 'PT') {
+    return { lower: 0, upper: 5 };
+  }
+
   const levelsAreNotNumbers = isNaN(center) || isNaN(width);
 
   if (levelsAreNotNumbers) {
     return { lower: 0, upper: 512 };
-  }
-
-  // For PET just set the range to 0-5 SUV
-  if (modality === 'PT') {
-    return { lower: 0, upper: 5 };
   }
 
   return {

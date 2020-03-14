@@ -17,8 +17,8 @@ const mapStateToProps = (state, ownProps) => {
 
   studiesWithLoadingData.forEach(study => {
     study.thumbnails.forEach(data => {
-      const { displaySetInstanceUid } = data;
-      const stackId = `StackProgress:${displaySetInstanceUid}`;
+      const { displaySetInstanceUID } = data;
+      const stackId = `StackProgress:${displaySetInstanceUID}`;
       const stackProgressData = stackLoadingProgressMap[stackId];
 
       let stackPercentComplete = 0;
@@ -37,9 +37,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onThumbnailClick: displaySetInstanceUid => {
+    onThumbnailClick: displaySetInstanceUID => {
       const displaySet = ownProps.studyMetadata[0].displaySets.find(
-        ds => ds.displaySetInstanceUid === displaySetInstanceUid
+        ds => ds.displaySetInstanceUID === displaySetInstanceUID
       );
 
       dispatch(setActiveViewportSpecificData(displaySet));

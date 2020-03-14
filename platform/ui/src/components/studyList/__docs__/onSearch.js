@@ -4,9 +4,9 @@ export default function(searchData) {
   this.setState({ searchData });
 
   const filter = (key, searchData, study) => {
-    if (key === 'studyDateFrom' && searchData[key] && study['studyDate']) {
-      const studyDate = moment(study['studyDate'], 'YYYYMMDD');
-      return studyDate.isBetween(
+    if (key === 'studyDateFrom' && searchData[key] && study['StudyDate']) {
+      const StudyDate = moment(study['StudyDate'], 'YYYYMMDD');
+      return StudyDate.isBetween(
         searchData['studyDateFrom'],
         searchData['studyDateTo'],
         'days',
@@ -25,11 +25,11 @@ export default function(searchData) {
   let filteredStudies = this.defaultStudies
     .filter(function(study) {
       const all = [
-        'patientName',
-        'patientId',
-        'accessionNumber',
+        'PatientName',
+        'PatientID',
+        'AccessionNumber',
         'modalities',
-        'studyDescription',
+        'StudyDescription',
         'studyDateFrom',
       ].every(key => {
         return filter(key, searchData, study);

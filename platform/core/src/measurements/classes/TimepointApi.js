@@ -55,7 +55,7 @@ export default class TimepointApi {
     });
     const filteredTimepoints = sortedTimepoints.find(
       tp =>
-        tp.patientId === timepoint.patientId &&
+        tp.PatientID === timepoint.PatientID &&
         tp.timepointType === timepoint.timepointType
     );
 
@@ -129,14 +129,14 @@ export default class TimepointApi {
     );
   }
 
-  disassociateStudy(timepointIds, studyInstanceUid) {
+  disassociateStudy(timepointIds, StudyInstanceUID) {
     const disassociateFn = configuration.dataExchange.disassociate;
     if (typeof disassociateFn !== 'function') {
       log.error('Study disassociate function has not been configured.');
       return;
     }
 
-    disassociateFn(timepointIds, studyInstanceUid).then(() => {
+    disassociateFn(timepointIds, StudyInstanceUID).then(() => {
       log.info('Disassociation completed');
 
       this.timepoints = [];
@@ -510,9 +510,9 @@ export default class TimepointApi {
   }
 
   // Return only the timepoints for the given study
-  study(studyInstanceUid) {
+  study(StudyInstanceUID) {
     return this.all().filter(timepoint =>
-      timepoint.studyInstanceUids.includes(studyInstanceUid)
+      timepoint.studyInstanceUIDs.includes(StudyInstanceUID)
     );
   }
 

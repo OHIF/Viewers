@@ -10,6 +10,7 @@ import {
   SET_VIEWPORT_ACTIVE,
   SET_VIEWPORT_LAYOUT,
   SET_VIEWPORT_LAYOUT_AND_DATA,
+  SET_USER_PREFERENCES,
 } from './constants/ActionTypes.js';
 
 /**
@@ -89,7 +90,7 @@ export const clearStudyLoadingProgress = progressId => ({
 });
 
 export const setUserPreferences = state => ({
-  type: 'SET_USER_PREFERENCES',
+  type: SET_USER_PREFERENCES,
   state,
 });
 
@@ -109,9 +110,9 @@ export const setMeasurements = state => ({
   state,
 });
 
-export const setStudyData = (studyInstanceUid, data) => ({
+export const setStudyData = (StudyInstanceUID, data) => ({
   type: 'SET_STUDY_DATA',
-  studyInstanceUid,
+  StudyInstanceUID,
   data,
 });
 

@@ -1,6 +1,5 @@
 .RoundedButtonGroup {
   --height: 25px;
-
   position: relative;
   z-index: 0;
 }
@@ -37,18 +36,17 @@
   z-index: 1;
 }
 
-.roundedButtonWrapper
-  .roundedButton
-  svg
-  .roundedButtonWrapper
-  .roundedButton
-  span {
+.roundedButtonWrapper .roundedButton svg .roundedButtonWrapper .roundedButton span {
   margin: 0 2px;
 }
 
 .roundedButtonWrapper .roundedButton i {
   line-height: 15px;
   font-size: 15px;
+}
+
+.roundedButtonWrapper .bottomLabel {
+  padding: 0 10px 0 10px;
 }
 
 .bottomLabel {

@@ -1,4 +1,5 @@
 import '@percy/cypress';
+import 'cypress-file-upload';
 import { DragSimulator } from '../helpers/DragSimulator.js';
 import {
   initCornerstoneToolsAliases,
@@ -8,6 +9,7 @@ import {
   initStudyListAliasesOnDesktop,
   initStudyListAliasesOnTablet,
   initPreferencesModalAliases,
+  initPreferencesModalFooterBtnAliases,
 } from './aliases.js';
 
 // ***********************************************
@@ -41,31 +43,35 @@ import {
  *
  * @param {string} PatientName - Patient name that we would like to search for
  */
-Cypress.Commands.add('openStudy', patientName => {
+Cypress.Commands.add('openStudy', PatientName => {
   cy.openStudyList();
-  cy.get('#filter-patientNameOrId').type(patientName);
+  cy.get('#filter-patientNameOrId').type(PatientName);
   cy.wait('@getStudies');
   cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
-    .contains(patientName)
+    .contains(PatientName)
     .first()
     .click({ force: true });
 });
 
+Cypress.Commands.add('openStudyInViewer', StudyInstanceUID => {
+  cy.visit(`/viewer/${StudyInstanceUID}`);
+});
+
 /**
- * Command to search for a modality and open the study.
+ * Command to search for a Modality and open the study.
  *
- * @param {string} modality - Modality type that we would like to search for
+ * @param {string} Modality - Modality type that we would like to search for
  */
-Cypress.Commands.add('openStudyModality', modality => {
+Cypress.Commands.add('openStudyModality', Modality => {
   cy.initRouteAliases();
   cy.visit('/');
 
   cy.get('#filter-accessionOrModalityOrDescription')
-    .type(modality)
+    .type(Modality)
     .wait(2000);
 
   cy.get('[data-cy="study-list-results"]')
-    .contains(modality)
+    .contains(Modality)
     .first()
     .click();
 });
@@ -168,13 +174,13 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy=thumbnail-list]', { timeout: 20000 }).should($itemList => {
+  cy.get('[data-cy=thumbnail-list]', { timeout: 50000 }).should($itemList => {
     expect($itemList.length >= seriesToWait).to.be.true;
   });
 });
 
 //Command to wait DICOM image to load into the viewport
-Cypress.Commands.add('waitDicomImage', (timeout = 20000) => {
+Cypress.Commands.add('waitDicomImage', (timeout = 50000) => {
   const loaded = cy.isPageLoaded();
 
   if (loaded) {
@@ -268,6 +274,16 @@ Cypress.Commands.add('initRouteAliases', () => {
 //Initialize aliases for VTK tools
 Cypress.Commands.add('initVTKToolsAliases', () => {
   initVTKToolsAliases();
+});
+
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliasesOnDesktop', () => {
+  initStudyListAliasesOnDesktop();
+});
+
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliasesOnTablet', () => {
+  initStudyListAliasesOnTablet();
 });
 
 //Initialize aliases for Study List page elements
@@ -440,6 +456,12 @@ Cypress.Commands.add('openPreferences', () => {
   });
 });
 
+Cypress.Commands.add('changePreferencesTab', tabAlias => {
+  cy.initPreferencesModalAliases();
+  cy.get(tabAlias).click();
+  initPreferencesModalFooterBtnAliases();
+});
+
 Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
   // Open User Preferences modal
   cy.openPreferences();
@@ -456,7 +478,7 @@ Cypress.Commands.add(
   (function_label, shortcut) => {
     // Within scopes all `.get` and `.contains` to within the matched elements
     // dom instead of checking from document
-    cy.get('.HotKeysPreferences')
+    cy.get('.HotkeysPreferences')
       .within(() => {
         cy.contains(function_label) // label we're looking for
           .parent()
@@ -486,16 +508,16 @@ Cypress.Commands.add('setLanguage', (language, save = true) => {
     .click()
     .should('have.class', 'active');
 
+  initPreferencesModalFooterBtnAliases();
+
   // Language dropdown should be displayed
   cy.get('#language-select').should('be.visible');
 
   // Select Language and Save/Cancel
-  cy.get('#language-select')
-    .select(language)
-    .then(() => {
-      const toClick = save ? '@saveBtn' : '@cancelBtn';
-      cy.get(toClick)
-        .scrollIntoView()
-        .click();
-    });
+  cy.get('#language-select').select(language);
+
+  const toClick = save ? '@saveBtn' : '@cancelBtn';
+  cy.get(toClick)
+    .scrollIntoView()
+    .click();
 });

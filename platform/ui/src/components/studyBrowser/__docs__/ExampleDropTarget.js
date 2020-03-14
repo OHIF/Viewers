@@ -18,7 +18,7 @@ const divTarget = {
     component.setState({
       item: {
         id: item.id,
-        seriesDescription: item.seriesDescription,
+        SeriesDescription: item.SeriesDescription,
       },
     });
     return { id: 'ExampleDropTarget' };

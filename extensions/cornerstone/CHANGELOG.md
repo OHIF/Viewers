@@ -3,6 +3,88 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.5.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.4.3...@ohif/extension-cornerstone@2.5.0) (2020-03-13)
+
+
+### Features
+
+* Segmentations Settings UI - Phase 1 [#1391](https://github.com/OHIF/Viewers/issues/1391) ([#1392](https://github.com/OHIF/Viewers/issues/1392)) ([e8842cf](https://github.com/OHIF/Viewers/commit/e8842cf8aebde98db7fc123e4867c8288552331f)), closes [#1423](https://github.com/OHIF/Viewers/issues/1423)
+
+
+
+
+
+## [2.4.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.4.2...@ohif/extension-cornerstone@2.4.3) (2020-03-09)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+## [2.4.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.4.1...@ohif/extension-cornerstone@2.4.2) (2020-03-09)
+
+
+### Bug Fixes
+
+* Remove Eraser and ROI Window ([6c950a9](https://github.com/OHIF/Viewers/commit/6c950a9669f7fbf3c46e48679fa26ee514824156))
+
+
+
+
+
+## [2.4.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.4.0...@ohif/extension-cornerstone@2.4.1) (2020-03-03)
+
+
+### Bug Fixes
+
+* bump react-cornerstone-viewport version to address critical issue ([#1473](https://github.com/OHIF/Viewers/issues/1473)) ([ee80e02](https://github.com/OHIF/Viewers/commit/ee80e026610442e94caf5e4e3e4d193220cd0ece))
+
+
+
+
+
+# [2.4.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.3.1...@ohif/extension-cornerstone@2.4.0) (2020-02-20)
+
+
+### Features
+
+* [#1342](https://github.com/OHIF/Viewers/issues/1342) - Window level tab ([#1429](https://github.com/OHIF/Viewers/issues/1429)) ([ebc01a8](https://github.com/OHIF/Viewers/commit/ebc01a8ca238d5a3437b44d81f75aa8a5e8d0574))
+
+
+
+
+
+## [2.3.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.3.0...@ohif/extension-cornerstone@2.3.1) (2020-02-14)
+
+
+### Bug Fixes
+
+* Creating 2 commands to activate zoom tool and also to move between displaySets ([#1446](https://github.com/OHIF/Viewers/issues/1446)) ([06a4af0](https://github.com/OHIF/Viewers/commit/06a4af06faaecf6fa06ccd90cdfa879ee8d53053))
+
+
+
+
+
+# [2.3.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.2.2...@ohif/extension-cornerstone@2.3.0) (2020-02-10)
+
+
+### Features
+
+* 🎸 MeasurementService ([#1314](https://github.com/OHIF/Viewers/issues/1314)) ([0c37a40](https://github.com/OHIF/Viewers/commit/0c37a406d963569af8c3be24c697dafd42712dfc))
+
+
+
+
+
+## [2.2.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.2.1...@ohif/extension-cornerstone@2.2.2) (2020-01-28)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 ## [2.2.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.2.0...@ohif/extension-cornerstone@2.2.1) (2019-12-20)
 
 

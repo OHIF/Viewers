@@ -4,25 +4,25 @@ export const studies = [
       {
         imageSrc:
           'https://raw.githubusercontent.com/crowds-cure/cancer/master/public/screenshots/Anti-PD-1_Lung.jpg',
-        seriesDescription: 'Anti-PD-1_Lung',
+        SeriesDescription: 'Anti-PD-1_Lung',
         active: true,
-        seriesNumber: '2',
+        SeriesNumber: '2',
         numImageFrames: 512,
         stackPercentComplete: 30,
       },
       {
         imageSrc:
           'https://raw.githubusercontent.com/crowds-cure/cancer/master/public/screenshots/Anti-PD-1_MELANOMA.jpg',
-        seriesDescription: 'Anti-PD-1_MELANOMA',
-        seriesNumber: '2',
-        instanceNumber: '1',
+        SeriesDescription: 'Anti-PD-1_MELANOMA',
+        SeriesNumber: '2',
+        InstanceNumber: '1',
         numImageFrames: 256,
         stackPercentComplete: 70,
       },
       {
         altImageText: 'SR',
-        seriesDescription: 'Imaging Measurement Report',
-        seriesNumber: '3',
+        SeriesDescription: 'Imaging Measurement Report',
+        SeriesNumber: '3',
         stackPercentComplete: 100,
       },
     ],
@@ -32,34 +32,34 @@ export const studies = [
       {
         imageSrc:
           'https://raw.githubusercontent.com/crowds-cure/cancer/master/public/screenshots/CPTAC-GBM.jpg',
-        seriesDescription: 'CPTAC-GBM',
+        SeriesDescription: 'CPTAC-GBM',
         active: true,
-        seriesNumber: '2',
+        SeriesNumber: '2',
         numImageFrames: 512,
         stackPercentComplete: 100,
       },
       {
         imageSrc:
           'https://raw.githubusercontent.com/crowds-cure/cancer/master/public/screenshots/CPTAC-CM.jpg',
-        seriesDescription: 'CPTAC-CM',
-        seriesNumber: '2',
-        instanceNumber: '1',
+        SeriesDescription: 'CPTAC-CM',
+        SeriesNumber: '2',
+        InstanceNumber: '1',
         numImageFrames: 256,
       },
       {
         imageSrc:
           'https://raw.githubusercontent.com/crowds-cure/cancer/master/public/screenshots/CPTAC-HNSCC.jpg',
-        seriesDescription: 'CPTAC-HNSCC',
-        seriesNumber: '2',
-        instanceNumber: '1',
+        SeriesDescription: 'CPTAC-HNSCC',
+        SeriesNumber: '2',
+        InstanceNumber: '1',
         numImageFrames: 256,
       },
       {
         imageSrc:
           'https://raw.githubusercontent.com/crowds-cure/cancer/master/public/screenshots/CPTAC-LSCC.jpg',
-        seriesDescription: 'CPTAC-LSCC',
-        seriesNumber: '2',
-        instanceNumber: '1',
+        SeriesDescription: 'CPTAC-LSCC',
+        SeriesNumber: '2',
+        InstanceNumber: '1',
         numImageFrames: 256,
       },
     ],

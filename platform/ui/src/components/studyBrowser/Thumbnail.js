@@ -7,12 +7,12 @@ import classNames from 'classnames';
 import './Thumbnail.styl';
 
 function ThumbnailFooter({
-  seriesDescription,
-  seriesNumber,
-  instanceNumber,
+  SeriesDescription,
+  SeriesNumber,
+  InstanceNumber,
   numImageFrames,
 }) {
-  const infoOnly = !seriesDescription;
+  const infoOnly = !SeriesDescription;
 
   const getInfo = (value, icon, className = '') => {
     return (
@@ -23,18 +23,18 @@ function ThumbnailFooter({
     );
   };
   const getSeriesInformation = (
-    seriesNumber,
-    instanceNumber,
+    SeriesNumber,
+    InstanceNumber,
     numImageFrames
   ) => {
-    if (!seriesNumber && !instanceNumber && !numImageFrames) {
+    if (!SeriesNumber && !InstanceNumber && !numImageFrames) {
       return;
     }
 
     return (
       <div className="series-information">
-        {getInfo(seriesNumber, 'S:')}
-        {getInfo(instanceNumber, 'I:')}
+        {getInfo(SeriesNumber, 'S:')}
+        {getInfo(InstanceNumber, 'I:')}
         {getInfo(numImageFrames, '', 'image-frames')}
       </div>
     );
@@ -42,8 +42,8 @@ function ThumbnailFooter({
 
   return (
     <div className={classNames('series-details', { 'info-only': infoOnly })}>
-      <div className="series-description">{seriesDescription}</div>
-      {getSeriesInformation(seriesNumber, instanceNumber, numImageFrames)}
+      <div className="series-description">{SeriesDescription}</div>
+      {getSeriesInformation(SeriesNumber, InstanceNumber, numImageFrames)}
     </div>
   );
 }
@@ -53,15 +53,15 @@ function Thumbnail(props) {
     active,
     altImageText,
     error,
-    displaySetInstanceUid,
+    displaySetInstanceUID,
     imageId,
     imageSrc,
-    instanceNumber,
+    InstanceNumber,
     numImageFrames,
-    seriesDescription,
-    seriesNumber,
+    SeriesDescription,
+    SeriesNumber,
     stackPercentComplete,
-    studyInstanceUid,
+    StudyInstanceUID,
     onClick,
     onDoubleClick,
     onMouseDown,
@@ -72,8 +72,8 @@ function Thumbnail(props) {
     // `droppedItem` in `dropTarget`
     // The only data it will have access to
     item: {
-      studyInstanceUid,
-      displaySetInstanceUid,
+      StudyInstanceUID,
+      displaySetInstanceUID,
       type: 'thumbnail', // Has to match `dropTarget`'s type
     },
     canDrag: function(monitor) {
@@ -117,8 +117,8 @@ const noop = () => {};
 Thumbnail.propTypes = {
   supportsDrag: PropTypes.bool,
   id: PropTypes.string.isRequired,
-  displaySetInstanceUid: PropTypes.string.isRequired,
-  studyInstanceUid: PropTypes.string.isRequired,
+  displaySetInstanceUID: PropTypes.string.isRequired,
+  StudyInstanceUID: PropTypes.string.isRequired,
   imageSrc: PropTypes.string,
   imageId: PropTypes.string,
   error: PropTypes.bool,
@@ -130,9 +130,9 @@ It will be displayed inside the <div>. This is useful when it is difficult
   to make a preview for a type of DICOM series (e.g. DICOM-SR)
   */
   altImageText: PropTypes.string,
-  seriesDescription: PropTypes.string,
-  seriesNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  instanceNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  SeriesDescription: PropTypes.string,
+  SeriesNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  InstanceNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   numImageFrames: PropTypes.number,
   onDoubleClick: PropTypes.func,
   onClick: PropTypes.func,

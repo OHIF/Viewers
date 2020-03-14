@@ -1,6 +1,6 @@
 import * as dcmjs from 'dcmjs';
 
-import findInstanceMetadataBySopInstanceUid from './utils/findInstanceMetadataBySopInstanceUid';
+import findInstanceMetadataBySopInstanceUID from './utils/findInstanceMetadataBySopInstanceUid';
 
 /**
  * Function to parse the part10 array buffer that comes from a DICOM Structured report into measurementData
@@ -13,6 +13,7 @@ import findInstanceMetadataBySopInstanceUid from './utils/findInstanceMetadataBy
  */
 const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
   // Get the dicom data as an Object
+
   const dicomData = dcmjs.data.DicomMessage.readFile(part10SRArrayBuffer);
   const dataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(
     dicomData.dict
@@ -30,17 +31,18 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
     measurementData[toolName] = [];
 
     measurements.forEach(measurement => {
-      const instanceMetadata = findInstanceMetadataBySopInstanceUid(
+      const instanceMetadata = findInstanceMetadataBySopInstanceUID(
         displaySets,
         measurement.sopInstanceUid
       );
+
       const { _study: study, _series: series } = instanceMetadata;
-      const { studyInstanceUid, patientId } = study;
-      const { seriesInstanceUid } = series;
+      const { StudyInstanceUID, PatientID } = study;
+      const { SeriesInstanceUID } = series;
       const { sopInstanceUid, frameIndex } = measurement;
       const imagePath = getImagePath(
-        studyInstanceUid,
-        seriesInstanceUid,
+        StudyInstanceUID,
+        SeriesInstanceUID,
         sopInstanceUid,
         frameIndex
       );
@@ -56,9 +58,10 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
       const toolData = Object.assign({}, measurement, {
         imageId,
         imagePath,
-        seriesInstanceUid,
-        studyInstanceUid,
-        patientId,
+        SOPInstanceUID: sopInstanceUid,
+        SeriesInstanceUID,
+        StudyInstanceUID,
+        PatientID,
         measurementNumber: ++measurementNumber,
         timepointId: currentTimepointId,
         toolType: toolName,
@@ -75,19 +78,19 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
 /**
  * Function to create imagePath with all imageData related
  *
- * @param {string} studyInstanceUid
- * @param {string} seriesInstanceUid
- * @param {string} sopInstanceUid
+ * @param {string} StudyInstanceUID
+ * @param {string} SeriesInstanceUID
+ * @param {string} SOPInstanceUID
  * @param {string} frameIndex
  * @returns
  */
 const getImagePath = (
-  studyInstanceUid,
-  seriesInstanceUid,
-  sopInstanceUid,
+  StudyInstanceUID,
+  SeriesInstanceUID,
+  SOPInstanceUID,
   frameIndex
 ) => {
-  return [studyInstanceUid, seriesInstanceUid, sopInstanceUid, frameIndex].join(
+  return [StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, frameIndex].join(
     '_'
   );
 };
