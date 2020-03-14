@@ -39,12 +39,12 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
       <div
         className="panel-section"
         style={{
-          marginBottom: isExpanded ? 0 : 10,
+          marginBottom: isExpanded ? 0 : 2,
           height: isExpanded ? '100%' : 'unset'
         }}
       >
         <div className="header">
-          <p>{title}</p>
+          <div>{title}</div>
           <Icon
             className={`eye-icon ${isExpanded && 'expanded'}`}
             name="eye"
@@ -59,7 +59,7 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
   };
 
   const toStructureSetItem = structureSet => {
-    const sameStructureSet = selectedStructureSet === 'identification of structure set';
+    const sameStructureSet = selectedStructureSet === 'id of structure set';
     return (
       <StructureSetItem
         key={1}

@@ -20,6 +20,17 @@ const RTSettings = ({ configuration, onBack, onChange }) => {
     setState(state => ({ ...state, [field]: value }));
   };
 
+  const SettingsSection = ({ title, children }) => {
+    return (
+      <div className="settings-section">
+        <div className="header">{title}</div>
+        <div className="content">
+          {children}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="dcmrt-settings">
       <div className="settings-title">
@@ -28,26 +39,31 @@ const RTSettings = ({ configuration, onBack, onChange }) => {
           Back
         </button>
       </div>
-      <div className="range">
-        <label htmlFor="range">Opacity</label>
-        <Range
-          step={1}
-          min={0}
-          max={100}
-          value={state.opacity * 100}
-          onChange={event => save('opacity', toFloat(event.target.value))}
-        />
-      </div>
-      <div className="range">
-        <label htmlFor="range">Width</label>
-        <Range
-          step={1}
-          min={1}
-          max={5}
-          value={state.lineWidth}
-          onChange={event => save('lineWidth', parseInt(event.target.value))}
-        />
-      </div>
+
+      <SettingsSection title="Segment Outline">
+        <div className="range">
+          <label htmlFor="range">Opacity</label>
+          <Range
+            showPercentage
+            step={1}
+            min={0}
+            max={100}
+            value={state.opacity * 100}
+            onChange={event => save('opacity', toFloat(event.target.value))}
+          />
+        </div>
+        <div className="range">
+          <label htmlFor="range">Width</label>
+          <Range
+            showValue
+            step={1}
+            min={1}
+            max={5}
+            value={state.lineWidth}
+            onChange={event => save('lineWidth', parseInt(event.target.value))}
+          />
+        </div>
+      </SettingsSection>
     </div>
   );
 };

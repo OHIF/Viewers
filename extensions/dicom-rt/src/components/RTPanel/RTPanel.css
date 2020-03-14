@@ -40,7 +40,7 @@
   background-color: var(--ui-gray-dark);
   border-radius: 5px;
   font-weight: bold;
-  padding: 0 20px 0 20px;
+  padding: 10px 15px;
 }
 
 .dcmrt-panel .panel-section .header .eye-icon {
