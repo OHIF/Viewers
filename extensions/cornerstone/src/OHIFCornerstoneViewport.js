@@ -4,18 +4,8 @@ import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
-import handleSegmentationStorage from './handleSegmentationStorage.js';
 
 const { StackManager } = OHIF.utils;
-
-const SOP_CLASSES = {
-  SEGMENTATION_STORAGE: '1.2.840.10008.5.1.4.1.1.66.4',
-};
-
-const specialCaseHandlers = {};
-specialCaseHandlers[
-  SOP_CLASSES.SEGMENTATION_STORAGE
-] = handleSegmentationStorage;
 
 class OHIFCornerstoneViewport extends Component {
   state = {
@@ -124,42 +114,24 @@ class OHIFCornerstoneViewport extends Component {
     studies,
     StudyInstanceUID,
     displaySetInstanceUID,
-    SOPClassUID,
     SOPInstanceUID,
     frameIndex
   ) => {
     let viewportData;
 
-    switch (SOPClassUID) {
-      case SOP_CLASSES.SEGMENTATION_STORAGE:
-        const specialCaseHandler =
-          specialCaseHandlers[SOP_CLASSES.SEGMENTATION_STORAGE];
+    const stack = OHIFCornerstoneViewport.getCornerstoneStack(
+      studies,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      SOPInstanceUID,
+      frameIndex
+    );
 
-        viewportData = await specialCaseHandler(
-          studies,
-          StudyInstanceUID,
-          displaySetInstanceUID,
-          SOPInstanceUID,
-          frameIndex
-        );
-        break;
-      default:
-        const stack = OHIFCornerstoneViewport.getCornerstoneStack(
-          studies,
-          StudyInstanceUID,
-          displaySetInstanceUID,
-          SOPInstanceUID,
-          frameIndex
-        );
-
-        viewportData = {
-          StudyInstanceUID,
-          displaySetInstanceUID,
-          stack,
-        };
-
-        break;
-    }
+    viewportData = {
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      stack,
+    };
 
     return viewportData;
   };
@@ -184,13 +156,10 @@ class OHIFCornerstoneViewport extends Component {
       );
     }
 
-    const SOPClassUID = sopClassUIDs && sopClassUIDs[0];
-
     this.getViewportData(
       studies,
       StudyInstanceUID,
       displaySetInstanceUID,
-      SOPClassUID,
       SOPInstanceUID,
       frameIndex
     ).then(viewportData => {
@@ -205,7 +174,7 @@ class OHIFCornerstoneViewport extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { studies, displaySet } = this.props.viewportData;
+    const { displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
     if (

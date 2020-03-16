@@ -3,11 +3,18 @@ describe('OHIF Study Viewer Page', function() {
     cy.location('pathname').then($url => {
       cy.log($url);
       if ($url == 'blank' || !$url.includes('/viewer/')) {
-        cy.openStudy('MISTER^MR');
+        cy.openStudyInViewer(
+          '1.2.840.113619.2.5.1762583153.215519.978957063.78'
+        );
         cy.waitDicomImage();
       }
       cy.expectMinimumThumbnails(5);
     });
+
+    // before(function() {
+    //   cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
+    //   cy.waitDicomImage();
+    //   cy.expectMinimumThumbnails(6);
   });
 
   beforeEach(function() {
@@ -108,10 +115,11 @@ describe('OHIF Study Viewer Page', function() {
       })
       .trigger('mouseup', x1, y1, {
         which: 3,
+      })
+      .then(() => {
+        //Contextmenu is visible
+        cy.get('.ToolContextMenu').should('be.visible');
       });
-
-    //Contextmenu is visible
-    cy.get('.ToolContextMenu').should('be.visible');
 
     //Click "Delete measurement"
     cy.get('.form-action')

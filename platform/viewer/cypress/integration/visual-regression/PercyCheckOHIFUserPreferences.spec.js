@@ -1,4 +1,4 @@
-describe('Visual Regression - OHIF User Preferences', () => {
+describe.skip('Visual Regression - OHIF User Preferences', () => {
   context('Study List Page', function() {
     before(() => {
       cy.visit('/');
@@ -51,7 +51,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
 
   context('Study Viewer Page', function() {
     before(() => {
-      cy.openStudy('MISTER^MR');
+      cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
       cy.expectMinimumThumbnails(5);
     });
 

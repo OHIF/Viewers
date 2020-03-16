@@ -3,11 +3,17 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.location('pathname').then($url => {
       cy.log($url);
       if ($url == 'blank' || !$url.includes('/viewer/')) {
-        cy.openStudy('MISTER^MR');
+        cy.openStudyInViewer(
+          '1.2.840.113619.2.5.1762583153.215519.978957063.78'
+        );
         cy.waitDicomImage();
       }
       cy.expectMinimumThumbnails(5);
     });
+
+    // cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
+    // cy.waitDicomImage();
+    // cy.expectMinimumThumbnails(5);
   });
 
   beforeEach(() => {
@@ -147,7 +153,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
         cy.get('.measurementItem')
           .its('length')
-          .should('be.eq', 1);
+          .should('be.at.least', 1);
 
         cy.wrap($measurementsBtn).click();
       });
@@ -175,7 +181,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
         cy.get('.measurementItem')
           .its('length')
-          .should('be.eq', 1);
+          .should('be.at.least', 1);
 
         cy.wrap($measurementsBtn).click();
       });
@@ -205,10 +211,11 @@ describe('OHIF Cornerstone Toolbar', () => {
       .should('be.visible');
 
     //Test PLAY button
-    cy.get('[title="Play / Stop"]')
-      .click()
-      .wait(100)
-      .click();
+    cy.get('[title="Play / Stop"]').then($btn => {
+      $btn.click();
+      cy.wait(100);
+      $btn.click();
+    });
 
     let expectedText = 'Img: 1 1/26';
     cy.get('@viewportInfoBottomLeft', { timeout: 15000 }).should(
@@ -256,9 +263,12 @@ describe('OHIF Cornerstone Toolbar', () => {
     );
 
     //Click on Cine button
-    cy.get('@cineBtn').click();
-    //Vefiry if cine control overlay is hidden
-    cy.get('@cineControls').should('not.be.visible');
+    cy.get('@cineBtn')
+      .click()
+      .then(() => {
+        //Vefiry if cine control overlay is hidden
+        cy.get('@cineControls').should('not.be.visible');
+      });
   });
 
   it('checks if More button will prompt a modal with secondary tools', () => {
@@ -402,7 +412,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@measurementsBtn').click();
     cy.get('.measurementItem')
       .its('length')
-      .should('be.eq', 2);
+      .should('be.at.least', 2);
 
     //Click on More button
     cy.get('@moreBtn').click();

@@ -3,11 +3,17 @@ describe('OHIF Cornerstone Hotkeys', () => {
     cy.location('pathname').then($url => {
       cy.log($url);
       if ($url == 'blank' || !$url.includes('/viewer/')) {
-        cy.openStudy('MISTER^MR');
+        cy.openStudyInViewer(
+          '1.2.840.113619.2.5.1762583153.215519.978957063.78'
+        );
         cy.waitDicomImage();
       }
       cy.expectMinimumThumbnails(5);
     });
+
+    // cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
+    // cy.waitDicomImage();
+    // cy.expectMinimumThumbnails(3);
   });
 
   beforeEach(() => {
@@ -131,6 +137,9 @@ describe('OHIF Cornerstone Hotkeys', () => {
     cy.get('@viewport2InfoMidLeft').should('contains.text', 'A');
     cy.get('@viewport2InfoMidTop').should('contains.text', 'H');
     cy.get('@viewport2InfoBottomRight').should('contains.text', 'Zoom: 45%');
+
+    //Select viewport layout (1,1)
+    cy.setLayout(1, 1);
   });
 
   //TO-DO: This test is blocked by issue #1095 (https://github.com/OHIF/Viewers/issues/1095)

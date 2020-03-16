@@ -1,4 +1,4 @@
-describe('Visual Regression - OHIF VTK Extension', () => {
+describe.skip('Visual Regression - OHIF VTK Extension', () => {
   before(() => {
     cy.openStudy('Bellona');
     cy.waitDicomImage();

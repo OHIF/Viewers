@@ -1,4 +1,4 @@
-describe('Visual Regression - OHIF PDF Extension', () => {
+describe.skip('Visual Regression - OHIF PDF Extension', () => {
   before(() => {
     cy.openStudy('Dummy');
     cy.expectMinimumThumbnails(6);
