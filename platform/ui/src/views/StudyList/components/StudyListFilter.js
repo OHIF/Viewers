@@ -124,87 +124,115 @@ const StudyListFilter = ({
   };
 
   return (
-    <div className="bg-custom-navyDark border-t-4 border-black">
-      <div className="container m-auto relative flex flex-col pt-5 pb-3">
-        <div className="flex flex-row justify-between mb-5 px-12">
-          <div className="flex flex-row">
-            <Typography variant="h4" className="text-custom-aquaBright mr-6">
-              Study List
-            </Typography>
-            <div className="flex flex-row items-end">
-              <Button
-                variant="text"
-                size="small"
-                color="inherit"
-                className="text-custom-blueBright"
-                startIcon={<Icon name="info-link" className="w-2" />}
-              >
-                <span className="flex flex-col flex-1">
-                  <span>Learn more</span>
-                  <span className="opacity-50 pt-1 border-b border-custom-blueBright"></span>
-                </span>
-              </Button>
+    <>
+      <div>
+        <div className="bg-custom-navyDark">
+          <div className="container m-auto relative flex flex-col pt-5">
+            <div className="flex flex-row justify-between mb-5 px-12">
+              <div className="flex flex-row">
+                <Typography
+                  variant="h4"
+                  className="text-custom-aquaBright mr-6"
+                >
+                  Study List
+                </Typography>
+                <div className="flex flex-row items-end">
+                  <Button
+                    variant="text"
+                    size="small"
+                    color="inherit"
+                    className="text-custom-blueBright"
+                    startIcon={<Icon name="info-link" className="w-2" />}
+                  >
+                    <span className="flex flex-col flex-1">
+                      <span>Learn more</span>
+                      <span className="opacity-50 pt-1 border-b border-custom-blueBright"></span>
+                    </span>
+                  </Button>
+                </div>
+              </div>
+              <div className="flex flex-row">
+                {isFiltering() && (
+                  <Button
+                    rounded="full"
+                    variant="outlined"
+                    color="primary"
+                    className="text-custom-blueBright border-custom-blueBright mx-8"
+                    startIcon={<Icon name="cancel" />}
+                    onClick={clearFilters}
+                  >
+                    Clear filters
+                  </Button>
+                )}
+                <Typography variant="h4" className="mr-2">
+                  {numOfStudies > 100 ? '>100' : numOfStudies}
+                </Typography>
+                <Typography
+                  variant="h6"
+                  className="text-custom-grayLight self-end pb-1"
+                >
+                  Studies
+                </Typography>
+              </div>
             </div>
           </div>
-          <div className="flex flex-row">
-            {isFiltering() && (
-              <Button
-                rounded="full"
-                variant="outlined"
-                color="primary"
-                className="text-custom-blueBright border-custom-blueBright mx-8"
-                startIcon={<Icon name="cancel" />}
-                onClick={clearFilters}
-              >
-                Clear filters
-              </Button>
-            )}
-            <Typography variant="h4" className="mr-2">
-              {numOfStudies > 100 ? '>100' : numOfStudies}
-            </Typography>
-            <Typography
-              variant="h6"
-              className="text-custom-grayLight self-end pb-1"
-            >
-              Studies
-            </Typography>
-          </div>
-        </div>
-        <div className="flex flex-row w-full">
-          {filtersMeta.map(
-            ({ name, displayName, inputType, isSortable, gridCol }) => {
-              return (
-                <div
-                  className={classnames(`w-${gridCol}/24`, 'pl-4 first:pl-12')}
-                >
-                  <FilterLabel
-                    key={name}
-                    label={displayName}
-                    isSortable={
-                      isSortable && numOfStudies <= 100 && numOfStudies > 0
-                    }
-                    isBeingSorted={sortBy === name}
-                    sortDirection={sortDirection}
-                    onLabelClick={() => handleFilterLabelClick(name)}
-                    inputType={inputType}
-                  >
-                    {inputType !== 'none' && (
-                      <Input
-                        className="border-custom-blue mt-2 bg-black"
-                        type="text"
-                        containerClassName="mr-2"
-                        value={currentFiltersValues[name] || ''}
-                        onChange={event => handleFilterValueChange(event, name)}
-                      />
-                    )}
-                  </FilterLabel>
-                </div>
-              );
-            }
-          )}
         </div>
       </div>
-    </div>
+      <div className="sticky z-10 border-b-4 border-black" style={{ top: 58 }}>
+        <div className="bg-custom-navyDark pt-3 pb-3 ">
+          <div className="container m-auto relative flex flex-col">
+            <div className="flex flex-row w-full">
+              {filtersMeta.map(
+                ({ name, displayName, inputType, isSortable, gridCol }) => {
+                  return (
+                    <div
+                      key={name}
+                      className={classnames(
+                        `w-${gridCol}/24`,
+                        'pl-4 first:pl-12'
+                      )}
+                    >
+                      <FilterLabel
+                        key={name}
+                        label={displayName}
+                        isSortable={
+                          isSortable && numOfStudies <= 100 && numOfStudies > 0
+                        }
+                        isBeingSorted={sortBy === name}
+                        sortDirection={sortDirection}
+                        onLabelClick={() => handleFilterLabelClick(name)}
+                        inputType={inputType}
+                      >
+                        {inputType !== 'none' && (
+                          <Input
+                            className="border-custom-blue mt-2 bg-black"
+                            type="text"
+                            containerClassName="mr-2"
+                            value={currentFiltersValues[name] || ''}
+                            onChange={event =>
+                              handleFilterValueChange(event, name)
+                            }
+                          />
+                        )}
+                      </FilterLabel>
+                    </div>
+                  );
+                }
+              )}
+            </div>
+          </div>
+        </div>
+        {numOfStudies > 100 && (
+          <div className="container m-auto">
+            <div className="bg-custom-blue text-center text-base py-1 rounded-b">
+              <p className="text-white">
+                Filter list to 100 studies or less to enable sorting
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
