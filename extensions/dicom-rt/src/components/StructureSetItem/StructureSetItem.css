@@ -12,14 +12,6 @@
   height: 20px;
 }
 
-.dcmrt-structure-set-item .item-label {
-  overflow: hidden;
-  max-width: calc(100% - 50px);
-  text-overflow: ellipsis;
-  overflow-wrap: normal;
-  white-space: nowrap;
-}
-
 .dcmrt-structure-set-item .item-info {
   display: inline-block;
   margin-top: 9px;
@@ -61,4 +53,28 @@
 
 .dcmrt-structure-set-item .item-actions .btnAction i {
   margin-right: 4px;
+}
+
+.dcmrt-structure-set-item .item-label {
+  overflow: hidden;
+  max-width: calc(100% - 50px); /* 20px = eye icon */
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+  white-space: nowrap;
+
+  display: flex;
+  justify-content: space-between;
+}
+
+.dcmrt-structure-set-item .item-label .eye-icon {
+  cursor: pointer;
+  color: var(--active-color);
+}
+
+.dcmrt-structure-set-item .item-label .eye-icon:hover {
+  color: var(--hover-color);
+}
+
+.dcmrt-structure-set-item .item-label .eye-icon.--visible {
+  color: var(--default-color);
 }

@@ -26,15 +26,35 @@ const refreshViewport = () => {
  * @returns component
  */
 const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
+  const DEFAULT_SET_INDEX = 0;
   const [showSettings, setShowSettings] = useState(false);
-  const [structureSets, setStructureSets] = useState([1, 2, 3]);
-  const [selectedStructureSet, setSelectedStructureSet] = useState();
 
-  const rtstructModule = cornerstoneTools.getModule('rtstruct');
-  console.log(rtstructModule.state);
+  const [contours, setContours] = useState([]);
+  const [selectedContour, setSelectedContour] = useState(null);
 
-  const PanelSection = ({ title, children }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+  const [structureSets, setStructureSets] = useState([]);
+  const [selectedStructureSet, setSelectedStructureSet] = useState(null);
+
+  useEffect(() => {
+    const module = cornerstoneTools.getModule('rtstruct');
+    const sets = module.state.StructureSets;
+    if (sets && sets.length) {
+      const defaultSet = sets[DEFAULT_SET_INDEX];
+      setSelectedStructureSet(defaultSet);
+      setContours(defaultSet.ROIContours);
+      setStructureSets(sets);
+    }
+  }, [studies, viewports, activeIndex]);
+
+  const PanelSection = ({
+    title,
+    children,
+    visible = false,
+    expanded = false,
+    onVisibilityChange = () => { }
+  }) => {
+    const [isExpanded, setIsExpanded] = useState(expanded);
+    const [isVisible, setIsVisible] = useState(visible);
     return (
       <div
         className="panel-section"
@@ -46,8 +66,19 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
         <div className="header">
           <div>{title}</div>
           <Icon
-            className={`eye-icon ${isExpanded && 'expanded'}`}
+            className={`eye-icon ${isVisible && 'expanded'}`}
             name="eye"
+            width="20px"
+            height="20px"
+            onClick={() => {
+              const newVisibility = !isVisible;
+              setIsVisible(newVisibility);
+              onVisibilityChange(newVisibility);
+            }}
+          />
+          <Icon
+            className={`angle-double-${isExpanded ? 'down' : 'up'} ${isExpanded && 'expanded'}`}
+            name={`angle-double-${isExpanded ? 'down' : 'up'}`}
             width="20px"
             height="20px"
             onClick={() => setIsExpanded(!isExpanded)}
@@ -58,30 +89,42 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     );
   };
 
-  const toStructureSetItem = structureSet => {
-    const sameStructureSet = selectedStructureSet === 'id of structure set';
+  const toContourItem = ({ ROINumber, ROIName, RTROIObservations, colorArray, visible }) => {
+    let interpretedType = '';
+    if (RTROIObservations && RTROIObservations.RTROIInterpretedType) {
+      interpretedType = `(${RTROIObservations.RTROIInterpretedType})`;
+    }
+
+    const isSameContour = selectedContour ? (selectedContour.ROINumber === ROINumber) : false;
     return (
       <StructureSetItem
-        key={1}
-        itemClass={`structure-set-item ${sameStructureSet && 'selected'}`}
-        onClick={() => setSelectedStructureSet(0)}
-        label={'test'}
-        index={1}
-        color={[221, 85, 85, 1]}
+        key={ROINumber}
+        itemClass={`structure-set-item ${isSameContour && 'selected'}`}
+        onClick={() => { }}
+        label={`${ROIName} ${interpretedType}`}
+        index={ROINumber}
+        color={colorArray}
+        itemVisibility={visible}
+        onItemVisibilityCLick={() => {
+          const module = cornerstoneTools.getModule('rtstruct');
+          module.setters.toggleROIContour(selectedStructureSet.SeriesInstanceUID, ROINumber);
+        }}
       />
     );
   };
 
   const configurationChangeHandler = newConfiguration => {
-    rtstructModule.configuration.lineWidth = newConfiguration.lineWidth;
-    rtstructModule.configuration.opacity = newConfiguration.opacity;
+    const module = cornerstoneTools.getModule('rtstruct');
+    module.configuration.lineWidth = newConfiguration.lineWidth;
+    module.configuration.opacity = newConfiguration.opacity;
     refreshViewport();
   };
 
   if (showSettings) {
+    const module = cornerstoneTools.getModule('rtstruct');
     return (
       <RTPanelSettings
-        configuration={rtstructModule.configuration}
+        configuration={module.configuration}
         onBack={() => setShowSettings(false)}
         onChange={configurationChangeHandler}
       />
@@ -100,20 +143,25 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
           onClick={() => setShowSettings(true)}
         />
       </div>
-      <PanelSection title="My Structure Set">
-        <ScrollableArea>
-          <TableList headless>
-            {structureSets.map(toStructureSetItem)}
-          </TableList>
-        </ScrollableArea>
-      </PanelSection>
-      <PanelSection title="Other Sets">
-        <ScrollableArea>
-          <TableList headless>
-            {structureSets.map(toStructureSetItem)}
-          </TableList>
-        </ScrollableArea>
-      </PanelSection>
+      {structureSets.map(({ StructureSetLabel, SeriesInstanceUID, visible }) => {
+        return (
+          <PanelSection
+            title={StructureSetLabel}
+            visible={visible}
+            expanded={selectedStructureSet.SeriesInstanceUID === SeriesInstanceUID}
+            onVisibilityChange={() => {
+              const module = cornerstoneTools.getModule('rtstruct');
+              module.setters.toggleStructureSet(selectedStructureSet.SeriesInstanceUID);
+            }}
+          >
+            <ScrollableArea>
+              <TableList headless>
+                {contours.map(toContourItem)}
+              </TableList>
+            </ScrollableArea>
+          </PanelSection>
+        );
+      })}
     </div>
   );
 };

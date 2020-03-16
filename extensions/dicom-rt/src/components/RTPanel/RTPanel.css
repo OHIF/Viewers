@@ -43,15 +43,19 @@
   padding: 10px 15px;
 }
 
-.dcmrt-panel .panel-section .header .eye-icon {
+.dcmrt-panel .panel-section .header .eye-icon,
+.dcmrt-panel .panel-section .header .angle-double-down,
+.dcmrt-panel .panel-section .header .angle-double-up {
   cursor: pointer;
-  color: var(--default-color);
+  color: var(--active-color);
 }
 
-.dcmrt-panel .panel-section .header .eye-icon:hover {
+.dcmrt-panel .panel-section .header .eye-icon:hover,
+.dcmrt-panel .panel-section .header .angle-double-down,
+.dcmrt-panel .panel-section .header .angle-double-up {
   color: var(--hover-color);
 }
 
 .dcmrt-panel .panel-section .header .eye-icon.expanded {
-  color: var(--active-color);
+  color: var(--default-color);
 }

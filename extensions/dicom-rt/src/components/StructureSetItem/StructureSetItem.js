@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { TableListItem, Icon } from '@ohif/ui';
 
@@ -17,48 +17,70 @@ ColoredCircle.propTypes = {
   color: PropTypes.array.isRequired,
 };
 
-const StructureSetItem = ({ index, label, onClick, itemClass, color }) => (
-  <div className="dcmrt-structure-set-item">
-    <TableListItem
-      key={index}
-      itemKey={index}
-      itemIndex={index}
-      itemClass={itemClass}
-      itemMeta={<ColoredCircle color={color} />}
-      itemMetaClass="item-color-section"
-      onItemClick={onClick}
-    >
-      <div>
-        <div className="item-label" style={{ marginBottom: 4 }}>
-          {label}
-        </div>
-        {false && <div className="item-info">{'...'}</div>}
-        {false && (
-          <div className="item-actions">
-            <button
-              className="btnAction"
-              onClick={() => console.log('Relabelling...')}
-            >
-              <span style={{ marginRight: '4px' }}>
-                <Icon name="edit" width="14px" height="14px" />
-              </span>
+const StructureSetItem = ({
+  index,
+  label,
+  onClick,
+  itemClass,
+  color,
+  visible = true,
+  onItemVisibilityCLick
+}) => {
+  const [isVisible, setIsVisible] = useState(visible);
+  return (
+    <div className="dcmrt-structure-set-item">
+      <TableListItem
+        key={index}
+        itemKey={index}
+        itemIndex={index}
+        itemClass={itemClass}
+        itemMeta={<ColoredCircle color={color} />}
+        itemMetaClass="item-color-section"
+        onItemClick={onClick}
+      >
+        <div>
+          <div className="item-label" style={{ marginBottom: 4 }}>
+            {label}
+            <Icon
+              className={`eye-icon ${isVisible && '--visible'}`}
+              name="eye"
+              width="20px"
+              height="20px"
+              onClick={() => {
+                const newVisibility = !isVisible;
+                setIsVisible(newVisibility);
+                onItemVisibilityCLick(newVisibility);
+              }}
+            />
+          </div>
+          {false && <div className="item-info">{'...'}</div>}
+          {false && (
+            <div className="item-actions">
+              <button
+                className="btnAction"
+                onClick={() => console.log('Relabelling...')}
+              >
+                <span style={{ marginRight: '4px' }}>
+                  <Icon name="edit" width="14px" height="14px" />
+                </span>
               Relabel
               </button>
-            <button
-              className="btnAction"
-              onClick={() => console.log('Editing description...')}
-            >
-              <span style={{ marginRight: '4px' }}>
-                <Icon name="edit" width="14px" height="14px" />
-              </span>
+              <button
+                className="btnAction"
+                onClick={() => console.log('Editing description...')}
+              >
+                <span style={{ marginRight: '4px' }}>
+                  <Icon name="edit" width="14px" height="14px" />
+                </span>
               Description
               </button>
-          </div>
-        )}
-      </div>
-    </TableListItem>
-  </div>
-);
+            </div>
+          )}
+        </div>
+      </TableListItem>
+    </div>
+  );
+};
 
 StructureSetItem.propTypes = {
   index: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
