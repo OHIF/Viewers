@@ -1,18 +1,8 @@
 describe('OHIF Download Snapshot File', () => {
   before(() => {
-    cy.location('pathname').then($url => {
-      cy.log($url);
-      if ($url == 'blank' || !$url.includes('/viewer/')) {
-        cy.openStudyInViewer(
-          '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-        );
-        cy.waitDicomImage();
-      }
-      cy.expectMinimumThumbnails(5);
-    });
-
-    cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
-    cy.waitDicomImage();
+    cy.checkStudyRouteInViewer(
+      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
+    );
     cy.expectMinimumThumbnails(5);
   });
 
@@ -116,8 +106,6 @@ describe('OHIF Download Snapshot File', () => {
     cy.get('[data-cy="show-annotations"]').check();
     // Check image preview
     cy.get('[data-cy="image-preview"]').scrollIntoView();
-    // Visual comparison
-    cy.screenshot('Download Image Modal - Show Annotations checked');
     //Compare classes that exists on Image Preview with Annotations and Without Annotation
     cy.get('[data-cy="modal-content"]')
       .find('canvas')

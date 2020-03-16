@@ -1,20 +1,9 @@
 describe('OHIF Study Viewer Page', function() {
   before(() => {
-    cy.location('pathname').then($url => {
-      cy.log($url);
-      if ($url == 'blank' || !$url.includes('/viewer/')) {
-        cy.openStudyInViewer(
-          '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-        );
-        cy.waitDicomImage();
-      }
-      cy.expectMinimumThumbnails(5);
-    });
-
-    // before(function() {
-    //   cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
-    //   cy.waitDicomImage();
-    //   cy.expectMinimumThumbnails(6);
+    cy.checkStudyRouteInViewer(
+      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
+    );
+    cy.expectMinimumThumbnails(5);
   });
 
   beforeEach(function() {
@@ -23,8 +12,6 @@ describe('OHIF Study Viewer Page', function() {
   });
 
   it('checks if series thumbnails are being displayed', function() {
-    cy.screenshot('Series Thumbnails - Should Display Thumbnails');
-
     cy.get('[data-cy="thumbnail-list"]')
       .its('length')
       .should('be.gt', 1);
@@ -302,9 +289,6 @@ describe('OHIF Study Viewer Page', function() {
         expect($modal).to.contain($headerVersionNumber);
       });
     });
-
-    // Visual comparison
-    cy.screenshot('About modal - Should display modal');
 
     //close modal
     cy.get('[data-cy="close-button"]').click();

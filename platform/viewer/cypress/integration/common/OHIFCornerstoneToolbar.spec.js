@@ -1,19 +1,9 @@
 describe('OHIF Cornerstone Toolbar', () => {
   before(() => {
-    cy.location('pathname').then($url => {
-      cy.log($url);
-      if ($url == 'blank' || !$url.includes('/viewer/')) {
-        cy.openStudyInViewer(
-          '1.2.840.113619.2.5.1762583153.215519.978957063.78'
-        );
-        cy.waitDicomImage();
-      }
-      cy.expectMinimumThumbnails(5);
-    });
-
-    // cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
-    // cy.waitDicomImage();
-    // cy.expectMinimumThumbnails(5);
+    cy.checkStudyRouteInViewer(
+      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
+    );
+    cy.expectMinimumThumbnails(5);
   });
 
   beforeEach(() => {
@@ -127,9 +117,6 @@ describe('OHIF Cornerstone Toolbar', () => {
       .trigger('mousedown', 'center', { which: 1 })
       .trigger('mousemove', 'bottom', { which: 1 })
       .trigger('mouseup', 'bottom');
-
-    // Visual comparison
-    cy.screenshot('Pan tool moved the image inside the viewport');
   });
 
   it('checks if Length annotation can be added on viewport and on measurements panel', () => {
@@ -459,9 +446,6 @@ describe('OHIF Cornerstone Toolbar', () => {
         //Click on Rotate button
         cy.get('[data-cy="rotate right"]').click({ force: true });
       });
-
-    // Visual comparison
-    cy.screenshot('Rotate tool - Should Rotate Image to Right');
   });
 
   it('check if Flip H tool will flip the image horizontally in the viewport', () => {
@@ -472,9 +456,6 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //Click on Flip H button
     cy.get('[data-cy="flip h"]').click();
-
-    // Visual comparison
-    cy.screenshot('Flip H tool - Should Flip Image on Y axis');
   });
 
   it('check if Flip V tool will flip the image vertically in the viewport', () => {
@@ -485,8 +466,5 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //Click on Flip V button
     cy.get('[data-cy="flip v"]').click();
-
-    // Visual comparison
-    cy.screenshot('Flip V tool - Should Flip Image on X axis');
   });
 });

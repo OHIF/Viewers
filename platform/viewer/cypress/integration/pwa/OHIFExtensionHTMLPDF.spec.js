@@ -1,17 +1,9 @@
 describe('OHIF HTML Extension', () => {
   before(() => {
-    cy.location('pathname').then($url => {
-      cy.log($url);
-      if ($url == 'blank' || !$url.includes('/viewer/')) {
-        cy.openStudyInViewer(
-          '1.2.826.0.13854362241694438965858641723883466450351448'
-        );
-      }
-      cy.expectMinimumThumbnails(5);
-    });
-
-    // cy.openStudy('Dummy');
-    // cy.expectMinimumThumbnails(5);
+    cy.checkStudyRouteInViewer(
+      '1.2.826.0.13854362241694438965858641723883466450351448'
+    );
+    cy.expectMinimumThumbnails(5);
   });
 
   it('checks if series thumbnails are being displayed', () => {

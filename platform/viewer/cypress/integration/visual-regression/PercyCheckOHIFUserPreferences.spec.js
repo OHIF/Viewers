@@ -1,4 +1,4 @@
-describe.skip('Visual Regression - OHIF User Preferences', () => {
+describe('Visual Regression - OHIF User Preferences', () => {
   context('Study List Page', function() {
     before(() => {
       cy.visit('/');

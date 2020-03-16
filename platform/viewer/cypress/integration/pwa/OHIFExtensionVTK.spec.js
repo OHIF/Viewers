@@ -1,9 +1,8 @@
 describe('OHIF VTK Extension', () => {
   before(() => {
-    cy.openStudyInViewer(
+    cy.checkStudyRouteInViewer(
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1'
     );
-    cy.waitDicomImage();
     cy.expectMinimumThumbnails(7);
 
     //Waiting for the desired thumbnail content to be displayed
@@ -50,9 +49,6 @@ describe('OHIF VTK Extension', () => {
     cy.get('@layoutBtn')
       .should('be.visible')
       .contains('Layout');
-
-    //Take Screenshot
-    cy.screenshot('VTK initial state - Should display toolbar and 3 viewports');
   });
 
   it('checks Crosshairs tool', () => {
@@ -93,9 +89,6 @@ describe('OHIF VTK Extension', () => {
           initialLabelText
         );
       });
-
-    //Take Screenshot
-    cy.screenshot('VTK WWWC tool - Canvas should be bright');
   });
 
   it('checks Rotate tool', () => {

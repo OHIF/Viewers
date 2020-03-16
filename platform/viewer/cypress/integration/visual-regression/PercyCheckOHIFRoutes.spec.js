@@ -1,6 +1,6 @@
 //We excluded the tests for '**/studies/**' because the bulk/all of our other study/viewer tests use this route
 
-describe.skip('Visual Regression - OHIF Routes', function() {
+describe('Visual Regression - OHIF Routes', function() {
   beforeEach(function() {
     cy.openStudyList();
   });

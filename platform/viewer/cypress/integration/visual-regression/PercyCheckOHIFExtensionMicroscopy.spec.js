@@ -1,4 +1,4 @@
-describe.skip('Visual Regression - OHIF Microscopy Extension', () => {
+describe('Visual Regression - OHIF Microscopy Extension', () => {
   before(() => {
     cy.openStudyModality('SM');
     cy.expectMinimumThumbnails(6);
