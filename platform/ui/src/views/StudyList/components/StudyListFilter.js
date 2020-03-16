@@ -178,8 +178,8 @@ const StudyListFilter = ({
           </div>
         </div>
       </div>
-      <div className="sticky z-10" style={{ top: 58 }}>
-        <div className="bg-custom-navyDark pt-3 pb-3 border-b-4 border-black">
+      <div className="sticky z-10 border-b-4 border-black" style={{ top: 58 }}>
+        <div className="bg-custom-navyDark pt-3 pb-3 ">
           <div className="container m-auto relative flex flex-col">
             <div className="flex flex-row w-full">
               {filtersMeta.map(
