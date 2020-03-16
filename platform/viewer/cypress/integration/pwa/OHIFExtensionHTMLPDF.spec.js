@@ -1,6 +1,6 @@
 describe('OHIF HTML Extension', () => {
   before(() => {
-    cy.checkStudyRouteInViewer(
+    cy.openStudyInViewer(
       '1.2.826.0.13854362241694438965858641723883466450351448'
     );
     cy.expectMinimumThumbnails(5);
@@ -49,18 +49,10 @@ describe('OHIF HTML Extension', () => {
 
 describe('OHIF PDF Extension', () => {
   before(() => {
-    cy.location('pathname').then($url => {
-      cy.log($url);
-      if ($url == 'blank' || !$url.includes('/viewer/')) {
-        cy.openStudyInViewer(
-          '1.2.826.0.13854362241694438965858641723883466450351448'
-        );
-      }
-      cy.expectMinimumThumbnails(5);
-    });
-
-    // cy.openStudy('Dummy');
-    // cy.expectMinimumThumbnails(6);
+    cy.checkStudyRouteInViewer(
+      '1.2.826.0.13854362241694438965858641723883466450351448'
+    );
+    cy.expectMinimumThumbnails(5);
   });
 
   it('checks if series thumbnails are being displayed', () => {

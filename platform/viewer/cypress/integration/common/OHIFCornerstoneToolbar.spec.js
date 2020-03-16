@@ -423,19 +423,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     });
   });
 
-  it('check if Invert tool will change the colors of the image in the viewport', () => {
-    // Click on More button
-    cy.get('@moreBtn').click();
-    // Verify if overlay is displayed
-    cy.get('.tooltip-toolbar-overlay').should('be.visible');
-
-    // Click on Invert button
-    cy.get('[data-cy="invert"]').click();
-
-    // Visual comparison
-    cy.screenshot('Invert tool - Should Invert Canvas');
-  });
-
   it('check if Rotate tool will change the image orientation in the viewport', () => {
     //Click on More button
     cy.get('@moreBtn').click();
@@ -445,6 +432,8 @@ describe('OHIF Cornerstone Toolbar', () => {
       .then(() => {
         //Click on Rotate button
         cy.get('[data-cy="rotate right"]').click({ force: true });
+        cy.get('@viewportInfoMidLeft').should('contains.text', 'F');
+        cy.get('@viewportInfoMidTop').should('contains.text', 'R');
       });
   });
 
@@ -456,6 +445,8 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //Click on Flip H button
     cy.get('[data-cy="flip h"]').click();
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'H');
   });
 
   it('check if Flip V tool will flip the image vertically in the viewport', () => {
@@ -466,5 +457,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //Click on Flip V button
     cy.get('[data-cy="flip v"]').click();
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'R');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'F');
   });
 });
