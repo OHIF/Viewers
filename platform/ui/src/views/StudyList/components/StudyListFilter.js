@@ -125,7 +125,7 @@ const StudyListFilter = ({
 
   return (
     <>
-      <div className="border-t-4 border-black">
+      <div>
         <div className="bg-custom-navyDark">
           <div className="container m-auto relative flex flex-col pt-5">
             <div className="flex flex-row justify-between mb-5 px-12">
@@ -178,7 +178,7 @@ const StudyListFilter = ({
           </div>
         </div>
       </div>
-      <div className="sticky z-10" style={{ top: 54 }}>
+      <div className="sticky z-10" style={{ top: 58 }}>
         <div className="bg-custom-navyDark pt-3 pb-3 border-b-4 border-black">
           <div className="container m-auto relative flex flex-col">
             <div className="flex flex-row w-full">
