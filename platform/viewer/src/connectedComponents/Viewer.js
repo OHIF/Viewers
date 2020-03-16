@@ -286,14 +286,15 @@ class Viewer extends Component {
             {VisiblePanelLeft ? (
               <VisiblePanelLeft
                 viewports={this.props.viewports}
+                studies={this.props.studies}
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
-              <ConnectedStudyBrowser
-                studies={this.state.thumbnails}
-                studyMetadata={this.props.studies}
-              />
-            )}
+                <ConnectedStudyBrowser
+                  studies={this.state.thumbnails}
+                  studyMetadata={this.props.studies}
+                />
+              )}
           </SidePanel>
 
           {/* MAIN */}
@@ -305,7 +306,9 @@ class Viewer extends Component {
           <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
             {VisiblePanelRight && (
               <VisiblePanelRight
+                isOpen={this.state.isRightSidePanelOpen}
                 viewports={this.props.viewports}
+                studies={this.props.studies}
                 activeIndex={this.props.activeViewportIndex}
               />
             )}
@@ -329,7 +332,7 @@ export default withDialog(Viewer);
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function(studies) {
+const _mapStudiesToThumbnails = function (studies) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
 

@@ -2,6 +2,7 @@ import DICOMWeb from '../../../DICOMWeb';
 import metadataProvider from '../../../classes/MetadataProvider';
 import getWADORSImageId from '../../../utils/getWADORSImageId';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import getReferencedSeriesSequence from './getReferencedSeriesSequence';
 
 /**
  * Create a plain JS object that describes a study (a study descriptor object)
@@ -23,7 +24,10 @@ function createStudy(server, aSopInstance) {
     PatientSize: DICOMWeb.getNumber(aSopInstance['00101020']),
     PatientWeight: DICOMWeb.getNumber(aSopInstance['00101030']),
     AccessionNumber: DICOMWeb.getString(aSopInstance['00080050']),
+    StudyTime: DICOMWeb.getString(aSopInstance['00080030']),
     StudyDate: DICOMWeb.getString(aSopInstance['00080020']),
+    FrameOfReferenceUID: DICOMWeb.getString(aSopInstance['00200052']),
+    ReferencedSeriesSequence: getReferencedSeriesSequence(aSopInstance),
     modalities: DICOMWeb.getString(aSopInstance['00080061']), // TODO -> Rename this.. it'll take a while to not mess this one up.
     StudyDescription: DICOMWeb.getString(aSopInstance['00081030']),
     NumberOfStudyRelatedInstances: DICOMWeb.getString(aSopInstance['00201208']),
@@ -186,7 +190,7 @@ async function makeSOPInstance(server, study, instance) {
  */
 async function addInstancesToStudy(server, study, sopInstanceList) {
   return Promise.all(
-    sopInstanceList.map(function(sopInstance) {
+    sopInstanceList.map(function (sopInstance) {
       return makeSOPInstance(server, study, sopInstance);
     })
   );
