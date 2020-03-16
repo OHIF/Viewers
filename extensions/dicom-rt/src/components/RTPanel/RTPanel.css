@@ -24,38 +24,3 @@
 .dcmrt-panel .dcmrt-panel-header .cog-icon:hover {
   color: var(--hover-color);
 }
-
-.dcmrt-panel .panel-section {
-  display: flex;
-  flex-direction: column;
-  color: var(--text-primary-color);
-  font-size: 12px;
-}
-
-.dcmrt-panel .panel-section .header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  background-color: var(--ui-gray-dark);
-  border-radius: 5px;
-  font-weight: bold;
-  padding: 10px 15px;
-}
-
-.dcmrt-panel .panel-section .header .eye-icon,
-.dcmrt-panel .panel-section .header .angle-double-down,
-.dcmrt-panel .panel-section .header .angle-double-up {
-  cursor: pointer;
-  color: var(--active-color);
-}
-
-.dcmrt-panel .panel-section .header .eye-icon:hover,
-.dcmrt-panel .panel-section .header .angle-double-down,
-.dcmrt-panel .panel-section .header .angle-double-up {
-  color: var(--hover-color);
-}
-
-.dcmrt-panel .panel-section .header .eye-icon.expanded {
-  color: var(--default-color);
-}

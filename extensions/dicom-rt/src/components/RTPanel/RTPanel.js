@@ -3,12 +3,16 @@ import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 
-import { utils, log } from '@ohif/core';
+import OHIF from '@ohif/core';
+const { setViewportSpecificData } = OHIF.redux.actions;
+const { studyMetadataManager } = OHIF.utils;
+
 import { ScrollableArea, TableList, Icon } from '@ohif/ui';
 
 import './RTPanel.css';
 import StructureSetItem from '../StructureSetItem/StructureSetItem';
 import RTPanelSettings from '../RTSettings/RTSettings';
+import PanelSection from '../PanelSection/PanelSection';
 
 const refreshViewport = () => {
   cornerstone.getEnabledElements().forEach(enabledElement => {
@@ -46,49 +50,6 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     }
   }, [studies, viewports, activeIndex]);
 
-  const PanelSection = ({
-    title,
-    children,
-    visible = false,
-    expanded = false,
-    onVisibilityChange = () => { }
-  }) => {
-    const [isExpanded, setIsExpanded] = useState(expanded);
-    const [isVisible, setIsVisible] = useState(visible);
-    return (
-      <div
-        className="panel-section"
-        style={{
-          marginBottom: isExpanded ? 0 : 2,
-          height: isExpanded ? '100%' : 'unset'
-        }}
-      >
-        <div className="header">
-          <div>{title}</div>
-          <Icon
-            className={`eye-icon ${isVisible && 'expanded'}`}
-            name="eye"
-            width="20px"
-            height="20px"
-            onClick={() => {
-              const newVisibility = !isVisible;
-              setIsVisible(newVisibility);
-              onVisibilityChange(newVisibility);
-            }}
-          />
-          <Icon
-            className={`angle-double-${isExpanded ? 'down' : 'up'} ${isExpanded && 'expanded'}`}
-            name={`angle-double-${isExpanded ? 'down' : 'up'}`}
-            width="20px"
-            height="20px"
-            onClick={() => setIsExpanded(!isExpanded)}
-          />
-        </div>
-        {children}
-      </div>
-    );
-  };
-
   const toContourItem = ({ ROINumber, ROIName, RTROIObservations, colorArray, visible }) => {
     let interpretedType = '';
     if (RTROIObservations && RTROIObservations.RTROIInterpretedType) {
@@ -100,7 +61,27 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
       <StructureSetItem
         key={ROINumber}
         itemClass={`structure-set-item ${isSameContour && 'selected'}`}
-        onClick={() => { }}
+        onClick={() => {
+          const enabledElements = cornerstone.getEnabledElements();
+          const element = enabledElements[activeIndex].element;
+          const toolState = cornerstoneTools.getToolState(element, 'stack');
+
+          if (!toolState) {
+            return;
+          }
+
+          const imageIds = toolState.data[0].imageIds;
+
+          const module = cornerstoneTools.getModule('rtstruct');
+          const imageId = module.getters.imageIdOfCenterFrameOfROIContour(
+            selectedStructureSet.SeriesInstanceUID,
+            ROINumber,
+            imageIds
+          );
+
+          console.log('ImageId', imageId);
+          // todo: jump to image
+        }}
         label={`${ROIName} ${interpretedType}`}
         index={ROINumber}
         color={colorArray}
