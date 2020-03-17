@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.0...@ohif/viewer@3.8.1) (2020-03-17)
+
+
+### Bug Fixes
+
+* resolves [#1483](https://github.com/OHIF/Viewers/issues/1483) ([#1527](https://github.com/OHIF/Viewers/issues/1527)) ([2747eff](https://github.com/OHIF/Viewers/commit/2747effd9e893bd78b80ee7d0444f44676e9d632))
+
+
+
+
+
 # [3.8.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.7.8...@ohif/viewer@3.8.0) (2020-03-13)
 
 
