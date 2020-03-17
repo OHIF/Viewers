@@ -22,10 +22,6 @@ describe('OHIF User Preferences', () => {
       cy.get('@cancelBtn').should('have.text', 'Cancel');
       cy.get('@saveBtn').should('have.text', 'Save');
 
-      // Visual comparison
-      cy.screenshot(
-        'User Preferences Modal - Hotkeys tab initial state in Study List page'
-      );
       cy.get('[data-cy="close-button"]').click();
     });
 
@@ -36,10 +32,6 @@ describe('OHIF User Preferences', () => {
       // Language dropdown should be displayed
       cy.get('#language-select').should('be.visible');
 
-      // Visual comparison
-      cy.screenshot(
-        'User Preferences Modal - General tab initial state in Study List page'
-      );
       // Set language to Spanish and save
       cy.setLanguage('Spanish');
 
@@ -211,10 +203,6 @@ describe('OHIF User Preferences', () => {
       cy.get('@cancelBtn').should('have.text', 'Cancel');
       cy.get('@saveBtn').should('have.text', 'Save');
 
-      // Visual comparison
-      cy.screenshot(
-        'User Preferences Modal - Hotkeys tab initial state in Study Viewer page'
-      );
       cy.get('[data-cy="close-button"]').click(); //close User Preferences modal
     });
 
@@ -225,10 +213,6 @@ describe('OHIF User Preferences', () => {
       // Language dropdown should be displayed
       cy.get('#language-select').should('be.visible');
 
-      // Visual comparison
-      cy.screenshot(
-        'User Preferences Modal - General tab initial state in Study Viewer page'
-      );
       // Set language to Spanish
       cy.setLanguage('Spanish');
 
@@ -400,9 +384,6 @@ describe('OHIF User Preferences', () => {
       // Reset viewport #1 with spacebar hotkey
       cy.get('body').type(' ');
       cy.get('@viewportInfoMidTop').should('contains.text', 'A');
-
-      // Visual comparison
-      cy.screenshot('Viewport Navigation - 2nd viewport inverted and rotated');
 
       // Set 1 viewport layout
       cy.setLayout(1, 1);

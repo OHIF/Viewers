@@ -53,6 +53,16 @@ Cypress.Commands.add('openStudy', PatientName => {
     .click({ force: true });
 });
 
+Cypress.Commands.add('checkStudyRouteInViewer', StudyInstanceUID => {
+  cy.location('pathname').then($url => {
+    cy.log($url);
+    if ($url == 'blank' || !$url.includes(`/viewer/${StudyInstanceUID}`)) {
+      cy.openStudyInViewer(StudyInstanceUID);
+      cy.waitDicomImage();
+    }
+  });
+});
+
 Cypress.Commands.add('openStudyInViewer', StudyInstanceUID => {
   cy.visit(`/viewer/${StudyInstanceUID}`);
 });
