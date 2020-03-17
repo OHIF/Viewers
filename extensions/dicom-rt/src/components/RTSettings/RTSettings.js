@@ -5,19 +5,10 @@ import { Range } from '@ohif/ui';
 import './RTSettings.css';
 
 const RTSettings = ({ configuration, onBack, onChange }) => {
-  const [state, setState] = useState({
-    lineWidth: configuration.lineWidth,
-    opacity: configuration.opacity
-  });
-
   const toFloat = value => parseFloat(value / 100).toFixed(2);
 
-  useEffect(() => {
-    onChange(state);
-  }, [state]);
-
   const save = (field, value) => {
-    setState(state => ({ ...state, [field]: value }));
+    onChange({ ...configuration, [field]: value });
   };
 
   const SettingsSection = ({ title, children }) => {
@@ -48,7 +39,7 @@ const RTSettings = ({ configuration, onBack, onChange }) => {
             step={1}
             min={0}
             max={100}
-            value={state.opacity * 100}
+            value={configuration.opacity * 100}
             onChange={event => save('opacity', toFloat(event.target.value))}
           />
         </div>
@@ -59,7 +50,7 @@ const RTSettings = ({ configuration, onBack, onChange }) => {
             step={1}
             min={1}
             max={5}
-            value={state.lineWidth}
+            value={configuration.lineWidth}
             onChange={event => save('lineWidth', parseInt(event.target.value))}
           />
         </div>
@@ -70,8 +61,8 @@ const RTSettings = ({ configuration, onBack, onChange }) => {
 
 RTSettings.propTypes = {
   configuration: PropTypes.shape({
-    lineWidth: PropTypes.number.isRequired,
-    opacity: PropTypes.number.isRequired,
+    lineWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    opacity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   }).isRequired,
   onBack: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,

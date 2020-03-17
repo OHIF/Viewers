@@ -126,6 +126,9 @@ export default async function loadRTStruct(
   }
 
   _setToolEnabledIfNotEnabled(rtStructDisplayToolName);
+
+  const event = new CustomEvent('rtloaded');
+  document.dispatchEvent(event);
 }
 
 function _setROIContourMetadata(

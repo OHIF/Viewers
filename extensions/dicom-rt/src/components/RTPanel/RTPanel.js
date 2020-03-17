@@ -39,6 +39,14 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
+    document.addEventListener('rtloaded', updateStructureSets);
+
+    return () => {
+      document.removeEventListener('rtloaded', updateStructureSets);
+    };
+  }, []);
+
+  const updateStructureSets = () => {
     const module = cornerstoneTools.getModule('rtstruct');
     const StructureSets = module.state.StructureSets;
 
@@ -58,6 +66,10 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
         setState(DEFAULT_STATE);
       }
     }
+  };
+
+  useEffect(() => {
+    updateStructureSets();
   }, [studies, viewports, activeIndex]);
 
   useEffect(() => {
@@ -70,7 +82,7 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
       interpretedType = `(${RTROIObservations.RTROIInterpretedType})`;
     }
 
-    const isSameContour = state.selectedContour ? (state.selectedContour === ROINumber) : false;
+    const isSameContour = state.selectedContour && state.selectedContour === ROINumber;
     return (
       <StructureSetItem
         key={ROINumber}
@@ -95,7 +107,7 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
             imageIds
           );
 
-          // TODO: jump to ROI image.
+          // TODO: jump to contour/ROI.
           console.log('ImageId', imageId);
         }}
         label={`${ROIName} ${interpretedType}`}
