@@ -24,11 +24,12 @@ const StructureSetItem = ({
   itemClass,
   color,
   visible = true,
-  onItemVisibilityCLick
+  onVisibilityChange,
+  selected = false,
 }) => {
   const [isVisible, setIsVisible] = useState(visible);
   return (
-    <div className="dcmrt-structure-set-item">
+    <div className={`dcmrt-structure-set-item ${selected && 'selected'}`}>
       <TableListItem
         key={index}
         itemKey={index}
@@ -46,36 +47,35 @@ const StructureSetItem = ({
               name="eye"
               width="20px"
               height="20px"
-              onClick={() => {
+              onClick={event => {
+                event.stopPropagation();
                 const newVisibility = !isVisible;
                 setIsVisible(newVisibility);
-                onItemVisibilityCLick(newVisibility);
+                onVisibilityChange(newVisibility);
               }}
             />
           </div>
-          {false && <div className="item-info">{'...'}</div>}
-          {false && (
-            <div className="item-actions">
-              <button
-                className="btnAction"
-                onClick={() => console.log('Relabelling...')}
-              >
-                <span style={{ marginRight: '4px' }}>
-                  <Icon name="edit" width="14px" height="14px" />
-                </span>
+          <div className="item-info">{'...'}</div>
+          <div className="item-actions">
+            <button
+              className="btnAction"
+              onClick={() => console.log('Relabelling...')}
+            >
+              <span style={{ marginRight: '4px' }}>
+                <Icon name="edit" width="14px" height="14px" />
+              </span>
               Relabel
               </button>
-              <button
-                className="btnAction"
-                onClick={() => console.log('Editing description...')}
-              >
-                <span style={{ marginRight: '4px' }}>
-                  <Icon name="edit" width="14px" height="14px" />
-                </span>
+            <button
+              className="btnAction"
+              onClick={() => console.log('Editing description...')}
+            >
+              <span style={{ marginRight: '4px' }}>
+                <Icon name="edit" width="14px" height="14px" />
+              </span>
               Description
               </button>
-            </div>
-          )}
+          </div>
         </div>
       </TableListItem>
     </div>

@@ -55,9 +55,14 @@
   margin-right: 4px;
 }
 
+.dcmrt-structure-set-item.selected .item-actions {
+  height: 35px;
+  visibility: visible;
+}
+
 .dcmrt-structure-set-item .item-label {
   overflow: hidden;
-  max-width: calc(100% - 50px); /* 20px = eye icon */
+  max-width: calc(100% - 15px); /* calc(100% - 50px); 20px = eye icon */
   text-overflow: ellipsis;
   overflow-wrap: normal;
   white-space: nowrap;

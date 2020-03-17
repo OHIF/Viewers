@@ -1,18 +1,17 @@
 /**
  * structureSetReferencesSeriesInstanceUid - Returns true if the structure set
  * references the given SeriesInstanceUID.
- * @param {*} structureSet
- * @param {*} referencedSeriesInstanceUid
+ * @param {*} StructureSet
+ * @param {*} SeriesInstanceUID
  */
 export default function structureSetReferencesSeriesInstanceUid(
-  structureSet,
-  referencedSeriesInstanceUid
+  StructureSet,
+  SeriesInstanceUID
 ) {
-  const { referencedSeriesSequence } = structureSet;
-
+  const { referencedSeriesSequence } = StructureSet;
   return referencedSeriesSequence.some(
     referencedSeries =>
-      referencedSeries.referencedSeriesInstanceUID ===
-      referencedSeriesInstanceUid
+      referencedSeries.SeriesInstanceUID ===
+      SeriesInstanceUID
   );
 }

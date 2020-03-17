@@ -23,28 +23,44 @@ const PanelSection = ({
     >
       <div className="header">
         <div>{title}</div>
-        <Icon
-          className={`eye-icon ${isVisible && 'expanded'}`}
-          name="eye"
-          width="20px"
-          height="20px"
-          onClick={() => {
-            const newVisibility = !isVisible;
-            setIsVisible(newVisibility);
-            onVisibilityChange(newVisibility);
-          }}
-        />
-        <Icon
-          className={`angle-double-${isExpanded ? 'down' : 'up'} ${isExpanded && 'expanded'}`}
-          name={`angle-double-${isExpanded ? 'down' : 'up'}`}
-          width="20px"
-          height="20px"
-          onClick={() => setIsExpanded(!isExpanded)}
-        />
+        <div className="icons">
+          <Icon
+            className={`eye-icon ${isVisible && 'expanded'}`}
+            name="eye"
+            width="20px"
+            height="20px"
+            onClick={() => {
+              const newVisibility = !isVisible;
+              setIsVisible(newVisibility);
+              onVisibilityChange(newVisibility);
+            }}
+          />
+          <Icon
+            className={`angle-double-${isExpanded ? 'down' : 'up'} ${isExpanded && 'expanded'}`}
+            name={`angle-double-${isExpanded ? 'down' : 'up'}`}
+            width="20px"
+            height="20px"
+            onClick={() => setIsExpanded(!isExpanded)}
+          />
+        </div>
       </div>
       {children}
     </div>
   );
+};
+
+PanelSection.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
+  visible: PropTypes.bool,
+  expanded: PropTypes.bool,
+  onVisibilityChange: PropTypes.func
+};
+
+PanelSection.defaultProps = {
+  visible: false,
+  expanded: false,
+  onVisibilityChange: () => { }
 };
 
 export default PanelSection;

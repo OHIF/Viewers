@@ -18,7 +18,7 @@ export default {
             for (let j = 0; j < study.series.length; j++) {
               const series = study.series[j];
 
-              if (series.Modality === 'RTSTRUCT') {
+              if (['RTSTRUCT', 'RTPLAN', 'RTDOSE'].includes(series.Modality)) {
                 return false;
               }
             }

@@ -32,3 +32,13 @@
 .dcmrt-panel-section .header .eye-icon.expanded {
   color: var(--default-color);
 }
+
+.icons {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.icons .angle-double-down, .icons .angle-double-up {
+  margin-left: 15px;
+}

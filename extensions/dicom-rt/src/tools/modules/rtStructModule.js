@@ -152,17 +152,16 @@ function setToggleROIContour(SeriesInstanceUID, ROINumber) {
 
 /**
  * Returns an array of StructureSets which reference the given SeriesInstanceUID.
- * @param {string} referencedSeriesInstanceUid The SeriesInstanceUID to check.
+ * @param {string} SeriesInstanceUID The SeriesInstanceUID to check.
  */
 function getStructuresSetsWhichReferenceSeriesInstanceUid(
-  referencedSeriesInstanceUid
+  SeriesInstanceUID
 ) {
   const { StructureSets } = state;
-
-  return StructureSets.filter(structureSet =>
+  return StructureSets.filter(StructureSet =>
     structureSetReferencesSeriesInstanceUid(
-      structureSet,
-      referencedSeriesInstanceUid
+      StructureSet,
+      SeriesInstanceUID
     )
   );
 }
