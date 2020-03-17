@@ -29,16 +29,18 @@
     "classnames": "^2.2.6",
     "date-fns": "^2.10.0",
     "docz": "^2.2.0",
-    "theme-ui": "^0.2.38",
     "gatsby": "2.19.24",
     "gatsby-plugin-postcss": "^2.1.20",
     "gatsby-plugin-react-svg": "^3.0.0",
     "gatsby-plugin-sass": "^2.1.28",
     "gatsby-theme-docz": "^2.2.0",
+    "moment": "^2.24.0",
     "node-sass": "^4.13.1",
     "prop-types": "^15.7.2",
     "react": "16.11.0",
-    "react-dom": "16.11.0"
+    "react-dates": "^21.8.0",
+    "react-dom": "16.11.0",
+    "theme-ui": "^0.2.38"
   },
   "devDependencies": {
     "autoprefixer": "^9.7.4",

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import moment from 'moment';
 
-import { Button, Icon, Input, Typography } from '@ohif/ui';
+import { Button, Icon, Input, Typography, DateRange } from '@ohif/ui';
 
 const sortIconMap = {
   '-1': 'sorting-active-down',
@@ -79,6 +80,7 @@ const StudyListFilter = ({
     filtersValues
   );
   const { sortBy, sortDirection } = currentFiltersValues;
+  const [focusedInput, setFocusedInput] = useState(null);
 
   const handleFilterLabelClick = name => {
     let _sortDirection = 1;
@@ -121,6 +123,131 @@ const StudyListFilter = ({
       const filterValue = currentFiltersValues[filter.name];
       return filterValue && filterValue !== '';
     });
+  };
+
+  const renderInput = (inputType, name) => {
+    switch (inputType) {
+      case 'date-range': {
+        const today = moment();
+        const lastWeek = moment().subtract(7, 'day');
+        const lastMonth = moment().subtract(1, 'month');
+
+        const getDateEntry = (datePicked, rangeDatePicked) => {
+          return rangeDatePicked || datePicked || null;
+        };
+
+        const getDateEntryFromRange = (today, numOfDays, edge = 'start') => {
+          if (typeof numOfDays !== 'number') {
+            return;
+          }
+
+          if (edge === 'end') {
+            return today;
+          } else {
+            return today.subtract(numOfDays, 'days');
+          }
+        };
+
+        const studyListDateFilterNumDays = 7;
+
+        const defaultStartDate = getDateEntryFromRange(
+          today,
+          studyListDateFilterNumDays,
+          'start'
+        );
+        const defaultEndDate = getDateEntryFromRange(
+          today,
+          studyListDateFilterNumDays,
+          'end'
+        );
+
+        const studyDatePresets = [
+          {
+            text: 'Today',
+            start: today,
+            end: today,
+          },
+          {
+            text: 'Last 7 days',
+            start: lastWeek,
+            end: today,
+          },
+          {
+            text: 'Last 30 days',
+            start: lastMonth,
+            end: today,
+          },
+        ];
+
+        const studyDateFrom = {};
+        const studyDateTo = {};
+
+        const [showDateRange, setShowDateRange] = useState(false);
+        const [forceFocus, setForceFocus] = useState(false);
+
+        const hideDateRange = () => {
+          setShowDateRange(false);
+          setFocusedInput(null);
+          setForceFocus(false);
+        };
+
+        return (
+          <div className="relative">
+            <Input
+              className="border-custom-blue mt-2 bg-black"
+              type="text"
+              containerClassName="mr-2"
+              value={currentFiltersValues[name] || ''}
+              // onChange={event => handleFilterValueChange(event, name)}
+              onFocus={() => {
+                setShowDateRange(true);
+                setFocusedInput('startDate');
+                setForceFocus(true);
+              }}
+            />
+            <div
+              className={classnames('absolute t-0 mt-2', {
+                hidden: !showDateRange,
+              })}
+              style={{ width: 290 }}
+            >
+              <DateRange
+                hideDateRange={hideDateRange}
+                startDate={getDateEntry(studyDateFrom, defaultStartDate)}
+                startDateId="start-date"
+                endDate={getDateEntry(studyDateTo, defaultEndDate)}
+                endDateId="end-date"
+                onDatesChange={({ startDate, endDate, preset = false }) => {
+                  console.log('studyDateFrom', startDate);
+                  console.log('studyDateTo', endDate);
+                }}
+                focusedInput={focusedInput}
+                onFocusChange={updatedVal => {
+                  if (forceFocus) {
+                    setForceFocus(false);
+                    return;
+                  }
+
+                  setFocusedInput(updatedVal);
+                }}
+                presets={studyDatePresets}
+              />
+            </div>
+          </div>
+        );
+      }
+
+      default:
+        return (
+          <Input
+            className="border-custom-blue mt-2 bg-black"
+            type="text"
+            containerClassName="mr-2"
+            value={currentFiltersValues[name] || ''}
+            onChange={event => handleFilterValueChange(event, name)}
+          />
+        );
+    }
   };
 
   return (
@@ -203,17 +330,7 @@ const StudyListFilter = ({
                         onLabelClick={() => handleFilterLabelClick(name)}
                         inputType={inputType}
                       >
-                        {inputType !== 'none' && (
-                          <Input
-                            className="border-custom-blue mt-2 bg-black"
-                            type="text"
-                            containerClassName="mr-2"
-                            value={currentFiltersValues[name] || ''}
-                            onChange={event =>
-                              handleFilterValueChange(event, name)
-                            }
-                          />
-                        )}
+                        {inputType !== 'none' && renderInput(inputType, name)}
                       </FilterLabel>
                     </div>
                   );

@@ -25,7 +25,7 @@ const filtersMeta = [
   {
     name: 'studyDate',
     displayName: 'Study date',
-    inputType: 'text',
+    inputType: 'date-range',
     isSortable: true,
     gridCol: 3,
   },
