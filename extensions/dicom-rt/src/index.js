@@ -20,7 +20,7 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getPanelModule({ servicesManager, commandsManager }) {
+  getPanelModule({ commandsManager }) {
     const ExtendedRTPanel = props => {
       const contourItemClickHandler = contourData => {
         commandsManager.runCommand('jumpToImage', contourData);

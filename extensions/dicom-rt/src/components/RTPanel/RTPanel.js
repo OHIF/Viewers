@@ -3,11 +3,7 @@ import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 
-import { utils, redux } from '@ohif/core';
 import { ScrollableArea, TableList, Icon } from '@ohif/ui';
-
-const { studyMetadataManager } = utils;
-const { setViewportSpecificData } = redux.actions;
 
 import './RTPanel.css';
 import StructureSetItem from '../StructureSetItem/StructureSetItem';
@@ -31,12 +27,12 @@ const refreshViewport = () => {
  * @returns component
  */
 const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }) => {
+  const [selectedContour, setSelectedContour] = useState();
   const DEFAULT_SET_INDEX = 0;
   const DEFAULT_STATE = {
     sets: [],
     contours: [],
     selectedSet: null,
-    selectedContour: null,
   };
 
   const [state, setState] = useState(DEFAULT_STATE);
@@ -86,13 +82,13 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }
       interpretedType = `(${RTROIObservations.RTROIInterpretedType})`;
     }
 
-    const isSameContour = state.selectedContour && state.selectedContour === ROINumber;
+    const isSameContour = selectedContour && selectedContour === ROINumber;
     return (
       <StructureSetItem
         key={ROINumber}
         selected={isSameContour}
         onClick={() => {
-          setState(state => ({ ...state, selectedContour: isSameContour ? null : ROINumber }));
+          setSelectedContour(isSameContour ? null : ROINumber);
 
           const enabledElements = cornerstone.getEnabledElements();
           const element = enabledElements[activeIndex].element;

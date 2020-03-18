@@ -44,7 +44,7 @@ const StructureSetItem = ({
             {label}
             <Icon
               className={`eye-icon ${isVisible && '--visible'}`}
-              name="eye"
+              name={isVisible ? "eye" : "eye-closed"}
               width="20px"
               height="20px"
               onClick={event => {

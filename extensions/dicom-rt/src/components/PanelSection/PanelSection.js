@@ -26,7 +26,7 @@ const PanelSection = ({
         <div className="icons">
           <Icon
             className={`eye-icon ${isVisible && 'expanded'}`}
-            name="eye"
+            name={isVisible ? "eye" : "eye-closed"}
             width="20px"
             height="20px"
             onClick={() => {
