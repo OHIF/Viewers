@@ -5,6 +5,7 @@ export {
   ButtonGroup,
   Icon,
   IconButton,
+  Select,
   Svg,
   Input,
   ThemeWrapper,

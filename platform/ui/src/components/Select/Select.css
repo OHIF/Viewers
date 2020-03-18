@@ -1,0 +1,31 @@
+.customSelect__wrapper .customSelect__control {
+  @apply bg-black border-custom-blue shadow transition duration-300 border rounded w-full text-sm text-white leading-tight;
+  min-height: 33px;
+}
+.customSelect__wrapper .customSelect__control:hover {
+  @apply border-gray-500;
+}
+
+.customSelect__wrapper .customSelect__control:focus {
+  @apply border-gray-500 outline-none;
+}
+
+.customSelect__wrapper .customSelect__control--menu-is-open {
+  @apply border-gray-500 outline-none;
+}
+
+.customSelect__wrapper .customSelect__indicator-separator {
+  @apply hidden;
+}
+
+.customSelect__wrapper .customSelect__dropdown-indicator {
+  padding: 4px;
+}
+
+.customSelect__wrapper .customSelect__option {
+  @apply text-black;
+}
+
+.customSelect__wrapper .customSelect__single-value {
+  @apply text-white;
+}

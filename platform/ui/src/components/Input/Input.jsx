@@ -4,7 +4,7 @@ import Label from '../Label';
 import classnames from 'classnames';
 
 const baseInputClasses =
-  'shadow transition duration-300 appearance-none border rounded w-full py-2 px-3 text-sm text-gray-700 hover:border-gray-500 leading-tight focus:border-gray-500 focus:outline-none';
+  'shadow transition duration-300 appearance-none border rounded w-full py-2 px-3 text-sm text-white hover:border-gray-500 leading-tight focus:border-gray-500 focus:outline-none';
 
 const transparentClasses = {
   true: 'bg-transparent',
