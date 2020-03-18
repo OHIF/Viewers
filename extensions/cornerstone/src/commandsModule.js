@@ -7,6 +7,9 @@ import { getEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 const scroll = cornerstoneTools.import('util/scroll');
 
+const { studyMetadataManager } = OHIF.utils;
+const { setViewportSpecificData } = OHIF.redux.actions;
+
 const commandsModule = ({ servicesManager }) => {
   const actions = {
     rotateViewport: ({ viewports, rotation }) => {
@@ -255,9 +258,35 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.setViewport(enabledElement, viewport);
       }
     },
+    jumpToImage: ({
+      StudyInstanceUID,
+      SOPInstanceUID,
+      frameIndex,
+      activeViewportIndex
+    }) => {
+      const study = studyMetadataManager.get(StudyInstanceUID);
+
+      const displaySet = study.findDisplaySet(ds => {
+        return ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
+      });
+
+      displaySet.SOPInstanceUID = SOPInstanceUID;
+      displaySet.frameIndex = frameIndex;
+
+      window.store.dispatch(setViewportSpecificData(activeViewportIndex, displaySet));
+
+      cornerstone.getEnabledElements().forEach(enabledElement => {
+        cornerstone.updateImage(enabledElement.element);
+      });
+    }
   };
 
   const definitions = {
+    jumpToImage: {
+      commandFn: actions.jumpToImage,
+      storeContexts: [],
+      options: {},
+    },
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
       storeContexts: [],

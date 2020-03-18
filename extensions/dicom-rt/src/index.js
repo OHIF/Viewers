@@ -1,7 +1,9 @@
+import React from 'react';
+
 import init from './init.js';
 import sopClassHandlerModule from './OHIFDicomRTStructSopClassHandler';
 import id from './id.js';
-import panelModule from './panelModule';
+import RTPanel from './components/RTPanel/RTPanel';
 
 export default {
   /**
@@ -18,8 +20,57 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getPanelModule({ servicesManager }) {
-    return panelModule;
+  getPanelModule({ servicesManager, commandsManager }) {
+    const ExtendedRTPanel = props => {
+      const contourItemClickHandler = contourData => {
+        commandsManager.runCommand('jumpToImage', contourData);
+      };
+
+      return (
+        <RTPanel
+          {...props}
+          onContourItemClick={contourItemClickHandler}
+        />
+      );
+    };
+
+    return {
+      menuOptions: [
+        {
+          icon: 'list',
+          label: 'RTSTRUCT',
+          target: 'rt-panel',
+          isDisabled: studies => {
+            if (!studies) {
+              return true;
+            }
+
+            for (let i = 0; i < studies.length; i++) {
+              const study = studies[i];
+
+              if (study && study.series) {
+                for (let j = 0; j < study.series.length; j++) {
+                  const series = study.series[j];
+                  console.log(studies);
+                  if (['RTSTRUCT', 'RTPLAN', 'RTDOSE'].includes(series.Modality)) {
+                    return false;
+                  }
+                }
+              }
+            }
+
+            return true;
+          },
+        },
+      ],
+      components: [
+        {
+          id: 'rt-panel',
+          component: ExtendedRTPanel,
+        },
+      ],
+      defaultContext: ['VIEWER'],
+    };
   },
   getSopClassHandlerModule({ servicesManager }) {
     return sopClassHandlerModule;

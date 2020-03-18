@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 
+import { utils, redux } from '@ohif/core';
 import { ScrollableArea, TableList, Icon } from '@ohif/ui';
+
+const { studyMetadataManager } = utils;
+const { setViewportSpecificData } = redux.actions;
 
 import './RTPanel.css';
 import StructureSetItem from '../StructureSetItem/StructureSetItem';
@@ -26,7 +30,7 @@ const refreshViewport = () => {
  * @param {number} props.isOpen - isOpen
  * @returns component
  */
-const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
+const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }) => {
   const DEFAULT_SET_INDEX = 0;
   const DEFAULT_STATE = {
     sets: [],
@@ -107,8 +111,16 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen }) => {
             imageIds
           );
 
-          // TODO: jump to contour/ROI.
-          console.log('ImageId', imageId);
+          const frameIndex = imageIds.indexOf(imageId);
+          const SOPInstanceUID = cornerstone.metaData.get('SOPInstanceUID', imageId);
+          const StudyInstanceUID = cornerstone.metaData.get('StudyInstanceUID', imageId);
+
+          onContourItemClick({
+            StudyInstanceUID,
+            SOPInstanceUID,
+            frameIndex,
+            activeViewportIndex: activeIndex
+          });
         }}
         label={`${ROIName} ${interpretedType}`}
         index={ROINumber}
