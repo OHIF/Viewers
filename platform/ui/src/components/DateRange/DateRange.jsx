@@ -4,27 +4,41 @@ import 'react-dates/lib/css/_datepicker.css';
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
 import './DateRange.css';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import moment from 'moment';
 
 const DateRange = props => {
-  const {
-    onDatesChange,
-    onFocusChange,
-    startDate,
-    endDate,
-    presets,
-    startDateId,
-    endDateId,
-    focusedInput,
-  } = props;
+  const { onDatesChange, startDate, endDate } = props;
+  const [focusedInput, setFocusedInput] = useState(null);
+
+  const today = moment();
+  const lastWeek = moment().subtract(7, 'day');
+  const lastMonth = moment().subtract(1, 'month');
+
+  const studyDatePresets = [
+    {
+      text: 'Today',
+      start: today,
+      end: today,
+    },
+    {
+      text: 'Last 7 days',
+      start: lastWeek,
+      end: today,
+    },
+    {
+      text: 'Last 30 days',
+      start: lastMonth,
+      end: today,
+    },
+  ];
 
   const renderDatePresets = () => {
     return (
       <div className="PresetDateRangePicker_panel">
-        {presets.map(({ text, start, end }) => {
+        {studyDatePresets.map(({ text, start, end }) => {
           const isSelected = startDate === start && endDate === end;
 
           return (
@@ -60,7 +74,11 @@ const DateRange = props => {
 
       for (let i = 0; i < yearsRange; i++) {
         const year = moment().year() - i;
-        options.push(<option value={year}>{year}</option>);
+        options.push(
+          <option key={year} value={year}>
+            {year}
+          </option>
+        );
       }
 
       return options;
@@ -104,12 +122,12 @@ const DateRange = props => {
     <DateRangePicker
       /** REQUIRED */
       startDate={startDate}
-      startDateId={startDateId}
+      startDateId={'startDateId'}
       endDate={endDate}
-      endDateId={endDateId}
+      endDateId={'endDateId'}
       onDatesChange={onDatesChange}
       focusedInput={focusedInput}
-      onFocusChange={onFocusChange}
+      onFocusChange={updatedVal => setFocusedInput(updatedVal)}
       /** OPTIONAL */
       renderCalendarInfo={renderDatePresets}
       renderMonthElement={renderMonthElement}
@@ -129,21 +147,9 @@ const DateRange = props => {
 };
 
 DateRange.propTypes = {
-  presets: PropTypes.arrayOf(
-    PropTypes.shape({
-      text: PropTypes.string,
-      start: PropTypes.required,
-      end: PropTypes.required,
-    })
-  ),
-  onDatesChange: PropTypes.func.isRequired,
-  onFocusChange: PropTypes.func.isRequired,
-  focusedInput: PropTypes.string.isRequired,
   startDate: PropTypes.instanceOf(Date),
-  startDateId: PropTypes.string.isRequired,
   endDate: PropTypes.instanceOf(Date),
-  endDateId: PropTypes.string.isRequired,
-  month: PropTypes.instanceOf(Date),
+  onDatesChange: PropTypes.func.isRequired,
 };
 
 export default DateRange;
