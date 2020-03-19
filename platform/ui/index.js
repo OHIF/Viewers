@@ -1,4 +1,10 @@
 import * as utils from './src/utils/';
+import {
+  ModalProvider,
+  ModalConsumer,
+  useModal,
+  withModal,
+} from './src/contextProviders';
 
 export {
   Button,
@@ -10,7 +16,5 @@ export {
   ThemeWrapper,
   Typography,
 } from './src/components';
-
-export { utils };
-
 export { StudyList } from './src/views';
+export { ModalProvider, ModalConsumer, useModal, withModal, utils };
