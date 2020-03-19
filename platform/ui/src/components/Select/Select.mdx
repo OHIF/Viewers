@@ -14,7 +14,14 @@ import Select from './';
 <Playground>
   <div className="flex flex-col flex-1 p-4 items-center">
     <div className="w-20">
-      <Select options={['one', 'two', 'three']} />
+      <Select
+        options={[
+          { value: 'one', label: 'one' },
+          { value: 'two', label: 'two' },
+          { value: 'three', label: 'three' },
+          { value: 'four', label: 'four' },
+        ]}
+      />
     </div>
   </div>
 </Playground>
