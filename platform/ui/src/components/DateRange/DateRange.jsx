@@ -37,17 +37,13 @@ const DateRange = props => {
 
   const renderDatePresets = () => {
     return (
-      <div className="PresetDateRangePicker_panel">
+      <div className="PresetDateRangePicker_panel flex justify-between">
         {studyDatePresets.map(({ text, start, end }) => {
-          const isSelected = startDate === start && endDate === end;
-
           return (
             <button
               key={text}
               type="button"
-              className={`PresetDateRangePicker_button ${
-                isSelected ? 'PresetDateRangePicker_button__selected' : ''
-              }`}
+              className={`m-0 py-2 px-3 bg-custom-blue border-0 rounded text-white text-base transition duration-300 hover:opacity-80`}
               onClick={() =>
                 onChange({
                   startDate: start,
@@ -81,6 +77,7 @@ const DateRange = props => {
     };
 
     renderMonthElement.propTypes = {
+      month: PropTypes.object,
       onMonthSelect: PropTypes.func,
       onYearSelect: PropTypes.func,
     };
