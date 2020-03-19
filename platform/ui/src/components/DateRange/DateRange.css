@@ -86,9 +86,15 @@
 .CalendarDay__selected:hover {
   @apply bg-custom-blue text-white border-0 border-custom-blue;
 }
+
 .CalendarDay__blocked_out_of_range:hover {
   @apply border-0 bg-white cursor-not-allowed text-custom-gray;
 }
+
+.CalendarDay__selected_span {
+  @apply border-0 bg-custom-aquaBright;
+}
+
 /* MONTH NAVIGATION BUTTONS */
 .DayPickerNavigation_button__horizontalDefault,
 .DayPickerNavigation_button__horizontalDefault:hover {

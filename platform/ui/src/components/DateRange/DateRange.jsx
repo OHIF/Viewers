@@ -146,9 +146,14 @@ const DateRange = props => {
   );
 };
 
+DateRange.defaultProps = {
+  startDate: null,
+  endDate: null,
+};
+
 DateRange.propTypes = {
-  startDate: PropTypes.instanceOf(Date),
-  endDate: PropTypes.instanceOf(Date),
+  startDate: PropTypes.object, // moment date is an object
+  endDate: PropTypes.object, // moment date is an object
   onDatesChange: PropTypes.func.isRequired,
 };
 

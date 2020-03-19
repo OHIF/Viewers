@@ -14,10 +14,8 @@ const defaultProps = {
   filtersValues: {
     patientName: '',
     mrn: '',
-    studyDate: {
-      startDate: null,
-      endDate: null,
-    },
+    startDate: null,
+    endDate: null,
     description: '',
     modality: '',
     accession: '',
@@ -119,19 +117,13 @@ const StudyListFilter = ({
   };
 
   const clearFilters = () => {
-    const _filterValues = { ...currentFiltersValues };
-    filtersMeta.forEach(filter => {
-      if (_filterValues[filter.name]) {
-        delete _filterValues[filter.name];
-      }
-    });
-    setcurrentFiltersValues(_filterValues);
+    setcurrentFiltersValues(defaultProps.filtersValues);
   };
 
   const isFiltering = () => {
-    return filtersMeta.some(filter => {
-      const filterValue = currentFiltersValues[filter.name];
-      return filterValue && filterValue !== '';
+    return Object.keys(currentFiltersValues).some(name => {
+      const filterValue = currentFiltersValues[name];
+      return filterValue !== defaultProps.filtersValues[name];
     });
   };
 
@@ -141,11 +133,14 @@ const StudyListFilter = ({
         return (
           <div className="relative">
             <DateRange
-              startDate={currentFiltersValues[name].startDate}
-              endDate={currentFiltersValues[name].endDate}
+              startDate={currentFiltersValues.startDate}
+              endDate={currentFiltersValues.endDate}
               onDatesChange={({ startDate, endDate, preset = false }) => {
-                console.log('studyDateFrom', startDate);
-                console.log('studyDateTo', endDate);
+                setcurrentFiltersValues(state => ({
+                  ...state,
+                  startDate,
+                  endDate,
+                }));
               }}
             />
           </div>
@@ -280,10 +275,8 @@ StudyListFilter.propTypes = {
   ),
   filtersValues: PropTypes.object,
   numOfStudies: PropTypes.number,
-  studyDate: PropTypes.shape({
-    startDate: PropTypes.string,
-    endDate: PropTypes.string,
-  }),
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
 };
 
 export default StudyListFilter;
