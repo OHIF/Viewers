@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.3...@ohif/viewer@3.8.4) (2020-03-19)
+
+
+### Bug Fixes
+
+* Only permit web workers to be initialized once. ([#1535](https://github.com/OHIF/Viewers/issues/1535)) ([9feadd3](https://github.com/OHIF/Viewers/commit/9feadd3c6d71c1c48f7825d024ccf95d5d82606d))
+
+
+
+
+
 ## [3.8.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.2...@ohif/viewer@3.8.3) (2020-03-17)
 
 **Note:** Version bump only for package @ohif/viewer
