@@ -20,6 +20,7 @@ const Input = ({
   type = 'text',
   value,
   onChange,
+  onFocus,
   ...otherProps
 }) => {
   return (
@@ -34,6 +35,7 @@ const Input = ({
         type={type}
         value={value}
         onChange={onChange}
+        onFocus={onFocus}
         {...otherProps}
       />
     </div>
@@ -49,6 +51,7 @@ Input.propTypes = {
   type: PropTypes.string,
   value: PropTypes.any,
   onChange: PropTypes.func,
+  onFocus: PropTypes.func,
 };
 
 export default Input;
