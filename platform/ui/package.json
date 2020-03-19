@@ -40,6 +40,7 @@
     "react": "16.11.0",
     "react-dates": "^21.8.0",
     "react-dom": "16.11.0",
+    "react-powerplug": "1.0.0",
     "theme-ui": "^0.2.38"
   },
   "devDependencies": {

@@ -16664,6 +16664,13 @@ react-portal@^4.2.0:
   dependencies:
     prop-types "^15.5.8"
 
+react-powerplug@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-powerplug/-/react-powerplug-1.0.0.tgz#f9c10a761ece115661b8fd10920c4e573ea95909"
+  integrity sha512-H7U+1sNiOqlaPgZpfciVZ3BMHtXHsd0tkXrOmrwV7ZTpK+YGRddK7+Um1RT2OTe+4G+1muXfyFMAwcnasABMtA==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+
 react-reconciler@^0.24.0:
   version "0.24.0"
   resolved "https://registry.yarnpkg.com/react-reconciler/-/react-reconciler-0.24.0.tgz#5a396b2c2f5efe8554134a5935f49f546723f2dd"
