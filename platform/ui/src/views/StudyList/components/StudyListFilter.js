@@ -135,7 +135,7 @@ const StudyListFilter = ({
             <DateRange
               startDate={currentFiltersValues.startDate}
               endDate={currentFiltersValues.endDate}
-              onDatesChange={({ startDate, endDate, preset = false }) => {
+              onChange={({ startDate, endDate, preset = false }) => {
                 setcurrentFiltersValues(state => ({
                   ...state,
                   startDate,

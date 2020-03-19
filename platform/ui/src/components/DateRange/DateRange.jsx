@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 const DateRange = props => {
-  const { onDatesChange, startDate, endDate } = props;
+  const { onChange, startDate, endDate } = props;
   const [focusedInput, setFocusedInput] = useState(null);
 
   const today = moment();
@@ -49,7 +49,7 @@ const DateRange = props => {
                 isSelected ? 'PresetDateRangePicker_button__selected' : ''
               }`}
               onClick={() =>
-                onDatesChange({
+                onChange({
                   startDate: start,
                   endDate: end,
                   preset: true,
@@ -121,7 +121,7 @@ const DateRange = props => {
       startDateId={'startDateId'}
       endDate={endDate}
       endDateId={'endDateId'}
-      onDatesChange={onDatesChange}
+      onDatesChange={onChange}
       focusedInput={focusedInput}
       onFocusChange={updatedVal => setFocusedInput(updatedVal)}
       /** OPTIONAL */
@@ -148,9 +148,12 @@ DateRange.defaultProps = {
 };
 
 DateRange.propTypes = {
+  /** Start date moment object */
   startDate: PropTypes.object, // moment date is an object
+  /** End date moment object */
   endDate: PropTypes.object, // moment date is an object
-  onDatesChange: PropTypes.func.isRequired,
+  /** Callback that returns on object with selected dates */
+  onChange: PropTypes.func.isRequired,
 };
 
 export default DateRange;
