@@ -182,57 +182,21 @@ const StudyListFilter = ({
         const studyDateFrom = {};
         const studyDateTo = {};
 
-        const [showDateRange, setShowDateRange] = useState(false);
-        const [forceFocus, setForceFocus] = useState(false);
-
-        const hideDateRange = () => {
-          setShowDateRange(false);
-          setFocusedInput(null);
-          setForceFocus(false);
-        };
-
         return (
           <div className="relative">
-            <Input
-              className="border-custom-blue mt-2 bg-black"
-              type="text"
-              containerClassName="mr-2"
-              value={currentFiltersValues[name] || ''}
-              // onChange={event => handleFilterValueChange(event, name)}
-              onFocus={() => {
-                setShowDateRange(true);
-                setFocusedInput('startDate');
-                setForceFocus(true);
+            <DateRange
+              startDate={getDateEntry(studyDateFrom, defaultStartDate)}
+              startDateId="start-date"
+              endDate={getDateEntry(studyDateTo, defaultEndDate)}
+              endDateId="end-date"
+              onDatesChange={({ startDate, endDate, preset = false }) => {
+                console.log('studyDateFrom', startDate);
+                console.log('studyDateTo', endDate);
               }}
+              focusedInput={focusedInput}
+              onFocusChange={updatedVal => setFocusedInput(updatedVal)}
+              presets={studyDatePresets}
             />
-            <div
-              className={classnames('absolute t-0 mt-2', {
-                hidden: !showDateRange,
-              })}
-              style={{ width: 290 }}
-            >
-              <DateRange
-                hideDateRange={hideDateRange}
-                startDate={getDateEntry(studyDateFrom, defaultStartDate)}
-                startDateId="start-date"
-                endDate={getDateEntry(studyDateTo, defaultEndDate)}
-                endDateId="end-date"
-                onDatesChange={({ startDate, endDate, preset = false }) => {
-                  console.log('studyDateFrom', startDate);
-                  console.log('studyDateTo', endDate);
-                }}
-                focusedInput={focusedInput}
-                onFocusChange={updatedVal => {
-                  if (forceFocus) {
-                    setForceFocus(false);
-                    return;
-                  }
-
-                  setFocusedInput(updatedVal);
-                }}
-                presets={studyDatePresets}
-              />
-            </div>
           </div>
         );
       }

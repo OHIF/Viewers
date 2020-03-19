@@ -27,14 +27,14 @@ const filtersMeta = [
     displayName: 'Study date',
     inputType: 'date-range',
     isSortable: true,
-    gridCol: 3,
+    gridCol: 5,
   },
   {
     name: 'description',
     displayName: 'Description',
     inputType: 'text',
     isSortable: true,
-    gridCol: 5,
+    gridCol: 4,
   },
   {
     name: 'modality',
@@ -55,7 +55,7 @@ const filtersMeta = [
     displayName: 'Instances',
     inputType: 'none',
     isSortable: false,
-    gridCol: 3,
+    gridCol: 2,
   },
 ];
 

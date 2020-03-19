@@ -1,71 +1,83 @@
-/* NOTE: the order of these styles DO matter */
-
-/* Will edit everything selected including everything between a range of dates */
-.CalendarDay__selected_span {
-  background: #9ccef9;
-  color: #484848;
-  border-color: #e4e7e7;
+.DateRangePicker {
 }
 
-/* Will edit selected date or the endpoints of a range of dates */
-.CalendarDay__selected {
-  background: #9ccef9;
-  color: #484848;
-  border-color: #e4e7e7;
+/** CONTAINER STYLES **/
+
+.DateRangePickerInput {
+  @apply bg-transparent border-0 flex;
 }
 
-/* Will edit when hovered over. _span style also has this property */
-.CalendarDay__selected:hover,
-.CalendarDay__default:hover {
-  background: #9ccef9;
-  color: #484848;
-  border-color: #e4e7e7;
+.DateRangePicker_picker {
+  @apply -mt-1;
 }
 
-/* Will edit when the second date (end date) in a range of dates
-is not yet selected. Edits the dates between your mouse and said date */
-.CalendarDay__hovered_span:hover,
-.CalendarDay__hovered_span {
-  background: #9ccef9;
-  color: #484848;
-  border-color: #e4e7e7;
+/** INPUT DIV STYLES **/
+
+.DateInput {
+  background: transparent;
+  @apply flex flex-1 w-auto;
+}
+
+/** INPUT FIELD COMMON STYLES **/
+
+.DateInput_input {
+  /* background-image: url(../../assets/icons/calendar.svg); */
+}
+
+.DateInput_input {
+  @apply cursor-pointer border-custom-blue mt-2 bg-black shadow transition duration-300 appearance-none border-t border-l border-r border-b border-solid rounded w-full py-2 px-3 text-sm text-gray-700 leading-tight pl-8;
+}
+
+.DateInput_input:hover {
+  @apply border-gray-500;
+}
+
+.DateInput_input:focus {
+  @apply border-gray-500 outline-none;
+}
+
+/** FIRST INPUT STYLES **/
+
+.DateInput:first-child .DateInput_input {
+  @apply rounded-r-none;
+}
+
+.DateInput:first-child .DateInput_input:hover,
+.DateInput:first-child .DateInput_input:focus {
+  @apply relative z-10;
+}
+
+/** SECOND INPUT STYLES **/
+
+.DateInput:last-child .DateInput_input {
+  @apply rounded-l-none;
+  margin-left: -1px;
+}
+
+/** ARROW STYLES **/
+
+.DateRangePickerInput_arrow {
+  @apply hidden;
 }
 
 /* PRESETS */
 .PresetDateRangePicker_panel {
-  display: flex;
-  justify-content: space-between;
+  @apply flex justify-between;
 }
 
 .PresetDateRangePicker_button {
-  margin: 0;
-  padding: 4px 8px;
-  color: #00a699;
-  background: #fff;
+  @apply m-0 py-2 px-3 bg-custom-blue border-0 rounded text-white text-base transition duration-300;
 }
 
 .PresetDateRangePicker_button:hover {
-  background: #00a699;
-  color: #fff;
+  @apply opacity-80;
 }
 
-.CalendarDay__blocked_out_of_range:hover {
-  background: #fff;
-  cursor: not-allowed;
-  color: #aaa;
-}
-
+/* SELECT MONTH PICKER */
 .DateRangePicker_select {
-  background-color: white;
-  color: #484848;
-  border: 1px solid #e4e7e7;
-  border-radius: 4px;
-  display: inline-block;
-  padding: 3px 20px 3px 10px;
-  font-size: 14px;
-  cursor: pointer;
-  appearance: none;
+  @apply bg-white text-custom-dark border rounded border-custom-gray appearance-none cursor-pointer text-base pl-2 pr-5 py-1;
 
+  /* NEEDED FOR ARROW DOWN */
   background-image: linear-gradient(45deg, transparent 50%, gray 50%),
     linear-gradient(135deg, gray 50%, transparent 50%);
   background-position: calc(100% - 11px) 11px, calc(100% - 6px) calc(11px);
@@ -73,6 +85,32 @@ is not yet selected. Edits the dates between your mouse and said date */
   background-repeat: no-repeat;
 }
 
-.DateRangePicker_select:hover {
-  border-color: #c4c4c4;
+/* CALENDAR DAYS */
+
+.CalendarDay {
+  @apply border-0 rounded-full;
+}
+
+.CalendarDay:hover,
+.CalendarDay__selected,
+.CalendarDay__selected:active,
+.CalendarDay__selected:hover {
+  @apply bg-custom-blue text-white border-0 border-custom-blue;
+}
+
+.CalendarDay__blocked_out_of_range:hover {
+  @apply border-0 bg-white cursor-not-allowed text-custom-gray;
+}
+
+/* MONTH NAVIGATION BUTTONS */
+
+.DayPickerNavigation_button__horizontalDefault,
+.DayPickerNavigation_button__horizontalDefault:hover {
+  @apply border-custom-gray text-custom-gray;
+  top: 24px;
+  padding: 3px 9px;
+}
+
+.DayPickerNavigation_svg__horizontal {
+  @apply fill-current;
 }

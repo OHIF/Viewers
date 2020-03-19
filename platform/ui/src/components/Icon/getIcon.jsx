@@ -3,6 +3,7 @@ import React from 'react';
 import arrowDown from './../../assets/icons/arrow-down.svg';
 import seriesActive from './../../assets/icons/series-active.svg';
 import seriesInactive from './../../assets/icons/series-inactive.svg';
+import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
@@ -21,6 +22,7 @@ const ICONS = {
   'arrow-down': arrowDown,
   'series-active': seriesActive,
   'series-inactive': seriesInactive,
+  calendar: calendar,
   cancel: cancel,
   'chevron-down': chevronDown,
   'chevron-right': chevronRight,

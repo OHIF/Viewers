@@ -19,28 +19,7 @@ const DateRange = props => {
     startDateId,
     endDateId,
     focusedInput,
-    hideDateRange,
   } = props;
-
-  const wrapperRef = useRef(null);
-
-  const handleClickOutside = event => {
-    const shouldHide =
-      wrapperRef.current && !wrapperRef.current.contains(event.target);
-
-    if (shouldHide) {
-      hideDateRange();
-    }
-  };
-
-  useEffect(() => {
-    // Bind the event listener
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  });
 
   const renderDatePresets = () => {
     return (
@@ -122,30 +101,30 @@ const DateRange = props => {
   };
 
   return (
-    <div ref={wrapperRef}>
-      <DateRangePicker
-        startDateId={startDateId}
-        startDate={startDate}
-        endDate={endDate}
-        endDateId={endDateId}
-        renderCalendarInfo={renderDatePresets}
-        onDatesChange={onDatesChange}
-        onFocusChange={onFocusChange}
-        renderMonthElement={renderMonthElement}
-        startDatePlaceholderText={'Start Date'}
-        endDatePlaceholderText={'End Date'}
-        phrases={{
-          closeDatePicker: 'Close',
-          clearDates: 'Clear dates',
-        }}
-        focusedInput={focusedInput}
-        isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
-        hideKeyboardShortcutsPanel={true}
-        numberOfMonths={1}
-        showClearDates={false}
-        anchorDirection="left"
-      />
-    </div>
+    <DateRangePicker
+      /** REQUIRED */
+      startDate={startDate}
+      startDateId={startDateId}
+      endDate={endDate}
+      endDateId={endDateId}
+      onDatesChange={onDatesChange}
+      focusedInput={focusedInput}
+      onFocusChange={onFocusChange}
+      /** OPTIONAL */
+      renderCalendarInfo={renderDatePresets}
+      renderMonthElement={renderMonthElement}
+      startDatePlaceholderText={'Start Date'}
+      endDatePlaceholderText={'End Date'}
+      phrases={{
+        closeDatePicker: 'Close',
+        clearDates: 'Clear dates',
+      }}
+      isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
+      hideKeyboardShortcutsPanel={true}
+      numberOfMonths={1}
+      showClearDates={false}
+      anchorDirection="left"
+    />
   );
 };
 
@@ -159,7 +138,6 @@ DateRange.propTypes = {
   ),
   onDatesChange: PropTypes.func.isRequired,
   onFocusChange: PropTypes.func.isRequired,
-  hideDateRange: PropTypes.func.isRequired,
   focusedInput: PropTypes.string.isRequired,
   startDate: PropTypes.instanceOf(Date),
   startDateId: PropTypes.string.isRequired,
