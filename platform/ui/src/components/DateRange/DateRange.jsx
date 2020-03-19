@@ -64,10 +64,6 @@ const DateRange = props => {
     );
   };
   const renderMonthElement = ({ month, onMonthSelect, onYearSelect }) => {
-    const containerStyle = {
-      margin: '0 5px',
-    };
-
     const renderYearsOptions = () => {
       const yearsRange = 20;
       const options = [];
@@ -90,8 +86,8 @@ const DateRange = props => {
     };
 
     return (
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <div style={containerStyle}>
+      <div className="flex justify-center">
+        <div className="my-0 mx-1">
           <select
             className="DateRangePicker_select"
             value={month.month()}
@@ -104,7 +100,7 @@ const DateRange = props => {
             ))}
           </select>
         </div>
-        <div style={containerStyle}>
+        <div className="my-0 mx-1">
           {}
           <select
             className="DateRangePicker_select"
