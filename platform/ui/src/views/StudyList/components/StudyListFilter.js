@@ -34,7 +34,6 @@ const FilterLabel = ({
   isBeingSorted = false,
   sortDirection = 0,
   onLabelClick,
-  inputType,
   className,
   children,
 }) => {
@@ -71,6 +70,16 @@ const FilterLabel = ({
       <span>{children}</span>
     </label>
   );
+};
+
+FilterLabel.propTypes = {
+  label: PropTypes.string,
+  isSortable: PropTypes.bool,
+  isBeingSorted: PropTypes.bool,
+  sortDirection: PropTypes.number,
+  onLabelClick: PropTypes.func,
+  className: PropTypes.string,
+  children: PropTypes.node,
 };
 
 const StudyListFilter = ({
