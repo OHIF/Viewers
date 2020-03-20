@@ -177,15 +177,32 @@ class OHIFCornerstoneViewport extends Component {
     const { displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
+    const displaySetInstanceUIDChanged =
+      displaySet.displaySetInstanceUID !== prevDisplaySet.displaySetInstanceUID;
+    const frameIndexChanged =
+      displaySet.frameIndex !== prevDisplaySet.frameIndex;
+    const sopInstanceUIDChanged =
+      displaySet.SOPInstanceUID &&
+      displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID;
     if (
-      displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
-      displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
-      displaySet.frameIndex !== prevDisplaySet.frameIndex
+      displaySetInstanceUIDChanged ||
+      sopInstanceUIDChanged ||
+      frameIndexChanged
     ) {
       this.setStateFromProps();
     }
   }
+
+  onNewImage = newImageData => {
+    const { currentImageIdIndex } = newImageData;
+    this.setState(state => ({
+      ...state,
+      viewportData: {
+        ...state.viewportData,
+        stack: { ...state.viewportData.stack, currentImageIdIndex },
+      },
+    }));
+  };
 
   render() {
     let childrenWithProps = null;
@@ -221,6 +238,7 @@ class OHIFCornerstoneViewport extends Component {
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
+          onNewImage={this.onNewImage}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}
