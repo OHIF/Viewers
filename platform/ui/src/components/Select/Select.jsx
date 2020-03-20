@@ -8,7 +8,6 @@ import './Select.css';
 const Select = ({
   autoFocus,
   className,
-  classNamePrefix,
   isDisabled,
   isMulti,
   isSearchable,
@@ -24,7 +23,7 @@ const Select = ({
       autoFocus={autoFocus}
       className={classnames(
         className,
-        'flex flex-col flex-1 hover:cursor-pointer mt-2 customSelect__wrapper'
+        'flex flex-col flex-1 mt-2 customSelect__wrapper'
       )}
       classNamePrefix="customSelect"
       isDisabled={isDisabled}
@@ -43,7 +42,6 @@ const Select = ({
 Select.propTypes = {
   autoFocus: PropTypes.bool,
   className: PropTypes.string,
-  classNamePrefix: PropTypes.string,
   isDisabled: PropTypes.bool,
   isMulti: PropTypes.bool,
   isSearchable: PropTypes.bool,
@@ -55,8 +53,8 @@ Select.propTypes = {
       label: PropTypes.string,
     })
   ),
-  placeholder: PropTypes.any,
-  noOptionsMessage: PropTypes.string,
+  placeholder: PropTypes.string,
+  noOptionsMessage: PropTypes.func,
   value: PropTypes.string,
 };
 

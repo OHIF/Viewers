@@ -32,6 +32,39 @@ import { Select } from '@ohfi/ui';
   </div>
 </Playground>
 
+## Disabled
+
+<Playground>
+  <div className="flex flex-col flex-1 p-4 items-center">
+    <div className="w-20">
+      <Select
+        isDisabled
+        options={[
+          { value: 'one', label: 'one' },
+          { value: 'two', label: 'two' },
+          { value: 'three', label: 'three' },
+          { value: 'four', label: 'four' },
+        ]}
+      />
+    </div>
+  </div>
+</Playground>
+
+## No Options
+
+<Playground>
+  <div className="flex flex-col flex-1 p-4 items-center">
+    <div className="w-20">
+      <Select
+        noOptionsMessage={() => {
+          'No Options';
+        }}
+        options={[]}
+      />
+    </div>
+  </div>
+</Playground>
+
 ## Properties
 
 <Props of={Select} />
