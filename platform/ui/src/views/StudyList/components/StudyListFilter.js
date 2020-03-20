@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { Button, Icon, Input, Typography, DateRange } from '@ohif/ui';
+import { Button, Icon, Input, Typography, Select, DateRange } from '@ohif/ui';
 
 const sortIconMap = {
   '-1': 'sorting-active-down',
@@ -127,7 +127,7 @@ const StudyListFilter = ({
     });
   };
 
-  const renderInput = (inputType, name) => {
+  const renderInput = (inputType, name, { selectOptions }) => {
     switch (inputType) {
       case 'date-range': {
         return (
@@ -146,8 +146,10 @@ const StudyListFilter = ({
           </div>
         );
       }
-
-      default:
+      case 'select': {
+        return <Select options={selectOptions}></Select>;
+      }
+      case 'text': {
         return (
           <Input
             className="border-custom-blue mt-2 bg-black"
@@ -157,6 +159,9 @@ const StudyListFilter = ({
             onChange={event => handleFilterValueChange(event, name)}
           />
         );
+      }
+      default:
+        break;
     }
   };
 
@@ -220,7 +225,14 @@ const StudyListFilter = ({
           <div className="container m-auto relative flex flex-col">
             <div className="flex flex-row w-full">
               {filtersMeta.map(
-                ({ name, displayName, inputType, isSortable, gridCol }) => {
+                ({
+                  name,
+                  displayName,
+                  inputType,
+                  isSortable,
+                  gridCol,
+                  selectOptions,
+                }) => {
                   return (
                     <div
                       key={name}
@@ -240,7 +252,7 @@ const StudyListFilter = ({
                         onLabelClick={() => handleFilterLabelClick(name)}
                         inputType={inputType}
                       >
-                        {inputType !== 'none' && renderInput(inputType, name)}
+                        {renderInput(inputType, name, { selectOptions })}
                       </FilterLabel>
                     </div>
                   );

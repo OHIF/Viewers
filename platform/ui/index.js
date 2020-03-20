@@ -6,6 +6,7 @@ export {
   DateRange,
   Icon,
   IconButton,
+  Select,
   Svg,
   Input,
   ThemeWrapper,
