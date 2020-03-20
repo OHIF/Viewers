@@ -726,6 +726,7 @@ const makeDisplaySet = (series, instances) => {
     imageSet.setAttributes({
       displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
       is4D: true,
+      currentStackIndex: 0,
       SeriesDate: seriesData.SeriesDate,
       SeriesTime: seriesData.SeriesTime,
       SeriesInstanceUID: series.getSeriesInstanceUID(),

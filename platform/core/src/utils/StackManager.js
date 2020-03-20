@@ -16,30 +16,68 @@ const stackUpdatedCallbacks = [];
  * @return {Array}                        Array with image IDs
  */
 function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
+  debugger;
+
+  let stack;
+
+  if (displaySet.is4D) {
+    stack = createAndAdd4DStack(study, displaySet);
+  } else {
+    const images = displaySet.images;
+    if (!images) {
+      return;
+    }
+
+    createAndAdd3DStack(study, displaySet, images);
+  }
+
+  if (!stack) {
+    return;
+  }
+
+  stackMap[displaySet.displaySetInstanceUID] = stack;
+
+  return stack;
+}
+
+function createAndAdd4DStack(study, displaySet) {
   const images = displaySet.images;
   if (!images) {
     return;
   }
 
-  const numImages = images.length;
+  debugger;
+
+  const stack4D = images.map(imageSet =>
+    createAndAdd3DStack(study, displaySet, imageSet)
+  );
+
+  const imageIds4D = stack4D.map(stack => stack.imageIds);
+
+  const stack = {
+    StudyInstanceUID: study.StudyInstanceUID,
+    displaySetInstanceUID: displaySet.displaySetInstanceUID,
+    is4D: true,
+    imageIds4D,
+    frameRate: displaySet.frameRate,
+    isClip: displaySet.isClip,
+  };
+
+  return stack;
+}
+
+function createAndAdd3DStack(study, displaySet, images) {
+  // const numImages = images.length;
   const imageIds = [];
   let imageId;
 
-  displaySet.images.forEach((instance, imageIndex) => {
+  images.forEach(instance => {
     const image = instance.getData();
-    const metaData = {
-      instance: image, // in this context, instance will be the data of the InstanceMetadata object...
-      series: displaySet, // TODO: Check this
-      study,
-      numImages,
-      imageIndex: imageIndex + 1,
-    };
 
     const NumberOfFrames = image.NumberOfFrames;
 
     if (NumberOfFrames > 1) {
       for (let i = 0; i < NumberOfFrames; i++) {
-        metaData.frameNumber = i;
         imageId = getImageId(image, i);
         imageIds.push(imageId);
 
@@ -56,7 +94,6 @@ function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
         });
       }
     } else {
-      metaData.frameNumber = 1;
       imageId = getImageId(image);
       imageIds.push(imageId);
 
@@ -80,11 +117,10 @@ function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
     StudyInstanceUID: study.StudyInstanceUID,
     displaySetInstanceUID: displaySet.displaySetInstanceUID,
     imageIds,
+    is4D: false,
     frameRate: displaySet.frameRate,
     isClip: displaySet.isClip,
   };
-
-  stackMap[displaySet.displaySetInstanceUID] = stack;
 
   return stack;
 }
@@ -134,6 +170,7 @@ const StackManager = {
    * @return {Array} Array with image IDs
    */
   findOrCreateStack(study, displaySet) {
+    debugger;
     let stack = this.findStack(displaySet.displaySetInstanceUID);
 
     if (!stack || !stack.imageIds) {

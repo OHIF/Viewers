@@ -33,11 +33,20 @@ class Viewer extends Component {
             InstanceNumber: PropTypes.number,
             numImageFrames: PropTypes.number,
             Modality: PropTypes.string.isRequired,
-            images: PropTypes.arrayOf(
-              PropTypes.shape({
-                getImageId: PropTypes.func.isRequired,
-              })
-            ),
+            images: PropTypes.oneOfType([
+              PropTypes.arrayOf(
+                PropTypes.shape({
+                  getImageId: PropTypes.func.isRequired,
+                })
+              ),
+              PropTypes.arrayOf(
+                PropTypes.arrayOf(
+                  PropTypes.shape({
+                    getImageId: PropTypes.func.isRequired,
+                  })
+                )
+              ),
+            ]),
           })
         ),
       })
@@ -290,11 +299,11 @@ class Viewer extends Component {
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
-              )}
+              <ConnectedStudyBrowser
+                studies={this.state.thumbnails}
+                studyMetadata={this.props.studies}
+              />
+            )}
           </SidePanel>
 
           {/* MAIN */}
@@ -332,7 +341,7 @@ export default withDialog(Viewer);
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function (studies) {
+const _mapStudiesToThumbnails = function(studies) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
 
@@ -354,9 +363,17 @@ const _mapStudiesToThumbnails = function (studies) {
         // and better than what we have right now.
         altImageText = 'SEG';
       } else if (displaySet.images && displaySet.images.length) {
-        const imageIndex = Math.floor(displaySet.images.length / 2);
+        if (displaySet.is4D) {
+          const timePointIndex = Math.floor(displaySet.images.length / 2);
+          const timePointImages = displaySet.images[timePointIndex];
 
-        imageId = displaySet.images[imageIndex].getImageId();
+          const imageIndex = Math.floor(timePointImages.length / 2);
+
+          imageId = timePointImages[imageIndex].getImageId();
+        } else {
+          const imageIndex = Math.floor(displaySet.images.length / 2);
+          imageId = displaySet.images[imageIndex].getImageId();
+        }
       } else {
         altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }

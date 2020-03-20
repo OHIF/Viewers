@@ -50,7 +50,9 @@ class OHIFCornerstoneViewport extends Component {
     StudyInstanceUID,
     displaySetInstanceUID,
     SOPInstanceUID,
-    frameIndex = 0
+    frameIndex = 0,
+    is4D = false,
+    currentStackIndex = 0
   ) {
     if (!studies || !studies.length) {
       throw new Error('Studies not provided.');
@@ -88,6 +90,10 @@ class OHIFCornerstoneViewport extends Component {
     const stack = Object.assign({}, storedStack);
     stack.currentImageIdIndex = frameIndex;
 
+    if (is4D) {
+      stack.currentStackIndex = currentStackIndex;
+    }
+
     if (SOPInstanceUID) {
       const index = stack.imageIds.findIndex(imageId => {
         const imageIdSOPInstanceUID = cornerstone.metaData.get(
@@ -115,7 +121,9 @@ class OHIFCornerstoneViewport extends Component {
     StudyInstanceUID,
     displaySetInstanceUID,
     SOPInstanceUID,
-    frameIndex
+    frameIndex,
+    is4D,
+    currentStackIndex
   ) => {
     let viewportData;
 
@@ -124,7 +132,9 @@ class OHIFCornerstoneViewport extends Component {
       StudyInstanceUID,
       displaySetInstanceUID,
       SOPInstanceUID,
-      frameIndex
+      frameIndex,
+      is4D,
+      currentStackIndex
     );
 
     viewportData = {
@@ -144,6 +154,8 @@ class OHIFCornerstoneViewport extends Component {
       sopClassUIDs,
       SOPInstanceUID,
       frameIndex,
+      is4D,
+      currentStackIndex,
     } = displaySet;
 
     if (!StudyInstanceUID || !displaySetInstanceUID) {
@@ -161,7 +173,9 @@ class OHIFCornerstoneViewport extends Component {
       StudyInstanceUID,
       displaySetInstanceUID,
       SOPInstanceUID,
-      frameIndex
+      frameIndex,
+      is4D,
+      currentStackIndex
     ).then(viewportData => {
       this.setState({
         viewportData,
@@ -193,6 +207,8 @@ class OHIFCornerstoneViewport extends Component {
     if (!this.state.viewportData) {
       return null;
     }
+
+    debugger;
     const { viewportIndex } = this.props;
     const {
       imageIds,

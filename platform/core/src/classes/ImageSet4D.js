@@ -34,15 +34,12 @@ class ImageSet {
       this.sortByImagePositionPatient(imageStack)
     );
 
-    // TODO -> Once we support 4D rendering, return a stack of stacks.
-    const imageStack = imageStacks[0];
-
     // @property "images"
     Object.defineProperty(this, 'images', {
       enumerable: false,
       configurable: false,
       writable: false,
-      value: imageStack,
+      value: imageStacks,
     });
 
     // @property "uid"
