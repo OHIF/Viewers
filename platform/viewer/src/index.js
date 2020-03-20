@@ -23,11 +23,12 @@ import ReactDOM from 'react-dom';
  * by using the exported `App` component, and passing in your extensions as props using
  * the defaultExtensions property.
  */
-import OHIFVTKExtension from '@ohif/extension-vtk';
-import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
-import OHIFDicomSegmentationExtension from '@ohif/extension-dicom-segmentation';
-import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
-import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
+// import OHIFVTKExtension from '@ohif/extension-vtk';
+// import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
+// import OHIFDicomSegmentationExtension from '@ohif/extension-dicom-segmentation';
+// import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
+// import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
+import KinderspitalMRUrographyExtension from '@kinderspital/mr-urography';
 
 /*
  * Default Settings
@@ -41,11 +42,12 @@ if (window) {
 const appProps = {
   config,
   defaultExtensions: [
-    OHIFVTKExtension,
-    OHIFDicomHtmlExtension,
-    OHIFDicomMicroscopyExtension,
-    OHIFDicomPDFExtension,
-    OHIFDicomSegmentationExtension,
+    KinderspitalMRUrographyExtension,
+    // OHIFVTKExtension,
+    // OHIFDicomHtmlExtension,
+    // OHIFDicomMicroscopyExtension,
+    // OHIFDicomPDFExtension,
+    // OHIFDicomSegmentationExtension,
   ],
 };
 

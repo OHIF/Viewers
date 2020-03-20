@@ -19,7 +19,9 @@ const StudyListRouting = asyncComponent(() =>
   )
 );
 const StandaloneRouting = asyncComponent(() =>
-  import(/* webpackChunkName: "ConnectedStandaloneRouting" */ '../connectedComponents/ConnectedStandaloneRouting.js')
+  import(
+    /* webpackChunkName: "ConnectedStandaloneRouting" */ '../connectedComponents/ConnectedStandaloneRouting.js'
+  )
 );
 const ViewerLocalFileData = asyncComponent(() =>
   import(
@@ -33,6 +35,12 @@ const ROUTES_DEF = {
   default: {
     viewer: {
       path: '/viewer/:studyInstanceUIDs',
+      component: ViewerRouting,
+    },
+    // TODO -> In the future OHIF will have a better way of registering a route.
+    // This mrUrography route exists just to show/hide the side panel.
+    mrUrography: {
+      path: '/mrUrography/:studyInstanceUIDs',
       component: ViewerRouting,
     },
     standaloneViewer: {
