@@ -6,7 +6,11 @@
   background: #000;
 }
 
-[data-testid='main-container'] > h2 {
-  margin: 20px 0;
-  font-weight: bold;
+#main-container > h2 {
+  @apply font-bold my-8 text-2xl;
+}
+
+#main-container > ul li a,
+#main-container > a {
+  @apply underline text-blue-500;
 }
