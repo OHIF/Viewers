@@ -1,6 +1,8 @@
 // - createStacks
 import DICOMWeb from './../../DICOMWeb';
 import ImageSet from './../ImageSet';
+import ImageSet4D from './../ImageSet4D';
+import sortTags4D from '../../utils/sortTags4D';
 import { InstanceMetadata } from './InstanceMetadata';
 import { Metadata } from './Metadata';
 import OHIFError from '../OHIFError';
@@ -674,55 +676,116 @@ const isMultiFrame = instance => {
   return instance.getTagValue('NumberOfFrames') > 1;
 };
 
-const makeDisplaySet = (series, instances) => {
-  const instance = instances[0];
-  const imageSet = new ImageSet(instances);
-  const seriesData = series.getData();
+const getSortTag4DForInstances = instances => {
+  let tags = sortTags4D;
 
-  // set appropriate attributes to image set...
-  imageSet.setAttributes({
-    displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
-    SeriesDate: seriesData.SeriesDate,
-    SeriesTime: seriesData.SeriesTime,
-    SeriesInstanceUID: series.getSeriesInstanceUID(),
-    SeriesNumber: instance.getTagValue('SeriesNumber'),
-    SeriesDescription: instance.getTagValue('SeriesDescription'),
-    numImageFrames: instances.length,
-    frameRate: instance.getTagValue('FrameTime'),
-    Modality: instance.getTagValue('Modality'),
-    isMultiFrame: isMultiFrame(instance),
-  });
+  // TODO -> In core OHIF use all of these for sorting, only use TemporalPositionIdentifier for now.
+  //tags.filter(tag => tag === 'TemporalPositionIdentifier');
 
-  // Sort the images in this series if needed
-  const shallSort = true; //!OHIF.utils.ObjectPath.get(Meteor, 'settings.public.ui.sortSeriesByIncomingOrder');
-  if (shallSort) {
-    imageSet.sortBy((a, b) => {
-      // Sort by InstanceNumber (0020,0013)
-      return (
-        (parseInt(a.getTagValue('InstanceNumber', 0)) || 0) -
-        (parseInt(b.getTagValue('InstanceNumber', 0)) || 0)
-      );
-    });
-  }
-
-  // Include the first image instance number (after sorted)
-  imageSet.setAttribute(
-    'InstanceNumber',
-    imageSet.getImage(0).getTagValue('InstanceNumber')
+  const metadataPerInstance = instances.map(
+    instance => instance.getData().metadata
   );
 
-  const isReconstructable = isDisplaySetReconstructable(instances);
+  const firstImageMetadata = metadataPerInstance[0];
 
-  imageSet.isReconstructable = isReconstructable.value;
+  let sortTag4DForInstance;
 
-  if (shallSort && imageSet.isReconstructable) {
-    imageSet.sortByImagePositionPatient();
+  for (let i = 0; i < tags.length; i++) {
+    const tagName = tags[i];
+    const tagValue = firstImageMetadata[tagName];
+
+    if (tagValue === undefined) {
+      continue;
+    }
+
+    let tagValues = metadataPerInstance.map(metadata => metadata[tagName]);
+    const uniqueTagValues = [...new Set(tagValues)];
+
+    if (uniqueTagValues.length > 1) {
+      uniqueTagValues.sort((a, b) => a - b);
+      sortTag4DForInstance = { tagName, tagValues: uniqueTagValues };
+      break;
+    }
   }
 
-  if (isReconstructable.missingFrames) {
-    // TODO -> This is currently unused, but may be used for reconstructing
-    // Volumes with gaps later on.
-    imageSet.missingFrames = isReconstructable.missingFrames;
+  return sortTag4DForInstance;
+};
+
+const makeDisplaySet = (series, instances) => {
+  const instance = instances[0];
+  const seriesData = series.getData();
+
+  let imageSet;
+
+  const sortTag4DForInstances = getSortTag4DForInstances(instances);
+
+  if (sortTag4DForInstances) {
+    imageSet = new ImageSet4D(instances, sortTag4DForInstances);
+
+    // set appropriate attributes to image set...
+    imageSet.setAttributes({
+      displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
+      is4D: true,
+      SeriesDate: seriesData.SeriesDate,
+      SeriesTime: seriesData.SeriesTime,
+      SeriesInstanceUID: series.getSeriesInstanceUID(),
+      SeriesNumber: instance.getTagValue('SeriesNumber'),
+      SeriesDescription: instance.getTagValue('SeriesDescription'),
+      numImageFrames: instances.length,
+      frameRate: instance.getTagValue('FrameTime'),
+      Modality: instance.getTagValue('Modality'),
+      isMultiFrame: isMultiFrame(instance),
+    });
+
+    imageSet.isReconstructable = false;
+  } else {
+    imageSet = new ImageSet(instances);
+
+    // set appropriate attributes to image set...
+    imageSet.setAttributes({
+      displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
+      SeriesDate: seriesData.SeriesDate,
+      SeriesTime: seriesData.SeriesTime,
+      SeriesInstanceUID: series.getSeriesInstanceUID(),
+      SeriesNumber: instance.getTagValue('SeriesNumber'),
+      SeriesDescription: instance.getTagValue('SeriesDescription'),
+      numImageFrames: instances.length,
+      frameRate: instance.getTagValue('FrameTime'),
+      Modality: instance.getTagValue('Modality'),
+      isMultiFrame: isMultiFrame(instance),
+    });
+
+    // Sort the images in this series if needed
+    const shallSort = true; //!OHIF.utils.ObjectPath.get(Meteor, 'settings.public.ui.sortSeriesByIncomingOrder');
+    if (shallSort) {
+      imageSet.sortBy((a, b) => {
+        // Sort by InstanceNumber (0020,0013)
+        return (
+          (parseInt(a.getTagValue('InstanceNumber', 0)) || 0) -
+          (parseInt(b.getTagValue('InstanceNumber', 0)) || 0)
+        );
+      });
+    }
+
+    // Include the first image instance number (after sorted)
+    imageSet.setAttribute(
+      'InstanceNumber',
+      imageSet.getImage(0).getTagValue('InstanceNumber')
+    );
+
+    const isReconstructable = isDisplaySetReconstructable(instances);
+
+    imageSet.isReconstructable = isReconstructable.value;
+
+    if (shallSort && imageSet.isReconstructable) {
+      imageSet.sortByImagePositionPatient();
+    }
+
+    if (isReconstructable.missingFrames) {
+      // TODO -> This is currently unused, but may be used for reconstructing
+      // Volumes with gaps later on.
+      imageSet.missingFrames = isReconstructable.missingFrames;
+    }
   }
 
   return imageSet;
