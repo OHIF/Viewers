@@ -84,6 +84,8 @@
     "Ssl": false,
     "StowMaxInstances": 10,
     "StowMaxSize": 10,
-    "QidoCaseSensitive": false
+    "QidoCaseSensitive": false,
+    "StudyMetadata": "Full",
+    "SeriesMetadata": "Full"
   }
 }

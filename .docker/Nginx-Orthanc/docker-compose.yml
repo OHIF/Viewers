@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   orthanc:
-    image: jodogne/orthanc-plugins:1.5.6
+    image: jodogne/orthanc-plugins:latest
     hostname: orthanc
     volumes:
       # Config
