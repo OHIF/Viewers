@@ -213,6 +213,7 @@ class OHIFCornerstoneViewport extends Component {
     const {
       imageIds,
       currentImageIdIndex,
+      currentStackIndex,
       // If this comes from the instance, would be a better default
       // `FrameTime` in the instance
       // frameRate = 0,
@@ -237,6 +238,7 @@ class OHIFCornerstoneViewport extends Component {
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
+          stackIndex={currentStackIndex}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}

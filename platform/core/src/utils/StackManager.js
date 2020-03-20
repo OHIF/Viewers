@@ -16,8 +16,6 @@ const stackUpdatedCallbacks = [];
  * @return {Array}                        Array with image IDs
  */
 function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
-  debugger;
-
   let stack;
 
   if (displaySet.is4D) {
@@ -46,8 +44,6 @@ function createAndAdd4DStack(study, displaySet) {
     return;
   }
 
-  debugger;
-
   const stack4D = images.map(imageSet =>
     createAndAdd3DStack(study, displaySet, imageSet)
   );
@@ -58,7 +54,7 @@ function createAndAdd4DStack(study, displaySet) {
     StudyInstanceUID: study.StudyInstanceUID,
     displaySetInstanceUID: displaySet.displaySetInstanceUID,
     is4D: true,
-    imageIds4D,
+    imageIds: imageIds4D,
     frameRate: displaySet.frameRate,
     isClip: displaySet.isClip,
   };
@@ -170,7 +166,6 @@ const StackManager = {
    * @return {Array} Array with image IDs
    */
   findOrCreateStack(study, displaySet) {
-    debugger;
     let stack = this.findStack(displaySet.displaySetInstanceUID);
 
     if (!stack || !stack.imageIds) {

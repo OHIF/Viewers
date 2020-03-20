@@ -30,8 +30,6 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
     const goodEventData =
       eventData && eventData.currentPoints && eventData.currentPoints.image;
 
-    debugger;
-
     if (!goodEventData) {
       logger.error(
         `required eventData not supplied to tool ${this.name}'s createNewMeasurement`
