@@ -26,11 +26,61 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
     super(initialProps);
   }
 
-  handleSelectedCallback(evt, toolData, handle, interactionType = 'mouse') {
-    // Interupt eventDispatchers
+  createNewMeasurement(eventData) {
+    const goodEventData =
+      eventData && eventData.currentPoints && eventData.currentPoints.image;
 
-    // Return true so you don't draw directly on an ROI.
-    return true;
+    debugger;
+
+    if (!goodEventData) {
+      logger.error(
+        `required eventData not supplied to tool ${this.name}'s createNewMeasurement`
+      );
+
+      return;
+    }
+
+    const { imageId } = eventData.image;
+
+    const instanceMetadata = cornerstone.metaData.get('instance', imageId);
+
+    const {
+      StudyInstanceUID,
+      SeriesInstanceUID,
+      SOPInstanceUID,
+      TemporalPositionIdentifier,
+    } = instanceMetadata;
+
+    const measurementData = {
+      SegmentLabel: null,
+      StudyInstanceUID,
+      SeriesInstanceUID,
+      SOPInstanceUID,
+      TemporalPositionIdentifier,
+      FrameIndex: 1, //Would need to update this in the case of a multiframe.
+      visible: true,
+      active: true,
+      invalidated: true,
+      color: undefined,
+      handles: {
+        points: [],
+      },
+    };
+
+    measurementData.handles.textBox = {
+      active: false,
+      hasMoved: false,
+      movesIndependently: false,
+      drawnIndependently: true,
+      allowedOutsideImage: true,
+      hasBoundingBox: true,
+    };
+
+    return measurementData;
+  }
+
+  handleSelectedCallback() {
+    // Override FreehandRoiTool's default functionality to prevent handle movement.
   }
 
   /**
