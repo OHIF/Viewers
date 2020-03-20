@@ -3,6 +3,7 @@ import * as utils from './src/utils/';
 export {
   Button,
   ButtonGroup,
+  DateRange,
   Icon,
   IconButton,
   Select,

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { Button, Icon, Input, Typography, Select } from '@ohif/ui';
+import { Button, Icon, Input, Typography, Select, DateRange } from '@ohif/ui';
 
 const sortIconMap = {
   '-1': 'sorting-active-down',
@@ -14,7 +14,8 @@ const defaultProps = {
   filtersValues: {
     patientName: '',
     mrn: '',
-    studyDate: '',
+    startDate: null,
+    endDate: null,
     description: '',
     modality: '',
     accession: '',
@@ -31,7 +32,6 @@ const FilterLabel = ({
   isBeingSorted = false,
   sortDirection = 0,
   onLabelClick,
-  inputType,
   className,
   children,
 }) => {
@@ -68,6 +68,16 @@ const FilterLabel = ({
       <span>{children}</span>
     </label>
   );
+};
+
+FilterLabel.propTypes = {
+  label: PropTypes.string,
+  isSortable: PropTypes.bool,
+  isBeingSorted: PropTypes.bool,
+  sortDirection: PropTypes.number,
+  onLabelClick: PropTypes.func,
+  className: PropTypes.string,
+  children: PropTypes.node,
 };
 
 const StudyListFilter = ({
@@ -107,20 +117,52 @@ const StudyListFilter = ({
   };
 
   const clearFilters = () => {
-    const _filterValues = { ...currentFiltersValues };
-    filtersMeta.forEach(filter => {
-      if (_filterValues[filter.name]) {
-        delete _filterValues[filter.name];
-      }
-    });
-    setcurrentFiltersValues(_filterValues);
+    setcurrentFiltersValues(defaultProps.filtersValues);
   };
 
   const isFiltering = () => {
-    return filtersMeta.some(filter => {
-      const filterValue = currentFiltersValues[filter.name];
-      return filterValue && filterValue !== '';
+    return Object.keys(currentFiltersValues).some(name => {
+      const filterValue = currentFiltersValues[name];
+      return filterValue !== defaultProps.filtersValues[name];
     });
+  };
+
+  const renderInput = (inputType, name, { selectOptions }) => {
+    switch (inputType) {
+      case 'date-range': {
+        return (
+          <div className="relative">
+            <DateRange
+              startDate={currentFiltersValues.startDate}
+              endDate={currentFiltersValues.endDate}
+              onChange={({ startDate, endDate, preset = false }) => {
+                setcurrentFiltersValues(state => ({
+                  ...state,
+                  startDate,
+                  endDate,
+                }));
+              }}
+            />
+          </div>
+        );
+      }
+      case 'select': {
+        return <Select options={selectOptions}></Select>;
+      }
+      case 'text': {
+        return (
+          <Input
+            className="border-custom-blue mt-2 bg-black"
+            type="text"
+            containerClassName="mr-2"
+            value={currentFiltersValues[name] || ''}
+            onChange={event => handleFilterValueChange(event, name)}
+          />
+        );
+      }
+      default:
+        break;
+    }
   };
 
   return (
@@ -210,20 +252,7 @@ const StudyListFilter = ({
                         onLabelClick={() => handleFilterLabelClick(name)}
                         inputType={inputType}
                       >
-                        {inputType === 'text' && (
-                          <Input
-                            className="border-custom-blue mt-2 bg-black"
-                            type="text"
-                            containerClassName="mr-2"
-                            value={currentFiltersValues[name] || ''}
-                            onChange={event =>
-                              handleFilterValueChange(event, name)
-                            }
-                          />
-                        )}
-                        {inputType === 'select' && (
-                          <Select options={selectOptions}></Select>
-                        )}
+                        {renderInput(inputType, name, { selectOptions })}
                       </FilterLabel>
                     </div>
                   );
@@ -247,15 +276,19 @@ const StudyListFilter = ({
 };
 
 StudyListFilter.propTypes = {
-  filtersMeta: PropTypes.arrayOf({
-    name: PropTypes.string,
-    dsplayName: PropTypes.string,
-    inputType: PropTypes.oneOf(['text', 'select', 'date-range', 'none']),
-    isSortable: PropTypes.bool,
-    gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
-  }),
+  filtersMeta: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      dsplayName: PropTypes.string,
+      inputType: PropTypes.oneOf(['text', 'select', 'date-range', 'none']),
+      isSortable: PropTypes.bool,
+      gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+    })
+  ),
   filtersValues: PropTypes.object,
   numOfStudies: PropTypes.number,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
 };
 
 export default StudyListFilter;
