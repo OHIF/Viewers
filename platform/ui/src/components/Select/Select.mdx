@@ -1,0 +1,70 @@
+---
+name: Select
+menu: Components
+route: components/select
+---
+
+import { Playground, Props } from 'docz';
+import Select from './';
+
+# Select
+
+## Import
+
+```javascript
+import { Select } from '@ohfi/ui';
+```
+
+## Basic usage
+
+<Playground>
+  <div className="flex flex-col flex-1 p-4 items-center">
+    <div className="w-20">
+      <Select
+        options={[
+          { value: 'one', label: 'one' },
+          { value: 'two', label: 'two' },
+          { value: 'three', label: 'three' },
+          { value: 'four', label: 'four' },
+        ]}
+      />
+    </div>
+  </div>
+</Playground>
+
+## Disabled
+
+<Playground>
+  <div className="flex flex-col flex-1 p-4 items-center">
+    <div className="w-20">
+      <Select
+        isDisabled
+        options={[
+          { value: 'one', label: 'one' },
+          { value: 'two', label: 'two' },
+          { value: 'three', label: 'three' },
+          { value: 'four', label: 'four' },
+        ]}
+      />
+    </div>
+  </div>
+</Playground>
+
+## No Options
+
+<Playground>
+  <div className="flex flex-col flex-1 p-4 items-center">
+    <div className="w-20">
+      <Select
+        noOptionsMessage={() => {
+          'No Options';
+        }}
+        options={[]}
+      />
+    </div>
+  </div>
+</Playground>
+
+## Properties
+
+<Props of={Select} />

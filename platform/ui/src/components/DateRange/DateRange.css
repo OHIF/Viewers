@@ -29,7 +29,7 @@
   @apply bg-no-repeat;
 }
 .DateInput_input {
-  @apply cursor-pointer border-custom-blue mt-2 bg-black shadow transition duration-300 appearance-none border-t border-l border-r border-b border-solid rounded w-full py-2 px-3 text-sm text-gray-700 leading-tight pl-8;
+  @apply cursor-pointer border-custom-blue mt-2 bg-black shadow transition duration-300 appearance-none border-t border-l border-r border-b border-solid rounded w-full py-2 px-3 text-sm text-white leading-tight pl-8;
 }
 .DateInput_input:hover {
   @apply border-gray-500;
