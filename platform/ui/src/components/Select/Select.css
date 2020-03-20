@@ -29,3 +29,11 @@
 .customSelect__wrapper .customSelect__single-value {
   @apply text-white;
 }
+
+.customSelect--is-disabled .customSelect__control--is-disabled {
+  @apply pointer-events-none;
+}
+
+.customSelect__wrapper.customSelect--is-disabled {
+  @apply cursor-not-allowed pointer-events-auto;
+}
