@@ -6,12 +6,13 @@
         "wadoUriRoot": "http://localhost:8042/wado",
         "qidoRoot": "http://localhost:8042/dicom-web",
         "wadoRoot": "http://localhost:8042/dicom-web",
-        "vtkRoot": "http://localhost:8042/vtk",
+        "vtkRoot": "http://localhost:8080/vtk",
+        "instancesRoot": "http://localhost:8042/instances",
         "qidoSupportsIncludeField": false,
         "imageRendering": "wadouri",
         "thumbnailRendering": "wadors",
         "requestOptions": {
-          "auth": "orthanc:orthanc",
+          "auth": "orthanc:0rth4ncP4ssw0rd",
           "logRequests": true,
           "logResponses": false,
           "logTiming": true
@@ -22,7 +23,7 @@
   "defaultServiceType": "dicomWeb",
   "dropCollections": false,
   "public": {
-    "verifyEmail": true,
+    "verifyEmail": false,
     "demoUserEnabled": false,
     "ui": {
         "studyListFunctionsEnabled": true,

@@ -26,6 +26,13 @@ Template.pipelineInformationForm.onCreated(() => {
 
                 instance.data.resetState();
             });
+        },
+        editFilter(index) {
+            const filter = instance.data.currentItem.get().pipelineDto.filters[index];
+            instance.data.currentItem.set(instance.data.currentItem.get());
+            instance.data.currentFilterItem.set(filter);
+            instance.data.mode.set('edit');
+            instance.data.target.set('filter');
         }
     };
 

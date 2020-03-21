@@ -60,6 +60,11 @@ export const DICOMWebServer = new SimpleSchema({
         label: 'VTK root',
         max: 1000
     },
+    instancesRoot: {
+        type: String,
+        label: "Instances root",
+        max: 1000
+    },
     imageRendering: {
         type: String,
         label: 'Image rendering',

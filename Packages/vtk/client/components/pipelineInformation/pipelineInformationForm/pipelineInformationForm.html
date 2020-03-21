@@ -33,10 +33,10 @@
                         <td>{{filter.filterClass}}</td>
                         <td class="text-right">
                             <div class="btn-group" role="group" aria-label="Actions">
-                                {{#button class='btn btn-sm btn-default' action='edit' params=pipeline title='Edit'}}
+                                {{#button class='btn btn-sm btn-default' action='editFilter' params=(concat @index) title='Edit'}}
                                     <i class="fa fa-pencil"></i>
                                 {{/button}}
-                                {{#button class='btn btn-sm btn-danger' action='delete' params=pipeline title='Remove'}}
+                                {{#button class='btn btn-sm btn-danger' action='deleteFilter' params=pipeline title='Remove'}}
                                     <i class="fa fa-trash"></i>
                                 {{/button}}
                             </div>

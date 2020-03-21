@@ -3,7 +3,6 @@ import {OHIF} from 'meteor/ohif:core';
 
 Meteor.startup(function () {
     // Mail server settings
-    debugger;
     var username = Meteor.settings && Meteor.settings.mailServerSettings && Meteor.settings.mailServerSettings.username || null;
     var password = Meteor.settings && Meteor.settings.mailServerSettings && Meteor.settings.mailServerSettings.password || null;
     var server = Meteor.settings && Meteor.settings.mailServerSettings && Meteor.settings.mailServerSettings.server || null;
@@ -39,7 +38,11 @@ Meteor.startup(function () {
     };
 
     Accounts.urls.resetPassword = function (token) {
-        return OHIF.utils.absoluteUrl('resetPassword/' + token);
+        return Meteor.absoluteUrl('resetPassword/' + token);
+    };
+
+    Accounts.urls.verifyEmail = function (token) {
+        return Meteor.absoluteUrl('verify-email/' + token);
     };
 
     Accounts.emailTemplates.resetPassword.text = function (user, url) {
@@ -49,7 +52,6 @@ Meteor.startup(function () {
     };
 
     // Send email when account is created
-    debugger;
     Accounts.config({
         sendVerificationEmail: verifyEmail
     });

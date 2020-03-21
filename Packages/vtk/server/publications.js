@@ -36,9 +36,9 @@ Meteor.publish('pipelines.publication', function () {
     poll();
     this.ready();
 
-    const interval = Meteor.setInterval(poll, POLL_INTERVAL);
+    //const interval = Meteor.setInterval(poll, POLL_INTERVAL);
 
     this.onStop(() => {
-        Meteor.clearInterval(interval);
+        //Meteor.clearInterval(interval);
     });
 });

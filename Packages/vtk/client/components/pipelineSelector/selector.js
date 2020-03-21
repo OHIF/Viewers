@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Pipelines } from 'meteor/gtajesgenga:vtk/both/collections';
 import { Template } from 'meteor/templating';
 import { OHIF } from 'meteor/ohif:core';
+import { PipelineSelector } from 'meteor/gtajesgenga:vtk';
 
 Template.pipelineSelector.onCreated(function() {
 
@@ -30,6 +31,7 @@ Template.pipelineSelector.helpers({
         // TODO your event handler here
         OHIF.log.info(suggestion.id);
         Template.instance().$('#selected-pipeline-id').val(suggestion.id);
+        PipelineSelector.selectedId = suggestion.id;
         //console.log(suggestion.id);
     }
 });
