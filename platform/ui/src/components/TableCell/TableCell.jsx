@@ -2,17 +2,33 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const TableCell = ({ children, className, isTableHead, size, style }) => {
-  const sizeClasses = {
-    small: 'flex-0.3',
-    normal: 'flex-1',
+const TableCell = ({
+  children,
+  className,
+  isTableHead,
+  size,
+  align,
+  style,
+}) => {
+  const classes = {
+    align: {
+      left: 'text-left',
+      center: 'text-center',
+      right: 'text-right',
+      justify: 'text-justify',
+    },
+    size: {
+      small: 'flex-0.3',
+      normal: 'flex-1',
+    },
   };
 
   return (
     <div
       className={classnames(
         'px-2 last:border-r-0 break-all',
-        sizeClasses[size],
+        classes.size[size],
+        classes.align[align],
         {
           'border-r border-custom-violetPale': !isTableHead,
         },
@@ -30,6 +46,7 @@ TableCell.defaultProps = {
   isTableHead: false,
   size: 'normal',
   style: {},
+  align: 'left',
 };
 
 TableCell.propTypes = {
@@ -38,6 +55,7 @@ TableCell.propTypes = {
   className: PropTypes.string,
   size: PropTypes.oneOf(['small', 'normal']),
   style: PropTypes.object,
+  align: PropTypes.oneOf(['left', 'center', 'right', 'justify']),
 };
 
 export default TableCell;
