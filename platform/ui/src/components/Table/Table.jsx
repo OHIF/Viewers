@@ -3,13 +3,19 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const Table = ({ children, className, fullWidth, style }) => {
+  const classes = {
+    base: 'text-lg text-white',
+    fullWidth: {
+      true: 'w-full',
+      false: '',
+    },
+  };
+
   return (
     <div
       className={classnames(
-        'text-lg text-white',
-        {
-          'w-full': fullWidth,
-        },
+        classes.base,
+        classes.fullWidth[fullWidth],
         className
       )}
       style={style}
