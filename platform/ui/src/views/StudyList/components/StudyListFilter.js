@@ -17,7 +17,7 @@ const defaultProps = {
     startDate: null,
     endDate: null,
     description: '',
-    modality: '',
+    modality: [],
     accession: '',
     sortBy: '',
     sortDirection: 0,
@@ -147,7 +147,26 @@ const StudyListFilter = ({
         );
       }
       case 'select': {
-        return <Select options={selectOptions}></Select>;
+        return (
+          <Select
+            options={selectOptions}
+            value={currentFiltersValues[name] || []}
+            onChange={(inputvalues, { action }) => {
+              switch (action) {
+                case 'select-option':
+                case 'remove-value':
+                case 'clear':
+                  setcurrentFiltersValues(prevState => ({
+                    ...prevState,
+                    [name]: inputvalues,
+                  }));
+                  break;
+                default:
+                  break;
+              }
+            }}
+          ></Select>
+        );
       }
       case 'text': {
         return (

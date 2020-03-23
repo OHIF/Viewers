@@ -55,7 +55,7 @@ Select.propTypes = {
   ),
   placeholder: PropTypes.string,
   noOptionsMessage: PropTypes.func,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 };
 
 export default Select;
