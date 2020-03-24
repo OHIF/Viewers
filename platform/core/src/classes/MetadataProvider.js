@@ -1,7 +1,7 @@
 import * as dcmjs from 'dcmjs';
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
-import getPixelSpacing from '../utils/metadataProvider/getPixelSpacing';
+import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacingInformation';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import fetchOverlayData from '../utils/metadataProvider/fetchOverlayData';
 
@@ -210,7 +210,7 @@ class MetadataProvider {
         // Fallback for DX images.
         // TODO: We should use the rest of the results of this function
         // to update the UI somehow
-        const { PixelSpacing } = getPixelSpacing(instance);
+        const { PixelSpacing } = getPixelSpacingInformation(instance);
 
         let rowPixelSpacing;
         let columnPixelSpacing;
