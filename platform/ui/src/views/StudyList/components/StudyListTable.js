@@ -3,16 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import { format } from 'date-fns';
-import {
-  Button,
-  Icon,
-  Typography,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-} from '@ohif/ui';
+import { Button, Icon, EmptyStudies } from '@ohif/ui';
 
 const getGridColClass = (filtersMeta, name) => {
   const filter = filtersMeta.find(filter => filter.name === name);
@@ -260,10 +251,7 @@ const StudyListTable = ({ studies, numOfStudies, filtersMeta }) => {
   const renderEmpty = () => {
     return (
       <div className="flex flex-col items-center justify-center pt-48">
-        <Icon name="magnifier" className="mb-4" />
-        <Typography className="text-custom-aquaBright" variant="h5">
-          No studies available
-        </Typography>
+        <EmptyStudies />
       </div>
     );
   };
