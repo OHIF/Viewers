@@ -2,82 +2,37 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { Button, Icon, Input, Typography, Select, DateRange } from '@ohif/ui';
+import {
+  Button,
+  Icon,
+  Typography,
+  FilterDateRange,
+  FilterSelect,
+  FilterText,
+} from '@ohif/ui';
 
-const sortIconMap = {
-  '-1': 'sorting-active-down',
-  0: 'sorting',
-  1: 'sorting-active-up',
+const filterInputComponentMap = {
+  'date-range': FilterDateRange,
+  text: FilterText,
+  select: FilterSelect,
 };
 
 const defaultProps = {
   filtersValues: {
     patientName: '',
     mrn: '',
-    startDate: null,
-    endDate: null,
+    studyDate: {
+      startDate: null,
+      endDate: null,
+    },
     description: '',
-    modality: '',
+    modality: [],
     accession: '',
     sortBy: '',
     sortDirection: 0,
     page: 0,
     resultsPerPage: 25,
   },
-};
-
-const FilterLabel = ({
-  label = '',
-  isSortable = false,
-  isBeingSorted = false,
-  sortDirection = 0,
-  onLabelClick,
-  className,
-  children,
-}) => {
-  const handleLabelClick = () => {
-    if (onLabelClick) {
-      onLabelClick();
-    }
-  };
-
-  const iconProps = {
-    name: isBeingSorted ? sortIconMap[sortDirection] : 'sorting',
-    colorClass: isBeingSorted ? 'text-custom-aquaBright' : 'text-custom-blue',
-  };
-
-  return (
-    <label
-      className={classnames(
-        'flex flex-col flex-1 text-white text-lg pl-1 select-none',
-        className
-      )}
-    >
-      <span
-        className="flex flex-row items-center cursor-pointer"
-        onClick={handleLabelClick}
-      >
-        {label}
-        {isSortable && (
-          <Icon
-            name={iconProps.name}
-            className={classnames('mx-2 w-2', iconProps.colorClass)}
-          />
-        )}
-      </span>
-      <span>{children}</span>
-    </label>
-  );
-};
-
-FilterLabel.propTypes = {
-  label: PropTypes.string,
-  isSortable: PropTypes.bool,
-  isBeingSorted: PropTypes.bool,
-  sortDirection: PropTypes.number,
-  onLabelClick: PropTypes.func,
-  className: PropTypes.string,
-  children: PropTypes.node,
 };
 
 const StudyListFilter = ({
@@ -108,14 +63,6 @@ const StudyListFilter = ({
     }
   };
 
-  const handleFilterValueChange = (event, name) => {
-    const { value } = event.target;
-    setcurrentFiltersValues(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
   const clearFilters = () => {
     setcurrentFiltersValues(defaultProps.filtersValues);
   };
@@ -125,44 +72,6 @@ const StudyListFilter = ({
       const filterValue = currentFiltersValues[name];
       return filterValue !== defaultProps.filtersValues[name];
     });
-  };
-
-  const renderInput = (inputType, name, { selectOptions }) => {
-    switch (inputType) {
-      case 'date-range': {
-        return (
-          <div className="relative">
-            <DateRange
-              startDate={currentFiltersValues.startDate}
-              endDate={currentFiltersValues.endDate}
-              onChange={({ startDate, endDate, preset = false }) => {
-                setcurrentFiltersValues(state => ({
-                  ...state,
-                  startDate,
-                  endDate,
-                }));
-              }}
-            />
-          </div>
-        );
-      }
-      case 'select': {
-        return <Select options={selectOptions}></Select>;
-      }
-      case 'text': {
-        return (
-          <Input
-            className="border-custom-blue mt-2 bg-black"
-            type="text"
-            containerClassName="mr-2"
-            value={currentFiltersValues[name] || ''}
-            onChange={event => handleFilterValueChange(event, name)}
-          />
-        );
-      }
-      default:
-        break;
-    }
   };
 
   return (
@@ -231,8 +140,15 @@ const StudyListFilter = ({
                   inputType,
                   isSortable,
                   gridCol,
-                  selectOptions,
+                  inputProps,
                 }) => {
+                  const _isSortable =
+                    isSortable && numOfStudies <= 100 && numOfStudies > 0;
+                  const _isBeingSorted = sortBy === name;
+                  const onLabelClick = () => handleFilterLabelClick(name);
+                  const FilterInputComponent =
+                    filterInputComponentMap[inputType];
+
                   return (
                     <div
                       key={name}
@@ -241,19 +157,22 @@ const StudyListFilter = ({
                         'pl-4 first:pl-12'
                       )}
                     >
-                      <FilterLabel
+                      <FilterInputComponent
                         key={name}
                         label={displayName}
-                        isSortable={
-                          isSortable && numOfStudies <= 100 && numOfStudies > 0
-                        }
-                        isBeingSorted={sortBy === name}
+                        isSortable={_isSortable}
+                        isBeingSorted={_isBeingSorted}
                         sortDirection={sortDirection}
-                        onLabelClick={() => handleFilterLabelClick(name)}
-                        inputType={inputType}
-                      >
-                        {renderInput(inputType, name, { selectOptions })}
-                      </FilterLabel>
+                        onLabelClick={onLabelClick}
+                        inputProps={inputProps}
+                        inputValue={currentFiltersValues[name]}
+                        onChange={newValue => {
+                          setcurrentFiltersValues(prevState => ({
+                            ...prevState,
+                            [name]: newValue,
+                          }));
+                        }}
+                      />
                     </div>
                   );
                 }

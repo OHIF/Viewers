@@ -1,6 +1,10 @@
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
 import DateRange from './DateRange';
+import FilterDateRange from './FilterDateRange';
+import FilterSelect from './FilterSelect';
+import FilterText from './FilterText';
+import FilterWrapper from './FilterWrapper';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
@@ -13,6 +17,10 @@ export {
   Button,
   ButtonGroup,
   DateRange,
+  FilterDateRange,
+  FilterSelect,
+  FilterText,
+  FilterWrapper,
   Icon,
   IconButton,
   Input,

@@ -6,7 +6,6 @@ import ReactSelect from 'react-select';
 import './Select.css';
 
 const Select = ({
-  autoFocus,
   className,
   isDisabled,
   isMulti,
@@ -20,7 +19,6 @@ const Select = ({
 }) => {
   return (
     <ReactSelect
-      autoFocus={autoFocus}
       className={classnames(
         className,
         'flex flex-col flex-1 mt-2 customSelect__wrapper'
@@ -40,7 +38,6 @@ const Select = ({
 };
 
 Select.propTypes = {
-  autoFocus: PropTypes.bool,
   className: PropTypes.string,
   isDisabled: PropTypes.bool,
   isMulti: PropTypes.bool,
@@ -55,7 +52,7 @@ Select.propTypes = {
   ),
   placeholder: PropTypes.string,
   noOptionsMessage: PropTypes.func,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 };
 
 export default Select;
