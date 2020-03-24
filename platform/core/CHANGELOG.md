@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.0...@ohif/core@2.6.1) (2020-03-23)
+
+
+### Bug Fixes
+
+* avoid-wasteful-renders ([#1544](https://github.com/OHIF/Viewers/issues/1544)) ([e41d339](https://github.com/OHIF/Viewers/commit/e41d339f5faef6b93700bc860f37f29f32ad5ed6))
+
+
+
+
+
 # [2.6.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.5.3...@ohif/core@2.6.0) (2020-03-13)
 
 
