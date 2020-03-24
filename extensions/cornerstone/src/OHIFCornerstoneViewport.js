@@ -208,7 +208,6 @@ class OHIFCornerstoneViewport extends Component {
       return null;
     }
 
-    debugger;
     const { viewportIndex } = this.props;
     const {
       imageIds,
