@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.3](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.2...@ohif/core@2.6.3) (2020-03-24)
+
+
+### Bug Fixes
+
+* Ensure we take into account pixel spacing fields properly ([#1555](https://github.com/OHIF/Viewers/issues/1555)) ([77ab0ad](https://github.com/OHIF/Viewers/commit/77ab0ad9a14a135b5560741fc1600704df08c141))
+
+
+
+
+
 ## [2.6.2](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.1...@ohif/core@2.6.2) (2020-03-24)
 
 
