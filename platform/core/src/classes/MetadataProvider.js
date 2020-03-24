@@ -1,7 +1,7 @@
 import * as dcmjs from 'dcmjs';
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
-import { getFallbackTagFromInstance } from '../utils/metadataProvider/metadataProviderFallbackTags';
+import getPixelSpacing from '../utils/metadataProvider/getPixelSpacing';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import fetchOverlayData from '../utils/metadataProvider/fetchOverlayData';
 
@@ -163,18 +163,6 @@ class MetadataProvider {
       return instance[naturalizedTagOrWADOImageLoaderTag];
     }
 
-    if (options.fallback) {
-      // Perhaps the tag has fallbacks?
-      const fallbackTag = getFallbackTagFromInstance(
-        naturalizedTagOrWADOImageLoaderTag,
-        instance
-      );
-
-      if (fallbackTag) {
-        return fallbackTag;
-      }
-    }
-
     // Maybe its a legacy CornerstoneWADOImageLoader tag then:
     return this._getCornerstoneWADOImageLoaderTag(
       naturalizedTagOrWADOImageLoaderTag,
@@ -220,10 +208,9 @@ class MetadataProvider {
         const { ImageOrientationPatient } = instance;
 
         // Fallback for DX images.
-        const PixelSpacing = getFallbackTagFromInstance(
-          'PixelSpacing',
-          instance
-        );
+        // TODO: We should use the rest of the results of this function
+        // to update the UI somehow
+        const { PixelSpacing } = getPixelSpacing(instance);
 
         let rowPixelSpacing;
         let columnPixelSpacing;
