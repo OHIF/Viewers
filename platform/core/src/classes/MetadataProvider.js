@@ -58,9 +58,7 @@ class MetadataProvider {
 
     Object.assign(instance, naturalizedDataset);
 
-    if (options.server) {
-      await this._checkBulkDataAndInlineBinaries(instance, options.server);
-    }
+    await this._checkBulkDataAndInlineBinaries(instance, options.server);
 
     return instance;
   }
@@ -344,7 +342,7 @@ class MetadataProvider {
 
         break;
       case WADO_IMAGE_LOADER_TAGS.OVERLAY_PLANE_MODULE:
-        metadata = [];
+        const overlays = [];
 
         for (
           let overlayGroup = 0x00;
@@ -389,8 +387,12 @@ class MetadataProvider {
             roiStandardDeviation: instance[ROIStandardDeviationTag],
           };
 
-          metadata.push(overlay);
+          overlays.push(overlay);
         }
+
+        metadata = {
+          overlays
+        };
 
         break;
 
