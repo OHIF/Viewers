@@ -11,9 +11,11 @@ const TableHead = ({ children, className, style }) => {
       )}
       style={style}
     >
-      {React.cloneElement(children, {
-        isTableHead: true,
-      })}
+      {React.isValidElement(children)
+        ? React.cloneElement(children, {
+            isTableHead: true,
+          })
+        : children}
     </div>
   );
 };
@@ -24,7 +26,26 @@ TableHead.defaultProps = {
 };
 
 TableHead.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: function(props, propName, componentName) {
+    const elements = React.Children.toArray(props.children);
+    const isString = elements.some(child => typeof child === 'string');
+
+    if (isString) {
+      return new Error(
+        `Failed prop type: Invalid prop ${propName} supplied to ${componentName}, expected a valid element instead of a string.`
+      );
+    }
+
+    const isInvalidElement = elements.some(
+      child => !React.isValidElement(child)
+    );
+
+    if (isInvalidElement) {
+      return new Error(
+        `Failed prop type: Invalid prop ${propName} supplied to ${componentName}, expected a valid node element.`
+      );
+    }
+  },
   className: PropTypes.string,
   style: PropTypes.object,
 };

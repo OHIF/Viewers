@@ -5,9 +5,11 @@ import classnames from 'classnames';
 const TableRow = ({ children, className, isTableHead, style }) => {
   return (
     <div className={classnames('w-full flex', className)} style={style}>
-      {React.Children.map(children, child =>
-        React.cloneElement(child, { isTableHead })
-      )}
+      {React.isValidElement(children)
+        ? React.Children.map(children, child =>
+            React.cloneElement(child, { isTableHead })
+          )
+        : children}
     </div>
   );
 };
@@ -20,7 +22,26 @@ TableRow.defaultProps = {
 
 TableRow.propTypes = {
   isTableHead: PropTypes.bool,
-  children: PropTypes.node.isRequired,
+  children: function(props, propName, componentName) {
+    const elements = React.Children.toArray(props.children);
+    const isString = elements.some(child => typeof child === 'string');
+
+    if (isString) {
+      return new Error(
+        `Failed prop type: Invalid prop ${propName} supplied to ${componentName}, expected a valid element instead of a string.`
+      );
+    }
+
+    const isInvalidElement = elements.some(
+      child => !React.isValidElement(child)
+    );
+
+    if (isInvalidElement) {
+      return new Error(
+        `Failed prop type: Invalid prop ${propName} supplied to ${componentName}, expected a valid node element.`
+      );
+    }
+  },
   className: PropTypes.string,
   style: PropTypes.object,
 };
