@@ -59,6 +59,8 @@ const mapStateToProps = (state, ownProps) => {
     frameRate,
     //stack: viewportSpecificData.stack,
     viewport: viewportSpecificData.viewport,
+    // viewport: viewportSpecificData.viewport,
+    SOPInstanceUID: viewportSpecificData.SOPInstanceUID,
   };
 };
 
@@ -103,6 +105,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
   };
 };
+
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   let eventListeners = [];
 
@@ -125,9 +128,15 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
   }
 
   return {
+    ...ownProps,
     ...propsFromState,
     ...propsFromDispatch,
-    ...ownProps,
+    setViewportActive: propsFromState.isActive
+      ? undefined
+      : propsFromDispatch.setViewportActive,
+    onNewImage: !propsFromState.SOPInstanceUID
+      ? ownProps.onNewImage
+      : propsFromDispatch.onNewImage,
     eventListeners,
   };
 };
