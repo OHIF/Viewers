@@ -194,14 +194,15 @@ class OHIFCornerstoneViewport extends Component {
   }
 
   onNewImage = newImageData => {
-    const { currentImageIdIndex } = newImageData;
-    this.setState(state => ({
-      ...state,
-      viewportData: {
-        ...state.viewportData,
-        stack: { ...state.viewportData.stack, currentImageIdIndex },
-      },
-    }));
+    if (this.state.viewportData.stack.currentImageIdIndex != null) {
+      this.setState(state => ({
+        ...state,
+        viewportData: {
+          ...state.viewportData,
+          stack: { ...state.viewportData.stack, currentImageIdIndex: null },
+        },
+      }));
+    }
   };
 
   render() {

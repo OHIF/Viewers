@@ -58,6 +58,7 @@ const mapStateToProps = (state, ownProps) => {
     frameRate,
     //stack: viewportSpecificData.stack,
     // viewport: viewportSpecificData.viewport,
+    SOPInstanceUID: viewportSpecificData.SOPInstanceUID,
   };
 };
 
@@ -103,9 +104,24 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   };
 };
 
+const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
+  return {
+    ...ownProps,
+    ...propsFromState,
+    ...propsFromDispatch,
+    setViewportActive: propsFromState.isActive
+      ? undefined
+      : propsFromDispatch.setViewportActive,
+    onNewImage: !propsFromState.SOPInstanceUID
+      ? ownProps.onNewImage
+      : propsFromDispatch.onNewImage,
+  };
+};
+
 const ConnectedCornerstoneViewport = connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
+  mergeProps
 )(CornerstoneViewport);
 
 export default ConnectedCornerstoneViewport;
