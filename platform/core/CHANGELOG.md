@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.2](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.1...@ohif/core@2.6.2) (2020-03-24)
+
+
+### Bug Fixes
+
+* OverlayPlane module usage for ArrayBuffer, BulkDataURI, and InlineBinary cases, as well as PaletteColor LUTs for ArrayBuffer (i.e. local drag/drop) case ([#1546](https://github.com/OHIF/Viewers/issues/1546)) ([404d52f](https://github.com/OHIF/Viewers/commit/404d52fe5c0442dd13e4d407bb0687d72fa5f32c))
+
+
+
+
+
 ## [2.6.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.0...@ohif/core@2.6.1) (2020-03-23)
 
 
