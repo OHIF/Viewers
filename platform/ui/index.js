@@ -15,6 +15,7 @@ export {
   Button,
   ButtonGroup,
   DateRange,
+  EmptyStudies,
   Icon,
   IconButton,
   Select,
