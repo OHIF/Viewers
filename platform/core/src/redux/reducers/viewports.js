@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
-import produce from 'immer';
+import produce, { setAutoFreeze } from 'immer';
 
 import {
   CLEAR_VIEWPORT,
@@ -10,6 +10,8 @@ import {
   SET_VIEWPORT_LAYOUT,
   SET_VIEWPORT_LAYOUT_AND_DATA,
 } from './../constants/ActionTypes.js';
+
+setAutoFreeze(false);
 
 export const DEFAULT_STATE = {
   numRows: 1,
