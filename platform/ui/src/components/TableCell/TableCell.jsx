@@ -21,6 +21,10 @@ const TableCell = ({
       small: 'flex-0.3',
       normal: 'flex-1',
     },
+    isTableHead: {
+      true: '',
+      false: 'border-r border-custom-violetPale',
+    },
   };
 
   return (
@@ -29,9 +33,7 @@ const TableCell = ({
         'px-2 last:border-r-0 break-all',
         classes.size[size],
         classes.align[align],
-        {
-          'border-r border-custom-violetPale': !isTableHead,
-        },
+        classes.isTableHead[isTableHead],
         className
       )}
       style={style}
