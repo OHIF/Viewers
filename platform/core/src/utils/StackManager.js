@@ -26,7 +26,7 @@ function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
       return;
     }
 
-    createAndAdd3DStack(study, displaySet, images);
+    stack = createAndAdd3DStack(study, displaySet, images);
   }
 
   if (!stack) {
