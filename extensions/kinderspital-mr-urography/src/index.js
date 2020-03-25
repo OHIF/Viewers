@@ -2,6 +2,9 @@ import init from './init.js';
 import toolbarModule from './toolbarModule.js';
 import panelModule from './panelModule.js';
 
+// TEMP
+import './utils/calculateAreaUnderCurve';
+
 export default {
   /**
    * Only required property. Should be a unique value across all extensions.
