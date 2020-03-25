@@ -4,6 +4,7 @@ menu: Components
 route: components/filterText
 ---
 
+import { useState } from 'react';
 import { Playground, Props } from 'docz';
 import FilterText from './';
 
@@ -18,11 +19,21 @@ import { FilterText } from '@ohif/ui';
 ## Basic usage
 
 <Playground>
-  <div className="flex flex-col flex-1 p-4 items-center">
-    <div className="w-20">
-      <FilterText />
-    </div>
-  </div>
+  {() => {
+    const [text, setText] = useState('');
+    return (
+      <div className="flex flex-col flex-1 p-4 items-center">
+        <div className="w-56">
+          <FilterText
+            label='Name'
+            inputValue={text}
+            onChange={value => {setText(value)}}
+          />
+        </div>
+      </div>
+    )
+  }}
+
 </Playground>
 
 ## Properties

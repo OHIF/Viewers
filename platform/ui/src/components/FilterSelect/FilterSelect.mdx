@@ -4,6 +4,7 @@ menu: Components
 route: components/filterSelect
 ---
 
+import { useState } from 'react';
 import { Playground, Props } from 'docz';
 import FilterSelect from './';
 
@@ -18,18 +19,30 @@ import { FilterSelect } from '@ohif/ui';
 ## Basic usage
 
 <Playground>
-  <div className="flex flex-col flex-1 p-4 items-center">
-    <div className="w-20">
-      <FilterSelect
-        options={[
-          { value: 'one', label: 'one' },
-          { value: 'two', label: 'two' },
-          { value: 'three', label: 'three' },
-          { value: 'four', label: 'four' },
-        ]}
-      />
-    </div>
-  </div>
+  {() => {
+    const [values, setValues] = useState([]);
+    return (
+      <div className="flex flex-col flex-1 p-4 items-center">
+        <div className="w-56">
+          <FilterSelect
+            label="Modality"
+            inputProps={{
+              options: [
+                { value: 'seg', label: 'seg' },
+                { value: 'ct', label: 'ct' },
+                { value: 'mr', label: 'mr' },
+                { value: 'sr', label: 'sr' },
+              ],
+            }}
+            inputValue={values}
+            onChange={values => {
+              setValues(values);
+            }}
+          />
+        </div>
+      </div>
+    );
+  }}
 </Playground>
 
 ## Properties

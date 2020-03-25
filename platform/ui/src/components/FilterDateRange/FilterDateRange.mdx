@@ -4,6 +4,7 @@ menu: Components
 route: components/filterDateRange
 ---
 
+import { useState } from 'react';
 import { Playground, Props } from 'docz';
 import FilterDateRange from './';
 
@@ -18,14 +19,23 @@ import { FilterDateRange } from '@ohif/ui';
 ## Basic usage
 
 <Playground>
-  <div className="flex flex-col flex-1 p-4 items-center">
-    <div className="w-20">
-      <FilterDateRange
-        inputValue={{ startDate: null, endDate: null }}
-        onChange={() => {}}
-      />
-    </div>
-  </div>
+  {() => {
+    const [dates, setDates] = useState({
+      startDate: null,
+      endDate: null,
+    });
+    return (
+      <div className="p-4 flex flex-col items-center">
+        <div className="w-56">
+          <FilterDateRange
+            label="Dates"
+            inputValue={dates}
+            onChange={dates => setDates(dates)}
+          />
+        </div>
+      </div>
+    );
+  }}
 </Playground>
 
 ## Properties
