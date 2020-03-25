@@ -50,7 +50,7 @@ FilterText.propTypes = {
   label: PropTypes.string,
   isSortable: PropTypes.bool,
   isBeingSorted: PropTypes.bool,
-  sortDirection: PropTypes.number,
+  sortDirection: PropTypes.oneOf([-1, 0, 1]),
   onLabelClick: PropTypes.func,
   value: PropTypes.string,
   inputProps: PropTypes.object,

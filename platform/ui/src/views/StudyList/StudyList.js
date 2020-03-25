@@ -42,11 +42,12 @@ const filtersMeta = [
     inputType: 'Select',
     inputProps: {
       options: [
-        { value: 'seg', label: 'seg' },
-        { value: 'ct', label: 'ct' },
-        { value: 'mr', label: 'mr' },
-        { value: 'sr', label: 'sr' },
+        { value: 'SEG', label: 'SEG' },
+        { value: 'CT', label: 'CT' },
+        { value: 'MR', label: 'MR' },
+        { value: 'SR', label: 'SR' },
       ],
+      isMulti: true,
     },
     isSortable: true,
     gridCol: 3,

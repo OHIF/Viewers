@@ -40,7 +40,7 @@ const FilterWrapper = ({
         {label}
         {isSortable && <Icon {...iconProps} />}
       </span>
-      <span>{children && children}</span>
+      <span>{children}</span>
     </label>
   );
 };
@@ -58,7 +58,7 @@ FilterWrapper.propTypes = {
   label: PropTypes.string,
   isSortable: PropTypes.bool,
   isBeingSorted: PropTypes.bool,
-  sortDirection: PropTypes.number,
+  sortDirection: PropTypes.oneOf([-1, 0, 1]),
   onLabelClick: PropTypes.func,
   className: PropTypes.string,
   children: PropTypes.node,
