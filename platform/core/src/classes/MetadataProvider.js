@@ -410,11 +410,20 @@ class MetadataProvider {
         break;
 
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
+        const AcquisitionTime = instance.AcquisitionTime;
+
+        let acquisitionTime;
+
+        if (AcquisitionTime) {
+          acquisitionTime = dicomParser.parseTM(AcquisitionTime);
+        }
+
         metadata = {
           instanceNumber: instance.InstanceNumber,
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,
           lossyImageCompressionMethod: instance.LossyImageCompressionMethod,
+          acquisitionTime,
         };
 
         break;
