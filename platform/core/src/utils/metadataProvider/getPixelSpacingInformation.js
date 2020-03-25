@@ -101,7 +101,7 @@ export default function getPixelSpacingInformation(instance) {
     typeof SequenceOfUltrasoundRegions === 'object'
   ) {
     const { PhysicalDeltaX, PhysicalDeltaY } = SequenceOfUltrasoundRegions;
-    let USPixelSpacing = [PhysicalDeltaX * 10, PhysicalDeltaY * 10];
+    const USPixelSpacing = [PhysicalDeltaX * 10, PhysicalDeltaY * 10];
 
     return {
       PixelSpacing: USPixelSpacing,
