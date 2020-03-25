@@ -107,7 +107,7 @@ describe('OHIF User Preferences', () => {
       // Close Success Message overlay (if displayed)
       cy.get('body').then(body => {
         if (body.find('.sb-closeIcon').length > 0) {
-          cy.get('.sb-closeIcon').click();
+          cy.get('.sb-closeIcon').click({ force: true });
         }
         // click on save button
         cy.get('@saveBtn')
@@ -163,7 +163,7 @@ describe('OHIF User Preferences', () => {
       // Close Success Message overlay (if displayed)
       cy.get('body').then(body => {
         if (body.find('.sb-closeIcon').length > 0) {
-          cy.get('.sb-closeIcon').click();
+          cy.get('.sb-closeIcon').click({ force: true });
         }
         // click on save button
         cy.get('@saveBtn')
@@ -184,7 +184,6 @@ describe('OHIF User Preferences', () => {
       cy.checkStudyRouteInViewer(
         '1.2.840.113619.2.5.1762583153.215519.978957063.78'
       );
-      cy.waitDicomImage();
       cy.expectMinimumThumbnails(5);
       cy.initCommonElementsAliases();
 
@@ -225,9 +224,19 @@ describe('OHIF User Preferences', () => {
       cy.initCommonElementsAliases();
       cy.resetViewport();
 
-      cy.resetUserHoktkeyPreferences();
+      cy.resetUserHotkeyPreferences();
+      cy.resetUserGeneralPreferences();
       // Open User Preferences modal
       cy.openPreferences();
+    });
+
+    afterEach(() => {
+      // Close User Preferences Modal (if displayed)
+      cy.get('body').then(body => {
+        if (body.find('.OHIFModal__header').length > 0) {
+          cy.get('[data-cy="close-button"]').click({ force: true });
+        }
+      });
     });
 
     it('checks displayed information on User Preferences modal', function() {
@@ -245,8 +254,6 @@ describe('OHIF User Preferences', () => {
         .should('have.text', 'Reset to Defaults');
       cy.get('@cancelBtn').should('have.text', 'Cancel');
       cy.get('@saveBtn').should('have.text', 'Save');
-
-      cy.get('[data-cy="close-button"]').click(); //close User Preferences modal
     });
 
     it('checks translation by selecting Spanish language', function() {
@@ -274,9 +281,6 @@ describe('OHIF User Preferences', () => {
       cy.get('[data-cy="dd-item-menu"]')
         .last()
         .should('contain.text', 'Preferencias');
-
-      // Close Options menu
-      cy.get('[data-cy="options-menu"]').click();
     });
 
     it('checks if user can cancel the language selection and application will be in "English (USA)"', function() {
@@ -302,8 +306,6 @@ describe('OHIF User Preferences', () => {
       cy.get('[data-cy="dd-item-menu"]')
         .last()
         .should('contain.text', 'Preferences');
-      // Close Options menu
-      cy.get('[data-cy="options-menu"]').click();
     });
 
     it('checks if user can restore to default the language selection and application will be in "English (USA)', function() {
@@ -346,9 +348,6 @@ describe('OHIF User Preferences', () => {
       cy.get('[data-cy="dd-item-menu"]')
         .last()
         .should('contain.text', 'Preferences');
-
-      // Close Options menu
-      cy.get('[data-cy="options-menu"]').click();
     });
 
     it('checks new hotkeys for "Rotate Right" and "Rotate Left"', function() {
@@ -369,7 +368,7 @@ describe('OHIF User Preferences', () => {
       // Close Success Message overlay (if displayed)
       cy.get('body').then(body => {
         if (body.find('.sb-closeIcon').length > 0) {
-          cy.get('.sb-closeIcon').click();
+          cy.get('.sb-closeIcon').click({ force: true });
         }
         // click on save button
         cy.get('@saveBtn')
@@ -401,7 +400,7 @@ describe('OHIF User Preferences', () => {
       // Close Success Message overlay (if displayed)
       cy.get('body').then(body => {
         if (body.find('.sb-closeIcon').length > 0) {
-          cy.get('.sb-closeIcon').click();
+          cy.get('.sb-closeIcon').click({ force: true });
         }
         // click on save button
         cy.get('@saveBtn')
@@ -459,17 +458,6 @@ describe('OHIF User Preferences', () => {
           .as('errorMsg')
           .should('have.text', '"Invert" is already using the "i" shortcut.');
       });
-
-      // Close Success Message overlay (if displayed)
-      cy.get('body').then(body => {
-        if (body.find('.sb-closeIcon').length > 0) {
-          cy.get('.sb-closeIcon').click();
-        }
-        //Cancel hotkeys
-        cy.get('@cancelBtn')
-          .scrollIntoView()
-          .click();
-      });
     });
 
     it('checks error message when invalid hotkey is inserted', function() {
@@ -486,17 +474,6 @@ describe('OHIF User Preferences', () => {
           .find('.preferencesInputErrorMessage')
           .as('errorMsg')
           .should('have.text', '"ctrl+z" shortcut combination is not allowed');
-      });
-
-      // Close Success Message overlay (if displayed)
-      cy.get('body').then(body => {
-        if (body.find('.sb-closeIcon').length > 0) {
-          cy.get('.sb-closeIcon').click();
-        }
-        //Cancel hotkeys
-        cy.get('@cancelBtn')
-          .scrollIntoView()
-          .click();
       });
     });
 
@@ -533,17 +510,6 @@ describe('OHIF User Preferences', () => {
         'have.text',
         "It's not possible to define only modifier keys (ctrl, alt and shift) as a shortcut"
       );
-
-      // Close Success Message overlay (if displayed)
-      cy.get('body').then(body => {
-        if (body.find('.sb-closeIcon').length > 0) {
-          cy.get('.sb-closeIcon').click();
-        }
-        //Cancel hotkeys
-        cy.get('@cancelBtn')
-          .scrollIntoView()
-          .click();
-      });
     });
 
     it('checks if user can cancel changes made on User Preferences Hotkeys tab', function() {
@@ -559,7 +525,7 @@ describe('OHIF User Preferences', () => {
       // Close Success Message overlay (if displayed)
       cy.get('body').then(body => {
         if (body.find('.sb-closeIcon').length > 0) {
-          cy.get('.sb-closeIcon').click();
+          cy.get('.sb-closeIcon').click({ force: true });
         }
         //Cancel hotkeys
         cy.get('@cancelBtn')
@@ -577,7 +543,6 @@ describe('OHIF User Preferences', () => {
           .find('input')
           .should('have.value', 'r');
       });
-      cy.get('[data-cy="close-button"]').click();
     });
 
     it('checks if user can reset to default values on User Preferences Hotkeys tab', function() {
@@ -590,16 +555,10 @@ describe('OHIF User Preferences', () => {
         '{ctrl}{shift}S'
       );
 
-      // Close Success Message overlay (if displayed)
-      cy.get('body').then(body => {
-        if (body.find('.sb-closeIcon').length > 0) {
-          cy.get('.sb-closeIcon').click();
-        }
-        // click on save button
-        cy.get('@saveBtn')
-          .scrollIntoView()
-          .click();
-      });
+      // click on save button
+      cy.get('@saveBtn')
+        .scrollIntoView()
+        .click();
 
       // Open User Preferences modal again
       cy.openPreferences();
@@ -609,9 +568,6 @@ describe('OHIF User Preferences', () => {
         .scrollIntoView()
         .click();
 
-      // Open User Preferences modal again
-      cy.openPreferences();
-
       //Check that hotkey for 'Rotate Right' function was not changed
       cy.get('.HotkeysPreferences').within(() => {
         cy.contains('Rotate Right') // label we're looking for
@@ -619,7 +575,6 @@ describe('OHIF User Preferences', () => {
           .find('input')
           .should('have.value', 'r');
       });
-      cy.get('[data-cy="close-button"]').click();
     });
   });
 

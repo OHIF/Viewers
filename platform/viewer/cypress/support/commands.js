@@ -474,14 +474,35 @@ Cypress.Commands.add('selectPreferencesTab', tabAlias => {
   initPreferencesModalFooterBtnAliases();
 });
 
-Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
+Cypress.Commands.add('resetUserHotkeyPreferences', () => {
   // Open User Preferences modal
   cy.openPreferences();
 
-  cy.initPreferencesModalAliases();
+  cy.selectPreferencesTab('@userPreferencesHotkeysTab').then(() => {
+    cy.log('Reset Hotkeys to Default Preferences');
+    cy.get('@restoreBtn').click();
+  });
 
-  cy.log('Reset to Default Preferences');
-  cy.get('@restoreBtn').click();
+  // Close Success Message overlay (if displayed)
+  cy.get('body').then(body => {
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+    // Click on Save Button
+    cy.get('@saveBtn').click();
+  });
+});
+
+Cypress.Commands.add('resetUserGeneralPreferences', () => {
+  // Open User Preferences modal
+  cy.openPreferences();
+
+  cy.selectPreferencesTab('@userPreferencesGeneralTab').then(() => {
+    cy.log('Reset Language to Default Preferences');
+    cy.get('@restoreBtn').click();
+  });
 
   // Close Success Message overlay (if displayed)
   cy.get('body').then(body => {

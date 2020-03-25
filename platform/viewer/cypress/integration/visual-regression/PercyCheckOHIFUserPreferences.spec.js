@@ -59,7 +59,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.initCommonElementsAliases();
       cy.resetViewport();
 
-      cy.resetUserHoktkeyPreferences();
+      cy.resetUserHotkeyPreferences();
       // Open User Preferences modal
       cy.openPreferences();
     });
