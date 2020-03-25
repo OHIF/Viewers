@@ -11,35 +11,35 @@ const filtersMeta = [
   {
     name: 'patientName',
     displayName: 'Patient Name',
-    inputType: 'text',
+    inputType: 'Text',
     isSortable: true,
     gridCol: 4,
   },
   {
     name: 'mrn',
     displayName: 'MRN',
-    inputType: 'text',
+    inputType: 'Text',
     isSortable: true,
     gridCol: 2,
   },
   {
     name: 'studyDate',
     displayName: 'Study date',
-    inputType: 'date-range',
+    inputType: 'DateRange',
     isSortable: true,
     gridCol: 5,
   },
   {
     name: 'description',
     displayName: 'Description',
-    inputType: 'text',
+    inputType: 'Text',
     isSortable: true,
     gridCol: 4,
   },
   {
     name: 'modality',
     displayName: 'Modality',
-    inputType: 'select',
+    inputType: 'Select',
     inputProps: {
       options: [
         { value: 'seg', label: 'seg' },
@@ -54,14 +54,14 @@ const filtersMeta = [
   {
     name: 'accession',
     displayName: 'Accession',
-    inputType: 'text',
+    inputType: 'Text',
     isSortable: true,
     gridCol: 4,
   },
   {
     name: 'instances',
     displayName: 'Instances',
-    inputType: 'none',
+    inputType: 'None',
     isSortable: false,
     gridCol: 2,
   },

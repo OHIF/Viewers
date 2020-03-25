@@ -9,9 +9,9 @@ const FilterText = ({
   isBeingSorted,
   sortDirection,
   onLabelClick,
-  inputValue = '',
-  inputProps = {},
-  onChange = () => {},
+  inputValue,
+  inputProps,
+  onChange,
 }) => {
   return (
     <FilterWrapper
@@ -35,7 +35,23 @@ const FilterText = ({
   );
 };
 
+FilterText.defaultProps = {
+  label: '',
+  isSortable: false,
+  isBeingSorted: false,
+  sortDirection: 0,
+  onLabelClick: () => {},
+  inputValue: '',
+  inputProps: {},
+  onChange: () => {},
+};
+
 FilterText.propTypes = {
+  label: PropTypes.string,
+  isSortable: PropTypes.bool,
+  isBeingSorted: PropTypes.bool,
+  sortDirection: PropTypes.number,
+  onLabelClick: PropTypes.func,
   value: PropTypes.string,
   inputProps: PropTypes.object,
   onChange: PropTypes.func,

@@ -14,11 +14,11 @@ const sortIconMap = {
 };
 
 const FilterWrapper = ({
-  label = '',
-  isSortable = false,
-  isBeingSorted = false,
-  sortDirection = 0,
-  onLabelClick = () => {},
+  label,
+  isSortable,
+  isBeingSorted,
+  sortDirection,
+  onLabelClick,
   className,
   children,
 }) => {
@@ -32,13 +32,26 @@ const FilterWrapper = ({
 
   return (
     <label className={classnames(baseLabelClassName, className)}>
-      <span className={spanClassName} onClick={onLabelClick}>
+      <span
+        className={spanClassName}
+        onClick={onLabelClick}
+        onKeyDown={onLabelClick}
+      >
         {label}
         {isSortable && <Icon {...iconProps} />}
       </span>
       <span>{children && children}</span>
     </label>
   );
+};
+
+FilterWrapper.defaultProps = {
+  label: '',
+  isSortable: false,
+  isBeingSorted: false,
+  sortDirection: 0,
+  onLabelClick: () => {},
+  className: '',
 };
 
 FilterWrapper.propTypes = {

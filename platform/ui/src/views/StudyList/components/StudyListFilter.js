@@ -6,40 +6,14 @@ import {
   Button,
   Icon,
   Typography,
+  FilterText,
   FilterDateRange,
   FilterSelect,
-  FilterText,
 } from '@ohif/ui';
 
-const filterInputComponentMap = {
-  'date-range': FilterDateRange,
-  text: FilterText,
-  select: FilterSelect,
-};
+const filterInputs = { FilterText, FilterDateRange, FilterSelect };
 
-const defaultProps = {
-  filtersValues: {
-    patientName: '',
-    mrn: '',
-    studyDate: {
-      startDate: null,
-      endDate: null,
-    },
-    description: '',
-    modality: [],
-    accession: '',
-    sortBy: '',
-    sortDirection: 0,
-    page: 0,
-    resultsPerPage: 25,
-  },
-};
-
-const StudyListFilter = ({
-  filtersMeta = [],
-  filtersValues = defaultProps.filtersValues,
-  numOfStudies = 90,
-}) => {
+const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
   const [currentFiltersValues, setcurrentFiltersValues] = useState(
     filtersValues
   );
@@ -64,13 +38,13 @@ const StudyListFilter = ({
   };
 
   const clearFilters = () => {
-    setcurrentFiltersValues(defaultProps.filtersValues);
+    setcurrentFiltersValues(StudyListFilter.defaultProps.filtersValues);
   };
 
   const isFiltering = () => {
     return Object.keys(currentFiltersValues).some(name => {
       const filterValue = currentFiltersValues[name];
-      return filterValue !== defaultProps.filtersValues[name];
+      return filterValue !== StudyListFilter.defaultProps.filtersValues[name];
     });
   };
 
@@ -147,7 +121,7 @@ const StudyListFilter = ({
                   const _isBeingSorted = sortBy === name;
                   const onLabelClick = () => handleFilterLabelClick(name);
                   const FilterInputComponent =
-                    filterInputComponentMap[inputType];
+                    filterInputs[`Filter${inputType}`];
 
                   return (
                     <div
@@ -157,22 +131,24 @@ const StudyListFilter = ({
                         'pl-4 first:pl-12'
                       )}
                     >
-                      <FilterInputComponent
-                        key={name}
-                        label={displayName}
-                        isSortable={_isSortable}
-                        isBeingSorted={_isBeingSorted}
-                        sortDirection={sortDirection}
-                        onLabelClick={onLabelClick}
-                        inputProps={inputProps}
-                        inputValue={currentFiltersValues[name]}
-                        onChange={newValue => {
-                          setcurrentFiltersValues(prevState => ({
-                            ...prevState,
-                            [name]: newValue,
-                          }));
-                        }}
-                      />
+                      {FilterInputComponent && (
+                        <FilterInputComponent
+                          key={name}
+                          label={displayName}
+                          isSortable={_isSortable}
+                          isBeingSorted={_isBeingSorted}
+                          sortDirection={sortDirection}
+                          onLabelClick={onLabelClick}
+                          inputProps={inputProps}
+                          inputValue={currentFiltersValues[name]}
+                          onChange={newValue => {
+                            setcurrentFiltersValues(prevState => ({
+                              ...prevState,
+                              [name]: newValue,
+                            }));
+                          }}
+                        />
+                      )}
                     </div>
                   );
                 }
@@ -194,12 +170,32 @@ const StudyListFilter = ({
   );
 };
 
+StudyListFilter.defaultProps = {
+  filtersMeta: [],
+  filtersValues: {
+    patientName: '',
+    mrn: '',
+    studyDate: {
+      startDate: null,
+      endDate: null,
+    },
+    description: '',
+    modality: [],
+    accession: '',
+    sortBy: '',
+    sortDirection: 0,
+    page: 0,
+    resultsPerPage: 25,
+  },
+  numOfStudies: 90,
+};
+
 StudyListFilter.propTypes = {
   filtersMeta: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string,
       dsplayName: PropTypes.string,
-      inputType: PropTypes.oneOf(['text', 'select', 'date-range', 'none']),
+      inputType: PropTypes.oneOf(['Text', 'Select', 'DateRange', 'None']),
       isSortable: PropTypes.bool,
       gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
     })

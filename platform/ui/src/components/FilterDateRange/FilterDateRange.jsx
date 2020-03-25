@@ -9,9 +9,9 @@ const FilterDateRange = ({
   isBeingSorted,
   sortDirection,
   onLabelClick,
-  inputValue = {},
-  inputProps = {},
-  onChange = () => {},
+  inputValue,
+  inputProps,
+  onChange,
 }) => {
   const { startDate, endDate } = inputValue;
   return (
@@ -38,7 +38,23 @@ const FilterDateRange = ({
   );
 };
 
+FilterDateRange.defaultProps = {
+  label: '',
+  isSortable: false,
+  isBeingSorted: false,
+  sortDirection: 0,
+  onLabelClick: () => {},
+  inputValue: {},
+  inputProps: {},
+  onChange: () => {},
+};
+
 FilterDateRange.propTypes = {
+  label: PropTypes.string,
+  isSortable: PropTypes.bool,
+  isBeingSorted: PropTypes.bool,
+  sortDirection: PropTypes.number,
+  onLabelClick: PropTypes.func,
   value: PropTypes.shape({
     startDate: PropTypes.string,
     endDate: PropTypes.string,
