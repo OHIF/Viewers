@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.9](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.8...@ohif/viewer@3.8.9) (2020-03-25)
+
+
+### Bug Fixes
+
+* Load measurement in active viewport. ([#1558](https://github.com/OHIF/Viewers/issues/1558)) ([99022f2](https://github.com/OHIF/Viewers/commit/99022f2bac752f3cd1cedb61e222b8d411e158c8))
+
+
+
+
+
+## [3.8.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.7...@ohif/viewer@3.8.8) (2020-03-25)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [3.8.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.6...@ohif/viewer@3.8.7) (2020-03-24)
 
 **Note:** Version bump only for package @ohif/viewer
