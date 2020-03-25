@@ -13,8 +13,11 @@ Tables display sets of data.
 
 ## Import
 
+Check the given example below to see how to import each component to create a
+table.
+
 ```javascript
-import { Table } from '@ohif/ui';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@ohif/ui';
 ```
 
 ## Basic usage
@@ -96,16 +99,24 @@ Table has full width by default. If you want to change its width, you will have
 to set the `fullWidth` prop to `false` and then define your own table width by
 passing a `className` or `style`.
 
-## Table components
-
-<Link to="components/table-head">TableHead</Link>
-<br />
-<Link to="components/table-body">TableBody</Link>
-<br />
-<Link to="components/table-row">TableRow</Link>
-<br />
-<Link to="components/table-cell">TableCell</Link>
-
 ## Properties
 
+### Table Props
+
 <Props of={Table} />
+
+### TableHead Props
+
+<Props of={TableHead} />
+
+### TableBody Props
+
+<Props of={TableBody} />
+
+### TableRow Props
+
+<Props of={TableRow} />
+
+### TableCell Props
+
+<Props of={TableCell} />
