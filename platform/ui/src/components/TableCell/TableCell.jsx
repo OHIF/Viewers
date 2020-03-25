@@ -5,8 +5,11 @@ import classnames from 'classnames';
 const TableCell = ({
   children,
   className,
+  colSpan,
+  // ignored because we don't wan't to expose this prop
+  // eslint-disable-next-line react/prop-types
+  cellsNum,
   isTableHead,
-  size,
   align,
   style,
 }) => {
@@ -16,10 +19,6 @@ const TableCell = ({
       center: 'text-center',
       right: 'text-right',
       justify: 'text-justify',
-    },
-    size: {
-      small: 'flex-0.3',
-      normal: 'flex-1',
     },
     isTableHead: {
       true: '',
@@ -31,7 +30,7 @@ const TableCell = ({
     <div
       className={classnames(
         'px-2 last:border-r-0 break-all',
-        classes.size[size],
+        `w-${colSpan}/${cellsNum}`,
         classes.align[align],
         classes.isTableHead[isTableHead],
         className
@@ -44,20 +43,20 @@ const TableCell = ({
 };
 
 TableCell.defaultProps = {
-  className: '',
-  isTableHead: false,
-  size: 'normal',
-  style: {},
   align: 'left',
+  className: '',
+  colSpan: 1,
+  isTableHead: false,
+  style: {},
 };
 
 TableCell.propTypes = {
-  isTableHead: PropTypes.bool,
+  align: PropTypes.oneOf(['left', 'center', 'right', 'justify']),
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  size: PropTypes.oneOf(['small', 'normal']),
+  colSpan: PropTypes.number,
+  isTableHead: PropTypes.bool,
   style: PropTypes.object,
-  align: PropTypes.oneOf(['left', 'center', 'right', 'justify']),
 };
 
 export default TableCell;

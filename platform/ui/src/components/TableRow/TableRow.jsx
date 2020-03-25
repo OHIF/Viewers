@@ -7,7 +7,7 @@ const TableRow = ({ children, className, isTableHead, style }) => {
     const isValidReactElement = React.isValidElement(child);
 
     return isValidReactElement
-      ? React.cloneElement(child, { isTableHead })
+      ? React.cloneElement(child, { isTableHead, cellsNum: children.length })
       : children;
   });
 
