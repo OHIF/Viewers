@@ -11,8 +11,6 @@ import {
   FilterSelect,
 } from '@ohif/ui';
 
-const filterInputs = { FilterText, FilterDateRange, FilterSelect };
-
 const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
   const [currentFiltersValues, setcurrentFiltersValues] = useState(
     filtersValues
@@ -34,6 +32,19 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
         sortBy: _sortDirection !== 0 ? name : '',
         sortDirection: _sortDirection,
       }));
+    }
+  };
+
+  const getFieldInputComponent = inputType => {
+    switch (inputType) {
+      case 'Text':
+        return FilterText;
+      case 'Select':
+        return FilterSelect;
+      case 'DateRange':
+        return FilterDateRange;
+      default:
+        break;
     }
   };
 
@@ -120,8 +131,9 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
                     isSortable && numOfStudies <= 100 && numOfStudies > 0;
                   const _isBeingSorted = sortBy === name;
                   const onLabelClick = () => handleFilterLabelClick(name);
-                  const FilterInputComponent =
-                    filterInputs[`Filter${inputType}`];
+                  const FilterInputComponent = getFieldInputComponent(
+                    inputType
+                  );
 
                   return (
                     <div
