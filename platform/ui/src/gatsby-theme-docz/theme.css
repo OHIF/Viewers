@@ -4,6 +4,7 @@
 
 [data-testid='live-preview'] {
   background: #000;
+  @apply font-sans;
 }
 
 #main-container > h2 {
