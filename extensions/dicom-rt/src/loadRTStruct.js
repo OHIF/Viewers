@@ -68,8 +68,13 @@ export default async function loadRTStruct(
   const rtStructDisplayToolName = TOOL_NAMES.RTSTRUCT_DISPLAY_TOOL;
 
   for (let i = 0; i < ROIContourSequence.length; i++) {
+
     const ROIContour = ROIContourSequence[i];
     const { ReferencedROINumber, ContourSequence } = ROIContour;
+
+    if (!ContourSequence) {
+      continue;
+    }
 
     _setROIContourMetadata(
       structureSet,
@@ -127,7 +132,24 @@ export default async function loadRTStruct(
 
   _setToolEnabledIfNotEnabled(rtStructDisplayToolName);
 
-  const event = new CustomEvent('rtloaded');
+  /*
+   * TODO: Improve the way we notify parts of the app that depends on rts to be loaded.
+   *
+   * Currently we are using a non-ideal implementation through a custom event to notify the rtstruct panel
+   * or other components that could rely on loaded rtstructs that
+   * the first batch of structs were loaded so that e.g. when the user opens the panel
+   * before the structs are fully loaded, the panel can subscribe to this custom event
+   * and update itself with the new structs.
+   *
+   * This limitation is due to the fact that the rtmodule is an object (which will be
+   * updated after the structs are loaded) that React its not aware of its changes
+   * because the module object its not passed in to the panel component as prop but accessed externally.
+   *
+   * Improving this event approach to something reactive that can be tracked inside the react lifecycle,
+   * allows us to easily watch the module or the rtstruct loading process in any other component
+   * without subscribing to external events.
+   */
+  const event = new CustomEvent('extensiondicomrtrtloaded');
   document.dispatchEvent(event);
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { TableListItem, Icon } from '@ohif/ui';
 
@@ -42,18 +42,20 @@ const StructureSetItem = ({
         <div>
           <div className="item-label" style={{ marginBottom: 4 }}>
             {label}
-            <Icon
-              className={`eye-icon ${isVisible && '--visible'}`}
-              name={isVisible ? "eye" : "eye-closed"}
-              width="20px"
-              height="20px"
-              onClick={event => {
-                event.stopPropagation();
-                const newVisibility = !isVisible;
-                setIsVisible(newVisibility);
-                onVisibilityChange(newVisibility);
-              }}
-            />
+            {!hideVisibleButton && (
+              <Icon
+                className={`eye-icon ${isVisible && '--visible'}`}
+                name={isVisible ? "eye" : "eye-closed"}
+                width="20px"
+                height="20px"
+                onClick={event => {
+                  event.stopPropagation();
+                  const newVisibility = !isVisible;
+                  setIsVisible(newVisibility);
+                  onVisibilityChange(newVisibility);
+                }}
+              />
+            )}
           </div>
           <div className="item-info">{'...'}</div>
           <div className="item-actions">

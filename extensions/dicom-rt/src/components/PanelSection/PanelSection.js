@@ -3,16 +3,25 @@ import PropTypes from 'prop-types';
 import { Icon } from '@ohif/ui';
 
 import './PanelSection.css';
+import LoadingIndicator from '../LoadingIndicator/LoadingIndicator';
 
 const PanelSection = ({
   title,
   children,
   visible = false,
   expanded = false,
-  onVisibilityChange = () => { }
+  loading = false,
+  hideVisibleButton = false,
+  onVisibilityChange = () => { },
+  onExpandChange = () => { }
 }) => {
   const [isExpanded, setIsExpanded] = useState(expanded);
   const [isVisible, setIsVisible] = useState(visible);
+
+  useEffect(() => {
+    setIsVisible(visible);
+  }, [visible]);
+
   return (
     <div
       className="dcmrt-panel-section"
@@ -24,26 +33,33 @@ const PanelSection = ({
       <div className="header">
         <div>{title}</div>
         <div className="icons">
-          <Icon
-            className={`eye-icon ${isVisible && 'expanded'}`}
-            name={isVisible ? "eye" : "eye-closed"}
-            width="20px"
-            height="20px"
-            onClick={() => {
-              const newVisibility = !isVisible;
-              setIsVisible(newVisibility);
-              onVisibilityChange(newVisibility);
-            }}
-          />
+          {!hideVisibleButton && (
+            <Icon
+              className={`eye-icon ${isVisible && 'expanded'}`}
+              name={isVisible ? "eye" : "eye-closed"}
+              width="20px"
+              height="20px"
+              onClick={() => {
+                const newVisibility = !isVisible;
+                setIsVisible(newVisibility);
+                onVisibilityChange(newVisibility);
+              }}
+            />
+          )}
           <Icon
             className={`angle-double-${isExpanded ? 'down' : 'up'} ${isExpanded && 'expanded'}`}
             name={`angle-double-${isExpanded ? 'down' : 'up'}`}
             width="20px"
             height="20px"
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={() => {
+              const newExpandValue = !isExpanded;
+              setIsExpanded(newExpandValue);
+              onExpandChange(newExpandValue);
+            }}
           />
         </div>
       </div>
+      {loading && isExpanded && <LoadingIndicator expand height="70px" width="70px" />}
       {children}
     </div>
   );

@@ -5,10 +5,15 @@ import cornerstone from 'cornerstone-core';
 
 import { ScrollableArea, TableList, Icon } from '@ohif/ui';
 
+import { utils } from '@ohif/core';
+
 import './RTPanel.css';
 import StructureSetItem from '../StructureSetItem/StructureSetItem';
 import RTPanelSettings from '../RTSettings/RTSettings';
 import PanelSection from '../PanelSection/PanelSection';
+import LoadingIndicator from '../LoadingIndicator/LoadingIndicator';
+
+const { studyMetadataManager } = utils;
 
 const refreshViewport = () => {
   cornerstone.getEnabledElements().forEach(enabledElement => {
@@ -30,19 +35,36 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }
   const [selectedContour, setSelectedContour] = useState();
   const DEFAULT_SET_INDEX = 0;
   const DEFAULT_STATE = {
+    referencedDisplaysets: [],
     sets: [],
-    contours: [],
     selectedSet: null,
   };
 
   const [state, setState] = useState(DEFAULT_STATE);
   const [showSettings, setShowSettings] = useState(false);
 
+  /*
+   * TODO: Improve the way we notify parts of the app that depends on rts to be loaded.
+   *
+   * Currently we are using a non-ideal implementation through a custom event to notify the rtstruct panel
+   * or other components that could rely on loaded rtstructs that
+   * the first batch of structs were loaded so that e.g. when the user opens the panel
+   * before the structs are fully loaded, the panel can subscribe to this custom event
+   * and update itself with the new structs.
+   *
+   * This limitation is due to the fact that the rtmodule is an object (which will be
+   * updated after the structs are loaded) that React its not aware of its changes
+   * because the module object its not passed in to the panel component as prop but accessed externally.
+   *
+   * Improving this event approach to something reactive that can be tracked inside the react lifecycle,
+   * allows us to easily watch the module or the rtstruct loading process in any other component
+   * without subscribing to external events.
+   */
   useEffect(() => {
-    document.addEventListener('rtloaded', updateStructureSets);
+    document.addEventListener('extensiondicomrtrtloaded', updateStructureSets);
 
     return () => {
-      document.removeEventListener('rtloaded', updateStructureSets);
+      document.removeEventListener('extensiondicomrtrtloaded', updateStructureSets);
     };
   }, []);
 
@@ -55,11 +77,17 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }
         viewports[activeIndex].SeriesInstanceUID
       );
 
+      const studyMetadata = studyMetadataManager.get(viewports[activeIndex].StudyInstanceUID);
+      const referencedDisplaysets = studyMetadata.getDerivedDatasets({
+        referencedSeriesInstanceUID: viewports[activeIndex].SeriesInstanceUID,
+        Modality: 'RTSTRUCT',
+      });
+
       if (viewportSets.length) {
         const defaultSet = viewportSets[DEFAULT_SET_INDEX];
         setState({
+          referencedDisplaysets,
           selectedSet: defaultSet,
-          contours: defaultSet.ROIContours,
           sets: viewportSets
         });
       } else {
@@ -76,7 +104,7 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }
     setShowSettings(showSettings && !isOpen);
   }, [isOpen]);
 
-  const toContourItem = ({ ROINumber, ROIName, RTROIObservations, colorArray, visible }) => {
+  const toContourItem = ({ ROINumber, ROIName, RTROIObservations, colorArray, visible }, loadedSet) => {
     let interpretedType = '';
     if (RTROIObservations && RTROIObservations.RTROIInterpretedType) {
       interpretedType = `(${RTROIObservations.RTROIInterpretedType})`;
@@ -160,21 +188,39 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }
           onClick={() => setShowSettings(true)}
         />
       </div>
-      {state.sets.map(({ StructureSetLabel, SeriesInstanceUID, visible }) => {
+      {!state.referencedDisplaysets.length && <LoadingIndicator expand height="70px" width="70px" />}
+      {state.referencedDisplaysets.map(displaySet => {
+        const { SeriesInstanceUID, metadata, isLoaded } = displaySet;
+
+        const module = cornerstoneTools.getModule('rtstruct');
+        const sets = module.getters.structuresSetsWhichReferenceSeriesInstanceUid(viewports[activeIndex].SeriesInstanceUID);
+
+        const loadedSet = sets.find(set => set.SeriesInstanceUID === SeriesInstanceUID);
         return (
           <PanelSection
             key={SeriesInstanceUID}
-            title={StructureSetLabel}
-            visible={visible}
-            expanded={state.selectedSet.SeriesInstanceUID === SeriesInstanceUID}
+            title={metadata.StructureSetLabel}
+            loading={!isLoaded || !loadedSet}
+            visible={isLoaded && loadedSet.visible}
+            hideVisibleButton={!isLoaded}
+            expanded={isLoaded && loadedSet.SeriesInstanceUID === state.selectedSet.SeriesInstanceUID}
             onVisibilityChange={() => {
               const module = cornerstoneTools.getModule('rtstruct');
-              module.setters.toggleStructureSet(state.selectedSet.SeriesInstanceUID);
+              module.setters.toggleStructureSet(SeriesInstanceUID);
+            }}
+            onExpandChange={async () => {
+              if (!isLoaded) {
+                await displaySet.load(viewports[activeIndex], studies);
+                const module = cornerstoneTools.getModule('rtstruct');
+                const sets = module.getters.structuresSetsWhichReferenceSeriesInstanceUid(viewports[activeIndex].SeriesInstanceUID);
+                const selectedSet = sets.find(set => set.SeriesInstanceUID === SeriesInstanceUID);
+                setState(state => ({ ...state, selectedSet, sets }));
+              }
             }}
           >
             <ScrollableArea>
               <TableList headless>
-                {state.contours.map(toContourItem)}
+                {isLoaded && loadedSet.ROIContours.map(c => toContourItem(c, loadedSet))}
               </TableList>
             </ScrollableArea>
           </PanelSection>
