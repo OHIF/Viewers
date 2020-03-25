@@ -3,13 +3,17 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const TableRow = ({ children, className, isTableHead, style }) => {
+  const childrens = React.Children.map(children, child => {
+    const isValidReactElement = React.isValidElement(child);
+
+    return isValidReactElement
+      ? React.cloneElement(child, { isTableHead })
+      : children;
+  });
+
   return (
     <div className={classnames('w-full flex', className)} style={style}>
-      {React.isValidElement(children)
-        ? React.Children.map(children, child =>
-            React.cloneElement(child, { isTableHead })
-          )
-        : children}
+      {childrens}
     </div>
   );
 };
