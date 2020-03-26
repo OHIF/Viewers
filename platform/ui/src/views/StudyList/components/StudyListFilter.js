@@ -72,7 +72,11 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
   }) => {
     const _isSortable = isSortable && numOfStudies <= 100 && numOfStudies > 0;
     const _sortDirection = sortBy !== name ? 'none' : sortDirection;
-    const onLabelClick = () => handleFilterLabelClick(name);
+    const onLabelClick = () => {
+      if (_isSortable) {
+        handleFilterLabelClick(name);
+      }
+    };
     const FilterInputComponent = getFieldInputComponent(inputType);
 
     return (
