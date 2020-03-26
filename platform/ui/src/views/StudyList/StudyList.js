@@ -47,7 +47,6 @@ const filtersMeta = [
         { value: 'MR', label: 'MR' },
         { value: 'SR', label: 'SR' },
       ],
-      isMulti: true,
     },
     isSortable: true,
     gridCol: 3,

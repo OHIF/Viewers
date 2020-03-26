@@ -9,7 +9,6 @@ const InputSelect = ({
   sortDirection,
   onLabelClick,
   value,
-  isMulti,
   placeholder,
   options,
   onChange,
@@ -22,11 +21,11 @@ const InputSelect = ({
       onLabelClick={onLabelClick}
     >
       <Select
-        isMulti={isMulti}
         placeholder={placeholder}
         className="mt-2"
         options={options}
         value={value}
+        isMulti={true}
         isClearable={false}
         isSearchable={false}
         closeMenuOnSelect={false}
@@ -50,7 +49,6 @@ const InputSelect = ({
 
 InputSelect.defaultProps = {
   value: [],
-  isMulti: false,
   placeholder: '',
   options: [],
 };
@@ -61,7 +59,6 @@ InputSelect.propTypes = {
   sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
     .isRequired,
   onLabelClick: PropTypes.func.isRequired,
-  isMulti: PropTypes.bool,
   placeholder: PropTypes.string,
   options: PropTypes.arrayOf(
     PropTypes.shape({

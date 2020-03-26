@@ -46,6 +46,10 @@ const Select = ({
   placeholder,
   value,
 }) => {
+  const _components = isMulti
+    ? { MultiValueContainer, Option, MultiValue }
+    : {};
+
   return (
     <ReactSelect
       className={classnames(
@@ -59,7 +63,7 @@ const Select = ({
       isSearchable={isSearchable}
       closeMenuOnSelect={closeMenuOnSelect}
       hideSelectedOptions={hideSelectedOptions}
-      components={{ MultiValueContainer, Option, MultiValue }}
+      components={_components}
       placeholder={placeholder}
       options={options}
       value={value}

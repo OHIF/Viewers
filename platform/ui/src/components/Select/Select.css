@@ -1,6 +1,6 @@
 .customSelect__wrapper .customSelect__control {
   @apply bg-black border-custom-blue shadow transition duration-300 border rounded w-full text-sm text-white leading-tight;
-  height: 40px;
+  min-height: 33px;
 }
 .customSelect__wrapper .customSelect__control:hover {
   @apply border-gray-500;
