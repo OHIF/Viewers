@@ -11,7 +11,7 @@ import EmptyViewport from './EmptyViewport.js';
 
 const { loadAndCacheDerivedDisplaySets } = utils;
 
-const ViewportGrid = function(props) {
+const ViewportGrid = function (props) {
   const {
     activeViewportIndex,
     availablePlugins,
@@ -37,7 +37,7 @@ const ViewportGrid = function(props) {
     viewportData.forEach(displaySet => {
       loadAndCacheDerivedDisplaySets(displaySet, studies);
     });
-  }, [viewportData]);
+  }, [studies, viewportData]);
 
   const getViewportPanes = () =>
     layout.viewports.map((layout, viewportIndex) => {
