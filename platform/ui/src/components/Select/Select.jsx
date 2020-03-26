@@ -26,7 +26,7 @@ const Option = props => {
           checked={props.isSelected}
           className="w-6 h-6"
           onChange={e => null}
-        />{' '}
+        />
         <label>{props.value} </label>
       </components.Option>
     </div>

@@ -19,21 +19,6 @@ const isFiltering = (currentFiltersValues, filtersValues) => {
   });
 };
 
-const getFieldInputComponent = inputType => {
-  switch (inputType) {
-    case 'Text':
-      return InputText;
-    case 'Select':
-      return InputSelect;
-    case 'DateRange':
-      return InputDateRange;
-    case 'None':
-      return InputLabelWrapper;
-    default:
-      break;
-  }
-};
-
 const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
   const [currentFiltersValues, setcurrentFiltersValues] = useState(
     filtersValues
@@ -77,25 +62,73 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
         handleFilterLabelClick(name);
       }
     };
-    const FilterInputComponent = getFieldInputComponent(inputType);
-
-    return (
-      <FilterInputComponent
-        key={name}
-        label={displayName}
-        isSortable={_isSortable}
-        sortDirection={_sortDirection}
-        onLabelClick={onLabelClick}
-        {...inputProps}
-        value={currentFiltersValues[name]}
-        onChange={newValue => {
-          setcurrentFiltersValues(prevState => ({
-            ...prevState,
-            [name]: newValue,
-          }));
-        }}
-      />
-    );
+    switch (inputType) {
+      case 'Text':
+        return (
+          <InputText
+            key={name}
+            label={displayName}
+            isSortable={_isSortable}
+            sortDirection={_sortDirection}
+            onLabelClick={onLabelClick}
+            value={currentFiltersValues[name]}
+            onChange={newValue => {
+              setcurrentFiltersValues(prevState => ({
+                ...prevState,
+                [name]: newValue,
+              }));
+            }}
+          />
+        );
+        break;
+      case 'Select':
+        return (
+          <InputSelect
+            key={name}
+            label={displayName}
+            isSortable={_isSortable}
+            sortDirection={_sortDirection}
+            onLabelClick={onLabelClick}
+            options={inputProps.options}
+            value={currentFiltersValues[name]}
+            onChange={newValue => {
+              setcurrentFiltersValues(prevState => ({
+                ...prevState,
+                [name]: newValue,
+              }));
+            }}
+          />
+        );
+      case 'DateRange':
+        return (
+          <InputDateRange
+            key={name}
+            label={displayName}
+            isSortable={_isSortable}
+            sortDirection={_sortDirection}
+            onLabelClick={onLabelClick}
+            value={currentFiltersValues[name]}
+            onChange={newValue => {
+              setcurrentFiltersValues(prevState => ({
+                ...prevState,
+                [name]: newValue,
+              }));
+            }}
+          />
+        );
+      case 'None':
+        return (
+          <InputLabelWrapper
+            key={name}
+            label={displayName}
+            isSortable={_isSortable}
+            sortDirection={_sortDirection}
+            onLabelClick={onLabelClick}
+          />
+        );
+      default:
+        break;
+    }
   };
 
   return (

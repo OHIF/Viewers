@@ -24,7 +24,7 @@
 }
 
 .customSelect__wrapper .customSelect__option {
-  @apply text-black;
+  @apply text-black flex flex-row items-center;
 }
 
 .customSelect__wrapper .customSelect__option:focus {
