@@ -1,14 +1,46 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import ReactSelect from 'react-select';
+import ReactSelect, { components } from 'react-select';
 
 import './Select.css';
 
+const MultiValueContainer = ({ data }) => {
+  return <span>{`${data.label}, `}</span>;
+};
+
+const MultiValue = props => {
+  return (
+    <components.MultiValue {...props}>
+      <span>{props.data.label}</span>
+    </components.MultiValue>
+  );
+};
+
+const Option = props => {
+  return (
+    <div>
+      <components.Option {...props}>
+        <input
+          type="checkbox"
+          checked={props.isSelected}
+          className="w-6 h-6"
+          onChange={e => null}
+        />{' '}
+        <label>{props.value} </label>
+      </components.Option>
+    </div>
+  );
+};
+
 const Select = ({
   className,
+  closeMenuOnSelect,
+  hideSelectedOptions,
+  isClearable,
   isDisabled,
   isMulti,
+  isSearchable,
   onChange,
   options,
   placeholder,
@@ -18,24 +50,43 @@ const Select = ({
     <ReactSelect
       className={classnames(
         className,
-        'flex flex-col flex-1 mt-2 customSelect__wrapper'
+        'flex flex-col flex-1 customSelect__wrapper'
       )}
       classNamePrefix="customSelect"
       isDisabled={isDisabled}
+      isClearable={isClearable}
       isMulti={isMulti}
-      onChange={onChange}
-      options={options}
+      isSearchable={isSearchable}
+      closeMenuOnSelect={closeMenuOnSelect}
+      hideSelectedOptions={hideSelectedOptions}
+      components={{ MultiValueContainer, Option, MultiValue }}
       placeholder={placeholder}
+      options={options}
       value={value}
+      onChange={onChange}
     ></ReactSelect>
   );
 };
 
+Select.defaultProps = {
+  className: '',
+  closeMenuOnSelect: true,
+  hideSelectedOptions: true,
+  isClearable: true,
+  isDisabled: false,
+  isMulti: false,
+  isSearchable: true,
+};
+
 Select.propTypes = {
   className: PropTypes.string,
+  closeMenuOnSelect: PropTypes.bool,
+  hideSelectedOptions: PropTypes.bool,
+  isClearable: PropTypes.bool,
   isDisabled: PropTypes.bool,
   isMulti: PropTypes.bool,
-  onChange: PropTypes.func,
+  isSearchable: PropTypes.bool,
+  onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.string,

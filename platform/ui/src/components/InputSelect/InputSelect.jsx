@@ -24,8 +24,13 @@ const InputSelect = ({
       <Select
         isMulti={isMulti}
         placeholder={placeholder}
+        className="mt-2"
         options={options}
         value={value}
+        isClearable={false}
+        isSearchable={false}
+        closeMenuOnSelect={false}
+        hideSelectedOptions={false}
         onChange={(inputvalues, { action }) => {
           switch (action) {
             case 'select-option':
