@@ -42,6 +42,7 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }
 
   const [state, setState] = useState(DEFAULT_STATE);
   const [showSettings, setShowSettings] = useState(false);
+  const activeViewport = viewports[activeIndex];
 
   /*
    * TODO: Improve the way we notify parts of the app that depends on rts to be loaded.
@@ -74,12 +75,12 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }
 
     if (StructureSets && StructureSets.length) {
       const viewportSets = module.getters.structuresSetsWhichReferenceSeriesInstanceUid(
-        viewports[activeIndex].SeriesInstanceUID
+        activeViewport.SeriesInstanceUID
       );
 
-      const studyMetadata = studyMetadataManager.get(viewports[activeIndex].StudyInstanceUID);
+      const studyMetadata = studyMetadataManager.get(activeViewport.StudyInstanceUID);
       const referencedDisplaysets = studyMetadata.getDerivedDatasets({
-        referencedSeriesInstanceUID: viewports[activeIndex].SeriesInstanceUID,
+        referencedSeriesInstanceUID: activeViewport.SeriesInstanceUID,
         Modality: 'RTSTRUCT',
       });
 
