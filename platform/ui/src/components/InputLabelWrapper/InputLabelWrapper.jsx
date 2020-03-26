@@ -8,28 +8,19 @@ const baseLabelClassName =
   'flex flex-col flex-1 text-white text-lg pl-1 select-none';
 const spanClassName = 'flex flex-row items-center cursor-pointer';
 const sortIconMap = {
-  '-1': 'sorting-active-down',
-  0: 'sorting',
-  1: 'sorting-active-up',
+  ascending: 'sorting-active-up',
+  descending: 'sorting-active-down',
+  none: 'sorting',
 };
 
 const InputLabelWrapper = ({
   label,
   isSortable,
-  isBeingSorted,
   sortDirection,
   onLabelClick,
   className,
   children,
 }) => {
-  const iconProps = {
-    name: isBeingSorted ? sortIconMap[sortDirection] : 'sorting',
-    className: classnames(
-      'mx-2 w-2',
-      isBeingSorted ? 'text-custom-aquaBright' : 'text-custom-blue'
-    ),
-  };
-
   return (
     <label className={classnames(baseLabelClassName, className)}>
       <span
@@ -38,7 +29,17 @@ const InputLabelWrapper = ({
         onKeyDown={onLabelClick}
       >
         {label}
-        {isSortable && <Icon {...iconProps} />}
+        {isSortable && (
+          <Icon
+            name={sortIconMap[sortDirection]}
+            className={classnames(
+              'mx-2 w-2',
+              sortDirection !== 'none'
+                ? 'text-custom-aquaBright'
+                : 'text-custom-blue'
+            )}
+          />
+        )}
       </span>
       <span>{children}</span>
     </label>
@@ -48,8 +49,7 @@ const InputLabelWrapper = ({
 InputLabelWrapper.defaultProps = {
   label: '',
   isSortable: false,
-  isBeingSorted: false,
-  sortDirection: 0,
+  sortDirection: 'none',
   onLabelClick: () => {},
   className: '',
 };
@@ -57,8 +57,7 @@ InputLabelWrapper.defaultProps = {
 InputLabelWrapper.propTypes = {
   label: PropTypes.string,
   isSortable: PropTypes.bool,
-  isBeingSorted: PropTypes.bool,
-  sortDirection: PropTypes.oneOf([-1, 0, 1]),
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
   onLabelClick: PropTypes.func,
   className: PropTypes.string,
   children: PropTypes.node,

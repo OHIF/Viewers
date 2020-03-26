@@ -12,6 +12,28 @@ import {
   InputLabelWrapper,
 } from '@ohif/ui';
 
+const isFiltering = (currentFiltersValues, filtersValues) => {
+  return Object.keys(currentFiltersValues).some(name => {
+    const filterValue = currentFiltersValues[name];
+    return filterValue !== filtersValues[name];
+  });
+};
+
+const getFieldInputComponent = inputType => {
+  switch (inputType) {
+    case 'Text':
+      return InputText;
+    case 'Select':
+      return InputSelect;
+    case 'DateRange':
+      return InputDateRange;
+    case 'None':
+      return InputLabelWrapper;
+    default:
+      break;
+  }
+};
+
 const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
   const [currentFiltersValues, setcurrentFiltersValues] = useState(
     filtersValues
@@ -19,11 +41,12 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
   const { sortBy, sortDirection } = currentFiltersValues;
 
   const handleFilterLabelClick = name => {
-    let _sortDirection = 1;
+    let _sortDirection = 'ascending';
     if (sortBy === name) {
-      _sortDirection = sortDirection + 1;
-      if (_sortDirection > 1) {
-        _sortDirection = -1;
+      if (sortDirection === 'ascending') {
+        _sortDirection = 'descending';
+      } else if (sortDirection === 'descending') {
+        _sortDirection = 'none';
       }
     }
 
@@ -36,30 +59,39 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
     }
   };
 
-  const getFieldInputComponent = inputType => {
-    switch (inputType) {
-      case 'Text':
-        return InputText;
-      case 'Select':
-        return InputSelect;
-      case 'DateRange':
-        return InputDateRange;
-      case 'None':
-        return InputLabelWrapper;
-      default:
-        break;
-    }
-  };
-
   const clearFilters = () => {
-    setcurrentFiltersValues(StudyListFilter.defaultProps.filtersValues);
+    setcurrentFiltersValues(filtersValues);
   };
 
-  const isFiltering = () => {
-    return Object.keys(currentFiltersValues).some(name => {
-      const filterValue = currentFiltersValues[name];
-      return filterValue !== StudyListFilter.defaultProps.filtersValues[name];
-    });
+  const renderFieldInputComponent = ({
+    name,
+    displayName,
+    inputProps,
+    isSortable,
+    inputType,
+  }) => {
+    const _isSortable = isSortable && numOfStudies <= 100 && numOfStudies > 0;
+    const _sortDirection = sortBy !== name ? 'none' : sortDirection;
+    const onLabelClick = () => handleFilterLabelClick(name);
+    const FilterInputComponent = getFieldInputComponent(inputType);
+
+    return (
+      <FilterInputComponent
+        key={name}
+        label={displayName}
+        isSortable={_isSortable}
+        sortDirection={_sortDirection}
+        onLabelClick={onLabelClick}
+        {...inputProps}
+        value={currentFiltersValues[name]}
+        onChange={newValue => {
+          setcurrentFiltersValues(prevState => ({
+            ...prevState,
+            [name]: newValue,
+          }));
+        }}
+      />
+    );
   };
 
   return (
@@ -91,7 +123,7 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
                 </div>
               </div>
               <div className="flex flex-row">
-                {isFiltering() && (
+                {isFiltering(currentFiltersValues, filtersValues) && (
                   <Button
                     rounded="full"
                     variant="outlined"
@@ -121,53 +153,19 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
         <div className="bg-custom-navyDark pt-3 pb-3 ">
           <div className="container m-auto relative flex flex-col">
             <div className="flex flex-row w-full">
-              {filtersMeta.map(
-                ({
-                  name,
-                  displayName,
-                  inputType,
-                  isSortable,
-                  gridCol,
-                  inputProps,
-                }) => {
-                  const _isSortable =
-                    isSortable && numOfStudies <= 100 && numOfStudies > 0;
-                  const _isBeingSorted = sortBy === name;
-                  const onLabelClick = () => handleFilterLabelClick(name);
-                  const FilterInputComponent = getFieldInputComponent(
-                    inputType
-                  );
-
-                  return (
-                    <div
-                      key={name}
-                      className={classnames(
-                        `w-${gridCol}/24`,
-                        'pl-4 first:pl-12'
-                      )}
-                    >
-                      {FilterInputComponent && (
-                        <FilterInputComponent
-                          key={name}
-                          label={displayName}
-                          isSortable={_isSortable}
-                          isBeingSorted={_isBeingSorted}
-                          sortDirection={sortDirection}
-                          onLabelClick={onLabelClick}
-                          inputProps={inputProps}
-                          value={currentFiltersValues[name]}
-                          onChange={newValue => {
-                            setcurrentFiltersValues(prevState => ({
-                              ...prevState,
-                              [name]: newValue,
-                            }));
-                          }}
-                        />
-                      )}
-                    </div>
-                  );
-                }
-              )}
+              {filtersMeta.map(filterMeta => {
+                return (
+                  <div
+                    key={filterMeta.name}
+                    className={classnames(
+                      'pl-4 first:pl-12',
+                      `w-${filterMeta.gridCol}/24`
+                    )}
+                  >
+                    {renderFieldInputComponent(filterMeta)}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

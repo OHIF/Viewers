@@ -79,7 +79,7 @@ const filtersValues = {
   modality: undefined,
   accession: '',
   sortBy: '',
-  sortDirection: 0,
+  sortDirection: 'none',
   page: 0,
   resultsPerPage: 25,
 };

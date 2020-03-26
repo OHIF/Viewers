@@ -6,7 +6,6 @@ import { Input, InputLabelWrapper } from '@ohif/ui';
 const InputText = ({
   label,
   isSortable,
-  isBeingSorted,
   sortDirection,
   onLabelClick,
   value,
@@ -16,7 +15,6 @@ const InputText = ({
     <InputLabelWrapper
       label={label}
       isSortable={isSortable}
-      isBeingSorted={isBeingSorted}
       sortDirection={sortDirection}
       onLabelClick={onLabelClick}
     >
@@ -36,22 +34,18 @@ const InputText = ({
 InputText.defaultProps = {
   label: '',
   isSortable: false,
-  isBeingSorted: false,
-  sortDirection: 0,
+  sortDirection: 'none',
   onLabelClick: () => {},
   value: '',
-  inputProps: {},
   onChange: () => {},
 };
 
 InputText.propTypes = {
   label: PropTypes.string,
   isSortable: PropTypes.bool,
-  isBeingSorted: PropTypes.bool,
-  sortDirection: PropTypes.oneOf([-1, 0, 1]),
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
   onLabelClick: PropTypes.func,
   value: PropTypes.string,
-  inputProps: PropTypes.object,
   onChange: PropTypes.func,
 };
 

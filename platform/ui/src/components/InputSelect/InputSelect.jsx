@@ -6,25 +6,23 @@ import { Select, InputLabelWrapper } from '@ohif/ui';
 const InputSelect = ({
   label,
   isSortable,
-  isBeingSorted,
   sortDirection,
   onLabelClick,
   value,
-  inputProps,
+  isMulti,
+  placeholder,
+  options,
   onChange,
 }) => {
-  const { options, isMulti, isDisabled, placeholder } = inputProps;
   return (
     <InputLabelWrapper
       label={label}
       isSortable={isSortable}
-      isBeingSorted={isBeingSorted}
       sortDirection={sortDirection}
       onLabelClick={onLabelClick}
     >
       <Select
         isMulti={isMulti}
-        isDisabled={isDisabled}
         placeholder={placeholder}
         options={options}
         value={value}
@@ -48,31 +46,28 @@ const InputSelect = ({
 InputSelect.defaultProps = {
   label: '',
   isSortable: false,
-  isBeingSorted: false,
-  sortDirection: 0,
+  sortDirection: 'none',
   onLabelClick: () => {},
   value: [],
-  inputProps: {},
+  isMulti: false,
+  placeholder: '',
+  options: [],
   onChange: () => {},
 };
 
 InputSelect.propTypes = {
   label: PropTypes.string,
   isSortable: PropTypes.bool,
-  isBeingSorted: PropTypes.bool,
-  sortDirection: PropTypes.oneOf([-1, 0, 1]),
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
   onLabelClick: PropTypes.func,
-  inputProps: PropTypes.shape({
-    isMulti: PropTypes.bool,
-    isDisabled: PropTypes.bool,
-    placeholder: PropTypes.string,
-    options: PropTypes.arrayOf(
-      PropTypes.shape({
-        value: PropTypes.string,
-        label: PropTypes.string,
-      })
-    ),
-  }),
+  isMulti: PropTypes.bool,
+  placeholder: PropTypes.string,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string,
+      label: PropTypes.string,
+    })
+  ),
   value: PropTypes.oneOfType([
     PropTypes.arrayOf(
       PropTypes.shape({
