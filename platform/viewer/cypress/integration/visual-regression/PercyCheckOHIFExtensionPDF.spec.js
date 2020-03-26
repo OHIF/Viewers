@@ -4,7 +4,7 @@ describe('Visual Regression - OHIF PDF Extension', () => {
       '1.2.826.0.13854362241694438965858641723883466450351448'
     );
     cy.expectMinimumThumbnails(5);
-  });v
+  });
 
   it('drags and drop a PDF thumbnail into viewport', () => {
     cy.get('[data-cy="thumbnail-list"]')

@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.10](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.9...@ohif/viewer@3.8.10) (2020-03-26)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.8.9](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.8...@ohif/viewer@3.8.9) (2020-03-25)
+
+
+### Bug Fixes
+
+* Load measurement in active viewport. ([#1558](https://github.com/OHIF/Viewers/issues/1558)) ([99022f2](https://github.com/OHIF/Viewers/commit/99022f2bac752f3cd1cedb61e222b8d411e158c8))
+
+
+
+
+
+## [3.8.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.7...@ohif/viewer@3.8.8) (2020-03-25)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.8.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.6...@ohif/viewer@3.8.7) (2020-03-24)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.8.6](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.5...@ohif/viewer@3.8.6) (2020-03-24)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.8.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.4...@ohif/viewer@3.8.5) (2020-03-23)
+
+
+### Bug Fixes
+
+* avoid-wasteful-renders ([#1544](https://github.com/OHIF/Viewers/issues/1544)) ([e41d339](https://github.com/OHIF/Viewers/commit/e41d339f5faef6b93700bc860f37f29f32ad5ed6))
+
+
+
+
+
+## [3.8.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.3...@ohif/viewer@3.8.4) (2020-03-19)
+
+
+### Bug Fixes
+
+* Only permit web workers to be initialized once. ([#1535](https://github.com/OHIF/Viewers/issues/1535)) ([9feadd3](https://github.com/OHIF/Viewers/commit/9feadd3c6d71c1c48f7825d024ccf95d5d82606d))
+
+
+
+
+
 ## [3.8.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.2...@ohif/viewer@3.8.3) (2020-03-17)
 
 **Note:** Version bump only for package @ohif/viewer

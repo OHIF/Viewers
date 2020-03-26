@@ -1,5 +1,6 @@
 import { api } from 'dicomweb-client';
 import DICOMWeb from '../../DICOMWeb';
+import str2ab from '../str2ab';
 
 export default async function fetchPaletteColorLookupTableData(
   instance,
@@ -157,31 +158,12 @@ function _getPaletteColor(server, paletteColorLookupTableData, lutDescriptor) {
       .then(arrayBufferToPaletteColorLUT);
   } else if (paletteColorLookupTableData.InlineBinary) {
     const inlineBinaryData = atob(paletteColorLookupTableData.InlineBinary);
-    const arraybuffer = _str2ab(inlineBinaryData);
+    const arraybuffer = str2ab(inlineBinaryData);
 
     return new Promise(resolve => {
       resolve(arrayBufferToPaletteColorLUT(arraybuffer));
     });
+  } else {
+    return Promise.resolve(arrayBufferToPaletteColorLUT(paletteColorLookupTableData));
   }
-
-  throw new Error(
-    'Palette Color LUT was not provided as InlineBinary or BulkDataURI'
-  );
-}
-
-/**
- * Convert String to ArrayBuffer
- *
- * @param {String} str Input String
- * @return {ArrayBuffer} Output converted ArrayBuffer
- */
-function _str2ab(str) {
-  const strLen = str.length;
-  const bytes = new Uint8Array(strLen);
-
-  for (let i = 0; i < strLen; i++) {
-    bytes[i] = str.charCodeAt(i);
-  }
-
-  return bytes.buffer;
 }
