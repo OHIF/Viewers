@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.4](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.3...@ohif/core@2.6.4) (2020-03-25)
+
+
+### Bug Fixes
+
+* Add support for single entries in SequenceOfUltrasoundRegions. M… ([#1559](https://github.com/OHIF/Viewers/issues/1559)) ([c1a0d3c](https://github.com/OHIF/Viewers/commit/c1a0d3c662d143b62dfbf1c01f6ce394af3756ca))
+* disable autoFreeze of immer, even in dev mode ([#1560](https://github.com/OHIF/Viewers/issues/1560)) ([d604eba](https://github.com/OHIF/Viewers/commit/d604ebaffd93f688eadd0081e402f27074dd226b))
+
+
+
+
+
 ## [2.6.3](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.2...@ohif/core@2.6.3) (2020-03-24)
 
 
