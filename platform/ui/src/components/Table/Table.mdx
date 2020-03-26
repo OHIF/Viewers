@@ -36,60 +36,14 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from '@ohif/ui';
         </TableRow>
       </TableHead>
       <TableBody>
-        <TableRow>
-          <TableCell>Content 01</TableCell>
-          <TableCell>Content 02</TableCell>
-          <TableCell>Content 03</TableCell>
-          <TableCell>Content 04</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>Content 01</TableCell>
-          <TableCell>Content 02</TableCell>
-          <TableCell>Content 03</TableCell>
-          <TableCell>Content 04</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>Content 01</TableCell>
-          <TableCell>Content 02</TableCell>
-          <TableCell>Content 03</TableCell>
-          <TableCell>Content 04</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>Content 01</TableCell>
-          <TableCell>Content 02</TableCell>
-          <TableCell>Content 03</TableCell>
-          <TableCell>Content 04</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>Content 01</TableCell>
-          <TableCell>Content 02</TableCell>
-          <TableCell>Content 03</TableCell>
-          <TableCell>Content 04</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>Content 01</TableCell>
-          <TableCell>Content 02</TableCell>
-          <TableCell>Content 03</TableCell>
-          <TableCell>Content 04</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>Content 01</TableCell>
-          <TableCell>Content 02</TableCell>
-          <TableCell>Content 03</TableCell>
-          <TableCell>Content 04</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>Content 01</TableCell>
-          <TableCell>Content 02</TableCell>
-          <TableCell>Content 03</TableCell>
-          <TableCell>Content 04</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>Content 01</TableCell>
-          <TableCell>Content 02</TableCell>
-          <TableCell>Content 03</TableCell>
-          <TableCell>Content 04</TableCell>
-        </TableRow>
+        {new Array(25).fill('').map(row => (
+          <TableRow>
+            <TableCell>Content 01</TableCell>
+            <TableCell>Content 02</TableCell>
+            <TableCell>Content 03</TableCell>
+            <TableCell>Content 04</TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   </div>
