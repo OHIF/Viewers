@@ -47,18 +47,15 @@ const InputLabelWrapper = ({
 };
 
 InputLabelWrapper.defaultProps = {
-  label: '',
-  isSortable: false,
-  sortDirection: 'none',
-  onLabelClick: () => {},
   className: '',
 };
 
 InputLabelWrapper.propTypes = {
-  label: PropTypes.string,
-  isSortable: PropTypes.bool,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
-  onLabelClick: PropTypes.func,
+  label: PropTypes.string.isRequired,
+  isSortable: PropTypes.bool.isRequired,
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
+    .isRequired,
+  onLabelClick: PropTypes.func.isRequired,
   className: PropTypes.string,
   children: PropTypes.node,
 };

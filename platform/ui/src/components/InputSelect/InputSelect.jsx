@@ -44,22 +44,18 @@ const InputSelect = ({
 };
 
 InputSelect.defaultProps = {
-  label: '',
-  isSortable: false,
-  sortDirection: 'none',
-  onLabelClick: () => {},
   value: [],
   isMulti: false,
   placeholder: '',
   options: [],
-  onChange: () => {},
 };
 
 InputSelect.propTypes = {
-  label: PropTypes.string,
-  isSortable: PropTypes.bool,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
-  onLabelClick: PropTypes.func,
+  label: PropTypes.string.isRequired,
+  isSortable: PropTypes.bool.isRequired,
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
+    .isRequired,
+  onLabelClick: PropTypes.func.isRequired,
   isMulti: PropTypes.bool,
   placeholder: PropTypes.string,
   options: PropTypes.arrayOf(
@@ -80,7 +76,7 @@ InputSelect.propTypes = {
       label: PropTypes.string,
     }),
   ]),
-  onChange: PropTypes.func,
+  onChange: PropTypes.func.isRequired,
 };
 
 export default InputSelect;

@@ -32,21 +32,17 @@ const InputText = ({
 };
 
 InputText.defaultProps = {
-  label: '',
-  isSortable: false,
-  sortDirection: 'none',
-  onLabelClick: () => {},
   value: '',
-  onChange: () => {},
 };
 
 InputText.propTypes = {
-  label: PropTypes.string,
-  isSortable: PropTypes.bool,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
-  onLabelClick: PropTypes.func,
+  label: PropTypes.string.isRequired,
+  isSortable: PropTypes.bool.isRequired,
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
+    .isRequired,
+  onLabelClick: PropTypes.func.isRequired,
   value: PropTypes.string,
-  onChange: PropTypes.func,
+  onChange: PropTypes.func.isRequired,
 };
 
 export default InputText;

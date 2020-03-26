@@ -35,26 +35,22 @@ const InputDateRange = ({
 };
 
 InputDateRange.defaultProps = {
-  label: '',
-  isSortable: false,
-  sortDirection: 'none',
-  onLabelClick: () => {},
   value: {},
-  onChange: () => {},
 };
 
 InputDateRange.propTypes = {
-  label: PropTypes.string,
-  isSortable: PropTypes.bool,
-  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
-  onLabelClick: PropTypes.func,
+  label: PropTypes.string.isRequired,
+  isSortable: PropTypes.bool.isRequired,
+  sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
+    .isRequired,
+  onLabelClick: PropTypes.func.isRequired,
   value: PropTypes.shape({
     /** Start date moment object */
     startDate: PropTypes.object, // moment date is an object
     /** End date moment object */
     endDate: PropTypes.object, // moment date is an object
   }),
-  onChange: PropTypes.func,
+  onChange: PropTypes.func.isRequired,
 };
 
 export default InputDateRange;
