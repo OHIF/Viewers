@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.10...@ohif/viewer@3.8.11) (2020-03-26)
+
+
+### Bug Fixes
+
+* [#1312](https://github.com/OHIF/Viewers/issues/1312) Cine dialog remains on screen ([#1540](https://github.com/OHIF/Viewers/issues/1540)) ([7d22bb7](https://github.com/OHIF/Viewers/commit/7d22bb7d5a8590cffc169725c93942f758fe13a0))
+
+
+
+
+
 ## [3.8.10](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.9...@ohif/viewer@3.8.10) (2020-03-26)
 
 **Note:** Version bump only for package @ohif/viewer
