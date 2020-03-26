@@ -14,6 +14,7 @@ export {
   InputSelect,
   InputText,
   InputLabelWrapper,
+  EmptyStudies,
   Icon,
   IconButton,
   Select,
