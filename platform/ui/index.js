@@ -1,11 +1,16 @@
+/** UTILS */
 import * as utils from './src/utils/';
-import {
+export { utils };
+
+/** CONTEXT/HOOKS */
+export {
   ModalProvider,
   ModalConsumer,
   useModal,
   withModal,
 } from './src/contextProviders';
 
+/** COMPONENTS */
 export {
   Button,
   ButtonGroup,
@@ -17,7 +22,13 @@ export {
   Svg,
   Input,
   ThemeWrapper,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
   Typography,
 } from './src/components';
+
+/** VIEWS */
 export { StudyList } from './src/views';
-export { ModalProvider, ModalConsumer, useModal, withModal, utils };

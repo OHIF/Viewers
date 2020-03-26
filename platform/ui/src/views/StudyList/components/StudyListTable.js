@@ -3,14 +3,23 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import { format } from 'date-fns';
-import { Button, Icon, EmptyStudies } from '@ohif/ui';
+import {
+  Button,
+  Icon,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  EmptyStudies,
+} from '@ohif/ui';
 
 const getGridColClass = (filtersMeta, name) => {
   const filter = filtersMeta.find(filter => filter.name === name);
   return (filter && filter.gridCol && `w-${filter.gridCol}/24`) || '';
 };
 
-const TableRow = props => {
+const StudyTableRow = props => {
   const {
     AccessionNumber,
     Modalities,
@@ -30,11 +39,6 @@ const TableRow = props => {
     'px-4 py-2 text-base',
     { 'border-b border-custom-violetPale': !isOpened },
   ];
-  const seriesWidthClasses = {
-    normal: 'px-2 flex-1',
-    small: 'px-2 flex-0.3',
-  };
-  const seriesBodyClasses = 'border-r border-custom-violetPale';
   return (
     <>
       <tr>
@@ -176,75 +180,35 @@ const TableRow = props => {
                         </div>
                       </div>
                       <div className="mt-4">
-                        <div className="w-full text-lg">
-                          <div className="bg-custom-navy border-b border-custom-violetPale flex">
-                            <div
-                              className={classnames(
-                                seriesWidthClasses.normal,
-                                'font-bold'
-                              )}
-                            >
-                              Description
-                            </div>
-                            <div
-                              className={classnames(
-                                seriesWidthClasses.small,
-                                'font-bold'
-                              )}
-                            >
-                              Series
-                            </div>
-                            <div
-                              className={classnames(
-                                seriesWidthClasses.small,
-                                'font-bold'
-                              )}
-                            >
-                              Modality
-                            </div>
-                            <div
-                              className={classnames(
-                                seriesWidthClasses.normal,
-                                'font-bold'
-                              )}
-                            >
-                              Instances
-                            </div>
-                          </div>
-                          <div className="mt-2 max-h-48 overflow-y-scroll ohif-scrollbar">
+                        <Table>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell size="normal">Description</TableCell>
+                              <TableCell size="small">Series</TableCell>
+                              <TableCell size="small">Modality</TableCell>
+                              <TableCell size="normal">Instances</TableCell>
+                            </TableRow>
+                          </TableHead>
+
+                          <TableBody>
                             {series.map((seriesItem, i) => (
-                              <div className="w-full flex" key={i}>
-                                <div
-                                  className={classnames(
-                                    seriesWidthClasses.normal,
-                                    seriesBodyClasses
-                                  )}
-                                >
+                              <TableRow key={i}>
+                                <TableCell size="normal">
                                   Patient Protocol
-                                </div>
-                                <div
-                                  className={classnames(
-                                    seriesWidthClasses.small,
-                                    seriesBodyClasses
-                                  )}
-                                >
+                                </TableCell>
+                                <TableCell size="small">
                                   {seriesItem.SeriesNumber}
-                                </div>
-                                <div
-                                  className={classnames(
-                                    seriesWidthClasses.small,
-                                    seriesBodyClasses
-                                  )}
-                                >
+                                </TableCell>
+                                <TableCell size="small">
                                   {seriesItem.Modality}
-                                </div>
-                                <div className={classnames('pl-3 flex-1')}>
+                                </TableCell>
+                                <TableCell size="normal">
                                   {seriesItem.instances.length}
-                                </div>
-                              </div>
+                                </TableCell>
+                              </TableRow>
                             ))}
-                          </div>
-                        </div>
+                          </TableBody>
+                        </Table>
                       </div>
                     </td>
                   </tr>
@@ -258,7 +222,7 @@ const TableRow = props => {
   );
 };
 
-TableRow.propTypes = {
+StudyTableRow.propTypes = {
   AccessionNumber: PropTypes.string.isRequired,
   Modalities: PropTypes.string.isRequired,
   Instances: PropTypes.number.isRequired,
@@ -275,7 +239,7 @@ const StudyListTable = ({ studies, numOfStudies, filtersMeta }) => {
       <table className="w-full text-white">
         <tbody>
           {studies.map((study, i) => (
-            <TableRow
+            <StudyTableRow
               key={i}
               AccessionNumber={study.AccessionNumber || ''}
               Modalities={study.Modalities || ''}
