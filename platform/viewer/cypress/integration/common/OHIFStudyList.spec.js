@@ -2,10 +2,19 @@
 //this is intended to be running in a controled docker environment with test data.
 describe('OHIF Study List', function() {
   context('Desktop resolution', function() {
+    before(function() {
+      cy.openStudyList();
+    });
+
     beforeEach(function() {
       cy.viewport(1750, 720);
-      cy.openStudyList();
       cy.initStudyListAliasesOnDesktop();
+      //Clear all text fields
+      cy.get('@PatientName').clear();
+      cy.get('@MRN').clear();
+      cy.get('@AccessionNumber').clear();
+      cy.get('@StudyDescription').clear();
+      cy.get('@modalities').clear();
     });
 
     it('searches Patient Name with exact string', function() {
@@ -101,10 +110,16 @@ describe('OHIF Study List', function() {
   });
 
   context('Tablet resolution', function() {
+    before(function() {
+      cy.openStudyList();
+    });
+
     beforeEach(function() {
       cy.viewport(1000, 660);
-      cy.openStudyList();
       cy.initStudyListAliasesOnTablet();
+      //Clear all text fields
+      cy.get('@patientNameOrMRN').clear();
+      cy.get('@accessionModalityDescription').clear();
     });
 
     it('searches Patient Name with exact string', function() {

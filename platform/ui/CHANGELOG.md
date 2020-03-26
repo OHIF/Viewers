@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.0...@ohif/ui@1.4.1) (2020-03-17)
+
+
+### Bug Fixes
+
+* rendering delete button when text is too wide for parent div ([#1526](https://github.com/OHIF/Viewers/issues/1526)) ([b269415](https://github.com/OHIF/Viewers/commit/b269415048dfec50e2abb3dd4f4355a23d6ad75a))
+
+
+
+
+
 # [1.4.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.3.3...@ohif/ui@1.4.0) (2020-03-13)
 
 

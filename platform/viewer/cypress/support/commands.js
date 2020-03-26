@@ -53,6 +53,16 @@ Cypress.Commands.add('openStudy', PatientName => {
     .click({ force: true });
 });
 
+Cypress.Commands.add('checkStudyRouteInViewer', StudyInstanceUID => {
+  cy.location('pathname').then($url => {
+    cy.log($url);
+    if ($url == 'blank' || !$url.includes(`/viewer/${StudyInstanceUID}`)) {
+      cy.openStudyInViewer(StudyInstanceUID);
+      cy.waitDicomImage();
+    }
+  });
+});
+
 Cypress.Commands.add('openStudyInViewer', StudyInstanceUID => {
   cy.visit(`/viewer/${StudyInstanceUID}`);
 });
@@ -111,7 +121,7 @@ Cypress.Commands.add('waitVTKReformatting', () => {
 
 Cypress.Commands.add('waitViewportImageLoading', () => {
   // Wait for finish loading
-  cy.get('[data-cy="viewprt-grid"]', { timeout: 20000 }).should($grid => {
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
     expect($grid).not.to.contain.text('Load');
   });
 });
@@ -456,21 +466,54 @@ Cypress.Commands.add('openPreferences', () => {
   });
 });
 
-Cypress.Commands.add('changePreferencesTab', tabAlias => {
+Cypress.Commands.add('selectPreferencesTab', tabAlias => {
   cy.initPreferencesModalAliases();
-  cy.get(tabAlias).click();
+  cy.get(tabAlias)
+    .click()
+    .should('have.class', 'active');
   initPreferencesModalFooterBtnAliases();
 });
 
-Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
+Cypress.Commands.add('resetUserHotkeyPreferences', () => {
   // Open User Preferences modal
   cy.openPreferences();
 
-  cy.initPreferencesModalAliases();
+  cy.selectPreferencesTab('@userPreferencesHotkeysTab').then(() => {
+    cy.log('Reset Hotkeys to Default Preferences');
+    cy.get('@restoreBtn').click();
+  });
 
-  cy.log('Reset to Default Preferences');
-  cy.get('@restoreBtn').click();
-  cy.get('@saveBtn').click();
+  // Close Success Message overlay (if displayed)
+  cy.get('body').then(body => {
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+    // Click on Save Button
+    cy.get('@saveBtn').click();
+  });
+});
+
+Cypress.Commands.add('resetUserGeneralPreferences', () => {
+  // Open User Preferences modal
+  cy.openPreferences();
+
+  cy.selectPreferencesTab('@userPreferencesGeneralTab').then(() => {
+    cy.log('Reset Language to Default Preferences');
+    cy.get('@restoreBtn').click();
+  });
+
+  // Close Success Message overlay (if displayed)
+  cy.get('body').then(body => {
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+    // Click on Save Button
+    cy.get('@saveBtn').click();
+  });
 });
 
 Cypress.Commands.add(
@@ -484,6 +527,37 @@ Cypress.Commands.add(
           .parent()
           .find('input') // closest input to that label
           .type(shortcut, { force: true }); // Set new shortcut for that function
+      })
+      .blur();
+  }
+);
+
+Cypress.Commands.add(
+  'setWindowLevelPreset',
+  (preset_index, description_value, window_value, level_value) => {
+    let index = parseInt(preset_index) + 1;
+
+    // Set new Description value
+    cy.get(':nth-child(' + index + ') > .description > .preferencesInput')
+      .clear()
+      .type(description_value, {
+        force: true,
+      })
+      .blur();
+
+    // Set new Window value
+    cy.get(':nth-child(' + index + ') > .window > .preferencesInput')
+      .clear()
+      .type(window_value, {
+        force: true,
+      })
+      .blur();
+
+    // Set new Level value
+    cy.get(':nth-child(' + index + ') > .level > .preferencesInput')
+      .clear()
+      .type(level_value, {
+        force: true,
       })
       .blur();
   }
@@ -503,12 +577,8 @@ Cypress.Commands.add('openDownloadImageModal', () => {
 
 Cypress.Commands.add('setLanguage', (language, save = true) => {
   cy.openPreferences();
-
-  cy.get('@userPreferencesGeneralTab')
-    .click()
-    .should('have.class', 'active');
-
-  initPreferencesModalFooterBtnAliases();
+  cy.initPreferencesModalAliases();
+  cy.selectPreferencesTab('@userPreferencesGeneralTab');
 
   // Language dropdown should be displayed
   cy.get('#language-select').should('be.visible');
@@ -516,8 +586,18 @@ Cypress.Commands.add('setLanguage', (language, save = true) => {
   // Select Language and Save/Cancel
   cy.get('#language-select').select(language);
 
-  const toClick = save ? '@saveBtn' : '@cancelBtn';
-  cy.get(toClick)
-    .scrollIntoView()
-    .click();
+  // Close Success Message overlay (if displayed)
+  cy.get('body').then(body => {
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+
+    //Click on Save/Cancel button
+    const toClick = save ? '@saveBtn' : '@cancelBtn';
+    cy.get(toClick)
+      .scrollIntoView()
+      .click();
+  });
 });

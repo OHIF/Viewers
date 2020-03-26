@@ -1,7 +1,8 @@
 describe('OHIF Cornerstone Toolbar', () => {
   before(() => {
-    cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
-    cy.waitDicomImage();
+    cy.checkStudyRouteInViewer(
+      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
+    );
     cy.expectMinimumThumbnails(5);
   });
 
@@ -116,9 +117,6 @@ describe('OHIF Cornerstone Toolbar', () => {
       .trigger('mousedown', 'center', { which: 1 })
       .trigger('mousemove', 'bottom', { which: 1 })
       .trigger('mouseup', 'bottom');
-
-    // Visual comparison
-    cy.screenshot('Pan tool moved the image inside the viewport');
   });
 
   it('checks if Length annotation can be added on viewport and on measurements panel', () => {
@@ -425,19 +423,6 @@ describe('OHIF Cornerstone Toolbar', () => {
     });
   });
 
-  it('check if Invert tool will change the colors of the image in the viewport', () => {
-    // Click on More button
-    cy.get('@moreBtn').click();
-    // Verify if overlay is displayed
-    cy.get('.tooltip-toolbar-overlay').should('be.visible');
-
-    // Click on Invert button
-    cy.get('[data-cy="invert"]').click();
-
-    // Visual comparison
-    cy.screenshot('Invert tool - Should Invert Canvas');
-  });
-
   it('check if Rotate tool will change the image orientation in the viewport', () => {
     //Click on More button
     cy.get('@moreBtn').click();
@@ -447,10 +432,9 @@ describe('OHIF Cornerstone Toolbar', () => {
       .then(() => {
         //Click on Rotate button
         cy.get('[data-cy="rotate right"]').click({ force: true });
+        cy.get('@viewportInfoMidLeft').should('contains.text', 'F');
+        cy.get('@viewportInfoMidTop').should('contains.text', 'R');
       });
-
-    // Visual comparison
-    cy.screenshot('Rotate tool - Should Rotate Image to Right');
   });
 
   it('check if Flip H tool will flip the image horizontally in the viewport', () => {
@@ -461,9 +445,8 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //Click on Flip H button
     cy.get('[data-cy="flip h"]').click();
-
-    // Visual comparison
-    cy.screenshot('Flip H tool - Should Flip Image on Y axis');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'L');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'H');
   });
 
   it('check if Flip V tool will flip the image vertically in the viewport', () => {
@@ -474,8 +457,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //Click on Flip V button
     cy.get('[data-cy="flip v"]').click();
-
-    // Visual comparison
-    cy.screenshot('Flip V tool - Should Flip Image on X axis');
+    cy.get('@viewportInfoMidLeft').should('contains.text', 'R');
+    cy.get('@viewportInfoMidTop').should('contains.text', 'F');
   });
 });

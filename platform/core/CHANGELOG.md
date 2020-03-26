@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.4](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.3...@ohif/core@2.6.4) (2020-03-25)
+
+
+### Bug Fixes
+
+* Add support for single entries in SequenceOfUltrasoundRegions. M… ([#1559](https://github.com/OHIF/Viewers/issues/1559)) ([c1a0d3c](https://github.com/OHIF/Viewers/commit/c1a0d3c662d143b62dfbf1c01f6ce394af3756ca))
+* disable autoFreeze of immer, even in dev mode ([#1560](https://github.com/OHIF/Viewers/issues/1560)) ([d604eba](https://github.com/OHIF/Viewers/commit/d604ebaffd93f688eadd0081e402f27074dd226b))
+
+
+
+
+
+## [2.6.3](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.2...@ohif/core@2.6.3) (2020-03-24)
+
+
+### Bug Fixes
+
+* Ensure we take into account pixel spacing fields properly ([#1555](https://github.com/OHIF/Viewers/issues/1555)) ([77ab0ad](https://github.com/OHIF/Viewers/commit/77ab0ad9a14a135b5560741fc1600704df08c141))
+
+
+
+
+
+## [2.6.2](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.1...@ohif/core@2.6.2) (2020-03-24)
+
+
+### Bug Fixes
+
+* OverlayPlane module usage for ArrayBuffer, BulkDataURI, and InlineBinary cases, as well as PaletteColor LUTs for ArrayBuffer (i.e. local drag/drop) case ([#1546](https://github.com/OHIF/Viewers/issues/1546)) ([404d52f](https://github.com/OHIF/Viewers/commit/404d52fe5c0442dd13e4d407bb0687d72fa5f32c))
+
+
+
+
+
+## [2.6.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.0...@ohif/core@2.6.1) (2020-03-23)
+
+
+### Bug Fixes
+
+* avoid-wasteful-renders ([#1544](https://github.com/OHIF/Viewers/issues/1544)) ([e41d339](https://github.com/OHIF/Viewers/commit/e41d339f5faef6b93700bc860f37f29f32ad5ed6))
+
+
+
+
+
 # [2.6.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.5.3...@ohif/core@2.6.0) (2020-03-13)
 
 
