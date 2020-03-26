@@ -1,21 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { DateRange, FilterWrapper } from '@ohif/ui';
+import { DateRange, InputLabelWrapper } from '@ohif/ui';
 
-const FilterDateRange = ({
+const InputDateRange = ({
   label,
   isSortable,
   isBeingSorted,
   sortDirection,
   onLabelClick,
-  inputValue,
-  inputProps,
+  value,
   onChange,
 }) => {
-  const { startDate, endDate } = inputValue;
+  const { startDate, endDate } = value;
   return (
-    <FilterWrapper
+    <InputLabelWrapper
       label={label}
       isSortable={isSortable}
       isBeingSorted={isBeingSorted}
@@ -24,7 +23,6 @@ const FilterDateRange = ({
     >
       <div className="relative">
         <DateRange
-          {...inputProps}
           startDate={startDate}
           endDate={endDate}
           onChange={({ startDate, endDate }) => {
@@ -34,33 +32,33 @@ const FilterDateRange = ({
           }}
         />
       </div>
-    </FilterWrapper>
+    </InputLabelWrapper>
   );
 };
 
-FilterDateRange.defaultProps = {
+InputDateRange.defaultProps = {
   label: '',
   isSortable: false,
   isBeingSorted: false,
   sortDirection: 0,
   onLabelClick: () => {},
-  inputValue: {},
-  inputProps: {},
+  value: {},
   onChange: () => {},
 };
 
-FilterDateRange.propTypes = {
+InputDateRange.propTypes = {
   label: PropTypes.string,
   isSortable: PropTypes.bool,
   isBeingSorted: PropTypes.bool,
   sortDirection: PropTypes.oneOf([-1, 0, 1]),
   onLabelClick: PropTypes.func,
   value: PropTypes.shape({
-    startDate: PropTypes.string,
-    endDate: PropTypes.string,
+    /** Start date moment object */
+    startDate: PropTypes.object, // moment date is an object
+    /** End date moment object */
+    endDate: PropTypes.object, // moment date is an object
   }),
-  inputProps: PropTypes.object,
   onChange: PropTypes.func,
 };
 
-export default FilterDateRange;
+export default InputDateRange;

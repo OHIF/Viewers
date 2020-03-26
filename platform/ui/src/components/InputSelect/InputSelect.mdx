@@ -1,19 +1,19 @@
 ---
-name: FilterSelect
+name: InputSelect
 menu: Components
-route: components/filterSelect
+route: components/InputSelect
 ---
 
 import { useState } from 'react';
 import { Playground, Props } from 'docz';
-import FilterSelect from './';
+import InputSelect from './';
 
 # Filter Select
 
 ## Import
 
 ```javascript
-import { FilterSelect } from '@ohif/ui';
+import { InputSelect } from '@ohif/ui';
 ```
 
 ## Basic usage
@@ -24,7 +24,7 @@ import { FilterSelect } from '@ohif/ui';
     return (
       <div className="flex flex-col flex-1 p-4 items-center">
         <div className="w-56">
-          <FilterSelect
+          <InputSelect
             label="Modality"
             inputProps={{
               options: [
@@ -34,7 +34,7 @@ import { FilterSelect } from '@ohif/ui';
                 { value: 'sr', label: 'sr' },
               ],
             }}
-            inputValue={values}
+            value={values}
             onChange={values => {
               setValues(values);
             }}
@@ -47,4 +47,4 @@ import { FilterSelect } from '@ohif/ui';
 
 ## Properties
 
-<Props of={FilterSelect} />
+<Props of={InputSelect} />

@@ -1,20 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Input, FilterWrapper } from '@ohif/ui';
+import { Input, InputLabelWrapper } from '@ohif/ui';
 
-const FilterText = ({
+const InputText = ({
   label,
   isSortable,
   isBeingSorted,
   sortDirection,
   onLabelClick,
-  inputValue,
-  inputProps,
+  value,
   onChange,
 }) => {
   return (
-    <FilterWrapper
+    <InputLabelWrapper
       label={label}
       isSortable={isSortable}
       isBeingSorted={isBeingSorted}
@@ -22,31 +21,30 @@ const FilterText = ({
       onLabelClick={onLabelClick}
     >
       <Input
-        {...inputProps}
         className="border-custom-blue mt-2 bg-black"
         type="text"
         containerClassName="mr-2"
-        value={inputValue}
+        value={value}
         onChange={event => {
           onChange(event.target.value);
         }}
       />
-    </FilterWrapper>
+    </InputLabelWrapper>
   );
 };
 
-FilterText.defaultProps = {
+InputText.defaultProps = {
   label: '',
   isSortable: false,
   isBeingSorted: false,
   sortDirection: 0,
   onLabelClick: () => {},
-  inputValue: '',
+  value: '',
   inputProps: {},
   onChange: () => {},
 };
 
-FilterText.propTypes = {
+InputText.propTypes = {
   label: PropTypes.string,
   isSortable: PropTypes.bool,
   isBeingSorted: PropTypes.bool,
@@ -57,4 +55,4 @@ FilterText.propTypes = {
   onChange: PropTypes.func,
 };
 
-export default FilterText;
+export default InputText;

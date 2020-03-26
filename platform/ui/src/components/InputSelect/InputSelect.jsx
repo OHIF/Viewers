@@ -1,20 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Select, FilterWrapper } from '@ohif/ui';
+import { Select, InputLabelWrapper } from '@ohif/ui';
 
-const FilterSelect = ({
+const InputSelect = ({
   label,
   isSortable,
   isBeingSorted,
   sortDirection,
   onLabelClick,
-  inputValue,
+  value,
   inputProps,
   onChange,
 }) => {
+  const { options, isMulti, isDisabled, placeholder } = inputProps;
   return (
-    <FilterWrapper
+    <InputLabelWrapper
       label={label}
       isSortable={isSortable}
       isBeingSorted={isBeingSorted}
@@ -22,8 +23,11 @@ const FilterSelect = ({
       onLabelClick={onLabelClick}
     >
       <Select
-        {...inputProps}
-        value={inputValue}
+        isMulti={isMulti}
+        isDisabled={isDisabled}
+        placeholder={placeholder}
+        options={options}
+        value={value}
         onChange={(inputvalues, { action }) => {
           switch (action) {
             case 'select-option':
@@ -37,30 +41,51 @@ const FilterSelect = ({
           }
         }}
       />
-    </FilterWrapper>
+    </InputLabelWrapper>
   );
 };
 
-FilterSelect.defaultProps = {
+InputSelect.defaultProps = {
   label: '',
   isSortable: false,
   isBeingSorted: false,
   sortDirection: 0,
   onLabelClick: () => {},
-  inputValue: '',
+  value: [],
   inputProps: {},
   onChange: () => {},
 };
 
-FilterSelect.propTypes = {
+InputSelect.propTypes = {
   label: PropTypes.string,
   isSortable: PropTypes.bool,
   isBeingSorted: PropTypes.bool,
   sortDirection: PropTypes.oneOf([-1, 0, 1]),
   onLabelClick: PropTypes.func,
-  value: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  inputProps: PropTypes.object,
+  inputProps: PropTypes.shape({
+    isMulti: PropTypes.bool,
+    isDisabled: PropTypes.bool,
+    placeholder: PropTypes.string,
+    options: PropTypes.arrayOf(
+      PropTypes.shape({
+        value: PropTypes.string,
+        label: PropTypes.string,
+      })
+    ),
+  }),
+  value: PropTypes.oneOfType([
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        value: PropTypes.string,
+        label: PropTypes.string,
+      })
+    ),
+    PropTypes.shape({
+      value: PropTypes.string,
+      label: PropTypes.string,
+    }),
+  ]),
   onChange: PropTypes.func,
 };
 
-export default FilterSelect;
+export default InputSelect;

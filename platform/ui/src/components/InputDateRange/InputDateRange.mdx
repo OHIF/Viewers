@@ -1,19 +1,19 @@
 ---
-name: FilterDateRange
+name: InputDateRange
 menu: Components
-route: components/filterDateRange
+route: components/InputDateRange
 ---
 
 import { useState } from 'react';
 import { Playground, Props } from 'docz';
-import FilterDateRange from './';
+import InputDateRange from './';
 
 # Filter Date Range
 
 ## Import
 
 ```javascript
-import { FilterDateRange } from '@ohif/ui';
+import { InputDateRange } from '@ohif/ui';
 ```
 
 ## Basic usage
@@ -27,9 +27,9 @@ import { FilterDateRange } from '@ohif/ui';
     return (
       <div className="p-4 flex flex-col items-center">
         <div className="w-56">
-          <FilterDateRange
+          <InputDateRange
             label="Dates"
-            inputValue={dates}
+            value={dates}
             onChange={dates => setDates(dates)}
           />
         </div>
@@ -40,4 +40,4 @@ import { FilterDateRange } from '@ohif/ui';
 
 ## Properties
 
-<Props of={FilterDateRange} />
+<Props of={InputDateRange} />

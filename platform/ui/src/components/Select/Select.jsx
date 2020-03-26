@@ -9,12 +9,9 @@ const Select = ({
   className,
   isDisabled,
   isMulti,
-  isSearchable,
-  name,
   onChange,
   options,
   placeholder,
-  noOptionsMessage,
   value,
 }) => {
   return (
@@ -26,12 +23,9 @@ const Select = ({
       classNamePrefix="customSelect"
       isDisabled={isDisabled}
       isMulti={isMulti}
-      isSearchable={isSearchable}
-      name={name}
       onChange={onChange}
       options={options}
       placeholder={placeholder}
-      noOptionsMessage={noOptionsMessage}
       value={value}
     ></ReactSelect>
   );
@@ -41,8 +35,6 @@ Select.propTypes = {
   className: PropTypes.string,
   isDisabled: PropTypes.bool,
   isMulti: PropTypes.bool,
-  isSearchable: PropTypes.bool,
-  name: PropTypes.string,
   onChange: PropTypes.func,
   options: PropTypes.arrayOf(
     PropTypes.shape({
@@ -51,8 +43,18 @@ Select.propTypes = {
     })
   ),
   placeholder: PropTypes.string,
-  noOptionsMessage: PropTypes.func,
-  value: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  value: PropTypes.oneOfType([
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        value: PropTypes.string,
+        label: PropTypes.string,
+      })
+    ),
+    PropTypes.shape({
+      value: PropTypes.string,
+      label: PropTypes.string,
+    }),
+  ]),
 };
 
 export default Select;

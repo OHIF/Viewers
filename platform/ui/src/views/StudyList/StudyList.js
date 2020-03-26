@@ -63,10 +63,26 @@ const filtersMeta = [
     name: 'instances',
     displayName: 'Instances',
     inputType: 'None',
-    isSortable: false,
+    isSortable: true,
     gridCol: 2,
   },
 ];
+
+const filtersValues = {
+  patientName: '',
+  mrn: '',
+  studyDate: {
+    startDate: null,
+    endDate: null,
+  },
+  description: '',
+  modality: undefined,
+  accession: '',
+  sortBy: '',
+  sortDirection: 0,
+  page: 0,
+  resultsPerPage: 25,
+};
 
 const StudyList = ({ studies, perPage }) => {
   const studiesData = studies.slice(0, perPage);
@@ -79,7 +95,11 @@ const StudyList = ({ studies, perPage }) => {
       })}
     >
       <Header />
-      <StudyListFilter numOfStudies={numOfStudies} filtersMeta={filtersMeta} />
+      <StudyListFilter
+        numOfStudies={numOfStudies}
+        filtersMeta={filtersMeta}
+        filtersValues={filtersValues}
+      />
       <StudyListTable
         studies={studiesData}
         numOfStudies={numOfStudies}

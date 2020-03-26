@@ -13,7 +13,7 @@ const sortIconMap = {
   1: 'sorting-active-up',
 };
 
-const FilterWrapper = ({
+const InputLabelWrapper = ({
   label,
   isSortable,
   isBeingSorted,
@@ -45,7 +45,7 @@ const FilterWrapper = ({
   );
 };
 
-FilterWrapper.defaultProps = {
+InputLabelWrapper.defaultProps = {
   label: '',
   isSortable: false,
   isBeingSorted: false,
@@ -54,7 +54,7 @@ FilterWrapper.defaultProps = {
   className: '',
 };
 
-FilterWrapper.propTypes = {
+InputLabelWrapper.propTypes = {
   label: PropTypes.string,
   isSortable: PropTypes.bool,
   isBeingSorted: PropTypes.bool,
@@ -64,4 +64,4 @@ FilterWrapper.propTypes = {
   children: PropTypes.node,
 };
 
-export default FilterWrapper;
+export default InputLabelWrapper;

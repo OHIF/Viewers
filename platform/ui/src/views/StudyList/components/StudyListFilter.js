@@ -6,9 +6,10 @@ import {
   Button,
   Icon,
   Typography,
-  FilterText,
-  FilterDateRange,
-  FilterSelect,
+  InputText,
+  InputDateRange,
+  InputSelect,
+  InputLabelWrapper,
 } from '@ohif/ui';
 
 const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
@@ -38,11 +39,13 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
   const getFieldInputComponent = inputType => {
     switch (inputType) {
       case 'Text':
-        return FilterText;
+        return InputText;
       case 'Select':
-        return FilterSelect;
+        return InputSelect;
       case 'DateRange':
-        return FilterDateRange;
+        return InputDateRange;
+      case 'None':
+        return InputLabelWrapper;
       default:
         break;
     }
@@ -152,7 +155,7 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
                           sortDirection={sortDirection}
                           onLabelClick={onLabelClick}
                           inputProps={inputProps}
-                          inputValue={currentFiltersValues[name]}
+                          value={currentFiltersValues[name]}
                           onChange={newValue => {
                             setcurrentFiltersValues(prevState => ({
                               ...prevState,
@@ -184,22 +187,8 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
 
 StudyListFilter.defaultProps = {
   filtersMeta: [],
-  filtersValues: {
-    patientName: '',
-    mrn: '',
-    studyDate: {
-      startDate: null,
-      endDate: null,
-    },
-    description: '',
-    modality: [],
-    accession: '',
-    sortBy: '',
-    sortDirection: 0,
-    page: 0,
-    resultsPerPage: 25,
-  },
-  numOfStudies: 90,
+  filtersValues: {},
+  numOfStudies: 0,
 };
 
 StudyListFilter.propTypes = {
@@ -214,8 +203,6 @@ StudyListFilter.propTypes = {
   ),
   filtersValues: PropTypes.object,
   numOfStudies: PropTypes.number,
-  startDate: PropTypes.string,
-  endDate: PropTypes.string,
 };
 
 export default StudyListFilter;
