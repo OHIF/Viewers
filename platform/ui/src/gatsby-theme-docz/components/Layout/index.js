@@ -36,6 +36,7 @@ export const Layout = ({ children }) => {
             onClick={() => setSidebarOpen(false)}
           />
           <div
+            id="main-container"
             className={classnames('py-10 w-full', {
               'px-4 lg:px-20': sidebarOpen,
               'px-4 lg:px-8': !sidebarOpen,

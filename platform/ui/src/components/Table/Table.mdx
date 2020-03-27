@@ -1,0 +1,78 @@
+---
+name: Table
+menu: Components
+route: components/table
+---
+
+import { Playground, Props, Link } from 'docz';
+import { Table, TableHead, TableBody, TableRow, TableCell } from '@ohif/ui';
+
+# Table
+
+Tables display sets of data.
+
+_The Table component and its components in the tree are built using divs._
+
+## Import
+
+Check the given example below to see how to import each component to create a
+table.
+
+```javascript
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  <div className="p-4">
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell>Item 01</TableCell>
+          <TableCell>Item 02</TableCell>
+          <TableCell>Item 03</TableCell>
+          <TableCell>Item 04</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {new Array(25).fill('').map(row => (
+          <TableRow>
+            <TableCell>Content 01</TableCell>
+            <TableCell>Content 02</TableCell>
+            <TableCell>Content 03</TableCell>
+            <TableCell>Content 04</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </div>
+</Playground>
+
+## Table width
+
+Table has full width by default. If you want to change its width, you will have
+to set the `fullWidth` prop to `false` and then define your own table width by
+passing a `className` or `style`.
+
+## Properties
+
+### Table Props
+
+<Props of={Table} />
+
+### TableHead Props
+
+<Props of={TableHead} />
+
+### TableBody Props
+
+<Props of={TableBody} />
+
+### TableRow Props
+
+<Props of={TableRow} />
+
+### TableCell Props
+
+<Props of={TableCell} />

@@ -6,12 +6,13 @@
   @apply border-gray-500;
 }
 
-.customSelect__wrapper .customSelect__control:focus {
+.customSelect__wrapper .customSelect__control:focus,
+.customSelect__wrapper .customSelect__control--menu-is-open {
   @apply border-gray-500 outline-none;
 }
 
-.customSelect__wrapper .customSelect__control--menu-is-open {
-  @apply border-gray-500 outline-none;
+.customSelect--is-disabled .customSelect__control--is-disabled {
+  @apply pointer-events-none;
 }
 
 .customSelect__wrapper .customSelect__indicator-separator {
@@ -23,17 +24,25 @@
 }
 
 .customSelect__wrapper .customSelect__option {
-  @apply text-black;
+  @apply text-black flex flex-row items-center;
+}
+
+.customSelect__wrapper .customSelect__option:focus {
+  @apply bg-custom-blue;
+}
+
+.customSelect__wrapper .customSelect__option--is-selected {
+  @apply bg-transparent;
 }
 
 .customSelect__wrapper .customSelect__single-value {
   @apply text-white;
 }
 
-.customSelect--is-disabled .customSelect__control--is-disabled {
-  @apply pointer-events-none;
-}
-
 .customSelect__wrapper.customSelect--is-disabled {
   @apply cursor-not-allowed pointer-events-auto;
+}
+
+.customSelect__wrapper .customSelect__value-container--is-multi {
+  @apply px-3 py-2 inline-block truncate;
 }

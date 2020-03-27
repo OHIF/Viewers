@@ -1,0 +1,62 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
+
+const TableCell = ({
+  children,
+  className,
+  colSpan,
+  // ignored because we don't wan't to expose this prop
+  // eslint-disable-next-line react/prop-types
+  cellsNum,
+  isTableHead,
+  align,
+  style,
+}) => {
+  const classes = {
+    align: {
+      left: 'text-left',
+      center: 'text-center',
+      right: 'text-right',
+      justify: 'text-justify',
+    },
+    isTableHead: {
+      true: '',
+      false: 'border-r border-custom-violetPale',
+    },
+  };
+
+  return (
+    <div
+      className={classnames(
+        'px-2 last:border-r-0 break-all',
+        `w-${colSpan}/${cellsNum}`,
+        classes.align[align],
+        classes.isTableHead[isTableHead],
+        className
+      )}
+      style={style}
+    >
+      {children}
+    </div>
+  );
+};
+
+TableCell.defaultProps = {
+  align: 'left',
+  className: '',
+  colSpan: 1,
+  isTableHead: false,
+  style: {},
+};
+
+TableCell.propTypes = {
+  align: PropTypes.oneOf(['left', 'center', 'right', 'justify']),
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string,
+  colSpan: PropTypes.number,
+  isTableHead: PropTypes.bool,
+  style: PropTypes.object,
+};
+
+export default TableCell;

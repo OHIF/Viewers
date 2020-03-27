@@ -31,19 +31,19 @@ export const Sidebar = React.forwardRef((props, ref) => {
           <div className="block lg:hidden">
             <div
               onClick={() => props.onClick()}
-              className="fixed z-10 left-0 w-full h-full bg-black opacity-80"
-              style={{ top: '81px' }}
+              className="fixed left-0 w-full h-full bg-black opacity-80"
+              style={{ top: 81, zIndex: 99999 }}
             />
           </div>
           <div
             ref={ref}
             data-testid="sidebar"
             className={classnames(
-              'p-8 flex-col bg-white top-0 overflow-auto z-10 border-r border-gray-400 hidden fixed left-0 bottom-0 lg:block lg:sticky lg:h-screen lg:top-0'
+              'p-8 flex-col bg-white top-0 overflow-auto border-r border-gray-400 hidden fixed left-0 bottom-0 lg:block lg:sticky lg:h-screen lg:top-0'
             )}
             style={{
               display: props.sidebarOpen ? 'block' : 'none',
-              top: '81px',
+              zIndex: 99999,
               minWidth: 250,
             }}
           >
