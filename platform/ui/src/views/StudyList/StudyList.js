@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
+import { EmptyStudies } from '@ohif/ui';
+
+// fix imports after refactor
 import Header from './components/Header';
 import StudyListFilter from './components/StudyListFilter';
 import StudyListTable from './components/StudyListTable';
@@ -65,38 +68,54 @@ const filtersMeta = [
   },
 ];
 
-const StudyList = ({ studies, perPage, tableDataSource }) => {
-  const studiesData = tableDataSource.slice(0, perPage);
-  const numOfStudies = studies.length;
-  const isEmptyStudies = numOfStudies === 0;
+const StudyList = ({ numOfStudies, tableDataSource, paginationData }) => {
+  const hasStudies = numOfStudies > 0;
 
   return (
     <div
       className={classnames('bg-black h-full', {
-        'h-screen': isEmptyStudies,
+        'h-screen': !hasStudies,
       })}
     >
       <Header />
       <StudyListFilter numOfStudies={numOfStudies} filtersMeta={filtersMeta} />
-      <StudyListTable
-        tableDataSource={studiesData}
-        studies={studiesData}
-        numOfStudies={numOfStudies}
-        filtersMeta={filtersMeta}
-      />
-      {!isEmptyStudies && <StudyListPagination />}
+
+      {hasStudies ? (
+        <>
+          <StudyListTable
+            tableDataSource={tableDataSource}
+            numOfStudies={numOfStudies}
+            filtersMeta={filtersMeta}
+          />
+          <StudyListPagination paginationData={paginationData} />
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center pt-48">
+          <EmptyStudies />
+        </div>
+      )}
     </div>
   );
 };
 
 StudyList.defaultProps = {
-  studies: [],
-  perPage: 25,
+  tableDataSource: [],
 };
 
 StudyList.propTypes = {
-  studies: PropTypes.array,
-  perPage: PropTypes.number,
+  tableDataSource: PropTypes.arrayOf(
+    PropTypes.shape({
+      row: PropTypes.object.isRequired,
+      expandedContent: PropTypes.node.isRequired,
+      onClickRow: PropTypes.func.isRequired,
+      isExpanded: PropTypes.bool.isRequired,
+    })
+  ),
+  numOfStudies: PropTypes.number.isRequired,
+  paginationData: PropTypes.shape({
+    onChangePage: PropTypes.func,
+    currentPage: PropTypes.number,
+  }).isRequired,
 };
 
 export default StudyList;

@@ -7,6 +7,7 @@ import IconButton from './IconButton';
 import Input from './Input';
 import Select from './Select';
 import Svg from './Svg';
+import StudyListExpandedRow from './StudyListExpandedRow';
 import Table from './Table';
 import TableBody from './TableBody';
 import TableCell from './TableCell';
@@ -25,6 +26,7 @@ export {
   Input,
   Select,
   Svg,
+  StudyListExpandedRow,
   Table,
   TableBody,
   TableCell,

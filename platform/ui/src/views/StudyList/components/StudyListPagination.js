@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Typography,
   ButtonGroup,
@@ -7,12 +8,12 @@ import {
   Icon,
 } from '../../../components/';
 
-const StudyListPagination = props => {
-  const [currentPage, setCurrentPage] = useState(1);
+const StudyListPagination = ({ paginationData }) => {
+  const { onChangePage, currentPage } = paginationData;
 
   const navigateToPage = page => {
     const toPage = page < 1 ? 1 : page;
-    setCurrentPage(toPage);
+    onChangePage(toPage);
   };
 
   return (
@@ -80,6 +81,13 @@ const StudyListPagination = props => {
       </div>
     </div>
   );
+};
+
+StudyListPagination.propTypes = {
+  paginationData: PropTypes.shape({
+    onChangePage: PropTypes.func,
+    currentPage: PropTypes.number,
+  }),
 };
 
 export default StudyListPagination;

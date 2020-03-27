@@ -1,1 +1,2 @@
-export { default as StudyListExpandedRow } from './StudyListExpandedRow';
+import StudyListExpandedRow from './StudyListExpandedRow';
+export default StudyListExpandedRow;

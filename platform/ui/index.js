@@ -20,6 +20,7 @@ export {
   IconButton,
   Select,
   Svg,
+  StudyListExpandedRow,
   Input,
   ThemeWrapper,
   Table,
