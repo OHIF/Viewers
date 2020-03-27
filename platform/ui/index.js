@@ -13,7 +13,7 @@ export {
   Icon,
   IconButton,
   Input,
-  NavBag,
+  NavBar,
   Select,
   Svg,
   ThemeWrapper,

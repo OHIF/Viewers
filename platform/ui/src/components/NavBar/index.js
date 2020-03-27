@@ -1,2 +1,2 @@
-import NavBag from './NavBag';
-export default NavBag;
+import NavBar from './NavBar';
+export default NavBar;
