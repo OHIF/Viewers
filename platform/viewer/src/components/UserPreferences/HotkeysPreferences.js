@@ -10,6 +10,9 @@ import { MODIFIER_KEYS } from './hotkeysConfig';
 
 import { hotkeysManager } from '../../App';
 
+import groupBy from 'lodash/groupBy';
+import keyBy from 'lodash/keyBy';
+import isEqual from 'lodash/isEqual';
 import './HotkeysPreferences.styl';
 /**
  * Take hotkeyDefenintions and build an initialState to be used into the component state
@@ -48,27 +51,6 @@ const validateCommandKey = ({ commandName, pressedKeys, hotkeys }) => {
 };
 
 /**
- * Take all hotkeys and split the list into two lists
- *
- * @param {array} hotkeys list of all hotkeys
- * @returns {array} array containing two arrays of keys
- */
-const splitHotkeys = hotkeys => {
-  const splitedHotkeys = [];
-  const arrayHotkeys = Object.entries(hotkeys);
-
-  if (arrayHotkeys.length) {
-    const halfwayThrough = Math.ceil(arrayHotkeys.length / 2);
-    splitedHotkeys.push(arrayHotkeys.slice(0, halfwayThrough));
-    splitedHotkeys.push(
-      arrayHotkeys.slice(halfwayThrough, arrayHotkeys.length)
-    );
-  }
-
-  return splitedHotkeys;
-};
-
-/**
  * HotkeysPreferences tab
  * It renders all hotkeys displayed into columns/rows
  *
@@ -79,6 +61,13 @@ const splitHotkeys = hotkeys => {
 function HotkeysPreferences({ onClose }) {
   const { t } = useTranslation('UserPreferencesModal');
   const { hotkeyDefaults, hotkeyDefinitions } = hotkeysManager;
+  let allCommands = hotkeysManager.getAllCommands();
+  allCommands = allCommands.map(command => ({
+    ...command,
+    ...hotkeyDefinitions[command.commandName],
+  }));
+  allCommands = allCommands.filter(({ label }) => !!label);
+  const commandsByContext = groupBy(allCommands, 'context');
 
   const [state, setState] = useState(initialState(hotkeyDefinitions));
 
@@ -100,7 +89,21 @@ function HotkeysPreferences({ onClose }) {
 
     hotkeysManager.setHotkeys(hotkeys);
 
-    localStorage.setItem('hotkey-definitions', JSON.stringify(hotkeys));
+    const customizedHotkeys = { ...hotkeys };
+    const defaults = keyBy(hotkeyDefaults, 'commandName');
+    Object.keys(hotkeys).forEach(commandName => {
+      if (
+        defaults[commandName] &&
+        isEqual(defaults[commandName].keys, hotkeys[commandName].keys)
+      ) {
+        delete customizedHotkeys[commandName];
+      }
+    });
+
+    localStorage.setItem(
+      'hotkey-definitions',
+      JSON.stringify(customizedHotkeys)
+    );
 
     onClose();
 
@@ -130,60 +133,58 @@ function HotkeysPreferences({ onClose }) {
   };
 
   const hasErrors = Object.keys(state.errors).some(key => !!state.errors[key]);
-  const hasHotkeys = Object.keys(state.hotkeys).length;
-  const splitedHotkeys = splitHotkeys(state.hotkeys);
 
   return (
     <React.Fragment>
       <div className="HotkeysPreferences">
-        {hasHotkeys ? (
-          <div className="hotkeyTable">
-            {splitedHotkeys.map((hotkeys, index) => {
-              return (
-                <div className="hotkeyColumn" key={index}>
-                  <div className="hotkeyHeader">
-                    <div className="headerItemText text-right">Function</div>
-                    <div className="headerItemText text-center">Shortcut</div>
-                  </div>
-                  {hotkeys.map(hotkey => {
-                    const commandName = hotkey[0];
-                    const hotkeyDefinition = hotkey[1];
-                    const { keys, label } = hotkeyDefinition;
-                    const errorMessage = state.errors[hotkey[0]];
-                    const handleChange = keys => {
-                      onHotkeyChanged(commandName, hotkeyDefinition, keys);
-                    };
-
-                    return (
-                      <div key={commandName} className="hotkeyRow">
-                        <div className="hotkeyLabel">{label}</div>
-                        <div
-                          data-key="defaultTool"
-                          className={classnames(
-                            'wrapperHotkeyInput',
-                            errorMessage ? 'stateError' : ''
-                          )}
-                        >
-                          <HotkeyField
-                            keys={keys}
-                            modifier_keys={MODIFIER_KEYS}
-                            handleChange={handleChange}
-                            classNames={'preferencesInput'}
-                          ></HotkeyField>
-                          <span className="preferencesInputErrorMessage">
-                            {errorMessage}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
+        <div className="hotkeyTable">
+          {Object.entries(commandsByContext).map(([context, commandList]) => {
+            return (
+              <div className="hotkeyColumn" key={context}>
+                <div style={{ textAlign: 'center' }}>{context}</div>
+                <div className="hotkeyHeader">
+                  <div className="headerItemText text-right">Function</div>
+                  <div className="headerItemText text-center">Shortcut</div>
                 </div>
-              );
-            })}
-          </div>
-        ) : (
-          'Hotkeys definitions is empty'
-        )}
+                {commandList.map(command => {
+                  const { commandName, label } = command;
+                  const hotkey = state.hotkeys[commandName];
+                  const { keys = [] } = hotkey || {};
+                  const errorMessage = state.errors[commandName];
+
+                  return (
+                    <div key={commandName} className="hotkeyRow">
+                      <div className="hotkeyLabel">{label}</div>
+                      <div
+                        data-key="defaultTool"
+                        className={classnames(
+                          'wrapperHotkeyInput',
+                          errorMessage ? 'stateError' : ''
+                        )}
+                      >
+                        <HotkeyField
+                          keys={keys}
+                          modifier_keys={MODIFIER_KEYS}
+                          handleChange={keys =>
+                            onHotkeyChanged(
+                              commandName,
+                              { commandName, label },
+                              keys
+                            )
+                          }
+                          classNames={'preferencesInput'}
+                        ></HotkeyField>
+                        <span className="preferencesInputErrorMessage">
+                          {errorMessage}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
       </div>
       <TabFooter
         onResetPreferences={onResetPreferences}

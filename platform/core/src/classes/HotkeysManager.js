@@ -1,6 +1,16 @@
 import hotkeys from './../utils/hotkeys';
 import log from './../log.js';
 
+function mergeDefinitions(definitions) {
+  return Object.values(
+    Object.fromEntries(
+      definitions
+        .filter(hotkey => !!hotkey)
+        .map(hotkey => [hotkey.commandName, hotkey])
+    )
+  );
+}
+
 /**
  *
  *
@@ -59,7 +69,8 @@ export class HotkeysManager {
    */
   setHotkeys(hotkeyDefinitions = []) {
     try {
-      const definitions = this._getValidDefinitions(hotkeyDefinitions);
+      let definitions = this._getValidDefinitions(hotkeyDefinitions);
+      definitions = mergeDefinitions(definitions);
 
       definitions.forEach(definition => this.registerHotkeys(definition));
     } catch (error) {
@@ -81,7 +92,7 @@ export class HotkeysManager {
   setDefaultHotKeys(hotkeyDefinitions = []) {
     const definitions = this._getValidDefinitions(hotkeyDefinitions);
 
-    this.hotkeyDefaults = definitions;
+    this.hotkeyDefaults = mergeDefinitions(definitions);
   }
 
   /**
@@ -229,6 +240,11 @@ export class HotkeysManager {
     }
 
     hotkeys.unbind(keys);
+  }
+
+  getAllCommands() {
+    const allCommands = this._commandsManager.getAllCommands();
+    return allCommands;
   }
 }
 

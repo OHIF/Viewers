@@ -184,6 +184,38 @@ export class CommandsManager {
       return commandFn(commandParams);
     }
   }
+
+  getAllCommands() {
+    let allCommands = [];
+    Object.keys(this.contexts).forEach(context => {
+      Object.keys(this.contexts[context]).forEach(commandName => {
+        const { label } = this.contexts[context][commandName];
+        allCommands.push({
+          context,
+          commandName,
+          label,
+        });
+      });
+    });
+    return allCommands;
+  }
+
+  getDefaultHotkeys() {
+    let hotkeys = [];
+    Object.keys(this.contexts).forEach(context => {
+      Object.keys(this.contexts[context]).forEach(commandName => {
+        const { label, keys } = this.contexts[context][commandName];
+        if (!keys) return;
+        hotkeys.push({
+          context,
+          commandName,
+          label,
+          keys,
+        });
+      });
+    });
+    return hotkeys;
+  }
 }
 
 export default CommandsManager;

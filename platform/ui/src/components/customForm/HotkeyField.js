@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { hotkeys } from '@ohif/core';
 
+import { Icon } from '../../elements/Icon';
 /**
  * Take the pressed key array and return the readable string for the keys
  *
@@ -60,14 +61,17 @@ function HotkeyField({ keys, handleChange, classNames, modifier_keys }) {
   };
 
   return (
-    <input
-      readOnly={true}
-      type="text"
-      value={inputValue}
-      className={classNames}
-      onKeyDown={onInputKeyDown}
-      onFocus={onFocus}
-    />
+    <div style={{ display: 'flex' }}>
+      <input
+        readOnly={true}
+        type="text"
+        value={inputValue}
+        className={classNames}
+        onKeyDown={onInputKeyDown}
+        onFocus={onFocus}
+      />
+      <Icon name="times" onClick={() => handleChange([])} />
+    </div>
   );
 }
 

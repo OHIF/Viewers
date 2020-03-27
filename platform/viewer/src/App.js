@@ -116,6 +116,7 @@ class App extends Component {
     const {
       servers,
       hotkeys: appConfigHotkeys,
+      useDefaultHotkeys = true,
       cornerstoneExtensionConfig,
       extensions,
       oidc,
@@ -138,7 +139,7 @@ class App extends Component {
      * Must run after extension commands are registered
      * if there is no hotkeys from localStorage set up from config.
      */
-    _initHotkeys(appConfigHotkeys);
+    _initHotkeys(appConfigHotkeys, useDefaultHotkeys);
     _initServers(servers);
     initWebWorkers();
   }
@@ -266,23 +267,26 @@ function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
  *
  * @param {Object} appConfigHotkeys - Default hotkeys, as defined by app config
  */
-function _initHotkeys(appConfigHotkeys) {
+function _initHotkeys(appConfigHotkeys, useDefaultHotkeys) {
   // TODO: Use something more resilient
   // TODO: Mozilla has a special library for this
-  const userPreferredHotkeys = JSON.parse(
+  let userPreferredHotkeys = JSON.parse(
     localStorage.getItem('hotkey-definitions') || '{}'
   );
+  userPreferredHotkeys = Object.values(userPreferredHotkeys);
 
-  // TODO: hotkeysManager.isValidDefinitionObject(/* */)
-  const hasUserPreferences =
-    userPreferredHotkeys && Object.keys(userPreferredHotkeys).length > 0;
-  if (hasUserPreferences) {
-    hotkeysManager.setHotkeys(userPreferredHotkeys);
-  } else {
-    hotkeysManager.setHotkeys(appConfigHotkeys);
-  }
+  const builtInHotkeys =
+    useDefaultHotkeys && commandsManager.getDefaultHotkeys();
 
-  hotkeysManager.setDefaultHotKeys(appConfigHotkeys);
+  const mergedHotkeys = [
+    builtInHotkeys,
+    appConfigHotkeys,
+    userPreferredHotkeys,
+  ].flat();
+  hotkeysManager.setHotkeys(mergedHotkeys);
+
+  const defaultHotkeys = [builtInHotkeys, appConfigHotkeys].flat();
+  hotkeysManager.setDefaultHotKeys(defaultHotkeys);
 }
 
 function _initServers(servers) {

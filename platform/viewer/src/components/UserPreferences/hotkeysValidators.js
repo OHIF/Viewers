@@ -52,6 +52,7 @@ const emptyValidator = ({ pressedKeys = [] }) => {
 };
 
 const conflictingValidator = ({ commandName, pressedKeys, hotkeys }) => {
+  if (pressedKeys.length === 0) return;
   const conflictingCommand = findConflictingCommand(
     hotkeys,
     commandName,
@@ -88,7 +89,7 @@ const disallowedValidator = ({ pressedKeys = [] }) => {
 };
 
 const hotkeysValidators = [
-  emptyValidator,
+  // emptyValidator,
   modifierValidator,
   conflictingValidator,
   disallowedValidator,
