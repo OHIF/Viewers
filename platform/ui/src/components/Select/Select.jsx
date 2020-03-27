@@ -9,7 +9,7 @@ const MultiValue = props => {
   const values = props.selectProps.value;
   const lastValue = values[values.length - 1];
   let label = props.data.label;
-  if (lastValue.label != label) {
+  if (lastValue.label !== label) {
     label += ', ';
   }
 
