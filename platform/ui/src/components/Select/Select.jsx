@@ -5,16 +5,15 @@ import ReactSelect, { components } from 'react-select';
 
 import './Select.css';
 
-const MultiValueContainer = ({ data }) => {
-  return <span>{`${data.label}, `}</span>;
-};
-
 const MultiValue = props => {
-  return (
-    <components.MultiValue {...props}>
-      <span>{props.data.label}</span>
-    </components.MultiValue>
-  );
+  const values = props.selectProps.value;
+  const lastValue = values[values.length - 1];
+  let label = props.data.label;
+  if (lastValue.label != label) {
+    label += ', ';
+  }
+
+  return <span>{label}</span>;
 };
 
 const Option = props => {
@@ -24,7 +23,7 @@ const Option = props => {
         <input
           type="checkbox"
           checked={props.isSelected}
-          className="w-6 h-6"
+          className="w-6 h-6 mr-2"
           onChange={e => null}
         />
         <label>{props.value} </label>
@@ -46,9 +45,7 @@ const Select = ({
   placeholder,
   value,
 }) => {
-  const _components = isMulti
-    ? { MultiValueContainer, Option, MultiValue }
-    : {};
+  const _components = isMulti ? { Option, MultiValue } : {};
 
   return (
     <ReactSelect
