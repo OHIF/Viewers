@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const NavBag = ({ className, children }) => {
+const NavBar = ({ className, children }) => {
   return (
     <div
       className={classnames(
@@ -15,9 +15,9 @@ const NavBag = ({ className, children }) => {
   );
 };
 
-NavBag.propTypes = {
+NavBar.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node,
 };
 
-export default NavBag;
+export default NavBar;
