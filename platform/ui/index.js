@@ -12,9 +12,10 @@ export {
   DateRange,
   Icon,
   IconButton,
+  Input,
+  NavBag,
   Select,
   Svg,
-  Input,
   ThemeWrapper,
   Typography,
 } from './src/components';
