@@ -23,11 +23,7 @@ const InputDateRange = ({
         <DateRange
           startDate={startDate}
           endDate={endDate}
-          onChange={({ startDate, endDate }) => {
-            if (onChange) {
-              onChange({ startDate, endDate });
-            }
-          }}
+          onChange={onChange}
         />
       </div>
     </InputLabelWrapper>
