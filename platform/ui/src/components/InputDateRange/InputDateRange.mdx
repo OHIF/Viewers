@@ -1,0 +1,43 @@
+---
+name: InputDateRange
+menu: Components
+route: components/InputDateRange
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import InputDateRange from './';
+
+# Input Date Range
+
+## Import
+
+```javascript
+import { InputDateRange } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const [dates, setDates] = useState({
+      startDate: null,
+      endDate: null,
+    });
+    return (
+      <div className="p-4 flex flex-col items-center">
+        <div className="w-56">
+          <InputDateRange
+            label="Dates"
+            value={dates}
+            onChange={dates => setDates(dates)}
+          />
+        </div>
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={InputDateRange} />

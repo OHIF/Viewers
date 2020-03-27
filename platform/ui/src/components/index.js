@@ -5,6 +5,10 @@ import EmptyStudies from './EmptyStudies';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
+import InputDateRange from './InputDateRange';
+import InputLabelWrapper from './InputLabelWrapper';
+import InputMultiSelect from './InputMultiSelect';
+import InputText from './InputText';
 import Select from './Select';
 import Svg from './Svg';
 import Table from './Table';
@@ -23,6 +27,10 @@ export {
   Icon,
   IconButton,
   Input,
+  InputDateRange,
+  InputLabelWrapper,
+  InputMultiSelect,
+  InputText,
   Select,
   Svg,
   Table,

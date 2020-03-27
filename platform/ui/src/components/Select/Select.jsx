@@ -1,52 +1,93 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import ReactSelect from 'react-select';
+import ReactSelect, { components } from 'react-select';
 
 import './Select.css';
 
+const MultiValue = props => {
+  const values = props.selectProps.value;
+  const lastValue = values[values.length - 1];
+  let label = props.data.label;
+  if (lastValue.label !== label) {
+    label += ', ';
+  }
+
+  return <span>{label}</span>;
+};
+
+const Option = props => {
+  return (
+    <div>
+      <components.Option {...props}>
+        <input
+          type="checkbox"
+          checked={props.isSelected}
+          className="w-6 h-6 mr-2"
+          onChange={e => null}
+        />
+        <label>{props.value} </label>
+      </components.Option>
+    </div>
+  );
+};
+
 const Select = ({
-  autoFocus,
   className,
+  closeMenuOnSelect,
+  hideSelectedOptions,
+  isClearable,
   isDisabled,
   isMulti,
   isSearchable,
-  name,
   onChange,
   options,
   placeholder,
-  noOptionsMessage,
   value,
 }) => {
+  const _components = isMulti ? { Option, MultiValue } : {};
+
   return (
     <ReactSelect
-      autoFocus={autoFocus}
       className={classnames(
         className,
-        'flex flex-col flex-1 mt-2 customSelect__wrapper'
+        'flex flex-col flex-1 customSelect__wrapper'
       )}
       classNamePrefix="customSelect"
       isDisabled={isDisabled}
+      isClearable={isClearable}
       isMulti={isMulti}
       isSearchable={isSearchable}
-      name={name}
-      onChange={onChange}
-      options={options}
+      closeMenuOnSelect={closeMenuOnSelect}
+      hideSelectedOptions={hideSelectedOptions}
+      components={_components}
       placeholder={placeholder}
-      noOptionsMessage={noOptionsMessage}
+      options={options}
       value={value}
+      onChange={onChange}
     ></ReactSelect>
   );
 };
 
+Select.defaultProps = {
+  className: '',
+  closeMenuOnSelect: true,
+  hideSelectedOptions: true,
+  isClearable: true,
+  isDisabled: false,
+  isMulti: false,
+  isSearchable: true,
+};
+
 Select.propTypes = {
-  autoFocus: PropTypes.bool,
   className: PropTypes.string,
+  closeMenuOnSelect: PropTypes.bool,
+  hideSelectedOptions: PropTypes.bool,
+  isClearable: PropTypes.bool,
   isDisabled: PropTypes.bool,
   isMulti: PropTypes.bool,
   isSearchable: PropTypes.bool,
-  name: PropTypes.string,
-  onChange: PropTypes.func,
+  onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.string,
@@ -54,8 +95,18 @@ Select.propTypes = {
     })
   ),
   placeholder: PropTypes.string,
-  noOptionsMessage: PropTypes.func,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        value: PropTypes.string,
+        label: PropTypes.string,
+      })
+    ),
+    PropTypes.shape({
+      value: PropTypes.string,
+      label: PropTypes.string,
+    }),
+  ]),
 };
 
 export default Select;
