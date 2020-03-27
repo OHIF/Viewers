@@ -65,10 +65,11 @@ const filtersMeta = [
   },
 ];
 
-const StudyList = ({ studies, perPage }) => {
-  const studiesData = studies.slice(0, perPage);
+const StudyList = ({ studies, perPage, tableDataSource }) => {
+  const studiesData = tableDataSource.slice(0, perPage);
   const numOfStudies = studies.length;
   const isEmptyStudies = numOfStudies === 0;
+
   return (
     <div
       className={classnames('bg-black h-full', {
@@ -78,6 +79,7 @@ const StudyList = ({ studies, perPage }) => {
       <Header />
       <StudyListFilter numOfStudies={numOfStudies} filtersMeta={filtersMeta} />
       <StudyListTable
+        tableDataSource={studiesData}
         studies={studiesData}
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}

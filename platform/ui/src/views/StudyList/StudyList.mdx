@@ -24,7 +24,7 @@ import { StudyList } from '@ohif/ui';
 
 <Playground>
   {() => {
-    const [studies, setStudies] = useState([])
+    const [studies, setStudies] = useState(getMockedStudies(50))
     const handleStudyList = (number) => {
       const studies = getMockedStudies(number)
       setStudies(studies)
