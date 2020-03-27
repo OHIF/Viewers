@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Select, InputLabelWrapper } from '@ohif/ui';
 
-const InputSelect = ({
+const InputMultiSelect = ({
   label,
   isSortable,
   sortDirection,
@@ -47,13 +47,13 @@ const InputSelect = ({
   );
 };
 
-InputSelect.defaultProps = {
+InputMultiSelect.defaultProps = {
   value: [],
   placeholder: '',
   options: [],
 };
 
-InputSelect.propTypes = {
+InputMultiSelect.propTypes = {
   label: PropTypes.string.isRequired,
   isSortable: PropTypes.bool.isRequired,
   sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
@@ -81,4 +81,4 @@ InputSelect.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-export default InputSelect;
+export default InputMultiSelect;

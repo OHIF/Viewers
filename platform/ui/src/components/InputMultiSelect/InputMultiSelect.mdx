@@ -1,19 +1,19 @@
 ---
-name: InputSelect
+name: InputMultiSelect
 menu: Components
-route: components/InputSelect
+route: components/InputMultiSelect
 ---
 
 import { useState } from 'react';
 import { Playground, Props } from 'docz';
-import InputSelect from './';
+import InputMultiSelect from './';
 
-# Filter Select
+# Input Multi Select
 
 ## Import
 
 ```javascript
-import { InputSelect } from '@ohif/ui';
+import { InputMultiSelect } from '@ohif/ui';
 ```
 
 ## Basic usage
@@ -24,7 +24,7 @@ import { InputSelect } from '@ohif/ui';
     return (
       <div className="flex flex-col flex-1 p-4 items-center">
         <div className="w-56">
-          <InputSelect
+          <InputMultiSelect
             label="Modality"
             options={[
               { value: 'SEG', label: 'SEG' },
@@ -45,4 +45,4 @@ import { InputSelect } from '@ohif/ui';
 
 ## Properties
 
-<Props of={InputSelect} />
+<Props of={InputMultiSelect} />

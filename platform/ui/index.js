@@ -11,7 +11,7 @@ export {
   ButtonGroup,
   DateRange,
   InputDateRange,
-  InputSelect,
+  InputMultiSelect,
   InputText,
   InputLabelWrapper,
   EmptyStudies,

@@ -7,7 +7,7 @@ import IconButton from './IconButton';
 import Input from './Input';
 import InputDateRange from './InputDateRange';
 import InputLabelWrapper from './InputLabelWrapper';
-import InputSelect from './InputSelect';
+import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
 import Select from './Select';
 import Svg from './Svg';
@@ -24,7 +24,7 @@ export {
   Input,
   InputDateRange,
   InputLabelWrapper,
-  InputSelect,
+  InputMultiSelect,
   InputText,
   Select,
   Svg,

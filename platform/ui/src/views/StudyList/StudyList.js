@@ -39,7 +39,7 @@ const filtersMeta = [
   {
     name: 'modality',
     displayName: 'Modality',
-    inputType: 'Select',
+    inputType: 'MultiSelect',
     inputProps: {
       options: [
         { value: 'SEG', label: 'SEG' },

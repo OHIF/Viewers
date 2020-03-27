@@ -8,7 +8,7 @@ import {
   Typography,
   InputText,
   InputDateRange,
-  InputSelect,
+  InputMultiSelect,
   InputLabelWrapper,
 } from '@ohif/ui';
 
@@ -81,9 +81,9 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
           />
         );
         break;
-      case 'Select':
+      case 'MultiSelect':
         return (
-          <InputSelect
+          <InputMultiSelect
             key={name}
             label={displayName}
             isSortable={_isSortable}
@@ -231,7 +231,7 @@ StudyListFilter.propTypes = {
     PropTypes.shape({
       name: PropTypes.string,
       dsplayName: PropTypes.string,
-      inputType: PropTypes.oneOf(['Text', 'Select', 'DateRange', 'None']),
+      inputType: PropTypes.oneOf(['Text', 'MultiSelect', 'DateRange', 'None']),
       isSortable: PropTypes.bool,
       gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
     })
