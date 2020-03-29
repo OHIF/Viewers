@@ -1,5 +1,4 @@
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
-
+import { getCornerstoneWADOImageLoader } from './cornerstoneWADOImageLoader';
 let initialized = false;
 
 export default function initWebWorkers() {
@@ -15,8 +14,10 @@ export default function initWebWorkers() {
     },
   };
 
-  if (!initialized) {
-    cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
-    initialized = true;
-  }
+  getCornerstoneWADOImageLoader().then(cornerstoneWADOImageLoader => {
+    if (!initialized) {
+      cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+      initialized = true;
+    }
+  });
 }

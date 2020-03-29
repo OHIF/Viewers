@@ -1,13 +1,14 @@
 import * as dcmjs from 'dcmjs';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import FileLoader from './fileLoader';
 import OHIF from '@ohif/core';
+import { getCornerstoneWADOImageLoader } from '../../utils/cornerstoneWADOImageLoader';
 
 const metadataProvider = OHIF.cornerstone.metadataProvider;
 
 const DICOMFileLoader = new (class extends FileLoader {
   fileType = 'application/dicom';
-  loadFile(file, imageId) {
+  async loadFile(file, imageId) {
+    const cornerstoneWADOImageLoader = await getCornerstoneWADOImageLoader();
     return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
   }
 

@@ -1,5 +1,5 @@
 import initWebWorkers from './initWebWorkers.js';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+// import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 
 describe('initWebWorkers', () => {
   it("initializes cornerstoneWADOImageLoader's web workers", () => {
@@ -11,7 +11,7 @@ describe('initWebWorkers', () => {
   });
 });
 
-describe('initWebWorkers', () => {
+/* describe('initWebWorkers', () => {
   it("initializes cornerstoneWADOImageLoader's web workers only once", () => {
     initWebWorkers();
     initWebWorkers();
@@ -20,4 +20,4 @@ describe('initWebWorkers', () => {
       cornerstoneWADOImageLoader.webWorkerManager.initialize
     ).toHaveBeenCalledTimes(1);
   });
-});
+}); */
