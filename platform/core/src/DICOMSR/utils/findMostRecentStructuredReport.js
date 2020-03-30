@@ -37,6 +37,10 @@ const isStructuredReportSeries = series => {
   ];
 
   const firstInstance = series.getFirstInstance();
+  if (!firstInstance) {
+    return false;
+  }
+
   const SOPClassUID = firstInstance.getData().metadata.SOPClassUID;
 
   return supportedSopClassUIDs.includes(SOPClassUID);

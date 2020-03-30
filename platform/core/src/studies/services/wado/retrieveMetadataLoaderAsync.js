@@ -1,4 +1,5 @@
 import { api } from 'dicomweb-client';
+import * as dcmjs from 'dcmjs';
 import DICOMWeb from '../../../DICOMWeb/';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 import { sortStudySeries, sortingCriteria } from '../../sortStudy';
@@ -101,15 +102,18 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
   async preLoad() {
     const preLoaders = this.getPreLoaders();
-    const result = await this.runLoaders(preLoaders);
+    const seriesData = await this.runLoaders(preLoaders);
 
     const seriesSorted = sortStudySeries(
-      result,
+      seriesData,
       sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
     );
     const seriesInstanceUIDsMap = mapStudySeries(seriesSorted);
 
-    return seriesInstanceUIDsMap;
+    return {
+      seriesInstanceUIDsMap,
+      seriesData
+    };
   }
 
   async load(preLoadData) {
@@ -118,7 +122,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const seriesAsyncLoader = makeSeriesAsyncLoader(
       client,
       studyInstanceUID,
-      preLoadData
+      preLoadData.seriesInstanceUIDsMap
     );
 
     const firstSeries = await seriesAsyncLoader.next();
@@ -126,15 +130,38 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     return {
       sopInstances: firstSeries.sopInstances,
       asyncLoader: seriesAsyncLoader,
+      seriesData: preLoadData.seriesData,
     };
   }
 
   async posLoad(loadData) {
     const { server } = this;
 
-    const { sopInstances, asyncLoader } = loadData;
+    const { sopInstances, asyncLoader, seriesData } = loadData;
 
     const study = await createStudyFromSOPInstanceList(server, sopInstances);
+
+    // TODO: Should this be in a helper
+    const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
+    const seriesDataNaturalized = seriesData.map(naturalizeDataset);
+
+    seriesDataNaturalized.forEach((series, idx) => {
+      const seriesDataFromQIDO = {
+        SeriesInstanceUID: series.SeriesInstanceUID,
+        SeriesDescription: series.SeriesDescription,
+        SeriesNumber: series.SeriesNumber,
+        Modality: series.Modality,
+        instances: []
+      };
+
+      if (study.series[idx]) {
+        study.series[idx] = Object.assign(seriesDataFromQIDO, study.series[idx]);
+      } else {
+        study.series[idx] = seriesDataFromQIDO;
+      }
+
+      study.seriesMap[series.SeriesInstanceUID] = study.series[idx];
+    });
 
     if (asyncLoader.hasNext()) {
       attachSeriesLoader(server, study, asyncLoader);
