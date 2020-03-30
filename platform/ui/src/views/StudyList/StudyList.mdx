@@ -25,22 +25,22 @@ import { StudyList } from '@ohif/ui';
 <Playground>
   {() => {
     const months = [
-      'JAN',
-      'FEB',
-      'MAR',
-      'APR',
-      'MAY',
-      'JUN',
-      'JUL',
-      'AUG',
-      'SEP',
-      'OCT',
-      'NOV',
-      'DEC',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ]
     const formatDate = date => {
       const currentDate = new Date(date)
-      return months[currentDate.getMonth()] + '-' + currentDate.getFullYear()
+      return `${months[currentDate.getMonth()]}-${currentDate.getDate()}-${currentDate.getFullYear()}`
     }
     const [studies, setStudies] = useState([])
     const numOfStudies = studies.length
