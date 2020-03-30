@@ -47,7 +47,7 @@ module.exports = (env, argv) => {
     },
     plugins: [
       // Uncomment to generate bundle analyzer
-      new BundleAnalyzerPlugin(),
+      // new BundleAnalyzerPlugin(),
       // Clean output.path
       new CleanWebpackPlugin(),
       // Copy "Public" Folder to Dist

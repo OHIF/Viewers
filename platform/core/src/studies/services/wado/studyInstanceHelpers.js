@@ -160,11 +160,11 @@ async function makeSOPInstance(server, study, instance) {
 
     const wadoRSMetadata = Object.assign(instance);
 
+    const cornerstoneWADOImageLoader = await getCornerstoneWADOImageLoader();
     if (sopInstance.NumberOfFrames) {
       for (let i = 0; i < sopInstance.NumberOfFrames; i++) {
         const wadorsImageId = getWADORSImageId(sopInstance, i);
 
-        const cornerstoneWADOImageLoader = await getCornerstoneWADOImageLoader();
         cornerstoneWADOImageLoader.wadors.metaDataManager.add(
           wadorsImageId,
           wadoRSMetadata

@@ -140,7 +140,7 @@ class App extends Component {
      */
     _initHotkeys(appConfigHotkeys);
     _initServers(servers);
-    initWebWorkers();
+    // initWebWorkers();
   }
 
   render() {
