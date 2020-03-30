@@ -71,7 +71,6 @@ const InputGroup = ({
             onChange={handleFieldChange}
           />
         );
-        break;
       case 'MultiSelect':
         return (
           <InputMultiSelect

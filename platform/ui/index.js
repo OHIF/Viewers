@@ -1,5 +1,5 @@
 /** UTILS */
-import * as utils from './src/utils/';
+import utils from './src/utils';
 export { utils };
 
 /** CONTEXT/HOOKS */
