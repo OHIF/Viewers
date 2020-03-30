@@ -6,6 +6,7 @@ import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
 import InputDateRange from './InputDateRange';
+import InputGroup from './InputGroup';
 import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
@@ -28,6 +29,7 @@ export {
   IconButton,
   Input,
   InputDateRange,
+  InputGroup,
   InputLabelWrapper,
   InputMultiSelect,
   InputText,
