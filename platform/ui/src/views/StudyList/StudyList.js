@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -67,7 +67,7 @@ const filtersMeta = [
   },
 ];
 
-const filtersValues = {
+const defaultFilterValues = {
   patientName: '',
   mrn: '',
   studyDate: {
@@ -83,10 +83,18 @@ const filtersValues = {
   resultsPerPage: 25,
 };
 
+const isFiltering = (filterValues, defaultFilterValues) => {
+  return Object.keys(defaultFilterValues).some(name => {
+    return filterValues[name] !== defaultFilterValues[name];
+  });
+};
+
 const StudyList = ({ studies, perPage }) => {
+  const [filterValues, setFilterValues] = useState(defaultFilterValues);
   const studiesData = studies.slice(0, perPage);
   const numOfStudies = studies.length;
   const isEmptyStudies = numOfStudies === 0;
+
   return (
     <div
       className={classnames('bg-black h-full', {
@@ -97,7 +105,10 @@ const StudyList = ({ studies, perPage }) => {
       <StudyListFilter
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}
-        filtersValues={filtersValues}
+        filterValues={filterValues}
+        setFilterValues={setFilterValues}
+        clearFilters={() => setFilterValues(defaultFilterValues)}
+        isFiltering={isFiltering(filterValues, defaultFilterValues)}
       />
       <StudyListTable
         studies={studiesData}
