@@ -9,9 +9,11 @@ import { utils, Icon, StudyListExpandedRow, Button } from '@ohif/ui';
 const ConnectedStudyList = () => {
   const studies = utils.getMockedStudies();
   const numOfStudies = studies.length;
+  const [expandedRows, setExpandedRows] = useState([]);
 
-  const tableDataSource = studies.map(study => {
-    const [isExpanded, setIsExpanded] = useState(false);
+  const tableDataSource = studies.map((study, key) => {
+    const isExpanded = !!expandedRows.find(k => k === key);
+
     const {
       AccessionNumber,
       Modalities,
@@ -111,7 +113,10 @@ const ConnectedStudyList = () => {
           </div>
         </StudyListExpandedRow>
       ),
-      onClickRow: () => setIsExpanded(s => !s),
+      onClickRow: () =>
+        setExpandedRows(s =>
+          isExpanded ? s.filter(n => key !== n) : [...s, key]
+        ),
       isExpanded,
     };
   });
