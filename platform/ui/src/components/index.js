@@ -5,6 +5,7 @@ import EmptyStudies from './EmptyStudies';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
+import NavBar from './NavBar';
 import InputDateRange from './InputDateRange';
 import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
@@ -27,6 +28,7 @@ export {
   Icon,
   IconButton,
   Input,
+  NavBar,
   InputDateRange,
   InputLabelWrapper,
   InputMultiSelect,

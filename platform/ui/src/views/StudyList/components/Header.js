@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 
-import { IconButton, Icon } from '@ohif/ui';
+import { IconButton, Icon, NavBar } from '@ohif/ui';
 
 import OHIFLogo from './OHIFLogo.js';
 
@@ -12,7 +12,7 @@ function Header({ appLogo = OHIFLogo(), children, t }) {
   };
 
   return (
-    <div className="bg-custom-navy flex flex-row justify-between px-3 py-1 text-white sticky top-0 z-10 border-b-4 border-black">
+    <NavBar className="justify-between border-b-4 border-black">
       <div className="flex items-center">
         <div className="mx-3">{appLogo}</div>
         <div>{children}</div>
@@ -33,7 +33,7 @@ function Header({ appLogo = OHIFLogo(), children, t }) {
           </React.Fragment>
         </IconButton>
       </div>
-    </div>
+    </NavBar>
   );
 }
 
