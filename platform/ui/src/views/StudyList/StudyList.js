@@ -14,59 +14,77 @@ const filtersMeta = [
   {
     name: 'patientName',
     displayName: 'Patient Name',
-    inputType: 'text',
+    inputType: 'Text',
     isSortable: true,
     gridCol: 4,
   },
   {
     name: 'mrn',
     displayName: 'MRN',
-    inputType: 'text',
+    inputType: 'Text',
     isSortable: true,
     gridCol: 2,
   },
   {
     name: 'studyDate',
     displayName: 'Study date',
-    inputType: 'date-range',
+    inputType: 'DateRange',
     isSortable: true,
     gridCol: 5,
   },
   {
     name: 'description',
     displayName: 'Description',
-    inputType: 'text',
+    inputType: 'Text',
     isSortable: true,
     gridCol: 4,
   },
   {
     name: 'modality',
     displayName: 'Modality',
-    inputType: 'select',
-    selectOptions: [
-      { value: 'seg', label: 'seg' },
-      { value: 'ct', label: 'ct' },
-      { value: 'mr', label: 'mr' },
-      { value: 'sr', label: 'sr' },
-    ],
+    inputType: 'MultiSelect',
+    inputProps: {
+      options: [
+        { value: 'SEG', label: 'SEG' },
+        { value: 'CT', label: 'CT' },
+        { value: 'MR', label: 'MR' },
+        { value: 'SR', label: 'SR' },
+      ],
+    },
     isSortable: true,
     gridCol: 3,
   },
   {
     name: 'accession',
     displayName: 'Accession',
-    inputType: 'text',
+    inputType: 'Text',
     isSortable: true,
     gridCol: 4,
   },
   {
     name: 'instances',
     displayName: 'Instances',
-    inputType: 'none',
-    isSortable: false,
+    inputType: 'None',
+    isSortable: true,
     gridCol: 2,
   },
 ];
+
+const filtersValues = {
+  patientName: '',
+  mrn: '',
+  studyDate: {
+    startDate: null,
+    endDate: null,
+  },
+  description: '',
+  modality: undefined,
+  accession: '',
+  sortBy: '',
+  sortDirection: 'none',
+  page: 0,
+  resultsPerPage: 25,
+};
 
 const StudyList = ({ numOfStudies, tableDataSource, paginationData }) => {
   const hasStudies = numOfStudies > 0;
@@ -78,7 +96,11 @@ const StudyList = ({ numOfStudies, tableDataSource, paginationData }) => {
       })}
     >
       <Header />
-      <StudyListFilter numOfStudies={numOfStudies} filtersMeta={filtersMeta} />
+      <StudyListFilter
+        numOfStudies={numOfStudies}
+        filtersMeta={filtersMeta}
+        filtersValues={filtersValues}
+      />
 
       {hasStudies ? (
         <>

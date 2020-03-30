@@ -1,0 +1,41 @@
+---
+name: InputText
+menu: Components
+route: components/InputText
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import { InputText } from '@ohif/ui';
+
+# Input Text
+
+## Import
+
+```javascript
+import { InputText } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const [text, setText] = useState('');
+    return (
+      <div className="flex flex-col flex-1 p-4 items-center">
+        <div className="w-56">
+          <InputText
+            label='Name'
+            value={text}
+            onChange={value => {setText(value)}}
+          />
+        </div>
+      </div>
+    )
+  }}
+
+</Playground>
+
+## Properties
+
+<Props of={InputText} />

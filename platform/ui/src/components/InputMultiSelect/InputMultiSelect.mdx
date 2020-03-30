@@ -1,0 +1,48 @@
+---
+name: InputMultiSelect
+menu: Components
+route: components/InputMultiSelect
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import { InputMultiSelect } from '@ohif/ui';
+
+# Input Multi Select
+
+## Import
+
+```javascript
+import { InputMultiSelect } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const [values, setValues] = useState([]);
+    return (
+      <div className="flex flex-col flex-1 p-4 items-center">
+        <div className="w-56">
+          <InputMultiSelect
+            label="Modality"
+            options={[
+              { value: 'SEG', label: 'SEG' },
+              { value: 'CT', label: 'CT' },
+              { value: 'MR', label: 'MR' },
+              { value: 'SR', label: 'SR' },
+            ]}
+            value={values}
+            onChange={values => {
+              setValues(values);
+            }}
+          />
+        </div>
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={InputMultiSelect} />
