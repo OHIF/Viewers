@@ -10,13 +10,13 @@ export default class DicomStorePicker extends Component {
     loading: true,
     stores: [],
     locations: [],
-    filterStr: ""
+    filterStr: '',
   };
 
   static propTypes = {
     dataset: PropTypes.object,
     onSelect: PropTypes.func,
-    accessToken: PropTypes.string.isRequired
+    accessToken: PropTypes.string.isRequired,
   };
 
   async componentDidMount() {
@@ -44,10 +44,11 @@ export default class DicomStorePicker extends Component {
 
     return (
       <div>
-        <input class="form-control gcp-input"
-            type="text"
-            value={ filterStr }
-            onChange={ e => this.setState({ filterStr: e.target.value }) }
+        <input
+          className="form-control gcp-input"
+          type="text"
+          value={filterStr}
+          onChange={e => this.setState({ filterStr: e.target.value })}
         />
         <DicomStoreList
           stores={stores}

@@ -8,7 +8,7 @@ const servers = (state = defaultState, action) => {
   switch (action.type) {
     case 'SET_STUDY_DATA':
       const updatedStudyData = cloneDeep(state).studyData;
-      updatedStudyData[action.studyInstanceUid] = action.data;
+      updatedStudyData[action.StudyInstanceUID] = action.data;
 
       return Object.assign({}, state, { studyData: updatedStudyData });
     default:

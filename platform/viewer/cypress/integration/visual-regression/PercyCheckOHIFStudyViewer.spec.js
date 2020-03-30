@@ -1,8 +1,9 @@
 describe('Visual Regression - OHIF Study Viewer Page', function() {
-  before(function() {
-    cy.openStudy('MISTER^MR');
-    cy.waitDicomImage();
-    cy.expectMinimumThumbnails(6);
+  before(() => {
+    cy.checkStudyRouteInViewer(
+      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
+    );
+    cy.expectMinimumThumbnails(5);
   });
 
   beforeEach(function() {

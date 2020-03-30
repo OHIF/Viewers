@@ -1,0 +1,61 @@
+.dcmseg-segmentation-panel {
+  color: white;
+  min-height: 200px;
+  background-color: var(--primary-background-color);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dcmseg-segmentation-panel h3 {
+  padding-left: 20px;
+  margin-top: 0;
+}
+
+.dcmseg-segmentation-panel .segmentations {
+  padding: 0 20px 20px 20px;
+}
+
+.dcmseg-segmentation-panel .cog-icon {
+  margin: 20px 20px 0 0;
+  align-self: flex-end;
+  color: var(--default-color);
+  cursor: pointer;
+}
+
+.dcmseg-segmentation-panel .cog-icon:hover {
+  color: var(--hover-color);
+}
+
+.dcmseg-segmentation-panel .segmentation-icon {
+  margin-right: 8px;
+  margin-top: 12px;
+  min-width: 14px;
+}
+
+.dcmseg-segmentation-panel .selector-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  height: 150px;
+}
+
+.dcmseg-segmentation-panel .selector-form>div {
+  width: 100%;
+}
+
+.dcmseg-segmentation-panel .selector-form>div:first-of-type {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.dcmseg-segmentation-panel .tableList .tableListHeader .numberOfItems {
+  float: unset;
+  max-width: unset;
+  flex: unset;
+  margin-right: 16px;
+}
