@@ -34,11 +34,12 @@ class DicomMicroscopyViewport extends Component {
       .then(instances => {
         const promises = [];
         for (let i = 0; i < instances.length; i++) {
-          const sopInstanceUid = instances[i]['00080018']['Value'][0];
+          const sopInstanceUID = instances[i]['00080018']['Value'][0];
+
           const retrieveInstanceOptions = {
             studyInstanceUID: displaySet.StudyInstanceUID,
             seriesInstanceUID: displaySet.SeriesInstanceUID,
-            sopInstanceUid,
+            sopInstanceUID,
           };
 
           const promise = dicomWebClient
