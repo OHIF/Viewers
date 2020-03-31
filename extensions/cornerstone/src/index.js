@@ -1,6 +1,5 @@
 import React from 'react';
 import init from './init.js';
-import asyncComponent from './asyncComponent.js';
 import commandsModule from './commandsModule.js';
 import toolbarModule from './toolbarModule.js';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
@@ -9,19 +8,13 @@ const Component = React.lazy(() => {
   return import('./OHIFCornerstoneViewport');
 });
 
-function OHIFCornerstoneViewport() {
+const OHIFCornerstoneViewport = props => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
-      <Component />
+      <Component {...props} />
     </React.Suspense>
   );
-}
-
-// const OHIFCornerstoneViewport = asyncComponent(() =>
-//   import(
-//     /* webpackChunkName: "OHIFCornerstoneViewport" */ './OHIFCornerstoneViewport.js'
-//   )
-// );
+};
 
 /**
  *
