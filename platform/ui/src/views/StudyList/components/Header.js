@@ -12,7 +12,7 @@ function Header({ appLogo = OHIFLogo(), children, t }) {
   };
 
   return (
-    <NavBar className="justify-between border-b-4 border-black">
+    <NavBar className="justify-between">
       <div className="flex items-center">
         <div className="mx-3">{appLogo}</div>
         <div>{children}</div>
