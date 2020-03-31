@@ -322,11 +322,13 @@ export class StudyMetadata extends Metadata {
 
     const displaySets = this._createDisplaySetsForSeries(sopClassHandlerModules, series)
 
-    this._displaySets.forEach((displaySet, idx) => {
+    // Note: filtering in place because this._displaySets has writable: false
+    for (let i = this._displaySets.length - 1; i >= 0; i--) {
+      const displaySet = this._displaySets[i];
       if (displaySet.SeriesInstanceUID === series.getSeriesInstanceUID()) {
-        this._displaySets.splice(idx, 1);
+        this._displaySets.splice(i, 1);
       }
-    })
+    }
 
     displaySets.forEach(displaySet => {
       this.addDisplaySet(displaySet);
