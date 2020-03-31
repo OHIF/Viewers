@@ -36,7 +36,6 @@ class DicomMicroscopyViewport extends Component {
         for (let i = 0; i < instances.length; i++) {
           const sopInstanceUID = instances[i]['00080018']['Value'][0];
 
-          debugger;
           const retrieveInstanceOptions = {
             studyInstanceUID: displaySet.StudyInstanceUID,
             seriesInstanceUID: displaySet.SeriesInstanceUID,
