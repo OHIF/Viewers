@@ -5,7 +5,7 @@ route: components/navBar
 ---
 
 import { Playground, Props } from 'docz';
-import { NavBar, Typography } from '@ohif/ui';
+import { NavBar, Svg, IconButton, Icon, Typography } from '@ohif/ui';
 
 # NavBar
 
@@ -22,6 +22,41 @@ import { NavBar } from '@ohif/ui';
     <Typography variant="h3" className="m-2">
       Header content
     </Typography>
+  </NavBar>
+</Playground>
+
+
+## Example with Logo only
+
+<Playground>
+  <NavBar className="justify-start items-center">
+    <div className="mx-3 my-3">
+      <Svg name="logo-ohif" />
+    </div>
+  </NavBar>
+</Playground>
+
+
+## Example with OHIF basic header
+
+<Playground>
+  <NavBar className="justify-between items-center">
+    <div className="mx-3">
+      <Svg name="logo-ohif" />
+    </div>
+    <div className="flex items-center">
+      <Typography variant="subtitle" className="text-custom-grayLight">
+        FOR INVESTIGATIONAL USE ONLY
+      </Typography>
+      <IconButton
+        variant="text"
+        color="inherit"
+        className="text-custom-blueBright"
+        onClick={() => {}}
+      >
+        <Icon name="settings" />
+      </IconButton>
+    </div>
   </NavBar>
 </Playground>
 
