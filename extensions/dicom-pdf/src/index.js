@@ -2,7 +2,7 @@ import React from 'react';
 import OHIFDicomPDFSopClassHandler from './OHIFDicomPDFSopClassHandler.js';
 
 const Component = React.lazy(() => {
-  return import('./OHIFDicomPDFSopClassHandler');
+  return import('./ConnectedOHIFDicomPDFViewer');
 });
 
 const ConnectedOHIFDicomPDFViewer = props => {
