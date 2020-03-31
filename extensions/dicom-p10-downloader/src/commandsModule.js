@@ -5,26 +5,28 @@ import {
   getSOPInstanceReferenceFromActiveViewport,
   getSOPInstanceReferencesFromViewports,
 } from './utils';
-import downloadAndZip from './downloadAndZip';
+import _downloadAndZip from './downloadAndZip';
 
 export function getCommands(context) {
   const actions = {
-    // Example for running this command using Commands Manager
-    // commandsManager.runCommand(
-    //   'downloadAndZip',
-    //   {
-    //     listOfUIDs: [...],
-    //     options: {
-    //       progress(status) {
-    //         console.info('Progress:', (status.progress * 100).toFixed(2) + '%');
-    //       }
-    //     }
-    //   },
-    //   'VIEWER'
-    // );
+    /**
+     * @example Running this command using Commands Manager
+     * commandsManager.runCommand(
+     *   'downloadAndZip',
+     *   {
+     *     listOfUIDs: [...],
+     *     options: {
+     *       progress(status) {
+     *         console.info('Progress:', (status.progress * 100).toFixed(2) + '%');
+     *       }
+     *     }
+     *   },
+     *   'VIEWER'
+     * );
+     */
     downloadAndZip({ servers, dicomWebClient, listOfUIDs, options }) {
       return save(
-        downloadAndZip(
+        _downloadAndZip(
           dicomWebClient || getDicomWebClientFromContext(context, servers),
           listOfUIDs,
           options
@@ -36,7 +38,7 @@ export function getCommands(context) {
       const dicomWebClient = getDicomWebClientFromContext(context, servers);
       const listOfUIDs = getSOPInstanceReferencesFromViewports(viewports);
       return save(
-        downloadAndZip(dicomWebClient, listOfUIDs, { progress }),
+        _downloadAndZip(dicomWebClient, listOfUIDs, { progress }),
         listOfUIDs
       );
     },
@@ -44,7 +46,7 @@ export function getCommands(context) {
       const dicomWebClient = getDicomWebClientFromContext(context, servers);
       const listOfUIDs = getSOPInstanceReferenceFromActiveViewport(viewports);
       return save(
-        downloadAndZip(dicomWebClient, listOfUIDs, { progress }),
+        _downloadAndZip(dicomWebClient, listOfUIDs, { progress }),
         listOfUIDs
       );
     },

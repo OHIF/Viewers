@@ -86,8 +86,8 @@ function getSOPInstanceReferencesFromViewports(viewports) {
   return list;
 }
 
-function save(thenable, listOfUIDs) {
-  return thenable
+function save(promise, listOfUIDs) {
+  return Promise.resolve(promise)
     .then(url => {
       OHIF.log.info('Files successfully compressed:', url);
       const StudyInstanceUID = hierarchicalListUtils.getItem(listOfUIDs, 0);
