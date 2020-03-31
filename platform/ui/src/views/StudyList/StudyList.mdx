@@ -8,7 +8,8 @@ import { useState } from 'react'
 import { Playground, Props } from 'docz';
 import { StudyList, utils, Icon, StudyListExpandedRow, Button } from '@ohif/ui';
 import { getMockedStudies } from '../../utils/'
-import classnames from 'classnames'
+import classnames from 'classnames';
+import moment from 'moment';
 
 # StudyList
 
@@ -24,24 +25,6 @@ import { StudyList } from '@ohif/ui';
 
 <Playground>
   {() => {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ]
-    const formatDate = date => {
-      const currentDate = new Date(date)
-      return `${months[currentDate.getMonth()]}-${currentDate.getDate()}-${currentDate.getFullYear()}`
-    }
     const [studies, setStudies] = useState([])
     const numOfStudies = studies.length
     const [expandedRows, setExpandedRows] = useState([])
@@ -86,7 +69,10 @@ import { StudyList } from '@ohif/ui';
           mrn: PatientId,
           studyDate: (
             <div>
-              <span className="mr-4">{formatDate(StudyDate)}</span>
+              <span className="mr-4">
+                {moment(StudyDate).format('MMM-DD-YYYY')}
+              </span>
+              <span>{moment(StudyDate).format('hh:mm A')}</span>
             </div>
           ),
           description: StudyDescription,
