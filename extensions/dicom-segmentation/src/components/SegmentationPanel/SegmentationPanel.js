@@ -39,50 +39,26 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
    * TODO: wrap get/set interactions with the cornerstoneTools
    * store with context to make these kind of things less blurry.
    */
-  const segmentationModule = cornerstoneTools.getModule('segmentation');
-  const { configuration } = segmentationModule;
+  const { configuration } = cornerstoneTools.getModule('segmentation');
   const DEFAULT_BRUSH_RADIUS = configuration.radius || 10;
-
-  const [brushRadius, setBrushRadius] = useState(DEFAULT_BRUSH_RADIUS);
-
-  /* TODO: We shouldn't hardcode this color, in the future the SEG may set the colorLUT to whatever it wants. */
-  const [brushColor, setBrushColor] = useState('rgba(221, 85, 85, 1)');
-  const [selectedSegment, setSelectedSegment] = useState();
-  const [showSegSettings, setShowSegSettings] = useState(false);
-  const [selectedSegmentation, setSelectedSegmentation] = useState();
-
-  const viewport = viewports[activeIndex];
-
-  const {
-    StudyInstanceUID,
-    SeriesInstanceUID,
-    displaySetInstanceUID,
-  } = viewport;
-
-  const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
-  const firstImageId = studyMetadata.getFirstImageId(displaySetInstanceUID);
-
-  /* CornerstoneTools */
-  const [brushStackState, setBrushStackState] = useState(
-    segmentationModule.state.series[firstImageId]
-  );
+  const [state, setState] = useState({
+    brushRadius: DEFAULT_BRUSH_RADIUS,
+    brushColor: 'rgba(221, 85, 85, 1)', /* TODO: We shouldn't hardcode this color, in the future the SEG may set the colorLUT to whatever it wants. */
+    selectedSegment: null,
+    selectedSegmentation: null,
+    showSegSettings: false,
+    brushStackState: null,
+    labelmapList: [],
+    segmentList: []
+  });
 
   useEffect(() => {
-    setShowSegSettings(showSegSettings && !isOpen);
-  }, [isOpen]);
-
-  useEffect(() => {
-    setBrushStackState(segmentationModule.state.series[firstImageId]);
-  }, [studies, viewports, activeIndex, firstImageId]);
-
-  useEffect(() => {
-    if (brushStackState) {
-      setSelectedSegmentation(brushStackState.activeLabelmapIndex);
-    }
-
     const labelmapModifiedHandler = event => {
-      log.warn('labelmap modified', event);
-      setBrushStackState(segmentationModule.state.series[firstImageId]);
+      log.warn('Segmentation Panel: labelmap modified', event);
+      const module = cornerstoneTools.getModule('segmentation');
+      const activeViewport = viewports[activeIndex];
+      const firstImageId = studyMetadata.getFirstImageId(activeViewport.displaySetInstanceUID);
+      updateState('brushStackState', module.state.series[firstImageId]);
     };
 
     /*
@@ -107,27 +83,43 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     };
   });
 
-  if (!brushStackState) {
-    return null;
-  }
+  useEffect(() => {
+    const module = cornerstoneTools.getModule('segmentation');
+    const activeViewport = viewports[activeIndex];
+    const studyMetadata = studyMetadataManager.get(activeViewport.StudyInstanceUID);
+    const firstImageId = studyMetadata.getFirstImageId(activeViewport.displaySetInstanceUID);
+    const brushStackState = module.state.series[firstImageId];
 
-  const labelmap3D =
-    brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
+    if (brushStackState) {
+      const labelmap3D = brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
+      const labelmapList = getLabelmapList(brushStackState, firstImageId, activeViewport);
+      const segmentList = getSegmentList(labelmap3D, firstImageId);
+      setState(state => ({
+        ...state,
+        brushStackState,
+        selectedSegmentation: brushStackState.activeLabelmapIndex,
+        labelmapList,
+        segmentList
+      }));
+    } else {
+      setState(state => ({
+        ...state,
+        labelmapList: [],
+        segmentList: [],
+      }));
+    }
+  }, [studies, viewports, activeIndex]);
 
-  /*
-   * 2. UseEffect to update state? or to a least trigger a re-render
-   * 4. Toggle visibility of labelmap?
-   * 5. Toggle visibility of seg?
-   *
-   * If the port is cornerstone, just need to call a re-render.
-   * If the port is vtkjs, its a bit more tricky as we now need to create a new
-   */
+  /* Handle open/closed panel behaviour */
+  useEffect(() => {
+    updateState('showSegSettings', state.showSegSettings && !isOpen);
+  }, [isOpen]);
 
-  const getLabelmapList = () => {
+  const getLabelmapList = (brushStackState, firstImageId, activeViewport) => {
     /* Get list of SEG labelmaps specific to active viewport (reference series) */
     const referencedSegDisplaysets = _getReferencedSegDisplaysets(
-      StudyInstanceUID,
-      SeriesInstanceUID
+      activeViewport.StudyInstanceUID,
+      activeViewport.SeriesInstanceUID
     );
 
     return referencedSegDisplaysets.map((displaySet, index) => {
@@ -148,23 +140,19 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
         description: displayDate,
         onClick: async () => {
           const activatedLabelmapIndex = await _setActiveLabelmap(
-            viewport,
+            activeViewport,
             studies,
             displaySet,
             firstImageId,
             brushStackState.activeLabelmapIndex
           );
-          setSelectedSegmentation(activatedLabelmapIndex);
+          updateState('selectedSegmentation', activatedLabelmapIndex);
         },
       };
     });
   };
 
-  const labelmapList = getLabelmapList();
-
-  const segmentList = [];
-
-  if (labelmap3D) {
+  const getSegmentList = (labelmap3D, firstImageId) => {
     /*
      * Newly created segments have no `meta`
      * So we instead build a list of all segment indexes in use
@@ -186,10 +174,12 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
       }, [])
       .sort((a, b) => a - b);
 
+    const module = cornerstoneTools.getModule('segmentation');
     const colorLutTable =
-      segmentationModule.state.colorLutTables[labelmap3D.colorLUTIndex];
+      module.state.colorLutTables[labelmap3D.colorLUTIndex];
     const hasLabelmapMeta = labelmap3D.metadata && labelmap3D.metadata.data;
 
+    const segmentList = [];
     for (let i = 0; i < uniqueSegmentIndexes.length; i++) {
       const segmentIndex = uniqueSegmentIndexes[i];
 
@@ -207,14 +197,14 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
         }
       }
 
-      const sameSegment = selectedSegment === segmentNumber;
+      const sameSegment = state.selectedSegment === segmentNumber;
       const setCurrentSelectedSegment = () => {
         _setActiveSegment(
           firstImageId,
           segmentNumber,
           labelmap3D.activeSegmentIndex
         );
-        setSelectedSegment(sameSegment ? null : segmentNumber);
+        updateState('selectedSegment', sameSegment ? null : segmentNumber);
       };
 
       segmentList.push(
@@ -229,20 +219,27 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
       );
     }
 
+    return segmentList;
+
     /*
      * Let's iterate over segmentIndexes ^ above
      * If meta has a match, use it to show info
      * If now, add "no-meta" class
      * Show default name
      */
-  }
+  };
+
+  const updateState = (field, value) => {
+    setState(state => ({ ...state, [field]: value }));
+  };
 
   const updateBrushSize = evt => {
     const updatedRadius = Number(evt.target.value);
 
     if (updatedRadius !== brushRadius) {
-      setBrushRadius(updatedRadius);
-      segmentationModule.setters.radius(updatedRadius);
+      updateState('brushRadius', updatedRadius);
+      const module = cornerstoneTools.getModule('segmentation');
+      module.setters.radius(updatedRadius);
     }
   };
 
@@ -251,29 +248,30 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     if (labelmap3D.activeSegmentIndex > 1) {
       labelmap3D.activeSegmentIndex--;
     }
-    setSelectedSegment(labelmap3D.activeSegmentIndex);
+    updateState('selectedSegment', labelmap3D.activeSegmentIndex);
     updateActiveSegmentColor();
   };
 
   const incrementSegment = event => {
     event.preventDefault();
     labelmap3D.activeSegmentIndex++;
-    setSelectedSegment(labelmap3D.activeSegmentIndex);
+    updateState('selectedSegment', labelmap3D.activeSegmentIndex);
     updateActiveSegmentColor();
   };
 
   const updateActiveSegmentColor = () => {
     const color = getActiveSegmentColor();
-    setBrushColor(color);
+    updateState('brushColor', color);
   };
 
   const getActiveSegmentColor = () => {
-    if (!brushStackState) {
+    if (!state.brushStackState) {
       return 'rgba(255, 255, 255, 1)';
     }
 
+    const module = cornerstoneTools.getModule('segmentation');
     const colorLutTable =
-      segmentationModule.state.colorLutTables[labelmap3D.colorLUTIndex];
+      module.state.colorLutTables[labelmap3D.colorLUTIndex];
     const color = colorLutTable[labelmap3D.activeSegmentIndex];
 
     return `rgba(${color.join(',')})`;
@@ -293,11 +291,11 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     refreshViewport();
   };
 
-  if (showSegSettings) {
+  if (state.showSegSettings) {
     return (
       <SegmentationSettings
         configuration={configuration}
-        onBack={() => setShowSegSettings(false)}
+        onBack={() => updateState('showSegSettings', false)}
         onChange={updateConfiguration}
       />
     );
@@ -309,13 +307,13 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
           name="cog"
           width="25px"
           height="25px"
-          onClick={() => setShowSegSettings(true)}
+          onClick={() => updateState('showSegSettings', true)}
         />
         {false && (
           <form className="selector-form">
             <BrushColorSelector
               defaultColor={brushColor}
-              index={labelmap3D.activeSegmentIndex}
+              index={state.selectedSegment}
               onNext={incrementSegment}
               onPrev={decrementSegment}
             />
@@ -331,17 +329,17 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
         <div className="segmentations">
           <SegmentationSelect
             value={
-              labelmapList.find(i => i.value === selectedSegmentation) || null
+              state.labelmapList.find(i => i.value === state.selectedSegmentation) || null
             }
             formatOptionLabel={SegmentationItem}
-            options={labelmapList}
+            options={state.labelmapList}
           />
         </div>
         <ScrollableArea>
           <TableList
-            customHeader={<SegmentsHeader count={segmentList.length} />}
+            customHeader={<SegmentsHeader count={state.segmentList.length} />}
           >
-            {segmentList}
+            {state.segmentList}
           </TableList>
         </ScrollableArea>
       </div>
@@ -421,7 +419,7 @@ const _setActiveLabelmap = async (
 ) => {
   if (displaySet.labelmapIndex === activeLabelmapIndex) {
     log.warn(`${activeLabelmapIndex} is already the active labelmap`);
-    return;
+    return displaySet.labelmapIndex;
   }
 
   if (!displaySet.isLoaded) {
@@ -432,7 +430,6 @@ const _setActiveLabelmap = async (
 
   const { state } = cornerstoneTools.getModule('segmentation');
   const brushStackState = state.series[firstImageId];
-
   brushStackState.activeLabelmapIndex = displaySet.labelmapIndex;
 
   refreshViewport();

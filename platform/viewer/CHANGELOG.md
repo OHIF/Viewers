@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.12...@ohif/viewer@3.8.13) (2020-04-01)
+
+
+### Bug Fixes
+
+* segmentation not loading ([#1566](https://github.com/OHIF/Viewers/issues/1566)) ([4a7ce1c](https://github.com/OHIF/Viewers/commit/4a7ce1c09324d74c61048393e3a2427757e4001a))
+
+
+
+
+
+## [3.8.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.11...@ohif/viewer@3.8.12) (2020-03-31)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [3.8.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.10...@ohif/viewer@3.8.11) (2020-03-26)
 
 

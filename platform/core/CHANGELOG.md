@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.5](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.4...@ohif/core@2.6.5) (2020-04-01)
+
+
+### Bug Fixes
+
+* segmentation not loading ([#1566](https://github.com/OHIF/Viewers/issues/1566)) ([4a7ce1c](https://github.com/OHIF/Viewers/commit/4a7ce1c09324d74c61048393e3a2427757e4001a))
+
+
+
+
+
 ## [2.6.4](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.3...@ohif/core@2.6.4) (2020-03-25)
 
 
