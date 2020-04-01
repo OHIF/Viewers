@@ -4,10 +4,26 @@ menu: Views
 route: views/studyList
 ---
 
-import { useState } from 'react'
+import { useState } from 'react';
 import { Playground, Props } from 'docz';
-import { StudyList, utils, Icon, StudyListExpandedRow, Button } from '@ohif/ui';
-import { getMockedStudies } from '../../utils/'
+import {
+  StudyList,
+  utils,
+  Icon,
+  StudyListExpandedRow,
+  Button,
+  NavBar,
+  Svg,
+  IconButton,
+  EmptyStudies,
+  StudyListTable,
+  StudyListPagination,
+} from '@ohif/ui';
+
+<!-- TEMPORARY IMPORTING -- SHOULD USE InputGroup after PR #1580 gets merged  -->
+
+import StudyListFilter from './components/StudyListFilter';
+import { getMockedStudies } from '../../utils/';
 import classnames from 'classnames';
 import moment from 'moment';
 
@@ -25,11 +41,86 @@ import { StudyList } from '@ohif/ui';
 
 <Playground>
   {() => {
-    const [studies, setStudies] = useState([])
-    const numOfStudies = studies.length
-    const [expandedRows, setExpandedRows] = useState([])
+    const [studies, setStudies] = useState([]);
+    const numOfStudies = studies.length;
+    const [expandedRows, setExpandedRows] = useState([]);
+    const filtersMeta = [
+      {
+        name: 'patientName',
+        displayName: 'Patient Name',
+        inputType: 'Text',
+        isSortable: true,
+        gridCol: 4,
+      },
+      {
+        name: 'mrn',
+        displayName: 'MRN',
+        inputType: 'Text',
+        isSortable: true,
+        gridCol: 2,
+      },
+      {
+        name: 'studyDate',
+        displayName: 'Study date',
+        inputType: 'DateRange',
+        isSortable: true,
+        gridCol: 5,
+      },
+      {
+        name: 'description',
+        displayName: 'Description',
+        inputType: 'Text',
+        isSortable: true,
+        gridCol: 4,
+      },
+      {
+        name: 'modality',
+        displayName: 'Modality',
+        inputType: 'MultiSelect',
+        inputProps: {
+          options: [
+            { value: 'SEG', label: 'SEG' },
+            { value: 'CT', label: 'CT' },
+            { value: 'MR', label: 'MR' },
+            { value: 'SR', label: 'SR' },
+          ],
+        },
+        isSortable: true,
+        gridCol: 3,
+      },
+      {
+        name: 'accession',
+        displayName: 'Accession',
+        inputType: 'Text',
+        isSortable: true,
+        gridCol: 4,
+      },
+      {
+        name: 'instances',
+        displayName: 'Instances',
+        inputType: 'None',
+        isSortable: true,
+        gridCol: 2,
+      },
+    ];
+    const filtersValues = {
+      patientName: '',
+      mrn: '',
+      studyDate: {
+        startDate: null,
+        endDate: null,
+      },
+      description: '',
+      modality: undefined,
+      accession: '',
+      sortBy: '',
+      sortDirection: 'none',
+      page: 0,
+      resultsPerPage: 25,
+    };
     const tableDataSource = studies.map((study, key) => {
-      const isExpanded = expandedRows.some(k => k === key)
+      const rowKey = key + 1;
+      const isExpanded = expandedRows.some((k) => k === rowKey);
       const {
         AccessionNumber,
         Modalities,
@@ -39,58 +130,86 @@ import { StudyList } from '@ohif/ui';
         PatientName,
         StudyDate,
         series,
-      } = study
+      } = study;
       const seriesTableColumns = {
         description: 'Description',
         seriesNumber: 'Series',
         modality: 'Modality',
         Instances: 'Instances',
-      }
-      const seriesTableDataSource = series.map(seriesItem => {
-        const { SeriesNumber, Modality, instances } = seriesItem
+      };
+      const seriesTableDataSource = series.map((seriesItem) => {
+        const { SeriesNumber, Modality, instances } = seriesItem;
         return {
           description: 'Patient Protocol',
           seriesNumber: SeriesNumber,
           modality: Modality,
           Instances: instances.length,
-        }
-      })
+        };
+      });
       return {
-        row: {
-          patientName: (
-            <>
-              <Icon
-                name={isExpanded ? 'chevron-down' : 'chevron-right'}
-                className="mr-4"
-              />
-              {PatientName}
-            </>
-          ),
-          mrn: PatientId,
-          studyDate: (
-            <div>
-              <span className="mr-4">
-                {moment(StudyDate).format('MMM-DD-YYYY')}
-              </span>
-              <span>{moment(StudyDate).format('hh:mm A')}</span>
-            </div>
-          ),
-          description: StudyDescription,
-          modality: Modalities,
-          accession: AccessionNumber,
-          instances: (
-            <>
-              <Icon
-                name="series-active"
-                className={classnames('inline-flex mr-2', {
-                  'text-custom-blueBright': isExpanded,
-                  'text-custom-violetPale': !isExpanded,
-                })}
-              />
-              {Instances}
-            </>
-          ),
-        },
+        row: [
+          {
+            key: 'patientName',
+            content: (
+              <>
+                <Icon
+                  name={isExpanded ? 'chevron-down' : 'chevron-right'}
+                  className="mr-4"
+                />
+                {PatientName}
+              </>
+            ),
+            gridCol: 4,
+          },
+          {
+            key: 'mrn',
+            content: PatientId,
+            gridCol: 2,
+          },
+          {
+            key: 'studyDate',
+            content: (
+              <div>
+                <span className="mr-4">
+                  {moment(StudyDate).format('MMM-DD-YYYY')}
+                </span>
+                <span>{moment(StudyDate).format('hh:mm A')}</span>
+              </div>
+            ),
+            gridCol: 5,
+          },
+          {
+            key: 'description',
+            content: StudyDescription,
+            gridCol: 4,
+          },
+          {
+            key: 'modality',
+            content: Modalities,
+            gridCol: 3,
+          },
+          {
+            key: 'accession',
+            content: AccessionNumber,
+            gridCol: 4,
+          },
+          {
+            key: 'instances',
+            content: (
+              <>
+                <Icon
+                  name="series-active"
+                  className={classnames('inline-flex mr-2', {
+                    'text-custom-blueBright': isExpanded,
+                    'text-custom-violetPale': !isExpanded,
+                  })}
+                />
+                {Instances}
+              </>
+            ),
+            gridCol: 4,
+          },
+        ],
         expandedContent: (
           <StudyListExpandedRow
             seriesTableColumns={seriesTableColumns}
@@ -134,21 +253,35 @@ import { StudyList } from '@ohif/ui';
           </StudyListExpandedRow>
         ),
         onClickRow: () =>
-          setExpandedRows(s =>
-            isExpanded ? s.filter(n => key !== n) : [...s, key],
+          setExpandedRows((s) =>
+            isExpanded ? s.filter((n) => rowKey !== n) : [...s, rowKey]
           ),
         isExpanded,
-      }
-    })
-    const handleStudyList = number => {
-      const studies = getMockedStudies(number)
-      setStudies(studies)
-    }
-    const [currentPage, setCurrentPage] = useState(1)
+      };
+    });
+    const handleStudyList = (number) => {
+      const studies = getMockedStudies(number);
+      setStudies(studies);
+      setCurrentPage(1);
+    };
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(25);
     const paginationData = {
-      onChangePage: page => setCurrentPage(page),
+      onChangePage: (page) => {
+        const totalPages = Math.floor(tableDataSource.length / perPage);
+        if (page > totalPages) {
+          return null;
+        }
+        setCurrentPage(page);
+      },
+      onChangePerPage: (perPage) => {
+        setPerPage(perPage);
+        setCurrentPage(1);
+      },
       currentPage,
-    }
+      perPage,
+    };
+    const hasStudies = numOfStudies > 0;
     return (
       <div>
         <div className="bg-white p-4">
@@ -165,16 +298,58 @@ import { StudyList } from '@ohif/ui';
             1000 Studies
           </Button>
         </div>
-        <StudyList
-          tableDataSource={tableDataSource.slice(0, 25)}
-          numOfStudies={numOfStudies}
-          paginationData={paginationData}
-        />
+        <div
+          className={classnames('bg-black h-full', {
+            'h-screen': !hasStudies,
+          })}
+        >
+          <NavBar className="justify-between border-b-4 border-black">
+            <div className="flex items-center">
+              <div className="mx-3">
+                <Svg name="logo-ohif" />
+              </div>
+            </div>
+            <div className="flex items-center">
+              <span className="mr-3 text-custom-grayLight text-lg">
+                FOR INVESTIGATIONAL USE ONLY
+              </span>
+              <IconButton
+                variant="text"
+                color="inherit"
+                className="text-custom-blueBright"
+                onClick={() => {}}
+              >
+                <React.Fragment>
+                  <Icon name="settings" />
+                  <Icon name="chevron-down" />
+                </React.Fragment>
+              </IconButton>
+            </div>
+          </NavBar>
+          <StudyListFilter
+            numOfStudies={numOfStudies}
+            filtersMeta={filtersMeta}
+            filtersValues={filtersValues}
+          />
+          {hasStudies ? (
+            <>
+              <StudyListTable
+                tableDataSource={tableDataSource.slice(
+                  (currentPage - 1) * perPage,
+                  (currentPage - 1) * perPage + perPage
+                )}
+                numOfStudies={numOfStudies}
+                filtersMeta={filtersMeta}
+              />
+              <StudyListPagination paginationData={paginationData} />
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center pt-48">
+              <EmptyStudies />
+            </div>
+          )}
+        </div>
       </div>
-    )
+    );
   }}
 </Playground>
-
-## Properties
-
-<Props of={StudyList} />
