@@ -26,6 +26,8 @@ export {
   NavBar,
   Select,
   StudyListExpandedRow,
+  StudyListPagination,
+  StudyListTable,
   Svg,
   ThemeWrapper,
   Table,

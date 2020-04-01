@@ -13,6 +13,8 @@ import InputText from './InputText';
 import Select from './Select';
 import Svg from './Svg';
 import StudyListExpandedRow from './StudyListExpandedRow';
+import StudyListPagination from './StudyListPagination';
+import StudyListTable from './StudyListTable';
 import Table from './Table';
 import TableBody from './TableBody';
 import TableCell from './TableCell';
@@ -37,6 +39,8 @@ export {
   Select,
   Svg,
   StudyListExpandedRow,
+  StudyListPagination,
+  StudyListTable,
   Table,
   TableBody,
   TableCell,
