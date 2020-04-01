@@ -9,13 +9,13 @@ const StudyListExpandedRow = ({
   children,
 }) => {
   return (
-    <td colSpan="7" className="py-4 pl-12 pr-2">
+    <div className="w-full bg-black py-4 pl-12 pr-2">
       <div className="block">{children}</div>
       <div className="mt-4">
         <Table>
           <TableHead>
             <TableRow>
-              {Object.keys(seriesTableColumns).map(columnKey => {
+              {Object.keys(seriesTableColumns).map((columnKey) => {
                 return (
                   <TableCell key={columnKey}>
                     {seriesTableColumns[columnKey]}
@@ -28,7 +28,7 @@ const StudyListExpandedRow = ({
           <TableBody>
             {seriesTableDataSource.map((row, i) => (
               <TableRow key={i}>
-                {Object.keys(row).map(cellKey => {
+                {Object.keys(row).map((cellKey) => {
                   const content = row[cellKey];
                   return <TableCell key={cellKey}>{content}</TableCell>;
                 })}
@@ -37,14 +37,14 @@ const StudyListExpandedRow = ({
           </TableBody>
         </Table>
       </div>
-    </td>
+    </div>
   );
 };
 
 StudyListExpandedRow.propTypes = {
-  seriesTableDataSource: PropTypes.arrayOf(PropTypes.object),
-  seriesTableColumns: PropTypes.object,
-  children: PropTypes.node,
+  seriesTableDataSource: PropTypes.arrayOf(PropTypes.object).isRequired,
+  seriesTableColumns: PropTypes.object.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default StudyListExpandedRow;
