@@ -1,0 +1,62 @@
+---
+name: Study List Table
+menu: Components
+route: components/studyListTable
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import { StudyListTable } from '@ohif/ui';
+
+# StudyListTable
+
+This component is used to display a studies list.
+
+## Import
+
+```javascript
+import { StudyListTable } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const studies = new Array(10).fill('');
+    const [expandedRows, setExpandedRows] = useState([]);
+    const tableDataSource = studies.map((study, key) => {
+      const rowKey = key + 1;
+      const isExpanded = expandedRows.some((k) => k === rowKey);
+      return {
+        row: [
+          { key: 'Cell 01', content: 'Cell 01', gridCol: 2 },
+          { key: 'Cell 02', content: 'Cell 02', gridCol: 4 },
+          { key: 'Cell 03', content: 'Cell 03', gridCol: 4 },
+          { key: 'Cell 04', content: 'Cell 04', gridCol: 4 },
+        ],
+        expandedContent: (
+          <td className="w-full p-8">
+            Custom expanded content for row {rowKey}
+          </td>
+        ),
+        onClickRow: () =>
+          setExpandedRows((rows) =>
+            isExpanded ? rows.filter((n) => rowKey !== n) : [...rows, rowKey]
+          ),
+        isExpanded,
+      };
+    });
+    return (
+      <div className="py-4">
+        <StudyListTable
+          tableDataSource={tableDataSource}
+          numOfStudies={studies.length}
+        />
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={StudyListTable} />
