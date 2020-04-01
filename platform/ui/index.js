@@ -26,6 +26,7 @@ export {
   InputText,
   Select,
   Svg,
+  NavBar,
   Table,
   TableBody,
   TableCell,
