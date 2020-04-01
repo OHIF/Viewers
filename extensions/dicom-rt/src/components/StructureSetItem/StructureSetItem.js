@@ -44,7 +44,7 @@ const StructureSetItem = ({
             {label}
             <Icon
               className={`eye-icon ${isVisible && '--visible'}`}
-              name={isVisible ? "eye" : "eye-closed"}
+              name={isVisible ? 'eye' : 'eye-closed'}
               width="20px"
               height="20px"
               onClick={event => {
@@ -55,27 +55,29 @@ const StructureSetItem = ({
               }}
             />
           </div>
-          <div className="item-info">{'...'}</div>
-          <div className="item-actions">
-            <button
-              className="btnAction"
-              onClick={() => console.log('Relabelling...')}
-            >
-              <span style={{ marginRight: '4px' }}>
-                <Icon name="edit" width="14px" height="14px" />
-              </span>
-              Relabel
+          {false && <div className="item-info">{'...'}</div>}
+          {false && (
+            <div className="item-actions">
+              <button
+                className="btnAction"
+                onClick={() => console.log('Relabelling...')}
+              >
+                <span style={{ marginRight: '4px' }}>
+                  <Icon name="edit" width="14px" height="14px" />
+                </span>
+                Relabel
               </button>
-            <button
-              className="btnAction"
-              onClick={() => console.log('Editing description...')}
-            >
-              <span style={{ marginRight: '4px' }}>
-                <Icon name="edit" width="14px" height="14px" />
-              </span>
-              Description
+              <button
+                className="btnAction"
+                onClick={() => console.log('Editing description...')}
+              >
+                <span style={{ marginRight: '4px' }}>
+                  <Icon name="edit" width="14px" height="14px" />
+                </span>
+                Description
               </button>
-          </div>
+            </div>
+          )}
         </div>
       </TableListItem>
     </div>
@@ -92,7 +94,7 @@ StructureSetItem.propTypes = {
 
 StructureSetItem.defaultProps = {
   itemClass: '',
-  onClick: () => { }
+  onClick: () => { },
 };
 
 export default StructureSetItem;
