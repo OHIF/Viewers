@@ -168,7 +168,7 @@ function ViewerRetrieveStudyData({
   const { appConfig = {} } = useContext(AppContext);
   const {
     filterQueryParam: isFilterStrategy = false,
-    maxConcurrentMetadataRequests = 3,
+    maxConcurrentMetadataRequests,
   } = appConfig;
 
   let cancelableSeriesPromises;
@@ -265,7 +265,8 @@ function ViewerRetrieveStudyData({
       return loadNextSeries();
     };
 
-    const promises = Array(maxConcurrentMetadataRequests)
+    const concurrentRequestsAllowed = maxConcurrentMetadataRequests || studyMetadata.getSeriesCount();
+    const promises = Array(concurrentRequestsAllowed)
       .fill(null)
       .map(loadNextSeries);
     await Promise.all(promises);
