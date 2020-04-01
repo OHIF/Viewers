@@ -1,0 +1,18 @@
+.background {
+  fill: #91b8cd26;
+}
+
+.line {
+  fill: none;
+  stroke: white;
+  stroke-width: 2;
+}
+
+.dot {
+  fill: white;
+  stroke: white;
+}
+
+.label.axis {
+  fill: white;
+}

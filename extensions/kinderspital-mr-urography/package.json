@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "react-select": "^3.0.8"
+    "react-select": "^3.0.8",
+    "d3": "^5.15.0"
   }
 }

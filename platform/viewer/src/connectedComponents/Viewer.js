@@ -11,13 +11,36 @@ import ConnectedToolbarRow from './ConnectedToolbarRow.js';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
-import { extensionManager } from './../App.js';
+import { extensionManager, servicesManager } from './../App.js';
 
 // Contexts
 import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
 import UserManagerContext from '../context/UserManagerContext';
+// TODO KINDERSPITAL this will remove soon when task 9 is done
+import TimecourseModal from '../../../../extensions/kinderspital-mr-urography/src/components/timecourseModal/TimecourseContent';
 
 import './Viewer.css';
+
+const mockPoints = new Array(100).fill(0).map((item, index) => {
+  return [index * 10, Math.ceil(Math.random() * 10)];
+});
+
+const { UIModalService } = servicesManager.services;
+
+// TODO KINDERSPITAL this will remove soon when task 9 is done
+const showTimecourseModal = () => {
+  if (UIModalService) {
+    UIModalService.show({
+      content: TimecourseModal,
+      title: 'Evaluate Timecourse',
+      contentProps: {
+        timecourse: mockPoints,
+        measurementId: 'mockMeasurentId',
+        onClose: UIModalService.hide,
+      },
+    });
+  }
+};
 
 class Viewer extends Component {
   static propTypes = {
@@ -234,6 +257,7 @@ class Viewer extends Component {
 
     return (
       <>
+        <button onClick={showTimecourseModal}></button>
         {/* HEADER */}
         <WhiteLabellingContext.Consumer>
           {whiteLabelling => (
