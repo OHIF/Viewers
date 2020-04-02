@@ -78,7 +78,7 @@ export class StudyMetadata extends Metadata {
     Object.defineProperty(this, 'studyInstanceUID', {
       configurable: false,
       enumerable: false,
-      get: function () {
+      get: function() {
         return this.getStudyInstanceUID();
       },
     });
