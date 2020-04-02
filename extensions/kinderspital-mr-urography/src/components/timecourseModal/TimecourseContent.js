@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { select } from 'd3-selection';
 
 import './TimecourseContent.css';
-import { createLineChart } from './chart';
+
+import { lineChart } from './chart';
 
 const DEFAULT_WIDTH = 500;
-const DEFAULT_HEIGHT = 300;
+const DEFAULT_HEIGHT = 350;
 
 const DEFAULT_AXIS = {
   x: {
@@ -27,21 +28,38 @@ function LineChartContainer({
   chartDimension,
 }) {
   const d3Container = useRef(null);
+  const chartRef = useRef(null);
   const { width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT } = chartDimension;
   useEffect(() => {
     if (timecourse && d3Container.current) {
       const d3Content = select(d3Container.current);
-      const chart = createLineChart(d3Content, axis, timecourse, width, height);
+      chartRef.current = lineChart.addLineChartNode(
+        d3Content,
+        axis,
+        timecourse,
+        width,
+        height
+      );
     }
   }, [timecourse, d3Container.current, width, height]);
 
   return (
-    <svg
-      className="d3-component"
-      width={width}
-      height={height}
-      ref={d3Container}
-    />
+    <div>
+      <div
+        class="reset"
+        onClick={() => {
+          lineChart.resetZoom(chartRef.current);
+        }}
+      >
+        Reset
+      </div>
+      <svg
+        className="d3-component"
+        width={width}
+        height={height}
+        ref={d3Container}
+      />
+    </div>
   );
 }
 

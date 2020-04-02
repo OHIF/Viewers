@@ -1,3 +1,3 @@
-import { createLineChart } from './lineChart';
+import * as lineChart from './lineChart/index.js';
 
-export { createLineChart };
+export { lineChart };

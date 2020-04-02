@@ -16,3 +16,19 @@
 .label.axis {
   fill: white;
 }
+
+.reset {
+  text-align: center;
+  height: 20px;
+  width: 50px;
+  position: relative;
+  background-color: var(--active-color);
+  border-color: var(--ui-border-color-active);
+  color: var(--ui-gray-dark);
+  z-index: 2;
+  border-bottom-left-radius: 20px;
+  border-top-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-top-right-radius: 20px;
+  cursor: pointer;
+}
