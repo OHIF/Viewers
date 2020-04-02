@@ -38,24 +38,6 @@ module.exports = {
         active: '#2c3074',
       },
 
-      /** CUSTOM THEME COLORS */
-      custom: {
-        dark: '#1f1f27', // [class]-secondary-active
-        aquaBright: '#5acce6', // [class]-primary-light
-        navyDark: '#090c29', // [class]-primary-dark
-        navy: '#041c4a', // [class]-secondary-dark
-        violetDark: '#2b166b', // [class]-secondary-main
-        violetPale: '#3a3f99', // [class]-secondary-light
-        blue: '#0944b3', // [class]-primary-main
-        blueBright: '#348cfd', // [class]-primary-active
-        white: '#ffffff', // [class]-common-main
-        grayBright: '#e1e1e1', // [class]-common-bright
-        grayLight: '#a19fad', // [class]-common-light
-        gray: '#726f7e', // [class]-common-dark
-        darkSlateBlue: '#2c3074', // [class]-common-active
-      },
-      /** END CUSTOM THEME COLORS */
-
       gray: {
         100: '#f7fafc',
         200: '#edf2f7',
