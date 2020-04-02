@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getImageData, loadImageData } from 'react-vtkjs-viewport';
+import { getReactVtkjsViewport } from './utils/getReactVtkjsViewport';
 import ConnectedVTKViewport from './ConnectedVTKViewport';
 import LoadingIndicator from './LoadingIndicator.js';
 import OHIF from '@ohif/core';
@@ -69,7 +69,7 @@ class OHIFVTKViewport extends Component {
   };
 
   static defaultProps = {
-    onScroll: () => {},
+    onScroll: () => { },
   };
 
   static id = 'OHIFVTKViewport';
@@ -133,7 +133,8 @@ class OHIFVTKViewport extends Component {
     displaySetInstanceUID,
     SOPClassUID,
     SOPInstanceUID,
-    frameIndex
+    frameIndex,
+    reactVtkjsViewport
   ) => {
     const stack = OHIFVTKViewport.getCornerstoneStack(
       studies,
@@ -144,7 +145,10 @@ class OHIFVTKViewport extends Component {
       frameIndex
     );
 
-    const imageDataObject = getImageData(stack.imageIds, displaySetInstanceUID);
+    const imageDataObject = reactVtkjsViewport.getImageData(
+      stack.imageIds,
+      displaySetInstanceUID
+    );
     let labelmapDataObject;
     let labelmapColorLUT;
 
@@ -257,7 +261,9 @@ class OHIFVTKViewport extends Component {
     return volumeActor;
   }
 
-  setStateFromProps() {
+  async setStateFromProps() {
+    const reactVtkjsViewport = await getReactVtkjsViewport();
+
     const { studies, displaySet } = this.props.viewportData;
     const {
       StudyInstanceUID,
@@ -295,8 +301,10 @@ class OHIFVTKViewport extends Component {
       studies,
       StudyInstanceUID,
       displaySetInstanceUID,
+      sopClassUIDs[0],
       SOPInstanceUID,
-      frameIndex
+      frameIndex,
+      reactVtkjsViewport
     );
 
     this.imageDataObject = imageDataObject;
@@ -317,7 +325,7 @@ class OHIFVTKViewport extends Component {
         dataDetails,
       },
       () => {
-        this.loadProgressively(imageDataObject);
+        this.loadProgressively(imageDataObject, reactVtkjsViewport);
 
         // TODO: There must be a better way to do this.
         // We do this so that if all the data is available the react-vtkjs-viewport
@@ -335,26 +343,26 @@ class OHIFVTKViewport extends Component {
     );
   }
 
-  componentDidMount() {
-    this.setStateFromProps();
+  async componentDidMount() {
+    await this.setStateFromProps();
   }
 
-  componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps) {
     const { displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
     if (
       displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
+      prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
-      this.setStateFromProps();
+      await this.setStateFromProps();
     }
   }
 
-  loadProgressively(imageDataObject) {
-    loadImageData(imageDataObject);
+  loadProgressively(imageDataObject, reactVtkjsViewport) {
+    reactVtkjsViewport.loadImageData(imageDataObject);
 
     const { isLoading, insertPixelDataPromises } = imageDataObject;
 
