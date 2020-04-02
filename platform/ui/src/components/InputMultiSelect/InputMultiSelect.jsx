@@ -59,6 +59,7 @@ InputMultiSelect.propTypes = {
   sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])
     .isRequired,
   onLabelClick: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
   options: PropTypes.arrayOf(
     PropTypes.shape({
@@ -78,7 +79,6 @@ InputMultiSelect.propTypes = {
       label: PropTypes.string,
     }),
   ]),
-  onChange: PropTypes.func.isRequired,
 };
 
 export default InputMultiSelect;

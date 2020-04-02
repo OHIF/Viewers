@@ -4,36 +4,52 @@ import 'react-dates/lib/css/_datepicker.css';
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
 import './DateRange.css';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import moment from 'moment';
 
-const DateRange = (props) => {
+const today = moment();
+const lastWeek = moment().subtract(7, 'day');
+const lastMonth = moment().subtract(1, 'month');
+const studyDatePresets = [
+  {
+    text: 'Today',
+    start: today,
+    end: today,
+  },
+  {
+    text: 'Last 7 days',
+    start: lastWeek,
+    end: today,
+  },
+  {
+    text: 'Last 30 days',
+    start: lastMonth,
+    end: today,
+  },
+];
+
+const renderYearsOptions = () => {
+  const currentYear = moment().year();
+  const options = [];
+
+  for (let i = 0; i < 20; i++) {
+    const year = currentYear - i;
+    options.push(
+      <option key={year} value={year}>
+        {year}
+      </option>
+    );
+  }
+
+  return options;
+};
+
+const DateRange = props => {
   const { onChange, startDate, endDate } = props;
   const [focusedInput, setFocusedInput] = useState(null);
-
-  const today = moment();
-  const lastWeek = moment().subtract(7, 'day');
-  const lastMonth = moment().subtract(1, 'month');
-
-  const studyDatePresets = [
-    {
-      text: 'Today',
-      start: today,
-      end: today,
-    },
-    {
-      text: 'Last 7 days',
-      start: lastWeek,
-      end: today,
-    },
-    {
-      text: 'Last 30 days',
-      start: lastMonth,
-      end: today,
-    },
-  ];
+  const renderYearsOptionsCallback = useCallback(renderYearsOptions, []);
 
   const renderDatePresets = () => {
     return (
@@ -60,27 +76,21 @@ const DateRange = (props) => {
     );
   };
   const renderMonthElement = ({ month, onMonthSelect, onYearSelect }) => {
-    const renderYearsOptions = () => {
-      const yearsRange = 20;
-      const options = [];
-
-      for (let i = 0; i < yearsRange; i++) {
-        const year = moment().year() - i;
-        options.push(
-          <option key={year} value={year}>
-            {year}
-          </option>
-        );
-      }
-
-      return options;
-    };
-
     renderMonthElement.propTypes = {
       month: PropTypes.object,
       onMonthSelect: PropTypes.func,
       onYearSelect: PropTypes.func,
     };
+
+    const handleMonthChange = event => {
+      onMonthSelect(month, event.target.value);
+    };
+
+    const handleYearChange = event => {
+      onYearSelect(month, event.target.value);
+    };
+
+    const handleOnBlur = () => {};
 
     return (
       <div className="flex justify-center">
@@ -88,7 +98,8 @@ const DateRange = (props) => {
           <select
             className="DateRangePicker_select"
             value={month.month()}
-            onChange={(e) => onMonthSelect(month, e.target.value)}
+            onChange={handleMonthChange}
+            onBlur={handleOnBlur}
           >
             {moment.months().map((label, value) => (
               <option key={value} value={value}>
@@ -98,13 +109,13 @@ const DateRange = (props) => {
           </select>
         </div>
         <div className="my-0 mx-1">
-          {}
           <select
             className="DateRangePicker_select"
             value={month.year()}
-            onChange={(e) => onYearSelect(month, e.target.value)}
+            onChange={handleYearChange}
+            onBlur={handleOnBlur}
           >
-            {renderYearsOptions()}
+            {renderYearsOptionsCallback()}
           </select>
         </div>
       </div>
@@ -120,7 +131,7 @@ const DateRange = (props) => {
       endDateId={'endDateId'}
       onDatesChange={onChange}
       focusedInput={focusedInput}
-      onFocusChange={(updatedVal) => setFocusedInput(updatedVal)}
+      onFocusChange={updatedVal => setFocusedInput(updatedVal)}
       /** OPTIONAL */
       renderCalendarInfo={renderDatePresets}
       renderMonthElement={renderMonthElement}
@@ -130,7 +141,7 @@ const DateRange = (props) => {
         closeDatePicker: 'Close',
         clearDates: 'Clear dates',
       }}
-      isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())}
+      isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
       hideKeyboardShortcutsPanel={true}
       numberOfMonths={1}
       showClearDates={false}

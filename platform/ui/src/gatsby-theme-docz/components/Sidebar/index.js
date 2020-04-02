@@ -30,9 +30,12 @@ export const Sidebar = React.forwardRef((props, ref) => {
         <>
           <div className="block lg:hidden">
             <div
+              role="button"
               onClick={() => props.onClick()}
+              onKeyDown={() => props.onClick()}
               className="fixed left-0 w-full h-full bg-black opacity-80"
               style={{ top: 81, zIndex: 99999 }}
+              tabIndex="0"
             />
           </div>
           <div

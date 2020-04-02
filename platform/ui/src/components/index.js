@@ -6,9 +6,12 @@ import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
 import InputDateRange from './InputDateRange';
+import InputGroup from './InputGroup';
 import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
+import Label from './Label';
+import NavBar from './NavBar';
 import Select from './Select';
 import Svg from './Svg';
 import Table from './Table';
@@ -28,9 +31,12 @@ export {
   IconButton,
   Input,
   InputDateRange,
+  InputGroup,
   InputLabelWrapper,
   InputMultiSelect,
   InputText,
+  Label,
+  NavBar,
   Select,
   Svg,
   Table,
