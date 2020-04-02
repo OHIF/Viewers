@@ -1,0 +1,45 @@
+---
+name: Study List Pagination
+menu: Components
+route: components/studyListPagination
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import { StudyListPagination } from '@ohif/ui';
+
+# StudyListPagination
+
+## Import
+
+```javascript
+import { StudyListPagination } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(25);
+    const onChangePage = (page) => {
+      setCurrentPage(page);
+    };
+    const onChangePerPage = (perPage) => {
+      setPerPage(perPage);
+      setCurrentPage(1);
+    };
+    return (
+      <StudyListPagination
+        onChangePage={onChangePage}
+        onChangePerPage={onChangePerPage}
+        currentPage={currentPage}
+        perPage={perPage}
+      />
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={StudyListPagination} />

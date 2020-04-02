@@ -14,6 +14,9 @@ import Label from './Label';
 import NavBar from './NavBar';
 import Select from './Select';
 import Svg from './Svg';
+import StudyListExpandedRow from './StudyListExpandedRow';
+import StudyListPagination from './StudyListPagination';
+import StudyListTable from './StudyListTable';
 import Table from './Table';
 import TableBody from './TableBody';
 import TableCell from './TableCell';
@@ -39,6 +42,9 @@ export {
   NavBar,
   Select,
   Svg,
+  StudyListExpandedRow,
+  StudyListPagination,
+  StudyListTable,
   Table,
   TableBody,
   TableCell,

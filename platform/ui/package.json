@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "classnames": "^2.2.6",
-    "date-fns": "^2.10.0",
     "docz": "^2.2.0",
     "gatsby": "2.19.24",
     "gatsby-plugin-postcss": "^2.1.20",
