@@ -192,8 +192,8 @@ const StudyList = () => {
               <Icon
                 name="series-active"
                 className={classnames('inline-flex mr-2', {
-                  'text-custom-blueBright': isExpanded,
-                  'text-custom-violetPale': !isExpanded,
+                  'text-primary-active': isExpanded,
+                  'text-secondary-light': !isExpanded,
                 })}
               />
               {Instances}
@@ -231,7 +231,7 @@ const StudyList = () => {
           >
             Module 3
           </Button>
-          <div className="ml-5 text-lg text-custom-grayBright inline-flex items-center">
+          <div className="ml-5 text-lg text-common-bright inline-flex items-center">
             <Icon name="notificationwarning-diamond" className="mr-2 w-5 h-5" />
             Feedback text lorem ipsum dolor sit amet
           </div>

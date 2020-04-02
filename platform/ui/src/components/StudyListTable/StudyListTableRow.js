@@ -10,23 +10,23 @@ const StudyListTableRow = (props) => {
       <tr>
         <td
           className={classnames('border-0 p-0', {
-            'border-b border-custom-violetPale bg-custom-navyDark': isExpanded,
+            'border-b border-secondary-light bg-primary-dark': isExpanded,
           })}
         >
           <div
             className={classnames('w-full transition duration-300', {
-              'border border-custom-aquaBright rounded overflow-hidden mb-2 hover:border-custom-violetPale': isExpanded,
+              'border border-primary-light rounded overflow-hidden mb-2 hover:border-secondary-light': isExpanded,
             })}
           >
             <table className={classnames('w-full p-4')}>
               <tbody>
                 <tr
                   className={classnames(
-                    'cursor-pointer hover:bg-custom-violetDark transition duration-300 bg-black',
+                    'cursor-pointer hover:bg-secondary-main transition duration-300 bg-black',
                     {
-                      'bg-custom-navyDark': !isExpanded,
+                      'bg-primary-dark': !isExpanded,
                     },
-                    { 'bg-custom-navy': isExpanded }
+                    { 'bg-secondary-dark': isExpanded }
                   )}
                   onClick={onClickRow}
                 >
@@ -38,7 +38,7 @@ const StudyListTableRow = (props) => {
                         key={name}
                         className={classnames(
                           'px-4 py-2 text-base',
-                          { 'border-b border-custom-violetPale': !isExpanded },
+                          { 'border-b border-secondary-light': !isExpanded },
                           `w-${gridCol}/24` || ''
                         )}
                       >
