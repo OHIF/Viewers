@@ -14,7 +14,7 @@ const OHIFDicomSegSopClassHandler = {
   id: 'OHIFDicomSegSopClassHandler',
   type: MODULE_TYPES.SOP_CLASS_HANDLER,
   sopClassUIDs,
-  getDisplaySetFromSeries: function(
+  getDisplaySetFromSeries: function (
     series,
     study,
     dicomWebClient,
@@ -53,7 +53,7 @@ const OHIFDicomSegSopClassHandler = {
       SeriesDescription,
     };
 
-    segDisplaySet.load = function(referencedDisplaySet, studies) {
+    segDisplaySet.load = function (referencedDisplaySet, studies) {
       return loadSegmentation(
         segDisplaySet,
         referencedDisplaySet,
