@@ -79,7 +79,7 @@ const filtersMeta = [
   },
 ];
 
-const filtersValues = {
+const defaultFilterValues = {
   patientName: '',
   mrn: '',
   studyDate: {
@@ -95,7 +95,14 @@ const filtersValues = {
   resultsPerPage: 25,
 };
 
+const isFiltering = (filterValues, defaultFilterValues) => {
+  return Object.keys(defaultFilterValues).some((name) => {
+    return filterValues[name] !== defaultFilterValues[name];
+  });
+};
+
 const StudyList = () => {
+  const [filterValues, setFilterValues] = useState(defaultFilterValues);
   const studies = utils.getMockedStudies();
   const numOfStudies = studies.length;
   const [expandedRows, setExpandedRows] = useState([]);
@@ -264,7 +271,10 @@ const StudyList = () => {
       <StudyListFilter
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}
-        filtersValues={filtersValues}
+        filterValues={filterValues}
+        setFilterValues={setFilterValues}
+        clearFilters={() => setFilterValues(defaultFilterValues)}
+        isFiltering={isFiltering(filterValues, defaultFilterValues)}
       />
 
       {hasStudies ? (
