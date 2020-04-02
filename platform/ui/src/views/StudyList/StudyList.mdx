@@ -120,7 +120,7 @@ import { StudyList } from '@ohif/ui';
       },
     ];
     const isFiltering = (filterValues, defaultFilterValues) => {
-      return Object.keys(defaultFilterValues).some(name => {
+      return Object.keys(defaultFilterValues).some((name) => {
         return filterValues[name] !== defaultFilterValues[name];
       });
     };
@@ -206,8 +206,8 @@ import { StudyList } from '@ohif/ui';
                 <Icon
                   name="series-active"
                   className={classnames('inline-flex mr-2', {
-                    'text-custom-blueBright': isExpanded,
-                    'text-custom-violetPale': !isExpanded,
+                    'text-primary-active': isExpanded,
+                    'text-secondary-light': !isExpanded,
                   })}
                 />
                 {Instances}
@@ -249,7 +249,7 @@ import { StudyList } from '@ohif/ui';
             >
               Module 3
             </Button>
-            <div className="ml-5 text-lg text-custom-grayBright inline-flex items-center">
+            <div className="ml-5 text-lg text-common-bright inline-flex items-center">
               <Icon
                 name="notificationwarning-diamond"
                 className="mr-2 w-5 h-5"
@@ -312,13 +312,13 @@ import { StudyList } from '@ohif/ui';
               </div>
             </div>
             <div className="flex items-center">
-              <span className="mr-3 text-custom-grayLight text-lg">
+              <span className="mr-3 text-common-light text-lg">
                 FOR INVESTIGATIONAL USE ONLY
               </span>
               <IconButton
                 variant="text"
                 color="inherit"
-                className="text-custom-blueBright"
+                className="text-primary-active"
                 onClick={() => {}}
               >
                 <React.Fragment>
