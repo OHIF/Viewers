@@ -37,9 +37,9 @@ const borderClasses = {
 
 const variantClasses = {
   text: {
-    default: 'border-custom-aquaBright',
-    primary: 'border-custom-blue',
-    secondary: 'border-custom-violetPale',
+    default: 'border-primary-light',
+    primary: 'border-primary-main',
+    secondary: 'border-secondary-light',
     white: 'border-white',
   },
   outlined: {
@@ -96,7 +96,7 @@ const ButtonGroup = ({
       ref={ref}
       {...other}
     >
-      {React.Children.map(children, child => {
+      {React.Children.map(children, (child) => {
         if (!React.isValidElement(child)) {
           return null;
         }

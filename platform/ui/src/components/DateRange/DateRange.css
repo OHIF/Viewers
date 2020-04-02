@@ -29,7 +29,7 @@
   @apply bg-no-repeat;
 }
 .DateInput_input {
-  @apply cursor-pointer border-custom-blue mt-2 bg-black shadow transition duration-300 appearance-none border-t border-l border-r border-b border-solid rounded w-full py-2 px-3 text-sm text-white leading-tight pl-8;
+  @apply cursor-pointer border-primary-main mt-2 bg-black shadow transition duration-300 appearance-none border-t border-l border-r border-b border-solid rounded w-full py-2 px-3 text-sm text-white leading-tight pl-8;
 }
 .DateInput_input:hover {
   @apply border-gray-500;
@@ -59,7 +59,7 @@
 
 /* SELECT MONTH PICKER */
 .DateRangePicker_select {
-  @apply bg-white text-custom-dark border rounded border-custom-gray appearance-none cursor-pointer text-base pl-2 pr-5 py-1; /* NEEDED FOR ARROW DOWN */
+  @apply bg-white text-secondary-active border rounded border-common-dark appearance-none cursor-pointer text-base pl-2 pr-5 py-1; /* NEEDED FOR ARROW DOWN */
   background-image: linear-gradient(45deg, transparent 50%, gray 50%),
     linear-gradient(135deg, gray 50%, transparent 50%);
   background-position: calc(100% - 11px) 11px, calc(100% - 6px) calc(11px);
@@ -75,21 +75,21 @@
 .CalendarDay__selected,
 .CalendarDay__selected:active,
 .CalendarDay__selected:hover {
-  @apply bg-custom-blue text-white border-0 border-custom-blue;
+  @apply bg-primary-main text-white border-0 border-primary-main;
 }
 
 .CalendarDay__blocked_out_of_range:hover {
-  @apply border-0 bg-white cursor-not-allowed text-custom-gray;
+  @apply border-0 bg-white cursor-not-allowed text-common-dark;
 }
 
 .CalendarDay__selected_span {
-  @apply border-0 bg-custom-aquaBright;
+  @apply border-0 bg-primary-light;
 }
 
 /* MONTH NAVIGATION BUTTONS */
 .DayPickerNavigation_button__horizontalDefault,
 .DayPickerNavigation_button__horizontalDefault:hover {
-  @apply border-custom-gray text-custom-gray;
+  @apply border-common-dark text-common-dark;
   top: 24px;
   padding: 3px 9px;
 }

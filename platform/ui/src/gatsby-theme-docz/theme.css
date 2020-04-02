@@ -15,3 +15,7 @@
 #main-container > a {
   @apply underline text-blue-500;
 }
+
+code {
+  @apply bg-gray-200 text-lg text-black px-2 py-1 rounded;
+}

@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 import moment from 'moment';
 
-const DateRange = props => {
+const DateRange = (props) => {
   const { onChange, startDate, endDate } = props;
   const [focusedInput, setFocusedInput] = useState(null);
 
@@ -43,7 +43,7 @@ const DateRange = props => {
             <button
               key={text}
               type="button"
-              className={`m-0 py-2 px-3 bg-custom-blue border-0 rounded text-white text-base transition duration-300 hover:opacity-80`}
+              className={`m-0 py-2 px-3 bg-primary-main border-0 rounded text-white text-base transition duration-300 hover:opacity-80`}
               onClick={() =>
                 onChange({
                   startDate: start,
@@ -88,7 +88,7 @@ const DateRange = props => {
           <select
             className="DateRangePicker_select"
             value={month.month()}
-            onChange={e => onMonthSelect(month, e.target.value)}
+            onChange={(e) => onMonthSelect(month, e.target.value)}
           >
             {moment.months().map((label, value) => (
               <option key={value} value={value}>
@@ -102,7 +102,7 @@ const DateRange = props => {
           <select
             className="DateRangePicker_select"
             value={month.year()}
-            onChange={e => onYearSelect(month, e.target.value)}
+            onChange={(e) => onYearSelect(month, e.target.value)}
           >
             {renderYearsOptions()}
           </select>
@@ -120,7 +120,7 @@ const DateRange = props => {
       endDateId={'endDateId'}
       onDatesChange={onChange}
       focusedInput={focusedInput}
-      onFocusChange={updatedVal => setFocusedInput(updatedVal)}
+      onFocusChange={(updatedVal) => setFocusedInput(updatedVal)}
       /** OPTIONAL */
       renderCalendarInfo={renderDatePresets}
       renderMonthElement={renderMonthElement}
@@ -130,7 +130,7 @@ const DateRange = props => {
         closeDatePicker: 'Close',
         clearDates: 'Clear dates',
       }}
-      isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
+      isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())}
       hideKeyboardShortcutsPanel={true}
       numberOfMonths={1}
       showClearDates={false}

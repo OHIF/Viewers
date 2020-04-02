@@ -1,5 +1,5 @@
 .customSelect__wrapper .customSelect__control {
-  @apply bg-black border-custom-blue shadow transition duration-300 border rounded w-full text-sm text-white leading-tight;
+  @apply bg-black border-primary-main shadow transition duration-300 border rounded w-full text-sm text-white leading-tight;
   min-height: 33px;
 }
 .customSelect__wrapper .customSelect__control:hover {
@@ -28,7 +28,7 @@
 }
 
 .customSelect__wrapper .customSelect__option:focus {
-  @apply bg-custom-blue;
+  @apply bg-primary-main;
 }
 
 .customSelect__wrapper .customSelect__option--is-selected {

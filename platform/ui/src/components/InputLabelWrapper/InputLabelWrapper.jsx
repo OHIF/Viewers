@@ -35,8 +35,8 @@ const InputLabelWrapper = ({
             className={classnames(
               'mx-2 w-2',
               sortDirection !== 'none'
-                ? 'text-custom-aquaBright'
-                : 'text-custom-blue'
+                ? 'text-primary-light'
+                : 'text-primary-main'
             )}
           />
         )}

@@ -13,7 +13,7 @@ import {
 } from '@ohif/ui';
 
 const isFiltering = (currentFiltersValues, filtersValues) => {
-  return Object.keys(currentFiltersValues).some(name => {
+  return Object.keys(currentFiltersValues).some((name) => {
     const filterValue = currentFiltersValues[name];
     return filterValue !== filtersValues[name];
   });
@@ -25,7 +25,7 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
   );
   const { sortBy, sortDirection } = currentFiltersValues;
 
-  const handleFilterLabelClick = name => {
+  const handleFilterLabelClick = (name) => {
     let _sortDirection = 'ascending';
     if (sortBy === name) {
       if (sortDirection === 'ascending') {
@@ -36,7 +36,7 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
     }
 
     if (numOfStudies <= 100) {
-      setcurrentFiltersValues(prevState => ({
+      setcurrentFiltersValues((prevState) => ({
         ...prevState,
         sortBy: _sortDirection !== 0 ? name : '',
         sortDirection: _sortDirection,
@@ -72,8 +72,8 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
             sortDirection={_sortDirection}
             onLabelClick={onLabelClick}
             value={currentFiltersValues[name]}
-            onChange={newValue => {
-              setcurrentFiltersValues(prevState => ({
+            onChange={(newValue) => {
+              setcurrentFiltersValues((prevState) => ({
                 ...prevState,
                 [name]: newValue,
               }));
@@ -91,8 +91,8 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
             onLabelClick={onLabelClick}
             options={inputProps.options}
             value={currentFiltersValues[name]}
-            onChange={newValue => {
-              setcurrentFiltersValues(prevState => ({
+            onChange={(newValue) => {
+              setcurrentFiltersValues((prevState) => ({
                 ...prevState,
                 [name]: newValue,
               }));
@@ -108,8 +108,8 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
             sortDirection={_sortDirection}
             onLabelClick={onLabelClick}
             value={currentFiltersValues[name]}
-            onChange={newValue => {
-              setcurrentFiltersValues(prevState => ({
+            onChange={(newValue) => {
+              setcurrentFiltersValues((prevState) => ({
                 ...prevState,
                 [name]: newValue,
               }));
@@ -134,14 +134,11 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
   return (
     <>
       <div>
-        <div className="bg-custom-navyDark">
+        <div className="bg-primary-dark">
           <div className="container m-auto relative flex flex-col pt-5">
             <div className="flex flex-row justify-between mb-5 px-12">
               <div className="flex flex-row">
-                <Typography
-                  variant="h4"
-                  className="text-custom-aquaBright mr-6"
-                >
+                <Typography variant="h4" className="text-primary-light mr-6">
                   Study List
                 </Typography>
                 <div className="flex flex-row items-end">
@@ -149,12 +146,12 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
                     variant="text"
                     size="small"
                     color="inherit"
-                    className="text-custom-blueBright"
+                    className="text-primary-active"
                     startIcon={<Icon name="info-link" className="w-2" />}
                   >
                     <span className="flex flex-col flex-1">
                       <span>Learn more</span>
-                      <span className="opacity-50 pt-1 border-b border-custom-blueBright"></span>
+                      <span className="opacity-50 pt-1 border-b border-primary-active"></span>
                     </span>
                   </Button>
                 </div>
@@ -165,7 +162,7 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
                     rounded="full"
                     variant="outlined"
                     color="primary"
-                    className="text-custom-blueBright border-custom-blueBright mx-8"
+                    className="text-primary-active border-primary-active mx-8"
                     startIcon={<Icon name="cancel" />}
                     onClick={clearFilters}
                   >
@@ -177,7 +174,7 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
                 </Typography>
                 <Typography
                   variant="h6"
-                  className="text-custom-grayLight self-end pb-1"
+                  className="text-common-light self-end pb-1"
                 >
                   Studies
                 </Typography>
@@ -187,10 +184,10 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
         </div>
       </div>
       <div className="sticky z-10 border-b-4 border-black" style={{ top: 58 }}>
-        <div className="bg-custom-navyDark pt-3 pb-3 ">
+        <div className="bg-primary-dark pt-3 pb-3 ">
           <div className="container m-auto relative flex flex-col">
             <div className="flex flex-row w-full">
-              {filtersMeta.map(filterMeta => {
+              {filtersMeta.map((filterMeta) => {
                 return (
                   <div
                     key={filterMeta.name}
@@ -208,7 +205,7 @@ const StudyListFilter = ({ filtersMeta, filtersValues, numOfStudies }) => {
         </div>
         {numOfStudies > 100 && (
           <div className="container m-auto">
-            <div className="bg-custom-blue text-center text-base py-1 rounded-b">
+            <div className="bg-primary-main text-center text-base py-1 rounded-b">
               <p className="text-white">
                 Filter list to 100 studies or less to enable sorting
               </p>
