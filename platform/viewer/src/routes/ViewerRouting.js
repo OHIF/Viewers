@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import ConnectedViewerRetrieveStudyData from '../connectedComponents/ConnectedViewerRetrieveStudyData';
 import useServer from '../customHooks/useServer';
 import OHIF from '@ohif/core';
-import { initCornerstoneWADOImageLoader } from '../utils/cornerstoneWADOImageLoader';
 const { urlUtil: UrlUtil } = OHIF.utils;
 
 /**
@@ -30,21 +29,10 @@ function ViewerRouting({ match: routeMatch, location: routeLocation }) {
   } = routeMatch.params;
   const server = useServer({ project, location, dataset, dicomStore });
 
-  const [
-    cornerstoneWADOImageLoaderInitialized,
-    setCornerstoneWADOImageLoaderInitialized,
-  ] = useState(false);
-
-  React.useEffect(() => {
-    initCornerstoneWADOImageLoader().then(() =>
-      setCornerstoneWADOImageLoaderInitialized(true)
-    );
-  }, []);
-
   const studyUIDs = UrlUtil.paramString.parseParam(studyInstanceUIDs);
   const seriesUIDs = getSeriesInstanceUIDs(seriesInstanceUIDs, routeLocation);
 
-  if (server && studyUIDs && cornerstoneWADOImageLoaderInitialized) {
+  if (server && studyUIDs) {
     return (
       <ConnectedViewerRetrieveStudyData
         studyInstanceUIDs={studyUIDs}

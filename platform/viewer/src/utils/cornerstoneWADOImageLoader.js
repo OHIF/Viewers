@@ -1,6 +1,7 @@
 import OHIF from '@ohif/core';
 import cornerstone from 'cornerstone-core';
 import dicomParser from 'dicom-parser';
+import React from 'react';
 
 export function getCornerstoneWADOImageLoader() {
   return import(
@@ -54,4 +55,25 @@ export async function initCornerstoneWADOImageLoader() {
   cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
 
   initialized = true;
+}
+
+export function withCornerstone(Component) {
+  // eslint-disable-next-line react/display-name
+  return props => {
+    const [
+      cornerstoneWADOImageLoaderInitialized,
+      setCornerstoneWADOImageLoaderInitialized,
+    ] = React.useState(false);
+
+    React.useEffect(() => {
+      initCornerstoneWADOImageLoader().then(() =>
+        setCornerstoneWADOImageLoaderInitialized(true)
+      );
+    }, []);
+
+    if (!cornerstoneWADOImageLoaderInitialized) {
+      return null;
+    }
+    return <Component {...props} />;
+  };
 }
