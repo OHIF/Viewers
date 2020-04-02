@@ -24,9 +24,11 @@ const InputLabelWrapper = ({
   return (
     <label className={classnames(baseLabelClassName, className)}>
       <span
+        role="button"
         className={spanClassName}
         onClick={onLabelClick}
         onKeyDown={onLabelClick}
+        tabIndex="0"
       >
         {label}
         {isSortable && (
