@@ -41,6 +41,24 @@ import { StudyList } from '@ohif/ui';
 
 <Playground>
   {() => {
+    const defaultFilterValues = {
+      patientName: '',
+      mrn: '',
+      studyDate: {
+        startDate: null,
+        endDate: null,
+      },
+      description: '',
+      modality: undefined,
+      accession: '',
+      sortBy: '',
+      sortDirection: 'none',
+      page: 0,
+      resultsPerPage: 25,
+    };
+    const [filterValues, setFilterValues] = useState(defaultFilterValues);
+    console.dir(filterValues);
+    console.dir(defaultFilterValues);
     const [studies, setStudies] = useState([]);
     const numOfStudies = studies.length;
     const [expandedRows, setExpandedRows] = useState([]);
@@ -103,20 +121,10 @@ import { StudyList } from '@ohif/ui';
         gridCol: 2,
       },
     ];
-    const filtersValues = {
-      patientName: '',
-      mrn: '',
-      studyDate: {
-        startDate: null,
-        endDate: null,
-      },
-      description: '',
-      modality: undefined,
-      accession: '',
-      sortBy: '',
-      sortDirection: 'none',
-      page: 0,
-      resultsPerPage: 25,
+    const isFiltering = (filterValues, defaultFilterValues) => {
+      return Object.keys(defaultFilterValues).some(name => {
+        return filterValues[name] !== defaultFilterValues[name];
+      });
     };
     const tableDataSource = studies.map((study, key) => {
       const rowKey = key + 1;
@@ -329,7 +337,10 @@ import { StudyList } from '@ohif/ui';
           <StudyListFilter
             numOfStudies={numOfStudies}
             filtersMeta={filtersMeta}
-            filtersValues={filtersValues}
+            filterValues={filterValues}
+            setFilterValues={setFilterValues}
+            clearFilters={() => setFilterValues(defaultFilterValues)}
+            isFiltering={isFiltering(filterValues, defaultFilterValues)}
           />
           {hasStudies ? (
             <>

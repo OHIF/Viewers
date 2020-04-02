@@ -1,5 +1,5 @@
 /** UTILS */
-import * as utils from './src/utils/';
+import utils from './src/utils';
 export { utils };
 
 /** CONTEXT/HOOKS */
@@ -15,26 +15,28 @@ export {
   Button,
   ButtonGroup,
   DateRange,
-  InputDateRange,
-  InputMultiSelect,
-  InputText,
-  InputLabelWrapper,
   EmptyStudies,
   Icon,
   IconButton,
   Input,
+  InputDateRange,
+  InputGroup,
+  InputLabelWrapper,
+  InputMultiSelect,
+  InputText,
+  Label,
   NavBar,
   Select,
   StudyListExpandedRow,
   StudyListPagination,
   StudyListTable,
   Svg,
-  ThemeWrapper,
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableRow,
-  TableCell,
+  ThemeWrapper,
   Typography,
 } from './src/components';
 
