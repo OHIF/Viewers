@@ -22,18 +22,21 @@ import { StudyListPagination } from '@ohif/ui';
   {() => {
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(25);
-    const paginationData = {
-      onChangePage: (page) => {
-        setCurrentPage(page);
-      },
-      onChangePerPage: (perPage) => {
-        setPerPage(perPage);
-        setCurrentPage(1);
-      },
-      currentPage,
-      perPage,
+    const onChangePage = (page) => {
+      setCurrentPage(page);
     };
-    return <StudyListPagination paginationData={paginationData} />;
+    const onChangePerPage = (perPage) => {
+      setPerPage(perPage);
+      setCurrentPage(1);
+    };
+    return (
+      <StudyListPagination
+        onChangePage={onChangePage}
+        onChangePerPage={onChangePerPage}
+        currentPage={currentPage}
+        perPage={perPage}
+      />
+    );
   }}
 </Playground>
 

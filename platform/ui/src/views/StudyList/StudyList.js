@@ -240,21 +240,16 @@ const StudyList = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(25);
-
-  const paginationData = {
-    onChangePage: (page) => {
-      const totalPages = Math.floor(tableDataSource.length / perPage);
-      if (page > totalPages) {
-        return null;
-      }
-      setCurrentPage(page);
-    },
-    onChangePerPage: (perPage) => {
-      setPerPage(perPage);
-      setCurrentPage(1);
-    },
-    currentPage,
-    perPage,
+  const totalPages = Math.floor(numOfStudies / perPage);
+  const onChangePage = (page) => {
+    if (page > totalPages) {
+      return;
+    }
+    setCurrentPage(page);
+  };
+  const onChangePerPage = (perPage) => {
+    setPerPage(perPage);
+    setCurrentPage(1);
   };
 
   const hasStudies = numOfStudies > 0;
@@ -279,7 +274,12 @@ const StudyList = () => {
             numOfStudies={numOfStudies}
             filtersMeta={filtersMeta}
           />
-          <StudyListPagination paginationData={paginationData} />
+          <StudyListPagination
+            onChangePage={onChangePage}
+            onChangePerPage={onChangePerPage}
+            currentPage={currentPage}
+            perPage={perPage}
+          />
         </>
       ) : (
         <div className="flex flex-col items-center justify-center pt-48">

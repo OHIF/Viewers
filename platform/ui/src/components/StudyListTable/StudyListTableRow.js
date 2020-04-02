@@ -5,11 +5,6 @@ import classnames from 'classnames';
 const StudyListTableRow = (props) => {
   const { tableData } = props;
   const { row, expandedContent, onClickRow, isExpanded } = tableData;
-
-  const tdClasses = [
-    'px-4 py-2 text-base',
-    { 'border-b border-custom-violetPale': !isExpanded },
-  ];
   return (
     <>
       <tr>
@@ -42,7 +37,8 @@ const StudyListTableRow = (props) => {
                       <td
                         key={name}
                         className={classnames(
-                          ...tdClasses,
+                          'px-4 py-2 text-base',
+                          { 'border-b border-custom-violetPale': !isExpanded },
                           `w-${gridCol}/24` || ''
                         )}
                       >
@@ -73,7 +69,13 @@ const StudyListTableRow = (props) => {
 
 StudyListTableRow.propTypes = {
   tableData: PropTypes.shape({
-    row: PropTypes.object.isRequired,
+    row: PropTypes.arrayOf(
+      PropTypes.shape({
+        key: PropTypes.string.isRequired,
+        content: PropTypes.node.isRequired,
+        gridCol: PropTypes.number.isRequired,
+      })
+    ).isRequired,
     expandedContent: PropTypes.node.isRequired,
     onClickRow: PropTypes.func.isRequired,
     isExpanded: PropTypes.bool.isRequired,

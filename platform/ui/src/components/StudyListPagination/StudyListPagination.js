@@ -2,14 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, ButtonGroup, Icon, IconButton, Typography } from '@ohif/ui';
 
-const StudyListPagination = ({ paginationData }) => {
-  const {
-    onChangePage,
-    currentPage,
-    perPage,
-    onChangePerPage,
-  } = paginationData;
-
+const StudyListPagination = ({
+  onChangePage,
+  currentPage,
+  perPage,
+  onChangePerPage,
+}) => {
   const navigateToPage = (page) => {
     const toPage = page < 1 ? 1 : page;
     onChangePage(toPage);
@@ -84,12 +82,10 @@ const StudyListPagination = ({ paginationData }) => {
 };
 
 StudyListPagination.propTypes = {
-  paginationData: PropTypes.shape({
-    onChangePage: PropTypes.func.isRequired,
-    currentPage: PropTypes.number.isRequired,
-    perPage: PropTypes.number.isRequired,
-    onChangePerPage: PropTypes.func.isRequired,
-  }).isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  perPage: PropTypes.number.isRequired,
+  onChangePerPage: PropTypes.func.isRequired,
 };
 
 export default StudyListPagination;
