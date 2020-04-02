@@ -1,11 +1,23 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+/**
+ * THIS IS A TEMPORARY FILE -- SHOULD BE REMOVED
+ */
+import React, { useState } from 'react';
 import classnames from 'classnames';
+import moment from 'moment';
 
+import {
+  EmptyStudies,
+  utils,
+  Icon,
+  StudyListExpandedRow,
+  Button,
+  StudyListPagination,
+  StudyListTable,
+} from '@ohif/ui';
+
+// fix imports after refactor
 import Header from './components/Header';
 import StudyListFilter from './components/StudyListFilter';
-import StudyListTable from './components/StudyListTable';
-import StudyListPagination from './components/StudyListPagination';
 
 const filtersMeta = [
   {
@@ -67,7 +79,7 @@ const filtersMeta = [
   },
 ];
 
-const filtersValues = {
+const defaultFilterValues = {
   patientName: '',
   mrn: '',
   studyDate: {
@@ -83,40 +95,209 @@ const filtersValues = {
   resultsPerPage: 25,
 };
 
-const StudyList = ({ studies, perPage }) => {
-  const studiesData = studies.slice(0, perPage);
+const isFiltering = (filterValues, defaultFilterValues) => {
+  return Object.keys(defaultFilterValues).some((name) => {
+    return filterValues[name] !== defaultFilterValues[name];
+  });
+};
+
+const StudyList = () => {
+  const [filterValues, setFilterValues] = useState(defaultFilterValues);
+  const studies = utils.getMockedStudies();
   const numOfStudies = studies.length;
-  const isEmptyStudies = numOfStudies === 0;
+  const [expandedRows, setExpandedRows] = useState([]);
+
+  const tableDataSource = studies.map((study, key) => {
+    const rowKey = key + 1;
+    const isExpanded = expandedRows.some((k) => k === rowKey);
+    const {
+      AccessionNumber,
+      Modalities,
+      Instances,
+      StudyDescription,
+      PatientId,
+      PatientName,
+      StudyDate,
+      series,
+    } = study;
+
+    const seriesTableColumns = {
+      description: 'Description',
+      seriesNumber: 'Series',
+      modality: 'Modality',
+      Instances: 'Instances',
+    };
+
+    const seriesTableDataSource = series.map((seriesItem) => {
+      const { SeriesNumber, Modality, instances } = seriesItem;
+      return {
+        description: 'Patient Protocol',
+        seriesNumber: SeriesNumber,
+        modality: Modality,
+        Instances: instances.length,
+      };
+    });
+
+    return {
+      row: [
+        {
+          key: 'patientName',
+          content: (
+            <>
+              <Icon
+                name={isExpanded ? 'chevron-down' : 'chevron-right'}
+                className="mr-4"
+              />
+              {PatientName}
+            </>
+          ),
+          gridCol: 4,
+        },
+        {
+          key: 'mrn',
+          content: PatientId,
+          gridCol: 2,
+        },
+        {
+          key: 'studyDate',
+          content: (
+            <div>
+              <span className="mr-4">
+                {moment(StudyDate).format('MMM-DD-YYYY')}
+              </span>
+              <span>{moment(StudyDate).format('hh:mm A')}</span>
+            </div>
+          ),
+          gridCol: 5,
+        },
+        {
+          key: 'description',
+          content: StudyDescription,
+          gridCol: 4,
+        },
+        {
+          key: 'modality',
+          content: Modalities,
+          gridCol: 3,
+        },
+        {
+          key: 'accession',
+          content: AccessionNumber,
+          gridCol: 4,
+        },
+        {
+          key: 'instances',
+          content: (
+            <>
+              <Icon
+                name="series-active"
+                className={classnames('inline-flex mr-2', {
+                  'text-custom-blueBright': isExpanded,
+                  'text-custom-violetPale': !isExpanded,
+                })}
+              />
+              {Instances}
+            </>
+          ),
+          gridCol: 4,
+        },
+      ],
+      expandedContent: (
+        <StudyListExpandedRow
+          seriesTableColumns={seriesTableColumns}
+          seriesTableDataSource={seriesTableDataSource}
+        >
+          <Button
+            rounded="full"
+            variant="contained"
+            className="mr-4 font-bold"
+            endIcon={<Icon name="launch-arrow" style={{ color: '#21a7c6' }} />}
+          >
+            Basic Viewer
+          </Button>
+          <Button
+            rounded="full"
+            variant="contained"
+            className="mr-4 font-bold"
+            endIcon={<Icon name="launch-arrow" style={{ color: '#21a7c6' }} />}
+          >
+            Segmentation
+          </Button>
+          <Button
+            rounded="full"
+            variant="outlined"
+            endIcon={<Icon name="launch-info" />}
+            className="font-bold"
+          >
+            Module 3
+          </Button>
+          <div className="ml-5 text-lg text-custom-grayBright inline-flex items-center">
+            <Icon name="notificationwarning-diamond" className="mr-2 w-5 h-5" />
+            Feedback text lorem ipsum dolor sit amet
+          </div>
+        </StudyListExpandedRow>
+      ),
+      onClickRow: () =>
+        setExpandedRows((s) =>
+          isExpanded ? s.filter((n) => rowKey !== n) : [...s, rowKey]
+        ),
+      isExpanded,
+    };
+  });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(25);
+  const totalPages = Math.floor(numOfStudies / perPage);
+  const onChangePage = (page) => {
+    if (page > totalPages) {
+      return;
+    }
+    setCurrentPage(page);
+  };
+  const onChangePerPage = (perPage) => {
+    setPerPage(perPage);
+    setCurrentPage(1);
+  };
+
+  const hasStudies = numOfStudies > 0;
+
   return (
     <div
       className={classnames('bg-black h-full', {
-        'h-screen': isEmptyStudies,
+        'h-screen': !hasStudies,
       })}
     >
       <Header />
       <StudyListFilter
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}
-        filtersValues={filtersValues}
+        filterValues={filterValues}
+        setFilterValues={setFilterValues}
+        clearFilters={() => setFilterValues(defaultFilterValues)}
+        isFiltering={isFiltering(filterValues, defaultFilterValues)}
       />
-      <StudyListTable
-        studies={studiesData}
-        numOfStudies={numOfStudies}
-        filtersMeta={filtersMeta}
-      />
-      {!isEmptyStudies && <StudyListPagination />}
+
+      {hasStudies ? (
+        <>
+          <StudyListTable
+            tableDataSource={tableDataSource}
+            numOfStudies={numOfStudies}
+            filtersMeta={filtersMeta}
+          />
+          <StudyListPagination
+            onChangePage={onChangePage}
+            onChangePerPage={onChangePerPage}
+            currentPage={currentPage}
+            perPage={perPage}
+          />
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center pt-48">
+          <EmptyStudies />
+        </div>
+      )}
     </div>
   );
-};
-
-StudyList.defaultProps = {
-  studies: [],
-  perPage: 25,
-};
-
-StudyList.propTypes = {
-  studies: PropTypes.array,
-  perPage: PropTypes.number,
 };
 
 export default StudyList;

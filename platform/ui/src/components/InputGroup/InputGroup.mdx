@@ -1,0 +1,90 @@
+---
+name: InputGroup
+menu: Components
+route: components/InputGroup
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import { InputGroup } from '@ohif/ui';
+
+# Input Group
+
+## Import
+
+```javascript
+import { InputGroup } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const [filterValues, setFilterValues] = useState({
+      patient: '',
+      studyDate: {
+        startDate: null,
+        endDate: null,
+      },
+      modality: [],
+    });
+    const [filterSorting, setFilterSorting] = useState({
+      sortBy: '',
+      sortDirection: 'none',
+    });
+    const filtersMeta = [
+      {
+        name: 'patient',
+        displayName: 'Patient Name',
+        inputType: 'Text',
+        isSortable: true,
+        gridCol: 6,
+      },
+      {
+        name: 'studyDate',
+        displayName: 'Study date',
+        inputType: 'DateRange',
+        isSortable: true,
+        gridCol: 6,
+      },
+      {
+        name: 'modality',
+        displayName: 'Modality',
+        inputType: 'MultiSelect',
+        inputProps: {
+          options: [
+            { value: 'SEG', label: 'SEG' },
+            { value: 'CT', label: 'CT' },
+            { value: 'MR', label: 'MR' },
+            { value: 'SR', label: 'SR' },
+          ],
+        },
+        isSortable: true,
+        gridCol: 6,
+      },
+      {
+        name: 'numberOfInstance',
+        displayName: 'Number of Instances',
+        inputType: 'None',
+        isSortable: true,
+        gridCol: 6,
+      },
+    ];
+    return (
+      <div className="py-4">
+        <InputGroup
+          inputMeta={filtersMeta}
+          values={filterValues}
+          onValuesChange={setFilterValues}
+          sorting={filterSorting}
+          onSortingChange={setFilterSorting}
+          isSortingEnable={true}
+        />
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={InputGroup} />

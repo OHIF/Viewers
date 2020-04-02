@@ -5,13 +5,18 @@ import EmptyStudies from './EmptyStudies';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
-import NavBar from './NavBar';
 import InputDateRange from './InputDateRange';
+import InputGroup from './InputGroup';
 import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
+import Label from './Label';
+import NavBar from './NavBar';
 import Select from './Select';
 import Svg from './Svg';
+import StudyListExpandedRow from './StudyListExpandedRow';
+import StudyListPagination from './StudyListPagination';
+import StudyListTable from './StudyListTable';
 import Table from './Table';
 import TableBody from './TableBody';
 import TableCell from './TableCell';
@@ -28,13 +33,18 @@ export {
   Icon,
   IconButton,
   Input,
-  NavBar,
   InputDateRange,
+  InputGroup,
   InputLabelWrapper,
   InputMultiSelect,
   InputText,
+  Label,
+  NavBar,
   Select,
   Svg,
+  StudyListExpandedRow,
+  StudyListPagination,
+  StudyListTable,
   Table,
   TableBody,
   TableCell,

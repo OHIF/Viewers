@@ -1,6 +1,7 @@
-import capitalize from './capitalize';
 import getMockedStudies from './getMockedStudies';
-import getModalities from './getModalities';
-import getInstances from './getInstances';
 
-export { capitalize, getMockedStudies, getModalities, getInstances };
+const utils = { getMockedStudies };
+
+export { getMockedStudies };
+
+export default utils;
