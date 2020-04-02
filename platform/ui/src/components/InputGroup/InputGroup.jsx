@@ -10,14 +10,14 @@ import {
 } from '@ohif/ui';
 
 const InputGroup = ({
-  filtersMeta,
-  filterValues,
-  setFilterValues,
-  filterSorting,
-  setFilterSorting,
+  inputMeta,
+  values,
+  onValuesChange,
+  sorting,
+  onSortingChange,
   isSortingEnable,
 }) => {
-  const { sortBy, sortDirection } = filterSorting;
+  const { sortBy, sortDirection } = sorting;
 
   const handleFilterLabelClick = name => {
     if (isSortingEnable) {
@@ -30,7 +30,7 @@ const InputGroup = ({
         }
       }
 
-      setFilterSorting({
+      onSortingChange({
         sortBy: _sortDirection !== 'none' ? name : '',
         sortDirection: _sortDirection,
       });
@@ -52,8 +52,8 @@ const InputGroup = ({
     };
 
     const handleFieldChange = newValue => {
-      setFilterValues({
-        ...filterValues,
+      onValuesChange({
+        ...values,
         [name]: newValue,
       });
     };
@@ -67,7 +67,7 @@ const InputGroup = ({
             isSortable={_isSortable}
             sortDirection={_sortDirection}
             onLabelClick={onLabelClick}
-            value={filterValues[name]}
+            value={values[name]}
             onChange={handleFieldChange}
           />
         );
@@ -79,7 +79,7 @@ const InputGroup = ({
             isSortable={_isSortable}
             sortDirection={_sortDirection}
             onLabelClick={onLabelClick}
-            value={filterValues[name]}
+            value={values[name]}
             onChange={handleFieldChange}
             options={inputProps.options}
           />
@@ -92,7 +92,7 @@ const InputGroup = ({
             isSortable={_isSortable}
             sortDirection={_sortDirection}
             onLabelClick={onLabelClick}
-            value={filterValues[name]}
+            value={values[name]}
             onChange={handleFieldChange}
           />
         );
@@ -113,16 +113,16 @@ const InputGroup = ({
   return (
     <div className="container m-auto relative flex flex-col">
       <div className="flex flex-row w-full">
-        {filtersMeta.map(filterMeta => {
+        {inputMeta.map(inputMeta => {
           return (
             <div
-              key={filterMeta.name}
+              key={inputMeta.name}
               className={classnames(
                 'pl-4 first:pl-12',
-                `w-${filterMeta.gridCol}/24`
+                `w-${inputMeta.gridCol}/24`
               )}
             >
-              {renderFieldInputComponent(filterMeta)}
+              {renderFieldInputComponent(inputMeta)}
             </div>
           );
         })}
@@ -132,7 +132,7 @@ const InputGroup = ({
 };
 
 InputGroup.propTypes = {
-  filtersMeta: PropTypes.arrayOf(
+  inputMeta: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       displayName: PropTypes.string.isRequired,
@@ -149,13 +149,13 @@ InputGroup.propTypes = {
       ),
     })
   ).isRequired,
-  filterValues: PropTypes.object.isRequired,
-  setFilterValues: PropTypes.func.isRequired,
-  filterSorting: PropTypes.shape({
+  values: PropTypes.object.isRequired,
+  onValuesChange: PropTypes.func.isRequired,
+  sorting: PropTypes.shape({
     sortBy: PropTypes.string,
     sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
   }).isRequired,
-  setFilterSorting: PropTypes.func.isRequired,
+  onSortingChange: PropTypes.func.isRequired,
   isSortingEnable: PropTypes.bool.isRequired,
 };
 

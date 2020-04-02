@@ -73,11 +73,11 @@ import { InputGroup } from '@ohif/ui';
     return (
       <div className="py-4">
         <InputGroup
-          filtersMeta={filtersMeta}
-          filterValues={filterValues}
-          setFilterValues={setFilterValues}
-          filterSorting={filterSorting}
-          setFilterSorting={setFilterSorting}
+          inputMeta={filtersMeta}
+          values={filterValues}
+          onValuesChange={setFilterValues}
+          sorting={filterSorting}
+          onSortingChange={setFilterSorting}
           isSortingEnable={true}
         />
       </div>

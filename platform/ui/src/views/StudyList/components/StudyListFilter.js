@@ -79,11 +79,11 @@ const StudyListFilter = ({
       <div className="sticky z-10 border-b-4 border-black" style={{ top: 58 }}>
         <div className="bg-custom-navyDark pt-3 pb-3 ">
           <InputGroup
-            filtersMeta={filtersMeta}
-            filterValues={filterValues}
-            setFilterValues={setFilterValues}
-            filterSorting={filterSorting}
-            setFilterSorting={setFilterSorting}
+            inputMeta={filtersMeta}
+            values={filterValues}
+            onValuesChange={setFilterValues}
+            sorting={filterSorting}
+            onSortingChange={setFilterSorting}
             isSortingEnable={isSortingEnable}
           />
         </div>
