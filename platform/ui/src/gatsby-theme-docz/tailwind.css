@@ -16,9 +16,9 @@
 
 .ohif-scrollbar::-webkit-scrollbar-thumb {
   @apply rounded;
-  @apply bg-custom-blue;
+  @apply bg-primary-main;
 }
 
 .ohif-scrollbar::-webkit-scrollbar-thumb:window-inactive {
-  @apply bg-custom-blue;
+  @apply bg-primary-main;
 }

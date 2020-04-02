@@ -19,11 +19,11 @@ const InputText = ({
       onLabelClick={onLabelClick}
     >
       <Input
-        className="border-custom-blue mt-2 bg-black"
+        className="border-primary-main mt-2 bg-black"
         type="text"
         containerClassName="mr-2"
         value={value}
-        onChange={event => {
+        onChange={(event) => {
           onChange(event.target.value);
         }}
       />

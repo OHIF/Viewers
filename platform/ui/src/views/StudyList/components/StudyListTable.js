@@ -15,11 +15,11 @@ import {
 } from '@ohif/ui';
 
 const getGridColClass = (filtersMeta, name) => {
-  const filter = filtersMeta.find(filter => filter.name === name);
+  const filter = filtersMeta.find((filter) => filter.name === name);
   return (filter && filter.gridCol && `w-${filter.gridCol}/24`) || '';
 };
 
-const StudyTableRow = props => {
+const StudyTableRow = (props) => {
   const {
     AccessionNumber,
     Modalities,
@@ -37,30 +37,30 @@ const StudyTableRow = props => {
   const ChevronIconName = isOpened ? 'chevron-down' : 'chevron-right';
   const tdClasses = [
     'px-4 py-2 text-base',
-    { 'border-b border-custom-violetPale': !isOpened },
+    { 'border-b border-secondary-light': !isOpened },
   ];
   return (
     <>
       <tr>
         <td
           className={classnames('border-0 p-0', {
-            'border-b border-custom-violetPale bg-custom-navyDark': isOpened,
+            'border-b border-secondary-light bg-primary-dark': isOpened,
           })}
         >
           <div
             className={classnames('w-full transition duration-300', {
-              'border border-custom-aquaBright rounded overflow-hidden mb-2 hover:border-custom-violetPale': isOpened,
+              'border border-primary-light rounded overflow-hidden mb-2 hover:border-secondary-light': isOpened,
             })}
           >
             <table className={classnames('w-full p-4')}>
               <tbody>
                 <tr
                   className={classnames(
-                    'cursor-pointer hover:bg-custom-violetDark transition duration-300 bg-black',
+                    'cursor-pointer hover:bg-secondary-main transition duration-300 bg-black',
                     {
-                      'bg-custom-navyDark': !isOpened,
+                      'bg-primary-dark': !isOpened,
                     },
-                    { 'bg-custom-navy': isOpened }
+                    { 'bg-secondary-dark': isOpened }
                   )}
                   onClick={toggleRow}
                 >
@@ -124,8 +124,8 @@ const StudyTableRow = props => {
                     <Icon
                       name="series-active"
                       className={classnames('inline-flex mr-2', {
-                        'text-custom-blueBright': isOpened,
-                        'text-custom-violetPale': !isOpened,
+                        'text-primary-active': isOpened,
+                        'text-secondary-light': !isOpened,
                       })}
                     />
                     {Instances}
@@ -171,7 +171,7 @@ const StudyTableRow = props => {
                         >
                           Module 3
                         </Button>
-                        <div className="ml-5 text-lg text-custom-grayBright inline-flex items-center">
+                        <div className="ml-5 text-lg text-common-bright inline-flex items-center">
                           <Icon
                             name="notificationwarning-diamond"
                             className="mr-2 w-5 h-5"
