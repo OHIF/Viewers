@@ -31,31 +31,31 @@ const disabledClasses = {
 const variantClasses = {
   text: {
     default:
-      'text-white hover:bg-custom-aquaBright hover:text-black active:opacity-80 focus:bg-custom-aquaBright focus:text-black',
+      'text-white hover:bg-primary-light hover:text-black active:opacity-80 focus:bg-primary-light focus:text-black',
     primary:
-      'text-custom-blue hover:bg-custom-blue hover:text-white active:opacity-80 focus:bg-custom-blue focus:text-white',
+      'text-primary-main hover:bg-primary-main hover:text-white active:opacity-80 focus:bg-primary-main focus:text-white',
     secondary:
-      'text-custom-violetPale hover:bg-custom-violetPale hover:text-white active:opacity-80 focus:bg-custom-violetPale focus:text-white',
+      'text-secondary-light hover:bg-secondary-light hover:text-white active:opacity-80 focus:bg-secondary-light focus:text-white',
     white:
       'text-white hover:bg-white hover:text-black active:opacity-80 focus:bg-white focus:text-black',
   },
   outlined: {
     default:
-      'border bg-trasparent border-custom-aquaBright text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border bg-trasparent border-primary-light text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary:
-      'border bg-transparent border-custom-blue text-custom-blue hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border bg-transparent border-primary-main text-primary-main hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
-      'border bg-transparent border-custom-violetPale text-custom-violetPale hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'border bg-transparent border-secondary-light text-secondary-light hover:opacity-80 active:opacity-100 focus:opacity-80',
     white:
       'border bg-transparent border-white text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
   contained: {
     default:
-      'bg-custom-aquaBright text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'bg-primary-light text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
     primary:
-      'bg-custom-blue text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'bg-primary-main text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     secondary:
-      'bg-custom-violetPale text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+      'bg-secondary-light text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     white:
       'bg-white text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
@@ -92,7 +92,7 @@ const IconButton = ({
 }) => {
   const buttonElement = useRef(null);
 
-  const handleOnClick = e => {
+  const handleOnClick = (e) => {
     buttonElement.current.blur();
     if (rest.onClick) {
       rest.onClick(e);

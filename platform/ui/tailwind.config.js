@@ -16,24 +16,27 @@ module.exports = {
       initial: 'initial',
       inherit: 'inherit',
 
-      /** CUSTOM THEME COLORS */
-      custom: {
-        dark: '#1f1f27',
-        aquaBright: '#5acce6',
-        navyDark: '#090c29',
-        navy: '#041c4a',
-        violetDark: '#2b166b',
-        violetPale: '#3a3f99',
-        blue: '#0944b3',
-        blueBright: '#348cfd',
-        aquaPale: '#7bb2ce',
-        white: '#ffffff',
-        grayBright: '#e1e1e1',
-        grayLight: '#a19fad',
-        gray: '#726f7e',
-        darkSlateBlue: '#2c3074',
+      primary: {
+        light: '#5acce6',
+        main: '#0944b3',
+        dark: '#090c29',
+        active: '#348cfd',
       },
-      /** END CUSTOM THEME COLORS */
+
+      secondary: {
+        light: '#3a3f99',
+        main: '#2b166b',
+        dark: '#041c4a',
+        active: '#1f1f27',
+      },
+
+      common: {
+        bright: '#e1e1e1',
+        light: '#a19fad',
+        main: '#fff',
+        dark: '#726f7e',
+        active: '#2c3074',
+      },
 
       gray: {
         100: '#f7fafc',
@@ -170,7 +173,7 @@ module.exports = {
       '80': '20rem',
       '250px': '250px',
     },
-    backgroundColor: theme => theme('colors'),
+    backgroundColor: (theme) => theme('colors'),
     backgroundPosition: {
       bottom: 'bottom',
       center: 'center',
@@ -187,7 +190,7 @@ module.exports = {
       cover: 'cover',
       contain: 'contain',
     },
-    borderColor: theme => ({
+    borderColor: (theme) => ({
       ...theme('colors'),
       default: theme('colors.gray.300', 'currentColor'),
     }),
@@ -301,7 +304,7 @@ module.exports = {
       extrabold: '800',
       black: '900',
     },
-    height: theme => ({
+    height: (theme) => ({
       auto: 'auto',
       ...theme('spacing'),
       full: '100%',
@@ -345,7 +348,7 @@ module.exports = {
       ...theme('spacing'),
       ...negative(theme('spacing')),
     }),
-    maxHeight: theme => ({
+    maxHeight: (theme) => ({
       full: '100%',
       screen: '100vh',
       ...theme('spacing'),
@@ -430,8 +433,8 @@ module.exports = {
       '11': '11',
       '12': '12',
     },
-    padding: theme => theme('spacing'),
-    placeholderColor: theme => theme('colors'),
+    padding: (theme) => theme('spacing'),
+    placeholderColor: (theme) => theme('colors'),
     stroke: {
       current: 'currentColor',
     },
@@ -440,8 +443,8 @@ module.exports = {
       '1': '1',
       '2': '2',
     },
-    textColor: theme => theme('colors'),
-    width: theme => ({
+    textColor: (theme) => theme('colors'),
+    width: (theme) => ({
       auto: 'auto',
       ...theme('spacing'),
       '1/2': '50%',
@@ -505,7 +508,7 @@ module.exports = {
       '40': '40',
       '50': '50',
     },
-    gap: theme => theme('spacing'),
+    gap: (theme) => theme('spacing'),
     gridTemplateColumns: {
       none: 'none',
       '1': 'repeat(1, minmax(0, 1fr))',

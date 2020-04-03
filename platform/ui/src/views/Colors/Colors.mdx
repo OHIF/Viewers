@@ -1,0 +1,84 @@
+---
+name: Colors
+menu: System
+route: system/colors
+---
+
+import { Playground, Props } from 'docz';
+import BackgroundColor from './BackgroundColor';
+
+# Color System
+
+**@ohif/ui** offers a color system with a handful of color utility classes.
+
+As **@ohif/ui** uses Tailwind as a base styling library, you will be able to use
+all the default colors from Tailwind, besides our custom colors too.
+
+# How to use
+
+To apply color in your element, you will use the same way Tailwind does.
+
+- Background - `bg-primary-main`
+- Border - `border-primary-main`
+- Text - `text-primary-main`
+- Placeholder - `placeholder-primary-main`
+
+Check [Tailwind's documentation](https://tailwindcss.com/docs) to see more
+details about color classes.
+
+# Examples
+
+## Text
+
+<Playground>
+  <div className="p-8">
+    <p className="text-common-bright">text-common-bright</p>
+    <p className="text-common-light">text-common-light</p>
+    <p className="text-common-main">text-common-main</p>
+    <p className="text-common-dark">text-common-dark</p>
+    <p className="text-common-active">text-common-active</p>
+  </div>
+</Playground>
+
+## Background
+
+<div className="flex">
+  <div className="mr-8">
+    <BackgroundColor color="primary-light" />
+    <BackgroundColor color="primary-main" />
+    <BackgroundColor color="primary-dark" />
+    <BackgroundColor color="primary-active" />
+  </div>
+  <div>
+    <BackgroundColor color="secondary-light" />
+    <BackgroundColor color="secondary-main" />
+    <BackgroundColor color="secondary-dark" />
+    <BackgroundColor color="secondary-active" />
+  </div>
+</div>
+
+# Color palette
+
+```javascript
+primary: {
+  light: '#5acce6',
+  main: '#0944b3',
+  dark: '#090c29',
+  active: '#348cfd',
+},
+
+secondary: {
+  light: '#3a3f99',
+  main: '#2b166b',
+  dark: '#041c4a',
+  active: '#1f1f27',
+},
+
+common: {
+  bright: '#e1e1e1',
+  light: '#a19fad',
+  main: '#fff',
+  dark: '#726f7e',
+  active: '#2c3074',
+},
+```

@@ -13,7 +13,7 @@ const StudyListFilter = ({
 }) => {
   const { sortBy, sortDirection } = filterValues;
   const filterSorting = { sortBy, sortDirection };
-  const setFilterSorting = sortingValues => {
+  const setFilterSorting = (sortingValues) => {
     setFilterValues({
       ...filterValues,
       ...sortingValues,
@@ -24,14 +24,11 @@ const StudyListFilter = ({
   return (
     <React.Fragment>
       <div>
-        <div className="bg-custom-navyDark">
+        <div className="bg-primary-dark">
           <div className="container m-auto relative flex flex-col pt-5">
             <div className="flex flex-row justify-between mb-5 px-12">
               <div className="flex flex-row">
-                <Typography
-                  variant="h4"
-                  className="text-custom-aquaBright mr-6"
-                >
+                <Typography variant="h4" className="text-primary-light mr-6">
                   Study List
                 </Typography>
                 <div className="flex flex-row items-end">
@@ -39,12 +36,12 @@ const StudyListFilter = ({
                     variant="text"
                     size="small"
                     color="inherit"
-                    className="text-custom-blueBright"
+                    className="text-primary-active"
                     startIcon={<Icon name="info-link" className="w-2" />}
                   >
                     <span className="flex flex-col flex-1">
                       <span>Learn more</span>
-                      <span className="opacity-50 pt-1 border-b border-custom-blueBright"></span>
+                      <span className="opacity-50 pt-1 border-b border-primary-active"></span>
                     </span>
                   </Button>
                 </div>
@@ -55,7 +52,7 @@ const StudyListFilter = ({
                     rounded="full"
                     variant="outlined"
                     color="primary"
-                    className="text-custom-blueBright border-custom-blueBright mx-8"
+                    className="text-primary-active border-primary-active mx-8"
                     startIcon={<Icon name="cancel" />}
                     onClick={clearFilters}
                   >
@@ -67,7 +64,7 @@ const StudyListFilter = ({
                 </Typography>
                 <Typography
                   variant="h6"
-                  className="text-custom-grayLight self-end pb-1"
+                  className="text-common-light self-end pb-1"
                 >
                   Studies
                 </Typography>
@@ -77,7 +74,7 @@ const StudyListFilter = ({
         </div>
       </div>
       <div className="sticky z-10 border-b-4 border-black" style={{ top: 58 }}>
-        <div className="bg-custom-navyDark pt-3 pb-3 ">
+        <div className="bg-primary-dark pt-3 pb-3 ">
           <InputGroup
             inputMeta={filtersMeta}
             values={filterValues}
@@ -89,7 +86,7 @@ const StudyListFilter = ({
         </div>
         {numOfStudies > 100 && (
           <div className="container m-auto">
-            <div className="bg-custom-blue text-center text-base py-1 rounded-b">
+            <div className="bg-primary-main text-center text-base py-1 rounded-b">
               <p className="text-white">
                 Filter list to 100 studies or less to enable sorting
               </p>
