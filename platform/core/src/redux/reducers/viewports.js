@@ -170,10 +170,6 @@ const viewports = (state = DEFAULT_STATE, action) => {
         draftState.viewportSpecificData[action.viewportIndex] =
           draftState.viewportSpecificData[action.viewportIndex] || {};
 
-        if (!action.viewportSpecificData) {
-          return;
-        }
-
         Object.keys(action.viewportSpecificData).forEach(key => {
           draftState.viewportSpecificData[action.viewportIndex][key] =
             action.viewportSpecificData[key];

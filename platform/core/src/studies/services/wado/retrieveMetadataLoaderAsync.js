@@ -1,5 +1,5 @@
 import { api } from 'dicomweb-client';
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
 import DICOMWeb from '../../../DICOMWeb/';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 import { sortStudySeries, sortingCriteria } from '../../sortStudy';
@@ -8,6 +8,8 @@ import {
   createStudyFromSOPInstanceList,
   addInstancesToStudy,
 } from './studyInstanceHelpers';
+
+const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
 
 /**
  * Map series to an array of SeriesInstanceUID
@@ -102,6 +104,9 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
   async preLoad() {
     const preLoaders = this.getPreLoaders();
+
+    // seriesData is the result of the QIDO-RS Search For Series request
+    // It's an array of Objects containing DICOM Tag values at the Series level
     const seriesData = await this.runLoaders(preLoaders);
 
     const seriesSorted = sortStudySeries(
@@ -142,7 +147,6 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const study = await createStudyFromSOPInstanceList(server, sopInstances);
 
     // TODO: Should this be in a helper
-    const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
     const seriesDataNaturalized = seriesData.map(naturalizeDataset);
 
     seriesDataNaturalized.forEach((series, idx) => {

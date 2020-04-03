@@ -10,6 +10,13 @@ const findMostRecentStructuredReport = studies => {
   studies.forEach(study => {
     const allSeries = study.getSeries ? study.getSeries() : [];
     allSeries.forEach(series => {
+      // Skip series that may not have instances yet
+      // This can happen if we have retrieved just the initial
+      // details about the series via QIDO-RS, but not the full metadata
+      if (!series.instances.length) {
+        return;
+      }
+
       if (isStructuredReportSeries(series)) {
         if (
           !mostRecentStructuredReport ||
@@ -37,10 +44,6 @@ const isStructuredReportSeries = series => {
   ];
 
   const firstInstance = series.getFirstInstance();
-  if (!firstInstance) {
-    return false;
-  }
-
   const SOPClassUID = firstInstance.getData().metadata.SOPClassUID;
 
   return supportedSopClassUIDs.includes(SOPClassUID);
