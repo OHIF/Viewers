@@ -1,9 +1,9 @@
 # Module: SOP Class Handler
 
-An extension can register a SOP Class Handler Module by defining a
-`getSopClassHandlerModule` method. The SOP Class Handler is a bit different from
-the other modules, as it doesn't provide a `1:1` schema for UI or provide it's
-own components. It instead defines:
+An extension can register a [SOP Class][sop-class-link] Handler Module by
+defining a `getSopClassHandlerModule` method. The [SOP Class][sop-class-link]
+Handler is a bit different from the other modules, as it doesn't provide a `1:1`
+schema for UI or provide it's own components. It instead defines:
 
 - `sopClassUIDs`: an array of string SOP Class UIDs that the
   `getDisplaySetFromSeries` method should be applied to.
@@ -76,6 +76,13 @@ getSopClassHandlerModule({ servicesManager, commandsManager }) {
 };
 ```
 
+### More examples :
+
+- [Dicom-HTML SOP][dicom-html-sop]
+- [Dicom-PDF SOP][dicom-pdf-sop]
+- [Dicom-Microscopy SOP][dicom-micro-sop]
+- [Dicom-Segmentation SOP][dicom-seg-sop]
+
 ## `@ohif/viewer` usage
 
 We use the `sopClassHandlerModule`s in three different places:
@@ -88,3 +95,11 @@ Each time, it is used to map study and series data to `displaySets`. It does
 this by working alongside the `StudyMetadataManager` in `@ohif/core`. That
 manager has the method `createDisplaySets` that takes an array of
 `sopClassHandlerModules`.
+
+<!-- prettier-ignore-start -->
+[sop-class-link]: http://dicom.nema.org/dicom/2013/output/chtml/part04/sect_B.5.html
+[dicom-html-sop]: https://github.com/OHIF/Viewers/blob/master/extensions/dicom-html/src/OHIFDicomHtmlSopClassHandler.js#L4-L12
+[dicom-pdf-sop]: https://github.com/OHIF/Viewers/blob/master/extensions/dicom-pdf/src/OHIFDicomPDFSopClassHandler.js#L4-L6
+[dicom-micro-sop]: https://github.com/OHIF/Viewers/blob/master/extensions/dicom-microscopy/src/DicomMicroscopySopClassHandler.js#L5-L7
+[dicom-seg-sop]: https://github.com/OHIF/Viewers/blob/master/extensions/dicom-segmentation/src/OHIFDicomSegSopClassHandler.js#L5-L7
+<!-- prettier-ignore-end -->

@@ -1,9 +1,10 @@
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import FileLoader from './fileLoader';
+import { getCornerstoneWADOImageLoader } from '../../utils/cornerstoneWADOImageLoader';
 
 const PDFFileLoader = new (class extends FileLoader {
   fileType = 'application/pdf';
-  loadFile(file, imageId) {
+  async loadFile(file, imageId) {
+    const cornerstoneWADOImageLoader = await getCornerstoneWADOImageLoader();
     return cornerstoneWADOImageLoader.wadouri.loadFileRequest(imageId);
   }
 

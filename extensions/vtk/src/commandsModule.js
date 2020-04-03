@@ -1,10 +1,5 @@
 import throttle from 'lodash.throttle';
-import {
-  vtkInteractorStyleMPRCrosshairs,
-  vtkInteractorStyleMPRWindowLevel,
-  vtkInteractorStyleMPRRotate,
-  vtkSVGCrosshairsWidget,
-} from 'react-vtkjs-viewport';
+import { getReactVtkjsViewport } from './utils/getReactVtkjsViewport';
 
 import setMPRLayout from './utils/setMPRLayout.js';
 import setViewportToVTK from './utils/setViewportToVTK.js';
@@ -124,16 +119,18 @@ const commandsModule = ({ commandsManager }) => {
 
       _setView(api, [0, 1, 0], [0, 0, 1]);
     },
-    enableRotateTool: () => {
+    enableRotateTool: async () => {
+      const reactVtkjsViewport = await getReactVtkjsViewport();
       apis.forEach(api => {
-        const istyle = vtkInteractorStyleMPRRotate.newInstance();
+        const istyle = reactVtkjsViewport.vtkInteractorStyleMPRRotate.newInstance();
 
         api.setInteractorStyle({ istyle });
       });
     },
-    enableCrosshairsTool: () => {
+    enableCrosshairsTool: async () => {
+      const reactVtkjsViewport = await getReactVtkjsViewport();
       apis.forEach((api, apiIndex) => {
-        const istyle = vtkInteractorStyleMPRCrosshairs.newInstance();
+        const istyle = reactVtkjsViewport.vtkInteractorStyleMPRCrosshairs.newInstance();
 
         api.setInteractorStyle({
           istyle,
@@ -141,7 +138,7 @@ const commandsModule = ({ commandsManager }) => {
         });
       });
     },
-    enableLevelTool: () => {
+    enableLevelTool: async () => {
       function updateVOI(apis, windowWidth, windowCenter) {
         apis.forEach(api => {
           api.updateVOI(windowWidth, windowCenter);
@@ -162,8 +159,9 @@ const commandsModule = ({ commandsManager }) => {
         },
       };
 
+      const reactVtkjsViewport = await getReactVtkjsViewport();
       apis.forEach(api => {
-        const istyle = vtkInteractorStyleMPRWindowLevel.newInstance();
+        const istyle = reactVtkjsViewport.vtkInteractorStyleMPRWindowLevel.newInstance();
 
         api.setInteractorStyle({ istyle, callbacks });
       });
@@ -260,14 +258,15 @@ const commandsModule = ({ commandsManager }) => {
       }
 
       // Add widgets and set default interactorStyle of each viewport.
+      const reactVtkjsViewport = await getReactVtkjsViewport();
       apis.forEach((api, apiIndex) => {
         api.addSVGWidget(
-          vtkSVGCrosshairsWidget.newInstance(),
+          reactVtkjsViewport.vtkSVGCrosshairsWidget.newInstance(),
           'crosshairsWidget'
         );
 
         const uid = api.uid;
-        const istyle = vtkInteractorStyleMPRCrosshairs.newInstance();
+        const istyle = reactVtkjsViewport.vtkInteractorStyleMPRCrosshairs.newInstance();
 
         api.setInteractorStyle({
           istyle,

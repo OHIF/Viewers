@@ -1,10 +1,10 @@
 import cornerstone from 'cornerstone-core';
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import {
   clearStudyLoadingProgress,
   setStudyLoadingProgress,
 } from '../redux/actions';
 import StackManager from '../utils/StackManager';
+import { getCornerstoneWADOImageLoader } from '../utils/cornerstoneWADOImageLoader';
 
 class BaseLoadingListener {
   constructor(stack, options = {}) {
@@ -103,7 +103,8 @@ class DICOMFileLoadingListener extends BaseLoadingListener {
     this._checkCachedData();
   }
 
-  _checkCachedData() {
+  async _checkCachedData() {
+    const cornerstoneWADOImageLoader = await getCornerstoneWADOImageLoader();
     const dataSet = cornerstoneWADOImageLoader.wadouri.dataSetCacheManager.get(
       this._dataSetUrl
     );

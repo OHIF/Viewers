@@ -50,7 +50,7 @@ window.config = {
 ```
 
 To learn more about how you can configure the OHIF Viewer, check out our
-[Configuration Guide](./index.md).
+[Configuration Guide](../../configuring/index.md).
 
 <ol start="3"><li>
   Render the viewer in the web page's target <code>div</code>
