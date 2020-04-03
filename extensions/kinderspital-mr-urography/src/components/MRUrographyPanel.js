@@ -43,7 +43,6 @@ const showTimecourseModal = uiModal => {
  */
 const MRUrographyPanel = ({ studies, viewports, activeIndex, isOpen }) => {
   const modal = useModal();
-  debugger;
   return (
     <div className="dcmseg-segmentation-panel">
       <button onClick={() => showTimecourseModal(modal)}></button>
