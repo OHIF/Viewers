@@ -3,12 +3,33 @@ import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import { utils, log } from '@ohif/core';
-import { ScrollableArea, TableList, Icon } from '@ohif/ui';
+import { ScrollableArea, TableList, Icon, useModal } from '@ohif/ui';
+
+import TimecourseModal from './timecourseModal/TimecourseContent';
 
 const refreshViewport = () => {
   cornerstone.getEnabledElements().forEach(enabledElement => {
     cornerstone.updateImage(enabledElement.element);
   });
+};
+
+// TODO KINDERSPITAL this will be removed soon when task 9 is done
+const mockPoints = new Array(100).fill(0).map((item, index) => {
+  return [index * 10, Math.ceil(Math.random() * 10)];
+});
+
+const showTimecourseModal = uiModal => {
+  if (uiModal) {
+    uiModal.show({
+      content: TimecourseModal,
+      title: 'Evaluate Timecourse',
+      contentProps: {
+        timecourse: mockPoints,
+        measurementId: 'mockMeasurentId',
+        onClose: uiModal.hide,
+      },
+    });
+  }
 };
 
 /**
@@ -21,7 +42,12 @@ const refreshViewport = () => {
  * @returns component
  */
 const MRUrographyPanel = ({ studies, viewports, activeIndex, isOpen }) => {
-  return <div className="dcmseg-segmentation-panel"></div>;
+  const modal = useModal();
+  return (
+    <div className="dcmseg-segmentation-panel">
+      <button onClick={() => showTimecourseModal(modal)}></button>
+    </div>
+  );
 };
 
 MRUrographyPanel.propTypes = {
