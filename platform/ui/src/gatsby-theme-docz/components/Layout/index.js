@@ -15,12 +15,13 @@ export const Layout = ({ children }) => {
   const nav = useRef();
 
   const handleSidebarToggle = () => {
-    setSidebarOpen(s => !s);
+    setSidebarOpen((s) => !s);
   };
 
   return (
     <BaseLayout sx={{ '& > div': { flex: '1 1 auto' } }} data-testid="layout">
       <Main
+        id="main-layout"
         sx={styles.main}
         className={classnames({
           'overflow-hidden h-screen lg:overflow-auto': sidebarOpen,

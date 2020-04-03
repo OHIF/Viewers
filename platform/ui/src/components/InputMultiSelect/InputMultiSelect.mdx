@@ -1,6 +1,6 @@
 ---
 name: InputMultiSelect
-menu: Components
+menu: Form
 route: components/InputMultiSelect
 ---
 
@@ -33,7 +33,7 @@ import { InputMultiSelect } from '@ohif/ui';
               { value: 'SR', label: 'SR' },
             ]}
             value={values}
-            onChange={values => {
+            onChange={(values) => {
               setValues(values);
             }}
           />
