@@ -4,6 +4,9 @@
 
 [data-testid='live-preview'] {
   background: #000;
+}
+
+#main-layout {
   @apply font-sans;
 }
 

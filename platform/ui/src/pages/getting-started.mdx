@@ -1,0 +1,47 @@
+---
+name: Getting Started
+route: /
+---
+
+import { Playground } from 'docz';
+import { Button } from '@ohif/ui';
+
+# Getting Started
+
+`@ohif/ui` is a collection of components and utilities that power OHIF's
+zero-footprint DICOM viewer.
+
+It's maintained in a monorepo, in the
+[OHIF's repository](https://github.com/OHIF/Viewers/).
+
+## Installation
+
+Install `@ohif/ui` from your terminal:
+
+```bash
+// with npm
+npm i @ohif/ui --save-exact
+​
+// with yarn
+yarn add @ohif/ui --exact
+```
+
+## Usage
+
+```javascript
+// Import and use components
+import { Button } from '@ohif/ui';
+```
+
+<Playground className="p-8" style={{ padding: 8 }}>
+  <div className="p-8">
+    <Button onClick={() => alert('Hello!')}>Click here!</Button>
+  </div>
+</Playground>
+
+## Examples
+
+In the **Examples** section you can check many examples on how to build your
+application using `@ohif/ui` components.
+
+...

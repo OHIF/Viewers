@@ -15,7 +15,7 @@ export const Sidebar = React.forwardRef((props, ref) => {
   const menus = useMenus({ query });
   const currentDoc = useCurrentDoc();
   const currentDocRef = useRef();
-  const handleChange = ev => {
+  const handleChange = (ev) => {
     setQuery(ev.target.value);
   };
   useEffect(() => {
@@ -23,6 +23,47 @@ export const Sidebar = React.forwardRef((props, ref) => {
       ref.current.scrollTo(0, currentDocRef.current.offsetTop);
     }
   }, [ref]);
+
+  const customMenus = {
+    Components: [],
+    System: [],
+    Examples: [],
+  };
+
+  const MENU_CATEGORIES = {
+    Components: [
+      'General',
+      'Form',
+      'Navigation',
+      'Feedback',
+      'Data Display',
+      'Other',
+    ],
+    Examples: ['Views'],
+    System: ['Colors'],
+  };
+
+  const renderMenuCategories = () => {
+    return Object.keys(customMenus).map((menuName) => {
+      return (
+        <div key={menuName}>
+          <h2 className="pl-2 border-l-8 -ml-4 border-secondary-active">
+            {menuName}
+          </h2>
+          {customMenus[menuName].map((item) => item)}
+        </div>
+      );
+    });
+  };
+
+  const getMenuCategory = (menuName) => {
+    return Object.keys(MENU_CATEGORIES).find((category) => {
+      if (MENU_CATEGORIES[category].includes(menuName)) {
+        return category;
+      }
+      return null;
+    });
+  };
 
   return (
     <>
@@ -56,11 +97,26 @@ export const Sidebar = React.forwardRef((props, ref) => {
               onChange={handleChange}
             />
             {menus &&
-              menus.map(menu => {
-                if (!menu.route)
+              menus.map((menu) => {
+                const isGroup = !!menu.menu;
+                const Component = isGroup ? NavGroup : NavLink;
+                const menuCategory = getMenuCategory(menu.name) || null;
+
+                if (menuCategory) {
+                  customMenus[menuCategory].push(
+                    <Component key={menu.id} item={menu} sidebarRef={ref}>
+                      {!isGroup && menu.name}
+                    </Component>
+                  );
+                  return null;
+                }
+
+                if (!menu.route) {
                   return (
                     <NavGroup key={menu.id} item={menu} sidebarRef={ref} />
                   );
+                }
+
                 if (menu.route === currentDoc.route) {
                   return (
                     <NavLink key={menu.id} item={menu} ref={currentDocRef}>
@@ -74,6 +130,7 @@ export const Sidebar = React.forwardRef((props, ref) => {
                   </NavLink>
                 );
               })}
+            {renderMenuCategories()}
           </div>
         </>
       )}
