@@ -1,7 +1,6 @@
 ---
 name: ModalProvider
-menu: Context Providers
-route: contextProviders/modalProvider
+route: customHooks/modalProvider
 ---
 
 import { Props } from 'docz';
@@ -50,7 +49,25 @@ import { withModal } from '@ohif/ui';
 const SampleComponent = () => {
   const { show, hide } = useModal();
 
-  return;
+  const openModal = () => {
+    show({
+      content: <div> Modal Content </div>,
+      title: 'Modal title',
+    });
+  }
+
+  const closeModal = () => {
+    hide();
+  }
+
+  return (
+    <button onClick={openModal}>
+      Open modal
+    </button>
+    <button onClick={closeModal}>
+      Close modal
+    </button>
+  );
 };
 
 export default SampleComponent;
@@ -69,10 +86,26 @@ import { withModal } from '@ohif/ui';
 import React from 'react';
 
 class SampleComponent extends React.Component {
-  const { show, hide } = props.modal;
+  openModal() {
+    this.props.modal.show({
+      content: <div> Modal Content </div>,
+      title: 'Modal title',
+    });
+  }
+
+  closeModal() = {
+    this.props.modal.hide();
+  }
 
   render() {
-    return;
+    return (
+      <button onClick={this.openModal}>
+        Open modal
+      </button>
+      <button onClick={this.closeModal}>
+        Close modal
+      </button>
+    );
   }
 }
 
