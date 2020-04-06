@@ -30,15 +30,25 @@ function LineChartContainer({
   const d3Container = useRef(null);
   const chartRef = useRef(null);
   const { width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT } = chartDimension;
+  const defaultTimecourseInterval = 60; // 1 minute
+  const timecoursePG = undefined;
+
   useEffect(() => {
     if (timecourse && d3Container.current) {
       const d3Content = select(d3Container.current);
       chartRef.current = lineChart.addLineChartNode(
         d3Content,
+        (peekIndex, glomerularIndex) => {
+          console.log(peekIndex, glomerularIndex);
+        },
         axis,
         timecourse,
+        timecoursePG,
+        defaultTimecourseInterval,
         width,
-        height
+        height,
+        true,
+        true
       );
     }
   }, [timecourse, d3Container.current, width, height]);

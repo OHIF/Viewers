@@ -1,7 +1,8 @@
 import { zoom } from 'd3-zoom';
-import { event } from 'd3-selection';
+import { drag } from 'd3-drag';
+import { event, select } from 'd3-selection';
 import { line } from 'd3-shape';
-import { zoomIdentity, zoomTransform } from 'd3';
+import { zoomIdentity, zoomTransform, mouse, bisector } from 'd3';
 
 import chart from './chart';
 
@@ -92,10 +93,10 @@ const _bindZoom = (
 ) => {
   _zoom.on('zoom', _zoomListener).filter(zoomEventsFilter);
 
-  _removeListernes();
+  _removeListeners();
   _setListeners();
 
-  function _removeListernes() {
+  function _removeListeners() {
     for (let eventName of d3ZoomNativeEvents) {
       root.on(eventName, null);
     }
@@ -175,27 +176,137 @@ const _bindPointInteraction = (
   xAxisScale,
   yAxisScale,
   parseXPoint,
-  parseYPoint
+  parseYPoint,
+  movingPointsCallback,
+  defaultTimecourseInterval = 10
 ) => {
   const dots = root.selectAll('.dot');
+  const gNodes = dots.nodes();
 
-  dots.on('mousedown', null);
-  const mouseDown = (item, index, group) => {
-    const rootNode = root.node();
-    const currentZoomTransform = zoomTransform(rootNode);
+  const getCurrentGGlomerular = root => {
+    return root.selectAll('.interaction.dot').filter('.glomerular');
+  };
 
-    const peekIndex = index;
-    const glomerularIndex = index + 10;
-    const gPeekPoint = group[index];
-    const gGlomerularPoint = group[index + 10];
+  const getCurrentGPeek = root => {
+    return root.selectAll('.interaction.dot').filter('.peek');
+  };
 
+  const bisect = bisector(function(gPoint) {
+    const gPointCx = gPoint.cx.baseVal.value;
+    return gPointCx;
+  }).left;
+
+  function _setListeners() {
+    dots.on('mousedown', mouseDownListener);
+    const nextGGlomerularPoint = getCurrentGGlomerular(root);
+
+    if (nextGGlomerularPoint) {
+      const rootNode = root.node();
+
+      _setDragListeners(
+        rootNode,
+        nextGGlomerularPoint,
+        gNodes,
+        0,
+        gNodes.length
+      );
+    }
+  }
+
+  function _removeListeners() {
+    const gGlomerularPoint = getCurrentGGlomerular(root);
+
+    if (gGlomerularPoint) {
+      _removeDragListeners(gGlomerularPoint);
+    }
+    dots.on('mousedown', null);
+  }
+  const _setDragListeners = (
+    rootNode,
+    gElement,
+    pathNodes,
+    peekIndex = 0,
+    nodesLength
+  ) => {
+    function _started() {
+      select(this).classed('selected', true);
+      let glomerularIndex;
+      chart.interactionPoint.setLineHidden(root, true);
+      event.on('drag', _dragged).on('end', _ended);
+      function _dragged() {
+        const mousePoint = mouse(this);
+        const closestIndex = bisect(pathNodes, mousePoint[0], 1);
+
+        if (closestIndex > peekIndex && closestIndex < nodesLength) {
+          const selectedData = gNodes[closestIndex];
+          if (selectedData) {
+            chart.interactionPoint.setMoving(
+              root,
+              selectedData.id,
+              'glomerular',
+              true
+            );
+
+            glomerularIndex = closestIndex;
+          }
+        }
+      }
+
+      function _ended(a, b, c) {
+        chart.interactionPoint.setLineHidden(root, false);
+
+        const rootNode = root.node();
+        const currentZoomTransform = zoomTransform(rootNode);
+        const gPeekPoint = gNodes[peekIndex];
+        const gGlomerularPoint = gNodes[glomerularIndex];
+
+        chart.interactionPoint.setMoving(
+          root,
+          glomerularIndex,
+          'glomerular',
+          false
+        );
+
+        placePoints(
+          rootNode,
+          currentZoomTransform,
+          peekIndex,
+          glomerularIndex,
+          gPeekPoint,
+          gGlomerularPoint
+        );
+        select(this).classed('selected', false);
+      }
+    }
+
+    const _drag = drag().on('start', _started);
+    _drag.container(rootNode);
+    gElement.call(_drag);
+    gElement.classed('draggable', true);
+  };
+
+  const _removeDragListeners = gElement => {
+    if (!gElement.empty()) {
+      gElement.on('drag', null);
+      gElement.classed('draggable', false);
+    }
+  };
+
+  const placePoints = (
+    rootNode,
+    zoomTransform,
+    peekIndex,
+    glomerularIndex,
+    gPeekPoint,
+    gGlomerularPoint
+  ) => {
     const transformedXAxisScale =
-      (currentZoomTransform && currentZoomTransform.rescaleX(xAxisScale)) ||
-      xAxisScale;
+      (zoomTransform && zoomTransform.rescaleX(xAxisScale)) || xAxisScale;
     const transformedYAxisScale =
-      (currentZoomTransform && currentZoomTransform.rescaleY(yAxisScale)) ||
-      yAxisScale;
+      (zoomTransform && zoomTransform.rescaleY(yAxisScale)) || yAxisScale;
 
+    const currentGGlomerularPoint = getCurrentGGlomerular(root);
+    _removeDragListeners(root, currentGGlomerularPoint);
     const buildInteractionDataset = (
       gPeekPoint,
       peekIndex,
@@ -256,8 +367,55 @@ const _bindPointInteraction = (
       dataset,
       _line
     );
+
+    const nextGGlomerularPoint = getCurrentGGlomerular(root);
+
+    if (nextGGlomerularPoint) {
+      _setDragListeners(
+        rootNode,
+        nextGGlomerularPoint,
+        gNodes,
+        peekIndex,
+        gNodes.length
+      );
+
+      movingPointsCallback(peekIndex, glomerularIndex);
+    }
   };
-  dots.on('mousedown', mouseDown);
+
+  const mouseDownListener = (item, index, group) => {
+    const rootNode = root.node();
+    const currentZoomTransform = zoomTransform(rootNode);
+
+    const peekIndex = index;
+    let glomerularIndex = index + defaultTimecourseInterval;
+    const gPeekPoint = group[index];
+    let gGlomerularPoint = group[glomerularIndex];
+
+    if (!gGlomerularPoint) {
+      glomerularIndex = group.length - 1;
+      gGlomerularPoint = group[glomerularIndex];
+    }
+
+    const currentClassName = gPeekPoint.className.baseVal;
+
+    if (currentClassName.indexOf('peek') > 0) {
+      return;
+    }
+
+    if (currentClassName.indexOf('glomerular') < 0) {
+      placePoints(
+        rootNode,
+        currentZoomTransform,
+        peekIndex,
+        glomerularIndex,
+        gPeekPoint,
+        gGlomerularPoint
+      );
+    }
+  };
+  _removeListeners();
+  _setListeners();
 };
 const bindMouseEvents = (
   root,
@@ -269,7 +427,9 @@ const bindMouseEvents = (
   yAxisGenerator,
   parseXPoint,
   parseYPoint,
-  dataset
+  dataset,
+  movingPointsCallback,
+  defaultTimecourseInterval
 ) => {
   if (!root) {
     return;
@@ -294,7 +454,9 @@ const bindMouseEvents = (
     xAxisScale,
     yAxisScale,
     parseXPoint,
-    parseYPoint
+    parseYPoint,
+    movingPointsCallback,
+    defaultTimecourseInterval
   );
 };
 

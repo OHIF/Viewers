@@ -1,5 +1,16 @@
+.d3-component {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: -moz-none;
+  -o-user-select: none;
+  user-select: none;
+}
+
 .background {
   fill: #91b8cd26;
+}
+.background.transparent {
+  fill: #ffffff00;
 }
 
 .line {
@@ -12,15 +23,28 @@
   fill: white;
   stroke: white;
 }
+.dot.selected.dragging,
+.text.selected.dragging {
+  fill: green;
+  stroke: green;
+}
 
 .interaction {
   fill: red;
   stroke: red;
 }
 
+.interaction.draggable {
+  cursor: pointer;
+}
+
 .interaction.line {
   fill: none;
   stroke-width: 2;
+}
+
+.interaction.line.hidden {
+  display: none;
 }
 
 .label.axis {

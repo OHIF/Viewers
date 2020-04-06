@@ -13,7 +13,11 @@ const _addAttributes = (root, attributes = []) => {
     const { key, value } = attr;
 
     if (key && value) {
-      root.attr(key, value);
+      if (key === 'class') {
+        root.classed(value, true);
+      } else {
+        root.attr(key, value);
+      }
     }
   }
 };
@@ -149,7 +153,7 @@ const _scaleAxisGraphics = (
  * @param {object} root svg element to be changed
  * @param {number} width content`s width
  * @param {number} height content`s height
- * @param {boolean} showBackground show chart background
+ * @param {boolean} transparent background to be transparent or not
  * @param {number} offset content`s clip offset
  * @modifies {root}
  *
@@ -158,7 +162,7 @@ const _addChartClipPath = (
   root,
   width,
   height,
-  showBackground = true,
+  transparent = true,
   offset = 6
 ) => {
   const translateOffset = -offset / 2;
@@ -170,13 +174,12 @@ const _addChartClipPath = (
     .attr('width', width + offset)
     .attr('height', height + offset);
 
-  if (showBackground) {
-    root
-      .append('rect')
-      .attr('class', 'background')
-      .attr('width', width)
-      .attr('height', height);
-  }
+  const rect = root
+    .append('rect')
+    .attr('class', 'background')
+    .attr('width', width)
+    .attr('height', height)
+    .classed('transparent', transparent);
 };
 
 /**
@@ -295,7 +298,59 @@ const _setInteractionLine = (
   }
 };
 
-const _setInteractionLabel = (root, pointIdSelector, label, classRef) => {
+const _fitIntoContainer = (gOuter, gInner) => {
+  try {
+    const {
+      x: outerX,
+      y: outerY,
+      width: outerWidth,
+      height: outerHeight,
+    } = gOuter.node().getBBox();
+    const {
+      x: innerX,
+      y: innerY,
+      width: innerWidth,
+      height: innerHeight,
+    } = gInner.node().getBBox();
+
+    let nextX = innerX + innerWidth;
+    let nextY = innerY + innerHeight;
+
+    if (nextX > outerX + outerWidth) {
+      nextX = Math.abs(outerX + outerWidth - innerWidth);
+    }
+
+    if (nextY > outerY + outerHeight) {
+      nextY = Math.abs(outerY + outerHeight - innerHeight);
+    }
+
+    if (nextX < outerX) {
+      nextX = outerX;
+    }
+
+    if (nextY < outerY) {
+      nextY = outerY;
+    }
+
+    return {
+      x: nextX,
+      y: nextY,
+    };
+  } catch (e) {
+    return {
+      x: 0,
+      y: 0,
+    };
+  }
+};
+
+const _setInteractionLabel = (
+  root,
+  pointIdSelector,
+  label,
+  classRef,
+  labelExtraAttrs
+) => {
   const gPoint = root.select(`#${pointIdSelector}`);
   if (!gPoint) {
     return false;
@@ -330,13 +385,31 @@ const _setInteractionLabel = (root, pointIdSelector, label, classRef) => {
     }
   }
 
-  _text
+  const gText = _text
     .attr('id', textId)
     .property('point-id', labelIdSuffix)
     .attr('x', textPosX)
     .attr('y', textPosY);
 
+  const clipContainer = root.select('#clip');
+  const { x: fitX, y: fitY } = _fitIntoContainer(clipContainer, gText);
+
+  if (fitX) {
+    gText.attr('x', fitX);
+  }
+
+  if (fitY) {
+    gText.attr('y', fitY);
+  }
+  _addAttributes(gText, labelExtraAttrs);
   return true;
+};
+
+const _setInteractionLineHidden = (root, hidden = false) => {
+  const interactorClassSelector = ' interaction line';
+  const interactorSelector = interactorClassSelector.replace(/\s/gi, '.');
+
+  root.selectAll(interactorSelector).classed('hidden', hidden);
 };
 
 const _removeInteractionLabel = (root, classRef) => {
@@ -364,14 +437,20 @@ const _addInteractionPoints = (
 ) => {
   // remove old class
   root.selectAll('.interaction.dot').attr('class', 'dot');
-  const _setInteractionPoint = (point, classRef, label) => {
+  const _setInteractionPoint = (point, classRef, label, labelExtraAttrs) => {
     if (point && point.id) {
       const pointSelector = point.id;
       const pointIdSelector = '#' + point.id;
 
       const interationPoint = root.select(pointIdSelector);
       interationPoint.attr('class', `${classRef} interaction dot`);
-      _setInteractionLabel(root, pointSelector, label, classRef);
+      _setInteractionLabel(
+        root,
+        pointSelector,
+        label,
+        classRef,
+        labelExtraAttrs
+      );
       return true;
     } else {
       _removeInteractionLabel(root, classRef);
@@ -406,9 +485,30 @@ const _addInteractionPoints = (
 const _updateInteractionPoints = (root, lineDataset, lineDAttrValue) => {
   root.selectAll('.interaction.text').each((data, index, group) => {
     const currentLabelText = group[index];
-    _setInteractionLabel(root, currentLabelText['point-id'], undefined);
+    _setInteractionLabel(root, currentLabelText['point-id']);
   });
   _setInteractionLine(root, true, true, lineDataset, lineDAttrValue);
+};
+
+const _setMoving = (root, pointId, classRef, isMoving) => {
+  if (isMoving) {
+    root.selectAll('.dot').classed('dragging selected', false);
+
+    root
+      .selectAll('.dot')
+      .filter(`#${pointId}`)
+      .classed('dragging selected', true);
+    _setInteractionLabel(root, pointId, undefined, classRef, [
+      { key: 'class', value: 'selected dragging' },
+    ]);
+  } else {
+    root
+      .selectAll(`.dot.selected.dragging`)
+      .classed('selected dragging', false);
+    root
+      .selectAll(`.text.selected.dragging`)
+      .classed('selected dragging', false);
+  }
 };
 
 /**
@@ -438,6 +538,9 @@ const chart = {
   interactionPoint: {
     addNode: _addInteractionPoints,
     updateNode: _updateInteractionPoints,
+    setLineHidden: _setInteractionLineHidden,
+    setInteractionLabel: _setInteractionLabel,
+    setMoving: _setMoving,
   },
   background: {
     addNode: _addChartClipPath,

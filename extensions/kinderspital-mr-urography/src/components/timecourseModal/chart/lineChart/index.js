@@ -45,8 +45,11 @@ const MARGIN = { top: 20, right: 50, bottom: 50, left: 50 };
  * It creates a svg chart containing lines, dots, axis, labels
  *
  * @param {object} d3SVGRef svg content reference to append chart
+ * @param {function} movingPointsCallback callback method to be called once p/g points are changed
  * @param {Object<string, TimecoursePointDef>} axis definition of axis
  * @param {object} points list of points to be created
+ * @param {object} timecoursePG list of pg points to be created
+ * @param {number} defaultTimecourseInterval interval for adding new p/g point
  * @param {number} width width for whole content including lines, dots, axis, labels
  * @param {number} height height for whole content including lines, dots, axis, labels
  * @param {boolean} showAxisLabels flag to display labels or not
@@ -55,8 +58,11 @@ const MARGIN = { top: 20, right: 50, bottom: 50, left: 50 };
  */
 const addLineChartNode = (
   d3SVGRef,
+  movingPointsCallback,
   axis,
   points = [],
+  timecoursePG = [],
+  defaultTimecourseInterval,
   width,
   height,
   showAxisLabels = true,
@@ -176,7 +182,9 @@ const addLineChartNode = (
     yAxisGenerator,
     parseXPoint,
     parseYPoint,
-    dataset
+    dataset,
+    movingPointsCallback,
+    defaultTimecourseInterval
   );
 
   return chartWrapper;
