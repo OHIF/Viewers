@@ -15,18 +15,16 @@ const Viewer = () => {
       >
         <SidePanel
           side="left"
-          className="h-100 bg-primary-light border-r-1 border-black"
           iconName="launch-arrow"
           componentName="Study List"
         >
           <div>GUSTAVO</div>
         </SidePanel>
-        <div className="flex-1 h-100 overflow-hidden w-100 bg-black">
+        <div className="flex-1 h-100 overflow-hidden w-100 bg-primary-main">
           CONTENT
         </div>
         <SidePanel
           side="right"
-          className="h-100 bg-primary-light border-l-1 border-black"
           iconName="launch-arrow"
           componentName="Measurements"
         >
