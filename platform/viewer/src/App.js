@@ -1,12 +1,12 @@
 import React from 'react';
-import { ThemeWrapper } from '@ohif/ui';
+import { ThemeWrapper, Viewer } from '@ohif/ui';
 
 import ConnectedStudyList from './connectedComponents/ConnectedStudyList';
 
 const App = () => {
   return (
     <ThemeWrapper>
-      <ConnectedStudyList />
+      <Viewer />
     </ThemeWrapper>
   );
 };

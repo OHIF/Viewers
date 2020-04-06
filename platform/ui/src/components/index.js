@@ -13,6 +13,7 @@ import InputText from './InputText';
 import Label from './Label';
 import NavBar from './NavBar';
 import Select from './Select';
+import SidePanel from './SidePanel';
 import Svg from './Svg';
 import StudyListExpandedRow from './StudyListExpandedRow';
 import StudyListPagination from './StudyListPagination';
@@ -41,6 +42,7 @@ export {
   Label,
   NavBar,
   Select,
+  SidePanel,
   Svg,
   StudyListExpandedRow,
   StudyListPagination,
