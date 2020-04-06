@@ -27,6 +27,16 @@
   fill: white;
 }
 
+.axis line {
+  stroke-opacity: 0.3;
+  fill: #91b8cd26;
+}
+
+.axis.grid .domain {
+  stroke-opacity: 0.3;
+  stroke: #91b8cd26;
+}
+
 .reset {
   text-align: center;
   height: 20px;

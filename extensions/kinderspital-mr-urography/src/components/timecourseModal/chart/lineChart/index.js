@@ -43,7 +43,6 @@ const MARGIN = { top: 20, right: 50, bottom: 50, left: 50 };
 
 /**
  * It creates a svg chart containing lines, dots, axis, labels
- * It mutates passed param
  *
  * @param {object} d3SVGRef svg content reference to append chart
  * @param {Object<string, TimecoursePointDef>} axis definition of axis
@@ -51,6 +50,8 @@ const MARGIN = { top: 20, right: 50, bottom: 50, left: 50 };
  * @param {number} width width for whole content including lines, dots, axis, labels
  * @param {number} height height for whole content including lines, dots, axis, labels
  * @param {boolean} showAxisLabels flag to display labels or not
+ *
+ * @modifies {d3SVGRef}
  */
 const addLineChartNode = (
   d3SVGRef,
@@ -58,7 +59,9 @@ const addLineChartNode = (
   points = [],
   width,
   height,
-  showAxisLabels = true
+  showAxisLabels = true,
+  showAxisGrid = false,
+  showChartBackground = true
 ) => {
   const _width = width - MARGIN.left - MARGIN.right;
   const _height = height - MARGIN.top - MARGIN.bottom;
@@ -110,9 +113,13 @@ const addLineChartNode = (
   );
 
   // add background
-  chart.background.addNode(chartWrapper, _width, _height);
+  chart.background.addNode(chartWrapper, _width, _height, showChartBackground);
   // call the x axis in a group tag
   const xAxisGenerator = axisBottom(xAxisScale);
+
+  if (showAxisGrid) {
+    xAxisGenerator.tickSize(-_height).tickPadding(10);
+  }
   const gXAxis = chart.axis.addNode(
     chartWrapper,
     XAxis,
@@ -123,9 +130,14 @@ const addLineChartNode = (
     showAxisLabels,
     _width / 2,
     _height + MARGIN.bottom / 2 + 10,
-    undefined
+    undefined,
+    showAxisGrid
   );
   const yAxisGenerator = axisLeft(yAxisScale);
+
+  if (showAxisGrid) {
+    yAxisGenerator.tickSize(-_width).tickPadding(10);
+  }
   // add y axis
   const gYAxis = chart.axis.addNode(
     chartWrapper,
@@ -140,7 +152,8 @@ const addLineChartNode = (
     [
       { key: 'transform', value: 'rotate(-90)' },
       { key: 'dy', value: '1em' },
-    ]
+    ],
+    showAxisGrid
   );
   // add line chart
   chart.lines.addNode(chartWrapper, dataset, _line);

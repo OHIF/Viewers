@@ -59,9 +59,11 @@ const _zoomButtonsDefinition = {
 
 /**
  * It resets given root
- * It mutates passed param
+ *
  * @param {object} root svg element to be reset
  * @param {object} zoom d3 zoom object
+ *
+ * @modifies {root}
  */
 const _resetZoom = (root, zoom) => {
   if (root) {
