@@ -50,7 +50,7 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
     } = instanceMetadata;
 
     const measurementData = {
-      SegmentLabel: null,
+      label: null,
       StudyInstanceUID,
       SeriesInstanceUID,
       SOPInstanceUID,
@@ -63,6 +63,7 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
       handles: {
         points: [],
       },
+      //measurementNumber: // TODO JAMES
     };
 
     measurementData.handles.textBox = {
