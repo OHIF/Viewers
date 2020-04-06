@@ -115,15 +115,18 @@ ModalProvider.defaultProps = {
 };
 
 ModalProvider.propTypes = {
+  /** Children that will be wrapped with Modal Context */
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]).isRequired,
+  /** Modal component */
   modal: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
     PropTypes.func,
   ]).isRequired,
+  /** service to be update once modal provider is instanciated */
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
