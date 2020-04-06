@@ -1,3 +1,4 @@
 import StudyList from './StudyList';
+import Viewer from './Viewer';
 
-export { StudyList };
+export { StudyList, Viewer };

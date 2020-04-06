@@ -27,6 +27,7 @@ export {
   Label,
   NavBar,
   Select,
+  SidePanel,
   StudyListExpandedRow,
   StudyListPagination,
   StudyListTable,
@@ -41,5 +42,4 @@ export {
 } from './src/components';
 
 /** VIEWS */
-export { StudyList } from './src/views';
-export { ModalProvider, ModalConsumer, useModal, withModal, utils };
+export { StudyList, Viewer } from './src/views';
