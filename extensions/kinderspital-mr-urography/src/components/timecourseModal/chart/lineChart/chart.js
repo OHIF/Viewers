@@ -1,9 +1,9 @@
 /**
  * It adds attributes to root element from passed attributes list
- * It mutates passed param
  *
  * @param {object} root svg element to be changed
  * @param {object} attributes list of attributes to be added on root element
+ * @modifies {root}
  *
  */
 const _addAttributes = (root, attributes = []) => {
@@ -36,15 +36,15 @@ const _formatAxisLabel = ({ label, unit }) => {
 
 /**
  * It appends chart svg element container to root element
- * It mutates passed param
  *
  * @param {object} root svg element to be changed
  * @param {number} width width of container
  * @param {number} height height of container
  * @param {number} translateX value to translate on axis x
  * @param {number} translateY value to translate on axis y
- * @return {object} appended chart container (svg element)
+ * @modifies {root}
  *
+ * @return {object} appended chart container (svg element)
  */
 const _addChartContainer = (root, width, height, translateX, translateY) => {
   return root
@@ -57,7 +57,6 @@ const _addChartContainer = (root, width, height, translateX, translateY) => {
 
 /**
  * It appends axis svg element to root element
- * It mutates passed param
  *
  * @param {object} root svg element to be changed
  * @param {TimecoursePointDef} axisDef definition of given axis
@@ -69,6 +68,7 @@ const _addChartContainer = (root, width, height, translateX, translateY) => {
  * @param {number} labelPosX position X to place label content
  * @param {number} labelPosY position Y to place label content
  * @param {object} labelExtraAttrs list of extra attributes to be added on label content
+ * @modifies {root}
  *
  * @return {object} axis svg element
  */
@@ -82,13 +82,15 @@ const _addAxis = (
   showAxisLabels,
   labelPosX,
   labelPosY,
-  labelExtraAttrs = []
+  labelExtraAttrs = [],
+  showAxisGrid
 ) => {
   const { type } = axisDef;
+  const showAxisGridClass = showAxisGrid ? 'grid' : '';
   const translateValue = `${posX}, ${posY}`;
   const axisContent = root
     .append('g')
-    .attr('class', `${type} axis`)
+    .attr('class', `${type} ${showAxisGridClass} axis`)
     .attr('transform', `translate(${translateValue})`);
 
   _addAttributes(axisContent, axisExtraAttrs);
@@ -115,7 +117,6 @@ const _addAxis = (
 
 /**
  * It scales axis graphics
- * It mutates passed param
  *
  * @param {object} sourceGraphicsXAxis original d3 graphics to be proccessed (x Axis)
  * @param {object} sourceGraphicsYAxis original d3 graphics to be proccessed (y Axis)
@@ -123,7 +124,7 @@ const _addAxis = (
  * @param {object} yAxisGenerator d3 Y axis generator
  * @param {object} newXAxisScale d3 continuos scale for X Axis
  * @param {object} newYAxisScale d3 continuos scale for Y Axis
- *
+ * @modifies {sourceGraphicsXAxis|sourceGraphicsYAxis}
  */
 const _scaleAxisGraphics = (
   sourceGraphicsXAxis,
@@ -142,35 +143,47 @@ const _scaleAxisGraphics = (
 
 /**
  * It appends background svg element to root element and also a clip path for chart boundaries
- * It mutates passed param
  *
  * @param {object} root svg element to be changed
  * @param {number} width content`s width
  * @param {number} height content`s height
+ * @param {boolean} showBackground show chart background
+ * @param {number} offset content`s clip offset
+ * @modifies {root}
  *
  */
-const _addChartClipPath = (root, width, height) => {
+const _addChartClipPath = (
+  root,
+  width,
+  height,
+  showBackground = true,
+  offset = 6
+) => {
+  const translateOffset = -offset / 2;
   root
     .append('clipPath')
     .attr('id', 'clip')
     .append('rect')
-    .attr('width', width)
-    .attr('height', height);
+    .attr('transform', `translate(${translateOffset}, ${translateOffset})`)
+    .attr('width', width + offset)
+    .attr('height', height + offset);
 
-  root
-    .append('rect')
-    .attr('class', 'background')
-    .attr('width', width)
-    .attr('height', height);
+  if (showBackground) {
+    root
+      .append('rect')
+      .attr('class', 'background')
+      .attr('width', width)
+      .attr('height', height);
+  }
 };
 
 /**
  * It appends line chart svg element to root element
- * It mutates passed param
  *
  * @param {object} root svg element to be changed
  * @param {object} dataset dataset to tie to content
  * @param {string} dAttrValue path d attribute
+ * @modifies {root}
  *
  * @return {object}  svg line element line
  */
@@ -185,11 +198,12 @@ const _addLine = (root, dataset, dAttrValue) => {
 
 /**
  * It updates line chart svg element with new dataset and dAttrValue value
- * It mutates passed param
  *
  * @param {object} root svg element to be changed
  * @param {object} dataset dataset to tie to content
  * @param {string} dAttrValue path d attribute
+ * @modifies {root}
+ *
  */
 const _updateLine = (root, dataset = [], dAttrValue) => {
   const line = root.select('.line');
@@ -203,12 +217,12 @@ const _updateLine = (root, dataset = [], dAttrValue) => {
 
 /**
  * It appends points svg element to root element
- * It mutates passed param
  *
  * @param {object} root svg element to be changed
  * @param {object} dataset dataset to tie to content
  * @param {number} cxAttrValue cx attribute
  * @param {number} cyAttrValue cy attribute
+ * @modifies {root}
  *
  * @return {object} points svg element
  *
@@ -228,12 +242,12 @@ const _addPoints = (root, dataset, cxAttrValue, cyAttrValue) => {
 
 /**
  * It updates points svg element with new dataset, cxAttrValue and cyAttrValue
- * It mutates passed param
  *
  * @param {object} root svg element to be changed
  * @param {object} dataset dataset to tie to content
  * @param {number} cxAttrValue cx attribute
  * @param {number} cyAttrValue cy attribute
+ * @modifies {root}
  *
  */
 const _updatePoints = (root, dataset = [], cxAttrValue, cyAttrValue) => {
@@ -247,8 +261,10 @@ const _updatePoints = (root, dataset = [], cxAttrValue, cyAttrValue) => {
 
 /**
  * It removes children nodes from root param.
- * It mutates passed param
+ *
  * @param {object} root svg element to remove children content
+ * @modifies {root}
+ *
  */
 const _removeChartContents = root => {
   root.selectAll('*').remove();
