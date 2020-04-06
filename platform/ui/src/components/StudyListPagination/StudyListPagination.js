@@ -2,19 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, ButtonGroup, Icon, IconButton, Typography } from '@ohif/ui';
 
-<<<<<<< HEAD:platform/ui/src/views/StudyList/components/StudyListPagination.js
-const StudyListPagination = (props) => {
-  const [currentPage, setCurrentPage] = useState(1);
-
-=======
 const StudyListPagination = ({
   onChangePage,
   currentPage,
   perPage,
   onChangePerPage,
 }) => {
->>>>>>> d5a288db1... feat: StudyListTable, ExpandedRow, API definitions (#1579):platform/ui/src/components/StudyListPagination/StudyListPagination.js
-  const navigateToPage = (page) => {
+  const navigateToPage = page => {
     const toPage = page < 1 ? 1 : page;
     onChangePage(toPage);
   };
@@ -26,15 +20,11 @@ const StudyListPagination = ({
           <div className="flex items-center">
             <div className="relative mr-3">
               <select
-<<<<<<< HEAD:platform/ui/src/views/StudyList/components/StudyListPagination.js
-                defaultValue="25"
-                className="block appearance-none w-full bg-transparent border border-common-active text-white text-base px-2 pr-4 rounded leading-tight focus:outline-none"
-=======
                 defaultValue={perPage}
                 className="block appearance-none w-full bg-transparent border border-custom-darkSlateBlue text-white text-base px-2 pr-4 rounded leading-tight focus:outline-none"
->>>>>>> d5a288db1... feat: StudyListTable, ExpandedRow, API definitions (#1579):platform/ui/src/components/StudyListPagination/StudyListPagination.js
                 style={{ height: 28 }}
-                onChange={(e) => onChangePerPage(e.target.value)}
+                onChange={e => onChangePerPage(e.target.value)}
+                onBlur={() => {}}
               >
                 <option value="25">25</option>
                 <option value="50">50</option>

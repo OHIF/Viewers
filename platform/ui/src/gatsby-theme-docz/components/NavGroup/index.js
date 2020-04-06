@@ -22,14 +22,20 @@ export const NavGroup = ({ item, sidebarRef }) => {
   }, [sidebarRef]);
   return (
     <div sx={styles.wrapper} data-testid="nav-group">
-      <div sx={styles.title} onClick={toggleSubheadings}>
+      <div
+        sx={styles.title}
+        onClick={toggleSubheadings}
+        role="button"
+        onKeyDown={toggleSubheadings}
+        tabIndex="0"
+      >
         {item.name}
         <ChevronDown sx={styles.chevron({ active: subheadingsVisible })} />
       </div>
       <div sx={styles.sublinkWrapper} data-testid="nav-group-links">
         {menu &&
           subheadingsVisible &&
-          menu.map((menu) => {
+          menu.map(menu => {
             if (currentDoc.route === menu.route) {
               return (
                 <NavLink key={menu.id} item={menu} ref={currentDocRef}>
