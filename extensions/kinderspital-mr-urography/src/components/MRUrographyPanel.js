@@ -3,14 +3,8 @@ import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import { utils, log } from '@ohif/core';
-import {
-  ScrollableArea,
-  TableList,
-  TableListItem,
-  MeasurementTableItem,
-  Icon,
-  useModal,
-} from '@ohif/ui';
+import { ScrollableArea, TableList, useModal } from '@ohif/ui';
+import MRUrographyTableItem from './MRUrographyTabelItem';
 
 import TimecourseModal from './timecourseModal/TimecourseContent';
 import TOOL_NAMES from '../tools/toolNames';
@@ -96,8 +90,6 @@ const MRUrographyPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     const toolState = globalImageIdSpecificToolStateManager.saveToolState();
     const toolName = TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL;
 
-    const key = 0;
-
     Object.keys(toolState).forEach(imageId => {
       const imageIdSpecificToolState = toolState[imageId];
 
@@ -112,12 +104,13 @@ const MRUrographyPanel = ({ studies, viewports, activeIndex, isOpen }) => {
       const measurements = imageIdSpecificToolState[toolName].data;
 
       measurements.forEach(measurement => {
-        debugger;
+        const key = measurement.measurementNumber;
+
         regionList.push(
-          <MeasurementTableItem
+          <MRUrographyTableItem
             key={key}
             itemIndex={key}
-            itemClass={selectedKey === i ? 'selected' : ''}
+            itemClass={selectedKey === key ? 'selected' : ''}
             measurementData={measurement}
             onItemClick={onItemClick}
             onRelabel={onRelabelClick}
@@ -125,8 +118,6 @@ const MRUrographyPanel = ({ studies, viewports, activeIndex, isOpen }) => {
             onEditDescription={onEditDescriptionClick}
           />
         );
-
-        key++;
       });
     });
 
@@ -153,13 +144,15 @@ const MRUrographyPanel = ({ studies, viewports, activeIndex, isOpen }) => {
 
   return (
     <div className="dcmseg-segmentation-panel">
-      <TableList
-        customHeader={
-          <RegionsHeader count={state.regionList.length}></RegionsHeader>
-        }
-      >
-        <ScrollableArea>{state.regionList}</ScrollableArea>
-      </TableList>
+      <ScrollableArea>
+        <TableList
+          customHeader={
+            <RegionsHeader count={state.regionList.length}></RegionsHeader>
+          }
+        >
+          {state.regionList}
+        </TableList>
+      </ScrollableArea>
 
       <button onClick={() => showTimecourseModal(modal)}></button>
     </div>

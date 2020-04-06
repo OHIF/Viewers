@@ -14,6 +14,8 @@ const draw = importInternal('drawing/draw');
 const drawJoinedLines = importInternal('drawing/drawJoinedLines');
 const drawHandles = importInternal('drawing/drawHandles');
 
+let measurementNumber = 0;
+
 export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
   constructor(props = {}) {
     const defaultProps = {
@@ -63,7 +65,9 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
       handles: {
         points: [],
       },
-      //measurementNumber: // TODO JAMES
+      measurementNumber: measurementNumber++,
+      auc: 0,
+      vol: 0,
     };
 
     measurementData.handles.textBox = {

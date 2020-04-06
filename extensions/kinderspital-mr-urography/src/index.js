@@ -20,7 +20,7 @@ export default {
   getToolbarModule({ servicesManager }) {
     return toolbarModule;
   },
-  getPanelModule({ servicesManager }) {
-    return panelModule;
-  },
+  // getPanelModule({ servicesManager }) {
+  //   return panelModule;
+  // },
 };
