@@ -15,7 +15,7 @@ export const Sidebar = React.forwardRef((props, ref) => {
   const menus = useMenus({ query });
   const currentDoc = useCurrentDoc();
   const currentDocRef = useRef();
-  const handleChange = (ev) => {
+  const handleChange = ev => {
     setQuery(ev.target.value);
   };
   useEffect(() => {
@@ -26,6 +26,7 @@ export const Sidebar = React.forwardRef((props, ref) => {
 
   const customMenus = {
     Components: [],
+    'Custom Hooks': [],
     System: [],
     Examples: [],
   };
@@ -39,25 +40,26 @@ export const Sidebar = React.forwardRef((props, ref) => {
       'Data Display',
       'Other',
     ],
+    'Custom Hooks': ['ModalProvider'],
     Examples: ['Views'],
     System: ['Colors'],
   };
 
   const renderMenuCategories = () => {
-    return Object.keys(customMenus).map((menuName) => {
+    return Object.keys(customMenus).map(menuName => {
       return (
         <div key={menuName}>
           <h2 className="pl-2 border-l-8 -ml-4 border-secondary-active">
             {menuName}
           </h2>
-          {customMenus[menuName].map((item) => item)}
+          {customMenus[menuName].map(item => item)}
         </div>
       );
     });
   };
 
-  const getMenuCategory = (menuName) => {
-    return Object.keys(MENU_CATEGORIES).find((category) => {
+  const getMenuCategory = menuName => {
+    return Object.keys(MENU_CATEGORIES).find(category => {
       if (MENU_CATEGORIES[category].includes(menuName)) {
         return category;
       }
@@ -97,7 +99,7 @@ export const Sidebar = React.forwardRef((props, ref) => {
               onChange={handleChange}
             />
             {menus &&
-              menus.map((menu) => {
+              menus.map(menu => {
                 const isGroup = !!menu.menu;
                 const Component = isGroup ? NavGroup : NavLink;
                 const menuCategory = getMenuCategory(menu.name) || null;
