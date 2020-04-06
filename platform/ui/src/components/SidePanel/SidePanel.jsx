@@ -20,8 +20,8 @@ const dynamicStyle = {
 };
 
 const sideClasses = {
-  left: 'border-r-1',
-  right: 'border-l-1',
+  left: 'border-r-4',
+  right: 'border-l-4',
 };
 
 const baseClassName =
@@ -36,8 +36,8 @@ const SidePanel = ({
   iconName,
 }) => {
   const [isOpen, setIsOpen] = useState(defaultIsOpen);
-
-  const style = Object.assign({}, isOpen ? openStyle : closedStyle, baseStyle);
+  const openStatus = isOpen ? 'open' : 'closed';
+  const style = Object.assign({}, dynamicStyle[openStatus][side]);
 
   return (
     <div
