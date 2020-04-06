@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.8](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.7...@ohif/core@2.6.8) (2020-04-06)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.6.7](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.6...@ohif/core@2.6.7) (2020-04-02)
+
+
+### Bug Fixes
+
+* 🐛 Fix multiframe images ([#1595](https://github.com/OHIF/Viewers/issues/1595)) ([9e0bd52](https://github.com/OHIF/Viewers/commit/9e0bd52c6a86648eb6673344a8555ad787043e5c))
+
+
+
+
+
+## [2.6.6](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.5...@ohif/core@2.6.6) (2020-04-02)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 ## [2.6.5](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.4...@ohif/core@2.6.5) (2020-04-01)
 
 

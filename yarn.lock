@@ -957,10 +957,11 @@
     core-js "^2.6.5"
     regenerator-runtime "^0.13.2"
 
-"@babel/polyfill@^7.6.0":
-  version "7.6.0"
-  resolved "https://registry.yarnpkg.com/@babel/polyfill/-/polyfill-7.6.0.tgz#6d89203f8b6cd323e8d946e47774ea35dc0619cc"
-  integrity sha512-q5BZJI0n/B10VaQQvln1IlDK3BTBJFbADx7tv+oXDPIDZuTo37H5Adb9jhlXm/fEN4Y7/64qD9mnrJJG7rmaTw==
+
+"@babel/polyfill@^7.8.3":
+  version "7.8.7"
+  resolved "https://registry.yarnpkg.com/@babel/polyfill/-/polyfill-7.8.7.tgz#151ec24c7135481336168c3bd8b8bf0cf91c032f"
+  integrity sha512-LeSfP9bNZH2UOZgcGcZ0PIHUt1ZuHub1L3CVmEyqLxCeDLm4C5Gi8jRH8ZX2PNpDhQCo0z6y/+DIs2JlliXW8w==
   dependencies:
     core-js "^2.6.5"
     regenerator-runtime "^0.13.2"
@@ -6424,25 +6425,15 @@ dateformat@^3.0.0:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dcmjs@^0.10.1:
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.10.1.tgz#0655f8c0f7ed1357145f416e14efd4a45e2c74be"
-  integrity sha512-aoXkZXTp3Kh20C6I2i2AJjcHRRxqjmt7KWvJElRv2b93AfUPVplg6+/B2ioiJFSSESt7/Q9yjHRM8k0U1uRCag==
+dcmjs@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.12.0.tgz#8b1634f9b66e452075295f5d1f2c5bf3dabdf03e"
+  integrity sha512-AZAnFMvzAxUv5+KWoZcxnTYflLKk0rNPeeFt2KrVAgaExFBFfDgJQh1lEgqdNlIP+XQDFrEEUmp726SQhgmVCg==
   dependencies:
-    "@babel/polyfill" "^7.6.0"
-    "@babel/runtime" "^7.6.3"
+    "@babel/polyfill" "^7.8.3"
+    "@babel/runtime" "^7.8.4"
     loglevelnext "^3.0.1"
-    ndarray "^1.0.18"
-
-dcmjs@^0.8.3:
-  version "0.8.3"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.8.3.tgz#fff1b030b6cb2d6e2afb1aa99840bfa853724c31"
-  integrity sha512-eXQjqgtJf9+oseraKDNDm2A5F3Th4B2GJeZtjStj0IFXxjlbPOzdq3PfCyxdwfRaKOBIwr0q3YK/Vfs2CpQY8Q==
-  dependencies:
-    "@babel/polyfill" "^7.6.0"
-    "@babel/runtime" "^7.6.3"
-    loglevelnext "^3.0.1"
-    ndarray "^1.0.18"
+    ndarray "^1.0.19"
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.1, debug@^2.6.3, debug@^2.6.6, debug@^2.6.8, debug@^2.6.9:
   version "2.6.9"
@@ -12971,10 +12962,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-ndarray@^1.0.18:
-  version "1.0.18"
-  resolved "https://registry.yarnpkg.com/ndarray/-/ndarray-1.0.18.tgz#b60d3a73224ec555d0faa79711e502448fd3f793"
-  integrity sha1-tg06cyJOxVXQ+qeXEeUCRI/T95M=
+ndarray@^1.0.19:
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/ndarray/-/ndarray-1.0.19.tgz#6785b5f5dfa58b83e31ae5b2a058cfd1ab3f694e"
+  integrity sha512-B4JHA4vdyZU30ELBw3g7/p9bZupyew5a7tX1Y/gGeF2hafrPaQZhgrGQfsvgfYbgdFZjYwuEcnaobeM/WMW+HQ==
   dependencies:
     iota-array "^1.0.0"
     is-buffer "^1.0.2"

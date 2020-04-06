@@ -1,7 +1,7 @@
-import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import FileLoader from './fileLoader';
 import PDFFileLoader from './pdfFileLoader';
 import DICOMFileLoader from './dicomFileLoader';
+import { getCornerstoneWADOImageLoader } from '../../utils/cornerstoneWADOImageLoader';
 
 class FileLoaderService extends FileLoader {
   fileType;
@@ -53,7 +53,8 @@ class FileLoaderService extends FileLoader {
     return result;
   }
 
-  addFile(file) {
+  async addFile(file) {
+    const cornerstoneWADOImageLoader = await getCornerstoneWADOImageLoader();
     return cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
   }
 
