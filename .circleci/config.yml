@@ -325,35 +325,11 @@ workflows:
           yarn: true
           record: false
           store_artifacts: false
+          parallelism: 4
           working_directory: platform/viewer
           build: npx cross-env QUICK_BUILD=true yarn run build
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
-          wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
-          post-steps:
-            - store_artifacts:
-                path: platform/viewer/cypress/screenshots
-            - store_artifacts:
-                path: platform/viewer/cypress/videos
-          requires:
-            - UNIT_TESTS
-      # E2E: script-tag
-      - cypress/run:
-          name: 'E2E: Script Tag'
-          executor: cypress/browsers-chrome76
-          browser: chrome
-          pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
-          yarn: true
-          record: false
-          store_artifacts: false
-          working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build:package
-          start: yarn run test:e2e:serve
-          spec: 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'
           wait-on: 'http://localhost:3000'
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
           no-workspace: true # Don't persist workspace

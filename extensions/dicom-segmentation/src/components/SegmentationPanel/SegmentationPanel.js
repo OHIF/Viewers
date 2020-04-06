@@ -301,7 +301,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     );
   } else {
     return (
-      <div className="dcmseg-segmentation-panel">
+      <div className="dcmseg-segmentation-panel" data-cy="segmentation-panel">
         <Icon
           className="cog-icon"
           name="cog"
