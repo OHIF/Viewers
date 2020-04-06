@@ -1,0 +1,86 @@
+---
+name: ModalProvider
+menu: Context Providers
+route: contextProviders/modalProvider
+---
+
+import { Props } from 'docz';
+import { ModalProvider } from '@ohif/ui';
+import ModalComponent from './ModalComponent.jsx';
+
+# Modal Context Provider
+
+This is a context provider that allow the application to share the modal
+component across all application.
+
+## ModalProvider
+
+Properties:
+
+<Props of={ModalProvider} />
+
+Usage example:
+
+```javascript
+import { ModalProvider } from '@ohif/ui';
+import YourModalComponent from 'your-modal-component';
+
+const App = () => {
+  return (
+    <ModalProvider modal={YourModalComponent}>
+      /** You app content */
+    </ModalComponent>;
+  )
+};
+
+export default App;
+```
+
+## useModal
+
+Used for React Functional Components. Should be used in the body of the
+functional component to get access to the context together with the `show/hide`
+functions.
+
+Usage example:
+
+```javascript
+import { withModal } from '@ohif/ui';
+
+const SampleComponent = () => {
+  const { show, hide } = useModal();
+
+  return;
+};
+
+export default SampleComponent;
+```
+
+## withModal
+
+Used for React Class Components. This function show receive a Component as a
+property and this component will have access to the context through its own
+properties.
+
+Usage example:
+
+```javascript
+import { withModal } from '@ohif/ui';
+import React from 'react';
+
+class SampleComponent extends React.Component {
+  const { show, hide } = props.modal;
+
+  render() {
+    return;
+  }
+}
+
+export default withModal(SampleComponent);
+```
+
+## Modal Properties
+
+The Modal Properties that can be override are:
+
+<Props of={ModalComponent} />
