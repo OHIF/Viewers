@@ -1,3 +1,5 @@
+import { line } from 'd3-shape';
+
 /**
  * It adds attributes to root element from passed attributes list
  * It mutates passed param
@@ -219,6 +221,9 @@ const _addPoints = (root, dataset, cxAttrValue, cyAttrValue) => {
     .data(dataset)
     .enter()
     .append('circle')
+    .attr('id', (point, index) => {
+      return `point-${index}`;
+    })
     .attr('class', 'dot')
     .attr('clip-path', 'url(#clip)')
     .attr('cx', cxAttrValue)
@@ -245,6 +250,153 @@ const _updatePoints = (root, dataset = [], cxAttrValue, cyAttrValue) => {
     .attr('cy', cyAttrValue);
 };
 
+// TODO KINDERSPITAL
+const _setInteractionLine = (
+  root,
+  isPeekSet,
+  isGlomerularSet,
+  lineDataset,
+  lineDAttrValue
+) => {
+  const interactorClassSelector = ' interaction line';
+  const interactorSelector = interactorClassSelector.replace(/\s/gi, '.');
+
+  if (!!isPeekSet && !!isGlomerularSet) {
+    let interactionLine = root.selectAll(interactorSelector);
+
+    // create if not existing
+    if (interactionLine.empty()) {
+      interactionLine = root
+        .append('path')
+        .attr('clip-path', 'url(#clip)')
+        .attr('class', interactorClassSelector);
+    }
+
+    if (lineDataset) {
+      interactionLine.datum(lineDataset);
+    }
+    interactionLine.attr('d', lineDAttrValue);
+  } else {
+    root.selectAll(interactorSelector).remove();
+  }
+};
+
+const _setInteractionLabel = (root, pointIdSelector, label, classRef) => {
+  const gPoint = root.select(`#${pointIdSelector}`);
+  if (!gPoint) {
+    return false;
+  }
+
+  const pointNode = gPoint.node();
+
+  if (!pointNode) {
+    return;
+  }
+  const labelIdSuffix = pointNode.id;
+
+  const textPosX = pointNode.cx.baseVal.valueAsString;
+  const textPosY = Number(pointNode.cy.baseVal.valueAsString) + 15;
+
+  const textId = 'text-' + labelIdSuffix;
+  const selector = classRef ? `.${classRef}.interaction.text` : `#${textId}`;
+  const oldText = root.select(selector);
+  let _text;
+
+  // create or use old one
+  if (!oldText.empty()) {
+    _text = oldText;
+  } else {
+    _text = root
+      .append('text')
+      .attr('class', `${classRef} interaction text`)
+      .attr('clip-path', 'url(#clip)');
+
+    if (label) {
+      _text.text(label);
+    }
+  }
+
+  _text
+    .attr('id', textId)
+    .property('point-id', labelIdSuffix)
+    .attr('x', textPosX)
+    .attr('y', textPosY);
+
+  return true;
+};
+
+const _removeInteractionLabel = (root, classRef) => {
+  root.selectAll(`.${classRef}.interaction.text`).remove();
+};
+
+/**
+ * It appends interaction points svg element to root element
+ * It mutates passed param
+ *
+ * @param {object} root svg element to be changed
+ * @param {object} dataset dataset to tie to content
+ * @param {number} cxAttrValue cx attribute
+ * @param {number} cyAttrValue cy attribute
+ *
+ * @return {object} points svg element
+ *
+ */
+const _addInteractionPoints = (
+  root,
+  peekPoint,
+  glomerularPoint,
+  lineDataset,
+  lineDAttrValue
+) => {
+  // remove old class
+  root.selectAll('.interaction.dot').attr('class', 'dot');
+  const _setInteractionPoint = (point, classRef, label) => {
+    if (point && point.id) {
+      const pointSelector = point.id;
+      const pointIdSelector = '#' + point.id;
+
+      const interationPoint = root.select(pointIdSelector);
+      interationPoint.attr('class', `${classRef} interaction dot`);
+      _setInteractionLabel(root, pointSelector, label, classRef);
+      return true;
+    } else {
+      _removeInteractionLabel(root, classRef);
+    }
+  };
+
+  const isPeekSet = _setInteractionPoint(peekPoint, 'peek', 'P');
+  const isGlomerularSet = _setInteractionPoint(
+    glomerularPoint,
+    'glomerular',
+    'G'
+  );
+  _setInteractionLine(
+    root,
+    isPeekSet,
+    isGlomerularSet,
+    lineDataset,
+    lineDAttrValue
+  );
+};
+
+/**
+ * It updates interaction points svg element with new dataset, cxAttrValue and cyAttrValue
+ * It mutates passed param
+ *
+ * @param {object} root svg element to be changed
+ * @param {object} dataset dataset to tie to content
+ * @param {number} cxAttrValue cx attribute
+ * @param {number} cyAttrValue cy attribute
+ *
+ */
+const _updateInteractionPoints = (root, lineDataset, lineDAttrValue) => {
+  root.selectAll('.interaction.text').each((data, index, group) => {
+    const currentLabelText = group[index];
+    _setInteractionLabel(root, currentLabelText['point-id'], undefined);
+  });
+  _setInteractionLine(root, true, true, lineDataset, lineDAttrValue);
+};
+
 /**
  * It removes children nodes from root param.
  * It mutates passed param
@@ -266,6 +418,10 @@ const chart = {
   points: {
     addNode: _addPoints,
     updateNode: _updatePoints,
+  },
+  interactionPoint: {
+    addNode: _addInteractionPoints,
+    updateNode: _updateInteractionPoints,
   },
   background: {
     addNode: _addChartClipPath,

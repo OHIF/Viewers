@@ -1,7 +1,7 @@
 import { zoom } from 'd3-zoom';
 import { event } from 'd3-selection';
 import { line } from 'd3-shape';
-import { zoomIdentity } from 'd3';
+import { zoomIdentity, zoomTransform } from 'd3';
 
 import chart from './chart';
 
@@ -119,6 +119,7 @@ const _bindZoom = (
       transformedXAxisScale,
       transformedYAxisScale
     );
+
     // create line
     const _line = line()
       .x(parseXPoint(transformedXAxisScale))
@@ -131,9 +132,130 @@ const _bindZoom = (
       parseXPoint(transformedXAxisScale),
       parseYPoint(transformedYAxisScale)
     );
+
+    // create line
+    const _interactionline = line()
+      .x(parseInteractionXPoint(parseXPoint, transformedXAxisScale))
+      .y(parseInteractionYPoint(parseYPoint, transformedYAxisScale));
+
+    chart.interactionPoint.updateNode(root, undefined, _interactionline);
   }
 
   return _zoom;
+};
+
+const parseInteractionXPoint = (parseAxis, axisScale) => (
+  interactionPoint,
+  interactionIndex
+) => {
+  const { x: index, y } = interactionPoint;
+  const point = {
+    y,
+  };
+  return parseAxis(axisScale)(point, index);
+};
+
+const parseInteractionYPoint = (parseAxis, axisScale) => (
+  interactionPoint,
+  interactionIndex
+) => {
+  const { x: index, y, parsedY } = interactionPoint;
+  const point = {
+    y,
+  };
+  // in case no parsed y yet parse it now
+  return parsedY || parseAxis(axisScale)(point, index);
+};
+
+const _bindPointInteraction = (
+  root,
+  dataset,
+  xAxisScale,
+  yAxisScale,
+  parseXPoint,
+  parseYPoint
+) => {
+  const dots = root.selectAll('.dot');
+
+  dots.on('mousedown', null);
+  const mouseDown = (item, index, group) => {
+    const rootNode = root.node();
+    const currentZoomTransform = zoomTransform(rootNode);
+
+    const peekIndex = index;
+    const glomerularIndex = index + 10;
+    const gPeekPoint = group[index];
+    const gGlomerularPoint = group[index + 10];
+
+    const transformedXAxisScale =
+      (currentZoomTransform && currentZoomTransform.rescaleX(xAxisScale)) ||
+      xAxisScale;
+    const transformedYAxisScale =
+      (currentZoomTransform && currentZoomTransform.rescaleY(yAxisScale)) ||
+      yAxisScale;
+
+    const buildInteractionDataset = (
+      gPeekPoint,
+      peekIndex,
+      gGlomerularPoint,
+      glomerularIndex
+    ) => {
+      if (!gPeekPoint || !gGlomerularPoint) {
+        return;
+      }
+
+      const peekData = gPeekPoint.__data__;
+      const glomerularData = gGlomerularPoint.__data__;
+
+      const getLower = (pointA, pointB) => {
+        const parsedYA = parseYPoint(transformedXAxisScale)(pointA, pointA.x);
+        const parsedYB = parseYPoint(transformedYAxisScale)(pointB, pointB.x);
+
+        return parsedYA < parsedYB ? pointA : pointB;
+      };
+
+      const createLowerPoint = (pointRef, minorPoint) => {
+        const parsedYMinor = parseYPoint(transformedYAxisScale)(
+          minorPoint,
+          minorPoint.x
+        );
+        const lowerY = Math.floor(parsedYMinor / 2);
+        return { x: pointRef.x, y: minorPoint.y, parsedY: lowerY };
+      };
+
+      const peekPoint = { x: peekIndex, ...peekData };
+      const glomerularPoint = { x: glomerularIndex, ...glomerularData };
+
+      const minorPoint = getLower(peekPoint, glomerularPoint);
+      const peekLowerPoint = createLowerPoint(peekPoint, minorPoint);
+      const glomerularLowerPoint = createLowerPoint(
+        glomerularPoint,
+        minorPoint
+      );
+
+      return [peekPoint, peekLowerPoint, glomerularLowerPoint, glomerularPoint];
+    };
+
+    const dataset = buildInteractionDataset(
+      gPeekPoint,
+      peekIndex,
+      gGlomerularPoint,
+      glomerularIndex
+    );
+    // create line
+    const _line = line()
+      .x(parseInteractionXPoint(parseXPoint, transformedXAxisScale))
+      .y(parseInteractionYPoint(parseYPoint, transformedYAxisScale));
+
+    chart.interactionPoint.addNode(
+      root,
+      gPeekPoint,
+      gGlomerularPoint,
+      dataset,
+      _line
+    );
+  };
+  dots.on('mousedown', mouseDown);
 };
 const bindMouseEvents = (
   root,
@@ -162,6 +284,15 @@ const bindMouseEvents = (
     parseXPoint,
     parseYPoint,
     dataset
+  );
+
+  _bindPointInteraction(
+    root,
+    dataset,
+    xAxisScale,
+    yAxisScale,
+    parseXPoint,
+    parseYPoint
   );
 };
 

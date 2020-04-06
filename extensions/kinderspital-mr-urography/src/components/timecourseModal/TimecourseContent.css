@@ -13,6 +13,16 @@
   stroke: white;
 }
 
+.interaction {
+  fill: red;
+  stroke: red;
+}
+
+.interaction.line {
+  fill: none;
+  stroke-width: 2;
+}
+
 .label.axis {
   fill: white;
 }
