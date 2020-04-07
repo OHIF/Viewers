@@ -66,7 +66,7 @@ const _addChartContainer = (root, width, height, translateX, translateY) => {
  *
  * @param {object} root svg element to be changed
  * @param {TimecoursePointDef} axisDef definition of given axis
- * @param {number} posX position X to place content // TODO KINDERSPISTAL
+ * @param {number} posX position X to place content
  * @param {number} posY position Y to place content
  * @param {number} axisExtraAttrs list of extra attributes to be added on content
  * @param {function} axisBuilder callback function to create axis graphics

@@ -75,7 +75,7 @@ const addLineChartNode = (
 
   function createAxisScale(domainBottom, domainUpper, rangeBottom, rangeUpper) {
     return scaleLinear()
-      .domain([domainBottom, domainUpper])
+      .domain([domainBottom, domainUpper * 1.05])
       .range([rangeBottom, rangeUpper]);
   }
 

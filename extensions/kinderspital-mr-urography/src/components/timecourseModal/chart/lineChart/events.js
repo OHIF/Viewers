@@ -147,7 +147,6 @@ const _bindZoom = (
   return _zoom;
 };
 
-// TODO KINDERSPITAL
 /**
  * Dataset for interaction point is groupped differently from original dataset. So this function prepares/adapt it for original parser
  * @param {function} parseAxis d3js axis parser method for X Axis
@@ -185,14 +184,60 @@ const _parseInteractionYPoint = (parseAxis, axisScale) => (
 };
 
 /**
- * Bisector method to find closest point, using d3js bisector strategy.
+ * Bisector method to find closest point (considering Axis Y), using d3js bisector strategy.
  *
  * @return {object | undefined} returns the closest point.
  */
-const bisect = bisector(gPoint => {
+const findClosestIndexY = bisector(gPoint => {
   const gPointCx = gPoint.cx.baseVal.value;
   return gPointCx;
 }).left;
+
+/**
+ * Find the closest point to mousePoint from a list of svg elements
+ * It looks for all possible points
+ *
+ * @param {object} gNodes svg elements to look into
+ * @param {object} mousePoint d3 mouse point
+ * @return {number | undefined} returns the closest point index.
+ */
+function mouseClosestPointIndex(gNodes, mousePoint) {
+  let nodesLength = gNodes.length;
+  let precision = 1;
+  let bestIndex;
+  let bestDistance = Infinity;
+
+  function distance(_gPoint, _mousePoint) {
+    const getDifferential = (axisRef, indexRef) => {
+      const pointAAxisRef = _gPoint[axisRef].baseVal.value;
+      const pointBAxisRef = _mousePoint[indexRef];
+
+      return pointAAxisRef - pointBAxisRef;
+    };
+
+    const dx = getDifferential('cx', 0);
+    const dy = getDifferential('cy', 1);
+
+    return dx * dx + dy * dy;
+  }
+
+  // linear scan for coarse approximation
+  let gScan;
+  let scanDistance;
+  let scanIndex;
+
+  for (scanIndex = 0; scanIndex < nodesLength; scanIndex += precision) {
+    gScan = gNodes[scanIndex];
+    scanDistance = distance(gScan, mousePoint);
+
+    if (scanDistance < bestDistance) {
+      bestIndex = scanIndex;
+      bestDistance = scanDistance;
+    }
+  }
+
+  return bestIndex;
+}
 
 const _bindPointInteraction = (
   root,
@@ -203,10 +248,10 @@ const _bindPointInteraction = (
   movingPointsCallback
 ) => {
   const gDots = chart.points.getPoints(root);
-  const gNodes = gDots.nodes();
+  const dotsNodes = gDots.nodes();
 
   function _setListeners() {
-    gDots.on('mousedown', mouseDownListener);
+    root.on('mousedown', mouseDownListener);
 
     const nextGGlomerularPoint = chart.interactionPoint.getGlomerularPoint(
       root
@@ -219,9 +264,9 @@ const _bindPointInteraction = (
       _setDragListeners(
         rootNode,
         nextGGlomerularPoint,
-        gNodes,
+        dotsNodes,
         0,
-        gNodes.length
+        dotsNodes.length
       );
     }
   }
@@ -232,7 +277,7 @@ const _bindPointInteraction = (
     if (gGlomerularPoint) {
       _removeDragListeners(gGlomerularPoint);
     }
-    gDots.on('mousedown', null);
+    root.on('mousedown', null);
   }
   function _setDragListeners(
     rootNode,
@@ -249,11 +294,11 @@ const _bindPointInteraction = (
       event.on('drag', _dragListener).on('end', _endListener);
       function _dragListener() {
         const mousePoint = mouse(this);
-        const closestIndex = bisect(pathNodes, mousePoint[0], 1);
+        const closestIndex = findClosestIndexY(pathNodes, mousePoint[0], 1);
 
         // validate next index
         if (closestIndex > infIndex && closestIndex < supIndex) {
-          const selectedData = gNodes[closestIndex];
+          const selectedData = dotsNodes[closestIndex];
           if (selectedData) {
             chart.interactionPoint.setMoving(
               root,
@@ -261,8 +306,6 @@ const _bindPointInteraction = (
               chart.interactionPoint.glomerularClassSelector,
               true
             );
-
-            console.log('glomerularIndex', glomerularIndex);
             glomerularIndex = closestIndex;
           }
         }
@@ -273,8 +316,8 @@ const _bindPointInteraction = (
 
         const rootNode = root.node();
         const currentZoomTransform = zoomTransform(rootNode);
-        const gPeekPoint = gNodes[infIndex];
-        const gGlomerularPoint = gNodes[glomerularIndex];
+        const gPeekPoint = dotsNodes[infIndex];
+        const gGlomerularPoint = dotsNodes[glomerularIndex];
 
         chart.interactionPoint.setMoving(
           root,
@@ -399,44 +442,49 @@ const _bindPointInteraction = (
       _setDragListeners(
         rootNode,
         nextGGlomerularPoint,
-        gNodes,
+        dotsNodes,
         peekIndex,
-        gNodes.length
+        dotsNodes.length
       );
 
       movingPointsCallback(peekIndex, glomerularIndex);
     }
   };
 
-  const mouseDownListener = (item, index, group) => {
-    const peekIndex = index;
-    const gPeekPoint = group[index];
+  const mouseDownListener = () => {
+    const mousePoint = mouse(root.node());
+    const closestIndex = mouseClosestPointIndex(dotsNodes, mousePoint);
 
+    const closestPoint = dotsNodes[closestIndex];
+
+    if (!closestPoint) {
+      return;
+    }
     // do nothing in case current is an already placed peek point
-    if (chart.interactionPoint.isPeekPoint(gPeekPoint)) {
+    if (chart.interactionPoint.isPeekPoint(closestPoint)) {
       return;
     }
 
     // in case current is not a peek or glomerular place automatically p/g
-    if (!chart.interactionPoint.isGlomerularPoint(gPeekPoint)) {
+    if (!chart.interactionPoint.isGlomerularPoint(closestPoint)) {
       const rootNode = root.node();
       const currentZoomTransform = zoomTransform(rootNode);
 
       const defaultTimecourseInterval = chart.interactionPoint.defaultInterval();
-      let glomerularIndex = index + defaultTimecourseInterval;
-      let gGlomerularPoint = group[glomerularIndex];
+      let glomerularIndex = closestIndex + defaultTimecourseInterval;
+      let gGlomerularPoint = dotsNodes[glomerularIndex];
 
       if (!gGlomerularPoint) {
-        glomerularIndex = group.length - 1;
-        gGlomerularPoint = group[glomerularIndex];
+        glomerularIndex = dotsNodes.length - 1;
+        gGlomerularPoint = dotsNodes[glomerularIndex];
       }
 
       placePoints(
         rootNode,
         currentZoomTransform,
-        peekIndex,
+        closestIndex,
         glomerularIndex,
-        gPeekPoint,
+        closestPoint,
         gGlomerularPoint
       );
     }
