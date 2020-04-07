@@ -18,11 +18,9 @@ const Viewer = () => {
           iconName="group-layers"
           iconLabel="Studies"
           componentLabel="Studies"
-          defaultIsOpen={false}
+          defaultIsOpen={true}
         >
-          <div className="flex justify-center text-white p-2">
-            <StudyBrowser />
-          </div>
+          <StudyBrowser />
         </SidePanel>
         <div className="flex flex-1 h-100 overflow-hidden w-100 bg-primary-main items-center justify-center text-white">
           CONTENT

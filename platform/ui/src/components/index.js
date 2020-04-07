@@ -19,6 +19,7 @@ import StudyListExpandedRow from './StudyListExpandedRow';
 import StudyListPagination from './StudyListPagination';
 import StudyListTable from './StudyListTable';
 import Svg from './Svg';
+import StudyItem from './StudyItem';
 import Table from './Table';
 import TableBody from './TableBody';
 import TableCell from './TableCell';
@@ -45,6 +46,7 @@ export {
   Select,
   SidePanel,
   StudyBrowser,
+  StudyItem,
   StudyListExpandedRow,
   StudyListPagination,
   StudyListTable,

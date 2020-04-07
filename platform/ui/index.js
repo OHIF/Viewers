@@ -29,6 +29,7 @@ export {
   Select,
   SidePanel,
   StudyBrowser,
+  StudyItem,
   StudyListExpandedRow,
   StudyListPagination,
   StudyListTable,
