@@ -65,6 +65,7 @@ const MRUrographyPanel = ({
     selectedKey: 0,
     canFetchTimeCourses: false,
     canEvaluate: false,
+    canGeneratePDF: false,
   });
 
   const updateState = (field, value) => {
@@ -149,9 +150,20 @@ const MRUrographyPanel = ({
   };
 
   const onEvaluateClick = event => {
-    console.log(event);
     console.log('TODO -> Do not mock data');
     showTimecourseModal(modal);
+  };
+
+  const onComputeSegmentationTimeCoursesClick = event => {
+    console.log('TODO -> generate time courses!');
+  };
+
+  const onViewResultsClick = event => {
+    console.log('TODO -> view results window!');
+  };
+
+  const onGeneratePDFReportClick = event => {
+    console.log('TODO -> generate PDF!');
   };
 
   const onItemClick = (event, measurementData) => {
@@ -284,12 +296,16 @@ const MRUrographyPanel = ({
     ? 'footerBtn'
     : 'footerBtn footerBtnDisabled';
 
-  if (state.canFetchTimeCourses) {
-    debugger;
-  }
+  const viewResultsClassNames = state.canEvaluate
+    ? 'footerBtn'
+    : 'footerBtn footerBtnDisabled';
+
+  const generatePDFReportClassNames = state.canGeneratePDF
+    ? 'footerBtn'
+    : 'footerBtn footerBtnDisabled';
 
   return (
-    <div className="dcmseg-segmentation-panel">
+    <div className="mr-urography-panel">
       <TableList
         customHeader={
           <RegionsHeader count={state.regionList.length}></RegionsHeader>
@@ -298,19 +314,22 @@ const MRUrographyPanel = ({
         {state.regionList}
       </TableList>
 
-      <div className="mr-uro-table-footer">
+      <div className="mr-urography-panel-footer">
         <button
-          onClick={onEvaluateClick}
+          onClick={onComputeSegmentationTimeCoursesClick}
           className={computeSegmentationTimeCoursesClasseNames}
         >
           <Icon name="save" width="14px" height="14px" />
           Compute Segmentation and Timecourses
         </button>
-        <button onClick={onEvaluateClick} className="footerBtn">
+        <button onClick={onViewResultsClick} className={viewResultsClassNames}>
           <Icon name="save" width="14px" height="14px" />
           View results
         </button>
-        <button onClick={onEvaluateClick} className="footerBtn">
+        <button
+          onClick={onGeneratePDFReportClick}
+          className={generatePDFReportClassNames}
+        >
           <Icon name="save" width="14px" height="14px" />
           Generate PDF Report
         </button>

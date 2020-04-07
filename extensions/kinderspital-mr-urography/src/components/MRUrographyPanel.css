@@ -1,4 +1,4 @@
-.dcmseg-segmentation-panel {
+.mr-urography-panel {
   color: white;
   min-height: 200px;
   background-color: var(--primary-background-color);
@@ -8,33 +8,26 @@
   flex-direction: column;
 }
 
-.dcmseg-segmentation-panel h3 {
+.mr-urography-panel h3 {
   padding-left: 20px;
   margin-top: 0;
 }
 
-.dcmseg-segmentation-panel .segmentations {
+/*
+.mr-urography-panel .segmentations {
   padding: 0 20px 20px 20px;
 }
+*/
 
-.dcmseg-segmentation-panel .cog-icon {
-  margin: 20px 20px 0 0;
-  align-self: flex-end;
-  color: var(--default-color);
-  cursor: pointer;
-}
-
-.dcmseg-segmentation-panel .cog-icon:hover {
-  color: var(--hover-color);
-}
-
-.dcmseg-segmentation-panel .segmentation-icon {
+/*
+.mr-urography-panel .segmentation-icon {
   margin-right: 8px;
   margin-top: 12px;
   min-width: 14px;
 }
-
-.dcmseg-segmentation-panel .selector-form {
+*/
+/*
+.mr-urography-panel .selector-form {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -43,31 +36,32 @@
   height: 150px;
 }
 
-.dcmseg-segmentation-panel .selector-form>div {
+.mr-urography-panel .selector-form>div {
   width: 100%;
 }
 
-.dcmseg-segmentation-panel .selector-form>div:first-of-type {
+.mr-urography-panel .selector-form>div:first-of-type {
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
+*/
 
-.dcmseg-segmentation-panel .tableList .tableListHeader .numberOfItems {
+.mr-urography-panel .tableList .tableListHeader .numberOfItems {
   float: unset;
   max-width: unset;
   flex: unset;
   margin-right: 16px;
 }
 
-.mr-uro-table-footer {
+.mr-urography-panel-footer {
 	padding: 10px;
 	color: #fff;
 	text-align: center;
 	z-index: 1;
 }
 
-.mr-uro-table-footer .footerBtn {
+.mr-urography-panel-footer .footerBtn {
 	border: 1px solid var(--ui-border-color-active);
 	border-radius: 25px;
 	background-color: var(--active-color);
@@ -79,16 +73,16 @@
 	cursor: pointer;
 }
 
-.mr-uro-table-footer .footerBtnDisabled {
+.mr-urography-panel-footer .footerBtnDisabled {
 	background-color: var(--text-disabled-color);
 }
 
-.mr-uro-table-footer .footerBtn:hover,
-.mr-uro-table-footer .footerBtn:active {
+.mr-urography-panel-footer .footerBtn:hover,
+.mr-urography-panel-footer .footerBtn:active {
 	background-color: var(--ui-sky-blue);
 }
 
-.mr-uro-table-footer .footerBtn svg {
+.mr-urography-panel-footer .footerBtn svg {
 	margin-right: 4px;
 	position: relative;
 	top: 2px;

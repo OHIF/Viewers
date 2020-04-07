@@ -47,7 +47,7 @@ class MRUrographyTableItem extends Component {
   }
 
   getActionButton = (btnLabel, onClickCallback, enabled = true) => {
-    const classNames = enabled ? 'btnAction' : 'btnAction btnActionDisabled';
+    const classNames = enabled ? 'btnAction' : 'btnActionDisabled';
 
     return (
       <button key={btnLabel} className={classNames} onClick={onClickCallback}>
@@ -91,7 +91,7 @@ class MRUrographyTableItem extends Component {
     return (
       <TableListItem
         itemKey={this.props.measurementData.measurementNumber}
-        itemClass={`measurementItem ${this.props.itemClass} ${hasWarningClass}`}
+        itemClass={`mrUrographyTableItem ${this.props.itemClass} ${hasWarningClass}`}
         itemIndex={this.props.itemIndex}
         onItemClick={this.onItemClick}
       >

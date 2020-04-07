@@ -1,4 +1,4 @@
-.measurementItem
+.mrUrographyTableItem
   .rowActions
       margin-left: -1px;
       background-color: var(--ui-gray-darker)
@@ -17,14 +17,25 @@
         height: 35px
         transition: all 0.3s ease
 
-        .btnActionDisabled
-           color: var(--text-disabled-color)
-
         &:hover, &:active
           color: var(--text-primary-color)
 
         i
           margin-right: 4px;
+      
+      .btnActionDisabled
+          background-color: transparent;
+          border: none;
+          color: var(--text-disabled-color)
+          cursor: pointer
+          line-height: 35px
+          height: 35px
+          transition: all 0.3s ease
+
+        i
+          margin-right: 4px;
+
+
 
   &.selected
     .rowActions
