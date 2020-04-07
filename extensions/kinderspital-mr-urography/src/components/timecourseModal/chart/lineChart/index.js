@@ -62,12 +62,11 @@ const addLineChartNode = (
   axis,
   points = [],
   timecoursePG = [],
-  defaultTimecourseInterval,
   width,
   height,
   showAxisLabels = true,
   showAxisGrid = false,
-  showChartBackground = true
+  transparentChartBackground = true
 ) => {
   const _width = width - MARGIN.left - MARGIN.right;
   const _height = height - MARGIN.top - MARGIN.bottom;
@@ -119,7 +118,12 @@ const addLineChartNode = (
   );
 
   // add background
-  chart.background.addNode(chartWrapper, _width, _height, showChartBackground);
+  chart.background.addNode(
+    chartWrapper,
+    _width,
+    _height,
+    transparentChartBackground
+  );
   // call the x axis in a group tag
   const xAxisGenerator = axisBottom(xAxisScale);
 
@@ -183,11 +187,14 @@ const addLineChartNode = (
     parseXPoint,
     parseYPoint,
     dataset,
-    movingPointsCallback,
-    defaultTimecourseInterval
+    movingPointsCallback
   );
 
   return chartWrapper;
 };
 
-export { addLineChartNode, resetZoom };
+const defaultTimecourseInterval = value => {
+  return chart.interactionPoint.defaultInterval(value);
+};
+
+export { addLineChartNode, resetZoom, defaultTimecourseInterval };

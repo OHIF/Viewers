@@ -138,8 +138,8 @@ const _bindZoom = (
 
     // create line
     const _interactionline = line()
-      .x(parseInteractionXPoint(parseXPoint, transformedXAxisScale))
-      .y(parseInteractionYPoint(parseYPoint, transformedYAxisScale));
+      .x(_parseInteractionXPoint(parseXPoint, transformedXAxisScale))
+      .y(_parseInteractionYPoint(parseYPoint, transformedYAxisScale));
 
     chart.interactionPoint.updateNode(root, undefined, _interactionline);
   }
@@ -147,7 +147,14 @@ const _bindZoom = (
   return _zoom;
 };
 
-const parseInteractionXPoint = (parseAxis, axisScale) => (
+// TODO KINDERSPITAL
+/**
+ * Dataset for interaction point is groupped differently from original dataset. So this function prepares/adapt it for original parser
+ * @param {function} parseAxis d3js axis parser method for X Axis
+ * @param {object} axisScale d3 continuos scale for X Axis
+ * @return {function} it returns a function to be consumed as parser for X
+ */
+const _parseInteractionXPoint = (parseAxis, axisScale) => (
   interactionPoint,
   interactionIndex
 ) => {
@@ -158,7 +165,14 @@ const parseInteractionXPoint = (parseAxis, axisScale) => (
   return parseAxis(axisScale)(point, index);
 };
 
-const parseInteractionYPoint = (parseAxis, axisScale) => (
+/**
+ *
+ * Dataset for interaction point is groupped differently from original dataset. So this function prepares/adapt it for original parser
+ * @param {function} parseAxis d3js axis parser method for Y Axis
+ * @param {object} axisScale d3 continuos scale for Y Axis
+ * @return {function} it returns a function to be consumed as parser for Y
+ */
+const _parseInteractionYPoint = (parseAxis, axisScale) => (
   interactionPoint,
   interactionIndex
 ) => {
@@ -170,36 +184,35 @@ const parseInteractionYPoint = (parseAxis, axisScale) => (
   return parsedY || parseAxis(axisScale)(point, index);
 };
 
+/**
+ * Bisector method to find closest point, using d3js bisector strategy.
+ *
+ * @return {object | undefined} returns the closest point.
+ */
+const bisect = bisector(gPoint => {
+  const gPointCx = gPoint.cx.baseVal.value;
+  return gPointCx;
+}).left;
+
 const _bindPointInteraction = (
   root,
-  dataset,
   xAxisScale,
   yAxisScale,
   parseXPoint,
   parseYPoint,
-  movingPointsCallback,
-  defaultTimecourseInterval = 10
+  movingPointsCallback
 ) => {
-  const dots = root.selectAll('.dot');
-  const gNodes = dots.nodes();
-
-  const getCurrentGGlomerular = root => {
-    return root.selectAll('.interaction.dot').filter('.glomerular');
-  };
-
-  const getCurrentGPeek = root => {
-    return root.selectAll('.interaction.dot').filter('.peek');
-  };
-
-  const bisect = bisector(function(gPoint) {
-    const gPointCx = gPoint.cx.baseVal.value;
-    return gPointCx;
-  }).left;
+  const gDots = chart.points.getPoints(root);
+  const gNodes = gDots.nodes();
 
   function _setListeners() {
-    dots.on('mousedown', mouseDownListener);
-    const nextGGlomerularPoint = getCurrentGGlomerular(root);
+    gDots.on('mousedown', mouseDownListener);
 
+    const nextGGlomerularPoint = chart.interactionPoint.getGlomerularPoint(
+      root
+    );
+
+    // initialize events in case existing gpoint already
     if (nextGGlomerularPoint) {
       const rootNode = root.node();
 
@@ -214,63 +227,66 @@ const _bindPointInteraction = (
   }
 
   function _removeListeners() {
-    const gGlomerularPoint = getCurrentGGlomerular(root);
+    const gGlomerularPoint = chart.interactionPoint.getGlomerularPoint(root);
 
     if (gGlomerularPoint) {
       _removeDragListeners(gGlomerularPoint);
     }
-    dots.on('mousedown', null);
+    gDots.on('mousedown', null);
   }
-  const _setDragListeners = (
+  function _setDragListeners(
     rootNode,
     gElement,
     pathNodes,
-    peekIndex = 0,
-    nodesLength
-  ) => {
-    function _started() {
+    infIndex = 0,
+    supIndex
+  ) {
+    function _startListener() {
       select(this).classed('selected', true);
       let glomerularIndex;
+
       chart.interactionPoint.setLineHidden(root, true);
-      event.on('drag', _dragged).on('end', _ended);
-      function _dragged() {
+      event.on('drag', _dragListener).on('end', _endListener);
+      function _dragListener() {
         const mousePoint = mouse(this);
         const closestIndex = bisect(pathNodes, mousePoint[0], 1);
 
-        if (closestIndex > peekIndex && closestIndex < nodesLength) {
+        // validate next index
+        if (closestIndex > infIndex && closestIndex < supIndex) {
           const selectedData = gNodes[closestIndex];
           if (selectedData) {
             chart.interactionPoint.setMoving(
               root,
               selectedData.id,
-              'glomerular',
+              chart.interactionPoint.glomerularClassSelector,
               true
             );
 
+            console.log('glomerularIndex', glomerularIndex);
             glomerularIndex = closestIndex;
           }
         }
       }
 
-      function _ended(a, b, c) {
+      function _endListener() {
         chart.interactionPoint.setLineHidden(root, false);
 
         const rootNode = root.node();
         const currentZoomTransform = zoomTransform(rootNode);
-        const gPeekPoint = gNodes[peekIndex];
+        const gPeekPoint = gNodes[infIndex];
         const gGlomerularPoint = gNodes[glomerularIndex];
 
         chart.interactionPoint.setMoving(
           root,
           glomerularIndex,
-          'glomerular',
+          chart.interactionPoint.glomerularClassSelector,
           false
         );
 
         placePoints(
           rootNode,
           currentZoomTransform,
-          peekIndex,
+          infIndex,
           glomerularIndex,
           gPeekPoint,
           gGlomerularPoint
@@ -279,18 +295,19 @@ const _bindPointInteraction = (
       }
     }
 
-    const _drag = drag().on('start', _started);
+    const _drag = drag().on('start', _startListener);
+
     _drag.container(rootNode);
     gElement.call(_drag);
     gElement.classed('draggable', true);
-  };
+  }
 
-  const _removeDragListeners = gElement => {
+  function _removeDragListeners(gElement) {
     if (!gElement.empty()) {
       gElement.on('drag', null);
       gElement.classed('draggable', false);
     }
-  };
+  }
 
   const placePoints = (
     rootNode,
@@ -305,8 +322,12 @@ const _bindPointInteraction = (
     const transformedYAxisScale =
       (zoomTransform && zoomTransform.rescaleY(yAxisScale)) || yAxisScale;
 
-    const currentGGlomerularPoint = getCurrentGGlomerular(root);
+    // remove current gGlomerular point listeners
+    const currentGGlomerularPoint = chart.interactionPoint.getGlomerularPoint(
+      root
+    );
     _removeDragListeners(root, currentGGlomerularPoint);
+
     const buildInteractionDataset = (
       gPeekPoint,
       peekIndex,
@@ -357,9 +378,10 @@ const _bindPointInteraction = (
     );
     // create line
     const _line = line()
-      .x(parseInteractionXPoint(parseXPoint, transformedXAxisScale))
-      .y(parseInteractionYPoint(parseYPoint, transformedYAxisScale));
+      .x(_parseInteractionXPoint(parseXPoint, transformedXAxisScale))
+      .y(_parseInteractionYPoint(parseYPoint, transformedYAxisScale));
 
+    // set interaction points
     chart.interactionPoint.addNode(
       root,
       gPeekPoint,
@@ -368,7 +390,10 @@ const _bindPointInteraction = (
       _line
     );
 
-    const nextGGlomerularPoint = getCurrentGGlomerular(root);
+    // set gGlomerular drag listeners
+    const nextGGlomerularPoint = chart.interactionPoint.getGlomerularPoint(
+      root
+    );
 
     if (nextGGlomerularPoint) {
       _setDragListeners(
@@ -384,26 +409,28 @@ const _bindPointInteraction = (
   };
 
   const mouseDownListener = (item, index, group) => {
-    const rootNode = root.node();
-    const currentZoomTransform = zoomTransform(rootNode);
-
     const peekIndex = index;
-    let glomerularIndex = index + defaultTimecourseInterval;
     const gPeekPoint = group[index];
-    let gGlomerularPoint = group[glomerularIndex];
 
-    if (!gGlomerularPoint) {
-      glomerularIndex = group.length - 1;
-      gGlomerularPoint = group[glomerularIndex];
-    }
-
-    const currentClassName = gPeekPoint.className.baseVal;
-
-    if (currentClassName.indexOf('peek') > 0) {
+    // do nothing in case current is an already placed peek point
+    if (chart.interactionPoint.isPeekPoint(gPeekPoint)) {
       return;
     }
 
-    if (currentClassName.indexOf('glomerular') < 0) {
+    // in case current is not a peek or glomerular place automatically p/g
+    if (!chart.interactionPoint.isGlomerularPoint(gPeekPoint)) {
+      const rootNode = root.node();
+      const currentZoomTransform = zoomTransform(rootNode);
+
+      const defaultTimecourseInterval = chart.interactionPoint.defaultInterval();
+      let glomerularIndex = index + defaultTimecourseInterval;
+      let gGlomerularPoint = group[glomerularIndex];
+
+      if (!gGlomerularPoint) {
+        glomerularIndex = group.length - 1;
+        gGlomerularPoint = group[glomerularIndex];
+      }
+
       placePoints(
         rootNode,
         currentZoomTransform,
@@ -414,9 +441,11 @@ const _bindPointInteraction = (
       );
     }
   };
+
   _removeListeners();
   _setListeners();
 };
+
 const bindMouseEvents = (
   root,
   gX,
@@ -428,8 +457,7 @@ const bindMouseEvents = (
   parseXPoint,
   parseYPoint,
   dataset,
-  movingPointsCallback,
-  defaultTimecourseInterval
+  movingPointsCallback
 ) => {
   if (!root) {
     return;
@@ -450,13 +478,11 @@ const bindMouseEvents = (
 
   _bindPointInteraction(
     root,
-    dataset,
     xAxisScale,
     yAxisScale,
     parseXPoint,
     parseYPoint,
-    movingPointsCallback,
-    defaultTimecourseInterval
+    movingPointsCallback
   );
 };
 

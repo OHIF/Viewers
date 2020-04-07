@@ -249,6 +249,17 @@ const _addPoints = (root, dataset, cxAttrValue, cyAttrValue) => {
 };
 
 /**
+ * It return points from root parent
+ *
+ * @param {object} root svg element to be changed
+ * @return {object} points svg element
+ *
+ */
+const _getPoints = root => {
+  return root.selectAll('.dot');
+};
+
+/**
  * It updates points svg element with new dataset, cxAttrValue and cyAttrValue
  *
  * @param {object} root svg element to be changed
@@ -267,7 +278,18 @@ const _updatePoints = (root, dataset = [], cxAttrValue, cyAttrValue) => {
     .attr('cy', cyAttrValue);
 };
 
-// TODO KINDERSPITAL
+/**
+ * It updates points svg element with new dataset, cxAttrValue and cyAttrValue
+ *
+ * @param {object} root svg element to be changed
+ * @param {boolean} isPeekSet boolean to define if peek point is already set
+ * @param {boolean} isGlomerularSet boolean to define if glomerular point is already set
+ * @param {object} lineDataset dataset to tie to content
+ * @param {*} lineDAttrValue svg d attribute for given line
+ *
+ * @modifies {root}
+ *
+ */
 const _setInteractionLine = (
   root,
   isPeekSet,
@@ -298,6 +320,15 @@ const _setInteractionLine = (
   }
 };
 
+/**
+ * It returns a pair of position {x, y} for gInner content which is inside gOuter totally.
+ *
+ * @param {object} gOuter svg element to be the outer content
+ * @param {object} gInner svg element to be the inner content. I.e the one to be fit into outer content.
+ *
+ * @return {object} point position
+ *
+ */
 const _fitIntoContainer = (gOuter, gInner) => {
   try {
     const {
@@ -339,12 +370,23 @@ const _fitIntoContainer = (gOuter, gInner) => {
     };
   }
 };
-
+/**
+ * It set/update interaction label for given point (pointIdSelector or labelClassSelector)
+ *
+ * @param {object} root svg element to be changed
+ * @param {string} pointIdSelector selector of point
+ * @param {string} label label text
+ * @param {string} labelClassSelector text for label class
+ * @param {object} labelExtraAttrs list of extra attributes to be added on label content
+ * @modifies {root}
+ *
+ * @return {boolean} return true in case of success and false otherwise
+ */
 const _setInteractionLabel = (
   root,
   pointIdSelector,
   label,
-  classRef,
+  labelClassSelector,
   labelExtraAttrs
 ) => {
   const gPoint = root.select(`#${pointIdSelector}`);
@@ -363,7 +405,9 @@ const _setInteractionLabel = (
   const textPosY = Number(pointNode.cy.baseVal.valueAsString) + 15;
 
   const textId = 'text-' + labelIdSuffix;
-  const selector = classRef ? `.${classRef}.interaction.text` : `#${textId}`;
+  const selector = labelClassSelector
+    ? `.${labelClassSelector}.interaction.text`
+    : `#${textId}`;
   const oldText = root.select(selector);
   let _text;
 
@@ -373,7 +417,7 @@ const _setInteractionLabel = (
   } else {
     _text = root
       .append('text')
-      .attr('class', `${classRef} interaction text`)
+      .attr('class', `${labelClassSelector} interaction text`)
       .attr('clip-path', 'url(#clip)');
 
     if (label) {
@@ -401,6 +445,13 @@ const _setInteractionLabel = (
   return true;
 };
 
+/**
+ * It changes interaction line visibility
+ * @param {object} root svg element to be changed
+ * @param {boolean} hidden flag to define if line is hidden or not
+ *
+ * @modifies {root}
+ */
 const _setInteractionLineHidden = (root, hidden = false) => {
   const interactorClassSelector = ' interaction line';
   const interactorSelector = interactorClassSelector.replace(/\s/gi, '.');
@@ -408,20 +459,38 @@ const _setInteractionLineHidden = (root, hidden = false) => {
   root.selectAll(interactorSelector).classed('hidden', hidden);
 };
 
-const _removeInteractionLabel = (root, classRef) => {
-  root.selectAll(`.${classRef}.interaction.text`).remove();
+/**
+ * It removes text label of given classSelector element
+ * @param {object} root svg element to be changed
+ * @param {string} classSelector class selector of element to be processed
+ *
+ * @modifies {root}
+ */
+const _removeInteractionLabel = (root, classSelector) => {
+  root.selectAll(`.${classSelector}.interaction.text`).remove();
+};
+
+/**
+ * It get a given interaction point
+ *
+ * @param {object} root svg element to be changed
+ * @param {string} classSelector class selector of element to be processed
+ *
+ * @return {object}
+ */
+const _getInteractionPoint = (root, classSelector) => {
+  return root.selectAll('.interaction.dot').filter(`.${classSelector}`);
 };
 
 /**
  * It appends interaction points svg element to root element
- * It mutates passed param
  *
  * @param {object} root svg element to be changed
- * @param {object} dataset dataset to tie to content
- * @param {number} cxAttrValue cx attribute
- * @param {number} cyAttrValue cy attribute
- *
- * @return {object} points svg element
+ * @param {object} peekPoint svg element representing peek point
+ * @param {number} glomerularPoint svg element representing glomerular point
+ * @param {object} lineDataset dataset to tie to content
+ * @param {*} lineDAttrValue svg d attribute for given line
+ * @modifies {root}
  *
  */
 const _addInteractionPoints = (
@@ -453,10 +522,14 @@ const _addInteractionPoints = (
     }
   };
 
-  const isPeekSet = _setInteractionPoint(peekPoint, 'peek', 'P');
+  const isPeekSet = _setInteractionPoint(
+    peekPoint,
+    chart.interactionPoint.peekClassSelector,
+    'P'
+  );
   const isGlomerularSet = _setInteractionPoint(
     glomerularPoint,
-    'glomerular',
+    chart.interactionPoint.glomerularClassSelector,
     'G'
   );
   _setInteractionLine(
@@ -469,13 +542,12 @@ const _addInteractionPoints = (
 };
 
 /**
- * It updates interaction points svg element with new dataset, cxAttrValue and cyAttrValue
- * It mutates passed param
+ * It updates interaction points dataset or svg dAttribute
  *
  * @param {object} root svg element to be changed
- * @param {object} dataset dataset to tie to content
- * @param {number} cxAttrValue cx attribute
- * @param {number} cyAttrValue cy attribute
+ * @param {object} lineDataset dataset to tie to content
+ * @param {*} lineDAttrValue svg d attribute for given line
+ * @modifies {root}
  *
  */
 const _updateInteractionPoints = (root, lineDataset, lineDAttrValue) => {
@@ -486,15 +558,56 @@ const _updateInteractionPoints = (root, lineDataset, lineDAttrValue) => {
   _setInteractionLine(root, true, true, lineDataset, lineDAttrValue);
 };
 
-const _setMoving = (root, pointId, classRef, isMoving) => {
+/**
+ * To get/set default interval between Peek and Glomerular points
+ *
+ * @param {number} [value] new value for interval
+ *
+ * @return {number} current value of defaultInterval
+ *
+ */
+const defaultInterval = value => {
+  // set
+  if (value) {
+    chart.interactionPoint.defaultIntervalValue = value;
+  }
+
+  return chart.interactionPoint.defaultIntervalValue;
+};
+
+/**
+ * It returns true if given gPoint contains given class
+ *
+ * @param {object} gPoint svg element to inspect
+ * @param {string} classSelector class to look for
+ *
+ * @return {boolean} true if gPoint has class classSelector
+ *
+ */
+const _isPointOf = (gPoint, classSelector) => {
+  const currentClassName = gPoint.className.baseVal;
+
+  return currentClassName.indexOf(classSelector) >= 0;
+};
+
+/**
+ * It updates points/line/label when moving (occurring or ending)
+ * @param {object} root svg element to be changed
+ * @param {string} pointIdSelector id selector of element to be processed (points related)
+ * @param {string} classSelector class selector of element to be processed (interaction points related)
+ * @param {boolean} isMoving if moving or not
+ *
+ * @modifies {root}
+ */
+const _setMoving = (root, pointIdSelector, classSelector, isMoving) => {
   if (isMoving) {
     root.selectAll('.dot').classed('dragging selected', false);
 
     root
       .selectAll('.dot')
-      .filter(`#${pointId}`)
+      .filter(`#${pointIdSelector}`)
       .classed('dragging selected', true);
-    _setInteractionLabel(root, pointId, undefined, classRef, [
+    _setInteractionLabel(root, pointIdSelector, undefined, classSelector, [
       { key: 'class', value: 'selected dragging' },
     ]);
   } else {
@@ -530,6 +643,7 @@ const chart = {
   points: {
     addNode: _addPoints,
     updateNode: _updatePoints,
+    getPoints: _getPoints,
   },
   interactionPoint: {
     addNode: _addInteractionPoints,
@@ -537,6 +651,20 @@ const chart = {
     setLineHidden: _setInteractionLineHidden,
     setInteractionLabel: _setInteractionLabel,
     setMoving: _setMoving,
+    getGlomerularPoint: root =>
+      _getInteractionPoint(
+        root,
+        chart.interactionPoint.glomerularClassSelector
+      ),
+    getPeekPoint: root =>
+      _getInteractionPoint(root, chart.interactionPoint.peekClassSelector),
+    defaultInterval: defaultInterval,
+    peekClassSelector: 'peek',
+    glomerularClassSelector: 'glomerular',
+    isPeekPoint: gPoint =>
+      _isPointOf(gPoint, chart.interactionPoint.peekClassSelector),
+    isGlomerularPoint: gPoint =>
+      _isPointOf(gPoint, chart.interactionPoint.glomerularClassSelector),
   },
   background: {
     addNode: _addChartClipPath,

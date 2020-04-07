@@ -44,12 +44,13 @@ function LineChartContainer({
         axis,
         timecourse,
         timecoursePG,
-        defaultTimecourseInterval,
         width,
         height,
         true,
         true
       );
+
+      lineChart.defaultTimecourseInterval(defaultTimecourseInterval);
     }
   }, [timecourse, d3Container.current, width, height]);
 
