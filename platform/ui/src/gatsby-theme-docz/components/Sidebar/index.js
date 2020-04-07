@@ -39,7 +39,7 @@ export const Sidebar = React.forwardRef((props, ref) => {
       'Data Display',
       'Other',
     ],
-    Examples: ['Views'],
+    Examples: ['Study List', 'Toolbar Header'],
     System: ['Colors'],
   };
 

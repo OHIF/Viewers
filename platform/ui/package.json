@@ -23,7 +23,8 @@
     "build:ui:ci": "docz build",
     "build:ui:deploy-preview": "docz build --base=/ui/",
     "dev": "docz dev",
-    "serve": "docz serve"
+    "serve": "docz serve",
+    "docs:preview": "yarn run dev"
   },
   "dependencies": {
     "classnames": "^2.2.6",

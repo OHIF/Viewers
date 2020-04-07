@@ -1,0 +1,174 @@
+---
+name: Toolbar Header
+route: examples/toolbarHeader
+---
+
+import { useState } from 'react';
+import { Playground } from 'docz';
+import classnames from 'classnames';
+import { NavBar, Typography, Svg, Icon, IconButton } from '@ohif/ui';
+
+# Toolbar Header
+
+This example shows you how you can build a Study List page using the available
+components.
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const [activeTool, setActiveTool] = useState('Zoom');
+    const [showTooltip, setShowTooltip] = useState('Zoom');
+    const tools = [
+      {
+        id: 'Zoom',
+        label: 'Zoom',
+        icon: 'tool-zoom',
+        type: null,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Zoom' },
+      },
+      {
+        id: 'Wwwc',
+        label: 'Levels',
+        icon: 'tool-zoom',
+        type: null,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Wwwc' },
+      },
+      {
+        id: 'Pan',
+        label: 'Pan',
+        icon: 'tool-zoom',
+        type: null,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Pan' },
+      },
+      {
+        id: 'Wwwc',
+        label: 'Levels',
+        icon: 'tool-zoom',
+        type: null,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Wwwc' },
+      },
+      {
+        id: 'Wwwc',
+        label: 'Levels',
+        icon: 'tool-zoom',
+        type: null,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Wwwc' },
+      },
+    ];
+    const collapsedTools = [
+      {
+        id: 'Zoom',
+        label: 'Zoom',
+        icon: 'tool-zoom',
+        type: null,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Zoom' },
+      },
+    ];
+    const renderToolbar = () => {
+      return tools.map((tool, i) => {
+        const isActive = activeTool === tool.id;
+        const shouldShowTooltip = showTooltip === tool.id;
+        return (
+          <div className="relative flex justify-center">
+            <IconButton
+              variant={isActive ? 'contained' : 'text'}
+              className={classnames('mx-1', {
+                'text-black': isActive,
+                'text-common-bright hover:bg-primary-dark hover:text-primary-light': !isActive,
+              })}
+              onClick={(e) => {
+                setActiveTool(tool.id);
+              }}
+              onMouseOver={() => setShowTooltip(tool.id)}
+              onMouseOut={() => setShowTooltip(null)}
+              key={tool.id}
+            >
+              <Icon name="tool-zoom" />
+            </IconButton>
+            <div
+              class={classnames(
+                'absolute bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 transition duration-300',
+                {
+                  'visible opacity-1': shouldShowTooltip,
+                  'invisible opacity-0': !shouldShowTooltip,
+                }
+              )}
+            >
+              {tool.label}
+              <svg
+                class="absolute text-primary-dark h-2 w-full left-0 top-full transform scale-150"
+                style={{ top: -8 }}
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M24 22h-24l12-20z"
+                  style={{ stroke: '#373D9A', strokeWidth: 1 }}
+                />
+              </svg>
+            </div>
+          </div>
+        );
+      });
+    };
+    return (
+      <div className="pb-10">
+        <NavBar className="justify-between border-b-4 border-black">
+          <div className="flex flex-1 justify-between">
+            <div className="flex items-center">
+              <div className="mx-3 inline-flex items-center">
+                <Icon
+                  name="chevron-left"
+                  className="text-primary-main w-10 h-10 cursor-pointer transition duration-300 transform hover:scale-125"
+                  onClick={() => alert('Navigate to previous page')}
+                />
+                <a href="#" className="ml-4">
+                  <Svg name="logo-ohif" />
+                </a>
+              </div>
+            </div>
+            <div className="flex items-center">
+              <div className="flex items-center">
+                {renderToolbar()}
+                <span
+                  className="w-1 border-l py-4 mx-2"
+                  style={{ borderColor: '#354A6D' }}
+                />
+                <button>BUTTON</button>
+              </div>
+            </div>
+            <div className="flex items-center">
+              <span className="mr-3 text-common-light text-lg">
+                FOR INVESTIGATIONAL USE ONLY
+              </span>
+              <IconButton
+                variant="text"
+                color="inherit"
+                className="text-primary-active"
+                onClick={() => {}}
+              >
+                <React.Fragment>
+                  <Icon name="settings" /> <Icon name="chevron-down" />
+                </React.Fragment>
+              </IconButton>
+            </div>
+          </div>
+        </NavBar>
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={NavBar} />

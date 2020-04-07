@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import tailwindConfig from '../../../tailwind.config';
 
@@ -8,7 +9,6 @@ const BackgroundColor = ({ color }) => {
     const { colors } = tailwindConfig.theme;
     return colors[currentColor[0]][currentColor[1]];
   };
-  console.log(tailwindConfig);
   return (
     <div
       className={classnames(
@@ -19,6 +19,10 @@ const BackgroundColor = ({ color }) => {
       <p>bg-{color}</p>
     </div>
   );
+};
+
+BackgroundColor.propTypes = {
+  color: PropTypes.string,
 };
 
 export default BackgroundColor;
