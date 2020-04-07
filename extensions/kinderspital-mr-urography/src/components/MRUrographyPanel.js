@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import { utils, log } from '@ohif/core';
-import { ScrollableArea, TableList, useModal } from '@ohif/ui';
+import { ScrollableArea, TableList, useModal, Icon } from '@ohif/ui';
 import MRUrographyTableItem from './MRUrographyTabelItem';
 
 import TimecourseModal from './timecourseModal/TimecourseContent';
@@ -73,9 +73,10 @@ const MRUrographyPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     console.log('todo -> delete');
   };
 
-  const onEditDescriptionClick = event => {
+  const onEvaluateClick = event => {
     console.log(event);
-    console.log('todo -> edit description');
+    console.log('TODO -> Do not mock data');
+    showTimecourseModal(modal);
   };
 
   const onItemClick = (event, measurementData) => {
@@ -115,7 +116,7 @@ const MRUrographyPanel = ({ studies, viewports, activeIndex, isOpen }) => {
             onItemClick={onItemClick}
             onRelabel={onRelabelClick}
             onDelete={onDeleteClick}
-            onEditDescription={onEditDescriptionClick}
+            onEvaluate={onEvaluateClick}
           />
         );
       });
@@ -144,17 +145,28 @@ const MRUrographyPanel = ({ studies, viewports, activeIndex, isOpen }) => {
 
   return (
     <div className="dcmseg-segmentation-panel">
-      <ScrollableArea>
-        <TableList
-          customHeader={
-            <RegionsHeader count={state.regionList.length}></RegionsHeader>
-          }
-        >
-          {state.regionList}
-        </TableList>
-      </ScrollableArea>
+      <TableList
+        customHeader={
+          <RegionsHeader count={state.regionList.length}></RegionsHeader>
+        }
+      >
+        {state.regionList}
+      </TableList>
 
-      <button onClick={() => showTimecourseModal(modal)}></button>
+      <div className="mr-uro-table-footer">
+        <button onClick={onEvaluateClick} className="footerBtn">
+          <Icon name="save" width="14px" height="14px" />
+          Compute Segmentation and Timecourses
+        </button>
+        <button onClick={onEvaluateClick} className="footerBtn">
+          <Icon name="save" width="14px" height="14px" />
+          View results
+        </button>
+        <button onClick={onEvaluateClick} className="footerBtn">
+          <Icon name="save" width="14px" height="14px" />
+          Generate PDF Report
+        </button>
+      </div>
     </div>
   );
 };

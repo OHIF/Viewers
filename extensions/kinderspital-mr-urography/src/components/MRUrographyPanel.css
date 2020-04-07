@@ -59,3 +59,33 @@
   flex: unset;
   margin-right: 16px;
 }
+
+.mr-uro-table-footer {
+	padding: 10px;
+	color: #fff;
+	text-align: center;
+	z-index: 1;
+}
+
+.mr-uro-table-footer .footerBtn {
+	border: 1px solid var(--ui-border-color-active);
+	border-radius: 25px;
+	background-color: var(--active-color);
+	color: var(--ui-gray-dark);
+	line-height: 25px;
+  padding: 0px 20px;
+  margin: 5px 0px;
+	outline: none;
+	cursor: pointer;
+}
+
+.mr-uro-table-footer .footerBtn:hover,
+.mr-uro-table-footer .footerBtn:active {
+	background-color: var(--ui-sky-blue);
+}
+
+.mr-uro-table-footer .footerBtn svg {
+	margin-right: 4px;
+	position: relative;
+	top: 2px;
+}

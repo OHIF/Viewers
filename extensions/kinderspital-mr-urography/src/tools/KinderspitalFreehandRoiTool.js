@@ -66,8 +66,8 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
         points: [],
       },
       measurementNumber: measurementNumber++,
-      auc: 0,
-      vol: 0,
+      areaUnderCurve: 0,
+      volume: 0,
     };
 
     measurementData.handles.textBox = {

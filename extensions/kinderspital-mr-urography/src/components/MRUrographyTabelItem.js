@@ -11,7 +11,7 @@ class MRUrographyTableItem extends Component {
     onItemClick: PropTypes.func.isRequired,
     onRelabel: PropTypes.func,
     onDelete: PropTypes.func,
-    onEditDescription: PropTypes.func,
+    onEvaluate: PropTypes.func,
     itemClass: PropTypes.string,
     itemIndex: PropTypes.number,
   };
@@ -63,6 +63,14 @@ class MRUrographyTableItem extends Component {
 
     const actionButtons = [];
 
+    if (typeof this.props.onEvaluate === 'function') {
+      const evaluateButton = this.getActionButton(
+        'Evaluate',
+        this.onEvaluateClick
+      );
+      actionButtons.push(evaluateButton);
+    }
+
     if (typeof this.props.onRelabel === 'function') {
       const relabelButton = this.getActionButton(
         'Relabel',
@@ -70,13 +78,7 @@ class MRUrographyTableItem extends Component {
       );
       actionButtons.push(relabelButton);
     }
-    if (typeof this.props.onEditDescription === 'function') {
-      const descriptionButton = this.getActionButton(
-        'Description',
-        this.onEditDescriptionClick
-      );
-      actionButtons.push(descriptionButton);
-    }
+
     if (typeof this.props.onDelete === 'function') {
       const deleteButton = this.getActionButton('Delete', this.onDeleteClick);
       actionButtons.push(deleteButton);
@@ -111,11 +113,11 @@ class MRUrographyTableItem extends Component {
     this.props.onRelabel(event, this.props.measurementData);
   };
 
-  onEditDescriptionClick = event => {
+  onEvaluateClick = event => {
     // Prevent onItemClick from firing
     event.stopPropagation();
 
-    this.props.onEditDescription(event, this.props.measurementData);
+    this.props.onEvaluate(event, this.props.measurementData);
   };
 
   onDeleteClick = event => {
@@ -126,6 +128,7 @@ class MRUrographyTableItem extends Component {
   };
 
   getDataDisplayText = () => {
+    debugger;
     const { areaUnderCurve, volume } = this.props.measurementData;
 
     return [
