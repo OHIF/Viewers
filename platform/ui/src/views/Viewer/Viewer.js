@@ -15,20 +15,24 @@ const Viewer = () => {
       >
         <SidePanel
           side="left"
-          iconName="launch-arrow"
-          componentName="Study List"
+          iconName="info-link"
+          iconLabel="Studies"
+          componentLabel="Studies"
+          defaultIsOpen={false}
         >
-          <div>GUSTAVO</div>
+          <div>LEFT SIDE PANE CONTENT</div>
         </SidePanel>
         <div className="flex-1 h-100 overflow-hidden w-100 bg-primary-main">
           CONTENT
         </div>
         <SidePanel
           side="right"
-          iconName="launch-arrow"
-          componentName="Measurements"
+          iconName="info-link"
+          iconLabel="Measure"
+          componentLabel="Measurements"
+          defaultIsOpen={true}
         >
-          <div>GUSTAVO DO OUTRO LADO</div>
+          <div>RIGHT SIDE PANEL CONTENT</div>
         </SidePanel>
       </div>
     </div>

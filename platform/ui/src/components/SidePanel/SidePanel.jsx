@@ -4,64 +4,107 @@ import classnames from 'classnames';
 
 import { Button, Icon } from '@ohif/ui';
 
+const borderSize = 4;
+const expandedWidth = 320;
+const collapsedWidth = 60;
+
 const baseStyle = {
-  maxWidth: '320px',
+  maxWidth: `${expandedWidth}px`,
+  width: `${expandedWidth}px`,
 };
 
-const dynamicStyle = {
+const styleMap = {
   open: {
-    left: {},
-    right: {},
+    left: { marginLeft: '0px' },
+    right: { marginRight: '0px' },
   },
   closed: {
-    left: {},
-    right: {},
+    left: { marginLeft: `-${expandedWidth - collapsedWidth - borderSize}px` },
+    right: { marginRight: `-${expandedWidth - collapsedWidth - borderSize}px` },
   },
-};
-
-const sideClasses = {
-  left: 'border-r-4',
-  right: 'border-l-4',
 };
 
 const baseClassName =
-  'transition-all duration-300 ease-in-out h-100 bg-primary-light border-black';
+  'transition-all duration-300 ease-in-out h-100 bg-primary-dark border-black flex flex-col justify-start';
+
+const classesMap = {
+  open: {
+    left: `border-r-${borderSize}`,
+    right: `border-l-${borderSize}`,
+  },
+  closed: {
+    left: `border-r-${borderSize} items-end`,
+    right: `border-l-${borderSize} items-start`,
+  },
+};
 
 const SidePanel = ({
   side,
   className,
   children,
   defaultIsOpen,
-  componentName,
+  componentLabel,
+  iconLabel,
   iconName,
 }) => {
   const [isOpen, setIsOpen] = useState(defaultIsOpen);
   const openStatus = isOpen ? 'open' : 'closed';
-  const style = Object.assign({}, dynamicStyle[openStatus][side]);
+  const style = Object.assign({}, styleMap[openStatus][side], baseStyle);
+  const openIconName = {
+    left: 'chevron-right',
+    right: 'chevron-right',
+  };
+
+  const sidePanelHeader = () => {
+    return (
+      <React.Fragment>
+        {isOpen ? (
+          <Button
+            variant="text"
+            color="inherit"
+            rounded="none"
+            onClick={() => setIsOpen(false)}
+            className="flex flex-row items-center border-b w-100 border-secondary-main h-12"
+          >
+            <Icon
+              name={openIconName[side]}
+              className={classnames(
+                'text-primary-active',
+                side === 'left' && 'order-last'
+              )}
+            />
+            <span className="flex-1 text-primary-active">{componentLabel}</span>
+          </Button>
+        ) : (
+          <Button
+            variant="text"
+            color="inherit"
+            onClick={() => setIsOpen(true)}
+            style={{
+              minWidth: `${collapsedWidth}px`,
+              width: `${collapsedWidth}px`,
+            }}
+            className="flex flex-col text-xs px-1 py-1 text-white"
+          >
+            <Icon name={iconName} className="text-primary-active" />
+            <span className="mt-2 text-white text-xs">{iconLabel}</span>
+          </Button>
+        )}
+      </React.Fragment>
+    );
+  };
 
   return (
     <div
-      className={classnames(className, baseClassName, sideClasses[side])}
+      className={classnames(
+        className,
+        baseClassName,
+        classesMap[openStatus][side]
+      )}
       style={style}
     >
-      {isOpen ? (
-        <React.Fragment>
-          <div className="border-b-1">
-            {componentName}
-            <Button onClick={() => setIsOpen(false)}>
-              <Icon name="chevron-right" />
-            </Button>
-          </div>
-          {children}
-        </React.Fragment>
-      ) : (
-        <Button onClick={() => setIsOpen(true)}>
-          <div>
-            <Icon name={iconName} />
-            {componentName}
-          </div>
-        </Button>
-      )}
+      {sidePanelHeader(isOpen, side, iconLabel, iconName)}
+      {isOpen && children}
     </div>
   );
 };
@@ -72,9 +115,12 @@ SidePanel.defaultProps = {
 
 SidePanel.propTypes = {
   side: PropTypes.oneOf(['left', 'right']).isRequired,
+  iconLabel: PropTypes.string.isRequired,
+  componentLabel: PropTypes.string.isRequired,
+  iconName: PropTypes.string.isRequired,
+  defaultIsOpen: PropTypes.bool,
   className: PropTypes.string,
   children: PropTypes.node,
-  isOpen: PropTypes.bool,
 };
 
 export default SidePanel;
