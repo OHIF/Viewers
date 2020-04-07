@@ -64,6 +64,7 @@ const MRUrographyPanel = ({
     regionList: [],
     selectedKey: 0,
     canFetchTimeCourses: false,
+    canEvaluate: false,
   });
 
   const updateState = (field, value) => {
@@ -254,6 +255,7 @@ const MRUrographyPanel = ({
             onRelabel={onRelabelClick}
             onDelete={onDeleteClick}
             onEvaluate={onEvaluateClick}
+            canEvaluate={state.canEvaluate}
           />
         );
       });

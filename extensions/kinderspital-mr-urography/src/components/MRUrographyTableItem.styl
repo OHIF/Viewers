@@ -1,116 +1,68 @@
-.measurementTable
-  background-color: var(--primary-background-color)
-  height: 100%
-  width: 100%
-  display: flex
-  flex-direction: column
+.measurementItem
+  .rowActions
+      margin-left: -1px;
+      background-color: var(--ui-gray-darker)
+      height: 0
+      overflow: hidden
+      transition: all 0.3s ease
+      visibility: hidden
+      padding-left: 14px
 
-  .maxMeasurements
-    border-radius: 3px
-    color: var(--primary-background-color)
-    font-size: 12px
-    font-weight: 500
-    height: 19px
-    line-height: 17px
-    margin-top: 22px
-    margin-right: 15px
-    padding: 2px 6px 0
-    text-transform: uppercase
-    transition: all 0.3s ease
-    background-color: var(--default-color)
+      .btnAction
+        background-color: transparent;
+        border: none;
+        color: var(--default-color)
+        cursor: pointer
+        line-height: 35px
+        height: 35px
+        transition: all 0.3s ease
 
-  .measurementTableHeader
-    padding-left: 45px
+        .btnActionDisabled
+           color: var(--text-disabled-color)
 
-    .measurementTableHeaderItem
-      display: inline-block
-      margin-top: 9px
-      margin-left: 9px
-      padding-left: 9px
-      width: 90px
-      font-size: 14px
-      line-height: 20px
-      border-left: 1px solid var(--text-secondary-color)
-      color: var(--text-primary-color)
+        &:hover, &:active
+          color: var(--text-primary-color)
 
-      .timepointLabel
-        color: var(--text-secondary-color)
-        font-size: 12px
+        i
+          margin-right: 4px;
 
-    .warning-status
-      display: block
-      position: absolute
-      width: 50px
-      height: 40px
-      padding-left: 7px
-      left: 15px
-      top: 7px
+  &.selected
+    .rowActions
+      height: auto;
+      visibility: visible
 
-      .warning-border
-        display: block
-        border: 2px solid #e29e4a
-        border-radius: 36px
-        padding: 6px 7px
-        width: 40px
-        height: 40px
+  .measurementLocation
+    margin-top: 9px;
+    overflow: hidden;
+    max-width: calc(100% - 50px);
+    text-overflow: ellipsis;
+    overflow-wrap: normal;
+    white-space: nowrap;
 
-      svg
-        color: #e29e4a
-        width: 22px
-        height: 20px
-        pointer-events: inherit
+  .measurementDisplayText
+    display: inline-block;
+    margin-top: 9px;
+    padding-left: 9px;
+    width: 90px;
+    border-left: 1px solid var(--text-secondary-color);
+    color: var(--text-primary-color);
 
-  .measurementTableFooter
-    padding: 10px
-    color: #fff
-    text-align: center
-    z-index: 1
+  .itemIndex
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+    box-sizing: initial;
 
-    .saveBtn
-      border: 1px solid var(--ui-border-color-active)
-      border-radius: 25px
-      background-color: var(--active-color)
-      color: var(--ui-gray-dark)
-      line-height: 25px
-      padding: 0 20px
-      outline: none
-      cursor: pointer
+  &.hasWarnings
+    .itemIndex
+      opacity: 1
+      background-color: #e29e4a;
+      color: #fff;
 
-      &:hover, &:active
-        background-color: var(--ui-sky-blue)
+    .warning-icon
+      display: block;
+      margin: 7px auto 0;
 
       svg
-        margin-right: 4px
-        position: relative
-        top: 2px
-
-.tooltip-warning
-  &.in
-    opacity 1
-
-  .tooltip-inner
-    padding: 0
-
-    .warningTitle
-      text-align: left
-      background-color: var(--ui-gray-darkest)
-      padding: 7px 15px
-      border-top-left-radius: 7px
-      border-top-right-radius: 7px
-
-    .warningContent
-      text-align center
-      background-color: var(--ui-gray)
-      border-bottom-left-radius: 7px
-      border-bottom-right-radius: 7px
-
-      ol
-        margin-top: auto
-        padding-inline-start: 20px
-        padding-top: 10px
-        padding-bottom: 10px
-        padding-left: 25px
-        text-align: left
-
-        li
-          padding-right: 10px
+        width: 22px;
+        height: 20px;
+        pointer-events: inherit;

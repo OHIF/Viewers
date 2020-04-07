@@ -14,6 +14,7 @@ class MRUrographyTableItem extends Component {
     onEvaluate: PropTypes.func,
     itemClass: PropTypes.string,
     itemIndex: PropTypes.number,
+    canEvaluate: PropTypes.bool,
   };
 
   render() {
@@ -45,9 +46,11 @@ class MRUrographyTableItem extends Component {
     );
   }
 
-  getActionButton = (btnLabel, onClickCallback) => {
+  getActionButton = (btnLabel, onClickCallback, enabled = true) => {
+    const classNames = enabled ? 'btnAction' : 'btnAction btnActionDisabled';
+
     return (
-      <button key={btnLabel} className="btnAction" onClick={onClickCallback}>
+      <button key={btnLabel} className={classNames} onClick={onClickCallback}>
         <span style={{ marginRight: '4px' }}>
           <Icon name="edit" width="14px" height="14px" />
         </span>
@@ -66,7 +69,8 @@ class MRUrographyTableItem extends Component {
     if (typeof this.props.onEvaluate === 'function') {
       const evaluateButton = this.getActionButton(
         'Evaluate',
-        this.onEvaluateClick
+        this.onEvaluateClick,
+        this.props.canEvaluate
       );
       actionButtons.push(evaluateButton);
     }
