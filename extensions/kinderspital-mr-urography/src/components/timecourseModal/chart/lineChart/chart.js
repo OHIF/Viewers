@@ -174,7 +174,7 @@ const _addChartClipPath = (
     .attr('width', width + offset)
     .attr('height', height + offset);
 
-  const rect = root
+  root
     .append('rect')
     .attr('class', 'background')
     .attr('width', width)
@@ -316,20 +316,16 @@ const _fitIntoContainer = (gOuter, gInner) => {
     let nextX = innerX + innerWidth;
     let nextY = innerY + innerHeight;
 
-    if (nextX > outerX + outerWidth) {
+    if (innerX < outerX) {
+      nextX = outerX > innerWidth ? outerX : innerWidth;
+    } else if (nextX > outerX + outerWidth) {
       nextX = Math.abs(outerX + outerWidth - innerWidth);
     }
 
-    if (nextY > outerY + outerHeight) {
+    if (innerY < outerY) {
+      nextY = outerY > innerHeight ? outerY : innerHeight;
+    } else if (nextY > outerY + outerHeight) {
       nextY = Math.abs(outerY + outerHeight - innerHeight);
-    }
-
-    if (nextX < outerX) {
-      nextX = outerX;
-    }
-
-    if (nextY < outerY) {
-      nextY = outerY;
     }
 
     return {
@@ -338,8 +334,8 @@ const _fitIntoContainer = (gOuter, gInner) => {
     };
   } catch (e) {
     return {
-      x: 0,
-      y: 0,
+      x: undefined,
+      y: undefined,
     };
   }
 };
@@ -394,11 +390,11 @@ const _setInteractionLabel = (
   const clipContainer = root.select('#clip');
   const { x: fitX, y: fitY } = _fitIntoContainer(clipContainer, gText);
 
-  if (fitX) {
+  if (fitX >= 0) {
     gText.attr('x', fitX);
   }
 
-  if (fitY) {
+  if (fitY >= 0) {
     gText.attr('y', fitY);
   }
   _addAttributes(gText, labelExtraAttrs);
