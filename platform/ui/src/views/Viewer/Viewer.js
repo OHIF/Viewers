@@ -20,9 +20,11 @@ const Viewer = () => {
           componentLabel="Studies"
           defaultIsOpen={false}
         >
-          <div>LEFT SIDE PANE CONTENT</div>
+          <div className="flex justify-center text-white p-2">
+            panel placeholder
+          </div>
         </SidePanel>
-        <div className="flex-1 h-100 overflow-hidden w-100 bg-primary-main">
+        <div className="flex flex-1 h-100 overflow-hidden w-100 bg-primary-main items-center justify-center text-white">
           CONTENT
         </div>
         <SidePanel
@@ -30,9 +32,11 @@ const Viewer = () => {
           iconName="list-bullets"
           iconLabel="Measure"
           componentLabel="Measurements"
-          defaultIsOpen={true}
+          defaultIsOpen={false}
         >
-          <div>RIGHT SIDE PANEL CONTENT</div>
+          <div className="flex justify-center text-white p-2">
+            panel placeholder
+          </div>
         </SidePanel>
       </div>
     </div>
