@@ -6,6 +6,7 @@ import seriesInactive from './../../assets/icons/series-inactive.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
+import chevronLeft from './../../assets/icons/chevron-left.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
 import infoLink from './../../assets/icons/info-link.svg';
 import launchArrow from './../../assets/icons/launch-arrow.svg';
@@ -18,6 +19,9 @@ import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
 
+/** Tools */
+import toolZoom from './../../assets/icons/tool-zoom.svg';
+
 const ICONS = {
   'arrow-down': arrowDown,
   'series-active': seriesActive,
@@ -25,6 +29,7 @@ const ICONS = {
   calendar: calendar,
   cancel: cancel,
   'chevron-down': chevronDown,
+  'chevron-left': chevronLeft,
   'chevron-right': chevronRight,
   'info-link': infoLink,
   'launch-arrow': launchArrow,
@@ -36,6 +41,9 @@ const ICONS = {
   'sorting-active-down': sortingActiveDown,
   'sorting-active-up': sortingActiveUp,
   sorting: sorting,
+
+  /** Tools */
+  'tool-zoom': toolZoom,
 };
 
 /**

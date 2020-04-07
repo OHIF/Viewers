@@ -87,6 +87,7 @@ const IconButton = ({
   disabled = defaults.disabled,
   type = defaults.type,
   fullWidth = defaults.fullWidth,
+  onClick,
   className,
   ...rest
 }) => {
@@ -94,8 +95,8 @@ const IconButton = ({
 
   const handleOnClick = (e) => {
     buttonElement.current.blur();
-    if (rest.onClick) {
-      rest.onClick(e);
+    if (onClick) {
+      onClick(e);
     }
   };
 
@@ -138,6 +139,7 @@ IconButton.propTypes = {
   disabled: PropTypes.bool,
   type: PropTypes.string,
   className: PropTypes.node,
+  onClick: PropTypes.func,
 };
 
 export default IconButton;
