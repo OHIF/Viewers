@@ -499,6 +499,7 @@ module.exports = {
       '23/24': '95.83333333%',
       full: '100%',
       screen: '100vw',
+      'max-content': 'max-content',
     }),
     zIndex: {
       auto: 'auto',
