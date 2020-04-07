@@ -79,6 +79,10 @@
 	cursor: pointer;
 }
 
+.mr-uro-table-footer .footerBtnDisabled {
+	background-color: var(--text-disabled-color);
+}
+
 .mr-uro-table-footer .footerBtn:hover,
 .mr-uro-table-footer .footerBtn:active {
 	background-color: var(--ui-sky-blue);

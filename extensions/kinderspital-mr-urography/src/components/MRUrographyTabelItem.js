@@ -128,7 +128,6 @@ class MRUrographyTableItem extends Component {
   };
 
   getDataDisplayText = () => {
-    debugger;
     const { areaUnderCurve, volume } = this.props.measurementData;
 
     return [
