@@ -94,7 +94,7 @@ components.
             </IconButton>
             <div
               class={classnames(
-                'absolute bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 transition duration-300',
+                'absolute bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 transition duration-300 w-max-content',
                 {
                   'visible opacity-1': shouldShowTooltip,
                   'invisible opacity-0': !shouldShowTooltip,
@@ -103,8 +103,8 @@ components.
             >
               {tool.label}
               <svg
-                class="absolute text-primary-dark h-2 w-full left-0 top-full transform scale-150"
-                style={{ top: -8 }}
+                class="absolute text-primary-dark w-full h-4 left-0"
+                style={{ top: -15 }}
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
