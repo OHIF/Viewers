@@ -313,19 +313,19 @@ const _fitIntoContainer = (gOuter, gInner) => {
       height: innerHeight,
     } = gInner.node().getBBox();
 
-    let nextX = innerX + innerWidth;
-    let nextY = innerY + innerHeight;
+    let nextX = undefined;
+    let nextY = undefined;
 
     if (innerX < outerX) {
       nextX = outerX > innerWidth ? outerX : innerWidth;
-    } else if (nextX > outerX + outerWidth) {
-      nextX = Math.abs(outerX + outerWidth - innerWidth);
+    } else if (innerX + 2 * innerWidth > outerWidth + outerX) {
+      nextX = Math.abs(outerWidth - 2 * innerWidth);
     }
 
     if (innerY < outerY) {
       nextY = outerY > innerHeight ? outerY : innerHeight;
-    } else if (nextY > outerY + outerHeight) {
-      nextY = Math.abs(outerY + outerHeight - innerHeight);
+    } else if (innerY + 2 * innerHeight > outerHeight + outerY) {
+      nextY = Math.abs(outerHeight - 2 * innerHeight);
     }
 
     return {
