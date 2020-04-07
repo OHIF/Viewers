@@ -4,5 +4,4 @@ export default {
   'ar': {
     UserPreferencesModal,
   }
-}
-;
+};

@@ -16,5 +16,4 @@ export default {
     Header,
     UserPreferencesModal,
   }
-}
-;
+};

@@ -51,7 +51,7 @@ directories.forEach(directory => {
   namespaces.forEach(namespace => {
     exportLines += `    ${namespace},\n`;
   });
-  exportLines += '  }\n}\n;';
+  exportLines += '  }\n};\n';
 
   content += exportLines;
 

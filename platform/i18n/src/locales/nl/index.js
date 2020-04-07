@@ -8,5 +8,4 @@ export default {
     Common,
     Header,
   }
-}
-;
+};
