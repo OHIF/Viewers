@@ -14,10 +14,11 @@ import Label from './Label';
 import NavBar from './NavBar';
 import Select from './Select';
 import SidePanel from './SidePanel';
-import Svg from './Svg';
+import StudyBrowser from './StudyBrowser';
 import StudyListExpandedRow from './StudyListExpandedRow';
 import StudyListPagination from './StudyListPagination';
 import StudyListTable from './StudyListTable';
+import Svg from './Svg';
 import Table from './Table';
 import TableBody from './TableBody';
 import TableCell from './TableCell';
@@ -43,10 +44,11 @@ export {
   NavBar,
   Select,
   SidePanel,
-  Svg,
+  StudyBrowser,
   StudyListExpandedRow,
   StudyListPagination,
   StudyListTable,
+  Svg,
   Table,
   TableBody,
   TableCell,

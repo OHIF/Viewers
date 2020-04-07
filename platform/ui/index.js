@@ -28,6 +28,7 @@ export {
   NavBar,
   Select,
   SidePanel,
+  StudyBrowser,
   StudyListExpandedRow,
   StudyListPagination,
   StudyListTable,
