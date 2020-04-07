@@ -1,9 +1,15 @@
 describe('isual Regression - OHIF Segmentations', () => {
   before(() => {
-    cy.checkStudyRouteInViewer(
+    cy.openStudyInViewer(
       '1.3.6.1.4.1.14519.5.2.1.2744.7002.373729467545468642229382466905'
     );
     cy.expectMinimumThumbnails(3);
+    //Wait thumbnails to finish loading
+    cy.wait(1000);
+    // Select thumbnail
+    cy.get('[data-cy="thumbnail-list"]')
+      .contains('PET HeadNeck_0')
+      .click();
   });
 
   beforeEach(() => {
