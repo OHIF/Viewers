@@ -105,9 +105,6 @@ const MRUrographyPanel = ({
   };
 
   const onDeleteClick = (event, measurementData) => {
-    console.log(event);
-    console.log('todo -> delete');
-
     const measurementNumber = measurementData.measurementNumber;
 
     const toolState = globalImageIdSpecificToolStateManager.saveToolState();
@@ -149,6 +146,56 @@ const MRUrographyPanel = ({
     }));
   };
 
+  const jumpToLesion = measurementData => {
+    const measurementNumber = measurementData.measurementNumber;
+
+    const activeViewport = viewports[activeIndex];
+
+    console.log(studies);
+
+    const displaySet = _findDisplaySetFromDisplaySetInstanceUID(
+      studies,
+      activeViewport.displaySetInstanceUID
+    );
+
+    const imageIds = [];
+
+    // Assume 4D for now.
+    for (let i = 0; i < displaySet.images.length; i++) {
+      imageIds.push(displaySet.images[i].map(image => image.getImageId()));
+    }
+
+    debugger;
+
+    const toolState = globalImageIdSpecificToolStateManager.saveToolState();
+    const toolName = TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL;
+
+    const toolStateImageIds = Object.keys(toolState);
+
+    for (let i = 0; i < toolStateImageIds.length; i++) {
+      const imageId = toolStateImageIds[i];
+      const imageIdSpecificToolState = toolState[imageId];
+
+      if (
+        !imageIdSpecificToolState[toolName] ||
+        !imageIdSpecificToolState[toolName].data ||
+        !imageIdSpecificToolState[toolName].data.length
+      ) {
+        continue;
+      }
+
+      const measurements = imageIdSpecificToolState[toolName].data;
+
+      for (let j = measurements.length - 1; j >= 0; j--) {
+        if (measurements[j].measurementNumber === measurementNumber) {
+          console.log(imageId);
+          debugger;
+          return;
+        }
+      }
+    }
+  };
+
   const onEvaluateClick = event => {
     console.log('TODO -> Do not mock data');
     showTimecourseModal(modal);
@@ -169,6 +216,8 @@ const MRUrographyPanel = ({
   const onItemClick = (event, measurementData) => {
     const selectedKey = measurementData.measurementNumber;
     const { canFetchTimeCourses, regionList } = getRegionList(selectedKey);
+
+    //jumpToLesion(measurementData);
 
     setState(state => ({
       ...state,
@@ -367,3 +416,19 @@ MRUrographyPanel.propTypes = {
 MRUrographyPanel.defaultProps = {};
 
 export default MRUrographyPanel;
+
+function _findDisplaySetFromDisplaySetInstanceUID(
+  studies,
+  displaySetInstanceUID
+) {
+  for (let i = 0; i < studies.length; i++) {
+    const study = studies[i];
+    const displaySets = study.displaySets;
+
+    for (let j = 0; j < displaySets.length; j++) {
+      if (displaySets[j].displaySetInstanceUID === displaySetInstanceUID) {
+        return displaySets[j];
+      }
+    }
+  }
+}
