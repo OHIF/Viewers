@@ -315,7 +315,7 @@ workflows:
                 - feature/*
                 - hotfix/*
       # E2E: PWA
-      - build:
+      - BUILD:
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
@@ -337,27 +337,27 @@ workflows:
                 - platform/viewer
                 - .cache/Cypress
             - requires:
-              - UNIT_TESTS
+                - UNIT_TESTS
 
       - cypress/run:
-            name: 'E2E Tests'
-            executor: cypress/browsers-chrome76
-            browser: chrome
-            parallelism: 2 # tell CircleCI to execute this job on 2 machines simultaneously
-            steps:
-              - attach_workspace:
-                  at: ~/
-              - start: yarn run test:e2e:serve
-              - spec: 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
-              - wait-on: 'http://localhost:3000'
-              - post-steps:
+          name: 'E2E Tests'
+          executor: cypress/browsers-chrome76
+          browser: chrome
+          parallelism: 2 # tell CircleCI to execute this job on 2 machines simultaneously
+          steps:
+            - attach_workspace:
+                at: ~/
+            - start: yarn run test:e2e:serve
+            - spec: 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
+            - wait-on: 'http://localhost:3000'
+            - post-steps:
                 - store_artifacts:
                     path: platform/viewer/cypress/screenshots
                 - store_artifacts:
                     path: platform/viewer/cypress/videos
-            requires:
-              - UNIT_TESTS
-              - build
+          requires:
+            - UNIT_TESTS
+            - BUILD
 
   PR_OPTIONAL_VISUAL_TESTS:
     jobs:
