@@ -15,7 +15,7 @@ const Viewer = () => {
       >
         <SidePanel
           side="left"
-          iconName="info-link"
+          iconName="icon-nav-studies"
           iconLabel="Studies"
           componentLabel="Studies"
           defaultIsOpen={false}
@@ -27,7 +27,7 @@ const Viewer = () => {
         </div>
         <SidePanel
           side="right"
-          iconName="info-link"
+          iconName="list-bullets"
           iconLabel="Measure"
           componentLabel="Measurements"
           defaultIsOpen={true}
