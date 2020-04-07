@@ -320,24 +320,24 @@ workflows:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
                 add wait-on' # Use yarn latest
           working_directory: platform/viewer
-          steps:
-            - yarn: true
-            - record: false
-            - store_artifacts: false
-            - run: npx cross-env QUICK_BUILD=true yarn run build
+          yarn: true
+          record: false
+          store_artifacts: false
+          run:
+            npx cross-env QUICK_BUILD=true yarn run build
             # save new cache folder if needed
-            - save_cache:
-                key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-                paths:
-                  - ~/.npm
-                  - ~/.cache
-            - persist_to_workspace:
-              root: ~/
-              paths:
-                - platform/viewer
-                - .cache/Cypress
-            - requires:
-                - UNIT_TESTS
+          save_cache:
+            key: 'yarn-packages-{{ checksum "yarn.lock" }}'
+            paths:
+              - ~/.npm
+              - ~/.cache
+          persist_to_workspace:
+            root: ~/
+            paths:
+              - platform/viewer
+              - .cache/Cypress
+          requires:
+            - UNIT_TESTS
 
       - cypress/run:
           name: 'E2E Tests'
