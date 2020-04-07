@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -38,6 +38,11 @@ const classesMap = {
   },
 };
 
+const openIconName = {
+  left: 'panel-left',
+  right: 'panel-right',
+};
+
 const SidePanel = ({
   side,
   className,
@@ -50,12 +55,8 @@ const SidePanel = ({
   const [isOpen, setIsOpen] = useState(defaultIsOpen);
   const openStatus = isOpen ? 'open' : 'closed';
   const style = Object.assign({}, styleMap[openStatus][side], baseStyle);
-  const openIconName = {
-    left: 'chevron-right',
-    right: 'chevron-right',
-  };
 
-  const sidePanelHeader = () => {
+  const getSidePanelHeader = useCallback(() => {
     return (
       <React.Fragment>
         {isOpen ? (
@@ -63,7 +64,9 @@ const SidePanel = ({
             variant="text"
             color="inherit"
             rounded="none"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+            }}
             className="flex flex-row items-center border-b w-100 border-secondary-main h-12"
           >
             <Icon
@@ -79,7 +82,9 @@ const SidePanel = ({
           <Button
             variant="text"
             color="inherit"
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              setIsOpen(true);
+            }}
             style={{
               minWidth: `${collapsedWidth}px`,
               width: `${collapsedWidth}px`,
@@ -92,7 +97,7 @@ const SidePanel = ({
         )}
       </React.Fragment>
     );
-  };
+  }, [componentLabel, iconLabel, iconName, isOpen, side]);
 
   return (
     <div
@@ -103,7 +108,7 @@ const SidePanel = ({
       )}
       style={style}
     >
-      {sidePanelHeader(isOpen, side, iconLabel, iconName)}
+      {getSidePanelHeader()}
       {isOpen && children}
     </div>
   );
