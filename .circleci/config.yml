@@ -93,10 +93,6 @@ jobs:
           - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global add
               wait-on' # Use yarn latest
       - yarn: true
-      # Checkout code and ALL Git Tags
-      - checkout:
-          post:
-            - git fetch --all
       - restore_cache:
           name: Restore Yarn and Cypress Package Cache
           keys:
@@ -131,9 +127,6 @@ jobs:
     # tell CircleCI to execute this job on 4 machines simultaneously
     parallelism: 4
     executor: cypress/browsers-chrome76
-    browser: chrome
-    record: false
-    store_artifacts: false
     steps:
       # restore application and Cypress binary before running the test command
       - attach_workspace:
@@ -147,7 +140,8 @@ jobs:
       - run:
           name: 'Cypress E2E Test Suite'
           command:
-            yarn run test:e2e:serve --parallel --group $CIRCLE_JOB --spec
+            yarn run test:e2e:serve --parallel --group $CIRCLE_JOB --config
+            video=false --browser chrome --spec
             'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
       - post-steps:
           - store_artifacts:
