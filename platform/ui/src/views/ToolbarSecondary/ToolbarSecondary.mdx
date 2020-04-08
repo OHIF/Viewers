@@ -64,7 +64,7 @@ components.
               variant={isActive ? 'contained' : 'text'}
               className={classnames('mx-1', {
                 'text-black': isActive,
-                'text-white hover:bg-primary-dark hover:text-white focus:bg-primary-dark focus:text-white': !isActive,
+                'text-white hover:bg-secondary-dark hover:text-white focus:bg-secondary-dark focus:text-white': !isActive,
               })}
               onClick={(e) => {
                 setActiveTool(tool.id);
@@ -101,7 +101,7 @@ components.
       <div className="p-10">
         <div
           className={classnames(
-            'flex w-full items-center bg-secondary-dark px-3 py-2'
+            'flex w-full items-center bg-primary-dark px-3 py-2'
           )}
         >
           <div className="flex items-center">{renderToolbar()}</div>
