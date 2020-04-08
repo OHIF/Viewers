@@ -5,16 +5,6 @@ import classnames from 'classnames';
 const baseClasses =
   'text-center items-center justify-center outline-none transition duration-300 ease-in-out font-bold focus:outline-none';
 
-const defaults = {
-  color: 'default',
-  disabled: false,
-  fullWidth: false,
-  rounded: 'medium',
-  size: 'medium',
-  type: 'button',
-  variant: 'contained',
-};
-
 const roundedClasses = {
   none: '',
   small: 'rounded',
@@ -80,13 +70,13 @@ const fullWidthClasses = {
 
 const IconButton = ({
   children,
-  variant = defaults.variant,
-  color = defaults.color,
-  size = defaults.size,
-  rounded = defaults.rounded,
-  disabled = defaults.disabled,
-  type = defaults.type,
-  fullWidth = defaults.fullWidth,
+  variant,
+  color,
+  size,
+  rounded,
+  disabled,
+  type,
+  fullWidth,
   onClick,
   className,
   ...rest
@@ -95,9 +85,7 @@ const IconButton = ({
 
   const handleOnClick = (e) => {
     buttonElement.current.blur();
-    if (onClick) {
-      onClick(e);
-    }
+    onClick(e);
   };
 
   return (
@@ -123,8 +111,19 @@ const IconButton = ({
   );
 };
 
+IconButton.defaultProps = {
+  onClick: () => {},
+  color: 'default',
+  disabled: false,
+  fullWidth: false,
+  rounded: 'medium',
+  size: 'medium',
+  type: 'button',
+  variant: 'contained',
+};
+
 IconButton.propTypes = {
-  children: PropTypes.node,
+  children: PropTypes.node.isRequired,
   size: PropTypes.oneOf(['small', 'medium', 'large']),
   rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
