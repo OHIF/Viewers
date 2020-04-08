@@ -14,9 +14,12 @@ const StudyListTableRow = (props) => {
           })}
         >
           <div
-            className={classnames('w-full transition duration-300', {
-              'border border-primary-light rounded overflow-hidden mb-2 hover:border-secondary-light': isExpanded,
-            })}
+            className={classnames(
+              'w-full transition border-transparent duration-300',
+              {
+                'border border-primary-light rounded overflow-hidden mb-2 hover:border-secondary-light': isExpanded,
+              }
+            )}
           >
             <table className={classnames('w-full p-4')}>
               <tbody>

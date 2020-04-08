@@ -4,32 +4,3 @@
 
 /* IMPORT CUSTOM FONT */
 @import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
-
-/* CUSTOM OHIF SCROLLBAR */
-.ohif-scrollbar::-webkit-scrollbar {
-  @apply w-2;
-}
-
-.ohif-scrollbar::-webkit-scrollbar-track {
-  @apply rounded;
-}
-
-.ohif-scrollbar::-webkit-scrollbar-thumb {
-  @apply rounded;
-  @apply bg-primary-main;
-}
-
-.ohif-scrollbar::-webkit-scrollbar-thumb:window-inactive {
-  @apply bg-primary-main;
-}
-
-/* TOOLTIP WORKAROUND FOR ARROW UP */
-.tooltip::before {
-  @apply bg-primary-dark absolute z-10;
-  content: '';
-  width: 14px;
-  height: 1px;
-  top: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-}
