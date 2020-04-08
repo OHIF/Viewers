@@ -19,7 +19,7 @@ components.
 <Playground>
   {() => {
     const [activeTool, setActiveTool] = useState('Zoom');
-    const [showTooltip, setShowTooltip] = useState(null);
+    const [showTooltip, setShowTooltip] = useState('Zoom');
     const tools = [
       {
         id: 'Zoom',
@@ -67,7 +67,7 @@ components.
         const isActive = activeTool === tool.id;
         const shouldShowTooltip = showTooltip === tool.id;
         return (
-          <div className="relative flex justify-center">
+          <div className="relative flex justify-center" key={tool.id}>
             <IconButton
               variant={isActive ? 'contained' : 'text'}
               className={classnames('mx-1', {
@@ -85,13 +85,13 @@ components.
             </IconButton>
             {shouldShowTooltip && (
               <div
-                class={classnames(
+                className={classnames(
                   'tooltip absolute bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content'
                 )}
               >
                 {tool.label}
                 <svg
-                  class="absolute text-primary-dark w-full h-4 left-0 stroke-secondary-main"
+                  className="absolute text-primary-dark w-full h-4 left-0 stroke-secondary-main"
                   style={{ top: -15 }}
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
