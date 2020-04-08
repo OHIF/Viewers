@@ -15,7 +15,7 @@ const Viewer = () => {
       >
         <SidePanel
           side="left"
-          iconName="icon-nav-studies"
+          iconName="group-layers"
           iconLabel="Studies"
           componentLabel="Studies"
           defaultIsOpen={false}
