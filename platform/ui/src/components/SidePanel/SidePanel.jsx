@@ -13,18 +13,19 @@ const baseStyle = {
   width: `${expandedWidth}px`,
 };
 
+const collapsedHideWidth = expandedWidth - collapsedWidth - borderSize;
 const styleMap = {
   open: {
     left: { marginLeft: '0px' },
     right: { marginRight: '0px' },
   },
   closed: {
-    left: { marginLeft: `-${expandedWidth - collapsedWidth - borderSize}px` },
-    right: { marginRight: `-${expandedWidth - collapsedWidth - borderSize}px` },
+    left: { marginLeft: `-${collapsedHideWidth}px` },
+    right: { marginRight: `-${collapsedHideWidth}px` },
   },
 };
 
-const baseClassName =
+const baseClasses =
   'transition-all duration-300 ease-in-out h-100 bg-primary-dark border-black flex flex-col justify-start';
 
 const classesMap = {
@@ -103,7 +104,7 @@ const SidePanel = ({
     <div
       className={classnames(
         className,
-        baseClassName,
+        baseClasses,
         classesMap[openStatus][side]
       )}
       style={style}
