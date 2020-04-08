@@ -18,7 +18,7 @@ components.
 <Playground>
   {() => {
     const [activeTool, setActiveTool] = useState('Zoom');
-    const [showTooltip, setShowTooltip] = useState('Zoom');
+    const [showTooltip, setShowTooltip] = useState(null);
     const tools = [
       {
         id: 'Zoom',
@@ -31,7 +31,7 @@ components.
       {
         id: 'Wwwc',
         label: 'Levels',
-        icon: 'tool-zoom',
+        icon: 'tool-window-level',
         type: null,
         commandName: 'setToolActive',
         commandOptions: { toolName: 'Wwwc' },
@@ -39,36 +39,26 @@ components.
       {
         id: 'Pan',
         label: 'Pan',
-        icon: 'tool-zoom',
+        icon: 'tool-move',
         type: null,
         commandName: 'setToolActive',
         commandOptions: { toolName: 'Pan' },
       },
       {
-        id: 'Wwwc',
-        label: 'Levels',
-        icon: 'tool-zoom',
+        id: 'Capture',
+        label: 'Capture',
+        icon: 'tool-capture',
         type: null,
         commandName: 'setToolActive',
-        commandOptions: { toolName: 'Wwwc' },
+        commandOptions: { toolName: 'Capture' },
       },
       {
-        id: 'Wwwc',
-        label: 'Levels',
-        icon: 'tool-zoom',
+        id: 'Layout',
+        label: 'Layout',
+        icon: 'tool-layout',
         type: null,
         commandName: 'setToolActive',
-        commandOptions: { toolName: 'Wwwc' },
-      },
-    ];
-    const collapsedTools = [
-      {
-        id: 'Zoom',
-        label: 'Zoom',
-        icon: 'tool-zoom',
-        type: null,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'Zoom' },
+        commandOptions: { toolName: 'Layout' },
       },
     ];
     const renderToolbar = () => {
@@ -90,33 +80,27 @@ components.
               onMouseOut={() => setShowTooltip(null)}
               key={tool.id}
             >
-              <Icon name="tool-zoom" />
+              <Icon name={tool.icon} />
             </IconButton>
-            <div
-              class={classnames(
-                'absolute bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 transition duration-300 w-max-content',
-                {
-                  'visible opacity-1': shouldShowTooltip,
-                  'invisible opacity-0': !shouldShowTooltip,
-                }
-              )}
-            >
-              {tool.label}
-              <svg
-                class="absolute text-primary-dark w-full h-4 left-0"
-                style={{ top: -15 }}
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
+            {shouldShowTooltip && (
+              <div
+                class={classnames(
+                  'tooltip absolute bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content'
+                )}
               >
-                <path
-                  fill="currentColor"
-                  d="M24 22h-24l12-20z"
-                  style={{ stroke: '#373D9A', strokeWidth: 1 }}
-                />
-              </svg>
-            </div>
+                {tool.label}
+                <svg
+                  class="absolute text-primary-dark w-full h-4 left-0 stroke-secondary-main"
+                  style={{ top: -15 }}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path fill="currentColor" d="M24 22h-24l12-20z" />
+                </svg>
+              </div>
+            )}
           </div>
         );
       });
@@ -129,7 +113,7 @@ components.
               <div className="mx-3 inline-flex items-center">
                 <Icon
                   name="chevron-left"
-                  className="text-primary-main w-10 h-10 cursor-pointer transition duration-300 transform hover:scale-125"
+                  className="text-primary-main w-10 h-10 cursor-pointer"
                   onClick={() => alert('Navigate to previous page')}
                 />
                 <a href="#" className="ml-4">
@@ -140,11 +124,18 @@ components.
             <div className="flex items-center">
               <div className="flex items-center">
                 {renderToolbar()}
-                <span
-                  className="w-1 border-l py-4 mx-2"
-                  style={{ borderColor: '#354A6D' }}
-                />
-                <button>BUTTON</button>
+                <span className="w-1 border-l py-4 mx-2 border-common-dark" />
+                <IconButton
+                  className={classnames(
+                    'mx-1 text-common-bright hover:bg-primary-dark hover:text-primary-light'
+                  )}
+                  color="inherit"
+                  onClick={(e) => {
+                    alert('Open menu');
+                  }}
+                >
+                  <Icon name="tool-more-menu" />
+                </IconButton>
               </div>
             </div>
             <div className="flex items-center">

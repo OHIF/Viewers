@@ -21,6 +21,11 @@ import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
 
 /** Tools */
 import toolZoom from './../../assets/icons/tool-zoom.svg';
+import toolCapture from './../../assets/icons/tool-capture.svg';
+import toolLayout from './../../assets/icons/tool-layout.svg';
+import toolMore from './../../assets/icons/tool-more-menu.svg';
+import toolMove from './../../assets/icons/tool-move.svg';
+import toolWindow from './../../assets/icons/tool-window-level.svg';
 
 const ICONS = {
   'arrow-down': arrowDown,
@@ -44,6 +49,11 @@ const ICONS = {
 
   /** Tools */
   'tool-zoom': toolZoom,
+  'tool-capture': toolCapture,
+  'tool-layout': toolLayout,
+  'tool-more-menu': toolMore,
+  'tool-move': toolMove,
+  'tool-window-level': toolWindow,
 };
 
 /**
