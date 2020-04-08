@@ -436,9 +436,10 @@ module.exports = {
     },
     padding: (theme) => theme('spacing'),
     placeholderColor: (theme) => theme('colors'),
-    stroke: {
+    stroke: (theme) => ({
+      ...theme('colors'),
       current: 'currentColor',
-    },
+    }),
     strokeWidth: {
       '0': '0',
       '1': '1',
