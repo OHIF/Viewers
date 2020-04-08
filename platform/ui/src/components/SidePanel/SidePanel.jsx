@@ -40,8 +40,8 @@ const classesMap = {
 };
 
 const openIconName = {
-  left: 'panel-left',
-  right: 'panel-right',
+  left: 'push-left',
+  right: 'push-right',
 };
 
 const SidePanel = ({
