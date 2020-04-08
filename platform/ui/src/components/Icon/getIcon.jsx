@@ -1,19 +1,22 @@
 import React from 'react';
 // Icons
+
 import arrowDown from './../../assets/icons/arrow-down.svg';
-import seriesActive from './../../assets/icons/series-active.svg';
-import seriesInactive from './../../assets/icons/series-inactive.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
 import chevronLeft from './../../assets/icons/chevron-left.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
+import groupLayers from './../../assets/icons/group-layers.svg';
 import infoLink from './../../assets/icons/info-link.svg';
 import launchArrow from './../../assets/icons/launch-arrow.svg';
 import launchInfo from './../../assets/icons/launch-info.svg';
+import listBullets from './../../assets/icons/list-bullets.svg';
 import logoOhifSmall from './../../assets/icons/logo-ohif-small.svg';
 import magnifier from './../../assets/icons/magnifier.svg';
 import notificationwarningDiamond from './../../assets/icons/notificationwarning-diamond.svg';
+import pushLeft from './../../assets/icons/push-left.svg';
+import pushRight from './../../assets/icons/push-right.svg';
 import settings from './../../assets/icons/settings.svg';
 import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
@@ -29,19 +32,21 @@ import toolWindow from './../../assets/icons/tool-window-level.svg';
 
 const ICONS = {
   'arrow-down': arrowDown,
-  'series-active': seriesActive,
-  'series-inactive': seriesInactive,
   calendar: calendar,
   cancel: cancel,
   'chevron-down': chevronDown,
   'chevron-left': chevronLeft,
   'chevron-right': chevronRight,
+  'group-layers': groupLayers,
   'info-link': infoLink,
   'launch-arrow': launchArrow,
   'launch-info': launchInfo,
+  'list-bullets': listBullets,
   'logo-ohif-small': logoOhifSmall,
   magnifier: magnifier,
   'notificationwarning-diamond': notificationwarningDiamond,
+  'push-left': pushLeft,
+  'push-right': pushRight,
   settings: settings,
   'sorting-active-down': sortingActiveDown,
   'sorting-active-up': sortingActiveUp,
