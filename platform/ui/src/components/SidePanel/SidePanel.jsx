@@ -90,7 +90,7 @@ const SidePanel = ({
               minWidth: `${collapsedWidth}px`,
               width: `${collapsedWidth}px`,
             }}
-            className="flex flex-col text-xs px-1 py-1 text-white"
+            className="flex flex-col text-xs px-1 py-1 text-white border-transparent border-b-2"
           >
             <Icon name={iconName} className="text-primary-active" />
             <span className="mt-2 text-white text-xs">{iconLabel}</span>
