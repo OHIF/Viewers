@@ -35,6 +35,7 @@
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
     "test:e2e:serve": "lerna run test:e2e:serve --stream",
     "see-changed": "lerna changed",
+    "docs:preview": "lerna run docs:preview --stream",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "release": "yarn run lerna:version && yarn run lerna:publish",
     "lerna:version": "npx lerna version prerelease --force-publish",

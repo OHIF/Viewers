@@ -1,11 +1,11 @@
 ---
 name: Study List
 menu: Views
-route: views/studyList
+route: examples/studyList
 ---
 
 import { useState } from 'react';
-import { Playground, Props } from 'docz';
+import { Playground } from 'docz';
 import {
   StudyList,
   utils,
@@ -27,17 +27,10 @@ import { getMockedStudies } from '../../utils/';
 import classnames from 'classnames';
 import moment from 'moment';
 
-# StudyList
+# Study List
 
-Description...
-
-## Import
-
-```javascript
-import { StudyList } from '@ohif/ui';
-```
-
-## StudyList
+This example shows you how you can build a Study List page using the available
+components.
 
 <Playground>
   {() => {
@@ -204,8 +197,8 @@ import { StudyList } from '@ohif/ui';
             content: (
               <>
                 <Icon
-                  name="series-active"
-                  className={classnames('inline-flex mr-2', {
+                  name="group-layers"
+                  className={classnames('inline-flex mr-2 w-4', {
                     'text-primary-active': isExpanded,
                     'text-secondary-light': !isExpanded,
                   })}
