@@ -21,6 +21,7 @@ import settings from './../../assets/icons/settings.svg';
 import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
+import tracked from './../../assets/icons/tracked.svg';
 
 /** Tools */
 import toolZoom from './../../assets/icons/tool-zoom.svg';
@@ -51,6 +52,7 @@ const ICONS = {
   'sorting-active-down': sortingActiveDown,
   'sorting-active-up': sortingActiveUp,
   sorting: sorting,
+  tracked: tracked,
 
   /** Tools */
   'tool-zoom': toolZoom,
