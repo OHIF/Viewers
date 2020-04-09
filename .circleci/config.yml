@@ -80,41 +80,25 @@ jobs:
       - codecov/upload:
           file: '/home/circleci/repo/platform/core/coverage/reports'
           flags: 'core'
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - platform/viewer
+            - .cache/Cypress
 
   ###
   # Workflow: PR_CHECKS
   ###
   BUILD_E2E_TESTS:
     <<: *defaults
-    working_directory: platform/viewer
     steps:
-      # Update yarn
-      - pre-steps:
-          - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global add
-              wait-on' # Use yarn latest
-      - yarn: true
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
-      - run:
-          name: Install Dependencies
-          command: yarn install --frozen-lockfile
+      - attach_workspace:
+          at: ~/
+      # Output: platform/viewer/dist
       - build: npx cross-env QUICK_BUILD=true yarn run build
       # run verify and then save cache.
       # this ensures that the Cypress verified status is cached too
-      - run: yarn run cy:verify
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache ## Cache yarn and Cypress
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-      # all other test jobs will run AFTER this build job finishes
-      # to avoid reinstalling dependencies, we persist the source folder "platform/viewer"
-      # and the Cypress binary to workspace, which is the fastest way
-      # for Circle jobs to pass files
+      # - run: yarn run cy:verify
       - persist_to_workspace:
           root: ~/
           paths:
@@ -123,7 +107,7 @@ jobs:
 
   cypress/run:
     <<: *defaults
-    working_directory: platform/viewer
+    # working_directory: platform/viewer
     # tell CircleCI to execute this job on 4 machines simultaneously
     parallelism: 4
     executor: cypress/browsers-chrome76
@@ -131,17 +115,17 @@ jobs:
       # restore application and Cypress binary before running the test command
       - attach_workspace:
           at: ~/
-      - run:
-          command: npm start
-          background: true
+      # - run:
+      #     command: npm start
+      #     background: true
       # runs Cypress test in load balancing (parallel) mode
       # and groups them in Cypress Dashboard under name "cypress/run"
       # RUN TESTS
       - run:
           name: 'Cypress E2E Test Suite'
           command:
-            yarn run test:e2e:serve --parallel --group $CIRCLE_JOB --config
-            video=false --browser chrome --spec
+            yarn run test:e2e:serve && cypress run --parallel --group
+            $CIRCLE_JOB --config video=false --browser chrome --spec
             'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
       - post-steps:
           - store_artifacts:
@@ -382,7 +366,6 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
-
       - BUILD_E2E_TESTS:
           requires:
             - UNIT_TESTS
@@ -390,7 +373,7 @@ workflows:
       # run all tests under group cypress/run
       - cypress/run:
           requires:
-            - build
+            - BUILD_E2E_TESTS # build
 
   PR_OPTIONAL_VISUAL_TESTS:
     jobs:
