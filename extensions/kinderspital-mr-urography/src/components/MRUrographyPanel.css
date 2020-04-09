@@ -1,0 +1,89 @@
+.mr-urography-panel {
+  color: white;
+  min-height: 200px;
+  background-color: var(--primary-background-color);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.mr-urography-panel h3 {
+  padding-left: 20px;
+  margin-top: 0;
+}
+
+/*
+.mr-urography-panel .segmentations {
+  padding: 0 20px 20px 20px;
+}
+*/
+
+/*
+.mr-urography-panel .segmentation-icon {
+  margin-right: 8px;
+  margin-top: 12px;
+  min-width: 14px;
+}
+*/
+/*
+.mr-urography-panel .selector-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  height: 150px;
+}
+
+.mr-urography-panel .selector-form>div {
+  width: 100%;
+}
+
+.mr-urography-panel .selector-form>div:first-of-type {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+*/
+
+.mr-urography-panel .tableList .tableListHeader .numberOfItems {
+  float: unset;
+  max-width: unset;
+  flex: unset;
+  margin-right: 16px;
+}
+
+.mr-urography-panel-footer {
+	padding: 10px;
+	color: #fff;
+	text-align: center;
+	z-index: 1;
+}
+
+.mr-urography-panel-footer .footerBtn {
+	border: 1px solid var(--ui-border-color-active);
+	border-radius: 25px;
+	background-color: var(--active-color);
+	color: var(--ui-gray-dark);
+	line-height: 25px;
+  padding: 0px 20px;
+  margin: 5px 0px;
+	outline: none;
+	cursor: pointer;
+}
+
+.mr-urography-panel-footer .footerBtnDisabled {
+	background-color: var(--text-disabled-color);
+}
+
+.mr-urography-panel-footer .footerBtn:hover,
+.mr-urography-panel-footer .footerBtn:active {
+	background-color: var(--ui-sky-blue);
+}
+
+.mr-urography-panel-footer .footerBtn svg {
+	margin-right: 4px;
+	position: relative;
+	top: 2px;
+}

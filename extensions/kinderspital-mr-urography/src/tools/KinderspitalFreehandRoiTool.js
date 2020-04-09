@@ -14,6 +14,10 @@ const draw = importInternal('drawing/draw');
 const drawJoinedLines = importInternal('drawing/drawJoinedLines');
 const drawHandles = importInternal('drawing/drawHandles');
 
+const measurementConfig = { measurementNumber: 1 };
+
+export { measurementConfig };
+
 export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
   constructor(props = {}) {
     const defaultProps = {
@@ -50,7 +54,7 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
     } = instanceMetadata;
 
     const measurementData = {
-      SegmentLabel: null,
+      label: null,
       StudyInstanceUID,
       SeriesInstanceUID,
       SOPInstanceUID,
@@ -63,7 +67,12 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
       handles: {
         points: [],
       },
+      measurementNumber: measurementConfig.measurementNumber,
+      areaUnderCurve: 0,
+      volume: 0,
     };
+
+    measurementConfig.measurementNumber++;
 
     measurementData.handles.textBox = {
       active: false,
