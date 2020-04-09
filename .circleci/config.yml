@@ -105,7 +105,8 @@ jobs:
             - platform/viewer
             - .cache/Cypress
 
-  cypress/run:
+  # cypress/run:
+  CYPRESS_MAGIC:
     <<: *defaults
     # working_directory: platform/viewer
     # tell CircleCI to execute this job on 4 machines simultaneously
@@ -371,7 +372,7 @@ workflows:
             - UNIT_TESTS
       # after installing dependencies in the "BUILD_E2E_TESTS" job
       # run all tests under group cypress/run
-      - cypress/run:
+      - CYPRESS_MAGIC:
           requires:
             - BUILD_E2E_TESTS # build
 
