@@ -11,6 +11,7 @@ import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
 import Label from './Label';
+import MeasurementTable from './MeasurementTable';
 import NavBar from './NavBar';
 import Select from './Select';
 import SidePanel from './SidePanel';
@@ -40,6 +41,7 @@ export {
   InputMultiSelect,
   InputText,
   Label,
+  MeasurementTable,
   NavBar,
   Select,
   SidePanel,

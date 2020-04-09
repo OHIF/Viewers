@@ -44,6 +44,15 @@ const openIconName = {
   right: 'push-right',
 };
 
+const position = {
+  left: {
+    right: 5,
+  },
+  right: {
+    left: 5,
+  },
+};
+
 const SidePanel = ({
   side,
   className,
@@ -68,14 +77,15 @@ const SidePanel = ({
             onClick={() => {
               setIsOpen(false);
             }}
-            className="flex flex-row items-center border-b-2 border-secondary-main h-12"
+            className="flex flex-row items-center border-b-2 border-secondary-main h-12 relative"
           >
             <Icon
               name={openIconName[side]}
               className={classnames(
-                'text-primary-active',
+                'text-primary-active absolute',
                 side === 'left' && 'order-last'
               )}
+              style={{ ...position[side] }}
             />
             <span className="flex-1 text-primary-active">{componentLabel}</span>
           </Button>

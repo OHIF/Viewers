@@ -1,0 +1,32 @@
+---
+name: Measurement Table
+menu: Data Display
+route: components/measurementTable
+---
+
+import { Playground, Props } from 'docz';
+import { MeasurementTable } from '@ohif/ui';
+
+# Measurement Table
+
+## Import
+
+```javascript
+import { MeasurementTable } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    return (
+      <div className="p-4">
+        <MeasurementTable />
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={MeasurementTable} />
