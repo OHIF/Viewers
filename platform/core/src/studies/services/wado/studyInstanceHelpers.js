@@ -144,7 +144,7 @@ async function makeSOPInstance(server, study, instance) {
     wadorsuri,
     wadoRoot: server.wadoRoot,
     imageRendering: server.imageRendering,
-    thumbnailRendering: server.thumbnailRendering,
+    thumbnailRendering: server.thumbnailRendering
   };
 
   series.instances.push(sopInstance);
