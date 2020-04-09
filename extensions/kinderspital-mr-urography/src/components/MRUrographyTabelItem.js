@@ -76,10 +76,9 @@ class MRUrographyTableItem extends Component {
     }
 
     if (typeof this.props.onRelabel === 'function') {
-      const relabelButton = this.getActionButton(
-        'Relabel',
-        this.onRelabelClick
-      );
+      const name = this.props.measurementData.label ? 'Relabel' : 'Label';
+
+      const relabelButton = this.getActionButton(name, this.onRelabelClick);
       actionButtons.push(relabelButton);
     }
 
@@ -134,14 +133,31 @@ class MRUrographyTableItem extends Component {
   getDataDisplayText = () => {
     const { areaUnderCurve, volume } = this.props.measurementData;
 
-    return [
-      <div key={`displayText_0`} className="measurementDisplayText">
-        {`AUC: ${areaUnderCurve.toFixed(2)}`}
-      </div>,
-      <div key={`displayText_1`} className="measurementDisplayText">
-        {`Vol: ${volume.toFixed(2)}`}
-      </div>,
-    ];
+    let keyIndex = 0;
+
+    const entries = [];
+
+    if (areaUnderCurve) {
+      entries.push(
+        <div key={`displayText_${keyIndex}`} className="measurementDisplayText">
+          {`AUC: ${areaUnderCurve.toFixed(2)}`}
+        </div>
+      );
+
+      keyIndex++;
+    }
+
+    if (volume) {
+      entries.push(
+        <div key={`displayText_1`} className="measurementDisplayText">
+          {`Vol: ${volume.toFixed(2)}`}
+        </div>
+      );
+
+      keyIndex++;
+    }
+
+    return entries;
   };
 
   getWarningContent = () => {

@@ -167,8 +167,6 @@ const MRUrographyPanel = ({
       imageIds.push(displaySet.images[i].map(image => image.getImageId()));
     }
 
-    debugger;
-
     const toolState = globalImageIdSpecificToolStateManager.saveToolState();
     const toolName = TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL;
 
@@ -192,9 +190,6 @@ const MRUrographyPanel = ({
 
       for (let j = measurements.length - 1; j >= 0; j--) {
         if (measurements[j].measurementNumber === measurementNumber) {
-          console.log(imageId);
-          debugger;
-
           position = _getStackIndexAndImageIdIndexfromImageId(
             imageIds,
             imageId
@@ -203,8 +198,6 @@ const MRUrographyPanel = ({
         }
       }
     }
-
-    debugger;
 
     const enabledElements = cornerstone.getEnabledElements();
     const enabledElement = enabledElements[activeIndex];
