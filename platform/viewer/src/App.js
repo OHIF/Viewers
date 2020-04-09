@@ -34,7 +34,10 @@ import i18n from '@ohif/i18n';
 import './config';
 
 /** Utils */
-import { getUserManagerForOpenIdConnectClient } from './utils/index.js';
+import {
+  getUserManagerForOpenIdConnectClient,
+  initWebWorkers,
+} from './utils/index.js';
 
 /** Extensions */
 import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
@@ -137,6 +140,7 @@ class App extends Component {
      */
     _initHotkeys(appConfigHotkeys);
     _initServers(servers);
+    initWebWorkers();
   }
 
   render() {

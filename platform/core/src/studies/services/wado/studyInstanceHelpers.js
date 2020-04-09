@@ -1,8 +1,8 @@
 import DICOMWeb from '../../../DICOMWeb';
 import metadataProvider from '../../../classes/MetadataProvider';
 import getWADORSImageId from '../../../utils/getWADORSImageId';
+import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import getReferencedSeriesSequence from './getReferencedSeriesSequence';
-import { getCornerstoneWADOImageLoader } from '../../../utils/cornerstoneWADOImageLoader';
 
 /**
  * Create a plain JS object that describes a study (a study descriptor object)
@@ -160,7 +160,6 @@ async function makeSOPInstance(server, study, instance) {
 
     const wadoRSMetadata = Object.assign(instance);
 
-    const cornerstoneWADOImageLoader = await getCornerstoneWADOImageLoader();
     if (sopInstance.NumberOfFrames) {
       for (let i = 0; i < sopInstance.NumberOfFrames; i++) {
         const wadorsImageId = getWADORSImageId(sopInstance, i);

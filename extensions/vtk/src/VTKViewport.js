@@ -1,15 +1,8 @@
 import React, { useEffect, useCallback } from 'react';
-// import { View2D } from 'react-vtkjs-viewport';
+import { View2D } from 'react-vtkjs-viewport';
 import PropTypes from 'prop-types';
-import asyncComponent from './asyncComponent.js';
-import { getReactVtkjsViewport } from './utils/getReactVtkjsViewport';
 
 import './VTKViewport.css';
-
-const View2D = asyncComponent(async () => {
-  const reactVtkjsViewport = await getReactVtkjsViewport();
-  return { default: reactVtkjsViewport.View2D };
-});
 
 const VTKViewport = props => {
   const style = { width: '100%', height: '100%', position: 'relative' };
@@ -59,7 +52,7 @@ VTKViewport.propTypes = {
 };
 
 VTKViewport.defaultProps = {
-  onScroll: () => { },
+  onScroll: () => {},
 };
 
 export default VTKViewport;

@@ -3,7 +3,7 @@ import FileLoaderService from './localFileLoaders/fileLoaderService';
 const processFile = async file => {
   try {
     const fileLoaderService = new FileLoaderService(file);
-    const imageId = await fileLoaderService.addFile(file);
+    const imageId = fileLoaderService.addFile(file);
     const image = await fileLoaderService.loadFile(file, imageId);
     const dataset = await fileLoaderService.getDataset(image, imageId);
     const studies = await fileLoaderService.getStudies(dataset, imageId);
