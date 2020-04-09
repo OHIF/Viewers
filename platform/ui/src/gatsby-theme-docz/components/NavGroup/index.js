@@ -5,7 +5,6 @@ import { useCurrentDoc } from 'docz';
 
 import * as styles from 'gatsby-theme-docz/src/components/NavGroup/styles';
 import { NavLink } from 'gatsby-theme-docz/src/components/NavLink';
-import { NavGroup as DoczNavGroup } from 'gatsby-theme-docz/src/components/NavGroup';
 import { ChevronDown } from 'gatsby-theme-docz/src/components/Icons';
 
 export const NavGroup = ({ item, sidebarRef }) => {
