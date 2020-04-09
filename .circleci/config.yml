@@ -113,14 +113,14 @@ jobs:
       # restore application and Cypress binary before running the test command
       - attach_workspace:
           at: ~/
-      # - run:
-      #     command: npm start
-      #     background: true
+      - run:
+          command: yarn run test:e2e:serve
+          background: true
       - run:
           name: 'Cypress E2E Test Suite'
           command:
-            yarn run test:e2e:serve && cypress run --parallel --group
-            $CIRCLE_JOB --config video=false --browser chrome --spec
+            cypress run --parallel --group $CIRCLE_JOB --config video=false
+            --browser chrome --spec
             'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
 
   ###
@@ -357,8 +357,12 @@ workflows:
                 - feature/*
                 - hotfix/*
       - BUILD_E2E_TESTS:
-          requires:
-            - UNIT_TESTS
+          filters:
+            branches:
+              ignore:
+                - master
+                - feature/*
+                - hotfix/*
       # after installing dependencies in the "BUILD_E2E_TESTS" job
       # run all tests under group cypress/run
       - CYPRESS_MAGIC:
