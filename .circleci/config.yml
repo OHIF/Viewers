@@ -95,7 +95,7 @@ jobs:
       - attach_workspace:
           at: ~/
       # Output: platform/viewer/dist
-      - build: npx cross-env QUICK_BUILD=true yarn run build
+      - run: npx cross-env QUICK_BUILD=true yarn run build
       # run verify and then save cache.
       # this ensures that the Cypress verified status is cached too
       # - run: yarn run cy:verify
