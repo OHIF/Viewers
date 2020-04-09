@@ -53,6 +53,8 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
       TemporalPositionIdentifier,
     } = instanceMetadata;
 
+    // TODO: Generate mock timecouse and add here
+
     const measurementData = {
       label: null,
       StudyInstanceUID,
@@ -70,6 +72,9 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
       measurementNumber: measurementConfig.measurementNumber,
       areaUnderCurve: 0,
       volume: 0,
+      //timecourse,
+      pIndex: undefined,
+      gIndex: undefined,
     };
 
     measurementConfig.measurementNumber++;
