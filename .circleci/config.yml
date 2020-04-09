@@ -107,11 +107,10 @@ jobs:
 
   # cypress/run:
   CYPRESS_MAGIC:
-    <<: *defaults
-    # working_directory: platform/viewer
-    # tell CircleCI to execute this job on 4 machines simultaneously
+    docker:
+      - image: cypress/browsers:chrome67
+    working_directory: ~/repo
     parallelism: 4
-    executor: cypress/browsers-chrome76
     steps:
       # restore application and Cypress binary before running the test command
       - attach_workspace:
@@ -119,20 +118,12 @@ jobs:
       # - run:
       #     command: npm start
       #     background: true
-      # runs Cypress test in load balancing (parallel) mode
-      # and groups them in Cypress Dashboard under name "cypress/run"
-      # RUN TESTS
       - run:
           name: 'Cypress E2E Test Suite'
           command:
             yarn run test:e2e:serve && cypress run --parallel --group
             $CIRCLE_JOB --config video=false --browser chrome --spec
             'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
-      - post-steps:
-          - store_artifacts:
-              path: platform/viewer/cypress/screenshots
-          - store_artifacts:
-              path: platform/viewer/cypress/videos
 
   ###
   # Workflow: PR_OPTIONAL_DOCKER_PUBLISH
