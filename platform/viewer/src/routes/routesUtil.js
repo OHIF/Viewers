@@ -125,7 +125,10 @@ const parsePath = (path, server, params) => {
 };
 
 const parseViewerPath = (appConfig = {}, server = {}, params) => {
-  let viewerPath = ROUTES_DEF.default.viewer.path;
+  //let viewerPath = ROUTES_DEF.default.viewer.path;
+
+  // TODO -> Put MR Urography as the default path for now.
+  let viewerPath = ROUTES_DEF.default.mrUrography.path;
   if (appConfig.enableGoogleCloudAdapter) {
     viewerPath = ROUTES_DEF.gcloud.viewer.path;
   }

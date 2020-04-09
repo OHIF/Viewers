@@ -25,6 +25,7 @@
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
     "build:package": "yarn run build",
     "prepublishOnly": "yarn run build",
+    "test:unit": "jest --watchAll",
     "start": "yarn run dev"
   },
   "peerDependencies": {
@@ -39,6 +40,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "react-select": "^3.0.8",
-    "d3": "^5.15.0"
+    "d3": "^5.15.0",
+    "b-spline": "^2.0.1"
   }
 }

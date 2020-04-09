@@ -256,7 +256,8 @@ function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
     GenericViewerCommands,
     [OHIFCornerstoneExtension, cornerstoneExtensionConfig],
     /* WARNING: MUST BE REGISTERED _AFTER_ OHIFCornerstoneExtension */
-    MeasurementsPanel,
+    // TODO -> commented out the measurements panel for now, as its not addable in an extensible way.
+    //MeasurementsPanel,
   ];
   const mergedExtensions = requiredExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
