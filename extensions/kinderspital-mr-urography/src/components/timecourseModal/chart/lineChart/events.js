@@ -138,49 +138,15 @@ const _bindZoom = (
 
     // create line
     const _interactionline = line()
-      .x(_parseInteractionXPoint(parseXPoint, transformedXAxisScale))
-      .y(_parseInteractionYPoint(parseYPoint, transformedYAxisScale));
+      .x(chart.interactionPoint.parseXPoint(parseXPoint, transformedXAxisScale))
+      .y(
+        chart.interactionPoint.parseYPoint(parseYPoint, transformedYAxisScale)
+      );
 
     chart.interactionPoint.updateNode(root, undefined, _interactionline);
   }
 
   return _zoom;
-};
-
-/**
- * Dataset for interaction point is groupped differently from original dataset. So this function prepares/adapt it for original parser
- * @param {function} parseAxis d3js axis parser method for X Axis
- * @param {object} axisScale d3 continuos scale for X Axis
- * @return {function} it returns a function to be consumed as parser for X
- */
-const _parseInteractionXPoint = (parseAxis, axisScale) => (
-  interactionPoint,
-  interactionIndex
-) => {
-  const { x: index, y } = interactionPoint;
-  const point = {
-    y,
-  };
-  return parseAxis(axisScale)(point, index);
-};
-
-/**
- *
- * Dataset for interaction point is groupped differently from original dataset. So this function prepares/adapt it for original parser
- * @param {function} parseAxis d3js axis parser method for Y Axis
- * @param {object} axisScale d3 continuos scale for Y Axis
- * @return {function} it returns a function to be consumed as parser for Y
- */
-const _parseInteractionYPoint = (parseAxis, axisScale) => (
-  interactionPoint,
-  interactionIndex
-) => {
-  const { x: index, y, parsedY } = interactionPoint;
-  const point = {
-    y,
-  };
-  // in case no parsed y yet parse it now
-  return parsedY || parseAxis(axisScale)(point, index);
 };
 
 /**
@@ -241,10 +207,13 @@ function mouseClosestPointIndex(gNodes, mousePoint) {
 
 const _bindPointInteraction = (
   root,
+  points,
   xAxisScale,
   yAxisScale,
   parseXPoint,
   parseYPoint,
+  peekIndex,
+  glomerularIndex,
   movingPointsCallback
 ) => {
   const gDots = chart.points.getPoints(root);
@@ -253,21 +222,28 @@ const _bindPointInteraction = (
   function _setListeners() {
     root.on('mousedown', mouseDownListener);
 
-    const nextGGlomerularPoint = chart.interactionPoint.getGlomerularPoint(
+    const existingGGlomerularPoint = chart.interactionPoint.getGlomerularPoint(
       root
     );
 
     // initialize events in case existing gpoint already
-    if (nextGGlomerularPoint) {
+    if (!existingGGlomerularPoint.empty()) {
       const rootNode = root.node();
 
-      _setDragListeners(
-        rootNode,
-        nextGGlomerularPoint,
-        dotsNodes,
-        0,
-        dotsNodes.length
-      );
+      const existingGGlomerularPointNode = existingGGlomerularPoint.node();
+
+      if (
+        existingGGlomerularPointNode.id &&
+        existingGGlomerularPointNode.id.includes(glomerularIndex) >= 0
+      ) {
+        _setDragListeners(
+          rootNode,
+          existingGGlomerularPoint,
+          dotsNodes,
+          peekIndex,
+          dotsNodes.length
+        );
+      }
     }
   }
 
@@ -371,58 +347,23 @@ const _bindPointInteraction = (
     );
     _removeDragListeners(root, currentGGlomerularPoint);
 
-    const buildInteractionDataset = (
+    const dataset = chart.interactionPoint.buildDataset(
       gPeekPoint,
       peekIndex,
       gGlomerularPoint,
-      glomerularIndex
-    ) => {
-      if (!gPeekPoint || !gGlomerularPoint) {
-        return;
-      }
-
-      const peekData = gPeekPoint.__data__;
-      const glomerularData = gGlomerularPoint.__data__;
-
-      const getLower = (pointA, pointB) => {
-        const parsedYA = parseYPoint(transformedXAxisScale)(pointA, pointA.x);
-        const parsedYB = parseYPoint(transformedYAxisScale)(pointB, pointB.x);
-
-        return parsedYA < parsedYB ? pointA : pointB;
-      };
-
-      const createLowerPoint = (pointRef, minorPoint) => {
-        const parsedYMinor = parseYPoint(transformedYAxisScale)(
-          minorPoint,
-          minorPoint.x
-        );
-        const lowerY = Math.floor(parsedYMinor / 2);
-        return { x: pointRef.x, y: minorPoint.y, parsedY: lowerY };
-      };
-
-      const peekPoint = { x: peekIndex, ...peekData };
-      const glomerularPoint = { x: glomerularIndex, ...glomerularData };
-
-      const minorPoint = getLower(peekPoint, glomerularPoint);
-      const peekLowerPoint = createLowerPoint(peekPoint, minorPoint);
-      const glomerularLowerPoint = createLowerPoint(
-        glomerularPoint,
-        minorPoint
-      );
-
-      return [peekPoint, peekLowerPoint, glomerularLowerPoint, glomerularPoint];
-    };
-
-    const dataset = buildInteractionDataset(
-      gPeekPoint,
-      peekIndex,
-      gGlomerularPoint,
-      glomerularIndex
+      glomerularIndex,
+      parseXPoint,
+      parseYPoint,
+      transformedXAxisScale,
+      transformedYAxisScale
     );
+
     // create line
     const _line = line()
-      .x(_parseInteractionXPoint(parseXPoint, transformedXAxisScale))
-      .y(_parseInteractionYPoint(parseYPoint, transformedYAxisScale));
+      .x(chart.interactionPoint.parseXPoint(parseXPoint, transformedXAxisScale))
+      .y(
+        chart.interactionPoint.parseYPoint(parseYPoint, transformedYAxisScale)
+      );
 
     // set interaction points
     chart.interactionPoint.addNode(
@@ -447,7 +388,17 @@ const _bindPointInteraction = (
         dotsNodes.length
       );
 
-      movingPointsCallback(peekIndex, glomerularIndex);
+      const nextDefaultTimecourseInterval = Math.abs(
+        points[peekIndex][0] - points[glomerularIndex][0]
+      );
+
+      // change local defaultInterval value
+      chart.interactionPoint.defaultInterval(nextDefaultTimecourseInterval);
+      movingPointsCallback(
+        peekIndex,
+        glomerularIndex,
+        nextDefaultTimecourseInterval
+      );
     }
   };
 
@@ -471,19 +422,42 @@ const _bindPointInteraction = (
       const currentZoomTransform = zoomTransform(rootNode);
 
       const defaultTimecourseInterval = chart.interactionPoint.defaultInterval();
-      let glomerularIndex = closestIndex + defaultTimecourseInterval;
-      let gGlomerularPoint = dotsNodes[glomerularIndex];
+      const glomerularTimestamp =
+        points[closestIndex][0] + defaultTimecourseInterval;
+      let _nextGlomerularIndex;
+
+      for (let it = closestIndex + 1; it < points.length; it++) {
+        const currentTimestamp = points[it][0];
+        if (currentTimestamp > glomerularTimestamp) {
+          _nextGlomerularIndex = it;
+          break;
+        }
+      }
+
+      if (!_nextGlomerularIndex) {
+        _nextGlomerularIndex = dotsNodes.length - 1;
+      }
+      // find the best match between next and previous possible glomerular indexes
+      _nextGlomerularIndex =
+        points[_nextGlomerularIndex] &&
+        points[_nextGlomerularIndex - 1] &&
+        Math.abs(points[_nextGlomerularIndex][0] - glomerularTimestamp) <
+          Math.abs(points[_nextGlomerularIndex - 1][0] - glomerularTimestamp)
+          ? _nextGlomerularIndex
+          : _nextGlomerularIndex - 1;
+
+      let gGlomerularPoint = dotsNodes[_nextGlomerularIndex];
 
       if (!gGlomerularPoint) {
-        glomerularIndex = dotsNodes.length - 1;
-        gGlomerularPoint = dotsNodes[glomerularIndex];
+        _nextGlomerularIndex = dotsNodes.length - 1;
+        gGlomerularPoint = dotsNodes[_nextGlomerularIndex];
       }
 
       placePoints(
         rootNode,
         currentZoomTransform,
         closestIndex,
-        glomerularIndex,
+        _nextGlomerularIndex,
         closestPoint,
         gGlomerularPoint
       );
@@ -496,6 +470,7 @@ const _bindPointInteraction = (
 
 const bindMouseEvents = (
   root,
+  points,
   gX,
   gY,
   xAxisScale,
@@ -505,6 +480,8 @@ const bindMouseEvents = (
   parseXPoint,
   parseYPoint,
   dataset,
+  peekIndex,
+  glomerularIndex,
   movingPointsCallback
 ) => {
   if (!root) {
@@ -526,10 +503,13 @@ const bindMouseEvents = (
 
   _bindPointInteraction(
     root,
+    points,
     xAxisScale,
     yAxisScale,
     parseXPoint,
     parseYPoint,
+    peekIndex,
+    glomerularIndex,
     movingPointsCallback
   );
 };

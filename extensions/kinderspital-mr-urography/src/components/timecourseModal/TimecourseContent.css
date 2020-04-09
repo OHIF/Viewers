@@ -34,6 +34,11 @@
   stroke: red;
 }
 
+.interaction.dot,
+.dot.selected.dragging {
+  r: 4;
+}
+
 .interaction.draggable {
   cursor: pointer;
 }

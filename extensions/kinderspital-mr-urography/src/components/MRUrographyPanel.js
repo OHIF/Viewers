@@ -14,9 +14,11 @@ const refreshViewport = () => {
 };
 
 // TODO KINDERSPITAL this will be removed soon when task 9 is done
-const mockPoints = new Array(100).fill(0).map((item, index) => {
-  return [index * 10, Math.ceil(Math.random() * 10)];
-});
+const generateMockPoints = () => {
+  return new Array(100).fill(0).map((item, index) => {
+    return [index * 10, Math.ceil(Math.random() * 10)];
+  });
+};
 
 const showTimecourseModal = uiModal => {
   if (uiModal) {
@@ -24,9 +26,12 @@ const showTimecourseModal = uiModal => {
       content: TimecourseModal,
       title: 'Evaluate Timecourse',
       contentProps: {
-        timecourse: mockPoints,
+        timecourse: generateMockPoints(),
         measurementId: 'mockMeasurentId',
         onClose: uiModal.hide,
+        onPlacePoints: (peekIndex, glomerularIndex, timecourseInterval) => {
+          console.log('call endpoint')
+        },
       },
     });
   }

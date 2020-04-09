@@ -541,6 +541,45 @@ const _addInteractionPoints = (
   );
 };
 
+const _buildInteractionDataset = (
+  gPeekPoint,
+  peekIndex,
+  gGlomerularPoint,
+  glomerularIndex,
+  parseXPoint,
+  parseYPoint,
+  xAxisScale,
+  yAxisScale
+) => {
+  if (!gPeekPoint || !gGlomerularPoint) {
+    return;
+  }
+
+  const peekData = gPeekPoint.__data__;
+  const glomerularData = gGlomerularPoint.__data__;
+
+  const getLower = (pointA, pointB) => {
+    const parsedYA = parseYPoint(xAxisScale)(pointA, pointA.x);
+    const parsedYB = parseYPoint(yAxisScale)(pointB, pointB.x);
+
+    return parsedYA < parsedYB ? pointA : pointB;
+  };
+
+  const createLowerPoint = (pointRef, minorPoint) => {
+    const parsedYMinor = parseYPoint(yAxisScale)(minorPoint, minorPoint.x);
+    const lowerY = Math.floor(parsedYMinor / 2);
+    return { x: pointRef.x, y: minorPoint.y, parsedY: lowerY };
+  };
+
+  const peekPoint = { x: peekIndex, ...peekData };
+  const glomerularPoint = { x: glomerularIndex, ...glomerularData };
+
+  const minorPoint = getLower(peekPoint, glomerularPoint);
+  const peekLowerPoint = createLowerPoint(peekPoint, minorPoint);
+  const glomerularLowerPoint = createLowerPoint(glomerularPoint, minorPoint);
+
+  return [peekPoint, peekLowerPoint, glomerularLowerPoint, glomerularPoint];
+};
 /**
  * It updates interaction points dataset or svg dAttribute
  *
@@ -556,6 +595,42 @@ const _updateInteractionPoints = (root, lineDataset, lineDAttrValue) => {
     _setInteractionLabel(root, currentLabelText['point-id']);
   });
   _setInteractionLine(root, true, true, lineDataset, lineDAttrValue);
+};
+
+/**
+ * Dataset for interaction point is groupped differently from original dataset. So this function prepares/adapt it for original parser
+ * @param {function} parseAxis d3js axis parser method for X Axis
+ * @param {object} axisScale d3 continuos scale for X Axis
+ * @return {function} it returns a function to be consumed as parser for X
+ */
+const _parseInteractionXPoint = (parseAxis, axisScale) => (
+  interactionPoint,
+  interactionIndex
+) => {
+  const { x: index, y } = interactionPoint;
+  const point = {
+    y,
+  };
+  return parseAxis(axisScale)(point, index);
+};
+
+/**
+ *
+ * Dataset for interaction point is groupped differently from original dataset. So this function prepares/adapt it for original parser
+ * @param {function} parseAxis d3js axis parser method for Y Axis
+ * @param {object} axisScale d3 continuos scale for Y Axis
+ * @return {function} it returns a function to be consumed as parser for Y
+ */
+const _parseInteractionYPoint = (parseAxis, axisScale) => (
+  interactionPoint,
+  interactionIndex
+) => {
+  const { x: index, y, parsedY } = interactionPoint;
+  const point = {
+    y,
+  };
+  // in case no parsed y yet parse it now
+  return parsedY || parseAxis(axisScale)(point, index);
 };
 
 /**
@@ -648,6 +723,7 @@ const chart = {
   interactionPoint: {
     addNode: _addInteractionPoints,
     updateNode: _updateInteractionPoints,
+    buildDataset: _buildInteractionDataset,
     setLineHidden: _setInteractionLineHidden,
     setInteractionLabel: _setInteractionLabel,
     setMoving: _setMoving,
@@ -665,6 +741,8 @@ const chart = {
       _isPointOf(gPoint, chart.interactionPoint.peekClassSelector),
     isGlomerularPoint: gPoint =>
       _isPointOf(gPoint, chart.interactionPoint.glomerularClassSelector),
+    parseXPoint: _parseInteractionXPoint,
+    parseYPoint: _parseInteractionYPoint,
   },
   background: {
     addNode: _addChartClipPath,

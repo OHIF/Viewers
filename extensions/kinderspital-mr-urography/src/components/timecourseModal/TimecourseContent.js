@@ -22,37 +22,56 @@ const DEFAULT_AXIS = {
     type: 'y',
   },
 };
+
+let defaultTimecourseInterval = 60; // 1 minute
+let _peekIndex = 10;
+let _glomerularIndex = 60;
+
 function LineChartContainer({
   axis = DEFAULT_AXIS,
   timecourse,
   chartDimension,
+  onPlacePoints,
+  peekIndex = _peekIndex,
+  glomerularIndex = _glomerularIndex,
+  timecourseInterval = defaultTimecourseInterval,
 }) {
   const d3Container = useRef(null);
   const chartRef = useRef(null);
   const { width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT } = chartDimension;
-  const defaultTimecourseInterval = 60; // 1 minute
-  const timecoursePG = undefined;
 
   useEffect(() => {
     if (timecourse && d3Container.current) {
       const d3Content = select(d3Container.current);
       chartRef.current = lineChart.addLineChartNode(
         d3Content,
-        (peekIndex, glomerularIndex) => {
-          console.log(peekIndex, glomerularIndex);
+        (nextPeekIndex, nextGlomerularIndex, nextTimecourseInterval) => {
+          _peekIndex = nextPeekIndex;
+          _glomerularIndex = nextGlomerularIndex;
+          defaultTimecourseInterval = nextTimecourseInterval;
+
+          onPlacePoints(_peekIndex, _glomerularIndex, timecourseInterval);
         },
         axis,
         timecourse,
-        timecoursePG,
+        peekIndex,
+        glomerularIndex,
         width,
         height,
         true,
         true
       );
 
-      lineChart.defaultTimecourseInterval(defaultTimecourseInterval);
+      lineChart.defaultTimecourseInterval(timecourseInterval);
     }
-  }, [timecourse, d3Container.current, width, height]);
+  }, [
+    timecourse,
+    d3Container.current,
+    width,
+    height,
+    peekIndex,
+    glomerularIndex,
+  ]);
 
   return (
     <div>
@@ -80,7 +99,14 @@ const _getDimensions = targetRef => {
     height: targetRef.current ? targetRef.current.offsetHeight : undefined,
   };
 };
-function TimecourseContent({ timecourse, measurementId, show }) {
+function TimecourseContent({
+  timecourse,
+  measurementId,
+  show,
+  peekIndex,
+  glomerularIndex,
+  onPlacePoints,
+}) {
   const contentRef = useRef();
   const [chartDimension, setChartDimension] = useState({});
 
@@ -108,6 +134,9 @@ function TimecourseContent({ timecourse, measurementId, show }) {
       <LineChartContainer
         timecourse={timecourse}
         chartDimension={chartDimension}
+        onPlacePoints={onPlacePoints}
+        peekIndex={peekIndex}
+        glomerularIndex={glomerularIndex}
       ></LineChartContainer>
     </div>
   );
@@ -117,6 +146,10 @@ TimecourseContent.propTypes = {
   timecourse: PropTypes.object.required,
   measurementId: PropTypes.string.required,
   show: PropTypes.bool.required,
+  onPlacePoints: PropTypes.func.required,
+  peekIndex: PropTypes.number,
+  glomerularIndex: PropTypes.number,
+  timecourseInterval: PropTypes.number,
 };
 
 export default TimecourseContent;

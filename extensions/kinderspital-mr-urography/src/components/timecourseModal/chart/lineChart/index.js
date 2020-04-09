@@ -48,7 +48,8 @@ const MARGIN = { top: 20, right: 50, bottom: 50, left: 50 };
  * @param {function} movingPointsCallback callback method to be called once p/g points are changed
  * @param {Object<string, TimecoursePointDef>} axis definition of axis
  * @param {object} points list of points to be created
- * @param {object} timecoursePG list of pg points to be created
+ * @param {number} [peekIndex] index related to peek point
+ * @param {number} [glomerularIndex] index related to peek point
  * @param {number} defaultTimecourseInterval interval for adding new p/g point
  * @param {number} width width for whole content including lines, dots, axis, labels
  * @param {number} height height for whole content including lines, dots, axis, labels
@@ -61,7 +62,8 @@ const addLineChartNode = (
   movingPointsCallback,
   axis,
   points = [],
-  timecoursePG = [],
+  peekIndex,
+  glomerularIndex,
   width,
   height,
   showAxisLabels = true,
@@ -168,16 +170,47 @@ const addLineChartNode = (
   // add line chart
   chart.lines.addNode(chartWrapper, dataset, _line);
   // add chart points
-  chart.points.addNode(
+  const gDots = chart.points.addNode(
     chartWrapper,
     dataset,
     parseXPoint(xAxisScale),
     parseYPoint(yAxisScale)
   );
 
+  if (peekIndex >= 0 && glomerularIndex >= 0) {
+    const gDotsNodes = gDots.nodes();
+    const gPeekPoint = gDotsNodes[peekIndex];
+    const gGlomerularPoint = gDotsNodes[glomerularIndex];
+
+    const _interactionDataset = chart.interactionPoint.buildDataset(
+      gPeekPoint,
+      peekIndex,
+      gGlomerularPoint,
+      glomerularIndex,
+      parseXPoint,
+      parseYPoint,
+      xAxisScale,
+      yAxisScale
+    );
+
+    // create line
+    const _interactionLine = line()
+      .x(chart.interactionPoint.parseXPoint(parseXPoint, xAxisScale))
+      .y(chart.interactionPoint.parseYPoint(parseYPoint, yAxisScale));
+    // set interaction points
+    chart.interactionPoint.addNode(
+      chartWrapper,
+      gPeekPoint,
+      gGlomerularPoint,
+      _interactionDataset,
+      _interactionLine
+    );
+  }
+
   // bind events
   events.bindMouseEvents(
     chartWrapper,
+    points,
     gXAxis,
     gYAxis,
     xAxisScale,
@@ -187,6 +220,8 @@ const addLineChartNode = (
     parseXPoint,
     parseYPoint,
     dataset,
+    peekIndex,
+    glomerularIndex,
     movingPointsCallback
   );
 
