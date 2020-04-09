@@ -82,9 +82,7 @@ jobs:
           flags: 'core'
       - persist_to_workspace:
           root: ~/
-          paths:
-            - platform/viewer
-            - .cache/Cypress
+          paths: .
 
   ###
   # Workflow: PR_CHECKS
