@@ -12,6 +12,8 @@ import { measurementConfig } from '../tools/KinderspitalFreehandRoiTool';
 import './MRUrographyPanel.css';
 import { stat } from 'fs';
 
+const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
+
 const globalImageIdSpecificToolStateManager =
   cornerstoneTools.globalImageIdSpecificToolStateManager;
 
@@ -160,7 +162,7 @@ const MRUrographyPanel = ({
 
     const imageIds = [];
 
-    // Assume 4D for now.
+    // Assume 4D
     for (let i = 0; i < displaySet.images.length; i++) {
       imageIds.push(displaySet.images[i].map(image => image.getImageId()));
     }
@@ -171,6 +173,8 @@ const MRUrographyPanel = ({
     const toolName = TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL;
 
     const toolStateImageIds = Object.keys(toolState);
+
+    let position;
 
     for (let i = 0; i < toolStateImageIds.length; i++) {
       const imageId = toolStateImageIds[i];
@@ -190,7 +194,52 @@ const MRUrographyPanel = ({
         if (measurements[j].measurementNumber === measurementNumber) {
           console.log(imageId);
           debugger;
-          return;
+
+          position = _getStackIndexAndImageIdIndexfromImageId(
+            imageIds,
+            imageId
+          );
+          break;
+        }
+      }
+    }
+
+    debugger;
+
+    const enabledElements = cornerstone.getEnabledElements();
+    const enabledElement = enabledElements[activeIndex];
+    const { element } = enabledElement;
+
+    const timeSeries = cornerstoneTools.getToolState(
+      enabledElement.element,
+      'timeSeries'
+    );
+
+    const currentStackIndex = timeSeries.data[0].currentStackIndex;
+
+    // Switch imageIdIndex in stack
+    scrollToIndex(element, position.imageIdIndex);
+
+    // Switch timepoint
+    cornerstoneTools.incrementTimePoint(
+      element,
+      position.stackIndex - currentStackIndex
+    );
+
+    cornerstone.updateImage(element);
+  };
+
+  const _getStackIndexAndImageIdIndexfromImageId = (imageIds, imageId) => {
+    for (let stackIndex = 0; stackIndex < imageIds.length; stackIndex++) {
+      const imageIdsForStack = imageIds[stackIndex];
+
+      for (
+        let imageIdIndex = 0;
+        imageIdIndex < imageIdsForStack.length;
+        imageIdIndex++
+      ) {
+        if (imageIdsForStack[imageIdIndex] === imageId) {
+          return { stackIndex, imageIdIndex };
         }
       }
     }
@@ -217,7 +266,7 @@ const MRUrographyPanel = ({
     const selectedKey = measurementData.measurementNumber;
     const { canFetchTimeCourses, regionList } = getRegionList(selectedKey);
 
-    //jumpToLesion(measurementData);
+    jumpToLesion(measurementData);
 
     setState(state => ({
       ...state,
