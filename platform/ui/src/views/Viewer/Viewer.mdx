@@ -5,7 +5,7 @@ route: examples/viewer
 ---
 
 import { Playground, Props } from 'docz';
-import { NavBar, SidePanel, Svg } from '@ohif/ui';
+import { NavBar, SidePanel, Svg, MeasurementTable } from '@ohif/ui';
 
 # Viewer
 
@@ -39,11 +39,9 @@ import { NavBar, SidePanel, Svg } from '@ohif/ui';
         iconName="list-bullets"
         iconLabel="Measure"
         componentLabel="Measurements"
-        defaultIsOpen={false}
+        defaultIsOpen={true}
       >
-        <div className="flex justify-center text-white p-2">
-          panel placeholder
-        </div>
+        <MeasurementTable />
       </SidePanel>
     </div>
   </div>

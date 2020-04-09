@@ -15,6 +15,7 @@ import listBullets from './../../assets/icons/list-bullets.svg';
 import logoOhifSmall from './../../assets/icons/logo-ohif-small.svg';
 import magnifier from './../../assets/icons/magnifier.svg';
 import notificationwarningDiamond from './../../assets/icons/notificationwarning-diamond.svg';
+import pencil from './../../assets/icons/pencil.svg';
 import pushLeft from './../../assets/icons/push-left.svg';
 import pushRight from './../../assets/icons/push-right.svg';
 import settings from './../../assets/icons/settings.svg';
@@ -49,6 +50,7 @@ const ICONS = {
   'logo-ohif-small': logoOhifSmall,
   magnifier: magnifier,
   'notificationwarning-diamond': notificationwarningDiamond,
+  pencil: pencil,
   'push-left': pushLeft,
   'push-right': pushRight,
   settings: settings,

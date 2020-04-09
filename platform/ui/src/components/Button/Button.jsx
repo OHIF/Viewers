@@ -64,6 +64,7 @@ const sizeClasses = {
   small: 'py-2 px-2 text-sm',
   medium: 'py-2 px-2 text-lg',
   large: 'py-2 px-6 text-xl',
+  initial: '',
 };
 
 const fullWidthClasses = {
@@ -122,8 +123,8 @@ const Button = ({
 
 Button.propTypes = {
   children: PropTypes.node,
-  size: PropTypes.oneOf(['small', 'medium', 'large']),
-  radius: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
+  size: PropTypes.oneOf(['small', 'medium', 'large', 'initial']),
+  rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
   color: PropTypes.oneOf([
     'default',
