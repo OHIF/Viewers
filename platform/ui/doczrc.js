@@ -4,11 +4,11 @@ export default {
     'Getting Started',
     // COMPONENTS ARE DEFINED JUST TO CUSTOMIZE THEIR SORTING
     'General',
+    'Data Display',
+    'Feedback',
     'Form',
     'Navigation',
-    // 'Feedback',
     // 'Other',
-    'Data Display',
   ],
   ignore: ['README.md'],
 };

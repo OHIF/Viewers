@@ -8,6 +8,7 @@ import chevronDown from './../../assets/icons/chevron-down.svg';
 import chevronLeft from './../../assets/icons/chevron-left.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
 import groupLayers from './../../assets/icons/group-layers.svg';
+import info from './../../assets/icons/info.svg';
 import infoLink from './../../assets/icons/info-link.svg';
 import launchArrow from './../../assets/icons/launch-arrow.svg';
 import launchInfo from './../../assets/icons/launch-info.svg';
@@ -42,6 +43,7 @@ const ICONS = {
   'chevron-left': chevronLeft,
   'chevron-right': chevronRight,
   'group-layers': groupLayers,
+  info: info,
   'info-link': infoLink,
   'launch-arrow': launchArrow,
   'launch-info': launchInfo,

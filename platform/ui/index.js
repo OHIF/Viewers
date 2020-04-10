@@ -26,6 +26,7 @@ export {
   InputText,
   Label,
   NavBar,
+  Notification,
   Select,
   SidePanel,
   StudyListExpandedRow,
