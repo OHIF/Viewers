@@ -11,7 +11,7 @@ const studyGroup = {
   All: [studySimple, studyWithSR],
 };
 
-const buttonClasses = 'text-white border-none bg-black';
+const buttonClasses = 'text-white text-base border-none bg-black';
 const activeButtonClasses = 'bg-primary-main';
 
 const StudyBrowser = () => {
@@ -35,6 +35,7 @@ const StudyBrowser = () => {
                   buttonClasses,
                   isActive && activeButtonClasses
                 )}
+                size="small"
                 onClick={() => {
                   setStudyGroupSelected(studyGroup);
                   setStudyActive(null);
