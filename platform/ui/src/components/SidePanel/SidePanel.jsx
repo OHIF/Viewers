@@ -65,7 +65,6 @@ const SidePanel = ({
             variant="text"
             color="inherit"
             rounded="none"
-            style={{ height: '52px' }}
             onClick={() => {
               setIsOpen(false);
             }}

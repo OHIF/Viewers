@@ -42,11 +42,11 @@ const ThumbnailList = ({ thumbnails }) => {
                 isTracked={isTracked}
                 isActive={isActive}
                 onClick={() => {
-                  if (thumbnailActive === displaySetInstanceUid) {
-                    setThumbnailActive(null);
-                  } else {
-                    setThumbnailActive(displaySetInstanceUid);
-                  }
+                  setThumbnailActive(
+                    thumbnailActive === displaySetInstanceUid
+                      ? null
+                      : displaySetInstanceUid
+                  );
                 }}
               />
             );

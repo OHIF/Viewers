@@ -27,11 +27,7 @@ const Thumbnail = ({
             isTracked && 'rounded-sm hover:bg-gray-900 showTooltipOnHover'
           )}
         >
-          <Icon
-            name={trackedIcon}
-            className="text-primary-light mb-2"
-            style={{ width: '19px' }}
-          />
+          <Icon name={trackedIcon} className="text-primary-light mb-2 w-5" />
           <div className="text-white text-xl leading-tight h-5">
             {viewportIdentificator}
           </div>
@@ -47,8 +43,10 @@ const Thumbnail = ({
                 </span>
                 {viewportIdentificator && (
                   <span>
-                    in viewport{'  '}
-                    <span className="text-white">{viewportIdentificator}</span>
+                    in viewport
+                    <span className="ml-1 text-white">
+                      {viewportIdentificator}
+                    </span>
                   </span>
                 )}
               </div>

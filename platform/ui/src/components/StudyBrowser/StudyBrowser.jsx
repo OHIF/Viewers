@@ -69,11 +69,7 @@ const StudyBrowser = () => {
                   trackedSeries={trackedSeries}
                   isActive={isActive}
                   onClick={() => {
-                    if (isActive) {
-                      setStudyActive(null);
-                    } else {
-                      setStudyActive(studyInstanceUid);
-                    }
+                    setStudyActive(isActive ? null : studyInstanceUid);
                   }}
                 />
                 {isActive && thumbnails && (
