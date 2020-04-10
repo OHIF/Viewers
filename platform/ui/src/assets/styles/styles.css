@@ -16,6 +16,10 @@
   @apply bg-primary-main;
 }
 
+.invisible-scrollbar::-webkit-scrollbar {
+  @apply hidden;
+}
+
 /* TOOLTIP WORKAROUND FOR ARROW UP */
 .tooltip::before {
   @apply bg-primary-dark absolute z-10;
