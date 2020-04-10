@@ -18,7 +18,7 @@ const Thumbnail = ({
       <div className="flex flex-col flex-2 px-2 items-center">
         <div
           className={classnames(
-            'flex flex-col items-center justify-center mb-2',
+            'flex flex-col items-center justify-center p-2 mb-2',
             isTracked && 'rounded-sm hover:bg-gray-900'
           )}
         >
@@ -27,29 +27,29 @@ const Thumbnail = ({
             className="text-primary-light mb-2"
             style={{ width: '19px' }}
           />
-          <span className="text-white text-xl leading-tight">
+          <div className="text-white text-xl leading-tight">
             {viewportIdentificator}
-          </span>
+          </div>
         </div>
         {isTracked && <Icon name="cancel" className="text-primary-active" />}
       </div>
       <div className="flex flex-col flex-1 px-4">
         <div
-          className="flex flex-1 items-center justify-center border rounded-md border-secondary-light bg-black text-white"
+          className="flex flex-1 items-center justify-center border rounded-md border-secondary-light bg-black text-white mb-2"
           style={{ minHeight: '120px' }}
         >
           {'Thumbnail img'}
         </div>
-        <div className="flex flex-row flex-1">
-          <div>
+        <div className="flex flex-row flex-1 text-blue-300 text-base">
+          <div className="mr-4">
             <span className="text-primary-main font-bold">{'S: '}</span>
             {seriesNumber}
           </div>
-          <div>
-            <Icon name="group-layers" /> {instanceNumber}
+          <div className="flex flex-row items-centerflex-1">
+            <Icon name="group-layers" className="w-3 mr-2" /> {instanceNumber}
           </div>
         </div>
-        <div>{seriesDescription}</div>
+        <div className="text-white">{seriesDescription}</div>
       </div>
     </div>
   );

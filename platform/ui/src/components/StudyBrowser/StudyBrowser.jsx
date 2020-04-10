@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import classnames from 'classnames';
 
-import { ButtonGroup, Button, StudyItem } from '@ohif/ui';
+import { ButtonGroup, Button, StudyItem, ThumbnailList } from '@ohif/ui';
 
 import { studyWithSR, studySimple, studyTracked } from './mockData';
 const studyGroupTypes = ['Primary', 'Recent', 'All'];
@@ -16,11 +16,7 @@ const activeButtonClasses = 'bg-primary-main';
 
 const StudyBrowser = () => {
   const [studyGroupSelected, setStudyGroupSelected] = useState('Recent');
-  const [studyActive, setStudyActive] = useState(null);
-
-  useEffect(() => {
-    setStudyActive(null);
-  }, [studyGroupSelected]);
+  const [studyActive, setStudyActive] = useState('1');
 
   return (
     <React.Fragment>
@@ -39,7 +35,10 @@ const StudyBrowser = () => {
                   buttonClasses,
                   isActive && activeButtonClasses
                 )}
-                onClick={() => setStudyGroupSelected(studyGroup)}
+                onClick={() => {
+                  setStudyGroupSelected(studyGroup);
+                  setStudyActive(null);
+                }}
               >
                 {studyGroup}
               </Button>
@@ -48,34 +47,41 @@ const StudyBrowser = () => {
         </ButtonGroup>
       </div>
       <div className="flex flex-col flex-1">
-        {studyGroup[studyGroupSelected].map((data, index) => {
-          const {
+        {studyGroup[studyGroupSelected].map(
+          ({
             studyInstanceUid,
             studyDate,
             studyDescription,
             instances,
             modalities,
             trackedSeries,
-          } = data;
-          return (
-            <StudyItem
-              key={index}
-              studyDate={studyDate}
-              studyDescription={studyDescription}
-              instances={instances}
-              modalities={modalities}
-              trackedSeries={trackedSeries}
-              isActive={studyActive === studyInstanceUid}
-              onClick={() => {
-                if (studyInstanceUid !== studyActive) {
-                  setStudyActive(studyInstanceUid);
-                } else {
-                  setStudyActive(null);
-                }
-              }}
-            />
-          );
-        })}
+            thumbnails,
+          }) => {
+            const isActive = studyActive === studyInstanceUid;
+            return (
+              <React.Fragment key={studyInstanceUid}>
+                <StudyItem
+                  studyDate={studyDate}
+                  studyDescription={studyDescription}
+                  instances={instances}
+                  modalities={modalities}
+                  trackedSeries={trackedSeries}
+                  isActive={isActive}
+                  onClick={() => {
+                    if (isActive) {
+                      setStudyActive(null);
+                    } else {
+                      setStudyActive(studyInstanceUid);
+                    }
+                  }}
+                />
+                {isActive && thumbnails && (
+                  <ThumbnailList thumbnails={thumbnails} />
+                )}
+              </React.Fragment>
+            );
+          }
+        )}
       </div>
     </React.Fragment>
   );

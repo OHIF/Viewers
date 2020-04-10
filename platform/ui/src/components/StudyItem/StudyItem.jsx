@@ -24,7 +24,7 @@ const StudyItem = ({
       )}
       onClick={onClick}
     >
-      <div className="flex flex-col flex-1 px-4">
+      <div className="flex flex-col flex-1 px-4 pb-3">
         <div className="flex flex-row justify-between pb-2 pt-3 pb-2">
           <div className="text-white">{studyDate}</div>
           <div className="flex flex-row text-blue-300">
@@ -37,7 +37,7 @@ const StudyItem = ({
           <div className="text-blue-300">{studyDescription}</div>
         </div>
       </div>
-      {trackedSeries && (
+      {!!trackedSeries && (
         <div className="flex flex-2">
           <div
             className={classnames(

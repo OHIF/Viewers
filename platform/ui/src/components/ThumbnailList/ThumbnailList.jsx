@@ -5,7 +5,7 @@ import { Thumbnail, ThumbnailSR } from '@ohif/ui';
 
 const ThumbnailList = ({ thumbnails }) => {
   return (
-    <React.Fragment>
+    <div className="bg-black">
       {thumbnails.map(
         ({
           imageId,
@@ -47,7 +47,7 @@ const ThumbnailList = ({ thumbnails }) => {
           }
         }
       )}
-    </React.Fragment>
+    </div>
   );
 };
 
