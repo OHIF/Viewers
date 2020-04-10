@@ -371,6 +371,7 @@ SegmentationPanel.propTypes = {
   }),
   activeIndex: PropTypes.number.isRequired,
   studies: PropTypes.array.isRequired,
+  isOpen: PropTypes.bool.isRequired,
 };
 SegmentationPanel.defaultProps = {};
 

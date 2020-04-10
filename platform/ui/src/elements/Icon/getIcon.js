@@ -85,8 +85,12 @@ import trash from './icons/trash.svg';
 import unlink from './icons/unlink.svg';
 import user from './icons/user.svg';
 import youtube from './icons/youtube.svg';
+import eye from './icons/eye.svg';
+import eyeClosed from './icons/eye-closed.svg';
 
 const ICONS = {
+  eye,
+  'eye-closed': eyeClosed,
   brush,
   scissors,
   user,

@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.19...@ohif/viewer@3.8.20) (2020-04-09)
+
+
+### Bug Fixes
+
+* Revert "refactor: Reduce bundle size ([#1575](https://github.com/OHIF/Viewers/issues/1575))" ([#1622](https://github.com/OHIF/Viewers/issues/1622)) ([d21af3f](https://github.com/OHIF/Viewers/commit/d21af3f133492fa31492413b8782936c9ff18b44))
+
+
+
+
+
+## [3.8.19](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.18...@ohif/viewer@3.8.19) (2020-04-09)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# Change Log
+
+All notable changes to this project will be documented in this file. See
+[Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 ## [3.8.18](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.17...@ohif/viewer@3.8.18) (2020-04-07)
 
 **Note:** Version bump only for package @ohif/viewer

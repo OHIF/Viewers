@@ -5,7 +5,7 @@ describe('utils', () => {
     const utilExports = Object.keys(utils).sort();
 
     expect(utilExports).toEqual(
-      ['getUserManagerForOpenIdConnectClient'].sort()
+      ['getUserManagerForOpenIdConnectClient', 'initWebWorkers'].sort()
     );
   });
 });

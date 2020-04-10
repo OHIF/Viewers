@@ -26,6 +26,7 @@ import ReactDOM from 'react-dom';
 import OHIFVTKExtension from '@ohif/extension-vtk';
 import OHIFDicomHtmlExtension from '@ohif/extension-dicom-html';
 import OHIFDicomSegmentationExtension from '@ohif/extension-dicom-segmentation';
+import OHIFDicomRtExtension from '@ohif/extension-dicom-rt';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 
@@ -46,6 +47,7 @@ const appProps = {
     OHIFDicomMicroscopyExtension,
     OHIFDicomPDFExtension,
     OHIFDicomSegmentationExtension,
+    OHIFDicomRtExtension,
   ],
 };
 
