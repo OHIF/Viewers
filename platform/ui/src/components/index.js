@@ -26,6 +26,9 @@ import TableCell from './TableCell';
 import TableHead from './TableHead';
 import TableRow from './TableRow';
 import ThemeWrapper from './ThemeWrapper/';
+import Thumbnail from './Thumbnail';
+import ThumbnailSR from './ThumbnailSR';
+import ThumbnailList from './ThumbnailList';
 import Typography from './Typography';
 
 export {
@@ -57,5 +60,8 @@ export {
   TableHead,
   TableRow,
   ThemeWrapper,
+  Thumbnail,
+  ThumbnailSR,
+  ThumbnailList,
   Typography,
 };

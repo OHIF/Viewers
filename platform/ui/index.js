@@ -40,6 +40,9 @@ export {
   TableHead,
   TableRow,
   ThemeWrapper,
+  Thumbnail,
+  ThumbnailSR,
+  ThumbnailList,
   Typography,
 } from './src/components';
 
