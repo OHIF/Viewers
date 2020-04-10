@@ -61,10 +61,9 @@ import {
             iconName="list-bullets"
             iconLabel="Measure"
             componentLabel="Measurements"
-            defaultIsOpen={true}
+            defaultIsOpen={false}
           >
             <div className="overflow-y-auto overflow-x-hidden invisible-scrollbar">
-              {/* HEADER */}
               <div className="p-2">
                 <div className="leading-none">
                   <span className="text-white text-base mr-2">07-Sep-2010</span>
@@ -78,8 +77,8 @@ import {
                   </span>
                 </div>
               </div>
-              <MeasurementTable tableData={measurementTableData} />
-              <SegmentationTable tableData={segmentationTableData} />
+              <MeasurementTable {...measurementTableData} />
+              <SegmentationTable {...segmentationTableData} />
             </div>
             <div className="p-4 flex justify-center">
               <ButtonGroup onClick={() => alert('Export')}>
