@@ -16,7 +16,7 @@ const activeButtonClasses = 'bg-primary-main';
 
 const StudyBrowser = () => {
   const [studyGroupSelected, setStudyGroupSelected] = useState('Recent');
-  const [studyActive, setStudyActive] = useState('1');
+  const [studyActive, setStudyActive] = useState(null);
 
   return (
     <React.Fragment>
