@@ -21,7 +21,7 @@
 }
 
 /* TOOLTIP WORKAROUND FOR ARROW UP */
-.tooltip::before {
+.tooltip.tooltip-up::before {
   @apply bg-primary-dark absolute z-10;
   content: '';
   width: 14px;
@@ -29,4 +29,27 @@
   top: -1px;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.tooltip.tooltip-right {
+  left: calc(100% + 15px);
+}
+
+.tooltip.tooltip-right::before {
+  @apply bg-black absolute z-10;
+  content: '';
+  width: 2px;
+  height: 15px;
+  left: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* TOOLTIP WORKAROUND FOR ARROW */
+.showTooltipOnHover .tooltip {
+  display: none;
+}
+
+.showTooltipOnHover:hover .tooltip {
+  display: block;
 }

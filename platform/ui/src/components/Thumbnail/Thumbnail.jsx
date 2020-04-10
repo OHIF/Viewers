@@ -19,7 +19,7 @@ const Thumbnail = ({
       <div className="flex flex-col flex-2 px-2 items-center">
         <div
           className={classnames(
-            'flex flex-col items-center justify-start p-2 mb-2',
+            'flex flex-col items-center justify-start p-2 mb-2 relative cursor-pointer showTooltipOnHover',
             isTracked && 'rounded-sm hover:bg-gray-900'
           )}
         >
@@ -30,6 +30,42 @@ const Thumbnail = ({
           />
           <div className="text-white text-xl leading-tight h-5">
             {viewportIdentificator}
+          </div>
+          <div
+            className={classnames(
+              'tooltip tooltip-right absolute bg-black border border-secondary-main text-common-light text-base rounded py-2 px-4 top-0 w-max-content'
+            )}
+          >
+            <div className="flex flex-row flex-1">
+              <div className="flex flex-col flex-1 pr-4">
+                <span>
+                  Series is <span className="text-white">tracked</span>
+                </span>
+                {viewportIdentificator && (
+                  <span>
+                    in viewport{' '}
+                    <span className="text-white">{viewportIdentificator}</span>
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-2 items-center justify-center">
+                <Icon name="info-link" className="text-primary-active" />
+              </div>
+            </div>
+            <svg
+              className="absolute text-black stroke-secondary-main"
+              style={{
+                top: 'calc(50% - 8px)',
+                left: -15,
+                transform: 'rotate(270deg)',
+              }}
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+            >
+              <path fill="currentColor" d="M24 22h-24l12-20z" />
+            </svg>
           </div>
         </div>
         {isTracked && <Icon name="cancel" className="text-primary-active" />}
