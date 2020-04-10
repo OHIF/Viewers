@@ -46,7 +46,7 @@ const StudyBrowser = () => {
           })}
         </ButtonGroup>
       </div>
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 overflow-auto invisible-scrollbar">
         {studyGroup[studyGroupSelected].map(
           ({
             studyInstanceUid,
