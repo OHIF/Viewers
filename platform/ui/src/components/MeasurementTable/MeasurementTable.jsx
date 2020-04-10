@@ -96,6 +96,24 @@ const MeasurementTable = () => {
                 </div>
               );
             })}
+          {!data.length && (
+            <div
+              className={classnames(
+                'group flex cursor-default bg-black border border-transparent transition duration-300 '
+              )}
+            >
+              <div
+                className={classnames(
+                  'text-center w-6 py-1 text-base transition duration-300 bg-primary-dark text-primary-light group-hover:bg-secondary-main'
+                )}
+              ></div>
+              <div className="px-2 py-4 flex flex-1 items-center justify-between">
+                <span className="text-base text-primary-light mb-1 flex items-center flex-1">
+                  No tracked measurements
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -197,6 +215,7 @@ const MeasurementTable = () => {
         </div>
       </div>
       {/* TABLE */}
+      {renderTable('Measurements', null, [])}
       {renderTable('Measurements', 5, tableData)}
       {renderTable('ADDITIONAL FINDINGS', 5, tableData)}
       {renderSegments('SEGMENTS', 12, tableData)}
