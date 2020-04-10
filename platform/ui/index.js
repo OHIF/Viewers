@@ -28,6 +28,7 @@ export {
   MeasurementTable,
   NavBar,
   Select,
+  SegmentationTable,
   SidePanel,
   StudyListExpandedRow,
   StudyListPagination,

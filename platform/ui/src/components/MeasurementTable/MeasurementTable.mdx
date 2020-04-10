@@ -19,9 +19,26 @@ import { MeasurementTable } from '@ohif/ui';
 
 <Playground>
   {() => {
+    const tableData = {
+      title: 'Measurements',
+      amount: 10,
+      data: new Array(10).fill(''),
+    };
     return (
-      <div className="p-4">
-        <MeasurementTable />
+      <div className="p-4 w-80">
+        <MeasurementTable {...tableData} />
+      </div>
+    );
+  }}
+</Playground>
+
+## Empty Data
+
+<Playground>
+  {() => {
+    return (
+      <div className="p-4 w-80">
+        <MeasurementTable title="Measurements" />
       </div>
     );
   }}
