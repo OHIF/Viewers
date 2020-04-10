@@ -14,9 +14,9 @@ const ThumbnailSR = ({ seriesDescription, seriesDate }) => {
           <div className="px-4 bg-primary-main rounded-sm mr-4 text-xl text-white">
             SR
           </div>
-          <span className="text-blue-300">{seriesDate}</span>
+          <span className="text-blue-300 text-base">{seriesDate}</span>
         </div>
-        <div className="text-white">{seriesDescription}</div>
+        <div className="text-white text-base">{seriesDescription}</div>
       </div>
       <div></div>
     </div>

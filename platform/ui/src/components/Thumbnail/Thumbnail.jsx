@@ -92,7 +92,7 @@ const Thumbnail = ({
             <Icon name="group-layers" className="w-3 mr-2" /> {instanceNumber}
           </div>
         </div>
-        <div className="text-white">{seriesDescription}</div>
+        <div className="text-white text-base">{seriesDescription}</div>
       </div>
     </div>
   );

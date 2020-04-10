@@ -24,24 +24,24 @@ const StudyItem = ({
       )}
       onClick={onClick}
     >
-      <div className="flex flex-col flex-1 px-4 pb-3">
-        <div className="flex flex-row justify-between pb-2 pt-3 pb-2">
-          <div className="text-white">{studyDate}</div>
-          <div className="flex flex-row text-blue-300">
+      <div className="flex flex-col flex-1 px-4 pb-2">
+        <div className="flex flex-row items-center justify-between pb-2 pt-2 pb-2">
+          <div className="text-white text-base">{studyDate}</div>
+          <div className="flex flex-row items-center text-blue-300  text-base">
             <Icon name="group-layers" className="text-blue-300 mx-2 w-4" />
             {instances}
           </div>
         </div>
-        <div className="flex flex-row py-2">
+        <div className="flex flex-row py-1">
           <div className="text-blue-300 pr-5 text-xl">{modalities}</div>
-          <div className="text-blue-300">{studyDescription}</div>
+          <div className="text-blue-300  text-base">{studyDescription}</div>
         </div>
       </div>
       {!!trackedSeries && (
         <div className="flex flex-2">
           <div
             className={classnames(
-              'flex flex-row bg-secondary-main text-white py-1 pl-2 pr-4 mt-2 ',
+              'flex flex-row bg-secondary-main text-base text-white py-1 pl-2 pr-4 mt-2 ',
               isActive
                 ? 'flex-1 border-t border-secondary-light justify-center'
                 : 'rounded-sm mx-4 mb-4'
