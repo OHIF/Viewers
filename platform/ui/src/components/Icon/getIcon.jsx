@@ -7,6 +7,8 @@ import cancel from './../../assets/icons/cancel.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
 import chevronLeft from './../../assets/icons/chevron-left.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
+import eyeVisible from './../../assets/icons/eye-visible.svg';
+import eyeHidden from './../../assets/icons/eye-hidden.svg';
 import groupLayers from './../../assets/icons/group-layers.svg';
 import infoLink from './../../assets/icons/info-link.svg';
 import launchArrow from './../../assets/icons/launch-arrow.svg';
@@ -42,6 +44,8 @@ const ICONS = {
   'chevron-down': chevronDown,
   'chevron-left': chevronLeft,
   'chevron-right': chevronRight,
+  'eye-visible': eyeVisible,
+  'eye-hidden': eyeHidden,
   'group-layers': groupLayers,
   'info-link': infoLink,
   'launch-arrow': launchArrow,
