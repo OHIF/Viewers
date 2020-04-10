@@ -18,6 +18,12 @@ const measurementConfig = { measurementNumber: 1 };
 
 export { measurementConfig };
 
+const generateMockPoints = () => {
+  return new Array(100).fill(0).map((item, index) => {
+    return [index * 10, Math.ceil(Math.random() * 10)];
+  });
+};
+
 export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
   constructor(props = {}) {
     const defaultProps = {
@@ -71,8 +77,8 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
       },
       measurementNumber: measurementConfig.measurementNumber,
       areaUnderCurve: 0,
-      volume: 0,
-      //timecourse,
+      volume: 10,
+      timecourse: generateMockPoints(),
       pIndex: undefined,
       gIndex: undefined,
     };

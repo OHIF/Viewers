@@ -66,7 +66,15 @@
   stroke: #91b8cd26;
 }
 
-.reset {
+.toolbarRow {
+  display: flex;
+}
+
+.toolbarRow div {
+  margin-right: 5px;
+}
+
+.toolbarButton {
   text-align: center;
   height: 20px;
   width: 50px;
@@ -80,4 +88,12 @@
   border-bottom-right-radius: 20px;
   border-top-right-radius: 20px;
   cursor: pointer;
+}
+
+.toolbarButton.big {
+  width: 65px;
+}
+
+.toolbarInfo {
+  margin-left: auto;
 }
