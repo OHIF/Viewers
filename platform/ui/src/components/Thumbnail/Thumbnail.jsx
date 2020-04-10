@@ -9,18 +9,19 @@ const Thumbnail = ({
   seriesNumber,
   instanceNumber,
   viewportIdentificator,
-  isTracked = true,
+  isTracked,
   isActive,
+  onClick,
 }) => {
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
 
   return (
-    <div className="flex flex-row flex-1 px-4 py-2">
+    <div className="flex flex-row flex-1 px-4 py-2" onClick={onClick}>
       <div className="flex flex-col flex-2 px-2 items-center">
         <div
           className={classnames(
-            'flex flex-col items-center justify-start p-2 mb-2 relative cursor-pointer showTooltipOnHover',
-            isTracked && 'rounded-sm hover:bg-gray-900'
+            'flex flex-col items-center justify-start p-2 mb-2 relative cursor-pointer',
+            isTracked && 'rounded-sm hover:bg-gray-900 showTooltipOnHover'
           )}
         >
           <Icon
@@ -33,7 +34,7 @@ const Thumbnail = ({
           </div>
           <div
             className={classnames(
-              'tooltip tooltip-right absolute bg-black border border-secondary-main text-common-light text-base rounded py-2 px-4 top-0 w-max-content'
+              'tooltip tooltip-right absolute bg-black border border-secondary-main text-common-light text-base rounded py-2 px-4 top-0 w-max-content hidden'
             )}
           >
             <div className="flex flex-row flex-1">
@@ -43,7 +44,7 @@ const Thumbnail = ({
                 </span>
                 {viewportIdentificator && (
                   <span>
-                    in viewport{' '}
+                    in viewport{'  '}
                     <span className="text-white">{viewportIdentificator}</span>
                   </span>
                 )}
@@ -98,12 +99,13 @@ const Thumbnail = ({
 };
 
 Thumbnail.propTypes = {
-  seriesDescription: PropTypes.string,
-  seriesNumber: PropTypes.number,
-  instanceNumber: PropTypes.number,
-  viewportIdentificator: PropTypes.bool,
+  seriesDescription: PropTypes.string.isRequired,
+  seriesNumber: PropTypes.number.isRequired,
+  instanceNumber: PropTypes.number.isRequired,
+  isActive: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
   isTracked: PropTypes.bool,
-  isActive: PropTypes.bool,
+  viewportIdentificator: PropTypes.string,
 };
 
 export default Thumbnail;

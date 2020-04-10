@@ -1,25 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { Thumbnail, ThumbnailSR } from '@ohif/ui';
 
 const ThumbnailList = ({ thumbnails }) => {
+  const [thumbnailActive, setThumbnailActive] = useState(null);
+
   return (
     <div className="bg-black py-3">
       {thumbnails.map(
         ({
-          imageId,
           displaySetInstanceUid,
           seriesDescription,
           seriesNumber,
           instanceNumber,
-          numImageFrames,
           modality,
           seriesDate,
           viewportIdentificator,
           isTracked,
         }) => {
           const isSR = modality && modality.toLowerCase() === 'sr';
+          const isActive = thumbnailActive === displaySetInstanceUid;
 
           if (isSR) {
             return (
@@ -34,14 +35,19 @@ const ThumbnailList = ({ thumbnails }) => {
             return (
               <Thumbnail
                 key={displaySetInstanceUid}
-                imageId={imageId}
-                displaySetInstanceUid={displaySetInstanceUid}
                 seriesDescription={seriesDescription}
                 seriesNumber={seriesNumber}
                 instanceNumber={instanceNumber}
-                numImageFrames={numImageFrames}
                 viewportIdentificator={viewportIdentificator}
                 isTracked={isTracked}
+                isActive={isActive}
+                onClick={() => {
+                  if (thumbnailActive === displaySetInstanceUid) {
+                    setThumbnailActive(null);
+                  } else {
+                    setThumbnailActive(displaySetInstanceUid);
+                  }
+                }}
               />
             );
           }
@@ -54,12 +60,10 @@ const ThumbnailList = ({ thumbnails }) => {
 ThumbnailList.propTypes = {
   thumbnails: PropTypes.arrayOf(
     PropTypes.shape({
-      imageId: PropTypes.string,
       displaySetInstanceUid: PropTypes.string,
       seriesDescription: PropTypes.string,
       seriesNumber: PropTypes.number,
       instanceNumber: PropTypes.number,
-      numImageFrames: PropTypes.number,
       modality: PropTypes.string,
       seriesDate: PropTypes.string,
     })
