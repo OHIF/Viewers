@@ -71,8 +71,5 @@ describe('OHIF PDF Extension', () => {
     cy.get('.DicomPDFViewport')
       .its('length')
       .should('be.eq', 1);
-
-    //Take Screenshot
-    cy.screenshot('PDF Extension - Should load PDF file');
   });
 });

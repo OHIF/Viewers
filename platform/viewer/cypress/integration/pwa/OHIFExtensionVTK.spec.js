@@ -3,10 +3,13 @@ describe('OHIF VTK Extension', () => {
     cy.checkStudyRouteInViewer(
       '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1'
     );
-    cy.expectMinimumThumbnails(7);
+    cy.expectMinimumThumbnails(20);
+    // Wait for all thumbnails to finish loading
+    // This will make this test less flaky
+    cy.wait(2000);
 
     //Waiting for the desired thumbnail content to be displayed
-    cy.get('[data-cy="thumbnail-list"]').should($list => {
+    cy.get('[data-cy="thumbnail-list"]', { timeout: 15000 }).should($list => {
       expect($list).to.contain('CT WB 5.0  B35f');
     });
 
@@ -51,25 +54,6 @@ describe('OHIF VTK Extension', () => {
       .contains('Layout');
   });
 
-  it('checks Crosshairs tool', () => {
-    cy.get('@crosshairsBtn').click();
-
-    // Click and Move the mouse inside the viewport
-    cy.get('[data-cy="viewport-container-0"]')
-      .trigger('mousedown', 'center', {
-        which: 1,
-      })
-      .trigger('mousemove', 'top', {
-        which: 1,
-      })
-      .trigger('mouseup');
-
-    //Take Screenshot
-    cy.screenshot(
-      "VTK Crosshairs tool - Should display crosshairs' green lines"
-    );
-  });
-
   it('checks WWWC tool', () => {
     cy.get('@wwwcBtn').click();
 
@@ -89,24 +73,5 @@ describe('OHIF VTK Extension', () => {
           initialLabelText
         );
       });
-  });
-
-  it('checks Rotate tool', () => {
-    cy.get('@rotateBtn').click();
-
-    // Click and Move the mouse inside the viewport
-    cy.get('[data-cy="viewport-container-0"]')
-      .trigger('mousedown', 'center', {
-        which: 1,
-      })
-      .trigger('mousemove', 'top', { which: 1 })
-      .trigger('mousedown', 'center', {
-        which: 1,
-      })
-      .trigger('mousemove', 'top', { which: 1 })
-      .trigger('mouseup', { which: 1 });
-
-    //Take Screenshot
-    cy.screenshot('VTK Rotate tool - Should rotate image');
   });
 });

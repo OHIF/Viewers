@@ -31,10 +31,6 @@ describe('OHIF Save Measurements', function() {
     // cy.get('.sb-success')
     //   .should('be.visible')
     //   .and('contains.text', 'Measurements saved successfully');
-
-    // Visual test comparison
-    cy.screenshot('Save Measurements - new measurement added');
-    cy.percyCanvasSnapshot('Save Measurements - new measurement added');
   });
 
   // it('retrieves saved measurements', function() {

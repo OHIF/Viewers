@@ -1,7 +1,12 @@
 describe('OHIF Microscopy Extension', () => {
   before(() => {
-    cy.openStudyModality('SM');
+    cy.openStudyInViewer(
+      '1.2.392.200140.2.1.1.1.2.799008771.2448.1519719572.518'
+    );
     cy.expectMinimumThumbnails(6);
+    // Wait for all thumbnails to finish loading
+    // This will make this test less flaky
+    cy.wait(1000);
   });
 
   it('checks if series thumbnails are being displayed', () => {
@@ -19,9 +24,5 @@ describe('OHIF Microscopy Extension', () => {
     cy.get('.DicomMicroscopyViewer')
       .its('length')
       .should('be.eq', 1);
-
-    cy.wait(3000); //Waiting for image to render before taking the snapshot
-    // Visual comparison
-    cy.screenshot('Microscopy Extension - Should display loaded canvas');
   });
 });

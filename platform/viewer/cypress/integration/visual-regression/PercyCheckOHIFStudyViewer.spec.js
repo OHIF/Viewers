@@ -11,10 +11,6 @@ describe('Visual Regression - OHIF Study Viewer Page', function() {
     cy.resetViewport();
   });
 
-  it('checks if series thumbnails are being displayed', function() {
-    cy.percyCanvasSnapshot('Series Thumbnails - Should Display Thumbnails');
-  });
-
   it('opens About modal and verify the displayed information', function() {
     cy.get('[data-cy="options-menu"]')
       .first()

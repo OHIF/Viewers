@@ -84,6 +84,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.percyCanvasSnapshot(
         'User Preferences Modal - Window Level Presets Tab'
       );
+      cy.get('[data-cy="close-button"]').click(); //close User Preferences modal
     });
 
     it('checks translation by selecting Spanish language', function() {
@@ -147,16 +148,16 @@ describe('Visual Regression - OHIF User Preferences', () => {
     it('checks new hotkeys for "Next" and "Previous" Image on Viewport', function() {
       // Go go hotkeys tab
       cy.selectPreferencesTab('@userPreferencesHotkeysTab');
-
-      // Set new hotkey for 'Next Image Viewport' function
+      cy.pause();
+      // Set new hotkey for 'Next Viewport' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
-        'Next Image Viewport',
+        'Next Viewport',
         '{shift}{rightarrow}'
       );
 
-      // Set new hotkey for 'Previous Image Viewport' function
+      // Set new hotkey for 'Previous Viewport' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
-        'Previous Image Viewport',
+        'Previous Viewport',
         '{shift}{leftarrow}'
       );
 

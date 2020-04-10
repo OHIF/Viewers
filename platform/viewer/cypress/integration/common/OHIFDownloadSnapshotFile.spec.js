@@ -17,18 +17,10 @@ describe('OHIF Download Snapshot File', () => {
       .click();
   });
 
-  it('checks displayed information for Tablet experience', function() {
-    // Set Tablet resolution
-    cy.viewport(1000, 660);
-    // Visual comparison
-    cy.screenshot('Download Image Modal - Tablet experience');
-  });
 
   it('checks displayed information for Desktop experience', function() {
     // Set Desktop resolution
     cy.viewport(1750, 720);
-    // Visual comparison
-    cy.screenshot('Download Image Modal - Desktop experience');
     //Check if all elements are displayed
     cy.get('[data-cy=modal-header]')
       .as('downloadImageModal')
