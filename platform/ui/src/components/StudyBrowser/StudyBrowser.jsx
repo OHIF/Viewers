@@ -3,12 +3,12 @@ import classnames from 'classnames';
 
 import { ButtonGroup, Button, StudyItem, ThumbnailList } from '@ohif/ui';
 
-import { studyWithSR, studySimple, studyTracked } from './mockData';
+import { studyWithSR, studySimple } from './mockData';
 const studyGroupTypes = ['Primary', 'Recent', 'All'];
 const studyGroup = {
-  Primary: [studyWithSR, studySimple],
-  Recent: [studyWithSR, studyTracked],
-  All: [studyWithSR, studySimple, studyTracked],
+  Primary: [studySimple],
+  Recent: [studyWithSR, studySimple],
+  All: [studySimple, studyWithSR],
 };
 
 const buttonClasses = 'text-white border-none bg-black';

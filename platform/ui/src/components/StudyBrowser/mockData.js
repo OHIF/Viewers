@@ -53,21 +53,4 @@ const studySimple = {
   ],
 };
 
-const studyTracked = {
-  studyInstanceUid: '3',
-  studyDate: '07-Sept-2010',
-  studyDescription: 'CHEST/ABD/PELVIS W/CONTRAST',
-  instances: 902,
-  modalities: 'CT',
-  trackedSeries: 0,
-  thumbnails: [
-    {
-      displaySetInstanceUid: 'f69f648c-223e-db7f-c4af-b8906641a66e',
-      seriesDescription: 'Multiple line image series description lorem sit',
-      seriesNumber: 1,
-      instanceNumber: 68,
-    },
-  ],
-};
-
-export { studyWithSR, studySimple, studyTracked };
+export { studyWithSR, studySimple };
