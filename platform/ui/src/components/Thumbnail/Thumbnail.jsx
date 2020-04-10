@@ -16,7 +16,10 @@ const Thumbnail = ({
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
 
   return (
-    <div className="flex flex-row flex-1 px-4 py-2" onClick={onClick}>
+    <div
+      className="flex flex-row flex-1 px-4 py-2 showExcludeButtonOnHover cursor-pointer"
+      onClick={onClick}
+    >
       <div className="flex flex-col flex-2 px-2 items-center">
         <div
           className={classnames(
@@ -69,7 +72,9 @@ const Thumbnail = ({
             </svg>
           </div>
         </div>
-        {isTracked && <Icon name="cancel" className="text-primary-active" />}
+        {isTracked && (
+          <Icon name="cancel" className="text-primary-active excludeButton" />
+        )}
       </div>
       <div className="flex flex-col flex-1 px-4">
         <div

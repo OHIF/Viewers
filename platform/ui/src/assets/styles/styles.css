@@ -53,3 +53,11 @@
 .showTooltipOnHover:hover .tooltip {
   display: block;
 }
+
+.showExcludeButtonOnHover .excludeButton {
+  display: none;
+}
+
+.showExcludeButtonOnHover:hover .excludeButton {
+  display: block;
+}
