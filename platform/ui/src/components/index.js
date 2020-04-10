@@ -13,6 +13,7 @@ import InputText from './InputText';
 import Label from './Label';
 import MeasurementTable from './MeasurementTable';
 import NavBar from './NavBar';
+import Notification from './Notification';
 import Select from './Select';
 import SegmentationTable from './SegmentationTable';
 import SidePanel from './SidePanel';
@@ -50,6 +51,7 @@ export {
   Label,
   MeasurementTable,
   NavBar,
+  Notification,
   Select,
   SegmentationTable,
   SidePanel,
