@@ -54,7 +54,7 @@ const Thumbnail = ({
               </div>
             </div>
             <svg
-              className="absolute text-black stroke-secondary-main"
+              className="absolute text-black stroke-secondary-main stroke-2"
               style={{
                 top: 'calc(50% - 8px)',
                 left: -15,
