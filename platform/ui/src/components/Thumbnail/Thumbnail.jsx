@@ -8,8 +8,9 @@ const Thumbnail = ({
   seriesDescription,
   seriesNumber,
   instanceNumber,
-  viewportIdentificator = 'A',
+  viewportIdentificator,
   isTracked = true,
+  isActive,
 }) => {
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
 
@@ -18,7 +19,7 @@ const Thumbnail = ({
       <div className="flex flex-col flex-2 px-2 items-center">
         <div
           className={classnames(
-            'flex flex-col items-center justify-center p-2 mb-2',
+            'flex flex-col items-center justify-start p-2 mb-2',
             isTracked && 'rounded-sm hover:bg-gray-900'
           )}
         >
@@ -27,7 +28,7 @@ const Thumbnail = ({
             className="text-primary-light mb-2"
             style={{ width: '19px' }}
           />
-          <div className="text-white text-xl leading-tight">
+          <div className="text-white text-xl leading-tight h-5">
             {viewportIdentificator}
           </div>
         </div>
@@ -35,7 +36,12 @@ const Thumbnail = ({
       </div>
       <div className="flex flex-col flex-1 px-4">
         <div
-          className="flex flex-1 items-center justify-center border rounded-md border-secondary-light bg-black text-white mb-2"
+          className={classnames(
+            'flex flex-1 items-center justify-center rounded-md bg-black text-white mb-2',
+            isActive
+              ? 'border-2 border-primary-light'
+              : 'border border-secondary-light hover:border-blue-300'
+          )}
           style={{ minHeight: '120px' }}
         >
           {'Thumbnail img'}
@@ -61,6 +67,7 @@ Thumbnail.propTypes = {
   instanceNumber: PropTypes.number,
   viewportIdentificator: PropTypes.bool,
   isTracked: PropTypes.bool,
+  isActive: PropTypes.bool,
 };
 
 export default Thumbnail;

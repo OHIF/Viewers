@@ -13,6 +13,7 @@ const studyWithSR = {
       seriesDescription: 'Multiple line image series description lorem sit',
       seriesNumber: 1,
       instanceNumber: 2,
+      viewportIdentificator: 'A',
       numImageFrames: 36,
     },
     {
