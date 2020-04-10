@@ -14,6 +14,7 @@ import Label from './Label';
 import MeasurementTable from './MeasurementTable';
 import NavBar from './NavBar';
 import Select from './Select';
+import SegmentationTable from './SegmentationTable';
 import SidePanel from './SidePanel';
 import Svg from './Svg';
 import StudyListExpandedRow from './StudyListExpandedRow';
@@ -44,6 +45,7 @@ export {
   MeasurementTable,
   NavBar,
   Select,
+  SegmentationTable,
   SidePanel,
   Svg,
   StudyListExpandedRow,
