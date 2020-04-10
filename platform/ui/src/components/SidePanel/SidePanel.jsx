@@ -69,7 +69,7 @@ const SidePanel = ({
             onClick={() => {
               setIsOpen(false);
             }}
-            className="flex flex-row items-center border-b-2 w-100 border-secondary-light px-3"
+            className="flex flex-row items-center border-b-2 border-secondary-light px-3 h-12"
           >
             <Icon
               name={openIconName[side]}

@@ -22,7 +22,7 @@ const Viewer = () => {
         >
           <StudyBrowser />
         </SidePanel>
-        <div className="flex flex-1 h-100 overflow-hidden w-100 bg-primary-main items-center justify-center text-white">
+        <div className="flex flex-1 h-100 overflow-hidden bg-primary-main items-center justify-center text-white">
           CONTENT
         </div>
         <SidePanel
