@@ -5,8 +5,8 @@ import { Icon } from '@ohif/ui';
 
 const ThumbnailSR = ({ seriesDescription, seriesDate }) => {
   return (
-    <div className="flex flex-row flex-1 px-4 py-5">
-      <div className="flex flex-2 px-4 ">
+    <div className="flex flex-row flex-1 px-4 py-2">
+      <div className="flex flex-2 pl-4 pr-6">
         <Icon name="list-bullets" className="text-secondary-light" />
       </div>
       <div className="flex flex-col flex-1">

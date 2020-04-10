@@ -14,7 +14,7 @@ const Thumbnail = ({
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
 
   return (
-    <div className="flex flex-row flex-1 px-4 py-5">
+    <div className="flex flex-row flex-1 px-4 py-2">
       <div className="flex flex-col flex-2 px-2 items-center">
         <div
           className={classnames(

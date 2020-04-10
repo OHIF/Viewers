@@ -5,7 +5,7 @@ import { Thumbnail, ThumbnailSR } from '@ohif/ui';
 
 const ThumbnailList = ({ thumbnails }) => {
   return (
-    <div className="bg-black">
+    <div className="bg-black py-3">
       {thumbnails.map(
         ({
           imageId,
