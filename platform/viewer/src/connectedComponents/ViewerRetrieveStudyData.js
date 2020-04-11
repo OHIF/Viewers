@@ -244,6 +244,7 @@ function ViewerRetrieveStudyData({
             }
           });
 
+          study.metadata = studyMetadata;
         return study;
       });
 

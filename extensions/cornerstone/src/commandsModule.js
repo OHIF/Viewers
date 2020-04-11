@@ -145,6 +145,10 @@ const commandsModule = ({ servicesManager }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
       return enabledElement;
     },
+    getViewportEnabledElement: ({ viewportIndex }) => {
+      const enabledElement = getEnabledElement(viewportIndex);
+      return enabledElement;
+    },
     showDownloadViewportModal: ({ title, viewports }) => {
       const activeViewportIndex = viewports.activeViewportIndex;
       const { UIModalService } = servicesManager.services;
@@ -310,6 +314,10 @@ const commandsModule = ({ servicesManager }) => {
     getActiveViewportEnabledElement: {
       commandFn: actions.getActiveViewportEnabledElement,
       storeContexts: ['viewports'],
+      options: {},
+    },
+    getViewportEnabledElement: {
+      commandFn: actions.getViewportEnabledElement,
       options: {},
     },
     rotateViewportCW: {
