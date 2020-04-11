@@ -18,6 +18,7 @@ describe('Top level exports', () => {
       'makeDeferred',
       'makeCancelable',
       'hotkeys',
+      'Queue',
       'isDicomUid',
       'resolveObjectPath',
       'hierarchicalListUtils',

@@ -13,6 +13,7 @@ import * as urlUtil from './urlUtil';
 import makeDeferred from './makeDeferred';
 import makeCancelable from './makeCancelable';
 import hotkeys from './hotkeys';
+import Queue from './Queue';
 import isDicomUid from './isDicomUid';
 import resolveObjectPath from './resolveObjectPath';
 import * as hierarchicalListUtils from './hierarchicalListUtils';
@@ -34,6 +35,7 @@ const utils = {
   makeDeferred,
   makeCancelable,
   hotkeys,
+  Queue,
   isDicomUid,
   resolveObjectPath,
   hierarchicalListUtils,
@@ -56,6 +58,7 @@ export {
   makeDeferred,
   makeCancelable,
   hotkeys,
+  Queue,
   isDicomUid,
   resolveObjectPath,
   hierarchicalListUtils,

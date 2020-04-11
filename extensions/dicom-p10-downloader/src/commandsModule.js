@@ -7,7 +7,14 @@ import {
 } from './utils';
 import _downloadAndZip from './downloadAndZip';
 
+const {
+  utils: {
+    Queue,
+  },
+} = OHIF;
+
 export function getCommands(context) {
+  const queue = new Queue(1);
   const actions = {
     /**
      * @example Running this command using Commands Manager
@@ -54,16 +61,19 @@ export function getCommands(context) {
 
   const definitions = {
     downloadAndZip: {
-      commandFn: actions.downloadAndZip,
+      commandFn: queue.bindSafe(actions.downloadAndZip, error),
       storeContexts: ['servers'],
     },
     downloadAndZipSeriesOnViewports: {
-      commandFn: actions.downloadAndZipSeriesOnViewports,
+      commandFn: queue.bindSafe(actions.downloadAndZipSeriesOnViewports, error),
       storeContexts: ['servers', 'viewports'],
       options: { progress },
     },
     downloadAndZipSeriesOnActiveViewport: {
-      commandFn: actions.downloadAndZipSeriesOnActiveViewport,
+      commandFn: queue.bindSafe(
+        actions.downloadAndZipSeriesOnActiveViewport,
+        error
+      ),
       storeContexts: ['servers', 'viewports'],
       options: { progress },
     },
@@ -84,4 +94,12 @@ function progress(status) {
     'Download and Zip Progress:',
     (status.progress * 100.0).toFixed(2) + '%'
   );
+}
+
+function error(e) {
+  if (e.message === 'Queue limit reached') {
+    OHIF.log.warn('Cannot have more than one download in progress');
+  } else {
+    OHIF.log.error(e);
+  }
 }
