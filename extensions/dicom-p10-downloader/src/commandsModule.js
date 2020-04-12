@@ -98,7 +98,7 @@ function progress(status) {
 
 function error(e) {
   if (e.message === 'Queue limit reached') {
-    OHIF.log.warn('Cannot have more than one download in progress');
+    OHIF.log.warn('A download is already in progress, please wait.');
   } else {
     OHIF.log.error(e);
   }
