@@ -1,0 +1,50 @@
+---
+name: Notification
+menu: Feedback
+route: components/notification
+---
+
+import { Playground, Props } from 'docz';
+import { Notification, Button } from '@ohif/ui';
+
+# Notification
+
+A notification displays a short message in a way that attracts the user's
+attention without interrupting the user's task.
+
+## Import
+
+```javascript
+import { Notification } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const actionButtons = () => {
+      return (
+        <div>
+          <Button>No</Button>
+          <Button className="ml-2">No, do not ask again</Button>
+          <Button className="ml-2" color="primary">
+            Yes
+          </Button>
+        </div>
+      );
+    };
+    return (
+      <div className="p-4 w-full lg:w-2/3">
+        <Notification
+          text="Track all measurement for this series?"
+          type="info"
+          actionButtons={actionButtons()}
+        />
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={Notification} />

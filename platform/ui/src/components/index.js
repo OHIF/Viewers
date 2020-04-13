@@ -12,6 +12,7 @@ import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
 import Label from './Label';
 import NavBar from './NavBar';
+import Notification from './Notification';
 import Select from './Select';
 import SidePanel from './SidePanel';
 import StudyBrowser from './StudyBrowser';
@@ -47,6 +48,7 @@ export {
   InputText,
   Label,
   NavBar,
+  Notification,
   Select,
   SidePanel,
   StudyBrowser,
