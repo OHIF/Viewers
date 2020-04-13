@@ -44,6 +44,7 @@ export {
   ThumbnailSR,
   ThumbnailList,
   Typography,
+  ViewportGrid,
 } from './src/components';
 
 /** VIEWS */

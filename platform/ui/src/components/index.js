@@ -30,6 +30,7 @@ import Thumbnail from './Thumbnail';
 import ThumbnailSR from './ThumbnailSR';
 import ThumbnailList from './ThumbnailList';
 import Typography from './Typography';
+import ViewportGrid from './ViewportGrid';
 
 export {
   Button,
@@ -64,4 +65,5 @@ export {
   ThumbnailSR,
   ThumbnailList,
   Typography,
+  ViewportGrid,
 };

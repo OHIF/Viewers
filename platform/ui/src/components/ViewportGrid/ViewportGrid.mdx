@@ -1,0 +1,37 @@
+---
+name: ViewportGrid
+menu: General
+route: components/viewportGrid
+---
+
+import { Playground, Props } from 'docz';
+import { ViewportGrid } from '@ohif/ui';
+
+# ViewportGrid
+
+Used display viewports in the viewer page
+
+## Import
+
+```javascript
+import { ViewportGrid } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  <div className="p-4 h-56">
+    <ViewportGrid
+      rows={1}
+      cols={2}
+      viewportContents={[
+        <div className="flex items-center justify-center h-full text-white">Viewport1</div>,
+        <div className="flex items-center justify-center h-full text-white">Viewport2</div>
+      ]}
+    />
+  </div>
+</Playground>
+
+## Properties
+
+<Props of={ViewportGrid} />
