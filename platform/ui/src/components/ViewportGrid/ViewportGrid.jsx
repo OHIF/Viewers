@@ -4,6 +4,7 @@ import classnames from 'classnames';
 
 const ViewportGrid = ({ rows, cols, viewportContents }) => {
   const ViewportPanes = viewportContents.map((viewportContent, index) => {
+    const isActive = index === activeViewportIndex;
     return (
       <div
         key={index}
