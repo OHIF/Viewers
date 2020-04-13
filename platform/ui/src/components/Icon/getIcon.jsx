@@ -4,6 +4,8 @@ import React from 'react';
 import arrowDown from './../../assets/icons/arrow-down.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
+import dottedCircle from './../../assets/icons/dotted-circle.svg';
+import circledCheckmark from './../../assets/icons/circled-checkmark.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
 import chevronLeft from './../../assets/icons/chevron-left.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
@@ -21,6 +23,7 @@ import settings from './../../assets/icons/settings.svg';
 import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
+import tracked from './../../assets/icons/tracked.svg';
 
 /** Tools */
 import toolZoom from './../../assets/icons/tool-zoom.svg';
@@ -38,6 +41,8 @@ const ICONS = {
   'arrow-down': arrowDown,
   calendar: calendar,
   cancel: cancel,
+  'dotted-circle': dottedCircle,
+  'circled-checkmark': circledCheckmark,
   'chevron-down': chevronDown,
   'chevron-left': chevronLeft,
   'chevron-right': chevronRight,
@@ -55,6 +60,7 @@ const ICONS = {
   'sorting-active-down': sortingActiveDown,
   'sorting-active-up': sortingActiveUp,
   sorting: sorting,
+  tracked: tracked,
 
   /** Tools */
   'tool-zoom': toolZoom,

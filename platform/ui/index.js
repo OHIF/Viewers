@@ -28,6 +28,8 @@ export {
   NavBar,
   Select,
   SidePanel,
+  StudyBrowser,
+  StudyItem,
   StudyListExpandedRow,
   StudyListPagination,
   StudyListTable,
@@ -38,6 +40,9 @@ export {
   TableHead,
   TableRow,
   ThemeWrapper,
+  Thumbnail,
+  ThumbnailSR,
+  ThumbnailList,
   Typography,
 } from './src/components';
 

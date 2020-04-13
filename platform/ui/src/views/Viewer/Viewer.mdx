@@ -5,7 +5,7 @@ route: examples/viewer
 ---
 
 import { Playground, Props } from 'docz';
-import { NavBar, SidePanel, Svg } from '@ohif/ui';
+import { NavBar, SidePanel, Svg, StudyBrowser } from '@ohif/ui';
 
 # Viewer
 
@@ -27,9 +27,7 @@ import { NavBar, SidePanel, Svg } from '@ohif/ui';
         componentLabel="Studies"
         defaultIsOpen={false}
       >
-        <div className="flex justify-center text-white p-2">
-          panel placeholder
-        </div>
+        <StudyBrowser />
       </SidePanel>
       <div className="flex flex-1 h-100 overflow-hidden bg-primary-main items-center justify-center text-white">
         CONTENT

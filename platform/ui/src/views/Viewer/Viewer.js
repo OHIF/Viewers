@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavBar, SidePanel, Svg } from '@ohif/ui';
+import { NavBar, SidePanel, Svg, StudyBrowser } from '@ohif/ui';
 
 const Viewer = () => {
   return (
@@ -18,11 +18,9 @@ const Viewer = () => {
           iconName="group-layers"
           iconLabel="Studies"
           componentLabel="Studies"
-          defaultIsOpen={false}
+          defaultIsOpen={true}
         >
-          <div className="flex justify-center text-white p-2">
-            panel placeholder
-          </div>
+          <StudyBrowser />
         </SidePanel>
         <div className="flex flex-1 h-100 overflow-hidden bg-primary-main items-center justify-center text-white">
           CONTENT
