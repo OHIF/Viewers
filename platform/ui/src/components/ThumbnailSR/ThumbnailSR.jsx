@@ -3,10 +3,13 @@ import PropTypes from 'prop-types';
 
 import { Icon } from '@ohif/ui';
 
-const ThumbnailSR = ({ seriesDescription, seriesDate }) => {
+const ThumbnailSR = ({ seriesDescription, seriesDate, onClick }) => {
   return (
-    <div className="flex flex-row flex-1 px-4 py-3">
-      <div className="flex flex-2 pl-4 pr-6">
+    <div
+      className="flex flex-row flex-1 px-4 py-3 cursor-pointer"
+      onClick={onClick}
+    >
+      <div className="flex flex-2 pl-2 pr-3">
         <Icon name="list-bullets" className="text-secondary-light" />
       </div>
       <div className="flex flex-col flex-1">
@@ -26,6 +29,7 @@ const ThumbnailSR = ({ seriesDescription, seriesDate }) => {
 ThumbnailSR.propTypes = {
   seriesDescription: PropTypes.string,
   seriesDate: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default ThumbnailSR;

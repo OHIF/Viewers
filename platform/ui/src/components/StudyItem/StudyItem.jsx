@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import { Icon } from '@ohif/ui';
 
 const baseClasses =
-  'first:border-0 border-t border-secondary-light cursor-pointer';
+  'first:border-0 border-t border-secondary-light cursor-pointer outline-none';
 
 const StudyItem = ({
   studyDate,

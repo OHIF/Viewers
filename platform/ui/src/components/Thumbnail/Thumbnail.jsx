@@ -17,20 +17,20 @@ const Thumbnail = ({
 
   return (
     <div
-      className="flex flex-row flex-1 px-4 py-2 showExcludeButtonOnHover cursor-pointer"
+      className="flex flex-row flex-1 px-3 py-2 showExcludeButtonOnHover cursor-pointer outline-none"
       onClick={onClick}
       onKeyDown={onClick}
       role="button"
       tabIndex="0"
     >
-      <div className="flex flex-col flex-2 px-2 items-center">
+      <div className="flex flex-col flex-2 items-center">
         <div
           className={classnames(
             'flex flex-col items-center justify-start p-2 mb-2 relative cursor-pointer',
             isTracked && 'rounded-sm hover:bg-gray-900 showTooltipOnHover'
           )}
         >
-          <Icon name={trackedIcon} className="text-primary-light mb-2 w-5" />
+          <Icon name={trackedIcon} className="text-primary-light mb-2 w-4" />
           <div className="text-white text-xl leading-tight h-5">
             {viewportIdentificator}
           </div>
@@ -74,13 +74,16 @@ const Thumbnail = ({
           </div>
         </div>
         {isTracked && (
-          <Icon name="cancel" className="text-primary-active excludeButton" />
+          <Icon
+            name="cancel"
+            className="text-primary-active excludeButton w-4"
+          />
         )}
       </div>
-      <div className="flex flex-col flex-1 px-4">
+      <div className="flex flex-col flex-1 px-3">
         <div
           className={classnames(
-            'flex flex-1 items-center justify-center rounded-md bg-black text-white mb-2',
+            'flex flex-1 items-center justify-center rounded-md bg-black text-base text-white mb-2',
             isActive
               ? 'border-2 border-primary-light'
               : 'border border-secondary-light hover:border-blue-300'
