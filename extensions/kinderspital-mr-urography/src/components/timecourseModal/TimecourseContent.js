@@ -165,22 +165,24 @@ function TimecourseContent({
   }, [chartDimension]);
 
   return (
-    <div ref={contentRef} id="chart-content">
-      <LineChartContainer
-        measurements={measurements}
-        targetMeasurementNumber={targetMeasurementNumber}
-        chartDimension={chartDimension}
-        onPlacePoints={onPlacePoints}
-      ></LineChartContainer>
-    </div>
+    measurements && (
+      <div ref={contentRef} id="chart-content">
+        <LineChartContainer
+          measurements={measurements}
+          targetMeasurementNumber={targetMeasurementNumber}
+          chartDimension={chartDimension}
+          onPlacePoints={onPlacePoints}
+        ></LineChartContainer>
+      </div>
+    )
   );
 }
 
 TimecourseContent.propTypes = {
-  measurements: PropTypes.array.required,
-  targetMeasurementNumber: PropTypes.string.required,
-  show: PropTypes.bool.required,
-  onPlacePoints: PropTypes.func.required,
+  measurements: PropTypes.array,
+  targetMeasurementNumber: PropTypes.number,
+  show: PropTypes.func,
+  onPlacePoints: PropTypes.func,
   timecourseInterval: PropTypes.number,
 };
 
