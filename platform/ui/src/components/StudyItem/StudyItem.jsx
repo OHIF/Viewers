@@ -23,6 +23,9 @@ const StudyItem = ({
         baseClasses
       )}
       onClick={onClick}
+      onKeyDown={onClick}
+      role="button"
+      tabIndex="0"
     >
       <div className="flex flex-col flex-1 px-4 pb-2">
         <div className="flex flex-row items-center justify-between pb-2 pt-2 pb-2">

@@ -19,6 +19,9 @@ const Thumbnail = ({
     <div
       className="flex flex-row flex-1 px-4 py-2 showExcludeButtonOnHover cursor-pointer"
       onClick={onClick}
+      onKeyDown={onClick}
+      role="button"
+      tabIndex="0"
     >
       <div className="flex flex-col flex-2 px-2 items-center">
         <div
