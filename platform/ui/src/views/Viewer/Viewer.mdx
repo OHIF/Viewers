@@ -16,6 +16,8 @@ import {
   Icon,
   IconButton,
   StudyBrowser,
+  ViewportActionBar,
+  ViewportGrid,
 } from '@ohif/ui';
 
 # Viewer
@@ -52,8 +54,19 @@ import {
           >
             <StudyBrowser />
           </SidePanel>
-          <div className="flex flex-1 h-100 overflow-hidden bg-primary-main items-center justify-center text-white">
-            CONTENT
+          <div className="flex flex-1 h-100 overflow-hidden bg-black items-center justify-center text-white">
+            <ViewportGrid
+              rows={1}
+              cols={2}
+              viewportContents={[
+                <div className="flex flex-col h-full">
+                  <ViewportActionBar isTracked modality="CT" />
+                </div>,
+                <div className="flex flex-col h-full">
+                  <ViewportActionBar isTracked={false} modality="CT" />
+                </div>,
+              ]}
+            />
           </div>
           <SidePanel
             side="right"

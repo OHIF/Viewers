@@ -47,6 +47,7 @@ export {
   ThumbnailSR,
   ThumbnailList,
   Typography,
+  ViewportActionBar,
   ViewportGrid,
 } from './src/components';
 

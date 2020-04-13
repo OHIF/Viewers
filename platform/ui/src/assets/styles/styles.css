@@ -59,6 +59,24 @@
   transform: translateY(-50%);
 }
 
+.tooltip.tooltip-top-right::before {
+  @apply bg-primary-dark absolute z-10;
+  content: '';
+  width: 15px;
+  height: 2px;
+  right: 5px;
+  top: -1px;
+}
+
+.tooltip.tooltip-top-left::before {
+  @apply bg-primary-dark absolute z-10;
+  content: '';
+  width: 15px;
+  height: 2px;
+  left: 5px;
+  top: -1px;
+}
+
 /* TOOLTIP WORKAROUND FOR ARROW */
 .showTooltipOnHover .tooltip {
   display: none;
