@@ -70,25 +70,29 @@ const SidePanel = ({
     return (
       <React.Fragment>
         {isOpen ? (
-          <Button
-            variant="text"
-            color="inherit"
-            rounded="none"
-            onClick={() => {
-              setIsOpen(false);
-            }}
-            className="flex flex-row items-center border-b-2 border-secondary-main border-secondary-light px-3 h-12 relative"
-          >
-            <Icon
-              name={openIconName[side]}
-              className={classnames(
-                'text-primary-active absolute',
-                side === 'left' && 'order-last'
-              )}
-              style={{ ...position[side] }}
-            />
-            <span className="flex-1 text-primary-active">{componentLabel}</span>
-          </Button>
+          <div className="px-3 border-b border-secondary-light">
+            <Button
+              variant="text"
+              color="inherit"
+              rounded="none"
+              onClick={() => {
+                setIsOpen(false);
+              }}
+              className="flex flex-row items-center px-3 h-12 relative w-full"
+            >
+              <Icon
+                name={openIconName[side]}
+                className={classnames(
+                  'text-primary-active absolute',
+                  side === 'left' && 'order-last'
+                )}
+                style={{ ...position[side] }}
+              />
+              <span className="flex-1 text-primary-active">
+                {componentLabel}
+              </span>
+            </Button>
+          </div>
         ) : (
           <Button
             variant="text"
@@ -100,7 +104,7 @@ const SidePanel = ({
               minWidth: `${collapsedWidth}px`,
               width: `${collapsedWidth}px`,
             }}
-            className="flex flex-col text-xs px-1 py-1 text-white border-transparent border-b-2"
+            className="flex flex-col text-xs px-1 py-1 text-white border-transparent border-b"
           >
             <Icon name={iconName} className="text-primary-active" />
             <span className="mt-2 text-white text-xs">{iconLabel}</span>

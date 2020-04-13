@@ -1,14 +1,13 @@
 import React from 'react';
-import { NavBar, SidePanel, Svg, StudyBrowser } from '@ohif/ui';
+import { SidePanel, StudyBrowser } from '@ohif/ui';
+
+import Header from './components/Header';
+import ViewportToolbar from './components/ViewportToolBar';
 
 const Viewer = () => {
   return (
     <div>
-      <NavBar className="justify-start">
-        <div className="m-3">
-          <Svg name="logo-ohif" />
-        </div>
-      </NavBar>
+      <Header />
       <div
         className="flex flex-row flex-no-wrap flex-1 items-stretch overflow-hidden w-full"
         style={{ height: 'calc(100vh - 57px' }}
@@ -23,7 +22,8 @@ const Viewer = () => {
           <StudyBrowser />
         </SidePanel>
         <div className="flex flex-1 h-100 overflow-hidden bg-primary-main items-center justify-center text-white">
-          CONTENT
+          <ViewportToolbar />
+          <div>CONTENT</div>
         </div>
         <SidePanel
           side="right"

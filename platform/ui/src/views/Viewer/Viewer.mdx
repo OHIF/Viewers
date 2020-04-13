@@ -18,6 +18,9 @@ import {
   StudyBrowser,
 } from '@ohif/ui';
 
+import Header from './components/Header';
+import ViewportToolbar from './components/ViewportToolBar';
+
 # Viewer
 
 <Playground>
@@ -34,11 +37,7 @@ import {
     };
     return (
       <div>
-        <NavBar className="justify-start">
-          <div className="m-3">
-            <Svg name="logo-ohif" />
-          </div>
-        </NavBar>
+        <Header />
         <div
           className="flex flex-row flex-no-wrap flex-1 items-stretch overflow-hidden w-full"
           style={{ height: 'calc(100vh - 57px' }}
@@ -52,8 +51,11 @@ import {
           >
             <StudyBrowser />
           </SidePanel>
-          <div className="flex flex-1 h-100 overflow-hidden bg-primary-main items-center justify-center text-white">
-            CONTENT
+          <div className="flex flex-col flex-1 h-100">
+            <div className="flex flex-2 w-100 border-b border-transparent h-12">
+              <ViewportToolbar />
+            </div>
+            <div className="flex flex-1 items-center justify-center bg-black text-white border rounded-lg border-secondary-light h-100 overflow-hidden">CONTENT</div>
           </div>
           <SidePanel
             side="right"
