@@ -55,6 +55,7 @@ const sizeClasses = {
   small: 'py-2 px-2 text-base',
   medium: 'py-3 px-3 text-lg',
   large: 'py-4 px-4 text-xl',
+  initial: '',
 };
 
 const iconSizeClasses = {
@@ -124,7 +125,7 @@ IconButton.defaultProps = {
 
 IconButton.propTypes = {
   children: PropTypes.node.isRequired,
-  size: PropTypes.oneOf(['small', 'medium', 'large']),
+  size: PropTypes.oneOf(['small', 'medium', 'large', 'initial']),
   rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
   color: PropTypes.oneOf([

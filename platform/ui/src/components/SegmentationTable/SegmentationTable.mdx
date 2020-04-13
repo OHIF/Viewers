@@ -1,0 +1,37 @@
+---
+name: Segmentation Table
+menu: Data Display
+route: components/segmentationTable
+---
+
+import { Playground, Props } from 'docz';
+import { SegmentationTable } from '@ohif/ui';
+
+# Segmentation Table
+
+## Import
+
+```javascript
+import { SegmentationTable } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const tableData = {
+      title: 'Segments',
+      amount: 12,
+      data: new Array(12).fill(''),
+    };
+    return (
+      <div className="p-4 w-80">
+        <SegmentationTable {...tableData} />
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={SegmentationTable} />

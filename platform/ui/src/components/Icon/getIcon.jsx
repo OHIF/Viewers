@@ -9,6 +9,8 @@ import circledCheckmark from './../../assets/icons/circled-checkmark.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
 import chevronLeft from './../../assets/icons/chevron-left.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
+import eyeVisible from './../../assets/icons/eye-visible.svg';
+import eyeHidden from './../../assets/icons/eye-hidden.svg';
 import groupLayers from './../../assets/icons/group-layers.svg';
 import info from './../../assets/icons/info.svg';
 import infoLink from './../../assets/icons/info-link.svg';
@@ -18,6 +20,7 @@ import listBullets from './../../assets/icons/list-bullets.svg';
 import logoOhifSmall from './../../assets/icons/logo-ohif-small.svg';
 import magnifier from './../../assets/icons/magnifier.svg';
 import notificationwarningDiamond from './../../assets/icons/notificationwarning-diamond.svg';
+import pencil from './../../assets/icons/pencil.svg';
 import pushLeft from './../../assets/icons/push-left.svg';
 import pushRight from './../../assets/icons/push-right.svg';
 import settings from './../../assets/icons/settings.svg';
@@ -47,6 +50,8 @@ const ICONS = {
   'chevron-down': chevronDown,
   'chevron-left': chevronLeft,
   'chevron-right': chevronRight,
+  'eye-visible': eyeVisible,
+  'eye-hidden': eyeHidden,
   'group-layers': groupLayers,
   info: info,
   'info-link': infoLink,
@@ -56,6 +61,7 @@ const ICONS = {
   'logo-ohif-small': logoOhifSmall,
   magnifier: magnifier,
   'notificationwarning-diamond': notificationwarningDiamond,
+  pencil: pencil,
   'push-left': pushLeft,
   'push-right': pushRight,
   settings: settings,

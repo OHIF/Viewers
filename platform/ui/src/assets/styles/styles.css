@@ -16,7 +16,21 @@
   @apply bg-primary-main;
 }
 
+/* INVISIBLE SCROLLBAR */
+
 .invisible-scrollbar::-webkit-scrollbar {
+  @apply hidden;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-track {
+  @apply hidden;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-thumb {
+  @apply hidden;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-thumb:window-inactive {
   @apply hidden;
 }
 

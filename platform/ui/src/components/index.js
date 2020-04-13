@@ -11,9 +11,11 @@ import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
 import Label from './Label';
+import MeasurementTable from './MeasurementTable';
 import NavBar from './NavBar';
 import Notification from './Notification';
 import Select from './Select';
+import SegmentationTable from './SegmentationTable';
 import SidePanel from './SidePanel';
 import StudyBrowser from './StudyBrowser';
 import StudyListExpandedRow from './StudyListExpandedRow';
@@ -47,9 +49,11 @@ export {
   InputMultiSelect,
   InputText,
   Label,
+  MeasurementTable,
   NavBar,
   Notification,
   Select,
+  SegmentationTable,
   SidePanel,
   StudyBrowser,
   StudyItem,
