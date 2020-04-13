@@ -29,6 +29,7 @@ const ThumbnailList = ({ thumbnails }) => {
                 modality={modality}
                 seriesDate={seriesDate}
                 seriesDescription={seriesDescription}
+                onClick={() => {}}
               />
             );
           } else {

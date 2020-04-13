@@ -161,7 +161,9 @@ module.exports = {
       '8': '2rem',
       '10': '2.5rem',
       '12': '3rem',
+      '14': '3.5rem',
       '16': '4rem',
+      '18': '4.5rem',
       '20': '5rem',
       '24': '6rem',
       '32': '8rem',
@@ -374,7 +376,8 @@ module.exports = {
       full: '100%',
       screen: '100vh',
     },
-    minWidth: {
+    minWidth: (theme) => ({
+      ...theme('spacing'),
       '0': '0',
       xs: '2rem',
       sm: '4rem',
@@ -382,7 +385,7 @@ module.exports = {
       lg: '8rem',
       xl: '10rem',
       full: '100%',
-    },
+    }),
     objectPosition: {
       bottom: 'bottom',
       center: 'center',
