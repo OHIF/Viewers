@@ -31,19 +31,13 @@ describe('Visual Regression - OHIF VTK Extension', () => {
     cy.wait(2000); //Wait toolbar to finish loading
   });
 
-  afterEach(() => {
-    cy.wait(2000); //wait screen loads back after screenshot
-
-    //Select Exit 2D MPR button
-    cy.get('[data-cy="exit 2d mpr"]').should($btn => {
-      expect($btn).to.be.visible;
-      $btn.click();
-    });
-    //Select 2D MPR button
-    cy.get('[data-cy="2d mpr"]').click();
-  });
-
   it('checks if VTK buttons are displayed on the toolbar', () => {
+    cy.get('@crosshairsBtn').should('be.visible');
+    cy.get('@wwwcBtn').should('be.visible');
+    cy.get('@rotateBtn').should('be.visible');
+    cy.get('@slabSlider').should('be.visible');
+    cy.get('@modeDropdown').should('be.visible');
+    cy.get('@modeCheckbox').should('be.visible');
     // Visual comparison
     cy.percyCanvasSnapshot(
       'VTK initial state - Should display toolbar and 3 viewports'
@@ -65,21 +59,6 @@ describe('Visual Regression - OHIF VTK Extension', () => {
     );
   });
 
-  it('checks WWWC tool', () => {
-    cy.get('@wwwcBtn').click();
-
-    // Click and Move the mouse inside the viewport
-    cy.get('[data-cy="viewport-container-0"]')
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'top', { which: 1 })
-      .trigger('mousedown', 'center', { which: 1 })
-      .trigger('mousemove', 'top', { which: 1 })
-      .trigger('mouseup', { which: 1 });
-
-    // Visual comparison
-    cy.percyCanvasSnapshot('VTK WWWC tool - Canvas should be bright');
-  });
-
   it('checks Rotate tool', () => {
     cy.get('@rotateBtn').click();
 
@@ -93,5 +72,20 @@ describe('Visual Regression - OHIF VTK Extension', () => {
 
     // Visual comparison
     cy.percyCanvasSnapshot('VTK Rotate tool - Should rotate image');
+  });
+
+  it('checks WWWC tool', () => {
+    cy.get('@wwwcBtn').click();
+
+    // Click and Move the mouse inside the viewport
+    cy.get('[data-cy="viewport-container-0"]')
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
+      .trigger('mousedown', 'center', { which: 1 })
+      .trigger('mousemove', 'top', { which: 1 })
+      .trigger('mouseup', { which: 1 });
+
+    // Visual comparison
+    cy.percyCanvasSnapshot('VTK WWWC tool - Canvas should be bright');
   });
 });
