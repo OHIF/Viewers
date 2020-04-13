@@ -27,9 +27,12 @@ export {
   Label,
   MeasurementTable,
   NavBar,
+  Notification,
   Select,
   SegmentationTable,
   SidePanel,
+  StudyBrowser,
+  StudyItem,
   StudyListExpandedRow,
   StudyListPagination,
   StudyListTable,
@@ -40,7 +43,11 @@ export {
   TableHead,
   TableRow,
   ThemeWrapper,
+  Thumbnail,
+  ThumbnailSR,
+  ThumbnailList,
   Typography,
+  ViewportGrid,
 } from './src/components';
 
 /** VIEWS */
