@@ -47,8 +47,8 @@ const ViewportActionBar = ({ isTracked, isLocked, modality }) => {
               </div>
               <div className="flex ml-4">
                 <span className="text-base text-common-light">
-                  Series is{' '}
-                  <span className="text-white font-bold">tracked</span> and can
+                  Series is
+                  <span className="text-white font-bold"> tracked</span> and can
                   be viewed <br /> in the measurement panel
                 </span>
               </div>
