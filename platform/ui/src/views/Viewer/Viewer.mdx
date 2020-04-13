@@ -18,6 +18,7 @@ import {
   StudyBrowser,
   ViewportActionBar,
   ViewportGrid,
+  Notification,
 } from '@ohif/ui';
 
 import Header from './components/Header';
@@ -57,7 +58,35 @@ import ViewportToolbar from './components/ViewportToolBar';
             <div className="flex flex-2 w-100 border-b border-transparent h-12">
               <ViewportToolbar />
             </div>
-            <div className="flex flex-1 items-center justify-center bg-black text-white border rounded-lg border-secondary-light h-100 overflow-hidden">CONTENT</div>
+            <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center">
+              <ViewportGrid
+                rows={1}
+                cols={2}
+                viewportContents={[
+                  <div className="flex flex-col h-full">
+                    <ViewportActionBar isTracked modality="CT" />
+                    <Notification
+                      text="Track all measurement for this series?"
+                      type="info"
+                      actionButtons={
+                        <div>
+                          <Button>No</Button>
+                          <Button className="ml-2">No, do not ask again</Button>
+                          <Button className="ml-2" color="primary">
+                            Yes
+                          </Button>
+                        </div>
+                      }
+                    />
+                  </div>,
+                  <div className="flex flex-col h-full">
+                    <ViewportActionBar isTracked={false} modality="CT" />
+                  </div>,
+                ]}
+                setActiveViewportIndex={setActiveViewportIndex}
+                activeViewportIndex={activeViewportIndex}
+              />
+            </div>
           </div>
           <SidePanel
             side="right"

@@ -69,7 +69,7 @@ const ViewportActionBar = ({ isTracked, isLocked, modality }) => {
     );
   };
   return (
-    <div className="flex items-center m-2 pb-2 border-b border-primary-light">
+    <div className="flex items-center mx-2 mt-2 pb-2 border-b border-primary-light">
       <div className="flex flex-grow">
         <div className="flex items-center">
           {renderIconStatus()}
