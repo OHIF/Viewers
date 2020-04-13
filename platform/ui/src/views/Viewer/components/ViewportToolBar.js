@@ -63,7 +63,7 @@ const ViewportToolbar = () => {
           {shouldShowTooltip && (
             <div
               className={classnames(
-                'tooltip absolute bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content'
+                'tooltip tooltip-up absolute bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content'
               )}
             >
               {tool.label}
