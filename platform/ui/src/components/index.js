@@ -25,6 +25,7 @@ import TableHead from './TableHead';
 import TableRow from './TableRow';
 import ThemeWrapper from './ThemeWrapper/';
 import Typography from './Typography';
+import ViewportGrid from './ViewportGrid';
 
 export {
   Button,
@@ -54,4 +55,5 @@ export {
   TableRow,
   ThemeWrapper,
   Typography,
+  ViewportGrid,
 };

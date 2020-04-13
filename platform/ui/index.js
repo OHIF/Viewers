@@ -39,6 +39,7 @@ export {
   TableRow,
   ThemeWrapper,
   Typography,
+  ViewportGrid,
 } from './src/components';
 
 /** VIEWS */
