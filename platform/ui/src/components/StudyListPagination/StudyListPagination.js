@@ -8,7 +8,7 @@ const StudyListPagination = ({
   perPage,
   onChangePerPage,
 }) => {
-  const navigateToPage = (page) => {
+  const navigateToPage = page => {
     const toPage = page < 1 ? 1 : page;
     onChangePage(toPage);
   };
@@ -23,7 +23,8 @@ const StudyListPagination = ({
                 defaultValue={perPage}
                 className="block appearance-none w-full bg-transparent border border-common-active text-white text-base px-2 pr-4 rounded leading-tight focus:outline-none"
                 style={{ height: 28 }}
-                onChange={(e) => onChangePerPage(e.target.value)}
+                onChange={e => onChangePerPage(e.target.value)}
+                onBlur={() => {}}
               >
                 <option value="25">25</option>
                 <option value="50">50</option>

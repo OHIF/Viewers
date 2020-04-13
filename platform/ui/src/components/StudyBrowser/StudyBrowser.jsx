@@ -20,7 +20,7 @@ const StudyBrowser = () => {
 
   return (
     <React.Fragment>
-      <div className="flex flex-row items-center justify-center border-b-2 w-100 h-16 border-secondary-light p-4 bg-primary-dark">
+      <div className="flex flex-row items-center justify-center border-b w-100 h-16 border-secondary-light p-4 bg-primary-dark">
         <ButtonGroup
           variant="outlined"
           color="inherit"
