@@ -77,7 +77,7 @@ const SidePanel = ({
             onClick={() => {
               setIsOpen(false);
             }}
-            className="flex flex-row items-center border-b-2 border-secondary-main border-secondary-light px-3 h-12 relative"
+            className="flex flex-row items-center border-b border-secondary-light px-3 h-12 relative"
           >
             <Icon
               name={openIconName[side]}
@@ -100,7 +100,7 @@ const SidePanel = ({
               minWidth: `${collapsedWidth}px`,
               width: `${collapsedWidth}px`,
             }}
-            className="flex flex-col text-xs px-1 py-1 text-white border-transparent border-b-2"
+            className="flex flex-col text-xs px-1 py-1 text-white border-transparent border-b"
           >
             <Icon name={iconName} className="text-primary-active" />
             <span className="mt-2 text-white text-xs">{iconLabel}</span>
