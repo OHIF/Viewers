@@ -148,7 +148,6 @@ describe('Visual Regression - OHIF User Preferences', () => {
     it('checks new hotkeys for "Next" and "Previous" Image on Viewport', function() {
       // Go go hotkeys tab
       cy.selectPreferencesTab('@userPreferencesHotkeysTab');
-      cy.pause();
       // Set new hotkey for 'Next Viewport' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
         'Next Viewport',
