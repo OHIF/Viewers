@@ -11,7 +11,6 @@ const ViewportGrid = ({
 }) => {
   const ViewportPanes = viewportContents.map((viewportContent, index) => {
     const isActive = index === activeViewportIndex;
-    console.log('isActive', isActive, index);
     return (
       <div
         key={index}
