@@ -17,10 +17,12 @@ import infoLink from './../../assets/icons/info-link.svg';
 import launchArrow from './../../assets/icons/launch-arrow.svg';
 import launchInfo from './../../assets/icons/launch-info.svg';
 import listBullets from './../../assets/icons/list-bullets.svg';
+import lock from './../../assets/icons/lock.svg';
 import logoOhifSmall from './../../assets/icons/logo-ohif-small.svg';
 import magnifier from './../../assets/icons/magnifier.svg';
 import notificationwarningDiamond from './../../assets/icons/notificationwarning-diamond.svg';
 import pencil from './../../assets/icons/pencil.svg';
+import profile from './../../assets/icons/profile.svg';
 import pushLeft from './../../assets/icons/push-left.svg';
 import pushRight from './../../assets/icons/push-right.svg';
 import settings from './../../assets/icons/settings.svg';
@@ -58,10 +60,12 @@ const ICONS = {
   'launch-arrow': launchArrow,
   'launch-info': launchInfo,
   'list-bullets': listBullets,
+  lock: lock,
   'logo-ohif-small': logoOhifSmall,
   magnifier: magnifier,
   'notificationwarning-diamond': notificationwarningDiamond,
   pencil: pencil,
+  profile: profile,
   'push-left': pushLeft,
   'push-right': pushRight,
   settings: settings,
