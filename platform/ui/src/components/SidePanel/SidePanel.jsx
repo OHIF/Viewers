@@ -70,25 +70,29 @@ const SidePanel = ({
     return (
       <React.Fragment>
         {isOpen ? (
-          <Button
-            variant="text"
-            color="inherit"
-            rounded="none"
-            onClick={() => {
-              setIsOpen(false);
-            }}
-            className="flex flex-row items-center border-b border-secondary-light px-3 h-12 relative w-full"
-          >
-            <Icon
-              name={openIconName[side]}
-              className={classnames(
-                'text-primary-active absolute',
-                side === 'left' && 'order-last'
-              )}
-              style={{ ...position[side] }}
-            />
-            <span className="flex-1 text-primary-active">{componentLabel}</span>
-          </Button>
+          <div className="px-3 border-b border-secondary-light">
+            <Button
+              variant="text"
+              color="inherit"
+              rounded="none"
+              onClick={() => {
+                setIsOpen(false);
+              }}
+              className="flex flex-row items-center px-3 h-12 relative w-full"
+            >
+              <Icon
+                name={openIconName[side]}
+                className={classnames(
+                  'text-primary-active absolute',
+                  side === 'left' && 'order-last'
+                )}
+                style={{ ...position[side] }}
+              />
+              <span className="flex-1 text-primary-active">
+                {componentLabel}
+              </span>
+            </Button>
+          </div>
         ) : (
           <Button
             variant="text"
@@ -119,7 +123,7 @@ const SidePanel = ({
       )}
       style={style}
     >
-      <div>{getSidePanelHeader()}</div>
+      {getSidePanelHeader()}
       {isOpen && children}
     </div>
   );
