@@ -33,6 +33,7 @@ import Thumbnail from './Thumbnail';
 import ThumbnailSR from './ThumbnailSR';
 import ThumbnailList from './ThumbnailList';
 import Typography from './Typography';
+import ViewportActionBar from './ViewportActionBar';
 import ViewportGrid from './ViewportGrid';
 
 export {
@@ -71,5 +72,6 @@ export {
   ThumbnailSR,
   ThumbnailList,
   Typography,
+  ViewportActionBar,
   ViewportGrid,
 };

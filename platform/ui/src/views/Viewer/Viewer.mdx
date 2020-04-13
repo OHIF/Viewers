@@ -5,32 +5,122 @@ route: examples/viewer
 ---
 
 import { Playground, Props } from 'docz';
-import { NavBar, SidePanel, Svg, StudyBrowser } from '@ohif/ui';
+import {
+  NavBar,
+  SidePanel,
+  Svg,
+  MeasurementTable,
+  SegmentationTable,
+  ButtonGroup,
+  Button,
+  Icon,
+  IconButton,
+  StudyBrowser,
+  ViewportActionBar,
+  ViewportGrid,
+} from '@ohif/ui';
 
 # Viewer
 
 <Playground>
-  <div>
-    <NavBar className="justify-start">
-      <div className="m-3">
-        <Svg name="logo-ohif" />
-      </div>
-    </NavBar>
-    <div
-      className="flex flex-row flex-no-wrap flex-1 items-stretch overflow-hidden w-full"
-      style={{ height: 'calc(100vh - 57px' }}
-    >
-      <SidePanel
-        side="left"
-        iconName="group-layers"
-        iconLabel="Studies"
-        componentLabel="Studies"
-        defaultIsOpen={false}
-      >
-        <StudyBrowser />
-      </SidePanel>
-      <div className="flex flex-1 h-100 overflow-hidden bg-primary-main items-center justify-center text-white">
-        CONTENT
+  {() => {
+    const measurementTableData = {
+      title: 'Measurements',
+      amount: 10,
+      data: new Array(10).fill(''),
+    };
+    const segmentationTableData = {
+      title: 'Segments',
+      amount: 12,
+      data: new Array(12).fill(''),
+    };
+    return (
+      <div>
+        <NavBar className="justify-start">
+          <div className="m-3">
+            <Svg name="logo-ohif" />
+          </div>
+        </NavBar>
+        <div
+          className="flex flex-row flex-no-wrap flex-1 items-stretch overflow-hidden w-full"
+          style={{ height: 'calc(100vh - 57px' }}
+        >
+          <SidePanel
+            side="left"
+            iconName="group-layers"
+            iconLabel="Studies"
+            componentLabel="Studies"
+            defaultIsOpen={false}
+          >
+            <StudyBrowser />
+          </SidePanel>
+          <div className="flex flex-1 h-100 overflow-hidden bg-black items-center justify-center text-white">
+            <ViewportGrid
+              rows={1}
+              cols={2}
+              viewportContents={[
+                <div className="flex flex-col h-full">
+                  <ViewportActionBar isTracked modality="CT" />
+                </div>,
+                <div className="flex flex-col h-full">
+                  <ViewportActionBar isTracked={false} modality="CT" />
+                </div>,
+              ]}
+            />
+          </div>
+          <SidePanel
+            side="right"
+            iconName="list-bullets"
+            iconLabel="Measure"
+            componentLabel="Measurements"
+            defaultIsOpen={false}
+          >
+            <div className="overflow-y-auto overflow-x-hidden invisible-scrollbar">
+              <div className="p-2">
+                <div className="leading-none">
+                  <span className="text-white text-base mr-2">07-Sep-2010</span>
+                  <span className="px-1 text-black bg-common-bright text-base rounded-sm font-bold">
+                    CT
+                  </span>
+                </div>
+                <div className="leading-none">
+                  <span className="text-base text-primary-light">
+                    CHEST/ABD/PELVIS W CONTRAST
+                  </span>
+                </div>
+              </div>
+              <MeasurementTable {...measurementTableData} />
+              <SegmentationTable {...segmentationTableData} />
+            </div>
+            <div className="p-4 flex justify-center">
+              <ButtonGroup onClick={() => alert('Export')}>
+                <Button
+                  className="text-white border-primary-main bg-black text-base py-2 px-2"
+                  size="initial"
+                  color="inherit"
+                >
+                  Export
+                </Button>
+                <IconButton
+                  className="bg-black border-primary-main px-2 text-white px-2"
+                  color="inherit"
+                  size="initial"
+                >
+                  <Icon name="arrow-down" />
+                </IconButton>
+              </ButtonGroup>
+              <Button
+                className="text-white border border-primary-main bg-black text-base py-2 px-2 ml-2"
+                variant="outlined"
+                size="initial"
+                color="inherit"
+                onClick={() => alert('Create Report')}
+              >
+                Create Report
+              </Button>
+            </div>
+          </SidePanel>
+        </div>
       </div>
     );
   }}

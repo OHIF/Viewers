@@ -1,0 +1,48 @@
+---
+name: Viewport Action Bar
+menu: Data Display
+route: components/viewportActionBar
+---
+
+import { Playground, Props } from 'docz';
+import { ViewportActionBar } from '@ohif/ui';
+
+# Viewport Action Bar
+
+Used to display an Action Bar in the viewer.
+
+## Import
+
+```javascript
+import { ViewportActionBar } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  <div className="p-4 h-64">
+    <ViewportActionBar isTracked={true} modality="CT" />
+  </div>
+</Playground>
+
+<Playground>
+  <div className="p-4 h-64">
+    <ViewportActionBar isTracked={false} modality="CT" />
+  </div>
+</Playground>
+
+<Playground>
+  <div className="p-4 h-64">
+    <ViewportActionBar isTracked={false} isLocked={false} modality="SR" />
+  </div>
+</Playground>
+
+<Playground>
+  <div className="p-4 h-64">
+    <ViewportActionBar isTracked={false} isLocked={true} modality="SR" />
+  </div>
+</Playground>
+
+## Properties
+
+<Props of={ViewportActionBar} />

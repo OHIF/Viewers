@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const baseClasses =
-  'min-w-md leading-none font-sans text-center justify-center items-center outline-none transition duration-300 ease-in-out focus:outline-none';
+  'leading-none font-sans text-center justify-center items-center outline-none transition duration-300 ease-in-out focus:outline-none';
 
 const defaults = {
   variant: 'contained',
@@ -61,9 +61,9 @@ const variantClasses = {
 };
 
 const sizeClasses = {
-  small: 'py-2 px-2 text-sm',
-  medium: 'py-2 px-2 text-lg',
-  large: 'py-2 px-6 text-xl',
+  small: 'py-2 px-2 text-sm min-w-md',
+  medium: 'py-2 px-2 text-lg min-w-md',
+  large: 'py-2 px-6 text-xl min-w-md',
   initial: '',
 };
 
