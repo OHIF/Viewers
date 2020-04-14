@@ -320,7 +320,9 @@ const _enableReferenceLines = () => {
         const referenceImage = referenceElement.image;
 
         if (!referenceImage || !targetImage) {
-          console.error('Could not render reference lines, images not defined');
+          console.error(
+            'Could not render reference lines, one or more images not defined.'
+          );
           return;
         }
 
@@ -344,7 +346,7 @@ const _enableReferenceLines = () => {
           !referenceImagePlane.imagePositionPatient
         ) {
           console.error(
-            'Could not render reference lines, image plane modules not defined'
+            'Could not render reference lines, image plane modules not defined.'
           );
           return;
         }
@@ -385,7 +387,7 @@ const _enableReferenceLines = () => {
         angleInRadians = Math.abs(angleInRadians);
         if (angleInRadians < 0.5) {
           console.error(
-            'Could not render reference lines, angle in radians does not match the expected value'
+            'Could not render reference lines, the angle between the two planes is lower than the required.'
           );
           return;
         }
@@ -393,7 +395,9 @@ const _enableReferenceLines = () => {
         const points = planeIntersection(targetImagePlane, referenceImagePlane);
 
         if (!points) {
-          console.error('Could not render reference lines, points not defined');
+          console.error(
+            'Could not render reference lines, the plane intersection is undefined.'
+          );
           return;
         }
 
@@ -405,9 +409,9 @@ const _enableReferenceLines = () => {
           end: projectPatientPointToImagePlane(points.end, referenceImagePlane),
         };
 
-        if (!referenceLine) {
+        if (!referenceLine.start || !referenceLine.end) {
           console.error(
-            'Could not render reference lines, no reference line to render'
+            'Could not render reference lines, the initial or final coordinates are undefined.'
           );
           return;
         }
