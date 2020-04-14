@@ -320,7 +320,7 @@ const _enableReferenceLines = () => {
         const referenceImage = referenceElement.image;
 
         if (!referenceImage || !targetImage) {
-          console.error(
+          console.warn(
             'Could not render reference lines, one or more images not defined.'
           );
           return;
@@ -345,7 +345,7 @@ const _enableReferenceLines = () => {
           !referenceImagePlane.columnCosines ||
           !referenceImagePlane.imagePositionPatient
         ) {
-          console.error(
+          console.warn(
             'Could not render reference lines, image plane modules not defined.'
           );
           return;
@@ -386,7 +386,7 @@ const _enableReferenceLines = () => {
         let angleInRadians = targetNormal.angleTo(referenceNormal);
         angleInRadians = Math.abs(angleInRadians);
         if (angleInRadians < 0.5) {
-          console.error(
+          console.warn(
             'Could not render reference lines, the angle between the two planes is lower than the required.'
           );
           return;
@@ -395,7 +395,7 @@ const _enableReferenceLines = () => {
         const points = planeIntersection(targetImagePlane, referenceImagePlane);
 
         if (!points) {
-          console.error(
+          console.warn(
             'Could not render reference lines, the plane intersection is undefined.'
           );
           return;
@@ -410,7 +410,7 @@ const _enableReferenceLines = () => {
         };
 
         if (!referenceLine.start || !referenceLine.end) {
-          console.error(
+          console.warn(
             'Could not render reference lines, the initial or final coordinates are undefined.'
           );
           return;
@@ -444,6 +444,16 @@ const _enableReferenceLines = () => {
   };
 
   cornerstone.events.addEventListener(
+    cornerstone.EVENTS.ELEMENT_ENABLED,
+    event => {
+      event.detail.element.addEventListener(
+        cornerstone.EVENTS.IMAGE_RENDERED,
+        renderReferenceLines
+      );
+    }
+  );
+
+  cornerstone.events.addEventListener(
     cornerstone.EVENTS.ELEMENT_DISABLED,
     event => {
       event.detail.element.removeEventListener(
@@ -452,64 +462,4 @@ const _enableReferenceLines = () => {
       );
     }
   );
-
-  const bindEnabledElementsEventListeners = enabledElements => {
-    enabledElements.forEach(enabledElement => {
-      enabledElement.addEventListener(
-        cornerstone.EVENTS.IMAGE_RENDERED,
-        renderReferenceLines
-      );
-    });
-  };
-
-  const unbindEnabledElementsEventListeners = enabledElements => {
-    enabledElements.forEach(enabledElement => {
-      enabledElement.removeEventListener(
-        cornerstone.EVENTS.IMAGE_RENDERED,
-        renderReferenceLines
-      );
-    });
-  };
-
-  let previousLayout;
-  window.store.subscribe(() => {
-    const { numColumns, numRows } = window.store.getState().viewports;
-    const viewportCount = numRows * numColumns;
-
-    if (viewportCount > 1) {
-      if (
-        !previousLayout ||
-        (previousLayout &&
-          (previousLayout.numColumns !== numColumns ||
-            previousLayout.numRows !== numRows))
-      ) {
-        previousLayout = { numColumns, numRows };
-
-        const enabledElements = [...csTools.store.state.enabledElements];
-
-        // We have all the elements
-        if (enabledElements.length === viewportCount) {
-          bindEnabledElementsEventListeners(enabledElements);
-        } else {
-          cornerstone.events.addEventListener(
-            cornerstone.EVENTS.ELEMENT_ENABLED,
-            ({ detail: { element } }) => {
-              enabledElements.push(element);
-
-              if (enabledElements.length === viewportCount) {
-                bindEnabledElementsEventListeners(enabledElements);
-              }
-            }
-          );
-        }
-      }
-    } else {
-      if (previousLayout !== undefined) {
-        previousLayout = undefined;
-        unbindEnabledElementsEventListeners(
-          csTools.store.state.enabledElements
-        );
-      }
-    }
-  });
 };
