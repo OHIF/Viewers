@@ -20,6 +20,22 @@
   @apply hidden;
 }
 
+.invisible-scrollbar::-webkit-scrollbar-track {
+  @apply hidden;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-thumb {
+  @apply hidden;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-thumb:window-inactive {
+  @apply hidden;
+}
+
+.tooltip {
+  @apply z-10 absolute;
+}
+
 /* TOOLTIP WORKAROUND FOR ARROW UP */
 .tooltip.tooltip-up::before {
   @apply bg-primary-dark absolute z-10;
