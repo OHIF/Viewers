@@ -446,12 +446,10 @@ const _enableReferenceLines = () => {
   cornerstone.events.addEventListener(
     cornerstone.EVENTS.ELEMENT_DISABLED,
     event => {
-      if (event.detail && event.detail.element) {
-        event.detail.element.removeEventListener(
-          cornerstone.EVENTS.IMAGE_RENDERED,
-          renderReferenceLines
-        );
-      }
+      event.detail.element.removeEventListener(
+        cornerstone.EVENTS.IMAGE_RENDERED,
+        renderReferenceLines
+      );
     }
   );
 
