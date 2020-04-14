@@ -35,12 +35,12 @@ const Notification = ({ type, text, actionButtons }) => {
   const { icon, color } = getIconData();
 
   return (
-    <div className="mx-2 p-2 flex flex-col lg:flex-row lg:items-center bg-common-bright rounded">
+    <div className="mx-2 p-2 flex flex-col bg-common-bright rounded">
       <div className="flex flex-grow">
         <Icon name={icon} className={classnames('w-5', color)} />
         <span className="text-base text-black ml-2">{text}</span>
       </div>
-      <div className="flex justify-end mt-2 lg:mt-0">{actionButtons}</div>
+      <div className="flex justify-end mt-2">{actionButtons}</div>
     </div>
   );
 };
