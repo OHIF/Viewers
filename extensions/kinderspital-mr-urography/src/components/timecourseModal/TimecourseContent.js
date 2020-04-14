@@ -40,6 +40,32 @@ function LineChartContainer({
       measurement => measurement.measurementNumber === targetMeasurementNumber
     )
   );
+
+  const timecourseIntervalsRef = useRef({});
+
+  useEffect(() => {
+    timecourseIntervalsRef.current = measurements.reduce(
+      (acc, measurement, index) => {
+        let pointsDiff;
+        const { pIndex, gIndex } = measurement;
+        // map to intervals diff from timecourse if existing p and g or use defaultInterval
+        if (!isNaN(pIndex) && !isNaN(gIndex)) {
+          const { timecourse = [] } = measurement;
+
+          if (timecourse.length) {
+            pointsDiff = Math.abs(
+              timecourse[pIndex][0] - timecourse[gIndex][0]
+            );
+          }
+        }
+        acc[index] = isNaN(pointsDiff) ? defaultTimecourseInterval : pointsDiff;
+
+        return acc;
+      },
+      {}
+    );
+  }, [measurements]);
+
   const measurement = measurements[currentIndex];
   const { timecourse } = measurement || {};
   const [area, setArea] = useState();
@@ -51,38 +77,67 @@ function LineChartContainer({
     setCurrentIndex(nextIndex);
   };
 
+  const isValidTimecourseInterval = index => {
+    const currentValue = timecourseIntervalsRef.current[index];
+    return currentValue && currentValue === defaultTimecourseInterval;
+  };
+
+  const invalidateTimecourseInterval = (measurement, index) => {
+    measurement.pIndex = undefined;
+    measurement.gIndex = undefined;
+    measurement.areaUnderCurve = undefined;
+
+    timecourseIntervalsRef.current[index] = defaultTimecourseInterval;
+  };
+
   useEffect(() => {
     const measurement = measurements[currentIndex];
-    const { areaUnderCurve } = measurement || {};
+    const { areaUnderCurve = 0 } = measurement || {};
     setArea(areaUnderCurve);
   }, [currentIndex]);
   useEffect(() => {
     if (timecourse && d3Container.current) {
-      const { peekIndex, glomerularIndex } = measurement;
+      const _isValidTimecourseInterval = isValidTimecourseInterval(
+        currentIndex
+      );
 
+      if (!_isValidTimecourseInterval) {
+        invalidateTimecourseInterval(measurement, currentIndex);
+      }
+
+      const { pIndex, gIndex } = measurement;
       const d3Content = select(d3Container.current);
       chartRef.current = lineChart.addLineChartNode(
         d3Content,
         (nextPeekIndex, nextGlomerularIndex, nextTimecourseInterval) => {
-          measurement.peekIndex = nextPeekIndex;
-          measurement.glomerularIndex = nextGlomerularIndex;
+          measurement.pIndex = nextPeekIndex;
+          measurement.gIndex = nextGlomerularIndex;
 
-          defaultTimecourseInterval = nextTimecourseInterval;
-          lineChart.defaultTimecourseInterval(defaultTimecourseInterval);
+          const timecourseChanged =
+            defaultTimecourseInterval !== nextTimecourseInterval;
+
+          if (timecourseChanged) {
+            defaultTimecourseInterval = nextTimecourseInterval;
+            timecourseIntervalsRef.current[
+              currentIndex
+            ] = nextTimecourseInterval;
+            lineChart.defaultTimecourseInterval(defaultTimecourseInterval);
+          }
 
           const area = onPlacePoints(
             nextPeekIndex,
             nextGlomerularIndex,
             currentIndex,
-            measurement
+            measurement,
+            timecourseChanged
           );
 
           setArea(area);
         },
         axis,
         timecourse,
-        peekIndex,
-        glomerularIndex,
+        pIndex,
+        gIndex,
         width,
         height,
         true,

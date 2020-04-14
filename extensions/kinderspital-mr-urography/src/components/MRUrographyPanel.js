@@ -269,7 +269,8 @@ const MRUrographyPanel = ({
     peekIndex,
     glomerularIndex,
     measurementIndex,
-    measurement
+    measurement,
+    invalidateOthers
   ) => {
     const { timecourse, measurementNumber } = measurement;
 
@@ -303,9 +304,13 @@ const MRUrographyPanel = ({
         if (
           measurementData.measurementNumber === measurement.measurementNumber
         ) {
-          measurement.areaUnderCurve = area;
-          measurement.pIndex = peekIndex;
-          measurement.gIndex = glomerularIndex;
+          measurementData.areaUnderCurve = area;
+          measurementData.pIndex = peekIndex;
+          measurementData.gIndex = glomerularIndex;
+        } else if(invalidateOthers) {
+          measurementData.areaUnderCurve = undefined;
+          measurementData.pIndex = undefined;
+          measurementData.gIndex = undefined;
         }
       }
     }
