@@ -71,7 +71,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     onNewImage: newImageData => {
       ownProps.onNewImage && ownProps.onNewImage(newImageData);
       dispatch(
-        setViewportSpecificData(viewportIndex, { SOPInstanceUID: null })
+        setViewportSpecificData(viewportIndex, {
+          SOPInstanceUID: null,
+          frameIndex: null,
+        })
       );
     },
 

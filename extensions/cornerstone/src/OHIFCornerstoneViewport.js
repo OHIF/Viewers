@@ -180,6 +180,7 @@ class OHIFCornerstoneViewport extends Component {
     const displaySetInstanceUIDChanged =
       displaySet.displaySetInstanceUID !== prevDisplaySet.displaySetInstanceUID;
     const frameIndexChanged =
+      displaySet.frameIndex &&
       displaySet.frameIndex !== prevDisplaySet.frameIndex;
     const sopInstanceUIDChanged =
       displaySet.SOPInstanceUID &&
