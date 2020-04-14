@@ -1,4 +1,8 @@
 /* CUSTOM OHIF SCROLLBAR */
+.ohif-scrollbar {
+  scrollbar-color: #0944b3 transparent;
+}
+
 .ohif-scrollbar::-webkit-scrollbar {
   @apply w-2;
 }
@@ -17,6 +21,9 @@
 }
 
 /* INVISIBLE SCROLLBAR */
+.invisible-scrollbar {
+  scrollbar-width: none;
+}
 
 .invisible-scrollbar::-webkit-scrollbar {
   @apply hidden;
