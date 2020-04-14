@@ -306,8 +306,8 @@ const _enableReferenceLines = () => {
   const renderReferenceLines = ({ detail: { enabledElement } }) => {
     const { activeViewportIndex } = window.store.getState().viewports;
 
-    const currentEnabledElement = getEnabledElement(activeViewportIndex);
-    if (currentEnabledElement !== enabledElement.element) return;
+    if (getEnabledElement(activeViewportIndex) !== enabledElement.element)
+      return;
 
     const targetImage = enabledElement.image;
     cornerstone
