@@ -19,6 +19,7 @@ import {
   StudyBrowser,
   ViewportActionBar,
   ViewportGrid,
+  Notification,
 } from '@ohif/ui';
 
 import Header from './components/Header';
@@ -51,7 +52,7 @@ import ViewportToolbar from './components/ViewportToolBar';
             iconName="group-layers"
             iconLabel="Studies"
             componentLabel="Studies"
-            defaultIsOpen={false}
+            defaultIsOpen={true}
           >
             <StudyBrowser />
           </SidePanel>
@@ -66,6 +67,19 @@ import ViewportToolbar from './components/ViewportToolBar';
                 viewportContents={[
                   <div className="flex flex-col h-full">
                     <ViewportActionBar isTracked modality="CT" />
+                    <Notification
+                      text="Track all measurement for this series?"
+                      type="info"
+                      actionButtons={
+                        <div>
+                          <Button>No</Button>
+                          <Button className="ml-2">No, do not ask again</Button>
+                          <Button className="ml-2" color="primary">
+                            Yes
+                          </Button>
+                        </div>
+                      }
+                    />
                   </div>,
                   <div className="flex flex-col h-full">
                     <ViewportActionBar isTracked={false} modality="CT" />

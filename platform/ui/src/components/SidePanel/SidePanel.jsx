@@ -5,8 +5,8 @@ import classnames from 'classnames';
 import { Button, Icon } from '@ohif/ui';
 
 const borderSize = 4;
-const expandedWidth = 320;
-const collapsedWidth = 60;
+const expandedWidth = 248;
+const collapsedWidth = 56;
 
 const baseStyle = {
   maxWidth: `${expandedWidth}px`,
@@ -26,7 +26,7 @@ const styleMap = {
 };
 
 const baseClasses =
-  'transition-all duration-300 ease-in-out h-100 bg-primary-dark border-black flex flex-col justify-start';
+  'transition-all duration-300 ease-in-out h-100 bg-primary-dark border-black flex flex-col justify-start box-content';
 
 const classesMap = {
   open: {
