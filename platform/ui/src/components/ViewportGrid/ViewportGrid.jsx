@@ -9,7 +9,11 @@ const ViewportGrid = ({ rows, cols, viewportContents }) => {
       <div
         key={index}
         className={classnames(
-          'border rounded-lg border-secondary-light hover:border-primary-light transition duration-300'
+          'rounded-lg hover:border-primary-light transition duration-300',
+          {
+            'border-2 border-primary-light -m-px': isActive,
+            'border border-secondary-light': !isActive,
+          }
         )}
       >
         {viewportContent}
