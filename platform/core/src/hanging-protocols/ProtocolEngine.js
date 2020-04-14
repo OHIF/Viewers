@@ -192,6 +192,11 @@ export default class ProtocolEngine {
         }
       });
     });
+    if (this.protocol) {
+      if (!this.matchedProtocols.has(this.protocol.id)) {
+        this.protocol = null;
+      }
+    }
   }
 
   _largestKeyByValue(obj) {

@@ -7,6 +7,7 @@ import { withModal } from '@ohif/ui';
 
 import { createProto } from './createProtocol';
 import { HangingProtocolDetailsModal } from './HangingProtocolDetailsModal';
+import { LocalHangingProtocolListModal } from './ManagerLocalHangingProtocolList';
 
 const {
   ProtocolEngine,
@@ -34,7 +35,9 @@ function AutoclosePopup({ children, close }) {
 
 const deepClone = obj => JSON.parse(JSON.stringify(obj));
 
-const protocolStore = new ProtocolStore(new LocalStorageProtocolStrategy());
+export const protocolStore = new ProtocolStore(
+  new LocalStorageProtocolStrategy()
+);
 
 export function HangingProtocolButton({
   studies,
@@ -68,10 +71,17 @@ export function HangingProtocolButton({
       );
 
       refProtocolEngine.current = protocolEngine;
-      protocolEngine.updateProtocolMatches();
     };
     initProtoEngine();
   }, [studies]);
+
+  const manageList = () => {
+    modal.show({
+      content: LocalHangingProtocolListModal,
+      contentProps: { protocolStore },
+      title: 'Local Hanging Protocols',
+    });
+  };
 
   const saveProto = proto => {
     protocolStore.addProtocol(proto);
@@ -108,7 +118,13 @@ export function HangingProtocolButton({
     protocolEngine.nextProtocolStageCircular();
   };
 
-  const toggleVisible = () => setVisible(!visible);
+  const toggleVisible = () => {
+    if (!visible) {
+      const protocolEngine = refProtocolEngine.current;
+      protocolEngine.updateProtocolMatches();
+    }
+    setVisible(!visible);
+  };
 
   const protocolEngine = refProtocolEngine.current;
   const protocols =
@@ -148,6 +164,9 @@ export function HangingProtocolButton({
                 <span>Save as new stage in {currentProtocol.name}</span>
               </button>
             )}
+            <button className="dd-item" onClick={manageList}>
+              <span>Manage Local Protocols</span>
+            </button>
           </AutoclosePopup>
         </div>
       )}
