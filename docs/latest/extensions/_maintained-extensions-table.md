@@ -31,6 +31,7 @@
             </td>
             <td>Viewport, Toolbar</td>
         </tr>
+        <!-- dicom-html -->
         <tr>
             <td>
                 <a href="https://www.npmjs.com/package/@ohif/extension-dicom-html">DICOM HTML</a>
@@ -40,6 +41,7 @@
             </td>
             <td>Viewport, SopClassHandler</td>
         </tr>
+        <!-- dicom-pdf -->
         <tr>
             <td>
                 <a href="https://www.npmjs.com/package/@ohif/extension-dicom-pdf">DICOM PDF</a>
@@ -49,6 +51,7 @@
             </td>
             <td>Viewport, SopClassHandler</td>
         </tr>
+        <!-- dicom-microscopy -->
         <tr>
             <td>
                 <a href="https://www.npmjs.com/package/@ohif/extension-dicom-microscopy">DICOM Microscopy</a>
@@ -57,6 +60,16 @@
                 Renders Microscopy images for a <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-microscopy/src/DicomMicroscopySopClassHandler.js#L5-L7">specific SopClassUID</a>.
             </td>
             <td>Viewport, SopClassHandler</td>
+        </tr>
+        <!-- dicom-segmentation -->
+        <tr>
+            <td>
+                <a href="https://www.npmjs.com/package/@ohif/extension-dicom-segmentation">DICOM Segmentation</a>
+            </td>
+            <td>
+                Renders segmentation images for a <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-segmentation/src/OHIFDicomSegSopClassHandler.js#L5-L7">specific SopClassUID</a>.
+            </td>
+            <td>Panel, Toolbar</td>
         </tr>
     </tbody>
 </table>

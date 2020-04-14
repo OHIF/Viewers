@@ -1,4 +1,5 @@
 import { api } from 'dicomweb-client';
+import dcmjs from 'dcmjs';
 import DICOMWeb from '../../../DICOMWeb/';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 import { sortStudySeries, sortingCriteria } from '../../sortStudy';
@@ -7,6 +8,8 @@ import {
   createStudyFromSOPInstanceList,
   addInstancesToStudy,
 } from './studyInstanceHelpers';
+
+const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
 
 /**
  * Map series to an array of SeriesInstanceUID
@@ -101,15 +104,21 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
   async preLoad() {
     const preLoaders = this.getPreLoaders();
-    const result = await this.runLoaders(preLoaders);
+
+    // seriesData is the result of the QIDO-RS Search For Series request
+    // It's an array of Objects containing DICOM Tag values at the Series level
+    const seriesData = await this.runLoaders(preLoaders);
 
     const seriesSorted = sortStudySeries(
-      result,
+      seriesData,
       sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
     );
     const seriesInstanceUIDsMap = mapStudySeries(seriesSorted);
 
-    return seriesInstanceUIDsMap;
+    return {
+      seriesInstanceUIDsMap,
+      seriesData
+    };
   }
 
   async load(preLoadData) {
@@ -118,7 +127,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const seriesAsyncLoader = makeSeriesAsyncLoader(
       client,
       studyInstanceUID,
-      preLoadData
+      preLoadData.seriesInstanceUIDsMap
     );
 
     const firstSeries = await seriesAsyncLoader.next();
@@ -126,15 +135,37 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     return {
       sopInstances: firstSeries.sopInstances,
       asyncLoader: seriesAsyncLoader,
+      seriesData: preLoadData.seriesData,
     };
   }
 
   async posLoad(loadData) {
     const { server } = this;
 
-    const { sopInstances, asyncLoader } = loadData;
+    const { sopInstances, asyncLoader, seriesData } = loadData;
 
     const study = await createStudyFromSOPInstanceList(server, sopInstances);
+
+    // TODO: Should this be in a helper
+    const seriesDataNaturalized = seriesData.map(naturalizeDataset);
+
+    seriesDataNaturalized.forEach((series, idx) => {
+      const seriesDataFromQIDO = {
+        SeriesInstanceUID: series.SeriesInstanceUID,
+        SeriesDescription: series.SeriesDescription,
+        SeriesNumber: series.SeriesNumber,
+        Modality: series.Modality,
+        instances: []
+      };
+
+      if (study.series[idx]) {
+        study.series[idx] = Object.assign(seriesDataFromQIDO, study.series[idx]);
+      } else {
+        study.series[idx] = seriesDataFromQIDO;
+      }
+
+      study.seriesMap[series.SeriesInstanceUID] = study.series[idx];
+    });
 
     if (asyncLoader.hasNext()) {
       attachSeriesLoader(server, study, asyncLoader);

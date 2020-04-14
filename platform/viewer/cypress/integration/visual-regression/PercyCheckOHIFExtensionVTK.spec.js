@@ -1,8 +1,9 @@
 describe('Visual Regression - OHIF VTK Extension', () => {
   before(() => {
-    cy.openStudy('Bellona');
-    cy.waitDicomImage();
-    cy.expectMinimumThumbnails(5);
+    cy.checkStudyRouteInViewer(
+      '1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1'
+    );
+    cy.expectMinimumThumbnails(7);
 
     //Waiting for the desired thumbnail content to be displayed
     cy.get('[data-cy="thumbnail-list"]').should($list => {

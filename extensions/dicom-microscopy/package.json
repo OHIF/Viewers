@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-microscopy",
-  "version": "0.50.7",
+  "version": "0.50.9",
   "description": "OHIF extension for Dicom Microscopy",
   "author": "OHIF",
   "license": "MIT",

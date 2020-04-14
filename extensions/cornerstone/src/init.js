@@ -76,7 +76,6 @@ export default function init({ servicesManager, configuration }) {
       csTools.DragProbeTool,
       csTools.RectangleRoiTool,
     ],
-    segmentation: [csTools.BrushTool],
     other: [
       csTools.PanTool,
       csTools.ZoomTool,

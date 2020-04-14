@@ -12,6 +12,7 @@ describe('Top level exports', () => {
       'b64toBlob',
       'StackManager',
       'studyMetadataManager',
+      'loadAndCacheDerivedDisplaySets',
       'DicomLoaderService',
       'urlUtil',
       'makeCancelable',

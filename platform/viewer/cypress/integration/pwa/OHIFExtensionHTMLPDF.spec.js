@@ -1,6 +1,8 @@
 describe('OHIF HTML Extension', () => {
   before(() => {
-    cy.openStudy('Dummy');
+    cy.openStudyInViewer(
+      '1.2.826.0.13854362241694438965858641723883466450351448'
+    );
     cy.expectMinimumThumbnails(5);
   });
 
@@ -40,5 +42,37 @@ describe('OHIF HTML Extension', () => {
         .scrollTo('bottom');
       cy.wrap($viewport).should('have.class', 'active');
     });
+
+    cy.setLayout('1', '1');
+  });
+});
+
+describe('OHIF PDF Extension', () => {
+  before(() => {
+    cy.checkStudyRouteInViewer(
+      '1.2.826.0.13854362241694438965858641723883466450351448'
+    );
+    cy.expectMinimumThumbnails(5);
+  });
+
+  it('checks if series thumbnails are being displayed', () => {
+    cy.get('[data-cy="thumbnail-list"]')
+      .contains('DOC')
+      .its('length')
+      .should('to.be.at.least', 1);
+  });
+
+  it('drags and drop a PDF thumbnail into viewport', () => {
+    cy.get('[data-cy="thumbnail-list"]')
+      .contains('DOC')
+      .scrollIntoView()
+      .drag('.viewport-drop-target');
+
+    cy.get('.DicomPDFViewport')
+      .its('length')
+      .should('be.eq', 1);
+
+    //Take Screenshot
+    cy.screenshot('PDF Extension - Should load PDF file');
   });
 });

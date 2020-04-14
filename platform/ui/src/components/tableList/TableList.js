@@ -9,14 +9,21 @@ export class TableList extends Component {
     defaultItems: PropTypes.object,
     children: PropTypes.node.isRequired,
     headerTitle: PropTypes.string,
+    headless: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    headless: false,
   };
 
   render() {
     return (
       <div className="tableList">
-        <div className="tableListHeader" onClick={this.onHeaderClick}>
-          {this.getHeader()}
-        </div>
+        {!this.props.headless && (
+          <div className="tableListHeader" onClick={this.onHeaderClick}>
+            {this.getHeader()}
+          </div>
+        )}
         <div className="tableListContent">{this.props.children}</div>
       </div>
     );
