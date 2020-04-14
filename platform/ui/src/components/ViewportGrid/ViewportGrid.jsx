@@ -17,7 +17,7 @@ const ViewportGrid = ({
         className={classnames(
           'rounded-lg hover:border-primary-light transition duration-300',
           {
-            'border-2 border-primary-light': isActive,
+            'border-2 border-primary-light -m-px': isActive,
             'border border-secondary-light': !isActive,
           }
         )}

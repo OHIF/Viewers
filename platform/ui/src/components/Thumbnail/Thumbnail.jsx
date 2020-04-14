@@ -36,7 +36,7 @@ const Thumbnail = ({
           </div>
           <div
             className={classnames(
-              'tooltip tooltip-right absolute bg-black border border-secondary-main text-common-light text-base rounded py-2 px-4 top-0 w-max-content hidden'
+              'tooltip tooltip-right bg-black border border-secondary-main text-common-light text-base rounded py-2 px-4 top-0 w-max-content hidden'
             )}
           >
             <div className="flex flex-row flex-1">
