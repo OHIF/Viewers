@@ -5,7 +5,6 @@ import { Icon, IconButton } from '@ohif/ui';
 
 const ViewportToolbar = () => {
   const [activeTool, setActiveTool] = useState(null);
-  const [showTooltip, setShowTooltip] = useState(null);
   const tools = [
     {
       id: 'Annotate',
@@ -43,9 +42,11 @@ const ViewportToolbar = () => {
   const renderToolbar = () => {
     return tools.map((tool, i) => {
       const isActive = activeTool === tool.id;
-      const shouldShowTooltip = showTooltip === tool.id;
       return (
-        <div className="relative flex justify-center" key={tool.id}>
+        <div
+          className="relative flex justify-center showTooltipOnHover"
+          key={tool.id}
+        >
           <IconButton
             variant={isActive ? 'contained' : 'text'}
             className={classnames('mx-1', {
@@ -55,30 +56,26 @@ const ViewportToolbar = () => {
             onClick={(e) => {
               setActiveTool(tool.id);
             }}
-            onMouseOver={() => setShowTooltip(tool.id)}
-            onMouseOut={() => setShowTooltip(null)}
           >
             <Icon name={tool.icon} />
           </IconButton>
-          {shouldShowTooltip && (
-            <div
-              className={classnames(
-                'tooltip tooltip-up absolute bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content'
-              )}
+          <div
+            className={classnames(
+              'tooltip tooltip-up bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content'
+            )}
+          >
+            {tool.label}
+            <svg
+              className="absolute text-primary-dark w-full h-4 left-0 stroke-secondary-main"
+              style={{ top: -15 }}
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
             >
-              {tool.label}
-              <svg
-                className="absolute text-primary-dark w-full h-4 left-0 stroke-secondary-main"
-                style={{ top: -15 }}
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
-                <path fill="currentColor" d="M24 22h-24l12-20z" />
-              </svg>
-            </div>
-          )}
+              <path fill="currentColor" d="M24 22h-24l12-20z" />
+            </svg>
+          </div>
         </div>
       );
     });

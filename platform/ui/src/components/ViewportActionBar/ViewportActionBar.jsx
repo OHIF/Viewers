@@ -38,7 +38,7 @@ const ViewportActionBar = ({ isTracked, isLocked, modality }) => {
         {isTracked && (
           <div
             className={classnames(
-              'tooltip tooltip-top-left absolute bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content'
+              'tooltip tooltip-top-left bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content'
             )}
           >
             <div className="flex py-2">
@@ -111,7 +111,7 @@ const ViewportActionBar = ({ isTracked, isLocked, modality }) => {
           </div>
           <div
             className={classnames(
-              'tooltip tooltip-top-right absolute bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content ml-1'
+              'tooltip tooltip-top-right bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content ml-1'
             )}
           >
             <div className="flex py-2">
