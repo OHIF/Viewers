@@ -16,7 +16,7 @@ const customStyle = {
 };
 
 Modal.setAppElement(document.getElementById('root'));
-
+let bodyStyleOverflowValue;
 const OHIFModal = ({
   className,
   closeButton,
@@ -25,6 +25,7 @@ const OHIFModal = ({
   title,
   onClose,
   children,
+  noScrollBehind,
 }) => {
   const renderHeader = () => {
     return (
@@ -49,6 +50,23 @@ const OHIFModal = ({
       isOpen={isOpen}
       title={title}
       style={customStyle}
+      onAfterOpen={() => {
+        if (noScrollBehind) {
+          bodyStyleOverflowValue = document.body.style.getPropertyValue(
+            'overflow'
+          );
+          document.body.style.setProperty('overflow', 'hidden');
+        }
+      }}
+      onAfterClose={() => {
+        if (noScrollBehind) {
+          if (bodyStyleOverflowValue) {
+            document.body.style.setProperty('overflow', bodyStyleOverflowValue);
+          } else {
+            document.body.style.removeProperty('overflow');
+          }
+        }
+      }}
     >
       <>
         {renderHeader()}
@@ -67,6 +85,7 @@ OHIFModal.propTypes = {
   isOpen: PropTypes.bool,
   title: PropTypes.string,
   onClose: PropTypes.func,
+  noScrollBehind: PropTypes.bool,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,

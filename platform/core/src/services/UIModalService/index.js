@@ -38,6 +38,7 @@ function _show({
   closeButton = true,
   title = null,
   customClassName = null,
+  noScrollBehind = false,
 }) {
   return serviceImplementation._show({
     content,
@@ -47,6 +48,7 @@ function _show({
     closeButton,
     title,
     customClassName,
+    noScrollBehind,
   });
 }
 
