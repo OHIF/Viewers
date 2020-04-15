@@ -8,9 +8,9 @@ jest.mock('cornerstone-core', () => ({
   metaData: {
     ...jest.requireActual('cornerstone-core').metaData,
     get: () => ({
-      sopInstanceUid: "123",
-      frameOfReferenceUID: "123",
-      seriesInstanceUid: "123",
+      SOPInstanceUID: '123',
+      FrameOfReferenceUID: '123',
+      SeriesInstanceUID: '123',
     }),
   },
 }));
@@ -42,8 +42,8 @@ describe('measurementServiceMappings.js', () => {
       measurementData: {
         _measurementServiceId: 1,
         sopInstanceUid: '123',
-        frameOfReferenceUid: '123',
-        seriesInstanceUid: '123',
+        frameOfReferenceUID: '123',
+        SeriesInstanceUID: '123',
         handles,
         text: 'Test',
         description: 'Test',
@@ -52,8 +52,8 @@ describe('measurementServiceMappings.js', () => {
     };
     measurement = {
       id: 1,
-      sopInstanceUID: '123',
-      frameOfReferenceUID: '123',
+      SOPInstanceUID: '123',
+      FrameOfReferenceUID: '123',
       referenceSeriesUID: '123',
       label: 'Test',
       description: 'Test',
@@ -66,7 +66,10 @@ describe('measurementServiceMappings.js', () => {
 
   describe('toAnnotation()', () => {
     it('map measurement service format to annotation', async () => {
-      const mappedMeasurement = await mappings.toAnnotation(measurement, definition);
+      const mappedMeasurement = await mappings.toAnnotation(
+        measurement,
+        definition
+      );
       expect(mappedMeasurement).toEqual(csToolsAnnotation);
     });
   });

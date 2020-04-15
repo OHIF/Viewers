@@ -79,14 +79,14 @@ function ImageThumbnail(props) {
     return () => {
       purgeCancelablePromise();
     };
-  }, []);
+  }, [purgeCancelablePromise]);
 
   useEffect(() => {
     if (image.imageId) {
       cornerstone.renderToCanvas(canvasRef.current, image);
       setLoading(false);
     }
-  }, [image.imageId]);
+  }, [canvasRef, image, image.imageId]);
 
   useEffect(() => {
     if (!image.imageId || image.imageId !== imageId) {
@@ -94,7 +94,7 @@ function ImageThumbnail(props) {
       setImagePromise();
       fetchImagePromise();
     }
-  }, [imageId]);
+  }, [fetchImagePromise, image.imageId, imageId, purgeCancelablePromise, setImagePromise]);
 
   return (
     <div className="ImageThumbnail">

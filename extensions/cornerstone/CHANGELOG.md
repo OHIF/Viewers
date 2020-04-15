@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.5.1...@ohif/extension-cornerstone@2.5.2) (2020-04-09)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+## [2.5.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.5.0...@ohif/extension-cornerstone@2.5.1) (2020-04-02)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [2.5.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.4.3...@ohif/extension-cornerstone@2.5.0) (2020-03-13)
+
+
+### Features
+
+* Segmentations Settings UI - Phase 1 [#1391](https://github.com/OHIF/Viewers/issues/1391) ([#1392](https://github.com/OHIF/Viewers/issues/1392)) ([e8842cf](https://github.com/OHIF/Viewers/commit/e8842cf8aebde98db7fc123e4867c8288552331f)), closes [#1423](https://github.com/OHIF/Viewers/issues/1423)
+
+
+
+
+
+## [2.4.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.4.2...@ohif/extension-cornerstone@2.4.3) (2020-03-09)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+## [2.4.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.4.1...@ohif/extension-cornerstone@2.4.2) (2020-03-09)
+
+
+### Bug Fixes
+
+* Remove Eraser and ROI Window ([6c950a9](https://github.com/OHIF/Viewers/commit/6c950a9669f7fbf3c46e48679fa26ee514824156))
+
+
+
+
+
+## [2.4.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.4.0...@ohif/extension-cornerstone@2.4.1) (2020-03-03)
+
+
+### Bug Fixes
+
+* bump react-cornerstone-viewport version to address critical issue ([#1473](https://github.com/OHIF/Viewers/issues/1473)) ([ee80e02](https://github.com/OHIF/Viewers/commit/ee80e026610442e94caf5e4e3e4d193220cd0ece))
+
+
+
+
+
 # [2.4.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.3.1...@ohif/extension-cornerstone@2.4.0) (2020-02-20)
 
 

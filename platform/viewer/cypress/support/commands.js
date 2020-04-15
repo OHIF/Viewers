@@ -43,31 +43,45 @@ import {
  *
  * @param {string} PatientName - Patient name that we would like to search for
  */
-Cypress.Commands.add('openStudy', patientName => {
+Cypress.Commands.add('openStudy', PatientName => {
   cy.openStudyList();
-  cy.get('#filter-patientNameOrId').type(patientName);
+  cy.get('#filter-patientNameOrId').type(PatientName);
   cy.wait('@getStudies');
   cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
-    .contains(patientName)
+    .contains(PatientName)
     .first()
     .click({ force: true });
 });
 
+Cypress.Commands.add('checkStudyRouteInViewer', StudyInstanceUID => {
+  cy.location('pathname').then($url => {
+    cy.log($url);
+    if ($url == 'blank' || !$url.includes(`/viewer/${StudyInstanceUID}`)) {
+      cy.openStudyInViewer(StudyInstanceUID);
+      cy.waitDicomImage();
+    }
+  });
+});
+
+Cypress.Commands.add('openStudyInViewer', StudyInstanceUID => {
+  cy.visit(`/viewer/${StudyInstanceUID}`);
+});
+
 /**
- * Command to search for a modality and open the study.
+ * Command to search for a Modality and open the study.
  *
- * @param {string} modality - Modality type that we would like to search for
+ * @param {string} Modality - Modality type that we would like to search for
  */
-Cypress.Commands.add('openStudyModality', modality => {
+Cypress.Commands.add('openStudyModality', Modality => {
   cy.initRouteAliases();
   cy.visit('/');
 
   cy.get('#filter-accessionOrModalityOrDescription')
-    .type(modality)
+    .type(Modality)
     .wait(2000);
 
   cy.get('[data-cy="study-list-results"]')
-    .contains(modality)
+    .contains(Modality)
     .first()
     .click();
 });
@@ -107,7 +121,7 @@ Cypress.Commands.add('waitVTKReformatting', () => {
 
 Cypress.Commands.add('waitViewportImageLoading', () => {
   // Wait for finish loading
-  cy.get('[data-cy="viewprt-grid"]', { timeout: 20000 }).should($grid => {
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
     expect($grid).not.to.contain.text('Load');
   });
 });
@@ -282,6 +296,16 @@ Cypress.Commands.add('initStudyListAliasesOnTablet', () => {
   initStudyListAliasesOnTablet();
 });
 
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliasesOnDesktop', () => {
+  initStudyListAliasesOnDesktop();
+});
+
+//Initialize aliases for Study List page elements
+Cypress.Commands.add('initStudyListAliasesOnTablet', () => {
+  initStudyListAliasesOnTablet();
+});
+
 //Add measurements in the viewport
 Cypress.Commands.add(
   'addLengthMeasurement',
@@ -442,21 +466,54 @@ Cypress.Commands.add('openPreferences', () => {
   });
 });
 
-Cypress.Commands.add('changePreferencesTab', tabAlias => {
+Cypress.Commands.add('selectPreferencesTab', tabAlias => {
   cy.initPreferencesModalAliases();
-  cy.get(tabAlias).click();
+  cy.get(tabAlias)
+    .click()
+    .should('have.class', 'active');
   initPreferencesModalFooterBtnAliases();
 });
 
-Cypress.Commands.add('resetUserHoktkeyPreferences', () => {
+Cypress.Commands.add('resetUserHotkeyPreferences', () => {
   // Open User Preferences modal
   cy.openPreferences();
 
-  cy.initPreferencesModalAliases();
+  cy.selectPreferencesTab('@userPreferencesHotkeysTab').then(() => {
+    cy.log('Reset Hotkeys to Default Preferences');
+    cy.get('@restoreBtn').click();
+  });
 
-  cy.log('Reset to Default Preferences');
-  cy.get('@restoreBtn').click();
-  cy.get('@saveBtn').click();
+  // Close Success Message overlay (if displayed)
+  cy.get('body').then(body => {
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+    // Click on Save Button
+    cy.get('@saveBtn').click();
+  });
+});
+
+Cypress.Commands.add('resetUserGeneralPreferences', () => {
+  // Open User Preferences modal
+  cy.openPreferences();
+
+  cy.selectPreferencesTab('@userPreferencesGeneralTab').then(() => {
+    cy.log('Reset Language to Default Preferences');
+    cy.get('@restoreBtn').click();
+  });
+
+  // Close Success Message overlay (if displayed)
+  cy.get('body').then(body => {
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+    // Click on Save Button
+    cy.get('@saveBtn').click();
+  });
 });
 
 Cypress.Commands.add(
@@ -470,6 +527,37 @@ Cypress.Commands.add(
           .parent()
           .find('input') // closest input to that label
           .type(shortcut, { force: true }); // Set new shortcut for that function
+      })
+      .blur();
+  }
+);
+
+Cypress.Commands.add(
+  'setWindowLevelPreset',
+  (preset_index, description_value, window_value, level_value) => {
+    let index = parseInt(preset_index) + 1;
+
+    // Set new Description value
+    cy.get(':nth-child(' + index + ') > .description > .preferencesInput')
+      .clear()
+      .type(description_value, {
+        force: true,
+      })
+      .blur();
+
+    // Set new Window value
+    cy.get(':nth-child(' + index + ') > .window > .preferencesInput')
+      .clear()
+      .type(window_value, {
+        force: true,
+      })
+      .blur();
+
+    // Set new Level value
+    cy.get(':nth-child(' + index + ') > .level > .preferencesInput')
+      .clear()
+      .type(level_value, {
+        force: true,
       })
       .blur();
   }
@@ -489,12 +577,8 @@ Cypress.Commands.add('openDownloadImageModal', () => {
 
 Cypress.Commands.add('setLanguage', (language, save = true) => {
   cy.openPreferences();
-
-  cy.get('@userPreferencesGeneralTab')
-    .click()
-    .should('have.class', 'active');
-
-  initPreferencesModalFooterBtnAliases();
+  cy.initPreferencesModalAliases();
+  cy.selectPreferencesTab('@userPreferencesGeneralTab');
 
   // Language dropdown should be displayed
   cy.get('#language-select').should('be.visible');
@@ -502,8 +586,18 @@ Cypress.Commands.add('setLanguage', (language, save = true) => {
   // Select Language and Save/Cancel
   cy.get('#language-select').select(language);
 
-  const toClick = save ? '@saveBtn' : '@cancelBtn';
-  cy.get(toClick)
-    .scrollIntoView()
-    .click();
+  // Close Success Message overlay (if displayed)
+  cy.get('body').then(body => {
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+
+    //Click on Save/Cancel button
+    const toClick = save ? '@saveBtn' : '@cancelBtn';
+    cy.get(toClick)
+      .scrollIntoView()
+      .click();
+  });
 });

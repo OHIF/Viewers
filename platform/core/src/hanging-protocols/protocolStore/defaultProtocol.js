@@ -9,8 +9,8 @@ function getDefaultProtocol() {
   protocol.locked = true;
 
   const oneByOne = new ViewportStructure('grid', {
-    rows: 1,
-    columns: 1,
+    Rows: 1,
+    Columns: 1,
   });
 
   const viewport = new Viewport();

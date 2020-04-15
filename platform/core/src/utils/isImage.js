@@ -53,10 +53,10 @@ const imagesTypes = [
 
 /**
  * Checks whether dicom files with specified SOP Class UID have image data
- * @param {string} sopClassUid - SOP Class UID to be checked
+ * @param {string} SOPClassUID - SOP Class UID to be checked
  * @returns {boolean} - true if it has image data
  */
-export const isImage = sopClassUid => {
-  if (!sopClassUid) return false;
-  return imagesTypes.indexOf(sopClassUid) !== -1;
+export const isImage = SOPClassUID => {
+  if (!SOPClassUID) return false;
+  return imagesTypes.indexOf(SOPClassUID) !== -1;
 };

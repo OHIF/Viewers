@@ -11,26 +11,26 @@ const SOP_CLASS_UIDS = {
   X_RAY_RADIATION_DOSE_SR: '1.2.840.10008.5.1.4.1.1.88.67',
 };
 
-const sopClassUids = Object.values(SOP_CLASS_UIDS);
+const sopClassUIDs = Object.values(SOP_CLASS_UIDS);
 
 // TODO: Handle the case where there is more than one SOP Class Handler for the
 // same SOP Class
 const OHIFDicomHtmlSopClassHandler = {
   id: 'OHIFDicomHtmlSopClassHandler',
   type: MODULE_TYPES.SOP_CLASS_HANDLER,
-  sopClassUids,
+  sopClassUIDs,
   getDisplaySetFromSeries(series, study, dicomWebClient, authorizationHeaders) {
     const instance = series.getFirstInstance();
 
     return {
       plugin: 'html',
-      modality: 'SR',
-      displaySetInstanceUid: utils.guid(),
+      Modality: 'SR',
+      displaySetInstanceUID: utils.guid(),
       wadoRoot: study.getData().wadoRoot,
       wadoUri: instance.getData().wadouri,
-      sopInstanceUid: instance.getSOPInstanceUID(),
-      seriesInstanceUid: series.getSeriesInstanceUID(),
-      studyInstanceUid: study.getStudyInstanceUID(),
+      SOPInstanceUID: instance.getSOPInstanceUID(),
+      SeriesInstanceUID: series.getSeriesInstanceUID(),
+      StudyInstanceUID: study.getStudyInstanceUID(),
       authorizationHeaders,
     };
   },

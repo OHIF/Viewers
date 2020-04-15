@@ -74,7 +74,8 @@ export default {
 ### Registering an Extension
 
 There are two different ways to register and configure extensions: At
-[runtime](#runtime-extensions) and at [build time](#bundled-extensions).
+[runtime](#registering-at-runtime) and at
+[build time](#registering-at-build-time).
 
 You can leverage one or both strategies. Which one(s) you choose depend on your
 application's requirements. Each [module](#modules) defined by the extension
@@ -82,9 +83,9 @@ becomes available to the core application via the `ExtensionManager`.
 
 #### Registering at Runtime
 
-The `@ohif/viewer` uses a [configuration file](#) at startup. The schema for
-that file includes an `Extensions` key that supports an array of extensions to
-register.
+The `@ohif/viewer` uses a [configuration file](../viewer/configuration.md) at
+startup. The schema for that file includes an `Extensions` key that supports an
+array of extensions to register.
 
 ```js
 // prettier-ignore
@@ -193,8 +194,8 @@ today, create a GitHub issue!
 
 The `ExtensionManager` is a class made available to us via the `@ohif/core`
 project (platform/core). Our application instantiates a single instance of it,
-and provides a `ServicesManager` and `CommandsManager` along with the application's
-configuration through the appConfig key (optional).
+and provides a `ServicesManager` and `CommandsManager` along with the
+application's configuration through the appConfig key (optional).
 
 ```js
 const commandsManager = new CommandsManager();
@@ -202,7 +203,7 @@ const servicesManager = new ServicesManager();
 const extensionManager = new ExtensionManager({
   commandsManager,
   servicesManager,
-  appConfig
+  appConfig,
 });
 ```
 
@@ -212,8 +213,9 @@ The `ExtensionManager` only has a few public members:
 - `registerExtensions` - Registers an array of extensions
 - `modules` - An object containing registered extensions by `MODULE_TYPE`
 
-During registration, lifecycle hooks and modules have access to the extension's config,
-the application's config and `ExtensionManager`'s `ServicesManager` and `CommandsManager` instances.
+During registration, lifecycle hooks and modules have access to the extension's
+config, the application's config and `ExtensionManager`'s `ServicesManager` and
+`CommandsManager` instances.
 
 Our `@ohif/viewer` uses the `modules` member to access registered extensions at
 appropriate places in our application.

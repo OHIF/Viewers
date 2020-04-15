@@ -30,7 +30,7 @@ export default class ProjectPicker extends Component {
 
     this.setState({
       projects: response.data.projects || [],
-      filterStr: "",
+      filterStr: '',
       loading: false,
     });
   }
@@ -40,10 +40,11 @@ export default class ProjectPicker extends Component {
     const { onSelect } = this.props;
     return (
       <div>
-        <input class="form-control gcp-input"
-            type="text"
-            value={ filterStr }
-            onChange={ e => this.setState({ filterStr: e.target.value }) } 
+        <input
+          className="form-control gcp-input"
+          type="text"
+          value={filterStr}
+          onChange={e => this.setState({ filterStr: e.target.value })}
         />
         <ProjectsList
           projects={projects}

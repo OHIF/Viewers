@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.52.8](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.52.7...@ohif/i18n@0.52.8) (2020-04-07)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+## [0.52.7](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.52.6...@ohif/i18n@0.52.7) (2020-03-09)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
 ## [0.52.6](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.52.5...@ohif/i18n@0.52.6) (2020-02-12)
 
 

@@ -13,15 +13,15 @@ const getImageId = imageObj => {
     : imageObj.url;
 };
 
-const findImageIdOnStudies = (studies, displaySetInstanceUid) => {
+const findImageIdOnStudies = (studies, displaySetInstanceUID) => {
   const study = studies.find(study => {
     const displaySet = study.displaySets.some(
-      displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
+      displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
     );
     return displaySet;
   });
-  const { seriesList = [] } = study;
-  const { instances = [] } = seriesList[0] || {};
+  const { series = [] } = study;
+  const { instances = [] } = series[0] || {};
   const instance = instances[0];
 
   return getImageId(instance);
@@ -85,7 +85,7 @@ const getImageLoaderType = imageId => {
   );
 };
 
-const DicomLoaderService = new (class {
+class DicomLoaderService {
   getLocalData(dataset, studies) {
     if (dataset && dataset.localFile) {
       // Use referenced imageInstance
@@ -94,7 +94,7 @@ const DicomLoaderService = new (class {
 
       // or Try to get it from studies
       if (someInvalidStrings(imageId)) {
-        imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUid);
+        imageId = findImageIdOnStudies(studies, dataset.displaySetInstanceUID);
       }
 
       if (!someInvalidStrings(imageId)) {
@@ -155,9 +155,9 @@ const DicomLoaderService = new (class {
 
   getDataByDatasetType(dataset) {
     const {
-      studyInstanceUid,
-      seriesInstanceUid,
-      sopInstanceUid,
+      StudyInstanceUID,
+      SeriesInstanceUID,
+      SOPInstanceUID,
       authorizationHeaders,
       wadoRoot,
       wadoUri,
@@ -166,9 +166,9 @@ const DicomLoaderService = new (class {
     if (!someInvalidStrings(wadoRoot)) {
       return wadorsRetriever(
         wadoRoot,
-        studyInstanceUid,
-        seriesInstanceUid,
-        sopInstanceUid,
+        StudyInstanceUID,
+        SeriesInstanceUID,
+        SOPInstanceUID,
         authorizationHeaders
       );
     } else if (!someInvalidStrings(wadoUri)) {
@@ -194,6 +194,8 @@ const DicomLoaderService = new (class {
     // in case of no valid loader
     throw new Error('Invalid dicom data loader');
   }
-})();
+}
 
-export default DicomLoaderService;
+const dicomLoaderService = new DicomLoaderService();
+
+export default dicomLoaderService;

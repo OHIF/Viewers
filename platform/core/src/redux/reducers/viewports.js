@@ -1,5 +1,5 @@
 import cloneDeep from 'lodash.clonedeep';
-import merge from 'lodash.merge';
+import produce, { setAutoFreeze } from 'immer';
 
 import {
   CLEAR_VIEWPORT,
@@ -10,6 +10,8 @@ import {
   SET_VIEWPORT_LAYOUT,
   SET_VIEWPORT_LAYOUT_AND_DATA,
 } from './../constants/ActionTypes.js';
+
+setAutoFreeze(false);
 
 export const DEFAULT_STATE = {
   numRows: 1,
@@ -22,7 +24,7 @@ export const DEFAULT_STATE = {
 };
 
 /**
- *  Take the new number of rows and columns, delete all not used viewport data and also set
+ *  Take the new number of Rows and Columns, delete all not used viewport data and also set
  *  active viewport as default in case current one is not available anymore.
  *
  * @param {Number} numRows
@@ -49,7 +51,7 @@ const findActiveViewportSpecificData = (
   return viewportSpecificData;
 };
 /**
- *  Take new number of rows and columns and make sure the current active viewport index is still available, if not, return the default
+ *  Take new number of Rows and Columns and make sure the current active viewport index is still available, if not, return the default
  *
  * @param {Number} numRows
  * @param {Number} numColumns
@@ -93,12 +95,13 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case SET_VIEWPORT_ACTIVE: {
-      const activeViewportIndex = getActiveViewportIndex(
-        state.numRows,
-        state.numColumns,
-        action.viewportIndex
-      );
-      return { ...state, activeViewportIndex };
+      return produce(state, draftState => {
+        draftState.activeViewportIndex = getActiveViewportIndex(
+          draftState.numRows,
+          draftState.numColumns,
+          action.viewportIndex
+        );
+      });
     }
 
     /**
@@ -163,21 +166,20 @@ const viewports = (state = DEFAULT_STATE, action) => {
      * @return {Object} New state.
      */
     case SET_VIEWPORT: {
-      const layout = cloneDeep(state.layout);
+      return produce(state, draftState => {
+        draftState.viewportSpecificData[action.viewportIndex] =
+          draftState.viewportSpecificData[action.viewportIndex] || {};
 
-      let viewportSpecificData = cloneDeep(state.viewportSpecificData);
-      viewportSpecificData[action.viewportIndex] = merge(
-        {},
-        viewportSpecificData[action.viewportIndex],
-        action.viewportSpecificData
-      );
+        Object.keys(action.viewportSpecificData).forEach(key => {
+          draftState.viewportSpecificData[action.viewportIndex][key] =
+            action.viewportSpecificData[key];
+        });
 
-      if (action.viewportSpecificData && action.viewportSpecificData.plugin) {
-        layout.viewports[action.viewportIndex].plugin =
-          action.viewportSpecificData.plugin;
-      }
-
-      return { ...state, layout, viewportSpecificData };
+        if (action.viewportSpecificData && action.viewportSpecificData.plugin) {
+          draftState.layout.viewports[action.viewportIndex].plugin =
+            action.viewportSpecificData.plugin;
+        }
+      });
     }
 
     /**

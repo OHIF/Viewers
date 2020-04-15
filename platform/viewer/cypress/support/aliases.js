@@ -17,7 +17,7 @@ export function initCornerstoneToolsAliases() {
 //Creating aliases for Common page elements
 export function initCommonElementsAliases() {
   cy.get(
-    '.pull-right > .RoundedButtonGroup > .roundedButtonWrapper > .roundedButton'
+    '.pull-right > .RoundedButtonGroup > .roundedButtonWrapper:first-of-type > .roundedButton'
   ).as('measurementsBtn');
   cy.get('.viewport-element').as('viewport');
   cy.get('section.sidepanel.from-right').as('measurementsPanel');
@@ -57,13 +57,13 @@ export function initVTKToolsAliases() {
 //Creating aliases for Study List page elements on Desktop experience
 export function initStudyListAliasesOnDesktop() {
   cy.get('.study-count').as('studyCount');
-  cy.get('#filter-patientName').as('patientName');
-  cy.get('#filter-patientId').as('MRN');
-  cy.get('#filter-accessionNumber').as('accessionNumber');
+  cy.get('#filter-PatientName').as('PatientName');
+  cy.get('#filter-PatientID').as('MRN');
+  cy.get('#filter-AccessionNumber').as('AccessionNumber');
   cy.get('#start-date').as('studyListStartDate');
   cy.get('#end-date').as('studyListEndDate');
   cy.get('#filter-modalities').as('modalities');
-  cy.get('#filter-studyDescription').as('studyDescription');
+  cy.get('#filter-StudyDescription').as('StudyDescription');
   cy.get('[data-cy="study-list-results"] > tr').as('searchResult');
 }
 
@@ -84,6 +84,7 @@ export function initPreferencesModalAliases() {
   cy.get('.OHIFModal').as('preferencesModal');
   cy.get('[data-cy="hotkeys"]').as('userPreferencesHotkeysTab');
   cy.get('[data-cy="general"]').as('userPreferencesGeneralTab');
+  cy.get('[data-cy="window-level"]').as('userPreferencesWindowLevelTab');
   initPreferencesModalFooterBtnAliases();
 }
 

@@ -6,7 +6,7 @@ import DatePicker from './DatePicker.json';
 import Header from './Header.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 
-export default {
+export default { 
   'pt-BR': {
     AboutModal,
     Buttons,
@@ -15,5 +15,5 @@ export default {
     DatePicker,
     Header,
     UserPreferencesModal,
-  },
+  }
 };

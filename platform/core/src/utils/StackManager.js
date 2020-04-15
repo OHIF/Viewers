@@ -1,9 +1,9 @@
 import OHIFError from '../classes/OHIFError.js';
 import getImageId from './getImageId';
+import metadataProvider from '../classes/MetadataProvider.js';
 
 let stackMap = {};
 let configuration = {};
-let stackManagerMetaDataProvider;
 const stackUpdatedCallbacks = [];
 
 /**
@@ -15,13 +15,7 @@ const stackUpdatedCallbacks = [];
  * @param  {Object} displaySet            The set of images to make the stack from
  * @return {Array}                        Array with image IDs
  */
-function createAndAddStack(
-  stackMap,
-  study,
-  displaySet,
-  stackUpdatedCallbacks,
-  metadataProvider
-) {
+function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
   const images = displaySet.images;
   if (!images) {
     return;
@@ -41,31 +35,55 @@ function createAndAddStack(
       imageIndex: imageIndex + 1,
     };
 
-    const numberOfFrames = image.numberOfFrames;
-    if (numberOfFrames > 1) {
-      for (let i = 0; i < numberOfFrames; i++) {
+    const naturalizedInstance = instance.getData().metadata;
+    const NumberOfFrames = naturalizedInstance.NumberOfFrames;
+
+    if (NumberOfFrames > 1) {
+      for (let i = 0; i < NumberOfFrames; i++) {
         metaData.frameNumber = i;
         imageId = getImageId(image, i);
         imageIds.push(imageId);
-        metadataProvider.addMetadata(imageId, metaData);
+
+        const {
+          StudyInstanceUID,
+          SeriesInstanceUID,
+          SOPInstanceUID,
+        } = instance.getData().metadata;
+
+        metadataProvider.addImageIdToUIDs(imageId, {
+          StudyInstanceUID,
+          SeriesInstanceUID,
+          SOPInstanceUID,
+        });
       }
     } else {
       metaData.frameNumber = 1;
       imageId = getImageId(image);
       imageIds.push(imageId);
-      metadataProvider.addMetadata(imageId, metaData);
+
+      const {
+        StudyInstanceUID,
+        SeriesInstanceUID,
+        SOPInstanceUID,
+      } = naturalizedInstance;
+
+      metadataProvider.addImageIdToUIDs(imageId, {
+        StudyInstanceUID,
+        SeriesInstanceUID,
+        SOPInstanceUID,
+      });
     }
   });
 
   const stack = {
-    studyInstanceUid: study.studyInstanceUid,
-    displaySetInstanceUid: displaySet.displaySetInstanceUid,
+    StudyInstanceUID: study.StudyInstanceUID,
+    displaySetInstanceUID: displaySet.displaySetInstanceUID,
     imageIds,
     frameRate: displaySet.frameRate,
     isClip: displaySet.isClip,
   };
 
-  stackMap[displaySet.displaySetInstanceUid] = stack;
+  stackMap[displaySet.displaySetInstanceUID] = stack;
 
   return stack;
 }
@@ -80,9 +98,6 @@ configuration = {
  * come in, you can register a callback with addStackUpdatedCallback.
  */
 const StackManager = {
-  setMetadataProvider(provider) {
-    stackManagerMetaDataProvider = provider;
-  },
   /**
    * Removes all current stacks
    */
@@ -96,27 +111,20 @@ const StackManager = {
    * @return {Array} Array with image IDs
    */
   makeAndAddStack(study, displaySet) {
-    if (!stackManagerMetaDataProvider) {
-      throw new Error(
-        'Please call StackManager.setMetadataProvider(provider) first.'
-      );
-    }
-
     return configuration.createAndAddStack(
       stackMap,
       study,
       displaySet,
-      stackUpdatedCallbacks,
-      stackManagerMetaDataProvider
+      stackUpdatedCallbacks
     );
   },
   /**
    * Find a stack from the currently created stacks.
-   * @param displaySetInstanceUid The UID of the stack to find.
+   * @param displaySetInstanceUID The UID of the stack to find.
    * @returns {*} undefined if not found, otherwise the stack object is returned.
    */
-  findStack(displaySetInstanceUid) {
-    return stackMap[displaySetInstanceUid];
+  findStack(displaySetInstanceUID) {
+    return stackMap[displaySetInstanceUID];
   },
   /**
    * Find a stack or reate one if it has not been created yet
@@ -125,7 +133,7 @@ const StackManager = {
    * @return {Array} Array with image IDs
    */
   findOrCreateStack(study, displaySet) {
-    let stack = this.findStack(displaySet.displaySetInstanceUid);
+    let stack = this.findStack(displaySet.displaySetInstanceUID);
 
     if (!stack || !stack.imageIds) {
       stack = this.makeAndAddStack(study, displaySet);
@@ -134,9 +142,9 @@ const StackManager = {
     return stack;
   },
   /**
-   * Gets the underlying map of displaySetInstanceUid to stack object.
+   * Gets the underlying map of displaySetInstanceUID to stack object.
    * WARNING: Do not change this object. It directly affects the manager.
-   * @returns {{}} map of displaySetInstanceUid -> stack.
+   * @returns {{}} map of displaySetInstanceUID -> stack.
    */
   getAllStacks() {
     return stackMap;

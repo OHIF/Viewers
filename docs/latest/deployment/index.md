@@ -123,7 +123,7 @@ There are two important steps to making sure this setup works:
 Most image archives do not provide either of these features "out of the box".
 It's common to use IIS, Nginx, or Apache to route incoming requests and append
 appropriate headers. You can find an example of this setup in our
-[Nginx + Image Archive Deployment Recipe](deployment/recipes/nginx--image-archive.md).
+[Nginx + Image Archive Deployment Recipe](./recipes/nginx--image-archive.md).
 
 #### What if my archive doesn't support DicomWeb?
 
@@ -166,7 +166,7 @@ window.config = {
 ```
 
 You can find an example of this setup in our
-[User Account Control Deployment Recipe](deployment/recipes/user-account-control.md).
+[User Account Control Deployment Recipe](./recipes/user-account-control.md).
 
 #### Choosing a Flow for the Viewer
 
@@ -183,12 +183,12 @@ many possible configurations, so please don't feel limited to these setups.
 Please feel free to suggest or contribute your own recipes.
 
 - Script Include
-  - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)
+  - [Embedding the Viewer](./recipes/embedded-viewer.md)
 - Stand-Alone
-  - [Build for Production](deployment/recipes/build-for-production.md)
-  - [Static](deployment/recipes/static-assets.md)
-  - [Nginx + Image Archive](deployment/recipes/nginx--image-archive.md)
-  - [User Account Control](deployment/recipes/user-account-control.md)
+  - [Build for Production](./recipes/build-for-production.md)
+  - [Static](./recipes/static-assets.md)
+  - [Nginx + Image Archive](./recipes/nginx--image-archive.md)
+  - [User Account Control](./recipes/user-account-control.md)
 
 <!--
   Links

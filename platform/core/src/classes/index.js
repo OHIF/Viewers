@@ -1,15 +1,10 @@
-import {
-  InstanceMetadata,
-  SeriesMetadata,
-  StudyMetadata,
-  StudySummary,
-} from './metadata';
+import { InstanceMetadata, SeriesMetadata, StudyMetadata } from './metadata';
 
 import CommandsManager from './CommandsManager.js';
 import { DICOMFileLoadingListener } from './StudyLoadingListener';
 import HotkeysManager from './HotkeysManager.js';
 import ImageSet from './ImageSet';
-import MetadataProvider from './MetadataProvider.js';
+import MetadataProvider from './MetadataProvider';
 import OHIFError from './OHIFError.js';
 import { OHIFStudyMetadataSource } from './OHIFStudyMetadataSource';
 import { StackLoadingListener } from './StudyLoadingListener';
@@ -31,7 +26,6 @@ export {
   StudyMetadata,
   SeriesMetadata,
   InstanceMetadata,
-  StudySummary,
   TypeSafeCollection,
   OHIFError,
   StudyMetadataSource,
@@ -50,7 +44,6 @@ const classes = {
   StudyMetadata,
   SeriesMetadata,
   InstanceMetadata,
-  StudySummary,
   TypeSafeCollection,
   OHIFError,
   StudyMetadataSource,

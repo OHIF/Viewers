@@ -2,6 +2,7 @@ import OHIF from '@ohif/core';
 import { connect } from 'react-redux';
 import { StudyBrowser } from '@ohif/ui';
 import cloneDeep from 'lodash.clonedeep';
+import findDisplaySetByUID from './findDisplaySetByUID';
 
 const { setActiveViewportSpecificData } = OHIF.redux.actions;
 
@@ -17,8 +18,8 @@ const mapStateToProps = (state, ownProps) => {
 
   studiesWithLoadingData.forEach(study => {
     study.thumbnails.forEach(data => {
-      const { displaySetInstanceUid } = data;
-      const stackId = `StackProgress:${displaySetInstanceUid}`;
+      const { displaySetInstanceUID } = data;
+      const stackId = `StackProgress:${displaySetInstanceUID}`;
       const stackProgressData = stackLoadingProgressMap[stackId];
 
       let stackPercentComplete = 0;
@@ -37,9 +38,10 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onThumbnailClick: displaySetInstanceUid => {
-      const displaySet = ownProps.studyMetadata[0].displaySets.find(
-        ds => ds.displaySetInstanceUid === displaySetInstanceUid
+    onThumbnailClick: displaySetInstanceUID => {
+      const displaySet = findDisplaySetByUID(
+        ownProps.studyMetadata,
+        displaySetInstanceUID
       );
 
       dispatch(setActiveViewportSpecificData(displaySet));

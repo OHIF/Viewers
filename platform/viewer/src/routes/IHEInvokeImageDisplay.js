@@ -16,20 +16,20 @@ function IHEInvokeImageDisplay({ location }) {
     case 'STUDY':
       return (
         <ConnectedViewerRetrieveStudyData
-          studyInstanceUids={studyUID.split(';')}
+          studyInstanceUIDs={studyUID.split(';')}
         />
       );
 
     case 'STUDYBASE64':
       return (
         <ConnectedViewerRetrieveStudyData
-          studyInstanceUids={UrlUtil.paramString.parseParam(studyUID)}
+          studyInstanceUIDs={UrlUtil.paramString.parseParam(studyUID)}
         />
       );
 
     case 'PATIENT':
       // TODO: connect this to the StudyList when we have the filter parameters set up
-      // return <StudyList patientUids={patientID.split(';')} />;
+      // return <StudyList patientUIDs={patientID.split(';')} />;
       return '';
 
     default:
