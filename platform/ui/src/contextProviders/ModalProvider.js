@@ -24,6 +24,7 @@ export const useModal = () => useContext(ModalContext);
  * @property {boolean} [closeButton=true] Should the modal body render the close button.
  * @property {string} [title=null] Should the modal render the title independently of the body content.
  * @property {string} [customClassName=null] The custom class to style the modal.
+ * @property {boolean} [noScrollBackground=false] Prevent scrolling background content.
  */
 
 const ModalProvider = ({ children, modal: Modal, service }) => {
