@@ -1,5 +1,16 @@
+.d3-component {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: -moz-none;
+  -o-user-select: none;
+  user-select: none;
+}
+
 .background {
   fill: #91b8cd26;
+}
+.background.transparent {
+  fill: #ffffff00;
 }
 
 .line {
@@ -12,7 +23,77 @@
   fill: white;
   stroke: white;
 }
+.dot.selected.dragging,
+.text.selected.dragging {
+  fill: green;
+  stroke: green;
+}
+
+.interaction {
+  fill: red;
+  stroke: red;
+}
+
+.interaction.dot,
+.dot.selected.dragging {
+  r: 4;
+}
+
+.interaction.draggable {
+  cursor: pointer;
+}
+
+.interaction.line {
+  fill: none;
+  stroke-width: 2;
+}
+
+.interaction.line.hidden {
+  display: none;
+}
 
 .label.axis {
   fill: white;
+}
+
+.axis line {
+  stroke-opacity: 0.3;
+  fill: #91b8cd26;
+}
+
+.axis.grid .domain {
+  stroke-opacity: 0.3;
+  stroke: #91b8cd26;
+}
+
+.toolbarRow {
+  display: flex;
+}
+
+.toolbarRow div {
+  margin-right: 5px;
+}
+
+.toolbarButton {
+  text-align: center;
+  height: 20px;
+  width: 50px;
+  position: relative;
+  background-color: var(--active-color);
+  border-color: var(--ui-border-color-active);
+  color: var(--ui-gray-dark);
+  z-index: 2;
+  border-bottom-left-radius: 20px;
+  border-top-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-top-right-radius: 20px;
+  cursor: pointer;
+}
+
+.toolbarButton.big {
+  width: 65px;
+}
+
+.toolbarInfo {
+  margin-left: auto;
 }

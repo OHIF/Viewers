@@ -9,6 +9,7 @@ import MRUrographyTableItem from './MRUrographyTabelItem';
 import TimecourseModal from './timecourseModal/TimecourseContent';
 import TOOL_NAMES from '../tools/toolNames';
 import { measurementConfig } from '../tools/KinderspitalFreehandRoiTool';
+import calculateAreaUnderCurve from '../utils/calculateAreaUnderCurve';
 import './MRUrographyPanel.css';
 import { stat } from 'fs';
 
@@ -25,20 +26,21 @@ const refreshViewport = () => {
   });
 };
 
-// TODO KINDERSPITAL this will be removed soon when task 9 is done
-const mockPoints = new Array(100).fill(0).map((item, index) => {
-  return [index * 10, Math.ceil(Math.random() * 10)];
-});
-
-const showTimecourseModal = uiModal => {
+const showTimecourseModal = (
+  uiModal,
+  targetMeasurementNumber,
+  measurements,
+  onPlacePoints
+) => {
   if (uiModal) {
     uiModal.show({
       content: TimecourseModal,
       title: 'Evaluate Timecourse',
       contentProps: {
-        timecourse: mockPoints,
-        measurementId: 'mockMeasurentId',
+        measurements,
+        targetMeasurementNumber,
         onClose: uiModal.hide,
+        onPlacePoints,
       },
     });
   }
@@ -238,9 +240,88 @@ const MRUrographyPanel = ({
     }
   };
 
-  const onEvaluateClick = event => {
-    console.log('TODO -> Do not mock data');
-    showTimecourseModal(modal);
+  const onEvaluateClick = measurementNumber => {
+    const toolState = globalImageIdSpecificToolStateManager.saveToolState();
+    const toolName = TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL;
+    let targetIndex = 0;
+    const measurements = [];
+    const imageIds = Object.keys(toolState);
+
+    for (let i = 0; i < imageIds.length; i++) {
+      const imageId = imageIds[i];
+      const imageIdSpecificToolState = toolState[imageId];
+
+      const currentSpecificToolState = imageIdSpecificToolState[toolName];
+      if (
+        !currentSpecificToolState ||
+        !currentSpecificToolState.data ||
+        !currentSpecificToolState.data.length
+      ) {
+        continue;
+      }
+      measurements.push(...imageIdSpecificToolState[toolName].data);
+    }
+
+    showTimecourseModal(modal, measurementNumber, measurements, onPlacePoints);
+  };
+
+  const onPlacePoints = (
+    peekIndex,
+    glomerularIndex,
+    measurementIndex,
+    measurement,
+    invalidateOthers
+  ) => {
+    const { timecourse, measurementNumber } = measurement;
+
+    const area = calculateAreaUnderCurve(
+      timecourse,
+      peekIndex,
+      glomerularIndex
+    );
+
+    const toolState = globalImageIdSpecificToolStateManager.saveToolState();
+    const toolName = TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL;
+
+    const imageIds = Object.keys(toolState);
+
+    for (let i = 0; i < imageIds.length; i++) {
+      const imageId = imageIds[i];
+      const imageIdSpecificToolState = toolState[imageId];
+
+      const currentSpecificToolState = imageIdSpecificToolState[toolName];
+      if (
+        !currentSpecificToolState ||
+        !currentSpecificToolState.data ||
+        !currentSpecificToolState.data.length
+      ) {
+        continue;
+      }
+
+      const measurements = imageIdSpecificToolState[toolName].data || [];
+
+      for (let measurementData of measurements) {
+        if (
+          measurementData.measurementNumber === measurement.measurementNumber
+        ) {
+          measurementData.areaUnderCurve = area;
+          measurementData.pIndex = peekIndex;
+          measurementData.gIndex = glomerularIndex;
+        } else if(invalidateOthers) {
+          measurementData.areaUnderCurve = undefined;
+          measurementData.pIndex = undefined;
+          measurementData.gIndex = undefined;
+        }
+      }
+    }
+
+    const { canFetchTimeCourses, regionList } = getRegionList();
+    setState(state => ({
+      ...state,
+      regionList,
+      canFetchTimeCourses,
+    }));
+    return area;
   };
 
   const onComputeSegmentationTimeCoursesClick = event => {
@@ -357,7 +438,7 @@ const MRUrographyPanel = ({
             onItemClick={onItemClick}
             onRelabel={onRelabelClick}
             onDelete={onDeleteClick}
-            onEvaluate={onEvaluateClick}
+            onEvaluate={() => onEvaluateClick(key)}
             canEvaluate={state.canEvaluate}
           />
         );
