@@ -42,7 +42,7 @@ const showTimecourseModal = (
         onClose: uiModal.hide,
         onPlacePoints,
       },
-      noScrollBehind: true,
+      noScrollBackground: true,
     });
   }
 };

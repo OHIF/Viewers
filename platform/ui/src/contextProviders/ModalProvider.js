@@ -35,7 +35,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     closeButton: true,
     title: null,
     customClassName: '',
-    noScrollBehind: false,
+    noScrollBackground: false,
   };
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
@@ -78,7 +78,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     customClassName,
     shouldCloseOnEsc,
     closeButton,
-    noScrollBehind,
+    noScrollBackground,
   } = options;
 
   return (
@@ -91,7 +91,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           title={title}
           closeButton={closeButton}
           onClose={hide}
-          noScrollBehind={noScrollBehind}
+          noScrollBackground={noScrollBackground}
         >
           <ModalContent {...contentProps} show={show} hide={hide} />
         </Modal>
