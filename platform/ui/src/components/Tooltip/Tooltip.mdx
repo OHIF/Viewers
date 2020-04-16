@@ -1,0 +1,40 @@
+---
+name: Tooltip
+menu: Data Display
+route: components/tooltip
+---
+
+import { Playground, Props } from 'docz';
+import { Tooltip, Typography } from '@ohif/ui';
+
+# Tooltip
+
+Tooltips display informative content when users hover over, focus on, or tap an
+element.
+
+## Import
+
+```javascript
+import { Tooltip } from '@ohif/ui';
+```
+
+<Playground>
+  {() => {
+    const tooltips = ['bottom', 'bottom-left', 'bottom-right', 'left', 'right'];
+    return (
+      <div className="py-10 flex flex-col items-center justify-center">
+        {tooltips.map((tooltip) => (
+          <div className="mb-16">
+            <Tooltip content="Tooltip content" position={tooltip}>
+              <Typography>Tooltip {tooltip}</Typography>
+            </Tooltip>
+          </div>
+        ))}
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={Tooltip} />

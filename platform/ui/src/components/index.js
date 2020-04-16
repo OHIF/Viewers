@@ -15,6 +15,7 @@ import MeasurementTable from './MeasurementTable';
 import NavBar from './NavBar';
 import Notification from './Notification';
 import Select from './Select';
+import PrimaryToolbar from './PrimaryToolbar';
 import SegmentationTable from './SegmentationTable';
 import SidePanel from './SidePanel';
 import StudyBrowser from './StudyBrowser';
@@ -32,6 +33,8 @@ import ThemeWrapper from './ThemeWrapper/';
 import Thumbnail from './Thumbnail';
 import ThumbnailSR from './ThumbnailSR';
 import ThumbnailList from './ThumbnailList';
+import ToolbarButton from './ToolbarButton';
+import Tooltip from './Tooltip';
 import Typography from './Typography';
 import ViewportActionBar from './ViewportActionBar';
 import ViewportGrid from './ViewportGrid';
@@ -53,6 +56,7 @@ export {
   MeasurementTable,
   NavBar,
   Notification,
+  PrimaryToolbar,
   Select,
   SegmentationTable,
   SidePanel,
@@ -71,6 +75,8 @@ export {
   Thumbnail,
   ThumbnailSR,
   ThumbnailList,
+  ToolbarButton,
+  Tooltip,
   Typography,
   ViewportActionBar,
   ViewportGrid,
