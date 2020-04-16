@@ -16,7 +16,7 @@ const customStyle = {
 };
 
 Modal.setAppElement(document.getElementById('root'));
-
+let bodyStyleOverflowValue;
 const OHIFModal = ({
   className,
   closeButton,
@@ -49,6 +49,19 @@ const OHIFModal = ({
       isOpen={isOpen}
       title={title}
       style={customStyle}
+      onAfterOpen={() => {
+        bodyStyleOverflowValue = document.body.style.getPropertyValue(
+          'overflow'
+        );
+        document.body.style.setProperty('overflow', 'hidden');
+      }}
+      onAfterClose={() => {
+        if (bodyStyleOverflowValue) {
+          document.body.style.setProperty('overflow', bodyStyleOverflowValue);
+        } else {
+          document.body.style.removeProperty('overflow');
+        }
+      }}
     >
       <>
         {renderHeader()}
