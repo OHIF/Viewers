@@ -25,7 +25,6 @@ const OHIFModal = ({
   title,
   onClose,
   children,
-  noScrollBackground,
 }) => {
   const renderHeader = () => {
     return (
@@ -51,20 +50,16 @@ const OHIFModal = ({
       title={title}
       style={customStyle}
       onAfterOpen={() => {
-        if (noScrollBackground) {
-          bodyStyleOverflowValue = document.body.style.getPropertyValue(
-            'overflow'
-          );
-          document.body.style.setProperty('overflow', 'hidden');
-        }
+        bodyStyleOverflowValue = document.body.style.getPropertyValue(
+          'overflow'
+        );
+        document.body.style.setProperty('overflow', 'hidden');
       }}
       onAfterClose={() => {
-        if (noScrollBackground) {
-          if (bodyStyleOverflowValue) {
-            document.body.style.setProperty('overflow', bodyStyleOverflowValue);
-          } else {
-            document.body.style.removeProperty('overflow');
-          }
+        if (bodyStyleOverflowValue) {
+          document.body.style.setProperty('overflow', bodyStyleOverflowValue);
+        } else {
+          document.body.style.removeProperty('overflow');
         }
       }}
     >
@@ -85,7 +80,6 @@ OHIFModal.propTypes = {
   isOpen: PropTypes.bool,
   title: PropTypes.string,
   onClose: PropTypes.func,
-  noScrollBackground: PropTypes.bool,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,

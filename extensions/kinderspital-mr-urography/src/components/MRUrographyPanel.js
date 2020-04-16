@@ -41,8 +41,7 @@ const showTimecourseModal = (
         targetMeasurementNumber,
         onClose: uiModal.hide,
         onPlacePoints,
-      },
-      noScrollBackground: true,
+      }
     });
   }
 };

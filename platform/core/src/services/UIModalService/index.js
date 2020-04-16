@@ -28,7 +28,7 @@ const serviceImplementation = {
 /**
  * Show a new UI modal;
  *
- * @param {ModalProps} props { content, contentProps, shouldCloseOnEsc, isOpen, closeButton, title, customClassName, noScrollBackground }
+ * @param {ModalProps} props { content, contentProps, shouldCloseOnEsc, isOpen, closeButton, title, customClassName }
  */
 function _show({
   content = null,
@@ -38,7 +38,6 @@ function _show({
   closeButton = true,
   title = null,
   customClassName = null,
-  noScrollBackground = false,
 }) {
   return serviceImplementation._show({
     content,
@@ -48,7 +47,6 @@ function _show({
     closeButton,
     title,
     customClassName,
-    noScrollBackground,
   });
 }
 
