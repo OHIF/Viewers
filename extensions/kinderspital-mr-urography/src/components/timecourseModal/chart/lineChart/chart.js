@@ -590,11 +590,23 @@ const _buildInteractionDataset = (
  *
  */
 const _updateInteractionPoints = (root, lineDataset, lineDAttrValue) => {
+  const peekPoint = chart.interactionPoint.getPeekPoint(root);
+  const glomerularPoint = chart.interactionPoint.getGlomerularPoint(root);
+
+  const isPeekSet = peekPoint && !peekPoint.empty();
+  const isGlomerularSet = glomerularPoint && !glomerularPoint.empty();
+
   root.selectAll('.interaction.text').each((data, index, group) => {
     const currentLabelText = group[index];
     _setInteractionLabel(root, currentLabelText['point-id']);
   });
-  _setInteractionLine(root, true, true, lineDataset, lineDAttrValue);
+  _setInteractionLine(
+    root,
+    isPeekSet,
+    isGlomerularSet,
+    lineDataset,
+    lineDAttrValue
+  );
 };
 
 /**
