@@ -27,10 +27,7 @@ export default {
       };
 
       return (
-        <RTPanel
-          {...props}
-          onContourItemClick={contourItemClickHandler}
-        />
+        <RTPanel {...props} onContourItemClick={contourItemClickHandler} />
       );
     };
 
@@ -51,8 +48,9 @@ export default {
               if (study && study.series) {
                 for (let j = 0; j < study.series.length; j++) {
                   const series = study.series[j];
-                  console.log(studies);
-                  if (['RTSTRUCT', 'RTPLAN', 'RTDOSE'].includes(series.Modality)) {
+                  if (
+                    ['RTSTRUCT', 'RTPLAN', 'RTDOSE'].includes(series.Modality)
+                  ) {
                     return false;
                   }
                 }
