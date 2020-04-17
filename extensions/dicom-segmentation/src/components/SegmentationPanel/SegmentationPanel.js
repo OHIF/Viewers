@@ -28,6 +28,7 @@ const refreshViewport = () => {
 /**
  * SegmentationPanel component
  *
+ * @param {Array} props.studies - Studies data
  * @param {Array} props.viewports - Viewports data (viewportSpecificData)
  * @param {number} props.activeIndex - Active viewport index
  * @param {boolean} props.isOpen - Boolean that indicates if the panel is expanded

@@ -49,7 +49,8 @@ export default {
                 for (let j = 0; j < study.series.length; j++) {
                   const series = study.series[j];
                   if (
-                    ['RTSTRUCT', 'RTPLAN', 'RTDOSE'].includes(series.Modality)
+                    /* Could be expanded to contain RTPLAN and RTDOSE information in the future */
+                    ['RTSTRUCT'].includes(series.Modality)
                   ) {
                     return false;
                   }
