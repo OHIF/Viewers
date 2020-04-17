@@ -219,12 +219,14 @@ class OHIFCornerstoneViewport extends Component {
     const debouncedNewImageHandler = debounce(({ currentImageIdIndex, sopInstanceUid }) => {
       const { displaySet } = this.props.viewportData;
       const { StudyInstanceUID } = displaySet;
-      this.props.onNewImage({
-        StudyInstanceUID,
-        SOPInstanceUID: sopInstanceUid,
-        frameIndex: currentImageIdIndex,
-        activeViewportIndex: viewportIndex,
-      });
+      if (currentImageIdIndex > 0) {
+        this.props.onNewImage({
+          StudyInstanceUID,
+          SOPInstanceUID: sopInstanceUid,
+          frameIndex: currentImageIdIndex,
+          activeViewportIndex: viewportIndex,
+        });
+      }
     }, 700);
 
     return (
