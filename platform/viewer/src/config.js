@@ -4,6 +4,8 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import dicomParser from 'dicom-parser';
 import version from './version.js';
 
+import AppContext from './context/AppContext';
+
 let homepage;
 const { process } = window;
 if (process && process.env && process.env.PUBLIC_URL) {
@@ -34,12 +36,25 @@ OHIF.user.getAccessToken = () => {
   return state.oidc.user.access_token;
 };
 
+OHIF.errorHandler.getHTTPErrorHandler = () => {
+  const { appConfig = {} } = AppContext;
+
+  return appConfig.httpErrorHandler;
+};
+
 cornerstoneWADOImageLoader.configure({
   beforeSend: function(xhr) {
     const headers = OHIF.DICOMWeb.getAuthorizationHeader();
 
     if (headers.Authorization) {
       xhr.setRequestHeader('Authorization', headers.Authorization);
+    }
+  },
+  errorInterceptor: error => {
+    const { appConfig = {} } = AppContext;
+
+    if (typeof appConfig.httpErrorHandler === 'function') {
+      appConfig.httpErrorHandler(errorHandler);
     }
   },
 });
