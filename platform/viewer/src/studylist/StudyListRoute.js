@@ -214,7 +214,7 @@ function StudyListRoute(props) {
           <UserManagerContext.Consumer>
             {userManager => (
               <ConnectedHeader
-                home={true}
+                useLargeLogo={true}
                 user={user}
                 userManager={userManager}
               >

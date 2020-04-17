@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.9.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.9.0...@ohif/viewer@3.9.1) (2020-04-17)
+
+
+### Bug Fixes
+
+* `showStudyList` config ([#1647](https://github.com/OHIF/Viewers/issues/1647)) ([d9fc7bb](https://github.com/OHIF/Viewers/commit/d9fc7bbb0e6d868f507c515f031aaf88a2353e2f))
+
+
+
+
+
+# [3.9.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.21...@ohif/viewer@3.9.0) (2020-04-17)
+
+
+### Features
+
+* set the authorization header for DICOMWeb requests if provided in query string ([#1646](https://github.com/OHIF/Viewers/issues/1646)) ([450c80b](https://github.com/OHIF/Viewers/commit/450c80b9d5f172be8b5713b422370360325a0afc))
+
+
+
+
+
 ## [3.8.21](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.20...@ohif/viewer@3.8.21) (2020-04-15)
 
 **Note:** Version bump only for package @ohif/viewer

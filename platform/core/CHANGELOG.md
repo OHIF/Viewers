@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.11...@ohif/core@2.7.0) (2020-04-17)
+
+
+### Features
+
+* set the authorization header for DICOMWeb requests if provided in query string ([#1646](https://github.com/OHIF/Viewers/issues/1646)) ([450c80b](https://github.com/OHIF/Viewers/commit/450c80b9d5f172be8b5713b422370360325a0afc))
+
+
+
+
+
 ## [2.6.11](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.10...@ohif/core@2.6.11) (2020-04-15)
 
 **Note:** Version bump only for package @ohif/core
