@@ -45,9 +45,7 @@ const ROUTES_DEF = {
       path: ['/studylist', '/'],
       component: StudyListRouting,
       condition: appConfig => {
-        return appConfig.showStudyList !== undefined
-          ? appConfig.showStudyList
-          : true;
+        return appConfig.showStudyList;
       },
     },
     local: {
@@ -72,10 +70,7 @@ const ROUTES_DEF = {
         '/projects/:project/locations/:location/datasets/:dataset/dicomStores/:dicomStore',
       component: StudyListRouting,
       condition: appConfig => {
-        const showList =
-          appConfig.showStudyList !== undefined
-            ? appConfig.showStudyList
-            : true;
+        const showList = appConfig.showStudyList;
 
         return showList && !!appConfig.enableGoogleCloudAdapter;
       },

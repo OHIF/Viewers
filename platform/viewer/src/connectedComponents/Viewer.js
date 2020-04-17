@@ -16,6 +16,7 @@ import { extensionManager } from './../App.js';
 // Contexts
 import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
 import UserManagerContext from '../context/UserManagerContext';
+import AppContext from '../context/AppContext';
 
 import './Viewer.css';
 
@@ -230,9 +231,23 @@ class Viewer extends Component {
           {whiteLabelling => (
             <UserManagerContext.Consumer>
               {userManager => (
-                <ConnectedHeader home={false} userManager={userManager}>
-                  {whiteLabelling.logoComponent}
-                </ConnectedHeader>
+                <AppContext.Consumer>
+                  {appContext => (
+                    <ConnectedHeader
+                      linkText={
+                        appContext.appConfig.showStudyList
+                          ? 'Study List'
+                          : undefined
+                      }
+                      linkPath={
+                        appContext.appConfig.showStudyList ? '/' : undefined
+                      }
+                      userManager={userManager}
+                    >
+                      {whiteLabelling.logoComponent}
+                    </ConnectedHeader>
+                  )}
+                </AppContext.Consumer>
               )}
             </UserManagerContext.Consumer>
           )}
@@ -290,11 +305,11 @@ class Viewer extends Component {
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
-              )}
+              <ConnectedStudyBrowser
+                studies={this.state.thumbnails}
+                studyMetadata={this.props.studies}
+              />
+            )}
           </SidePanel>
 
           {/* MAIN */}
@@ -332,7 +347,7 @@ export default withDialog(Viewer);
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function (studies) {
+const _mapStudiesToThumbnails = function(studies) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
 
