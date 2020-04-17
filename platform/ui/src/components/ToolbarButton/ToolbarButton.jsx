@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import { IconButton, Icon, Tooltip } from '@ohif/ui';
 
 const ToolbarButton = ({
+  type,
   id,
   isActive,
   onClick,
@@ -12,6 +13,17 @@ const ToolbarButton = ({
   label,
   dropdownContent,
 }) => {
+  const classes = {
+    type: {
+      primary: isActive
+        ? 'text-black'
+        : 'text-common-bright hover:bg-primary-dark hover:text-primary-light',
+      secondary: isActive
+        ? 'text-black'
+        : 'text-white hover:bg-secondary-dark hover:text-white focus:bg-secondary-dark focus:text-white',
+    },
+  };
+
   const shouldShowDropdown = !!isActive && !!dropdownContent;
   return (
     <div key={id}>
@@ -21,10 +33,7 @@ const ToolbarButton = ({
       >
         <IconButton
           variant={isActive ? 'contained' : 'text'}
-          className={classnames('mx-1', {
-            'text-black': isActive,
-            'text-common-bright hover:bg-primary-dark hover:text-primary-light': !isActive,
-          })}
+          className={classnames('mx-1', classes.type[type])}
           onClick={onClick}
           key={id}
         >
@@ -38,9 +47,11 @@ const ToolbarButton = ({
 ToolbarButton.defaultProps = {
   dropdownContent: null,
   isActive: false,
+  type: 'primary',
 };
 
 ToolbarButton.propTypes = {
+  type: PropTypes.oneOf(['primary', 'secondary']),
   id: PropTypes.string.isRequired,
   isActive: PropTypes.bool,
   onClick: PropTypes.func.isRequired,

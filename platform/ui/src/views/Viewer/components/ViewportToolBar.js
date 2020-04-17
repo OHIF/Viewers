@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import classnames from 'classnames';
 
-import { Icon, IconButton } from '@ohif/ui';
+import { Toolbar } from '@ohif/ui';
 
 const ViewportToolbar = () => {
-  const [activeTool, setActiveTool] = useState(null);
   const tools = [
     {
       id: 'Annotate',
@@ -13,6 +12,7 @@ const ViewportToolbar = () => {
       type: null,
       commandName: 'setToolActive',
       commandOptions: { toolName: 'Annotate' },
+      onClick: () => console.log('Activate Annotate'),
     },
     {
       id: 'Bidirectional',
@@ -21,6 +21,7 @@ const ViewportToolbar = () => {
       type: null,
       commandName: 'setToolActive',
       commandOptions: { toolName: 'Bidirectional' },
+      onClick: () => console.log('Activate Bidirectional'),
     },
     {
       id: 'Elipse',
@@ -29,6 +30,7 @@ const ViewportToolbar = () => {
       type: null,
       commandName: 'setToolActive',
       commandOptions: { toolName: 'Elipse' },
+      onClick: () => console.log('Activate Elipse'),
     },
     {
       id: 'Length',
@@ -37,58 +39,10 @@ const ViewportToolbar = () => {
       type: null,
       commandName: 'setToolActive',
       commandOptions: { toolName: 'Length' },
+      onClick: () => console.log('Activate Length'),
     },
   ];
-  const renderToolbar = () => {
-    return tools.map((tool, i) => {
-      const isActive = activeTool === tool.id;
-      return (
-        <div
-          className="relative flex justify-center showTooltipOnHover"
-          key={tool.id}
-        >
-          <IconButton
-            variant={isActive ? 'contained' : 'text'}
-            className={classnames('mx-1', {
-              'text-black': isActive,
-              'text-white hover:bg-secondary-dark hover:text-white focus:bg-secondary-dark focus:text-white': !isActive,
-            })}
-            onClick={(e) => {
-              setActiveTool(tool.id);
-            }}
-          >
-            <Icon name={tool.icon} />
-          </IconButton>
-          <div
-            className={classnames(
-              'tooltip tooltip-up bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content'
-            )}
-          >
-            {tool.label}
-            <svg
-              className="absolute text-primary-dark w-full h-4 left-0 stroke-secondary-main"
-              style={{ top: -15 }}
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <path fill="currentColor" d="M24 22h-24l12-20z" />
-            </svg>
-          </div>
-        </div>
-      );
-    });
-  };
-  return (
-    <div
-      className={classnames(
-        'flex w-full items-center bg-primary-dark px-3 py-2'
-      )}
-    >
-      <div className="flex items-center">{renderToolbar()}</div>
-    </div>
-  );
+  return <Toolbar type="secondary" tools={tools} />;
 };
 
 export default ViewportToolbar;

@@ -4,9 +4,16 @@ import classnames from 'classnames';
 
 import { ToolbarButton, IconButton, Icon, Tooltip } from '@ohif/ui';
 
-const PrimaryToolbar = ({ activeTool, tools, moreTools }) => {
+const classes = {
+  type: {
+    primary: '',
+    secondary: 'w-full items-center bg-primary-dark px-3',
+  },
+};
+
+const Toolbar = ({ activeTool, tools, moreTools, type }) => {
   return (
-    <div className="flex">
+    <div className={classnames('flex', classes.type[type])}>
       {tools.map((tool) => {
         const { id, onClick, icon, label, dropdownContent } = tool;
         const isActive = activeTool === tool.id;
@@ -19,13 +26,14 @@ const PrimaryToolbar = ({ activeTool, tools, moreTools }) => {
               icon={icon}
               label={label}
               dropdownContent={dropdownContent}
+              type={type}
             />
           </div>
         );
       })}
       {!!moreTools.length && (
         <>
-          <span className="w-1 border-l py-4 mx-2 border-common-dark" />
+          <span className="w-1 border-l h-8 self-center mx-2 border-common-dark" />
           <Tooltip position="bottom" content="More tools">
             <IconButton
               className={classnames(
@@ -42,12 +50,14 @@ const PrimaryToolbar = ({ activeTool, tools, moreTools }) => {
   );
 };
 
-PrimaryToolbar.defaultProps = {
+Toolbar.defaultProps = {
   activeTool: '',
   moreTools: [],
+  type: 'primary',
 };
 
-PrimaryToolbar.propTypes = {
+Toolbar.propTypes = {
+  type: PropTypes.oneOf(['primary', 'secondary']),
   activeTool: PropTypes.string,
   tools: PropTypes.arrayOf(
     PropTypes.shape({
@@ -76,4 +86,4 @@ PrimaryToolbar.propTypes = {
   ),
 };
 
-export default PrimaryToolbar;
+export default Toolbar;
