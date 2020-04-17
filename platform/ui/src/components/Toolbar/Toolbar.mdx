@@ -1,22 +1,22 @@
 ---
-name: Primary Toolbar
+name: Toolbar
 menu: Data Display
-route: components/primaryToolbar
+route: components/toolbar
 ---
 
 import { useState } from 'react';
-import { Playground } from 'docz';
+import { Playground, Props } from 'docz';
 import classnames from 'classnames';
-import { PrimaryToolbar } from '@ohif/ui';
+import { Toolbar } from '@ohif/ui';
 
-# Primary Toolbar
+# Toolbar
 
-Primary Toolbar is used to create a list of tools.
+A Toolbar is used to create a list of tools.
 
 ## Import
 
 ```javascript
-import { PrimaryToolbar } from '@ohif/ui';
+import { Toolbar } from '@ohif/ui';
 ```
 
 <Playground>
@@ -112,11 +112,7 @@ import { PrimaryToolbar } from '@ohif/ui';
     ];
     return (
       <div className="py-10 flex justify-center">
-        <PrimaryToolbar
-          moreTools={moreTools}
-          activeTool={activeTool}
-          tools={tools}
-        />
+        <Toolbar moreTools={moreTools} activeTool={activeTool} tools={tools} />
       </div>
     );
   }}
@@ -124,4 +120,4 @@ import { PrimaryToolbar } from '@ohif/ui';
 
 ## Properties
 
-<Props of={PrimaryToolbar} />
+<Props of={Toolbar} />

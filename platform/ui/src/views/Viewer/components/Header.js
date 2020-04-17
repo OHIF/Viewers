@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavBar, Svg, Icon, IconButton, PrimaryToolbar } from '@ohif/ui';
+import { NavBar, Svg, Icon, IconButton, Toolbar } from '@ohif/ui';
 
 const Header = () => {
   const [activeTool, setActiveTool] = useState('Zoom');
@@ -89,11 +89,7 @@ const Header = () => {
           </div>
         </div>
         <div className="flex items-center">
-          <PrimaryToolbar
-            tools={tools}
-            activeTool={activeTool}
-            moreTools={tools}
-          />
+          <Toolbar tools={tools} activeTool={activeTool} moreTools={tools} />
         </div>
         <div className="flex items-center">
           <span className="mr-3 text-common-light text-lg">
