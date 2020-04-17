@@ -7,7 +7,7 @@ route: components/toolbar
 import { useState } from 'react';
 import { Playground, Props } from 'docz';
 import classnames from 'classnames';
-import { Toolbar } from '@ohif/ui';
+import { Toolbar, Typography } from '@ohif/ui';
 
 # Toolbar
 
@@ -110,9 +110,58 @@ import { Toolbar } from '@ohif/ui';
         onClick: () => setActiveTool('Layout 2'),
       },
     ];
+    const secondaryTools = [
+      {
+        id: 'Annotate',
+        label: 'Annotate',
+        icon: 'tool-annotate',
+        type: null,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Annotate' },
+        onClick: () => console.log('Activate Annotate'),
+      },
+      {
+        id: 'Bidirectional',
+        label: 'Bidirectional',
+        icon: 'tool-bidirectional',
+        type: null,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Bidirectional' },
+        onClick: () => console.log('Activate Bidirectional'),
+      },
+      {
+        id: 'Elipse',
+        label: 'Elipse',
+        icon: 'tool-elipse',
+        type: null,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Elipse' },
+        onClick: () => console.log('Activate Elipse'),
+      },
+      {
+        id: 'Length',
+        label: 'Length',
+        icon: 'tool-length',
+        type: null,
+        commandName: 'setToolActive',
+        commandOptions: { toolName: 'Length' },
+        onClick: () => console.log('Activate Length'),
+      },
+    ];
     return (
-      <div className="py-10 flex justify-center">
-        <Toolbar moreTools={moreTools} activeTool={activeTool} tools={tools} />
+      <div className="py-10 px-4 flex flex-col justify-center">
+        <div className="mb-4">
+          <Typography className="mb-2">Primary Toolbar</Typography>
+          <Toolbar
+            moreTools={moreTools}
+            activeTool={activeTool}
+            tools={tools}
+          />
+        </div>
+        <div>
+          <Typography className="mb-2">Secondary Toolbar</Typography>
+          <Toolbar tools={secondaryTools} type="secondary" />
+        </div>
       </div>
     );
   }}
