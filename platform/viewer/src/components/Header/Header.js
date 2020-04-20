@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
-
 import PropTypes from 'prop-types';
-
+import classNames from 'classnames';
 import { Dropdown, AboutContent, withModal } from '@ohif/ui';
-
+//
 import { UserPreferences } from './../UserPreferences';
 import OHIFLogo from '../OHIFLogo/OHIFLogo.js';
 import './Header.css';
-
-// Context
-import AppContext from './../../context/AppContext';
 
 function Header(props) {
   const {
@@ -19,12 +15,15 @@ function Header(props) {
     user,
     userManager,
     modal: { show },
-    home,
+    useLargeLogo,
+    linkPath,
+    linkText,
     location,
     children,
   } = props;
 
   const [options, setOptions] = useState([]);
+  const hasLink = linkText && linkPath;
 
   useEffect(() => {
     const optionsValue = [
@@ -61,15 +60,12 @@ function Header(props) {
     setOptions(optionsValue);
   }, [setOptions, show, t, user, userManager]);
 
-  const { appConfig = {} } = AppContext;
-  const showStudyList =
-    appConfig.showStudyList !== undefined ? appConfig.showStudyList : true;
-
-  // ANTD -- Hamburger, Drawer, Menu
   return (
     <>
       <div className="notification-bar">{t('INVESTIGATIONAL USE ONLY')}</div>
-      <div className={`entry-header ${home ? 'header-big' : ''}`}>
+      <div
+        className={classNames('entry-header', { 'header-big': useLargeLogo })}
+      >
         <div className="header-left-box">
           {location && location.studyLink && (
             <Link
@@ -82,15 +78,15 @@ function Header(props) {
 
           {children}
 
-          {showStudyList && !home && (
+          {hasLink && (
             <Link
               className="header-btn header-studyListLinkSection"
               to={{
-                pathname: '/',
+                pathname: linkPath,
                 state: { studyLink: location.pathname },
               }}
             >
-              {t('Study list')}
+              {t(linkText)}
             </Link>
           )}
         </div>
@@ -105,7 +101,11 @@ function Header(props) {
 }
 
 Header.propTypes = {
-  home: PropTypes.bool.isRequired,
+  // Study list, /
+  linkText: PropTypes.string,
+  linkPath: PropTypes.string,
+  useLargeLogo: PropTypes.bool,
+  //
   location: PropTypes.object.isRequired,
   children: PropTypes.node,
   t: PropTypes.func.isRequired,
@@ -115,7 +115,7 @@ Header.propTypes = {
 };
 
 Header.defaultProps = {
-  home: true,
+  useLargeLogo: false,
   children: OHIFLogo(),
 };
 
