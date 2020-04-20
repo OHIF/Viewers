@@ -9,7 +9,7 @@ import {
   addInstancesToStudy,
 } from './studyInstanceHelpers';
 
-import errorHanlder from '../../../errorHandler';
+import errorHandler from '../../../errorHandler';
 
 const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
 
@@ -71,6 +71,8 @@ function makeSeriesAsyncLoader(
 export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader {
   configLoad() {
     const { server } = this;
+
+    debugger;
 
     const client = new api.DICOMwebClient({
       url: server.qidoRoot,
