@@ -32,6 +32,7 @@ import TableRow from './TableRow';
 import ThemeWrapper from './ThemeWrapper/';
 import Thumbnail from './Thumbnail';
 import ThumbnailSR from './ThumbnailSR';
+import ThumbnailTracked from './ThumbnailTracked';
 import ThumbnailList from './ThumbnailList';
 import Toolbar from './Toolbar';
 import ToolbarButton from './ToolbarButton';
@@ -75,6 +76,7 @@ export {
   ThemeWrapper,
   Thumbnail,
   ThumbnailSR,
+  ThumbnailTracked,
   ThumbnailList,
   Toolbar,
   ToolbarButton,

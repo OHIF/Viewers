@@ -46,6 +46,7 @@ export {
   ThemeWrapper,
   Thumbnail,
   ThumbnailSR,
+  ThumbnailTracked,
   ThumbnailList,
   Toolbar,
   ToolbarButton,
