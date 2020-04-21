@@ -25,6 +25,8 @@ import {
 import Header from './components/Header';
 import ViewportToolbar from './components/ViewportToolBar';
 
+import { tabs } from './studyBrowserMockData';
+
 # Viewer
 
 <Playground>
@@ -62,7 +64,7 @@ import ViewportToolbar from './components/ViewportToolBar';
             componentLabel="Studies"
             defaultIsOpen={true}
           >
-            <StudyBrowser />
+            <StudyBrowser tabs={tabs} />
           </SidePanel>
           <div className="flex flex-col flex-1 h-full pb-2">
             <div className="flex flex-2 w-100 border-b border-transparent h-12">
