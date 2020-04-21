@@ -25,6 +25,7 @@ export {
   InputMultiSelect,
   InputText,
   Label,
+  MeasurementsPanel,
   MeasurementTable,
   NavBar,
   Notification,

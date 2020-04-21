@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon } from '@ohif/ui';
 
-const MeasurementTable = ({ title, amount, data }) => {
-  const [activeItem, setActiveItem] = useState(null);
-
+const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
   return (
     <div>
       <div className="flex justify-between px-2 py-1 bg-secondary-main">
@@ -14,29 +12,22 @@ const MeasurementTable = ({ title, amount, data }) => {
         </span>
         <span className="text-base font-bold text-white">{amount}</span>
       </div>
-      <div className="overflow-y-auto overflow-x-hidden ohif-scrollbar max-h-80">
+      <div className="overflow-y-auto overflow-x-hidden ohif-scrollbar max-h-112">
         {!!data.length &&
-          data.map((e, i) => {
-            const itemKey = i;
-            const currentItem = i + 1;
-            const isActive = !!activeItem && activeItem[title] === i;
+          data.map((measurementItem) => {
+            const { id, label, displayText, isActive } = measurementItem;
             return (
               <div
-                key={i}
+                key={id}
                 className={classnames(
                   'group flex cursor-default bg-black border border-transparent transition duration-300 ',
                   {
                     'rounded overflow-hidden border-primary-light': isActive,
                   }
                 )}
-                onClick={() => {
-                  setActiveItem((s) => {
-                    return {
-                      ...s,
-                      [title]: s && s[title] === itemKey ? null : itemKey,
-                    };
-                  });
-                }}
+                onClick={() => onClick(measurementItem.id)}
+                onKeyDown={() => onClick(measurementItem.id)}
+                role="button"
               >
                 <div
                   className={classnames(
@@ -47,14 +38,14 @@ const MeasurementTable = ({ title, amount, data }) => {
                     }
                   )}
                 >
-                  {currentItem}
+                  {id}
                 </div>
                 <div className="px-2 py-1 flex flex-1 flex-col relative">
                   <span className="text-base text-primary-light mb-1">
-                    Label short description
+                    {label}
                   </span>
                   <span className="pl-2 border-l border-primary-light text-base text-white">
-                    24.0 x 24.0 mm (S:4, I:22)
+                    {displayText}
                   </span>
                   <Icon
                     className={classnames(
@@ -72,7 +63,7 @@ const MeasurementTable = ({ title, amount, data }) => {
                     onClick={(e) => {
                       // stopPropagation needed to avoid disable the current active item
                       e.stopPropagation();
-                      alert('Edit');
+                      onEdit(id);
                     }}
                   />
                 </div>
@@ -105,12 +96,23 @@ const MeasurementTable = ({ title, amount, data }) => {
 MeasurementTable.defaultProps = {
   amount: null,
   data: [],
+  onClick: () => {},
+  onEdit: () => {},
 };
 
 MeasurementTable.propTypes = {
   title: PropTypes.string.isRequired,
   amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  data: PropTypes.array, // TODO: define better the array structure
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      label: PropTypes.string,
+      displayText: PropTypes.string,
+      isActive: PropTypes.bool,
+    })
+  ),
+  onClick: PropTypes.func,
+  onEdit: PropTypes.func,
 };
 
 export default MeasurementTable;
