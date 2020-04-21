@@ -4,6 +4,7 @@ menu: Data Display
 route: components/measurementTable
 ---
 
+import { useState } from 'react';
 import { Playground, Props } from 'docz';
 import { MeasurementTable } from '@ohif/ui';
 
@@ -19,14 +20,22 @@ import { MeasurementTable } from '@ohif/ui';
 
 <Playground>
   {() => {
-    const tableData = {
+    const [activeMeasurementItem, setActiveMeasurementItem] = useState(null);
+    const measurementTableData = {
       title: 'Measurements',
       amount: 10,
-      data: new Array(10).fill(''),
+      data: new Array(10).fill({}).map((el, i) => ({
+        id: i + 1,
+        label: 'Label short description',
+        displayText: '24.0 x 24.0 mm (S:4, I:22)',
+        isActive: activeMeasurementItem === i + 1,
+      })),
+      onClick: (id) => setActiveMeasurementItem((s) => (s === id ? null : id)),
+      onEdit: (id) => alert(`Edit: ${id}`),
     };
     return (
       <div className="p-4 w-80">
-        <MeasurementTable {...tableData} />
+        <MeasurementTable {...measurementTableData} />
       </div>
     );
   }}
