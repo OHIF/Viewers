@@ -1,0 +1,44 @@
+---
+name: Toolbar Button
+menu: General
+route: components/toolbarButton
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import { ToolbarButton } from '@ohif/ui';
+
+# Toolbar Button
+
+Toolbar Buttons are used to populate the Toolbar.
+
+## Import
+
+```javascript
+import { ToolbarButton } from '@ohif/ui';
+```
+
+<Playground>
+  {() => {
+    const [isActive, setIsActive] = useState(false);
+    const tool = {
+      id: 'Zoom',
+      label: 'Zoom',
+      icon: 'tool-zoom',
+      type: null,
+      commandName: 'setToolActive',
+      commandOptions: { toolName: 'Zoom' },
+      onClick: () => setIsActive(true),
+      isActive,
+    };
+    return (
+      <div className="py-10 flex justify-center">
+        <ToolbarButton {...tool} />
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={ToolbarButton} />

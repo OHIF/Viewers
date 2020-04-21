@@ -1,0 +1,91 @@
+.tooltip {
+  @apply z-10 absolute;
+}
+
+/* TOOLTIP WORKAROUND FOR ARROW UP */
+.tooltip.tooltip-bottom .tooltip-box::before {
+  @apply bg-primary-dark absolute z-10;
+  content: '';
+  width: 14px;
+  height: 1px;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip.tooltip-bottom {
+  @apply pt-2 mt-1;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip.tooltip-bottom-left {
+  @apply pt-2 mt-1;
+  left: 0;
+}
+
+.tooltip.tooltip-bottom-right {
+  @apply pt-2 mt-1;
+  right: 0;
+}
+
+.tooltip.tooltip-left {
+  @apply mr-4;
+  top: 50%;
+  right: calc(100%);
+  transform: translateY(-50%);
+}
+
+.tooltip.tooltip-right {
+  @apply ml-4;
+  top: 50%;
+  left: calc(100%);
+  transform: translateY(-50%);
+}
+
+.tooltip.tooltip-right .tooltip-box::before {
+  @apply bg-primary-dark absolute z-10;
+  content: '';
+  width: 2px;
+  height: 15px;
+  left: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tooltip.tooltip-left .tooltip-box::before {
+  @apply bg-primary-dark absolute z-10;
+  content: '';
+  width: 2px;
+  height: 15px;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tooltip.tooltip-bottom-right .tooltip-box::before {
+  @apply bg-primary-dark absolute z-10;
+  content: '';
+  width: 15px;
+  height: 2px;
+  right: 5px;
+  top: -1px;
+}
+
+.tooltip.tooltip-bottom-left .tooltip-box::before {
+  @apply bg-primary-dark absolute z-10;
+  content: '';
+  width: 15px;
+  height: 2px;
+  left: 5px;
+  top: -1px;
+}
+
+/* TODO: REMOVE BELOW CLASS "showTooltipOnHover" AFTER TOOLTIP REPLACEMENT */
+.showTooltipOnHover .tooltip {
+  display: none;
+}
+
+.showTooltipOnHover:hover .tooltip {
+  display: block;
+}

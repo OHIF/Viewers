@@ -32,6 +32,9 @@ import ThemeWrapper from './ThemeWrapper/';
 import Thumbnail from './Thumbnail';
 import ThumbnailSR from './ThumbnailSR';
 import ThumbnailList from './ThumbnailList';
+import Toolbar from './Toolbar';
+import ToolbarButton from './ToolbarButton';
+import Tooltip from './Tooltip';
 import Typography from './Typography';
 import ViewportActionBar from './ViewportActionBar';
 import ViewportGrid from './ViewportGrid';
@@ -71,6 +74,9 @@ export {
   Thumbnail,
   ThumbnailSR,
   ThumbnailList,
+  Toolbar,
+  ToolbarButton,
+  Tooltip,
   Typography,
   ViewportActionBar,
   ViewportGrid,
