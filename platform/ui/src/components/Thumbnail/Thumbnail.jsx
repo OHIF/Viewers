@@ -8,9 +8,9 @@ const Thumbnail = ({
   className,
   imageSrc,
   imageAltText,
-  seriesDescription,
+  description,
   seriesNumber,
-  instanceNumber,
+  numInstances,
   isActive,
   onClick,
 }) => {
@@ -45,10 +45,10 @@ const Thumbnail = ({
           {seriesNumber}
         </div>
         <div className="flex flex-row items-center flex-1">
-          <Icon name="group-layers" className="w-3 mr-2" /> {instanceNumber}
+          <Icon name="group-layers" className="w-3 mr-2" /> {numInstances}
         </div>
       </div>
-      <div className="text-white text-base">{seriesDescription}</div>
+      <div className="text-white text-base">{description}</div>
     </div>
   );
 };
@@ -57,9 +57,9 @@ Thumbnail.propTypes = {
   className: PropTypes.string,
   imageSrc: PropTypes.string,
   imageAltText: PropTypes.string,
-  seriesDescription: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
   seriesNumber: PropTypes.number.isRequired,
-  instanceNumber: PropTypes.number.isRequired,
+  numInstances: PropTypes.number.isRequired,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
 };

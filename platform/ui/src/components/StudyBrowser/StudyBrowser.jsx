@@ -1,22 +1,59 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import { ButtonGroup, Button, StudyItem, ThumbnailList } from '@ohif/ui';
 
-import { studyWithSR, studySimple } from './mockData';
-const studyGroupTypes = ['Primary', 'Recent', 'All'];
-const studyGroup = {
-  Primary: [studySimple],
-  Recent: [studyWithSR, studySimple],
-  All: [studySimple, studyWithSR],
-};
-
 const buttonClasses = 'text-white text-base border-none bg-black p-2 min-w-18';
 const activeButtonClasses = 'bg-primary-main';
 
-const StudyBrowser = () => {
-  const [studyGroupSelected, setStudyGroupSelected] = useState('Recent');
+const getInitialActiveTab = (tabs) => {
+  return tabs && tabs[0] && tabs[0].name;
+};
+
+const StudyBrowser = ({ tabs }) => {
+  const [tabActive, setTabActive] = useState(getInitialActiveTab(tabs));
   const [studyActive, setStudyActive] = useState(null);
+
+  const getTabContent = () => {
+    const tabData = tabs.find((tab) => tab.name === tabActive);
+
+    if (!tabData || !tabData.studies || !Array.isArray(tabData.studies)) {
+      return;
+    }
+
+    return tabData.studies.map(
+      ({
+        studyInstanceUid,
+        studyDate,
+        studyDescription,
+        instances,
+        modalities,
+        trackedSeries,
+        thumbnails,
+      }) => {
+        const isActive = studyActive === studyInstanceUid;
+        return (
+          <React.Fragment key={studyInstanceUid}>
+            <StudyItem
+              studyDate={studyDate}
+              studyDescription={studyDescription}
+              instances={instances}
+              modalities={modalities}
+              trackedSeries={trackedSeries}
+              isActive={isActive}
+              onClick={() => {
+                setStudyActive(isActive ? null : studyInstanceUid);
+              }}
+            />
+            {isActive && thumbnails && (
+              <ThumbnailList thumbnails={thumbnails} />
+            )}
+          </React.Fragment>
+        );
+      }
+    );
+  };
 
   return (
     <React.Fragment>
@@ -26,62 +63,69 @@ const StudyBrowser = () => {
           color="inherit"
           className="border border-secondary-light rounded-md"
         >
-          {studyGroupTypes.map((studyGroup) => {
-            const isActive = studyGroupSelected === studyGroup;
+          {tabs.map((tab) => {
+            const { name, label } = tab;
+            const isActive = tabActive === name;
             return (
               <Button
-                key={studyGroup}
+                key={name}
                 className={classnames(
                   buttonClasses,
                   isActive && activeButtonClasses
                 )}
                 size="initial"
                 onClick={() => {
-                  setStudyGroupSelected(studyGroup);
+                  setTabActive(name);
                   setStudyActive(null);
                 }}
               >
-                {studyGroup}
+                {label}
               </Button>
             );
           })}
         </ButtonGroup>
       </div>
       <div className="flex flex-col flex-1 overflow-auto invisible-scrollbar">
-        {studyGroup[studyGroupSelected].map(
-          ({
-            studyInstanceUid,
-            studyDate,
-            studyDescription,
-            instances,
-            modalities,
-            trackedSeries,
-            thumbnails,
-          }) => {
-            const isActive = studyActive === studyInstanceUid;
-            return (
-              <React.Fragment key={studyInstanceUid}>
-                <StudyItem
-                  studyDate={studyDate}
-                  studyDescription={studyDescription}
-                  instances={instances}
-                  modalities={modalities}
-                  trackedSeries={trackedSeries}
-                  isActive={isActive}
-                  onClick={() => {
-                    setStudyActive(isActive ? null : studyInstanceUid);
-                  }}
-                />
-                {isActive && thumbnails && (
-                  <ThumbnailList thumbnails={thumbnails} />
-                )}
-              </React.Fragment>
-            );
-          }
-        )}
+        {getTabContent()}
       </div>
     </React.Fragment>
   );
+};
+
+StudyBrowser.propTypes = {
+  tabs: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+      studies: PropTypes.arrayOf(
+        PropTypes.shape({
+          studyInstanceUid: PropTypes.string.isRequired,
+          date: PropTypes.string,
+          numInstances: PropTypes.number,
+          modality: PropTypes.string,
+          description: PropTypes.string,
+          displaySets: PropTypes.arrayOf(
+            PropTypes.shape({
+              displaySetInstanceUid: PropTypes.string.isRequired,
+              imageSrc: PropTypes.string,
+              imageAltText: PropTypes.string,
+              seriesDate: PropTypes.string,
+              seriesNumber: PropTypes.number,
+              numInstances: PropTypes.number,
+              description: PropTypes.string,
+              componentType: PropTypes.oneOf([
+                'thumbnail',
+                'thumbnailTracked',
+                'thumbnailNoImage',
+              ]).isRequired,
+              isTracked: PropTypes.bool,
+              viewportIdentificator: PropTypes.string,
+            })
+          ),
+        })
+      ).isRequired,
+    })
+  ),
 };
 
 export default StudyBrowser;

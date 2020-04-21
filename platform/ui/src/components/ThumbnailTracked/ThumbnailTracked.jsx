@@ -8,13 +8,13 @@ const ThumbnailTracked = ({
   className,
   imageSrc,
   imageAltText,
-  seriesDescription,
+  description,
   seriesNumber,
-  instanceNumber,
-  isActive,
+  numInstances,
   onClick,
   viewportIdentificator,
   isTracked,
+  isActive,
 }) => {
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
 
@@ -85,9 +85,9 @@ const ThumbnailTracked = ({
       <Thumbnail
         imageSrc={imageSrc}
         imageAltText={imageAltText}
-        seriesDescription={seriesDescription}
+        description={description}
         seriesNumber={seriesNumber}
-        instanceNumber={instanceNumber}
+        numInstances={numInstances}
         isActive={isActive}
         onClick={onClick}
       />
@@ -99,13 +99,13 @@ ThumbnailTracked.propTypes = {
   className: PropTypes.string,
   imageSrc: PropTypes.string,
   imageAltText: PropTypes.string,
-  seriesDescription: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
   seriesNumber: PropTypes.number.isRequired,
-  instanceNumber: PropTypes.number.isRequired,
-  isActive: PropTypes.bool.isRequired,
+  numInstances: PropTypes.number.isRequired,
   onClick: PropTypes.func.isRequired,
-  isTracked: PropTypes.bool,
   viewportIdentificator: PropTypes.string,
+  isTracked: PropTypes.bool,
+  isActive: PropTypes.bool.isRequired,
 };
 
 export default ThumbnailTracked;
