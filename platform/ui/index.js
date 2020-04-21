@@ -45,7 +45,7 @@ export {
   TableRow,
   ThemeWrapper,
   Thumbnail,
-  ThumbnailSR,
+  ThumbnailNoImage,
   ThumbnailTracked,
   ThumbnailList,
   Toolbar,
