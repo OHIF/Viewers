@@ -1,6 +1,5 @@
 window.config = {
   routerBasename: '/',
-  whiteLabelling: {},
   extensions: [],
   showStudyList: true,
   servers: {
