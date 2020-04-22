@@ -19,7 +19,7 @@ import filesToStudies from '../lib/filesToStudies.js';
 
 // Contexts
 import UserManagerContext from '../context/UserManagerContext';
-import WhiteLabellingContext from '../context/WhiteLabellingContext';
+import WhiteLabelingContext from '../context/WhiteLabelingContext';
 import AppContext from '../context/AppContext';
 
 const { urlUtil: UrlUtil } = OHIF.utils;
@@ -209,8 +209,8 @@ function StudyListRoute(props) {
         />
       ) : null}
       {healthCareApiWindows}
-      <WhiteLabellingContext.Consumer>
-        {whiteLabelling => (
+      <WhiteLabelingContext.Consumer>
+        {whiteLabeling => (
           <UserManagerContext.Consumer>
             {userManager => (
               <ConnectedHeader
@@ -218,12 +218,14 @@ function StudyListRoute(props) {
                 user={user}
                 userManager={userManager}
               >
-                {whiteLabelling.logoComponent}
+                {whiteLabeling &&
+                  whiteLabeling.createLogoComponentFn &&
+                  whiteLabeling.createLogoComponentFn(React)}
               </ConnectedHeader>
             )}
           </UserManagerContext.Consumer>
         )}
-      </WhiteLabellingContext.Consumer>
+      </WhiteLabelingContext.Consumer>
       <div className="study-list-header">
         <div className="header">
           <h1 style={{ fontWeight: 300, fontSize: '22px' }}>

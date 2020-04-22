@@ -14,7 +14,7 @@ import SidePanel from './../components/SidePanel.js';
 import { extensionManager } from './../App.js';
 
 // Contexts
-import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
+import WhiteLabelingContext from '../context/WhiteLabelingContext.js';
 import UserManagerContext from '../context/UserManagerContext';
 import AppContext from '../context/AppContext';
 
@@ -227,8 +227,8 @@ class Viewer extends Component {
     return (
       <>
         {/* HEADER */}
-        <WhiteLabellingContext.Consumer>
-          {whiteLabelling => (
+        <WhiteLabelingContext.Consumer>
+          {whiteLabeling => (
             <UserManagerContext.Consumer>
               {userManager => (
                 <AppContext.Consumer>
@@ -244,14 +244,16 @@ class Viewer extends Component {
                       }
                       userManager={userManager}
                     >
-                      {whiteLabelling.logoComponent}
+                      {whiteLabeling &&
+                        whiteLabeling.createLogoComponentFn &&
+                        whiteLabeling.createLogoComponentFn(React)}
                     </ConnectedHeader>
                   )}
                 </AppContext.Consumer>
               )}
             </UserManagerContext.Consumer>
           )}
-        </WhiteLabellingContext.Consumer>
+        </WhiteLabelingContext.Consumer>
 
         {/* TOOLBAR */}
         <ConnectedToolbarRow

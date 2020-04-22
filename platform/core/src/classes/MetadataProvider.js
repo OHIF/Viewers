@@ -378,7 +378,7 @@ class MetadataProvider {
         }
 
         metadata = {
-          overlays
+          overlays,
         };
 
         break;
