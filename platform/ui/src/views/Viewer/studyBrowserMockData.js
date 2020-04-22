@@ -4,7 +4,7 @@ const studyWithSR = {
   description: 'CHEST/ABD/PELVIS W/CONTRAST',
   numInstances: 902,
   modalities: 'CT,SR',
-  thumbnails: [
+  displaySets: [
     {
       displaySetInstanceUid: 'f69f6asdasd48c-223e-db7f-c4af-b8906641a66e',
       description: 'Multiple line image series description lorem sit',

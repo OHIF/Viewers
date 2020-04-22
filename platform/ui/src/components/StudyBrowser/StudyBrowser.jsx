@@ -14,6 +14,7 @@ const getInitialActiveTab = (tabs) => {
 const StudyBrowser = ({ tabs }) => {
   const [tabActive, setTabActive] = useState(getInitialActiveTab(tabs));
   const [studyActive, setStudyActive] = useState(null);
+  const [thumbnailActive, setThumbnailActive] = useState(null);
 
   const getTabContent = () => {
     const tabData = tabs.find((tab) => tab.name === tabActive);
@@ -25,20 +26,20 @@ const StudyBrowser = ({ tabs }) => {
     return tabData.studies.map(
       ({
         studyInstanceUid,
-        studyDate,
-        studyDescription,
-        instances,
+        date,
+        description,
+        numInstances,
         modalities,
         trackedSeries,
-        thumbnails,
+        displaySets,
       }) => {
         const isActive = studyActive === studyInstanceUid;
         return (
           <React.Fragment key={studyInstanceUid}>
             <StudyItem
-              studyDate={studyDate}
-              studyDescription={studyDescription}
-              instances={instances}
+              date={date}
+              description={description}
+              numInstances={numInstances}
               modalities={modalities}
               trackedSeries={trackedSeries}
               isActive={isActive}
@@ -46,8 +47,16 @@ const StudyBrowser = ({ tabs }) => {
                 setStudyActive(isActive ? null : studyInstanceUid);
               }}
             />
-            {isActive && thumbnails && (
-              <ThumbnailList thumbnails={thumbnails} />
+            {isActive && displaySets && (
+              <ThumbnailList
+                thumbnails={displaySets}
+                thumbnailActive={thumbnailActive}
+                onThumbnailClick={(thumbnailId) =>
+                  setThumbnailActive(
+                    thumbnailId === thumbnailActive ? null : thumbnailId
+                  )
+                }
+              />
             )}
           </React.Fragment>
         );
@@ -102,7 +111,7 @@ StudyBrowser.propTypes = {
           studyInstanceUid: PropTypes.string.isRequired,
           date: PropTypes.string,
           numInstances: PropTypes.number,
-          modality: PropTypes.string,
+          modalities: PropTypes.string,
           description: PropTypes.string,
           displaySets: PropTypes.arrayOf(
             PropTypes.shape({

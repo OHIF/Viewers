@@ -11,6 +11,12 @@ const ViewportGrid = ({
 }) => {
   const ViewportPanes = viewportContents.map((viewportContent, index) => {
     const isActive = index === activeViewportIndex;
+
+    const handleOnClick = () => {
+      console.log('clicked', index);
+      setActiveViewportIndex(index);
+    };
+
     return (
       <div
         key={index}
@@ -21,10 +27,10 @@ const ViewportGrid = ({
             'border border-secondary-light': !isActive,
           }
         )}
-        onClick={() => {
-          console.log('clicked', index);
-          setActiveViewportIndex(index);
-        }}
+        onClick={handleOnClick}
+        onKeyDown={handleOnClick}
+        role="button"
+        tabIndex="0"
       >
         {viewportContent}
       </div>
