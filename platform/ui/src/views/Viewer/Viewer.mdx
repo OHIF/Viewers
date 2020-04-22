@@ -20,6 +20,7 @@ import {
   ViewportActionBar,
   ViewportGrid,
   Notification,
+  Viewport,
 } from '@ohif/ui';
 
 import Header from './components/Header';
@@ -73,25 +74,45 @@ import ViewportToolbar from './components/ViewportToolBar';
                 rows={1}
                 cols={2}
                 viewportContents={[
-                  <div className="flex flex-col h-full">
-                    <ViewportActionBar isTracked modality="CT" />
-                    <Notification
-                      text="Track all measurement for this series?"
-                      type="info"
-                      actionButtons={
-                        <div>
-                          <Button>No</Button>
-                          <Button className="ml-2">No, do not ask again</Button>
-                          <Button className="ml-2" color="primary">
-                            Yes
-                          </Button>
-                        </div>
-                      }
-                    />
-                  </div>,
-                  <div className="flex flex-col h-full">
-                    <ViewportActionBar isTracked={false} modality="CT" />
-                  </div>,
+                  <Viewport
+                    viewportIndex={0}
+                    onSeriesChange={() => {}}
+                    studyData={{
+                      isTracked: false,
+                      studyDate: '07-Sep-2010',
+                      currentSeries: 1,
+                      modality: 'CT',
+                      patientInformation: {
+                        patientName: 'Smith, Jane',
+                        patientSex: 'F',
+                        patientAge: '59',
+                        MRN: '10000001',
+                        thickness: '5.0mm',
+                        spacing: '1.25mm',
+                        scanner: 'Aquilion',
+                      },
+                    }}
+                    isTracked={false}
+                    activeViewportIndex={activeViewportIndex}
+                  />,
+                  <Viewport
+                    viewportIndex={1}
+                    onSeriesChange={() => {}}
+                    studyData={{
+                      isTracked: false,
+                      studyDate: '07-Sep-2010',
+                      currentSeries: 1,
+                      modality: 'CT',
+                      patientInformation: {
+                        patientName: 'Smith, Jane',
+                        patientSex: 'F',
+                        patientAge: '59',
+                        MRN: '10000001',
+                      },
+                    }}
+                    isTracked={false}
+                    activeViewportIndex={activeViewportIndex}
+                  />,
                 ]}
                 setActiveViewportIndex={setActiveViewportIndex}
                 activeViewportIndex={activeViewportIndex}

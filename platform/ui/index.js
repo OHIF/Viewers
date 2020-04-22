@@ -51,6 +51,7 @@ export {
   ToolbarButton,
   Tooltip,
   Typography,
+  Viewport,
   ViewportActionBar,
   ViewportGrid,
 } from './src/components';
