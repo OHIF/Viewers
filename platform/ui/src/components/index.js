@@ -38,6 +38,7 @@ import Toolbar from './Toolbar';
 import ToolbarButton from './ToolbarButton';
 import Tooltip from './Tooltip';
 import Typography from './Typography';
+import Viewport from './Viewport';
 import ViewportActionBar from './ViewportActionBar';
 import ViewportGrid from './ViewportGrid';
 
@@ -82,6 +83,7 @@ export {
   ToolbarButton,
   Tooltip,
   Typography,
+  Viewport,
   ViewportActionBar,
   ViewportGrid,
 };
