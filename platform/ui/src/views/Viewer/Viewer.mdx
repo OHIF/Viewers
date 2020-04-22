@@ -80,11 +80,15 @@ import { tabs } from './studyBrowserMockData';
                 viewportContents={[
                   <Viewport
                     viewportIndex={0}
-                    onSeriesChange={() => {}}
+                    onSeriesChange={(direction) => alert(`Series ${direction}`)}
                     studyData={{
-                      isTracked: false,
-                      studyDate: '07-Sep-2010',
+                      label: 'A',
+                      isTracked: true,
+                      isLocked: false,
+                      studyDate: '07-Sep-2011',
                       currentSeries: 1,
+                      seriesDescription:
+                        'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
                       modality: 'CT',
                       patientInformation: {
                         patientName: 'Smith, Jane',
@@ -96,27 +100,38 @@ import { tabs } from './studyBrowserMockData';
                         scanner: 'Aquilion',
                       },
                     }}
-                    isTracked={false}
-                    activeViewportIndex={activeViewportIndex}
-                  />,
+                  >
+                    <div className="flex justify-center items-center h-full">
+                      CONTENT
+                    </div>
+                  </Viewport>,
                   <Viewport
                     viewportIndex={1}
-                    onSeriesChange={() => {}}
+                    onSeriesChange={(direction) => alert(`Series ${direction}`)}
                     studyData={{
+                      label: 'A',
                       isTracked: false,
+                      isLocked: true,
                       studyDate: '07-Sep-2010',
-                      currentSeries: 1,
-                      modality: 'CT',
+                      currentSeries: 2,
+                      seriesDescription:
+                        'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
+                      modality: 'SR',
                       patientInformation: {
                         patientName: 'Smith, Jane',
                         patientSex: 'F',
                         patientAge: '59',
                         MRN: '10000001',
+                        thickness: '2.0mm',
+                        spacing: '1.25mm',
+                        scanner: 'Aquilion',
                       },
                     }}
-                    isTracked={false}
-                    activeViewportIndex={activeViewportIndex}
-                  />,
+                  >
+                    <div className="flex justify-center items-center h-full">
+                      CONTENT
+                    </div>
+                  </Viewport>,
                 ]}
                 setActiveViewportIndex={setActiveViewportIndex}
                 activeViewportIndex={activeViewportIndex}

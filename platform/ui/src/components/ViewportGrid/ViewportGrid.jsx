@@ -15,6 +15,9 @@ const ViewportGrid = ({ rows, cols, viewportContents }) => {
             'border border-secondary-light': !isActive,
           }
         )}
+        onClick={() => {
+          setActiveViewportIndex(index);
+        }}
       >
         {viewportContent}
       </div>
