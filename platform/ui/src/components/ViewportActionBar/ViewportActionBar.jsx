@@ -10,19 +10,6 @@ const classes = {
   row: 'flex flex-col ml-4',
 };
 
-// isTracked: true,
-// studyDate: '07-Sep-2010',
-// currentSeries: 1,
-// modality: 'CT',
-// patientInformation: {
-// patientName: 'Smith, Jane',
-// patientSex: 'F',
-// patientAge: '59',
-// MRN: '10000001',
-// thickness: '5.0mm',
-// spacing: '1.25mm',
-// scanner: 'Aquilion',
-
 const ViewportActionBar = ({ studyData, onSeriesChange }) => {
   const {
     label,
