@@ -7,8 +7,19 @@ import { ButtonGroup, Button, StudyItem, ThumbnailList } from '@ohif/ui';
 const buttonClasses = 'text-white text-base border-none bg-black p-2 min-w-18';
 const activeButtonClasses = 'bg-primary-main';
 
-const getInitialActiveTab = (tabs) => {
+const getInitialActiveTab = tabs => {
   return tabs && tabs[0] && tabs[0].name;
+};
+
+const getTrackedSeries = displaySets => {
+  let trackedSeries = 0;
+  displaySets.forEach(displaySet => {
+    if (displaySet.isTracked) {
+      trackedSeries++;
+    }
+  });
+
+  return trackedSeries;
 };
 
 const StudyBrowser = ({ tabs }) => {
@@ -16,7 +27,7 @@ const StudyBrowser = ({ tabs }) => {
   const [studyActive, setStudyActive] = useState(null);
 
   const getTabContent = () => {
-    const tabData = tabs.find((tab) => tab.name === tabActive);
+    const tabData = tabs.find(tab => tab.name === tabActive);
 
     if (!tabData || !tabData.studies || !Array.isArray(tabData.studies)) {
       return;
@@ -29,8 +40,7 @@ const StudyBrowser = ({ tabs }) => {
         studyDescription,
         instances,
         modalities,
-        trackedSeries,
-        thumbnails,
+        displaySets,
       }) => {
         const isActive = studyActive === studyInstanceUid;
         return (
@@ -40,7 +50,7 @@ const StudyBrowser = ({ tabs }) => {
               studyDescription={studyDescription}
               instances={instances}
               modalities={modalities}
-              trackedSeries={trackedSeries}
+              trackedSeries={getTrackedSeries(displaySets)}
               isActive={isActive}
               onClick={() => {
                 setStudyActive(isActive ? null : studyInstanceUid);
@@ -63,7 +73,7 @@ const StudyBrowser = ({ tabs }) => {
           color="inherit"
           className="border border-secondary-light rounded-md"
         >
-          {tabs.map((tab) => {
+          {tabs.map(tab => {
             const { name, label } = tab;
             const isActive = tabActive === name;
             return (
