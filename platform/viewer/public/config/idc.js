@@ -7,8 +7,6 @@ window.config = function(props) {
     enableGoogleCloudAdapterUI: false,
     showStudyList: true,
     httpErrorHandler: error => {
-      debugger;
-
       // This is 429 when rejected from the public idc sandbox too often.
       console.warn(error.status);
 

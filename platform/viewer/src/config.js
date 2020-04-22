@@ -39,8 +39,6 @@ export function setConfiguration(appConfig) {
   OHIF.errorHandler.getHTTPErrorHandler = () => {
     // const { appConfig = {} } = AppContext;
 
-    debugger;
-
     return appConfig.httpErrorHandler;
   };
 

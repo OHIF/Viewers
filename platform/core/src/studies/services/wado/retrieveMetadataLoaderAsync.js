@@ -72,8 +72,6 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
   configLoad() {
     const { server } = this;
 
-    debugger;
-
     const client = new api.DICOMwebClient({
       url: server.qidoRoot,
       headers: DICOMWeb.getAuthorizationHeader(server),

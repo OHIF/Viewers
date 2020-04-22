@@ -124,8 +124,6 @@ class App extends Component {
       oidc,
     } = this._appConfig;
 
-    debugger;
-
     setConfiguration(this._appConfig);
 
     this.initUserManager(oidc);
