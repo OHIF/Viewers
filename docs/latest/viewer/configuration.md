@@ -11,6 +11,14 @@ are:
 ```js
 window.config = {
   routerBasename: '/',
+  /**
+   * "White Labeling" is used to change the branding, look, and feel of the OHIF
+   * Viewer. These settings, and the color variables that are used by our components,
+   * are the easiest way to rebrand the application.
+   *
+   * More extensive changes are made possible through swapping out the UI library,
+   * Viewer project, or extensions.
+   */
   whiteLabeling: {
     /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
     createLogoComponentFn: function(React) {
@@ -30,6 +38,17 @@ window.config = {
       });
     },
   },
+  /**
+   * Internally, the OHIF Viewer fetches data primarily with the
+   * `cornerstoneWADOImageLoader` and the `DICOMWebClient`. If either of these
+   * receive a non-200 response, this method allows you to handle that error.
+   *
+   * Common use cases include:
+   * - Showing a notification with the UINotificationService
+   * - Redirecting the user
+   * - Refreshing an auth token
+   */
+  httpErrorHandler: error => {},
   extensions: [],
   showStudyList: true,
   filterQueryParam: false,
