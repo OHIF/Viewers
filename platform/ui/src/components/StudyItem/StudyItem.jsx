@@ -60,12 +60,12 @@ const StudyItem = ({
 };
 
 StudyItem.propTypes = {
-  date: PropTypes.any,
-  description: PropTypes.any,
-  modalities: PropTypes.any,
-  numInstances: PropTypes.any,
-  trackedSeries: PropTypes.any,
-  isActive: PropTypes.any,
+  date: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  modalities: PropTypes.string.isRequired,
+  numInstances: PropTypes.number.isRequired,
+  trackedSeries: PropTypes.number,
+  isActive: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
 };
 

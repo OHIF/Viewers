@@ -11,6 +11,17 @@ const getInitialActiveTab = (tabs) => {
   return tabs && tabs[0] && tabs[0].name;
 };
 
+const getTrackedSeries = (displaySets) => {
+  let trackedSeries = 0;
+  displaySets.forEach((displaySet) => {
+    if (displaySet.isTracked) {
+      trackedSeries++;
+    }
+  });
+
+  return trackedSeries;
+};
+
 const StudyBrowser = ({ tabs }) => {
   const [tabActive, setTabActive] = useState(getInitialActiveTab(tabs));
   const [studyActive, setStudyActive] = useState(null);
@@ -30,7 +41,6 @@ const StudyBrowser = ({ tabs }) => {
         description,
         numInstances,
         modalities,
-        trackedSeries,
         displaySets,
       }) => {
         const isActive = studyActive === studyInstanceUid;
@@ -41,7 +51,7 @@ const StudyBrowser = ({ tabs }) => {
               description={description}
               numInstances={numInstances}
               modalities={modalities}
-              trackedSeries={trackedSeries}
+              trackedSeries={getTrackedSeries(displaySets)}
               isActive={isActive}
               onClick={() => {
                 setStudyActive(isActive ? null : studyInstanceUid);
