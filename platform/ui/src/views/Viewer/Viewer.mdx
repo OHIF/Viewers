@@ -57,14 +57,18 @@ import { tabs } from './studyBrowserMockData';
         >
           <SidePanel
             side="left"
-            iconName="group-layers"
-            iconLabel="Studies"
-            componentLabel="Studies"
-            defaultIsOpen={true}
-          >
-            <StudyBrowser tabs={tabs} />
-          </SidePanel>
-          <div className="flex flex-col flex-1 h-100">
+            defaultComponentOpen='studies'
+            childComponents={{
+              iconName: 'group-layers',
+              iconLabel: 'Studies',
+              label: 'Studies',
+              name: 'studies',
+              content: (
+                <StudyBrowser tabs={tabs} />
+              )
+            }}
+          />
+          <div className="flex flex-col flex-1 h-full pb-2">
             <div className="flex flex-2 w-100 border-b border-transparent h-12">
               <ViewportToolbar />
             </div>
@@ -100,45 +104,49 @@ import { tabs } from './studyBrowserMockData';
           </div>
           <SidePanel
             side="right"
-            iconName="list-bullets"
-            iconLabel="Measure"
-            componentLabel="Measurements"
-            defaultIsOpen={true}
-          >
-            <MeasurementsPanel
-              descriptionData={descriptionData}
-              measurementTableData={measurementTableData}
-              actionButtons={
-                <>
-                  <ButtonGroup onClick={() => alert('Export')}>
-                    <Button
-                      className="text-white border-primary-main bg-black text-base py-2 px-2"
-                      size="initial"
-                      color="inherit"
-                    >
-                      Export
-                    </Button>
-                    <IconButton
-                      className="bg-black border-primary-main px-2 text-white px-2"
-                      color="inherit"
-                      size="initial"
-                    >
-                      <Icon name="arrow-down" />
-                    </IconButton>
-                  </ButtonGroup>
-                  <Button
-                    className="text-white border border-primary-main bg-black text-base py-2 px-2 ml-2"
-                    variant="outlined"
-                    size="initial"
-                    color="inherit"
-                    onClick={() => alert('Create Report')}
-                  >
-                    Create Report
-                  </Button>
-                </>
-              }
-            />
-          </SidePanel>
+            defaultComponentOpen="measurements"
+            childComponents={{
+              iconName: 'list-bullets',
+              iconLabel: 'Measure',
+              label: 'Measurements',
+              name: 'measurements',
+              content: (
+                <MeasurementsPanel
+                  descriptionData={descriptionData}
+                  measurementTableData={measurementTableData}
+                  actionButtons={
+                    <React.Fragment>
+                      <ButtonGroup onClick={() => alert('Export')}>
+                        <Button
+                          className="text-white border-primary-main bg-black text-base py-2 px-2"
+                          size="initial"
+                          color="inherit"
+                        >
+                          Export
+                        </Button>
+                        <IconButton
+                          className="bg-black border-primary-main px-2 text-white px-2"
+                          color="inherit"
+                          size="initial"
+                        >
+                          <Icon name="arrow-down" />
+                        </IconButton>
+                      </ButtonGroup>
+                      <Button
+                        className="text-white border border-primary-main bg-black text-base py-2 px-2 ml-2"
+                        variant="outlined"
+                        size="initial"
+                        color="inherit"
+                        onClick={() => alert('Create Report')}
+                      >
+                        Create Report
+                      </Button>
+                    </React.Fragment>
+                  }
+                />
+              )
+            }}
+          />
         </div>
       </div>
     );
