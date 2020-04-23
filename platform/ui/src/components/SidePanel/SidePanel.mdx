@@ -24,18 +24,51 @@ import { SidePanel } from '@ohif/ui';
   >
     <SidePanel
       side="left"
-      iconName="group-layers"
-      iconLabel="Studies"
-      componentLabel="Studies"
-      defaultIsOpen={false}
-    >
-      <div className="flex justify-center text-white p-2">panel content</div>
-    </SidePanel>
+      childComponents={{
+        iconName: "group-layers",
+        iconLabel: "Studies",
+        name: "studies",
+        label: "Studies",
+        content: <div className="flex justify-center text-white p-2">panel content</div>,
+      }}
+    />
     <div className="flex flex-1 h-100 overflow-hidden bg-primary-main items-center justify-center text-white">
       CONTENT
     </div>
   </div>
 </Playground>
+
+
+## Multiple panels
+
+<Playground>
+  <div
+    className="flex flex-row flex-no-wrap flex-1 items-stretch overflow-hidden w-full"
+    style={{ height: '500px' }}
+  >
+    <SidePanel
+      side="left"
+      childComponents={[{
+        iconName: "group-layers",
+        iconLabel: "Studies",
+        name: "studies",
+        label: "Studies",
+        content: <div className="flex justify-center text-white p-2">studies panel content</div>,
+      },
+      {
+        iconName: "list-bullets",
+        iconLabel: "Measure",
+        name: "measurements",
+        label: "Measurements",
+        content: <div className="flex justify-center text-white p-2">measure panel content</div>,
+      }]}
+    />
+    <div className="flex flex-1 h-100 overflow-hidden bg-primary-main items-center justify-center text-white">
+      CONTENT
+    </div>
+  </div>
+</Playground>
+
 
 ## Properties
 

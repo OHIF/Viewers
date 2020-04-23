@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -53,30 +53,78 @@ const position = {
   },
 };
 
+const getChildComponent = (childComponents, componentOpen) => {
+  if (Array.isArray(childComponents)) {
+    return childComponents.find(
+      (_childComponent) => _childComponent.name === componentOpen
+    );
+  } else {
+    return childComponents;
+  }
+};
+
 const SidePanel = ({
   side,
   className,
-  children,
-  defaultIsOpen,
-  componentLabel,
-  iconLabel,
-  iconName,
+  defaultComponentOpen,
+  childComponents,
 }) => {
-  const [isOpen, setIsOpen] = useState(defaultIsOpen);
-  const openStatus = isOpen ? 'open' : 'closed';
+  const [componentOpen, setComponentOpen] = useState(defaultComponentOpen);
+
+  const openStatus = componentOpen ? 'open' : 'closed';
   const style = Object.assign({}, styleMap[openStatus][side], baseStyle);
 
-  const getSidePanelHeader = useCallback(() => {
-    return (
-      <React.Fragment>
-        {isOpen ? (
+  const childComponent = getChildComponent(childComponents, componentOpen);
+
+  const getPanelButtons = () => {
+    const _childComponents = Array.isArray(childComponents)
+      ? childComponents
+      : [childComponents];
+    return _childComponents.map((childComponent) => {
+      return (
+        <Button
+          key={childComponent.name}
+          variant="text"
+          color="inherit"
+          onClick={() => {
+            setComponentOpen(childComponent.name);
+          }}
+          style={{
+            minWidth: `${collapsedWidth}px`,
+            width: `${collapsedWidth}px`,
+          }}
+          className="flex flex-col text-xs px-1 py-1 text-white border-transparent border-b"
+        >
+          <Icon
+            name={childComponent.iconName}
+            className="text-primary-active"
+          />
+          <span className="mt-2 text-white text-xs">
+            {childComponent.iconLabel}
+          </span>
+        </Button>
+      );
+    });
+  };
+
+  return (
+    <div
+      className={classnames(
+        className,
+        baseClasses,
+        classesMap[openStatus][side]
+      )}
+      style={style}
+    >
+      {componentOpen ? (
+        <React.Fragment>
           <div className="px-3 border-b border-secondary-light">
             <Button
               variant="text"
               color="inherit"
               rounded="none"
               onClick={() => {
-                setIsOpen(false);
+                setComponentOpen(null);
               }}
               className="flex flex-row items-center px-3 h-12 relative w-full"
             >
@@ -89,58 +137,45 @@ const SidePanel = ({
                 style={{ ...position[side] }}
               />
               <span className="flex-1 text-primary-active">
-                {componentLabel}
+                {childComponent.label}
               </span>
             </Button>
           </div>
-        ) : (
-          <Button
-            variant="text"
-            color="inherit"
-            onClick={() => {
-              setIsOpen(true);
-            }}
-            style={{
-              minWidth: `${collapsedWidth}px`,
-              width: `${collapsedWidth}px`,
-            }}
-            className="flex flex-col text-xs px-1 py-1 text-white border-transparent border-b"
-          >
-            <Icon name={iconName} className="text-primary-active" />
-            <span className="mt-2 text-white text-xs">{iconLabel}</span>
-          </Button>
-        )}
-      </React.Fragment>
-    );
-  }, [componentLabel, iconLabel, iconName, isOpen, side]);
-
-  return (
-    <div
-      className={classnames(
-        className,
-        baseClasses,
-        classesMap[openStatus][side]
+          {childComponent.content}
+        </React.Fragment>
+      ) : (
+        <React.Fragment>{getPanelButtons()}</React.Fragment>
       )}
-      style={style}
-    >
-      {getSidePanelHeader()}
-      {isOpen && children}
     </div>
   );
 };
 
 SidePanel.defaultProps = {
-  defaultIsOpen: false,
+  defaultComponentOpen: null,
 };
 
 SidePanel.propTypes = {
   side: PropTypes.oneOf(['left', 'right']).isRequired,
-  iconLabel: PropTypes.string.isRequired,
-  componentLabel: PropTypes.string.isRequired,
-  iconName: PropTypes.string.isRequired,
-  defaultIsOpen: PropTypes.bool,
   className: PropTypes.string,
-  children: PropTypes.node,
+  defaultComponentOpen: PropTypes.string,
+  childComponents: PropTypes.oneOfType([
+    PropTypes.shape({
+      iconName: PropTypes.string.isRequired,
+      iconLabel: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+      content: PropTypes.node,
+    }),
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        iconName: PropTypes.string.isRequired,
+        iconLabel: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+        content: PropTypes.node,
+      })
+    ),
+  ]),
 };
 
 export default SidePanel;
