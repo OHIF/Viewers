@@ -1,56 +1,62 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Thumbnail, ThumbnailSR } from '@ohif/ui';
+import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '@ohif/ui';
 
-const ThumbnailList = ({ thumbnails }) => {
-  const [thumbnailActive, setThumbnailActive] = useState(null);
-
+const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
   return (
     <div className="bg-black py-3">
       {thumbnails.map(
         ({
           displaySetInstanceUid,
-          seriesDescription,
+          description,
           seriesNumber,
-          instanceNumber,
+          numInstances,
           modality,
+          componentType,
           seriesDate,
           viewportIdentificator,
           isTracked,
         }) => {
-          const isSR = modality && modality.toLowerCase() === 'sr';
           const isActive = thumbnailActive === displaySetInstanceUid;
 
-          if (isSR) {
-            return (
-              <ThumbnailSR
-                key={displaySetInstanceUid}
-                modality={modality}
-                seriesDate={seriesDate}
-                seriesDescription={seriesDescription}
-                onClick={() => {}}
-              />
-            );
-          } else {
-            return (
-              <Thumbnail
-                key={displaySetInstanceUid}
-                seriesDescription={seriesDescription}
-                seriesNumber={seriesNumber}
-                instanceNumber={instanceNumber}
-                viewportIdentificator={viewportIdentificator}
-                isTracked={isTracked}
-                isActive={isActive}
-                onClick={() => {
-                  setThumbnailActive(
-                    thumbnailActive === displaySetInstanceUid
-                      ? null
-                      : displaySetInstanceUid
-                  );
-                }}
-              />
-            );
+          switch (componentType) {
+            case 'thumbnail':
+              return (
+                <Thumbnail
+                  key={displaySetInstanceUid}
+                  description={description}
+                  seriesNumber={seriesNumber}
+                  numInstances={numInstances}
+                  isActive={isActive}
+                  onClick={() => onThumbnailClick(displaySetInstanceUid)}
+                />
+              );
+            case 'thumbnailNoImage':
+              return (
+                <ThumbnailNoImage
+                  key={displaySetInstanceUid}
+                  modality={modality}
+                  seriesDate={seriesDate}
+                  description={description}
+                  onClick={() => onThumbnailClick(displaySetInstanceUid)}
+                />
+              );
+            case 'thumbnailTracked':
+              return (
+                <ThumbnailTracked
+                  key={displaySetInstanceUid}
+                  description={description}
+                  seriesNumber={seriesNumber}
+                  numInstances={numInstances}
+                  viewportIdentificator={viewportIdentificator}
+                  isTracked={isTracked}
+                  isActive={isActive}
+                  onClick={() => onThumbnailClick(displaySetInstanceUid)}
+                />
+              );
+            default:
+              return <></>;
           }
         }
       )}
@@ -61,14 +67,24 @@ const ThumbnailList = ({ thumbnails }) => {
 ThumbnailList.propTypes = {
   thumbnails: PropTypes.arrayOf(
     PropTypes.shape({
-      displaySetInstanceUid: PropTypes.string,
-      seriesDescription: PropTypes.string,
-      seriesNumber: PropTypes.number,
-      instanceNumber: PropTypes.number,
-      modality: PropTypes.string,
+      displaySetInstanceUid: PropTypes.string.isRequired,
+      imageSrc: PropTypes.string,
+      imageAltText: PropTypes.string,
       seriesDate: PropTypes.string,
+      seriesNumber: PropTypes.number,
+      numInstances: PropTypes.number,
+      description: PropTypes.string,
+      componentType: PropTypes.oneOf([
+        'thumbnail',
+        'thumbnailTracked',
+        'thumbnailNoImage',
+      ]).isRequired,
+      viewportIdentificator: PropTypes.string,
+      isTracked: PropTypes.bool,
     })
   ),
+  thumbnailActive: PropTypes.string,
+  onThumbnailClick: PropTypes.func,
 };
 
 export default ThumbnailList;
