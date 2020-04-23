@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.6.0...@ohif/extension-cornerstone@2.6.1) (2020-04-23)
+
+
+### Bug Fixes
+
+* 🐛 Multiframe fix ([#1661](https://github.com/OHIF/Viewers/issues/1661)) ([7120561](https://github.com/OHIF/Viewers/commit/71205618ecb8b592247c5acb32284bfe7e18fce5))
+
+
+
+
+
 # [2.6.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.5.2...@ohif/extension-cornerstone@2.6.0) (2020-04-23)
 
 

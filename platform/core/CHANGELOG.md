@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.8.0...@ohif/core@2.8.1) (2020-04-23)
+
+
+### Bug Fixes
+
+* 🐛 Multiframe fix ([#1661](https://github.com/OHIF/Viewers/issues/1661)) ([7120561](https://github.com/OHIF/Viewers/commit/71205618ecb8b592247c5acb32284bfe7e18fce5))
+
+
+
+
+
 # [2.8.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.7.1...@ohif/core@2.8.0) (2020-04-23)
 
 
