@@ -54,7 +54,7 @@ export function setConfiguration(appConfig) {
       // const { appConfig = {} } = AppContext;
 
       if (typeof appConfig.httpErrorHandler === 'function') {
-        appConfig.httpErrorHandler(errorHandler);
+        appConfig.httpErrorHandler(error);
       }
     },
   });
