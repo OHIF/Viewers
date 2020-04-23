@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.7.1...@ohif/core@2.8.0) (2020-04-23)
+
+
+### Features
+
+* configuration to hook into XHR Error handling ([e96205d](https://github.com/OHIF/Viewers/commit/e96205de35e5bec14dc8a9a8509db3dd4e6ecdb6))
+
+
+
+
+
 ## [2.7.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.7.0...@ohif/core@2.7.1) (2020-04-22)
 
 

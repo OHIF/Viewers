@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.3.14...@ohif/extension-vtk@1.4.0) (2020-04-23)
+
+
+### Features
+
+* configuration to hook into XHR Error handling ([e96205d](https://github.com/OHIF/Viewers/commit/e96205de35e5bec14dc8a9a8509db3dd4e6ecdb6))
+
+
+
+
+
 ## [1.3.14](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.3.13...@ohif/extension-vtk@1.3.14) (2020-04-22)
 
 **Note:** Version bump only for package @ohif/extension-vtk
