@@ -22,7 +22,6 @@ const ViewportGrid = ({
           }
         )}
         onClick={() => {
-          console.log('clicked', index);
           setActiveViewportIndex(index);
         }}
       >
