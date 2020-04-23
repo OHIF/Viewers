@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon, ButtonGroup, Button } from '@ohif/ui';
+import { Icon, ButtonGroup, Button, Tooltip } from '@ohif/ui';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',
@@ -51,40 +51,29 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
     }
 
     return (
-      <div className="showTooltipOnHover relative">
-        <Icon
-          name={isTracked ? 'tracked' : 'dotted-circle'}
-          className="text-primary-light w-6"
-        />
-        {isTracked && (
-          <div
-            className={classnames(
-              'tooltip tooltip-top-left bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content'
-            )}
+      <div className="relative">
+        {!isTracked ? (
+          <Icon name="dotted-circle" className="text-primary-light w-6" />
+        ) : (
+          <Tooltip
+            position="bottom-left"
+            content={
+              <div className="flex py-2">
+                <div className="flex pt-1">
+                  <Icon name="info-link" className="w-4 text-primary-main" />
+                </div>
+                <div className="flex ml-4">
+                  <span className="text-base text-common-light">
+                    Series is
+                    <span className="text-white font-bold"> tracked</span> and
+                    can be viewed <br /> in the measurement panel
+                  </span>
+                </div>
+              </div>
+            }
           >
-            <div className="flex py-2">
-              <div className="flex pt-1">
-                <Icon name="info-link" className="w-4 text-primary-main" />
-              </div>
-              <div className="flex ml-4">
-                <span className="text-base text-common-light">
-                  Series is
-                  <span className="text-white font-bold"> tracked</span> and can
-                  be viewed <br /> in the measurement panel
-                </span>
-              </div>
-            </div>
-            <svg
-              className="absolute text-primary-dark h-4 left-0 stroke-secondary-main"
-              style={{ top: -15 }}
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <path fill="currentColor" d="M24 22h-24l12-20z" />
-            </svg>
-          </div>
+            <Icon name="tracked" className="text-primary-light w-6" />
+          </Tooltip>
         )}
       </div>
     );
@@ -129,20 +118,9 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
         </ButtonGroup>
       </div>
       <div className="flex ml-4 mr-2">
-        <div className="showTooltipOnHover flex justify-end relative">
-          <div className="relative">
-            <Icon name="profile" className="text-white w-5" />
-            <Icon
-              name="info-link"
-              className="bg-black text-white w-5 absolute"
-              style={{ right: -7, bottom: -10 }}
-            />
-          </div>
-          <div
-            className={classnames(
-              'tooltip tooltip-top-right bg-primary-dark border border-secondary-main text-white text-base rounded py-1 px-4 inset-x-auto top-full mt-2 w-max-content ml-1'
-            )}
-          >
+        <Tooltip
+          position="bottom-right"
+          content={
             <div className="flex py-2">
               <div className="flex pt-1">
                 <Icon name="info-link" className="w-4 text-primary-main" />
@@ -197,18 +175,19 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
                 </div>
               </div>
             </div>
-            <svg
-              className="absolute text-primary-dark h-4 right-0 stroke-secondary-main"
-              style={{ top: -15 }}
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <path fill="currentColor" d="M24 22h-24l12-20z" />
-            </svg>
+          }
+        >
+          <div className="showTooltipOnHover flex justify-end relative">
+            <div className="relative">
+              <Icon name="profile" className="text-white w-5" />
+              <Icon
+                name="info-link"
+                className="bg-black text-white w-5 absolute"
+                style={{ right: -7, bottom: -10 }}
+              />
+            </div>
           </div>
-        </div>
+        </Tooltip>
       </div>
     </div>
   );
