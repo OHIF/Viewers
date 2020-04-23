@@ -9,6 +9,8 @@ import {
   addInstancesToStudy,
 } from './studyInstanceHelpers';
 
+import errorHandler from '../../../errorHandler';
+
 const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
 
 /**
@@ -73,6 +75,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const client = new api.DICOMwebClient({
       url: server.qidoRoot,
       headers: DICOMWeb.getAuthorizationHeader(server),
+      errorInterceptor: errorHandler.getHTTPErrorHandler(),
     });
 
     this.client = client;
@@ -117,7 +120,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
     return {
       seriesInstanceUIDsMap,
-      seriesData
+      seriesData,
     };
   }
 
@@ -155,11 +158,14 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
         SeriesDescription: series.SeriesDescription,
         SeriesNumber: series.SeriesNumber,
         Modality: series.Modality,
-        instances: []
+        instances: [],
       };
 
       if (study.series[idx]) {
-        study.series[idx] = Object.assign(seriesDataFromQIDO, study.series[idx]);
+        study.series[idx] = Object.assign(
+          seriesDataFromQIDO,
+          study.series[idx]
+        );
       } else {
         study.series[idx] = seriesDataFromQIDO;
       }

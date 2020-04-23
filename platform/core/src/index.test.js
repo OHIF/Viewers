@@ -24,6 +24,7 @@ describe('Top level exports', () => {
       'header',
       'cornerstone',
       'default', //
+      'errorHandler',
       'string',
       'ui',
       'user',

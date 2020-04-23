@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-p10-downloader",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "OHIF extension for downloading DICOM P10 files",
   "author": "OHIF",
   "license": "MIT",
@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "dicomweb-client": "^0.6.0",
     "file-saver": "^2.0.2",
     "jszip": "^3.2.2"
   }
