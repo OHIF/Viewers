@@ -3,6 +3,8 @@ import DICOMWeb from '../../../DICOMWeb/';
 import { createStudyFromSOPInstanceList } from './studyInstanceHelpers';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
+import errorHandler from '../../../errorHandler';
+
 /**
  * Class for sync load of study metadata.
  * It inherits from RetrieveMetadataLoader
@@ -58,6 +60,7 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
     const client = new api.DICOMwebClient({
       url: server.wadoRoot,
       headers: DICOMWeb.getAuthorizationHeader(server),
+      errorInterceptor: errorHandler.getHTTPErrorHandler(),
     });
 
     this.client = client;

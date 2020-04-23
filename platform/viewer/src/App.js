@@ -31,7 +31,8 @@ import {
 import i18n from '@ohif/i18n';
 
 // TODO: This should not be here
-import './config';
+//import './config';
+import { setConfiguration } from './config';
 
 /** Utils */
 import {
@@ -122,6 +123,8 @@ class App extends Component {
       extensions,
       oidc,
     } = this._appConfig;
+
+    setConfiguration(this._appConfig);
 
     this.initUserManager(oidc);
     _initServices([
