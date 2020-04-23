@@ -47,8 +47,23 @@ window.config = {
    * - Showing a notification with the UINotificationService
    * - Redirecting the user
    * - Refreshing an auth token
+   *
+   * @param {Object} error - JS new Error()
+   * @param {XMLHttpRequest} error.request - The XHR request that's onreadystate change triggered this callback
+   * @param {string} error.response - The XHR's response property
+   * @param {number} error.status - The XHR's status property
    */
-  httpErrorHandler: error => {},
+  httpErrorHandler: error => {
+    const { request: xhr, response, status } = err;
+    const { responseType, statusText } = xhr;
+
+    // In local files, status is 0 upon success in Firefox
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      console.log(statusText, response, responseType);
+    } else {
+      console.warn('Likely CORS error');
+    }
+  },
   extensions: [],
   showStudyList: true,
   filterQueryParam: false,
