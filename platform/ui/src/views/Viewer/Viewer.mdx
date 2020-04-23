@@ -20,6 +20,7 @@ import {
   ViewportActionBar,
   ViewportGrid,
   Notification,
+  Viewport,
 } from '@ohif/ui';
 
 import Header from './components/Header';
@@ -79,25 +80,60 @@ import { tabs } from './studyBrowserMockData';
                 rows={1}
                 cols={2}
                 viewportContents={[
-                  <div className="flex flex-col h-full">
-                    <ViewportActionBar isTracked modality="CT" />
-                    <Notification
-                      text="Track all measurement for this series?"
-                      type="info"
-                      actionButtons={
-                        <div>
-                          <Button>No</Button>
-                          <Button className="ml-2">No, do not ask again</Button>
-                          <Button className="ml-2" color="primary">
-                            Yes
-                          </Button>
-                        </div>
-                      }
-                    />
-                  </div>,
-                  <div className="flex flex-col h-full">
-                    <ViewportActionBar isTracked={false} modality="CT" />
-                  </div>,
+                  <Viewport
+                    viewportIndex={0}
+                    onSeriesChange={(direction) => alert(`Series ${direction}`)}
+                    studyData={{
+                      label: 'A',
+                      isTracked: true,
+                      isLocked: false,
+                      studyDate: '07-Sep-2011',
+                      currentSeries: 1,
+                      seriesDescription:
+                        'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
+                      modality: 'CT',
+                      patientInformation: {
+                        patientName: 'Smith, Jane',
+                        patientSex: 'F',
+                        patientAge: '59',
+                        MRN: '10000001',
+                        thickness: '5.0mm',
+                        spacing: '1.25mm',
+                        scanner: 'Aquilion',
+                      },
+                    }}
+                  >
+                    <div className="flex justify-center items-center h-full">
+                      CONTENT
+                    </div>
+                  </Viewport>,
+                  <Viewport
+                    viewportIndex={1}
+                    onSeriesChange={(direction) => alert(`Series ${direction}`)}
+                    studyData={{
+                      label: 'A',
+                      isTracked: false,
+                      isLocked: true,
+                      studyDate: '07-Sep-2010',
+                      currentSeries: 2,
+                      seriesDescription:
+                        'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
+                      modality: 'SR',
+                      patientInformation: {
+                        patientName: 'Smith, Jane',
+                        patientSex: 'F',
+                        patientAge: '59',
+                        MRN: '10000001',
+                        thickness: '2.0mm',
+                        spacing: '1.25mm',
+                        scanner: 'Aquilion',
+                      },
+                    }}
+                  >
+                    <div className="flex justify-center items-center h-full">
+                      CONTENT
+                    </div>
+                  </Viewport>,
                 ]}
                 setActiveViewportIndex={setActiveViewportIndex}
                 activeViewportIndex={activeViewportIndex}

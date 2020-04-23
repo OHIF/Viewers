@@ -10,7 +10,28 @@ const classes = {
   row: 'flex flex-col ml-4',
 };
 
-const ViewportActionBar = ({ isTracked, isLocked, modality }) => {
+const ViewportActionBar = ({ studyData, onSeriesChange }) => {
+  const {
+    label,
+    isTracked,
+    isLocked,
+    modality,
+    studyDate,
+    currentSeries,
+    seriesDescription,
+    patientInformation,
+  } = studyData;
+
+  const {
+    patientName,
+    patientSex,
+    patientAge,
+    MRN,
+    thickness,
+    spacing,
+    scanner,
+  } = patientInformation;
+
   const renderIconStatus = () => {
     if (modality === 'SR') {
       return (
@@ -73,28 +94,36 @@ const ViewportActionBar = ({ isTracked, isLocked, modality }) => {
       <div className="flex flex-grow">
         <div className="flex items-center">
           {renderIconStatus()}
-          <span className="text-large text-white ml-2">A</span>
+          <span className="text-large text-white ml-2">{label}</span>
         </div>
         <div className="flex flex-col justify-start ml-4">
           <div className="flex">
-            <span className="text-base text-white">07-Sep-2010</span>
+            <span className="text-base text-white">{studyDate}</span>
             <span className="border-l border-primary-light ml-2 pl-2 text-base text-primary-light">
-              S: 1
+              S: {currentSeries}
             </span>
           </div>
           <div className="flex">
-            <span className="text-base text-primary-light">
-              Series description lorem ipsum dolor sit...
-            </span>
+            <p className="text-base truncate max-w-sm text-primary-light">
+              {seriesDescription}
+            </p>
           </div>
         </div>
       </div>
       <div className="ml-2">
         <ButtonGroup>
-          <Button size="initial" className="py-1 px-2">
+          <Button
+            size="initial"
+            className="py-1 px-2"
+            onClick={() => onSeriesChange('left')}
+          >
             <Icon name="chevron-left" className="text-white w-4" />
           </Button>
-          <Button size="initial" className="py-1 px-2">
+          <Button
+            size="initial"
+            className="py-1 px-2"
+            onClick={() => onSeriesChange('right')}
+          >
             <Icon name="chevron-right" className="text-white w-4" />
           </Button>
         </ButtonGroup>
@@ -120,22 +149,24 @@ const ViewportActionBar = ({ isTracked, isLocked, modality }) => {
               </div>
               <div className="flex flex-col ml-2">
                 <span className="text-base font-bold text-white">
-                  Smith, Jane
+                  {patientName}
                 </span>
                 <div className="flex mt-4 pb-4 mb-4 border-b border-secondary-main">
                   <div className={classnames(classes.firstRow)}>
                     <span className={classnames(classes.infoHeader)}>Sex</span>
-                    <span className={classnames(classes.infoText)}>F</span>
+                    <span className={classnames(classes.infoText)}>
+                      {patientSex}
+                    </span>
                   </div>
                   <div className={classnames(classes.row)}>
                     <span className={classnames(classes.infoHeader)}>Age</span>
-                    <span className={classnames(classes.infoText)}>59</span>
+                    <span className={classnames(classes.infoText)}>
+                      {patientAge}
+                    </span>
                   </div>
                   <div className={classnames(classes.row)}>
                     <span className={classnames(classes.infoHeader)}>MRN</span>
-                    <span className={classnames(classes.infoText)}>
-                      10000001
-                    </span>
+                    <span className={classnames(classes.infoText)}>{MRN}</span>
                   </div>
                 </div>
                 <div className="flex">
@@ -143,14 +174,16 @@ const ViewportActionBar = ({ isTracked, isLocked, modality }) => {
                     <span className={classnames(classes.infoHeader)}>
                       Thickness
                     </span>
-                    <span className={classnames(classes.infoText)}>5.00mm</span>
+                    <span className={classnames(classes.infoText)}>
+                      {thickness}
+                    </span>
                   </div>
                   <div className={classnames(classes.row)}>
                     <span className={classnames(classes.infoHeader)}>
                       Spacing
                     </span>
                     <span className={classnames(classes.infoText)}>
-                      1.25 mm
+                      {spacing}
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
@@ -158,7 +191,7 @@ const ViewportActionBar = ({ isTracked, isLocked, modality }) => {
                       Scanner
                     </span>
                     <span className={classnames(classes.infoText)}>
-                      Aquilion
+                      {scanner}
                     </span>
                   </div>
                 </div>
@@ -181,14 +214,26 @@ const ViewportActionBar = ({ isTracked, isLocked, modality }) => {
   );
 };
 
-ViewportActionBar.defaultProps = {
-  isLocked: false,
-};
-
 ViewportActionBar.propTypes = {
-  isTracked: PropTypes.bool.isRequired,
-  isLocked: PropTypes.bool,
-  modality: PropTypes.string.isRequired,
+  onSeriesChange: PropTypes.func.isRequired,
+  studyData: PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    isTracked: PropTypes.bool.isRequired,
+    isLocked: PropTypes.bool.isRequired,
+    studyDate: PropTypes.string.isRequired,
+    currentSeries: PropTypes.number.isRequired,
+    seriesDescription: PropTypes.string.isRequired,
+    modality: PropTypes.string.isRequired,
+    patientInformation: PropTypes.shape({
+      patientName: PropTypes.string.isRequired,
+      patientSex: PropTypes.string.isRequired,
+      patientAge: PropTypes.string.isRequired,
+      MRN: PropTypes.string.isRequired,
+      thickness: PropTypes.string.isRequired,
+      spacing: PropTypes.string.isRequired,
+      scanner: PropTypes.string.isRequired,
+    }),
+  }).isRequired,
 };
 
 export default ViewportActionBar;

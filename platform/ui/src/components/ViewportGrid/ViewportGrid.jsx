@@ -13,7 +13,6 @@ const ViewportGrid = ({
     const isActive = index === activeViewportIndex;
 
     const handleOnClick = () => {
-      console.log('clicked', index);
       setActiveViewportIndex(index);
     };
 
