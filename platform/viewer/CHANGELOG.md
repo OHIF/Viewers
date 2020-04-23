@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.10.1...@ohif/viewer@3.10.2) (2020-04-23)
+
+
+### Bug Fixes
+
+* undefined `errorHandler` in cornerstoneWadoImageLoader configuration ([#1664](https://github.com/OHIF/Viewers/issues/1664)) ([709f147](https://github.com/OHIF/Viewers/commit/709f14708e2b0f912b5ea509114acd87af3149cb))
+
+
+
+
+
 ## [3.10.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.10.0...@ohif/viewer@3.10.1) (2020-04-23)
 
 **Note:** Version bump only for package @ohif/viewer
