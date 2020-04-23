@@ -43,6 +43,16 @@ const SegmentationTable = ({ title, amount, data }) => {
             const itemKey = i;
             const currentItem = i + 1;
             const isActive = !!activeItem && activeItem[title] === i;
+
+            const handleOnClick = () => {
+              setActiveItem((s) => {
+                return {
+                  ...s,
+                  [title]: s && s[title] === itemKey ? null : itemKey,
+                };
+              });
+            };
+
             return (
               <div
                 key={i}
@@ -52,14 +62,10 @@ const SegmentationTable = ({ title, amount, data }) => {
                     'border-primary-light': isActive,
                   }
                 )}
-                onClick={() => {
-                  setActiveItem((s) => {
-                    return {
-                      ...s,
-                      [title]: s && s[title] === itemKey ? null : itemKey,
-                    };
-                  });
-                }}
+                onClick={handleOnClick}
+                onKeyDown={handleOnClick}
+                role="button"
+                tabIndex="0"
               >
                 <div
                   className={classnames(

@@ -26,19 +26,27 @@ const arrowPositionStyle = {
 
 const Tooltip = ({ position, content, tight, children }) => {
   const [isActive, setIsActive] = useState(false);
+
+  const handleMouseOver = () => {
+    if (!isActive) {
+      setIsActive(true);
+    }
+  };
+
+  const handleMouseOut = () => {
+    if (isActive) {
+      setIsActive(false);
+    }
+  };
+
   return (
     <div
-      className="relative"
-      onMouseOver={() => {
-        if (!isActive) {
-          setIsActive(true);
-        }
-      }}
-      onMouseOut={() => {
-        if (isActive) {
-          setIsActive(false);
-        }
-      }}
+      className="relative "
+      onMouseOver={handleMouseOver}
+      onFocus={handleMouseOver}
+      onMouseOut={handleMouseOut}
+      onBlur={handleMouseOut}
+      role="tooltip"
     >
       {children}
       <div
