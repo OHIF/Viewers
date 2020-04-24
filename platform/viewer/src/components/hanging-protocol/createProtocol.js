@@ -11,7 +11,7 @@ export function createProto(viewports, studies) {
     ViewportStructure,
   } = hangingProtocols.classes;
 
-  const proto = new Protocol('a proto');
+  const proto = new Protocol(new Date().toLocaleString());
 
   const study = studies[0];
   const studyMetadata = study.metadata;
@@ -31,7 +31,8 @@ export function createProto(viewports, studies) {
     Columns: viewports.numColumns,
   });
 
-  const stage = new Stage(layout, 'stageName');
+  const stageName = `${viewports.numRows}x${viewports.numColumns}`;
+  const stage = new Stage(layout, stageName);
   Object.values(viewports.viewportSpecificData).map(
     (viewportSpecificData, viewportIndex) => {
       const viewport = new Viewport();
@@ -73,6 +74,15 @@ export function createProto(viewports, studies) {
 
         // Ideally, only modified settings should be stored
         let viewportSettings = cornerstone.getViewport(ee);
+        cornerstone.reset(ee);
+        let defaultViewportSettings = cornerstone.getViewport(ee);
+        cornerstone.setViewport(ee, viewportSettings);
+
+        viewportSettings = getModified(
+          viewportSettings,
+          defaultViewportSettings
+        );
+
         ee = cornerstone.getEnabledElement(ee);
         // let defaultViewportSettings = cornerstone.getDefaultViewport(ee);
         const imageId = ee.image.imageId;
@@ -116,4 +126,22 @@ function metadataAttrs(metadata, keys) {
         )
     )
   );
+}
+
+function getModified(current, orig) {
+  let entries = Object.entries(current)
+    .map(([k, v]) => {
+      if (v === orig[k]) return undefined;
+      if (typeof v === 'object') {
+        v = getModified(v, orig[k]);
+      }
+
+      if (v === undefined) return undefined;
+      return [k, v];
+    })
+    .filter(e => !!e);
+
+  if (entries.length == 0) return undefined;
+
+  return Object.fromEntries(entries);
 }

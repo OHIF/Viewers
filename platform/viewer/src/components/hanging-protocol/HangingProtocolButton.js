@@ -87,6 +87,8 @@ export function HangingProtocolButton({
     protocolStore.addProtocol(proto);
     const protocolEngine = refProtocolEngine.current;
     protocolEngine.updateProtocolMatches();
+    proto = protocolStore.getProtocol(proto.id);
+    protocolEngine.setHangingProtocol(proto, proto.stages.length - 1, false);
   };
 
   const editProto = proto => {
@@ -147,26 +149,26 @@ export function HangingProtocolButton({
       {visible && (
         <div className="dd-menu-list" style={{ width: 200 }}>
           <AutoclosePopup close={() => setVisible(false)}>
-            <button className="dd-item" onClick={addProtocol}>
+            <div className="dd-item" onClick={addProtocol}>
               <span>Save as new protocol</span>
-            </button>
+            </div>
             {stageCount > 0 && (
-              <button className="dd-item" onClick={applyProtocol}>
+              <div className="dd-item" onClick={applyProtocol}>
                 {// prettier-ignore
                 currentProtocol
                   ? <span>Apply next ({stageCount})</span>
                   : <span>Apply ({stageCount})</span>}
-              </button>
+              </div>
             )}
 
             {currentProtocol && (
-              <button className="dd-item" onClick={addStage}>
+              <div className="dd-item" onClick={addStage}>
                 <span>Save as new stage in {currentProtocol.name}</span>
-              </button>
+              </div>
             )}
-            <button className="dd-item" onClick={manageList}>
+            <div className="dd-item" onClick={manageList}>
               <span>Manage Local Protocols</span>
-            </button>
+            </div>
           </AutoclosePopup>
         </div>
       )}
