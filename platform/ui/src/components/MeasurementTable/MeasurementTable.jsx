@@ -28,6 +28,7 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
                 onClick={() => onClick(measurementItem.id)}
                 onKeyDown={() => onClick(measurementItem.id)}
                 role="button"
+                tabIndex="0"
               >
                 <div
                   className={classnames(
@@ -60,6 +61,7 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
                       right: 4,
                       transform: isActive ? '' : 'translateX(100%)',
                     }}
+                    e
                     onClick={(e) => {
                       // stopPropagation needed to avoid disable the current active item
                       e.stopPropagation();
