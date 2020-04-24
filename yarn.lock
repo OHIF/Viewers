@@ -5953,10 +5953,10 @@ cornerstone-tools@4.12.5:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.7"
 
-cornerstone-wado-image-loader@^3.0.0:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-3.0.6.tgz#7b2be91f8f658de3a7474e029aa8314a35725132"
-  integrity sha512-1luWOh1GzkboZ3uxfu4T8vh7K9nlDiiEbQ4dYIY9oobRZVZQbQiLT8wEZPbb4JTUe7UWJISHPCNgtAU8UE9DNw==
+cornerstone-wado-image-loader@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-3.1.0.tgz#6007470be896678636da3188f194f5e66ed07858"
+  integrity sha512-n2yadbwK7rCHqJyh5AUmYVPUY5m7boKpheK60sXV41Z0eSZLin9Ja+P9yeAvkg0VGV+/zaBZGPUGY3YyjdWBgg==
   dependencies:
     dicom-parser "^1.8.3"
     pako "^1.0.10"
@@ -6857,6 +6857,11 @@ dicomweb-client@^0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.5.2.tgz#aa5a4a6a5044b0702bb0a8a2662c86cd16901951"
   integrity sha512-e11n2+g7HfBuMyopWq76W11eSZJ707g4U1XiO8URA+23aoe0g1kGAtlPB29NKXl7zX7RznTJ7wfRBxFkW6EJDA==
+
+dicomweb-client@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.6.0.tgz#5e35ada52fe0155af1cc1f0e84f9c7f76477f92d"
+  integrity sha512-VAkBg4W6odIo2XsFxqjN/rptd7bQ8oHpRuKH5d46E9BUIPzRschazE8Dx1xg7/l3N3f1M70jB7yJ339arAXiDQ==
 
 diff-sequences@^24.9.0:
   version "24.9.0"
@@ -11428,9 +11433,9 @@ jszip@3.2.2:
     set-immediate-shim "~1.0.1"
 
 jszip@^3.2.2:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/jszip/-/jszip-3.3.0.tgz#29d72c21a54990fa885b11fc843db320640d5271"
-  integrity sha512-EJ9k766htB1ZWnsV5ZMDkKLgA+201r/ouFF8R2OigVjVdcm2rurcBrrdXaeqBJbqnUVMko512PYmlncBKE1Huw==
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/jszip/-/jszip-3.4.0.tgz#1a69421fa5f0bb9bc222a46bca88182fba075350"
+  integrity sha512-gZAOYuPl4EhPTXT0GjhI3o+ZAz3su6EhLrKUoAivcKqyqC7laS5JEv4XWZND9BgcDcF83vI85yGbDmDR6UhrIg==
   dependencies:
     lie "~3.3.0"
     pako "~1.0.2"

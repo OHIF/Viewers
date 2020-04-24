@@ -11,6 +11,7 @@ import { api } from 'dicomweb-client';
 import { isImage } from '../../utils/isImage';
 import isDisplaySetReconstructable from '../../utils/isDisplaySetReconstructable';
 import isLowPriorityModality from '../../utils/isLowPriorityModality';
+import errorHandler from '../../errorHandler';
 
 export class StudyMetadata extends Metadata {
   constructor(data, uid) {
@@ -102,10 +103,7 @@ export class StudyMetadata extends Metadata {
    * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
    * @returns {Array} The list of display sets created for the given series object
    */
-  _createDisplaySetsForSeries(
-    sopClassHandlerModules,
-    series,
-  ) {
+  _createDisplaySetsForSeries(sopClassHandlerModules, series) {
     const study = this;
     const displaySets = [];
 
@@ -293,14 +291,13 @@ export class StudyMetadata extends Metadata {
     }
 
     // Loop through the series (SeriesMetadata)
-    this.forEachSeries(
-      series => {
-         const displaySetsForSeries = this._createDisplaySetsForSeries(
-           sopClassHandlerModules,
-           series,
-         );
+    this.forEachSeries(series => {
+      const displaySetsForSeries = this._createDisplaySetsForSeries(
+        sopClassHandlerModules,
+        series
+      );
 
-         displaySets.push(...displaySetsForSeries);
+      displaySets.push(...displaySetsForSeries);
     });
 
     return sortDisplaySetList(displaySets);
@@ -321,7 +318,10 @@ export class StudyMetadata extends Metadata {
       return false;
     }
 
-    const displaySets = this._createDisplaySetsForSeries(sopClassHandlerModules, series)
+    const displaySets = this._createDisplaySetsForSeries(
+      sopClassHandlerModules,
+      series
+    );
 
     // Note: filtering in place because this._displaySets has writable: false
     for (let i = this._displaySets.length - 1; i >= 0; i--) {
@@ -835,9 +835,11 @@ function _getDisplaySetFromSopClassModule(
 
   const plugin = handlersForSopClassUID[0];
   const headers = DICOMWeb.getAuthorizationHeader();
+  const errorInterceptor = errorHandler.getHTTPErrorHandler();
   const dicomWebClient = new dwc({
     url: study.getData().wadoRoot,
     headers,
+    errorInterceptor,
   });
 
   let displaySet = plugin.getDisplaySetFromSeries(

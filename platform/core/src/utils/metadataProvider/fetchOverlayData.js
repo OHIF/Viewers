@@ -3,6 +3,8 @@ import DICOMWeb from '../../DICOMWeb';
 import str2ab from '../str2ab';
 import unpackOverlay from './unpackOverlay';
 
+import errorHandler from '../../errorHandler';
+
 export default async function fetchOverlayData(instance, server) {
   const OverlayDataPromises = [];
   const OverlayDataTags = [];
@@ -21,14 +23,20 @@ export default async function fetchOverlayData(instance, server) {
         const inlineBinaryData = atob(instance[OverlayDataTag].InlineBinary);
         const arraybuffer = str2ab(inlineBinaryData);
 
-        instance[OverlayDataTag] = unpackOverlay(arraybuffer)
-      } else if (instance[OverlayDataTag] && instance[OverlayDataTag].BulkDataURI) {
+        instance[OverlayDataTag] = unpackOverlay(arraybuffer);
+      } else if (
+        instance[OverlayDataTag] &&
+        instance[OverlayDataTag].BulkDataURI
+      ) {
         OverlayDataPromises.push(
           _getOverlayData(instance[OverlayDataTag], server)
         );
         OverlayDataTags.push(OverlayDataTag);
-      } else if (instance[OverlayDataTag] && instance[OverlayDataTag] instanceof ArrayBuffer) {
-        instance[OverlayDataTag] = unpackOverlay(instance[OverlayDataTag])
+      } else if (
+        instance[OverlayDataTag] &&
+        instance[OverlayDataTag] instanceof ArrayBuffer
+      ) {
+        instance[OverlayDataTag] = unpackOverlay(instance[OverlayDataTag]);
       }
     }
 
@@ -60,6 +68,7 @@ async function _getOverlayData(tag, server) {
   const config = {
     url: server.wadoRoot, //BulkDataURI is absolute, so this isn't used
     headers: DICOMWeb.getAuthorizationHeader(server),
+    errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
   const dicomWeb = new api.DICOMwebClient(config);
   const options = {
@@ -71,5 +80,3 @@ async function _getOverlayData(tag, server) {
     .then(result => result[0])
     .then(unpackOverlay);
 }
-
-
