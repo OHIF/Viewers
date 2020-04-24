@@ -41,7 +41,7 @@ const StructureSetItem = ({
       >
         <div>
           <div className="item-label" style={{ marginBottom: 4 }}>
-            {label}
+            <span>{label}</span>
             <Icon
               className={`eye-icon ${isVisible && '--visible'}`}
               name={isVisible ? 'eye' : 'eye-closed'}

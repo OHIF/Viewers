@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-vtk",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "OHIF extension for VTK.js",
   "author": "OHIF",
   "license": "MIT",
@@ -35,7 +35,7 @@
     "cornerstone-core": "^2.2.8",
     "cornerstone-tools": "4.12.5",
     "cornerstone-wado-image-loader": "^3.1.0",
-    "dcmjs": "^0.10.1",
+    "dcmjs": "^0.12.2",
     "dicom-parser": "^1.8.3",
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
@@ -53,7 +53,7 @@
     "react-vtkjs-viewport": "^0.8.3"
   },
   "devDependencies": {
-    "@ohif/core": "^2.8.1",
+    "@ohif/core": "^2.9.0",
     "@ohif/ui": "^1.4.3",
     "cornerstone-tools": "4.12.5",
     "cornerstone-wado-image-loader": "^3.1.0",

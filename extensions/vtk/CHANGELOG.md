@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.4.1...@ohif/extension-vtk@1.5.0) (2020-04-24)
+
+
+### Features
+
+* 🎸 Seg jump to slice + show/hide ([835f64d](https://github.com/OHIF/Viewers/commit/835f64d47a9994f6a25aaf3941a4974e215e7e7f))
+
+
+
+
+
 ## [1.4.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.4.0...@ohif/extension-vtk@1.4.1) (2020-04-23)
 
 **Note:** Version bump only for package @ohif/extension-vtk

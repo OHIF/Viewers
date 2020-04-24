@@ -267,7 +267,7 @@ const commandsModule = ({ servicesManager }) => {
       const study = studyMetadataManager.get(StudyInstanceUID);
 
       const displaySet = study.findDisplaySet(ds => {
-        return ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
+        return ds.images && ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
       });
 
       displaySet.SOPInstanceUID = SOPInstanceUID;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
@@ -28,13 +28,20 @@ const refreshViewport = () => {
 /**
  * SegmentationPanel component
  *
- * @param {Object} props
- * @param {Array} props.studies
- * @param {Array} props.viewports - viewportSpecificData
- * @param {number} props.activeIndex - activeViewportIndex
+ * @param {Array} props.studies - Studies data
+ * @param {Array} props.viewports - Viewports data (viewportSpecificData)
+ * @param {number} props.activeIndex - Active viewport index
+ * @param {boolean} props.isOpen - Boolean that indicates if the panel is expanded
+ * @param {Function} props.onSegItemClick - Segment click handler
  * @returns component
  */
-const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
+const SegmentationPanel = ({
+  studies,
+  viewports,
+  activeIndex,
+  isOpen,
+  onSegItemClick,
+}) => {
   /*
    * TODO: wrap get/set interactions with the cornerstoneTools
    * store with context to make these kind of things less blurry.
@@ -43,13 +50,14 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
   const DEFAULT_BRUSH_RADIUS = configuration.radius || 10;
   const [state, setState] = useState({
     brushRadius: DEFAULT_BRUSH_RADIUS,
-    brushColor: 'rgba(221, 85, 85, 1)', /* TODO: We shouldn't hardcode this color, in the future the SEG may set the colorLUT to whatever it wants. */
+    brushColor:
+      'rgba(221, 85, 85, 1)' /* TODO: We shouldn't hardcode this color, in the future the SEG may set the colorLUT to whatever it wants. */,
     selectedSegment: null,
     selectedSegmentation: null,
     showSegSettings: false,
     brushStackState: null,
     labelmapList: [],
-    segmentList: []
+    segmentList: [],
   });
 
   useEffect(() => {
@@ -57,7 +65,12 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
       log.warn('Segmentation Panel: labelmap modified', event);
       const module = cornerstoneTools.getModule('segmentation');
       const activeViewport = viewports[activeIndex];
-      const firstImageId = studyMetadata.getFirstImageId(activeViewport.displaySetInstanceUID);
+      const studyMetadata = studyMetadataManager.get(
+        activeViewport.StudyInstanceUID
+      );
+      const firstImageId = studyMetadata.getFirstImageId(
+        activeViewport.displaySetInstanceUID
+      );
       updateState('brushStackState', module.state.series[firstImageId]);
     };
 
@@ -86,20 +99,29 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
   useEffect(() => {
     const module = cornerstoneTools.getModule('segmentation');
     const activeViewport = viewports[activeIndex];
-    const studyMetadata = studyMetadataManager.get(activeViewport.StudyInstanceUID);
-    const firstImageId = studyMetadata.getFirstImageId(activeViewport.displaySetInstanceUID);
+    const studyMetadata = studyMetadataManager.get(
+      activeViewport.StudyInstanceUID
+    );
+    const firstImageId = studyMetadata.getFirstImageId(
+      activeViewport.displaySetInstanceUID
+    );
     const brushStackState = module.state.series[firstImageId];
 
     if (brushStackState) {
-      const labelmap3D = brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
-      const labelmapList = getLabelmapList(brushStackState, firstImageId, activeViewport);
-      const segmentList = getSegmentList(labelmap3D, firstImageId);
+      const labelmap3D =
+        brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
+      const labelmapList = getLabelmapList(
+        brushStackState,
+        firstImageId,
+        activeViewport
+      );
+      const segmentList = getSegmentList(labelmap3D, firstImageId, brushStackState);
       setState(state => ({
         ...state,
         brushStackState,
         selectedSegmentation: brushStackState.activeLabelmapIndex,
         labelmapList,
-        segmentList
+        segmentList,
       }));
     } else {
       setState(state => ({
@@ -108,126 +130,201 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
         segmentList: [],
       }));
     }
-  }, [studies, viewports, activeIndex]);
+  }, [studies, viewports, activeIndex, getLabelmapList, getSegmentList]);
 
   /* Handle open/closed panel behaviour */
   useEffect(() => {
-    updateState('showSegSettings', state.showSegSettings && !isOpen);
+    setState(state => ({
+      ...state,
+      showSegSettings: state.showSegSettings && !isOpen,
+    }));
   }, [isOpen]);
 
-  const getLabelmapList = (brushStackState, firstImageId, activeViewport) => {
-    /* Get list of SEG labelmaps specific to active viewport (reference series) */
-    const referencedSegDisplaysets = _getReferencedSegDisplaysets(
-      activeViewport.StudyInstanceUID,
-      activeViewport.SeriesInstanceUID
-    );
+  const getLabelmapList = useCallback(
+    (brushStackState, firstImageId, activeViewport) => {
+      /* Get list of SEG labelmaps specific to active viewport (reference series) */
+      const referencedSegDisplaysets = _getReferencedSegDisplaysets(
+        activeViewport.StudyInstanceUID,
+        activeViewport.SeriesInstanceUID
+      );
 
-    return referencedSegDisplaysets.map((displaySet, index) => {
-      const { labelmapIndex, SeriesDate, SeriesTime } = displaySet;
+      return referencedSegDisplaysets.map((displaySet, index) => {
+        const { labelmapIndex, SeriesDate, SeriesTime } = displaySet;
 
-      /* Map to display representation */
-      const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
-      const date = moment(dateStr, 'YYYYMMDD:HHmmss');
-      const isActiveLabelmap =
-        labelmapIndex === brushStackState.activeLabelmapIndex;
-      const displayDate = date.format('ddd, MMM Do YYYY');
-      const displayTime = date.format('h:mm:ss a');
-      const displayDescription = displaySet.SeriesDescription;
+        /* Map to display representation */
+        const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
+        const date = moment(dateStr, 'YYYYMMDD:HHmmss');
+        const isActiveLabelmap =
+          labelmapIndex === brushStackState.activeLabelmapIndex;
+        const displayDate = date.format('ddd, MMM Do YYYY');
+        const displayTime = date.format('h:mm:ss a');
+        const displayDescription = displaySet.SeriesDescription;
 
-      return {
-        value: labelmapIndex,
-        title: displayDescription,
-        description: displayDate,
-        onClick: async () => {
-          const activatedLabelmapIndex = await _setActiveLabelmap(
-            activeViewport,
-            studies,
-            displaySet,
-            firstImageId,
-            brushStackState.activeLabelmapIndex
-          );
-          updateState('selectedSegmentation', activatedLabelmapIndex);
-        },
-      };
-    });
-  };
+        return {
+          value: labelmapIndex,
+          title: displayDescription,
+          description: displayDate,
+          onClick: async () => {
+            const activatedLabelmapIndex = await _setActiveLabelmap(
+              activeViewport,
+              studies,
+              displaySet,
+              firstImageId,
+              brushStackState.activeLabelmapIndex
+            );
+            updateState('selectedSegmentation', activatedLabelmapIndex);
+          },
+        };
+      });
+    },
+    [studies]
+  );
 
-  const getSegmentList = (labelmap3D, firstImageId) => {
-    /*
-     * Newly created segments have no `meta`
-     * So we instead build a list of all segment indexes in use
-     * Then find any associated metadata
-     */
-    const uniqueSegmentIndexes = labelmap3D.labelmaps2D
-      .reduce((acc, labelmap2D) => {
-        if (labelmap2D) {
-          const segmentIndexes = labelmap2D.segmentsOnLabelmap;
+  const getSegmentList = useCallback(
+    (labelmap3D, firstImageId, brushStackState) => {
+      /*
+       * Newly created segments have no `meta`
+       * So we instead build a list of all segment indexes in use
+       * Then find any associated metadata
+       */
+      const uniqueSegmentIndexes = labelmap3D.labelmaps2D
+        .reduce((acc, labelmap2D) => {
+          if (labelmap2D) {
+            const segmentIndexes = labelmap2D.segmentsOnLabelmap;
 
-          for (let i = 0; i < segmentIndexes.length; i++) {
-            if (!acc.includes(segmentIndexes[i]) && segmentIndexes[i] !== 0) {
-              acc.push(segmentIndexes[i]);
+            for (let i = 0; i < segmentIndexes.length; i++) {
+              if (!acc.includes(segmentIndexes[i]) && segmentIndexes[i] !== 0) {
+                acc.push(segmentIndexes[i]);
+              }
             }
+          }
+
+          return acc;
+        }, [])
+        .sort((a, b) => a - b);
+
+      const module = cornerstoneTools.getModule('segmentation');
+      const colorLutTable =
+        module.state.colorLutTables[labelmap3D.colorLUTIndex];
+      const hasLabelmapMeta = labelmap3D.metadata && labelmap3D.metadata.data;
+
+      const segmentList = [];
+      for (let i = 0; i < uniqueSegmentIndexes.length; i++) {
+        const segmentIndex = uniqueSegmentIndexes[i];
+
+        const color = colorLutTable[segmentIndex];
+        let segmentLabel = '(unlabeled)';
+        let segmentNumber = segmentIndex;
+
+        /* Meta */
+        if (hasLabelmapMeta) {
+          const segmentMeta = labelmap3D.metadata.data[segmentIndex];
+
+          if (segmentMeta) {
+            segmentNumber = segmentMeta.SegmentNumber;
+            segmentLabel = segmentMeta.SegmentLabel;
           }
         }
 
-        return acc;
-      }, [])
-      .sort((a, b) => a - b);
+        const sameSegment = state.selectedSegment === segmentNumber;
+        const setCurrentSelectedSegment = () => {
+          _setActiveSegment(
+            firstImageId,
+            segmentNumber,
+            labelmap3D.activeSegmentIndex
+          );
+          updateState('selectedSegment', sameSegment ? null : segmentNumber);
 
-    const module = cornerstoneTools.getModule('segmentation');
-    const colorLutTable =
-      module.state.colorLutTables[labelmap3D.colorLUTIndex];
-    const hasLabelmapMeta = labelmap3D.metadata && labelmap3D.metadata.data;
+          const validIndexList = [];
+          labelmap3D.labelmaps2D.forEach((labelMap2D, index) => {
+            if (labelMap2D.segmentsOnLabelmap.includes(segmentNumber)) {
+              validIndexList.push(index);
+            }
+          });
+          const avg = array => array.reduce((a, b) => a + b) / array.length;
+          const average = avg(validIndexList);
+          const closest = validIndexList.reduce((prev, curr) => {
+            return Math.abs(curr - average) < Math.abs(prev - average)
+              ? curr
+              : prev;
+          });
 
-    const segmentList = [];
-    for (let i = 0; i < uniqueSegmentIndexes.length; i++) {
-      const segmentIndex = uniqueSegmentIndexes[i];
+          const enabledElements = cornerstone.getEnabledElements();
+          const element = enabledElements[activeIndex].element;
+          const toolState = cornerstoneTools.getToolState(element, 'stack');
 
-      const color = colorLutTable[segmentIndex];
-      let segmentLabel = '(unlabeled)';
-      let segmentNumber = segmentIndex;
+          if (!toolState) {
+            return;
+          }
 
-      /* Meta */
-      if (hasLabelmapMeta) {
-        const segmentMeta = labelmap3D.metadata.data[segmentIndex];
+          const imageIds = toolState.data[0].imageIds;
+          const imageId = imageIds[closest];
+          const frameIndex = imageIds.indexOf(imageId);
 
-        if (segmentMeta) {
-          segmentNumber = segmentMeta.SegmentNumber;
-          segmentLabel = segmentMeta.SegmentLabel;
+          const SOPInstanceUID = cornerstone.metaData.get(
+            'SOPInstanceUID',
+            imageId
+          );
+          const StudyInstanceUID = cornerstone.metaData.get(
+            'StudyInstanceUID',
+            imageId
+          );
+
+          onSegItemClick({
+            StudyInstanceUID,
+            SOPInstanceUID,
+            frameIndex,
+            activeViewportIndex: activeIndex,
+          });
+        };
+
+        const enabledElements = cornerstone.getEnabledElements();
+        const enabledElementViewport = enabledElements[activeIndex];
+
+        let isVisible = true;
+        if (enabledElementViewport) {
+          const element = enabledElementViewport.element;
+          const module = cornerstoneTools.getModule('segmentation');
+          isVisible = module.getters.isSegmentVisible(
+            element,
+            segmentNumber,
+            brushStackState.activeLabelmapIndex
+          );
         }
+
+        segmentList.push(
+          <SegmentItem
+            key={segmentNumber}
+            itemClass={`segment-item ${sameSegment && 'selected'}`}
+            onClick={setCurrentSelectedSegment}
+            label={segmentLabel}
+            index={segmentNumber}
+            color={color}
+            visible={isVisible}
+            onVisibilityChange={() => {
+              const element = enabledElements[activeIndex].element;
+              module.setters.toggleSegmentVisibility(
+                element,
+                segmentNumber,
+                brushStackState.activeLabelmapIndex
+              );
+              refreshViewport();
+            }}
+          />
+        );
       }
 
-      const sameSegment = state.selectedSegment === segmentNumber;
-      const setCurrentSelectedSegment = () => {
-        _setActiveSegment(
-          firstImageId,
-          segmentNumber,
-          labelmap3D.activeSegmentIndex
-        );
-        updateState('selectedSegment', sameSegment ? null : segmentNumber);
-      };
+      return segmentList;
 
-      segmentList.push(
-        <SegmentItem
-          key={segmentNumber}
-          itemClass={`segment-item ${sameSegment && 'selected'}`}
-          onClick={setCurrentSelectedSegment}
-          label={segmentLabel}
-          index={segmentNumber}
-          color={color}
-        />
-      );
-    }
-
-    return segmentList;
-
-    /*
-     * Let's iterate over segmentIndexes ^ above
-     * If meta has a match, use it to show info
-     * If now, add "no-meta" class
-     * Show default name
-     */
-  };
+      /*
+       * Let's iterate over segmentIndexes ^ above
+       * If meta has a match, use it to show info
+       * If now, add "no-meta" class
+       * Show default name
+       */
+    },
+    [activeIndex, onSegItemClick, state.selectedSegment]
+  );
 
   const updateState = (field, value) => {
     setState(state => ({ ...state, [field]: value }));
@@ -270,8 +367,7 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
     }
 
     const module = cornerstoneTools.getModule('segmentation');
-    const colorLutTable =
-      module.state.colorLutTables[labelmap3D.colorLUTIndex];
+    const colorLutTable = module.state.colorLutTables[labelmap3D.colorLUTIndex];
     const color = colorLutTable[labelmap3D.activeSegmentIndex];
 
     return `rgba(${color.join(',')})`;
@@ -329,7 +425,9 @@ const SegmentationPanel = ({ studies, viewports, activeIndex, isOpen }) => {
         <div className="segmentations">
           <SegmentationSelect
             value={
-              state.labelmapList.find(i => i.value === state.selectedSegmentation) || null
+              state.labelmapList.find(
+                i => i.value === state.selectedSegmentation
+              ) || null
             }
             formatOptionLabel={SegmentationItem}
             options={state.labelmapList}

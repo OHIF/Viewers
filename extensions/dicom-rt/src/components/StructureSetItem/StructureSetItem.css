@@ -61,14 +61,17 @@
 }
 
 .dcmrt-structure-set-item .item-label {
-  overflow: hidden;
-  max-width: calc(100% - 15px); /* calc(100% - 50px); 20px = eye icon */
-  text-overflow: ellipsis;
-  overflow-wrap: normal;
-  white-space: nowrap;
-
   display: flex;
   justify-content: space-between;
+  padding-right: 10px;
+}
+
+.dcmrt-structure-set-item .item-label span {
+  overflow-wrap: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: calc(100% - 40px); /* calc(100% - 50px); 20px = eye icon */
+  text-overflow: ellipsis;
 }
 
 .dcmrt-structure-set-item .item-label .eye-icon {
