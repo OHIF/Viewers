@@ -130,7 +130,7 @@ const SegmentationPanel = ({
         segmentList: [],
       }));
     }
-  }, [studies, viewports, activeIndex, getLabelmapList, getSegmentList]);
+  }, [studies, viewports, activeIndex, getLabelmapList, getSegmentList, state.selectedSegmentation]);
 
   /* Handle open/closed panel behaviour */
   useEffect(() => {
@@ -424,11 +424,7 @@ const SegmentationPanel = ({
         <h3>Segmentations</h3>
         <div className="segmentations">
           <SegmentationSelect
-            value={
-              state.labelmapList.find(
-                i => i.value === state.selectedSegmentation
-              ) || null
-            }
+            value={state.labelmapList.find(i => i.value === state.selectedSegmentation)}
             formatOptionLabel={SegmentationItem}
             options={state.labelmapList}
           />
