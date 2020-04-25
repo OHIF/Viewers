@@ -202,7 +202,8 @@ More info on this JSON format can be found here [Issue #1500](https://github.com
 1. When hosting the viewer, you will also need to host a /viewer route on the server - or the browser may not be able to find the route.
 2. For each instance url (dicom object) in the returned JSON, you must prefix the ```url``` with ```dicomweb:``` in order for the cornerstone image loader to retrieve it correctly.
  eg. ```https://image-server/my-image.dcm``` ---> ```dicomweb:https://image-server/my-image.dcm```
-3. The JSON format above is compatible with >= v3.7.8 of the application. Older versions of the the viewer used a different JSON format. As of 20/04/20 the public [https://viewer.ohif.org/] is a pre 3.0 version that does not support this format yet.
+3. The JSON format above is compatible with >= v3.7.8 of the application. Older versions of the viewer used a different JSON format. As of 20/04/20 the public [https://viewer.ohif.org/] is a pre 3.0 version that does not support this format yet.
+4. The JSON format is case-sensitive. Please ensure you have matched casing with the naturalised Dicom format referenced in [Issue #1500](https://github.com/OHIF/Viewers/issues/1500).
 
 
 
