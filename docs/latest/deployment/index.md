@@ -127,10 +127,84 @@ appropriate headers. You can find an example of this setup in our
 
 #### What if my archive doesn't support DicomWeb?
 
-> This is possible to do with the OHIF Viewer, but not as straightforward. Look
-> out for documentation on this subject in the near future.
+It's possible to supply all Study data via JSON format, in the event you do not have a DicomWeb endpoint.
+You can host all of the relevant files on any web accessible server (Amazon S3, Azure Blob Storage, Local file server etc.)
 
-...
+This JSON is supplied via the '?url=' query parameter.
+It should reference an endpoint that returns **application/json** formatted text.
+
+If you do not have an API, you can simply return a text file containing the JSON from any web server.
+
+
+You tell the OHIF viewer to use JSON by appending the ```'?url='``` query to the ```/Viewer``` route:
+
+eg. ```https://my-test-ohif-server/viewer?url=https://my-json-server/study-uid.json```
+
+The returned JSON object must contain a single root object with a 'studies' array.
+
+
+*Sample JSON format:*
+```
+{
+    "studies": [
+      {
+        "StudyInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.78",
+        "StudyDescription": "BRAIN SELLA",
+        "StudyDate": "20010108",
+        "StudyTime": "120022",
+        "PatientName": "MISTER^MR",
+        "PatientId": "832040",
+        "series": [
+          {
+            "SeriesDescription": "SAG T-1",
+            "SeriesInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.121",
+            "SeriesNumber": 2,
+            "SeriesDate": "20010108",
+            "SeriesTime": "120318",
+            "Modality": "MR",
+            "instances": [
+              {
+                "metadata": {
+                    "Columns": 512,
+                    "Rows": 512,
+                    "InstanceNumber": 3,
+                    "AcquisitionNumber": 0,
+                    "PhotometricInterpretation": "MONOCHROME2",
+                    "BitsAllocated": 16,
+                    "BitsStored": 16,
+                    "PixelRepresentation": 1,
+                    "SamplesPerPixel": 1,
+                    "PixelSpacing": [0.390625, 0.390625],
+                    "HighBit": 15,
+                    "ImageOrientationPatient": [0,1,0,0,0,-1],
+                    "ImagePositionPatient": [11.600000,-92.500000, 98.099998],
+                    "FrameOfReferenceUID": "1.2.840.113619.2.5.1762583153.223134.978956938.470",
+                    "ImageType": ["ORIGINAL","PRIMARY","OTHER"],
+                    "Modality": "MR",
+                    "SOPInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.124",
+                    "SeriesInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.121",
+                    "StudyInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.78"
+                },
+                "url": "dicomweb://s3.amazonaws.com/lury/MRStudy/1.2.840.113619.2.5.1762583153.215519.978957063.124.dcm"
+             }
+           ]
+         }
+       ]
+     }
+   ]
+}
+```
+More info on this JSON format can be found here [Issue #1500](https://github.com/OHIF/Viewers/issues/1500)
+
+
+**Implementation Notes:**
+
+1. When hosting the viewer, you will also need to host a /viewer route on the server - or the browser may not be able to find the route.
+2. For each instance url (dicom object) in the returned JSON, you must prefix the ```url``` with ```dicomweb:``` in order for the cornerstone image loader to retrieve it correctly.
+ eg. ```https://image-server/my-image.dcm``` ---> ```dicomweb:https://image-server/my-image.dcm```
+3. The JSON format above is compatible with >= v3.7.8 of the application. Older versions of the the viewer used a different JSON format. As of 20/04/20 the public [https://viewer.ohif.org/] is a pre 3.0 version that does not support this format yet.
+
+
 
 ### Securing Your Data
 
