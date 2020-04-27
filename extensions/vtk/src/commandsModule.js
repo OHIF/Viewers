@@ -139,18 +139,15 @@ const commandsModule = ({ commandsManager }) => {
           apis[viewportIndex] = api;
         }
 
-        api.setLabelmapRenderingOptions({
-          globalOpacity,
-          visible,
-          outlineThickness,
-          renderOutline,
-        });
-
+        api.setGlobalOpacity(globalOpacity);
+        api.setVisibility(visible);
+        api.setOutlineThickness(outlineThickness);
+        api.setOutlineRendering(renderOutline);
         api.updateImage();
       });
       await Promise.all(promises);
     },
-    setSegmentConfiguration: async ({ viewports, visible, segmentNumber, segmentAlpha }) => {
+    setSegmentConfiguration: async ({ viewports, visible, segmentNumber }) => {
       const allViewports = Object.values(viewports.viewportSpecificData);
       const promises = allViewports.map(async (viewport, viewportIndex) => {
         let api = apis[viewportIndex];
@@ -160,9 +157,7 @@ const commandsModule = ({ commandsManager }) => {
           apis[viewportIndex] = api;
         }
 
-        segmentAlpha = segmentAlpha ? segmentAlpha : (visible ? 255 : 0);
-        api.setSegmentAlpha(segmentNumber, segmentAlpha);
-
+        api.setSegmentVisibility(segmentNumber, visible);
         api.updateImage();
       });
       await Promise.all(promises);
