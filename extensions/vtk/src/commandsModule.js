@@ -130,32 +130,42 @@ const commandsModule = ({ commandsManager }) => {
       renderOutline,
       outlineThickness
     }) => {
-      let api = apis[viewports.activeViewportIndex];
+      const allViewports = Object.values(viewports.viewportSpecificData);
+      const promises = allViewports.map(async (viewport, viewportIndex) => {
+        let api = apis[viewportIndex];
 
-      if (!api) {
-        api = await _getActiveViewportVTKApi(viewports);
-        apis[viewports.activeViewportIndex] = api;
-      }
+        if (!api) {
+          api = await _getActiveViewportVTKApi(viewports);
+          apis[viewportIndex] = api;
+        }
 
-      api.setLabelmapRenderingOptions({
-        globalOpacity,
-        visible,
-        outlineThickness,
-        renderOutline,
+        api.setLabelmapRenderingOptions({
+          globalOpacity,
+          visible,
+          outlineThickness,
+          renderOutline,
+        });
+
+        api.updateImage();
       });
-      api.updateImage();
+      await Promise.all(promises);
     },
-    setSegmentConfiguration: async ({ viewports, visible, segmentIndex, segmentAlpha }) => {
-      let api = apis[viewports.activeViewportIndex];
+    setSegmentConfiguration: async ({ viewports, visible, segmentNumber, segmentAlpha }) => {
+      const allViewports = Object.values(viewports.viewportSpecificData);
+      const promises = allViewports.map(async (viewport, viewportIndex) => {
+        let api = apis[viewportIndex];
 
-      if (!api) {
-        api = await _getActiveViewportVTKApi(viewports);
-        apis[viewports.activeViewportIndex] = api;
-      }
+        if (!api) {
+          api = await _getActiveViewportVTKApi(viewports);
+          apis[viewportIndex] = api;
+        }
 
-      segmentAlpha = segmentAlpha ? segmentAlpha : (visible ? 255 : 0);
-      api.setSegmentAlpha(segmentIndex, segmentAlpha);
-      api.updateImage();
+        segmentAlpha = segmentAlpha ? segmentAlpha : (visible ? 255 : 0);
+        api.setSegmentAlpha(segmentNumber, segmentAlpha);
+
+        api.updateImage();
+      });
+      await Promise.all(promises);
     },
     enableRotateTool: () => {
       apis.forEach(api => {

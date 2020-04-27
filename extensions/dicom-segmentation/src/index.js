@@ -29,8 +29,11 @@ export default {
         commandsManager.runCommand('jumpToImage', segData);
       };
 
-      const onSegmentVisibilityChangeHandler = (segmentIndex, visible) => {
-        commandsManager.runCommand('setSegmentConfiguration', { segmentIndex, visible });
+      const onSegmentVisibilityChangeHandler = (segmentNumber, visible) => {
+        commandsManager.runCommand('setSegmentConfiguration', {
+          segmentNumber,
+          visible
+        });
       };
 
       const onConfigurationChangeHandler = configuration => {

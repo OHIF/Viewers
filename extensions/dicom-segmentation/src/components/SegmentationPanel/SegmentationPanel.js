@@ -281,8 +281,8 @@ const SegmentationPanel = ({
           });
         };
 
-        const segmentProperties = state.cachedSegmentsProperties[segmentNumber];
-        const visible = segmentProperties ? segmentProperties.visible : true;
+        const cachedSegmentsProperties = state.cachedSegmentsProperties[segmentNumber];
+        const visible = cachedSegmentsProperties ? cachedSegmentsProperties.visible : true;
 
         segmentList.push(
           <SegmentItem
