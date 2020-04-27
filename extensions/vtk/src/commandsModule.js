@@ -34,7 +34,6 @@ const commandsModule = ({ commandsManager }) => {
     }
 
     const displaySet = viewportSpecificData[activeViewportIndex];
-
     let api;
     if (!api) {
       try {
@@ -123,6 +122,40 @@ const commandsModule = ({ commandsManager }) => {
       apis[viewports.activeViewportIndex] = api;
 
       _setView(api, [0, 1, 0], [0, 0, 1]);
+    },
+    setSegmentationConfiguration: async ({
+      viewports,
+      globalOpacity,
+      visible,
+      renderOutline,
+      outlineThickness
+    }) => {
+      let api = apis[viewports.activeViewportIndex];
+
+      if (!api) {
+        api = await _getActiveViewportVTKApi(viewports);
+        apis[viewports.activeViewportIndex] = api;
+      }
+
+      api.setLabelmapRenderingOptions({
+        globalOpacity,
+        visible,
+        outlineThickness,
+        renderOutline,
+      });
+      api.updateImage();
+    },
+    setSegmentConfiguration: async ({ viewports, visible, segmentIndex, segmentAlpha }) => {
+      let api = apis[viewports.activeViewportIndex];
+
+      if (!api) {
+        api = await _getActiveViewportVTKApi(viewports);
+        apis[viewports.activeViewportIndex] = api;
+      }
+
+      segmentAlpha = segmentAlpha ? segmentAlpha : (visible ? 255 : 0);
+      api.setSegmentAlpha(segmentIndex, segmentAlpha);
+      api.updateImage();
     },
     enableRotateTool: () => {
       apis.forEach(api => {
@@ -280,6 +313,16 @@ const commandsModule = ({ commandsManager }) => {
   window.vtkActions = actions;
 
   const definitions = {
+    setSegmentationConfiguration: {
+      commandFn: actions.setSegmentationConfiguration,
+      storeContexts: ['viewports'],
+      options: {},
+    },
+    setSegmentConfiguration: {
+      commandFn: actions.setSegmentConfiguration,
+      storeContexts: ['viewports'],
+      options: {},
+    },
     axial: {
       commandFn: actions.axial,
       storeContexts: ['viewports'],

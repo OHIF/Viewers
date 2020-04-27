@@ -29,8 +29,26 @@ export default {
         commandsManager.runCommand('jumpToImage', segData);
       };
 
+      const onSegmentVisibilityChangeHandler = (segmentIndex, visible) => {
+        commandsManager.runCommand('setSegmentConfiguration', { segmentIndex, visible });
+      };
+
+      const onConfigurationChangeHandler = configuration => {
+        commandsManager.runCommand('setSegmentationConfiguration', {
+          globalOpacity: configuration.fillAlpha,
+          outlineThickness: configuration.outlineWidth,
+          renderOutline: configuration.renderOutline,
+          visible: configuration.renderFill
+        });
+      };
+
       return (
-        <SegmentationPanel {...props} onSegItemClick={segItemClickHandler} />
+        <SegmentationPanel
+          {...props}
+          onSegItemClick={segItemClickHandler}
+          onSegmentVisibilityChange={onSegmentVisibilityChangeHandler}
+          onConfigurationChange={onConfigurationChangeHandler}
+        />
       );
     };
 

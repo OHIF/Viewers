@@ -41,6 +41,8 @@ const SegmentationPanel = ({
   activeIndex,
   isOpen,
   onSegItemClick,
+  onSegmentVisibilityChange,
+  onConfigurationChange
 }) => {
   /*
    * TODO: wrap get/set interactions with the cornerstoneTools
@@ -58,6 +60,7 @@ const SegmentationPanel = ({
     brushStackState: null,
     labelmapList: [],
     segmentList: [],
+    cachedSegmentsProperties: []
   });
 
   useEffect(() => {
@@ -278,19 +281,8 @@ const SegmentationPanel = ({
           });
         };
 
-        const enabledElements = cornerstone.getEnabledElements();
-        const enabledElementViewport = enabledElements[activeIndex];
-
-        let isVisible = true;
-        if (enabledElementViewport) {
-          const element = enabledElementViewport.element;
-          const module = cornerstoneTools.getModule('segmentation');
-          isVisible = module.getters.isSegmentVisible(
-            element,
-            segmentNumber,
-            brushStackState.activeLabelmapIndex
-          );
-        }
+        const segmentProperties = state.cachedSegmentsProperties[segmentNumber];
+        const visible = segmentProperties ? segmentProperties.visible : true;
 
         segmentList.push(
           <SegmentItem
@@ -300,14 +292,20 @@ const SegmentationPanel = ({
             label={segmentLabel}
             index={segmentNumber}
             color={color}
-            visible={isVisible}
-            onVisibilityChange={() => {
-              const element = enabledElements[activeIndex].element;
-              module.setters.toggleSegmentVisibility(
-                element,
-                segmentNumber,
-                brushStackState.activeLabelmapIndex
-              );
+            visible={visible}
+            onVisibilityChange={newVisibility => {
+              const enabledElements = cornerstone.getEnabledElements();
+              if (enabledElements && enabledElements.length) {
+                const element = enabledElements[activeIndex].element;
+                module.setters.toggleSegmentVisibility(
+                  element,
+                  segmentNumber,
+                  brushStackState.activeLabelmapIndex
+                );
+              }
+
+              updateCachedSegmentsProperties(segmentNumber, { visible: newVisibility });
+              onSegmentVisibilityChange(segmentNumber, newVisibility);
               refreshViewport();
             }}
           />
@@ -325,6 +323,18 @@ const SegmentationPanel = ({
     },
     [activeIndex, onSegItemClick, state.selectedSegment]
   );
+
+  const updateCachedSegmentsProperties = (segmentNumber, properties) => {
+    const segmentsProperties = state.cachedSegmentsProperties;
+    const segmentProperties = state.cachedSegmentsProperties[segmentNumber];
+
+    segmentsProperties[segmentNumber] =
+      segmentProperties ?
+        { ...segmentProperties, ...properties } :
+        properties;
+
+    updateState('segmentsProperties', segmentsProperties);
+  };
 
   const updateState = (field, value) => {
     setState(state => ({ ...state, [field]: value }));
@@ -374,7 +384,6 @@ const SegmentationPanel = ({
   };
 
   const updateConfiguration = newConfiguration => {
-    /* Supported configuration */
     configuration.renderFill = newConfiguration.renderFill;
     configuration.renderOutline = newConfiguration.renderOutline;
     configuration.shouldRenderInactiveLabelmaps =
@@ -384,6 +393,7 @@ const SegmentationPanel = ({
     configuration.outlineWidth = newConfiguration.outlineWidth;
     configuration.fillAlphaInactive = newConfiguration.fillAlphaInactive;
     configuration.outlineAlphaInactive = newConfiguration.outlineAlphaInactive;
+    onConfigurationChange(newConfiguration);
     refreshViewport();
   };
 

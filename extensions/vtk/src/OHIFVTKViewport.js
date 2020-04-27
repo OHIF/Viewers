@@ -69,7 +69,7 @@ class OHIFVTKViewport extends Component {
   };
 
   static defaultProps = {
-    onScroll: () => {},
+    onScroll: () => { },
   };
 
   static id = 'OHIFVTKViewport';
@@ -345,7 +345,7 @@ class OHIFVTKViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
+      prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
@@ -405,10 +405,6 @@ class OHIFVTKViewport extends Component {
 
     const style = { width: '100%', height: '100%', position: 'relative' };
 
-    const visible = configuration.renderFill || configuration.renderOutline;
-    const opacity = configuration.fillAlpha;
-    const outlineThickness = configuration.outlineThickness;
-
     return (
       <>
         <div style={style}>
@@ -428,9 +424,9 @@ class OHIFVTKViewport extends Component {
               dataDetails={this.state.dataDetails}
               labelmapRenderingOptions={{
                 colorLUT: this.state.labelmapColorLUT,
-                globalOpacity: opacity,
-                visible,
-                outlineThickness,
+                globalOpacity: configuration.fillAlpha,
+                visible: configuration.renderFill,
+                outlineThickness: configuration.outlineWidth,
                 renderOutline: true,
               }}
               onScroll={this.props.onScroll}
