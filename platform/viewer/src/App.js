@@ -1,13 +1,14 @@
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { ThemeWrapper } from '@ohif/ui';
 
-import ConnectedStudyList from './connectedComponents/ConnectedStudyList';
+import routes from './routes';
 
 const App = () => {
   return (
-    <ThemeWrapper>
-      <ConnectedStudyList />
-    </ThemeWrapper>
+    <BrowserRouter>
+      <ThemeWrapper>{routes()}</ThemeWrapper>
+    </BrowserRouter>
   );
 };
 

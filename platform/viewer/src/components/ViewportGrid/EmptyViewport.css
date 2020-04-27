@@ -1,7 +1,0 @@
-.empty-viewport {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  color: var(--text-secondary-color);
-}
