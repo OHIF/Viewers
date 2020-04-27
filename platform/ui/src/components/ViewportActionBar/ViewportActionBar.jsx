@@ -93,7 +93,7 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
             </span>
           </div>
           <div className="flex">
-            <p className="text-base truncate max-w-sm text-primary-light">
+            <p className="text-base truncate max-w-72 text-primary-light">
               {seriesDescription}
             </p>
           </div>
