@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.2.0...@ohif/extension-dicom-segmentation@0.2.1) (2020-04-27)
+
+
+### Bug Fixes
+
+* 🐛 Dropdown not updating when selecting segment ([#1675](https://github.com/OHIF/Viewers/issues/1675)) ([20e366f](https://github.com/OHIF/Viewers/commit/20e366ffbd76781f48dc99c9f59e24b255b5e5df)), closes [#1669](https://github.com/OHIF/Viewers/issues/1669)
+
+
+
+
+
 # [0.2.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.1.2...@ohif/extension-dicom-segmentation@0.2.0) (2020-04-24)
 
 
