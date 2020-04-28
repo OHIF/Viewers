@@ -1,0 +1,118 @@
+---
+name: Study List Filter
+menu: Data Display
+route: components/studyListFilter
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import { StudyListFilter } from '@ohif/ui';
+
+# Study List Filter
+
+## Import
+
+```javascript
+import { StudyListFilter } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const defaultFilterValues = {
+      patientName: '',
+      mrn: '',
+      studyDate: {
+        startDate: null,
+        endDate: null,
+      },
+      description: '',
+      modality: undefined,
+      accession: '',
+      sortBy: '',
+      sortDirection: 'none',
+      page: 0,
+      resultsPerPage: 25,
+    };
+    const [filterValues, setFilterValues] = useState(defaultFilterValues);
+    const filtersMeta = [
+      {
+        name: 'patientName',
+        displayName: 'Patient Name',
+        inputType: 'Text',
+        isSortable: true,
+        gridCol: 4,
+      },
+      {
+        name: 'mrn',
+        displayName: 'MRN',
+        inputType: 'Text',
+        isSortable: true,
+        gridCol: 2,
+      },
+      {
+        name: 'studyDate',
+        displayName: 'Study date',
+        inputType: 'DateRange',
+        isSortable: true,
+        gridCol: 5,
+      },
+      {
+        name: 'description',
+        displayName: 'Description',
+        inputType: 'Text',
+        isSortable: true,
+        gridCol: 4,
+      },
+      {
+        name: 'modality',
+        displayName: 'Modality',
+        inputType: 'MultiSelect',
+        inputProps: {
+          options: [
+            { value: 'SEG', label: 'SEG' },
+            { value: 'CT', label: 'CT' },
+            { value: 'MR', label: 'MR' },
+            { value: 'SR', label: 'SR' },
+          ],
+        },
+        isSortable: true,
+        gridCol: 3,
+      },
+      {
+        name: 'accession',
+        displayName: 'Accession',
+        inputType: 'Text',
+        isSortable: true,
+        gridCol: 4,
+      },
+      {
+        name: 'instances',
+        displayName: 'Instances',
+        inputType: 'None',
+        isSortable: true,
+        gridCol: 2,
+      },
+    ];
+    const isFiltering = (filterValues, defaultFilterValues) => {
+      return Object.keys(defaultFilterValues).some(name => {
+        return filterValues[name] !== defaultFilterValues[name];
+      });
+    };
+    return (
+      <StudyListFilter
+        numOfStudies={100}
+        filtersMeta={filtersMeta}
+        filterValues={filterValues}
+        setFilterValues={setFilterValues}
+        clearFilters={() => setFilterValues(defaultFilterValues)}
+        isFiltering={isFiltering(filterValues, defaultFilterValues)}
+      />
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={StudyListFilter} />
