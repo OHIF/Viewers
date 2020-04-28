@@ -30,6 +30,7 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
                   isActive={isActive}
+                  imageSrc={imageSrc}
                   onClick={() => onThumbnailClick(displaySetInstanceUid)}
                 />
               );
@@ -54,6 +55,7 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
                   isTracked={isTracked}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUid)}
+                  imageSrc={imageSrc}
                 />
               );
             default:

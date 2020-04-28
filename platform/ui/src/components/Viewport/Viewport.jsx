@@ -16,6 +16,22 @@ const Viewport = ({
           onSeriesChange={onSeriesChange}
           studyData={studyData}
         />
+
+        {hasNotification && (
+          <Notification
+            text="Track all measurement for this series?"
+            type="info"
+            actionButtons={
+              <div>
+                <Button>No</Button>
+                <Button className="ml-2">No, do not ask again</Button>
+                <Button className="ml-2" color="primary">
+                  Yes
+                </Button>
+              </div>
+            }
+          />
+        )}
       </div>
 
       {/* STUDY IMAGE */}
