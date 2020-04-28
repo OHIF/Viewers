@@ -42,7 +42,7 @@ const SegmentationPanel = ({
   isOpen,
   onSegItemClick,
   onSegmentVisibilityChange,
-  onConfigurationChange
+  onConfigurationChange,
 }) => {
   /*
    * TODO: wrap get/set interactions with the cornerstoneTools
@@ -253,31 +253,57 @@ const SegmentationPanel = ({
           });
 
           const enabledElements = cornerstone.getEnabledElements();
-          const element = enabledElements[activeIndex].element;
-          const toolState = cornerstoneTools.getToolState(element, 'stack');
+          if (enabledElements.length) {
+            const element = enabledElements[activeIndex].element;
+            const toolState = cornerstoneTools.getToolState(element, 'stack');
 
-          if (!toolState) {
-            return;
+            if (!toolState) {
+              return;
+            }
+
+            const imageIds = toolState.data[0].imageIds;
+            const imageId = imageIds[closest];
+            const frameIndex = imageIds.indexOf(imageId);
+
+            const SOPInstanceUID = cornerstone.metaData.get(
+              'SOPInstanceUID',
+              imageId
+            );
+            const StudyInstanceUID = cornerstone.metaData.get(
+              'StudyInstanceUID',
+              imageId
+            );
+
+            onSegItemClick({
+              StudyInstanceUID,
+              SOPInstanceUID,
+              frameIndex,
+              activeViewportIndex: activeIndex,
+            });
           }
 
-          const imageIds = toolState.data[0].imageIds;
-          const imageId = imageIds[closest];
-          const frameIndex = imageIds.indexOf(imageId);
+          const activeViewport = viewports[activeIndex];
+          const studyMetadata = studyMetadataManager.get(
+            activeViewport.StudyInstanceUID
+          );
+          const allDisplaySets = studyMetadata.getDisplaySets();
+          const currentDisplaySet = allDisplaySets.find(
+            displaySet =>
+              displaySet.displaySetInstanceUID ===
+              activeViewport.displaySetInstanceUID
+          );
 
-          const SOPInstanceUID = cornerstone.metaData.get(
-            'SOPInstanceUID',
-            imageId
-          );
-          const StudyInstanceUID = cornerstone.metaData.get(
-            'StudyInstanceUID',
-            imageId
-          );
+          const frame = labelmap3D.labelmaps2D[closest];
 
           onSegItemClick({
-            StudyInstanceUID,
-            SOPInstanceUID,
-            frameIndex,
-            activeViewportIndex: activeIndex,
+            studies,
+            StudyInstanceUID: currentDisplaySet.StudyInstanceUID,
+            displaySetInstanceUID: currentDisplaySet.displaySetInstanceUID,
+            SOPClassUID: viewports[activeIndex].sopClassUIDs[0],
+            SOPInstanceUID: currentDisplaySet.SOPInstanceUID,
+            frameIndex: closest,
+            frame,
+            segmentNumber
           });
         };
 

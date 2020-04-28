@@ -27,6 +27,7 @@ export default {
     const ExtendedSegmentationPanel = props => {
       const segItemClickHandler = segData => {
         commandsManager.runCommand('jumpToImage', segData);
+        commandsManager.runCommand('jumpToSlice', segData);
       };
 
       const onSegmentVisibilityChangeHandler = (segmentNumber, visible) => {

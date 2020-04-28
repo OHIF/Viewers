@@ -5,10 +5,13 @@ import {
   vtkInteractorStyleMPRRotate,
   vtkSVGCrosshairsWidget,
 } from 'react-vtkjs-viewport';
-
+import { getImageData } from 'react-vtkjs-viewport';
+import { vec3 } from 'gl-matrix';
 import setMPRLayout from './utils/setMPRLayout.js';
 import setViewportToVTK from './utils/setViewportToVTK.js';
 import Constants from 'vtk.js/Sources/Rendering/Core/VolumeMapper/Constants.js';
+import OHIFVTKViewport from './OHIFVTKViewport';
+import vtkCoordinate from 'vtk.js/Sources/Rendering/Core/Coordinate';
 
 const { BlendMode } = Constants;
 
@@ -122,6 +125,79 @@ const commandsModule = ({ commandsManager }) => {
       apis[viewports.activeViewportIndex] = api;
 
       _setView(api, [0, 1, 0], [0, 0, 1]);
+    },
+    jumpToSlice: async ({
+      viewports,
+      studies,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      SOPClassUID,
+      SOPInstanceUID,
+      segmentNumber,
+      frameIndex,
+      frame
+    }) => {
+      let api = apis[viewports.activeViewportIndex];
+
+      if (!api) {
+        api = await _getActiveViewportVTKApi(viewports);
+        apis[viewports.activeViewportIndex] = api;
+      }
+
+      const stack = OHIFVTKViewport.getCornerstoneStack(
+        studies,
+        StudyInstanceUID,
+        displaySetInstanceUID,
+        SOPClassUID,
+        SOPInstanceUID,
+        frameIndex,
+      );
+
+      const imageDataObject = getImageData(stack.imageIds, displaySetInstanceUID);
+
+      /* rows and cols from somewhere. */
+      let pixelIndex = 0;
+      let x = 0;
+      let y = 0;
+      let count = 0;
+
+      const rows = imageDataObject.dimensions[1];
+      const cols = imageDataObject.dimensions[0];
+
+      for (let j = 0; j < rows; j++) {
+        for (let i = 0; i < cols; i++) {
+          // [i, j] =
+          const pixel = frame.pixelData[pixelIndex];
+          if (pixel === segmentNumber) {
+            x += i;
+            y += j;
+            count++;
+          }
+          pixelIndex++;
+        }
+      }
+      x /= count;
+      y /= count;
+
+      const position = [x, y, frameIndex];
+
+      const _convertModelToWorldSpace = (position, vtkImageData) => {
+        const indexToWorld = vtkImageData.getIndexToWorld();
+        const pos = vec3.create();
+
+        position[0] += 0.5; /* Move to the centre of the voxel. */
+        position[1] += 0.5; /* Move to the centre of the voxel. */
+        position[2] += 0.5; /* Move to the centre of the voxel. */
+
+        vec3.set(pos, position[0], position[1], position[2]);
+        vec3.transformMat4(pos, pos, indexToWorld);
+
+        return pos;
+      };
+
+      const worldPos = _convertModelToWorldSpace(position, imageDataObject.vtkImageData);
+
+      api.svgWidgets.crosshairsWidget.moveCrosshairs(worldPos, apis, viewports.activeViewportIndex);
     },
     setSegmentationConfiguration: async ({
       viewports,
@@ -318,6 +394,11 @@ const commandsModule = ({ commandsManager }) => {
   window.vtkActions = actions;
 
   const definitions = {
+    jumpToSlice: {
+      commandFn: actions.jumpToSlice,
+      storeContexts: ['viewports'],
+      options: {},
+    },
     setSegmentationConfiguration: {
       commandFn: actions.setSegmentationConfiguration,
       storeContexts: ['viewports'],
