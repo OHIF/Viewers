@@ -61,7 +61,7 @@ const SegmentationPanel = ({
       'rgba(221, 85, 85, 1)' /* TODO: We shouldn't hardcode this color, in the future the SEG may set the colorLUT to whatever it wants. */,
     selectedSegment: null,
     selectedSegmentation: null,
-    showSegSettings: false,
+    showSegmentationSettings: false,
     brushStackState: null,
     labelmapList: [],
     segmentList: [],
@@ -138,13 +138,13 @@ const SegmentationPanel = ({
         segmentList: [],
       }));
     }
-  }, [studies, viewports, activeIndex, getLabelmapList, getSegmentList, state.selectedSegmentation]);
+  }, [studies, viewports, activeIndex, getLabelmapList, getSegmentList, state.selectedSegmentation, activeContexts]);
 
   /* Handle open/closed panel behaviour */
   useEffect(() => {
     setState(state => ({
       ...state,
-      showSegSettings: state.showSegSettings && !isOpen,
+      showSegmentationSettings: state.showSegmentationSettings && !isOpen,
     }));
   }, [isOpen]);
 
@@ -257,7 +257,6 @@ const SegmentationPanel = ({
               : prev;
           });
 
-          console.log('asdasd', isCornerstone(), contexts, activeContexts);
           if (isCornerstone()) {
             const enabledElements = cornerstone.getEnabledElements();
             const element = enabledElements[activeIndex].element;
@@ -286,7 +285,9 @@ const SegmentationPanel = ({
               frameIndex,
               activeViewportIndex: activeIndex,
             });
-          } else {
+          }
+
+          if (isVTK()) {
             const activeViewport = viewports[activeIndex];
             const studyMetadata = studyMetadataManager.get(
               activeViewport.StudyInstanceUID
@@ -306,15 +307,15 @@ const SegmentationPanel = ({
               displaySetInstanceUID: currentDisplaySet.displaySetInstanceUID,
               SOPClassUID: viewports[activeIndex].sopClassUIDs[0],
               SOPInstanceUID: currentDisplaySet.SOPInstanceUID,
+              segmentNumber,
               frameIndex: closest,
               frame,
-              segmentNumber
             });
           }
         };
 
-        const cachedSegmentsProperties = state.cachedSegmentsProperties[segmentNumber];
-        const visible = cachedSegmentsProperties ? cachedSegmentsProperties.visible : true;
+        const cachedSegmentProperties = state.cachedSegmentsProperties[segmentNumber];
+        let visible = cachedSegmentProperties ? cachedSegmentProperties.visible : true;
 
         segmentList.push(
           <SegmentItem
@@ -326,8 +327,8 @@ const SegmentationPanel = ({
             color={color}
             visible={visible}
             onVisibilityChange={newVisibility => {
-              const enabledElements = cornerstone.getEnabledElements();
-              if (enabledElements && enabledElements.length) {
+              if (isCornerstone()) {
+                const enabledElements = cornerstone.getEnabledElements();
                 const element = enabledElements[activeIndex].element;
                 module.setters.toggleSegmentVisibility(
                   element,
@@ -336,8 +337,11 @@ const SegmentationPanel = ({
                 );
               }
 
+              if (isVTK()) {
+                onSegmentVisibilityChange(segmentNumber, newVisibility);
+              }
+
               updateCachedSegmentsProperties(segmentNumber, { visible: newVisibility });
-              onSegmentVisibilityChange(segmentNumber, newVisibility);
               refreshViewport();
             }}
           />
@@ -365,8 +369,12 @@ const SegmentationPanel = ({
         { ...segmentProperties, ...properties } :
         properties;
 
-    updateState('segmentsProperties', segmentsProperties);
+    updateState('cachedSegmentsProperties', segmentsProperties);
   };
+
+  useEffect(() => {
+    updateState('cachedSegmentsProperties', []);
+  }, [activeContexts]);
 
   const updateState = (field, value) => {
     setState(state => ({ ...state, [field]: value }));
@@ -429,12 +437,13 @@ const SegmentationPanel = ({
     refreshViewport();
   };
 
-  if (state.showSegSettings) {
+  const disabledConfigurationFields = ['outlineAlpha', 'shouldRenderInactiveLabelmaps'];
+  if (state.showSegmentationSettings) {
     return (
       <SegmentationSettings
-        disabledFields={isVTK() ? ['outlineAlpha', 'shouldRenderInactiveLabelmaps'] : []}
+        disabledFields={isVTK() ? disabledConfigurationFields : []}
         configuration={configuration}
-        onBack={() => updateState('showSegSettings', false)}
+        onBack={() => updateState('showSegmentationSettings', false)}
         onChange={updateConfiguration}
       />
     );
@@ -446,7 +455,7 @@ const SegmentationPanel = ({
           name="cog"
           width="25px"
           height="25px"
-          onClick={() => updateState('showSegSettings', true)}
+          onClick={() => updateState('showSegmentationSettings', true)}
         />
         {false && (
           <form className="selector-form">
