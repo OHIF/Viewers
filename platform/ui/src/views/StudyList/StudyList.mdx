@@ -18,12 +18,10 @@ import {
   EmptyStudies,
   StudyListTable,
   StudyListPagination,
+  StudyListFilter
 } from '@ohif/ui';
 
-<!-- TEMPORARY IMPORTING -- SHOULD USE InputGroup after PR #1580 gets merged  -->
 
-import StudyListFilter from './components/StudyListFilter';
-import { getMockedStudies } from '../../utils/';
 import classnames from 'classnames';
 import moment from 'moment';
 
@@ -259,7 +257,7 @@ components.
       };
     });
     const handleStudyList = (number) => {
-      const studies = getMockedStudies(number);
+      const studies = utils.getMockedStudies(number);
       setStudies(studies);
       setCurrentPage(1);
     };
