@@ -53,7 +53,7 @@ import store from './store';
 /** Contexts */
 import WhiteLabelingContext from './context/WhiteLabelingContext';
 import UserManagerContext from './context/UserManagerContext';
-import AppContext from './context/AppContext';
+import { AppProvider, useAppContext, CONTEXTS } from './context/AppContext';
 
 /** ~~~~~~~~~~~~~ Application Setup */
 const commandsManagerConfig = {
@@ -159,8 +159,8 @@ class App extends Component {
 
     if (this._userManager) {
       return (
-        <AppContext.Provider value={{ appConfig: this._appConfig }}>
-          <Provider store={store}>
+        <Provider store={store}>
+          <AppProvider config={this._appConfig}>
             <I18nextProvider i18n={i18n}>
               <OidcProvider store={store} userManager={this._userManager}>
                 <UserManagerContext.Provider value={this._userManager}>
@@ -183,14 +183,14 @@ class App extends Component {
                 </UserManagerContext.Provider>
               </OidcProvider>
             </I18nextProvider>
-          </Provider>
-        </AppContext.Provider>
+          </AppProvider>
+        </Provider>
       );
     }
 
     return (
-      <AppContext.Provider value={{ appConfig: this._appConfig }}>
-        <Provider store={store}>
+      <Provider store={store}>
+        <AppProvider config={this._appConfig}>
           <I18nextProvider i18n={i18n}>
             <Router basename={routerBasename}>
               <WhiteLabelingContext.Provider value={whiteLabeling}>
@@ -204,8 +204,8 @@ class App extends Component {
               </WhiteLabelingContext.Provider>
             </Router>
           </I18nextProvider>
-        </Provider>
-      </AppContext.Provider>
+        </AppProvider>
+      </Provider>
     );
   }
 
@@ -255,6 +255,12 @@ function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
     commandsManager,
     servicesManager,
     appConfig,
+    api: {
+      contexts: CONTEXTS,
+      hooks: {
+        useAppContext
+      }
+    }
   });
 
   const requiredExtensions = [

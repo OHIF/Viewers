@@ -32,7 +32,7 @@ const refreshViewport = () => {
  * @param {Array} props.viewports - Viewports data (viewportSpecificData)
  * @param {number} props.activeIndex - Active viewport index
  * @param {boolean} props.isOpen - Boolean that indicates if the panel is expanded
- * @param {Function} props.onSegItemClick - Segment click handler
+ * @param {Function} props.onSegmentItemClick - Segment click handler
  * @returns component
  */
 const SegmentationPanel = ({
@@ -40,10 +40,15 @@ const SegmentationPanel = ({
   viewports,
   activeIndex,
   isOpen,
-  onSegItemClick,
+  onSegmentItemClick,
   onSegmentVisibilityChange,
   onConfigurationChange,
+  activeContexts,
+  contexts,
 }) => {
+  const isVTK = () => activeContexts.includes(contexts.VTK);
+  const isCornerstone = () => activeContexts.includes(contexts.CORNERSTONE);
+
   /*
    * TODO: wrap get/set interactions with the cornerstoneTools
    * store with context to make these kind of things less blurry.
@@ -252,8 +257,9 @@ const SegmentationPanel = ({
               : prev;
           });
 
-          const enabledElements = cornerstone.getEnabledElements();
-          if (enabledElements.length) {
+          console.log('asdasd', isCornerstone(), contexts, activeContexts);
+          if (isCornerstone()) {
+            const enabledElements = cornerstone.getEnabledElements();
             const element = enabledElements[activeIndex].element;
             const toolState = cornerstoneTools.getToolState(element, 'stack');
 
@@ -274,37 +280,37 @@ const SegmentationPanel = ({
               imageId
             );
 
-            onSegItemClick({
+            onSegmentItemClick({
               StudyInstanceUID,
               SOPInstanceUID,
               frameIndex,
               activeViewportIndex: activeIndex,
             });
+          } else {
+            const activeViewport = viewports[activeIndex];
+            const studyMetadata = studyMetadataManager.get(
+              activeViewport.StudyInstanceUID
+            );
+            const allDisplaySets = studyMetadata.getDisplaySets();
+            const currentDisplaySet = allDisplaySets.find(
+              displaySet =>
+                displaySet.displaySetInstanceUID ===
+                activeViewport.displaySetInstanceUID
+            );
+
+            const frame = labelmap3D.labelmaps2D[closest];
+
+            onSegmentItemClick({
+              studies,
+              StudyInstanceUID: currentDisplaySet.StudyInstanceUID,
+              displaySetInstanceUID: currentDisplaySet.displaySetInstanceUID,
+              SOPClassUID: viewports[activeIndex].sopClassUIDs[0],
+              SOPInstanceUID: currentDisplaySet.SOPInstanceUID,
+              frameIndex: closest,
+              frame,
+              segmentNumber
+            });
           }
-
-          const activeViewport = viewports[activeIndex];
-          const studyMetadata = studyMetadataManager.get(
-            activeViewport.StudyInstanceUID
-          );
-          const allDisplaySets = studyMetadata.getDisplaySets();
-          const currentDisplaySet = allDisplaySets.find(
-            displaySet =>
-              displaySet.displaySetInstanceUID ===
-              activeViewport.displaySetInstanceUID
-          );
-
-          const frame = labelmap3D.labelmaps2D[closest];
-
-          onSegItemClick({
-            studies,
-            StudyInstanceUID: currentDisplaySet.StudyInstanceUID,
-            displaySetInstanceUID: currentDisplaySet.displaySetInstanceUID,
-            SOPClassUID: viewports[activeIndex].sopClassUIDs[0],
-            SOPInstanceUID: currentDisplaySet.SOPInstanceUID,
-            frameIndex: closest,
-            frame,
-            segmentNumber
-          });
         };
 
         const cachedSegmentsProperties = state.cachedSegmentsProperties[segmentNumber];
@@ -347,7 +353,7 @@ const SegmentationPanel = ({
        * Show default name
        */
     },
-    [activeIndex, onSegItemClick, state.selectedSegment]
+    [activeIndex, onSegmentItemClick, state.selectedSegment]
   );
 
   const updateCachedSegmentsProperties = (segmentNumber, properties) => {
@@ -426,6 +432,7 @@ const SegmentationPanel = ({
   if (state.showSegSettings) {
     return (
       <SegmentationSettings
+        disabledFields={isVTK() ? ['outlineAlpha', 'shouldRenderInactiveLabelmaps'] : []}
         configuration={configuration}
         onBack={() => updateState('showSegSettings', false)}
         onChange={updateConfiguration}

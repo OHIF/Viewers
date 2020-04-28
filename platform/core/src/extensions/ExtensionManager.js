@@ -2,7 +2,7 @@ import MODULE_TYPES from './MODULE_TYPES.js';
 import log from './../log.js';
 
 export default class ExtensionManager {
-  constructor({ commandsManager, servicesManager, appConfig = {} }) {
+  constructor({ commandsManager, servicesManager, api, appConfig = {} }) {
     this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
@@ -10,6 +10,7 @@ export default class ExtensionManager {
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
     this._appConfig = appConfig;
+    this._api = api;
 
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
@@ -119,6 +120,7 @@ export default class ExtensionManager {
         commandsManager: this._commandsManager,
         appConfig: this._appConfig,
         configuration,
+        api: this._api
       });
 
       if (!extensionModule) {

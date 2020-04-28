@@ -23,11 +23,13 @@ export default {
   getToolbarModule({ servicesManager }) {
     return toolbarModule;
   },
-  getPanelModule({ commandsManager }) {
+  getPanelModule({ commandsManager, api }) {
     const ExtendedSegmentationPanel = props => {
-      const segItemClickHandler = segData => {
-        commandsManager.runCommand('jumpToImage', segData);
-        commandsManager.runCommand('jumpToSlice', segData);
+      const { activeContexts } = api.hooks.useAppContext();
+
+      const segmentItemClickHandler = data => {
+        commandsManager.runCommand('jumpToImage', data);
+        commandsManager.runCommand('jumpToSlice', data);
       };
 
       const onSegmentVisibilityChangeHandler = (segmentNumber, visible) => {
@@ -49,7 +51,9 @@ export default {
       return (
         <SegmentationPanel
           {...props}
-          onSegItemClick={segItemClickHandler}
+          activeContexts={activeContexts}
+          contexts={api.contexts}
+          onSegmentItemClick={segmentItemClickHandler}
           onSegmentVisibilityChange={onSegmentVisibilityChangeHandler}
           onConfigurationChange={onConfigurationChangeHandler}
         />
