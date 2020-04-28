@@ -1,4 +1,4 @@
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
 import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacingInformation';
