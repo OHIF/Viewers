@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
 import TypedArrayProp from './TypedArrayProp';
 
 import './DicomHtmlViewport.css';

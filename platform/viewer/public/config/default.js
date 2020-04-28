@@ -1,7 +1,6 @@
 window.config = {
   // default: '/'
   routerBasename: '/',
-  whiteLabelling: {},
   extensions: [],
   showStudyList: true,
   filterQueryParam: false,

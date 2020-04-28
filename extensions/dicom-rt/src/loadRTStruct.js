@@ -1,5 +1,5 @@
 import OHIF from '@ohif/core';
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import transformPointsToImagePlane from './utils/transformPointsToImagePlane';

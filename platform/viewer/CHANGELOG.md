@@ -3,6 +3,104 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.11.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.1...@ohif/viewer@3.11.2) (2020-04-28)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.11.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.0...@ohif/viewer@3.11.1) (2020-04-27)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [3.11.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.10.2...@ohif/viewer@3.11.0) (2020-04-24)
+
+
+### Features
+
+* 🎸 Seg jump to slice + show/hide ([835f64d](https://github.com/OHIF/Viewers/commit/835f64d47a9994f6a25aaf3941a4974e215e7e7f))
+
+
+
+
+
+## [3.10.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.10.1...@ohif/viewer@3.10.2) (2020-04-23)
+
+
+### Bug Fixes
+
+* undefined `errorHandler` in cornerstoneWadoImageLoader configuration ([#1664](https://github.com/OHIF/Viewers/issues/1664)) ([709f147](https://github.com/OHIF/Viewers/commit/709f14708e2b0f912b5ea509114acd87af3149cb))
+
+
+
+
+
+## [3.10.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.10.0...@ohif/viewer@3.10.1) (2020-04-23)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [3.10.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.9.2...@ohif/viewer@3.10.0) (2020-04-23)
+
+
+### Features
+
+* configuration to hook into XHR Error handling ([e96205d](https://github.com/OHIF/Viewers/commit/e96205de35e5bec14dc8a9a8509db3dd4e6ecdb6))
+
+
+
+
+
+## [3.9.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.9.1...@ohif/viewer@3.9.2) (2020-04-22)
+
+
+### Bug Fixes
+
+* whiteLabeling should support component creation by passing React to defined fn ([#1659](https://github.com/OHIF/Viewers/issues/1659)) ([2093a00](https://github.com/OHIF/Viewers/commit/2093a0036584b2cc698c8f06fe62b334523b1029))
+
+
+
+
+
+## [3.9.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.9.0...@ohif/viewer@3.9.1) (2020-04-17)
+
+
+### Bug Fixes
+
+* `showStudyList` config ([#1647](https://github.com/OHIF/Viewers/issues/1647)) ([d9fc7bb](https://github.com/OHIF/Viewers/commit/d9fc7bbb0e6d868f507c515f031aaf88a2353e2f))
+
+
+
+
+
+# [3.9.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.21...@ohif/viewer@3.9.0) (2020-04-17)
+
+
+### Features
+
+* set the authorization header for DICOMWeb requests if provided in query string ([#1646](https://github.com/OHIF/Viewers/issues/1646)) ([450c80b](https://github.com/OHIF/Viewers/commit/450c80b9d5f172be8b5713b422370360325a0afc))
+
+
+
+
+
+## [3.8.21](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.20...@ohif/viewer@3.8.21) (2020-04-15)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [3.8.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.8.19...@ohif/viewer@3.8.20) (2020-04-09)
 
 

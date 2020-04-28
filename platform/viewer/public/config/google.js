@@ -1,6 +1,5 @@
 window.config = {
   routerBasename: '/',
-  whiteLabelling: {},
   enableGoogleCloudAdapter: true,
   healthcareApiEndpoint: 'https://healthcare.googleapis.com/v1beta1',
   servers: {

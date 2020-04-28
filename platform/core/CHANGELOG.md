@@ -3,6 +3,77 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.0...@ohif/core@2.9.1) (2020-04-28)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [2.9.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.8.1...@ohif/core@2.9.0) (2020-04-24)
+
+
+### Features
+
+* 🎸 Seg jump to slice + show/hide ([835f64d](https://github.com/OHIF/Viewers/commit/835f64d47a9994f6a25aaf3941a4974e215e7e7f))
+
+
+
+
+
+## [2.8.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.8.0...@ohif/core@2.8.1) (2020-04-23)
+
+
+### Bug Fixes
+
+* 🐛 Multiframe fix ([#1661](https://github.com/OHIF/Viewers/issues/1661)) ([7120561](https://github.com/OHIF/Viewers/commit/71205618ecb8b592247c5acb32284bfe7e18fce5))
+
+
+
+
+
+# [2.8.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.7.1...@ohif/core@2.8.0) (2020-04-23)
+
+
+### Features
+
+* configuration to hook into XHR Error handling ([e96205d](https://github.com/OHIF/Viewers/commit/e96205de35e5bec14dc8a9a8509db3dd4e6ecdb6))
+
+
+
+
+
+## [2.7.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.7.0...@ohif/core@2.7.1) (2020-04-22)
+
+
+### Bug Fixes
+
+* whiteLabeling should support component creation by passing React to defined fn ([#1659](https://github.com/OHIF/Viewers/issues/1659)) ([2093a00](https://github.com/OHIF/Viewers/commit/2093a0036584b2cc698c8f06fe62b334523b1029))
+
+
+
+
+
+# [2.7.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.11...@ohif/core@2.7.0) (2020-04-17)
+
+
+### Features
+
+* set the authorization header for DICOMWeb requests if provided in query string ([#1646](https://github.com/OHIF/Viewers/issues/1646)) ([450c80b](https://github.com/OHIF/Viewers/commit/450c80b9d5f172be8b5713b422370360325a0afc))
+
+
+
+
+
+## [2.6.11](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.10...@ohif/core@2.6.11) (2020-04-15)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 ## [2.6.10](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.9...@ohif/core@2.6.10) (2020-04-09)
 
 
