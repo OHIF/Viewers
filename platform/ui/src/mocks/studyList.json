@@ -1,6 +1,5 @@
 {
-  "studies": [
-    {
+  "studies": [{
       "StudyInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.78",
       "StudyDescription": "BRAIN SELLA",
       "AccessionNumber": "11788761116031",
@@ -10,16 +9,14 @@
       "PatientId": "832040",
       "Instances": 33,
       "Modalities": "MR",
-      "series": [
-        {
+      "series": [{
           "SeriesDescription": "SAG T-1",
           "SeriesInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.121",
           "SeriesNumber": 2,
           "SeriesDate": "20010108",
           "SeriesTime": "120318",
           "Modality": "MR",
-          "instances": [
-            {
+          "instances": [{
               "metadata": {
                 "Columns": 512,
                 "Rows": 512,
@@ -340,8 +337,7 @@
           "SeriesDate": "20010108",
           "SeriesTime": "121105",
           "Modality": "MR",
-          "instances": [
-            {
+          "instances": [{
               "metadata": {
                 "Columns": 512,
                 "Rows": 512,
@@ -824,6 +820,66 @@
           ]
         }
       ]
+    },
+    {
+      "StudyInstanceUID": "1.2.3.4",
+      "StudyDescription": "CT CHEST W CONTRAST",
+      "AccessionNumber": "00219013901",
+      "StudyDate": "2001-03-26T23:33:59.073Z",
+      "StudyTime": "120022",
+      "PatientName": "BELLONAˆDEMO",
+      "PatientId": "832123",
+      "Instances": 1025,
+      "Modalities": "CT",
+      "series": [{
+        "SeriesDescription": "Topogram 0.6",
+        "SeriesInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.121",
+        "SeriesNumber": 1,
+        "SeriesDate": "20010108",
+        "SeriesTime": "120318",
+        "Modality": "CT",
+        "instances": []
+      }, {
+        "SeriesDescription": "Chest 3x3 Soft",
+        "SeriesInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.121",
+        "SeriesNumber": 2,
+        "SeriesDate": "20010108",
+        "SeriesTime": "120318",
+        "Modality": "CT",
+        "instances": []
+      }, {
+        "SeriesDescription": "Chest 3x3 Lung",
+        "SeriesInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.121",
+        "SeriesNumber": 3,
+        "SeriesDate": "20010108",
+        "SeriesTime": "120318",
+        "Modality": "CT",
+        "instances": []
+      }, {
+        "SeriesDescription": "Chest Cor 3x3 Soft",
+        "SeriesInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.121",
+        "SeriesNumber": 4,
+        "SeriesDate": "20010108",
+        "SeriesTime": "120318",
+        "Modality": "CT",
+        "instances": []
+      }, {
+        "SeriesDescription": "Chest Sag 3x3 Soft",
+        "SeriesInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.121",
+        "SeriesNumber": 5,
+        "SeriesDate": "20010108",
+        "SeriesTime": "120318",
+        "Modality": "CT",
+        "instances": []
+      }, {
+        "SeriesDescription": "CT Nk/Ch/Abd I+ 2.0 B31f",
+        "SeriesInstanceUID": "1.2.840.113619.2.5.1762583153.215519.978957063.121",
+        "SeriesNumber": 6,
+        "SeriesDate": "20010108",
+        "SeriesTime": "120318",
+        "Modality": "CT",
+        "instances": []
+      }]
     }
   ]
 }

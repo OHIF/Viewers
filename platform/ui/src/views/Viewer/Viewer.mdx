@@ -51,7 +51,7 @@ import Image2 from './image2.png'
                           },
                           {id: 3,
                             label: 'Kidney',
-                            displayText: '17.6 x 14.1 mm (S:4, I:35)',
+                            displayText: '17.6 x 14.1 mm (S:3, I:35)',
                             isActive: activeMeasurementItem === 2
                           }];
     const measurementTableData = {
@@ -100,9 +100,9 @@ import Image2 from './image2.png'
                       isTracked: true,
                       isLocked: false,
                       studyDate: '05-Sep-2011',
-                      currentSeries: 1,
+                      currentSeries: 3,
                       seriesDescription:
-                        'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
+                        'CT WB 5.0 B35f',
                       modality: 'CT',
                       patientInformation: {
                         patientName: 'Smith, Jane',
@@ -128,9 +128,9 @@ import Image2 from './image2.png'
                       isTracked: false,
                       isLocked: true,
                       studyDate: '07-Sep-2010',
-                      currentSeries: 2,
+                      currentSeries: 3,
                       seriesDescription:
-                        'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
+                        'CT WB 5.0 B35f',
                       modality: 'SR',
                       patientInformation: {
                         patientName: 'Smith, Jane',
@@ -159,7 +159,7 @@ import Image2 from './image2.png'
             childComponents={{
               iconName: 'list-bullets',
               iconLabel: 'Measure',
-              label: 'ERIKERIk',
+              label: 'Measurements',
               name: 'measurements',
               content: (
                 <MeasurementsPanel

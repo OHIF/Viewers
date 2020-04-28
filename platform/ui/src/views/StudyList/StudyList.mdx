@@ -137,14 +137,20 @@ components.
         Instances: 'Instances',
       };
       const seriesTableDataSource = series.map((seriesItem) => {
-        const { SeriesNumber, Modality, instances } = seriesItem;
+        const { SeriesNumber, Modality, instances, SeriesDescription } = seriesItem;
         return {
-          description: 'Patient Protocol',
+          description: SeriesDescription,
           seriesNumber: SeriesNumber,
           modality: Modality,
           Instances: instances.length,
         };
       });
+      seriesTableDataSource[0].Instances = 1;
+      seriesTableDataSource[1].Instances = 1;
+      seriesTableDataSource[2].Instances = 350;
+      seriesTableDataSource[3].Instances = 200;
+      seriesTableDataSource[4].Instances = 200;
+      seriesTableDataSource[5].Instances = 273;
       return {
         row: [
           {
@@ -240,15 +246,15 @@ components.
               endIcon={<Icon name="launch-info" />}
               className="font-bold"
             >
-              Module 3
+              PET/CT
             </Button>
-            <div className="ml-5 text-lg text-common-bright inline-flex items-center">
+            {/*<div className="ml-5 text-lg text-common-bright inline-flex items-center">
               <Icon
                 name="notificationwarning-diamond"
                 className="mr-2 w-5 h-5"
               />
               Feedback text lorem ipsum dolor sit amet
-            </div>
+            </div>*/}
           </StudyListExpandedRow>
         ),
         onClickRow: () =>

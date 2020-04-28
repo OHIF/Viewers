@@ -1,6 +1,7 @@
 import Thumb1 from './thumb1.png';
 import Thumb2 from './thumb2.png';
 import Thumb3 from './thumb3.png';
+import Thumb4 from './thumb4.png';
 
 const studyWithSR = {
   studyInstanceUid: '1',
@@ -75,6 +76,15 @@ const studySimple = {
       numInstances: 68,
       componentType: 'thumbnailTracked',
       imageSrc: Thumb3,
+      isTracked: false,
+    },
+    {
+      displaySetInstanceUid: 'f69f648c-223e-dasdasdb7f-c4af-b8906641a66e',
+      description: 'CT Nk/Ch/Abd I+ 2.0 B31f',
+      seriesNumber: 4,
+      numInstances: 394,
+      componentType: 'thumbnailTracked',
+      imageSrc: Thumb4,
       isTracked: true,
     },
   ],
