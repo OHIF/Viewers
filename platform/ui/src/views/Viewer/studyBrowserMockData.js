@@ -1,3 +1,8 @@
+import Thumb1 from './thumb1.png';
+import Thumb2 from './thumb2.png';
+import Thumb3 from './thumb3.png';
+
+
 const studyWithSR = {
   studyInstanceUid: '1',
   date: '07-Sept-2010',
@@ -13,6 +18,7 @@ const studyWithSR = {
       componentType: 'thumbnailTracked',
       viewportIdentificator: 'A',
       isTracked: true,
+      imageSrc: Thumb1
     },
     {
       displaySetInstanceUid: 'f69f648c-223e-db7f-c4asdasdaf-b8906641a66e',
@@ -20,7 +26,6 @@ const studyWithSR = {
       seriesNumber: 1,
       numInstances: 68,
       componentType: 'thumbnailTracked',
-      viewportIdentificator: 'B',
     },
     {
       displaySetInstanceUid: 'f69f648c-223e-dasdasdb7f-c4af-b8906641a66e',
@@ -35,13 +40,14 @@ const studyWithSR = {
       modality: 'SR',
       componentType: 'thumbnailNoImage',
       seriesDate: '07-Sept-2010',
+      viewportIdentificator: 'B',
     },
   ],
 };
 
 const studySimple = {
   studyInstanceUid: '2',
-  date: '07-Sept-2010',
+  date: '07-Sept-2011',
   description: 'CHEST/ABD/PELVIS W/CONTRAST',
   numInstances: 902,
   modalities: 'CT',
@@ -52,6 +58,7 @@ const studySimple = {
       seriesNumber: 1,
       numInstances: 68,
       componentType: 'thumbnailTracked',
+      imageSrc: Thumb1
     },
   ],
 };

@@ -28,7 +28,8 @@ import ViewportToolbar from './components/ViewportToolBar';
 
 import { tabs } from './studyBrowserMockData';
 
-# Viewer
+import Image1 from './image1.png'
+import Image2 from './image2.png'
 
 <Playground>
   {() => {
@@ -82,6 +83,7 @@ import { tabs } from './studyBrowserMockData';
                 viewportContents={[
                   <Viewport
                     viewportIndex={0}
+                    hasNotification={true}
                     onSeriesChange={(direction) => alert(`Series ${direction}`)}
                     studyData={{
                       label: 'A',
@@ -104,14 +106,15 @@ import { tabs } from './studyBrowserMockData';
                     }}
                   >
                     <div className="flex justify-center items-center h-full">
-                      CONTENT
+                      <img src={Image1}/>
                     </div>
                   </Viewport>,
                   <Viewport
                     viewportIndex={1}
+                    hasNotification={false}
                     onSeriesChange={(direction) => alert(`Series ${direction}`)}
                     studyData={{
-                      label: 'A',
+                      label: 'B',
                       isTracked: false,
                       isLocked: true,
                       studyDate: '07-Sep-2010',
@@ -120,10 +123,10 @@ import { tabs } from './studyBrowserMockData';
                         'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
                       modality: 'SR',
                       patientInformation: {
-                        patientName: 'Smith, Jane',
+                        patientName: 'Erik, test',
                         patientSex: 'F',
                         patientAge: '59',
-                        MRN: '10000001',
+                        MRN: '2',
                         thickness: '2.0mm',
                         spacing: '1.25mm',
                         scanner: 'Aquilion',
@@ -131,7 +134,7 @@ import { tabs } from './studyBrowserMockData';
                     }}
                   >
                     <div className="flex justify-center items-center h-full">
-                      CONTENT
+                      <img src={Image2}/>
                     </div>
                   </Viewport>,
                 ]}

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ViewportActionBar, Notification, Button } from '@ohif/ui';
 
-const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
+const Viewport = ({ viewportIndex, onSeriesChange, hasNotification, studyData, children }) => {
   return (
     <div className="flex flex-col h-full relative">
       <div className="absolute top-0 left-0 w-full">
@@ -12,6 +12,8 @@ const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
         />
 
         {/* TODO: NOTIFICATION API DEFINITION - OHIF-112 */}
+
+        { hasNotification ?
         <Notification
           text="Track all measurement for this series?"
           type="info"
@@ -24,7 +26,7 @@ const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
               </Button>
             </div>
           }
-        />
+        /> : null }
       </div>
 
       {/* STUDY IMAGE */}

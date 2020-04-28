@@ -34,7 +34,7 @@ const Thumbnail = ({
         )}
       >
         {imageSrc ? (
-          <img src={imageSrc} alt={imageAltText} className="min-h-32" />
+          <img src={imageSrc} alt={imageAltText} className="h-32" style={{'object-fit': 'cover',  'height': '7.9rem'}} />
         ) : (
           <div>{imageAltText}</div>
         )}
