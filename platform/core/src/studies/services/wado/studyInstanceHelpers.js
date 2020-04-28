@@ -144,7 +144,7 @@ async function makeSOPInstance(server, study, instance) {
     wadorsuri,
     wadoRoot: server.wadoRoot,
     imageRendering: server.imageRendering,
-    thumbnailRendering: server.thumbnailRendering
+    thumbnailRendering: server.thumbnailRendering,
   };
 
   series.instances.push(sopInstance);
@@ -160,8 +160,10 @@ async function makeSOPInstance(server, study, instance) {
 
     const wadoRSMetadata = Object.assign(instance);
 
-    if (sopInstance.NumberOfFrames) {
-      for (let i = 0; i < sopInstance.NumberOfFrames; i++) {
+    const { NumberOfFrames } = sopInstance.metadata;
+
+    if (NumberOfFrames) {
+      for (let i = 0; i < NumberOfFrames; i++) {
         const wadorsImageId = getWADORSImageId(sopInstance, i);
 
         cornerstoneWADOImageLoader.wadors.metaDataManager.add(
@@ -190,7 +192,7 @@ async function makeSOPInstance(server, study, instance) {
  */
 async function addInstancesToStudy(server, study, sopInstanceList) {
   return Promise.all(
-    sopInstanceList.map(function (sopInstance) {
+    sopInstanceList.map(function(sopInstance) {
       return makeSOPInstance(server, study, sopInstance);
     })
   );

@@ -1,4 +1,4 @@
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
 import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacingInformation';
@@ -378,7 +378,7 @@ class MetadataProvider {
         }
 
         metadata = {
-          overlays
+          overlays,
         };
 
         break;
@@ -400,6 +400,7 @@ class MetadataProvider {
 
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
+          sopInstanceUid: instance.SOPInstanceUID,
           instanceNumber: instance.InstanceNumber,
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,

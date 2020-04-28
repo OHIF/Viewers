@@ -3,6 +3,8 @@ import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { api } from 'dicomweb-client';
 import DICOMWeb from '../DICOMWeb';
 
+import errorHandler from '../errorHandler';
+
 const getImageId = imageObj => {
   if (!imageObj) {
     return;
@@ -57,11 +59,13 @@ const wadorsRetriever = (
   studyInstanceUID,
   seriesInstanceUID,
   sopInstanceUID,
-  headers = DICOMWeb.getAuthorizationHeader()
+  headers = DICOMWeb.getAuthorizationHeader(),
+  errorInterceptor = errorHandler.getHTTPErrorHandler()
 ) => {
   const config = {
     url,
     headers,
+    errorInterceptor,
   };
   const dicomWeb = new api.DICOMwebClient(config);
 

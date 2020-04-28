@@ -1,6 +1,8 @@
 import { api } from 'dicomweb-client';
 import DICOMWeb from '../../../DICOMWeb/';
 
+import errorHandler from '../../../errorHandler';
+
 /**
  * Creates a QIDO date string for a date range query
  * Assumes the year is positive, at most 4 digits long.
@@ -115,6 +117,7 @@ export default function Studies(server, filter) {
   const config = {
     url: server.qidoRoot,
     headers: DICOMWeb.getAuthorizationHeader(server),
+    errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
 
   const dicomWeb = new api.DICOMwebClient(config);

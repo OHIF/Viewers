@@ -2,6 +2,8 @@ import { api } from 'dicomweb-client';
 import DICOMWeb from '../../DICOMWeb';
 import str2ab from '../str2ab';
 
+import errorHandler from '../../errorHandler';
+
 export default async function fetchPaletteColorLookupTableData(
   instance,
   server
@@ -146,6 +148,7 @@ function _getPaletteColor(server, paletteColorLookupTableData, lutDescriptor) {
     const config = {
       url: server.wadoRoot, //BulkDataURI is absolute, so this isn't used
       headers: DICOMWeb.getAuthorizationHeader(server),
+      errorInterceptor: errorHandler.getHTTPErrorHandler(),
     };
     const dicomWeb = new api.DICOMwebClient(config);
     const options = {
@@ -164,6 +167,8 @@ function _getPaletteColor(server, paletteColorLookupTableData, lutDescriptor) {
       resolve(arrayBufferToPaletteColorLUT(arraybuffer));
     });
   } else {
-    return Promise.resolve(arrayBufferToPaletteColorLUT(paletteColorLookupTableData));
+    return Promise.resolve(
+      arrayBufferToPaletteColorLUT(paletteColorLookupTableData)
+    );
   }
 }

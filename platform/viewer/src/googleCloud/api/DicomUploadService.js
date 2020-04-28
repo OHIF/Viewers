@@ -1,5 +1,6 @@
 import { httpErrorToStr, checkDicomFile } from '../utils/helpers';
 import { api } from 'dicomweb-client';
+import { errorHandler } from '@ohif/core';
 
 class DicomUploadService {
   async smartUpload(files, url, uploadCallback, cancellationToken) {
@@ -22,8 +23,7 @@ class DicomUploadService {
         let error = null;
         try {
           if (chunk.length > 1) throw new Error('Not implemented');
-          if (chunk.length === 1)
-            await this.simpleUpload(chunk[0], url);
+          if (chunk.length === 1) await this.simpleUpload(chunk[0], url);
         } catch (err) {
           // It looks like a stupid bug of Babel that err is not an actual Exception object
           error = httpErrorToStr(err);
@@ -76,11 +76,12 @@ class DicomUploadService {
 
   getClient(url) {
     const headers = this.retrieveAuthHeaderFunc();
+    const errorInterceptor = errorHandler.getHTTPErrorHandler();
 
     // TODO: a bit weird we are creating a new dicomweb client instance for every upload
     return new api.DICOMwebClient({
       url,
-      headers
+      headers,
     });
   }
 }
