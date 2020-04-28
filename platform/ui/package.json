@@ -24,7 +24,8 @@
     "build:ui:deploy-preview": "docz build --base=/ui/",
     "dev": "docz dev",
     "serve": "docz serve",
-    "docs:preview": "yarn run dev"
+    "docs:preview": "yarn run dev",
+    "clean": "gatsby clean"
   },
   "dependencies": {
     "classnames": "^2.2.6",

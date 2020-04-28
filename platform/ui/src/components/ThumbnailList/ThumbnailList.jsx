@@ -17,7 +17,7 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
           seriesDate,
           viewportIdentificator,
           isTracked,
-          imageSrc
+          imageSrc,
         }) => {
           const isActive = thumbnailActive === displaySetInstanceUid;
 
@@ -30,7 +30,6 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
                   isActive={isActive}
-                  imageSrc={imageSrc}
                   onClick={() => onThumbnailClick(displaySetInstanceUid)}
                 />
               );
@@ -55,10 +54,10 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
                   isTracked={isTracked}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUid)}
-                  imageSrc={imageSrc}
                 />
               );
             default:
+              console.error('unexpected type', componentType);
               return <></>;
           }
         }
