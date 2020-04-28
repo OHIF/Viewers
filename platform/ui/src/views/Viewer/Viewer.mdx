@@ -35,22 +35,35 @@ import Image2 from './image2.png'
   {() => {
     const [activeMeasurementItem, setActiveMeasurementItem] = useState(null);
     const descriptionData = {
-      date: '07-Sep-2010',
+      date: '05-Sep-2011',
       modality: 'CT',
       description: 'CHEST/ABD/PELVIS W CONTRAST',
     };
+
+    const measurements = [{id: 0,
+                               label: 'Liver',
+                               displayText: '15.1 x 12.3 mm (S:4, I:40)',
+                               isActive: activeMeasurementItem === 0
+                          },
+                          {id: 1,
+                            label: 'Liver',
+                            displayText: '17.6 x 14.1 mm (S:4, I:35)',
+                            isActive: activeMeasurementItem === 1
+                          },
+                          {id: 2,
+                            label: 'Kidney',
+                            displayText: '17.6 x 14.1 mm (S:4, I:35)',
+                            isActive: activeMeasurementItem === 2
+                          }];
+
     const measurementTableData = {
       title: 'Measurements',
-      amount: 10,
-      data: new Array(10).fill({}).map((el, i) => ({
-        id: i + 1,
-        label: 'Label short description',
-        displayText: '24.0 x 24.0 mm (S:4, I:22)',
-        isActive: activeMeasurementItem === i + 1,
-      })),
+      amount: 3,
+      data: [],
       onClick: (id) => setActiveMeasurementItem((s) => (s === id ? null : id)),
       onEdit: (id) => alert(`Edit: ${id}`),
     };
+
     const [activeViewportIndex, setActiveViewportIndex] = useState(0);
     return (
       <div>
@@ -89,7 +102,7 @@ import Image2 from './image2.png'
                       label: 'A',
                       isTracked: true,
                       isLocked: false,
-                      studyDate: '07-Sep-2011',
+                      studyDate: '05-Sep-2011',
                       currentSeries: 1,
                       seriesDescription:
                         'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
@@ -97,7 +110,7 @@ import Image2 from './image2.png'
                       patientInformation: {
                         patientName: 'Smith, Jane',
                         patientSex: 'F',
-                        patientAge: '59',
+                        patientAge: '60',
                         MRN: '10000001',
                         thickness: '5.0mm',
                         spacing: '1.25mm',
@@ -123,11 +136,11 @@ import Image2 from './image2.png'
                         'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
                       modality: 'SR',
                       patientInformation: {
-                        patientName: 'Erik, test',
+                        patientName: 'Smith, Jane',
                         patientSex: 'F',
                         patientAge: '59',
-                        MRN: '2',
-                        thickness: '2.0mm',
+                        MRN: '10000001',
+                        thickness: '5.0mm',
                         spacing: '1.25mm',
                         scanner: 'Aquilion',
                       },
@@ -149,7 +162,7 @@ import Image2 from './image2.png'
             childComponents={{
               iconName: 'list-bullets',
               iconLabel: 'Measure',
-              label: 'Measurements',
+              label: 'ERIKERIk',
               name: 'measurements',
               content: (
                 <MeasurementsPanel

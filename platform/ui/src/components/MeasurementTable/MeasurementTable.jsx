@@ -14,7 +14,7 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
       </div>
       <div className="overflow-y-auto overflow-x-hidden ohif-scrollbar max-h-112">
         {!!data.length &&
-          data.map((measurementItem) => {
+          data.map(measurementItem => {
             const { id, label, displayText, isActive } = measurementItem;
             return (
               <div
@@ -61,8 +61,7 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
                       right: 4,
                       transform: isActive ? '' : 'translateX(100%)',
                     }}
-                    e
-                    onClick={(e) => {
+                    onClick={e => {
                       // stopPropagation needed to avoid disable the current active item
                       e.stopPropagation();
                       onEdit(id);

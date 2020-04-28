@@ -8,6 +8,7 @@ const MeasurementsPanel = ({
   actionButtons,
 }) => {
   const { date, modality, description } = descriptionData;
+  console.log(measurementTableData);
   return (
     <>
       <div className="overflow-y-auto overflow-x-hidden invisible-scrollbar">
