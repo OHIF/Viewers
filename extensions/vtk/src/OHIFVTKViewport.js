@@ -432,7 +432,10 @@ class OHIFVTKViewport extends Component {
                 visible: configuration.renderFill,
                 outlineThickness: configuration.outlineWidth,
                 renderOutline: configuration.renderOutline,
-                segmentsDefaultProperties: this.segmentsDefaultProperties
+                segmentsDefaultProperties: this.segmentsDefaultProperties,
+                onNewSegmentationRequested: () => {
+                  this.setStateFromProps();
+                }
               }}
               onScroll={this.props.onScroll}
             />

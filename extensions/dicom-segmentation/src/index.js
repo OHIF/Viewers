@@ -48,6 +48,10 @@ export default {
         });
       };
 
+      const onSelectedSegmentationChangeHandler = () => {
+        commandsManager.runCommand('requestNewSegmentation');
+      };
+
       return (
         <SegmentationPanel
           {...props}
@@ -56,6 +60,7 @@ export default {
           onSegmentItemClick={segmentItemClickHandler}
           onSegmentVisibilityChange={onSegmentVisibilityChangeHandler}
           onConfigurationChange={onConfigurationChangeHandler}
+          onSelectedSegmentationChange={onSelectedSegmentationChangeHandler}
         />
       );
     };

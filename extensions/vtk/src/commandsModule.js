@@ -126,6 +126,21 @@ const commandsModule = ({ commandsManager }) => {
 
       _setView(api, [0, 1, 0], [0, 0, 1]);
     },
+    requestNewSegmentation: async ({ viewports }) => {
+      const allViewports = Object.values(viewports.viewportSpecificData);
+      const promises = allViewports.map(async (viewport, viewportIndex) => {
+        let api = apis[viewportIndex];
+
+        if (!api) {
+          api = await _getActiveViewportVTKApi(viewports);
+          apis[viewportIndex] = api;
+        }
+
+        api.requestNewSegmentation();
+        api.updateImage();
+      });
+      await Promise.all(promises);
+    },
     jumpToSlice: async ({
       viewports,
       studies,
@@ -395,6 +410,11 @@ const commandsModule = ({ commandsManager }) => {
   window.vtkActions = actions;
 
   const definitions = {
+    requestNewSegmentation: {
+      commandFn: actions.requestNewSegmentation,
+      storeContexts: ['viewports'],
+      options: {},
+    },
     jumpToSlice: {
       commandFn: actions.jumpToSlice,
       storeContexts: ['viewports'],

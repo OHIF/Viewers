@@ -47,6 +47,7 @@ const SegmentationPanel = ({
   onSegmentItemClick,
   onSegmentVisibilityChange,
   onConfigurationChange,
+  onSelectedSegmentationChange,
   activeContexts,
   contexts,
 }) => {
@@ -187,7 +188,8 @@ const SegmentationPanel = ({
               studies,
               displaySet,
               firstImageId,
-              brushStackState.activeLabelmapIndex
+              brushStackState.activeLabelmapIndex,
+              () => onSelectedSegmentationChange()
             );
             updateState('selectedSegmentation', activatedLabelmapIndex);
           },
@@ -583,7 +585,8 @@ const _setActiveLabelmap = async (
   studies,
   displaySet,
   firstImageId,
-  activeLabelmapIndex
+  activeLabelmapIndex,
+  callback = () => { }
 ) => {
   if (displaySet.labelmapIndex === activeLabelmapIndex) {
     log.warn(`${activeLabelmapIndex} is already the active labelmap`);
@@ -601,6 +604,8 @@ const _setActiveLabelmap = async (
   brushStackState.activeLabelmapIndex = displaySet.labelmapIndex;
 
   refreshViewport();
+
+  callback();
 
   return displaySet.labelmapIndex;
 };
