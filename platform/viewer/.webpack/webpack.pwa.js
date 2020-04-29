@@ -94,7 +94,7 @@ module.exports = (env, argv) => {
         swDest: 'sw.js',
         swSrc: path.join(SRC_DIR, 'service-worker.js'),
         // Increase the limit to 4mb:
-        // maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       }),
     ],
     // https://webpack.js.org/configuration/dev-server/
