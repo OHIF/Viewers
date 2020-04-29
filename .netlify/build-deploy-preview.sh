@@ -12,9 +12,9 @@ yarn -v
 node -v
 
 # Build && Move PWA Output
-# yarn run build:ci
-# mkdir -p ./.netlify/www/pwa
-# mv platform/viewer/dist/* .netlify/www/pwa -v
+yarn run build:ci
+mkdir -p ./.netlify/www/pwa
+mv platform/viewer/dist/* .netlify/www/pwa -v
 
 # Build && Move script output
 # yarn run build:package
@@ -25,6 +25,3 @@ mkdir -p ./.netlify/www/ui
 mv platform/ui/.docz/dist/* .netlify/www/ui -v
 
 echo 'Nothing left to see here. Go home, folks.'
-
-# Build using react-scripts
-# npx cross-env PUBLIC_URL=/demo APP_CONFIG=config/netlify.js react-scripts --max_old_space_size=4096 build
