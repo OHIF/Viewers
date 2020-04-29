@@ -70,6 +70,7 @@
     "dcmjs": "^0.8.2",
     "dicom-parser": "^1.8.3",
     "dicomweb-client": "^0.4.4",
+    "dotenv-webpack": "^1.7.0",
     "hammerjs": "^2.0.8",
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",

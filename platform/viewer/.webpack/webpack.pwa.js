@@ -27,6 +27,7 @@ const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
+const Dotenv = require('dotenv-webpack');
 
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
@@ -46,6 +47,7 @@ module.exports = (env, argv) => {
       rules: [...extractStyleChunksRule(isProdBuild)],
     },
     plugins: [
+      new Dotenv(),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
       // Clean output.path
