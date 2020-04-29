@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 // Route Components
-import StudyListContainer from '../containers/StudyListContainer';
+import StudyListContainer from './StudyListContainer';
 import NotFound from './NotFound';
 
 const appRoutes = [
