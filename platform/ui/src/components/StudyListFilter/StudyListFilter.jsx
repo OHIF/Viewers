@@ -13,7 +13,7 @@ const StudyListFilter = ({
 }) => {
   const { sortBy, sortDirection } = filterValues;
   const filterSorting = { sortBy, sortDirection };
-  const setFilterSorting = (sortingValues) => {
+  const setFilterSorting = sortingValues => {
     setFilterValues({
       ...filterValues,
       ...sortingValues,
@@ -73,7 +73,10 @@ const StudyListFilter = ({
           </div>
         </div>
       </div>
-      <div className="sticky z-10 border-b-4 border-black" style={{ top: 58 }}>
+      <div
+        className="sticky z-10 border-b-4 border-black"
+        style={{ top: '57px' }}
+      >
         <div className="bg-primary-dark pt-3 pb-3 ">
           <InputGroup
             inputMeta={filtersMeta}

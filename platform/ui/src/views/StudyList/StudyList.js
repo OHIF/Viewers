@@ -13,11 +13,11 @@ import {
   Button,
   StudyListPagination,
   StudyListTable,
+  StudyListFilter,
 } from '@ohif/ui';
 
 // fix imports after refactor
 import Header from './components/Header';
-import StudyListFilter from './components/StudyListFilter';
 
 const filtersMeta = [
   {
@@ -96,7 +96,7 @@ const defaultFilterValues = {
 };
 
 const isFiltering = (filterValues, defaultFilterValues) => {
-  return Object.keys(defaultFilterValues).some((name) => {
+  return Object.keys(defaultFilterValues).some(name => {
     return filterValues[name] !== defaultFilterValues[name];
   });
 };
@@ -109,7 +109,7 @@ const StudyList = () => {
 
   const tableDataSource = studies.map((study, key) => {
     const rowKey = key + 1;
-    const isExpanded = expandedRows.some((k) => k === rowKey);
+    const isExpanded = expandedRows.some(k => k === rowKey);
     const {
       AccessionNumber,
       Modalities,
@@ -128,7 +128,7 @@ const StudyList = () => {
       Instances: 'Instances',
     };
 
-    const seriesTableDataSource = series.map((seriesItem) => {
+    const seriesTableDataSource = series.map(seriesItem => {
       const { SeriesNumber, Modality, instances } = seriesItem;
       return {
         description: 'Patient Protocol',
@@ -238,8 +238,8 @@ const StudyList = () => {
         </StudyListExpandedRow>
       ),
       onClickRow: () =>
-        setExpandedRows((s) =>
-          isExpanded ? s.filter((n) => rowKey !== n) : [...s, rowKey]
+        setExpandedRows(s =>
+          isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey]
         ),
       isExpanded,
     };
@@ -248,13 +248,13 @@ const StudyList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(25);
   const totalPages = Math.floor(numOfStudies / perPage);
-  const onChangePage = (page) => {
+  const onChangePage = page => {
     if (page > totalPages) {
       return;
     }
     setCurrentPage(page);
   };
-  const onChangePerPage = (perPage) => {
+  const onChangePerPage = perPage => {
     setPerPage(perPage);
     setCurrentPage(1);
   };

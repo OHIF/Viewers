@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, ButtonGroup, Icon, IconButton, Typography } from '@ohif/ui';
+import { Button, ButtonGroup, Icon, Typography } from '@ohif/ui';
 
 const StudyListPagination = ({
   onChangePage,
@@ -21,8 +21,7 @@ const StudyListPagination = ({
             <div className="relative mr-3">
               <select
                 defaultValue={perPage}
-                className="block appearance-none w-full bg-transparent border border-common-active text-white text-base px-2 pr-4 rounded leading-tight focus:outline-none"
-                style={{ height: 28 }}
+                className="block appearance-none w-full bg-transparent border border-common-active text-white text-base px-2 pr-4 rounded leading-tight focus:outline-none h-8"
                 onChange={e => onChangePerPage(e.target.value)}
                 onBlur={() => {}}
               >
@@ -48,22 +47,22 @@ const StudyListPagination = ({
                 Page {currentPage}
               </Typography>
               <ButtonGroup color="primary">
-                <IconButton
-                  size="inherit"
+                <Button
+                  size="initial"
                   className="border-common-active px-4 py-2 text-base"
                   color="white"
                   onClick={() => navigateToPage(1)}
                 >
-                  <>{`<<`}</>
-                </IconButton>
+                  {`<<`}
+                </Button>
                 <Button
-                  size="inherit"
+                  size="initial"
                   className="border-common-active py-2 px-2 text-base"
                   color="white"
                   onClick={() => navigateToPage(currentPage - 1)}
                 >{`< Previous`}</Button>
                 <Button
-                  size="inherit"
+                  size="initial"
                   className="border-common-active py-2 px-4 text-base"
                   color="white"
                   onClick={() => navigateToPage(currentPage + 1)}

@@ -24,6 +24,7 @@ import StudyListPagination from './StudyListPagination';
 import StudyListTable from './StudyListTable';
 import Svg from './Svg';
 import StudyItem from './StudyItem';
+import StudyListFilter from './StudyListFilter';
 import Table from './Table';
 import TableBody from './TableBody';
 import TableCell from './TableCell';
@@ -66,6 +67,7 @@ export {
   StudyBrowser,
   StudyItem,
   StudyListExpandedRow,
+  StudyListFilter,
   StudyListPagination,
   StudyListTable,
   Svg,

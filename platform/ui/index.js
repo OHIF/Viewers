@@ -35,6 +35,7 @@ export {
   StudyBrowser,
   StudyItem,
   StudyListExpandedRow,
+  StudyListFilter,
   StudyListPagination,
   StudyListTable,
   Svg,
