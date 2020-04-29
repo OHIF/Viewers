@@ -1,13 +1,12 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import StudyListContainer from '../containers/StudyListContainer';
-import ViewerContainer from '../containers/ViewerContainer';
-import NotFound from '../containers/NotFound';
+import StudyListContainer from './StudyListContainer';
+import NotFound from './NotFound';
 
 const appRoutes = [
   { path: '/', exact: true, component: StudyListContainer },
-  { path: '/viewer/:studyInstanceUids', component: ViewerContainer },
+  { path: '/viewer/:studyInstanceUids', component: NotFound },
   { component: NotFound },
 ];
 
