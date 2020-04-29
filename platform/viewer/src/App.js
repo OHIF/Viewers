@@ -5,13 +5,13 @@ import { ThemeWrapper } from '@ohif/ui';
 import routes from './routes';
 
 const App = () => {
-  const RouterComponent = JSON.parse(process.env.USE_HASH_ROUTER)
+  const Router = JSON.parse(process.env.USE_HASH_ROUTER)
     ? HashRouter
     : BrowserRouter;
   return (
-    <RouterComponent>
+    <Router>
       <ThemeWrapper>{routes()}</ThemeWrapper>
-    </RouterComponent>
+    </Router>
   );
 };
 
