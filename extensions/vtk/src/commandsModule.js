@@ -197,7 +197,7 @@ const commandsModule = ({ commandsManager }) => {
 
       const worldPos = _convertModelToWorldSpace(position, imageDataObject.vtkImageData);
 
-      api.svgWidgets.crosshairsWidget.moveCrosshairs(worldPos, apis, viewports.activeViewportIndex);
+      api.svgWidgets.crosshairsWidget.moveCrosshairs(worldPos, apis);
     },
     setSegmentationConfiguration: async ({
       viewports,
@@ -215,6 +215,7 @@ const commandsModule = ({ commandsManager }) => {
           apis[viewportIndex] = api;
         }
 
+        api.setSegmentAlpha();
         api.setGlobalOpacity(globalOpacity);
         api.setVisibility(visible);
         api.setOutlineThickness(outlineThickness);
