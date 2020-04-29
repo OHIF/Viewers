@@ -56,7 +56,7 @@ const position = {
 const getChildComponent = (childComponents, componentOpen) => {
   if (Array.isArray(childComponents)) {
     return childComponents.find(
-      (_childComponent) => _childComponent.name === componentOpen
+      _childComponent => _childComponent.name === componentOpen
     );
   } else {
     return childComponents;
@@ -80,10 +80,10 @@ const SidePanel = ({
     const _childComponents = Array.isArray(childComponents)
       ? childComponents
       : [childComponents];
-    return _childComponents.map((childComponent) => {
+    return _childComponents.map((childComponent, i) => {
       return (
         <Button
-          key={childComponent.name}
+          key={i}
           variant="text"
           color="inherit"
           onClick={() => {

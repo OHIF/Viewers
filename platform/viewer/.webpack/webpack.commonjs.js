@@ -16,6 +16,7 @@ const PUBLIC_DIR = path.join(__dirname, '../public');
 const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'script-tag.html';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
+const Dotenv = require('dotenv-webpack');
 
 module.exports = (env, argv) => {
   const commonConfig = webpackCommon(env, argv, { SRC_DIR, DIST_DIR });
@@ -34,6 +35,7 @@ module.exports = (env, argv) => {
       rules: [fontsToJavaScriptRule],
     },
     plugins: [
+      new Dotenv(),
       // Clean output.path
       new CleanWebpackPlugin(),
       new CopyWebpackPlugin([

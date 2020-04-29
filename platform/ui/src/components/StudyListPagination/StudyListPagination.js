@@ -49,25 +49,22 @@ const StudyListPagination = ({
               </Typography>
               <ButtonGroup color="primary">
                 <IconButton
-                  size="small"
+                  size="inherit"
                   className="border-common-active px-4 py-2 text-base"
-                  style={{ padding: '3px 12px', minWidth: 0 }}
                   color="white"
                   onClick={() => navigateToPage(1)}
                 >
                   <>{`<<`}</>
                 </IconButton>
                 <Button
-                  size="small"
-                  className="border-common-active py-2 text-base"
-                  style={{ padding: '3px 8px', minWidth: 0 }}
+                  size="inherit"
+                  className="border-common-active py-2 px-2 text-base"
                   color="white"
                   onClick={() => navigateToPage(currentPage - 1)}
                 >{`< Previous`}</Button>
                 <Button
-                  size="small"
-                  className="border-common-active py-2 text-base"
-                  style={{ padding: '3px 20px', minWidth: 0 }}
+                  size="inherit"
+                  className="border-common-active py-2 px-4 text-base"
                   color="white"
                   onClick={() => navigateToPage(currentPage + 1)}
                 >
