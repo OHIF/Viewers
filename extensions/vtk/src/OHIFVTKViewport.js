@@ -156,6 +156,10 @@ class OHIFVTKViewport extends Component {
       const { activeLabelmapIndex } = brushStackState;
       const labelmap3D = brushStackState.labelmaps3D[activeLabelmapIndex];
 
+      this.segmentsDefaultProperties = labelmap3D.segmentsHidden.map(isHidden => {
+        return { visible: !isHidden };
+      });
+
       const vtkLabelmapID = `${firstImageId}_${activeLabelmapIndex}`;
 
       if (labelmapCache[vtkLabelmapID]) {
@@ -388,7 +392,7 @@ class OHIFVTKViewport extends Component {
 
   render() {
     let childrenWithProps = null;
-    const { configuration } = segmentationModule;
+    const { configuration, state } = segmentationModule;
 
     // TODO: Does it make more sense to use Context?
     if (this.props.children && this.props.children.length) {
@@ -427,7 +431,8 @@ class OHIFVTKViewport extends Component {
                 globalOpacity: configuration.fillAlpha,
                 visible: configuration.renderFill,
                 outlineThickness: configuration.outlineWidth,
-                renderOutline: true,
+                renderOutline: configuration.renderOutline,
+                segmentsDefaultProperties: this.segmentsDefaultProperties
               }}
               onScroll={this.props.onScroll}
             />

@@ -33,6 +33,10 @@ const refreshViewport = () => {
  * @param {number} props.activeIndex - Active viewport index
  * @param {boolean} props.isOpen - Boolean that indicates if the panel is expanded
  * @param {Function} props.onSegmentItemClick - Segment click handler
+ * @param {Function} props.onSegmentVisibilityChange - Segment visibiliy change handler
+ * @param {Function} props.onConfigurationChange - Configuration change handler
+ * @param {Function} props.activeContexts - List of active application contexts
+ * @param {Function} props.contexts - List of available application contexts
  * @returns component
  */
 const SegmentationPanel = ({
@@ -55,10 +59,15 @@ const SegmentationPanel = ({
    */
   const { configuration } = cornerstoneTools.getModule('segmentation');
   const DEFAULT_BRUSH_RADIUS = configuration.radius || 10;
+
+  /*
+   * TODO: We shouldn't hardcode brushColor color, in the future
+   * the SEG may set the colorLUT to whatever it wants.
+   */
   const [state, setState] = useState({
     brushRadius: DEFAULT_BRUSH_RADIUS,
     brushColor:
-      'rgba(221, 85, 85, 1)' /* TODO: We shouldn't hardcode this color, in the future the SEG may set the colorLUT to whatever it wants. */,
+      'rgba(221, 85, 85, 1)',
     selectedSegment: null,
     selectedSegmentation: null,
     showSegmentationSettings: false,
@@ -314,8 +323,21 @@ const SegmentationPanel = ({
           }
         };
 
+        const isSegmentVisible = () => {
+          return !labelmap3D.segmentsHidden[segmentIndex];
+        };
+
+        const toggleSegmentVisibility = () => {
+          const segmentsHidden = labelmap3D.segmentsHidden;
+          segmentsHidden[segmentIndex] = !segmentsHidden[segmentIndex];
+          return !segmentsHidden[segmentIndex];
+        };
+
         const cachedSegmentProperties = state.cachedSegmentsProperties[segmentNumber];
-        let visible = cachedSegmentProperties ? cachedSegmentProperties.visible : true;
+        let visible = isSegmentVisible();
+        if (cachedSegmentProperties && cachedSegmentProperties.visible !== visible) {
+          toggleSegmentVisibility();
+        }
 
         segmentList.push(
           <SegmentItem
