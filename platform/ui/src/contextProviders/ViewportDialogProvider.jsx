@@ -46,12 +46,14 @@ const ViewportDialogProvider = ({
 
   return (
     <Provider value={{ show, hide }}>
-      {ViewportDialogContent && (
-        <Dialog className={customClassName}>
-          <ViewportDialogContent {...contentProps} show={show} hide={hide} />
-        </Dialog>
-      )}
-      {children}
+      <div className="relative w-full h-full">
+        {ViewportDialogContent && (
+          <Dialog className={customClassName}>
+            <ViewportDialogContent {...contentProps} show={show} hide={hide} />
+          </Dialog>
+        )}
+        {children}
+      </div>
     </Provider>
   );
 };
@@ -71,7 +73,7 @@ ViewportDialogProvider.propTypes = {
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),
-  viewportIndex: PropTypes.number.isRequired,
+  viewportIndex: PropTypes.number,
 };
 
 export default ViewportDialogProvider;

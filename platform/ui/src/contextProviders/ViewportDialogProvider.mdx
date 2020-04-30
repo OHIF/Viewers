@@ -4,7 +4,14 @@ route: customHooks/viewportDialogProvider
 ---
 
 import { Playground, Props } from 'docz';
-import { ViewportDialogProvider } from '@ohif/ui';
+
+import {
+  ViewportDialogProvider,
+  Dialog,
+  Button,
+  useViewportDialog,
+  Notification,
+} from '@ohif/ui';
 
 # Viewport Dialog Provider
 
@@ -14,7 +21,61 @@ component across all application.
 ## Sample
 
 <Playground>
-
+  {() => {
+    const ViewportNotification = ({ hide }) => {
+      return (
+        <Notification
+          text="Track all measurement for this series?"
+          type="info"
+          actionButtons={
+            <div>
+              <Button onClick={hide}>No</Button>
+              <Button onClick={hide} className="ml-2">
+                No, do not ask again
+              </Button>
+              <Button onClick={hide} className="ml-2" color="primary">
+                Yes
+              </Button>
+            </div>
+          }
+        />
+      );
+    };
+    const ViewportActionButtons = () => {
+      const dialog = useViewportDialog();
+      return (
+        <Button
+          onClick={() =>
+            dialog.show({
+              content: ViewportNotification,
+            })
+          }
+        >
+          Open Dialog
+        </Button>
+      );
+    };
+    return (
+      <div className="w-full flex flex-row p-4" style={{height: '400px'}}>
+        <div className="flex flex-1 items-center justify-center h-full w-full bg-black text-white border border-primary-main">
+          <ViewportDialogProvider dialog={Dialog}>
+            <div className="flex flex-1 flex-col items-center justify-center h-full">
+              <ViewportActionButtons />
+              <span>CONTENT 1</span>
+            </div>
+          </ViewportDialogProvider>
+        </div>
+        <div className="flex flex-1 items-center justify-center h-full w-full bg-black text-white border border-primary-main">
+          <ViewportDialogProvider dialog={Dialog}>
+            <div className="flex flex-1 flex-col items-center justify-center h-full">
+              <ViewportActionButtons />
+              <span>CONTENT 1</span>
+            </div>
+          </ViewportDialogProvider>
+        </div>
+      </div>
+    );
+  }}
 </Playground>
 
 ## Properties:
