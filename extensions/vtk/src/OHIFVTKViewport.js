@@ -333,6 +333,7 @@ class OHIFVTKViewport extends Component {
             paintFilterLabelMapImageData: labelmapDataObject,
             paintFilterBackgroundImageData: imageDataObject.vtkImageData,
             labelmapColorLUT,
+            isNewSegmentationLoaded: true
           });
         }, 200);
       }
@@ -412,7 +413,7 @@ class OHIFVTKViewport extends Component {
     return (
       <>
         <div style={style}>
-          {!this.state.isLoaded && (
+          {!this.state.isLoaded || !this.state.isNewSegmentationLoaded && (
             <LoadingIndicator percentComplete={this.state.percentComplete} />
           )}
           {this.state.volumes && (
@@ -434,6 +435,7 @@ class OHIFVTKViewport extends Component {
                 renderOutline: configuration.renderOutline,
                 segmentsDefaultProperties: this.segmentsDefaultProperties,
                 onNewSegmentationRequested: () => {
+                  this.setState({ isNewSegmentationLoaded: false });
                   this.setStateFromProps();
                 }
               }}
