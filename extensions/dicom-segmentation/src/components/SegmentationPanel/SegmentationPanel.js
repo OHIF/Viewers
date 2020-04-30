@@ -75,7 +75,8 @@ const SegmentationPanel = ({
     brushStackState: null,
     labelmapList: [],
     segmentList: [],
-    cachedSegmentsProperties: []
+    cachedSegmentsProperties: [],
+    isLoading: false
   });
 
   useEffect(() => {
@@ -93,6 +94,25 @@ const SegmentationPanel = ({
     };
 
     /*
+     * TODO: Improve the way we notify parts of the app that depends on segs to be loaded.
+     *
+     * Currently we are using a non-ideal implementation through a custom event to notify the segmentation panel
+     * or other components that could rely on loaded segmentations that
+     * the segments were loaded so that e.g. when the user opens the panel
+     * before the segments are fully loaded, the panel can subscribe to this custom event
+     * and update itself with the new segments.
+     *
+     * This limitation is due to the fact that the cs segmentation module is an object (which will be
+     * updated after the segments are loaded) that React its not aware of its changes
+     * because the module object its not passed in to the panel component as prop but accessed externally.
+     *
+     * Improving this event approach to something reactive that can be tracked inside the react lifecycle,
+     * allows us to easily watch the module or the segmentations loading process in any other component
+     * without subscribing to external events.
+     */
+    document.addEventListener('extensiondicomsegmentationsegloaded', refreshSegmentations);
+
+    /*
      * These are specific to each element;
      * Need to iterate cornerstone-tools tracked enabled elements?
      * Then only care about the one tied to active viewport?
@@ -105,6 +125,7 @@ const SegmentationPanel = ({
     );
 
     return () => {
+      document.removeEventListener('extensiondicomsegmentationsegloaded', refreshSegmentations);
       cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
         enabledElement.removeEventListener(
           'cornerstonetoolslabelmapmodified',
@@ -112,9 +133,9 @@ const SegmentationPanel = ({
         )
       );
     };
-  });
+  }, [activeIndex, viewports]);
 
-  useEffect(() => {
+  const refreshSegmentations = useCallback(() => {
     const module = cornerstoneTools.getModule('segmentation');
     const activeViewport = viewports[activeIndex];
     const studyMetadata = studyMetadataManager.get(
@@ -124,7 +145,6 @@ const SegmentationPanel = ({
       activeViewport.displaySetInstanceUID
     );
     const brushStackState = module.state.series[firstImageId];
-
     if (brushStackState) {
       const labelmap3D =
         brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
@@ -148,7 +168,11 @@ const SegmentationPanel = ({
         segmentList: [],
       }));
     }
-  }, [studies, viewports, activeIndex, getLabelmapList, getSegmentList, state.selectedSegmentation, activeContexts]);
+  }, [viewports, activeIndex, state.isLoading]);
+
+  useEffect(() => {
+    refreshSegmentations();
+  }, [viewports, activeIndex, state.selectedSegmentation, activeContexts, state.isLoading]);
 
   /* Handle open/closed panel behaviour */
   useEffect(() => {
@@ -345,7 +369,7 @@ const SegmentationPanel = ({
           <SegmentItem
             key={segmentNumber}
             itemClass={`segment-item ${sameSegment && 'selected'}`}
-            onClick={setCurrentSelectedSegment}
+            onClick={() => setCurrentSelectedSegment()}
             label={segmentLabel}
             index={segmentNumber}
             color={color}
@@ -381,7 +405,7 @@ const SegmentationPanel = ({
        * Show default name
        */
     },
-    [activeIndex, onSegmentItemClick, state.selectedSegment]
+    [activeIndex, onSegmentItemClick, state.selectedSegment, state.isLoading]
   );
 
   const updateCachedSegmentsProperties = (segmentNumber, properties) => {

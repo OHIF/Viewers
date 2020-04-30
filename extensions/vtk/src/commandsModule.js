@@ -101,6 +101,20 @@ const commandsModule = ({ commandsManager }) => {
     });
   }
 
+  const _convertModelToWorldSpace = (position, vtkImageData) => {
+    const indexToWorld = vtkImageData.getIndexToWorld();
+    const pos = vec3.create();
+
+    position[0] += 0.5; /* Move to the centre of the voxel. */
+    position[1] += 0.5; /* Move to the centre of the voxel. */
+    position[2] += 0.5; /* Move to the centre of the voxel. */
+
+    vec3.set(pos, position[0], position[1], position[2]);
+    vec3.transformMat4(pos, pos, indexToWorld);
+
+    return pos;
+  };
+
   const actions = {
     getVtkApis: ({ index }) => {
       return apis[index];
@@ -150,7 +164,8 @@ const commandsModule = ({ commandsManager }) => {
       SOPInstanceUID,
       segmentNumber,
       frameIndex,
-      frame
+      frame,
+      done = () => { }
     }) => {
       let api = apis[viewports.activeViewportIndex];
 
@@ -170,7 +185,6 @@ const commandsModule = ({ commandsManager }) => {
 
       const imageDataObject = getImageData(stack.imageIds, displaySetInstanceUID);
 
-      /* rows and cols from somewhere. */
       let pixelIndex = 0;
       let x = 0;
       let y = 0;
@@ -195,31 +209,17 @@ const commandsModule = ({ commandsManager }) => {
       y /= count;
 
       const position = [x, y, frameIndex];
-
-      const _convertModelToWorldSpace = (position, vtkImageData) => {
-        const indexToWorld = vtkImageData.getIndexToWorld();
-        const pos = vec3.create();
-
-        position[0] += 0.5; /* Move to the centre of the voxel. */
-        position[1] += 0.5; /* Move to the centre of the voxel. */
-        position[2] += 0.5; /* Move to the centre of the voxel. */
-
-        vec3.set(pos, position[0], position[1], position[2]);
-        vec3.transformMat4(pos, pos, indexToWorld);
-
-        return pos;
-      };
-
       const worldPos = _convertModelToWorldSpace(position, imageDataObject.vtkImageData);
 
       api.svgWidgets.crosshairsWidget.moveCrosshairs(worldPos, apis);
+      done();
     },
     setSegmentationConfiguration: async ({
       viewports,
       globalOpacity,
       visible,
       renderOutline,
-      outlineThickness
+      outlineThickness,
     }) => {
       const allViewports = Object.values(viewports.viewportSpecificData);
       const promises = allViewports.map(async (viewport, viewportIndex) => {
@@ -230,7 +230,6 @@ const commandsModule = ({ commandsManager }) => {
           apis[viewportIndex] = api;
         }
 
-        api.setSegmentAlpha();
         api.setGlobalOpacity(globalOpacity);
         api.setVisibility(visible);
         api.setOutlineThickness(outlineThickness);
