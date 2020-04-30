@@ -1,4 +1,10 @@
-import React, { useState, createContext, useContext, useCallback } from 'react';
+import React, {
+  useState,
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+} from 'react';
 import PropTypes from 'prop-types';
 
 const DEFAULT_OPTIONS = {
@@ -12,7 +18,12 @@ const { Provider } = ViewportDialogContext;
 
 export const useViewportDialog = () => useContext(ViewportDialogContext);
 
-const ViewportDialogProvider = ({ children, dialog: Dialog }) => {
+const ViewportDialogProvider = ({
+  children,
+  dialog: Dialog,
+  service,
+  viewportIndex,
+}) => {
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
 
   const show = useCallback((props) => setOptions({ ...options, ...props }), [
@@ -20,6 +31,12 @@ const ViewportDialogProvider = ({ children, dialog: Dialog }) => {
   ]);
 
   const hide = useCallback(() => setOptions(DEFAULT_OPTIONS), []);
+
+  useEffect(() => {
+    if (service) {
+      service.setServiceImplementation({ hide, show, viewportIndex });
+    }
+  }, [hide, service, show, viewportIndex]);
 
   const {
     content: ViewportDialogContent,
@@ -51,6 +68,10 @@ ViewportDialogProvider.propTypes = {
     PropTypes.node,
     PropTypes.func,
   ]).isRequired,
+  service: PropTypes.shape({
+    setServiceImplementation: PropTypes.func,
+  }),
+  viewportIndex: PropTypes.number.isRequired,
 };
 
 export default ViewportDialogProvider;
