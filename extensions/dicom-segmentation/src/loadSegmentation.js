@@ -34,28 +34,35 @@ export default async function loadSegmentation(
     referencedDisplaySet.SeriesInstanceUID
   );
 
-  const results = _parseSeg(segArrayBuffer, imageIds);
+  return new Promise((resolve, reject) => {
+    let results;
 
-  if (!results) {
-    throw new Error('Fractional segmentations are not yet supported');
-  }
+    try {
+      results = _parseSeg(segArrayBuffer, imageIds);
+    } catch (error) {
+      segDisplaySet.isLoaded = false;
+      reject(error);
+    }
 
-  const { labelmapBuffer, segMetadata, segmentsOnFrame } = results;
-  const { setters } = cornerstoneTools.getModule('segmentation');
+    const { labelmapBuffer, segMetadata, segmentsOnFrame } = results;
+    const { setters } = cornerstoneTools.getModule('segmentation');
 
-  // TODO: Could define a color LUT based on colors in the SEG.
-  const labelmapIndex = _getNextLabelmapIndex(imageIds[0]);
+    // TODO: Could define a color LUT based on colors in the SEG.
+    const labelmapIndex = _getNextLabelmapIndex(imageIds[0]);
 
-  setters.labelmap3DByFirstImageId(
-    imageIds[0],
-    labelmapBuffer,
-    labelmapIndex,
-    segMetadata,
-    imageIds.length,
-    segmentsOnFrame
-  );
+    setters.labelmap3DByFirstImageId(
+      imageIds[0],
+      labelmapBuffer,
+      labelmapIndex,
+      segMetadata,
+      imageIds.length,
+      segmentsOnFrame
+    );
 
-  segDisplaySet.labelmapIndex = labelmapIndex;
+    segDisplaySet.labelmapIndex = labelmapIndex;
+
+    resolve(labelmapIndex);
+  });
 }
 
 function _getNextLabelmapIndex(firstImageId) {
