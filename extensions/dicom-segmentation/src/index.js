@@ -2,7 +2,7 @@ import React from 'react';
 
 import init from './init.js';
 import toolbarModule from './toolbarModule.js';
-import sopClassHandlerModule from './OHIFDicomSegSopClassHandler.js';
+import getSopClassHandlerModule from './getOHIFDicomSegSopClassHandler.js';
 import SegmentationPanel from './components/SegmentationPanel/SegmentationPanel.js';
 
 export default {
@@ -23,9 +23,20 @@ export default {
   getToolbarModule({ servicesManager }) {
     return toolbarModule;
   },
-  getPanelModule({ commandsManager, api }) {
+  getPanelModule({ commandsManager, api, servicesManager }) {
+    const { UINotificationService } = servicesManager;
+
     const ExtendedSegmentationPanel = props => {
       const { activeContexts } = api.hooks.useAppContext();
+
+      const onDisplaySetLoadFailureHandler = error => {
+        UINotificationService.show({
+          title: 'DICOM Segmentation Loader',
+          message: error.message,
+          type: 'error',
+          autoClose: false,
+        });
+      };
 
       const segmentItemClickHandler = data => {
         commandsManager.runCommand('jumpToImage', data);
@@ -61,6 +72,7 @@ export default {
           onSegmentVisibilityChange={onSegmentVisibilityChangeHandler}
           onConfigurationChange={onConfigurationChangeHandler}
           onSelectedSegmentationChange={onSelectedSegmentationChangeHandler}
+          onDisplaySetLoadFailure={onDisplaySetLoadFailureHandler}
         />
       );
     };
@@ -103,7 +115,5 @@ export default {
       defaultContext: ['VIEWER'],
     };
   },
-  getSopClassHandlerModule({ servicesManager }) {
-    return sopClassHandlerModule;
-  },
+  getSopClassHandlerModule,
 };

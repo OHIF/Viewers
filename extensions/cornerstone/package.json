@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "2.7.0",
+  "version": "2.7.2",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -36,7 +36,7 @@
     "cornerstone-math": "^0.1.8",
     "cornerstone-tools": "4.12.5",
     "cornerstone-wado-image-loader": "^3.1.0",
-    "dcmjs": "^0.12.2",
+    "dcmjs": "^0.12.3",
     "dicom-parser": "^1.8.3",
     "hammerjs": "^2.0.8",
     "prop-types": "^15.6.2",
@@ -51,6 +51,6 @@
     "classnames": "^2.2.6",
     "lodash.merge": "^4.6.2",
     "lodash.throttle": "^4.1.1",
-    "react-cornerstone-viewport": "^2.3.6"
+    "react-cornerstone-viewport": "2.3.8"
   }
 }

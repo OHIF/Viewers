@@ -47,6 +47,7 @@ const SegmentationPanel = ({
   onSegmentItemClick,
   onSegmentVisibilityChange,
   onConfigurationChange,
+  onDisplaySetLoadFailure,
   onSelectedSegmentationChange,
   activeContexts,
   contexts,
@@ -153,7 +154,11 @@ const SegmentationPanel = ({
         firstImageId,
         activeViewport
       );
-      const segmentList = getSegmentList(labelmap3D, firstImageId, brushStackState);
+      const segmentList = getSegmentList(
+        labelmap3D,
+        firstImageId,
+        brushStackState
+      );
       setState(state => ({
         ...state,
         brushStackState,
@@ -168,7 +173,11 @@ const SegmentationPanel = ({
         segmentList: [],
       }));
     }
-  }, [viewports, activeIndex, state.isLoading]);
+  }, [
+    viewports,
+    activeIndex,
+    state.isLoading
+  ]);
 
   useEffect(() => {
     refreshSegmentations();
@@ -213,7 +222,8 @@ const SegmentationPanel = ({
               displaySet,
               firstImageId,
               brushStackState.activeLabelmapIndex,
-              () => onSelectedSegmentationChange()
+              () => onSelectedSegmentationChange(),
+              onDisplaySetLoadFailure
             );
             updateState('selectedSegmentation', activatedLabelmapIndex);
           },
@@ -524,7 +534,9 @@ const SegmentationPanel = ({
         <h3>Segmentations</h3>
         <div className="segmentations">
           <SegmentationSelect
-            value={state.labelmapList.find(i => i.value === state.selectedSegmentation)}
+            value={state.labelmapList.find(
+              i => i.value === state.selectedSegmentation
+            )}
             formatOptionLabel={SegmentationItem}
             options={state.labelmapList}
           />
@@ -610,7 +622,8 @@ const _setActiveLabelmap = async (
   displaySet,
   firstImageId,
   activeLabelmapIndex,
-  callback = () => { }
+  callback = () => { },
+  onDisplaySetLoadFailure
 ) => {
   if (displaySet.labelmapIndex === activeLabelmapIndex) {
     log.warn(`${activeLabelmapIndex} is already the active labelmap`);
@@ -620,7 +633,17 @@ const _setActiveLabelmap = async (
   if (!displaySet.isLoaded) {
     // What props does this expect `viewportSpecificData` to have?
     // TODO: Should this return the `labelmapIndex`?
-    await displaySet.load(viewportSpecificData, studies);
+
+    const loadPromise = displaySet.load(viewportSpecificData, studies);
+
+    loadPromise.catch(error => {
+      onDisplaySetLoadFailure(error);
+
+      // Return old index.
+      return activeLabelmapIndex;
+    });
+
+    await loadPromise;
   }
 
   const { state } = cornerstoneTools.getModule('segmentation');

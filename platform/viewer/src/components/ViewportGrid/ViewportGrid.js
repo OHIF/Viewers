@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { utils } from '@ohif/core';
+import { useSnackbarContext } from '@ohif/ui';
 //
 import ViewportPane from './ViewportPane.js';
 import DefaultViewport from './DefaultViewport.js';
@@ -11,7 +12,7 @@ import EmptyViewport from './EmptyViewport.js';
 
 const { loadAndCacheDerivedDisplaySets } = utils;
 
-const ViewportGrid = function (props) {
+const ViewportGrid = function(props) {
   const {
     activeViewportIndex,
     availablePlugins,
@@ -33,9 +34,22 @@ const ViewportGrid = function (props) {
     return null;
   }
 
+  const snackbar = useSnackbarContext();
+
   useEffect(() => {
     viewportData.forEach(displaySet => {
-      loadAndCacheDerivedDisplaySets(displaySet, studies);
+      const promises = loadAndCacheDerivedDisplaySets(displaySet, studies);
+
+      promises.forEach(promise => {
+        promise.catch(error => {
+          snackbar.show({
+            title: 'Error loading derived display set:',
+            message: error.message,
+            type: 'error',
+            autoClose: false,
+          });
+        });
+      });
     });
   }, [studies, viewportData]);
 
