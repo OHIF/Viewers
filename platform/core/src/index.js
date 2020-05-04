@@ -22,10 +22,11 @@ import errorHandler from './errorHandler.js';
 import utils, { hotkeys } from './utils/';
 
 import {
-  UINotificationService,
-  UIModalService,
-  UIDialogService,
   MeasurementService,
+  UIDialogService,
+  UIModalService,
+  UINotificationService,
+  UIViewportDialogService,
 } from './services';
 
 const OHIF = {
@@ -56,9 +57,10 @@ const OHIF = {
   measurements,
   hangingProtocols,
   //
-  UINotificationService,
-  UIModalService,
   UIDialogService,
+  UIModalService,
+  UINotificationService,
+  UIViewportDialogService,
   MeasurementService,
 };
 
@@ -89,9 +91,10 @@ export {
   measurements,
   hangingProtocols,
   //
-  UINotificationService,
-  UIModalService,
   UIDialogService,
+  UIModalService,
+  UINotificationService,
+  UIViewportDialogService,
   MeasurementService,
 };
 

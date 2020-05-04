@@ -8,6 +8,8 @@ export {
   ModalConsumer,
   useModal,
   withModal,
+  ViewportDialogProvider,
+  useViewportDialog,
 } from './src/contextProviders';
 
 /** COMPONENTS */
@@ -15,6 +17,7 @@ export {
   Button,
   ButtonGroup,
   DateRange,
+  Dialog,
   EmptyStudies,
   Icon,
   IconButton,

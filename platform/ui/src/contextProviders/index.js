@@ -3,4 +3,9 @@ export {
   useModal,
   withModal,
   ModalConsumer,
-} from './ModalProvider.js';
+} from './ModalProvider';
+
+export {
+  default as ViewportDialogProvider,
+  useViewportDialog,
+} from './ViewportDialogProvider';
