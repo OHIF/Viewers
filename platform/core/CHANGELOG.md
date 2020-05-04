@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.3](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.2...@ohif/core@2.9.3) (2020-05-04)
+
+
+### Bug Fixes
+
+* 🐛 Proper error handling for derived display sets ([#1708](https://github.com/OHIF/Viewers/issues/1708)) ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
+
+
+
+
+
 ## [2.9.2](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.1...@ohif/core@2.9.2) (2020-05-04)
 
 
