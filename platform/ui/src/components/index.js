@@ -1,6 +1,7 @@
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
 import DateRange from './DateRange';
+import Dialog from './Dialog';
 import EmptyStudies from './EmptyStudies';
 import Icon from './Icon';
 import IconButton from './IconButton';
@@ -47,6 +48,7 @@ export {
   Button,
   ButtonGroup,
   DateRange,
+  Dialog,
   EmptyStudies,
   Icon,
   IconButton,
