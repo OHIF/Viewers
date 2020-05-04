@@ -15598,10 +15598,10 @@ react-codemirror2@^6.0.0:
   resolved "https://registry.yarnpkg.com/react-codemirror2/-/react-codemirror2-6.0.0.tgz#180065df57a64026026cde569a9708fdf7656525"
   integrity sha512-D7y9qZ05FbUh9blqECaJMdDwKluQiO3A9xB+fssd5jKM7YAXucRuEOlX32mJQumUvHUkHRHqXIPBjm6g0FW0Ag==
 
-react-cornerstone-viewport@^2.3.6:
-  version "2.3.6"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.3.6.tgz#1c76bd37c95284254767296952845bacd3b810a4"
-  integrity sha512-MBs1Mgl0g0YswkhgoaYlaPoPDVs/HZQ3Z89thHxVytvJsgnQvhc3YrR48iRaUfQj0eYoazh7AL/lLCfd8veFKA==
+react-cornerstone-viewport@^2.3.8:
+  version "2.3.8"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.3.8.tgz#7af8360f29bca986ae4e36b4e503269b88ddc52f"
+  integrity sha512-aiG2uVNrDY6SQx4t/HBxIA3zsMsCwT+6TpcXK9qSSoXhs+X6OTmYEKncWUqL0jtxU1yfh6JTUz8ARTg03gtF+A==
   dependencies:
     classnames "^2.2.6"
     date-fns "^2.2.1"
