@@ -1,6 +1,6 @@
 {
   "name": "@ohif/viewer",
-  "version": "3.11.4",
+  "version": "3.11.5",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -49,7 +49,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@ohif/core": "^2.9.2",
-    "@ohif/extension-cornerstone": "^2.7.0",
+    "@ohif/extension-cornerstone": "^2.7.1",
     "@ohif/extension-dicom-html": "^1.2.1",
     "@ohif/extension-dicom-microscopy": "^0.50.9",
     "@ohif/extension-dicom-p10-downloader": "^0.1.0",

@@ -34,8 +34,15 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getViewportModule() {
-    return OHIFCornerstoneViewport;
+  getViewportModule({ commandsManager }) {
+    const ExtendedOHIFCornerstoneViewport = props => {
+      const onNewImageHandler = jumpData => {
+        commandsManager.runCommand('jumpToImage', jumpData);
+      };
+      return <OHIFCornerstoneViewport {...props} onNewImage={onNewImageHandler} />;
+    };
+
+    return ExtendedOHIFCornerstoneViewport;
   },
   getToolbarModule() {
     return toolbarModule;
