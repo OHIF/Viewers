@@ -49,6 +49,7 @@ export default async function loadSegmentation(
 
     // TODO: Could define a color LUT based on colors in the SEG.
     const labelmapIndex = _getNextLabelmapIndex(imageIds[0]);
+    const colorLUTIndex = _makeColorLUTAndGetIndex(segMetadata);
 
     setters.labelmap3DByFirstImageId(
       imageIds[0],
@@ -56,7 +57,8 @@ export default async function loadSegmentation(
       labelmapIndex,
       segMetadata,
       imageIds.length,
-      segmentsOnFrame
+      segmentsOnFrame,
+      colorLUTIndex
     );
 
     segDisplaySet.labelmapIndex = labelmapIndex;
@@ -84,6 +86,69 @@ function _getNextLabelmapIndex(firstImageId) {
   }
 
   return labelmapIndex;
+}
+
+function _makeColorLUTAndGetIndex(segMetadata) {
+  const { setters, state } = cornerstoneTools.getModule('segmentation');
+  const { colorLutTables } = state;
+  const colorLUTIndex = _getNextColorLUTIndex();
+
+  const { data } = segMetadata;
+
+  if (
+    !data.some(
+      segment =>
+        segment &&
+        (segment.ROIDisplayColor || segment.RecommendedDisplayCIELabValue)
+    )
+  ) {
+    // Use default cornerstoneTools colorLUT.
+    return 0;
+  }
+
+  const colorLUT = [];
+
+  for (let i = 0; i < data.length; i++) {
+    const segment = data[i];
+    if (!segment) {
+      continue;
+    }
+
+    const { ROIDisplayColor, RecommendedDisplayCIELabValue } = segment;
+
+    if (RecommendedDisplayCIELabValue) {
+      const rgb = dcmjs.data.Colors.dicomlab2RGB(
+        RecommendedDisplayCIELabValue
+      ).map(x => Math.round(x * 255));
+
+      colorLUT[i] = [...rgb, 255];
+    } else if (ROIDisplayColor) {
+      colorLUT[i] = [...ROIDisplayColor, 255];
+    } else {
+      colorLUT[i] = [...colorLutTables[0][i]];
+    }
+  }
+
+  colorLUT.shift();
+  setters.colorLUT(colorLUTIndex, colorLUT);
+
+  return colorLUTIndex;
+}
+
+function _getNextColorLUTIndex() {
+  const { state } = cornerstoneTools.getModule('segmentation');
+  const { colorLutTables } = state;
+
+  let colorLUTIndex = colorLutTables.length;
+
+  for (let i = 0; i < colorLutTables.length; i++) {
+    if (!colorLutTables[i]) {
+      colorLUTIndex = i;
+      break;
+    }
+  }
+
+  return colorLUTIndex;
 }
 
 function _parseSeg(arrayBuffer, imageIds) {
