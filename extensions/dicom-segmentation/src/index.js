@@ -2,7 +2,7 @@ import React from 'react';
 
 import init from './init.js';
 import toolbarModule from './toolbarModule.js';
-import sopClassHandlerModule from './OHIFDicomSegSopClassHandler.js';
+import getSopClassHandlerModule from './getOHIFDicomSegSopClassHandler.js';
 import SegmentationPanel from './components/SegmentationPanel/SegmentationPanel.js';
 
 export default {
@@ -23,14 +23,20 @@ export default {
   getToolbarModule({ servicesManager }) {
     return toolbarModule;
   },
-  getPanelModule({ commandsManager }) {
+  getPanelModule({ commandsManager, servicesManager }) {
     const ExtendedSegmentationPanel = props => {
       const segItemClickHandler = segData => {
         commandsManager.runCommand('jumpToImage', segData);
       };
 
+      const { UINotificationService } = servicesManager.services;
+
       return (
-        <SegmentationPanel {...props} onSegItemClick={segItemClickHandler} />
+        <SegmentationPanel
+          {...props}
+          onSegItemClick={segItemClickHandler}
+          UINotificationService={UINotificationService}
+        />
       );
     };
 
@@ -72,7 +78,5 @@ export default {
       defaultContext: ['VIEWER'],
     };
   },
-  getSopClassHandlerModule({ servicesManager }) {
-    return sopClassHandlerModule;
-  },
+  getSopClassHandlerModule,
 };
