@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.2.2...@ohif/extension-dicom-segmentation@0.2.3) (2020-05-04)
+
+
+### Bug Fixes
+
+* 🐛 Proper error handling for derived display sets ([#1708](https://github.com/OHIF/Viewers/issues/1708)) ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
+
+
+
+
+
 ## [0.2.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.2.1...@ohif/extension-dicom-segmentation@0.2.2) (2020-04-28)
 
 **Note:** Version bump only for package @ohif/extension-dicom-segmentation
