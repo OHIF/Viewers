@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.2](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.1...@ohif/core@2.9.2) (2020-05-04)
+
+
+### Bug Fixes
+
+* use bit-appropriate array for palette lookup tables ([#1698](https://github.com/OHIF/Viewers/issues/1698)) ([7033886](https://github.com/OHIF/Viewers/commit/70338866978a76fa026c18d7c3c05257c5ece762))
+
+
+
+
+
+## [2.9.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.0...@ohif/core@2.9.1) (2020-04-28)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [2.9.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.8.1...@ohif/core@2.9.0) (2020-04-24)
 
 
