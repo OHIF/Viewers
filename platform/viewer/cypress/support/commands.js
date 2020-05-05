@@ -107,15 +107,15 @@ Cypress.Commands.add('waitStudyList', () => {
   });
 });
 
-Cypress.Commands.add('waitVTKReformatting', () => {
-  // Wait for start reformatting
+Cypress.Commands.add('waitVTKLoading', () => {
+  // Wait for start loading
   cy.get('[data-cy="viewprt-grid"]', { timeout: 10000 }).should($grid => {
-    expect($grid).to.contain.text('Reform');
+    expect($grid).to.contain.text('Loading');
   });
 
-  // Wait for finish reformatting
+  // Wait for finish loading
   cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
-    expect($grid).not.to.contain.text('Reform');
+    expect($grid).not.to.contain.text('Loading');
   });
 });
 
