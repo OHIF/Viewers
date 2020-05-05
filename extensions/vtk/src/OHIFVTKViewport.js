@@ -49,7 +49,7 @@ class OHIFVTKViewport extends Component {
   state = {
     volumes: null,
     paintFilterLabelMapImageData: null,
-    paintFilterBackgroundImageData: null,
+    paintFilterBackgroundImageData: null
   };
 
   static propTypes = {
@@ -333,7 +333,6 @@ class OHIFVTKViewport extends Component {
             paintFilterLabelMapImageData: labelmapDataObject,
             paintFilterBackgroundImageData: imageDataObject.vtkImageData,
             labelmapColorLUT,
-            isNewSegmentationLoaded: true
           });
         }, 200);
       }
@@ -344,7 +343,7 @@ class OHIFVTKViewport extends Component {
     this.setStateFromProps();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
@@ -393,7 +392,7 @@ class OHIFVTKViewport extends Component {
 
   render() {
     let childrenWithProps = null;
-    const { configuration, state } = segmentationModule;
+    const { configuration } = segmentationModule;
 
     // TODO: Does it make more sense to use Context?
     if (this.props.children && this.props.children.length) {
@@ -413,7 +412,7 @@ class OHIFVTKViewport extends Component {
     return (
       <>
         <div style={style}>
-          {!this.state.isLoaded || !this.state.isNewSegmentationLoaded && (
+          {!this.state.isLoaded && (
             <LoadingIndicator percentComplete={this.state.percentComplete} />
           )}
           {this.state.volumes && (
@@ -435,7 +434,6 @@ class OHIFVTKViewport extends Component {
                 renderOutline: configuration.renderOutline,
                 segmentsDefaultProperties: this.segmentsDefaultProperties,
                 onNewSegmentationRequested: () => {
-                  this.setState({ isNewSegmentationLoaded: false });
                   this.setStateFromProps();
                 }
               }}
