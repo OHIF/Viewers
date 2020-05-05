@@ -1,7 +1,7 @@
 import webApi from './modules/webApi';
 
 /**
- * Array that contains the default modules.
+ * Defines the default modules.
  */
 const defaultModules = [webApi];
 
