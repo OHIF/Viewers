@@ -36,10 +36,4 @@ Template.pipelineSelector.helpers({
     }
 });
 
-Template.pipelineSelector.events({
-    'click label.fa.fa-cog'(event) {
-        OHIF.ui.showDialog('pipelineInformationModal');
-    }
-});
-
 

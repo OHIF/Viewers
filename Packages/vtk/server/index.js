@@ -1,1 +1,1 @@
-import './publications.js'
+import './publications.js';
