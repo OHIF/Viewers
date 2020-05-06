@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { TableListItem, Icon } from '@ohif/ui';
 
@@ -19,6 +19,11 @@ ColoredCircle.propTypes = {
 
 const SegmentItem = ({ index, label, onClick, itemClass, color, visible = true, onVisibilityChange }) => {
   const [isVisible, setIsVisible] = useState(visible);
+
+  useEffect(() => {
+    setIsVisible(visible);
+  }, [visible]);
+
   return (
     <div className="dcmseg-segment-item">
       <TableListItem

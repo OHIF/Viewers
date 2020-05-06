@@ -23,19 +23,56 @@ export default {
   getToolbarModule({ servicesManager }) {
     return toolbarModule;
   },
-  getPanelModule({ commandsManager, servicesManager }) {
+  getPanelModule({ commandsManager, api, servicesManager }) {
+    const { UINotificationService } = servicesManager;
+
     const ExtendedSegmentationPanel = props => {
-      const segItemClickHandler = segData => {
-        commandsManager.runCommand('jumpToImage', segData);
+      const { activeContexts } = api.hooks.useAppContext();
+
+      const onDisplaySetLoadFailureHandler = error => {
+        UINotificationService.show({
+          title: 'DICOM Segmentation Loader',
+          message: error.message,
+          type: 'error',
+          autoClose: false,
+        });
       };
 
-      const { UINotificationService } = servicesManager.services;
+      const segmentItemClickHandler = data => {
+        commandsManager.runCommand('jumpToImage', data);
+        commandsManager.runCommand('jumpToSlice', data);
+      };
+
+      const onSegmentVisibilityChangeHandler = (segmentNumber, visible) => {
+        commandsManager.runCommand('setSegmentConfiguration', {
+          segmentNumber,
+          visible
+        });
+      };
+
+      const onConfigurationChangeHandler = configuration => {
+        commandsManager.runCommand('setSegmentationConfiguration', {
+          globalOpacity: configuration.fillAlpha,
+          outlineThickness: configuration.outlineWidth,
+          renderOutline: configuration.renderOutline,
+          visible: configuration.renderFill
+        });
+      };
+
+      const onSelectedSegmentationChangeHandler = () => {
+        commandsManager.runCommand('requestNewSegmentation');
+      };
 
       return (
         <SegmentationPanel
           {...props}
-          onSegItemClick={segItemClickHandler}
-          UINotificationService={UINotificationService}
+          activeContexts={activeContexts}
+          contexts={api.contexts}
+          onSegmentItemClick={segmentItemClickHandler}
+          onSegmentVisibilityChange={onSegmentVisibilityChangeHandler}
+          onConfigurationChange={onConfigurationChangeHandler}
+          onSelectedSegmentationChange={onSelectedSegmentationChangeHandler}
+          onDisplaySetLoadFailure={onDisplaySetLoadFailureHandler}
         />
       );
     };

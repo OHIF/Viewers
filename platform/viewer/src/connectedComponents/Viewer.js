@@ -7,7 +7,7 @@ import OHIF, { DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedHeader from './ConnectedHeader.js';
-import ConnectedToolbarRow from './ConnectedToolbarRow.js';
+import ToolbarRow from './ToolbarRow.js';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
@@ -256,7 +256,7 @@ class Viewer extends Component {
         </WhiteLabelingContext.Consumer>
 
         {/* TOOLBAR */}
-        <ConnectedToolbarRow
+        <ToolbarRow
           isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
           isRightSidePanelOpen={this.state.isRightSidePanelOpen}
           selectedLeftSidePanel={
@@ -307,11 +307,11 @@ class Viewer extends Component {
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
-              <ConnectedStudyBrowser
-                studies={this.state.thumbnails}
-                studyMetadata={this.props.studies}
-              />
-            )}
+                <ConnectedStudyBrowser
+                  studies={this.state.thumbnails}
+                  studyMetadata={this.props.studies}
+                />
+              )}
           </SidePanel>
 
           {/* MAIN */}
@@ -349,7 +349,7 @@ export default withDialog(Viewer);
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function(studies) {
+const _mapStudiesToThumbnails = function (studies) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
 
