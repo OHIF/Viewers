@@ -1,8 +1,8 @@
 {
   "name": "@ohif/extension-default",
   "version": "1.0.1",
-  "description": "OHIF extension for default configuration",
-  "author": "OHIF",
+  "description": "Common/default features and functionality for basic image viewing",
+  "author": "OHIF Core Team",
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/index.umd.js",
@@ -13,7 +13,7 @@
   "engines": {
     "node": ">=10",
     "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "yarn": ">=1.19.1"
   },
   "files": [
     "dist",
