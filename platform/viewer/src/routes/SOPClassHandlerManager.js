@@ -1,27 +1,24 @@
+import { dicomMetadataStore } from '@ohif/core';
+
 export default class SOPClassHandlerManager {
-  constructor(sopClassHandlerIds) {
-    this.SOPClassHandlers = sopClassHandlerIds.map(getSOPClassHandler);
+  constructor(extensionManager, sopClassHandlerIds) {
+    this.SOPClassHandlers = sopClassHandlerIds.map(
+      extensionManager.getModuleEntry
+    );
+
+    dicomMetadataStore.listen(this.onSeriesMetadataLoaded);
   }
 
-  async createDisplaySets() {
+  onSeriesMetadataLoaded = instances => {
     const SOPClassHandlers = this.SOPClassHandlers;
 
-    const displaySets = [];
+    for (let i = 0; i < SOPClassHandlers.length; i++) {
+      const handler = SOPClassHandlers[i];
 
-    // TODO
-    StudyMetadata.forEachSeries(series => {
-      for (let i = 0; i < SOPClassHandlers.length; i++) {
-        const handler = SOPClassHandlers[i];
-
+      if (handler.sopClassUids.includes(instances[0].SOPClassUID)) {
         // TODO: This step is still unclear to me
-        const displaySet = handler(series);
-
-        if (displaySet) {
-          displaySets.push(displaySet);
-        }
+        return handler.getDisplaySetFromSeries(series);
       }
-    });
-
-    return displaySets;
-  }
+    }
+  };
 }
