@@ -12,9 +12,11 @@ export default class ExtensionManager {
     this._appConfig = appConfig;
     this._api = api;
 
+    this.modulesMap = {};
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
     });
+    this.dataSourceMap = {};
   }
 
   /**
@@ -93,11 +95,23 @@ export default class ExtensionManager {
           extensionId,
           module: extensionModule,
         });
+
+        extensionModule.forEach(element => {
+          this.modulesMap[`${extensionId}.${moduleType}.${name}`];
+        });
       }
     });
 
     // Track extension registration
     this.registeredExtensionIds.push(extensionId);
+  }
+
+  getModuleEntry(stringEntry) {
+    return this.modulesMap[stringEntry];
+  }
+
+  getDataSource(dataSourceId) {
+    return this.dataSourceMap[dataSourceId];
   }
 
   /**
@@ -148,8 +162,12 @@ export default class ExtensionManager {
         this._initCommandsModule(definitions, defaultContext);
         break;
       }
-      case: 'dataSourcesModule': {
+      case 'dataSourcesModule': {
         break;
+
+        extensionModule.forEach(element => {
+          this.dataSourceMap[extensionModule.name] = element;
+        });
       }
       default:
       // code block
