@@ -148,6 +148,9 @@ export default class ExtensionManager {
         this._initCommandsModule(definitions, defaultContext);
         break;
       }
+      case: 'dataSourcesModule': {
+        break;
+      }
       default:
       // code block
     }
