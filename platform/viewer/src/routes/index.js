@@ -5,16 +5,18 @@ import { Switch, Route } from 'react-router-dom';
 import StudyListContainer from './StudyListContainer';
 import NotFound from './NotFound';
 
-const appRoutes = [
+const bakedInRoutes = [
   { path: '/', exact: true, component: StudyListContainer },
-  { path: '/viewer/:studyInstanceUids', component: NotFound },
   { component: NotFound },
 ];
 
-const routes = () => {
+const createRoutes = routes => {
+  console.log('Creating Routes: ', routes, bakedInRoutes);
+  const allRoutes = [...(routes || []), ...bakedInRoutes];
+
   return (
     <Switch>
-      {appRoutes.map((route, i) => {
+      {allRoutes.map((route, i) => {
         return (
           <Route
             key={i}
@@ -30,4 +32,4 @@ const routes = () => {
   );
 };
 
-export default routes;
+export default createRoutes;
