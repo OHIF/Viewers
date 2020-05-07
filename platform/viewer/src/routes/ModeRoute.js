@@ -1,68 +1,53 @@
-export default function ModeRoute(mode, dataSourceId) {
-  const [displaySets, setDisplaySets] = useState([]);
-  const { routes, sopClassHandlers, extensions } = getMode(modeId);
+import React, { useContext } from 'react';
+import SOPClassHandlerManager from './SOPClassHandlerManager';
+import ViewModelContext from './ViewModelContext';
+import Compose from './Compose';
 
+export default function ModeRoute({
+  location,
+  mode,
+  dataSourceId,
+  extensionManager,
+}) {
+  const { routes, sopClassHandlers, extensions } = mode;
+  const dataSource = extensionManager.getDataSource(dataSourceId);
+
+  const { displaySetInstanceUids, setDisplaySetInstanceUids } = useContext(
+    ViewModelContext
+  );
   // Deal with toolbar.
 
   // Only handling one route per mode for now
-  const LayoutComponent = routes[0].layoutTemplate;
+  const LayoutComponent = extensionManager.getModuleEntry(
+    routes[0].layoutTemplate
+  );
 
   // Add SOPClassHandlers to a new SOPClassManager.
-  const manager = new SOPClassHandlerManager(sopClassHandlers);
+  const manager = new SOPClassHandlerManager(
+    extensionManager,
+    sopClassHandlers
+  );
 
-  const dataSource = getDataSource(dataSourceId);
   const queryParams = location.search;
 
   // Call the data source to start building the view model?
-  dataSource(queryParams);
+  //dataSource(queryParams);
 
-  metadataStore.onModified();
+  //metadataStore.onModified();
 
   const onUpdatedCallback = () => {
     // TODO: This should append, not create from scratch so we don't nuke existing display sets
     // when e.g. a new series arrives
-    manager.createDisplaySets.then(setDisplaySets);
+    manager.createDisplaySets.then(setDisplaySetInstanceUids);
   };
 
-  // TODO: Should extensions provide an array of these or one nested context?
   const contextModules = extensions.getContextModules();
-  const ExtensionContexts = contextModules => {};
-
-  /*
-  TODO: How are contexts provided by extensions passed into the mode?
+  const contextModuleProviders = contextModules.map(a => a.context.Provider);
+  const CombinedContextProvider = Compose(contextModuleProviders);
 
   return (
-    <ExtensionContexts>
-      <LayoutComponent displaySets={displaySets} setDisplaySets={setDisplaySets}/>
-    </ExtensionContexts>
-  );*/
-
-  return <LayoutComponent displaySetInstanceUids={displaySetInstanceUids} />;
+    <CombinedContextProvider>
+      <LayoutComponent displaySetInstanceUids={displaySetInstanceUids} />
+    </CombinedContextProvider>
+  );
 }
-
-/*const ViewModelContext = React.createContext(
-  displaySets: [],
-  setDisplaySets: () => {}
-);
-
-
-class ViewModelProvider extends Component {
-  state = {
-    displaySets: []
-  };
-
-  const setDisplaySets = displaySets => {
-    this.setState({displaySets});
-  };
-
-  render() {
-    return (
-      <ViewModelContext.Provider value={
-        displaySets: this.state.displaySets,
-        setDisplaySets
-      }>
-        {this.props.children}
-      </ViewModelContext.Provider>
-    );
-  }
-}*/
