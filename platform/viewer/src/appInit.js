@@ -20,15 +20,16 @@ import buildModeRoutes from './routes/buildModeRoutes';
 function appInit(appConfigOrFunc, defaultExtensions) {
   const appConfig = {
     ...(typeof appConfigOrFunc === 'function'
-      ? config({ servicesManager })
+      ? appConfigOrFunc({ servicesManager })
       : appConfigOrFunc),
   };
 
+  // TODO: Wire this up to Rodrigo's basic Context "ContextService"
   const commandsManagerConfig = {
     /** Used by commands to inject `viewports` from "redux" */
-    getAppState: () => store.getState(),
+    getAppState: () => {},
     /** Used by commands to determine active context */
-    getActiveContexts: () => getActiveContexts(store.getState()),
+    getActiveContexts: () => ['VIEWER', 'ACTIVE_VIEWPORT::CORNERSTONE'],
   };
   const commandsManager = new CommandsManager(commandsManagerConfig);
   const servicesManager = new ServicesManager();
@@ -37,12 +38,6 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     commandsManager,
     servicesManager,
     appConfig,
-    api: {
-      contexts: CONTEXTS,
-      hooks: {
-        useAppContext,
-      },
-    },
   });
 
   servicesManager.registerServices([
@@ -69,14 +64,14 @@ function appInit(appConfigOrFunc, defaultExtensions) {
 
   const { modes } = appConfig;
 
-  const routes = buildModeRoutes(modes, extensionManager);
+  const appRoutes = buildModeRoutes(modes, extensionManager) || [];
 
   return {
     appConfig,
     commandsManager,
     extensionManager,
     servicesManager,
-    routes,
+    appRoutes,
   };
 }
 

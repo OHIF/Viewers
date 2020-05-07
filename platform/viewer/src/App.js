@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import { ThemeWrapper } from '@ohif/ui';
 // Viewer Project
-import routes from './routes';
+import createRoutes from './routes';
 import appInit from './appInit.js';
 
 /**
@@ -20,14 +20,16 @@ function App({ config, defaultExtensions }) {
     commandsManager,
     extensionManager,
     servicesManager,
+    appRoutes,
   } = appInit(config, defaultExtensions);
 
+  console.log(appRoutes);
   // TODO: Expose configuration w/ context?
   // See: `setConfiguration` in master
 
   return (
     <Router basename={appConfig.routerBasename}>
-      <ThemeWrapper>{routes()}</ThemeWrapper>
+      <ThemeWrapper>{createRoutes(appRoutes)}</ThemeWrapper>
     </Router>
   );
 }
