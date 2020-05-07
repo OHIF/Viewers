@@ -20,59 +20,6 @@ function dateToString(date) {
 }
 
 /**
- * Produces a QIDO URL given server details and a set of specified search filter
- * items
- *
- * @param filter
- * @param serverSupportsQIDOIncludeField
- * @returns {string} The URL with encoded filter query data
- */
-function getQIDOQueryParams(filter, serverSupportsQIDOIncludeField) {
-  const commaSeparatedFields = [
-    '00081030', // Study Description
-    '00080060', // Modality
-    // Add more fields here if you want them in the result
-  ].join(',');
-
-  const parameters = {
-    PatientName: filter.patientName,
-    PatientID: filter.patientId,
-    AccessionNumber: filter.accessionNumber,
-    StudyDescription: filter.studyDescription,
-    ModalitiesInStudy: filter.modalitiesInStudy,
-    limit: filter.limit,
-    offset: filter.offset,
-    fuzzymatching: filter.fuzzymatching,
-    includefield: serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all',
-  };
-
-  // build the StudyDate range parameter
-  if (filter.studyDateFrom || filter.studyDateTo) {
-    const dateFrom = dateToString(new Date(filter.studyDateFrom));
-    const dateTo = dateToString(new Date(filter.studyDateTo));
-    parameters.StudyDate = `${dateFrom}-${dateTo}`;
-  }
-
-  // Build the StudyInstanceUID parameter
-  if (filter.studyInstanceUid) {
-    let studyUids = filter.studyInstanceUid;
-    studyUids = Array.isArray(studyUids) ? studyUids.join() : studyUids;
-    studyUids = studyUids.replace(/[^0-9.]+/g, '\\');
-    parameters.StudyInstanceUID = studyUids;
-  }
-
-  // Clean query params of undefined values.
-  const params = {};
-  Object.keys(parameters).forEach(key => {
-    if (parameters[key] !== undefined && parameters[key] !== '') {
-      params[key] = parameters[key];
-    }
-  });
-
-  return params;
-}
-
-/**
  * Parses resulting data from a QIDO call into a set of Study MetaData
  *
  * @param resultData
