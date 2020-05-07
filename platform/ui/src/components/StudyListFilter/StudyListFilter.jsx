@@ -6,7 +6,7 @@ import { Button, Icon, Typography, InputGroup } from '@ohif/ui';
 const StudyListFilter = ({
   filtersMeta,
   filterValues,
-  setFilterValues,
+  onChange,
   clearFilters,
   isFiltering,
   numOfStudies,
@@ -14,7 +14,7 @@ const StudyListFilter = ({
   const { sortBy, sortDirection } = filterValues;
   const filterSorting = { sortBy, sortDirection };
   const setFilterSorting = sortingValues => {
-    setFilterValues({
+    onChange({
       ...filterValues,
       ...sortingValues,
     });
@@ -81,7 +81,7 @@ const StudyListFilter = ({
           <InputGroup
             inputMeta={filtersMeta}
             values={filterValues}
-            onValuesChange={setFilterValues}
+            onValuesChange={onChange}
             sorting={filterSorting}
             onSortingChange={setFilterSorting}
             isSortingEnable={isSortingEnable}
@@ -121,7 +121,7 @@ StudyListFilter.propTypes = {
   ).isRequired,
   filterValues: PropTypes.object.isRequired,
   numOfStudies: PropTypes.number.isRequired,
-  setFilterValues: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
   clearFilters: PropTypes.func.isRequired,
   isFiltering: PropTypes.bool.isRequired,
 };

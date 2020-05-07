@@ -272,7 +272,7 @@ const StudyList = () => {
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}
         filterValues={filterValues}
-        setFilterValues={setFilterValues}
+        onChange={setFilterValues}
         clearFilters={() => setFilterValues(defaultFilterValues)}
         isFiltering={isFiltering(filterValues, defaultFilterValues)}
       />
