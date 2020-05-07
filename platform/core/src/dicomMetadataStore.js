@@ -1,0 +1,4 @@
+const dicomMetadataStore = {
+  // TODO James
+  //
+};
