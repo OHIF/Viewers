@@ -26,7 +26,6 @@ export default function mode({ modeConfiguration }) {
               // named slots
               leftPanels: ['org.ohif.defaults.seriesList'],
               rightPanels: ['org.ohif.defaults.measure'],
-              viewports: ['org.ohif.defaults.cornerstoneViewport'],
             },
           };
         },
