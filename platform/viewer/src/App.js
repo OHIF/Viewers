@@ -1,20 +1,11 @@
+// External
 import React from 'react';
 import PropTypes from 'prop-types';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import { ThemeWrapper } from '@ohif/ui';
-import {
-  CommandsManager,
-  ExtensionManager,
-  ServicesManager,
-  HotkeysManager,
-  UINotificationService,
-  UIModalService,
-  UIDialogService,
-  MeasurementService,
-  utils,
-  redux as reduxOHIF,
-} from '@ohif/core';
+// Viewer Project
 import routes from './routes';
+import appInit from './appInit.js';
 
 /**
  * ENV Variable to determine routing behavior
@@ -23,33 +14,16 @@ const Router = JSON.parse(process.env.USE_HASH_ROUTER)
   ? HashRouter
   : BrowserRouter;
 
-const commandsManagerConfig = {
-  /** Used by commands to inject `viewports` from "redux" */
-  getAppState: () => store.getState(),
-  /** Used by commands to determine active context */
-  getActiveContexts: () => getActiveContexts(store.getState()),
-};
-const commandsManager = new CommandsManager(commandsManagerConfig);
-const servicesManager = new ServicesManager();
-// const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
-const extensionManager = new ExtensionManager({
-  commandsManager,
-  servicesManager,
-  appConfig,
-  api: {
-    contexts: CONTEXTS,
-    hooks: {
-      useAppContext,
-    },
-  },
-});
-
-extensionManager.registerExtensions(/* Array of Extensions */);
-
 function App({ config, defaultExtensions }) {
-  const appConfig = {
-    ...(typeof config === 'function' ? config({ servicesManager }) : config),
-  };
+  const {
+    appConfig,
+    commandsManager,
+    extensionManager,
+    servicesManager,
+  } = appInit(config, defaultExtensions);
+
+  // TODO: Expose configuration w/ context?
+  // See: `setConfiguration` in master
 
   return (
     <Router basename={appConfig.routerBasename}>
