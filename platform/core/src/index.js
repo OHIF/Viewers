@@ -28,6 +28,8 @@ import {
   UIViewportDialogService,
 } from './services';
 
+import * as IWebApiDataSource from './DataSources/IWebApiDataSource';
+
 const OHIF = {
   MODULE_TYPES,
   //
@@ -60,6 +62,7 @@ const OHIF = {
   UINotificationService,
   UIViewportDialogService,
   MeasurementService,
+  IWebApiDataSource,
 };
 
 export {
@@ -93,6 +96,7 @@ export {
   UINotificationService,
   UIViewportDialogService,
   MeasurementService,
+  IWebApiDataSource,
 };
 
 export { OHIF };
