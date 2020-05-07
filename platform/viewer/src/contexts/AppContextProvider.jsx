@@ -8,8 +8,12 @@ export const useAppContext = () => useContext(AppContext);
 const AppContextProvider = ({ children }) => {
   const [config, setConfig] = useState(null);
 
-  const get = ({ configKey }) => {
-    return config[configKey];
+  const get = ({ configKey = null }) => {
+    if (configKey) {
+      return config[configKey];
+    }
+
+    return config;
   };
 
   const add = ({ configKey, value }) => {
