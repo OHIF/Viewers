@@ -4,6 +4,7 @@
     "sysoev.language-stylus",
     "dbaeumer.vscode-eslint",
     "mikestead.dotenv",
-    "bungcip.better-toml"
+    "bungcip.better-toml",
+    "silvenon.mdx"
   ]
 }
