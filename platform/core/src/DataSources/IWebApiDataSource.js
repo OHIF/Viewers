@@ -8,7 +8,7 @@
  * It's worth noting that a single implementation of this interface
  * can define different underlying sources for "read" and "write" operations.
  */
-function createWebApiDataSource({ query, retrieve }) {
+function create({ query, retrieve, retrieveMetadata }) {
   const defaultQuery = {
     studies: {
       /**
@@ -36,7 +36,14 @@ function createWebApiDataSource({ query, retrieve }) {
   return {
     query,
     retrieve: {},
+    // retrieveMetadata: retrieveMetadata.bind(null, dicomMetadataStore);
+    // then go get all series level metadata.
+    // Store this in the DICOM MetadataStore.
   };
 }
 
-export { createWebApiDataSource };
+const IWebApiDataSource = {
+  create,
+};
+
+export default IWebApiDataSource;

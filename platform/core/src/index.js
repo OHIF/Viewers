@@ -29,7 +29,7 @@ import {
   UIViewportDialogService,
 } from './services';
 
-import * as IWebApiDataSource from './DataSources/IWebApiDataSource';
+import IWebApiDataSource from './DataSources/IWebApiDataSource';
 
 const OHIF = {
   MODULE_TYPES,
