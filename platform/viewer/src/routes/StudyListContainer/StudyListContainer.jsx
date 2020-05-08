@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
+import propTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import qs from 'query-string';
+//
+import { useDebounce, useQuery } from './../../hooks';
 
 import {
-  utils,
   Icon,
   StudyListExpandedRow,
   Button,
@@ -17,31 +20,50 @@ import {
   StudyListFilter,
 } from '@ohif/ui';
 
-// URL Query Hook
-import { useQuery } from '../../hooks';
-
-function StudyListContainer() {
+/**
+ * TODO:
+ * - debounce `setFilterValues` (150ms?)
+ */
+function StudyListContainer({ history, studies }) {
+  // ~ Filters
   const query = useQuery();
-
-  const defaultFilterValues = {
-    patientName: '',
-    mrn: '',
-    studyDate: {
-      startDate: null,
-      endDate: null,
-    },
-    description: '',
-    modality: undefined,
-    accession: '',
-    sortBy: '',
-    sortDirection: 'none',
-    page: 0,
-    resultsPerPage: 25,
-  };
-  const [filterValues, setFilterValues] = useState(defaultFilterValues);
-  const studies = utils.getMockedStudies(100);
-  const numOfStudies = studies.length;
+  const queryFilterValues = _getQueryFilterValues(query);
+  const [filterValues, setFilterValues] = useState(
+    Object.assign({}, defaultFilterValues, queryFilterValues)
+  );
+  const debouncedFilterValues = useDebounce(filterValues, 500);
+  // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
+  const numOfStudies = studies.length;
+
+  useEffect(() => {
+    if (!debouncedFilterValues) {
+      return;
+    }
+    const queryString = {};
+    Object.keys(defaultFilterValues).forEach(key => {
+      const defaultValue = defaultFilterValues[key];
+      const currValue = debouncedFilterValues[key];
+
+      if (
+        typeof currValue === 'object' &&
+        currValue !== null &&
+        JSON.stringify(currValue) !== JSON.stringify(defaultValue)
+      ) {
+        queryString[key] = JSON.stringify(currValue);
+      } else if (currValue !== defaultValue) {
+        queryString[key] = currValue;
+      }
+    });
+    history.push({
+      pathname: '/',
+      search: `?${qs.stringify(queryString, {
+        skipNull: true,
+        skipEmptyString: true,
+      })}`,
+    });
+  }, [debouncedFilterValues, history]);
+
   const filtersMeta = [
     {
       name: 'patientName',
@@ -259,10 +281,6 @@ function StudyListContainer() {
 
   const hasStudies = numOfStudies > 0;
 
-  useEffect(() => {
-    query.setQueryString(filterValues);
-  }, [filterValues, query]);
-
   return (
     <div
       className={classnames('bg-black h-full', {
@@ -296,7 +314,7 @@ function StudyListContainer() {
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}
         filterValues={filterValues}
-        setFilterValues={setFilterValues}
+        onChange={setFilterValues}
         clearFilters={() => setFilterValues(defaultFilterValues)}
         isFiltering={isFiltering(filterValues, defaultFilterValues)}
       />
@@ -324,6 +342,87 @@ function StudyListContainer() {
       )}
     </div>
   );
+}
+
+StudyListContainer.propTypes = {
+  history: propTypes.shape({
+    push: propTypes.func,
+  }),
+  studies: propTypes.array,
+};
+
+StudyListContainer.defaultProps = {
+  studies: [],
+};
+
+const defaultFilterValues = {
+  patientName: '',
+  mrn: '',
+  studyDate: {
+    startDate: null,
+    endDate: null,
+  },
+  description: '',
+  modality: [],
+  accession: '',
+  sortBy: '',
+  sortDirection: 'none',
+  page: 0,
+  resultsPerPage: 25,
+};
+
+function _getQueryFilterValues(query) {
+  const queryFilterValues = {
+    patientName: query.get('patientName'),
+    mrn: query.get('mrn'),
+    studyDate: _tryParseDates(query.get('studyDate'), undefined),
+    description: query.get('description'),
+    modality: _tryParseJson(query.get('modality'), undefined),
+    accession: query.get('accession'),
+    sortBy: query.get('soryBy'),
+    sortDirection: query.get('sortDirection'),
+    page: _tryParseInt(query.get('page'), undefined),
+    resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
+  };
+
+  // Delete null/undefined keys
+  Object.keys(queryFilterValues).forEach(
+    key => queryFilterValues[key] == null && delete queryFilterValues[key]
+  );
+
+  return queryFilterValues;
+
+  function _tryParseInt(str, defaultValue) {
+    var retValue = defaultValue;
+    if (str !== null) {
+      if (str.length > 0) {
+        if (!isNaN(str)) {
+          retValue = parseInt(str);
+        }
+      }
+    }
+    return retValue;
+  }
+
+  function _tryParseJson(str, defaultValue) {
+    return str ? JSON.parse(str) : defaultValue;
+  }
+
+  function _tryParseDates(str, defaultValue) {
+    const studyDateObject = _tryParseJson(str, defaultValue);
+
+    if (studyDateObject) {
+      studyDateObject.startDate = studyDateObject.startDate
+        ? moment(new Date(studyDateObject.startDate))
+        : undefined;
+
+      studyDateObject.endDate = studyDateObject.endDate
+        ? moment(new Date(studyDateObject.endDate))
+        : undefined;
+    }
+
+    return studyDateObject;
+  }
 }
 
 export default StudyListContainer;
