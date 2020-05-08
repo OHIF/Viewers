@@ -14,16 +14,17 @@ const Router = JSON.parse(process.env.USE_HASH_ROUTER)
   ? HashRouter
   : BrowserRouter;
 
-function App({ config, defaultExtensions }) {
-  const {
-    appConfig,
-    commandsManager,
-    extensionManager,
-    servicesManager,
-    appRoutes,
-  } = appInit(config, defaultExtensions);
+let commandsManager, extensionManager, servicesManager;
 
-  console.log(appRoutes);
+function App({ config, defaultExtensions }) {
+  const init = appInit(config, defaultExtensions);
+  const { appConfig, appRoutes } = init;
+
+  // Set above for named export
+  commandsManager = init.commandsManager;
+  extensionManager = init.extensionManager;
+  servicesManager = init.servicesManager;
+
   // TODO: Expose configuration w/ context?
   // See: `setConfiguration` in master
 
@@ -71,3 +72,5 @@ App.defaultProps = {
 };
 
 export default App;
+
+export { commandsManager, extensionManager, servicesManager };
