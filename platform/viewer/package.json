@@ -78,6 +78,7 @@
     "moment": "^2.24.0",
     "oidc-client": "1.7.x",
     "prop-types": "^15.7.2",
+    "query-string": "^6.12.1",
     "react-dropzone": "^10.1.7",
     "react-i18next": "^10.11.0",
     "react-redux": "^7.1.0",
