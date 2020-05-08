@@ -1,6 +1,6 @@
 import { api } from 'dicomweb-client';
 import { mapParams, search, processResults } from './qido.js';
-import IWebApi from '@ohif/core';
+import { IWebApiDataSource } from '@ohif/core';
 
 /**
  *
@@ -22,7 +22,7 @@ function createDicomWebApi(dicomWebConfig) {
 
   const dicomWebClient = new api.DICOMwebClient(config);
 
-  return IWebApi({
+  return IWebApiDataSource.create({
     query: {
       studies: {
         mapParams: mapParams.bind(),
