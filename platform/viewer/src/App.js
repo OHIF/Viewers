@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import { ThemeWrapper } from '@ohif/ui';
 // Viewer Project
+// TODO: Should this influence study list?
+// import AppContextProvider from './contexts/AppContextProvider.js';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 
@@ -14,13 +16,14 @@ const Router = JSON.parse(process.env.USE_HASH_ROUTER)
   ? HashRouter
   : BrowserRouter;
 
-let commandsManager, extensionManager, servicesManager;
+let appConfig, commandsManager, extensionManager, servicesManager;
 
 function App({ config, defaultExtensions }) {
   const init = appInit(config, defaultExtensions);
-  const { appConfig, appRoutes } = init;
+  const { appRoutes } = init;
 
   // Set above for named export
+  appConfig = init.appConfig;
   commandsManager = init.commandsManager;
   extensionManager = init.extensionManager;
   servicesManager = init.servicesManager;
@@ -73,4 +76,4 @@ App.defaultProps = {
 
 export default App;
 
-export { commandsManager, extensionManager, servicesManager };
+export { appConfig, commandsManager, extensionManager, servicesManager };
