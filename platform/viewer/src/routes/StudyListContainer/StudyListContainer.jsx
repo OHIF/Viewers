@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
@@ -17,7 +17,12 @@ import {
   StudyListFilter,
 } from '@ohif/ui';
 
+// URL Query Hook
+import { useQuery } from '../../hooks';
+
 function StudyListContainer() {
+  const query = useQuery();
+
   const defaultFilterValues = {
     patientName: '',
     mrn: '',
@@ -253,6 +258,10 @@ function StudyListContainer() {
   };
 
   const hasStudies = numOfStudies > 0;
+
+  useEffect(() => {
+    query.setQueryString(filterValues);
+  }, [filterValues, query]);
 
   return (
     <div
