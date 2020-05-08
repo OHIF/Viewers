@@ -2,7 +2,7 @@ import React from 'react';
 
 import init from './init.js';
 import toolbarModule from './toolbarModule.js';
-import sopClassHandlerModule from './OHIFDicomSegSopClassHandler.js';
+import getSopClassHandlerModule from './getOHIFDicomSegSopClassHandler.js';
 import SegmentationPanel from './components/SegmentationPanel/SegmentationPanel.js';
 
 export default {
@@ -23,14 +23,57 @@ export default {
   getToolbarModule({ servicesManager }) {
     return toolbarModule;
   },
-  getPanelModule({ commandsManager }) {
+  getPanelModule({ commandsManager, api, servicesManager }) {
+    const { UINotificationService } = servicesManager;
+
     const ExtendedSegmentationPanel = props => {
-      const segItemClickHandler = segData => {
-        commandsManager.runCommand('jumpToImage', segData);
+      const { activeContexts } = api.hooks.useAppContext();
+
+      const onDisplaySetLoadFailureHandler = error => {
+        UINotificationService.show({
+          title: 'DICOM Segmentation Loader',
+          message: error.message,
+          type: 'error',
+          autoClose: false,
+        });
+      };
+
+      const segmentItemClickHandler = data => {
+        commandsManager.runCommand('jumpToImage', data);
+        commandsManager.runCommand('jumpToSlice', data);
+      };
+
+      const onSegmentVisibilityChangeHandler = (segmentNumber, visible) => {
+        commandsManager.runCommand('setSegmentConfiguration', {
+          segmentNumber,
+          visible
+        });
+      };
+
+      const onConfigurationChangeHandler = configuration => {
+        commandsManager.runCommand('setSegmentationConfiguration', {
+          globalOpacity: configuration.fillAlpha,
+          outlineThickness: configuration.outlineWidth,
+          renderOutline: configuration.renderOutline,
+          visible: configuration.renderFill
+        });
+      };
+
+      const onSelectedSegmentationChangeHandler = () => {
+        commandsManager.runCommand('requestNewSegmentation');
       };
 
       return (
-        <SegmentationPanel {...props} onSegItemClick={segItemClickHandler} />
+        <SegmentationPanel
+          {...props}
+          activeContexts={activeContexts}
+          contexts={api.contexts}
+          onSegmentItemClick={segmentItemClickHandler}
+          onSegmentVisibilityChange={onSegmentVisibilityChangeHandler}
+          onConfigurationChange={onConfigurationChangeHandler}
+          onSelectedSegmentationChange={onSelectedSegmentationChangeHandler}
+          onDisplaySetLoadFailure={onDisplaySetLoadFailureHandler}
+        />
       );
     };
 
@@ -72,7 +115,5 @@ export default {
       defaultContext: ['VIEWER'],
     };
   },
-  getSopClassHandlerModule({ servicesManager }) {
-    return sopClassHandlerModule;
-  },
+  getSopClassHandlerModule,
 };

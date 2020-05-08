@@ -21,8 +21,8 @@ describe('OHIF VTK Extension', () => {
     //Select 2D MPR button
     cy.get('[data-cy="2d mpr"]').click();
 
-    //Wait Reformatting Images
-    cy.waitVTKReformatting();
+    //Wait waitVTKLoading Images
+    cy.waitVTKLoading();
   });
 
   beforeEach(() => {

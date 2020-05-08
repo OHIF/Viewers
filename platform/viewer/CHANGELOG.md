@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.11.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.7...@ohif/viewer@3.11.8) (2020-05-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.11.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.6...@ohif/viewer@3.11.7) (2020-05-04)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.11.6](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.5...@ohif/viewer@3.11.6) (2020-05-04)
+
+
+### Bug Fixes
+
+* 🐛 Proper error handling for derived display sets ([#1708](https://github.com/OHIF/Viewers/issues/1708)) ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
+
+
+
+
+
+## [3.11.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.4...@ohif/viewer@3.11.5) (2020-05-04)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.11.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.3...@ohif/viewer@3.11.4) (2020-05-04)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.11.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.2...@ohif/viewer@3.11.3) (2020-04-29)
+
+
+### Bug Fixes
+
+* Add IHEInvokeImageDisplay routes back into viewer ([#1695](https://github.com/OHIF/Viewers/issues/1695)) ([f7162ce](https://github.com/OHIF/Viewers/commit/f7162ce61708776a6c192732b0904a022bcc6b3a))
+
+
+
+
+
+## [3.11.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.1...@ohif/viewer@3.11.2) (2020-04-28)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [3.11.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.0...@ohif/viewer@3.11.1) (2020-04-27)
 
 **Note:** Version bump only for package @ohif/viewer

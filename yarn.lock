@@ -9110,6 +9110,11 @@ gl-matrix@^3.1.0:
   resolved "https://registry.yarnpkg.com/gl-matrix/-/gl-matrix-3.1.0.tgz#f5b2de17d8fed95a79e5025b10cded0ab9ccbed0"
   integrity sha512-526NA+3EA+ztAQi0IZpSWiM0fyQXIp7IbRvfJ4wS/TjjQD0uv0fVybXwwqqSOlq33UckivI0yMDlVtboWm3k7A==
 
+gl-matrix@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/gl-matrix/-/gl-matrix-3.3.0.tgz#232eef60b1c8b30a28cbbe75b2caf6c48fd6358b"
+  integrity sha512-COb7LDz+SXaHtl/h4LeaFcNdJdAQSDeVqjiIihSXNrkWObZLhDI4hIkZC11Aeqp7bcE72clzB0BnDXr2SmslRA==
+
 gl-preserve-state@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/gl-preserve-state/-/gl-preserve-state-1.0.0.tgz#4ef710d62873f1470ed015c6546c37dacddd4198"
@@ -15598,10 +15603,10 @@ react-codemirror2@^6.0.0:
   resolved "https://registry.yarnpkg.com/react-codemirror2/-/react-codemirror2-6.0.0.tgz#180065df57a64026026cde569a9708fdf7656525"
   integrity sha512-D7y9qZ05FbUh9blqECaJMdDwKluQiO3A9xB+fssd5jKM7YAXucRuEOlX32mJQumUvHUkHRHqXIPBjm6g0FW0Ag==
 
-react-cornerstone-viewport@^2.3.6:
-  version "2.3.6"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.3.6.tgz#1c76bd37c95284254767296952845bacd3b810a4"
-  integrity sha512-MBs1Mgl0g0YswkhgoaYlaPoPDVs/HZQ3Z89thHxVytvJsgnQvhc3YrR48iRaUfQj0eYoazh7AL/lLCfd8veFKA==
+react-cornerstone-viewport@2.3.8:
+  version "2.3.8"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.3.8.tgz#7af8360f29bca986ae4e36b4e503269b88ddc52f"
+  integrity sha512-aiG2uVNrDY6SQx4t/HBxIA3zsMsCwT+6TpcXK9qSSoXhs+X6OTmYEKncWUqL0jtxU1yfh6JTUz8ARTg03gtF+A==
   dependencies:
     classnames "^2.2.6"
     date-fns "^2.2.1"
@@ -16024,10 +16029,10 @@ react-transition-group@^4.1.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-vtkjs-viewport@^0.8.3:
-  version "0.8.4"
-  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.8.4.tgz#6bd9837d7762b845e77f053fb8fbf4469428d594"
-  integrity sha512-b90ENJzmStiahxVox+7mMwZij3NVUu//jE07PV2Qtp6E7q/eLXn6ZUwcEt9w5YHN36xLZVcx9b53ztLcXVgh/Q==
+react-vtkjs-viewport@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.9.0.tgz#5a7890643e511946f960db6b05142318be2dfe80"
+  integrity sha512-kjpNr1n+eW0nU736HH07IsSYQXphxfn/RBvKtpBer9tNsl+FyLH8h+uY8KWdv8kVBHkEoaH6/srxB0JBa8l+jA==
   dependencies:
     date-fns "^2.2.1"
     gl-matrix "^3.1.0"

@@ -1,4 +1,4 @@
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
 import { api } from 'dicomweb-client';
 
 import DICOMWeb from '../DICOMWeb';

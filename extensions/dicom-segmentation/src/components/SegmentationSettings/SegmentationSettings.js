@@ -4,7 +4,7 @@ import { Range } from '@ohif/ui';
 
 import './SegmentationSettings.css';
 
-const SegmentationSettings = ({ configuration, onBack, onChange }) => {
+const SegmentationSettings = ({ configuration, onBack, onChange, disabledFields = [] }) => {
   const [state, setState] = useState({
     renderFill: configuration.renderFill,
     renderOutline: configuration.renderOutline,
@@ -70,28 +70,32 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
         />
         {state.renderOutline && (
           <>
-            <CustomRange
-              value={state.outlineAlpha * 100}
-              label="Opacity"
-              showPercentage
-              step={1}
-              min={0}
-              max={100}
-              onChange={event => save('outlineAlpha', toFloat(event.target.value))}
-            />
-            <CustomRange
-              value={state.outlineWidth}
-              label="Width"
-              showValue
-              step={1}
-              min={0}
-              max={5}
-              onChange={event => save('outlineWidth', parseInt(event.target.value))}
-            />
+            {!disabledFields.includes('outlineAlpha') && (
+              <CustomRange
+                value={state.outlineAlpha * 100}
+                label="Opacity"
+                showPercentage
+                step={1}
+                min={0}
+                max={100}
+                onChange={event => save('outlineAlpha', toFloat(event.target.value))}
+              />
+            )}
+            {!disabledFields.includes('outlineWidth') && (
+              <CustomRange
+                value={state.outlineWidth}
+                label="Width"
+                showValue
+                step={1}
+                min={0}
+                max={5}
+                onChange={event => save('outlineWidth', parseInt(event.target.value))}
+              />
+            )}
           </>
         )}
       </div>
-      {(state.renderFill || state.renderOutline) && (
+      {(state.renderFill || state.renderOutline) && !disabledFields.includes('shouldRenderInactiveLabelmaps') && (
         <div
           className="settings-group"
           style={{ marginBottom: state.shouldRenderInactiveLabelmaps ? 15 : 0 }}
@@ -103,7 +107,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
           />
           {state.shouldRenderInactiveLabelmaps && (
             <>
-              {state.renderFill && (
+              {state.renderFill && !disabledFields.includes('fillAlphaInactive') && (
                 <CustomRange
                   label="Fill Opacity"
                   showPercentage
@@ -114,7 +118,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange }) => {
                   onChange={event => save('fillAlphaInactive', toFloat(event.target.value))}
                 />
               )}
-              {state.renderOutline && (
+              {state.renderOutline && !disabledFields.includes('outlineAlphaInactive') && (
                 <CustomRange
                   label="Outline Opacity"
                   showPercentage

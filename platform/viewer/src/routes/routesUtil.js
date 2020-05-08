@@ -54,6 +54,7 @@ const ROUTES_DEF = {
     },
     IHEInvokeImageDisplay: {
       path: '/IHEInvokeImageDisplay',
+      component: IHEInvokeImageDisplay
     },
   },
   gcloud: {

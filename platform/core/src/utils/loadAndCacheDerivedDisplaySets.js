@@ -50,10 +50,12 @@ import studyMetadataManager from './studyMetadataManager';
 const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
   const { StudyInstanceUID, SeriesInstanceUID } = referencedDisplaySet;
 
+  const promises = [];
+
   const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
 
   if (!studyMetadata) {
-    return;
+    return promises;
   }
 
   const derivedDisplaySets = studyMetadata.getDerivedDatasets({
@@ -61,7 +63,7 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
   });
 
   if (!derivedDisplaySets.length) {
-    return;
+    return promises;
   }
 
   // Filter by type
@@ -100,8 +102,10 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
       }
     });
 
-    recentDisplaySet.load(referencedDisplaySet, studies);
+    promises.push(recentDisplaySet.load(referencedDisplaySet, studies));
   });
+
+  return promises;
 };
 
 export default loadAndCacheDerivedDisplaySets;

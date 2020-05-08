@@ -49,7 +49,7 @@ class OHIFVTKViewport extends Component {
   state = {
     volumes: null,
     paintFilterLabelMapImageData: null,
-    paintFilterBackgroundImageData: null,
+    paintFilterBackgroundImageData: null
   };
 
   static propTypes = {
@@ -69,7 +69,7 @@ class OHIFVTKViewport extends Component {
   };
 
   static defaultProps = {
-    onScroll: () => {},
+    onScroll: () => { },
   };
 
   static id = 'OHIFVTKViewport';
@@ -155,6 +155,10 @@ class OHIFVTKViewport extends Component {
     if (brushStackState) {
       const { activeLabelmapIndex } = brushStackState;
       const labelmap3D = brushStackState.labelmaps3D[activeLabelmapIndex];
+
+      this.segmentsDefaultProperties = labelmap3D.segmentsHidden.map(isHidden => {
+        return { visible: !isHidden };
+      });
 
       const vtkLabelmapID = `${firstImageId}_${activeLabelmapIndex}`;
 
@@ -339,13 +343,13 @@ class OHIFVTKViewport extends Component {
     this.setStateFromProps();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
     if (
       displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
+      prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
@@ -405,10 +409,6 @@ class OHIFVTKViewport extends Component {
 
     const style = { width: '100%', height: '100%', position: 'relative' };
 
-    const visible = configuration.renderFill || configuration.renderOutline;
-    const opacity = configuration.fillAlpha;
-    const outlineThickness = configuration.outlineThickness;
-
     return (
       <>
         <div style={style}>
@@ -428,10 +428,14 @@ class OHIFVTKViewport extends Component {
               dataDetails={this.state.dataDetails}
               labelmapRenderingOptions={{
                 colorLUT: this.state.labelmapColorLUT,
-                globalOpacity: opacity,
-                visible,
-                outlineThickness,
-                renderOutline: true,
+                globalOpacity: configuration.fillAlpha,
+                visible: configuration.renderFill,
+                outlineThickness: configuration.outlineWidth,
+                renderOutline: configuration.renderOutline,
+                segmentsDefaultProperties: this.segmentsDefaultProperties,
+                onNewSegmentationRequested: () => {
+                  this.setStateFromProps();
+                }
               }}
               onScroll={this.props.onScroll}
             />
