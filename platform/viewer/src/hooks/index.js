@@ -1,3 +1,4 @@
+import useDebounce from './useDebounce.js';
 import useQuery from './useQuery.js';
 
-export { useQuery };
+export { useDebounce, useQuery };
