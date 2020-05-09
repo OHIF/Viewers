@@ -9,6 +9,9 @@ import { ThemeWrapper } from '@ohif/ui';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 
+// Temporarily for testing
+import '@ohif/mode-example';
+
 /**
  * ENV Variable to determine routing behavior
  */

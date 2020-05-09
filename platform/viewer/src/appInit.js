@@ -64,6 +64,11 @@ function appInit(appConfigOrFunc, defaultExtensions) {
 
   const { modes } = appConfig;
 
+  // Temporarily for testing
+  if (!modes.length) {
+    modes.push(window.exampleMode);
+  }
+
   const appRoutes = buildModeRoutes(modes, extensionManager) || [];
 
   return {

@@ -1,7 +1,7 @@
 window.config = {
   routerBasename: '/',
   // whiteLabelling: {},
-  extensions: [],
+  extensions: ['org.ohif.default'],
   modes: [],
   showStudyList: true,
   // filterQueryParam: false,
