@@ -21,7 +21,7 @@ export default function mode({ modeConfiguration }) {
         },
         layoutTemplate: ({ routeProps }) => {
           return {
-            id: 'org.ohif.defaults.viewerlayout',
+            id: 'org.ohif.defaults.viewerLayout',
             props: {
               // named slots
               leftPanels: ['org.ohif.defaults.seriesList'],
@@ -35,3 +35,5 @@ export default function mode({ modeConfiguration }) {
     sopClassHandlers: ['org.ohif.defaults.stack'],
   };
 }
+
+window.exampleMode = mode({});

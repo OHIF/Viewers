@@ -18,15 +18,23 @@ export default function ModeRoute({
   // Deal with toolbar.
 
   // Only handling one route per mode for now
-  const LayoutComponent = extensionManager.getModuleEntry(
-    routes[0].layoutTemplate
+  const layoutTemplateData = routes[0].layoutTemplate({ location });
+  /*const LayoutComponent = extensionManager.getModuleEntry(
+    layoutTemplateData.id
+  );*/
+
+  // You can test via http://localhost:3000/example-mode/dicomweb
+  const LayoutComponent = () => (
+    <div>
+      {`Reached the route for Mode: ${mode.id} and Data Source: ${dataSourceId}`}
+    </div>
   );
 
   // Add SOPClassHandlers to a new SOPClassManager.
-  const manager = new SOPClassHandlerManager(
+  /*const manager = new SOPClassHandlerManager(
     extensionManager,
     sopClassHandlers
-  );
+  );*/
 
   const queryParams = location.search;
 
@@ -38,16 +46,27 @@ export default function ModeRoute({
   const onUpdatedCallback = () => {
     // TODO: This should append, not create from scratch so we don't nuke existing display sets
     // when e.g. a new series arrives
-    manager.createDisplaySets.then(setDisplaySetInstanceUids);
+    //manager.createDisplaySets.then(setDisplaySetInstanceUids);
   };
 
-  const contextModules = extensions.getContextModules();
-  const contextModuleProviders = contextModules.map(a => a.context.Provider);
-  const CombinedContextProvider = Compose(contextModuleProviders);
+  // TODO: For each extension, look up their context modules
+  //const contextModules = extensions.getContextModules();
+  //const contextModuleProviders = contextModules.map(a => a.context.Provider);
+  //const CombinedContextProvider = Compose(contextModuleProviders);
 
   return (
-    <CombinedContextProvider>
-      <LayoutComponent displaySetInstanceUids={displaySetInstanceUids} />
-    </CombinedContextProvider>
+    <LayoutComponent
+      displaySetInstanceUids={displaySetInstanceUids}
+      {...layoutTemplateData.props}
+    />
   );
+
+  /*return (
+    <CombinedContextProvider>
+      <LayoutComponent
+        displaySetInstanceUids={displaySetInstanceUids}
+        {...layoutTemplateData.props}
+      />
+    </CombinedContextProvider>
+  );*/
 }

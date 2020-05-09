@@ -1,6 +1,6 @@
-import { React } from 'react';
+import React from 'react';
 import ModeRoute from './ModeRoute';
-import ViewModelProvider from './ViewModelContext';
+import { ViewModelProvider } from './ViewModelContext';
 
 /*
   Routes uniquely define an entry point to:
@@ -26,16 +26,22 @@ export default function buildModeRoutes(modes, extensionManager) {
   const routes = [];
 
   // TODO: Build api for this.
-  const dataSources = extensionManager.getDataSource();
+  // Currently builds an endpoint for all data sources, which probably
+  // doesn't make sense
+  const dataSources = Object.keys(extensionManager.dataSourceMap).map(a =>
+    extensionManager.getDataSource(a)
+  );
 
   modes.forEach(mode => {
     dataSources.forEach(dataSource => {
-      const dataSourceId = dataSource.id;
+      // TODO: name vs id
+      const dataSourceId = dataSource.name;
       const path = `/${mode.id}/${dataSourceId}`;
 
-      const component = (
+      const component = ({ location }) => (
         <ViewModelProvider>
           <ModeRoute
+            location={location}
             mode={mode}
             dataSourceId={dataSourceId}
             extensionManager={extensionManager}

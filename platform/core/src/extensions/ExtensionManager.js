@@ -97,7 +97,7 @@ export default class ExtensionManager {
         });
 
         extensionModule.forEach(element => {
-          this.modulesMap[`${extensionId}.${moduleType}.${name}`];
+          this.modulesMap[`${extensionId}.${moduleType}.${element.name}`];
         });
       }
     });
@@ -111,6 +111,7 @@ export default class ExtensionManager {
   }
 
   getDataSource(dataSourceId) {
+    // Note: this currently uses the data source name, which feels weird...
     return this.dataSourceMap[dataSourceId];
   }
 
@@ -163,11 +164,11 @@ export default class ExtensionManager {
         break;
       }
       case 'dataSourcesModule': {
-        break;
-
         extensionModule.forEach(element => {
-          this.dataSourceMap[extensionModule.name] = element;
+          this.dataSourceMap[element.name] = element;
         });
+
+        break;
       }
       default:
       // code block

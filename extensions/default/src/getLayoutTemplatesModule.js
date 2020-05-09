@@ -6,7 +6,7 @@ export default function() {
   return [
     // Layout Template Definition
     {
-      name: 'myLayout',
+      id: 'org.ohif.defaults.viewerLayout',
       component: viewerLayout,
     },
   ];
