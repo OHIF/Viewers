@@ -18,17 +18,15 @@ export default function ModeRoute({
   // Deal with toolbar.
 
   // Only handling one route per mode for now
-  const layoutTemplateData = routes[0].layoutTemplate({ location });
-  /*const LayoutComponent = extensionManager.getModuleEntry(
-    layoutTemplateData.id
-  );*/
-
   // You can test via http://localhost:3000/example-mode/dicomweb
-  const LayoutComponent = () => (
-    <div>
-      {`Reached the route for Mode: ${mode.id} and Data Source: ${dataSourceId}`}
-    </div>
+  const layoutTemplateData = routes[0].layoutTemplate({ location });
+
+  const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
+    layoutTemplateData.id
   );
+
+  const LayoutComponent = layoutTemplateModuleEntry.component;
+  //const LayoutComponent = props => <div>{'Testing'}</div>;
 
   // Add SOPClassHandlers to a new SOPClassManager.
   /*const manager = new SOPClassHandlerManager(
@@ -49,24 +47,33 @@ export default function ModeRoute({
     //manager.createDisplaySets.then(setDisplaySetInstanceUids);
   };
 
-  // TODO: For each extension, look up their context modules
-  //const contextModules = extensions.getContextModules();
-  //const contextModuleProviders = contextModules.map(a => a.context.Provider);
-  //const CombinedContextProvider = Compose(contextModuleProviders);
+  // For each extension, look up their context modules
+  let contextModules = [];
+  extensions.forEach(extensionId => {
+    const allRegisteredModuleIds = Object.keys(extensionManager.modulesMap);
+    const moduleIds = allRegisteredModuleIds.filter(id =>
+      id.includes(`${extensionId}.contextModule.`)
+    );
+
+    if (!moduleIds || !moduleIds.length) {
+      return;
+    }
+
+    const modules = moduleIds.map(extensionManager.getModuleEntry);
+    contextModules = contextModules.concat(modules);
+  });
+
+  const contextModuleProviders = contextModules.map(a => a.provider);
+  const CombinedContextProvider = ({ children }) =>
+    Compose({ components: contextModuleProviders, children });
 
   return (
-    <LayoutComponent
-      displaySetInstanceUids={displaySetInstanceUids}
-      {...layoutTemplateData.props}
-    />
-  );
-
-  /*return (
     <CombinedContextProvider>
       <LayoutComponent
+        extensionManager={extensionManager}
         displaySetInstanceUids={displaySetInstanceUids}
         {...layoutTemplateData.props}
       />
     </CombinedContextProvider>
-  );*/
+  );
 }

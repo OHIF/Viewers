@@ -21,18 +21,18 @@ export default function mode({ modeConfiguration }) {
         },
         layoutTemplate: ({ routeProps }) => {
           return {
-            id: 'org.ohif.defaults.viewerLayout',
+            id: 'org.ohif.default.layoutTemplateModule.viewerLayout',
             props: {
               // named slots
-              leftPanels: ['org.ohif.defaults.seriesList'],
-              rightPanels: ['org.ohif.defaults.measure'],
+              leftPanels: ['org.ohif.default.panelModule.seriesList'],
+              rightPanels: ['org.ohif.default.panelModule.measure'],
             },
           };
         },
       },
     ],
-    extensions: ['org.ohif.defaults', 'org.ohif.cornerstone'],
-    sopClassHandlers: ['org.ohif.defaults.stack'],
+    extensions: ['org.ohif.default', 'org.ohif.cornerstone'],
+    sopClassHandlers: ['org.ohif.default.sopClassHandlerModule.stack'],
   };
 }
 
