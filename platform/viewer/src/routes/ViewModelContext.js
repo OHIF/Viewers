@@ -5,6 +5,8 @@ const ViewModelContext = React.createContext({
   setDisplaySetInstanceUids: () => {},
 });
 
+ViewModelContext.displayName = 'ViewModelContext';
+
 class ViewModelProvider extends Component {
   state = {
     displaySetInstanceUids: [],

@@ -1,25 +1,22 @@
 import React, { useState } from 'react';
 
 import { SidePanel, NavBar, Svg, Icon, IconButton, Toolbar } from '@ohif/ui';
+import {
+  HelloWorldContext,
+  AnotherHelloWorldContext,
+} from './getContextModule';
 
 export default function() {
   return [
     // Layout Template Definition
+    // TODO: this is weird naming
     {
-      id: 'org.ohif.defaults.viewerLayout',
+      name: 'viewerLayout',
+      id: 'viewerLayout',
       component: viewerLayout,
     },
   ];
 }
-
-/*    {
-      id: 'org.ohif.defaults.viewerLayout',
-      props: {
-        leftPanelIds: ['org.ohif.defaults.seriesList'],
-        rightPanelIds: ['org.ohif.defaults.measure'],
-      },
-    },
-    */
 
 const Header = () => {
   const [activeTool, setActiveTool] = useState('Zoom');
@@ -176,12 +173,15 @@ const ViewportToolbar = () => {
 function viewerLayout({ leftPanels, rightPanels, extensionManager }) {
   const getPanelData = id => {
     const entry = extensionManager.getModuleEntry(id);
+    // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
+    const content = entry.component({});
+
     return {
       iconName: entry.iconName,
       iconLabel: entry.iconLabel,
       label: entry.label,
       name: entry.name,
-      content: entry.component,
+      content,
     };
   };
 

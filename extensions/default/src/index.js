@@ -1,7 +1,7 @@
 import getContextModule from './getContextModule.js';
 import getDataSourcesModule from './getDataSourcesModule.js';
-import getLayoutTemplatesModule from './getLayoutTemplatesModule.js';
-import getSidePanelModule from './getSidePanelModule.js';
+import getLayoutTemplateModule from './getLayoutTemplateModule.js';
+import getPanelModule from './getPanelModule.js';
 
 export default {
   /**
@@ -10,6 +10,6 @@ export default {
   id: 'org.ohif.default',
   getContextModule,
   getDataSourcesModule,
-  getLayoutTemplatesModule,
-  getSidePanelModule,
+  getLayoutTemplateModule,
+  getPanelModule,
 };

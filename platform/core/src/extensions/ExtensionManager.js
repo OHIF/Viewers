@@ -24,7 +24,7 @@ export default class ExtensionManager {
    *
    * @param {Object[]} extensions - Array of extensions
    */
-  registerExtensions(extensions) {
+  registerExtensions = extensions => {
     extensions.forEach(extension => {
       const hasConfiguration = Array.isArray(extension);
 
@@ -35,7 +35,7 @@ export default class ExtensionManager {
         this.registerExtension(extension);
       }
     });
-  }
+  };
 
   /**
    *
@@ -43,7 +43,7 @@ export default class ExtensionManager {
    * @param {Object} extension
    * @param {Object} configuration
    */
-  registerExtension(extension, configuration = {}) {
+  registerExtension = (extension, configuration = {}) => {
     if (!extension) {
       log.warn(
         'Attempting to register a null/undefined extension. Exiting early.'
@@ -96,23 +96,25 @@ export default class ExtensionManager {
         });
 
         extensionModule.forEach(element => {
-          this.modulesMap[`${extensionId}.${moduleType}.${element.name}`];
+          this.modulesMap[
+            `${extensionId}.${moduleType}.${element.name}`
+          ] = element;
         });
       }
     });
 
     // Track extension registration
     this.registeredExtensionIds.push(extensionId);
-  }
+  };
 
-  getModuleEntry(stringEntry) {
+  getModuleEntry = stringEntry => {
     return this.modulesMap[stringEntry];
-  }
+  };
 
-  getDataSource(dataSourceId) {
+  getDataSource = dataSourceId => {
     // Note: this currently uses the data source name, which feels weird...
     return this.dataSourceMap[dataSourceId];
-  }
+  };
 
   /**
    * @private
@@ -120,7 +122,7 @@ export default class ExtensionManager {
    * @param {Object} extension
    * @param {string} extensionId - Used for logging warnings
    */
-  _getExtensionModule(moduleType, extension, extensionId, configuration) {
+  _getExtensionModule = (moduleType, extension, extensionId, configuration) => {
     const getModuleFnName = 'get' + _capitalizeFirstCharacter(moduleType);
     const getModuleFn = extension[getModuleFnName];
 
@@ -148,9 +150,9 @@ export default class ExtensionManager {
         `Exception thrown while trying to call ${getModuleFnName} for the ${extensionId} extension`
       );
     }
-  }
+  };
 
-  _initSpecialModuleTypes(moduleType, extensionModule) {
+  _initSpecialModuleTypes = (moduleType, extensionModule) => {
     switch (moduleType) {
       case 'commandsModule': {
         const { definitions, defaultContext } = extensionModule;
@@ -171,14 +173,14 @@ export default class ExtensionManager {
       default:
       // code block
     }
-  }
+  };
 
   /**
    *
    * @private
    * @param {Object[]} commandDefinitions
    */
-  _initCommandsModule(commandDefinitions, defaultContext = 'VIEWER') {
+  _initCommandsModule = (commandDefinitions, defaultContext = 'VIEWER') => {
     if (!this._commandsManager.getContext(defaultContext)) {
       this._commandsManager.createContext(defaultContext);
     }
@@ -199,7 +201,7 @@ export default class ExtensionManager {
         commandDefinition
       );
     });
-  }
+  };
 }
 
 /**
