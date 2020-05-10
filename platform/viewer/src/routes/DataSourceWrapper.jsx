@@ -66,7 +66,7 @@ function DataSourceWrapper(props) {
 
     }
     console.log('DataSourceWrapper: useEffect');
-  }, []);
+  }, [rest.history.location.search]);
   // queryFilterValues
 
   console.log(rest);
