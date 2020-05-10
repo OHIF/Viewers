@@ -26,19 +26,21 @@ export default function ModeRoute({
   );
 
   const LayoutComponent = layoutTemplateModuleEntry.component;
-  //const LayoutComponent = props => <div>{'Testing'}</div>;
 
   // Add SOPClassHandlers to a new SOPClassManager.
-  /*const manager = new SOPClassHandlerManager(
+  const manager = new SOPClassHandlerManager(
     extensionManager,
     sopClassHandlers
-  );*/
+  );
+
+  /*setInterval(() => {
+    setDisplaySetInstanceUids(manager.displaySets);
+  }, 5000);*/
 
   const queryParams = location.search;
 
   // Call the data source to start building the view model?
   //dataSource(queryParams);
-
   //metadataStore.onModified();
 
   const onUpdatedCallback = () => {

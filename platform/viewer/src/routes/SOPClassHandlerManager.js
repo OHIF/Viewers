@@ -6,10 +6,17 @@ export default class SOPClassHandlerManager {
       extensionManager.getModuleEntry
     );
 
-    dicomMetadataStore.listen(this.onSeriesMetadataLoaded);
+    dicomMetadataStore.onSeriesMetadataLoaded(this.onSeriesMetadataLoaded);
+
+    // TODO, this is unclear. How are we getting the created display sets out?
+    this.displaySets = [];
   }
 
   onSeriesMetadataLoaded = instances => {
+    if (!instances || !instances.length) {
+      throw new Error("No instances were provided.");
+    }
+
     const SOPClassHandlers = this.SOPClassHandlers;
 
     for (let i = 0; i < SOPClassHandlers.length; i++) {
@@ -17,7 +24,7 @@ export default class SOPClassHandlerManager {
 
       if (handler.sopClassUids.includes(instances[0].SOPClassUID)) {
         // TODO: This step is still unclear to me
-        return handler.getDisplaySetFromSeries(series);
+        this.displaySets = handler.getDisplaySetFromSeries(instances).map(a => a.displaySetInstanceUid);
       }
     }
   };

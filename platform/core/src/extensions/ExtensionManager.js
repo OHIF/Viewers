@@ -149,6 +149,7 @@ export default class ExtensionManager {
       log.error(
         `Exception thrown while trying to call ${getModuleFnName} for the ${extensionId} extension`
       );
+      log.error(ex);
     }
   };
 
