@@ -24,7 +24,7 @@ import {
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function StudyListContainer({ history, studies }) {
+function StudyListContainer({ history, data: studies }) {
   // ~ Filters
   const query = useQuery();
   const queryFilterValues = _getQueryFilterValues(query);
@@ -132,14 +132,17 @@ function StudyListContainer({ history, studies }) {
     const rowKey = key + 1;
     const isExpanded = expandedRows.some(k => k === rowKey);
     const {
-      AccessionNumber,
-      Modalities,
-      Instances,
-      StudyDescription,
-      PatientId,
-      PatientName,
-      StudyDate,
-      series,
+      accessionNumber,
+      modalities,
+      instances,
+      studyDescription,
+      patientId,
+      patientName,
+      studyDate,
+      studyTime,
+      // ??
+      // TODO: won't have until expanded
+      series = [],
     } = study;
     const seriesTableColumns = {
       description: 'Description',
@@ -166,14 +169,14 @@ function StudyListContainer({ history, studies }) {
                 name={isExpanded ? 'chevron-down' : 'chevron-right'}
                 className="mr-4"
               />
-              {PatientName}
+              {patientName}
             </>
           ),
           gridCol: 4,
         },
         {
           key: 'mrn',
-          content: PatientId,
+          content: patientId,
           gridCol: 2,
         },
         {
@@ -181,26 +184,26 @@ function StudyListContainer({ history, studies }) {
           content: (
             <div>
               <span className="mr-4">
-                {moment(StudyDate).format('MMM-DD-YYYY')}
+                {moment(studyDate).format('MMM-DD-YYYY')}
               </span>
-              <span>{moment(StudyDate).format('hh:mm A')}</span>
+              <span>{moment(studyTime).format('hh:mm A')}</span>
             </div>
           ),
           gridCol: 5,
         },
         {
           key: 'description',
-          content: StudyDescription,
+          content: studyDescription,
           gridCol: 4,
         },
         {
           key: 'modality',
-          content: Modalities,
+          content: modalities,
           gridCol: 3,
         },
         {
           key: 'accession',
-          content: AccessionNumber,
+          content: accessionNumber,
           gridCol: 4,
         },
         {
@@ -214,7 +217,7 @@ function StudyListContainer({ history, studies }) {
                   'text-secondary-light': !isExpanded,
                 })}
               />
-              {Instances}
+              {instances}
             </>
           ),
           gridCol: 4,

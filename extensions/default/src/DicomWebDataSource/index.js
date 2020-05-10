@@ -1,5 +1,5 @@
 import { api } from 'dicomweb-client';
-import { mapParams, search, processResults } from './qido.js';
+import { mapParams, search as qidoSearch, processResults } from './qido.js';
 import { IWebApiDataSource } from '@ohif/core';
 
 /**
@@ -26,12 +26,24 @@ function createDicomWebApi(dicomWebConfig) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: search.bind(undefined, dicomWebClient, null, null),
+        search: async function(origParams) {
+          const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
+            mapParams(origParams) || {};
+
+          const results = await qidoSearch(
+            dicomWebClient,
+            studyInstanceUid,
+            seriesInstanceUid,
+            mappedParams
+          );
+
+          return processResults(results);
+        },
         processResults: processResults.bind(),
       },
       instances: {
         search: (studyInstanceUid, queryParamaters) =>
-          search.call(
+          qidoSearch.call(
             undefined,
             dicomWebClient,
             studyInstanceUid,
