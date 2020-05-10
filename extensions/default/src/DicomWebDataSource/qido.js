@@ -37,21 +37,11 @@ const { getString, getName, getModalities } = DICOMWeb;
  * @returns {Array} An array of Study MetaData objects
  */
 function processResults(qidoStudies) {
-  debugger;
   if (!qidoStudies || !qidoStudies.length) {
     return [];
   }
 
   const studies = [];
-
-  // LIST
-  // AccessionNumber,
-  // Modalities,
-  // Instances,
-  // StudyDescription,
-  // PatientId,
-  // PatientName,
-  // StudyDate,
 
   qidoStudies.forEach(qidoStudy =>
     studies.push({
@@ -140,10 +130,10 @@ function mapParams(params) {
     AccessionNumber: params.accessionNumber,
     StudyDescription: params.studyDescription,
     ModalitiesInStudy: params.modalitiesInStudy,
-    limit: params.limit,
-    offset: params.offset,
-    fuzzymatching: params.fuzzymatching,
-    includefield: serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all',
+    limit: params.limit || 101,
+    offset: params.offset || 0,
+    fuzzymatching: params.fuzzymatching === undefined ? false : true,
+    includefield: commaSeparatedFields, // serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all',
   };
 
   // build the StudyDate range parameter
@@ -162,14 +152,14 @@ function mapParams(params) {
   }
 
   // Clean query params of undefined values.
-  // const params = {};
+  const final = {};
   Object.keys(parameters).forEach(key => {
     if (parameters[key] !== undefined && parameters[key] !== '') {
-      params[key] = parameters[key];
+      final[key] = parameters[key];
     }
   });
 
-  return params;
+  return final;
 }
 
 /**
