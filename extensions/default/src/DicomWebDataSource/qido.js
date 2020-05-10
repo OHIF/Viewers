@@ -22,7 +22,7 @@
  * | limit            | {number}           |
  * | offset           | {number}           |
  */
-import DICOMWeb from '@ohif/core';
+import { DICOMWeb } from '@ohif/core';
 
 const { getString, getName, getModalities } = DICOMWeb;
 
@@ -37,11 +37,21 @@ const { getString, getName, getModalities } = DICOMWeb;
  * @returns {Array} An array of Study MetaData objects
  */
 function processResults(qidoStudies) {
+  debugger;
   if (!qidoStudies || !qidoStudies.length) {
     return [];
   }
 
   const studies = [];
+
+  // LIST
+  // AccessionNumber,
+  // Modalities,
+  // Instances,
+  // StudyDescription,
+  // PatientId,
+  // PatientName,
+  // StudyDate,
 
   qidoStudies.forEach(qidoStudy =>
     studies.push({
@@ -49,14 +59,14 @@ function processResults(qidoStudies) {
       studyDate: getString(qidoStudy['00080020']),
       studyTime: getString(qidoStudy['00080030']),
       accessionNumber: getString(qidoStudy['00080050']),
-      referringPhysicianName: getString(qidoStudy['00080090']),
+      // referringPhysicianName: getString(qidoStudy['00080090']),
       patientName: getName(qidoStudy['00100010']),
       patientId: getString(qidoStudy['00100020']),
-      patientBirthdate: getString(qidoStudy['00100030']),
-      patientSex: getString(qidoStudy['00100040']),
-      studyId: getString(qidoStudy['00200010']),
-      numberOfStudyRelatedSeries: getString(qidoStudy['00201206']),
-      numberOfStudyRelatedInstances: getString(qidoStudy['00201208']),
+      // patientBirthdate: getString(qidoStudy['00100030']),
+      // patientSex: getString(qidoStudy['00100040']),
+      // studyId: getString(qidoStudy['00200010']), // mrn?
+      // numberOfStudyRelatedSeries: getString(qidoStudy['00201206']),
+      instances: getString(qidoStudy['00201208']),
       studyDescription: getString(qidoStudy['00081030']),
       modalities: getString(
         getModalities(qidoStudy['00080060'], qidoStudy['00080061'])
@@ -82,13 +92,13 @@ function search(
   seriesInstanceUid,
   queryParamaters
 ) {
-  const requestFn = studyInstanceUid
-    ? dicomWebClient.searchForInstances
-    : dicomWebClient.searchForStudies;
+  // const requestFn = studyInstanceUid
+  //   ? dicomWebClient.searchForInstances
+  //   : dicomWebClient.searchForStudies;
 
   // TODO: Current version does not apply query Params for `searchForInstances` call?
   // Just sets `studyInstanceUid` in options...
-  return requestFn({
+  return dicomWebClient.searchForStudies({
     studyInstanceUid,
     queryParams: queryParamaters,
   });
@@ -115,6 +125,9 @@ export default function searchStudies(server, filter) {
  * @returns {string} The URL with encoded filter query data
  */
 function mapParams(params) {
+  if (!params) {
+    return;
+  }
   const commaSeparatedFields = [
     '00081030', // Study Description
     '00080060', // Modality
@@ -122,27 +135,27 @@ function mapParams(params) {
   ].join(',');
 
   const parameters = {
-    PatientName: filter.patientName,
-    PatientID: filter.patientId,
-    AccessionNumber: filter.accessionNumber,
-    StudyDescription: filter.studyDescription,
-    ModalitiesInStudy: filter.modalitiesInStudy,
-    limit: filter.limit,
-    offset: filter.offset,
-    fuzzymatching: filter.fuzzymatching,
+    PatientName: params.patientName,
+    PatientID: params.patientId,
+    AccessionNumber: params.accessionNumber,
+    StudyDescription: params.studyDescription,
+    ModalitiesInStudy: params.modalitiesInStudy,
+    limit: params.limit,
+    offset: params.offset,
+    fuzzymatching: params.fuzzymatching,
     includefield: serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all',
   };
 
   // build the StudyDate range parameter
-  if (filter.studyDateFrom || filter.studyDateTo) {
-    const dateFrom = _dateToString(new Date(filter.studyDateFrom));
-    const dateTo = _dateToString(new Date(filter.studyDateTo));
+  if (params.studyDateFrom || params.studyDateTo) {
+    const dateFrom = _dateToString(new Date(params.studyDateFrom));
+    const dateTo = _dateToString(new Date(params.studyDateTo));
     parameters.StudyDate = `${dateFrom}-${dateTo}`;
   }
 
   // Build the StudyInstanceUID parameter
-  if (filter.studyInstanceUid) {
-    let studyUids = filter.studyInstanceUid;
+  if (params.studyInstanceUid) {
+    let studyUids = params.studyInstanceUid;
     studyUids = Array.isArray(studyUids) ? studyUids.join() : studyUids;
     studyUids = studyUids.replace(/[^0-9.]+/g, '\\');
     parameters.StudyInstanceUID = studyUids;

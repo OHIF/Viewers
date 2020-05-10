@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { MODULE_TYPES } from '@ohif/core';
 //
@@ -45,13 +45,19 @@ function DataSourceWrapper(props) {
   // But only for LayoutTemplate type of 'list'?
   // Or no data fetching here, and just hand down my source
 
-  // const studies = dataSource.query.studies.search();
-
-  // console.log(studies);
+  debugger;
+  const [data, setData] = useState();
+  useEffect(() => {
+    async function getData() {
+      const searchResult = await dataSource.query.studies.search();
+      setData(searchResult);
+    }
+    getData();
+  }, [dataSource.query.studies]);
 
   return (
     <React.Fragment>
-      <LayoutTemplate {...rest} />
+      {data && <LayoutTemplate {...rest} data={data} />}
     </React.Fragment>
   );
 }
