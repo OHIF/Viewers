@@ -2,6 +2,7 @@ import getContextModule from './getContextModule.js';
 import getDataSourcesModule from './getDataSourcesModule.js';
 import getLayoutTemplateModule from './getLayoutTemplateModule.js';
 import getPanelModule from './getPanelModule.js';
+import getSopClassHandlerModule from './getSopClassHandlerModule.js';
 
 export default {
   /**
@@ -12,4 +13,5 @@ export default {
   getDataSourcesModule,
   getLayoutTemplateModule,
   getPanelModule,
+  getSopClassHandlerModule
 };
