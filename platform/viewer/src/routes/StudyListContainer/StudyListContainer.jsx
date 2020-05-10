@@ -62,7 +62,7 @@ function StudyListContainer({ history, data: studies }) {
         skipEmptyString: true,
       })}`,
     });
-  }, [debouncedFilterValues, history]);
+  }, [debouncedFilterValues]);
 
   const filtersMeta = [
     {
