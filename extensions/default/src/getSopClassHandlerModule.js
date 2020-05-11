@@ -1,27 +1,31 @@
 import { isImage } from '@ohif/core/src/utils/isImage';
 import ImageSet from '@ohif/core/src/classes/ImageSet';
 import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
+import id from './id';
+
+const sopClassHandlerName = 'stack';
 
 const isMultiFrame = instance => {
   return instance.NumberOfFrames > 1;
 };
 
-const makeDisplaySet = (instances) => {
+const makeDisplaySet = instances => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
 
   // set appropriate attributes to image set...
   imageSet.setAttributes({
     displaySetInstanceUid: imageSet.uid, // create a local alias for the imageSet UID
-    seriesDate: instance.SeriesDate,
-    seriesTime: instance.SeriesTime,
-    seriesInstanceUid: instance.SeriesInstanceUID,
-    seriesNumber: instance.SeriesNumber,
-    seriesDescription: instance.SeriesDescription,
-    numImageFrames: instances.length,
-    frameRate: instance.FrameTime,
-    modality: instance.Modality,
+    SeriesDate: instance.SeriesDate,
+    SeriesTime: instance.SeriesTime,
+    SeriesInstanceUid: instance.SeriesInstanceUID,
+    SeriesNumber: instance.SeriesNumber,
+    SeriesDescription: instance.SeriesDescription,
+    FrameRate: instance.FrameTime,
+    Modality: instance.Modality,
     isMultiFrame: isMultiFrame(instance),
+    mumImageFrames: instances.length,
+    SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
   });
 
   // Sort the images in this series if needed
@@ -30,8 +34,7 @@ const makeDisplaySet = (instances) => {
     imageSet.sortBy((a, b) => {
       // Sort by InstanceNumber (0020,0013)
       return (
-        (parseInt(a.InstanceNumber) || 0) -
-        (parseInt(b.InstanceNumber) || 0)
+        (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0)
       );
     });
   }
@@ -78,7 +81,7 @@ function getSopClassUids(instances) {
  * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
  * @returns {Array} The list of display sets created for the given series object
  */
-function getDisplaySetFromSeries(instances) {
+function getDisplaySetsFromSeries(instances) {
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
@@ -325,9 +328,9 @@ const sopClassUids = [
 function getSopClassHandlerModule() {
   return [
     {
-      name: 'stack',
+      name: sopClassHandlerName,
       sopClassUids,
-      getDisplaySetFromSeries,
+      getDisplaySetsFromSeries,
     },
   ];
 }

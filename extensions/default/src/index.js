@@ -3,15 +3,16 @@ import getDataSourcesModule from './getDataSourcesModule.js';
 import getLayoutTemplateModule from './getLayoutTemplateModule.js';
 import getPanelModule from './getPanelModule.js';
 import getSopClassHandlerModule from './getSopClassHandlerModule.js';
+import id from './id';
 
 export default {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
-  id: 'org.ohif.default',
+  id,
   getContextModule,
   getDataSourcesModule,
   getLayoutTemplateModule,
   getPanelModule,
-  getSopClassHandlerModule
+  getSopClassHandlerModule,
 };

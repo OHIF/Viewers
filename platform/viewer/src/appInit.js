@@ -50,10 +50,10 @@ function appInit(appConfigOrFunc, defaultExtensions) {
    * Example: [ext1, ext2, ext3]
    * Example2: [[ext1, config], ext2, [ext3, config]]
    */
-  extensionManager.registerExtensions([
-    ...defaultExtensions,
-    ...appConfig.extensions,
-  ]);
+  extensionManager.registerExtensions(
+    [...defaultExtensions, ...appConfig.extensions],
+    appConfig.dataSources
+  );
 
   // TODO: Init global hotkeys, or the hotkeys manager?
   // TODO: We no longer use `utils.addServer`
@@ -69,7 +69,8 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     modes.push(window.exampleMode);
   }
 
-  const appRoutes = buildModeRoutes(modes, extensionManager) || [];
+  const appRoutes =
+    buildModeRoutes(modes, appConfig.dataSources, extensionManager) || [];
 
   return {
     appConfig,

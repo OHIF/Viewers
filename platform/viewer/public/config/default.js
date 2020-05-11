@@ -7,8 +7,9 @@ window.config = {
   // filterQueryParam: false,
   dataSources: [
     {
-      friendlyName: "Rodrigo's DICOMWeb Server",
-      namespace: 'org.ohif.default.datasources.dicomweb',
+      friendlyName: 'dcmjs DICOMWeb Server',
+      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
       configuration: {
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',

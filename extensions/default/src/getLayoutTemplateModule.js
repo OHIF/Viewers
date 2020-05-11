@@ -170,7 +170,12 @@ const ViewportToolbar = () => {
   return <Toolbar type="secondary" tools={tools} />;
 };
 
-function viewerLayout({ leftPanels, rightPanels, extensionManager, displaySetInstanceUids }) {
+function viewerLayout({
+  leftPanels,
+  rightPanels,
+  extensionManager,
+  displaySetInstanceUids,
+}) {
   const getPanelData = id => {
     const entry = extensionManager.getModuleEntry(id);
     // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
@@ -184,6 +189,8 @@ function viewerLayout({ leftPanels, rightPanels, extensionManager, displaySetIns
       content,
     };
   };
+
+  debugger;
 
   const leftPanelComponents = leftPanels.map(getPanelData);
   const rightPanelComponents = rightPanels.map(getPanelData);
