@@ -31,7 +31,8 @@
     "prop-types": "^15.6.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "webpack": "^4.0.0"
+    "webpack": "^4.0.0",
+    "dcmjs": "^0.12.4"
   },
   "dependencies": {
     "@babel/runtime": "7.7.6"

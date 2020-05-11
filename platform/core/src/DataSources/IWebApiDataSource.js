@@ -1,3 +1,5 @@
+import { dicomMetadataStore } from '@ohif/core';
+
 /**
  * Factory function that creates a new "Web API" data source.
  * A "Web API" data source is any source that fetches data over
@@ -8,7 +10,7 @@
  * It's worth noting that a single implementation of this interface
  * can define different underlying sources for "read" and "write" operations.
  */
-function create({ query, retrieve, retrieveMetadata }) {
+function create({ query, retrieve }) {
   const defaultQuery = {
     studies: {
       /**
@@ -31,12 +33,13 @@ function create({ query, retrieve, retrieveMetadata }) {
     instances: {},
   };
 
-  const defaultRetrieve = {};
+  const defaultRetrieve = {
+    series: {},
+  };
 
   return {
     query,
-    retrieve: {},
-    // retrieveMetadata: retrieveMetadata.bind(null, dicomMetadataStore);
+    retrieve,
     // then go get all series level metadata.
     // Store this in the DICOM MetadataStore.
   };

@@ -22,28 +22,35 @@ import { ViewModelProvider } from './ViewModelContext';
 
   /:modeId/:modeRoute/?queryParameters=example
  */
-export default function buildModeRoutes(modes, extensionManager) {
+export default function buildModeRoutes(modes, dataSources, extensionManager) {
   const routes = [];
 
-  // TODO: Build api for this.
-  // Currently builds an endpoint for all data sources, which probably
-  // doesn't make sense
-  const dataSources = Object.keys(extensionManager.dataSourceMap).map(a =>
-    extensionManager.getDataSource(a)
-  );
+  // const dataSources = Object.keys(extensionManager.dataSourceMap).map(a =>
+  //   extensionManager.getDataSources(a)
+  // );
+
+  const dataSourceNames = [];
+
+  dataSources.forEach(dataSource => {
+    const { sourceName } = dataSource;
+    if (!dataSourceNames.includes(sourceName)) {
+      dataSourceNames.push(sourceName);
+    }
+  });
 
   modes.forEach(mode => {
-    dataSources.forEach(dataSource => {
+    // todo: for each route. add route to path.
+    dataSourceNames.forEach(dataSourceName => {
       // TODO: name vs id
-      const dataSourceId = dataSource.name;
-      const path = `/${mode.id}/${dataSourceId}`;
+      const path = `/${mode.id}/${dataSourceName}`;
 
+      // TODO move up.
       const component = ({ location }) => (
         <ViewModelProvider>
           <ModeRoute
             location={location}
             mode={mode}
-            dataSourceId={dataSourceId}
+            dataSourceName={dataSourceName}
             extensionManager={extensionManager}
           />
         </ViewModelProvider>

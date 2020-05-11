@@ -19,6 +19,7 @@ import studies from './studies/';
 import ui from './ui';
 import user from './user.js';
 import dicomMetadataStore from './dicomMetadataStore';
+import displaySetManager from './displaySetManager';
 import utils, { hotkeys } from './utils/';
 
 import {
@@ -65,6 +66,7 @@ const OHIF = {
   MeasurementService,
   IWebApiDataSource,
   dicomMetadataStore,
+  displaySetManager,
 };
 
 export {
@@ -100,6 +102,7 @@ export {
   MeasurementService,
   IWebApiDataSource,
   dicomMetadataStore,
+  displaySetManager,
 };
 
 export { OHIF };

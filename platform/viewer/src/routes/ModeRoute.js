@@ -1,20 +1,26 @@
 import React, { useContext } from 'react';
-import SOPClassHandlerManager from './SOPClassHandlerManager';
+import { displaySetManager } from '@ohif/core';
 import ViewModelContext from './ViewModelContext';
 import Compose from './Compose';
 
 export default function ModeRoute({
   location,
   mode,
-  dataSourceId,
+  dataSourceName,
   extensionManager,
 }) {
   const { routes, sopClassHandlers, extensions } = mode;
-  const dataSource = extensionManager.getDataSource(dataSourceId);
+  const dataSources = extensionManager.getDataSources(dataSourceName);
 
-  const { displaySetInstanceUids, setDisplaySetInstanceUids } = useContext(
-    ViewModelContext
-  );
+  // TODO: For now assume one unique datasource.
+
+  const dataSource = dataSources[0];
+
+  const viewModelContext = useContext(ViewModelContext);
+
+  console.log(viewModelContext);
+
+  const { displaySetInstanceUids } = viewModelContext;
   // Deal with toolbar.
 
   // Only handling one route per mode for now
@@ -28,28 +34,25 @@ export default function ModeRoute({
   const LayoutComponent = layoutTemplateModuleEntry.component;
 
   // Add SOPClassHandlers to a new SOPClassManager.
-  const manager = new SOPClassHandlerManager(
-    extensionManager,
-    sopClassHandlers
-  );
 
-  /*setInterval(() => {
-    setDisplaySetInstanceUids(manager.displaySets);
-  }, 5000);*/
+  debugger;
+
+  displaySetManager.init(extensionManager, sopClassHandlers, viewModelContext);
+
+  // setInterval(() => {
+  //   setDisplaySetInstanceUids(manager.displaySets);
+  // }, 5000);
 
   const queryParams = location.search;
 
   // Call the data source to start building the view model?
-  //dataSource(queryParams);
-  //metadataStore.onModified();
-
-  const onUpdatedCallback = () => {
-    // TODO: This should append, not create from scratch so we don't nuke existing display sets
-    // when e.g. a new series arrives
-    //manager.createDisplaySets.then(setDisplaySetInstanceUids);
-  };
+  dataSource.retrieve.series.metadata(
+    queryParams,
+    displaySetManager.makeDisplaySets
+  );
 
   // For each extension, look up their context modules
+  // TODO: move to extension manager.
   let contextModules = [];
   extensions.forEach(extensionId => {
     const allRegisteredModuleIds = Object.keys(extensionManager.modulesMap);

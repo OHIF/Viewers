@@ -24,15 +24,15 @@ export default class ExtensionManager {
    *
    * @param {Object[]} extensions - Array of extensions
    */
-  registerExtensions = extensions => {
+  registerExtensions = (extensions, dataSources) => {
     extensions.forEach(extension => {
       const hasConfiguration = Array.isArray(extension);
 
       if (hasConfiguration) {
         const [ohifExtension, configuration] = extension;
-        this.registerExtension(ohifExtension, configuration);
+        this.registerExtension(ohifExtension, dataSources, configuration);
       } else {
-        this.registerExtension(extension);
+        this.registerExtension(extension, dataSources);
       }
     });
   };
@@ -43,7 +43,7 @@ export default class ExtensionManager {
    * @param {Object} extension
    * @param {Object} configuration
    */
-  registerExtension = (extension, configuration = {}) => {
+  registerExtension = (extension, dataSources, configuration = {}) => {
     if (!extension) {
       log.warn(
         'Attempting to register a null/undefined extension. Exiting early.'
@@ -88,7 +88,12 @@ export default class ExtensionManager {
       );
 
       if (extensionModule) {
-        this._initSpecialModuleTypes(moduleType, extensionModule);
+        this._initSpecialModuleTypes(
+          extensionId,
+          moduleType,
+          extensionModule,
+          dataSources
+        );
 
         this.modules[moduleType].push({
           extensionId,
@@ -111,9 +116,9 @@ export default class ExtensionManager {
     return this.modulesMap[stringEntry];
   };
 
-  getDataSource = dataSourceId => {
+  getDataSources = dataSourceName => {
     // Note: this currently uses the data source name, which feels weird...
-    return this.dataSourceMap[dataSourceId];
+    return this.dataSourceMap[dataSourceName];
   };
 
   /**
@@ -153,7 +158,12 @@ export default class ExtensionManager {
     }
   };
 
-  _initSpecialModuleTypes = (moduleType, extensionModule) => {
+  _initSpecialModuleTypes = (
+    extensionId,
+    moduleType,
+    extensionModule,
+    dataSources
+  ) => {
     switch (moduleType) {
       case 'commandsModule': {
         const { definitions, defaultContext } = extensionModule;
@@ -166,7 +176,25 @@ export default class ExtensionManager {
       }
       case 'dataSourcesModule': {
         extensionModule.forEach(element => {
-          this.dataSourceMap[element.name] = element;
+          const namespace = `${extensionId}.${moduleType}.${element.name}`;
+
+          dataSources.forEach(dataSource => {
+            if (dataSource.namespace === namespace) {
+              const dataSourceInstance = element.createDataSource(
+                dataSource.configuration
+              );
+
+              if (this.dataSourceMap[dataSource.sourceName]) {
+                this.dataSourceMap[dataSource.sourceName].push(
+                  dataSourceInstance
+                );
+              } else {
+                this.dataSourceMap[dataSource.sourceName] = [
+                  dataSourceInstance,
+                ];
+              }
+            }
+          });
         });
 
         break;
