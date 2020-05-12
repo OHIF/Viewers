@@ -32,9 +32,26 @@ function StudyListContainer({ history, data: studies }) {
     Object.assign({}, defaultFilterValues, queryFilterValues)
   );
   const debouncedFilterValues = useDebounce(filterValues, 500);
+  const { resultsPerPage, pageNumber } = filterValues;
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
   const numOfStudies = studies.length;
+  const totalPages = Math.floor(numOfStudies / resultsPerPage);
+
+  const onPageNumberChange = newPageNumber => {
+    if (newPageNumber > totalPages) {
+      return;
+    }
+    setFilterValues({ ...filterValues, pageNumber: newPageNumber });
+  };
+
+  const onResultsPerPageChange = newResultsPerPage => {
+    setFilterValues({
+      ...filterValues,
+      pageNumber: 1,
+      resultsPerPage: Number(newResultsPerPage),
+    });
+  };
 
   // Set body style
   useEffect(()=> {
@@ -284,22 +301,6 @@ function StudyListContainer({ history, data: studies }) {
     };
   });
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(25);
-  const totalPages = Math.floor(numOfStudies / perPage);
-
-  const onChangePage = page => {
-    if (page > totalPages) {
-      return;
-    }
-    setCurrentPage(page);
-  };
-
-  const onChangePerPage = perPage => {
-    setPerPage(perPage);
-    setCurrentPage(1);
-  };
-
   const hasStudies = numOfStudies > 0;
 
   return (
@@ -343,17 +344,17 @@ function StudyListContainer({ history, data: studies }) {
         <>
           <StudyListTable
             tableDataSource={tableDataSource.slice(
-              (currentPage - 1) * perPage,
-              (currentPage - 1) * perPage + perPage
+              (pageNumber - 1) * resultsPerPage,
+              (pageNumber - 1) * resultsPerPage + resultsPerPage
             )}
             numOfStudies={numOfStudies}
             filtersMeta={filtersMeta}
           />
           <StudyListPagination
-            onChangePage={onChangePage}
-            onChangePerPage={onChangePerPage}
-            currentPage={currentPage}
-            perPage={perPage}
+            onChangePage={onPageNumberChange}
+            onChangePerPage={onResultsPerPageChange}
+            currentPage={pageNumber}
+            perPage={resultsPerPage}
           />
         </>
       ) : (
@@ -388,7 +389,7 @@ const defaultFilterValues = {
   accession: '',
   sortBy: '',
   sortDirection: 'none',
-  page: 0,
+  pageNumber: 1,
   resultsPerPage: 25,
 };
 
@@ -407,7 +408,7 @@ function _getQueryFilterValues(query) {
     accession: query.get('accession'),
     sortBy: query.get('soryBy'),
     sortDirection: query.get('sortDirection'),
-    page: _tryParseInt(query.get('page'), undefined),
+    pageNumber: _tryParseInt(query.get('pageNumber'), undefined),
     resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
   };
 
