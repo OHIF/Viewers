@@ -182,6 +182,21 @@ function StudyListContainer({ history, data: studies }) {
         return -1 * sortModifier;
       } else if (!s2Prop && s1Prop) {
         return 1 * sortModifier;
+      } else if (sortBy === 'studyDate') {
+        // TODO: Delimiters are non-standard. Should we support them?
+        const s1Date = moment(s1.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
+        const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
+
+        if (s1Date.isValid() && s2Date.isValid()) {
+          return (
+            (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) *
+            sortModifier
+          );
+        } else if (s1Date.isValid()) {
+          return sortModifier;
+        } else if (s2Date.isValid()) {
+          return -1 * sortModifier;
+        }
       }
 
       return 0;
@@ -240,11 +255,27 @@ function StudyListContainer({ history, data: studies }) {
             content: (
               <div>
                 <span className="mr-4">
-                  {moment(date).format('MMM-DD-YYYY')}
+                  {date &&
+                    moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
+                    moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(
+                      'MMM-DD-YYYY'
+                    )}
                 </span>
                 {time && (
                   <span>
-                    {moment(time, 'HHmmss.SSS').format('hh:mm A')}
+                    {time &&
+                      moment(time, [
+                        'HH',
+                        'HHmm',
+                        'HHmmss',
+                        'HHmmss.SSS',
+                      ]).isValid() &&
+                      moment(time, [
+                        'HH',
+                        'HHmm',
+                        'HHmmss',
+                        'HHmmss.SSS',
+                      ]).format('hh:mm A')}
                   </span>
                 )}
               </div>
