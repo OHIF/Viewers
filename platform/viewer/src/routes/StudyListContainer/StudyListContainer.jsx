@@ -165,11 +165,13 @@ function StudyListContainer({ history, data: studies }) {
         {
           key: 'patientName',
           content: patientName,
+          title: patientName,
           gridCol: 4,
         },
         {
           key: 'mrn',
           content: patientId,
+          title: patientId,
           gridCol: 2,
         },
         {
@@ -182,21 +184,25 @@ function StudyListContainer({ history, data: studies }) {
               <span>{moment(studyTime).format('hh:mm A')}</span>
             </div>
           ),
+          title: 'time',
           gridCol: 5,
         },
         {
           key: 'description',
           content: studyDescription,
+          title: studyDescription,
           gridCol: 4,
         },
         {
           key: 'modality',
           content: modalities,
+          title: modalities,
           gridCol: 3,
         },
         {
           key: 'accession',
           content: accessionNumber,
+          title: accessionNumber,
           gridCol: 4,
         },
         {
@@ -213,6 +219,7 @@ function StudyListContainer({ history, data: studies }) {
               {instances}
             </>
           ),
+          title: instances,
           gridCol: 4,
         },
       ],

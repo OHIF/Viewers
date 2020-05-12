@@ -35,22 +35,20 @@ const StudyListTableRow = props => {
                   onClick={onClickRow}
                 >
                   {row.map((cell, index) => {
-                    const { content, gridCol, name } = cell;
+                    const { content, title, gridCol, name } = cell;
 
                     return (
                       <td
                         key={name}
                         className={classnames(
-                          'px-4 py-2 text-base',
+                          'px-4 py-2 text-base truncate',
                           { 'border-b border-secondary-light': !isExpanded },
                           `w-${gridCol}/24` || ''
                         )}
                         style={{
                           maxWidth: 0,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
                         }}
+                        title={title}
                       >
                         {index === 0 && (
                           <Icon
@@ -83,6 +81,8 @@ StudyListTableRow.propTypes = {
       PropTypes.shape({
         key: PropTypes.string.isRequired,
         content: PropTypes.node.isRequired,
+        /** Title attribute to use for provided content */
+        title: PropTypes.string,
         gridCol: PropTypes.number.isRequired,
       })
     ).isRequired,
