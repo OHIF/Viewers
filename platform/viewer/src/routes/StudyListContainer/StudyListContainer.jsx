@@ -31,8 +31,8 @@ function StudyListContainer({ history, data: studies }) {
   const [filterValues, setFilterValues] = useState(
     Object.assign({}, defaultFilterValues, queryFilterValues)
   );
-  const debouncedFilterValues = useDebounce(filterValues, 500);
-  const { resultsPerPage, pageNumber } = filterValues;
+  const debouncedFilterValues = useDebounce(filterValues, 200);
+  const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
   const numOfStudies = studies.length;
@@ -54,12 +54,12 @@ function StudyListContainer({ history, data: studies }) {
   };
 
   // Set body style
-  useEffect(()=> {
+  useEffect(() => {
     document.body.classList.add('bg-black');
     return () => {
       document.body.classList.remove('bg-black');
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
     if (!debouncedFilterValues) {
@@ -162,144 +162,180 @@ function StudyListContainer({ history, data: studies }) {
       return filterValues[name] !== defaultFilterValues[name];
     });
   };
-  const tableDataSource = studies.map((study, key) => {
-    const rowKey = key + 1;
-    const isExpanded = expandedRows.some(k => k === rowKey);
-    const {
-      accessionNumber,
-      modalities,
-      instances,
-      studyDescription,
-      mrn,
-      patientName,
-      studyDate,
-      studyTime,
-      // ??
-      // TODO: won't have until expanded
-      series = [],
-    } = study;
-    const seriesTableColumns = {
-      description: 'Description',
-      seriesNumber: 'Series',
-      modality: 'Modality',
-      Instances: 'Instances',
-    };
-    const seriesTableDataSource = series.map(seriesItem => {
-      const { SeriesNumber, Modality, instances } = seriesItem;
+  const tableDataSource = studies
+    .sort((s1, s2) => {
+      const noSortApplied = sortBy === '' || !sortBy;
+      const sortModifier = sortDirection === 'descending' ? 1 : -1;
+      if (noSortApplied) {
+        return 0;
+      }
+
+      const s1Prop = s1[sortBy];
+      const s2Prop = s2[sortBy];
+
+      if (typeof s1Prop === 'string' && typeof s2Prop === 'string') {
+        return s1Prop.localeCompare(s2Prop) * sortModifier;
+      } else if (typeof s1Prop === 'number' && typeof s2Prop === 'number') {
+        return (s1Prop > s2Prop) * sortModifier;
+      } else if (!s1Prop && s2Prop) {
+        return -1 * sortModifier;
+      } else if (!s2Prop && s1Prop) {
+        return 1 * sortModifier;
+      }
+
+      return 0;
+    })
+    .map((study, key) => {
+      const rowKey = key + 1;
+      const isExpanded = expandedRows.some(k => k === rowKey);
+      const {
+        accessionNumber,
+        modalities,
+        instances,
+        studyDescription,
+        mrn,
+        patientName,
+        studyDate,
+        studyTime,
+        // ??
+        // TODO: won't have until expanded
+        series = [],
+      } = study;
+      const seriesTableColumns = {
+        description: 'Description',
+        seriesNumber: 'Series',
+        modality: 'Modality',
+        Instances: 'Instances',
+      };
+      const seriesTableDataSource = series.map(seriesItem => {
+        const { SeriesNumber, Modality, instances } = seriesItem;
+        return {
+          description: 'Patient Protocol',
+          seriesNumber: SeriesNumber,
+          modality: Modality,
+          Instances: instances.length,
+        };
+      });
       return {
-        description: 'Patient Protocol',
-        seriesNumber: SeriesNumber,
-        modality: Modality,
-        Instances: instances.length,
+        row: [
+          {
+            key: 'patientName',
+            content: patientName ? (
+              patientName
+            ) : (
+              <span className="text-gray-700">(Empty)</span>
+            ),
+            title: patientName,
+            gridCol: 4,
+          },
+          {
+            key: 'mrn',
+            content: mrn,
+            title: mrn,
+            gridCol: 2,
+          },
+          {
+            key: 'studyDate',
+            content: (
+              <div>
+                <span className="mr-4">
+                  {moment(studyDate).format('MMM-DD-YYYY')}
+                </span>
+                {studyTime && (
+                  <span>
+                    {moment(studyTime, 'HHmmss.SSS').format('hh:mm A')}
+                  </span>
+                )}
+              </div>
+            ),
+            title: 'time',
+            gridCol: 5,
+          },
+          {
+            key: 'description',
+            content: studyDescription,
+            title: studyDescription,
+            gridCol: 4,
+          },
+          {
+            key: 'modality',
+            content: modalities,
+            title: modalities,
+            gridCol: 3,
+          },
+          {
+            key: 'accession',
+            content: accessionNumber,
+            title: accessionNumber,
+            gridCol: 4,
+          },
+          {
+            key: 'instances',
+            content: (
+              <>
+                <Icon
+                  name="group-layers"
+                  className={classnames('inline-flex mr-2 w-4', {
+                    'text-primary-active': isExpanded,
+                    'text-secondary-light': !isExpanded,
+                  })}
+                />
+                {instances}
+              </>
+            ),
+            title: instances,
+            gridCol: 4,
+          },
+        ],
+        expandedContent: (
+          <StudyListExpandedRow
+            seriesTableColumns={seriesTableColumns}
+            seriesTableDataSource={seriesTableDataSource}
+          >
+            <Button
+              rounded="full"
+              variant="contained"
+              className="mr-4 font-bold"
+              endIcon={
+                <Icon name="launch-arrow" style={{ color: '#21a7c6' }} />
+              }
+            >
+              <Link to="/viewer/123">Basic Viewer</Link>
+            </Button>
+            <Button
+              rounded="full"
+              variant="contained"
+              className="mr-4 font-bold"
+              endIcon={
+                <Icon name="launch-arrow" style={{ color: '#21a7c6' }} />
+              }
+            >
+              <Link to="/viewer/123">Segmentation</Link>
+            </Button>
+            <Button
+              rounded="full"
+              variant="outlined"
+              endIcon={<Icon name="launch-info" />}
+              className="font-bold"
+            >
+              Module 3
+            </Button>
+            <div className="ml-5 text-lg text-common-bright inline-flex items-center">
+              <Icon
+                name="notificationwarning-diamond"
+                className="mr-2 w-5 h-5"
+              />
+              Feedback text lorem ipsum dolor sit amet
+            </div>
+          </StudyListExpandedRow>
+        ),
+        onClickRow: () =>
+          setExpandedRows(s =>
+            isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey]
+          ),
+        isExpanded,
       };
     });
-    return {
-      row: [
-        {
-          key: 'patientName',
-          content: patientName
-            ? patientName
-            : (<span className="text-gray-700">(Empty)</span>),
-          title: patientName,
-          gridCol: 4,
-        },
-        {
-          key: 'mrn',
-          content: mrn,
-          title: mrn,
-          gridCol: 2,
-        },
-        {
-          key: 'studyDate',
-          content: (
-            <div>
-              <span className="mr-4">
-                {moment(studyDate).format('MMM-DD-YYYY')}
-              </span>
-              {studyTime && (<span>{moment(studyTime, 'HHmmss.SSS').format('hh:mm A')}</span>)}
-            </div>
-          ),
-          title: 'time',
-          gridCol: 5,
-        },
-        {
-          key: 'description',
-          content: studyDescription,
-          title: studyDescription,
-          gridCol: 4,
-        },
-        {
-          key: 'modality',
-          content: modalities,
-          title: modalities,
-          gridCol: 3,
-        },
-        {
-          key: 'accession',
-          content: accessionNumber,
-          title: accessionNumber,
-          gridCol: 4,
-        },
-        {
-          key: 'instances',
-          content: (
-            <>
-              <Icon
-                name="group-layers"
-                className={classnames('inline-flex mr-2 w-4', {
-                  'text-primary-active': isExpanded,
-                  'text-secondary-light': !isExpanded,
-                })}
-              />
-              {instances}
-            </>
-          ),
-          title: instances,
-          gridCol: 4,
-        },
-      ],
-      expandedContent: (
-        <StudyListExpandedRow
-          seriesTableColumns={seriesTableColumns}
-          seriesTableDataSource={seriesTableDataSource}
-        >
-          <Button
-            rounded="full"
-            variant="contained"
-            className="mr-4 font-bold"
-            endIcon={<Icon name="launch-arrow" style={{ color: '#21a7c6' }} />}
-          >
-            <Link to="/viewer/123">Basic Viewer</Link>
-          </Button>
-          <Button
-            rounded="full"
-            variant="contained"
-            className="mr-4 font-bold"
-            endIcon={<Icon name="launch-arrow" style={{ color: '#21a7c6' }} />}
-          >
-            <Link to="/viewer/123">Segmentation</Link>
-          </Button>
-          <Button
-            rounded="full"
-            variant="outlined"
-            endIcon={<Icon name="launch-info" />}
-            className="font-bold"
-          >
-            Module 3
-          </Button>
-          <div className="ml-5 text-lg text-common-bright inline-flex items-center">
-            <Icon name="notificationwarning-diamond" className="mr-2 w-5 h-5" />
-            Feedback text lorem ipsum dolor sit amet
-          </div>
-        </StudyListExpandedRow>
-      ),
-      onClickRow: () =>
-        setExpandedRows(s =>
-          isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey]
-        ),
-      isExpanded,
-    };
-  });
 
   const hasStudies = numOfStudies > 0;
 
