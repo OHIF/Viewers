@@ -7,6 +7,8 @@ class DisplaySetManager {
     this.extensionManager = extensionManager;
     this.SOPClassHandlerIds = SOPClassHandlerIds;
 
+    debugger;
+
     const {
       displaySetInstanceUids,
       setDisplaySetInstanceUids,
@@ -20,7 +22,6 @@ class DisplaySetManager {
   }
 
   _addDisplaySets(displaySets) {
-    debugger;
     //const displayInstanceUids = [...this.displaySetInstanceUids];
 
     const addedDisplaySetUids = [];
@@ -46,8 +47,6 @@ class DisplaySetManager {
     }
 
     const instance = instances[0];
-
-    debugger;
 
     const existingDisplaySets =
       this.getDisplaySetsForSeries(instance.SeriesInstanceUID) || [];
@@ -76,9 +75,7 @@ class DisplaySetManager {
           addedDisplaySetUids = this._addDisplaySets(displaySets);
         }
 
-        debugger;
-
-        setDisplaySetInstanceUids([
+        this.setDisplaySetInstanceUids([
           ...addedDisplaySetUids,
           ...this.displaySetInstanceUids,
         ]);

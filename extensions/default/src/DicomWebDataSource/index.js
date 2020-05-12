@@ -352,8 +352,6 @@ function createDicomWebApi(dicomWebConfig) {
 
           StudyInstanceUIDs = urlUtil.paramString.parseParam(StudyInstanceUIDs);
 
-          debugger;
-
           if (!StudyInstanceUIDs) {
             throw new Error(
               'Incomplete queryParams, missing StudyInstanceUIDs'
