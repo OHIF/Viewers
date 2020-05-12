@@ -25,7 +25,7 @@ class OHIFCornerstoneViewport extends Component {
     customProps: PropTypes.object,
   };
 
-  static id = 'OHIFCornerstoneViewport';
+  static name = 'OHIFCornerstoneViewport';
 
   static init() {
     console.log('OHIFCornerstoneViewport init()');

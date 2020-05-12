@@ -26,6 +26,15 @@ export default function mode({ modeConfiguration }) {
               // named slots
               leftPanels: ['org.ohif.default.panelModule.seriesList'],
               rightPanels: ['org.ohif.default.panelModule.measure'],
+              viewports: [
+                {
+                  namespace:
+                    'org.ohif.cornerstone.viewportModule.OHIFCornerstoneViewport',
+                  displaySetsToDisplay: [
+                    'org.ohif.default.sopClassHandlerModule.stack',
+                  ],
+                },
+              ],
             },
           };
         },

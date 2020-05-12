@@ -15,6 +15,8 @@ import measurementServiceMappingsFactory from './utils/measurementServiceMapping
 export default function init({ servicesManager, configuration }) {
   const { UIDialogService, MeasurementService } = servicesManager.services;
 
+  debugger;
+
   const callInputDialog = (data, event, callback) => {
     if (UIDialogService) {
       let dialogId = UIDialogService.create({
