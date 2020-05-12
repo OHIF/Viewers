@@ -52,25 +52,13 @@ const StudyListTableRow = props => {
                           whiteSpace: 'nowrap',
                         }}
                       >
-                        <div
-                          className="flex flex-row items-center pl-1"
-                          style={{
-                            width: '100%',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {index === 0 && (
-                            <Icon
-                              name={
-                                isExpanded ? 'chevron-down' : 'chevron-right'
-                              }
-                              className="mr-4"
-                            />
-                          )}
-                          {content}
-                        </div>
+                        {index === 0 && (
+                          <Icon
+                            name={isExpanded ? 'chevron-down' : 'chevron-right'}
+                            className="mr-4 inline-flex"
+                          />
+                        )}
+                        {content}
                       </td>
                     );
                   })}
