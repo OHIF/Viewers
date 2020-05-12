@@ -92,8 +92,8 @@ function _getQueryFilterValues(query) {
 
   const queryFilterValues = {
     // DCM
+    patientId: query.get('mrn'),
     patientName: query.get('patientName'),
-    // mrn: query.get('mrn'), patientId?
     studyDescription: query.get('description'),
     modalitiesInStudy: query.get('modalities')
       ? query.get('modalities').split(',')

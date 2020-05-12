@@ -51,8 +51,8 @@ function processResults(qidoStudies) {
       studyTime: getString(qidoStudy['00080030']),
       accessionNumber: getString(qidoStudy['00080050']),
       // referringPhysicianName: getString(qidoStudy['00080090']),
+      mrn: getString(qidoStudy['00100020']), // patientId
       patientName: getName(qidoStudy['00100010']),
-      patientId: getString(qidoStudy['00100020']),
       // patientBirthdate: getString(qidoStudy['00100030']),
       // patientSex: getString(qidoStudy['00100040']),
       // studyId: getString(qidoStudy['00200010']), // mrn?

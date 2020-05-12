@@ -153,7 +153,7 @@ function StudyListContainer({ history, data: studies }) {
       modalities,
       instances,
       studyDescription,
-      patientId,
+      mrn,
       patientName,
       studyDate,
       studyTime,
@@ -188,8 +188,8 @@ function StudyListContainer({ history, data: studies }) {
         },
         {
           key: 'mrn',
-          content: patientId,
-          title: patientId,
+          content: mrn,
+          title: mrn,
           gridCol: 2,
         },
         {
