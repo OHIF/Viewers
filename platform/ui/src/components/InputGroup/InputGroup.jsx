@@ -58,6 +58,16 @@ const InputGroup = ({
       });
     };
 
+    const handleDateRangeFieldChange = ({ startDate, endDate }) => {
+      onValuesChange({
+        ...values,
+        [name]: {
+          startDate: startDate,
+          endDate: endDate,
+        },
+      });
+    };
+
     switch (inputType) {
       case 'Text':
         return (
@@ -93,7 +103,7 @@ const InputGroup = ({
             sortDirection={_sortDirection}
             onLabelClick={onLabelClick}
             value={values[name]}
-            onChange={handleFieldChange}
+            onChange={handleDateRangeFieldChange}
           />
         );
       case 'None':
