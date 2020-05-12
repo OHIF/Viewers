@@ -30,13 +30,13 @@ const InputMultiSelect = ({
         isSearchable={false}
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
-        onChange={(inputvalues, { action }) => {
+        onChange={(selectedOptions, action) => {
           switch (action) {
             case 'select-option':
             case 'remove-value':
             case 'deselect-option':
             case 'clear':
-              onChange(inputvalues);
+              onChange(selectedOptions);
               break;
             default:
               break;
