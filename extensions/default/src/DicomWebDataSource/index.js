@@ -46,14 +46,31 @@ function createDicomWebApi(dicomWebConfig) {
 
           const results = await qidoSearch(
             qidoDicomWebClient,
-            studyInstanceUid,
-            seriesInstanceUid,
+            undefined,
+            undefined,
             mappedParams
           );
 
           return processResults(results);
         },
         processResults: processResults.bind(),
+      },
+      series: {
+        // mapParams: mapParams.bind(),
+        search: async function(origParams) {
+          const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
+            mapParams(origParams) || {};
+
+          const results = await qidoSearch(
+            qidoDicomWebClient,
+            studyInstanceUid,
+            undefined,
+            mappedParams
+          );
+
+          return processResults(results);
+        },
+        // processResults: processResults.bind(),
       },
       instances: {
         search: (studyInstanceUid, queryParamaters) =>
