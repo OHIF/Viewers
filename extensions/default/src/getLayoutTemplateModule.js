@@ -190,8 +190,6 @@ function viewerLayout({
     };
   };
 
-  debugger;
-
   const leftPanelComponents = leftPanels.map(getPanelData);
   const rightPanelComponents = rightPanels.map(getPanelData);
 
