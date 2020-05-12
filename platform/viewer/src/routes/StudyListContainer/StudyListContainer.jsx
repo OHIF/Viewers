@@ -164,6 +164,7 @@ function StudyListContainer({ history, data: studies }) {
   };
   const tableDataSource = studies
     // TOOD: Move sort to DataSourceWrapper?
+    // TODO: MOTIVATION, this is triggered on every render, even if list/sort does not change
     .sort((s1, s2) => {
       const noSortApplied = sortBy === '' || !sortBy;
       const sortModifier = sortDirection === 'descending' ? 1 : -1;
