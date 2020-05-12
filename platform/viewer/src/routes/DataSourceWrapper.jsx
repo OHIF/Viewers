@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { MODULE_TYPES } from '@ohif/core';
 //
 import { appConfig, extensionManager } from '../App.js';
-import { useQuery } from './../hooks';
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -15,9 +14,8 @@ import { useQuery } from './../hooks';
  * @param {function} props.children - Layout Template React Component
  */
 function DataSourceWrapper(props) {
-  const { children: LayoutTemplate, ...rest } = props;
-  const query = useQuery();
-  const queryFilterValues = _getQueryFilterValues(query);
+  const { children: LayoutTemplate, history, ...rest } = props;
+  const queryFilterValues = _getQueryFilterValues(history.location.search);
 
   // TODO: Fetch by type, name, etc?
   const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
@@ -53,10 +51,10 @@ function DataSourceWrapper(props) {
 
     // 204: no content
     async function getData() {
-      const searchResult = await dataSource.query.studies.search({
-        patientName: queryFilterValues.patientName,
-      });
-      setData(searchResult);
+      const searchResults = await dataSource.query.studies.search(
+        queryFilterValues
+      );
+      setData(searchResults);
     }
 
     try {
@@ -66,14 +64,13 @@ function DataSourceWrapper(props) {
 
     }
     console.log('DataSourceWrapper: useEffect');
-  }, [rest.history.location.search]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [history.location.search]);
   // queryFilterValues
-
-  console.log(rest);
 
   return (
     <React.Fragment>
-      {data && <LayoutTemplate {...rest} data={data} />}
+      {data && <LayoutTemplate {...rest} history={history} data={data} />}
     </React.Fragment>
   );
 }
@@ -91,18 +88,27 @@ export default DataSourceWrapper;
  * @param {*} query
  */
 function _getQueryFilterValues(query) {
+  query = new URLSearchParams(query);
+
   const queryFilterValues = {
     patientName: query.get('patientName'),
     // mrn: query.get('mrn'), patientId?
-    studyDate: _tryParseDates(query.get('studyDate'), undefined),
+    studyDate: {
+      startDate: query.get('startDate'),
+      endDate: query.get('endDate'),
+    },
     studyDescription: query.get('description'),
-    modalitiesInStudy: _tryParseJson(query.get('modality'), undefined),
+    //modalitiesInStudy: _tryParseJson(query.get('modality'), undefined),
     accessionNumber: query.get('accession'),
     sortBy: query.get('soryBy'),
     sortDirection: query.get('sortDirection'),
     page: _tryParseInt(query.get('page'), undefined),
     resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
   };
+
+  // patientName: good
+  // studyDescription: good
+  // accessionNumber: good
 
   // Delete null/undefined keys
   Object.keys(queryFilterValues).forEach(
@@ -121,25 +127,5 @@ function _getQueryFilterValues(query) {
       }
     }
     return retValue;
-  }
-
-  function _tryParseJson(str, defaultValue) {
-    return str ? JSON.parse(str) : defaultValue;
-  }
-
-  function _tryParseDates(str, defaultValue) {
-    const studyDateObject = _tryParseJson(str, defaultValue);
-
-    if (studyDateObject) {
-      studyDateObject.startDate = studyDateObject.startDate
-        ? moment(new Date(studyDateObject.startDate))
-        : undefined;
-
-      studyDateObject.endDate = studyDateObject.endDate
-        ? moment(new Date(studyDateObject.endDate))
-        : undefined;
-    }
-
-    return studyDateObject;
   }
 }

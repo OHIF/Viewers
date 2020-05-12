@@ -53,16 +53,21 @@ function StudyListContainer({ history, data: studies }) {
       const defaultValue = defaultFilterValues[key];
       const currValue = debouncedFilterValues[key];
 
-      if (
-        typeof currValue === 'object' &&
-        currValue !== null &&
-        JSON.stringify(currValue) !== JSON.stringify(defaultValue)
-      ) {
-        queryString[key] = JSON.stringify(currValue);
+      // TODO: nesting/recursion?
+      // TODO: modalities array
+      if (key === 'studyDate') {
+        console.log(currValue)
+        if (defaultValue.startDate !== currValue.startDate) {
+          queryString.startDate = currValue.startDate;
+        }
+        if (defaultValue.endDate !== currValue.endDate) {
+          queryString.endDate = currValue.endDate;
+        }
       } else if (currValue !== defaultValue) {
         queryString[key] = currValue;
       }
     });
+
     history.push({
       pathname: '/',
       search: `?${qs.stringify(queryString, {
@@ -372,8 +377,8 @@ const defaultFilterValues = {
   patientName: '',
   mrn: '',
   studyDate: {
-    startDate: null,
-    endDate: null,
+    startDate: undefined,
+    endDate: undefined,
   },
   description: '',
   modality: [],
@@ -388,9 +393,12 @@ function _getQueryFilterValues(query) {
   const queryFilterValues = {
     patientName: query.get('patientName'),
     mrn: query.get('mrn'),
-    studyDate: _tryParseDates(query.get('studyDate'), undefined),
+    studyDate: {
+      startDate: query.get('startDate'),
+      endDate: query.get('endDate'),
+    },
     description: query.get('description'),
-    modality: _tryParseJson(query.get('modality'), undefined),
+    // modality: _tryParseJson(query.get('modality'), undefined),
     accession: query.get('accession'),
     sortBy: query.get('soryBy'),
     sortDirection: query.get('sortDirection'),
@@ -415,26 +423,6 @@ function _getQueryFilterValues(query) {
       }
     }
     return retValue;
-  }
-
-  function _tryParseJson(str, defaultValue) {
-    return str ? JSON.parse(str) : defaultValue;
-  }
-
-  function _tryParseDates(str, defaultValue) {
-    const studyDateObject = _tryParseJson(str, defaultValue);
-
-    if (studyDateObject) {
-      studyDateObject.startDate = studyDateObject.startDate
-        ? moment(new Date(studyDateObject.startDate))
-        : undefined;
-
-      studyDateObject.endDate = studyDateObject.endDate
-        ? moment(new Date(studyDateObject.endDate))
-        : undefined;
-    }
-
-    return studyDateObject;
   }
 }
 

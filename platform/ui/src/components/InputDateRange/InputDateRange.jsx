@@ -41,10 +41,10 @@ InputDateRange.propTypes = {
     .isRequired,
   onLabelClick: PropTypes.func.isRequired,
   value: PropTypes.shape({
-    /** Start date moment object */
-    startDate: PropTypes.object, // moment date is an object
-    /** End date moment object */
-    endDate: PropTypes.object, // moment date is an object
+    /** YYYYMMDD (19921022) */
+    startDate: PropTypes.string,
+    /** YYYYMMDD (19921022) */
+    endDate: PropTypes.string,
   }),
   onChange: PropTypes.func.isRequired,
 };

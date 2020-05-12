@@ -122,14 +122,23 @@ const DateRange = (props) => {
     );
   };
 
+  // Moment
+  const parsedStartDate = startDate ? moment(startDate, 'YYYYMMDD') : null;
+  const parsedEndDate = endDate ? moment(endDate, 'YYYYMMDD') : null;
+
   return (
     <DateRangePicker
       /** REQUIRED */
-      startDate={startDate}
+      startDate={parsedStartDate}
       startDateId={'startDateId'}
-      endDate={endDate}
+      endDate={parsedEndDate}
       endDateId={'endDateId'}
-      onDatesChange={onChange}
+      onDatesChange={({ startDate: newStartDate, endDate: newEndDate }) => {
+        onChange({
+          startDate: newStartDate ? newStartDate.format('YYYYMMDD') : undefined,
+          endDate: newEndDate ? newEndDate.format('YYYYMMDD') : undefined,
+        })
+      }}
       focusedInput={focusedInput}
       onFocusChange={(updatedVal) => setFocusedInput(updatedVal)}
       /** OPTIONAL */
@@ -156,11 +165,11 @@ DateRange.defaultProps = {
 };
 
 DateRange.propTypes = {
-  /** Start date moment object */
-  startDate: PropTypes.object, // moment date is an object
-  /** End date moment object */
-  endDate: PropTypes.object, // moment date is an object
-  /** Callback that returns on object with selected dates */
+  /** YYYYMMDD (19921022) */
+  startDate: PropTypes.string,
+  /** YYYYMMDD (19921022) */
+  endDate: PropTypes.object,
+  /** Callback that received { startDate: string(YYYYMMDD), endDate: string(YYYYMMDD)} */
   onChange: PropTypes.func.isRequired,
 };
 
