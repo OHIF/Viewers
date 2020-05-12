@@ -46,6 +46,17 @@ const Select = ({
   value,
 }) => {
   const _components = isMulti ? { Option, MultiValue } : {};
+  const selectedOptions = [];
+
+  // Map array of values to an array of selected options
+  if (value && Array.isArray(value)) {
+    value.forEach(val => {
+      const found = options.find(opt => opt.value === val);
+      if (found) {
+        selectedOptions.push(JSON.parse(JSON.stringify(found)));
+      }
+    });
+  }
 
   return (
     <ReactSelect
@@ -63,8 +74,14 @@ const Select = ({
       components={_components}
       placeholder={placeholder}
       options={options}
-      value={value}
-      onChange={onChange}
+      value={selectedOptions}
+      onChange={(selectedOptions, { action }) => {
+        const newSelection = selectedOptions.reduce(
+          (acc, curr) => acc.concat([curr.value]),
+          []
+        );
+        onChange(newSelection, action);
+      }}
     ></ReactSelect>
   );
 };
@@ -77,6 +94,7 @@ Select.defaultProps = {
   isDisabled: false,
   isMulti: false,
   isSearchable: true,
+  value: [],
 };
 
 Select.propTypes = {
@@ -95,18 +113,7 @@ Select.propTypes = {
     })
   ),
   placeholder: PropTypes.string,
-  value: PropTypes.oneOfType([
-    PropTypes.arrayOf(
-      PropTypes.shape({
-        value: PropTypes.string,
-        label: PropTypes.string,
-      })
-    ),
-    PropTypes.shape({
-      value: PropTypes.string,
-      label: PropTypes.string,
-    }),
-  ]),
+  value: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default Select;
