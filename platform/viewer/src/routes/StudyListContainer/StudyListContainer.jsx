@@ -183,7 +183,7 @@ function StudyListContainer({ history, data: studies }) {
               <span className="mr-4">
                 {moment(studyDate).format('MMM-DD-YYYY')}
               </span>
-              <span>{moment(studyTime).format('hh:mm A')}</span>
+              {studyTime && (<span>{moment(studyTime, 'HHmmss.SSS').format('hh:mm A')}</span>)}
             </div>
           ),
           title: 'time',
