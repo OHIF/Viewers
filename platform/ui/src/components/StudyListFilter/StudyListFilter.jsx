@@ -104,13 +104,18 @@ const StudyListFilter = ({
 StudyListFilter.propTypes = {
   filtersMeta: PropTypes.arrayOf(
     PropTypes.shape({
+      /** Identifier used to map a field to it's value in `filterValues` */
       name: PropTypes.string.isRequired,
+      /** Friendly label for filter field */
       displayName: PropTypes.string.isRequired,
+      /** One of the supported filter field input types */
       inputType: PropTypes.oneOf(['Text', 'MultiSelect', 'DateRange', 'None'])
         .isRequired,
       isSortable: PropTypes.bool.isRequired,
+      /** Size of filter field in a 12-grid system */
       gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
         .isRequired,
+      /** Options for a "MultiSelect" inputType */
       option: PropTypes.arrayOf(
         PropTypes.shape({
           value: PropTypes.string,

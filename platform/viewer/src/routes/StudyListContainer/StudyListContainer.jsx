@@ -54,7 +54,6 @@ function StudyListContainer({ history, data: studies }) {
       const currValue = debouncedFilterValues[key];
 
       // TODO: nesting/recursion?
-      // TODO: modalities array
       if (key === 'studyDate') {
         if (
           currValue.startDate &&
@@ -65,6 +64,8 @@ function StudyListContainer({ history, data: studies }) {
         if (currValue.endDate && defaultValue.endDate !== currValue.endDate) {
           queryString.endDate = currValue.endDate;
         }
+      } else if (key === 'modalities' && currValue.length) {
+        queryString.modalities = currValue.join(',');
       } else if (currValue !== defaultValue) {
         queryString[key] = currValue;
       }
@@ -110,7 +111,7 @@ function StudyListContainer({ history, data: studies }) {
       gridCol: 4,
     },
     {
-      name: 'modality',
+      name: 'modalities',
       displayName: 'Modality',
       inputType: 'MultiSelect',
       inputProps: {
@@ -383,7 +384,7 @@ const defaultFilterValues = {
     endDate: undefined,
   },
   description: '',
-  modality: [],
+  modalities: [],
   accession: '',
   sortBy: '',
   sortDirection: 'none',
@@ -400,7 +401,9 @@ function _getQueryFilterValues(query) {
       endDate: query.get('endDate'),
     },
     description: query.get('description'),
-    // modality: _tryParseJson(query.get('modality'), undefined),
+    modalities: query.get('modalities')
+      ? query.get('modalities').split(',')
+      : [],
     accession: query.get('accession'),
     sortBy: query.get('soryBy'),
     sortDirection: query.get('sortDirection'),
