@@ -38,8 +38,6 @@ function DataSourceWrapper(props) {
   const firstWebApiDataSource = webApiDataSources[0];
   const dataSource = firstWebApiDataSource.createDataSource(dataSourceConfig);
 
-  console.log(dataSource, 'dsm');
-
   // Route props --> studies.mapParams
   // mapParams --> studies.search
   // studies.search --> studies.processResults
@@ -68,9 +66,17 @@ function DataSourceWrapper(props) {
   }, [history.location.search]);
   // queryFilterValues
 
+  // TODO: Better way to pass DataSource?
   return (
     <React.Fragment>
-      {data && <LayoutTemplate {...rest} history={history} data={data} />}
+      {data && (
+        <LayoutTemplate
+          {...rest}
+          history={history}
+          data={data}
+          dataSource={dataSource}
+        />
+      )}
     </React.Fragment>
   );
 }
