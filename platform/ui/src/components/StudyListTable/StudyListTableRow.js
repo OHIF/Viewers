@@ -8,6 +8,7 @@ const StudyListTableRow = (props) => {
   return (
     <>
       <tr>
+      <tr className="select-none">
         <td
           className={classnames('border-0 p-0', {
             'border-b border-secondary-light bg-primary-dark': isExpanded,
@@ -53,11 +54,7 @@ const StudyListTableRow = (props) => {
                   })}
                 </tr>
                 {isExpanded && (
-                  <tr
-                    className={classnames(
-                      'w-full bg-black max-h-0 overflow-hidden'
-                    )}
-                  >
+                  <tr className="w-full bg-black select-text max-h-0 overflow-hidden">
                     <td colSpan={row.length}>{expandedContent}</td>
                   </tr>
                 )}
