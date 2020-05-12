@@ -91,17 +91,22 @@ function _getQueryFilterValues(query) {
   query = new URLSearchParams(query);
 
   const queryFilterValues = {
+    // DCM
     patientName: query.get('patientName'),
     // mrn: query.get('mrn'), patientId?
+    studyDescription: query.get('description'),
+    modalitiesInStudy: query.get('modalities')
+      ? query.get('modalities').split(',')
+      : [],
+    accessionNumber: query.get('accession'),
+    //
     startDate: query.get('startDate'),
     endDate: query.get('endDate'),
-    studyDescription: query.get('description'),
-    //modalitiesInStudy: _tryParseJson(query.get('modality'), undefined),
-    accessionNumber: query.get('accession'),
-    sortBy: query.get('soryBy'),
-    sortDirection: query.get('sortDirection'),
     page: _tryParseInt(query.get('page'), undefined),
     resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
+    // Rarely supported server-side
+    sortBy: query.get('sortBy'),
+    sortDirection: query.get('sortDirection'),
   };
 
   // patientName: good
