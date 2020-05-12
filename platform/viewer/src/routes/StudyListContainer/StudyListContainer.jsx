@@ -62,6 +62,7 @@ function StudyListContainer({ history, data: studies }) {
         skipEmptyString: true,
       })}`,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedFilterValues]);
 
   const filtersMeta = [
@@ -163,15 +164,7 @@ function StudyListContainer({ history, data: studies }) {
       row: [
         {
           key: 'patientName',
-          content: (
-            <>
-              <Icon
-                name={isExpanded ? 'chevron-down' : 'chevron-right'}
-                className="mr-4"
-              />
-              {patientName}
-            </>
-          ),
+          content: patientName,
           gridCol: 4,
         },
         {

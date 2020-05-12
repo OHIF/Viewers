@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import Icon from './../Icon';
 
-const StudyListTableRow = (props) => {
+const StudyListTableRow = props => {
   const { tableData } = props;
   const { row, expandedContent, onClickRow, isExpanded } = tableData;
   return (
     <>
-      <tr>
       <tr className="select-none">
         <td
           className={classnames('border-0 p-0', {
@@ -34,7 +34,7 @@ const StudyListTableRow = (props) => {
                   )}
                   onClick={onClickRow}
                 >
-                  {row.map((cell) => {
+                  {row.map((cell, index) => {
                     const { content, gridCol, name } = cell;
 
                     return (
@@ -45,8 +45,30 @@ const StudyListTableRow = (props) => {
                           { 'border-b border-secondary-light': !isExpanded },
                           `w-${gridCol}/24` || ''
                         )}
+                        style={{
+                          maxWidth: 0,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
                       >
-                        <div className="flex flex-row items-center pl-1">
+                        <div
+                          className="flex flex-row items-center pl-1"
+                          style={{
+                            width: '100%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {index === 0 && (
+                            <Icon
+                              name={
+                                isExpanded ? 'chevron-down' : 'chevron-right'
+                              }
+                              className="mr-4"
+                            />
+                          )}
                           {content}
                         </div>
                       </td>
