@@ -6,7 +6,15 @@ import {
   processResults,
   processSeriesResults,
 } from './qido.js';
-import { dicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
+import {
+  dicomMetadataStore,
+  IWebApiDataSource,
+  utils,
+  displaySetManager,
+} from '@ohif/core';
+
+import { mapParams, search as qidoSearch, processResults } from './qido.js';
+import getImageId from './utils/getImageId';
 import * as dcmjs from 'dcmjs';
 import { retrieveStudyMetadata } from './retrieveStudyMetadata.js';
 
@@ -121,17 +129,45 @@ function createDicomWebApi(dicomWebConfig) {
               });
             });
           });
-
-          // TEMP use dummy data.
-          //const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
-          //const instances = exampleInstances.map(naturalizeDataset);
-
-          // TEMP
-
-          //dicomMetadataStore.addInstances(instances);
-          //callback(instances);
         },
       },
+    },
+    getImageIdsForDisplaySet(displaySetInstanceUid) {
+      const displaySet = displaySetManager.getDisplaySetByUID(
+        displaySetInstanceUid
+      );
+
+      debugger;
+
+      const images = displaySet.images;
+
+      const imageIds = [];
+
+      if (!images) {
+        return imageIds;
+      }
+
+      displaySet.images.forEach(instance => {
+        const NumberOfFrames = instance.NumberOfFrames;
+
+        if (NumberOfFrames > 1) {
+          for (let i = 0; i < NumberOfFrames; i++) {
+            const imageId = getImageId({
+              instance,
+              frame: i,
+              config: dicomWebConfig,
+            });
+            imageIds.push(imageId);
+          }
+        } else {
+          const imageId = getImageId({ instance, config: dicomWebConfig });
+          imageIds.push(imageId);
+        }
+      });
+
+      debugger;
+
+      return imageIds;
     },
   });
 }

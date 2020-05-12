@@ -10,7 +10,7 @@ import { dicomMetadataStore } from '@ohif/core';
  * It's worth noting that a single implementation of this interface
  * can define different underlying sources for "read" and "write" operations.
  */
-function create({ query, retrieve }) {
+function create({ query, retrieve, getImageIdsForDisplaySet }) {
   const defaultQuery = {
     studies: {
       /**
@@ -38,8 +38,9 @@ function create({ query, retrieve }) {
   };
 
   return {
-    query,
-    retrieve,
+    query: query || defaultQuery,
+    retrieve: retrieve || defaultRetrieve,
+    getImageIdsForDisplaySet,
     // then go get all series level metadata.
     // Store this in the DICOM MetadataStore.
   };

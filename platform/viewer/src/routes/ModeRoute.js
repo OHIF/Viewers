@@ -16,6 +16,8 @@ export default function ModeRoute({
 
   const dataSource = dataSources[0];
 
+  console.log(dataSource);
+
   const { displaySetInstanceUids, setDisplaySetInstanceUids } = useContext(
     ViewModelContext
   );

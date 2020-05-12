@@ -39,6 +39,12 @@ class DisplaySetManager {
     );
   }
 
+  getDisplaySetByUID(displaySetInstanceUid) {
+    return this.displaySets.find(
+      displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
+    );
+  }
+
   makeDisplaySets = instances => {
     if (!instances || !instances.length) {
       throw new Error('No instances were provided.');
@@ -73,10 +79,12 @@ class DisplaySetManager {
           addedDisplaySetUids = this._addDisplaySets(displaySets);
         }
 
-        this.setDisplaySetInstanceUids([
+        this.displaySetInstanceUids = [
           ...addedDisplaySetUids,
           ...this.displaySetInstanceUids,
-        ]);
+        ];
+
+        this.setDisplaySetInstanceUids(this.displaySetInstanceUids);
       }
     }
   };
