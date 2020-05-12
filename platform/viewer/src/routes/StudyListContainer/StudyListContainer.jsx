@@ -36,6 +36,14 @@ function StudyListContainer({ history, data: studies }) {
   const [expandedRows, setExpandedRows] = useState([]);
   const numOfStudies = studies.length;
 
+  // Set body style
+  useEffect(()=> {
+    document.body.classList.add('bg-black');
+    return () => {
+      document.body.classList.remove('bg-black');
+    }
+  }, [])
+
   useEffect(() => {
     if (!debouncedFilterValues) {
       return;
