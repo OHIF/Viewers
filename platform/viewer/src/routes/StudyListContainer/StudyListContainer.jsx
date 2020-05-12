@@ -164,7 +164,9 @@ function StudyListContainer({ history, data: studies }) {
       row: [
         {
           key: 'patientName',
-          content: patientName,
+          content: patientName
+            ? patientName
+            : (<span className="text-gray-700">(Empty)</span>),
           title: patientName,
           gridCol: 4,
         },
