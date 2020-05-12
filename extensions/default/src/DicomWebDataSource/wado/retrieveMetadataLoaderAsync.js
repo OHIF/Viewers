@@ -1,10 +1,10 @@
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
-import { sortStudySeries, sortingCriteria } from '../../sortStudy';
-import getSeriesInfo from '../../getSeriesInfo';
-import {
-  createStudyFromSOPInstanceList,
-  addInstancesToStudy,
-} from './studyInstanceHelpers';
+//import { sortStudySeries, sortingCriteria } from '../../sortStudy';
+import getSeriesInfo from './utils/getSeriesInfo';
+// import {
+//   createStudyFromSOPInstanceList,
+//   addInstancesToStudy,
+// } from './studyInstanceHelpers';
 
 /**
  * Map seriesList to an array of seriesInstanceUid
@@ -15,18 +15,18 @@ function mapStudySeries(seriesList) {
   return seriesList.map(series => getSeriesInfo(series).seriesInstanceUid);
 }
 
-function attachSeriesLoader(server, study, seriesLoader) {
-  study.seriesLoader = Object.freeze({
-    hasNext() {
-      return seriesLoader.hasNext();
-    },
-    async next() {
-      const series = await seriesLoader.next();
-      await addInstancesToStudy(server, study, series.sopInstances);
-      return study.seriesMap[series.seriesInstanceUID];
-    },
-  });
-}
+// function attachSeriesLoader(server, study, seriesLoader) {
+//   study.seriesLoader = Object.freeze({
+//     hasNext() {
+//       return seriesLoader.hasNext();
+//     },
+//     async next() {
+//       const series = await seriesLoader.next();
+//       await addInstancesToStudy(server, study, series.sopInstances);
+//       return study.seriesMap[series.seriesInstanceUID];
+//     },
+//   });
+// }
 
 /**
  * Creates an immutable series loader object which loads each series sequentially using the iterator interface
@@ -46,11 +46,11 @@ function makeSeriesAsyncLoader(
     },
     async next() {
       const seriesInstanceUID = seriesInstanceUIDList.shift();
-      const sopInstances = await client.retrieveSeriesMetadata({
+      return client.retrieveSeriesMetadata({
         studyInstanceUID,
         seriesInstanceUID,
       });
-      return { studyInstanceUID, seriesInstanceUID, sopInstances };
+      // return { studyInstanceUID, seriesInstanceUID, sopInstances };
     },
   });
 }
@@ -90,11 +90,14 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const preLoaders = this.getPreLoaders();
     const result = await this.runLoaders(preLoaders);
 
-    const seriesSorted = sortStudySeries(
-      result,
-      sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
-    );
-    const seriesInstanceUidsMap = mapStudySeries(seriesSorted);
+    // const seriesSorted = sortStudySeries(
+    //   result,
+    //   sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
+    // );
+
+    //const seriesInstanceUidsMap = mapStudySeries(seriesSorted);
+
+    const seriesInstanceUidsMap = mapStudySeries(result);
 
     return seriesInstanceUidsMap;
   }
@@ -108,24 +111,35 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
       preLoadData
     );
 
-    const firstSeries = await seriesAsyncLoader.next();
+    // const firstSeries = await seriesAsyncLoader.next();
 
-    return {
-      sopInstances: firstSeries.sopInstances,
-      asyncLoader: seriesAsyncLoader,
-    };
-  }
+    // return {
+    //   sopInstances: firstSeries.sopInstances,
+    //   asyncLoader: seriesAsyncLoader,
+    // };
 
-  async posLoad(loadData) {
-    const { client } = this;
-    const { sopInstances, asyncLoader } = loadData;
+    const promises = [];
 
-    const study = await createStudyFromSOPInstanceList(server, sopInstances);
-
-    if (asyncLoader.hasNext()) {
-      attachSeriesLoader(server, study, asyncLoader);
+    while (seriesAsyncLoader.hasNext()) {
+      promises.push(seriesAsyncLoader.next());
     }
 
-    return study;
+    return promises;
+
+    // if (asyncLoader.hasNext()) {
+  }
+
+  async posLoad(promises) {
+    return promises;
+    // const { client } = this;
+    // const { sopInstances, asyncLoader } = loadData;
+
+    // const study = await createStudyFromSOPInstanceList(server, sopInstances);
+
+    // if (asyncLoader.hasNext()) {
+    //   attachSeriesLoader(server, study, asyncLoader);
+    // }
+
+    // return study;
   }
 }

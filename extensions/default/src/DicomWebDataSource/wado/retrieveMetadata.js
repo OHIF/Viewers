@@ -1,4 +1,4 @@
-import RetrieveMetadataLoaderSync from './retrieveMetadataLoaderSync';
+//import RetrieveMetadataLoaderSync from './retrieveMetadataLoaderSync';
 import RetrieveMetadataLoaderAsync from './retrieveMetadataLoaderAsync';
 
 /**
@@ -17,10 +17,12 @@ async function RetrieveMetadata(
   enableStudyLazyLoad,
   filters = {}
 ) {
-  const RetrieveMetadataLoader =
-    enableStudyLazyLoad !== false
-      ? RetrieveMetadataLoaderAsync
-      : RetrieveMetadataLoaderSync;
+  // const RetrieveMetadataLoader =
+  //   enableStudyLazyLoad !== false
+  //     ? RetrieveMetadataLoaderAsync
+  //     : RetrieveMetadataLoaderSync;
+
+  const RetrieveMetadataLoader = RetrieveMetadataLoaderAsync;
 
   const retrieveMetadataLoader = new RetrieveMetadataLoader(
     dicomWebClient,
