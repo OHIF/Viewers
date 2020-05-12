@@ -142,15 +142,7 @@ const StudyList = () => {
       row: [
         {
           key: 'patientName',
-          content: (
-            <>
-              <Icon
-                name={isExpanded ? 'chevron-down' : 'chevron-right'}
-                className="mr-4"
-              />
-              {PatientName}
-            </>
-          ),
+          content: PatientName,
           gridCol: 4,
         },
         {
