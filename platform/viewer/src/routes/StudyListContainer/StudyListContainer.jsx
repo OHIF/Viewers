@@ -56,11 +56,13 @@ function StudyListContainer({ history, data: studies }) {
       // TODO: nesting/recursion?
       // TODO: modalities array
       if (key === 'studyDate') {
-        console.log(currValue)
-        if (defaultValue.startDate !== currValue.startDate) {
+        if (
+          currValue.startDate &&
+          defaultValue.startDate !== currValue.startDate
+        ) {
           queryString.startDate = currValue.startDate;
         }
-        if (defaultValue.endDate !== currValue.endDate) {
+        if (currValue.endDate && defaultValue.endDate !== currValue.endDate) {
           queryString.endDate = currValue.endDate;
         }
       } else if (currValue !== defaultValue) {

@@ -62,8 +62,8 @@ const DateRange = (props) => {
               className={`m-0 py-2 px-3 bg-primary-main border-0 rounded text-white text-base transition duration-300 hover:opacity-80`}
               onClick={() =>
                 onChange({
-                  startDate: start,
-                  endDate: end,
+                  startDate: start ? start.format('YYYYMMDD') : undefined,
+                  endDate: end ? end.format('YYYYMMDD') : undefined,
                   preset: true,
                 })
               }
