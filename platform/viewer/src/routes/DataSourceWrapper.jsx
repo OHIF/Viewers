@@ -93,10 +93,8 @@ function _getQueryFilterValues(query) {
   const queryFilterValues = {
     patientName: query.get('patientName'),
     // mrn: query.get('mrn'), patientId?
-    studyDate: {
-      startDate: query.get('startDate'),
-      endDate: query.get('endDate'),
-    },
+    startDate: query.get('startDate'),
+    endDate: query.get('endDate'),
     studyDescription: query.get('description'),
     //modalitiesInStudy: _tryParseJson(query.get('modality'), undefined),
     accessionNumber: query.get('accession'),

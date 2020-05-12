@@ -126,11 +126,13 @@ function mapParams(params) {
   ].join(',');
 
   const parameters = {
+    // Named
     PatientName: params.patientName,
     PatientID: params.patientId,
     AccessionNumber: params.accessionNumber,
     StudyDescription: params.studyDescription,
     ModalitiesInStudy: params.modalitiesInStudy,
+    // Other
     limit: params.limit || 101,
     offset: params.offset || 0,
     fuzzymatching: params.fuzzymatching === undefined ? false : true,
@@ -138,10 +140,20 @@ function mapParams(params) {
   };
 
   // build the StudyDate range parameter
-  if (params.studyDateFrom || params.studyDateTo) {
-    const dateFrom = _dateToString(new Date(params.studyDateFrom));
-    const dateTo = _dateToString(new Date(params.studyDateTo));
-    parameters.StudyDate = `${dateFrom}-${dateTo}`;
+  if (params.startDate && params.endDate) {
+    parameters.StudyDate = `${params.startDate}-${params.endDate}`;
+  } else if (params.startDate) {
+    const today = new Date();
+    const DD = String(today.getDate()).padStart(2, '0');
+    const MM = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    const YYYY = today.getFullYear();
+    const todayStr = `${YYYY}${MM}${DD}`;
+
+    parameters.StudyDate = `${params.startDate}-${todayStr}`;
+  } else if (params.endDate) {
+    const oldDateStr = `19700102`;
+
+    parameters.StudyDate = `${oldDateStr}-${params.endDate}`;
   }
 
   // Build the StudyInstanceUID parameter
@@ -161,24 +173,6 @@ function mapParams(params) {
   });
 
   return final;
-}
-
-/**
- * Creates a QIDO date string for a date range query
- * Assumes the year is positive, at most 4 digits long.
- *
- * @param date The Date object to be formatted
- * @returns {string} The formatted date string
- */
-function _dateToString(date) {
-  if (!date) return '';
-  let year = date.getFullYear().toString();
-  let month = (date.getMonth() + 1).toString();
-  let day = date.getDate().toString();
-  year = '0'.repeat(4 - year.length).concat(year);
-  month = '0'.repeat(2 - month.length).concat(month);
-  day = '0'.repeat(2 - day.length).concat(day);
-  return ''.concat(year, month, day);
 }
 
 export { mapParams, search, processResults };

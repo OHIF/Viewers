@@ -77,10 +77,12 @@ const StudyListTableRow = props => {
 
 StudyListTableRow.propTypes = {
   tableData: PropTypes.shape({
+    /** A table row represented by an array of "cell" objects */
     row: PropTypes.arrayOf(
       PropTypes.shape({
         key: PropTypes.string.isRequired,
-        content: PropTypes.node.isRequired,
+        /** Optional content to render in row's cell */
+        content: PropTypes.node,
         /** Title attribute to use for provided content */
         title: PropTypes.string,
         gridCol: PropTypes.number.isRequired,
