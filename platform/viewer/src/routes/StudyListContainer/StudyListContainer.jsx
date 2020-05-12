@@ -163,6 +163,7 @@ function StudyListContainer({ history, data: studies }) {
     });
   };
   const tableDataSource = studies
+    // TOOD: Move sort to DataSourceWrapper?
     .sort((s1, s2) => {
       const noSortApplied = sortBy === '' || !sortBy;
       const sortModifier = sortDirection === 'descending' ? 1 : -1;
@@ -176,7 +177,7 @@ function StudyListContainer({ history, data: studies }) {
       if (typeof s1Prop === 'string' && typeof s2Prop === 'string') {
         return s1Prop.localeCompare(s2Prop) * sortModifier;
       } else if (typeof s1Prop === 'number' && typeof s2Prop === 'number') {
-        return (s1Prop > s2Prop) * sortModifier;
+        return (s1Prop > s2Prop ? 1 : -1) * sortModifier;
       } else if (!s1Prop && s2Prop) {
         return -1 * sortModifier;
       } else if (!s2Prop && s1Prop) {
@@ -189,14 +190,14 @@ function StudyListContainer({ history, data: studies }) {
       const rowKey = key + 1;
       const isExpanded = expandedRows.some(k => k === rowKey);
       const {
-        accessionNumber,
+        accession,
         modalities,
         instances,
-        studyDescription,
+        description,
         mrn,
         patientName,
-        studyDate,
-        studyTime,
+        date,
+        time,
         // ??
         // TODO: won't have until expanded
         series = [],
@@ -239,11 +240,11 @@ function StudyListContainer({ history, data: studies }) {
             content: (
               <div>
                 <span className="mr-4">
-                  {moment(studyDate).format('MMM-DD-YYYY')}
+                  {moment(date).format('MMM-DD-YYYY')}
                 </span>
-                {studyTime && (
+                {time && (
                   <span>
-                    {moment(studyTime, 'HHmmss.SSS').format('hh:mm A')}
+                    {moment(time, 'HHmmss.SSS').format('hh:mm A')}
                   </span>
                 )}
               </div>
@@ -253,8 +254,8 @@ function StudyListContainer({ history, data: studies }) {
           },
           {
             key: 'description',
-            content: studyDescription,
-            title: studyDescription,
+            content: description,
+            title: description,
             gridCol: 4,
           },
           {
@@ -265,8 +266,8 @@ function StudyListContainer({ history, data: studies }) {
           },
           {
             key: 'accession',
-            content: accessionNumber,
-            title: accessionNumber,
+            content: accession,
+            title: accession,
             gridCol: 4,
           },
           {
@@ -283,7 +284,7 @@ function StudyListContainer({ history, data: studies }) {
                 {instances}
               </>
             ),
-            title: instances,
+            title: (instances || 0).toString(),
             gridCol: 4,
           },
         ],
@@ -442,7 +443,7 @@ function _getQueryFilterValues(query) {
       ? query.get('modalities').split(',')
       : [],
     accession: query.get('accession'),
-    sortBy: query.get('soryBy'),
+    sortBy: query.get('sortBy'),
     sortDirection: query.get('sortDirection'),
     pageNumber: _tryParseInt(query.get('pageNumber'), undefined),
     resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
