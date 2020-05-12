@@ -33,7 +33,7 @@
     "@ohif/i18n": "^0.50.0",
     "@ohif/ui": "^0.50.0",
     "cornerstone-core": "^2.2.8",
-    "cornerstone-tools": "4.12.5",
+    "cornerstone-tools": "4.15.1",
     "cornerstone-wado-image-loader": "^3.1.0",
     "dcmjs": "^0.12.2",
     "dicom-parser": "^1.8.3",
@@ -55,7 +55,7 @@
   "devDependencies": {
     "@ohif/core": "^2.9.4",
     "@ohif/ui": "^1.4.4",
-    "cornerstone-tools": "4.12.5",
+    "cornerstone-tools": "4.15.1",
     "cornerstone-wado-image-loader": "^3.1.0",
     "dicom-parser": "^1.8.3",
     "gh-pages": "^2.0.1",
