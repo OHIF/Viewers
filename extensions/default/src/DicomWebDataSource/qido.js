@@ -47,6 +47,7 @@ function processResults(qidoStudies) {
     studies.push({
       studyInstanceUid: getString(qidoStudy['0020000D']),
       studyDate: getString(qidoStudy['00080020']),
+      // HHmmss.SSS (24-hour, minutes, seconds, fractional seconds)
       studyTime: getString(qidoStudy['00080030']),
       accessionNumber: getString(qidoStudy['00080050']),
       // referringPhysicianName: getString(qidoStudy['00080090']),
