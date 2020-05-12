@@ -7,8 +7,6 @@ class DisplaySetManager {
     this.extensionManager = extensionManager;
     this.SOPClassHandlerIds = SOPClassHandlerIds;
 
-    debugger;
-
     const {
       displaySetInstanceUids,
       setDisplaySetInstanceUids,

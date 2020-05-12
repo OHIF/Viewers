@@ -14,7 +14,7 @@ export default class RetrieveMetadataLoader {
    * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
    */
   constructor(client, studyInstanceUID, filters = {}) {
-    this.client = dicomwWebClient;
+    this.client = client;
     this.studyInstanceUID = studyInstanceUID;
     this.filters = filters;
   }
