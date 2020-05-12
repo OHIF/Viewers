@@ -39,7 +39,7 @@ const StudyListTableRow = props => {
 
                     return (
                       <td
-                        key={name}
+                        key={index}
                         className={classnames(
                           'px-4 py-2 text-base truncate',
                           { 'border-b border-secondary-light': !isExpanded },
