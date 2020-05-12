@@ -6,7 +6,7 @@ import {
   UINotificationService,
   UIModalService,
   UIDialogService,
-  // MeasurementService,
+  MeasurementService,
   // utils,
   // redux as reduxOHIF,
 } from '@ohif/core';
@@ -44,7 +44,10 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     UINotificationService,
     UIModalService,
     UIDialogService,
+    MeasurementService,
   ]);
+
+  debugger;
 
   /**
    * Example: [ext1, ext2, ext3]

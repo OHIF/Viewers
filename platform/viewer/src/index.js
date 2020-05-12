@@ -21,11 +21,12 @@ import ReactDOM from 'react-dom';
  * the defaultExtensions property.
  */
 import OHIFDefaultExtension from '@ohif/extension-default';
+import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 
 /** Combine our appConfiguration and "baked-in" extensions */
 const appProps = {
   config: window ? window.config : {},
-  defaultExtensions: [OHIFDefaultExtension],
+  defaultExtensions: [OHIFDefaultExtension, OHIFCornerstoneExtension],
 };
 
 /** Create App */

@@ -100,6 +100,8 @@ export default class ExtensionManager {
           module: extensionModule,
         });
 
+        // TODO -> deal with command modules.
+
         extensionModule.forEach(element => {
           this.modulesMap[
             `${extensionId}.${moduleType}.${element.name}`
