@@ -13,7 +13,6 @@ import {
   displaySetManager,
 } from '@ohif/core';
 
-import { mapParams, search as qidoSearch, processResults } from './qido.js';
 import getImageId from './utils/getImageId';
 import * as dcmjs from 'dcmjs';
 import { retrieveStudyMetadata } from './retrieveStudyMetadata.js';
