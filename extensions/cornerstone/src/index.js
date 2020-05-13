@@ -23,7 +23,7 @@ export default {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
-  id: 'cornerstone',
+  id: 'org.ohif.cornerstone',
 
   /**
    *
@@ -39,10 +39,14 @@ export default {
       const onNewImageHandler = jumpData => {
         commandsManager.runCommand('jumpToImage', jumpData);
       };
-      return <OHIFCornerstoneViewport {...props} onNewImage={onNewImageHandler} />;
+      return (
+        <OHIFCornerstoneViewport {...props} onNewImage={onNewImageHandler} />
+      );
     };
 
-    return ExtendedOHIFCornerstoneViewport;
+    return [
+      { name: 'cornerstone', component: ExtendedOHIFCornerstoneViewport },
+    ];
   },
   getToolbarModule() {
     return toolbarModule;

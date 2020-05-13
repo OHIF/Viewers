@@ -12,12 +12,25 @@ export default function mode({ modeConfiguration }) {
     routes: [
       {
         path: 'viewer',
-        preInit: ({ toolbarManager }) => {
-          toolbarManager &&
-            toolbarManager.setDefaultLoadOut([
-              [], // Primary
-              [], // Secondary
-            ]);
+        init: ({ toolbarManager }) => {
+          toolbarManager.addButtons([
+            {
+              id: 'StackScroll', // If id not given will use default in button definition.
+              namespace: 'org.ohif.cornerstone.toolbarModule.StackScroll',
+            },
+            {
+              id: 'Zoom',
+              namespace: 'org.ohif.cornerstone.toolbarModule.Zoom',
+            },
+          ]);
+
+          // Could import layout selector here from org.ohif.default (when it exists!)
+          toolbarManager.setToolBarLayout([
+            // Primary
+            ['StackScroll', { label: 'More', subMenu: ['Zoom'] }],
+            // Secondary
+            ['StackScroll'],
+          ]);
         },
         layoutTemplate: ({ routeProps }) => {
           return {

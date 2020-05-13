@@ -47,8 +47,6 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     MeasurementService,
   ]);
 
-  debugger;
-
   /**
    * Example: [ext1, ext2, ext3]
    * Example2: [[ext1, config], ext2, [ext3, config]]

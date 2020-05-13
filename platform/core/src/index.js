@@ -20,6 +20,7 @@ import ui from './ui';
 import user from './user.js';
 import dicomMetadataStore from './dicomMetadataStore';
 import displaySetManager from './displaySetManager';
+import ToolBarManager from './ToolBarManager';
 import utils, { hotkeys } from './utils/';
 
 import {
@@ -68,6 +69,7 @@ const OHIF = {
   IWebApiDataSource,
   dicomMetadataStore,
   displaySetManager,
+  ToolBarManager,
 };
 
 export {
@@ -105,6 +107,7 @@ export {
   IWebApiDataSource,
   dicomMetadataStore,
   displaySetManager,
+  ToolBarManager,
 };
 
 export { OHIF };
