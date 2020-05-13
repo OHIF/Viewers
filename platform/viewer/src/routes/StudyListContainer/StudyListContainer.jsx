@@ -34,6 +34,47 @@ function StudyListContainer({ history, data: studies, dataSource }) {
   );
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
+
+  const sortedStudies = studies
+    // TOOD: Move sort to DataSourceWrapper?
+    // TODO: MOTIVATION, this is triggered on every render, even if list/sort does not change
+    .sort((s1, s2) => {
+      const noSortApplied = sortBy === '' || !sortBy;
+      const sortModifier = sortDirection === 'descending' ? 1 : -1;
+      if (noSortApplied) {
+        return 0;
+      }
+
+      const s1Prop = s1[sortBy];
+      const s2Prop = s2[sortBy];
+
+      if (typeof s1Prop === 'string' && typeof s2Prop === 'string') {
+        return s1Prop.localeCompare(s2Prop) * sortModifier;
+      } else if (typeof s1Prop === 'number' && typeof s2Prop === 'number') {
+        return (s1Prop > s2Prop ? 1 : -1) * sortModifier;
+      } else if (!s1Prop && s2Prop) {
+        return -1 * sortModifier;
+      } else if (!s2Prop && s1Prop) {
+        return 1 * sortModifier;
+      } else if (sortBy === 'studyDate') {
+        // TODO: Delimiters are non-standard. Should we support them?
+        const s1Date = moment(s1.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
+        const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
+
+        if (s1Date.isValid() && s2Date.isValid()) {
+          return (
+            (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) *
+            sortModifier
+          );
+        } else if (s1Date.isValid()) {
+          return sortModifier;
+        } else if (s2Date.isValid()) {
+          return -1 * sortModifier;
+        }
+      }
+
+      return 0;
+    });
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
   const [seriesInStudies, setSeriesInStudies] = useState({});
@@ -144,47 +185,6 @@ function StudyListContainer({ history, data: studies, dataSource }) {
       return filterValues[name] !== defaultFilterValues[name];
     });
   };
-  const tableDataSource = studies
-    // TOOD: Move sort to DataSourceWrapper?
-    // TODO: MOTIVATION, this is triggered on every render, even if list/sort does not change
-    .sort((s1, s2) => {
-      const noSortApplied = sortBy === '' || !sortBy;
-      const sortModifier = sortDirection === 'descending' ? 1 : -1;
-      if (noSortApplied) {
-        return 0;
-      }
-
-      const s1Prop = s1[sortBy];
-      const s2Prop = s2[sortBy];
-
-      if (typeof s1Prop === 'string' && typeof s2Prop === 'string') {
-        return s1Prop.localeCompare(s2Prop) * sortModifier;
-      } else if (typeof s1Prop === 'number' && typeof s2Prop === 'number') {
-        return (s1Prop > s2Prop ? 1 : -1) * sortModifier;
-      } else if (!s1Prop && s2Prop) {
-        return -1 * sortModifier;
-      } else if (!s2Prop && s1Prop) {
-        return 1 * sortModifier;
-      } else if (sortBy === 'studyDate') {
-        // TODO: Delimiters are non-standard. Should we support them?
-        const s1Date = moment(s1.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
-        const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
-
-        if (s1Date.isValid() && s2Date.isValid()) {
-          return (
-            (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) *
-            sortModifier
-          );
-        } else if (s1Date.isValid()) {
-          return sortModifier;
-        } else if (s2Date.isValid()) {
-          return -1 * sortModifier;
-        }
-      }
-
-      return 0;
-    })
-    .map((study, key) => {
       const rowKey = key + 1;
       const isExpanded = expandedRows.some(k => k === rowKey);
       const {
@@ -225,6 +225,7 @@ function StudyListContainer({ history, data: studies, dataSource }) {
                     moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
                     moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(
                       'MMM-DD-YYYY'
+  const tableDataSource = sortedStudies.map((study, key) => {
                     )}
                 </span>
                 {time && (
