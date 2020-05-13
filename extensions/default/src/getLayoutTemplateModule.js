@@ -18,7 +18,7 @@ export default function() {
   ];
 }
 
-const Header = () => {
+const Header = ({ tools, moreTools }) => {
   const [activeTool, setActiveTool] = useState('Zoom');
   const dropdownContent = [
     {
@@ -30,6 +30,7 @@ const Header = () => {
     { name: 'Bone', value: '2500 / 480' },
     { name: 'Brain', value: '80 / 40' },
   ];
+  /*
   const tools = [
     {
       id: 'Zoom',
@@ -90,6 +91,7 @@ const Header = () => {
       onClick: () => setActiveTool('Layout'),
     },
   ];
+  */
   return (
     <NavBar className="justify-between border-b-4 border-black">
       <div className="flex flex-1 justify-between">
@@ -106,7 +108,11 @@ const Header = () => {
           </div>
         </div>
         <div className="flex items-center">
-          <Toolbar tools={tools} activeTool={activeTool} moreTools={tools} />
+          <Toolbar
+            tools={tools}
+            activeTool={activeTool}
+            moreTools={moreTools}
+          />
         </div>
         <div className="flex items-center">
           <span className="mr-3 text-common-light text-lg">
@@ -128,45 +134,45 @@ const Header = () => {
   );
 };
 
-const ViewportToolbar = () => {
-  const tools = [
-    {
-      id: 'Annotate',
-      label: 'Annotate',
-      icon: 'tool-annotate',
-      type: null,
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Annotate' },
-      onClick: () => console.log('Activate Annotate'),
-    },
-    {
-      id: 'Bidirectional',
-      label: 'Bidirectional',
-      icon: 'tool-bidirectional',
-      type: null,
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Bidirectional' },
-      onClick: () => console.log('Activate Bidirectional'),
-    },
-    {
-      id: 'Elipse',
-      label: 'Elipse',
-      icon: 'tool-elipse',
-      type: null,
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Elipse' },
-      onClick: () => console.log('Activate Elipse'),
-    },
-    {
-      id: 'Length',
-      label: 'Length',
-      icon: 'tool-length',
-      type: null,
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Length' },
-      onClick: () => console.log('Activate Length'),
-    },
-  ];
+const ViewportToolbar = ({ tools }) => {
+  // const tools = [
+  //   {
+  //     id: 'Annotate',
+  //     label: 'Annotate',
+  //     icon: 'tool-annotate',
+  //     type: null,
+  //     commandName: 'setToolActive',
+  //     commandOptions: { toolName: 'Annotate' },
+  //     onClick: () => console.log('Activate Annotate'),
+  //   },
+  //   {
+  //     id: 'Bidirectional',
+  //     label: 'Bidirectional',
+  //     icon: 'tool-bidirectional',
+  //     type: null,
+  //     commandName: 'setToolActive',
+  //     commandOptions: { toolName: 'Bidirectional' },
+  //     onClick: () => console.log('Activate Bidirectional'),
+  //   },
+  //   {
+  //     id: 'Elipse',
+  //     label: 'Elipse',
+  //     icon: 'tool-elipse',
+  //     type: null,
+  //     commandName: 'setToolActive',
+  //     commandOptions: { toolName: 'Elipse' },
+  //     onClick: () => console.log('Activate Elipse'),
+  //   },
+  //   {
+  //     id: 'Length',
+  //     label: 'Length',
+  //     icon: 'tool-length',
+  //     type: null,
+  //     commandName: 'setToolActive',
+  //     commandOptions: { toolName: 'Length' },
+  //     onClick: () => console.log('Activate Length'),
+  //   },
+  // ];
   return <Toolbar type="secondary" tools={tools} />;
 };
 
@@ -197,9 +203,14 @@ function viewerLayout({
   console.warn(displaySetInstanceUids);
   console.warn(toolBarLayout);
 
+  const [primaryToolBarLayout, secondaryToolBarLayout] = toolBarLayout;
+
   return (
     <div>
-      <Header />
+      <Header
+        tools={primaryToolBarLayout.tools}
+        moreTools={primaryToolBarLayout.moreTools}
+      />
       <div
         className="flex flex-row flex-no-wrap flex-1 items-stretch overflow-hidden w-full"
         style={{ height: 'calc(100vh - 57px' }}
@@ -211,7 +222,7 @@ function viewerLayout({
         />
         <div className="flex flex-col flex-1 h-full pb-2">
           <div className="flex flex-2 w-100 border-b border-transparent h-12">
-            <ViewportToolbar />
+            <ViewportToolbar tools={secondaryToolBarLayout.tools} />
           </div>
           <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center">
             {/*<ViewportGrid
@@ -287,3 +298,10 @@ function viewerLayout({
     </div>
   );
 }
+
+viewerLayout.defaultProps = {
+  toolBarLayout: [
+    { tools: [], moreTools: [] },
+    { tools: [], moreTools: [] },
+  ],
+};

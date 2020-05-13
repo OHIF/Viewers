@@ -47,7 +47,7 @@ const definitions = [
   {
     id: 'Zoom',
     label: 'Zoom',
-    icon: 'search-plus',
+    icon: 'tool-zoom',
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',

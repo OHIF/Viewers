@@ -2,7 +2,7 @@ export default class toolBarManager {
   constructor(extensionManager, setToolBarLayout) {
     this.buttons = {};
     this.extensionManager = extensionManager;
-    this.setToolBarLayout = setToolBarLayout;
+    this.viewModelContextSetToolBarLayout = setToolBarLayout;
   }
 
   addButtons(buttons) {
@@ -22,34 +22,34 @@ export default class toolBarManager {
   setToolBarLayout(layouts) {
     const toolBarLayout = [];
 
+    debugger;
+    console.log('setToolBarLayout');
+
     layouts.forEach(layout => {
-      const toolBarDefinitions = [];
+      const toolBarDefinitions = { tools: [], moreTools: [] };
 
-      layout.forEach(element => {
-        if (typeof element === 'object') {
-          // process submenu.
+      const { tools, moreTools } = layout;
 
-          const subMenuDefinition = { label: element.label, subMenu: [] };
-
-          element.subMenu.forEach(subMenuElement => {
-            const button = this.buttons[subMenuElement];
-
-            subMenuDefinition.subMenu.push(button);
-          });
-
-          toolBarDefinitions.push(subMenuDefinition);
-        } else {
+      tools &&
+        tools.forEach(element => {
           const button = this.buttons[element];
 
-          toolBarDefinitions.push(button);
-        }
-      });
+          toolBarDefinitions.tools.push(button);
+        });
+
+      moreTools &&
+        moreTools.forEach(element => {
+          const button = this.buttons[element];
+
+          toolBarDefinitions.moreTools.push(button);
+        });
 
       toolBarLayout.push(toolBarDefinitions);
     });
 
+    console.log(`TOOLBAR LAYOUT`);
     console.log(toolBarLayout);
 
-    setToolBarLayout(toolBarLayout);
+    this.viewModelContextSetToolBarLayout(toolBarLayout);
   }
 }
