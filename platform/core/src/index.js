@@ -18,6 +18,8 @@ import string from './string.js';
 import studies from './studies/';
 import ui from './ui';
 import user from './user.js';
+import dicomMetadataStore from './dicomMetadataStore';
+import displaySetManager from './displaySetManager';
 import utils, { hotkeys } from './utils/';
 
 import {
@@ -27,6 +29,8 @@ import {
   UINotificationService,
   UIViewportDialogService,
 } from './services';
+
+import IWebApiDataSource from './DataSources/IWebApiDataSource';
 
 const OHIF = {
   MODULE_TYPES,
@@ -60,6 +64,9 @@ const OHIF = {
   UINotificationService,
   UIViewportDialogService,
   MeasurementService,
+  IWebApiDataSource,
+  dicomMetadataStore,
+  displaySetManager,
 };
 
 export {
@@ -93,6 +100,9 @@ export {
   UINotificationService,
   UIViewportDialogService,
   MeasurementService,
+  IWebApiDataSource,
+  dicomMetadataStore,
+  displaySetManager,
 };
 
 export { OHIF };

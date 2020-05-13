@@ -22,7 +22,7 @@ import SidePanel from './SidePanel';
 import StudyBrowser from './StudyBrowser';
 import StudyListExpandedRow from './StudyListExpandedRow';
 import StudyListPagination from './StudyListPagination';
-import StudyListTable from './StudyListTable';
+import { StudyListTable, StudyListTableRow } from './StudyListTable';
 import Svg from './Svg';
 import StudyItem from './StudyItem';
 import StudyListFilter from './StudyListFilter';
@@ -72,6 +72,7 @@ export {
   StudyListFilter,
   StudyListPagination,
   StudyListTable,
+  StudyListTableRow,
   Svg,
   Table,
   TableBody,

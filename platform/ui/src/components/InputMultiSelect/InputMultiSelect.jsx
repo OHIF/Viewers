@@ -30,13 +30,13 @@ const InputMultiSelect = ({
         isSearchable={false}
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
-        onChange={(inputvalues, { action }) => {
+        onChange={(selectedOptions, action) => {
           switch (action) {
             case 'select-option':
             case 'remove-value':
             case 'deselect-option':
             case 'clear':
-              onChange(inputvalues);
+              onChange(selectedOptions);
               break;
             default:
               break;
@@ -61,24 +61,15 @@ InputMultiSelect.propTypes = {
   onLabelClick: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
+  /** Array of options to list as options */
   options: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.string,
       label: PropTypes.string,
     })
   ),
-  value: PropTypes.oneOfType([
-    PropTypes.arrayOf(
-      PropTypes.shape({
-        value: PropTypes.string,
-        label: PropTypes.string,
-      })
-    ),
-    PropTypes.shape({
-      value: PropTypes.string,
-      label: PropTypes.string,
-    }),
-  ]),
+  /** Array of string values that exist in our list of options */
+  value: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default InputMultiSelect;

@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import qs from 'query-string';
+//
+import filtersMeta from './filtersMeta.js';
+import { useDebounce, useQuery } from './../../hooks';
 
 import {
-  utils,
   Icon,
   StudyListExpandedRow,
   Button,
@@ -17,136 +21,202 @@ import {
   StudyListFilter,
 } from '@ohif/ui';
 
-function StudyListContainer() {
-  const defaultFilterValues = {
-    patientName: '',
-    mrn: '',
-    studyDate: {
-      startDate: null,
-      endDate: null,
-    },
-    description: '',
-    modality: undefined,
-    accession: '',
-    sortBy: '',
-    sortDirection: 'none',
-    page: 0,
-    resultsPerPage: 25,
-  };
-  const [filterValues, setFilterValues] = useState(defaultFilterValues);
-  const studies = utils.getMockedStudies(100);
-  const numOfStudies = studies.length;
+const seriesInStudiesMap = new Map();
+
+/**
+ * TODO:
+ * - debounce `setFilterValues` (150ms?)
+ */
+function StudyListContainer({ history, data: studies, dataSource }) {
+  // ~ Filters
+  const query = useQuery();
+  const queryFilterValues = _getQueryFilterValues(query);
+  const [filterValues, _setFilterValues] = useState(
+    Object.assign({}, defaultFilterValues, queryFilterValues)
+  );
+  const debouncedFilterValues = useDebounce(filterValues, 200);
+  const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
+
+  const sortedStudies = studies
+    // TOOD: Move sort to DataSourceWrapper?
+    // TODO: MOTIVATION, this is triggered on every render, even if list/sort does not change
+    .sort((s1, s2) => {
+      const noSortApplied = sortBy === '' || !sortBy;
+      const sortModifier = sortDirection === 'descending' ? 1 : -1;
+      if (noSortApplied) {
+        return 0;
+      }
+
+      const s1Prop = s1[sortBy];
+      const s2Prop = s2[sortBy];
+
+      if (typeof s1Prop === 'string' && typeof s2Prop === 'string') {
+        return s1Prop.localeCompare(s2Prop) * sortModifier;
+      } else if (typeof s1Prop === 'number' && typeof s2Prop === 'number') {
+        return (s1Prop > s2Prop ? 1 : -1) * sortModifier;
+      } else if (!s1Prop && s2Prop) {
+        return -1 * sortModifier;
+      } else if (!s2Prop && s1Prop) {
+        return 1 * sortModifier;
+      } else if (sortBy === 'studyDate') {
+        // TODO: Delimiters are non-standard. Should we support them?
+        const s1Date = moment(s1.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
+        const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
+
+        if (s1Date.isValid() && s2Date.isValid()) {
+          return (
+            (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) *
+            sortModifier
+          );
+        } else if (s1Date.isValid()) {
+          return sortModifier;
+        } else if (s2Date.isValid()) {
+          return -1 * sortModifier;
+        }
+      }
+
+      return 0;
+    });
+  // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
-  const filtersMeta = [
-    {
-      name: 'patientName',
-      displayName: 'Patient Name',
-      inputType: 'Text',
-      isSortable: true,
-      gridCol: 4,
-    },
-    {
-      name: 'mrn',
-      displayName: 'MRN',
-      inputType: 'Text',
-      isSortable: true,
-      gridCol: 2,
-    },
-    {
-      name: 'studyDate',
-      displayName: 'Study date',
-      inputType: 'DateRange',
-      isSortable: true,
-      gridCol: 5,
-    },
-    {
-      name: 'description',
-      displayName: 'Description',
-      inputType: 'Text',
-      isSortable: true,
-      gridCol: 4,
-    },
-    {
-      name: 'modality',
-      displayName: 'Modality',
-      inputType: 'MultiSelect',
-      inputProps: {
-        options: [
-          { value: 'SEG', label: 'SEG' },
-          { value: 'CT', label: 'CT' },
-          { value: 'MR', label: 'MR' },
-          { value: 'SR', label: 'SR' },
-        ],
-      },
-      isSortable: true,
-      gridCol: 3,
-    },
-    {
-      name: 'accession',
-      displayName: 'Accession',
-      inputType: 'Text',
-      isSortable: true,
-      gridCol: 4,
-    },
-    {
-      name: 'instances',
-      displayName: 'Instances',
-      inputType: 'None',
-      isSortable: true,
-      gridCol: 2,
-    },
-  ];
+  const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
+  const numOfStudies = studies.length;
+  const totalPages = Math.floor(numOfStudies / resultsPerPage);
+
+  const setFilterValues = val => {
+    if (filterValues.pageNumber === val.pageNumber) {
+      val.pageNumber = 1;
+    }
+    _setFilterValues(val);
+    setExpandedRows([]);
+  };
+
+  const onPageNumberChange = newPageNumber => {
+    if (newPageNumber > totalPages) {
+      return;
+    }
+    setFilterValues({ ...filterValues, pageNumber: newPageNumber });
+  };
+
+  const onResultsPerPageChange = newResultsPerPage => {
+    setFilterValues({
+      ...filterValues,
+      pageNumber: 1,
+      resultsPerPage: Number(newResultsPerPage),
+    });
+  };
+
+  // Set body style
+  useEffect(() => {
+    document.body.classList.add('bg-black');
+    return () => {
+      document.body.classList.remove('bg-black');
+    };
+  }, []);
+
+  // Sync URL query parameters with filters
+  useEffect(() => {
+    if (!debouncedFilterValues) {
+      return;
+    }
+    const queryString = {};
+    Object.keys(defaultFilterValues).forEach(key => {
+      const defaultValue = defaultFilterValues[key];
+      const currValue = debouncedFilterValues[key];
+
+      // TODO: nesting/recursion?
+      if (key === 'studyDate') {
+        if (
+          currValue.startDate &&
+          defaultValue.startDate !== currValue.startDate
+        ) {
+          queryString.startDate = currValue.startDate;
+        }
+        if (currValue.endDate && defaultValue.endDate !== currValue.endDate) {
+          queryString.endDate = currValue.endDate;
+        }
+      } else if (key === 'modalities' && currValue.length) {
+        queryString.modalities = currValue.join(',');
+      } else if (currValue !== defaultValue) {
+        queryString[key] = currValue;
+      }
+    });
+
+    history.push({
+      pathname: '/',
+      search: `?${qs.stringify(queryString, {
+        skipNull: true,
+        skipEmptyString: true,
+      })}`,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedFilterValues]);
+
+  // Query for series information
+  useEffect(() => {
+    const fetchSeries = async studyInstanceUid => {
+      try {
+        const result = await dataSource.query.series.search(studyInstanceUid);
+
+        seriesInStudiesMap.set(studyInstanceUid, result);
+        setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
+      } catch (ex) {
+        // TODO: UI Notification Service
+        console.warn(ex);
+      }
+    };
+
+    // TODO: WHY WOULD YOU USE AN INDEX OF 1?!
+    // Note: expanded rows index begins at 1
+    for (let z = 0; z < expandedRows.length; z++) {
+      const expandedRowIndex = expandedRows[z] - 1;
+      console.log(sortedStudies[expandedRowIndex]);
+      const studyInstanceUid = sortedStudies[expandedRowIndex].studyInstanceUid;
+      if (studiesWithSeriesData.includes(studyInstanceUid)) {
+        continue;
+      }
+
+      console.log(`fetching for ${expandedRowIndex}`)
+      fetchSeries(studyInstanceUid);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expandedRows, studies]);
+
   const isFiltering = (filterValues, defaultFilterValues) => {
     return Object.keys(defaultFilterValues).some(name => {
       return filterValues[name] !== defaultFilterValues[name];
     });
   };
-  const tableDataSource = studies.map((study, key) => {
+  const tableDataSource = sortedStudies.map((study, key) => {
     const rowKey = key + 1;
     const isExpanded = expandedRows.some(k => k === rowKey);
     const {
-      AccessionNumber,
-      Modalities,
-      Instances,
-      StudyDescription,
-      PatientId,
-      PatientName,
-      StudyDate,
-      series,
+      studyInstanceUid,
+      accession,
+      modalities,
+      instances,
+      description,
+      mrn,
+      patientName,
+      date,
+      time,
     } = study;
-    const seriesTableColumns = {
-      description: 'Description',
-      seriesNumber: 'Series',
-      modality: 'Modality',
-      Instances: 'Instances',
-    };
-    const seriesTableDataSource = series.map(seriesItem => {
-      const { SeriesNumber, Modality, instances } = seriesItem;
-      return {
-        description: 'Patient Protocol',
-        seriesNumber: SeriesNumber,
-        modality: Modality,
-        Instances: instances.length,
-      };
-    });
     return {
       row: [
         {
           key: 'patientName',
-          content: (
-            <>
-              <Icon
-                name={isExpanded ? 'chevron-down' : 'chevron-right'}
-                className="mr-4"
-              />
-              {PatientName}
-            </>
+          content: patientName ? (
+            patientName
+          ) : (
+            <span className="text-gray-700">(Empty)</span>
           ),
+          title: patientName,
           gridCol: 4,
         },
         {
           key: 'mrn',
-          content: PatientId,
+          content: mrn,
+          title: mrn,
           gridCol: 2,
         },
         {
@@ -154,26 +224,47 @@ function StudyListContainer() {
           content: (
             <div>
               <span className="mr-4">
-                {moment(StudyDate).format('MMM-DD-YYYY')}
+                {date &&
+                  moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
+                  moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(
+                    'MMM-DD-YYYY'
+                  )}
               </span>
-              <span>{moment(StudyDate).format('hh:mm A')}</span>
+              {time && (
+                <span>
+                  {time &&
+                    moment(time, [
+                      'HH',
+                      'HHmm',
+                      'HHmmss',
+                      'HHmmss.SSS',
+                    ]).isValid() &&
+                    moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(
+                      'hh:mm A'
+                    )}
+                </span>
+              )}
             </div>
           ),
+          title: 'time',
           gridCol: 5,
         },
         {
           key: 'description',
-          content: StudyDescription,
+          content: description,
+          title: description,
           gridCol: 4,
         },
         {
           key: 'modality',
-          content: Modalities,
+          content: modalities,
+          title: modalities,
           gridCol: 3,
         },
         {
           key: 'accession',
-          content: AccessionNumber,
+          content: accession,
+          title: accession,
           gridCol: 4,
         },
         {
@@ -187,45 +278,51 @@ function StudyListContainer() {
                   'text-secondary-light': !isExpanded,
                 })}
               />
-              {Instances}
+              {instances}
             </>
           ),
+          title: (instances || 0).toString(),
           gridCol: 4,
         },
       ],
       expandedContent: (
         <StudyListExpandedRow
-          seriesTableColumns={seriesTableColumns}
-          seriesTableDataSource={seriesTableDataSource}
+          seriesTableColumns={{
+            description: 'Description',
+            seriesNumber: 'Series',
+            modality: 'Modality',
+            instances: 'Instances',
+          }}
+          seriesTableDataSource={
+            seriesInStudiesMap.has(studyInstanceUid)
+              ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
+                  return {
+                    description: s.description || '(empty)',
+                    seriesNumber: s.seriesNumber || '',
+                    modality: s.modality || '',
+                    instances: s.numSeriesInstances || '',
+                  };
+                })
+              : []
+          }
         >
           <Button
             rounded="full"
-            variant="contained"
-            className="mr-4 font-bold"
-            endIcon={<Icon name="launch-arrow" style={{ color: '#21a7c6' }} />}
+            variant="outlined"
+            disabled={true}
+            endIcon={<Icon name="launch-info" />}
+            className="font-bold"
           >
-            <Link to="/viewer/123">Basic Viewer</Link>
-          </Button>
-          <Button
-            rounded="full"
-            variant="contained"
-            className="mr-4 font-bold"
-            endIcon={<Icon name="launch-arrow" style={{ color: '#21a7c6' }} />}
-          >
-            <Link to="/viewer/123">Segmentation</Link>
+            Comparison
           </Button>
           <Button
             rounded="full"
             variant="outlined"
             endIcon={<Icon name="launch-info" />}
-            className="font-bold"
+            className="font-bold ml-4"
           >
-            Module 3
+            View: Segmentation
           </Button>
-          <div className="ml-5 text-lg text-common-bright inline-flex items-center">
-            <Icon name="notificationwarning-diamond" className="mr-2 w-5 h-5" />
-            Feedback text lorem ipsum dolor sit amet
-          </div>
         </StudyListExpandedRow>
       ),
       onClickRow: () =>
@@ -235,22 +332,6 @@ function StudyListContainer() {
       isExpanded,
     };
   });
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(25);
-  const totalPages = Math.floor(numOfStudies / perPage);
-
-  const onChangePage = page => {
-    if (page > totalPages) {
-      return;
-    }
-    setCurrentPage(page);
-  };
-
-  const onChangePerPage = perPage => {
-    setPerPage(perPage);
-    setCurrentPage(1);
-  };
 
   const hasStudies = numOfStudies > 0;
 
@@ -287,7 +368,7 @@ function StudyListContainer() {
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}
         filterValues={filterValues}
-        setFilterValues={setFilterValues}
+        onChange={setFilterValues}
         clearFilters={() => setFilterValues(defaultFilterValues)}
         isFiltering={isFiltering(filterValues, defaultFilterValues)}
       />
@@ -295,17 +376,17 @@ function StudyListContainer() {
         <>
           <StudyListTable
             tableDataSource={tableDataSource.slice(
-              (currentPage - 1) * perPage,
-              (currentPage - 1) * perPage + perPage
+              (pageNumber - 1) * resultsPerPage,
+              (pageNumber - 1) * resultsPerPage + resultsPerPage
             )}
             numOfStudies={numOfStudies}
             filtersMeta={filtersMeta}
           />
           <StudyListPagination
-            onChangePage={onChangePage}
-            onChangePerPage={onChangePerPage}
-            currentPage={currentPage}
-            perPage={perPage}
+            onChangePage={onPageNumberChange}
+            onChangePerPage={onResultsPerPageChange}
+            currentPage={pageNumber}
+            perPage={resultsPerPage}
           />
         </>
       ) : (
@@ -315,6 +396,71 @@ function StudyListContainer() {
       )}
     </div>
   );
+}
+
+StudyListContainer.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
+  data: PropTypes.array.isRequired,
+  dataSource: PropTypes.shape({
+    query: PropTypes.object.isRequired,
+  }).isRequired,
+};
+
+const defaultFilterValues = {
+  patientName: '',
+  mrn: '',
+  studyDate: {
+    startDate: undefined,
+    endDate: undefined,
+  },
+  description: '',
+  modalities: [],
+  accession: '',
+  sortBy: '',
+  sortDirection: 'none',
+  pageNumber: 1,
+  resultsPerPage: 25,
+};
+
+function _getQueryFilterValues(query) {
+  const queryFilterValues = {
+    patientName: query.get('patientName'),
+    mrn: query.get('mrn'),
+    studyDate: {
+      startDate: query.get('startDate'),
+      endDate: query.get('endDate'),
+    },
+    description: query.get('description'),
+    modalities: query.get('modalities')
+      ? query.get('modalities').split(',')
+      : [],
+    accession: query.get('accession'),
+    sortBy: query.get('sortBy'),
+    sortDirection: query.get('sortDirection'),
+    pageNumber: _tryParseInt(query.get('pageNumber'), undefined),
+    resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
+  };
+
+  // Delete null/undefined keys
+  Object.keys(queryFilterValues).forEach(
+    key => queryFilterValues[key] == null && delete queryFilterValues[key]
+  );
+
+  return queryFilterValues;
+
+  function _tryParseInt(str, defaultValue) {
+    var retValue = defaultValue;
+    if (str !== null) {
+      if (str.length > 0) {
+        if (!isNaN(str)) {
+          retValue = parseInt(str);
+        }
+      }
+    }
+    return retValue;
+  }
 }
 
 export default StudyListContainer;

@@ -142,15 +142,7 @@ const StudyList = () => {
       row: [
         {
           key: 'patientName',
-          content: (
-            <>
-              <Icon
-                name={isExpanded ? 'chevron-down' : 'chevron-right'}
-                className="mr-4"
-              />
-              {PatientName}
-            </>
-          ),
+          content: PatientName,
           gridCol: 4,
         },
         {
@@ -272,7 +264,7 @@ const StudyList = () => {
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}
         filterValues={filterValues}
-        setFilterValues={setFilterValues}
+        onChange={setFilterValues}
         clearFilters={() => setFilterValues(defaultFilterValues)}
         isFiltering={isFiltering(filterValues, defaultFilterValues)}
       />

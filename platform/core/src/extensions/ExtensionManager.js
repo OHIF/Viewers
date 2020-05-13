@@ -11,9 +11,11 @@ export default class ExtensionManager {
     this._servicesManager = servicesManager;
     this._appConfig = appConfig;
 
+    this.modulesMap = {};
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
     });
+    this.dataSourceMap = {};
   }
 
   /**
@@ -22,18 +24,18 @@ export default class ExtensionManager {
    *
    * @param {Object[]} extensions - Array of extensions
    */
-  registerExtensions(extensions) {
+  registerExtensions = (extensions, dataSources) => {
     extensions.forEach(extension => {
       const hasConfiguration = Array.isArray(extension);
 
       if (hasConfiguration) {
         const [ohifExtension, configuration] = extension;
-        this.registerExtension(ohifExtension, configuration);
+        this.registerExtension(ohifExtension, dataSources, configuration);
       } else {
-        this.registerExtension(extension);
+        this.registerExtension(extension, dataSources);
       }
     });
-  }
+  };
 
   /**
    *
@@ -41,7 +43,7 @@ export default class ExtensionManager {
    * @param {Object} extension
    * @param {Object} configuration
    */
-  registerExtension(extension, configuration = {}) {
+  registerExtension = (extension, dataSources, configuration = {}) => {
     if (!extension) {
       log.warn(
         'Attempting to register a null/undefined extension. Exiting early.'
@@ -86,18 +88,38 @@ export default class ExtensionManager {
       );
 
       if (extensionModule) {
-        this._initSpecialModuleTypes(moduleType, extensionModule);
+        this._initSpecialModuleTypes(
+          extensionId,
+          moduleType,
+          extensionModule,
+          dataSources
+        );
 
         this.modules[moduleType].push({
           extensionId,
           module: extensionModule,
+        });
+
+        extensionModule.forEach(element => {
+          this.modulesMap[
+            `${extensionId}.${moduleType}.${element.name}`
+          ] = element;
         });
       }
     });
 
     // Track extension registration
     this.registeredExtensionIds.push(extensionId);
-  }
+  };
+
+  getModuleEntry = stringEntry => {
+    return this.modulesMap[stringEntry];
+  };
+
+  getDataSources = dataSourceName => {
+    // Note: this currently uses the data source name, which feels weird...
+    return this.dataSourceMap[dataSourceName];
+  };
 
   /**
    * @private
@@ -105,7 +127,7 @@ export default class ExtensionManager {
    * @param {Object} extension
    * @param {string} extensionId - Used for logging warnings
    */
-  _getExtensionModule(moduleType, extension, extensionId, configuration) {
+  _getExtensionModule = (moduleType, extension, extensionId, configuration) => {
     const getModuleFnName = 'get' + _capitalizeFirstCharacter(moduleType);
     const getModuleFn = extension[getModuleFnName];
 
@@ -132,10 +154,16 @@ export default class ExtensionManager {
       log.error(
         `Exception thrown while trying to call ${getModuleFnName} for the ${extensionId} extension`
       );
+      log.error(ex);
     }
-  }
+  };
 
-  _initSpecialModuleTypes(moduleType, extensionModule) {
+  _initSpecialModuleTypes = (
+    extensionId,
+    moduleType,
+    extensionModule,
+    dataSources
+  ) => {
     switch (moduleType) {
       case 'commandsModule': {
         const { definitions, defaultContext } = extensionModule;
@@ -146,17 +174,42 @@ export default class ExtensionManager {
         this._initCommandsModule(definitions, defaultContext);
         break;
       }
+      case 'dataSourcesModule': {
+        extensionModule.forEach(element => {
+          const namespace = `${extensionId}.${moduleType}.${element.name}`;
+
+          dataSources.forEach(dataSource => {
+            if (dataSource.namespace === namespace) {
+              const dataSourceInstance = element.createDataSource(
+                dataSource.configuration
+              );
+
+              if (this.dataSourceMap[dataSource.sourceName]) {
+                this.dataSourceMap[dataSource.sourceName].push(
+                  dataSourceInstance
+                );
+              } else {
+                this.dataSourceMap[dataSource.sourceName] = [
+                  dataSourceInstance,
+                ];
+              }
+            }
+          });
+        });
+
+        break;
+      }
       default:
       // code block
     }
-  }
+  };
 
   /**
    *
    * @private
    * @param {Object[]} commandDefinitions
    */
-  _initCommandsModule(commandDefinitions, defaultContext = 'VIEWER') {
+  _initCommandsModule = (commandDefinitions, defaultContext = 'VIEWER') => {
     if (!this._commandsManager.getContext(defaultContext)) {
       this._commandsManager.createContext(defaultContext);
     }
@@ -177,7 +230,7 @@ export default class ExtensionManager {
         commandDefinition
       );
     });
-  }
+  };
 }
 
 /**

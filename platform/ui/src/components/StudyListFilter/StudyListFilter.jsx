@@ -6,7 +6,7 @@ import { Button, Icon, Typography, InputGroup } from '@ohif/ui';
 const StudyListFilter = ({
   filtersMeta,
   filterValues,
-  setFilterValues,
+  onChange,
   clearFilters,
   isFiltering,
   numOfStudies,
@@ -14,7 +14,7 @@ const StudyListFilter = ({
   const { sortBy, sortDirection } = filterValues;
   const filterSorting = { sortBy, sortDirection };
   const setFilterSorting = sortingValues => {
-    setFilterValues({
+    onChange({
       ...filterValues,
       ...sortingValues,
     });
@@ -81,7 +81,7 @@ const StudyListFilter = ({
           <InputGroup
             inputMeta={filtersMeta}
             values={filterValues}
-            onValuesChange={setFilterValues}
+            onValuesChange={onChange}
             sorting={filterSorting}
             onSortingChange={setFilterSorting}
             isSortingEnable={isSortingEnable}
@@ -104,13 +104,18 @@ const StudyListFilter = ({
 StudyListFilter.propTypes = {
   filtersMeta: PropTypes.arrayOf(
     PropTypes.shape({
+      /** Identifier used to map a field to it's value in `filterValues` */
       name: PropTypes.string.isRequired,
+      /** Friendly label for filter field */
       displayName: PropTypes.string.isRequired,
+      /** One of the supported filter field input types */
       inputType: PropTypes.oneOf(['Text', 'MultiSelect', 'DateRange', 'None'])
         .isRequired,
       isSortable: PropTypes.bool.isRequired,
+      /** Size of filter field in a 12-grid system */
       gridCol: PropTypes.oneOf([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
         .isRequired,
+      /** Options for a "MultiSelect" inputType */
       option: PropTypes.arrayOf(
         PropTypes.shape({
           value: PropTypes.string,
@@ -121,7 +126,7 @@ StudyListFilter.propTypes = {
   ).isRequired,
   filterValues: PropTypes.object.isRequired,
   numOfStudies: PropTypes.number.isRequired,
-  setFilterValues: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
   clearFilters: PropTypes.func.isRequired,
   isFiltering: PropTypes.bool.isRequired,
 };
