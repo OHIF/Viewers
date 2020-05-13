@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
 //
+import filtersMeta from './filtersMeta.js';
 import { useDebounce, useQuery } from './../../hooks';
 
 import {
