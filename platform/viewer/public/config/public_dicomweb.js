@@ -11,6 +11,7 @@ window.config = {
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        supportsFuzzyMatching: true,
       },
     ],
   },
