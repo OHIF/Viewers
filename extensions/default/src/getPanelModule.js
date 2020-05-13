@@ -4,7 +4,19 @@ import {
   AnotherHelloWorldContext,
 } from './getContextModule';
 
+import { useViewModel, displaySetManager } from '@ohif/core';
+
 function helloWorldComponent({}) {
+  const viewModel = useViewModel();
+
+  console.log(viewModel);
+
+  viewModel.displaySetInstanceUids.forEach(uid => {
+    console.log(displaySetManager.getDisplaySetByUID(uid));
+  });
+
+  debugger;
+
   return (
     <HelloWorldContext.Consumer>
       {value => (

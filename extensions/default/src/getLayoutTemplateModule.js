@@ -6,6 +6,19 @@ import {
   AnotherHelloWorldContext,
 } from './getContextModule';
 
+// import {LayoutManager} from '@ohif/core';
+/*
+
+- Define layout for the viewer in mode configuration.
+- Pass in the viewport types that can populate the viewer.
+- Init layout based on the displaySets and the objects.
+-
+
+
+
+
+*/
+
 export default function() {
   return [
     // Layout Template Definition

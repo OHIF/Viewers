@@ -15,8 +15,6 @@ export default class toolBarManager {
 
       this.buttons[id] = buttonDefinition;
     });
-
-    console.log(this.buttons);
   }
 
   setToolBarLayout(layouts) {
@@ -43,9 +41,6 @@ export default class toolBarManager {
 
       toolBarLayout.push(toolBarDefinitions);
     });
-
-    console.log(`TOOLBAR LAYOUT`);
-    console.log(toolBarLayout);
 
     this.viewModelContextSetToolBarLayout(toolBarLayout);
   }

@@ -57,7 +57,7 @@ export default function mode({ modeConfiguration }) {
             // Primary
             {
               tools: ['Zoom', 'Levels', 'Pan', 'Capture', 'Layout'],
-              moreTools: ['Zoom', 'Levels', 'Pan', 'Capture', 'Layout'],
+              moreTools: ['Zoom'],
             },
             // Secondary
             {

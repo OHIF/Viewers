@@ -21,6 +21,7 @@ import user from './user.js';
 import dicomMetadataStore from './dicomMetadataStore';
 import displaySetManager from './displaySetManager';
 import ToolBarManager from './ToolBarManager';
+import { ViewModelProvider, useViewModel } from './ViewModelContext';
 import utils, { hotkeys } from './utils/';
 
 import {
@@ -69,6 +70,8 @@ const OHIF = {
   dicomMetadataStore,
   displaySetManager,
   ToolBarManager,
+  ViewModelProvider,
+  useViewModel,
 };
 
 export {
@@ -106,6 +109,8 @@ export {
   dicomMetadataStore,
   displaySetManager,
   ToolBarManager,
+  ViewModelProvider,
+  useViewModel,
 };
 
 export { OHIF };

@@ -1,6 +1,6 @@
 import React from 'react';
 import ModeRoute from './ModeRoute';
-import { ViewModelProvider } from './ViewModelContext';
+import { ViewModelProvider } from '@ohif/core';
 
 /*
   Routes uniquely define an entry point to:

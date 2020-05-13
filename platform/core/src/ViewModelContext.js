@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, useContext } from 'react';
+
+/// TODO MAKE THIS PRETTY DANNY
 
 const ViewModelContext = React.createContext({
   displaySetInstanceUids: [],
@@ -38,6 +40,8 @@ class ViewModelProvider extends Component {
   }
 }
 
+const useViewModel = () => useContext(ViewModelContext);
+
 export default ViewModelContext;
 
-export { ViewModelProvider };
+export { ViewModelProvider, useViewModel };
