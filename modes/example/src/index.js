@@ -24,12 +24,19 @@ export default function mode({ modeConfiguration }) {
             },
           ]);
 
+          debugger;
+
           // Could import layout selector here from org.ohif.default (when it exists!)
           toolBarManager.setToolBarLayout([
             // Primary
-            ['StackScroll', { label: 'More', subMenu: ['Zoom'] }],
+            {
+              tools: ['Zoom'],
+              moreTools: ['Zoom'],
+            },
             // Secondary
-            ['StackScroll'],
+            {
+              tools: ['Zoom'],
+            },
           ]);
         },
         layoutTemplate: ({ routeProps }) => {
