@@ -113,27 +113,27 @@ function StudyListContainer({ history, data: studies, dataSource }) {
   useEffect(() => {
     const fetchSeries = async studyInstanceUid => {
       try {
-        const expandedStudiesSeriesList = {};
+        const result = await dataSource.query.series.search(studyInstanceUid);
 
-        expandedStudiesSeriesList[
-          studyInstanceUid
-        ] = await dataSource.query.series.search(studyInstanceUid);
-
-        setSeriesInStudies(
-          Object.assign({}, seriesInStudies, expandedStudiesSeriesList)
-        );
+        seriesInStudiesMap.set(studyInstanceUid, result);
+        setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
       } catch (ex) {
         // TODO: UI Notification Service
         console.warn(ex);
       }
     };
 
+    // TODO: WHY WOULD YOU USE AN INDEX OF 1?!
+    // Note: expanded rows index begins at 1
     for (let z = 0; z < expandedRows.length; z++) {
-      const studyInstanceUid = studies[z].studyInstanceUid;
-      if (seriesInStudies[studyInstanceUid]) {
+      const expandedRowIndex = expandedRows[z] - 1;
+      console.log(sortedStudies[expandedRowIndex]);
+      const studyInstanceUid = sortedStudies[expandedRowIndex].studyInstanceUid;
+      if (studiesWithSeriesData.includes(studyInstanceUid)) {
         continue;
       }
 
+      console.log(`fetching for ${expandedRowIndex}`)
       fetchSeries(studyInstanceUid);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
