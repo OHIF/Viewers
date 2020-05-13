@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
-import propTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
@@ -24,7 +24,7 @@ import {
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function StudyListContainer({ history, data: studies }) {
+function StudyListContainer({ history, data: studies, dataSource }) {
   // ~ Filters
   const query = useQuery();
   const queryFilterValues = _getQueryFilterValues(query);
@@ -35,6 +35,7 @@ function StudyListContainer({ history, data: studies }) {
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
+  const [seriesInStudies, setSeriesInStudies] = useState({});
   const numOfStudies = studies.length;
   const totalPages = Math.floor(numOfStudies / resultsPerPage);
 
@@ -61,6 +62,7 @@ function StudyListContainer({ history, data: studies }) {
     };
   }, []);
 
+  // Sync URL query parameters with filters
   useEffect(() => {
     if (!debouncedFilterValues) {
       return;
@@ -97,6 +99,36 @@ function StudyListContainer({ history, data: studies }) {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedFilterValues]);
+
+  // Query for series information
+  useEffect(() => {
+    const fetchSeries = async studyInstanceUid => {
+      try {
+        const expandedStudiesSeriesList = {};
+
+        expandedStudiesSeriesList[
+          studyInstanceUid
+        ] = await dataSource.query.series.search(studyInstanceUid);
+
+        setSeriesInStudies(
+          Object.assign({}, seriesInStudies, expandedStudiesSeriesList)
+        );
+      } catch (ex) {
+        // TODO: UI Notification Service
+        console.warn(ex);
+      }
+    };
+
+    for (let z = 0; z < expandedRows.length; z++) {
+      const studyInstanceUid = studies[z].studyInstanceUid;
+      if (seriesInStudies[studyInstanceUid]) {
+        continue;
+      }
+
+      fetchSeries(studyInstanceUid);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expandedRows, studies]);
 
   const filtersMeta = [
     {
@@ -206,6 +238,7 @@ function StudyListContainer({ history, data: studies }) {
       const rowKey = key + 1;
       const isExpanded = expandedRows.some(k => k === rowKey);
       const {
+        studyInstanceUid,
         accession,
         modalities,
         instances,
@@ -214,25 +247,7 @@ function StudyListContainer({ history, data: studies }) {
         patientName,
         date,
         time,
-        // ??
-        // TODO: won't have until expanded
-        series = [],
       } = study;
-      const seriesTableColumns = {
-        description: 'Description',
-        seriesNumber: 'Series',
-        modality: 'Modality',
-        Instances: 'Instances',
-      };
-      const seriesTableDataSource = series.map(seriesItem => {
-        const { SeriesNumber, Modality, instances } = seriesItem;
-        return {
-          description: 'Patient Protocol',
-          seriesNumber: SeriesNumber,
-          modality: Modality,
-          Instances: instances.length,
-        };
-      });
       return {
         row: [
           {
@@ -322,8 +337,24 @@ function StudyListContainer({ history, data: studies }) {
         ],
         expandedContent: (
           <StudyListExpandedRow
-            seriesTableColumns={seriesTableColumns}
-            seriesTableDataSource={seriesTableDataSource}
+            seriesTableColumns={{
+              description: 'Description',
+              seriesNumber: 'Series',
+              modality: 'Modality',
+              instances: 'Instances',
+            }}
+            seriesTableDataSource={
+              seriesInStudies[studyInstanceUid]
+                ? seriesInStudies[studyInstanceUid].map(s => {
+                    return {
+                      description: s.description || '(empty)',
+                      seriesNumber: s.seriesNumber || '',
+                      modality: s.modality || '',
+                      instances: s.numSeriesInstances || '',
+                    };
+                  })
+                : []
+            }
           >
             <Button
               rounded="full"
@@ -436,14 +467,13 @@ function StudyListContainer({ history, data: studies }) {
 }
 
 StudyListContainer.propTypes = {
-  history: propTypes.shape({
-    push: propTypes.func,
-  }),
-  studies: propTypes.array,
-};
-
-StudyListContainer.defaultProps = {
-  studies: [],
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
+  data: PropTypes.array.isRequired,
+  dataSource: PropTypes.shape({
+    query: PropTypes.object.isRequired,
+  }).isRequired,
 };
 
 const defaultFilterValues = {
