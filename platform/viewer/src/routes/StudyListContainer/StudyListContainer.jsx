@@ -29,7 +29,7 @@ function StudyListContainer({ history, data: studies, dataSource }) {
   // ~ Filters
   const query = useQuery();
   const queryFilterValues = _getQueryFilterValues(query);
-  const [filterValues, setFilterValues] = useState(
+  const [filterValues, _setFilterValues] = useState(
     Object.assign({}, defaultFilterValues, queryFilterValues)
   );
   const debouncedFilterValues = useDebounce(filterValues, 200);
@@ -39,6 +39,14 @@ function StudyListContainer({ history, data: studies, dataSource }) {
   const [seriesInStudies, setSeriesInStudies] = useState({});
   const numOfStudies = studies.length;
   const totalPages = Math.floor(numOfStudies / resultsPerPage);
+
+  const setFilterValues = val => {
+    if (filterValues.pageNumber === val.pageNumber) {
+      val.pageNumber = 1;
+    }
+    _setFilterValues(val);
+    setExpandedRows([]);
+  };
 
   const onPageNumberChange = newPageNumber => {
     if (newPageNumber > totalPages) {
