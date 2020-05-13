@@ -22,9 +22,6 @@ export default class toolBarManager {
   setToolBarLayout(layouts) {
     const toolBarLayout = [];
 
-    debugger;
-    console.log('setToolBarLayout');
-
     layouts.forEach(layout => {
       const toolBarDefinitions = { tools: [], moreTools: [] };
 

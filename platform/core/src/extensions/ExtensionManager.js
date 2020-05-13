@@ -111,9 +111,6 @@ export default class ExtensionManager {
           case MODULE_TYPES.LAYOUT_TEMPLATE:
             // Default for most extension points,
             // Just adds each entry ready for consumption by mode.
-            if (!extensionModule.forEach) {
-              debugger;
-            }
 
             extensionModule.forEach(element => {
               this.modulesMap[
