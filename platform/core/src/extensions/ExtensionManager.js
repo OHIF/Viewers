@@ -16,6 +16,9 @@ export default class ExtensionManager {
       this.modules[moduleType] = [];
     });
     this.dataSourceMap = {};
+
+    console.log('modules map');
+    console.log(this.modulesMap);
   }
 
   /**
@@ -54,11 +57,9 @@ export default class ExtensionManager {
     let extensionId = extension.id;
 
     if (!extensionId) {
-      extensionId = Math.random()
-        .toString(36)
-        .substr(2, 5);
-
-      log.warn(`Extension ID not set. Using random string ID: ${extensionId}`);
+      // Note: Mode framework cannot function without IDs.
+      log.warn(extension);
+      throw new Error(`Extension ID not set`);
     }
 
     if (this.registeredExtensionIds.includes(extensionId)) {
@@ -88,24 +89,42 @@ export default class ExtensionManager {
       );
 
       if (extensionModule) {
-        this._initSpecialModuleTypes(
-          extensionId,
-          moduleType,
-          extensionModule,
-          dataSources
-        );
+        switch (moduleType) {
+          case MODULE_TYPES.COMMANDS:
+            this._initCommandsModule(extensionModule);
+            break;
+          case MODULE_TYPES.DATA_SOURCE:
+            this._initDataSourcesModule(
+              extensionModule,
+              extensionId,
+              dataSources
+            );
+            break;
+          case MODULE_TYPES.TOOLBAR:
+            this._initToolBarModule(extensionModule, extensionId);
+            break;
+
+          case MODULE_TYPES.PANEL:
+          case MODULE_TYPES.SOP_CLASS_HANDLER:
+          case MODULE_TYPES.VIEWPORT:
+          case MODULE_TYPES.CONTEXT:
+          case MODULE_TYPES.LAYOUT_TEMPLATE:
+            // Default for most extension points,
+            // Just adds each entry ready for consumption by mode.
+            if (!extensionModule.forEach) {
+              debugger;
+            }
+
+            extensionModule.forEach(element => {
+              this.modulesMap[
+                `${extensionId}.${moduleType}.${element.name}`
+              ] = element;
+            });
+        }
 
         this.modules[moduleType].push({
           extensionId,
           module: extensionModule,
-        });
-
-        // TODO -> deal with command modules.
-
-        extensionModule.forEach(element => {
-          this.modulesMap[
-            `${extensionId}.${moduleType}.${element.name}`
-          ] = element;
         });
       }
     });
@@ -121,6 +140,27 @@ export default class ExtensionManager {
   getDataSources = dataSourceName => {
     // Note: this currently uses the data source name, which feels weird...
     return this.dataSourceMap[dataSourceName];
+  };
+
+  _initToolBarModule = (extensionModule, extensionId) => {
+    let { definitions, defaultContext } = extensionModule;
+    if (!definitions || Object.keys(definitions).length === 0) {
+      log.warn('Commands Module contains no command definitions');
+      return;
+    }
+
+    defaultContext = defaultContext || 'VIEWER';
+
+    definitions.forEach(definition => {
+      console.log(`${extensionId}.${MODULE_TYPES.TOOLBAR}.${definition.id}`);
+
+      // TODO -> Deep copy instead of mutation? We only do this once, but would be better.
+      definition.context = definition.context || defaultContext;
+
+      this.modulesMap[
+        `${extensionId}.${MODULE_TYPES.TOOLBAR}.${definition.id}`
+      ] = definition;
+    });
   };
 
   /**
@@ -160,64 +200,52 @@ export default class ExtensionManager {
     }
   };
 
-  _initSpecialModuleTypes = (
-    extensionId,
-    moduleType,
-    extensionModule,
-    dataSources
-  ) => {
-    switch (moduleType) {
-      case 'commandsModule': {
-        const { definitions, defaultContext } = extensionModule;
-        if (!definitions || Object.keys(definitions).length === 0) {
-          log.warn('Commands Module contains no command definitions');
-          return;
+  _initDataSourcesModule(extensionModule, extensionId, dataSources) {
+    extensionModule.forEach(element => {
+      const namespace = `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`;
+
+      dataSources.forEach(dataSource => {
+        if (dataSource.namespace === namespace) {
+          const dataSourceInstance = element.createDataSource(
+            dataSource.configuration
+          );
+
+          if (this.dataSourceMap[dataSource.sourceName]) {
+            this.dataSourceMap[dataSource.sourceName].push(dataSourceInstance);
+          } else {
+            this.dataSourceMap[dataSource.sourceName] = [dataSourceInstance];
+          }
         }
-        this._initCommandsModule(definitions, defaultContext);
-        break;
-      }
-      case 'dataSourcesModule': {
-        extensionModule.forEach(element => {
-          const namespace = `${extensionId}.${moduleType}.${element.name}`;
+      });
+    });
 
-          dataSources.forEach(dataSource => {
-            if (dataSource.namespace === namespace) {
-              const dataSourceInstance = element.createDataSource(
-                dataSource.configuration
-              );
-
-              if (this.dataSourceMap[dataSource.sourceName]) {
-                this.dataSourceMap[dataSource.sourceName].push(
-                  dataSourceInstance
-                );
-              } else {
-                this.dataSourceMap[dataSource.sourceName] = [
-                  dataSourceInstance,
-                ];
-              }
-            }
-          });
-        });
-
-        break;
-      }
-      default:
-      // code block
-    }
-  };
+    extensionModule.forEach(element => {
+      this.modulesMap[
+        `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`
+      ] = element;
+    });
+  }
 
   /**
    *
    * @private
    * @param {Object[]} commandDefinitions
    */
-  _initCommandsModule = (commandDefinitions, defaultContext = 'VIEWER') => {
+  _initCommandsModule = extensionModule => {
+    let { definitions, defaultContext } = extensionModule;
+    if (!definitions || Object.keys(definitions).length === 0) {
+      log.warn('Commands Module contains no command definitions');
+      return;
+    }
+
+    defaultContext = defaultContext || 'VIEWER';
+
     if (!this._commandsManager.getContext(defaultContext)) {
       this._commandsManager.createContext(defaultContext);
     }
 
-    Object.keys(commandDefinitions).forEach(commandName => {
-      const commandDefinition = commandDefinitions[commandName];
+    Object.keys(definitions).forEach(commandName => {
+      const commandDefinition = definitions[commandName];
       const commandHasContextThatDoesNotExist =
         commandDefinition.context &&
         !this._commandsManager.getContext(commandDefinition.context);

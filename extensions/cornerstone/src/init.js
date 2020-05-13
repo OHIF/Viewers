@@ -35,8 +35,6 @@ cornerstone.metaData.addProvider(fallbackMetaDataProvider, -1);
 export default function init({ servicesManager, configuration }) {
   const { UIDialogService, MeasurementService } = servicesManager.services;
 
-  debugger;
-
   const callInputDialog = (data, event, callback) => {
     if (UIDialogService) {
       let dialogId = UIDialogService.create({

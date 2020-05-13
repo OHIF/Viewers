@@ -17,7 +17,7 @@ export default {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
-  id: 'cornerstone',
+  id: 'org.ohif.cornerstone',
 
   /**
    *
@@ -29,7 +29,7 @@ export default {
     init({ servicesManager, configuration });
   },
   getViewportModule() {
-    return OHIFCornerstoneViewport;
+    return [{ name: 'cornerstone', component: OHIFCornerstoneViewport }];
   },
   getToolbarModule() {
     return toolbarModule;
