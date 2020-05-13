@@ -35,15 +35,7 @@ const enums = {
 };
 
 const definitions = [
-  {
-    id: 'StackScroll',
-    label: 'Stack Scroll',
-    icon: 'bars',
-    //
-    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-    commandName: 'setToolActive',
-    commandOptions: { toolName: 'StackScroll' },
-  },
+  // UPDATED
   {
     id: 'Zoom',
     label: 'Zoom',
@@ -56,7 +48,7 @@ const definitions = [
   {
     id: 'Wwwc',
     label: 'Levels',
-    icon: 'level',
+    icon: 'tool-window-level',
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
@@ -65,30 +57,70 @@ const definitions = [
   {
     id: 'Pan',
     label: 'Pan',
-    icon: 'arrows',
+    icon: 'tool-move',
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
     commandOptions: { toolName: 'Pan' },
   },
   {
-    id: 'Length',
-    label: 'Length',
-    icon: 'measure-temp',
+    id: 'Capture',
+    label: 'Capture',
+    icon: 'tool-capture',
     //
-    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-    commandName: 'setToolActive',
-    commandOptions: { toolName: 'Length' },
+    type: TOOLBAR_BUTTON_TYPES.BUILT_IN,
+    options: {
+      behavior: TOOLBAR_BUTTON_BEHAVIORS.DOWNLOAD_SCREEN_SHOT,
+      togglable: true,
+    },
   },
   {
-    id: 'ArrowAnnotate',
+    id: 'Annotate',
     label: 'Annotate',
-    icon: 'measure-non-target',
+    icon: 'tool-annotate',
     //
     type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
     commandName: 'setToolActive',
     commandOptions: { toolName: 'ArrowAnnotate' },
   },
+  {
+    id: 'Bidirectional',
+    label: 'Bidirectional',
+    icon: 'tool-bidirectional',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'Bidirectional' },
+  },
+  {
+    id: 'Ellipse',
+    label: 'Ellipse',
+    icon: 'tool-elipse',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'EllipticalRoi' },
+  },
+  {
+    id: 'Length',
+    label: 'Length',
+    icon: 'tool-length',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'Length' },
+  },
+  // OLD
+  {
+    id: 'StackScroll',
+    label: 'Stack Scroll',
+    icon: 'bars',
+    //
+    type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'StackScroll' },
+  },
+
   {
     id: 'Angle',
     label: 'Angle',
@@ -149,15 +181,6 @@ const definitions = [
         commandOptions: { toolName: 'DragProbe' },
       },
       {
-        id: 'EllipticalRoi',
-        label: 'Ellipse',
-        icon: 'circle-o',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'EllipticalRoi' },
-      },
-      {
         id: 'RectangleRoi',
         label: 'Rectangle',
         icon: 'square-o',
@@ -207,15 +230,6 @@ const definitions = [
         commandName: 'clearAnnotations',
       },
       {
-        id: 'Bidirectional',
-        label: 'Bidirectional',
-        icon: 'measure-target',
-        //
-        type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-        commandName: 'setToolActive',
-        commandOptions: { toolName: 'Bidirectional' },
-      },
-      {
         id: 'Eraser',
         label: 'Eraser',
         icon: 'eraser',
@@ -223,17 +237,6 @@ const definitions = [
         type: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
         commandName: 'setToolActive',
         commandOptions: { toolName: 'Eraser' },
-      },
-      {
-        id: 'Download',
-        label: 'Download',
-        icon: 'create-screen-capture',
-        //
-        type: TOOLBAR_BUTTON_TYPES.BUILT_IN,
-        options: {
-          behavior: TOOLBAR_BUTTON_BEHAVIORS.DOWNLOAD_SCREEN_SHOT,
-          togglable: true,
-        },
       },
     ],
   },

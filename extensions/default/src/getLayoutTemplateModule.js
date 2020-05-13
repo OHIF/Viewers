@@ -30,6 +30,7 @@ const Header = ({ tools, moreTools }) => {
     { name: 'Bone', value: '2500 / 480' },
     { name: 'Brain', value: '80 / 40' },
   ];
+
   /*
   const tools = [
     {

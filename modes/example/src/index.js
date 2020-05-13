@@ -15,12 +15,40 @@ export default function mode({ modeConfiguration }) {
         init: ({ toolBarManager }) => {
           toolBarManager.addButtons([
             {
-              id: 'StackScroll', // If id not given will use default in button definition.
-              namespace: 'org.ohif.cornerstone.toolbarModule.StackScroll',
-            },
-            {
               id: 'Zoom',
               namespace: 'org.ohif.cornerstone.toolbarModule.Zoom',
+            },
+            {
+              id: 'Levels',
+              namespace: 'org.ohif.cornerstone.toolbarModule.Wwwc',
+            },
+            {
+              id: 'Pan',
+              namespace: 'org.ohif.cornerstone.toolbarModule.Pan',
+            },
+            {
+              id: 'Capture',
+              namespace: 'org.ohif.cornerstone.toolbarModule.Capture',
+            },
+            {
+              id: 'Layout',
+              namespace: 'org.ohif.default.toolbarModule.Layout',
+            },
+            {
+              id: 'Annotate',
+              namespace: 'org.ohif.cornerstone.toolbarModule.Annotate',
+            },
+            {
+              id: 'Bidirectional',
+              namespace: 'org.ohif.cornerstone.toolbarModule.Bidirectional',
+            },
+            {
+              id: 'Ellipse',
+              namespace: 'org.ohif.cornerstone.toolbarModule.Ellipse',
+            },
+            {
+              id: 'Length',
+              namespace: 'org.ohif.cornerstone.toolbarModule.Length',
             },
           ]);
 
@@ -30,12 +58,12 @@ export default function mode({ modeConfiguration }) {
           toolBarManager.setToolBarLayout([
             // Primary
             {
-              tools: ['Zoom'],
-              moreTools: ['Zoom'],
+              tools: ['Zoom', 'Levels', 'Pan', 'Capture', 'Layout'],
+              moreTools: ['Zoom', 'Levels', 'Pan', 'Capture', 'Layout'],
             },
             // Secondary
             {
-              tools: ['Zoom'],
+              tools: ['Annotate', 'Bidirectional', 'Ellipse', 'Length'],
             },
           ]);
         },

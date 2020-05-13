@@ -3,6 +3,7 @@ import getDataSourcesModule from './getDataSourcesModule.js';
 import getLayoutTemplateModule from './getLayoutTemplateModule.js';
 import getPanelModule from './getPanelModule.js';
 import getSopClassHandlerModule from './getSopClassHandlerModule.js';
+import getToolbarModule from './getToolbarModule.js';
 import id from './id';
 
 export default {
@@ -15,4 +16,5 @@ export default {
   getLayoutTemplateModule,
   getPanelModule,
   getSopClassHandlerModule,
+  getToolbarModule,
 };
