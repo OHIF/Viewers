@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useCallback } from 'react';
 import { displaySetManager, ToolBarManager } from '@ohif/core';
-import ViewModelContext from './ViewModelContext';
+import { useViewModel } from '@ohif/core';
 import Compose from './Compose';
 
 export default function ModeRoute({
@@ -9,7 +9,7 @@ export default function ModeRoute({
   dataSourceName,
   extensionManager,
 }) {
-  const { routes, sopClassHandlers, extensions, init } = mode;
+  const { routes, sopClassHandlers, extensions } = mode;
   const dataSources = extensionManager.getDataSources(dataSourceName);
 
   // Add toolbar state to the view model context?
@@ -18,7 +18,7 @@ export default function ModeRoute({
     setToolBarLayout,
     displaySetInstanceUids,
     setDisplaySetInstanceUids,
-  } = useContext(ViewModelContext);
+  } = useViewModel();
 
   // TODO: For now assume one unique datasource.
 
