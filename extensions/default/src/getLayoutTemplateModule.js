@@ -31,6 +31,8 @@ const Header = ({ tools, moreTools }) => {
     { name: 'Brain', value: '80 / 40' },
   ];
 
+  // TODO -> In ToolBarManager => Consume commandName and commandOptions and create onClick?
+
   /*
   const tools = [
     {

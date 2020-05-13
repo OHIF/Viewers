@@ -28,7 +28,6 @@ export default function ModeRoute({
   let toolBarManager;
 
   useEffect(() => {
-    debugger;
     toolBarManager = new ToolBarManager(extensionManager, setToolBarLayout);
     route.init({ toolBarManager });
   }, [mode, dataSourceName, location]);
