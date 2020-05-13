@@ -41,6 +41,7 @@ export {
   StudyListFilter,
   StudyListPagination,
   StudyListTable,
+  StudyListTableRow,
   Svg,
   Table,
   TableBody,

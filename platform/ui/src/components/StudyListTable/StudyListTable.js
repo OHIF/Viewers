@@ -5,19 +5,17 @@ import StudyListTableRow from './StudyListTableRow';
 
 const StudyListTable = ({ tableDataSource }) => {
   return (
-    <>
-      <div className="bg-black">
-        <div className="container m-auto relative">
-          <table className="w-full text-white">
-            <tbody>
-              {tableDataSource.map((tableData, i) => {
-                return <StudyListTableRow tableData={tableData} key={i} />;
-              })}
-            </tbody>
-          </table>
-        </div>
+    <div className="bg-black">
+      <div className="container m-auto relative">
+        <table className="w-full text-white">
+          <tbody>
+            {tableDataSource.map((tableData, i) => {
+              return <StudyListTableRow tableData={tableData} key={i} />;
+            })}
+          </tbody>
+        </table>
       </div>
-    </>
+    </div>
   );
 };
 
