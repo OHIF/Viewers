@@ -174,6 +174,7 @@ function viewerLayout({
   leftPanels,
   rightPanels,
   extensionManager,
+  toolBarLayout,
   displaySetInstanceUids,
 }) {
   const getPanelData = id => {
@@ -194,6 +195,7 @@ function viewerLayout({
   const rightPanelComponents = rightPanels.map(getPanelData);
 
   console.warn(displaySetInstanceUids);
+  console.warn(toolBarLayout);
 
   return (
     <div>

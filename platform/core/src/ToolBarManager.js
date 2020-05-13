@@ -1,8 +1,8 @@
 export default class toolBarManager {
-  constructor(extensionManager) {
-    this.toolBarLayout = [];
+  constructor(extensionManager, setToolBarLayout) {
     this.buttons = {};
     this.extensionManager = extensionManager;
+    this.setToolBarLayout = setToolBarLayout;
   }
 
   addButtons(buttons) {
@@ -48,8 +48,8 @@ export default class toolBarManager {
       toolBarLayout.push(toolBarDefinitions);
     });
 
-    this.toolBarLayout = toolBarLayout;
+    console.log(toolBarLayout);
 
-    console.log(this.toolBarLayout);
+    setToolBarLayout(toolBarLayout);
   }
 }

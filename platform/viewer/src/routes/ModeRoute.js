@@ -12,21 +12,28 @@ export default function ModeRoute({
   const { routes, sopClassHandlers, extensions, init } = mode;
   const dataSources = extensionManager.getDataSources(dataSourceName);
 
-  const toolbarManager = new ToolBarManager(extensionManager);
+  // Add toolbar state to the view model context?
+  const {
+    toolBarLayout,
+    setToolBarLayout,
+    displaySetInstanceUids,
+    setDisplaySetInstanceUids,
+  } = useContext(ViewModelContext);
 
   // TODO: For now assume one unique datasource.
 
   const dataSource = dataSources[0];
   const route = routes[0];
 
-  route.init({ toolbarManager });
+  let toolBarManager;
+
+  useEffect(() => {
+    debugger;
+    toolBarManager = new ToolBarManager(extensionManager, setToolBarLayout);
+    route.init({ toolBarManager });
+  }, [mode, dataSourceName, location]);
 
   console.log(dataSource);
-
-  // Add toolbar state to the view model context?
-  const { displaySetInstanceUids, setDisplaySetInstanceUids } = useContext(
-    ViewModelContext
-  );
 
   const createDisplaySets = useCallback(() => {
     // Add SOPClassHandlers to a new SOPClassManager.
@@ -82,6 +89,7 @@ export default function ModeRoute({
       <LayoutComponent
         extensionManager={extensionManager}
         displaySetInstanceUids={displaySetInstanceUids}
+        toolBarLayout={toolBarLayout}
         {...layoutTemplateData.props}
       />
     </CombinedContextProvider>
