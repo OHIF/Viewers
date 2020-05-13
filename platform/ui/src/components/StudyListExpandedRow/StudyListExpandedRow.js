@@ -15,7 +15,7 @@ const StudyListExpandedRow = ({
         <Table>
           <TableHead>
             <TableRow>
-              {Object.keys(seriesTableColumns).map((columnKey) => {
+              {Object.keys(seriesTableColumns).map(columnKey => {
                 return (
                   <TableCell key={columnKey}>
                     {seriesTableColumns[columnKey]}
@@ -28,9 +28,13 @@ const StudyListExpandedRow = ({
           <TableBody>
             {seriesTableDataSource.map((row, i) => (
               <TableRow key={i}>
-                {Object.keys(row).map((cellKey) => {
+                {Object.keys(row).map(cellKey => {
                   const content = row[cellKey];
-                  return <TableCell key={cellKey}>{content}</TableCell>;
+                  return (
+                    <TableCell key={cellKey} className="truncate">
+                      {content}
+                    </TableCell>
+                  );
                 })}
               </TableRow>
             ))}
