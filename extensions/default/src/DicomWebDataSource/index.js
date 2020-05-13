@@ -1,12 +1,17 @@
 import { api } from 'dicomweb-client';
-import { mapParams, search as qidoSearch, processResults } from './qido.js';
+import {
+  mapParams,
+  search as qidoSearch,
+  seriesInStudy,
+  processResults,
+  processSeriesResults,
+} from './qido.js';
 import { dicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 import * as dcmjs from 'dcmjs';
 import exampleInstances from './exampleInstances.js';
 //import { retrieveStudyMetadata } from './retrieveStudyMetadata.js';
 
 const { urlUtil } = utils;
-
 
 /**
  *
@@ -57,18 +62,13 @@ function createDicomWebApi(dicomWebConfig) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function(origParams) {
-          const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
-            mapParams(origParams) || {};
-
-          const results = await qidoSearch(
+        search: async function(studyInstanceUid) {
+          const results = await seriesInStudy(
             qidoDicomWebClient,
-            studyInstanceUid,
-            undefined,
-            mappedParams
+            studyInstanceUid
           );
 
-          return processResults(results);
+          return processSeriesResults(results);
         },
         // processResults: processResults.bind(),
       },

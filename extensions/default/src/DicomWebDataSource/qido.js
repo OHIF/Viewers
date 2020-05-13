@@ -64,6 +64,35 @@ function processResults(qidoStudies) {
 }
 
 /**
+ * Parses resulting data from a QIDO call into a set of Study MetaData
+ *
+ * @param {Array} qidoSeries - An array of study objects. Each object contains a keys for DICOM tags.
+ * @param {object} qidoSeries[0].qidoSeries - An object where each key is the DICOM Tag group+element
+ * @param {object} qidoSeries[0].qidoSeries[dicomTag] - Optional object that represents DICOM Tag
+ * @param {string} qidoSeries[0].qidoSeries[dicomTag].vr - Value Representation
+ * @param {string[]} qidoSeries[0].qidoSeries[dicomTag].Value - Optional string array representation of the DICOM Tag's value
+ * @returns {Array} An array of Study MetaData objects
+ */
+export function processSeriesResults(qidoSeries) {
+  const series = [];
+
+  if (qidoSeries && qidoSeries.length) {
+    qidoSeries.forEach(qidoSeries =>
+      series.push({
+        studyInstanceUid: getString(qidoSeries['0020000D']),
+        seriesInstanceUid: getString(qidoSeries['0020000E']),
+        modality: getString(qidoSeries['00080060']),
+        seriesNumber: getString(qidoSeries['00200011']),
+        numSeriesInstances: Number(getString(qidoSeries['00201209'])),
+        description: getString(qidoSeries['0008103E']),
+      })
+    );
+  }
+
+  return series;
+}
+
+/**
  *
  * @param {object} dicomWebClient - Client similar to what's provided by `dicomweb-client` library
  * @param {function} dicomWebClient.searchForStudies -
@@ -78,16 +107,27 @@ function search(
   seriesInstanceUid,
   queryParamaters
 ) {
-  // const requestFn = studyInstanceUid
-  //   ? dicomWebClient.searchForInstances
-  //   : dicomWebClient.searchForStudies;
-
-  // TODO: Current version does not apply query Params for `searchForInstances` call?
-  // Just sets `studyInstanceUid` in options...
+  // Studies
   return dicomWebClient.searchForStudies({
-    studyInstanceUid,
+    studyInstanceUid: undefined,
     queryParams: queryParamaters,
   });
+}
+
+/**
+ *
+ * @param {string} studyInstanceUID - ID of study to return a list of series for
+ * @returns {Promise} - Resolves SeriesMetadata[] in study
+ */
+export function seriesInStudy(dicomWebClient, studyInstanceUID) {
+  // Series Description
+  // Already included?
+  const commaSeparatedFields = ['0008103E'].join(',');
+  const queryParams = {
+    // includefield: commaSeparatedFields,
+  };
+
+  return dicomWebClient.searchForSeries({ studyInstanceUID, queryParams });
 }
 
 export default function searchStudies(server, filter) {
