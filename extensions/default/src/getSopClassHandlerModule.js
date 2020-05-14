@@ -24,7 +24,7 @@ const makeDisplaySet = instances => {
     FrameRate: instance.FrameTime,
     Modality: instance.Modality,
     isMultiFrame: isMultiFrame(instance),
-    mumImageFrames: instances.length,
+    numImageFrames: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
   });
 
