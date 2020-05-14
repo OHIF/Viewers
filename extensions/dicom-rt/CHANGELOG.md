@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.1.3...@ohif/extension-dicom-rt@0.1.4) (2020-05-14)
+
+
+### Bug Fixes
+
+* 🐛 Load default display set when no time metadata ([#1684](https://github.com/OHIF/Viewers/issues/1684)) ([f7b8b6a](https://github.com/OHIF/Viewers/commit/f7b8b6a41c4626084ef56b0fdf7363e914b143c4)), closes [#1683](https://github.com/OHIF/Viewers/issues/1683)
+
+
+
+
+
 ## [0.1.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.1.2...@ohif/extension-dicom-rt@0.1.3) (2020-05-12)
 
 
