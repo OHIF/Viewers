@@ -90,7 +90,7 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
 
     // find most recent and load it.
     let recentDateTime = 0;
-    let recentDisplaySet;
+    let recentDisplaySet = displaySets[0];
 
     displaySets.forEach(displaySet => {
       const dateTime = Number(
