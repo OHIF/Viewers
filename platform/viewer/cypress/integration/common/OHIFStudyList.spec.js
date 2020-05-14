@@ -22,7 +22,7 @@ describe('OHIF Study List', function() {
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('@searchResult').should($list => {
-        expect($list.length).to.be.eq(2);
+        expect($list.length).to.be.eq(3);
         expect($list).to.contain('Juno');
       });
     });
@@ -127,7 +127,7 @@ describe('OHIF Study List', function() {
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('@searchResult').should($list => {
-        expect($list.length).to.be.eq(2);
+        expect($list.length).to.be.eq(3);
         expect($list).to.contain('Juno');
       });
     });
@@ -137,7 +137,7 @@ describe('OHIF Study List', function() {
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('@searchResult').should($list => {
-        expect($list.length).to.be.eq(2);
+        expect($list.length).to.be.eq(6);
         expect($list).to.contain('ProstateX-0000');
       });
     });
