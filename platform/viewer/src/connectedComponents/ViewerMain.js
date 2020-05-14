@@ -150,6 +150,7 @@ class ViewerMain extends Component {
       <div className="ViewerMain">
         {this.state.displaySets.length && (
           <ConnectedViewportGrid
+            isStudyLoaded={this.props.isStudyLoaded}
             studies={this.props.studies}
             viewportData={viewportData}
             setViewportData={this.setViewportData}

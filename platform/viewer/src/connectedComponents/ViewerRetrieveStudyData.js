@@ -105,7 +105,7 @@ const _showUserMessage = (queryParamApplied, message, dialog = {}) => {
     return;
   }
 
-  const { show: showUserMessage = () => {} } = dialog;
+  const { show: showUserMessage = () => { } } = dialog;
   showUserMessage({
     message,
   });
@@ -269,7 +269,8 @@ function ViewerRetrieveStudyData({
     const promises = Array(concurrentRequestsAllowed)
       .fill(null)
       .map(loadNextSeries);
-    await Promise.all(promises);
+
+    return await Promise.all(promises);
   };
 
   const loadStudies = async () => {
