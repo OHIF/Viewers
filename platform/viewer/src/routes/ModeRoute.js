@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useCallback } from 'react';
 import { displaySetManager, ToolBarManager } from '@ohif/core';
 import { useViewModel } from '@ohif/core';
 import Compose from './Compose';
+import ViewportGrid from './../components/ViewportGrid.jsx';
 
 export default function ModeRoute({
   location,
@@ -85,10 +86,14 @@ export default function ModeRoute({
 
   return (
     <CombinedContextProvider>
+      {/* TODO: extensionManager is already provided to the extension module.
+       *  Use it from there instead of passing as a prop here.
+       */}
       <LayoutComponent
         extensionManager={extensionManager}
         displaySetInstanceUids={displaySetInstanceUids}
         toolBarLayout={toolBarLayout}
+        ViewportGrid={ViewportGrid}
         {...layoutTemplateData.props}
       />
     </CombinedContextProvider>
