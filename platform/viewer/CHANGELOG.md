@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.11.10](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.9...@ohif/viewer@3.11.10) (2020-05-13)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [3.11.9](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.8...@ohif/viewer@3.11.9) (2020-05-12)
+
+
+### Bug Fixes
+
+* 🐛 Fix seg color load ([#1724](https://github.com/OHIF/Viewers/issues/1724)) ([c4f84b1](https://github.com/OHIF/Viewers/commit/c4f84b1174d04ba84d37ed89b6d7ab541be28181))
+
+
+
+
+
 ## [3.11.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.7...@ohif/viewer@3.11.8) (2020-05-06)
 
 **Note:** Version bump only for package @ohif/viewer

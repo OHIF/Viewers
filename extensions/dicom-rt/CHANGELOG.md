@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.1.2...@ohif/extension-dicom-rt@0.1.3) (2020-05-12)
+
+
+### Bug Fixes
+
+* 🐛 Fix seg color load ([#1724](https://github.com/OHIF/Viewers/issues/1724)) ([c4f84b1](https://github.com/OHIF/Viewers/commit/c4f84b1174d04ba84d37ed89b6d7ab541be28181))
+
+
+
+
+
 ## [0.1.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.1.1...@ohif/extension-dicom-rt@0.1.2) (2020-05-04)
 
 
