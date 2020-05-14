@@ -13,16 +13,24 @@ const makeDisplaySet = instances => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
 
+  const modalities = new Set();
+  instances.forEach(i => {
+    modalities.add(i.Modality);
+  });
+
+  const modalitiesInDisplaySet = Array.from(modalities).join(', ');
+
   // set appropriate attributes to image set...
   imageSet.setAttributes({
     displaySetInstanceUid: imageSet.uid, // create a local alias for the imageSet UID
     SeriesDate: instance.SeriesDate,
     SeriesTime: instance.SeriesTime,
-    SeriesInstanceUid: instance.SeriesInstanceUID,
+    SeriesInstanceUID: instance.SeriesInstanceUID,
+    StudyInstanceUID: instance.StudyInstanceUID,
     SeriesNumber: instance.SeriesNumber,
-    SeriesDescription: instance.SeriesDescription,
     FrameRate: instance.FrameTime,
-    Modality: instance.Modality,
+    SeriesDescription: instance.SeriesDescription,
+    modalities: modalitiesInDisplaySet,
     isMultiFrame: isMultiFrame(instance),
     numImageFrames: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
@@ -109,8 +117,6 @@ function getDisplaySetsFromSeries(instances) {
       displaySet.setAttributes({
         sopClassUids,
         isClip: true,
-        seriesInstanceUid: instance.SeriesInstanceUID,
-        studyInstanceUid: instance.StudyInstanceUID,
         numImageFrames: instance.NumberOfFrames,
         instanceNumber: instance.InstanceNumber,
         acquisitionDatetime: instance.AcquisitionDateTime,
@@ -120,8 +126,6 @@ function getDisplaySetsFromSeries(instances) {
       displaySet = makeDisplaySet([instance]);
       displaySet.setAttributes({
         sopClassUids,
-        studyInstanceUid: instance.StudyInstanceUID,
-        seriesInstanceUid: instance.SeriesInstanceUID,
         instanceNumber: instance.InstanceNumber,
         acquisitionDatetime: instance.AcquisitionDateTime,
       });
