@@ -3,26 +3,40 @@ import { StudyBrowser } from '@ohif/ui';
 
 import { useViewModel, displaySetManager } from '@ohif/core';
 
-function displaySetsToStudyPanelInfo(displaySets) {
+function displaySetsToStudyPanelInfo(
+  displaySets,
+  viewportData = [],
+  seriesTracking = {}
+) {
   console.log(displaySets);
 
   const studies = {};
   displaySets.forEach(displaySet => {
-    // TODO
-    displaySet.componentType = 'thumbnailTracked';
-    displaySet.viewportIdentificator = 'A';
-    displaySet.isTracked = true;
-    displaySet.seriesNumber = displaySet.SeriesNumber;
-    displaySet.numInstances = displaySet.numImageFrames;
-    displaySet.description = displaySet.SeriesDescription;
+    const displaySetViewportData = viewportData.find(
+      a => a.displaySetInstanceUid === displaySet.displaySetInstanceUid
+    );
+
+    if (displaySetViewportData) {
+      displaySet.viewportIdentificator = displaySetViewportData.identifier;
+    }
+
+    const trackingInfo = seriesTracking[displaySet.SeriesInstanceUID];
+    if (trackingInfo) {
+      displaySet.viewportIdentificator = trackingInfo.isTracked;
+
+      displaySet.componentType = trackingInfo.isTracked
+        ? 'thumbnailTracked'
+        : 'thumbnail';
+    }
 
     if (!Object.keys(studies).includes(displaySet.StudyInstanceUID)) {
       studies[displaySet.StudyInstanceUID] = {
-        date: displaySet.StudyDate,
-        description: 'TEST',
-        modalities: 'TEST---TEST',
-        date: '01-Jan-1999',
+        date: displaySet.SeriesDate,
+        description: displaySet.SeriesDescription,
+        seriesNumber: displaySet.SeriesNumber,
+        modalities: displaySet.modalities,
         displaySets: [],
+        numInstances: 0,
       };
     }
 
@@ -92,6 +106,10 @@ function displaySetsToStudyPanelInfo(displaySets) {
 function StudyBrowserPanel({}) {
   const viewModel = useViewModel();
 
+  // TODO
+  const viewportData = []; //useViewportGrid();
+  const seriesTracking = {}; //useSeriesTracking();
+
   console.log(viewModel);
 
   const displaySets = viewModel.displaySetInstanceUids.map(
@@ -101,7 +119,11 @@ function StudyBrowserPanel({}) {
   let tabs;
 
   if (displaySets.length) {
-    tabs = displaySetsToStudyPanelInfo(displaySets);
+    tabs = displaySetsToStudyPanelInfo(
+      displaySets,
+      viewportData,
+      seriesTracking
+    );
   } else {
     tabs = [
       {
