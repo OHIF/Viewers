@@ -52,8 +52,15 @@ const SegmentationPanel = ({
   activeContexts,
   contexts,
 }) => {
+  const [isDisabled, setIsDisabled] = useState(true);
   const isVTK = () => activeContexts.includes(contexts.VTK);
   const isCornerstone = () => activeContexts.includes(contexts.CORNERSTONE);
+
+  useEffect(() => {
+    const activeViewport = viewports[activeIndex];
+    const invalidState = !activeViewport || !activeViewport.StudyInstanceUID;
+    setIsDisabled(invalidState);
+  }, [viewports, activeIndex]);
 
   /*
    * TODO: wrap get/set interactions with the cornerstoneTools
@@ -137,6 +144,10 @@ const SegmentationPanel = ({
   }, [activeIndex, viewports]);
 
   const refreshSegmentations = useCallback(() => {
+    if (isDisabled) {
+      return;
+    }
+
     const module = cornerstoneTools.getModule('segmentation');
     const activeViewport = viewports[activeIndex];
     const studyMetadata = studyMetadataManager.get(
@@ -181,7 +192,7 @@ const SegmentationPanel = ({
 
   useEffect(() => {
     refreshSegmentations();
-  }, [viewports, activeIndex, state.selectedSegmentation, activeContexts, state.isLoading]);
+  }, [viewports, activeIndex, isOpen, state.selectedSegmentation, activeContexts, state.isLoading]);
 
   /* Handle open/closed panel behaviour */
   useEffect(() => {
@@ -507,7 +518,7 @@ const SegmentationPanel = ({
     );
   } else {
     return (
-      <div className="dcmseg-segmentation-panel">
+      <div className={`dcmseg-segmentation-panel ${isDisabled && 'disabled'}`}>
         <Icon
           className="cog-icon"
           name="cog"
