@@ -33,17 +33,17 @@ class DisplaySetManager {
     return addedDisplaySetUids;
   }
 
-  getDisplaySetsForSeries(SeriesInstanceUID) {
+  getDisplaySetsForSeries = SeriesInstanceUID => {
     return this.displaySets.filter(
       displaySet => displaySet.SeriesInstanceUID === SeriesInstanceUID
     );
-  }
+  };
 
-  getDisplaySetByUID(displaySetInstanceUid) {
+  getDisplaySetByUID = displaySetInstanceUid => {
     return this.displaySets.find(
       displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
     );
-  }
+  };
 
   makeDisplaySets = instances => {
     if (!instances || !instances.length) {
