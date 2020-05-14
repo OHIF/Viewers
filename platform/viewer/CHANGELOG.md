@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.11...@ohif/viewer@4.0.0) (2020-05-14)
+
+
+### Bug Fixes
+
+* 🐛 Fix race condition when loading derived display sets ([#1718](https://github.com/OHIF/Viewers/issues/1718)) ([b1678ce](https://github.com/OHIF/Viewers/commit/b1678ce6399dde37a9878f45ccc7c63286d93fab)), closes [#1715](https://github.com/OHIF/Viewers/issues/1715)
+
+
+### BREAKING CHANGES
+
+* 🧨 However we start to load once the first set of metadata arrives. We need
+to wait until all series metadata is fetched.
+
+
+
+
+
 ## [3.11.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.10...@ohif/viewer@3.11.11) (2020-05-14)
 
 
