@@ -1,7 +1,7 @@
 /**
  * CSS Grid Reference: http://grid.malven.co/
  */
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 //
 import ViewportPane from './ViewportPane.jsx';
@@ -11,12 +11,20 @@ import ViewportPane from './ViewportPane.jsx';
 function ViewportGrid(props) {
   const {
     activeViewportIndex,
-    viewports,
     displaySets,
     numRows,
     numColumns,
     children,
   } = props;
+
+  // From ViewportGridService and/or ContextProvider
+  const [viewportGrid, setViewportGrid] = useState({
+    viewports: [
+      {
+        displaySetUid: undefined,
+      },
+    ],
+  });
 
   const rowSize = 100 / numRows;
   const colSize = 100 / numColumns;
@@ -24,14 +32,14 @@ function ViewportGrid(props) {
   // viewportData --> displaySets
 
   const getViewportPanes = () =>
-    viewports.map((viewport, viewportIndex) => {
+    viewportGrid.viewports.map((viewport, viewportIndex) => {
       const someId = viewport.displaySetId;
-      const displaySet = displaySets[someId];
+      // const displaySet = displaySets[someId];
 
-      if (!displaySet) {
-        // TODO: Empty Viewport
-        return null;
-      }
+      // if (!displaySet) {
+      //   // TODO: Empty Viewport
+      //   return null;
+      // }
 
       // const pluginName =
       //   !layout.plugin && displaySet && displaySet.plugin
@@ -50,7 +58,9 @@ function ViewportGrid(props) {
       return (
         <ViewportPane
           key={viewportIndex}
-          onDrop={() => { /* setDisplaySet for Viewport */ }}
+          onDrop={() => {
+            /* setDisplaySet for Viewport */
+          }}
           viewportIndex={viewportIndex}
           isActive={activeViewportIndex === viewportIndex}
         >
@@ -59,12 +69,10 @@ function ViewportGrid(props) {
       );
     });
 
-  // const ViewportPanes = React.useMemo(getViewportPanes, [
-  //   viewportData,
-  //   children,
-  //   setViewportData,
-  //   activeViewportIndex,
-  // ]);
+  const ViewportPanes = React.useMemo(getViewportPanes, [
+    children,
+    activeViewportIndex,
+  ]);
 
   return (
     <div
@@ -77,13 +85,13 @@ function ViewportGrid(props) {
         width: '100%',
       }}
     >
-      {/* {ViewportPanes} */}
+      {ViewportPanes}
     </div>
   );
-};
+}
 
 ViewportGrid.propTypes = {
-  viewports: PropTypes.array.isRequired,
+  // viewports: PropTypes.array.isRequired,
   activeViewportIndex: PropTypes.number.isRequired,
   children: PropTypes.node,
   numRows: PropTypes.number.isRequired,
@@ -91,7 +99,7 @@ ViewportGrid.propTypes = {
 };
 
 ViewportGrid.defaultProps = {
-  viewports: [],
+  // viewports: [],
   numRows: 1,
   numColumns: 1,
   activeViewportIndex: 0,

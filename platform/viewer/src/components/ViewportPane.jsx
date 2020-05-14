@@ -1,32 +1,35 @@
 import React from 'react';
-import { useDrop } from 'react-dnd';
+// import { useDrop } from 'react-dnd';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 const ViewportPane = function(props) {
   const { children, onDrop, viewportIndex } = props;
-  const [{ isHovered, isHighlighted }, drop] = useDrop({
-    accept: 'displayset',
-    drop: (displaySet, monitor) => {
-      const canDrop = monitor.canDrop();
-      const isOver = monitor.isOver();
+  // const [{ isHovered, isHighlighted }, drop] = useDrop({
+  //   accept: 'displayset',
+  //   drop: (displaySet, monitor) => {
+  //     const canDrop = monitor.canDrop();
+  //     const isOver = monitor.isOver();
 
-      if (canDrop && isOver && onDrop) {
-        const { StudyInstanceUID, displaySetInstanceUID } = displaySet;
+  //     if (canDrop && isOver && onDrop) {
+  //       const { StudyInstanceUID, displaySetInstanceUID } = displaySet;
 
-        onDrop({ viewportIndex, StudyInstanceUID, displaySetInstanceUID });
-      }
-    },
-    // Monitor, and collect props; returned as values by `useDrop`
-    collect: monitor => ({
-      isHighlighted: monitor.canDrop(),
-      isHovered: monitor.isOver(),
-    }),
-  });
+  //       onDrop({ viewportIndex, StudyInstanceUID, displaySetInstanceUID });
+  //     }
+  //   },
+  //   // Monitor, and collect props; returned as values by `useDrop`
+  //   collect: monitor => ({
+  //     isHighlighted: monitor.canDrop(),
+  //     isHovered: monitor.isOver(),
+  //   }),
+  // });
+
+  const isHovered = false;
+  const isHighlighted = false;
 
   return (
     <div
-      ref={drop}
+      // ref={drop}
       className={classNames({ hovered: isHovered, highlighted: isHighlighted })}
       data-cy={`viewport-pane-${viewportIndex}`}
     >
