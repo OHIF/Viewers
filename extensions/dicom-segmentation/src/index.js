@@ -24,7 +24,7 @@ export default {
     return toolbarModule;
   },
   getPanelModule({ commandsManager, api, servicesManager }) {
-    const { UINotificationService } = servicesManager;
+    const { UINotificationService } = servicesManager.services;
 
     const ExtendedSegmentationPanel = props => {
       const { activeContexts } = api.hooks.useAppContext();

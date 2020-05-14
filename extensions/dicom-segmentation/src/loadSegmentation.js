@@ -44,6 +44,11 @@ export default async function loadSegmentation(
       reject(error);
     }
 
+    if (!results) {
+      segDisplaySet.isLoaded = false;
+      return reject(new Error('Failed to parse segmentation.'));
+    }
+
     const { labelmapBuffer, segMetadata, segmentsOnFrame } = results;
     const { setters } = cornerstoneTools.getModule('segmentation');
 

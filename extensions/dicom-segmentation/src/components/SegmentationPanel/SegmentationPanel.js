@@ -52,15 +52,8 @@ const SegmentationPanel = ({
   activeContexts,
   contexts,
 }) => {
-  const [isDisabled, setIsDisabled] = useState(true);
   const isVTK = () => activeContexts.includes(contexts.VTK);
   const isCornerstone = () => activeContexts.includes(contexts.CORNERSTONE);
-
-  useEffect(() => {
-    const activeViewport = viewports[activeIndex];
-    const invalidState = !activeViewport || !activeViewport.StudyInstanceUID;
-    setIsDisabled(invalidState);
-  }, [viewports, activeIndex]);
 
   /*
    * TODO: wrap get/set interactions with the cornerstoneTools
@@ -84,7 +77,8 @@ const SegmentationPanel = ({
     labelmapList: [],
     segmentList: [],
     cachedSegmentsProperties: [],
-    isLoading: false
+    isLoading: false,
+    isDisabled: true
   });
 
   useEffect(() => {
@@ -144,45 +138,47 @@ const SegmentationPanel = ({
   }, [activeIndex, viewports]);
 
   const refreshSegmentations = useCallback(() => {
-    if (isDisabled) {
-      return;
-    }
-
     const module = cornerstoneTools.getModule('segmentation');
     const activeViewport = viewports[activeIndex];
-    const studyMetadata = studyMetadataManager.get(
-      activeViewport.StudyInstanceUID
-    );
-    const firstImageId = studyMetadata.getFirstImageId(
-      activeViewport.displaySetInstanceUID
-    );
-    const brushStackState = module.state.series[firstImageId];
-    if (brushStackState) {
-      const labelmap3D =
-        brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
-      const labelmapList = getLabelmapList(
-        brushStackState,
-        firstImageId,
-        activeViewport
+
+    const isDisabled = !activeViewport || !activeViewport.StudyInstanceUID;
+    if (!isDisabled) {
+      const studyMetadata = studyMetadataManager.get(
+        activeViewport.StudyInstanceUID
       );
-      const segmentList = getSegmentList(
-        labelmap3D,
-        firstImageId,
-        brushStackState
+      const firstImageId = studyMetadata.getFirstImageId(
+        activeViewport.displaySetInstanceUID
       );
-      setState(state => ({
-        ...state,
-        brushStackState,
-        selectedSegmentation: brushStackState.activeLabelmapIndex,
-        labelmapList,
-        segmentList,
-      }));
-    } else {
-      setState(state => ({
-        ...state,
-        labelmapList: [],
-        segmentList: [],
-      }));
+      const brushStackState = module.state.series[firstImageId];
+      if (brushStackState) {
+        const labelmap3D =
+          brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
+        const labelmapList = getLabelmapList(
+          brushStackState,
+          firstImageId,
+          activeViewport
+        );
+        const segmentList = getSegmentList(
+          labelmap3D,
+          firstImageId,
+          brushStackState
+        );
+        setState(state => ({
+          ...state,
+          brushStackState,
+          selectedSegmentation: brushStackState.activeLabelmapIndex,
+          labelmapList,
+          segmentList,
+          isDisabled
+        }));
+      } else {
+        setState(state => ({
+          ...state,
+          labelmapList: [],
+          segmentList: [],
+          isDisabled
+        }));
+      }
     }
   }, [
     viewports,
@@ -518,7 +514,7 @@ const SegmentationPanel = ({
     );
   } else {
     return (
-      <div className={`dcmseg-segmentation-panel ${isDisabled && 'disabled'}`}>
+      <div className={`dcmseg-segmentation-panel ${state.isDisabled && 'disabled'}`}>
         <Icon
           className="cog-icon"
           name="cog"
