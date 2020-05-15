@@ -15,12 +15,15 @@ import MeasurementTable from './MeasurementTable.js';
 
 function getImageSrc(imageId, { cornerstone }) {
   return new Promise((resolve, reject) => {
-    cornerstone.loadAndCacheImage(imageId).then(image => {
-      const canvas = document.createElement('canvas');
-      cornerstone.renderToCanvas(canvas, image);
+    cornerstone
+      .loadAndCacheImage(imageId)
+      .then(image => {
+        const canvas = document.createElement('canvas');
+        cornerstone.renderToCanvas(canvas, image);
 
-      resolve(canvas.toDataURL());
-    });
+        resolve(canvas.toDataURL());
+      })
+      .catch(reject);
   });
 }
 
@@ -33,8 +36,16 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
   const updateThumbnailMap = (k, v) => {
     setThumbnailImageSrcMap(thumbnailImageSrcMap.set(k, v));
   };
+  const viewportData = []; //useViewportGrid();
+  const seriesTracking = {}; //useSeriesTracking();
 
   useEffect(() => {
+    if (!viewModel.displaySetInstanceUids.length) {
+      return;
+    }
+
+    let isSubscribed = true;
+
     const command = commandsManager.getCommand(
       'getCornerstoneLibraries',
       'VIEWER'
@@ -46,41 +57,22 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
 
     const { cornerstone, cornerstoneTools } = command.commandFn();
 
-    if (!viewModel.displaySetInstanceUids.length) {
-      return;
-    }
-
     viewModel.displaySetInstanceUids.forEach(uid => {
       const imageIds = dataSource.getImageIdsForDisplaySet(uid);
-      const imageId = imageIds[0];
+      const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       getImageSrc(imageId, { cornerstone }).then(imageSrc => {
-        updateThumbnailMap(uid, imageSrc);
+        if (isSubscribed) {
+          updateThumbnailMap(uid, imageSrc);
+        }
       });
     });
-  }, [viewModel.displaySetInstanceUids]);
 
-  // TODO
-  const viewportData = []; //useViewportGrid();
-  const seriesTracking = {}; //useSeriesTracking();
-
-  const displaySets = viewModel.displaySetInstanceUids.map(
-    displaySetManager.getDisplaySetByUID
-  );
-
-  // TODO:
-  // - Put this in something so it only runs once
-  // - Have update the query update the dicom data store at the study level and then have this component use the data in the view model
-  useEffect(() => {
-    if (!viewModel.displaySetInstanceUids.length) {
-      return;
-    }
-
-    const dSets = viewModel.displaySetInstanceUids.map(
+    const displaySets = viewModel.displaySetInstanceUids.map(
       displaySetManager.getDisplaySetByUID
     );
 
-    const aDisplaySet = dSets[0];
+    const aDisplaySet = displaySets[0];
     const firstStudy = dicomMetadataStore.getStudy(
       aDisplaySet.StudyInstanceUID
     );
@@ -103,105 +95,117 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
         };
       });
 
-      setStudyData(studies);
+      const studiesFromInstanceData = {};
+      displaySets.forEach(ds => {
+        const displaySet = {
+          displaySetInstanceUid: ds.displaySetInstanceUid,
+          description: ds.SeriesDescription,
+          seriesNumber: ds.SeriesNumber,
+          modality: ds.Modality,
+          date: ds.SeriesDate,
+          numInstances: ds.numImageFrames,
+        };
+
+        const displaySetViewportData = viewportData.find(
+          a => a.displaySetInstanceUid === ds.displaySetInstanceUid
+        );
+
+        if (displaySetViewportData) {
+          displaySet.viewportIdentificator = displaySetViewportData.identifier;
+        }
+
+        const trackingInfo = seriesTracking[ds.SeriesInstanceUID];
+        if (trackingInfo) {
+          displaySet.isTracked = trackingInfo.isTracked;
+        } else {
+          displaySet.isTracked = false;
+        }
+
+        displaySet.componentType = 'thumbnailTracked';
+
+        if (
+          !Object.keys(studiesFromInstanceData).includes(ds.StudyInstanceUID)
+        ) {
+          const study = dicomMetadataStore.getStudy(ds.StudyInstanceUID);
+          const anInstance = study.series[0].instances[0];
+
+          studiesFromInstanceData[ds.StudyInstanceUID] = {
+            date: anInstance.StudyDate, // TODO: Format this date to DD-MMM-YYYY
+            description: anInstance.StudyDescription,
+            displaySets: [],
+            numInstances: 0,
+            modalitiesSet: new Set(),
+          };
+        }
+
+        studiesFromInstanceData[ds.StudyInstanceUID].displaySets.push(
+          displaySet
+        );
+        studiesFromInstanceData[ds.StudyInstanceUID].numInstances +=
+          displaySet.numInstances;
+
+        studiesFromInstanceData[ds.StudyInstanceUID].modalitiesSet.add(
+          displaySet.modality
+        );
+
+        const modalitiesSet =
+          studiesFromInstanceData[ds.StudyInstanceUID].modalitiesSet;
+        studiesFromInstanceData[ds.StudyInstanceUID].modalities = Array.from(
+          modalitiesSet
+        ).join(', ');
+      });
+
+      // QIDO for all by MRN
+      const allStudies = studies.map(studyLevelData => {
+        const studyFromInstanceData =
+          studiesFromInstanceData[studyLevelData.StudyInstanceUID];
+
+        if (!studyFromInstanceData) {
+          return {
+            studyInstanceUid: studyLevelData.StudyInstanceUID,
+            date: studyLevelData.StudyDate,
+            description: studyLevelData.StudyDescription,
+            modalities: studyLevelData.ModalitiesInStudy,
+            numInstances: studyLevelData.NumInstances,
+            displaySets: [],
+          };
+        }
+
+        return {
+          studyInstanceUid: studyLevelData.StudyInstanceUID,
+          date: studyLevelData.StudyDate || studyFromInstanceData.date,
+          description:
+            studyLevelData.StudyDescription ||
+            studyFromInstanceData.description,
+          modalities:
+            studyFromInstanceData.modalities ||
+            studyLevelData.ModalitiesInStudy,
+          numInstances:
+            studyLevelData.NumInstances || studyFromInstanceData.numInstances,
+          displaySets: studyFromInstanceData.displaySets,
+        };
+      });
+
+      if (isSubscribed) {
+        setStudyData(allStudies);
+      }
     });
+
+    return () => (isSubscribed = false);
   }, [viewModel.displaySetInstanceUids]);
 
-  const studiesFromInstanceData = {};
-  displaySets.forEach(ds => {
-    const displaySet = {
-      displaySetInstanceUid: ds.displaySetInstanceUid,
-      description: ds.SeriesDescription,
-      seriesNumber: ds.SeriesNumber,
-      modality: ds.Modality,
-      date: ds.SeriesDate,
-      numInstances: ds.numImageFrames,
-      imageSrc: thumbnailImageSrcMap.get(ds.displaySetInstanceUid),
-    };
-
-    const displaySetViewportData = viewportData.find(
-      a => a.displaySetInstanceUid === ds.displaySetInstanceUid
-    );
-
-    if (displaySetViewportData) {
-      displaySet.viewportIdentificator = displaySetViewportData.identifier;
-    }
-
-    const trackingInfo = seriesTracking[ds.SeriesInstanceUID];
-    if (trackingInfo) {
-      displaySet.isTracked = trackingInfo.isTracked;
-
-      displaySet.componentType = trackingInfo.isTracked
-        ? 'thumbnailTracked'
-        : 'thumbnail';
-    } else {
-      displaySet.isTracked = false;
-      displaySet.componentType = 'thumbnail';
-    }
-
-    if (!Object.keys(studiesFromInstanceData).includes(ds.StudyInstanceUID)) {
-      const study = dicomMetadataStore.getStudy(ds.StudyInstanceUID);
-      const anInstance = study.series[0].instances[0];
-
-      studiesFromInstanceData[ds.StudyInstanceUID] = {
-        date: anInstance.StudyDate, // TODO: Format this date to DD-MMM-YYYY
-        description: anInstance.StudyDescription,
-        displaySets: [],
-        numInstances: 0,
-        modalitiesSet: new Set(),
-      };
-    }
-
-    studiesFromInstanceData[ds.StudyInstanceUID].displaySets.push(displaySet);
-    studiesFromInstanceData[ds.StudyInstanceUID].numInstances +=
-      displaySet.numInstances;
-
-    studiesFromInstanceData[ds.StudyInstanceUID].modalitiesSet.add(
-      displaySet.modality
-    );
-
-    const modalitiesSet =
-      studiesFromInstanceData[ds.StudyInstanceUID].modalitiesSet;
-    studiesFromInstanceData[ds.StudyInstanceUID].modalities = Array.from(
-      modalitiesSet
-    ).join(', ');
+  studyData.forEach(study => {
+    study.displaySets.forEach(ds => {
+      ds.imageSrc = thumbnailImageSrcMap.get(ds.displaySetInstanceUid);
+    });
   });
 
-  // QIDO for all by MRN
-  const allStudies = studyData.map(studyLevelData => {
-    const studyFromInstanceData =
-      studiesFromInstanceData[studyLevelData.StudyInstanceUID];
-
-    if (!studyFromInstanceData) {
-      return {
-        studyInstanceUid: studyLevelData.StudyInstanceUID,
-        date: studyLevelData.StudyDate,
-        description: studyLevelData.StudyDescription,
-        modalities: studyLevelData.ModalitiesInStudy,
-        numInstances: studyLevelData.NumInstances,
-        displaySets: [],
-      };
-    }
-
-    return {
-      studyInstanceUid: studyLevelData.StudyInstanceUID,
-      date: studyLevelData.StudyDate || studyFromInstanceData.date,
-      description:
-        studyLevelData.StudyDescription || studyFromInstanceData.description,
-      modalities:
-        studyFromInstanceData.modalities || studyLevelData.ModalitiesInStudy,
-      numInstances:
-        studyLevelData.NumInstances || studyFromInstanceData.numInstances,
-      displaySets: studyFromInstanceData.displaySets,
-    };
-  });
-
-  const primary = allStudies.find(study => {
+  const primary = studyData.find(study => {
     return true; // TODO: check study.StudyInstanceUID matches queryparam?
   });
 
   // TODO: Filter allStudies to dates within one year of current date
-  const recentStudies = allStudies.filter(study => {
+  const recentStudies = studyData.filter(study => {
     return true; // TODO: check study.date
   });
 
@@ -219,12 +223,13 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
     {
       name: 'all',
       label: 'All',
-      studies: allStudies,
+      studies: studyData,
     },
   ];
 
   function onClickStudy(StudyInstanceUID) {
-    if (studiesFromInstanceData[StudyInstanceUID]) {
+    const study = studyData.find(a => a.studyInstanceUid === StudyInstanceUID);
+    if (study && study.displaySets && study.displaySets.length) {
       return;
     }
 
@@ -239,9 +244,12 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
     );
   }
 
-  const memoOnClickStudy = useCallback(StudyInstanceUID => {
-    onClickStudy(StudyInstanceUID);
-  });
+  const memoOnClickStudy = useCallback(
+    StudyInstanceUID => {
+      onClickStudy(StudyInstanceUID);
+    },
+    [studyData]
+  );
 
   return <StudyBrowser tabs={tabs} onClickStudy={memoOnClickStudy} />;
 }

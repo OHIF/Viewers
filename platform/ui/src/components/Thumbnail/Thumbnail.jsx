@@ -34,7 +34,7 @@ const Thumbnail = ({
         )}
       >
         {imageSrc ? (
-          <img src={imageSrc} alt={imageAltText} className="min-h-32" />
+          <img src={imageSrc} alt={imageAltText} className="min-h-32 object-none" />
         ) : (
           <div>{imageAltText}</div>
         )}
