@@ -21,18 +21,14 @@ import { ViewportGrid } from '@ohif/ui';
 
 <Playground>
   <div className="p-4 h-56">
-    <ViewportGrid
-      rows={1}
-      cols={2}
-      viewportContents={[
-        <div className="flex items-center justify-center h-full text-white">
-          Viewport1
-        </div>,
-        <div className="flex items-center justify-center h-full text-white">
-          Viewport2
-        </div>,
-      ]}
-    />
+    <ViewportGrid numRows={1} numCols={2}>
+      <div className="flex items-center justify-center h-full text-white">
+        Viewport1
+      </div>
+      <div className="flex items-center justify-center h-full text-white">
+        Viewport2
+      </div>
+    </ViewportGrid>
   </div>
 </Playground>
 
