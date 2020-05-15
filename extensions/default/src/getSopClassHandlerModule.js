@@ -13,13 +13,6 @@ const makeDisplaySet = instances => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
 
-  const modalities = new Set();
-  instances.forEach(i => {
-    modalities.add(i.Modality);
-  });
-
-  const modalitiesInDisplaySet = Array.from(modalities).join(', ');
-
   // set appropriate attributes to image set...
   imageSet.setAttributes({
     displaySetInstanceUid: imageSet.uid, // create a local alias for the imageSet UID
@@ -30,7 +23,7 @@ const makeDisplaySet = instances => {
     SeriesNumber: instance.SeriesNumber,
     FrameRate: instance.FrameTime,
     SeriesDescription: instance.SeriesDescription,
-    modalities: modalitiesInDisplaySet,
+    Modality: instance.Modality,
     isMultiFrame: isMultiFrame(instance),
     numImageFrames: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,

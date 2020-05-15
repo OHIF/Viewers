@@ -80,13 +80,13 @@ function createDicomWebApi(dicomWebConfig) {
         // processResults: processResults.bind(),
       },
       instances: {
-        search: (studyInstanceUid, queryParamaters) =>
+        search: (studyInstanceUid, queryParameters) =>
           qidoSearch.call(
             undefined,
             qidoDicomWebClient,
             studyInstanceUid,
             null,
-            queryParamaters
+            queryParameters
           ),
       },
     },

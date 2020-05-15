@@ -47,7 +47,9 @@ const _model = {
 };
 
 function _getStudy(StudyInstanceUID) {
-  return _model.studies.find(StudyInstanceUID);
+  return _model.studies.find(
+    aStudy => aStudy.StudyInstanceUID === StudyInstanceUID
+  );
 }
 
 function _getSeries(StudyInstanceUID, SeriesInstanceUID) {
@@ -89,6 +91,27 @@ const dicomMetadataStore = {
     }
 
     study.addSeries(instances);
+  },
+  addStudy(study) {
+    const { StudyInstanceUID } = study;
+
+    let existingStudy = _model.studies.find(
+      study => study.StudyInstanceUID === StudyInstanceUID
+    );
+
+    if (!existingStudy) {
+      const newStudy = new StudyMetadata(StudyInstanceUID);
+
+      newStudy.PatientID = study.PatientID;
+      newStudy.PatientName = study.PatientName;
+      newStudy.StudyDate = study.StudyDate;
+      newStudy.ModalitiesInStudy = study.ModalitiesInStudy;
+      newStudy.StudyDescription = study.StudyDescription;
+      newStudy.AccessionNumber = study.AccessionNumber;
+      newStudy.NumInstances = study.NumInstances; // todo: Correct naming?
+
+      _model.studies.push(newStudy);
+    }
   },
   getStudy: _getStudy,
   getSeries: _getSeries,

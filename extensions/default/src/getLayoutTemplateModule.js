@@ -1,4 +1,3 @@
-
 import ViewerLayout from './ViewerLayout';
 /*
 - Define layout for the viewer in mode configuration.
