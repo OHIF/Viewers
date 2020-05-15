@@ -13,7 +13,7 @@ const isTouchDevice = typeof window !== `undefined` && !!('ontouchstart' in wind
  * Docs:
  * http://react-dnd.github.io/react-dnd/docs/api/drag-drop-context
  */
-export default function DragAndDropContext({children}) {
+export default function DragAndDropProvider({children}) {
   const backend = isTouchDevice ? TouchBackend : HTML5Backend;
   const opts = isTouchDevice ? { enableMouseEvents: true } : {};
 

@@ -10,4 +10,4 @@ export {
   useViewportDialog,
 } from './ViewportDialogProvider';
 
-export { default as DragAndDropContext } from './DragAndDropContext';
+export { default as DragAndDropProvider } from './DragAndDropProvider';
