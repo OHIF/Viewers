@@ -1,60 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
-const ViewportGrid = ({
-  rows,
-  cols,
-  viewportContents,
-  activeViewportIndex,
-  setActiveViewportIndex,
-}) => {
-  const ViewportPanes = viewportContents.map((viewportContent, index) => {
-    const isActive = index === activeViewportIndex;
-
-    const handleOnClick = () => {
-      setActiveViewportIndex(index);
-    };
-
-    return (
-      <div
-        key={index}
-        className={classnames(
-          'rounded-lg hover:border-primary-light transition duration-300 outline-none overflow-hidden',
-          {
-            'border-2 border-primary-light -m-px': isActive,
-            'border border-secondary-light': !isActive,
-          }
-        )}
-        onClick={handleOnClick}
-        onKeyDown={handleOnClick}
-        role="button"
-        tabIndex="0"
-      >
-        {viewportContent}
-      </div>
-    );
-  });
+function ViewportGrid({ numRows, numCols, children }) {
+  const rowSize = 100 / numRows;
+  const colSize = 100 / numCols;
 
   return (
     <div
-      className={classnames(
-        'h-full w-full grid gap-2',
-        `grid-cols-${cols}`,
-        `grid-rows-${rows}`
-      )}
+      data-cy="viewport-grid"
+      style={{
+        display: 'grid',
+        gridTemplateRows: `repeat(${numRows}, ${rowSize}%)`,
+        gridTemplateColumns: `repeat(${numCols}, ${colSize}%)`,
+        height: '100%',
+        width: '100%',
+      }}
     >
-      {ViewportPanes}
+      {children}
     </div>
   );
-};
+}
 
 ViewportGrid.propTypes = {
-  rows: PropTypes.number.isRequired,
-  cols: PropTypes.number.isRequired,
-  viewportContents: PropTypes.arrayOf(PropTypes.node),
-  activeViewportIndex: PropTypes.number.isRequired,
-  setActiveViewportIndex: PropTypes.func.isRequired,
+  /** Number of columns */
+  numRows: PropTypes.number.isRequired,
+  /** Number of rows */
+  numCols: PropTypes.number.isRequired,
+  /** Array of React Components to render within grid */
+  children: PropTypes.arrayOf(PropTypes.node).isRequired,
 };
 
 export default ViewportGrid;
