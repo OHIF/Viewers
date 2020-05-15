@@ -17,9 +17,11 @@ import {
   IconButton,
   StudyBrowser,
   ViewportActionBar,
-  ViewportGrid,
   Notification,
+  DragAndDropProvider,
   Viewport,
+  ViewportGrid,
+  ViewportPane,
 } from '@ohif/ui';
 
 import Header from './components/Header';
@@ -50,141 +52,116 @@ import { tabs } from './studyBrowserMockData';
       onEdit: (id) => alert(`Edit: ${id}`),
     };
     return (
-      <div>
-        <Header />
-        <div
-          className="flex flex-row flex-no-wrap flex-1 items-stretch overflow-hidden w-full"
-          style={{ height: 'calc(100vh - 57px' }}
-        >
-          <SidePanel
-            side="left"
-            defaultComponentOpen='studies'
-            childComponents={{
-              iconName: 'group-layers',
-              iconLabel: 'Studies',
-              label: 'Studies',
-              name: 'studies',
-              content: (
-                <StudyBrowser tabs={tabs} />
-              )
-            }}
-          />
-          <div className="flex flex-col flex-1 h-full pb-2">
-            <div className="flex flex-2 w-100 border-b border-transparent h-12">
-              <ViewportToolbar />
-            </div>
-            <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center">
-              <ViewportGrid
-                rows={1}
-                cols={2}
-                viewportContents={[
-                  <Viewport
-                    viewportIndex={0}
-                    onSeriesChange={(direction) => alert(`Series ${direction}`)}
-                    studyData={{
-                      label: 'A',
-                      isTracked: true,
-                      isLocked: false,
-                      studyDate: '07-Sep-2011',
-                      currentSeries: 1,
-                      seriesDescription:
-                        'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
-                      modality: 'CT',
-                      patientInformation: {
-                        patientName: 'Smith, Jane',
-                        patientSex: 'F',
-                        patientAge: '59',
-                        MRN: '10000001',
-                        thickness: '5.0mm',
-                        spacing: '1.25mm',
-                        scanner: 'Aquilion',
-                      },
-                    }}
-                  >
-                    <div className="flex justify-center items-center h-full">
-                      CONTENT
-                    </div>
-                  </Viewport>,
-                  <Viewport
-                    viewportIndex={1}
-                    onSeriesChange={(direction) => alert(`Series ${direction}`)}
-                    studyData={{
-                      label: 'A',
-                      isTracked: false,
-                      isLocked: true,
-                      studyDate: '07-Sep-2010',
-                      currentSeries: 2,
-                      seriesDescription:
-                        'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
-                      modality: 'SR',
-                      patientInformation: {
-                        patientName: 'Smith, Jane',
-                        patientSex: 'F',
-                        patientAge: '59',
-                        MRN: '10000001',
-                        thickness: '2.0mm',
-                        spacing: '1.25mm',
-                        scanner: 'Aquilion',
-                      },
-                    }}
-                  >
-                    <div className="flex justify-center items-center h-full">
-                      CONTENT
-                    </div>
-                  </Viewport>,
-                ]}
-                setActiveViewportIndex={setActiveViewportIndex}
-                activeViewportIndex={activeViewportIndex}
-              />
-            </div>
-          </div>
-          <SidePanel
-            side="right"
-            defaultComponentOpen="measurements"
-            childComponents={{
-              iconName: 'list-bullets',
-              iconLabel: 'Measure',
-              label: 'Measurements',
-              name: 'measurements',
-              content: (
-                <MeasurementsPanel
-                  descriptionData={descriptionData}
-                  measurementTableData={measurementTableData}
-                  actionButtons={
-                    <React.Fragment>
-                      <ButtonGroup onClick={() => alert('Export')}>
-                        <Button
-                          className="text-white border-primary-main bg-black text-base py-2 px-2"
-                          size="initial"
-                          color="inherit"
-                        >
-                          Export
-                        </Button>
-                        <IconButton
-                          className="bg-black border-primary-main px-2 text-white px-2"
-                          color="inherit"
-                          size="initial"
-                        >
-                          <Icon name="arrow-down" />
-                        </IconButton>
-                      </ButtonGroup>
-                      <Button
-                        className="text-white border border-primary-main bg-black text-base py-2 px-2 ml-2"
-                        variant="outlined"
-                        size="initial"
-                        color="inherit"
-                        onClick={() => alert('Create Report')}
+      <DragAndDropProvider>
+        <div>
+          <Header />
+          <div
+            className="flex flex-row flex-no-wrap flex-1 items-stretch overflow-hidden w-full"
+            style={{ height: 'calc(100vh - 57px' }}
+          >
+            <SidePanel
+              side="left"
+              defaultComponentOpen='studies'
+              childComponents={{
+                iconName: 'group-layers',
+                iconLabel: 'Studies',
+                label: 'Studies',
+                name: 'studies',
+                content: (
+                  <StudyBrowser tabs={tabs} />
+                )
+              }}
+            />
+            {/* TOOLBAR + GRID */}
+            <div className="flex flex-col flex-1 h-full pb-2">
+              <div className="flex flex-2 w-100 border-b border-transparent h-12">
+                <ViewportToolbar />
+              </div>
+              {/* VIEWPORT GRID CONTAINER */}
+              <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center">
+                <ViewportGrid numRows={1} numCols={2}>
+                  {[0, 1].map(viewportIndex => (
+                    <ViewportPane key={viewportIndex} className="m-1" isActive={false} onDrop={() => {}}>
+                      <Viewport
+                        viewportIndex={viewportIndex}
+                        onSeriesChange={(direction) => alert(`Series ${direction}`)}
+                        studyData={{
+                          label: 'A',
+                          isTracked: true,
+                          isLocked: false,
+                          studyDate: '07-Sep-2011',
+                          currentSeries: 1,
+                          seriesDescription:
+                            'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
+                          modality: 'CT',
+                          patientInformation: {
+                            patientName: 'Smith, Jane',
+                            patientSex: 'F',
+                            patientAge: '59',
+                            MRN: '10000001',
+                            thickness: '5.0mm',
+                            spacing: '1.25mm',
+                            scanner: 'Aquilion',
+                          },
+                        }}
                       >
-                        Create Report
-                      </Button>
-                    </React.Fragment>
-                  }
-                />
-              )
-            }}
-          />
+                        <div className="flex justify-center items-center h-full">
+                          CONTENT
+                        </div>
+                      </Viewport>
+                    </ViewportPane>)
+                  )}
+                </ViewportGrid>
+              </div>
+            </div>
+            <SidePanel
+              side="right"
+              defaultComponentOpen="measurements"
+              childComponents={{
+                iconName: 'list-bullets',
+                iconLabel: 'Measure',
+                label: 'Measurements',
+                name: 'measurements',
+                content: (
+                  <MeasurementsPanel
+                    descriptionData={descriptionData}
+                    measurementTableData={measurementTableData}
+                    actionButtons={
+                      <React.Fragment>
+                        <ButtonGroup onClick={() => alert('Export')}>
+                          <Button
+                            className="text-white border-primary-main bg-black text-base py-2 px-2"
+                            size="initial"
+                            color="inherit"
+                          >
+                            Export
+                          </Button>
+                          <IconButton
+                            className="bg-black border-primary-main px-2 text-white px-2"
+                            color="inherit"
+                            size="initial"
+                          >
+                            <Icon name="arrow-down" />
+                          </IconButton>
+                        </ButtonGroup>
+                        <Button
+                          className="text-white border border-primary-main bg-black text-base py-2 px-2 ml-2"
+                          variant="outlined"
+                          size="initial"
+                          color="inherit"
+                          onClick={() => alert('Create Report')}
+                        >
+                          Create Report
+                        </Button>
+                      </React.Fragment>
+                    }
+                  />
+                )
+              }}
+            />
+          </div>
         </div>
-      </div>
+      </DragAndDropProvider>
     );
   }}
 </Playground>
