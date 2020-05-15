@@ -7,37 +7,86 @@ import {
   displaySetManager,
 } from '@ohif/core';
 
-function StudyBrowserPanel({ extensionManager }) {
-  // TODO: need to check how this is intended to be passed in
-  const dataSource = extensionManager.dataSourceMap.dicomweb[0];
+// Create map in local state from displaySetInstanceUids to thumbnails
+// Get thumbnail imageId from displaySet
+// When displaySetInstanceUids change, initiate async render into canvas
+// Get image data-uri from canvas offscreen
+// Set image data-uri into state (NOTE: This will probably end up in the fucking browser cache, NEED to find a way to prevent that from happening)
+// state triggers rerender
+//
+// TODO:
+// - No loading UI exists yet
+// - cancel promises when component is destroyed
+// - show errors in UI for thumbnails if promise fails
 
+function getImageSrc(imageId, { cornerstone }) {
+  // TODO: Switch to async/await when it stops failing
+  return new Promise((resolve, reject) => {
+    cornerstone.loadAndCacheImage(imageId).then(image => {
+      const canvas = document.createElement('canvas');
+      cornerstone.renderToCanvas(canvas, image);
+
+      resolve(canvas.toDataURL());
+    });
+  });
+}
+
+function StudyBrowserPanel({ getDataSources, commandsManager }) {
   const viewModel = useViewModel();
+
+  const dataSource = getDataSources('dicomweb')[0];
+  const [studyData, setStudyData] = useState([]);
+  const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState(new Map());
+  const updateThumbnailMap = (k, v) => {
+    setThumbnailImageSrcMap(thumbnailImageSrcMap.set(k, v));
+  };
+
+  useEffect(() => {
+    const command = commandsManager.getCommand(
+      'getCornerstoneLibraries',
+      'VIEWER'
+    );
+
+    if (!command) {
+      throw new Error('Required command not found');
+    }
+
+    const { cornerstone, cornerstoneTools } = command.commandFn();
+
+    if (!viewModel.displaySetInstanceUids.length) {
+      return;
+    }
+
+    viewModel.displaySetInstanceUids.forEach(uid => {
+      const imageIds = dataSource.getImageIdsForDisplaySet(uid);
+      const imageId = imageIds[0];
+
+      getImageSrc(imageId, { cornerstone }).then(imageSrc => {
+        updateThumbnailMap(uid, imageSrc);
+      });
+    });
+  }, [viewModel.displaySetInstanceUids]);
 
   // TODO
   const viewportData = []; //useViewportGrid();
   const seriesTracking = {}; //useSeriesTracking();
 
-  const [studyData, setStudyData] = useState([]);
-
-  console.log(viewModel);
-
   const displaySets = viewModel.displaySetInstanceUids.map(
     displaySetManager.getDisplaySetByUID
   );
-
-  console.log(displaySets);
-
-  if (!displaySets.length) {
-    return;
-  }
 
   // TODO:
   // - Put this in something so it only runs once
   // - Have update the query update the dicom data store at the study level and then have this component use the data in the view model
   useEffect(() => {
+    if (!viewModel.displaySetInstanceUids.length) {
+      return;
+    }
+
     const dSets = viewModel.displaySetInstanceUids.map(
       displaySetManager.getDisplaySetByUID
     );
+
     const aDisplaySet = dSets[0];
     const firstStudy = dicomMetadataStore.getStudy(
       aDisplaySet.StudyInstanceUID
@@ -74,6 +123,7 @@ function StudyBrowserPanel({ extensionManager }) {
       modality: ds.Modality,
       date: ds.SeriesDate,
       numInstances: ds.numImageFrames,
+      //imageSrc,
     };
 
     const displaySetViewportData = viewportData.find(
@@ -203,21 +253,30 @@ function StudyBrowserPanel({ extensionManager }) {
   return <StudyBrowser tabs={tabs} onClickStudy={memoOnClickStudy} />;
 }
 
-function getPanelModule() {
+function getPanelModule({ getDataSources, commandsManager }) {
+  const wrappedStudyBrowserPanel = () => {
+    return (
+      <StudyBrowserPanel
+        getDataSources={getDataSources}
+        commandsManager={commandsManager}
+      />
+    );
+  };
+
   return [
     {
       name: 'seriesList',
       iconName: 'group-layers',
       iconLabel: 'Studies',
       label: 'Studies',
-      component: StudyBrowserPanel,
+      component: wrappedStudyBrowserPanel,
     },
     {
       name: 'measure',
       iconName: 'list-bullets',
       iconLabel: 'Measure',
       label: 'Measurements',
-      component: StudyBrowserPanel,
+      component: wrappedStudyBrowserPanel,
     },
   ];
 }

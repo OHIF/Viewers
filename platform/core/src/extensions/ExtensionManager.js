@@ -176,6 +176,7 @@ export default class ExtensionManager {
 
     try {
       const extensionModule = getModuleFn({
+        getDataSources: this.getDataSources,
         servicesManager: this._servicesManager,
         commandsManager: this._commandsManager,
         appConfig: this._appConfig,

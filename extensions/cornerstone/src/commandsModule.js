@@ -9,6 +9,9 @@ const scroll = cornerstoneTools.import('util/scroll');
 
 const commandsModule = ({ servicesManager }) => {
   const actions = {
+    getCornerstoneLibraries: () => {
+      return { cornerstone, cornerstoneTools };
+    },
     rotateViewport: ({ viewports, rotation }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
@@ -257,6 +260,12 @@ const commandsModule = ({ servicesManager }) => {
   };
 
   const definitions = {
+    getCornerstoneLibraries: {
+      commandFn: actions.getCornerstoneLibraries,
+      storeContexts: [],
+      options: {},
+      context: 'VIEWER',
+    },
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
       storeContexts: [],

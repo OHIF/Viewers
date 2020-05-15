@@ -17,6 +17,8 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
           seriesDate,
           viewportIdentificator,
           isTracked,
+          imageSrc,
+          imageAltText,
         }) => {
           const isActive = thumbnailActive === displaySetInstanceUid;
 
@@ -28,6 +30,9 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
+                  imageSrc={imageSrc}
+                  imageAltText={imageAltText}
+                  viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUid)}
                 />
@@ -49,6 +54,8 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
+                  imageSrc={imageSrc}
+                  imageAltText={imageAltText}
                   viewportIdentificator={viewportIdentificator}
                   isTracked={isTracked}
                   isActive={isActive}
