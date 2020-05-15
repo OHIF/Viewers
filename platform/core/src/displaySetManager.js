@@ -8,26 +8,26 @@ class DisplaySetManager {
     this.SOPClassHandlerIds = SOPClassHandlerIds;
 
     const {
-      displaySetInstanceUids,
+      displaySetInstanceUIDs,
       setDisplaySetInstanceUids,
     } = viewModelContext;
 
-    this.displaySetInstanceUids = displaySetInstanceUids;
+    this.displaySetInstanceUIDs = displaySetInstanceUIDs;
     this.setDisplaySetInstanceUids = setDisplaySetInstanceUids;
 
-    // Reset displaySetInstanceUids
+    // Reset displaySetInstanceUIDs
     this.setDisplaySetInstanceUids([]);
   }
 
   _addDisplaySets(displaySets) {
-    //const displayInstanceUids = [...this.displaySetInstanceUids];
+    //const displayInstanceUids = [...this.displaySetInstanceUIDs];
 
     const addedDisplaySetUids = [];
 
     displaySets.forEach(displaySet => {
       this.displaySets.push(displaySet);
 
-      addedDisplaySetUids.push(displaySet.displaySetInstanceUid);
+      addedDisplaySetUids.push(displaySet.displaySetInstanceUID);
     });
 
     return addedDisplaySetUids;
@@ -39,9 +39,9 @@ class DisplaySetManager {
     );
   };
 
-  getDisplaySetByUID = displaySetInstanceUid => {
+  getDisplaySetByUID = displaySetInstanceUID => {
     return this.displaySets.find(
-      displaySet => displaySet.displaySetInstanceUid === displaySetInstanceUid
+      displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
     );
   };
 
@@ -71,7 +71,7 @@ class DisplaySetManager {
 
         if (cachedDisplaySets.length) {
           addedDisplaySetUids = cachedDisplaySets.map(
-            displaySet => displaySet.displaySetInstanceUid
+            displaySet => displaySet.displaySetInstanceUID
           );
         } else {
           const displaySets = handler.getDisplaySetsFromSeries(instances);
@@ -79,12 +79,12 @@ class DisplaySetManager {
           addedDisplaySetUids = this._addDisplaySets(displaySets);
         }
 
-        this.displaySetInstanceUids = [
+        this.displaySetInstanceUIDs = [
           ...addedDisplaySetUids,
-          ...this.displaySetInstanceUids,
+          ...this.displaySetInstanceUIDs,
         ];
 
-        this.setDisplaySetInstanceUids(this.displaySetInstanceUids);
+        this.setDisplaySetInstanceUids(this.displaySetInstanceUIDs);
       }
     }
   };

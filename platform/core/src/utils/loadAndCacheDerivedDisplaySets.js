@@ -30,7 +30,7 @@ import studyMetadataManager from './studyMetadataManager';
  * Factory function to load and cache derived display sets.
  *
  * @param {object} referencedDisplaySet Display set
- * @param {string} referencedDisplaySet.displaySetInstanceUid Display set instance uid
+ * @param {string} referencedDisplaySet.displaySetInstanceUID Display set instance uid
  * @param {string} referencedDisplaySet.seriesDate
  * @param {string} referencedDisplaySet.seriesTime
  * @param {string} referencedDisplaySet.seriesInstanceUid

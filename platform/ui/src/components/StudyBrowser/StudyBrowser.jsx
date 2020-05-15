@@ -7,13 +7,13 @@ import { ButtonGroup, Button, StudyItem, ThumbnailList } from '@ohif/ui';
 const buttonClasses = 'text-white text-base border-none bg-black p-2 min-w-18';
 const activeButtonClasses = 'bg-primary-main';
 
-const getInitialActiveTab = (tabs) => {
+const getInitialActiveTab = tabs => {
   return tabs && tabs[0] && tabs[0].name;
 };
 
-const getTrackedSeries = (displaySets) => {
+const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
-  displaySets.forEach((displaySet) => {
+  displaySets.forEach(displaySet => {
     if (displaySet.isTracked) {
       trackedSeries++;
     }
@@ -28,7 +28,7 @@ const StudyBrowser = ({ tabs, onClickStudy, onClickThumbnail }) => {
   const [thumbnailActive, setThumbnailActive] = useState(null);
 
   const getTabContent = () => {
-    const tabData = tabs.find((tab) => tab.name === tabActive);
+    const tabData = tabs.find(tab => tab.name === tabActive);
 
     if (!tabData || !tabData.studies || !Array.isArray(tabData.studies)) {
       return;
@@ -65,17 +65,16 @@ const StudyBrowser = ({ tabs, onClickStudy, onClickThumbnail }) => {
               <ThumbnailList
                 thumbnails={displaySets}
                 thumbnailActive={thumbnailActive}
-                onThumbnailClick={(thumbnailId) => {
-                    setThumbnailActive(
-                      thumbnailId === thumbnailActive ? null : thumbnailId
-                    )
+                onThumbnailClick={thumbnailId => {
+                  setThumbnailActive(
+                    thumbnailId === thumbnailActive ? null : thumbnailId
+                  );
 
-                    if (onClickThumbnail) {
-                      // TODO: what is thumbnailId? Should pass display set instead
-                      onClickThumbnail(thumbnailId);
-                    }
+                  if (onClickThumbnail) {
+                    // TODO: what is thumbnailId? Should pass display set instead
+                    onClickThumbnail(thumbnailId);
                   }
-                }
+                }}
               />
             )}
           </React.Fragment>
@@ -92,7 +91,7 @@ const StudyBrowser = ({ tabs, onClickStudy, onClickThumbnail }) => {
           color="inherit"
           className="border border-secondary-light rounded-md"
         >
-          {tabs.map((tab) => {
+          {tabs.map(tab => {
             const { name, label } = tab;
             const isActive = tabActive === name;
             return (
@@ -137,7 +136,7 @@ StudyBrowser.propTypes = {
           description: PropTypes.string,
           displaySets: PropTypes.arrayOf(
             PropTypes.shape({
-              displaySetInstanceUid: PropTypes.string.isRequired,
+              displaySetInstanceUID: PropTypes.string.isRequired,
               imageSrc: PropTypes.string,
               imageAltText: PropTypes.string,
               seriesDate: PropTypes.string,

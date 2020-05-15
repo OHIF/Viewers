@@ -74,8 +74,7 @@ export default function mode({ modeConfiguration }) {
               rightPanels: ['org.ohif.default.panelModule.measure'],
               viewports: [
                 {
-                  namespace:
-                    'org.ohif.cornerstone.viewportModule.OHIFCornerstoneViewport',
+                  namespace: 'org.ohif.cornerstone.viewportModule.cornerstone',
                   displaySetsToDisplay: [
                     'org.ohif.default.sopClassHandlerModule.stack',
                   ],

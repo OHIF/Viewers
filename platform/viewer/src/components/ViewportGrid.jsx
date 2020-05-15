@@ -8,7 +8,12 @@ import { ViewportGrid, ViewportPane } from '@ohif/ui';
 // import EmptyViewport from './EmptyViewport.js';
 
 function ViewerViewportGrid(props) {
-  const { activeViewportIndex, displaySets, children } = props;
+  const {
+    activeViewportIndex,
+    viewportData,
+    viewportComponents,
+    dataSource,
+  } = props;
 
   // From ViewportGridService and/or ContextProvider
   const [viewportGrid, setViewportGrid] = useState({
@@ -35,8 +40,20 @@ function ViewerViewportGrid(props) {
 
   const getViewportPanes = () =>
     viewportGrid.viewports.map((viewport, viewportIndex) => {
-      const someId = viewport.displaySetId;
-      // const displaySet = displaySets[someId];
+      const displaySet = viewportData[viewportIndex];
+
+      if (!displaySet) {
+        return (
+          <ViewportPane
+            key={viewportIndex}
+            className="m-1"
+            onDrop={() => {
+              /* setDisplaySet for Viewport */
+            }}
+            isActive={activeViewportIndex === viewportIndex}
+          ></ViewportPane>
+        );
+      }
 
       // if (!displaySet) {
       //   // TODO: Empty Viewport
@@ -48,14 +65,12 @@ function ViewerViewportGrid(props) {
       //     ? displaySet.plugin
       //     : layout.plugin;
 
-      // const ViewportComponent = _getViewportComponent(
-      //   data, // Why do we pass this as `ViewportData`, when that's not really what it is?
-      //   viewportIndex,
-      //   children,
+      // TODO -> Need way for other viewport e.g. vtk to be used.
 
-      //   pluginName,
-      //   defaultPluginName
-      // );
+      const ViewportComponent = _getViewportComponent(
+        displaySet,
+        viewportComponents
+      );
 
       return (
         <ViewportPane
@@ -66,13 +81,17 @@ function ViewerViewportGrid(props) {
           }}
           isActive={activeViewportIndex === viewportIndex}
         >
-          {/* {ViewportComponent} */}
+          <ViewportComponent
+            displaySet={displaySet}
+            viewportIndex={viewportIndex}
+            dataSource={dataSource}
+          />
         </ViewportPane>
       );
     });
 
   const ViewportPanes = React.useMemo(getViewportPanes, [
-    children,
+    viewportComponents,
     activeViewportIndex,
   ]);
 
@@ -86,16 +105,30 @@ function ViewerViewportGrid(props) {
 ViewerViewportGrid.propTypes = {
   // viewports: PropTypes.array.isRequired,
   activeViewportIndex: PropTypes.number.isRequired,
-  children: PropTypes.node,
+  viewportComponents: PropTypes.array.isRequired,
   // numRows: PropTypes.number.isRequired,
   // numColumns: PropTypes.number.isRequired,
 };
 
 ViewerViewportGrid.defaultProps = {
-  // viewports: [],
   // numRows: 1,
   // numColumns: 1,
+  viewportData: [],
+  viewportComponents: [],
   activeViewportIndex: 0,
 };
+
+function _getViewportComponent(displaySet, viewportComponents) {
+  const { SOPClassHandlerId } = displaySet;
+
+  for (let i = 0; i < viewportComponents.length; i++) {
+    if (
+      viewportComponents[i].displaySetsToDisplay.includes(SOPClassHandlerId)
+    ) {
+      const { component } = viewportComponents[i];
+      return component;
+    }
+  }
+}
 
 export default ViewerViewportGrid;

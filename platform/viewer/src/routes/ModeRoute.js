@@ -17,7 +17,7 @@ export default function ModeRoute({
   const {
     toolBarLayout,
     setToolBarLayout,
-    displaySetInstanceUids,
+    displaySetInstanceUIDs,
     setDisplaySetInstanceUids,
   } = useViewModel();
 
@@ -38,7 +38,7 @@ export default function ModeRoute({
   const createDisplaySets = useCallback(() => {
     // Add SOPClassHandlers to a new SOPClassManager.
     displaySetManager.init(extensionManager, sopClassHandlers, {
-      displaySetInstanceUids,
+      displaySetInstanceUIDs,
       setDisplaySetInstanceUids,
     });
 
@@ -49,7 +49,7 @@ export default function ModeRoute({
       queryParams,
       displaySetManager.makeDisplaySets
     );
-  }, [displaySetInstanceUids, location]);
+  }, [displaySetInstanceUIDs, location]);
 
   useEffect(() => {
     createDisplaySets();
@@ -84,6 +84,10 @@ export default function ModeRoute({
   const CombinedContextProvider = ({ children }) =>
     Compose({ components: contextModuleProviders, children });
 
+  function ViewportGridWithDataSource(props) {
+    return ViewportGrid({ ...props, dataSource });
+  }
+
   return (
     <CombinedContextProvider>
       {/* TODO: extensionManager is already provided to the extension module.
@@ -92,9 +96,9 @@ export default function ModeRoute({
       <DragAndDropProvider>
         <LayoutComponent
           extensionManager={extensionManager}
-          displaySetInstanceUids={displaySetInstanceUids}
+          displaySetInstanceUIDs={displaySetInstanceUIDs}
           toolBarLayout={toolBarLayout}
-          ViewportGrid={ViewportGrid}
+          ViewportGrid={ViewportGridWithDataSource}
           {...layoutTemplateData.props}
         />
       </DragAndDropProvider>

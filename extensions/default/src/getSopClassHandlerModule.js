@@ -15,7 +15,7 @@ const makeDisplaySet = instances => {
 
   // set appropriate attributes to image set...
   imageSet.setAttributes({
-    displaySetInstanceUid: imageSet.uid, // create a local alias for the imageSet UID
+    displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
     SeriesDate: instance.SeriesDate,
     SeriesTime: instance.SeriesTime,
     SeriesInstanceUID: instance.SeriesInstanceUID,

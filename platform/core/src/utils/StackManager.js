@@ -11,79 +11,37 @@ const stackUpdatedCallbacks = [];
  * Cornerstone meta data provider. This will be used to fill information
  * into the viewport overlays, and to calculate reference lines and orientation markers
  * @param  {Object} stackMap              stackMap object
- * @param  {Object} study                 Study object
  * @param  {Object} displaySet            The set of images to make the stack from
  * @return {Array}                        Array with image IDs
  */
-function createAndAddStack(stackMap, study, displaySet, stackUpdatedCallbacks) {
-  const images = displaySet.images;
+function createAndAddStack(
+  stackMap,
+  displaySet,
+  dataSource,
+  stackUpdatedCallbacks
+) {
+  const {
+    images,
+    displaySetInstanceUID,
+    StudyInstanceUID,
+    frameRate,
+    isClip,
+  } = displaySet;
   if (!images) {
     return;
   }
 
-  const numImages = images.length;
-  const imageIds = [];
-  let imageId;
-
-  displaySet.images.forEach((instance, imageIndex) => {
-    const image = instance.getData();
-    const metaData = {
-      instance: image, // in this context, instance will be the data of the InstanceMetadata object...
-      series: displaySet, // TODO: Check this
-      study,
-      numImages,
-      imageIndex: imageIndex + 1,
-    };
-
-    const naturalizedInstance = instance.getData().metadata;
-    const NumberOfFrames = naturalizedInstance.NumberOfFrames;
-
-    if (NumberOfFrames > 1) {
-      for (let i = 0; i < NumberOfFrames; i++) {
-        metaData.frameNumber = i;
-        imageId = getImageId(image, i);
-        imageIds.push(imageId);
-
-        const {
-          StudyInstanceUID,
-          SeriesInstanceUID,
-          SOPInstanceUID,
-        } = instance.getData().metadata;
-
-        metadataProvider.addImageIdToUIDs(imageId, {
-          StudyInstanceUID,
-          SeriesInstanceUID,
-          SOPInstanceUID,
-        });
-      }
-    } else {
-      metaData.frameNumber = 1;
-      imageId = getImageId(image);
-      imageIds.push(imageId);
-
-      const {
-        StudyInstanceUID,
-        SeriesInstanceUID,
-        SOPInstanceUID,
-      } = naturalizedInstance;
-
-      metadataProvider.addImageIdToUIDs(imageId, {
-        StudyInstanceUID,
-        SeriesInstanceUID,
-        SOPInstanceUID,
-      });
-    }
-  });
+  const imageIds = dataSource.getImageIdsForDisplaySet(displaySetInstanceUID);
 
   const stack = {
-    StudyInstanceUID: study.StudyInstanceUID,
-    displaySetInstanceUID: displaySet.displaySetInstanceUID,
+    StudyInstanceUID,
+    displaySetInstanceUID,
     imageIds,
-    frameRate: displaySet.frameRate,
-    isClip: displaySet.isClip,
+    frameRate,
+    isClip,
   };
 
-  stackMap[displaySet.displaySetInstanceUID] = stack;
+  stackMap[displaySetInstanceUID] = stack;
 
   return stack;
 }
@@ -106,15 +64,14 @@ const StackManager = {
   },
   /**
    * Create a stack from an image set, as well as add in the metadata on a per image bases.
-   * @param study The study who's metadata will be added
    * @param displaySet The set of images to make the stack from
    * @return {Array} Array with image IDs
    */
-  makeAndAddStack(study, displaySet) {
+  makeAndAddStack(displaySet, dataSource) {
     return configuration.createAndAddStack(
       stackMap,
-      study,
       displaySet,
+      dataSource,
       stackUpdatedCallbacks
     );
   },
@@ -128,15 +85,14 @@ const StackManager = {
   },
   /**
    * Find a stack or reate one if it has not been created yet
-   * @param study The study who's metadata will be added
    * @param displaySet The set of images to make the stack from
    * @return {Array} Array with image IDs
    */
-  findOrCreateStack(study, displaySet) {
+  findOrCreateStack(displaySet, dataSource) {
     let stack = this.findStack(displaySet.displaySetInstanceUID);
 
     if (!stack || !stack.imageIds) {
-      stack = this.makeAndAddStack(study, displaySet);
+      stack = this.makeAndAddStack(displaySet, dataSource);
     }
 
     return stack;

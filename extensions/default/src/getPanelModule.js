@@ -40,7 +40,7 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
   const seriesTracking = {}; //useSeriesTracking();
 
   useEffect(() => {
-    if (!viewModel.displaySetInstanceUids.length) {
+    if (!viewModel.displaySetInstanceUIDs.length) {
       return;
     }
 
@@ -57,7 +57,7 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
 
     const { cornerstone, cornerstoneTools } = command.commandFn();
 
-    viewModel.displaySetInstanceUids.forEach(uid => {
+    viewModel.displaySetInstanceUIDs.forEach(uid => {
       const imageIds = dataSource.getImageIdsForDisplaySet(uid);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
@@ -68,7 +68,7 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
       });
     });
 
-    const displaySets = viewModel.displaySetInstanceUids.map(
+    const displaySets = viewModel.displaySetInstanceUIDs.map(
       displaySetManager.getDisplaySetByUID
     );
 
@@ -98,7 +98,7 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
       const studiesFromInstanceData = {};
       displaySets.forEach(ds => {
         const displaySet = {
-          displaySetInstanceUid: ds.displaySetInstanceUid,
+          displaySetInstanceUID: ds.displaySetInstanceUID,
           description: ds.SeriesDescription,
           seriesNumber: ds.SeriesNumber,
           modality: ds.Modality,
@@ -107,7 +107,7 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
         };
 
         const displaySetViewportData = viewportData.find(
-          a => a.displaySetInstanceUid === ds.displaySetInstanceUid
+          a => a.displaySetInstanceUID === ds.displaySetInstanceUID
         );
 
         if (displaySetViewportData) {
@@ -192,11 +192,11 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
     });
 
     return () => (isSubscribed = false);
-  }, [viewModel.displaySetInstanceUids]);
+  }, [viewModel.displaySetInstanceUIDs]);
 
   studyData.forEach(study => {
     study.displaySets.forEach(ds => {
-      ds.imageSrc = thumbnailImageSrcMap.get(ds.displaySetInstanceUid);
+      ds.imageSrc = thumbnailImageSrcMap.get(ds.displaySetInstanceUID);
     });
   });
 

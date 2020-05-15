@@ -8,7 +8,7 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
     <div className="bg-black py-3">
       {thumbnails.map(
         ({
-          displaySetInstanceUid,
+          displaySetInstanceUID,
           description,
           seriesNumber,
           numInstances,
@@ -20,13 +20,13 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
           imageSrc,
           imageAltText,
         }) => {
-          const isActive = thumbnailActive === displaySetInstanceUid;
+          const isActive = thumbnailActive === displaySetInstanceUID;
 
           switch (componentType) {
             case 'thumbnail':
               return (
                 <Thumbnail
-                  key={displaySetInstanceUid}
+                  key={displaySetInstanceUID}
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
@@ -34,23 +34,23 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
                   imageAltText={imageAltText}
                   viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
-                  onClick={() => onThumbnailClick(displaySetInstanceUid)}
+                  onClick={() => onThumbnailClick(displaySetInstanceUID)}
                 />
               );
             case 'thumbnailNoImage':
               return (
                 <ThumbnailNoImage
-                  key={displaySetInstanceUid}
+                  key={displaySetInstanceUID}
                   modality={modality}
                   seriesDate={seriesDate}
                   description={description}
-                  onClick={() => onThumbnailClick(displaySetInstanceUid)}
+                  onClick={() => onThumbnailClick(displaySetInstanceUID)}
                 />
               );
             case 'thumbnailTracked':
               return (
                 <ThumbnailTracked
-                  key={displaySetInstanceUid}
+                  key={displaySetInstanceUID}
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
@@ -59,7 +59,7 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
                   viewportIdentificator={viewportIdentificator}
                   isTracked={isTracked}
                   isActive={isActive}
-                  onClick={() => onThumbnailClick(displaySetInstanceUid)}
+                  onClick={() => onThumbnailClick(displaySetInstanceUID)}
                 />
               );
             default:
@@ -74,7 +74,7 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
 ThumbnailList.propTypes = {
   thumbnails: PropTypes.arrayOf(
     PropTypes.shape({
-      displaySetInstanceUid: PropTypes.string.isRequired,
+      displaySetInstanceUID: PropTypes.string.isRequired,
       imageSrc: PropTypes.string,
       imageAltText: PropTypes.string,
       seriesDate: PropTypes.string,

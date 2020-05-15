@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-
-import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
+import CornerstoneViewport from 'react-cornerstone-viewport';
+//import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
@@ -18,9 +18,9 @@ class OHIFCornerstoneViewport extends Component {
   };
 
   static propTypes = {
-    studies: PropTypes.object,
     displaySet: PropTypes.object,
     viewportIndex: PropTypes.number,
+    dataSource: PropTypes.object,
     children: PropTypes.node,
     customProps: PropTypes.object,
   };
@@ -39,98 +39,57 @@ class OHIFCornerstoneViewport extends Component {
   /**
    * Obtain the CornerstoneTools Stack for the specified display set.
    *
-   * @param {Object[]} studies
-   * @param {String} StudyInstanceUID
-   * @param {String} displaySetInstanceUID
-   * @param {String} [SOPInstanceUID]
-   * @param {Number} [frameIndex=1]
+   * @param {Object} displaySet
+   * @param {Object} dataSource
    * @return {Object} CornerstoneTools Stack
    */
-  static getCornerstoneStack(
-    studies,
-    StudyInstanceUID,
-    displaySetInstanceUID,
-    SOPInstanceUID,
-    frameIndex = 0
-  ) {
-    if (!studies || !studies.length) {
-      throw new Error('Studies not provided.');
-    }
-
-    if (!StudyInstanceUID) {
-      throw new Error('StudyInstanceUID not provided.');
-    }
-
-    if (!displaySetInstanceUID) {
-      throw new Error('StudyInstanceUID not provided.');
-    }
-
-    // Create shortcut to displaySet
-    const study = studies.find(
-      study => study.StudyInstanceUID === StudyInstanceUID
-    );
-
-    if (!study) {
-      throw new Error('Study not found.');
-    }
-
-    const displaySet = study.displaySets.find(set => {
-      return set.displaySetInstanceUID === displaySetInstanceUID;
-    });
-
-    if (!displaySet) {
-      throw new Error('Display Set not found.');
-    }
+  static getCornerstoneStack(displaySet, dataSource) {
+    const { frameIndex } = displaySet;
 
     // Get stack from Stack Manager
-    const storedStack = StackManager.findOrCreateStack(study, displaySet);
+    const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
 
     // Clone the stack here so we don't mutate it
     const stack = Object.assign({}, storedStack);
+
     stack.currentImageIdIndex = frameIndex;
 
-    if (SOPInstanceUID) {
-      const index = stack.imageIds.findIndex(imageId => {
-        const imageIdSOPInstanceUID = cornerstone.metaData.get(
-          'SOPInstanceUID',
-          imageId
-        );
+    // TODO -> Do we ever use this like this?
+    // if (SOPInstanceUID) {
+    //   const index = stack.imageIds.findIndex(imageId => {
+    //     const imageIdSOPInstanceUID = cornerstone.metaData.get(
+    //       'SOPInstanceUID',
+    //       imageId
+    //     );
 
-        return imageIdSOPInstanceUID === SOPInstanceUID;
-      });
+    //     return imageIdSOPInstanceUID === SOPInstanceUID;
+    //   });
 
-      if (index > -1) {
-        stack.currentImageIdIndex = index;
-      } else {
-        console.warn(
-          'SOPInstanceUID provided was not found in specified DisplaySet'
-        );
-      }
-    }
+    //   if (index > -1) {
+    //     stack.currentImageIdIndex = index;
+    //   } else {
+    //     console.warn(
+    //       'SOPInstanceUID provided was not found in specified DisplaySet'
+    //     );
+    //   }
+    // }
 
     return stack;
   }
 
-  getViewportData = async (
-    studies,
-    StudyInstanceUID,
-    displaySetInstanceUID,
-    SOPInstanceUID,
-    frameIndex
-  ) => {
+  getViewportData = async displaySet => {
     let viewportData;
 
+    const { dataSource } = this.props;
+
     const stack = OHIFCornerstoneViewport.getCornerstoneStack(
-      studies,
-      StudyInstanceUID,
-      displaySetInstanceUID,
-      SOPInstanceUID,
-      frameIndex
+      displaySet,
+      dataSource
     );
 
     viewportData = {
-      StudyInstanceUID,
-      displaySetInstanceUID,
+      StudyInstanceUID: displaySet.StudyInstanceUID,
+      displaySetInstanceUID: displaySet.displaySetInstanceUID,
       stack,
     };
 
@@ -138,32 +97,24 @@ class OHIFCornerstoneViewport extends Component {
   };
 
   setStateFromProps() {
-    const { studies, displaySet } = this.props.viewportData;
+    const { displaySet } = this.props;
     const {
       StudyInstanceUID,
       displaySetInstanceUID,
-      sopClassUIDs,
-      SOPInstanceUID,
-      frameIndex,
+      sopClassUids,
     } = displaySet;
 
     if (!StudyInstanceUID || !displaySetInstanceUID) {
       return;
     }
 
-    if (sopClassUIDs && sopClassUIDs.length > 1) {
+    if (sopClassUids && sopClassUids.length > 1) {
       console.warn(
         'More than one SOPClassUID in the same series is not yet supported.'
       );
     }
 
-    this.getViewportData(
-      studies,
-      StudyInstanceUID,
-      displaySetInstanceUID,
-      SOPInstanceUID,
-      frameIndex
-    ).then(viewportData => {
+    this.getViewportData(displaySet).then(viewportData => {
       this.setState({
         viewportData,
       });
@@ -175,8 +126,8 @@ class OHIFCornerstoneViewport extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { displaySet } = this.props.viewportData;
-    const prevDisplaySet = prevProps.viewportData.displaySet;
+    const { displaySet } = this.props;
+    const prevDisplaySet = prevProps.displaySet;
 
     if (
       displaySet.displaySetInstanceUID !==
@@ -232,9 +183,11 @@ class OHIFCornerstoneViewport extends Component {
       700
     );
 
+    // TODO -> We may still want a wrapped component to define all the measurement api stuff.
+
     return (
       <>
-        <ConnectedCornerstoneViewport
+        {/* <ConnectedCornerstoneViewport
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
@@ -246,6 +199,16 @@ class OHIFCornerstoneViewport extends Component {
           // onElementEnabled={() => {}}
           // setViewportActive{() => {}}
           {...this.props.customProps}
+        /> */}
+        <CornerstoneViewport
+          viewportIndex={viewportIndex}
+          imageIds={imageIds}
+          imageIdIndex={currentImageIdIndex}
+          onNewImage={debouncedNewImageHandler}
+          isActive={true} // todo
+          isStackPrefetchEnabled={true} // todo
+          isPlaying={false}
+          frameRate={24}
         />
         {childrenWithProps}
       </>

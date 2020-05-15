@@ -105,9 +105,9 @@ export default class ExtensionManager {
             this._initToolBarModule(extensionModule, extensionId);
             break;
 
+          case MODULE_TYPES.VIEWPORT:
           case MODULE_TYPES.PANEL:
           case MODULE_TYPES.SOP_CLASS_HANDLER:
-          case MODULE_TYPES.VIEWPORT:
           case MODULE_TYPES.CONTEXT:
           case MODULE_TYPES.LAYOUT_TEMPLATE:
             // Default for most extension points,
@@ -118,6 +118,7 @@ export default class ExtensionManager {
                 `${extensionId}.${moduleType}.${element.name}`
               ] = element;
             });
+            break;
         }
 
         this.modules[moduleType].push({

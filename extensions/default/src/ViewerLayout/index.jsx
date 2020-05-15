@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SidePanel, Toolbar } from '@ohif/ui';
 //
 import Header from './Header.jsx';
+import { displaySetManager } from '@ohif/core';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -11,7 +12,8 @@ function ViewerLayout({
   leftPanels,
   rightPanels,
   toolBarLayout,
-  displaySetInstanceUids,
+  viewports,
+  displaySetInstanceUIDs,
   ViewportGrid,
 }) {
   /**
@@ -28,6 +30,17 @@ function ViewerLayout({
     };
   }, []);
 
+  // TODO -> Need some way of selecting which displaySets hit the viewports.
+  const [viewportData, setViewportData] = useState([]);
+
+  console.log(displaySetInstanceUIDs);
+
+  useEffect(() => {
+    setViewportData([
+      displaySetManager.getDisplaySetByUID(displaySetInstanceUIDs[0]),
+    ]);
+  }, [displaySetInstanceUIDs]);
+
   const getPanelData = id => {
     const entry = extensionManager.getModuleEntry(id);
     // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
@@ -42,11 +55,22 @@ function ViewerLayout({
     };
   };
 
+  const getViewportComponentData = viewportComponent => {
+    const entry = extensionManager.getModuleEntry(viewportComponent.namespace);
+
+    return {
+      component: entry.component,
+      displaySetsToDisplay: viewportComponent.displaySetsToDisplay,
+    };
+  };
+
   const leftPanelComponents = leftPanels.map(getPanelData);
   const rightPanelComponents = rightPanels.map(getPanelData);
 
-  console.warn(displaySetInstanceUids);
-  console.warn(toolBarLayout);
+  const viewportComponents = viewports.map(getViewportComponentData);
+
+  console.log(displaySetInstanceUIDs);
+  console.log(toolBarLayout);
 
   const [primaryToolBarLayout, secondaryToolBarLayout] = toolBarLayout;
 
@@ -72,7 +96,10 @@ function ViewerLayout({
             <Toolbar type="secondary" tools={secondaryToolBarLayout.tools} />
           </div>
           <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center pb-2 pt-1">
-            <ViewportGrid />
+            <ViewportGrid
+              viewportData={viewportData}
+              viewportComponents={viewportComponents}
+            />
             {/*
               viewportContents={[
                 <Viewport
@@ -152,7 +179,7 @@ ViewerLayout.propTypes = {
       moreTools: PropTypes.array,
     })
   ).isRequired,
-  displaySetInstanceUids: PropTypes.any.isRequired,
+  displaySetInstanceUIDs: PropTypes.any.isRequired,
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
