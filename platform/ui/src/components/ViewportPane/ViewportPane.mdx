@@ -5,7 +5,7 @@ route: components/viewport-pane
 ---
 
 import { Playground, Props } from 'docz';
-import { ViewportGrid, ViewportPane } from '@ohif/ui';
+import { DragAndDropContext, ViewportGrid, ViewportPane } from '@ohif/ui';
 
 # ViewportPane
 
@@ -21,10 +21,12 @@ import { ViewportPane } from '@ohif/ui';
 
 <Playground>
   <div className="p-4 h-56">
-    <ViewportGrid>
-      <ViewportPane><h3>Hello</h3></ViewportPane>
-      <ViewportPane><h3>World</h3></ViewportPane>
-    </ViewportGrid>
+    <DragAndDropContext>
+      <ViewportGrid numRows={1} numCols={2}>
+        <ViewportPane onDrop={() => {}} isActive={true}><h3>Hello</h3></ViewportPane>
+        <ViewportPane onDrop={() => {}} isActive={false}><h3>World</h3></ViewportPane>
+      </ViewportGrid>
+    </DragAndDropContext>
   </div>
 </Playground>
 

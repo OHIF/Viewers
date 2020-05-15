@@ -38,6 +38,8 @@
     "react": "16.11.0",
     "react-dates": "^21.8.0",
     "react-dnd": "^10.0.2",
+    "react-dnd-html5-backend": "^10.0.2",
+    "react-dnd-touch-backend": "^10.0.2",
     "react-dom": "16.11.0",
     "react-powerplug": "1.0.0",
     "react-select": "^3.0.8",

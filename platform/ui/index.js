@@ -4,6 +4,7 @@ export { utils };
 
 /** CONTEXT/HOOKS */
 export {
+  DragAndDropContext,
   ModalProvider,
   ModalConsumer,
   useModal,
@@ -60,6 +61,7 @@ export {
   Viewport,
   ViewportActionBar,
   ViewportGrid,
+  ViewportPane,
 } from './src/components';
 
 /** VIEWS */

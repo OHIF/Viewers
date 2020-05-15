@@ -1,2 +1,2 @@
-import ViewportPane from './ViewportPane.jsx';
+import ViewportPane from './ViewportPane';
 export default ViewportPane;
