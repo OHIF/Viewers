@@ -85,9 +85,6 @@ function ViewerLayout({
                     },
                   }}
                 >
-                  <div className="flex justify-center items-center h-full">
-                    CONTENT
-                  </div>
                 </Viewport>,
                 <Viewport
                   viewportIndex={1}
@@ -112,9 +109,6 @@ function ViewerLayout({
                     },
                   }}
                 >
-                  <div className="flex justify-center items-center h-full">
-                    CONTENT
-                  </div>
                 </Viewport>,
               ]}
               setActiveViewportIndex={setActiveViewportIndex}
