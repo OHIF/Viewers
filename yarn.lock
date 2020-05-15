@@ -16532,12 +16532,27 @@ react-dev-utils@^4.2.3:
     strip-ansi "3.0.1"
     text-table "0.2.0"
 
+react-dnd-html5-backend@^10.0.2:
+  version "10.0.2"
+  resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-10.0.2.tgz#15cb9d2b923f43576a136df854e288cb5969784c"
+  integrity sha512-ny17gUdInZ6PIGXdzfwPhoztRdNVVvjoJMdG80hkDBamJBeUPuNF2Wv4D3uoQJLjXssX1+i9PhBqc7EpogClwQ==
+  dependencies:
+    dnd-core "^10.0.2"
+
 react-dnd-html5-backend@^9.4.0:
   version "9.5.1"
   resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-9.5.1.tgz#e6a0aed3ece800c1abe004f9ed9991513e2e644c"
   integrity sha512-wUdzjREwLqHxFkA6E+XDVL5IFjRDbBI3SHVKil9n3qrGT5dm2tA2oi1aIALdfMKsu00c+OXA9lz/LuKZCE9KXg==
   dependencies:
     dnd-core "^9.5.1"
+
+react-dnd-touch-backend@^10.0.2:
+  version "10.0.2"
+  resolved "https://registry.yarnpkg.com/react-dnd-touch-backend/-/react-dnd-touch-backend-10.0.2.tgz#90cb916655539b838d49b8895e1813f8b874b3b4"
+  integrity sha512-+lW/Ern0dKyHToD0oP+Wc/ZD6l7qJazosLqbjzL7OnPlig6WxdlrHkJylOLkeAdZj41fIJJ551Lb57pIL0CcPw==
+  dependencies:
+    "@react-dnd/invariant" "^2.0.0"
+    dnd-core "^10.0.2"
 
 react-dnd-touch-backend@^9.4.0:
   version "9.5.1"
