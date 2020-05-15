@@ -72,7 +72,7 @@ let extensionManager;
 window.store = store;
 
 window.ohif = window.ohif || {};
-window.ohif.app: {
+window.ohif.app = {
   commandsManager,
   hotkeysManager,
   servicesManager,
