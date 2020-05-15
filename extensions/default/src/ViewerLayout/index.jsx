@@ -57,23 +57,23 @@ function ViewerLayout({
         moreTools={primaryToolBarLayout.moreTools}
       />
       <div
-        className="flex flex-row flex-no-wrap flex-1 items-stretch overflow-hidden w-full"
+        className="flex flex-row flex-no-wrap items-stretch overflow-hidden w-full"
         style={{ height: 'calc(100vh - 57px' }}
       >
+        {/* LEFT SIDEPANELS */}
         <SidePanel
           side="left"
           defaultComponentOpen={leftPanelComponents[0].name}
           childComponents={leftPanelComponents}
         />
-        <div className="flex flex-col flex-1 h-full pb-2">
+        {/* TOOLBAR + GRID */}
+        <div className="flex flex-col flex-1 h-full">
           <div className="flex flex-2 w-100 border-b border-transparent h-12">
             <Toolbar type="secondary" tools={secondaryToolBarLayout.tools} />
           </div>
-          <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center">
+          <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center pb-2 pt-1">
             <ViewportGrid />
-            {/*<ViewportGrid
-              rows={1}
-              cols={2}
+            {/*
               viewportContents={[
                 <Viewport
                   viewportIndex={0}

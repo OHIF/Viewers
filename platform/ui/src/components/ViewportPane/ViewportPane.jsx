@@ -35,7 +35,7 @@ function ViewportPane({ children, className, isActive, onDrop }) {
       className={classnames(
         'rounded-lg hover:border-primary-light transition duration-300 outline-none overflow-hidden',
         {
-          'border-2 border-primary-light -m-px': isActive,
+          'border-2 border-primary-light m-0': isActive,
           'border border-secondary-light': !isActive,
         },
         className
