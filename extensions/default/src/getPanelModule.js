@@ -1,19 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StudyBrowser } from '@ohif/ui';
-
 import {
   dicomMetadataStore,
   useViewModel,
   displaySetManager,
 } from '@ohif/core';
 
-// Create map in local state from displaySetInstanceUids to thumbnails
-// Get thumbnail imageId from displaySet
-// When displaySetInstanceUids change, initiate async render into canvas
-// Get image data-uri from canvas offscreen
-// Set image data-uri into state (NOTE: This will probably end up in the fucking browser cache, NEED to find a way to prevent that from happening)
-// state triggers rerender
-//
+import MeasurementTable from './MeasurementTable.js';
+
 // TODO:
 // - No loading UI exists yet
 // - cancel promises when component is destroyed
@@ -253,12 +247,21 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
   return <StudyBrowser tabs={tabs} onClickStudy={memoOnClickStudy} />;
 }
 
-function getPanelModule({ getDataSources, commandsManager }) {
+function getPanelModule({ getDataSources, commandsManager, servicesManager }) {
   const wrappedStudyBrowserPanel = () => {
     return (
       <StudyBrowserPanel
         getDataSources={getDataSources}
         commandsManager={commandsManager}
+      />
+    );
+  };
+
+  const wrappedMeasurementPanel = () => {
+    return (
+      <MeasurementTable
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
       />
     );
   };
@@ -276,7 +279,7 @@ function getPanelModule({ getDataSources, commandsManager }) {
       iconName: 'list-bullets',
       iconLabel: 'Measure',
       label: 'Measurements',
-      component: wrappedStudyBrowserPanel,
+      component: wrappedMeasurementPanel,
     },
   ];
 }
