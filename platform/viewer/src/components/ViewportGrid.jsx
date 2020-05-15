@@ -3,31 +3,33 @@
  */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-//
-import ViewportPane from './ViewportPane.jsx';
+import { ViewportGrid, ViewportPane } from '@ohif/ui';
 // import DefaultViewport from './DefaultViewport.js';
 // import EmptyViewport from './EmptyViewport.js';
 
-function ViewportGrid(props) {
-  const {
-    activeViewportIndex,
-    displaySets,
-    numRows,
-    numColumns,
-    children,
-  } = props;
+function ViewerViewportGrid(props) {
+  const { activeViewportIndex, displaySets, children } = props;
 
   // From ViewportGridService and/or ContextProvider
   const [viewportGrid, setViewportGrid] = useState({
+    numRows: 2,
+    numCols: 2,
+    activeViewportIndex: 0,
     viewports: [
+      {
+        displaySetUid: undefined,
+      },
+      {
+        displaySetUid: undefined,
+      },
+      {
+        displaySetUid: undefined,
+      },
       {
         displaySetUid: undefined,
       },
     ],
   });
-
-  const rowSize = 100 / numRows;
-  const colSize = 100 / numColumns;
 
   // viewportData --> displaySets
 
@@ -58,10 +60,10 @@ function ViewportGrid(props) {
       return (
         <ViewportPane
           key={viewportIndex}
+          className="m-1"
           onDrop={() => {
             /* setDisplaySet for Viewport */
           }}
-          viewportIndex={viewportIndex}
           isActive={activeViewportIndex === viewportIndex}
         >
           {/* {ViewportComponent} */}
@@ -75,34 +77,25 @@ function ViewportGrid(props) {
   ]);
 
   return (
-    <div
-      data-cy="viewport-grid"
-      style={{
-        display: 'grid',
-        gridTemplateRows: `repeat(${numRows}, ${rowSize}%)`,
-        gridTemplateColumns: `repeat(${numColumns}, ${colSize}%)`,
-        height: '100%',
-        width: '100%',
-      }}
-    >
+    <ViewportGrid numRows={viewportGrid.numRows} numCols={viewportGrid.numCols}>
       {ViewportPanes}
-    </div>
+    </ViewportGrid>
   );
 }
 
-ViewportGrid.propTypes = {
+ViewerViewportGrid.propTypes = {
   // viewports: PropTypes.array.isRequired,
   activeViewportIndex: PropTypes.number.isRequired,
   children: PropTypes.node,
-  numRows: PropTypes.number.isRequired,
-  numColumns: PropTypes.number.isRequired,
+  // numRows: PropTypes.number.isRequired,
+  // numColumns: PropTypes.number.isRequired,
 };
 
-ViewportGrid.defaultProps = {
+ViewerViewportGrid.defaultProps = {
   // viewports: [],
-  numRows: 1,
-  numColumns: 1,
+  // numRows: 1,
+  // numColumns: 1,
   activeViewportIndex: 0,
 };
 
-export default ViewportGrid;
+export default ViewerViewportGrid;
