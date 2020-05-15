@@ -6,7 +6,7 @@ import { useDrop } from 'react-dnd';
 // NOTE: If we found a way to make `useDrop` conditional,
 // Or we provided a HOC of this component, we could provide
 // this UI without the DragAndDropContext dependency.
-function ViewportPane({ children, isActive, onDrop }) {
+function ViewportPane({ children, className, isActive, onDrop }) {
   const [{ isHovered, isHighlighted }, drop] = useDrop({
     accept: 'displayset',
     // TODO: pass in as prop?
@@ -37,7 +37,8 @@ function ViewportPane({ children, isActive, onDrop }) {
         {
           'border-2 border-primary-light -m-px': isActive,
           'border border-secondary-light': !isActive,
-        }
+        },
+        className
       )}
     >
       {children}
@@ -48,6 +49,8 @@ function ViewportPane({ children, isActive, onDrop }) {
 ViewportPane.propTypes = {
   /** The ViewportComp */
   children: PropTypes.node.isRequired,
+  /** Classes to append to container */
+  className: PropTypes.string,
   /** Bool to show active styling */
   isActive: PropTypes.bool.isRequired,
   /** Function that handles drop events */
