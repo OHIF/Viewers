@@ -15,6 +15,20 @@ function ViewerLayout({
   displaySetInstanceUids,
   ViewportGrid,
 }) {
+  /**
+   * Set body classes (tailwindcss) that don't allow vertical
+   * or horizontal overflow (no scrolling). Also guarantee window
+   * is sized to our viewport.
+   */
+  useEffect(() => {
+    document.body.classList.add('bg-black');
+    document.body.classList.add('overflow-hidden');
+    return () => {
+      document.body.classList.remove('bg-black');
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, []);
+
   const getPanelData = id => {
     const entry = extensionManager.getModuleEntry(id);
     // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
