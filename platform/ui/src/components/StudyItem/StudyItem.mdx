@@ -1,0 +1,46 @@
+---
+name: StudyItem
+menu: General
+route: components/studyItem
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import { StudyItem } from '@ohif/ui';
+
+# StudyItem
+
+Used to expose study information as a card
+
+## Import
+
+```javascript
+import { StudyItem } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    const [studyActive, setStudyActive] = useState(null);
+    return (
+      <div className="flex flex-1 items-center justify-center p-4">
+        <div className="w-56">
+          <StudyItem
+            studyInstanceUid="1"
+            date="07-Sept-2010"
+            description="CHEST/ABD/PELVIS W/CONTRAST"
+            numInstances={902}
+            modalities="CT,SR"
+            isActive={studyActive}
+            onClick={() => setStudyActive(studyActive === '1' ? null : '1')}
+          />
+        </div>
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={StudyItem} />

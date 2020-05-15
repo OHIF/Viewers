@@ -15,7 +15,7 @@ export const Layout = ({ children }) => {
   const nav = useRef();
 
   const handleSidebarToggle = () => {
-    setSidebarOpen((s) => !s);
+    setSidebarOpen(s => !s);
   };
 
   return (
