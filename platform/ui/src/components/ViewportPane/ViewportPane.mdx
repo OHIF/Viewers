@@ -1,0 +1,33 @@
+---
+name: ViewportPane
+menu: General
+route: components/viewport-pane
+---
+
+import { Playground, Props } from 'docz';
+import { ViewportGrid, ViewportPane } from '@ohif/ui';
+
+# ViewportPane
+
+Used to display viewports in the viewer page.
+
+## Import
+
+```javascript
+import { ViewportPane } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  <div className="p-4 h-56">
+    <ViewportGrid>
+      <ViewportPane><h3>Hello</h3></ViewportPane>
+      <ViewportPane><h3>World</h3></ViewportPane>
+    </ViewportGrid>
+  </div>
+</Playground>
+
+## Properties
+
+<Props of={ViewportPane} />
