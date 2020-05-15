@@ -18,6 +18,8 @@ const ThumbnailList = ({ thumbnails }) => {
           viewportIdentificator,
           isTracked,
           isActive,
+          imageSrc,
+          imageAltText,
         }) => {
           switch (componentType) {
             case 'thumbnail':
@@ -27,6 +29,9 @@ const ThumbnailList = ({ thumbnails }) => {
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
+                  imageSrc={imageSrc}
+                  imageAltText={imageAltText}
+                  viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
                   onClick={() => {}}
                 />
@@ -48,6 +53,8 @@ const ThumbnailList = ({ thumbnails }) => {
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
+                  imageSrc={imageSrc}
+                  imageAltText={imageAltText}
                   viewportIdentificator={viewportIdentificator}
                   isTracked={isTracked}
                   isActive={isActive}

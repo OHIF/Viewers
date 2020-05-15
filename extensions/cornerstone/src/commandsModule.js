@@ -12,6 +12,9 @@ const { setViewportSpecificData } = OHIF.redux.actions;
 
 const commandsModule = ({ servicesManager }) => {
   const actions = {
+    getCornerstoneLibraries: () => {
+      return { cornerstone, cornerstoneTools };
+    },
     rotateViewport: ({ viewports, rotation }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
 
@@ -262,23 +265,28 @@ const commandsModule = ({ servicesManager }) => {
       StudyInstanceUID,
       SOPInstanceUID,
       frameIndex,
-      activeViewportIndex
+      activeViewportIndex,
     }) => {
       const study = studyMetadataManager.get(StudyInstanceUID);
 
       const displaySet = study.findDisplaySet(ds => {
-        return ds.images && ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
+        return (
+          ds.images &&
+          ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
+        );
       });
 
       displaySet.SOPInstanceUID = SOPInstanceUID;
       displaySet.frameIndex = frameIndex;
 
-      window.store.dispatch(setViewportSpecificData(activeViewportIndex, displaySet));
+      window.store.dispatch(
+        setViewportSpecificData(activeViewportIndex, displaySet)
+      );
 
       cornerstone.getEnabledElements().forEach(enabledElement => {
         cornerstone.updateImage(enabledElement.element);
       });
-    }
+    },
   };
 
   const definitions = {
@@ -286,6 +294,12 @@ const commandsModule = ({ servicesManager }) => {
       commandFn: actions.jumpToImage,
       storeContexts: [],
       options: {},
+    },
+    getCornerstoneLibraries: {
+      commandFn: actions.getCornerstoneLibraries,
+      storeContexts: [],
+      options: {},
+      context: 'VIEWER',
     },
     getNearbyToolData: {
       commandFn: actions.getNearbyToolData,
