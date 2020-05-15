@@ -4,7 +4,7 @@ export { utils };
 
 /** CONTEXT/HOOKS */
 export {
-  DragAndDropContext,
+  DragAndDropProvider,
   ModalProvider,
   ModalConsumer,
   useModal,
