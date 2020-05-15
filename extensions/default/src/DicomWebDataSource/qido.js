@@ -105,12 +105,12 @@ function search(
   dicomWebClient,
   studyInstanceUid,
   seriesInstanceUid,
-  queryParamaters
+  queryParameters
 ) {
   // Studies
   return dicomWebClient.searchForStudies({
     studyInstanceUid: undefined,
-    queryParams: queryParamaters,
+    queryParams: queryParameters,
   });
 }
 

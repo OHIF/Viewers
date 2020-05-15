@@ -31,7 +31,7 @@ function ViewerLayout({
   const getPanelData = id => {
     const entry = extensionManager.getModuleEntry(id);
     // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
-    const content = entry.component({});
+    const content = entry.component({ extensionManager });
 
     return {
       iconName: entry.iconName,

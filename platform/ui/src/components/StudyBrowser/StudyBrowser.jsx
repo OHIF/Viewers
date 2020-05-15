@@ -22,7 +22,7 @@ const getTrackedSeries = (displaySets) => {
   return trackedSeries;
 };
 
-const StudyBrowser = ({ tabs }) => {
+const StudyBrowser = ({ tabs, onClickStudy, onClickThumbnail }) => {
   const [tabActive, setTabActive] = useState(getInitialActiveTab(tabs));
   const [studyActive, setStudyActive] = useState(null);
   const [thumbnailActive, setThumbnailActive] = useState(null);
@@ -55,16 +55,26 @@ const StudyBrowser = ({ tabs }) => {
               isActive={isActive}
               onClick={() => {
                 setStudyActive(isActive ? null : studyInstanceUid);
+
+                if (onClickStudy) {
+                  onClickStudy(studyInstanceUid);
+                }
               }}
             />
             {isActive && displaySets && (
               <ThumbnailList
                 thumbnails={displaySets}
                 thumbnailActive={thumbnailActive}
-                onThumbnailClick={(thumbnailId) =>
-                  setThumbnailActive(
-                    thumbnailId === thumbnailActive ? null : thumbnailId
-                  )
+                onThumbnailClick={(thumbnailId) => {
+                    setThumbnailActive(
+                      thumbnailId === thumbnailActive ? null : thumbnailId
+                    )
+
+                    if (onClickThumbnail) {
+                      // TODO: what is thumbnailId? Should pass display set instead
+                      onClickThumbnail(thumbnailId);
+                    }
+                  }
                 }
               />
             )}
@@ -112,6 +122,8 @@ const StudyBrowser = ({ tabs }) => {
 };
 
 StudyBrowser.propTypes = {
+  onClickStudy: PropTypes.func,
+  onClickThumbnail: PropTypes.func,
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
