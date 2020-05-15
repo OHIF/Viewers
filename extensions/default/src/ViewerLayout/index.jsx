@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { SidePanel } from '@ohif/ui';
+import { SidePanel, Toolbar } from '@ohif/ui';
 //
 import Header from './Header.jsx';
-import SecondaryToolbar from './SecondaryToolbar.jsx';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -68,7 +67,7 @@ function ViewerLayout({
         />
         <div className="flex flex-col flex-1 h-full pb-2">
           <div className="flex flex-2 w-100 border-b border-transparent h-12">
-            <SecondaryToolbar tools={secondaryToolBarLayout.tools} />
+            <Toolbar type="secondary" tools={secondaryToolBarLayout.tools} />
           </div>
           <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center">
             <ViewportGrid />
