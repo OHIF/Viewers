@@ -4,6 +4,7 @@ import dicomParser from 'dicom-parser';
 import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacingInformation';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import fetchOverlayData from '../utils/metadataProvider/fetchOverlayData';
+import dicomMetadataStore from '../dicomMetadataStore';
 
 class MetadataProvider {
   constructor() {
@@ -22,7 +23,7 @@ class MetadataProvider {
     });
   }
 
-  async addInstance(dicomJSONDatasetOrP10ArrayBuffer, options = {}) {
+  /*async addInstance(dicomJSONDatasetOrP10ArrayBuffer, options = {}) {
     let dicomJSONDataset;
 
     // If Arraybuffer, parse to DICOMJSON before naturalizing.
@@ -61,7 +62,7 @@ class MetadataProvider {
     await this._checkBulkDataAndInlineBinaries(instance, options.server);
 
     return instance;
-  }
+  }*/
 
   addImageIdToUIDs(imageId, uids) {
     // This method is a fallback for when you don't have WADO-URI or WADO-RS.
@@ -122,7 +123,7 @@ class MetadataProvider {
 
     const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = uids;
 
-    return this._getInstanceData(
+    return dicomMetadataStore.getInstance(
       StudyInstanceUID,
       SeriesInstanceUID,
       SOPInstanceUID
@@ -426,24 +427,6 @@ class MetadataProvider {
     }
 
     return metadata;
-  }
-
-  _getInstanceData(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
-    const study = this.studies.get(StudyInstanceUID);
-
-    if (!study) {
-      return;
-    }
-
-    const series = study.series.get(SeriesInstanceUID);
-
-    if (!series) {
-      return;
-    }
-
-    const instance = series.instances.get(SOPInstanceUID);
-
-    return instance;
   }
 
   _getUIDsFromImageID(imageId) {

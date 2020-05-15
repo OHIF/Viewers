@@ -14,7 +14,6 @@ import MeasurementTable from './MeasurementTable.js';
 // - show errors in UI for thumbnails if promise fails
 
 function getImageSrc(imageId, { cornerstone }) {
-  // TODO: Switch to async/await when it stops failing
   return new Promise((resolve, reject) => {
     cornerstone.loadAndCacheImage(imageId).then(image => {
       const canvas = document.createElement('canvas');
@@ -117,7 +116,7 @@ function StudyBrowserPanel({ getDataSources, commandsManager }) {
       modality: ds.Modality,
       date: ds.SeriesDate,
       numInstances: ds.numImageFrames,
-      //imageSrc,
+      imageSrc: thumbnailImageSrcMap.get(ds.displaySetInstanceUid),
     };
 
     const displaySetViewportData = viewportData.find(
