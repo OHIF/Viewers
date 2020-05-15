@@ -36,7 +36,10 @@ describe('measurementServiceMappings.js', () => {
     };
     mappings = measurementServiceMappingsFactory(measurementServiceMock);
     handles = { start: { x: 1, y: 2 }, end: { x: 1, y: 2 } };
-    points = [{ x: 1, y: 2 }, { x: 1, y: 2 }];
+    points = [
+      { x: 1, y: 2 },
+      { x: 1, y: 2 },
+    ];
     csToolsAnnotation = {
       toolName: definition,
       measurementData: {

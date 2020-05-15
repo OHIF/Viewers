@@ -81,8 +81,12 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
         /* i18n */
         'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
-        'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
-        'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
+        'process.env.LOCIZE_PROJECTID': JSON.stringify(
+          process.env.LOCIZE_PROJECTID || ''
+        ),
+        'process.env.LOCIZE_API_KEY': JSON.stringify(
+          process.env.LOCIZE_API_KEY || ''
+        ),
       }),
     ],
     // Fix: https://github.com/webpack-contrib/css-loader/issues/447#issuecomment-285598881

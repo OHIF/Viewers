@@ -8,9 +8,7 @@ import {
 import _downloadAndZip from './downloadAndZip';
 
 const {
-  utils: {
-    Queue,
-  },
+  utils: { Queue },
 } = OHIF;
 
 export function getCommands(context) {

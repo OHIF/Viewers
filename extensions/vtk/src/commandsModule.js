@@ -165,7 +165,7 @@ const commandsModule = ({ commandsManager }) => {
       segmentNumber,
       frameIndex,
       frame,
-      done = () => { }
+      done = () => {},
     }) => {
       let api = apis[viewports.activeViewportIndex];
 
@@ -180,10 +180,13 @@ const commandsModule = ({ commandsManager }) => {
         displaySetInstanceUID,
         SOPClassUID,
         SOPInstanceUID,
-        frameIndex,
+        frameIndex
       );
 
-      const imageDataObject = getImageData(stack.imageIds, displaySetInstanceUID);
+      const imageDataObject = getImageData(
+        stack.imageIds,
+        displaySetInstanceUID
+      );
 
       let pixelIndex = 0;
       let x = 0;
@@ -209,7 +212,10 @@ const commandsModule = ({ commandsManager }) => {
       y /= count;
 
       const position = [x, y, frameIndex];
-      const worldPos = _convertModelToWorldSpace(position, imageDataObject.vtkImageData);
+      const worldPos = _convertModelToWorldSpace(
+        position,
+        imageDataObject.vtkImageData
+      );
 
       api.svgWidgets.crosshairsWidget.moveCrosshairs(worldPos, apis);
       done();

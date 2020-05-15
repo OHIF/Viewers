@@ -17,7 +17,15 @@ ColoredCircle.propTypes = {
   color: PropTypes.array.isRequired,
 };
 
-const SegmentItem = ({ index, label, onClick, itemClass, color, visible = true, onVisibilityChange }) => {
+const SegmentItem = ({
+  index,
+  label,
+  onClick,
+  itemClass,
+  color,
+  visible = true,
+  onVisibilityChange,
+}) => {
   const [isVisible, setIsVisible] = useState(visible);
 
   useEffect(() => {
@@ -61,7 +69,7 @@ const SegmentItem = ({ index, label, onClick, itemClass, color, visible = true, 
                 <span style={{ marginRight: '4px' }}>
                   <Icon name="edit" width="14px" height="14px" />
                 </span>
-              Relabel
+                Relabel
               </button>
               <button
                 className="btnAction"
@@ -70,7 +78,7 @@ const SegmentItem = ({ index, label, onClick, itemClass, color, visible = true, 
                 <span style={{ marginRight: '4px' }}>
                   <Icon name="edit" width="14px" height="14px" />
                 </span>
-              Description
+                Description
               </button>
             </div>
           )}
@@ -90,7 +98,7 @@ SegmentItem.propTypes = {
 
 SegmentItem.defaultProps = {
   itemClass: '',
-  onClick: () => { }
+  onClick: () => {},
 };
 
 export default SegmentItem;

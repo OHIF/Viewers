@@ -70,9 +70,7 @@ export default class RTStructDisplayTool extends BaseTool {
       }
 
       const colorArray = ROIContourData.colorArray;
-      const color = `rgba(${colorArray[0]},${colorArray[1]},${
-        colorArray[2]
-        },${opacity})`;
+      const color = `rgba(${colorArray[0]},${colorArray[1]},${colorArray[2]},${opacity})`;
 
       lineWidth;
 

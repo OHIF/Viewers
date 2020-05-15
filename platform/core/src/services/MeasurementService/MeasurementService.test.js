@@ -34,7 +34,10 @@ describe('MeasurementService.js', () => {
       unit: 'mm',
       area: 123,
       type: measurementService.VALUE_TYPES.POLYLINE,
-      points: [{ x: 1, y: 2 }, { x: 1, y: 2 }],
+      points: [
+        { x: 1, y: 2 },
+        { x: 1, y: 2 },
+      ],
       source: source,
     };
     toAnnotation = () => annotation;

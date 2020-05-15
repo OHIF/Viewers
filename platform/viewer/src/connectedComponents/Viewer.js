@@ -307,16 +307,19 @@ class Viewer extends Component {
                 activeIndex={this.props.activeViewportIndex}
               />
             ) : (
-                <ConnectedStudyBrowser
-                  studies={this.state.thumbnails}
-                  studyMetadata={this.props.studies}
-                />
-              )}
+              <ConnectedStudyBrowser
+                studies={this.state.thumbnails}
+                studyMetadata={this.props.studies}
+              />
+            )}
           </SidePanel>
 
           {/* MAIN */}
           <div className={classNames('main-content')}>
-            <ConnectedViewerMain studies={this.props.studies} isStudyLoaded={this.props.isStudyLoaded} />
+            <ConnectedViewerMain
+              studies={this.props.studies}
+              isStudyLoaded={this.props.isStudyLoaded}
+            />
           </div>
 
           {/* RIGHT */}
@@ -349,7 +352,7 @@ export default withDialog(Viewer);
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function (studies) {
+const _mapStudiesToThumbnails = function(studies) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
 

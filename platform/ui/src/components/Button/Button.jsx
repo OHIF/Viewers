@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -6,17 +6,18 @@ const baseClasses =
   'leading-none font-sans text-center justify-center items-center outline-none transition duration-300 ease-in-out focus:outline-none';
 
 const defaults = {
-  variant: 'contained',
   color: 'default',
-  size: 'medium',
-  radius: 'medium',
   disabled: false,
+  fullWidth: false,
+  rounded: 'medium',
+  size: 'medium',
   type: 'button',
+  variant: 'contained',
 };
 
-const radiusClasses = {
+const roundedClasses = {
   none: '',
-  small: 'rounded-sm',
+  small: 'rounded',
   medium: 'rounded-md',
   large: 'rounded-lg',
   full: 'rounded-full',
@@ -77,7 +78,7 @@ const Button = ({
   variant = defaults.variant,
   color = defaults.color,
   size = defaults.size,
-  radius = defaults.radius,
+  rounded = defaults.rounded,
   disabled = defaults.disabled,
   type = defaults.type,
   fullWidth = defaults.fullWidth,
@@ -86,14 +87,24 @@ const Button = ({
   className,
   ...rest
 }) => {
-  const baseClasses =
-    'inline-flex items-center outline-none transition duration-300 ease-in-out font-bold focus:outline-none';
-
   const startIcon = startIconProp && (
-    <div className="mr-2">{startIconProp}</div>
+    <div className="mr-2">
+      {React.cloneElement(startIconProp, {
+        className: classnames('w-4 h-4 fill-current'),
+      })}
+    </div>
   );
 
-  const handleOnClick = e => {
+  const endIcon = endIconProp && (
+    <div className="ml-2">
+      {React.cloneElement(endIconProp, {
+        className: classnames('w-4 h-4 fill-current'),
+      })}
+    </div>
+  );
+  const buttonElement = useRef(null);
+
+  const handleOnClick = (e) => {
     buttonElement.current.blur();
     if (rest.onClick) {
       rest.onClick(e);
@@ -106,11 +117,13 @@ const Button = ({
         className,
         baseClasses,
         variantClasses[variant][color],
-        radiusClasses[radius],
+        roundedClasses[rounded],
         sizeClasses[size],
         fullWidthClasses[fullWidth],
         disabledClasses[disabled]
       )}
+      ref={buttonElement}
+      onClick={handleOnClick}
       type={type}
       {...rest}
     >

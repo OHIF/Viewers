@@ -6,8 +6,8 @@ import MeasurementTable from './MeasurementTable.json';
 import StudyList from './StudyList.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
 
-export default { 
-  'zh': {
+export default {
+  zh: {
     Buttons,
     CineDialog,
     Common,
@@ -15,5 +15,5 @@ export default {
     MeasurementTable,
     StudyList,
     UserPreferencesModal,
-  }
+  },
 };

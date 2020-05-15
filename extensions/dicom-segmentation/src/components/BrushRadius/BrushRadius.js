@@ -27,7 +27,7 @@ BrushRadius.propTypes = {
 };
 
 BrushRadius.defaultProps = {
-  onChange: () => { },
+  onChange: () => {},
   min: 1,
   max: 50,
   step: 1,

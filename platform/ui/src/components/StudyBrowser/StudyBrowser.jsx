@@ -7,13 +7,13 @@ import { ButtonGroup, Button, StudyItem, ThumbnailList } from '@ohif/ui';
 const buttonClasses = 'text-white text-base border-none bg-black p-2 min-w-18';
 const activeButtonClasses = 'bg-primary-main';
 
-const getInitialActiveTab = tabs => {
+const getInitialActiveTab = (tabs) => {
   return tabs && tabs[0] && tabs[0].name;
 };
 
-const getTrackedSeries = displaySets => {
+const getTrackedSeries = (displaySets) => {
   let trackedSeries = 0;
-  displaySets.forEach(displaySet => {
+  displaySets.forEach((displaySet) => {
     if (displaySet.isTracked) {
       trackedSeries++;
     }
@@ -25,9 +25,10 @@ const getTrackedSeries = displaySets => {
 const StudyBrowser = ({ tabs, onClickStudy, onClickThumbnail }) => {
   const [tabActive, setTabActive] = useState(getInitialActiveTab(tabs));
   const [studyActive, setStudyActive] = useState(null);
+  const [thumbnailActive, setThumbnailActive] = useState(null);
 
   const getTabContent = () => {
-    const tabData = tabs.find(tab => tab.name === tabActive);
+    const tabData = tabs.find((tab) => tab.name === tabActive);
 
     if (!tabData || !tabData.studies || !Array.isArray(tabData.studies)) {
       return;
@@ -36,9 +37,9 @@ const StudyBrowser = ({ tabs, onClickStudy, onClickThumbnail }) => {
     return tabData.studies.map(
       ({
         studyInstanceUid,
-        studyDate,
-        studyDescription,
-        instances,
+        date,
+        description,
+        numInstances,
         modalities,
         displaySets,
       }) => {
@@ -46,9 +47,9 @@ const StudyBrowser = ({ tabs, onClickStudy, onClickThumbnail }) => {
         return (
           <React.Fragment key={studyInstanceUid}>
             <StudyItem
-              studyDate={studyDate}
-              studyDescription={studyDescription}
-              instances={instances}
+              date={date}
+              description={description}
+              numInstances={numInstances}
               modalities={modalities}
               trackedSeries={getTrackedSeries(displaySets)}
               isActive={isActive}
@@ -64,16 +65,17 @@ const StudyBrowser = ({ tabs, onClickStudy, onClickThumbnail }) => {
               <ThumbnailList
                 thumbnails={displaySets}
                 thumbnailActive={thumbnailActive}
-                onThumbnailClick={thumbnailId => {
-                  setThumbnailActive(
-                    thumbnailId === thumbnailActive ? null : thumbnailId
-                  );
+                onThumbnailClick={(thumbnailId) => {
+                    setThumbnailActive(
+                      thumbnailId === thumbnailActive ? null : thumbnailId
+                    )
 
-                  if (onClickThumbnail) {
-                    // TODO: what is thumbnailId? Should pass display set instead
-                    onClickThumbnail(thumbnailId);
+                    if (onClickThumbnail) {
+                      // TODO: what is thumbnailId? Should pass display set instead
+                      onClickThumbnail(thumbnailId);
+                    }
                   }
-                }}
+                }
               />
             )}
           </React.Fragment>
@@ -90,7 +92,7 @@ const StudyBrowser = ({ tabs, onClickStudy, onClickThumbnail }) => {
           color="inherit"
           className="border border-secondary-light rounded-md"
         >
-          {tabs.map(tab => {
+          {tabs.map((tab) => {
             const { name, label } = tab;
             const isActive = tabActive === name;
             return (
@@ -131,7 +133,7 @@ StudyBrowser.propTypes = {
           studyInstanceUid: PropTypes.string.isRequired,
           date: PropTypes.string,
           numInstances: PropTypes.number,
-          modality: PropTypes.string,
+          modalities: PropTypes.string,
           description: PropTypes.string,
           displaySets: PropTypes.arrayOf(
             PropTypes.shape({

@@ -21,7 +21,7 @@ SegmentationItem.propTypes = {
 };
 
 SegmentationItem.defaultProps = {
-  description: ''
+  description: '',
 };
 
 export default SegmentationItem;

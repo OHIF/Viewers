@@ -4,7 +4,12 @@ import { Range } from '@ohif/ui';
 
 import './SegmentationSettings.css';
 
-const SegmentationSettings = ({ configuration, onBack, onChange, disabledFields = [] }) => {
+const SegmentationSettings = ({
+  configuration,
+  onBack,
+  onChange,
+  disabledFields = [],
+}) => {
   const [state, setState] = useState({
     renderFill: configuration.renderFill,
     renderOutline: configuration.renderOutline,
@@ -13,7 +18,7 @@ const SegmentationSettings = ({ configuration, onBack, onChange, disabledFields 
     outlineAlpha: configuration.outlineAlpha,
     outlineWidth: configuration.outlineWidth,
     fillAlphaInactive: configuration.fillAlphaInactive,
-    outlineAlphaInactive: configuration.outlineAlphaInactive
+    outlineAlphaInactive: configuration.outlineAlphaInactive,
   });
 
   useEffect(() => {
@@ -78,7 +83,9 @@ const SegmentationSettings = ({ configuration, onBack, onChange, disabledFields 
                 step={1}
                 min={0}
                 max={100}
-                onChange={event => save('outlineAlpha', toFloat(event.target.value))}
+                onChange={event =>
+                  save('outlineAlpha', toFloat(event.target.value))
+                }
               />
             )}
             {!disabledFields.includes('outlineWidth') && (
@@ -89,50 +96,64 @@ const SegmentationSettings = ({ configuration, onBack, onChange, disabledFields 
                 step={1}
                 min={0}
                 max={5}
-                onChange={event => save('outlineWidth', parseInt(event.target.value))}
+                onChange={event =>
+                  save('outlineWidth', parseInt(event.target.value))
+                }
               />
             )}
           </>
         )}
       </div>
-      {(state.renderFill || state.renderOutline) && !disabledFields.includes('shouldRenderInactiveLabelmaps') && (
-        <div
-          className="settings-group"
-          style={{ marginBottom: state.shouldRenderInactiveLabelmaps ? 15 : 0 }}
-        >
-          <CustomCheck
-            label="Render inactive segmentations"
-            checked={state.shouldRenderInactiveLabelmaps}
-            onChange={() => check('shouldRenderInactiveLabelmaps')}
-          />
-          {state.shouldRenderInactiveLabelmaps && (
-            <>
-              {state.renderFill && !disabledFields.includes('fillAlphaInactive') && (
-                <CustomRange
-                  label="Fill Opacity"
-                  showPercentage
-                  step={1}
-                  min={0}
-                  max={100}
-                  value={state.fillAlphaInactive * 100}
-                  onChange={event => save('fillAlphaInactive', toFloat(event.target.value))}
-                />
-              )}
-              {state.renderOutline && !disabledFields.includes('outlineAlphaInactive') && (
-                <CustomRange
-                  label="Outline Opacity"
-                  showPercentage
-                  step={1}
-                  min={0}
-                  max={100}
-                  value={state.outlineAlphaInactive * 100}
-                  onChange={event => save('outlineAlphaInactive', toFloat(event.target.value))}
-                />
-              )}
-            </>
-          )}
-        </div>
-      )}
+      {(state.renderFill || state.renderOutline) &&
+        !disabledFields.includes('shouldRenderInactiveLabelmaps') && (
+          <div
+            className="settings-group"
+            style={{
+              marginBottom: state.shouldRenderInactiveLabelmaps ? 15 : 0,
+            }}
+          >
+            <CustomCheck
+              label="Render inactive segmentations"
+              checked={state.shouldRenderInactiveLabelmaps}
+              onChange={() => check('shouldRenderInactiveLabelmaps')}
+            />
+            {state.shouldRenderInactiveLabelmaps && (
+              <>
+                {state.renderFill &&
+                  !disabledFields.includes('fillAlphaInactive') && (
+                    <CustomRange
+                      label="Fill Opacity"
+                      showPercentage
+                      step={1}
+                      min={0}
+                      max={100}
+                      value={state.fillAlphaInactive * 100}
+                      onChange={event =>
+                        save('fillAlphaInactive', toFloat(event.target.value))
+                      }
+                    />
+                  )}
+                {state.renderOutline &&
+                  !disabledFields.includes('outlineAlphaInactive') && (
+                    <CustomRange
+                      label="Outline Opacity"
+                      showPercentage
+                      step={1}
+                      min={0}
+                      max={100}
+                      value={state.outlineAlphaInactive * 100}
+                      onChange={event =>
+                        save(
+                          'outlineAlphaInactive',
+                          toFloat(event.target.value)
+                        )
+                      }
+                    />
+                  )}
+              </>
+            )}
+          </div>
+        )}
     </div>
   );
 };
@@ -169,8 +190,10 @@ SegmentationSettings.propTypes = {
     renderFill: PropTypes.bool.isRequired,
     renderOutline: PropTypes.bool.isRequired,
     shouldRenderInactiveLabelmaps: PropTypes.bool.isRequired,
-    fillAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, /* TODO: why fillAlpha is string? */
-    outlineAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, /* TODO: why fillAlpha is string? */
+    fillAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      .isRequired /* TODO: why fillAlpha is string? */,
+    outlineAlpha: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      .isRequired /* TODO: why fillAlpha is string? */,
     outlineWidth: PropTypes.number.isRequired,
     fillAlphaInactive: PropTypes.number.isRequired,
     outlineAlphaInactive: PropTypes.number.isRequired,

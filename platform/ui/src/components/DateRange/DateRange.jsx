@@ -46,7 +46,7 @@ const renderYearsOptions = () => {
   return options;
 };
 
-const DateRange = props => {
+const DateRange = (props) => {
   const { onChange, startDate, endDate } = props;
   const [focusedInput, setFocusedInput] = useState(null);
   const renderYearsOptionsCallback = useCallback(renderYearsOptions, []);
@@ -82,11 +82,11 @@ const DateRange = props => {
       onYearSelect: PropTypes.func,
     };
 
-    const handleMonthChange = event => {
+    const handleMonthChange = (event) => {
       onMonthSelect(month, event.target.value);
     };
 
-    const handleYearChange = event => {
+    const handleYearChange = (event) => {
       onYearSelect(month, event.target.value);
     };
 
@@ -140,7 +140,7 @@ const DateRange = props => {
         })
       }}
       focusedInput={focusedInput}
-      onFocusChange={updatedVal => setFocusedInput(updatedVal)}
+      onFocusChange={(updatedVal) => setFocusedInput(updatedVal)}
       /** OPTIONAL */
       renderCalendarInfo={renderDatePresets}
       renderMonthElement={renderMonthElement}
@@ -150,7 +150,7 @@ const DateRange = props => {
         closeDatePicker: 'Close',
         clearDates: 'Clear dates',
       }}
-      isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
+      isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())}
       hideKeyboardShortcutsPanel={true}
       numberOfMonths={1}
       showClearDates={false}

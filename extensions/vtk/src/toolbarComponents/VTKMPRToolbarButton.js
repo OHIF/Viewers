@@ -8,10 +8,13 @@ const { studyMetadataManager } = utils;
 
 let isVisible = true;
 
-const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportIndex) => {
+const _isDisplaySetReconstructable = (
+  viewportSpecificData = {},
+  activeViewportIndex
+) => {
   if (!viewportSpecificData[activeViewportIndex]) {
     return false;
-  };
+  }
 
   const { displaySetInstanceUID, StudyInstanceUID } = viewportSpecificData[
     activeViewportIndex
@@ -27,11 +30,13 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
     return false;
   }
 
-  const displaySet = study._displaySets.find(set => set.displaySetInstanceUID === displaySetInstanceUID);
+  const displaySet = study._displaySets.find(
+    set => set.displaySetInstanceUID === displaySetInstanceUID
+  );
 
   if (!displaySet) {
     return false;
-  };
+  }
 
   return displaySet.isReconstructable;
 };
@@ -52,12 +57,12 @@ function VTKMPRToolbarButton({
     return {
       viewportSpecificData,
       activeViewportIndex,
-    }
+    };
   });
 
   isVisible = _isDisplaySetReconstructable(
     viewportSpecificData,
-    activeViewportIndex,
+    activeViewportIndex
   );
 
   return (

@@ -10,8 +10,6 @@ export default function structureSetReferencesSeriesInstanceUid(
 ) {
   const { referencedSeriesSequence } = StructureSet;
   return referencedSeriesSequence.some(
-    referencedSeries =>
-      referencedSeries.SeriesInstanceUID ===
-      SeriesInstanceUID
+    referencedSeries => referencedSeries.SeriesInstanceUID === SeriesInstanceUID
   );
 }

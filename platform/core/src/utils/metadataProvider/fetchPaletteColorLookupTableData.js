@@ -116,9 +116,8 @@ function _getPaletteColor(server, paletteColorLookupTableData, lutDescriptor) {
   const bits = lutDescriptor[2];
 
   const arrayBufferToPaletteColorLUT = arraybuffer => {
-    const byteArray = bits === 16 ?
-      new Uint16Array(arraybuffer) :
-      new Uint8Array(arraybuffer);
+    const byteArray =
+      bits === 16 ? new Uint16Array(arraybuffer) : new Uint8Array(arraybuffer);
     const lut = [];
 
     for (let i = 0; i < numLutEntries; i++) {

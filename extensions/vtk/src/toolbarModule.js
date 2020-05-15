@@ -131,4 +131,4 @@ const definitions = [
 export default {
   definitions,
   defaultContext: 'ACTIVE_VIEWPORT::VTK',
-}
+};

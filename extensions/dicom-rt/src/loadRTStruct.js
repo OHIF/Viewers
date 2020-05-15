@@ -68,7 +68,6 @@ export default async function loadRTStruct(
   const rtStructDisplayToolName = TOOL_NAMES.RTSTRUCT_DISPLAY_TOOL;
 
   for (let i = 0; i < ROIContourSequence.length; i++) {
-
     const ROIContour = ROIContourSequence[i];
     const { ReferencedROINumber, ContourSequence } = ROIContour;
 

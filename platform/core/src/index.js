@@ -7,6 +7,7 @@ import classes, { CommandsManager, HotkeysManager } from './classes/';
 import DICOMWeb from './DICOMWeb';
 import DICOMSR from './DICOMSR';
 import cornerstone from './cornerstone.js';
+import errorHandler from './errorHandler.js';
 import hangingProtocols from './hanging-protocols';
 import header from './header.js';
 import log from './log.js';

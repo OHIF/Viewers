@@ -12,7 +12,7 @@ import EmptyViewport from './EmptyViewport.js';
 
 const { loadAndCacheDerivedDisplaySets } = utils;
 
-const ViewportGrid = function (props) {
+const ViewportGrid = function(props) {
   const {
     activeViewportIndex,
     availablePlugins,
@@ -24,7 +24,7 @@ const ViewportGrid = function (props) {
     studies,
     viewportData,
     children,
-    isStudyLoaded
+    isStudyLoaded,
   } = props;
 
   const rowSize = 100 / numRows;

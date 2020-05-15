@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '@ohif/ui';
 
-const ThumbnailList = ({ thumbnails }) => {
+const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
   return (
     <div className="bg-black py-3">
       {thumbnails.map(
@@ -17,10 +17,11 @@ const ThumbnailList = ({ thumbnails }) => {
           seriesDate,
           viewportIdentificator,
           isTracked,
-          isActive,
           imageSrc,
           imageAltText,
         }) => {
+          const isActive = thumbnailActive === displaySetInstanceUid;
+
           switch (componentType) {
             case 'thumbnail':
               return (
@@ -33,7 +34,7 @@ const ThumbnailList = ({ thumbnails }) => {
                   imageAltText={imageAltText}
                   viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
-                  onClick={() => {}}
+                  onClick={() => onThumbnailClick(displaySetInstanceUid)}
                 />
               );
             case 'thumbnailNoImage':
@@ -43,7 +44,7 @@ const ThumbnailList = ({ thumbnails }) => {
                   modality={modality}
                   seriesDate={seriesDate}
                   description={description}
-                  onClick={() => {}}
+                  onClick={() => onThumbnailClick(displaySetInstanceUid)}
                 />
               );
             case 'thumbnailTracked':
@@ -58,7 +59,7 @@ const ThumbnailList = ({ thumbnails }) => {
                   viewportIdentificator={viewportIdentificator}
                   isTracked={isTracked}
                   isActive={isActive}
-                  onClick={() => {}}
+                  onClick={() => onThumbnailClick(displaySetInstanceUid)}
                 />
               );
             default:
@@ -87,9 +88,10 @@ ThumbnailList.propTypes = {
       ]).isRequired,
       viewportIdentificator: PropTypes.string,
       isTracked: PropTypes.bool,
-      isActive: PropTypes.bool,
     })
   ),
+  thumbnailActive: PropTypes.string,
+  onThumbnailClick: PropTypes.func,
 };
 
 export default ThumbnailList;

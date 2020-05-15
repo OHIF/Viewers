@@ -8,9 +8,9 @@ const baseClasses =
   'first:border-0 border-t border-secondary-light cursor-pointer outline-none';
 
 const StudyItem = ({
-  studyDate,
-  studyDescription,
-  instances,
+  date,
+  description,
+  numInstances,
   modalities,
   trackedSeries,
   isActive,
@@ -29,15 +29,15 @@ const StudyItem = ({
     >
       <div className="flex flex-col flex-1 px-4 pb-2">
         <div className="flex flex-row items-center justify-between pb-2 pt-2 pb-2">
-          <div className="text-white text-base">{studyDate}</div>
+          <div className="text-white text-base">{date}</div>
           <div className="flex flex-row items-center text-blue-300  text-base">
             <Icon name="group-layers" className="text-blue-300 mx-2 w-4" />
-            {instances}
+            {numInstances}
           </div>
         </div>
         <div className="flex flex-row py-1">
           <div className="text-blue-300 pr-5 text-xl">{modalities}</div>
-          <div className="text-blue-300  text-base">{studyDescription}</div>
+          <div className="text-blue-300  text-base">{description}</div>
         </div>
       </div>
       {!!trackedSeries && (

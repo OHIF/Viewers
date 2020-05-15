@@ -4,6 +4,7 @@ menu: Views
 route: examples/viewer
 ---
 
+import { useState } from 'react';
 import { Playground, Props } from 'docz';
 import {
   NavBar,
@@ -51,6 +52,7 @@ import { tabs } from './studyBrowserMockData';
       onClick: (id) => setActiveMeasurementItem((s) => (s === id ? null : id)),
       onEdit: (id) => alert(`Edit: ${id}`),
     };
+    const [activeViewportIndex, setActiveViewportIndex] = useState(0);
     return (
       <DragAndDropProvider>
         <Header />

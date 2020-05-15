@@ -68,8 +68,7 @@ const SegmentationPanel = ({
    */
   const [state, setState] = useState({
     brushRadius: DEFAULT_BRUSH_RADIUS,
-    brushColor:
-      'rgba(221, 85, 85, 1)',
+    brushColor: 'rgba(221, 85, 85, 1)',
     selectedSegment: null,
     selectedSegmentation: null,
     showSegmentationSettings: false,
@@ -77,7 +76,7 @@ const SegmentationPanel = ({
     labelmapList: [],
     segmentList: [],
     cachedSegmentsProperties: [],
-    isLoading: false
+    isLoading: false,
   });
 
   useEffect(() => {
@@ -111,7 +110,10 @@ const SegmentationPanel = ({
      * allows us to easily watch the module or the segmentations loading process in any other component
      * without subscribing to external events.
      */
-    document.addEventListener('extensiondicomsegmentationsegloaded', refreshSegmentations);
+    document.addEventListener(
+      'extensiondicomsegmentationsegloaded',
+      refreshSegmentations
+    );
 
     /*
      * These are specific to each element;
@@ -126,7 +128,10 @@ const SegmentationPanel = ({
     );
 
     return () => {
-      document.removeEventListener('extensiondicomsegmentationsegloaded', refreshSegmentations);
+      document.removeEventListener(
+        'extensiondicomsegmentationsegloaded',
+        refreshSegmentations
+      );
       cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
         enabledElement.removeEventListener(
           'cornerstonetoolslabelmapmodified',
@@ -173,15 +178,17 @@ const SegmentationPanel = ({
         segmentList: [],
       }));
     }
-  }, [
-    viewports,
-    activeIndex,
-    state.isLoading
-  ]);
+  }, [viewports, activeIndex, state.isLoading]);
 
   useEffect(() => {
     refreshSegmentations();
-  }, [viewports, activeIndex, state.selectedSegmentation, activeContexts, state.isLoading]);
+  }, [
+    viewports,
+    activeIndex,
+    state.selectedSegmentation,
+    activeContexts,
+    state.isLoading,
+  ]);
 
   /* Handle open/closed panel behaviour */
   useEffect(() => {
@@ -369,9 +376,13 @@ const SegmentationPanel = ({
           return !segmentsHidden[segmentIndex];
         };
 
-        const cachedSegmentProperties = state.cachedSegmentsProperties[segmentNumber];
+        const cachedSegmentProperties =
+          state.cachedSegmentsProperties[segmentNumber];
         let visible = isSegmentVisible();
-        if (cachedSegmentProperties && cachedSegmentProperties.visible !== visible) {
+        if (
+          cachedSegmentProperties &&
+          cachedSegmentProperties.visible !== visible
+        ) {
           toggleSegmentVisibility();
         }
 
@@ -399,7 +410,9 @@ const SegmentationPanel = ({
                 onSegmentVisibilityChange(segmentNumber, newVisibility);
               }
 
-              updateCachedSegmentsProperties(segmentNumber, { visible: newVisibility });
+              updateCachedSegmentsProperties(segmentNumber, {
+                visible: newVisibility,
+              });
               refreshViewport();
             }}
           />
@@ -422,10 +435,9 @@ const SegmentationPanel = ({
     const segmentsProperties = state.cachedSegmentsProperties;
     const segmentProperties = state.cachedSegmentsProperties[segmentNumber];
 
-    segmentsProperties[segmentNumber] =
-      segmentProperties ?
-        { ...segmentProperties, ...properties } :
-        properties;
+    segmentsProperties[segmentNumber] = segmentProperties
+      ? { ...segmentProperties, ...properties }
+      : properties;
 
     updateState('cachedSegmentsProperties', segmentsProperties);
   };
@@ -495,7 +507,10 @@ const SegmentationPanel = ({
     refreshViewport();
   };
 
-  const disabledConfigurationFields = ['outlineAlpha', 'shouldRenderInactiveLabelmaps'];
+  const disabledConfigurationFields = [
+    'outlineAlpha',
+    'shouldRenderInactiveLabelmaps',
+  ];
   if (state.showSegmentationSettings) {
     return (
       <SegmentationSettings
@@ -622,7 +637,7 @@ const _setActiveLabelmap = async (
   displaySet,
   firstImageId,
   activeLabelmapIndex,
-  callback = () => { },
+  callback = () => {},
   onDisplaySetLoadFailure
 ) => {
   if (displaySet.labelmapIndex === activeLabelmapIndex) {

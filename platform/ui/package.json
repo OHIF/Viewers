@@ -19,10 +19,12 @@
   ],
   "scripts": {
     "start": "yarn run dev",
-    "build:styles": "postcss src/styles/tailwind.css -o src/gatsby-theme-docz/app.css",
-    "dev": "docz dev",
     "build": "docz build",
-    "serve": "docz serve"
+    "build:ui:ci": "docz build",
+    "build:ui:deploy-preview": "docz build --base=/ui/",
+    "dev": "docz dev",
+    "serve": "docz serve",
+    "docs:preview": "yarn run dev"
   },
   "dependencies": {
     "classnames": "^2.2.6",

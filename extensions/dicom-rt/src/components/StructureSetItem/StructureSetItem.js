@@ -31,7 +31,7 @@ const StructureSetItem = ({
 
   useEffect(() => {
     setIsVisible(visible);
-  }, [visible])
+  }, [visible]);
 
   return (
     <div className={`dcmrt-structure-set-item ${selected && 'selected'}`}>
@@ -99,7 +99,7 @@ StructureSetItem.propTypes = {
 
 StructureSetItem.defaultProps = {
   itemClass: '',
-  onClick: () => { },
+  onClick: () => {},
 };
 
 export default StructureSetItem;

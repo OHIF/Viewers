@@ -1,6 +1,4 @@
-
 export default class Queue {
-
   constructor(limit) {
     this.limit = limit;
     this.size = 0;

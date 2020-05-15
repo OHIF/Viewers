@@ -49,7 +49,7 @@ class OHIFVTKViewport extends Component {
   state = {
     volumes: null,
     paintFilterLabelMapImageData: null,
-    paintFilterBackgroundImageData: null
+    paintFilterBackgroundImageData: null,
   };
 
   static propTypes = {
@@ -69,7 +69,7 @@ class OHIFVTKViewport extends Component {
   };
 
   static defaultProps = {
-    onScroll: () => { },
+    onScroll: () => {},
   };
 
   static id = 'OHIFVTKViewport';
@@ -156,9 +156,11 @@ class OHIFVTKViewport extends Component {
       const { activeLabelmapIndex } = brushStackState;
       const labelmap3D = brushStackState.labelmaps3D[activeLabelmapIndex];
 
-      this.segmentsDefaultProperties = labelmap3D.segmentsHidden.map(isHidden => {
-        return { visible: !isHidden };
-      });
+      this.segmentsDefaultProperties = labelmap3D.segmentsHidden.map(
+        isHidden => {
+          return { visible: !isHidden };
+        }
+      );
 
       const vtkLabelmapID = `${firstImageId}_${activeLabelmapIndex}`;
 
@@ -349,7 +351,7 @@ class OHIFVTKViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-      prevDisplaySet.displaySetInstanceUID ||
+        prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
@@ -435,7 +437,7 @@ class OHIFVTKViewport extends Component {
                 segmentsDefaultProperties: this.segmentsDefaultProperties,
                 onNewSegmentationRequested: () => {
                   this.setStateFromProps();
-                }
+                },
               }}
               onScroll={this.props.onScroll}
             />

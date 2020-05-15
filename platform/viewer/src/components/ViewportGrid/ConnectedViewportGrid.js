@@ -37,9 +37,6 @@ const mapStateToProps = state => {
   };
 };
 
-const ConnectedViewportGrid = connect(
-  mapStateToProps,
-  null
-)(ViewportGrid);
+const ConnectedViewportGrid = connect(mapStateToProps, null)(ViewportGrid);
 
 export default ConnectedViewportGrid;

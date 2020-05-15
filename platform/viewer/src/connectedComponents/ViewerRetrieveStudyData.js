@@ -105,7 +105,7 @@ const _showUserMessage = (queryParamApplied, message, dialog = {}) => {
     return;
   }
 
-  const { show: showUserMessage = () => { } } = dialog;
+  const { show: showUserMessage = () => {} } = dialog;
   showUserMessage({
     message,
   });
@@ -125,7 +125,7 @@ const _addSeriesToStudy = (studyMetadata, series) => {
 
   studyMetadata.createAndAddDisplaySetsForSeries(
     sopClassHandlerModules,
-    seriesMetadata,
+    seriesMetadata
   );
   study.displaySets = studyMetadata.getDisplaySets();
   _updateStudyMetadataManager(study, studyMetadata);
@@ -265,7 +265,8 @@ function ViewerRetrieveStudyData({
       return loadNextSeries();
     };
 
-    const concurrentRequestsAllowed = maxConcurrentMetadataRequests || studyMetadata.getSeriesCount();
+    const concurrentRequestsAllowed =
+      maxConcurrentMetadataRequests || studyMetadata.getSeriesCount();
     const promises = Array(concurrentRequestsAllowed)
       .fill(null)
       .map(loadNextSeries);

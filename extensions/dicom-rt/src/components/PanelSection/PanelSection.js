@@ -12,8 +12,8 @@ const PanelSection = ({
   expanded = false,
   loading = false,
   hideVisibleButton = false,
-  onVisibilityChange = () => { },
-  onExpandChange = () => { }
+  onVisibilityChange = () => {},
+  onExpandChange = () => {},
 }) => {
   const [isExpanded, setIsExpanded] = useState(expanded);
   const [isVisible, setIsVisible] = useState(visible);
@@ -27,7 +27,7 @@ const PanelSection = ({
       className="dcmrt-panel-section"
       style={{
         marginBottom: isExpanded ? 0 : 2,
-        height: isExpanded ? '100%' : 'unset'
+        height: isExpanded ? '100%' : 'unset',
       }}
     >
       <div className="header">
@@ -36,7 +36,7 @@ const PanelSection = ({
           {!hideVisibleButton && (
             <Icon
               className={`eye-icon ${isVisible && 'expanded'}`}
-              name={isVisible ? "eye" : "eye-closed"}
+              name={isVisible ? 'eye' : 'eye-closed'}
               width="20px"
               height="20px"
               onClick={() => {
@@ -47,7 +47,9 @@ const PanelSection = ({
             />
           )}
           <Icon
-            className={`angle-double-${isExpanded ? 'down' : 'up'} ${isExpanded && 'expanded'}`}
+            className={`angle-double-${
+              isExpanded ? 'down' : 'up'
+            } ${isExpanded && 'expanded'}`}
             name={`angle-double-${isExpanded ? 'down' : 'up'}`}
             width="20px"
             height="20px"
@@ -59,7 +61,9 @@ const PanelSection = ({
           />
         </div>
       </div>
-      {loading && isExpanded && <LoadingIndicator expand height="70px" width="70px" />}
+      {loading && isExpanded && (
+        <LoadingIndicator expand height="70px" width="70px" />
+      )}
       {children}
     </div>
   );
@@ -70,13 +74,13 @@ PanelSection.propTypes = {
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
   visible: PropTypes.bool,
   expanded: PropTypes.bool,
-  onVisibilityChange: PropTypes.func
+  onVisibilityChange: PropTypes.func,
 };
 
 PanelSection.defaultProps = {
   visible: false,
   expanded: false,
-  onVisibilityChange: () => { }
+  onVisibilityChange: () => {},
 };
 
 export default PanelSection;

@@ -15,9 +15,7 @@ const RTSettings = ({ configuration, onBack, onChange }) => {
     return (
       <div className="settings-section">
         <div className="header">{title}</div>
-        <div className="content">
-          {children}
-        </div>
+        <div className="content">{children}</div>
       </div>
     );
   };
@@ -61,8 +59,10 @@ const RTSettings = ({ configuration, onBack, onChange }) => {
 
 RTSettings.propTypes = {
   configuration: PropTypes.shape({
-    lineWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-    opacity: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    lineWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+      .isRequired,
+    opacity: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+      .isRequired,
   }).isRequired,
   onBack: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,

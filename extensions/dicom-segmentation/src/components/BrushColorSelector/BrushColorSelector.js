@@ -12,12 +12,8 @@ const BrushColorSelector = ({ defaultColor, index, onNext, onPrev }) => (
       {index}
     </div>
     <div className="selector-buttons">
-      <button onClick={onPrev}>
-        Previous
-      </button>
-      <button onClick={onNext}>
-        Next
-      </button>
+      <button onClick={onPrev}>Previous</button>
+      <button onClick={onNext}>Next</button>
     </div>
   </div>
 );

@@ -182,7 +182,7 @@ export default class ExtensionManager {
         commandsManager: this._commandsManager,
         appConfig: this._appConfig,
         configuration,
-        api: this._api
+        api: this._api,
       });
 
       if (!extensionModule) {

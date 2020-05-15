@@ -52,7 +52,10 @@ class DicomPDFViewport extends Component {
 
     if (!this.props.useNative) {
       const pdf = await PDFJS.getDocument(fileURL).promise;
-      this.setState(state => ({ ...state, pdf }), () => this.updatePDFCanvas());
+      this.setState(
+        state => ({ ...state, pdf }),
+        () => this.updatePDFCanvas()
+      );
     }
   }
 

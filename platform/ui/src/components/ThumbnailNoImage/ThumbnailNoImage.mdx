@@ -21,14 +21,12 @@ import { Thumbnail } from '@ohif/ui';
 
 <Playground>
   <div className="flex flex-1 items-center justify-center p-4">
-    <div className="w-56">
-      <Thumbnail
-        imageAltText="DisplaySet thumbnail image"
+    <div className="w-64">
+      <ThumbnailNoImage
+        modality={'SR'}
+        seriesDate="13-Mar-1999"
         description="Multiple line image series description lorem sit"
-        seriesNumber={4}
-        numInstances={902}
-        onClick={() => alert('Thumbnail was clicked!')}
-        isActive={false}
+        onClick={() => alert('ThumbnailNoImage was clicked!')}
       />
     </div>
   </div>
@@ -36,4 +34,4 @@ import { Thumbnail } from '@ohif/ui';
 
 ## Properties
 
-<Props of={Thumbnail} />
+<Props of={ThumbnailNoImage} />
