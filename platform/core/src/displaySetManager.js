@@ -9,11 +9,11 @@ class DisplaySetManager {
 
     const {
       displaySetInstanceUIDs,
-      setDisplaySetInstanceUids,
+      setDisplaySetInstanceUIDs,
     } = viewModelContext;
 
     this.displaySetInstanceUIDs = displaySetInstanceUIDs;
-    this.setDisplaySetInstanceUids = setDisplaySetInstanceUids;
+    this.setDisplaySetInstanceUids = setDisplaySetInstanceUIDs;
 
     // Reset displaySetInstanceUIDs
     this.setDisplaySetInstanceUids([]);

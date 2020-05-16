@@ -8,9 +8,9 @@ import {
 } from '@ohif/ui';
 
 export default function MeasurementTable({ servicesManager, commandsManager }) {
-  console.warn(servicesManager);
-
   const { MeasurementService } = servicesManager.services;
+
+  console.error('MeasurementTable rendering!!!!!!!!!!!!!');
 
   const actionButtons = (
     <React.Fragment>

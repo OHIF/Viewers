@@ -22,10 +22,13 @@ const getTrackedSeries = displaySets => {
   return trackedSeries;
 };
 
-const StudyBrowser = ({ tabs, onClickStudy, onClickThumbnail }) => {
-  const [tabActive, setTabActive] = useState(getInitialActiveTab(tabs));
+const StudyBrowser = ({ tabs, activeTabName, onSetTabActive, onClickStudy, onClickThumbnail }) => {
+  const [tabActive, setTabActive] = useState(activeTabName || getInitialActiveTab(tabs));
   const [studyActive, setStudyActive] = useState(null);
   const [thumbnailActive, setThumbnailActive] = useState(null);
+
+  console.log('StudyBrowser rerender');
+  console.log(`tabActive: ${tabActive}`);
 
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === tabActive);
@@ -105,6 +108,10 @@ const StudyBrowser = ({ tabs, onClickStudy, onClickThumbnail }) => {
                 onClick={() => {
                   setTabActive(name);
                   setStudyActive(null);
+
+                  if (onSetTabActive) {
+                    onSetTabActive(name)
+                  }
                 }}
               >
                 {label}

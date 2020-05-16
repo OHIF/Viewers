@@ -4,9 +4,7 @@ import React, { Component, useContext } from 'react';
 
 const ViewModelContext = React.createContext({
   displaySetInstanceUIDs: [],
-  setDisplaySetInstanceUids: () => {},
-  toolBarLayout: [],
-  setToolBarLayout: () => {},
+  setDisplaySetInstanceUIDs: () => {},
 });
 
 ViewModelContext.displayName = 'ViewModelContext';
@@ -17,21 +15,15 @@ class ViewModelProvider extends Component {
   };
 
   render() {
-    const setDisplaySetInstanceUids = displaySetInstanceUIDs => {
+    const setDisplaySetInstanceUIDs = displaySetInstanceUIDs => {
       this.setState({ displaySetInstanceUIDs });
-    };
-
-    const setToolBarLayout = toolBarLayout => {
-      this.setState({ toolBarLayout });
     };
 
     return (
       <ViewModelContext.Provider
         value={{
           displaySetInstanceUIDs: this.state.displaySetInstanceUIDs,
-          setDisplaySetInstanceUids,
-          toolBarLayout: this.state.toolBarLayout,
-          setToolBarLayout,
+          setDisplaySetInstanceUIDs,
         }}
       >
         {this.props.children}

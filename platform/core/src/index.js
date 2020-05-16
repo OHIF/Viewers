@@ -23,6 +23,10 @@ import dicomMetadataStore from './dicomMetadataStore';
 import displaySetManager from './displaySetManager';
 import ToolBarManager from './ToolBarManager';
 import { ViewModelProvider, useViewModel } from './ViewModelContext';
+import {
+  ToolbarLayoutProvider,
+  useToolbarLayout,
+} from './ToolbarLayoutContext';
 import utils, { hotkeys } from './utils/';
 
 import {
@@ -114,6 +118,8 @@ export {
   ToolBarManager,
   ViewModelProvider,
   useViewModel,
+  ToolbarLayoutProvider,
+  useToolbarLayout,
 };
 
 export { OHIF };

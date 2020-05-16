@@ -1,45 +1,44 @@
 import React, { useContext, useEffect, useCallback } from 'react';
-import { displaySetManager, ToolBarManager, useViewModel } from '@ohif/core';
+import {
+  displaySetManager,
+  ToolBarManager,
+  useViewModel,
+  useToolbarLayout,
+  ToolbarLayoutProvider,
+} from '@ohif/core';
 import { DragAndDropProvider } from '@ohif/ui';
 import Compose from './Compose';
 import ViewportGrid from './../components/ViewportGrid';
 
-export default function ModeRoute({
+function DisplaySetCreator({
   location,
   mode,
   dataSourceName,
   extensionManager,
 }) {
-  const { routes, sopClassHandlers, extensions } = mode;
+  console.warn('DisplaySetCreator rerendering');
+  const { routes, sopClassHandlers } = mode;
   const dataSources = extensionManager.getDataSources(dataSourceName);
-
-  // Add toolbar state to the view model context?
-  const {
-    toolBarLayout,
-    setToolBarLayout,
-    displaySetInstanceUIDs,
-    setDisplaySetInstanceUids,
-  } = useViewModel();
-
   // TODO: For now assume one unique datasource.
 
   const dataSource = dataSources[0];
   const route = routes[0];
 
-  let toolBarManager;
+  // Add toolbar state to the view model context?
+  const { displaySetInstanceUIDs, setDisplaySetInstanceUIDs } = useViewModel();
+
+  const { toolBarLayout, setToolBarLayout } = useToolbarLayout();
 
   useEffect(() => {
-    toolBarManager = new ToolBarManager(extensionManager, setToolBarLayout);
+    let toolBarManager = new ToolBarManager(extensionManager, setToolBarLayout);
     route.init({ toolBarManager });
   }, [mode, dataSourceName, location]);
-
-  console.log(dataSource);
 
   const createDisplaySets = useCallback(() => {
     // Add SOPClassHandlers to a new SOPClassManager.
     displaySetManager.init(extensionManager, sopClassHandlers, {
       displaySetInstanceUIDs,
-      setDisplaySetInstanceUids,
+      setDisplaySetInstanceUIDs,
     });
 
     const queryParams = location.search;
@@ -54,6 +53,23 @@ export default function ModeRoute({
   useEffect(() => {
     createDisplaySets();
   }, [mode, dataSourceName, location]);
+
+  return null;
+}
+
+export default function ModeRoute({
+  location,
+  mode,
+  dataSourceName,
+  extensionManager,
+}) {
+  console.warn('ModeRoute rerendering');
+  const { routes, extensions } = mode;
+  const dataSources = extensionManager.getDataSources(dataSourceName);
+  // TODO: For now assume one unique datasource.
+
+  const dataSource = dataSources[0];
+  const route = routes[0];
 
   // Only handling one route per mode for now
   // You can test via http://localhost:3000/example-mode/dicomweb
@@ -89,19 +105,27 @@ export default function ModeRoute({
   }
 
   return (
-    <CombinedContextProvider>
-      {/* TODO: extensionManager is already provided to the extension module.
-       *  Use it from there instead of passing as a prop here.
-       */}
-      <DragAndDropProvider>
-        <LayoutComponent
+    <React.Fragment>
+      <ToolbarLayoutProvider>
+        <DisplaySetCreator
+          location={location}
+          mode={mode}
+          dataSourceName={dataSourceName}
           extensionManager={extensionManager}
-          displaySetInstanceUIDs={displaySetInstanceUIDs}
-          toolBarLayout={toolBarLayout}
-          ViewportGrid={ViewportGridWithDataSource}
-          {...layoutTemplateData.props}
         />
-      </DragAndDropProvider>
-    </CombinedContextProvider>
+        <CombinedContextProvider>
+          {/* TODO: extensionManager is already provided to the extension module.
+           *  Use it from there instead of passing as a prop here.
+           */}
+          <DragAndDropProvider>
+            <LayoutComponent
+              extensionManager={extensionManager}
+              ViewportGrid={ViewportGridWithDataSource}
+              {...layoutTemplateData.props}
+            />
+          </DragAndDropProvider>
+        </CombinedContextProvider>
+      </ToolbarLayoutProvider>
+    </React.Fragment>
   );
 }

@@ -1,9 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SidePanel, Toolbar } from '@ohif/ui';
+import { useToolbarLayout, useViewModel } from '@ohif/core';
 //
 import Header from './Header.jsx';
 import { displaySetManager } from '@ohif/core';
+
+function ViewportDataCreator({setViewportData}) {
+  const { displaySetInstanceUIDs } = useViewModel()
+  console.log(displaySetInstanceUIDs);
+
+  useEffect(() => {
+    setViewportData([
+      displaySetManager.getDisplaySetByUID(displaySetInstanceUIDs[0]),
+    ]);
+  }, [displaySetInstanceUIDs, setViewportData]);
+
+  return null;
+}
 
 function ViewerLayout({
   // From Extension Module Params
@@ -11,9 +25,7 @@ function ViewerLayout({
   // From Modes
   leftPanels,
   rightPanels,
-  toolBarLayout,
   viewports,
-  displaySetInstanceUIDs,
   ViewportGrid,
 }) {
   /**
@@ -32,14 +44,6 @@ function ViewerLayout({
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const [viewportData, setViewportData] = useState([]);
-
-  console.log(displaySetInstanceUIDs);
-
-  useEffect(() => {
-    setViewportData([
-      displaySetManager.getDisplaySetByUID(displaySetInstanceUIDs[0]),
-    ]);
-  }, [displaySetInstanceUIDs]);
 
   const getPanelData = id => {
     const entry = extensionManager.getModuleEntry(id);
@@ -66,16 +70,18 @@ function ViewerLayout({
 
   const leftPanelComponents = leftPanels.map(getPanelData);
   const rightPanelComponents = rightPanels.map(getPanelData);
-
   const viewportComponents = viewports.map(getViewportComponentData);
 
-  console.log(displaySetInstanceUIDs);
-  console.log(toolBarLayout);
+  let { toolBarLayout } = useToolbarLayout();
+  if (!toolBarLayout.length) {
+    return null;
+  }
 
   const [primaryToolBarLayout, secondaryToolBarLayout] = toolBarLayout;
 
   return (
     <div>
+      <ViewportDataCreator setViewportData={setViewportData}/>
       <Header
         tools={primaryToolBarLayout.tools}
         moreTools={primaryToolBarLayout.moreTools}
@@ -179,7 +185,7 @@ ViewerLayout.propTypes = {
       moreTools: PropTypes.array,
     })
   ).isRequired,
-  displaySetInstanceUIDs: PropTypes.any.isRequired,
+  //displaySetInstanceUids: PropTypes.any.isRequired,
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
