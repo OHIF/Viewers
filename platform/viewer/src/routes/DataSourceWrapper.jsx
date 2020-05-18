@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { MODULE_TYPES } from '@ohif/core';
 //
-import { appConfig, extensionManager } from '../App.js';
+import { appConfig, extensionManager } from '../App.jsx';
 
 /**
  * Uses route properties to determine the data source that should be passed

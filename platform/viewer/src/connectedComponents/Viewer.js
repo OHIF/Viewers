@@ -11,7 +11,7 @@ import ToolbarRow from './ToolbarRow.js';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
-import { extensionManager } from './../App.js';
+import { extensionManager } from './../App.jsx';
 
 // Contexts
 import WhiteLabelingContext from '../context/WhiteLabelingContext.js';

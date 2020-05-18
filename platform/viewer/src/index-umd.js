@@ -5,7 +5,7 @@ import 'regenerator-runtime/runtime';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App.js';
+import App from './App.jsx';
 
 function installViewer(config, containerId = 'root', callback) {
   const container = document.getElementById(containerId);

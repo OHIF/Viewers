@@ -11,8 +11,6 @@ import {
   // redux as reduxOHIF,
 } from '@ohif/core';
 
-import buildModeRoutes from './routes/buildModeRoutes';
-
 /**
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects
@@ -61,24 +59,11 @@ function appInit(appConfigOrFunc, defaultExtensions) {
   // TODO: We no longer init webWorkers at app level
   // TODO: We no longer init the user Manager
 
-  // TODO: After extensions are registered, add modes and datasources to buildModeRoutes.js
-
-  const { modes } = appConfig;
-
-  // Temporarily for testing
-  if (!modes.length) {
-    modes.push(window.exampleMode);
-  }
-
-  const appRoutes =
-    buildModeRoutes(modes, appConfig.dataSources, extensionManager) || [];
-
   return {
     appConfig,
     commandsManager,
     extensionManager,
     servicesManager,
-    appRoutes,
   };
 }
 

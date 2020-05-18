@@ -3,7 +3,7 @@
  * Packaged (NPM) builds go through `index-umd.js`
  */
 import 'regenerator-runtime/runtime';
-import App from './App.js';
+import App from './App.jsx';
 import React from 'react';
 import ReactDOM from 'react-dom';
 // test

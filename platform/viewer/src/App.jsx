@@ -5,7 +5,8 @@ import { BrowserRouter, HashRouter } from 'react-router-dom';
 import { ThemeWrapper } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
-// import AppContextProvider from './contexts/AppContextProvider.js';
+import { appConfigContext } from './state/appConfig.context';
+import { useAppConfig } from './hooks/useAppConfig';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 
@@ -23,7 +24,6 @@ let appConfig, commandsManager, extensionManager, servicesManager;
 
 function App({ config, defaultExtensions }) {
   const init = appInit(config, defaultExtensions);
-  const { appRoutes } = init;
 
   // Set above for named export
   appConfig = init.appConfig;
@@ -33,11 +33,23 @@ function App({ config, defaultExtensions }) {
 
   // TODO: Expose configuration w/ context?
   // See: `setConfiguration` in master
+  const appConfigImp = useAppConfig();
+  console.log('appConfigImp: ', appConfigImp);
 
   return (
-    <Router basename={appConfig.routerBasename}>
-      <ThemeWrapper>{createRoutes(appRoutes)}</ThemeWrapper>
-    </Router>
+    <appConfigContext.Provider value={appConfigImp}>
+      <Router basename={appConfig.routerBasename}>
+        <ThemeWrapper>
+          {createRoutes(
+            appConfig.modes,
+            appConfig.dataSources,
+            extensionManager,
+            appConfig,
+            appConfigImp
+          )}
+        </ThemeWrapper>
+      </Router>
+    </appConfigContext.Provider>
   );
 }
 
@@ -53,7 +65,8 @@ App.propTypes = {
       extensions: PropTypes.array,
     }),
   ]).isRequired,
-  /* Extensions that are "bundled" or "baked-in" to the application */
+  /* Extensions that are "bundled" or "baked-in" to the application.
+   * These would be provided at build time as part of they entry point. */
   defaultExtensions: PropTypes.array,
 };
 

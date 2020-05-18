@@ -12,7 +12,7 @@ import {
 } from '@ohif/ui';
 
 import './ToolbarRow.css';
-import { commandsManager, extensionManager } from './../App.js';
+import { commandsManager, extensionManager } from './../App.jsx';
 
 import ConnectedCineDialog from './ConnectedCineDialog';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
