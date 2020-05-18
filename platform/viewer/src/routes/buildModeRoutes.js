@@ -24,11 +24,8 @@ import { ViewModelProvider } from '@ohif/core';
  */
 export default function buildModeRoutes(
   modes,
-
   dataSources,
-
   extensionManager,
-
   servicesManager
 ) {
   const routes = [];
