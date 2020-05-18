@@ -1,8 +1,8 @@
 import { createContext } from 'react';
 
 export const APP_CONFIG_DEFAULT_VALUE = {
-  config: {},
-  setCurrentConfig: () => {},
+  appConfig: {},
+  setCurrentAppConfig: () => {},
 };
 
 export const appConfigContext = createContext(APP_CONFIG_DEFAULT_VALUE);

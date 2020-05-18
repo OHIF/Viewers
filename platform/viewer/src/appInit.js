@@ -59,6 +59,11 @@ function appInit(appConfigOrFunc, defaultExtensions) {
   // TODO: We no longer init webWorkers at app level
   // TODO: We no longer init the user Manager
 
+  // TODO: Remove this
+  if (!appConfig.modes.length) {
+    appConfig.modes.push(window.exampleMode);
+  }
+
   return {
     appConfig,
     commandsManager,

@@ -7,6 +7,7 @@ import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 
 // TODO: Make these configurable
+// TODO: Include "routes" debug route if dev build
 const bakedInRoutes = [
   // WORK LIST
   {
@@ -19,15 +20,12 @@ const bakedInRoutes = [
   { component: NotFound },
 ];
 
-const createRoutes = (modes, dataSources, extensionManager, t, t2) => {
-  console.log('Creating Routes: ', routes, bakedInRoutes);
-  console.log(modes, dataSources, extensionManager, t, t2);
-  if (!modes.length) {
-    modes.push(window.exampleMode);
-  }
+const createRoutes = (modes, dataSources, extensionManager) => {
   const routes = buildModeRoutes(modes, dataSources, extensionManager) || [];
   // TODO: Shouldn't need to guard input routes with an empty array?
   const allRoutes = [...(routes || []), ...bakedInRoutes];
+
+  console.log('Creating Routes: ', modes, dataSources, routes, bakedInRoutes, allRoutes);
 
   return (
     <Switch>

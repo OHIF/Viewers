@@ -7,7 +7,7 @@ import { ThemeWrapper } from '@ohif/ui';
 // TODO: Should this influence study list?
 import { appConfigContext } from './state/appConfig.context';
 import { useAppConfig } from './hooks/useAppConfig';
-import createRoutes from './routes';
+import createAppRoutes from './routes';
 import appInit from './appInit.js';
 
 // Temporarily for testing
@@ -20,34 +20,26 @@ const Router = JSON.parse(process.env.USE_HASH_ROUTER)
   ? HashRouter
   : BrowserRouter;
 
-let appConfig, commandsManager, extensionManager, servicesManager;
+let commandsManager, extensionManager, servicesManager;
 
 function App({ config, defaultExtensions }) {
   const init = appInit(config, defaultExtensions);
 
   // Set above for named export
-  appConfig = init.appConfig;
   commandsManager = init.commandsManager;
   extensionManager = init.extensionManager;
   servicesManager = init.servicesManager;
 
-  // TODO: Expose configuration w/ context?
-  // See: `setConfiguration` in master
-  const appConfigImp = useAppConfig();
-  console.log('appConfigImp: ', appConfigImp);
+  // Set appConfig
+  const appConfigContextApi = useAppConfig(init.appConfig);
+  const { routerBasename, modes, dataSources } = appConfigContextApi.appConfig;
+  // Use config to create routes
+  const appRoutes = createAppRoutes(modes, dataSources, extensionManager);
 
   return (
-    <appConfigContext.Provider value={appConfigImp}>
-      <Router basename={appConfig.routerBasename}>
-        <ThemeWrapper>
-          {createRoutes(
-            appConfig.modes,
-            appConfig.dataSources,
-            extensionManager,
-            appConfig,
-            appConfigImp
-          )}
-        </ThemeWrapper>
+    <appConfigContext.Provider value={appConfigContextApi}>
+      <Router basename={routerBasename}>
+        <ThemeWrapper>{appRoutes}</ThemeWrapper>
       </Router>
     </appConfigContext.Provider>
   );
@@ -92,4 +84,4 @@ App.defaultProps = {
 
 export default App;
 
-export { appConfig, commandsManager, extensionManager, servicesManager };
+export { commandsManager, extensionManager, servicesManager };
