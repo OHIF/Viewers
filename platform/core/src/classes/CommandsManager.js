@@ -115,7 +115,7 @@ export class CommandsManager {
    * @param {String} commandName - Command to find
    * @param {String} [contextName] - Specific command to look in. Defaults to current activeContexts
    */
-  getCommand(commandName, contextName) {
+  getCommand = (commandName, contextName) => {
     let contexts = [];
 
     if (contextName) {
@@ -145,7 +145,7 @@ export class CommandsManager {
     });
 
     return foundCommand;
-  }
+  };
 
   /**
    *

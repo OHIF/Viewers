@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { StudyBrowser } from '@ohif/ui';
-import { dicomMetadataStore, useViewModel } from '@ohif/core';
+import { dicomMetadataStore } from '@ohif/core';
 //
 
-function PanelStudyBrowser({ getImageSrc, getStudiesByPatientId, dataSource }) {
+function PanelStudyBrowser({ servicesManager, getImageSrc, getStudiesByPatientId, dataSource }) {
   console.warn('StudyBrowserPanel rerender');
   const [activeTabName, setActiveTabName] = useState('primary');
   const [studyData, setStudyData] = useState([]);
@@ -13,34 +13,30 @@ function PanelStudyBrowser({ getImageSrc, getStudiesByPatientId, dataSource }) {
     setThumbnailImageSrcMap(thumbnailImageSrcMap.set(k, v));
   };
 
-  const isSubscribed = true;
-  const viewModel = useViewModel();
-  const viewportData = []; //useViewportGrid();
-  const seriesTracking = {}; //useSeriesTracking();
-
-  // This effect
-  useEffect(() => {
-    if (!viewModel.displaySetInstanceUIDs.length) {
+  const { DisplaySetService } = servicesManager.services;
+  const handleDisplaySetSubscription = useCallback(displaySets => {
+    if (!displaySets) {
       return;
     }
 
     if (getImageSrc) {
-      viewModel.displaySetInstanceUIDs.forEach(async uid => {
-        const imageIds = dataSource.getImageIdsForDisplaySet(uid);
-        const imageId = imageIds[Math.floor(imageIds.length / 2)];
-        const imageSrc = await getImageSrc(imageId);
+      Object.keys(displaySets).forEach(StudyInstanceUid => {
+        const dSets = displaySets[StudyInstanceUid];
+        dSets.forEach(async (dset) => {
+          const uid = dset.displaySetInstanceUID;
+          const imageIds = dataSource.getImageIdsForDisplaySet(uid, DisplaySetService);
+          const imageId = imageIds[Math.floor(imageIds.length / 2)];
+          const imageSrc = await getImageSrc(imageId);
 
-        updateThumbnailMap(uid, imageSrc);
-      });
+          updateThumbnailMap(uid, imageSrc);
+        });
+      })
     }
 
-    const displaySets = viewModel.displaySetInstanceUIDs.map(
-      displaySetManager.getDisplaySetByUID
-    );
-
-    const aDisplaySet = displaySets[0];
+    // TODO: This isn't really the 'first'
+    const firstStudyInstanceUID = Object.keys(displaySets)[0];
     const firstStudy = dicomMetadataStore.getStudy(
-      aDisplaySet.StudyInstanceUID
+      firstStudyInstanceUID
     );
     const firstInstance = firstStudy.series[0].instances[0];
     const PatientID = firstInstance.PatientID;
@@ -62,9 +58,19 @@ function PanelStudyBrowser({ getImageSrc, getStudiesByPatientId, dataSource }) {
     }
 
     getData();
+  });
 
-    return () => (isSubscribed = false);
-  }, [viewModel.displaySetInstanceUIDs]);
+  useEffect(() => {
+    const { unsubscribe } = DisplaySetService.subscribe(
+      DisplaySetService.EVENTS.DISPLAY_SET_ADDED,
+      handleDisplaySetSubscription
+    );
+
+    return unsubscribe;
+  }, []);
+
+  const viewportData = []; //useViewportGrid();
+  const seriesTracking = {}; //useSeriesTracking();
 
   studyData.forEach(study => {
     study.displaySets.forEach(ds => {
@@ -112,7 +118,7 @@ function PanelStudyBrowser({ getImageSrc, getStudiesByPatientId, dataSource }) {
 
     dataSource.retrieve.series.metadata(
       queryParams,
-      displaySetManager.makeDisplaySets
+      DisplaySetService.makeDisplaySets
     );
   }
 
@@ -169,34 +175,39 @@ function _mapDataSourceStudies(studies) {
  * Iterates over displaysets and creates mapped studies from
  * instance metadata.
  *
- * @param {*} displaySets
+ * @param {*} displaySetsPerStudy
  */
-function _getMappedStudiesFromDisplaySets(displaySets) {
+function _getMappedStudiesFromDisplaySets(displaySetsPerStudy) {
   const studiesFromInstanceData = {};
 
-  displaySets.forEach(ds => {
-    const displaySet = {
-      displaySetInstanceUID: ds.displaySetInstanceUID,
-      description: ds.SeriesDescription,
-      seriesNumber: ds.SeriesNumber,
-      modality: ds.Modality,
-      date: ds.SeriesDate,
-      numInstances: ds.numImageFrames,
-    };
+  Object.keys(displaySetsPerStudy).forEach(StudyInstanceUID => {
+    const displaySets = displaySetsPerStudy[StudyInstanceUID];
 
-    studiesFromInstanceData[ds.StudyInstanceUID] =
-      studiesFromInstanceData[ds.StudyInstanceUID] ||
-      _mapStudyFromInstance(ds.StudyInstanceUID);
+    displaySets.forEach(ds => {
+      const displaySet = {
+        displaySetInstanceUID: ds.displaySetInstanceUID,
+        description: ds.SeriesDescription,
+        seriesNumber: ds.SeriesNumber,
+        modality: ds.Modality,
+        date: ds.SeriesDate,
+        numInstances: ds.numImageFrames,
+        componentType: 'thumbnailTracked' // TODO: PUT THIS SOMEWHERE ELSE
+      };
 
-    const mappedStudy = studiesFromInstanceData[ds.StudyInstanceUID];
+      studiesFromInstanceData[ds.StudyInstanceUID] =
+        studiesFromInstanceData[ds.StudyInstanceUID] ||
+        _mapStudyFromInstance(ds.StudyInstanceUID);
 
-    mappedStudy.displaySets.push(displaySet);
-    mappedStudy.numInstances += displaySet.numInstances;
-    mappedStudy.modalitiesSet.add(displaySet.modality);
+      const mappedStudy = studiesFromInstanceData[ds.StudyInstanceUID];
 
-    const modalitiesSet = mappedStudy.modalitiesSet;
-    mappedStudy.modalities = Array.from(modalitiesSet).join(', ');
-  });
+      mappedStudy.displaySets.push(displaySet);
+      mappedStudy.numInstances += displaySet.numInstances;
+      mappedStudy.modalitiesSet.add(displaySet.modality);
+
+      const modalitiesSet = mappedStudy.modalitiesSet;
+      mappedStudy.modalities = Array.from(modalitiesSet).join(', ');
+    });
+  })
 
   return studiesFromInstanceData;
 }
@@ -223,6 +234,7 @@ function _mergeDataSourceAndInstanceStudies(mappedQidoStudies, mappedInstanceStu
       description: qidoStudy.StudyDescription || studyFromInstances.description,
       modalities: studyFromInstances.modalities || qidoStudy.ModalitiesInStudy,
       numInstances: qidoStudy.NumInstances || studyFromInstances.numInstances,
+      seriesNumber: studyFromInstances.seriesNumber,
       displaySets: studyFromInstances.displaySets,
     };
   });

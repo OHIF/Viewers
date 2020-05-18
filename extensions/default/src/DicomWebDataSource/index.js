@@ -125,8 +125,8 @@ function createDicomWebApi(dicomWebConfig) {
         },
       },
     },
-    getImageIdsForDisplaySet(displaySetInstanceUID) {
-      const displaySet = displaySetManager.getDisplaySetByUID(
+    getImageIdsForDisplaySet(displaySetInstanceUID, DisplaySetService) {
+      const displaySet = DisplaySetService.getDisplaySetByUID(
         displaySetInstanceUID
       );
 

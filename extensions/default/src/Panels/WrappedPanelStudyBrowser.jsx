@@ -11,18 +11,18 @@ import getImageSrcFromImageId from './getImageSrcFromImageId';
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowser({ commandsManager, extensionManager }) {
+function WrappedPanelStudyBrowser({ commandsManager, extensionManager, servicesManager }) {
   // Note: this feels odd
   const dataSource = extensionManager.getDataSources('dicomweb')[0];
   const getStudiesByPatientId = patientId =>
     dataSource.query.studies.search(patientId);
   const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(
-    commandsManager.getCommand
+    commandsManager.getCommand.bind(commandsManager),
   );
-
 
   return (
     <PanelStudyBrowser
+      servicesManager={servicesManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesByPatientId={getStudiesByPatientId}
@@ -47,7 +47,7 @@ function _createGetImageSrcFromImageIdFn(getCommand) {
 
     return getImageSrcFromImageId.bind(null, cornerstone);
   } catch (ex) {
-    // throw new Error('Required command not found');
+    throw new Error('Required command not found');
   }
 }
 

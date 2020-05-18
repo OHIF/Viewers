@@ -26,7 +26,7 @@ export default {
           component: MeasurementComparisonTable,
         },
       ],
-      defaultContext: ['VIEWER']
+      defaultContext: ['VIEWER'],
     };
   },
 

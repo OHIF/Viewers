@@ -17,6 +17,6 @@ const setCornerstoneLayout = () => {
   const action = setLayout(layout);
 
   window.store.dispatch(action);
-}
+};
 
 export default setCornerstoneLayout;
