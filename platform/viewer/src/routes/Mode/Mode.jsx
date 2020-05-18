@@ -1,17 +1,12 @@
-import React, { useEffect, useCallback } from 'react';
-import {
-  displaySetManager,
-  ToolBarManager,
-  useViewModel,
-  useToolbarLayout,
-  ToolbarLayoutProvider,
-} from '@ohif/core';
+import React from 'react';
+import PropTypes from 'prop-types';
+//
+import { ToolbarLayoutProvider } from '@ohif/core';
 import { DragAndDropProvider } from '@ohif/ui';
 //
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 import DisplaySetCreator from './DisplaySetCreator';
-
 
 export default function ModeRoute({
   location,
@@ -85,3 +80,17 @@ export default function ModeRoute({
     </React.Fragment>
   );
 }
+
+ModeRoute.propTypes = {
+  // Ref: https://reacttraining.com/react-router/web/api/location
+  location: PropTypes.shape({
+    key: PropTypes.string,
+    pathname: PropTypes.string.isRequired,
+    search: PropTypes.string.isRequired,
+    hash: PropTypes.string.isRequired,
+    state: PropTypes.object.isRequired,
+  }),
+  mode: PropTypes.object.isRequired,
+  dataSourceName: PropTypes.string,
+  extensionManager: PropTypes.object,
+};
