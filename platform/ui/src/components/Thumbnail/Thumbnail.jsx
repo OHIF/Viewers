@@ -15,23 +15,23 @@ const Thumbnail = ({
   description,
   seriesNumber,
   numInstances,
-  dragData,
+  // dragData,
   isActive,
   onClick,
 }) => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
   // specified item.
-  const [collectedProps, drag, dragPreview] = useDrag({
+  /*const [collectedProps, drag, dragPreview] = useDrag({
     item: { ...dragData },
     canDrag: function(monitor) {
       return Object.keys(dragData).length !== 0;
     },
-  });
+  });*/
 
+  //      ref={drag}
   return (
     <div
-      ref={drag}
       className={classnames(
         className,
         'flex flex-col flex-1 px-3 cursor-pointer outline-none'
