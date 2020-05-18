@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { StudyBrowser } from '@ohif/ui';
 import { dicomMetadataStore, useViewModel } from '@ohif/core';
+//
 
-function PanelStudyBrowser({ getDataSources, commandsManager }) {
+function PanelStudyBrowser({ getImageSrc, getStudiesByPatientId, dataSource }) {
   console.warn('StudyBrowserPanel rerender');
   const [activeTabName, setActiveTabName] = useState('primary');
   const [studyData, setStudyData] = useState([]);
@@ -12,8 +13,8 @@ function PanelStudyBrowser({ getDataSources, commandsManager }) {
     setThumbnailImageSrcMap(thumbnailImageSrcMap.set(k, v));
   };
 
+  const isSubscribed = true;
   const viewModel = useViewModel();
-  const dataSource = getDataSources('dicomweb')[0];
   const viewportData = []; //useViewportGrid();
   const seriesTracking = {}; //useSeriesTracking();
 
@@ -23,29 +24,15 @@ function PanelStudyBrowser({ getDataSources, commandsManager }) {
       return;
     }
 
-    let isSubscribed = true;
+    if (getImageSrc) {
+      viewModel.displaySetInstanceUIDs.forEach(async uid => {
+        const imageIds = dataSource.getImageIdsForDisplaySet(uid);
+        const imageId = imageIds[Math.floor(imageIds.length / 2)];
+        const imageSrc = await getImageSrc(imageId);
 
-    const command = commandsManager.getCommand(
-      'getCornerstoneLibraries',
-      'VIEWER'
-    );
-
-    if (!command) {
-      throw new Error('Required command not found');
-    }
-
-    const { cornerstone, cornerstoneTools } = command.commandFn();
-
-    viewModel.displaySetInstanceUIDs.forEach(uid => {
-      const imageIds = dataSource.getImageIdsForDisplaySet(uid);
-      const imageId = imageIds[Math.floor(imageIds.length / 2)];
-
-      getImageSrc(imageId, { cornerstone }).then(imageSrc => {
-        if (isSubscribed) {
-          updateThumbnailMap(uid, imageSrc);
-        }
+        updateThumbnailMap(uid, imageSrc);
       });
-    });
+    }
 
     const displaySets = viewModel.displaySetInstanceUIDs.map(
       displaySetManager.getDisplaySetByUID
@@ -57,121 +44,27 @@ function PanelStudyBrowser({ getDataSources, commandsManager }) {
     );
     const firstInstance = firstStudy.series[0].instances[0];
     const PatientID = firstInstance.PatientID;
+    //
+    async function getData() {
+      const studiesForPatient = await getStudiesByPatientId(PatientID);
+      const mappedStudiesFromDataSource = _mapDataSourceStudies(
+        studiesForPatient
+      );
+      const mappedStudiesFromInstances = _getMappedStudiesFromDisplaySets(
+        displaySets
+      );
+      const ourFinalFormIGuess = _mergeDataSourceAndInstanceStudies(
+        mappedStudiesFromDataSource,
+        mappedStudiesFromInstances
+      );
 
-    dataSource.query.studies.search({ patientId: PatientID }).then(results => {
-      const studies = results.map(study => {
-        // TODO: Why does the data source return in this format?
-        return {
-          AccessionNumber: study.accession,
-          StudyDate: study.date,
-          StudyDescription: study.description,
-          NumInstances: study.instances,
-          ModalitiesInStudy: study.modalities,
-          PatientID: study.mrn,
-          PatientName: study.patientName,
-          StudyInstanceUID: study.studyInstanceUid,
-          StudyTime: study.time,
-        };
-      });
+      setStudyData(ourFinalFormIGuess);
+    }
 
-      const studiesFromInstanceData = {};
-      displaySets.forEach(ds => {
-        const displaySet = {
-          displaySetInstanceUID: ds.displaySetInstanceUID,
-          description: ds.SeriesDescription,
-          seriesNumber: ds.SeriesNumber,
-          modality: ds.Modality,
-          date: ds.SeriesDate,
-          numInstances: ds.numImageFrames,
-        };
-
-        const displaySetViewportData = viewportData.find(
-          a => a.displaySetInstanceUID === ds.displaySetInstanceUID
-        );
-
-        if (displaySetViewportData) {
-          displaySet.viewportIdentificator = displaySetViewportData.identifier;
-        }
-
-        const trackingInfo = seriesTracking[ds.SeriesInstanceUID];
-        if (trackingInfo) {
-          displaySet.isTracked = trackingInfo.isTracked;
-        } else {
-          displaySet.isTracked = false;
-        }
-
-        displaySet.componentType = 'thumbnailTracked';
-
-        if (
-          !Object.keys(studiesFromInstanceData).includes(ds.StudyInstanceUID)
-        ) {
-          const study = dicomMetadataStore.getStudy(ds.StudyInstanceUID);
-          const anInstance = study.series[0].instances[0];
-
-          studiesFromInstanceData[ds.StudyInstanceUID] = {
-            date: anInstance.StudyDate, // TODO: Format this date to DD-MMM-YYYY
-            description: anInstance.StudyDescription,
-            displaySets: [],
-            numInstances: 0,
-            modalitiesSet: new Set(),
-          };
-        }
-
-        studiesFromInstanceData[ds.StudyInstanceUID].displaySets.push(
-          displaySet
-        );
-        studiesFromInstanceData[ds.StudyInstanceUID].numInstances +=
-          displaySet.numInstances;
-
-        studiesFromInstanceData[ds.StudyInstanceUID].modalitiesSet.add(
-          displaySet.modality
-        );
-
-        const modalitiesSet =
-          studiesFromInstanceData[ds.StudyInstanceUID].modalitiesSet;
-        studiesFromInstanceData[ds.StudyInstanceUID].modalities = Array.from(
-          modalitiesSet
-        ).join(', ');
-      });
-
-      // QIDO for all by MRN
-      const allStudies = studies.map(studyLevelData => {
-        const studyFromInstanceData =
-          studiesFromInstanceData[studyLevelData.StudyInstanceUID];
-
-        if (!studyFromInstanceData) {
-          return {
-            studyInstanceUid: studyLevelData.StudyInstanceUID,
-            date: studyLevelData.StudyDate,
-            description: studyLevelData.StudyDescription,
-            modalities: studyLevelData.ModalitiesInStudy,
-            numInstances: studyLevelData.NumInstances,
-            displaySets: [],
-          };
-        }
-
-        return {
-          studyInstanceUid: studyLevelData.StudyInstanceUID,
-          date: studyLevelData.StudyDate || studyFromInstanceData.date,
-          description:
-            studyLevelData.StudyDescription ||
-            studyFromInstanceData.description,
-          modalities:
-            studyFromInstanceData.modalities ||
-            studyLevelData.ModalitiesInStudy,
-          numInstances:
-            studyLevelData.NumInstances || studyFromInstanceData.numInstances,
-          displaySets: studyFromInstanceData.displaySets,
-        };
-      });
-
-      if (isSubscribed) {
-        setStudyData(allStudies);
-      }
-    });
+    getData();
 
     return () => (isSubscribed = false);
-  }, [viewModel.displaySetInstanceUIDs, thumbnailImageSrcMap, setStudyData]);
+  }, [viewModel.displaySetInstanceUIDs]);
 
   studyData.forEach(study => {
     study.displaySets.forEach(ds => {
@@ -240,18 +133,112 @@ function PanelStudyBrowser({ getDataSources, commandsManager }) {
   );
 }
 
-function WrappedPanelStudyBrowser({ commandsManager, extensionManager }) {
-  return (
-    <PanelStudyBrowser
-      getDataSources={extensionManager.getDataSources}
-      commandsManager={commandsManager}
-    />
-  );
-}
-
-WrappedPanelStudyBrowser.propTypes = {
-  commandsManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.object.isRequired,
+PanelStudyBrowser.propTypes = {
+  dataSource: PropTypes.shape({
+    getImageIdsForDisplaySet: PropTypes.func.isRequired,
+  }).isRequired,
+  getImageSrc: PropTypes.func.isRequired,
+  getStudiesByPatientId: PropTypes.func.isRequired,
 };
 
-export { WrappedPanelStudyBrowser };
+export default PanelStudyBrowser;
+
+/**
+ * Maps from the DataSource's format to a naturalized object
+ *
+ * @param {*} studies
+ */
+function _mapDataSourceStudies(studies) {
+  return studies.map(study => {
+    // TODO: Why does the data source return in this format?
+    return {
+      AccessionNumber: study.accession,
+      StudyDate: study.date,
+      StudyDescription: study.description,
+      NumInstances: study.instances,
+      ModalitiesInStudy: study.modalities,
+      PatientID: study.mrn,
+      PatientName: study.patientName,
+      StudyInstanceUID: study.studyInstanceUid,
+      StudyTime: study.time,
+    };
+  });
+}
+
+/**
+ * Iterates over displaysets and creates mapped studies from
+ * instance metadata.
+ *
+ * @param {*} displaySets
+ */
+function _getMappedStudiesFromDisplaySets(displaySets) {
+  const studiesFromInstanceData = {};
+
+  displaySets.forEach(ds => {
+    const displaySet = {
+      displaySetInstanceUID: ds.displaySetInstanceUID,
+      description: ds.SeriesDescription,
+      seriesNumber: ds.SeriesNumber,
+      modality: ds.Modality,
+      date: ds.SeriesDate,
+      numInstances: ds.numImageFrames,
+    };
+
+    studiesFromInstanceData[ds.StudyInstanceUID] =
+      studiesFromInstanceData[ds.StudyInstanceUID] ||
+      _mapStudyFromInstance(ds.StudyInstanceUID);
+
+    const mappedStudy = studiesFromInstanceData[ds.StudyInstanceUID];
+
+    mappedStudy.displaySets.push(displaySet);
+    mappedStudy.numInstances += displaySet.numInstances;
+    mappedStudy.modalitiesSet.add(displaySet.modality);
+
+    const modalitiesSet = mappedStudy.modalitiesSet;
+    mappedStudy.modalities = Array.from(modalitiesSet).join(', ');
+  });
+
+  return studiesFromInstanceData;
+}
+
+function _mergeDataSourceAndInstanceStudies(mappedQidoStudies, mappedInstanceStudies) {
+  const allStudies = mappedQidoStudies.map(qidoStudy => {
+    const studyFromInstances =
+      mappedInstanceStudies[qidoStudy.StudyInstanceUID];
+
+    if (!studyFromInstances) {
+      return {
+        studyInstanceUid: qidoStudy.StudyInstanceUID,
+        date: qidoStudy.StudyDate,
+        description: qidoStudy.StudyDescription,
+        modalities: qidoStudy.ModalitiesInStudy,
+        numInstances: qidoStudy.NumInstances,
+        displaySets: [],
+      };
+    }
+
+    return {
+      studyInstanceUid: qidoStudy.StudyInstanceUID,
+      date: qidoStudy.StudyDate || studyFromInstances.date,
+      description: qidoStudy.StudyDescription || studyFromInstances.description,
+      modalities: studyFromInstances.modalities || qidoStudy.ModalitiesInStudy,
+      numInstances: qidoStudy.NumInstances || studyFromInstances.numInstances,
+      displaySets: studyFromInstances.displaySets,
+    };
+  });
+
+  return allStudies;
+}
+
+function _mapStudyFromInstance(StudyInstanceUID) {
+  const study = dicomMetadataStore.getStudy(StudyInstanceUID);
+  const anInstance = study.series[0].instances[0];
+
+  return {
+    date: anInstance.StudyDate, // TODO: Format this date to DD-MMM-YYYY
+    description: anInstance.StudyDescription,
+    displaySets: [],
+    numInstances: 0,
+    modalitiesSet: new Set(),
+  };
+}

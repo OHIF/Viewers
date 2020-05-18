@@ -8,20 +8,6 @@ import MeasurementTable from './MeasurementTable.js';
 // - cancel promises when component is destroyed
 // - show errors in UI for thumbnails if promise fails
 
-function getImageSrc(imageId, { cornerstone }) {
-  return new Promise((resolve, reject) => {
-    cornerstone
-      .loadAndCacheImage(imageId)
-      .then(image => {
-        const canvas = document.createElement('canvas');
-        cornerstone.renderToCanvas(canvas, image);
-
-        resolve(canvas.toDataURL());
-      })
-      .catch(reject);
-  });
-}
-
 function getPanelModule({
   commandsManager,
   extensionManager,
