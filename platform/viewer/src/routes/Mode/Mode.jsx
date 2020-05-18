@@ -88,7 +88,10 @@ export default function ModeRoute({
          *  Use it from there instead of passing as a prop here.
          */}
         <DragAndDropProvider>
-          <LayoutComponent {...layoutTemplateData.props} ViewportGridComp={ViewportGridWithDataSource}/>
+          <LayoutComponent
+            {...layoutTemplateData.props}
+            ViewportGridComp={ViewportGridWithDataSource}
+          />
         </DragAndDropProvider>
       </CombinedContextProvider>
       {/*</ToolbarLayoutProvider>*/}
