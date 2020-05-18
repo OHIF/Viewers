@@ -27,7 +27,6 @@ export default class DisplaySetService {
    * @return {Object} Observable object with actions
    */
   subscribe(eventName, callback) {
-    debugger;
     if (this._isValidEvent(eventName)) {
       const listenerId = guid();
       const subscription = { id: listenerId, callback };

@@ -8,8 +8,6 @@ import { ViewportGrid, ViewportPane } from '@ohif/ui';
 // import EmptyViewport from './EmptyViewport.js';
 
 function ViewerViewportGrid(props) {
-  debugger;
-
   const {
     activeViewportIndex,
     servicesManager,
@@ -22,14 +20,15 @@ function ViewerViewportGrid(props) {
 
   // TODO -> Make a HangingProtocolService
   const HangingProtocolService = displaySets => {
+    const displaySetInstanceUid = displaySets[Object.keys(displaySets)[0]][0].displaySetInstanceUid;
+
     return {
       numRows: 1,
       numCols: 1,
       activeViewportIndex: 0,
       viewports: [
         {
-          displaySetInstanceUid: Object.keys(displaySets)[0][0]
-            .displaySetInstanceUid,
+          displaySetInstanceUid,
         },
       ],
     };
@@ -40,7 +39,6 @@ function ViewerViewportGrid(props) {
   });
 
   useEffect(() => {
-    debugger;
     const { unsubscribe } = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SET_ADDED,
       handleDisplaySetSubscription
@@ -60,7 +58,14 @@ function ViewerViewportGrid(props) {
 
   const getViewportPanes = () =>
     viewportGrid.viewports.map((viewport, viewportIndex) => {
-      const displaySet = viewportData[viewportIndex];
+      const displaySetInstanceUid = viewport.displaySetInstanceUid;
+      if (!displaySetInstanceUid) {
+        return null;
+      }
+
+      // TODO: Is this ever being hit??
+      debugger;
+      const displaySet = DisplaySetService.getDisplaySetByUID(displaySetInstanceUid);
 
       if (!displaySet) {
         return (
@@ -115,6 +120,7 @@ function ViewerViewportGrid(props) {
   const ViewportPanes = React.useMemo(getViewportPanes, [
     viewportComponents,
     activeViewportIndex,
+    viewportGrid
   ]);
 
   return (

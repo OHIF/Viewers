@@ -54,7 +54,6 @@ export default function ModeRoute({
     Compose({ components: contextModuleProviders, children });
 
   function ViewportGridWithDataSource(props) {
-    debugger;
     return ViewportGrid({ ...props, dataSource });
   }
 
