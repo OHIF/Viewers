@@ -13,7 +13,7 @@ function ViewportPane({
   onDrop,
   acceptDropsFor,
 }) {
-  const [{ isHovered, isHighlighted }, drop] = useDrop({
+  /*const [{ isHovered, isHighlighted }, drop] = useDrop({
     accept: acceptDropsFor,
     // TODO: pass in as prop?
     drop: (droppedItem, monitor) => {
@@ -29,11 +29,11 @@ function ViewportPane({
       isHighlighted: monitor.canDrop(),
       isHovered: monitor.isOver(),
     }),
-  });
+  });*/
 
+  //       ref={drop}
   return (
     <div
-      ref={drop}
       className={classnames(
         'rounded-lg hover:border-primary-light transition duration-300 outline-none overflow-hidden',
         {

@@ -78,6 +78,7 @@ class OHIFCornerstoneViewport extends Component {
   }
 
   getViewportData = async displaySet => {
+    debugger;
     let viewportData;
 
     const { dataSource } = this.props;

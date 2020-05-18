@@ -20,7 +20,7 @@ function ViewerViewportGrid(props) {
 
   // TODO -> Make a HangingProtocolService
   const HangingProtocolService = displaySets => {
-    const displaySetInstanceUid = displaySets[Object.keys(displaySets)[0]][0].displaySetInstanceUid;
+    const displaySetInstanceUID = displaySets[Object.keys(displaySets)[0]][0].displaySetInstanceUID;
 
     return {
       numRows: 1,
@@ -28,7 +28,7 @@ function ViewerViewportGrid(props) {
       activeViewportIndex: 0,
       viewports: [
         {
-          displaySetInstanceUid,
+          displaySetInstanceUID,
         },
       ],
     };
@@ -56,16 +56,17 @@ function ViewerViewportGrid(props) {
 
   // viewportData --> displaySets
 
+  debugger;
   const getViewportPanes = () =>
     viewportGrid.viewports.map((viewport, viewportIndex) => {
-      const displaySetInstanceUid = viewport.displaySetInstanceUid;
-      if (!displaySetInstanceUid) {
+      const displaySetInstanceUID = viewport.displaySetInstanceUID;
+      if (!displaySetInstanceUID) {
         return null;
       }
 
       // TODO: Is this ever being hit??
       debugger;
-      const displaySet = DisplaySetService.getDisplaySetByUID(displaySetInstanceUid);
+      const displaySet = DisplaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
       if (!displaySet) {
         return (
