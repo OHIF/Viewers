@@ -15,7 +15,6 @@ export default function ModeRoute({
   extensionManager,
   servicesManager,
 }) {
-  console.warn('ModeRoute rerendering');
   const { routes, extensions, sopClassHandlers } = mode;
   const dataSources = extensionManager.getDataSources(dataSourceName);
   // TODO: For now assume one unique datasource.
@@ -54,10 +53,7 @@ export default function ModeRoute({
   const CombinedContextProvider = ({ children }) =>
     Compose({ components: contextModuleProviders, children });
 
-  debugger;
-
   function ViewportGridWithDataSource(props) {
-    debugger;
     return ViewportGrid({ ...props, dataSource });
   }
 
@@ -87,15 +83,6 @@ export default function ModeRoute({
   return (
     <React.Fragment>
       {/*<ToolbarLayoutProvider>*/}
-      {/*
-          <DisplaySetCreator
-            location={location}
-            mode={mode}
-            dataSourceName={dataSourceName}
-            extensionManager={extensionManager}
-            DisplaySetService={DisplaySetService}
-          />
-        */}
       <CombinedContextProvider>
         {/* TODO: extensionManager is already provided to the extension module.
          *  Use it from there instead of passing as a prop here.
