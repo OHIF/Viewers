@@ -27,7 +27,7 @@ const seriesInStudiesMap = new Map();
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function StudyListContainer({ history, data: studies, dataSource }) {
+function WorkList({ history, data: studies, dataSource }) {
   // ~ Filters
   const query = useQuery();
   const queryFilterValues = _getQueryFilterValues(query);
@@ -398,7 +398,7 @@ function StudyListContainer({ history, data: studies, dataSource }) {
   );
 }
 
-StudyListContainer.propTypes = {
+WorkList.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
@@ -463,4 +463,4 @@ function _getQueryFilterValues(query) {
   }
 }
 
-export default StudyListContainer;
+export default WorkList;

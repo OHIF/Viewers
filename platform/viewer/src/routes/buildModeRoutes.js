@@ -1,5 +1,5 @@
 import React from 'react';
-import ModeRoute from './ModeRoute';
+import ModeRoute from '@routes/Mode';
 import { ViewModelProvider } from '@ohif/core';
 
 /*

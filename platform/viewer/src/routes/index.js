@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 // Route Components
 import DataSourceWrapper from './DataSourceWrapper';
-import StudyListContainer from './StudyListContainer';
+import WorkList from './WorkList';
 import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 
@@ -14,7 +14,7 @@ const bakedInRoutes = [
     path: '/',
     exact: true,
     component: DataSourceWrapper,
-    props: { children: StudyListContainer },
+    props: { children: WorkList },
   },
   // NOT FOUND (404)
   { component: NotFound },

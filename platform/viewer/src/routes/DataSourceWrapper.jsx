@@ -91,7 +91,7 @@ DataSourceWrapper.propTypes = {
 export default DataSourceWrapper;
 
 /**
- * Duplicated in `studyListContainer`
+ * Duplicated in `workList`
  * Need generic that can be shared? Isn't this what qs is for?
  * @param {*} query
  */
