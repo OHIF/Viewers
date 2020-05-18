@@ -1,9 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-
+import { useDrag } from 'react-dnd';
+//
 import { Icon } from '@ohif/ui';
 
+/**
+ *
+ */
 const Thumbnail = ({
   className,
   imageSrc,
@@ -11,11 +15,23 @@ const Thumbnail = ({
   description,
   seriesNumber,
   numInstances,
+  dragData,
   isActive,
   onClick,
 }) => {
+  // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
+  // this will still allow for "drag", even if there is no drop target for the
+  // specified item.
+  const [collectedProps, drag, dragPreview] = useDrag({
+    item: { ...dragData },
+    canDrag: function(monitor) {
+      return Object.keys(dragData).length !== 0;
+    },
+  });
+
   return (
     <div
+      ref={drag}
       className={classnames(
         className,
         'flex flex-col flex-1 px-3 cursor-pointer outline-none'
@@ -34,7 +50,11 @@ const Thumbnail = ({
         )}
       >
         {imageSrc ? (
-          <img src={imageSrc} alt={imageAltText} className="min-h-32 object-none" />
+          <img
+            src={imageSrc}
+            alt={imageAltText}
+            className="min-h-32 object-none"
+          />
         ) : (
           <div>{imageAltText}</div>
         )}
@@ -56,12 +76,27 @@ const Thumbnail = ({
 Thumbnail.propTypes = {
   className: PropTypes.string,
   imageSrc: PropTypes.string,
+  /**
+   * Data the thumbnail should expose to a receiving drop target. Use a matching
+   * `dragData.type` to identify which targets can receive this draggable item.
+   * If this is not set, drag-n-drop will be disabled for this thumbnail.
+   *
+   * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
+   */
+  dragData: PropTypes.shape({
+    /** Must match the "type" a dropTarget expects */
+    type: PropTypes.string.isRequired,
+  }),
   imageAltText: PropTypes.string,
   description: PropTypes.string.isRequired,
   seriesNumber: PropTypes.number.isRequired,
   numInstances: PropTypes.number.isRequired,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
+};
+
+Thumbnail.defaultProps = {
+  dragData: {},
 };
 
 export default Thumbnail;
