@@ -184,6 +184,7 @@ export default class ExtensionManager {
         appConfig: this._appConfig,
         configuration,
         api: this._api,
+        extensionManager: this,
       });
 
       if (!extensionModule) {

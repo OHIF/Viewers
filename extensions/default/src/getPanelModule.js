@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StudyBrowser } from '@ohif/ui';
-import {
-  dicomMetadataStore,
-  useViewModel,
-  useToolbarLayout,
-  displaySetManager,
-} from '@ohif/core';
+import { dicomMetadataStore, useViewModel, useToolbarLayout } from '@ohif/core';
 
 import MeasurementTable from './MeasurementTable.js';
 

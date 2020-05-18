@@ -1,33 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SidePanel, Toolbar } from '@ohif/ui';
-import { useToolbarLayout, useViewModel } from '@ohif/core';
+import { useToolbarLayout } from '@ohif/core';
 //
 import Header from './Header.jsx';
 import { displaySetManager } from '@ohif/core';
 
-function ViewportDataCreator({setViewportData}) {
-  const { displaySetInstanceUIDs } = useViewModel()
-  console.log(displaySetInstanceUIDs);
+// function ViewportDataCreator({ setViewportData }) {
+//   const { displaySetInstanceUIDs } = useViewModel();
+//   console.log(displaySetInstanceUIDs);
 
-  useEffect(() => {
-    setViewportData([
-      displaySetManager.getDisplaySetByUID(displaySetInstanceUIDs[0]),
-    ]);
-  }, [displaySetInstanceUIDs, setViewportData]);
+//   useEffect(() => {
+//     setViewportData([
+//       displaySetManager.getDisplaySetByUID(displaySetInstanceUIDs[0]),
+//     ]);
+//   }, [displaySetInstanceUIDs, setViewportData]);
 
-  return null;
-}
+//   return null;
+// }
 
 function ViewerLayout({
   // From Extension Module Params
   extensionManager,
+  servicesManager,
   // From Modes
   leftPanels,
   rightPanels,
   viewports,
-  ViewportGrid,
+  children,
 }) {
+  const [displaySets, setDisplaySets] = useState({});
+
+  console.log(children);
+  debugger;
   /**
    * Set body classes (tailwindcss) that don't allow vertical
    * or horizontal overflow (no scrolling). Also guarantee window
@@ -41,10 +46,6 @@ function ViewerLayout({
       document.body.classList.remove('overflow-hidden');
     };
   }, []);
-
-  // TODO -> Need some way of selecting which displaySets hit the viewports.
-  const [viewportData, setViewportData] = useState([]);
-
   const getPanelData = id => {
     const entry = extensionManager.getModuleEntry(id);
     // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
@@ -72,16 +73,18 @@ function ViewerLayout({
   const rightPanelComponents = rightPanels.map(getPanelData);
   const viewportComponents = viewports.map(getViewportComponentData);
 
-  let { toolBarLayout } = useToolbarLayout();
-  if (!toolBarLayout.length) {
-    return null;
-  }
+  // let { toolBarLayout } = useToolbarLayout();
+  // if (!toolBarLayout.length) {
+  //   return null;
+  // }
+
+  // TODO -> make toolbar service
+  const toolBarLayout = { tools: [], moreTools: [] };
 
   const [primaryToolBarLayout, secondaryToolBarLayout] = toolBarLayout;
 
   return (
     <div>
-      <ViewportDataCreator setViewportData={setViewportData}/>
       <Header
         tools={primaryToolBarLayout.tools}
         moreTools={primaryToolBarLayout.moreTools}
@@ -102,8 +105,8 @@ function ViewerLayout({
             <Toolbar type="secondary" tools={secondaryToolBarLayout.tools} />
           </div>
           <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center pb-2 pt-1">
-            <ViewportGrid
-              viewportData={viewportData}
+            <children.ViewportGrid
+              servicesManager={servicesManager}
               viewportComponents={viewportComponents}
             />
             {/*
@@ -189,7 +192,7 @@ ViewerLayout.propTypes = {
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
-  ViewportGrid: PropTypes.oneOfType(PropTypes.node, PropTypes.func).isRequired,
+  children: PropTypes.oneOfType(PropTypes.node, PropTypes.func).isRequired,
 };
 
 ViewerLayout.defaultProps = {

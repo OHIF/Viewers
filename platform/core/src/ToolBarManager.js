@@ -1,8 +1,7 @@
 export default class toolBarManager {
-  constructor(extensionManager, setToolBarLayout) {
+  constructor(extensionManager) {
     this.buttons = {};
     this.extensionManager = extensionManager;
-    this.viewModelContextSetToolBarLayout = setToolBarLayout;
   }
 
   addButtons(buttons) {
@@ -42,6 +41,6 @@ export default class toolBarManager {
       toolBarLayout.push(toolBarDefinitions);
     });
 
-    this.viewModelContextSetToolBarLayout(toolBarLayout);
+    // TODO -> Change this to a service. => emit an event to subscribers to update the toolbar layout.
   }
 }

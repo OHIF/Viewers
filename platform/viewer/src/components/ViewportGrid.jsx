@@ -10,31 +10,47 @@ import { ViewportGrid, ViewportPane } from '@ohif/ui';
 function ViewerViewportGrid(props) {
   const {
     activeViewportIndex,
-    viewportData,
+    servicesManager,
     viewportComponents,
     dataSource,
   } = props;
 
-  // From ViewportGridService and/or ContextProvider
-  const [viewportGrid, setViewportGrid] = useState({
-    numRows: 2,
-    numCols: 2,
-    activeViewportIndex: 0,
-    viewports: [
-      {
-        displaySetUid: undefined,
-      },
-      {
-        displaySetUid: undefined,
-      },
-      {
-        displaySetUid: undefined,
-      },
-      {
-        displaySetUid: undefined,
-      },
-    ],
+  debugger;
+
+  // TODO -> Need some way of selecting which displaySets hit the viewports.
+  const { DisplaySetService } = servicesManager.services;
+
+  // TODO -> Make a HangingProtocolService
+  const HangingProtocolService = displaySets => {
+    return {
+      numRows: 1,
+      numCols: 1,
+      activeViewportIndex: 0,
+      viewports: [
+        {
+          displaySetInstanceUid: Object.keys(displaySets)[0][0]
+            .displaySetInstanceUid,
+        },
+      ],
+    };
+  };
+
+  const handleDisplaySetSubscription = useCallback(displaySets => {
+    setViewportGrid(HangingProtocolService(displaySets));
   });
+
+  useEffect(() => {
+    debugger;
+    const { unsubscribe } = DisplaySetService.subscribe(
+      DisplaySetService.EVENTS.DISPLAY_SET_ADDED,
+      handleDisplaySetSubscription
+    );
+
+    return unsubscribe;
+  }, []);
+
+  // From ViewportGridService and/or ContextProvider
+  const [viewportGrid, setViewportGrid] = useState({});
 
   // viewportData --> displaySets
 
@@ -47,8 +63,10 @@ function ViewerViewportGrid(props) {
           <ViewportPane
             key={viewportIndex}
             className="m-1"
-            onDrop={() => {
-              /* setDisplaySet for Viewport */
+            // Pass in as prop?
+            acceptDropsFor="displayset"
+            onDrop={droppedItem => {
+              console.warn('DROPPED ITEM:', droppedItem);
             }}
             isActive={activeViewportIndex === viewportIndex}
           ></ViewportPane>

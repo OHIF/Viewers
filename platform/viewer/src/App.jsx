@@ -7,7 +7,7 @@ import { ThemeWrapper } from '@ohif/ui';
 // TODO: Should this influence study list?
 import { appConfigContext } from './state/appConfig.context';
 import { useAppConfig } from './hooks/useAppConfig';
-import createAppRoutes from './routes';
+import createRoutes from './routes';
 import appInit from './appInit.js';
 
 // Temporarily for testing
@@ -34,7 +34,12 @@ function App({ config, defaultExtensions }) {
   const appConfigContextApi = useAppConfig(init.appConfig);
   const { routerBasename, modes, dataSources } = appConfigContextApi.appConfig;
   // Use config to create routes
-  const appRoutes = createAppRoutes(modes, dataSources, extensionManager);
+  const appRoutes = createRoutes(
+    modes,
+    dataSources,
+    extensionManager,
+    servicesManager
+  );
 
   return (
     <appConfigContext.Provider value={appConfigContextApi}>

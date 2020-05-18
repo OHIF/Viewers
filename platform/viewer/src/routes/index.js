@@ -20,12 +20,26 @@ const bakedInRoutes = [
   { component: NotFound },
 ];
 
-const createRoutes = (modes, dataSources, extensionManager) => {
-  const routes = buildModeRoutes(modes, dataSources, extensionManager) || [];
+const createRoutes = (
+  modes,
+  dataSources,
+  extensionManager,
+  servicesManager
+) => {
+  const routes =
+    buildModeRoutes(modes, dataSources, extensionManager, servicesManager) ||
+    [];
   // TODO: Shouldn't need to guard input routes with an empty array?
   const allRoutes = [...(routes || []), ...bakedInRoutes];
 
-  console.log('Creating Routes: ', modes, dataSources, routes, bakedInRoutes, allRoutes);
+  console.log(
+    'Creating Routes: ',
+    modes,
+    dataSources,
+    routes,
+    bakedInRoutes,
+    allRoutes
+  );
 
   return (
     <Switch>

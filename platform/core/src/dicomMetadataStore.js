@@ -3,8 +3,6 @@ import {
   addInstancesToStudy,
 } from './studies/services/wado/studyInstanceHelpers';
 
-import displaySetManager from './displaySetManager';
-
 class StudyMetadata {
   constructor(StudyInstanceUID) {
     this.StudyInstanceUID = StudyInstanceUID;

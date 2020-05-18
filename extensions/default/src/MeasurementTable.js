@@ -10,7 +10,7 @@ import {
 export default function MeasurementTable({ servicesManager, commandsManager }) {
   const { MeasurementService } = servicesManager.services;
 
-  console.error('MeasurementTable rendering!!!!!!!!!!!!!');
+  console.log('MeasurementTable rendering!!!!!!!!!!!!!');
 
   const actionButtons = (
     <React.Fragment>

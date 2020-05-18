@@ -6,12 +6,7 @@ import {
   processResults,
   processSeriesResults,
 } from './qido.js';
-import {
-  dicomMetadataStore,
-  IWebApiDataSource,
-  utils,
-  displaySetManager,
-} from '@ohif/core';
+import { dicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 
 import getImageId from './utils/getImageId';
 import * as dcmjs from 'dcmjs';

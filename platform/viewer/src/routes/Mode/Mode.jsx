@@ -1,26 +1,29 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 //
-import { ToolbarLayoutProvider } from '@ohif/core';
+import { ToolBarManager } from '@ohif/core';
 import { DragAndDropProvider } from '@ohif/ui';
 //
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
-import DisplaySetCreator from './DisplaySetCreator';
+//import DisplaySetCreator from './DisplaySetCreator';
 
 export default function ModeRoute({
   location,
   mode,
   dataSourceName,
   extensionManager,
+  servicesManager,
 }) {
   console.warn('ModeRoute rerendering');
-  const { routes, extensions } = mode;
+  const { routes, extensions, sopClassHandlers } = mode;
   const dataSources = extensionManager.getDataSources(dataSourceName);
   // TODO: For now assume one unique datasource.
 
   const dataSource = dataSources[0];
   const route = routes[0];
+
+  const { DisplaySetService } = servicesManager.services;
 
   // Only handling one route per mode for now
   // You can test via http://localhost:3000/example-mode/dicomweb
@@ -51,32 +54,59 @@ export default function ModeRoute({
   const CombinedContextProvider = ({ children }) =>
     Compose({ components: contextModuleProviders, children });
 
+  debugger;
+
   function ViewportGridWithDataSource(props) {
+    debugger;
     return ViewportGrid({ ...props, dataSource });
   }
 
+  useEffect(() => {
+    // TODO -> Make this into a service
+    let toolBarManager = new ToolBarManager(extensionManager); //, setToolBarLayout);
+    route.init({ toolBarManager });
+  }, [mode, dataSourceName, location]);
+
+  const createDisplaySets = useCallback(() => {
+    // Add SOPClassHandlers to a new SOPClassManager.
+    DisplaySetService.init(extensionManager, sopClassHandlers);
+
+    const queryParams = location.search;
+
+    // Call the data source to start building the view model?
+    dataSource.retrieve.series.metadata(
+      queryParams,
+      DisplaySetService.makeDisplaySets
+    );
+  }, [location]);
+
+  useEffect(() => {
+    createDisplaySets();
+  }, [mode, dataSourceName, location]);
+
   return (
     <React.Fragment>
-      <ToolbarLayoutProvider>
-        <DisplaySetCreator
-          location={location}
-          mode={mode}
-          dataSourceName={dataSourceName}
-          extensionManager={extensionManager}
-        />
-        <CombinedContextProvider>
-          {/* TODO: extensionManager is already provided to the extension module.
-           *  Use it from there instead of passing as a prop here.
-           */}
-          <DragAndDropProvider>
-            <LayoutComponent
-              extensionManager={extensionManager}
-              ViewportGrid={ViewportGridWithDataSource}
-              {...layoutTemplateData.props}
-            />
-          </DragAndDropProvider>
-        </CombinedContextProvider>
-      </ToolbarLayoutProvider>
+      {/*<ToolbarLayoutProvider>*/}
+      {/*
+          <DisplaySetCreator
+            location={location}
+            mode={mode}
+            dataSourceName={dataSourceName}
+            extensionManager={extensionManager}
+            DisplaySetService={DisplaySetService}
+          />
+        */}
+      <CombinedContextProvider>
+        {/* TODO: extensionManager is already provided to the extension module.
+         *  Use it from there instead of passing as a prop here.
+         */}
+        <DragAndDropProvider>
+          <LayoutComponent {...layoutTemplateData.props}>
+            <ViewportGridWithDataSource />
+          </LayoutComponent>
+        </DragAndDropProvider>
+      </CombinedContextProvider>
+      {/*</ToolbarLayoutProvider>*/}
     </React.Fragment>
   );
 }
@@ -88,7 +118,7 @@ ModeRoute.propTypes = {
     pathname: PropTypes.string.isRequired,
     search: PropTypes.string.isRequired,
     hash: PropTypes.string.isRequired,
-    state: PropTypes.object.isRequired,
+    //state: PropTypes.object.isRequired,
   }),
   mode: PropTypes.object.isRequired,
   dataSourceName: PropTypes.string,

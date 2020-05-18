@@ -5,7 +5,7 @@ route: components/viewportGrid
 ---
 
 import { Playground, Props } from 'docz';
-import { ViewportGrid } from '@ohif/ui';
+import { DragAndDropProvider, ViewportGrid } from '@ohif/ui';
 
 # ViewportGrid
 
@@ -20,6 +20,7 @@ import { ViewportGrid } from '@ohif/ui';
 ## Basic usage
 
 <Playground>
+  <DragAndDropProvider>
   <div className="p-4 h-56">
     <ViewportGrid numRows={1} numCols={2}>
       <div className="flex items-center justify-center h-full text-white">
@@ -30,6 +31,7 @@ import { ViewportGrid } from '@ohif/ui';
       </div>
     </ViewportGrid>
   </div>
+  </DragAndDropProvider>
 </Playground>
 
 ## Properties

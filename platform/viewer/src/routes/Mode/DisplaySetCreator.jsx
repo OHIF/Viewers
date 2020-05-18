@@ -11,6 +11,7 @@ export default function DisplaySetCreator({
   mode,
   dataSourceName,
   extensionManager,
+  DisplaySetService,
 }) {
   console.warn('DisplaySetCreator rerendering');
   const { routes, sopClassHandlers } = mode;
