@@ -1,21 +1,21 @@
 /**
  * CSS Grid Reference: http://grid.malven.co/
  */
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane } from '@ohif/ui';
 // import DefaultViewport from './DefaultViewport.js';
 // import EmptyViewport from './EmptyViewport.js';
 
 function ViewerViewportGrid(props) {
+  debugger;
+
   const {
     activeViewportIndex,
     servicesManager,
     viewportComponents,
     dataSource,
   } = props;
-
-  debugger;
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const { DisplaySetService } = servicesManager.services;
@@ -50,7 +50,11 @@ function ViewerViewportGrid(props) {
   }, []);
 
   // From ViewportGridService and/or ContextProvider
-  const [viewportGrid, setViewportGrid] = useState({});
+  const [viewportGrid, setViewportGrid] = useState({
+    numCols: 1,
+    numRows: 1,
+    viewports: []
+  });
 
   // viewportData --> displaySets
 
