@@ -27,9 +27,13 @@ function ViewerLayout({
   leftPanels,
   rightPanels,
   viewports,
-  children: ViewportGrid,
+  children,
 }) {
   const [displaySets, setDisplaySets] = useState({});
+
+  const ViewportGrid = React.Children.only(children);
+  debugger;
+
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -105,10 +109,10 @@ function ViewerLayout({
             <Toolbar type="secondary" tools={secondaryToolBarLayout.tools} />
           </div>
           <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center pb-2 pt-1">
-            <ViewportGrid
+            {/*<ViewportGrid
               servicesManager={servicesManager}
               viewportComponents={viewportComponents}
-            />
+            />*/}
             {/*
               viewportContents={[
                 <Viewport

@@ -89,7 +89,7 @@ export default function ModeRoute({
          */}
         <DragAndDropProvider>
           <LayoutComponent {...layoutTemplateData.props}>
-            <ViewportGridWithDataSource />
+            <div>test</div>
           </LayoutComponent>
         </DragAndDropProvider>
       </CombinedContextProvider>
