@@ -57,6 +57,11 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
       ],
     },
     resolve: {
+      alias: {
+        // Viewer project
+        '@routes': path.resolve(__dirname, '../platform/viewer/src/routes'),
+        '@components': path.resolve(__dirname, '../platform/viewer/src/components'),
+      },
       // Which directories to search when resolving modules
       modules: [
         // Modules specific to this package
