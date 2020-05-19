@@ -20,7 +20,7 @@ function ViewerViewportGrid(props) {
 
   // TODO -> Make a HangingProtocolService
   const HangingProtocolService = displaySets => {
-    const displaySetInstanceUID = displaySets[Object.keys(displaySets)[0]][0].displaySetInstanceUID;
+    const displaySetInstanceUID = displaySets[0].displaySetInstanceUID;
 
     return {
       numRows: 1,
@@ -40,7 +40,7 @@ function ViewerViewportGrid(props) {
 
   useEffect(() => {
     const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SET_ADDED,
+      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
       handleDisplaySetSubscription
     );
 
