@@ -1,28 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SidePanel, Toolbar } from '@ohif/ui';
-import { useToolbarLayout } from '@ohif/core';
 //
 import Header from './Header.jsx';
-import { displaySetManager } from '@ohif/core';
-
-// function ViewportDataCreator({ setViewportData }) {
-//   const { displaySetInstanceUIDs } = useViewModel();
-//   console.log(displaySetInstanceUIDs);
-
-//   useEffect(() => {
-//     setViewportData([
-//       displaySetManager.getDisplaySetByUID(displaySetInstanceUIDs[0]),
-//     ]);
-//   }, [displaySetInstanceUIDs, setViewportData]);
-
-//   return null;
-// }
 
 function ViewerLayout({
   // From Extension Module Params
   extensionManager,
   servicesManager,
+  commandsManager,
   // From Modes
   leftPanels,
   rightPanels,
@@ -69,8 +55,56 @@ function ViewerLayout({
   };
 
   const handleToolBarSubscription = newToolBarLayout => {
+    // Get buttons to pass to toolbars.
+    console.log(commandsManager);
+
+    const firstTool = newToolBarLayout[0].tools[0];
+
+    const toolBarLayout = [];
+
+    newToolBarLayout.forEach(newToolBar => {
+      const toolBar = { tools: [], moreTools: [] };
+
+      Object.keys(newToolBar).forEach(key => {
+        if (newToolBar[key].length) {
+          newToolBar[key].forEach(tool => {
+            const commandOptions = tool.commandOptions || {};
+
+            toolBar[key].push({
+              context: tool.context,
+              icon: tool.icon,
+              id: tool.id,
+              label: tool.label,
+              type: 'setToolActive',
+              onClick: () =>
+                commandsManager.runCommand(tool.commandName, commandOptions),
+            });
+          });
+        }
+      });
+
+      toolBarLayout.push(toolBar);
+
+      // if (newToolBar.moreTools && newToolBar.moreTools.length) {
+      //   newToolBar.moreTools.forEach(tool => {
+      //     const commandOptions = tool.commandOptions || {};
+
+      //     toolBar.push({
+      //       context: tool.context,
+      //       icon: tool.icon,
+      //       id: tool.id,
+      //       label: tool.label,
+      //       type: 'setToolActive',
+      //       command: () =>
+      //         commandsManager.runCommand(tool.commandName, commandOptions),
+      //     });
+      //   });
+      // }
+    });
+
     debugger;
-    setToolBarLayout(newToolBarLayout);
+
+    setToolBarLayout(toolBarLayout);
   };
 
   const [toolBarLayout, setToolBarLayout] = useState([
@@ -188,6 +222,7 @@ ViewerLayout.propTypes = {
   extensionManager: PropTypes.shape({
     getModuleEntry: PropTypes.func.isRequired,
   }).isRequired,
+  commandsManager: PropTypes.object,
   // From modes
   // TODO: Not in love with this shape,
   toolBarLayout: PropTypes.arrayOf(
@@ -201,13 +236,6 @@ ViewerLayout.propTypes = {
   rightPanels: PropTypes.array,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
   children: PropTypes.oneOfType(PropTypes.node, PropTypes.func).isRequired,
-};
-
-ViewerLayout.defaultProps = {
-  toolBarLayout: [
-    { tools: [], moreTools: [] },
-    { tools: [], moreTools: [] },
-  ],
 };
 
 export default ViewerLayout;

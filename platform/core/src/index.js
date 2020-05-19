@@ -21,10 +21,6 @@ import ui from './ui';
 import user from './user.js';
 import dicomMetadataStore from './dicomMetadataStore';
 import { ViewModelProvider, useViewModel } from './ViewModelContext';
-import {
-  ToolbarLayoutProvider,
-  useToolbarLayout,
-} from './ToolbarLayoutContext';
 import utils, { hotkeys } from './utils/';
 
 import {
@@ -119,8 +115,6 @@ export {
   dicomMetadataStore,
   ViewModelProvider,
   useViewModel,
-  ToolbarLayoutProvider,
-  useToolbarLayout,
 };
 
 export { OHIF };
