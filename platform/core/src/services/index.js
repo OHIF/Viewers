@@ -5,6 +5,7 @@ import UIModalService from './UIModalService';
 import UINotificationService from './UINotificationService';
 import UIViewportDialogService from './UIViewportDialogService';
 import DisplaySetService from './DisplaySetService';
+import ToolBarSerivce from './ToolBarService';
 
 export {
   MeasurementService,
@@ -14,4 +15,5 @@ export {
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
+  ToolBarSerivce,
 };

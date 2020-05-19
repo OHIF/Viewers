@@ -1,12 +1,10 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 //
-import { ToolBarManager } from '@ohif/core';
 import { DragAndDropProvider } from '@ohif/ui';
 //
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
-//import DisplaySetCreator from './DisplaySetCreator';
 
 export default function ModeRoute({
   location,
@@ -58,9 +56,7 @@ export default function ModeRoute({
   }
 
   useEffect(() => {
-    // TODO -> Make this into a service
-    let toolBarManager = new ToolBarManager(extensionManager); //, setToolBarLayout);
-    route.init({ toolBarManager });
+    route.init({ servicesManager, extensionManager });
   }, [mode, dataSourceName, location]);
 
   const createDisplaySets = useCallback(() => {

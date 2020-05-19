@@ -28,12 +28,9 @@ function ViewerLayout({
   rightPanels,
   viewports,
   children,
-  ViewportGridComp
+  ViewportGridComp,
 }) {
-  const [displaySets, setDisplaySets] = useState({});
-
-  //const ViewportGrid = React.Children.only(children);
-
+  const { ToolBarService } = servicesManager.services;
   /**
    * Set body classes (tailwindcss) that don't allow vertical
    * or horizontal overflow (no scrolling). Also guarantee window
@@ -47,6 +44,7 @@ function ViewerLayout({
       document.body.classList.remove('overflow-hidden');
     };
   }, []);
+
   const getPanelData = id => {
     const entry = extensionManager.getModuleEntry(id);
     // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
@@ -70,27 +68,34 @@ function ViewerLayout({
     };
   };
 
+  const handleToolBarSubscription = newToolBarLayout => {
+    debugger;
+    setToolBarLayout(newToolBarLayout);
+  };
+
+  const [toolBarLayout, setToolBarLayout] = useState([
+    { tools: [], moreTools: [] },
+    { tools: [] },
+  ]);
+
+  useEffect(() => {
+    const { unsubscribe } = ToolBarService.subscribe(
+      ToolBarService.EVENTS.TOOL_BAR_MODIFIED,
+      handleToolBarSubscription
+    );
+
+    return unsubscribe;
+  }, []);
+
   const leftPanelComponents = leftPanels.map(getPanelData);
   const rightPanelComponents = rightPanels.map(getPanelData);
   const viewportComponents = viewports.map(getViewportComponentData);
 
-  // let { toolBarLayout } = useToolbarLayout();
-  // if (!toolBarLayout.length) {
-  //   return null;
-  // }
-
-  // TODO -> make toolbar service
-  const toolBarLayout = { tools: [], moreTools: [] };
-
-  //const [primaryToolBarLayout, secondaryToolBarLayout] = toolBarLayout;
-  const primaryToolBarLayout = toolBarLayout;
-  const secondaryToolBarLayout = toolBarLayout;
-
   return (
     <div>
       <Header
-        tools={primaryToolBarLayout.tools}
-        moreTools={primaryToolBarLayout.moreTools}
+        tools={toolBarLayout[0].tools}
+        moreTools={toolBarLayout[0].moreTools}
       />
       <div
         className="flex flex-row flex-no-wrap items-stretch overflow-hidden w-full"
@@ -105,7 +110,7 @@ function ViewerLayout({
         {/* TOOLBAR + GRID */}
         <div className="flex flex-col flex-1 h-full">
           <div className="flex flex-2 w-100 border-b border-transparent h-12">
-            <Toolbar type="secondary" tools={secondaryToolBarLayout.tools} />
+            <Toolbar type="secondary" tools={toolBarLayout[1].tools} />
           </div>
           <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center pb-2 pt-1">
             <ViewportGridComp

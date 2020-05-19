@@ -8,6 +8,7 @@ import {
   UIDialogService,
   MeasurementService,
   DisplaySetService,
+  ToolBarSerivce,
   // utils,
   // redux as reduxOHIF,
 } from '@ohif/core';
@@ -45,6 +46,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     UIDialogService,
     MeasurementService,
     DisplaySetService,
+    ToolBarSerivce,
   ]);
 
   /**

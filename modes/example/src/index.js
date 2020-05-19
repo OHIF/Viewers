@@ -12,8 +12,10 @@ export default function mode({ modeConfiguration }) {
     routes: [
       {
         path: 'viewer',
-        init: ({ toolBarManager }) => {
-          toolBarManager.addButtons([
+        init: ({ servicesManager, extensionManager }) => {
+          const { ToolBarService } = servicesManager.services;
+          ToolBarService.init(extensionManager);
+          ToolBarService.addButtons([
             {
               id: 'Zoom',
               namespace: 'org.ohif.cornerstone.toolbarModule.Zoom',
@@ -53,7 +55,7 @@ export default function mode({ modeConfiguration }) {
           ]);
 
           // Could import layout selector here from org.ohif.default (when it exists!)
-          toolBarManager.setToolBarLayout([
+          ToolBarService.setToolBarLayout([
             // Primary
             {
               tools: ['Zoom', 'Levels', 'Pan', 'Capture', 'Layout'],
