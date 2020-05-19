@@ -55,8 +55,6 @@ function ViewerViewportGrid(props) {
   });
 
   // viewportData --> displaySets
-
-  debugger;
   const getViewportPanes = () =>
     viewportGrid.viewports.map((viewport, viewportIndex) => {
       const displaySetInstanceUID = viewport.displaySetInstanceUID;
@@ -64,8 +62,6 @@ function ViewerViewportGrid(props) {
         return null;
       }
 
-      // TODO: Is this ever being hit??
-      debugger;
       const displaySet = DisplaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
       if (!displaySet) {
