@@ -1,7 +1,7 @@
-import guid from '../../utils/guid';
+import pubSubServiceInterface from '../pubSubServiceInterface';
 
 const EVENTS = {
-  DISPLAY_SET_ADDED: 'event::displaySetService:displaySetAdded',
+  DISPLAY_SETS_ADDED: 'event::displaySetService:displaySetAdded',
 };
 
 const displaySetCache = [];
@@ -11,88 +11,14 @@ export default class DisplaySetService {
     this.displaySets = {};
     this.EVENTS = EVENTS;
     this.listeners = {};
+
+    Object.assign(this, pubSubServiceInterface);
   }
 
   init(extensionManager, SOPClassHandlerIds) {
     this.extensionManager = extensionManager;
     this.SOPClassHandlerIds = SOPClassHandlerIds;
-    this.activeDisplaySets = {};
-  }
-
-  /**
-   * Subscribe to measurement updates.
-   *
-   * @param {string} eventName The name of the event
-   * @param {Function} callback Events callback
-   * @return {Object} Observable object with actions
-   */
-  subscribe(eventName, callback) {
-    if (this._isValidEvent(eventName)) {
-      const listenerId = guid();
-      const subscription = { id: listenerId, callback };
-
-      console.info(`displaySetService: Subscribing to '${eventName}'.`);
-      if (Array.isArray(this.listeners[eventName])) {
-        this.listeners[eventName].push(subscription);
-      } else {
-        this.listeners[eventName] = [subscription];
-      }
-
-      return {
-        unsubscribe: () => this._unsubscribe(eventName, listenerId),
-      };
-    } else {
-      throw new Error(`Event ${eventName} not supported.`);
-    }
-  }
-
-  /**
-   * Unsubscribe to measurement updates.
-   *
-   * @param {string} eventName The name of the event
-   * @param {string} listenerId The listeners id
-   * @return void
-   */
-  _unsubscribe(eventName, listenerId) {
-    if (!this.listeners[eventName]) {
-      return;
-    }
-
-    const listeners = this.listeners[eventName];
-    if (Array.isArray(listeners)) {
-      this.listeners[eventName] = listeners.filter(
-        ({ id }) => id !== listenerId
-      );
-    } else {
-      this.listeners[eventName] = undefined;
-    }
-  }
-
-  /**
-   * Broadcasts displaySetService changes.
-   *
-   * @param {string} eventName The event name
-   * @return void
-   */
-  _broadcastChange(eventName) {
-    const hasListeners = Object.keys(this.listeners).length > 0;
-    const hasCallbacks = Array.isArray(this.listeners[eventName]);
-
-    if (hasListeners && hasCallbacks) {
-      this.listeners[eventName].forEach(listener => {
-        listener.callback(this.activeDisplaySets);
-      });
-    }
-  }
-
-  /**
-   * Check if a given displaySetService event is valid.
-   *
-   * @param {string} eventName The name of the event
-   * @return {boolean} Event name validation
-   */
-  _isValidEvent(eventName) {
-    return Object.values(this.EVENTS).includes(eventName);
+    this.activeDisplaySets = [];
   }
 
   _addDisplaySetsToCache(displaySets) {
@@ -105,19 +31,8 @@ export default class DisplaySetService {
     const activeDisplaySets = this.activeDisplaySets;
 
     displaySets.forEach(displaySet => {
-      const { StudyInstanceUID } = displaySet;
-
-      if (!Array.isArray(activeDisplaySets[StudyInstanceUID])) {
-        activeDisplaySets[StudyInstanceUID] = [];
-      }
-
-      activeDisplaySets[StudyInstanceUID].push(displaySet);
+      activeDisplaySets.push(displaySet);
     });
-
-    console.log('DISPLAY_SET_ADDED');
-    console.log(activeDisplaySets);
-
-    this._broadcastChange(EVENTS.DISPLAY_SET_ADDED);
   }
 
   getActiveDisplaySets() {
@@ -137,11 +52,59 @@ export default class DisplaySetService {
     );
   };
 
-  makeDisplaySets = instances => {
-    if (!instances || !instances.length) {
+  /**
+   * Broadcasts displaySetService changes.
+   *
+   * @param {string} eventName The event name
+   * @return void
+   */
+  _broadcastChange = (eventName, callbackProps) => {
+    const hasListeners = Object.keys(this.listeners).length > 0;
+    const hasCallbacks = Array.isArray(this.listeners[eventName]);
+
+    if (hasListeners && hasCallbacks) {
+      this.listeners[eventName].forEach(listener => {
+        listener.callback(callbackProps);
+      });
+    }
+  };
+
+  makeDisplaySets = (input, batch = false) => {
+    if (!input || !input.length) {
       throw new Error('No instances were provided.');
     }
 
+    if (batch && !input[0].length) {
+      throw new Error(
+        'Batch displaySet creation does not contain array of array of instances.'
+      );
+    }
+
+    // If array of instances => One instance.
+
+    let displaySetsAdded = [];
+
+    debugger;
+
+    if (batch) {
+      input.forEach(instances => {
+        const displaySets = this.makeDisplaySetForInstances(instances);
+
+        displaySetsAdded = [...displaySetsAdded, displaySets];
+      });
+    } else {
+      const displaySets = this.makeDisplaySetForInstances(input);
+
+      displaySetsAdded = displaySets;
+    }
+
+    // If array of array of instances
+
+    this._broadcastChange(EVENTS.DISPLAY_SETS_ADDED, displaySetsAdded);
+  };
+
+  makeDisplaySetForInstances(instances) {
+    debugger;
     const instance = instances[0];
 
     const existingDisplaySets =
@@ -155,19 +118,21 @@ export default class DisplaySetService {
 
       if (handler.sopClassUids.includes(instance.SOPClassUID)) {
         // Check if displaySets are already created using this SeriesInstanceUID/SOPClassHandler pair.
-        const cachedDisplaySets = existingDisplaySets.filter(
+        let displaySets = existingDisplaySets.filter(
           displaySet => displaySet.SOPClassHandlerId === SOPClassHandlerId
         );
 
-        if (cachedDisplaySets.length) {
-          this._addActiveDisplaySets(cachedDisplaySets);
+        if (displaySets.length) {
+          this._addActiveDisplaySets(displaySets);
         } else {
-          const newDisplaySets = handler.getDisplaySetsFromSeries(instances);
+          displaySets = handler.getDisplaySetsFromSeries(instances);
 
-          this._addDisplaySetsToCache(newDisplaySets);
-          this._addActiveDisplaySets(newDisplaySets);
+          this._addDisplaySetsToCache(displaySets);
+          this._addActiveDisplaySets(displaySets);
         }
+
+        return displaySets;
       }
     }
-  };
+  }
 }
