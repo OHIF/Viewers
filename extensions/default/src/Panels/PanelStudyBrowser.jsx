@@ -53,6 +53,7 @@ function PanelStudyBrowser({
         numInstances: ds.numImageFrames,
         StudyInstanceUID: ds.StudyInstanceUID,
         componentType: 'thumbnailTracked', // TODO: PUT THIS SOMEWHERE ELSE
+        imageSrc: thumbnailImageSrcMap.get(ds.displaySetInstanceUID),
       };
     });
 
