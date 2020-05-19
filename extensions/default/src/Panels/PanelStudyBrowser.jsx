@@ -20,6 +20,7 @@ function PanelStudyBrowser({
   const [activeTabName, setActiveTabName] = useState('primary');
   const [studyData, setStudyData] = useState([]);
   const [studiesForPatient, setStudiesForPatient] = useState([]);
+  const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState(new Map());
 
   useEffect(() => {
     const mappedStudiesFromDataSource = _mapDataSourceStudies(
@@ -32,18 +33,20 @@ function PanelStudyBrowser({
       displaySets
     );
 
-    addDisplaySetsToStudyData(newStudyData, displaySets);
+    addDisplaySetsToStudyData(newStudyData, displaySets, thumbnailImageSrcMap);
 
     setStudyData(newStudyData);
-  }, [studiesForPatient]);
+  }, [studiesForPatient, thumbnailImageSrcMap]);
 
-  const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState(new Map());
-  const updateThumbnailMap = (k, v) => {
-    setThumbnailImageSrcMap(thumbnailImageSrcMap.set(k, v));
+  const updateThumbnailMap = (displaySetInstanceUID, imageSrc) => {
+    setThumbnailImageSrcMap(
+      thumbnailImageSrcMap.set(displaySetInstanceUID, imageSrc)
+    );
   };
 
   function setLocalDisplaySetsState(displaySets) {
     const displaySetsUI = displaySets.map(ds => {
+      const imageSrc = thumbnailImageSrcMap.get(ds.displaySetInstanceUID);
       return {
         displaySetInstanceUID: ds.displaySetInstanceUID,
         description: ds.SeriesDescription,
@@ -53,17 +56,25 @@ function PanelStudyBrowser({
         numInstances: ds.numImageFrames,
         StudyInstanceUID: ds.StudyInstanceUID,
         componentType: 'thumbnailTracked', // TODO: PUT THIS SOMEWHERE ELSE
-        imageSrc: thumbnailImageSrcMap.get(ds.displaySetInstanceUID),
+        imageSrc,
       };
     });
 
     setDisplaySets(displaySetsUI);
   }
 
-  function addDisplaySetsToStudyData(studies, displaySets) {
+  function addDisplaySetsToStudyData(
+    studies,
+    displaySets,
+    thumbnailImageSrcMap
+  ) {
     displaySets.forEach(displaySet => {
       const study = studies.find(
         s => s.studyInstanceUid === displaySet.StudyInstanceUID
+      );
+
+      displaySet.imageSrc = thumbnailImageSrcMap.get(
+        displaySet.displaySetInstanceUID
       );
 
       study.displaySets.push(displaySet);
@@ -82,7 +93,6 @@ function PanelStudyBrowser({
       updateThumbnailMap(uid, imageSrc);
     });
 
-    // If
     const firstDisplaySet = newDisplaySets[0];
     if (!studiesForPatient.length && firstDisplaySet) {
       async function doAsyncStuff() {
@@ -92,7 +102,6 @@ function PanelStudyBrowser({
         );
 
         setStudiesForPatient(qidoStuff);
-        debugger;
         setPrimaryStudyInstanceUID(firstDisplaySet.StudyInstanceUID);
       }
 
@@ -161,7 +170,6 @@ function PanelStudyBrowser({
   ];
 
   function onClickStudy(StudyInstanceUID) {
-    debugger;
     const study = studyData.find(a => a.studyInstanceUid === StudyInstanceUID);
     if (study && study.displaySets && study.displaySets.length) {
       return;
@@ -210,9 +218,6 @@ async function _getStudiesByPatientId(displaySet, getStudiesByPatientId) {
   const instance = study.series[0].instances[0];
   const PatientID = instance.PatientID;
   const studiesByPatientId = await getStudiesByPatientId(PatientID);
-  // const mappedStudiesFromInstances = _getMappedStudiesFromDisplaySets(
-  //   displaySets
-  // );
 
   return studiesByPatientId;
 }
@@ -237,47 +242,6 @@ function _mapDataSourceStudies(studies) {
       StudyTime: study.time,
     };
   });
-}
-
-/**
- * Iterates over displaysets and creates mapped studies from
- * instance metadata.
- *
- * @param {*} displaySets
- */
-function _getMappedStudiesFromDisplaySets(displaySets) {
-  if (!displaySets) {
-    return [];
-  }
-
-  const studiesFromInstanceData = {};
-
-  displaySets.forEach(ds => {
-    const displaySet = {
-      displaySetInstanceUID: ds.displaySetInstanceUID,
-      description: ds.SeriesDescription,
-      seriesNumber: ds.SeriesNumber,
-      modality: ds.Modality,
-      date: ds.SeriesDate,
-      numInstances: ds.numImageFrames,
-      componentType: 'thumbnailTracked', // TODO: PUT THIS SOMEWHERE ELSE
-    };
-
-    studiesFromInstanceData[ds.StudyInstanceUID] =
-      studiesFromInstanceData[ds.StudyInstanceUID] ||
-      _mapStudyFromInstance(ds.StudyInstanceUID);
-
-    const mappedStudy = studiesFromInstanceData[ds.StudyInstanceUID];
-
-    mappedStudy.displaySets.push(displaySet);
-    mappedStudy.numInstances += displaySet.numInstances;
-    mappedStudy.modalitiesSet.add(displaySet.modality);
-
-    const modalitiesSet = mappedStudy.modalitiesSet;
-    mappedStudy.modalities = Array.from(modalitiesSet).join(', ');
-  });
-
-  return Object.values(studiesFromInstanceData);
 }
 
 function _mergeStudyDataAndDataSourceStudies(studyData, mappedQidoStudies) {
