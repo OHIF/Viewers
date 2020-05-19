@@ -31,11 +31,7 @@ function createAndAddStack(
     return;
   }
 
-  // TODO: This is broken because it needs to give DisplaySetService to the dataSource
-  // DisplaySetService
-  // Should be something like:
-  // const imageIds = dataSource.getImageIdsForDisplaySet(displaySetInstanceUID, DisplaySetService);
-  const imageIds = dataSource.getImageIdsForDisplaySet(displaySetInstanceUID);
+  const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
 
   const stack = {
     StudyInstanceUID,

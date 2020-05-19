@@ -24,7 +24,7 @@ function PanelStudyBrowser({ servicesManager, getImageSrc, getStudiesByPatientId
         const dSets = displaySets[StudyInstanceUid];
         dSets.forEach(async (dset) => {
           const uid = dset.displaySetInstanceUID;
-          const imageIds = dataSource.getImageIdsForDisplaySet(uid, DisplaySetService);
+          const imageIds = dataSource.getImageIdsForDisplaySet(dset);
           const imageId = imageIds[Math.floor(imageIds.length / 2)];
           const imageSrc = await getImageSrc(imageId);
 
