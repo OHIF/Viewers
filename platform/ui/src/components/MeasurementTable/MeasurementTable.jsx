@@ -61,7 +61,6 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
                       right: 4,
                       transform: isActive ? '' : 'translateX(100%)',
                     }}
-                    e
                     onClick={(e) => {
                       // stopPropagation needed to avoid disable the current active item
                       e.stopPropagation();

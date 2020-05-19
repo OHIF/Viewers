@@ -1,7 +1,7 @@
 import pubSubServiceInterface from '../pubSubServiceInterface';
 
 const EVENTS = {
-  DISPLAY_SETS_ADDED: 'event::displaySetService:displaySetAdded',
+  DISPLAY_SETS_ADDED: 'event::displaySetService:displaySetsAdded',
 };
 
 const displaySetCache = [];
@@ -81,10 +81,7 @@ export default class DisplaySetService {
     }
 
     // If array of instances => One instance.
-
     let displaySetsAdded = [];
-
-    debugger;
 
     if (batch) {
       input.forEach(instances => {
@@ -98,13 +95,13 @@ export default class DisplaySetService {
       displaySetsAdded = displaySets;
     }
 
-    if (displaySetsAdded.length) {
+    // If array of array of instances
+    if (displaySetsAdded && displaySetsAdded.length) {
       this._broadcastChange(EVENTS.DISPLAY_SETS_ADDED, displaySetsAdded);
     }
   };
 
   makeDisplaySetForInstances(instances) {
-    debugger;
     const instance = instances[0];
 
     const existingDisplaySets =
