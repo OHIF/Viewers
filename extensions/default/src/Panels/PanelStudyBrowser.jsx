@@ -3,64 +3,73 @@ import PropTypes from 'prop-types';
 import { StudyBrowser } from '@ohif/ui';
 import { dicomMetadataStore } from '@ohif/core';
 
-function StudyDataCreator({ dataSource, servicesManager, setStudiesForPatient, getImageSrc, getStudiesByPatientId, setStudyData, updateThumbnailMap }) {
-  const [ displaySets, setDisplaySets ] = useState([]);
+function PanelStudyBrowser({
+  servicesManager,
+  getImageSrc,
+  getStudiesByPatientId,
+  dataSource,
+}) {
   const { DisplaySetService } = servicesManager.services;
+  const currentDisplaySets = DisplaySetService.activeDisplaySets || [];
+  // TODO: Deep copy? Or By IDs?
+  // TODO: May need to be mapped to a different shape?
 
-  const _getRelatedStudies = async () => {
-    const currentDisplaySets = DisplaySetService.activeDisplaySets;
-    if (!currentDisplaySets || !currentDisplaySets.length) {
-      return;
-    }
-
-    // Handle launching QIDO-RS request
-    const displaySet = currentDisplaySets[0];
-    const study = dicomMetadataStore.getStudy(
-      displaySet.StudyInstanceUID
-    );
-    const instance = study.series[0].instances[0];
-    const PatientID = instance.PatientID;
-    const studiesForPatient = await getStudiesByPatientId(PatientID);
-
-    debugger;
-
-    setStudiesForPatient(studiesForPatient);
-  }
+  const [displaySets, setDisplaySets] = useState(currentDisplaySets);
+  // TODO: Grab from URL, or pass in as part of contract to panels
+  const [primaryStudyInstanceUID, setPrimaryStudyInstanceUID] = useState();
+  const [activeTabName, setActiveTabName] = useState('primary');
+  const [studyData, setStudyData] = useState([]);
+  const [studiesForPatient, setStudiesForPatient] = useState([]);
 
   useEffect(() => {
-    _getRelatedStudies();
-  }, []);
+    const mappedStudiesFromDataSource = _mapDataSourceStudies(
+      studiesForPatient
+    );
 
-  function handleDisplaySetsChanged(displaySets) {
-    console.log('handleDisplaySetsChanged')
-    console.log(displaySets.length);
-    // On initial load
-    // 1. DisplaySets are added for the primary studies, which are used to create
-    //    the initial 'StudyData' to be displayed in the browser
-    // 2. Requests for thumbnails are made for each display set, which
-    //    resolve asynchronously and update thumbnailImageSrcMap
-    // 3. QIDO-RS call is made to retrieve StudyData for related studies, which
-    //    resolves later and is merged into StudyData
-    //
-    // Later, if another study is loaded
-    // 1. Display sets are added again, triggering requests for thumbnails
-    // 2. StudyData is updated from any new information provided by the series-level requests
-
-    // Does any studyData already exist?
-    // If it does, map the new display set data and merge it into the local state
-    // for display
-    const mappedStudiesFromInstances = _getMappedStudiesFromDisplaySets(
+    const newStudyData = _mergeStudyDataAndDataSourceStudies(
+      studyData,
+      mappedStudiesFromDataSource,
       displaySets
     );
 
-    setStudyData(mappedStudiesFromInstances);
+    addDisplaySetsToStudyData(newStudyData, displaySets);
+
+    setStudyData(newStudyData);
+  }, [studiesForPatient]);
+
+  const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState(new Map());
+  const updateThumbnailMap = (k, v) => {
+    setThumbnailImageSrcMap(thumbnailImageSrcMap.set(k, v));
+  };
+
+  function setLocalDisplaySetsState(displaySets) {
+    const displaySetsUI = displaySets.map(ds => {
+      return {
+        displaySetInstanceUID: ds.displaySetInstanceUID,
+        description: ds.SeriesDescription,
+        seriesNumber: ds.SeriesNumber,
+        modality: ds.Modality,
+        date: ds.SeriesDate,
+        numInstances: ds.numImageFrames,
+        StudyInstanceUID: ds.StudyInstanceUID,
+        componentType: 'thumbnailTracked', // TODO: PUT THIS SOMEWHERE ELSE
+      };
+    });
+
+    setDisplaySets(displaySetsUI);
   }
 
-  useEffect(() => {
-    handleDisplaySetsChanged(displaySets);
-  }, [displaySets]);
+  function addDisplaySetsToStudyData(studies, displaySets) {
+    displaySets.forEach(displaySet => {
+      const study = studies.find(
+        s => s.studyInstanceUid === displaySet.StudyInstanceUID
+      );
 
-  function handleDisplaySetsAdded(newDisplaySets) {
+      study.displaySets.push(displaySet);
+    });
+  }
+
+  async function handleDisplaySetsAdded(newDisplaySets) {
     // First, launch requests for a thumbnail for the new display sets
     newDisplaySets.forEach(async dset => {
       const uid = dset.displaySetInstanceUID;
@@ -71,68 +80,61 @@ function StudyDataCreator({ dataSource, servicesManager, setStudiesForPatient, g
       const imageSrc = await getImageSrc(imageId);
       updateThumbnailMap(uid, imageSrc);
     });
+
+    // If
+    const firstDisplaySet = newDisplaySets[0];
+    if (!studiesForPatient.length && firstDisplaySet) {
+      async function doAsyncStuff() {
+        const qidoStuff = await _getStudiesByPatientId(
+          firstDisplaySet,
+          getStudiesByPatientId
+        );
+
+        setStudiesForPatient(qidoStuff);
+        debugger;
+        setPrimaryStudyInstanceUID(firstDisplaySet.StudyInstanceUID);
+      }
+
+      doAsyncStuff();
+    }
   }
 
   useEffect(() => {
-    const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      handleDisplaySetsAdded
-    );
+    // TODO: IF WE HAVE OUR FIRST DISPLAY SET...
+    // QIDO AWAY
+    // IF WE DO NOT, WAIT FOR FIRST DISPLAY_SETS_ADDED
+    const firstDisplaySet = displaySets[0];
+    if (firstDisplaySet) {
+      async function doAsyncStuff() {
+        const qidoStuff = await _getStudiesByPatientId(
+          firstDisplaySet,
+          getStudiesByPatientId
+        );
+        setPrimaryStudyInstanceUID(firstDisplaySet.StudyInstanceUID);
+        setStudiesForPatient(qidoStuff);
+      }
+      doAsyncStuff();
+    }
 
-    return unsubscribe;
+    const subscriptions = [
+      DisplaySetService.subscribe(
+        DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
+        handleDisplaySetsAdded
+      ),
+      DisplaySetService.subscribe(
+        DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+        setLocalDisplaySetsState
+      ),
+    ];
+
+    return () => {
+      subscriptions.forEach(sub => sub.unsubscribe);
+    };
   }, []);
 
-  function setLocalDisplaySetsState(ds) {
-    setDisplaySets(ds);
-  }
-
-  useEffect(() => {
-    const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-      setLocalDisplaySetsState
-    );
-
-    return unsubscribe;
-  }, []);
-
-  return null;
-}
-
-function PanelStudyBrowser({servicesManager, getImageSrc, getStudiesByPatientId, dataSource}) {
-  const [activeTabName, setActiveTabName] = useState('primary');
-  const [studyData, setStudyData] = useState([]);
-  const [studiesForPatient, setStudiesForPatient] = useState([]);
-  const mappedStudiesFromDataSource = _mapDataSourceStudies(
-    studiesForPatient
+  const primary = studyData.find(
+    study => study.studyInstanceUid === primaryStudyInstanceUID
   );
-  const merged = _mergeStudyDataAndDataSourceStudies(
-    studyData,
-    mappedStudiesFromDataSource,
-  );
-
-
-  const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState(new Map());
-  const updateThumbnailMap = (k, v) => {
-    setThumbnailImageSrcMap(thumbnailImageSrcMap.set(k, v));
-  };
-
-  return (
-    <>
-      <StudyDataCreator dataSource={dataSource} setStudyData={setStudyData} servicesManager={servicesManager} updateThumbnailMap={updateThumbnailMap} getStudiesByPatientId={getStudiesByPatientId} getImageSrc={getImageSrc}/>
-      <StudyBrowserUIData
-      studyData={studyData}
-      activeTabName={activeTabName}
-      setActiveTabName={setActiveTabName}
-      dataSource={dataSource}
-      />
-    </>
-  )
-}
-
-function StudyBrowserUIData({ activeTabName, setActiveTabName, studyData, dataSource }) {
-  const primary = studyData.find(study => {
-    return true; // TODO: check study.StudyInstanceUID matches queryparam?
-  });
 
   // TODO: Filter allStudies to dates within one year of current date
   const recentStudies = studyData.filter(study => {
@@ -158,6 +160,7 @@ function StudyBrowserUIData({ activeTabName, setActiveTabName, studyData, dataSo
   ];
 
   function onClickStudy(StudyInstanceUID) {
+    debugger;
     const study = studyData.find(a => a.studyInstanceUid === StudyInstanceUID);
     if (study && study.displaySets && study.displaySets.length) {
       return;
@@ -201,11 +204,23 @@ PanelStudyBrowser.propTypes = {
 
 export default PanelStudyBrowser;
 
-  /**
-   * Maps from the DataSource's format to a naturalized object
-   *
-   * @param {*} studies
-   */
+async function _getStudiesByPatientId(displaySet, getStudiesByPatientId) {
+  const study = dicomMetadataStore.getStudy(displaySet.StudyInstanceUID);
+  const instance = study.series[0].instances[0];
+  const PatientID = instance.PatientID;
+  const studiesByPatientId = await getStudiesByPatientId(PatientID);
+  // const mappedStudiesFromInstances = _getMappedStudiesFromDisplaySets(
+  //   displaySets
+  // );
+
+  return studiesByPatientId;
+}
+
+/**
+ * Maps from the DataSource's format to a naturalized object
+ *
+ * @param {*} studies
+ */
 function _mapDataSourceStudies(studies) {
   return studies.map(study => {
     // TODO: Why does the data source return in this format?
@@ -244,7 +259,7 @@ function _getMappedStudiesFromDisplaySets(displaySets) {
       modality: ds.Modality,
       date: ds.SeriesDate,
       numInstances: ds.numImageFrames,
-      componentType: 'thumbnailTracked' // TODO: PUT THIS SOMEWHERE ELSE
+      componentType: 'thumbnailTracked', // TODO: PUT THIS SOMEWHERE ELSE
     };
 
     studiesFromInstanceData[ds.StudyInstanceUID] =
@@ -267,31 +282,40 @@ function _getMappedStudiesFromDisplaySets(displaySets) {
 function _mergeStudyDataAndDataSourceStudies(studyData, mappedQidoStudies) {
   return mappedQidoStudies.map(qidoStudy => {
     const { StudyInstanceUID } = qidoStudy;
-    const existing = studyData.find(a => a.studyInstanceUid === StudyInstanceUID) || {};
+    const existing =
+      studyData.find(a => a.studyInstanceUid === StudyInstanceUID) || {};
 
-    return Object.assign({
-      displaySets: []
-    }, existing, {
-      studyInstanceUid: StudyInstanceUID,
-      date: qidoStudy.StudyDate,
-      description: qidoStudy.StudyDescription,
-      modalities: qidoStudy.ModalitiesInStudy,
-      numInstances: qidoStudy.NumInstances,
-    });
+    return Object.assign(
+      {},
+      existing,
+      {
+        displaySets: [],
+      },
+      {
+        studyInstanceUid: StudyInstanceUID,
+        date: qidoStudy.StudyDate,
+        description: qidoStudy.StudyDescription,
+        modalities: qidoStudy.ModalitiesInStudy,
+        numInstances: qidoStudy.NumInstances,
+      }
+    );
   });
 }
 
 function _mergeStudyDataAndInstanceStudies(studyData, mappedInstanceStudies) {
   const merged = [];
   mappedInstanceStudies.map(studyFromInstances => {
-    const existing =
-      studyData.find(a => a.studyInstanceUid === studyFromInstances.studyInstanceUid);
+    const existing = studyData.find(
+      a => a.studyInstanceUid === studyFromInstances.studyInstanceUid
+    );
 
     if (existing) {
-      merged.push(Object.assign({}, existing, {
-        displaySets: studyFromInstances.displaySets,
-        modalities: studyFromInstances.modalities
-      }))
+      merged.push(
+        Object.assign({}, existing, {
+          displaySets: studyFromInstances.displaySets,
+          modalities: studyFromInstances.modalities,
+        })
+      );
     } else {
       merged.push(studyFromInstances);
     }

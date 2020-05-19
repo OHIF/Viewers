@@ -81,21 +81,17 @@ export default function ModeRoute({
   }, [mode, dataSourceName, location]);
 
   return (
-    <React.Fragment>
-      {/*<ToolbarLayoutProvider>*/}
-      <CombinedContextProvider>
-        {/* TODO: extensionManager is already provided to the extension module.
-         *  Use it from there instead of passing as a prop here.
-         */}
-        <DragAndDropProvider>
-          <LayoutComponent
-            {...layoutTemplateData.props}
-            ViewportGridComp={ViewportGridWithDataSource}
-          />
-        </DragAndDropProvider>
-      </CombinedContextProvider>
-      {/*</ToolbarLayoutProvider>*/}
-    </React.Fragment>
+    <CombinedContextProvider>
+      {/* TODO: extensionManager is already provided to the extension module.
+       *  Use it from there instead of passing as a prop here.
+       */}
+      <DragAndDropProvider>
+        <LayoutComponent
+          {...layoutTemplateData.props}
+          ViewportGridComp={ViewportGridWithDataSource}
+        />
+      </DragAndDropProvider>
+    </CombinedContextProvider>
   );
 }
 

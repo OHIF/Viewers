@@ -96,7 +96,6 @@ export default class DisplaySetService {
       displaySetsAdded = displaySets;
     }
 
-    // If array of array of instances
     if (displaySetsAdded && displaySetsAdded.length) {
       this._broadcastChange(EVENTS.DISPLAY_SETS_ADDED, displaySetsAdded);
 

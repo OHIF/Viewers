@@ -11,13 +11,17 @@ import getImageSrcFromImageId from './getImageSrcFromImageId';
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowser({ commandsManager, extensionManager, servicesManager }) {
+function WrappedPanelStudyBrowser({
+  commandsManager,
+  extensionManager,
+  servicesManager,
+}) {
   // Note: this feels odd
   const dataSource = extensionManager.getDataSources('dicomweb')[0];
   const getStudiesByPatientId = patientId =>
-    dataSource.query.studies.search(patientId);
+    dataSource.query.studies.search({ patientId });
   const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(
-    commandsManager.getCommand.bind(commandsManager),
+    commandsManager.getCommand.bind(commandsManager)
   );
 
   return (
@@ -42,7 +46,9 @@ function WrappedPanelStudyBrowser({ commandsManager, extensionManager, servicesM
 function _createGetImageSrcFromImageIdFn(getCommand) {
   try {
     const command = getCommand('getCornerstoneLibraries', 'VIEWER');
-    if(!command) { return; }
+    if (!command) {
+      return;
+    }
     const { cornerstone } = command.commandFn();
 
     return getImageSrcFromImageId.bind(null, cornerstone);
