@@ -35,9 +35,6 @@ const StudyBrowser = ({
   const [studyActive, setStudyActive] = useState(null);
   const [thumbnailActive, setThumbnailActive] = useState(null);
 
-  console.log('StudyBrowser rerender');
-  console.log(`tabActive: ${tabActive}`);
-
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === tabActive);
 

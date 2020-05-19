@@ -20,7 +20,8 @@ function ViewerViewportGrid(props) {
 
   // TODO -> Make a HangingProtocolService
   const HangingProtocolService = displaySets => {
-    const displaySetInstanceUID = displaySets[0].displaySetInstanceUID;
+    const displaySet = DisplaySetService.activeDisplaySets[0]
+    const displaySetInstanceUID = displaySet.displaySetInstanceUID;
 
     return {
       numRows: 1,

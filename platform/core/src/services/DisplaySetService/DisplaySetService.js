@@ -2,6 +2,7 @@ import pubSubServiceInterface from '../pubSubServiceInterface';
 
 const EVENTS = {
   DISPLAY_SETS_ADDED: 'event::displaySetService:displaySetsAdded',
+  DISPLAY_SETS_CHANGED: 'event::displaySetService:displaySetsChanged',
 };
 
 const displaySetCache = [];
@@ -98,6 +99,11 @@ export default class DisplaySetService {
     // If array of array of instances
     if (displaySetsAdded && displaySetsAdded.length) {
       this._broadcastChange(EVENTS.DISPLAY_SETS_ADDED, displaySetsAdded);
+
+      this._broadcastChange(
+        EVENTS.DISPLAY_SETS_CHANGED,
+        this.activeDisplaySets
+      );
     }
   };
 
