@@ -178,7 +178,7 @@ export default class ExtensionManager {
 
     try {
       const extensionModule = getModuleFn({
-        getDataSources: this.getDataSources,
+        getDataSources: this.getDataSources, // Why pass this in if we're passing in `extensionManager`?
         servicesManager: this._servicesManager,
         commandsManager: this._commandsManager,
         appConfig: this._appConfig,

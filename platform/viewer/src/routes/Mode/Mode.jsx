@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
+import { useParams } from 'react-router';
 import PropTypes from 'prop-types';
 //
 import { ToolBarManager } from '@ohif/core';
@@ -73,21 +74,19 @@ export default function ModeRoute({
     route.init({ toolBarManager });
   }, [mode, dataSourceName, location]);
 
-  const createDisplaySets = useCallback(() => {
+  // This queries for series, but... What does it do with them?
+  useEffect(() => {
     // Add SOPClassHandlers to a new SOPClassManager.
     DisplaySetService.init(extensionManager, sopClassHandlers);
 
     const queryParams = location.search;
+    console.log('queryParams: ', queryParams);
 
     // Call the data source to start building the view model?
     dataSource.retrieve.series.metadata(
       queryParams,
       DisplaySetService.makeDisplaySets
     );
-  }, [location]);
-
-  useEffect(() => {
-    createDisplaySets();
   }, [mode, dataSourceName, location]);
 
   return (
@@ -98,6 +97,7 @@ export default function ModeRoute({
       <DragAndDropProvider>
         <LayoutComponent
           {...layoutTemplateData.props}
+          StudyInstanceUIDs={StudyInstanceUIDs}
           ViewportGridComp={ViewportGridWithDataSource}
         />
       </DragAndDropProvider>

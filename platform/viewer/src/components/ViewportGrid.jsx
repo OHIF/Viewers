@@ -20,8 +20,16 @@ function ViewerViewportGrid(props) {
 
   // TODO -> Make a HangingProtocolService
   const HangingProtocolService = displaySets => {
-    const displaySet = DisplaySetService.activeDisplaySets[0]
-    const displaySetInstanceUID = displaySet.displaySetInstanceUID;
+    let displaySetInstanceUID;
+
+    // Fallback
+    if(!displaySets || !displaySets.length) {
+      const displaySet = DisplaySetService.activeDisplaySets[0]
+      displaySetInstanceUID = displaySet.displaySetInstanceUID;
+    } else {
+      const displaySet = displaySets[0];
+      displaySetInstanceUID = displaySet.displaySetInstanceUID;
+    }
 
     return {
       numRows: 1,
@@ -35,25 +43,38 @@ function ViewerViewportGrid(props) {
     };
   };
 
-  const handleDisplaySetSubscription = useCallback(displaySets => {
-    setViewportGrid(HangingProtocolService(displaySets));
-  });
-
-  useEffect(() => {
-    const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      handleDisplaySetSubscription
-    );
-
-    return unsubscribe;
-  }, []);
-
   // From ViewportGridService and/or ContextProvider
   const [viewportGrid, setViewportGrid] = useState({
     numCols: 1,
     numRows: 1,
     viewports: []
   });
+
+
+  useEffect(() => {
+    const { unsubscribe } = DisplaySetService.subscribe(
+      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
+      displaySets => {
+        setViewportGrid(HangingProtocolService(displaySets));
+      },
+    );
+
+    return unsubscribe;
+  }, []);
+
+  // TODO: either need hover to change "active viewport"
+  // so we can use it as our target for setting the displaySet,
+  // or the dropHandler needs to know which viewport was dropped on
+  // in event data
+  const onDropHandler = ({displaySetInstanceUID}) => {
+    const droppedDisplaySet = DisplaySetService.getDisplaySetByUID(displaySetInstanceUID);
+    const updatedViewportGridState = HangingProtocolService([droppedDisplaySet]);
+
+    console.warn('DROPPED: ', displaySetInstanceUID, droppedDisplaySet, updatedViewportGridState);
+
+    // This is not updating the displayed DisplaySet
+    setViewportGrid(updatedViewportGridState);
+  }
 
   // viewportData --> displaySets
   const getViewportPanes = () =>
@@ -65,6 +86,7 @@ function ViewerViewportGrid(props) {
 
       const displaySet = DisplaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
+      // TODO: Better Empty Viewport
       if (!displaySet) {
         return (
           <ViewportPane
@@ -72,23 +94,11 @@ function ViewerViewportGrid(props) {
             className="m-1"
             // Pass in as prop?
             acceptDropsFor="displayset"
-            onDrop={droppedItem => {
-              console.warn('DROPPED ITEM:', droppedItem);
-            }}
+            onDrop={onDropHandler}
             isActive={activeViewportIndex === viewportIndex}
           />
         );
       }
-
-      // if (!displaySet) {
-      //   // TODO: Empty Viewport
-      //   return null;
-      // }
-
-      // const pluginName =
-      //   !layout.plugin && displaySet && displaySet.plugin
-      //     ? displaySet.plugin
-      //     : layout.plugin;
 
       // TODO -> Need way for other viewport e.g. vtk to be used.
 
@@ -102,9 +112,7 @@ function ViewerViewportGrid(props) {
           key={viewportIndex}
           className="m-1"
           acceptDropsFor="displayset"
-          onDrop={droppedItem => {
-            console.warn('DROPPED ITEM:', droppedItem);
-          }}
+          onDrop={onDropHandler}
           isActive={activeViewportIndex === viewportIndex}
         >
           <ViewportComponent
@@ -116,15 +124,16 @@ function ViewerViewportGrid(props) {
       );
     });
 
-  const ViewportPanes = React.useMemo(getViewportPanes, [
-    viewportComponents,
-    activeViewportIndex,
-    viewportGrid
-  ]);
+  // const ViewportPanes = React.useMemo(getViewportPanes, [
+  //   viewportComp'onents,
+  //   activeViewportIndex,
+  //   viewportGrid,
+  // ]);
 
   return (
     <ViewportGrid numRows={viewportGrid.numRows} numCols={viewportGrid.numCols}>
-      {ViewportPanes}
+      {/* {ViewportPanes} */}
+      {getViewportPanes()}
     </ViewportGrid>
   );
 }

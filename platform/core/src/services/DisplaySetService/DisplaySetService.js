@@ -46,12 +46,13 @@ export default class DisplaySetService {
     );
   };
 
-  getDisplaySetByUID = displaySetInstanceUid => {
-    // TODO: Why is this searching active, not just displaySets?
-    return displaySetCache.find(
+  /**
+   * @param {string} displaySetInstanceUID
+   * @returns {object} displaySet
+   */
+  getDisplaySetByUID = displaySetInstanceUid => displaySetCache.find(
       displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUid
     );
-  };
 
   /**
    * Broadcasts displaySetService changes.
