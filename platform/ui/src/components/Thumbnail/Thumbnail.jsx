@@ -15,26 +15,26 @@ const Thumbnail = ({
   description,
   seriesNumber,
   numInstances,
-  // dragData,
+  dragData,
   isActive,
   onClick,
 }) => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
   // specified item.
-  /*const [collectedProps, drag, dragPreview] = useDrag({
+  const [collectedProps, drag, dragPreview] = useDrag({
     item: { ...dragData },
     canDrag: function(monitor) {
       return Object.keys(dragData).length !== 0;
     },
-  });*/
+  });
 
-  //      ref={drag}
   return (
     <div
+      ref={drag}
       className={classnames(
         className,
-        'flex flex-col flex-1 px-3 cursor-pointer outline-none'
+        'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none'
       )}
       onClick={onClick}
       onKeyDown={onClick}
@@ -43,7 +43,7 @@ const Thumbnail = ({
     >
       <div
         className={classnames(
-          'flex flex-1 items-center justify-center rounded-md bg-black text-base text-white mb-2 min-h-32',
+          'flex flex-1 items-center justify-center rounded-md bg-black text-base text-white overflow-hidden mb-2 min-h-32',
           isActive
             ? 'border-2 border-primary-light'
             : 'border border-secondary-light hover:border-blue-300'
@@ -53,22 +53,22 @@ const Thumbnail = ({
           <img
             src={imageSrc}
             alt={imageAltText}
-            className="min-h-32 object-none"
+            className="object-none min-h-32"
           />
         ) : (
           <div>{imageAltText}</div>
         )}
       </div>
-      <div className="flex flex-row flex-1 text-blue-300 text-base items-center">
+      <div className="flex flex-row items-center flex-1 text-base text-blue-300">
         <div className="mr-4">
-          <span className="text-primary-main font-bold">{'S: '}</span>
+          <span className="font-bold text-primary-main">{'S: '}</span>
           {seriesNumber}
         </div>
         <div className="flex flex-row items-center flex-1">
           <Icon name="group-layers" className="w-3 mr-2" /> {numInstances}
         </div>
       </div>
-      <div className="text-white text-base">{description}</div>
+      <div className="text-base text-white">{description}</div>
     </div>
   );
 };
