@@ -59,11 +59,13 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
     resolve: {
       alias: {
         // Viewer project
-        '@routes': path.resolve(__dirname, '../platform/viewer/src/routes'),
+        '@': path.resolve(__dirname, '../platform/viewer/src'),
         '@components': path.resolve(
           __dirname,
           '../platform/viewer/src/components'
         ),
+        '@hooks': path.resolve(__dirname, '../platform/viewer/src/hooks'),
+        '@routes': path.resolve(__dirname, '../platform/viewer/src/routes'),
       },
       // Which directories to search when resolving modules
       modules: [
