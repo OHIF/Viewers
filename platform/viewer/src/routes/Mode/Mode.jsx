@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { ToolBarManager } from '@ohif/core';
 import { DragAndDropProvider } from '@ohif/ui';
 //
+import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 //import DisplaySetCreator from './DisplaySetCreator';
@@ -15,12 +16,21 @@ export default function ModeRoute({
   extensionManager,
   servicesManager,
 }) {
-  const { routes, extensions, sopClassHandlers } = mode;
-  const dataSources = extensionManager.getDataSources(dataSourceName);
-  // TODO: For now assume one unique datasource.
+  // Parse route params/querystring
+  const query = useQuery();
+  const queryStudyInstanceUIDs = query.get('StudyInstanceUIDs');
+  const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = useParams();
+  const StudyInstanceUIDs = queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
 
+  const { extensions, sopClassHandlers } = mode;
+  // TODO:
+  // - Check query/params for specific dataSource
+  //     - If provided, query for that dataSource instance
+  //     - If not provided, select default datasource
+  // - Update `extensionManager` to have a method to retrieve the default source
+  const dataSources = extensionManager.getDataSources(dataSourceName);
   const dataSource = dataSources[0];
-  const route = routes[0];
+  const route = mode.routes[0];
 
   const { DisplaySetService } = servicesManager.services;
 
