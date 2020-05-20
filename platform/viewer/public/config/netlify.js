@@ -1,9 +1,16 @@
 window.config = {
   routerBasename: '/pwa',
+  // whiteLabelling: {},
+  extensions: ['org.ohif.default'],
+  modes: [],
   showStudyList: true,
-  servers: {
-    dicomWeb: [
-      {
+  // filterQueryParam: false,
+  dataSources: [
+    {
+      friendlyName: 'dcmjs DICOMWeb Server',
+      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
@@ -12,13 +19,7 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: true,
       },
-    ],
-  },
-  i18n: {
-    LOCIZE_PROJECTID: 'a8da3f9a-e467-4dd6-af33-474d582a0294',
-    LOCIZE_API_KEY: null, // Developers can use this to do in-context editing. DO NOT COMMIT THIS KEY!
-    USE_LOCIZE: true,
-  },
+    },
+  ],
 };
