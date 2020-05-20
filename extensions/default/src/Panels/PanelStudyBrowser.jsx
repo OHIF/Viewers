@@ -55,7 +55,7 @@ function PanelStudyBrowser({
         date: ds.SeriesDate,
         numInstances: ds.numImageFrames,
         StudyInstanceUID: ds.StudyInstanceUID,
-        componentType: 'thumbnailTracked', // TODO: PUT THIS SOMEWHERE ELSE
+        componentType: 'thumbnail', // 'thumbnailNoImage' || 'thumbnailTracked' // TODO: PUT THIS SOMEWHERE ELSE
         imageSrc,
       };
     });
