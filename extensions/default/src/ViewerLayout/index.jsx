@@ -1,39 +1,22 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { SidePanel, Toolbar } from '@ohif/ui';
-import { useToolbarLayout } from '@ohif/core';
 //
 import Header from './Header.jsx';
-import { displaySetManager } from '@ohif/core';
-
-// function ViewportDataCreator({ setViewportData }) {
-//   const { displaySetInstanceUIDs } = useViewModel();
-//   console.log(displaySetInstanceUIDs);
-
-//   useEffect(() => {
-//     setViewportData([
-//       displaySetManager.getDisplaySetByUID(displaySetInstanceUIDs[0]),
-//     ]);
-//   }, [displaySetInstanceUIDs, setViewportData]);
-
-//   return null;
-// }
 
 function ViewerLayout({
   // From Extension Module Params
   extensionManager,
   servicesManager,
+  commandsManager,
   // From Modes
   leftPanels,
   rightPanels,
   viewports,
   children,
-  ViewportGridComp
+  ViewportGridComp,
 }) {
-  const [displaySets, setDisplaySets] = useState({});
-
-  //const ViewportGrid = React.Children.only(children);
-
+  const { ToolBarService } = servicesManager.services;
   /**
    * Set body classes (tailwindcss) that don't allow vertical
    * or horizontal overflow (no scrolling). Also guarantee window
@@ -47,6 +30,7 @@ function ViewerLayout({
       document.body.classList.remove('overflow-hidden');
     };
   }, []);
+
   const getPanelData = id => {
     const entry = extensionManager.getModuleEntry(id);
     // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
@@ -70,27 +54,84 @@ function ViewerLayout({
     };
   };
 
+  const handleToolBarSubscription = newToolBarLayout => {
+    // Get buttons to pass to toolbars.
+    console.log(commandsManager);
+
+    const firstTool = newToolBarLayout[0].tools[0];
+
+    const toolBarLayout = [];
+
+    newToolBarLayout.forEach(newToolBar => {
+      const toolBar = { tools: [], moreTools: [] };
+
+      Object.keys(newToolBar).forEach(key => {
+        if (newToolBar[key].length) {
+          newToolBar[key].forEach(tool => {
+            const commandOptions = tool.commandOptions || {};
+
+            toolBar[key].push({
+              context: tool.context,
+              icon: tool.icon,
+              id: tool.id,
+              label: tool.label,
+              type: 'setToolActive',
+              onClick: () => {
+                debugger;
+                commandsManager.runCommand(tool.commandName, commandOptions);
+              },
+            });
+          });
+        }
+      });
+
+      toolBarLayout.push(toolBar);
+
+      // if (newToolBar.moreTools && newToolBar.moreTools.length) {
+      //   newToolBar.moreTools.forEach(tool => {
+      //     const commandOptions = tool.commandOptions || {};
+
+      //     toolBar.push({
+      //       context: tool.context,
+      //       icon: tool.icon,
+      //       id: tool.id,
+      //       label: tool.label,
+      //       type: 'setToolActive',
+      //       command: () =>
+      //         commandsManager.runCommand(tool.commandName, commandOptions),
+      //     });
+      //   });
+      // }
+    });
+
+    debugger;
+
+    setToolBarLayout(toolBarLayout);
+  };
+
+  const [toolBarLayout, setToolBarLayout] = useState([
+    { tools: [], moreTools: [] },
+    { tools: [] },
+  ]);
+
+  useEffect(() => {
+    const { unsubscribe } = ToolBarService.subscribe(
+      ToolBarService.EVENTS.TOOL_BAR_MODIFIED,
+      handleToolBarSubscription
+    );
+
+    return unsubscribe;
+  }, []);
+
   const leftPanelComponents = leftPanels.map(getPanelData);
   const rightPanelComponents = rightPanels.map(getPanelData);
   const viewportComponents = viewports.map(getViewportComponentData);
 
-  // let { toolBarLayout } = useToolbarLayout();
-  // if (!toolBarLayout.length) {
-  //   return null;
-  // }
-
-  // TODO -> make toolbar service
-  const toolBarLayout = { tools: [], moreTools: [] };
-
-  //const [primaryToolBarLayout, secondaryToolBarLayout] = toolBarLayout;
-  const primaryToolBarLayout = toolBarLayout;
-  const secondaryToolBarLayout = toolBarLayout;
-
   return (
     <div>
       <Header
-        tools={primaryToolBarLayout.tools}
-        moreTools={primaryToolBarLayout.moreTools}
+        tools={toolBarLayout[0].tools}
+        moreTools={toolBarLayout[0].moreTools}
       />
       <div
         className="flex flex-row flex-no-wrap items-stretch overflow-hidden w-full"
@@ -105,7 +146,7 @@ function ViewerLayout({
         {/* TOOLBAR + GRID */}
         <div className="flex flex-col flex-1 h-full">
           <div className="flex flex-2 w-100 border-b border-transparent h-12">
-            <Toolbar type="secondary" tools={secondaryToolBarLayout.tools} />
+            <Toolbar type="secondary" tools={toolBarLayout[1].tools} />
           </div>
           <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center pb-2 pt-1">
             <ViewportGridComp
@@ -183,6 +224,7 @@ ViewerLayout.propTypes = {
   extensionManager: PropTypes.shape({
     getModuleEntry: PropTypes.func.isRequired,
   }).isRequired,
+  commandsManager: PropTypes.object,
   // From modes
   // TODO: Not in love with this shape,
   toolBarLayout: PropTypes.arrayOf(
@@ -196,13 +238,6 @@ ViewerLayout.propTypes = {
   rightPanels: PropTypes.array,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
   children: PropTypes.oneOfType(PropTypes.node, PropTypes.func).isRequired,
-};
-
-ViewerLayout.defaultProps = {
-  toolBarLayout: [
-    { tools: [], moreTools: [] },
-    { tools: [], moreTools: [] },
-  ],
 };
 
 export default ViewerLayout;

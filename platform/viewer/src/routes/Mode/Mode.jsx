@@ -2,13 +2,11 @@ import React, { useEffect, useCallback } from 'react';
 import { useParams } from 'react-router';
 import PropTypes from 'prop-types';
 //
-import { ToolBarManager } from '@ohif/core';
 import { DragAndDropProvider } from '@ohif/ui';
 //
 import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
-//import DisplaySetCreator from './DisplaySetCreator';
 
 export default function ModeRoute({
   location,
@@ -69,9 +67,7 @@ export default function ModeRoute({
   }
 
   useEffect(() => {
-    // TODO -> Make this into a service
-    let toolBarManager = new ToolBarManager(extensionManager); //, setToolBarLayout);
-    route.init({ toolBarManager });
+    route.init({ servicesManager, extensionManager });
   }, [mode, dataSourceName, location]);
 
   // This queries for series, but... What does it do with them?
