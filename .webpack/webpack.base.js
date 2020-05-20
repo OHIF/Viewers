@@ -66,6 +66,7 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         ),
         '@hooks': path.resolve(__dirname, '../platform/viewer/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/viewer/src/routes'),
+        '@state': path.resolve(__dirname, '../platform/viewer/src/state'),
       },
       // Which directories to search when resolving modules
       modules: [

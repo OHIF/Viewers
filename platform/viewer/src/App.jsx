@@ -5,7 +5,7 @@ import { BrowserRouter, HashRouter } from 'react-router-dom';
 import { ThemeWrapper } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
-import { appConfigContext } from './state/appConfig.context';
+import { appConfigContext } from '@state/appConfig.context';
 import { useAppConfig } from './hooks/useAppConfig';
 import createRoutes from './routes';
 import appInit from './appInit.js';
