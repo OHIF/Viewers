@@ -71,7 +71,6 @@ const StudyBrowser = ({
             />
             {isActive && displaySets && (
               <ThumbnailList
-                dragData={{ type: 'displayset' }}
                 thumbnails={displaySets}
                 thumbnailActive={thumbnailActive}
                 onThumbnailClick={thumbnailId => {
@@ -94,11 +93,11 @@ const StudyBrowser = ({
 
   return (
     <React.Fragment>
-      <div className="flex flex-row items-center justify-center border-b w-100 h-16 border-secondary-light p-4 bg-primary-dark">
+      <div className="flex flex-row items-center justify-center h-16 p-4 border-b w-100 border-secondary-light bg-primary-dark">
         <ButtonGroup
           variant="outlined"
           color="inherit"
-          className="border border-secondary-light rounded-md"
+          className="border rounded-md border-secondary-light"
         >
           {tabs.map(tab => {
             const { name, label } = tab;

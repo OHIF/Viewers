@@ -102,8 +102,8 @@ function ViewerViewportGrid(props) {
           key={viewportIndex}
           className="m-1"
           acceptDropsFor="displayset"
-          onDrop={() => {
-            /* setDisplaySet for Viewport */
+          onDrop={droppedItem => {
+            console.warn('DROPPED ITEM:', droppedItem);
           }}
           isActive={activeViewportIndex === viewportIndex}
         >

@@ -59,6 +59,7 @@ function PanelStudyBrowser({
         imageSrc,
         dragData: {
           type: 'displayset',
+          displaySetInstanceUID: ds.displaySetInstanceUID,
           // .. Any other data to pass
         },
       };
