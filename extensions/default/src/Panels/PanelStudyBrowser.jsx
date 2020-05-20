@@ -78,6 +78,10 @@ function PanelStudyBrowser({
         s => s.studyInstanceUid === displaySet.StudyInstanceUID
       );
 
+      if (!study) {
+        return;
+      }
+
       displaySet.imageSrc = thumbnailImageSrcMap.get(
         displaySet.displaySetInstanceUID
       );
