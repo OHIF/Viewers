@@ -147,21 +147,6 @@ StudyBrowser.propTypes = {
           numInstances: PropTypes.number,
           modalities: PropTypes.string,
           description: PropTypes.string,
-          // These apply to each thumbnail; we should set Thumbnails
-          // As children and kill the <ThumbnailList> component to
-          // make it easier to set this prop.
-          // Do much less nesting so we have a bit more control.
-          /**
-           * Data the thumbnail should expose to a receiving drop target. Use a matching
-           * `dragData.type` to identify which targets can receive this draggable item.
-           * If this is not set, drag-n-drop will be disabled for this thumbnail.
-           *
-           * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
-           */
-          dragData: PropTypes.shape({
-            /** Must match the "type" a dropTarget expects */
-            type: PropTypes.string.isRequired,
-          }),
           displaySets: PropTypes.arrayOf(
             PropTypes.shape({
               displaySetInstanceUID: PropTypes.string.isRequired,
@@ -178,6 +163,17 @@ StudyBrowser.propTypes = {
               ]).isRequired,
               isTracked: PropTypes.bool,
               viewportIdentificator: PropTypes.string,
+              /**
+               * Data the thumbnail should expose to a receiving drop target. Use a matching
+               * `dragData.type` to identify which targets can receive this draggable item.
+               * If this is not set, drag-n-drop will be disabled for this thumbnail.
+               *
+               * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
+               */
+              dragData: PropTypes.shape({
+                /** Must match the "type" a dropTarget expects */
+                type: PropTypes.string.isRequired,
+              }),
             })
           ),
         })

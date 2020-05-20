@@ -4,17 +4,17 @@ import PropTypes from 'prop-types';
 import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '@ohif/ui';
 
 const ThumbnailList = ({
-  dragData,
   thumbnails,
   thumbnailActive,
   onThumbnailClick,
 }) => {
   return (
-    <div className="bg-black py-3">
+    <div className="py-3 bg-black">
       {thumbnails.map(
         ({
           displaySetInstanceUID,
           description,
+          dragData,
           seriesNumber,
           numInstances,
           modality,
@@ -80,17 +80,6 @@ const ThumbnailList = ({
 };
 
 ThumbnailList.propTypes = {
-  /**
-   * Data the thumbnail should expose to a receiving drop target. Use a matching
-   * `dragData.type` to identify which targets can receive this draggable item.
-   * If this is not set, drag-n-drop will be disabled for this thumbnail.
-   *
-   * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
-   */
-  dragData: PropTypes.shape({
-    /** Must match the "type" a dropTarget expects */
-    type: PropTypes.string.isRequired,
-  }),
   thumbnails: PropTypes.arrayOf(
     PropTypes.shape({
       displaySetInstanceUID: PropTypes.string.isRequired,
@@ -107,6 +96,17 @@ ThumbnailList.propTypes = {
       ]).isRequired,
       viewportIdentificator: PropTypes.string,
       isTracked: PropTypes.bool,
+      /**
+       * Data the thumbnail should expose to a receiving drop target. Use a matching
+       * `dragData.type` to identify which targets can receive this draggable item.
+       * If this is not set, drag-n-drop will be disabled for this thumbnail.
+       *
+       * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
+       */
+      dragData: PropTypes.shape({
+        /** Must match the "type" a dropTarget expects */
+        type: PropTypes.string.isRequired,
+      }),
     })
   ),
   thumbnailActive: PropTypes.string,

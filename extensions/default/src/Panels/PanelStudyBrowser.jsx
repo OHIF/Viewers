@@ -57,6 +57,10 @@ function PanelStudyBrowser({
         StudyInstanceUID: ds.StudyInstanceUID,
         componentType: 'thumbnail', // 'thumbnailNoImage' || 'thumbnailTracked' // TODO: PUT THIS SOMEWHERE ELSE
         imageSrc,
+        dragData: {
+          type: 'displayset',
+          // .. Any other data to pass
+        },
       };
     });
 
