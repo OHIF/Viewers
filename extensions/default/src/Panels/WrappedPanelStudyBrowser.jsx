@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 //
 import PanelStudyBrowser from './PanelStudyBrowser';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
+import getStudiesForPatientByStudyInstanceUID from './getStudiesForPatientByStudyInstanceUID';
+import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStudy';
 
 /**
  * Wraps the PanelStudyBrowser and provides features afforded by managers/services
@@ -16,20 +18,30 @@ function WrappedPanelStudyBrowser({
   extensionManager,
   servicesManager,
 }) {
-  // Note: this feels odd
+  // TODO: This should be made available a different way; route should have
+  // already determined our datasource
   const dataSource = extensionManager.getDataSources('dicomweb')[0];
-  const getStudiesByPatientId = patientId =>
-    dataSource.query.studies.search({ patientId });
+  const _getStudiesForPatientByStudyInstanceUID = getStudiesForPatientByStudyInstanceUID.bind(
+    null,
+    dataSource
+  );
   const _getImageSrcFromImageId = _createGetImageSrcFromImageIdFn(
     commandsManager.getCommand.bind(commandsManager)
+  );
+  const _requestDisplaySetCreationForStudy = requestDisplaySetCreationForStudy.bind(
+    null,
+    dataSource
   );
 
   return (
     <PanelStudyBrowser
-      servicesManager={servicesManager}
+      DisplaySetService={servicesManager.services.DisplaySetService}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
-      getStudiesByPatientId={getStudiesByPatientId}
+      getStudiesForPatientByStudyInstanceUID={
+        _getStudiesForPatientByStudyInstanceUID
+      }
+      requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
     />
   );
 }
@@ -60,6 +72,7 @@ function _createGetImageSrcFromImageIdFn(getCommand) {
 WrappedPanelStudyBrowser.propTypes = {
   commandsManager: PropTypes.object.isRequired,
   extensionManager: PropTypes.object.isRequired,
+  servicesManager: PropTypes.object.isRequired,
 };
 
 export default WrappedPanelStudyBrowser;

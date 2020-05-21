@@ -1,42 +1,53 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { StudyBrowser } from '@ohif/ui';
+//
+import { StudyBrowser, useImageViewer } from '@ohif/ui';
 import { dicomMetadataStore } from '@ohif/core';
+// This has to import from somewhere else...
 
 function PanelStudyBrowser({
-  servicesManager,
+  DisplaySetService,
   getImageSrc,
-  getStudiesByPatientId,
+  getStudiesForPatientByStudyInstanceUID,
+  requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const { DisplaySetService } = servicesManager.services;
   const currentDisplaySets = DisplaySetService.activeDisplaySets || [];
   // TODO: Deep copy? Or By IDs?
   // TODO: May need to be mapped to a different shape?
-
   const [displaySets, setDisplaySets] = useState(currentDisplaySets);
-  // TODO: Grab from URL, or pass in as part of contract to panels
-  const [primaryStudyInstanceUID, setPrimaryStudyInstanceUID] = useState();
   const [activeTabName, setActiveTabName] = useState('primary');
-  const [studyData, setStudyData] = useState([]);
-  const [studiesForPatient, setStudiesForPatient] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState(new Map());
+  const [{ StudyInstanceUIDs }, dispatch] = useImageViewer();
+  // vv What we want to render
+  const [studyDisplayList, setStudyDisplayList] = useState([]);
 
   useEffect(() => {
-    const mappedStudiesFromDataSource = _mapDataSourceStudies(
-      studiesForPatient
-    );
+    // Fetch all studies for the patient in each primary study
+    async function fetchStudiesForPatient(StudyInstanceUID) {
+      const qidoStudiesForPatient =
+        (await getStudiesForPatientByStudyInstanceUID(StudyInstanceUID)) || [];
 
-    const newStudyData = _mergeStudyDataAndDataSourceStudies(
-      studyData,
-      mappedStudiesFromDataSource,
-      displaySets
-    );
+      const mappedStudies = _mapDataSourceStudies(qidoStudiesForPatient);
 
-    addDisplaySetsToStudyData(newStudyData, displaySets, thumbnailImageSrcMap);
+      const updatedStudyDisplayList = _mergeStudyDisplayListAndDataSourceStudies(
+        studyDisplayList,
+        mappedStudies,
+        displaySets
+      );
 
-    setStudyData(newStudyData);
-  }, [studiesForPatient, thumbnailImageSrcMap]);
+      addDisplaySetsToStudyDisplayList(
+        updatedStudyDisplayList,
+        displaySets,
+        thumbnailImageSrcMap
+      );
+
+      setStudyDisplayList(updatedStudyDisplayList);
+    }
+
+    StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
+  }, [StudyInstanceUIDs, getStudiesForPatientByStudyInstanceUID]);
+
 
   const updateThumbnailMap = (displaySetInstanceUID, imageSrc) => {
     setThumbnailImageSrcMap(
@@ -68,7 +79,7 @@ function PanelStudyBrowser({
     setDisplaySets(displaySetsUI);
   }
 
-  function addDisplaySetsToStudyData(
+  function addDisplaySetsToStudyDisplayList(
     studies,
     displaySets,
     thumbnailImageSrcMap
@@ -101,40 +112,9 @@ function PanelStudyBrowser({
       const imageSrc = await getImageSrc(imageId);
       updateThumbnailMap(uid, imageSrc);
     });
-
-    const firstDisplaySet = newDisplaySets[0];
-    if (!studiesForPatient.length && firstDisplaySet) {
-      async function doAsyncStuff() {
-        const qidoStuff = await _getStudiesByPatientId(
-          firstDisplaySet,
-          getStudiesByPatientId
-        );
-
-        setStudiesForPatient(qidoStuff);
-        setPrimaryStudyInstanceUID(firstDisplaySet.StudyInstanceUID);
-      }
-
-      doAsyncStuff();
-    }
   }
 
   useEffect(() => {
-    // TODO: IF WE HAVE OUR FIRST DISPLAY SET...
-    // QIDO AWAY
-    // IF WE DO NOT, WAIT FOR FIRST DISPLAY_SETS_ADDED
-    const firstDisplaySet = displaySets[0];
-    if (firstDisplaySet) {
-      async function doAsyncStuff() {
-        const qidoStuff = await _getStudiesByPatientId(
-          firstDisplaySet,
-          getStudiesByPatientId
-        );
-        setPrimaryStudyInstanceUID(firstDisplaySet.StudyInstanceUID);
-        setStudiesForPatient(qidoStuff);
-      }
-      doAsyncStuff();
-    }
-
     const subscriptions = [
       DisplaySetService.subscribe(
         DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
@@ -151,12 +131,12 @@ function PanelStudyBrowser({
     };
   }, []);
 
-  const primary = studyData.find(
-    study => study.studyInstanceUid === primaryStudyInstanceUID
+  const primaryStudies = studyDisplayList.filter(study =>
+    StudyInstanceUIDs.includes(study.studyInstanceUid)
   );
 
   // TODO: Filter allStudies to dates within one year of current date
-  const recentStudies = studyData.filter(study => {
+  const recentStudies = studyDisplayList.filter(study => {
     return true; // TODO: check study.date
   });
 
@@ -164,7 +144,7 @@ function PanelStudyBrowser({
     {
       name: 'primary',
       label: 'Primary',
-      studies: primary ? [primary] : [],
+      studies: primaryStudies || [],
     },
     {
       name: 'recent',
@@ -174,62 +154,41 @@ function PanelStudyBrowser({
     {
       name: 'all',
       label: 'All',
-      studies: studyData,
+      studies: studyDisplayList,
     },
   ];
 
-  function onClickStudy(StudyInstanceUID) {
-    const study = studyData.find(a => a.studyInstanceUid === StudyInstanceUID);
-    if (study && study.displaySets && study.displaySets.length) {
-      return;
-    }
-
-    console.warn(`onClickStudy: ${StudyInstanceUID}`);
-    // TODO: This is weird, why can't the data source just be used as
-    // as function that doesn't expect a query string?
-    const queryParams = `?StudyInstanceUIDs=${StudyInstanceUID}`;
-
-    dataSource.retrieve.series.metadata(
-      queryParams,
-      DisplaySetService.makeDisplaySets
-    );
+  // TODO: Should "expand" appropriate study (already handled by component?)
+  // TODO: Should not fire this on "close"
+  function _handleStudyClick(StudyInstanceUID) {
+    requestDisplaySetCreationForStudy(DisplaySetService, StudyInstanceUID);
   }
-
-  const memoOnClickStudy = useCallback(
-    StudyInstanceUID => {
-      onClickStudy(StudyInstanceUID);
-    },
-    [studyData]
-  );
 
   return (
     <StudyBrowser
       activeTabName={activeTabName}
       tabs={tabs}
-      onClickStudy={memoOnClickStudy}
+      onClickStudy={_handleStudyClick}
       onSetTabActive={setActiveTabName}
     />
   );
 }
 
 PanelStudyBrowser.propTypes = {
+  DisplaySetService: PropTypes.shape({
+    EVENTS: PropTypes.object.isRequired,
+    hasDisplaySetsForStudy: PropTypes.func.isRequired,
+    subscribe: PropTypes.func.isRequired,
+  }).isRequired,
   dataSource: PropTypes.shape({
     getImageIdsForDisplaySet: PropTypes.func.isRequired,
   }).isRequired,
   getImageSrc: PropTypes.func.isRequired,
-  getStudiesByPatientId: PropTypes.func.isRequired,
+  getStudiesForPatientByStudyInstanceUID: PropTypes.func.isRequired,
+  requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
 };
 
 export default PanelStudyBrowser;
-
-async function _getStudiesByPatientId(displaySet, getStudiesByPatientId) {
-  const study = dicomMetadataStore.getStudy(displaySet.StudyInstanceUID);
-  const instance = study.series[0].instances[0];
-  const PatientID = instance.PatientID;
-  const studiesByPatientId = await getStudiesByPatientId(PatientID);
-
-  return studiesByPatientId;
-}
 
 /**
  * Maps from the DataSource's format to a naturalized object
@@ -253,11 +212,14 @@ function _mapDataSourceStudies(studies) {
   });
 }
 
-function _mergeStudyDataAndDataSourceStudies(studyData, mappedQidoStudies) {
+function _mergeStudyDisplayListAndDataSourceStudies(
+  studyDisplayList,
+  mappedQidoStudies
+) {
   return mappedQidoStudies.map(qidoStudy => {
     const { StudyInstanceUID } = qidoStudy;
     const existing =
-      studyData.find(a => a.studyInstanceUid === StudyInstanceUID) || {};
+      studyDisplayList.find(a => a.studyInstanceUid === StudyInstanceUID) || {};
 
     return Object.assign(
       {},
@@ -274,40 +236,4 @@ function _mergeStudyDataAndDataSourceStudies(studyData, mappedQidoStudies) {
       }
     );
   });
-}
-
-function _mergeStudyDataAndInstanceStudies(studyData, mappedInstanceStudies) {
-  const merged = [];
-  mappedInstanceStudies.map(studyFromInstances => {
-    const existing = studyData.find(
-      a => a.studyInstanceUid === studyFromInstances.studyInstanceUid
-    );
-
-    if (existing) {
-      merged.push(
-        Object.assign({}, existing, {
-          displaySets: studyFromInstances.displaySets,
-          modalities: studyFromInstances.modalities,
-        })
-      );
-    } else {
-      merged.push(studyFromInstances);
-    }
-  });
-
-  return merged;
-}
-
-function _mapStudyFromInstance(StudyInstanceUID) {
-  const study = dicomMetadataStore.getStudy(StudyInstanceUID);
-  const anInstance = study.series[0].instances[0];
-
-  return {
-    studyInstanceUid: StudyInstanceUID,
-    date: anInstance.StudyDate, // TODO: Format this date to DD-MMM-YYYY
-    description: anInstance.StudyDescription,
-    displaySets: [],
-    numInstances: 0,
-    modalitiesSet: new Set(),
-  };
 }

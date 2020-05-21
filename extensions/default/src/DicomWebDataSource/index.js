@@ -87,6 +87,9 @@ function createDicomWebApi(dicomWebConfig) {
     },
     retrieve: {
       series: {
+        // TODO: change queryParams to `StudyInstanceUID` for now?
+        // Conduct query, return a promise like others
+        // Await this call and add to dicomMetadataStore after receiving result
         metadata: (queryParams, callback) => {
           let { StudyInstanceUIDs } = urlUtil.parse(queryParams, true);
 
@@ -124,6 +127,32 @@ function createDicomWebApi(dicomWebConfig) {
           });
         },
       },
+    },
+    retrieveSeriesMetadata: async ({ StudyInstanceUID } = {}) => {
+      if (!StudyInstanceUID) {
+        throw new Error(
+          'Unable to query for SeriesMetadata without StudyInstanceUID'
+        );
+      }
+
+      // Get Series
+      const seriesPromises = await retrieveStudyMetadata(
+        naturalizeDataset,
+        StudyInstanceUID,
+        enableStudyLazyLoad
+      );
+
+      // Async load series, store as retrieved
+      function storeInstances(instances) {
+        const naturalizedInstances = instances.map(naturalizeDataset);
+
+        dicomMetadataStore.addInstances(naturalizedInstances);
+      }
+
+      seriesPromises.forEach(async seriesPromise => {
+        const instances = await seriesPromise;
+        storeInstances(instances);
+      });
     },
     getImageIdsForDisplaySet(displaySet) {
       const images = displaySet.images;

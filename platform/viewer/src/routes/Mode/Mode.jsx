@@ -1,14 +1,13 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import PropTypes from 'prop-types';
 //
 import { ToolBarManager } from '@ohif/core';
-import { DragAndDropProvider } from '@ohif/ui';
+import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 //
 import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
-//import DisplaySetCreator from './DisplaySetCreator';
 
 export default function ModeRoute({
   location,
@@ -22,6 +21,10 @@ export default function ModeRoute({
   const queryStudyInstanceUIDs = query.get('StudyInstanceUIDs');
   const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = useParams();
   const StudyInstanceUIDs = queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
+  const StudyInstanceUIDsAsArray =
+    StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
+      ? StudyInstanceUIDs
+      : [StudyInstanceUIDs];
 
   const { extensions, sopClassHandlers } = mode;
   // TODO:
@@ -89,19 +92,28 @@ export default function ModeRoute({
     );
   }, [mode, dataSourceName, location]);
 
+  const reducer = (state, action) => {
+    console.log(state, action);
+  }
+
   return (
-    <CombinedContextProvider>
-      {/* TODO: extensionManager is already provided to the extension module.
-       *  Use it from there instead of passing as a prop here.
-       */}
-      <DragAndDropProvider>
-        <LayoutComponent
-          {...layoutTemplateData.props}
-          StudyInstanceUIDs={StudyInstanceUIDs}
-          ViewportGridComp={ViewportGridWithDataSource}
-        />
-      </DragAndDropProvider>
-    </CombinedContextProvider>
+    <ImageViewerProvider
+      initialState={{ StudyInstanceUIDs: StudyInstanceUIDsAsArray }}
+      reducer={reducer}
+    >
+      <CombinedContextProvider>
+        {/* TODO: extensionManager is already provided to the extension module.
+        *  Use it from there instead of passing as a prop here.
+        */}
+        <DragAndDropProvider>
+          <LayoutComponent
+            {...layoutTemplateData.props}
+            StudyInstanceUIDs={StudyInstanceUIDs}
+            ViewportGridComp={ViewportGridWithDataSource}
+          />
+        </DragAndDropProvider>
+      </CombinedContextProvider>
+    </ImageViewerProvider>
   );
 }
 
@@ -117,4 +129,5 @@ ModeRoute.propTypes = {
   mode: PropTypes.object.isRequired,
   dataSourceName: PropTypes.string,
   extensionManager: PropTypes.object,
+  servicesManager: PropTypes.object,
 };

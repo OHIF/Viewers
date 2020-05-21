@@ -107,6 +107,12 @@ export default class DisplaySetService {
     }
   };
 
+  hasDisplaySetsForStudy(StudyInstanceUID) {
+    return displaySetCache.some(
+      displaySet => displaySet.StudyInstanceUID === StudyInstanceUID
+    );
+  }
+
   makeDisplaySetForInstances(instances) {
     const instance = instances[0];
 

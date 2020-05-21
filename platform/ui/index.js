@@ -11,6 +11,9 @@ export {
   withModal,
   ViewportDialogProvider,
   useViewportDialog,
+  ImageViewerContext,
+  ImageViewerProvider,
+  useImageViewer,
 } from './src/contextProviders';
 
 /** COMPONENTS */

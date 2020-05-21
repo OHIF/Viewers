@@ -10,4 +10,10 @@ export {
   useViewportDialog,
 } from './ViewportDialogProvider';
 
+export {
+  ImageViewerContext,
+  ImageViewerProvider,
+  useImageViewer,
+} from './ImageViewerProvider';
+
 export { default as DragAndDropProvider } from './DragAndDropProvider';

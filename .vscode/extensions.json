@@ -5,6 +5,9 @@
     "dbaeumer.vscode-eslint",
     "mikestead.dotenv",
     "bungcip.better-toml",
-    "silvenon.mdx"
+    "silvenon.mdx",
+    "gruntfuggly.todo-tree",
+    "wayou.vscode-todo-highlight",
+    "bradlc.vscode-tailwindcss"
   ]
 }
