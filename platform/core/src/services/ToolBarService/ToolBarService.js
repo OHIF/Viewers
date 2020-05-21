@@ -1,5 +1,9 @@
 import pubSubServiceInterface from '../pubSubServiceInterface';
 
+const EVENTS = {
+  TOOL_BAR_MODIFIED: 'event::toolBarService:toolBarModified',
+};
+
 export default class ToolBarService {
   constructor() {
     this.displaySets = {};
@@ -26,6 +30,23 @@ export default class ToolBarService {
     });
   }
 
+  /**
+   * Broadcasts displaySetService changes.
+   *
+   * @param {string} eventName The event name
+   * @return void
+   */
+  _broadcastChange = (eventName, callbackProps) => {
+    const hasListeners = Object.keys(this.listeners).length > 0;
+    const hasCallbacks = Array.isArray(this.listeners[eventName]);
+
+    if (hasListeners && hasCallbacks) {
+      this.listeners[eventName].forEach(listener => {
+        listener.callback(callbackProps);
+      });
+    }
+  };
+
   setToolBarLayout(layouts) {
     const toolBarLayout = [];
 
@@ -51,6 +72,8 @@ export default class ToolBarService {
       toolBarLayout.push(toolBarDefinitions);
     });
 
-    // TODO -> Change this to a service. => emit an event to subscribers to update the toolbar layout.
+    this.toolBarLayout = toolBarLayout;
+
+    this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, toolBarLayout);
   }
 }

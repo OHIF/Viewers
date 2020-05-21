@@ -5,9 +5,18 @@ import ViewerLayout from './ViewerLayout';
 - Init layout based on the displaySets and the objects.
 */
 
-export default function({ servicesManager, extensionManager }) {
+export default function({
+  servicesManager,
+  extensionManager,
+  commandsManager,
+}) {
   function ViewerLayoutWithServices(props) {
-    return ViewerLayout({ servicesManager, extensionManager, ...props });
+    return ViewerLayout({
+      servicesManager,
+      extensionManager,
+      commandsManager,
+      ...props,
+    });
   }
 
   return [

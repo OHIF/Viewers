@@ -72,10 +72,15 @@ export default function ModeRoute({
   }
 
   useEffect(() => {
-    // TODO -> Make this into a service
-    let toolBarManager = new ToolBarManager(extensionManager); //, setToolBarLayout);
-    route.init({ toolBarManager });
-  }, [mode, dataSourceName, location]);
+    route.init({ servicesManager, extensionManager });
+  }, [
+    mode,
+    dataSourceName,
+    location,
+    route,
+    servicesManager,
+    extensionManager,
+  ]);
 
   // This queries for series, but... What does it do with them?
   useEffect(() => {
@@ -90,11 +95,19 @@ export default function ModeRoute({
       queryParams,
       DisplaySetService.makeDisplaySets
     );
-  }, [mode, dataSourceName, location]);
+  }, [
+    mode,
+    dataSourceName,
+    location,
+    DisplaySetService,
+    extensionManager,
+    sopClassHandlers,
+    dataSource.retrieve.series,
+  ]);
 
   const reducer = (state, action) => {
     console.log(state, action);
-  }
+  };
 
   return (
     <ImageViewerProvider
@@ -103,8 +116,8 @@ export default function ModeRoute({
     >
       <CombinedContextProvider>
         {/* TODO: extensionManager is already provided to the extension module.
-        *  Use it from there instead of passing as a prop here.
-        */}
+         *  Use it from there instead of passing as a prop here.
+         */}
         <DragAndDropProvider>
           <LayoutComponent
             {...layoutTemplateData.props}
