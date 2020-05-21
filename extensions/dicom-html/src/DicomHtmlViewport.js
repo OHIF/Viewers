@@ -250,7 +250,7 @@ class DicomHtmlViewport extends Component {
         data-cy="dicom-html-viewport"
         className="DicomHtmlViewport"
         onClick={this.setViewportActiveHandler}
-        onScroll={this.setViewportActiveHandler}
+        onScroll={this.seÎtViewportActiveHandler}
       >
         {content}
         {error && <h2>{JSON.stringify(error)}</h2>}

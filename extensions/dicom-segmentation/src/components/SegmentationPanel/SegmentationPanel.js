@@ -49,8 +49,8 @@ const SegmentationPanel = ({
   onConfigurationChange,
   onDisplaySetLoadFailure,
   onSelectedSegmentationChange,
-  activeContexts,
-  contexts,
+  activeContexts = [],
+  contexts = {},
 }) => {
   const isVTK = () => activeContexts.includes(contexts.VTK);
   const isCornerstone = () => activeContexts.includes(contexts.CORNERSTONE);

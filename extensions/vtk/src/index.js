@@ -1,3 +1,6 @@
+import React from 'react';
+import { ErrorBoundary } from '@ohif/ui';
+
 import asyncComponent from './asyncComponent.js';
 import commandsModule from './commandsModule.js';
 import toolbarModule from './toolbarModule.js';
@@ -16,7 +19,12 @@ const vtkExtension = {
   id: 'vtk',
 
   getViewportModule({ commandsManager }) {
-    return withCommandsManager(OHIFVTKViewport, commandsManager);
+    const ExtendedVTKViewport = props => (
+      <ErrorBoundary context='OHIFVTKViewport'>
+        <OHIFVTKViewport {...props} />
+      </ErrorBoundary>
+    );
+    return withCommandsManager(ExtendedVTKViewport, commandsManager);
   },
   getToolbarModule() {
     return toolbarModule;

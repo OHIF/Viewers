@@ -4,6 +4,7 @@ import init from './init.js';
 import sopClassHandlerModule from './OHIFDicomRTStructSopClassHandler';
 import id from './id.js';
 import RTPanel from './components/RTPanel/RTPanel';
+import { ErrorBoundary } from '@ohif/ui';
 
 export default {
   /**
@@ -20,14 +21,23 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getPanelModule({ commandsManager }) {
+  getPanelModule({ commandsManager, api }) {
     const ExtendedRTPanel = props => {
+      const { activeContexts } = api.hooks.useAppContext();
+
       const contourItemClickHandler = contourData => {
         commandsManager.runCommand('jumpToImage', contourData);
       };
 
       return (
-        <RTPanel {...props} onContourItemClick={contourItemClickHandler} />
+        <ErrorBoundary context='RTPanel'>
+          <RTPanel
+            {...props}
+            onContourItemClick={contourItemClickHandler}
+            activeContexts={activeContexts}
+            contexts={api.contexts}
+          />
+        </ErrorBoundary>
       );
     };
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import DicomMicroscopySopClassHandler from './DicomMicroscopySopClassHandler.js';
+import { ErrorBoundary } from '@ohif/ui';
 
 const Component = React.lazy(() => {
   return import('./DicomMicroscopyViewport');
@@ -8,7 +9,9 @@ const Component = React.lazy(() => {
 const DicomMicroscopyViewport = props => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
-      <Component {...props} />
+      <ErrorBoundary context='DicomMicroscopyViewport'>
+        <Component {...props} />
+      </ErrorBoundary>
     </React.Suspense>
   );
 };

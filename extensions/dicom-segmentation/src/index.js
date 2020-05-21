@@ -4,6 +4,7 @@ import init from './init.js';
 import toolbarModule from './toolbarModule.js';
 import getSopClassHandlerModule from './getOHIFDicomSegSopClassHandler.js';
 import SegmentationPanel from './components/SegmentationPanel/SegmentationPanel.js';
+import { ErrorBoundary } from '@ohif/ui';
 
 export default {
   /**
@@ -64,16 +65,18 @@ export default {
       };
 
       return (
-        <SegmentationPanel
-          {...props}
-          activeContexts={activeContexts}
-          contexts={api.contexts}
-          onSegmentItemClick={segmentItemClickHandler}
-          onSegmentVisibilityChange={onSegmentVisibilityChangeHandler}
-          onConfigurationChange={onConfigurationChangeHandler}
-          onSelectedSegmentationChange={onSelectedSegmentationChangeHandler}
-          onDisplaySetLoadFailure={onDisplaySetLoadFailureHandler}
-        />
+        <ErrorBoundary context='Segmentation Panel'>
+          <SegmentationPanel
+            {...props}
+            activeContexts={activeContexts}
+            contexts={api.contexts}
+            onSegmentItemClick={segmentItemClickHandler}
+            onSegmentVisibilityChange={onSegmentVisibilityChangeHandler}
+            onConfigurationChange={onConfigurationChangeHandler}
+            onSelectedSegmentationChange={onSelectedSegmentationChangeHandler}
+            onDisplaySetLoadFailure={onDisplaySetLoadFailureHandler}
+          />
+        </ErrorBoundary>
       );
     };
 

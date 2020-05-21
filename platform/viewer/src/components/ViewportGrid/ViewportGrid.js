@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { utils } from '@ohif/core';
-import { useSnackbarContext } from '@ohif/ui';
+import { useSnackbarContext, ErrorBoundary } from '@ohif/ui';
 //
 import ViewportPane from './ViewportPane.js';
 import DefaultViewport from './DefaultViewport.js';
@@ -120,18 +120,20 @@ const ViewportGrid = function (props) {
   ]);
 
   return (
-    <div
-      data-cy="viewprt-grid"
-      style={{
-        display: 'grid',
-        gridTemplateRows: `repeat(${numRows}, ${rowSize}%)`,
-        gridTemplateColumns: `repeat(${numColumns}, ${colSize}%)`,
-        height: '100%',
-        width: '100%',
-      }}
-    >
-      {ViewportPanes}
-    </div>
+    <ErrorBoundary context='ViewportGrid'>
+      <div
+        data-cy="viewprt-grid"
+        style={{
+          display: 'grid',
+          gridTemplateRows: `repeat(${numRows}, ${rowSize}%)`,
+          gridTemplateColumns: `repeat(${numColumns}, ${colSize}%)`,
+          height: '100%',
+          width: '100%',
+        }}
+      >
+        {ViewportPanes}
+      </div>
+    </ErrorBoundary>
   );
 };
 

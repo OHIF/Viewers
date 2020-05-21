@@ -1,5 +1,6 @@
 import React from 'react';
 import OHIFDicomHtmlSopClassHandler from './OHIFDicomHtmlSopClassHandler.js';
+import { ErrorBoundary } from '@ohif/ui';
 
 const Component = React.lazy(() => {
   return import('./OHIFDicomHtmlViewport');
@@ -8,7 +9,9 @@ const Component = React.lazy(() => {
 const OHIFDicomHtmlViewport = props => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
-      <Component {...props} />
+      <ErrorBoundary context='OHIFDicomHtmlViewport'>
+        <Component {...props} />
+      </ErrorBoundary>
     </React.Suspense>
   );
 };

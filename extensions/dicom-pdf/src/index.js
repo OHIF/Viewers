@@ -1,5 +1,6 @@
 import React from 'react';
 import OHIFDicomPDFSopClassHandler from './OHIFDicomPDFSopClassHandler.js';
+import { ErrorBoundary } from '@ohif/ui';
 
 const Component = React.lazy(() => {
   return import('./ConnectedOHIFDicomPDFViewer');
@@ -8,7 +9,9 @@ const Component = React.lazy(() => {
 const ConnectedOHIFDicomPDFViewer = props => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
-      <Component {...props} />
+      <ErrorBoundary context='OHIFDicomPDFViewport'>
+        <Component {...props} />
+      </ErrorBoundary>
     </React.Suspense>
   );
 };
