@@ -1,4 +1,6 @@
-import { dicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
+// TODO: Use above to inject so dependent datasources don't need to import or
+// depend on @ohif/core?
 
 /**
  * Factory function that creates a new "Web API" data source.
@@ -10,7 +12,12 @@ import { dicomMetadataStore } from '@ohif/core';
  * It's worth noting that a single implementation of this interface
  * can define different underlying sources for "read" and "write" operations.
  */
-function create({ query, retrieve, getImageIdsForDisplaySet }) {
+function create({
+  query,
+  retrieve,
+  retrieveSeriesMetadata,
+  getImageIdsForDisplaySet,
+}) {
   const defaultQuery = {
     studies: {
       /**
@@ -41,6 +48,7 @@ function create({ query, retrieve, getImageIdsForDisplaySet }) {
     query: query || defaultQuery,
     retrieve: retrieve || defaultRetrieve,
     getImageIdsForDisplaySet,
+    retrieveSeriesMetadata,
     // then go get all series level metadata.
     // Store this in the DICOM MetadataStore.
   };

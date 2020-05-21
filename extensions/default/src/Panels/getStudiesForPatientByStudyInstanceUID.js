@@ -2,7 +2,7 @@ async function getStudiesForPatientByStudyInstanceUID(
   dataSource,
   StudyInstanceUID
 ) {
-  // TODO: The `dicomMetadataStore` should short-circuit both of these requests
+  // TODO: The `DicomMetadataStore` should short-circuit both of these requests
   // Data _could_ be here from route query, or if using JSON data source
   // We could also force this to "await" these values being available in the DICOMStore?
   // Kind of like promise fulfillment in cornerstone-wado-image-loader when there are multiple
@@ -18,6 +18,6 @@ async function getStudiesForPatientByStudyInstanceUID(
       patientId: getStudyResult[0].mrn,
     });
   }
-};
+}
 
 export default getStudiesForPatientByStudyInstanceUID;

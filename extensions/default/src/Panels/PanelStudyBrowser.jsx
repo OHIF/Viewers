@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 //
 import { StudyBrowser, useImageViewer } from '@ohif/ui';
-import { dicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
 // This has to import from somewhere else...
 
 function PanelStudyBrowser({
@@ -46,8 +46,10 @@ function PanelStudyBrowser({
     }
 
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
-  }, [StudyInstanceUIDs, getStudiesForPatientByStudyInstanceUID]);
-
+  }, [
+    StudyInstanceUIDs,
+    getStudiesForPatientByStudyInstanceUID,
+  ]);
 
   const updateThumbnailMap = (displaySetInstanceUID, imageSrc) => {
     setThumbnailImageSrcMap(

@@ -4,7 +4,7 @@ import dicomParser from 'dicom-parser';
 import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacingInformation';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import fetchOverlayData from '../utils/metadataProvider/fetchOverlayData';
-import dicomMetadataStore from '../dicomMetadataStore';
+import DicomMetadataStore from '../services/DicomMetadataStore';
 
 class MetadataProvider {
   constructor() {
@@ -123,7 +123,7 @@ class MetadataProvider {
 
     const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = uids;
 
-    return dicomMetadataStore.getInstance(
+    return DicomMetadataStore.getInstance(
       StudyInstanceUID,
       SeriesInstanceUID,
       SOPInstanceUID

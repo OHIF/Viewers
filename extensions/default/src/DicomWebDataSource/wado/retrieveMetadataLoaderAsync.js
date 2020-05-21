@@ -1,10 +1,6 @@
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 //import { sortStudySeries, sortingCriteria } from '../../sortStudy';
 import getSeriesInfo from './utils/getSeriesInfo';
-// import {
-//   createStudyFromSOPInstanceList,
-//   addInstancesToStudy,
-// } from './studyInstanceHelpers';
 
 /**
  * Map seriesList to an array of seriesInstanceUid
@@ -14,19 +10,6 @@ import getSeriesInfo from './utils/getSeriesInfo';
 function mapStudySeries(seriesList) {
   return seriesList.map(series => getSeriesInfo(series).seriesInstanceUid);
 }
-
-// function attachSeriesLoader(server, study, seriesLoader) {
-//   study.seriesLoader = Object.freeze({
-//     hasNext() {
-//       return seriesLoader.hasNext();
-//     },
-//     async next() {
-//       const series = await seriesLoader.next();
-//       await addInstancesToStudy(server, study, series.sopInstances);
-//       return study.seriesMap[series.seriesInstanceUID];
-//     },
-//   });
-// }
 
 /**
  * Creates an immutable series loader object which loads each series sequentially using the iterator interface

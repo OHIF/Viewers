@@ -6,7 +6,7 @@ import {
   processResults,
   processSeriesResults,
 } from './qido.js';
-import { dicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
+import { DicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 
 import getImageId from './utils/getImageId';
 import * as dcmjs from 'dcmjs';
@@ -89,7 +89,7 @@ function createDicomWebApi(dicomWebConfig) {
       series: {
         // TODO: change queryParams to `StudyInstanceUID` for now?
         // Conduct query, return a promise like others
-        // Await this call and add to dicomMetadataStore after receiving result
+        // Await this call and add to DicomMetadataStore after receiving result
         metadata: (queryParams, callback) => {
           let { StudyInstanceUIDs } = urlUtil.parse(queryParams, true);
 
@@ -104,7 +104,7 @@ function createDicomWebApi(dicomWebConfig) {
           const storeInstances = instances => {
             const naturalizedInstances = instances.map(naturalizeDataset);
 
-            dicomMetadataStore.addInstances(naturalizedInstances);
+            DicomMetadataStore.addInstances(naturalizedInstances);
             callback(naturalizedInstances);
           };
 
@@ -146,7 +146,7 @@ function createDicomWebApi(dicomWebConfig) {
       function storeInstances(instances) {
         const naturalizedInstances = instances.map(naturalizeDataset);
 
-        dicomMetadataStore.addInstances(naturalizedInstances);
+        DicomMetadataStore.addInstances(naturalizedInstances);
       }
 
       seriesPromises.forEach(async seriesPromise => {

@@ -1,4 +1,4 @@
-import pubSubServiceInterface from '../pubSubServiceInterface';
+import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 
 const EVENTS = {
   TOOL_BAR_MODIFIED: 'event::toolBarService:toolBarModified',

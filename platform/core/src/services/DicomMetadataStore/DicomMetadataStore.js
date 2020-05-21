@@ -1,26 +1,6 @@
-import {
-  createStudyFromSOPInstanceList,
-  addInstancesToStudy,
-} from './studies/services/wado/studyInstanceHelpers';
-
-class StudyMetadata {
-  constructor(StudyInstanceUID) {
-    this.StudyInstanceUID = StudyInstanceUID;
-    this.series = [];
-  }
-
-  addSeries(instances) {
-    this.series.push(new SeriesMetadata(instances));
-  }
-}
-
-class SeriesMetadata {
-  constructor(instances) {
-    const { SeriesInstanceUID } = instances[0];
-    this.SeriesInstanceUID = SeriesInstanceUID;
-    this.instances = instances;
-  }
-}
+import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
+import StudyMetadata from './StudyMetadata';
+import EVENTS from './EVENTS';
 
 const _model = {
   studies: [],
@@ -74,7 +54,9 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
   );
 }
 
-const dicomMetadataStore = {
+const BaseImplementation = {
+  EVENTS,
+  listeners: {},
   addInstances(instances) {
     const { StudyInstanceUID } = instances[0];
 
@@ -116,10 +98,14 @@ const dicomMetadataStore = {
   getInstance: _getInstance,
 };
 
-//
+const DicomMetadataStore = Object.assign(
+  {},
+  BaseImplementation,
+  pubSubServiceInterface
+);
 
 // TODO => Add instances
 //_addInstance(input) // arraybuffer, or other stuff
 
-export { dicomMetadataStore };
-export default dicomMetadataStore;
+export { DicomMetadataStore };
+export default DicomMetadataStore;

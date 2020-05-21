@@ -38,6 +38,7 @@ function DataSourceWrapper(props) {
   const firstAppConfigDataSource = appConfig.dataSources[0];
   const dataSourceConfig = firstAppConfigDataSource.configuration;
   const firstWebApiDataSource = webApiDataSources[0];
+  debugger;
   const dataSource = firstWebApiDataSource.createDataSource(dataSourceConfig);
 
   // Route props --> studies.mapParams
@@ -48,7 +49,6 @@ function DataSourceWrapper(props) {
   // Or no data fetching here, and just hand down my source
   const [data, setData] = useState();
   useEffect(() => {
-
     // 204: no content
     async function getData() {
       const searchResults = await dataSource.query.studies.search(
@@ -61,7 +61,6 @@ function DataSourceWrapper(props) {
       getData();
     } catch (ex) {
       console.warn(ex);
-
     }
     console.log('DataSourceWrapper: useEffect');
     // eslint-disable-next-line react-hooks/exhaustive-deps

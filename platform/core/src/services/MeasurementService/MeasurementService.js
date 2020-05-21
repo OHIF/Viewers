@@ -1,6 +1,6 @@
 import log from '../../log';
 import guid from '../../utils/guid';
-import pubSubServiceInterface from '../pubSubServiceInterface';
+import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 
 /**
  * Measurement source schema

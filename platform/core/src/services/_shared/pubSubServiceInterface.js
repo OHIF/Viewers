@@ -1,7 +1,13 @@
 import guid from '../../utils/guid';
 
+/**
+ * Consumer must implement:
+ * this.listeners = {}
+ * this.EVENTS = { "EVENT_KEY": "EVENT_VALUE" }
+ */
 export default {
   subscribe,
+  _broadcastEvent,
   _unsubscribe,
   _isValidEvent,
 };
@@ -61,4 +67,22 @@ function _unsubscribe(eventName, listenerId) {
  */
 function _isValidEvent(eventName) {
   return Object.values(this.EVENTS).includes(eventName);
+}
+
+/**
+ * Broadcasts displaySetService changes.
+ *
+ * @param {string} eventName - The event name
+ * @param {func} callbackProps - Properties to pass callback
+ * @return void
+ */
+function _broadcastEvent(eventName, callbackProps) {
+  const hasListeners = Object.keys(this.listeners).length > 0;
+  const hasCallbacks = Array.isArray(this.listeners[eventName]);
+
+  if (hasListeners && hasCallbacks) {
+    this.listeners[eventName].forEach(listener => {
+      listener.callback(callbackProps);
+    });
+  }
 }

@@ -1,17 +1,13 @@
-import pubSubServiceInterface from '../pubSubServiceInterface';
-
-const EVENTS = {
-  DISPLAY_SETS_ADDED: 'event::displaySetService:displaySetsAdded',
-  DISPLAY_SETS_CHANGED: 'event::displaySetService:displaySetsChanged',
-};
+import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
+import EVENTS from './EVENTS';
 
 const displaySetCache = [];
 
 export default class DisplaySetService {
   constructor() {
     this.displaySets = {};
-    this.EVENTS = EVENTS;
     this.listeners = {};
+    this.EVENTS = EVENTS;
 
     Object.assign(this, pubSubServiceInterface);
   }
@@ -50,26 +46,10 @@ export default class DisplaySetService {
    * @param {string} displaySetInstanceUID
    * @returns {object} displaySet
    */
-  getDisplaySetByUID = displaySetInstanceUid => displaySetCache.find(
+  getDisplaySetByUID = displaySetInstanceUid =>
+    displaySetCache.find(
       displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUid
     );
-
-  /**
-   * Broadcasts displaySetService changes.
-   *
-   * @param {string} eventName The event name
-   * @return void
-   */
-  _broadcastChange = (eventName, callbackProps) => {
-    const hasListeners = Object.keys(this.listeners).length > 0;
-    const hasCallbacks = Array.isArray(this.listeners[eventName]);
-
-    if (hasListeners && hasCallbacks) {
-      this.listeners[eventName].forEach(listener => {
-        listener.callback(callbackProps);
-      });
-    }
-  };
 
   makeDisplaySets = (input, batch = false) => {
     if (!input || !input.length) {
@@ -98,12 +78,9 @@ export default class DisplaySetService {
     }
 
     if (displaySetsAdded && displaySetsAdded.length) {
-      this._broadcastChange(EVENTS.DISPLAY_SETS_ADDED, displaySetsAdded);
+      this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, displaySetsAdded);
 
-      this._broadcastChange(
-        EVENTS.DISPLAY_SETS_CHANGED,
-        this.activeDisplaySets
-      );
+      this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
     }
   };
 

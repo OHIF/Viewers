@@ -77,7 +77,6 @@ function ViewerLayout({
               label: tool.label,
               type: 'setToolActive',
               onClick: () => {
-                debugger;
                 commandsManager.runCommand(tool.commandName, commandOptions);
               },
             });
@@ -103,8 +102,6 @@ function ViewerLayout({
       //   });
       // }
     });
-
-    debugger;
 
     setToolBarLayout(toolBarLayout);
   };
@@ -134,7 +131,7 @@ function ViewerLayout({
         moreTools={toolBarLayout[0].moreTools}
       />
       <div
-        className="flex flex-row flex-no-wrap items-stretch overflow-hidden w-full"
+        className="flex flex-row flex-no-wrap items-stretch w-full overflow-hidden"
         style={{ height: 'calc(100vh - 57px' }}
       >
         {/* LEFT SIDEPANELS */}
@@ -145,10 +142,10 @@ function ViewerLayout({
         />
         {/* TOOLBAR + GRID */}
         <div className="flex flex-col flex-1 h-full">
-          <div className="flex flex-2 w-100 border-b border-transparent h-12">
+          <div className="flex h-12 border-b border-transparent flex-2 w-100">
             <Toolbar type="secondary" tools={toolBarLayout[1].tools} />
           </div>
-          <div className="flex flex-1 h-full overflow-hidden bg-black items-center justify-center pb-2 pt-1">
+          <div className="flex items-center justify-center flex-1 h-full pt-1 pb-2 overflow-hidden bg-black">
             <ViewportGridComp
               servicesManager={servicesManager}
               viewportComponents={viewportComponents}

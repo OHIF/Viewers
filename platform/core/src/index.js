@@ -19,18 +19,19 @@ import string from './string.js';
 import studies from './studies/';
 import ui from './ui';
 import user from './user.js';
-import dicomMetadataStore from './dicomMetadataStore';
 import { ViewModelProvider, useViewModel } from './ViewModelContext';
 import utils, { hotkeys } from './utils/';
 
 import {
-  MeasurementService,
   UIDialogService,
   UIModalService,
   UINotificationService,
   UIViewportDialogService,
+  //
+  DicomMetadataStore,
   DisplaySetService,
   ToolBarSerivce,
+  MeasurementService,
 } from './services';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -71,7 +72,7 @@ const OHIF = {
   MeasurementService,
   ToolBarSerivce,
   IWebApiDataSource,
-  dicomMetadataStore,
+  DicomMetadataStore,
   //
   ViewModelProvider,
   useViewModel,
@@ -112,7 +113,7 @@ export {
   MeasurementService,
   ToolBarSerivce,
   IWebApiDataSource,
-  dicomMetadataStore,
+  DicomMetadataStore,
   ViewModelProvider,
   useViewModel,
 };
