@@ -21,11 +21,11 @@ const getTrackedSeries = displaySets => {
 const StudyBrowser = ({
   tabs,
   activeTabName,
+  expandedStudyInstanceUIDs,
   onClickTab,
   onClickStudy,
   onClickThumbnail,
 }) => {
-  const [studyActive, setStudyActive] = useState(null);
   const [thumbnailActive, setThumbnailActive] = useState(null);
 
   const getTabContent = () => {
@@ -44,7 +44,7 @@ const StudyBrowser = ({
         modalities,
         displaySets,
       }) => {
-        const isActive = studyActive === studyInstanceUid;
+        const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
         return (
           <React.Fragment key={studyInstanceUid}>
             <StudyItem
@@ -53,16 +53,12 @@ const StudyBrowser = ({
               numInstances={numInstances}
               modalities={modalities}
               trackedSeries={getTrackedSeries(displaySets)}
-              isActive={isActive}
+              isActive={isExpanded}
               onClick={() => {
-                setStudyActive(isActive ? null : studyInstanceUid);
-
-                if (onClickStudy) {
-                  onClickStudy(studyInstanceUid);
-                }
+                onClickStudy(studyInstanceUid);
               }}
             />
-            {isActive && displaySets && (
+            {isExpanded && displaySets && (
               <ThumbnailList
                 thumbnails={displaySets}
                 thumbnailActive={thumbnailActive}
@@ -125,6 +121,7 @@ StudyBrowser.propTypes = {
   onClickStudy: PropTypes.func,
   onClickThumbnail: PropTypes.func,
   activeTabName: PropTypes.string.isRequired,
+  expandedStudyInstanceUIDs: PropTypes.arrayOf(PropTypes.string).isRequired,
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,

@@ -18,6 +18,7 @@ function PanelStudyBrowser({
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatch] = useImageViewer();
   const [activeTabName, setActiveTabName] = useState('primary');
+  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([]);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
@@ -130,16 +131,28 @@ function PanelStudyBrowser({
     displaySets
   );
 
-  // TODO: Should "expand" appropriate study (already handled by component?)
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
-    requestDisplaySetCreationForStudy(DisplaySetService, StudyInstanceUID);
+    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(
+      StudyInstanceUID
+    );
+    const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
+      // eslint-disable-next-line prettier/prettier
+      ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
+      : [...expandedStudyInstanceUIDs, StudyInstanceUID];
+
+    setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
+
+    if (!shouldCollapseStudy) {
+      requestDisplaySetCreationForStudy(DisplaySetService, StudyInstanceUID);
+    }
   }
 
   return (
     <StudyBrowser
       tabs={tabs}
       activeTabName={activeTabName}
+      expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
       onClickStudy={_handleStudyClick}
       onClickTab={clickedTabName => {
         setActiveTabName(clickedTabName);
