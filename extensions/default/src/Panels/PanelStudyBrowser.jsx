@@ -12,107 +12,66 @@ function PanelStudyBrowser({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
-  const currentDisplaySets = DisplaySetService.activeDisplaySets || [];
-  // TODO: Deep copy? Or By IDs?
-  // TODO: May need to be mapped to a different shape?
-  const [displaySets, setDisplaySets] = useState(currentDisplaySets);
-  const [activeTabName, setActiveTabName] = useState('primary');
-  const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState(new Map());
+  // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatch] = useImageViewer();
-  // vv What we want to render
+  const [activeTabName, setActiveTabName] = useState('primary');
   const [studyDisplayList, setStudyDisplayList] = useState([]);
+  const [displaySets, setDisplaySets] = useState([]);
+  const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState(new Map());
 
+  // ~~ studyDisplayList
   useEffect(() => {
     // Fetch all studies for the patient in each primary study
     async function fetchStudiesForPatient(StudyInstanceUID) {
       const qidoStudiesForPatient =
         (await getStudiesForPatientByStudyInstanceUID(StudyInstanceUID)) || [];
 
+      // TODO: This should be "naturalized DICOM JSON" studies
       const mappedStudies = _mapDataSourceStudies(qidoStudiesForPatient);
+      const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
+        return {
+          studyInstanceUid: qidoStudy.StudyInstanceUID,
+          date: qidoStudy.StudyDate,
+          description: qidoStudy.StudyDescription,
+          modalities: qidoStudy.ModalitiesInStudy,
+          numInstances: qidoStudy.NumInstances,
+          // displaySets: []
+        };
+      });
 
-      const updatedStudyDisplayList = _mergeStudyDisplayListAndDataSourceStudies(
-        studyDisplayList,
-        mappedStudies,
-        displaySets
-      );
-
-      addDisplaySetsToStudyDisplayList(
-        updatedStudyDisplayList,
-        displaySets,
-        thumbnailImageSrcMap
-      );
-
-      setStudyDisplayList(updatedStudyDisplayList);
+      setStudyDisplayList(actuallyMappedStudies);
     }
 
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
-  }, [
-    StudyInstanceUIDs,
-    getStudiesForPatientByStudyInstanceUID,
-  ]);
+  }, [StudyInstanceUIDs, getStudiesForPatientByStudyInstanceUID]);
 
-  const updateThumbnailMap = (displaySetInstanceUID, imageSrc) => {
-    setThumbnailImageSrcMap(
-      thumbnailImageSrcMap.set(displaySetInstanceUID, imageSrc)
+  // ~~ displaySets
+  useEffect(() => {
+    // TODO: Deep copy? Or By IDs?
+    // TODO: May need to be mapped to a different shape?
+    // TODO: Iterate over `studyDisplayList` and map these for all studies in list?
+    const currentDisplaySets = DisplaySetService.activeDisplaySets || [];
+    const mappedDisplaySets = _mapDisplaySets(
+      currentDisplaySets,
+      thumbnailImageSrcMap
     );
-  };
 
-  function setLocalDisplaySetsState(displaySets) {
-    const displaySetsUI = displaySets.map(ds => {
-      const imageSrc = thumbnailImageSrcMap.get(ds.displaySetInstanceUID);
-      return {
-        displaySetInstanceUID: ds.displaySetInstanceUID,
-        description: ds.SeriesDescription,
-        seriesNumber: ds.SeriesNumber,
-        modality: ds.Modality,
-        date: ds.SeriesDate,
-        numInstances: ds.numImageFrames,
-        StudyInstanceUID: ds.StudyInstanceUID,
-        componentType: 'thumbnail', // 'thumbnailNoImage' || 'thumbnailTracked' // TODO: PUT THIS SOMEWHERE ELSE
-        imageSrc,
-        dragData: {
-          type: 'displayset',
-          displaySetInstanceUID: ds.displaySetInstanceUID,
-          // .. Any other data to pass
-        },
-      };
-    });
-
-    setDisplaySets(displaySetsUI);
-  }
-
-  function addDisplaySetsToStudyDisplayList(
-    studies,
-    displaySets,
-    thumbnailImageSrcMap
-  ) {
-    displaySets.forEach(displaySet => {
-      const study = studies.find(
-        s => s.studyInstanceUid === displaySet.StudyInstanceUID
-      );
-
-      if (!study) {
-        return;
-      }
-
-      displaySet.imageSrc = thumbnailImageSrcMap.get(
-        displaySet.displaySetInstanceUID
-      );
-
-      study.displaySets.push(displaySet);
-    });
-  }
+    setDisplaySets(mappedDisplaySets);
+  }, [thumbnailImageSrcMap]);
 
   async function handleDisplaySetsAdded(newDisplaySets) {
+    console.warn('~~ handleDisplaySetsAdded');
     // First, launch requests for a thumbnail for the new display sets
     newDisplaySets.forEach(async dset => {
-      const uid = dset.displaySetInstanceUID;
       const imageIds = dataSource.getImageIdsForDisplaySet(dset);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // When the image arrives, render it and store the result in the thumbnailImgSrcMap
       const imageSrc = await getImageSrc(imageId);
-      updateThumbnailMap(uid, imageSrc);
+
+      setThumbnailImageSrcMap(
+        thumbnailImageSrcMap.set(dset.displaySetInstanceUID, imageSrc)
+      );
     });
   }
 
@@ -122,9 +81,21 @@ function PanelStudyBrowser({
         DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
         handleDisplaySetsAdded
       ),
+      // TODO: Should this event indicate batch/series/study?
+      // Naming feels odd, and result is non-obvious
+      // Will this always contain _all_ displaySets we care about?
       DisplaySetService.subscribe(
         DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-        setLocalDisplaySetsState
+        changedDisplaySets => {
+          console.warn('DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED', changedDisplaySets);
+
+          const mappedDisplaySets = _mapDisplaySets(
+            changedDisplaySets,
+            thumbnailImageSrcMap
+          );
+
+          setDisplaySets(mappedDisplaySets);
+        }
       ),
     ];
 
@@ -133,32 +104,11 @@ function PanelStudyBrowser({
     };
   }, []);
 
-  const primaryStudies = studyDisplayList.filter(study =>
-    StudyInstanceUIDs.includes(study.studyInstanceUid)
+  const tabs = _createStudyBrowserTabs(
+    StudyInstanceUIDs,
+    studyDisplayList,
+    displaySets
   );
-
-  // TODO: Filter allStudies to dates within one year of current date
-  const recentStudies = studyDisplayList.filter(study => {
-    return true; // TODO: check study.date
-  });
-
-  const tabs = [
-    {
-      name: 'primary',
-      label: 'Primary',
-      studies: primaryStudies || [],
-    },
-    {
-      name: 'recent',
-      label: 'Recent',
-      studies: recentStudies,
-    },
-    {
-      name: 'all',
-      label: 'All',
-      studies: studyDisplayList,
-    },
-  ];
 
   // TODO: Should "expand" appropriate study (already handled by component?)
   // TODO: Should not fire this on "close"
@@ -214,28 +164,84 @@ function _mapDataSourceStudies(studies) {
   });
 }
 
-function _mergeStudyDisplayListAndDataSourceStudies(
-  studyDisplayList,
-  mappedQidoStudies
-) {
-  return mappedQidoStudies.map(qidoStudy => {
-    const { StudyInstanceUID } = qidoStudy;
-    const existing =
-      studyDisplayList.find(a => a.studyInstanceUid === StudyInstanceUID) || {};
-
-    return Object.assign(
-      {},
-      existing,
-      {
-        displaySets: [],
+function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
+  console.warn('~~ setLocalDisplaySetsState');
+  return displaySets.map(ds => {
+    const imageSrc = thumbnailImageSrcMap.get(ds.displaySetInstanceUID);
+    return {
+      displaySetInstanceUID: ds.displaySetInstanceUID,
+      description: ds.SeriesDescription,
+      seriesNumber: ds.SeriesNumber,
+      modality: ds.Modality,
+      date: ds.SeriesDate,
+      numInstances: ds.numImageFrames,
+      StudyInstanceUID: ds.StudyInstanceUID,
+      componentType: 'thumbnail', // 'thumbnailNoImage' || 'thumbnailTracked' // TODO: PUT THIS SOMEWHERE ELSE
+      imageSrc,
+      dragData: {
+        type: 'displayset',
+        displaySetInstanceUID: ds.displaySetInstanceUID,
+        // .. Any other data to pass
       },
-      {
-        studyInstanceUid: StudyInstanceUID,
-        date: qidoStudy.StudyDate,
-        description: qidoStudy.StudyDescription,
-        modalities: qidoStudy.ModalitiesInStudy,
-        numInstances: qidoStudy.NumInstances,
-      }
-    );
+    };
   });
+}
+
+/**
+ *
+ * @param {string[]} primaryStudyInstanceUIDs
+ * @param {object[]} studyDisplayList
+ * @param {string} studyDisplayList.studyInstanceUid
+ * @param {string} studyDisplayList.date
+ * @param {string} studyDisplayList.description
+ * @param {string} studyDisplayList.modalities
+ * @param {number} studyDisplayList.numInstances
+ * @param {object[]} displaySets
+ * @returns tabs - The prop object expected by the StudyBrowser component
+ */
+function _createStudyBrowserTabs(
+  primaryStudyInstanceUIDs,
+  studyDisplayList,
+  displaySets
+) {
+  const primaryStudies = [];
+  const recentStudies = [];
+  const allStudies = [];
+
+  studyDisplayList.forEach(study => {
+    const displaySetsForStudy = displaySets.filter(
+      ds => ds.StudyInstanceUID === study.studyInstanceUid
+    );
+    const tabStudy = Object.assign({}, study, {
+      displaySets: displaySetsForStudy,
+    });
+
+    if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
+      primaryStudies.push(tabStudy);
+    } else {
+      // TODO: Filter allStudies to dates within one year of current date
+      recentStudies.push(tabStudy);
+      allStudies.push(tabStudy);
+    }
+  });
+
+  const tabs = [
+    {
+      name: 'primary',
+      label: 'Primary',
+      studies: primaryStudies,
+    },
+    {
+      name: 'recent',
+      label: 'Recent',
+      studies: recentStudies,
+    },
+    {
+      name: 'all',
+      label: 'All',
+      studies: allStudies,
+    },
+  ];
+
+  return tabs;
 }

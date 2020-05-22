@@ -1,6 +1,5 @@
 const EVENTS = {
-  DISPLAY_SETS_ADDED: 'event::displaySetService:displaySetsAdded',
-  DISPLAY_SETS_CHANGED: 'event::displaySetService:displaySetsChanged',
+  INSTANCES_ADDED: 'event::dicomMetadataStore:instancesAdded',
 };
 
 export default EVENTS;

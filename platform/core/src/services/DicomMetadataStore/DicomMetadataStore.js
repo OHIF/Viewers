@@ -1,5 +1,5 @@
 import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
-import StudyMetadata from './StudyMetadata';
+import createStudyMetadata from './createStudyMetadata';
 import EVENTS from './EVENTS';
 
 const _model = {
@@ -57,20 +57,26 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
 const BaseImplementation = {
   EVENTS,
   listeners: {},
+  // TODO: The assumption is that this is called per Study per Series
+  // We should do more to verify/clarify that
   addInstances(instances) {
-    const { StudyInstanceUID } = instances[0];
+    const { StudyInstanceUID, SeriesInstanceUID } = instances[0];
 
     let study = _model.studies.find(
       study => study.StudyInstanceUID === StudyInstanceUID
     );
 
     if (!study) {
-      _model.studies.push(new StudyMetadata(StudyInstanceUID));
+      _model.studies.push(createStudyMetadata(StudyInstanceUID));
 
       study = _model.studies[_model.studies.length - 1];
     }
 
     study.addSeries(instances);
+    this._broadcastEvent(EVENTS.INSTANCES_ADDED, {
+      StudyInstanceUID,
+      SeriesInstanceUID,
+    });
   },
   addStudy(study) {
     const { StudyInstanceUID } = study;

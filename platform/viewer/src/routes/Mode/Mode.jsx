@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import PropTypes from 'prop-types';
-//
-import { ToolBarManager } from '@ohif/core';
+// TODO: DicomMetadataStore should be injected?
+import { DicomMetadataStore, ToolBarManager } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 //
 import { useQuery } from '@hooks';
@@ -91,10 +91,31 @@ export default function ModeRoute({
     console.log('queryParams: ', queryParams);
 
     // Call the data source to start building the view model?
-    dataSource.retrieve.series.metadata(
-      queryParams,
-      DisplaySetService.makeDisplaySets
+    // TODO: This should be called on subscription to DicomMetadataStore?
+    // dataSource.retrieve.series.metadata(
+    //   queryParams,
+    //   DisplaySetService.makeDisplaySets
+    // );
+
+    // TODO: This should be baked into core, not manuel?
+    // DisplaySetService would wire this up?
+    DicomMetadataStore.subscribe(
+      DicomMetadataStore.EVENTS.INSTANCES_ADDED,
+      ({ StudyInstanceUID, SeriesInstanceUID }) => {
+        console.warn(`INSTANCES_ADDED::\nStudy:${StudyInstanceUID}\nSeries:${SeriesInstanceUID}`);
+
+        const seriesMetadata = DicomMetadataStore.getSeries(
+          StudyInstanceUID,
+          SeriesInstanceUID
+        );
+
+        DisplaySetService.makeDisplaySets(seriesMetadata.instances);
+      }
     );
+
+    StudyInstanceUIDsAsArray.forEach(StudyInstanceUID => {
+      dataSource.retrieveSeriesMetadata({ StudyInstanceUID });
+    });
   }, [
     mode,
     dataSourceName,
@@ -102,7 +123,8 @@ export default function ModeRoute({
     DisplaySetService,
     extensionManager,
     sopClassHandlers,
-    dataSource.retrieve.series,
+    StudyInstanceUIDsAsArray,
+    dataSource,
   ]);
 
   const reducer = (state, action) => {

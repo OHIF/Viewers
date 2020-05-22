@@ -38,7 +38,6 @@ function DataSourceWrapper(props) {
   const firstAppConfigDataSource = appConfig.dataSources[0];
   const dataSourceConfig = firstAppConfigDataSource.configuration;
   const firstWebApiDataSource = webApiDataSources[0];
-  debugger;
   const dataSource = firstWebApiDataSource.createDataSource(dataSourceConfig);
 
   // Route props --> studies.mapParams
