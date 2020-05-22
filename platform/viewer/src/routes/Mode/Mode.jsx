@@ -87,23 +87,11 @@ export default function ModeRoute({
     // Add SOPClassHandlers to a new SOPClassManager.
     DisplaySetService.init(extensionManager, sopClassHandlers);
 
-    const queryParams = location.search;
-    console.log('queryParams: ', queryParams);
-
-    // Call the data source to start building the view model?
-    // TODO: This should be called on subscription to DicomMetadataStore?
-    // dataSource.retrieve.series.metadata(
-    //   queryParams,
-    //   DisplaySetService.makeDisplaySets
-    // );
-
     // TODO: This should be baked into core, not manuel?
     // DisplaySetService would wire this up?
     DicomMetadataStore.subscribe(
       DicomMetadataStore.EVENTS.INSTANCES_ADDED,
       ({ StudyInstanceUID, SeriesInstanceUID }) => {
-        console.warn(`INSTANCES_ADDED::\nStudy:${StudyInstanceUID}\nSeries:${SeriesInstanceUID}`);
-
         const seriesMetadata = DicomMetadataStore.getSeries(
           StudyInstanceUID,
           SeriesInstanceUID

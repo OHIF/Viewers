@@ -48,11 +48,28 @@ function PanelStudyBrowser({
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
   }, [StudyInstanceUIDs, getStudiesForPatientByStudyInstanceUID]);
 
+  // ~~ Initial Thumbnails
+  useEffect(() => {
+    const currentDisplaySets = DisplaySetService.activeDisplaySets || [];
+    currentDisplaySets.forEach(async dSet => {
+      const newImageSrcEntry = {};
+      const displaySet = DisplaySetService.getDisplaySetByUID(
+        dSet.displaySetInstanceUID
+      );
+      const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+      const imageId = imageIds[Math.floor(imageIds.length / 2)];
+
+      // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+      newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
+      setThumbnailImageSrcMap(prevState => {
+        return { ...prevState, ...newImageSrcEntry };
+      });
+    });
+  }, []);
+
   // ~~ displaySets
   useEffect(() => {
-    // TODO: Deep copy? Or By IDs?
-    // TODO: May need to be mapped to a different shape?
-    // TODO: Iterate over `studyDisplayList` and map these for all studies in list?
+    // TODO: Are we sure `activeDisplaySets` will always be accurate?
     const currentDisplaySets = DisplaySetService.activeDisplaySets || [];
     const mappedDisplaySets = _mapDisplaySets(
       currentDisplaySets,
@@ -62,48 +79,48 @@ function PanelStudyBrowser({
     setDisplaySets(mappedDisplaySets);
   }, [thumbnailImageSrcMap]);
 
-  async function handleDisplaySetsAdded(newDisplaySets) {
-    console.warn('~~ handleDisplaySetsAdded');
-    // First, launch requests for a thumbnail for the new display sets
-    newDisplaySets.forEach(async dset => {
-      const newImageSrcEntry = {};
-      const imageIds = dataSource.getImageIdsForDisplaySet(dset);
-      const imageId = imageIds[Math.floor(imageIds.length / 2)];
-
-      // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-      newImageSrcEntry[dset.displaySetInstanceUID] = await getImageSrc(imageId);
-      console.log(`setting thumbnail for ${imageId}`);
-
-      setThumbnailImageSrcMap(prevState => {
-        return {...prevState, ...newImageSrcEntry}
-      });
-    });
-  }
-
+  // ~~ subscriptions --> displaySets
   useEffect(() => {
-    const subscriptions = [
-      DisplaySetService.subscribe(
-        DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-        handleDisplaySetsAdded
-      ),
-      // TODO: Should this event indicate batch/series/study?
-      // Naming feels odd, and result is non-obvious
-      // Will this always contain _all_ displaySets we care about?
-      DisplaySetService.subscribe(
-        DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-        changedDisplaySets => {
-          const mappedDisplaySets = _mapDisplaySets(
-            changedDisplaySets,
-            thumbnailImageSrcMap
+    // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
+    const SubscriptionDisplaySetsAdded = DisplaySetService.subscribe(
+      DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
+      newDisplaySets => {
+        newDisplaySets.forEach(async dSet => {
+          const newImageSrcEntry = {};
+          const displaySet = DisplaySetService.getDisplaySetByUID(
+            dSet.displaySetInstanceUID
           );
+          const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+          const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-          setDisplaySets(mappedDisplaySets);
-        }
-      ),
-    ];
+          // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+          newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
+            imageId
+          );
+          setThumbnailImageSrcMap(prevState => {
+            return { ...prevState, ...newImageSrcEntry };
+          });
+        });
+      }
+    );
+
+    // TODO: Will this always hold _all_ the displaySets we care about?
+    // DISPLAY_SETS_CHANGED returns `DisplaySerService.activeDisplaySets`
+    const SubscriptionDisplaySetsChanged = DisplaySetService.subscribe(
+      DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+      changedDisplaySets => {
+        const mappedDisplaySets = _mapDisplaySets(
+          changedDisplaySets,
+          thumbnailImageSrcMap
+        );
+
+        setDisplaySets(mappedDisplaySets);
+      }
+    );
 
     return () => {
-      subscriptions.forEach(sub => sub.unsubscribe);
+      SubscriptionDisplaySetsAdded.unsubscribe();
+      SubscriptionDisplaySetsChanged.unsubscribe();
     };
   }, []);
 
@@ -132,6 +149,7 @@ function PanelStudyBrowser({
 PanelStudyBrowser.propTypes = {
   DisplaySetService: PropTypes.shape({
     EVENTS: PropTypes.object.isRequired,
+    getDisplaySetByUID: PropTypes.func.isRequired,
     hasDisplaySetsForStudy: PropTypes.func.isRequired,
     subscribe: PropTypes.func.isRequired,
   }).isRequired,
@@ -188,6 +206,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
     };
   });
 }
+
 
 /**
  *
