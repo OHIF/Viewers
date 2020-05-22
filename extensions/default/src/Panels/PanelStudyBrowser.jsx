@@ -138,10 +138,12 @@ function PanelStudyBrowser({
 
   return (
     <StudyBrowser
-      activeTabName={activeTabName}
       tabs={tabs}
+      activeTabName={activeTabName}
       onClickStudy={_handleStudyClick}
-      onSetTabActive={setActiveTabName}
+      onClickTab={clickedTabName => {
+        setActiveTabName(clickedTabName);
+      }}
     />
   );
 }

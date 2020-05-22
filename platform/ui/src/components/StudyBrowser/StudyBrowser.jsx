@@ -7,10 +7,6 @@ import { ButtonGroup, Button, StudyItem, ThumbnailList } from '@ohif/ui';
 const buttonClasses = 'text-white text-base border-none bg-black p-2 min-w-18';
 const activeButtonClasses = 'bg-primary-main';
 
-const getInitialActiveTab = tabs => {
-  return tabs && tabs[0] && tabs[0].name;
-};
-
 const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
   displaySets.forEach(displaySet => {
@@ -25,18 +21,15 @@ const getTrackedSeries = displaySets => {
 const StudyBrowser = ({
   tabs,
   activeTabName,
-  onSetTabActive,
+  onClickTab,
   onClickStudy,
   onClickThumbnail,
 }) => {
-  const [tabActive, setTabActive] = useState(
-    activeTabName || getInitialActiveTab(tabs)
-  );
   const [studyActive, setStudyActive] = useState(null);
   const [thumbnailActive, setThumbnailActive] = useState(null);
 
   const getTabContent = () => {
-    const tabData = tabs.find(tab => tab.name === tabActive);
+    const tabData = tabs.find(tab => tab.name === activeTabName);
 
     if (!tabData || !tabData.studies || !Array.isArray(tabData.studies)) {
       return;
@@ -101,7 +94,7 @@ const StudyBrowser = ({
         >
           {tabs.map(tab => {
             const { name, label } = tab;
-            const isActive = tabActive === name;
+            const isActive = activeTabName === name;
             return (
               <Button
                 key={name}
@@ -111,12 +104,7 @@ const StudyBrowser = ({
                 )}
                 size="initial"
                 onClick={() => {
-                  setTabActive(name);
-                  setStudyActive(null);
-
-                  if (onSetTabActive) {
-                    onSetTabActive(name);
-                  }
+                  onClickTab(name);
                 }}
               >
                 {label}
@@ -133,8 +121,10 @@ const StudyBrowser = ({
 };
 
 StudyBrowser.propTypes = {
+  onClickTab: PropTypes.func.isRequired,
   onClickStudy: PropTypes.func,
   onClickThumbnail: PropTypes.func,
+  activeTabName: PropTypes.string.isRequired,
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
