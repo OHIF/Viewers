@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import { Icon } from '@ohif/ui';
 
 const baseClasses =
-  'first:border-0 border-t border-secondary-light cursor-pointer outline-none';
+  'first:border-0 border-t border-secondary-light cursor-pointer select-none outline-none';
 
 const StudyItem = ({
   date,
@@ -28,16 +28,16 @@ const StudyItem = ({
       tabIndex="0"
     >
       <div className="flex flex-col flex-1 px-4 pb-2">
-        <div className="flex flex-row items-center justify-between pb-2 pt-2 pb-2">
-          <div className="text-white text-base">{date}</div>
-          <div className="flex flex-row items-center text-blue-300  text-base">
-            <Icon name="group-layers" className="text-blue-300 mx-2 w-4" />
+        <div className="flex flex-row items-center justify-between pt-2 pb-2">
+          <div className="text-base text-white">{date}</div>
+          <div className="flex flex-row items-center text-base text-blue-300">
+            <Icon name="group-layers" className="w-4 mx-2 text-blue-300" />
             {numInstances}
           </div>
         </div>
         <div className="flex flex-row py-1">
-          <div className="text-blue-300 pr-5 text-xl">{modalities}</div>
-          <div className="text-blue-300  text-base">{description}</div>
+          <div className="pr-5 text-xl text-blue-300">{modalities}</div>
+          <div className="text-base text-blue-300">{description}</div>
         </div>
       </div>
       {!!trackedSeries && (
@@ -50,7 +50,7 @@ const StudyItem = ({
                 : 'rounded-sm mx-4 mb-4'
             )}
           >
-            <Icon name="tracked" className="text-primary-light w-4 mr-2" />
+            <Icon name="tracked" className="w-4 mr-2 text-primary-light" />
             {trackedSeries} Tracked Series
           </div>
         </div>
