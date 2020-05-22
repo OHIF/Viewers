@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-//
 import { StudyBrowser, useImageViewer } from '@ohif/ui';
-import { DicomMetadataStore } from '@ohif/core';
-// This has to import from somewhere else...
 
+/**
+ *
+ * @param {*} param0
+ */
 function PanelStudyBrowser({
   DisplaySetService,
   getImageSrc,
@@ -12,12 +13,14 @@ function PanelStudyBrowser({
   requestDisplaySetCreationForStudy,
   dataSource,
 }) {
+  // Normally you nest the components so the tree isn't so deep, and the data
+  // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatch] = useImageViewer();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
-  const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState(new Map());
+  const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
 
   // ~~ studyDisplayList
   useEffect(() => {
@@ -63,15 +66,17 @@ function PanelStudyBrowser({
     console.warn('~~ handleDisplaySetsAdded');
     // First, launch requests for a thumbnail for the new display sets
     newDisplaySets.forEach(async dset => {
+      const newImageSrcEntry = {};
       const imageIds = dataSource.getImageIdsForDisplaySet(dset);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
       // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-      const imageSrc = await getImageSrc(imageId);
+      newImageSrcEntry[dset.displaySetInstanceUID] = await getImageSrc(imageId);
+      console.log(`setting thumbnail for ${imageId}`);
 
-      setThumbnailImageSrcMap(
-        thumbnailImageSrcMap.set(dset.displaySetInstanceUID, imageSrc)
-      );
+      setThumbnailImageSrcMap(prevState => {
+        return {...prevState, ...newImageSrcEntry}
+      });
     });
   }
 
@@ -87,8 +92,6 @@ function PanelStudyBrowser({
       DisplaySetService.subscribe(
         DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
         changedDisplaySets => {
-          console.warn('DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED', changedDisplaySets);
-
           const mappedDisplaySets = _mapDisplaySets(
             changedDisplaySets,
             thumbnailImageSrcMap
@@ -165,9 +168,8 @@ function _mapDataSourceStudies(studies) {
 }
 
 function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
-  console.warn('~~ setLocalDisplaySetsState');
   return displaySets.map(ds => {
-    const imageSrc = thumbnailImageSrcMap.get(ds.displaySetInstanceUID);
+    const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
     return {
       displaySetInstanceUID: ds.displaySetInstanceUID,
       description: ds.SeriesDescription,
