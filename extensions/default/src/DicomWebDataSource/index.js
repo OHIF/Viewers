@@ -137,7 +137,7 @@ function createDicomWebApi(dicomWebConfig) {
 
       // Get Series
       const seriesPromises = await retrieveStudyMetadata(
-        naturalizeDataset,
+        wadoDicomWebClient,
         StudyInstanceUID,
         enableStudyLazyLoad
       );
