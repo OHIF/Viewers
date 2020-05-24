@@ -31,10 +31,6 @@ const StudyBrowser = ({
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
 
-    if (!tabData || !tabData.studies || !Array.isArray(tabData.studies)) {
-      return;
-    }
-
     return tabData.studies.map(
       ({
         studyInstanceUid,
