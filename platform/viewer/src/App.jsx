@@ -48,17 +48,39 @@ function App({ config, defaultExtensions }) {
   );
   const { UIDialogService, UIModalService, UINotificationService } = servicesManager.services;
 
+  // A UI Service may need to use the ViewportGrid context
+  const viewportGridReducer = (state, action) => {
+    console.log(state, action);
+
+    switch (action.type) {
+      case 'DO_TODO':
+        return state;
+      default:
+        return action.payload;
+    }
+  };
+
   return (
     <appConfigContext.Provider value={appConfigContextApi}>
       <Router basename={routerBasename}>
         <ThemeWrapper>
-          <SnackbarProvider service={UINotificationService}>
-            <DialogProvider service={UIDialogService}>
-              <ModalProvider modal={Modal} service={UIModalService}>
-                {appRoutes}
-              </ModalProvider>
-            </DialogProvider>
-          </SnackbarProvider>
+          <ViewportGridProvider
+            initialState={{
+              numRows: 1,
+              numCols: 1,
+              viewports: [],
+              activeViewportIndex: 0,
+            }}
+            reducer={viewportGridReducer}
+          >
+            <SnackbarProvider service={UINotificationService}>
+              <DialogProvider service={UIDialogService}>
+                <ModalProvider modal={Modal} service={UIModalService}>
+                  {appRoutes}
+                </ModalProvider>
+              </DialogProvider>
+            </SnackbarProvider>
+          </ViewportGridProvider>
         </ThemeWrapper>
       </Router>
     </appConfigContext.Provider>

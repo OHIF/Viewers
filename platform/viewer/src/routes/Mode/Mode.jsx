@@ -6,7 +6,6 @@ import { DicomMetadataStore, ToolBarManager } from '@ohif/core';
 import {
   DragAndDropProvider,
   ImageViewerProvider,
-  ViewportGridProvider,
 } from '@ohif/ui';
 //
 import { useQuery } from '@hooks';
@@ -123,44 +122,23 @@ export default function ModeRoute({
     console.log(state, action);
   };
 
-  const viewportGridReducer = (state, action) => {
-    console.log(state, action);
-
-    switch (action.type) {
-      case 'DO_TODO':
-        return state;
-      default:
-        return action.payload;
-    }
-  };
-
   return (
     <ImageViewerProvider
       initialState={{ StudyInstanceUIDs: StudyInstanceUIDsAsArray }}
       reducer={reducer}
     >
-      <ViewportGridProvider
-        initialState={{
-          numRows: 1,
-          numCols: 1,
-          viewports: [],
-          activeViewportIndex: 0,
-        }}
-        reducer={viewportGridReducer}
-      >
-        <CombinedContextProvider>
-          {/* TODO: extensionManager is already provided to the extension module.
-           *  Use it from there instead of passing as a prop here.
-           */}
-          <DragAndDropProvider>
-            <LayoutComponent
-              {...layoutTemplateData.props}
-              StudyInstanceUIDs={StudyInstanceUIDs}
-              ViewportGridComp={ViewportGridWithDataSource}
-            />
-          </DragAndDropProvider>
-        </CombinedContextProvider>
-      </ViewportGridProvider>
+      <CombinedContextProvider>
+        {/* TODO: extensionManager is already provided to the extension module.
+          *  Use it from there instead of passing as a prop here.
+          */}
+        <DragAndDropProvider>
+          <LayoutComponent
+            {...layoutTemplateData.props}
+            StudyInstanceUIDs={StudyInstanceUIDs}
+            ViewportGridComp={ViewportGridWithDataSource}
+          />
+        </DragAndDropProvider>
+      </CombinedContextProvider>
     </ImageViewerProvider>
   );
 }

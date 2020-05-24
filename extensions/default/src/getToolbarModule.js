@@ -9,8 +9,8 @@ const definitions = [
     id: 'Layout',
     label: 'Layout',
     icon: 'tool-layout',
-    commandName: TOOLBAR_BUTTON_TYPES.SET_TOOL_ACTIVE,
-    commandOptions: { toolName: 'Layout' }, // TODO
+    commandName: 'toggleLayoutSelectionDialog',
+    commandOptions: {  },
   },
 ];
 
