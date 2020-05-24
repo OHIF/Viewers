@@ -72,11 +72,16 @@ const BaseImplementation = {
       study = _model.studies[_model.studies.length - 1];
     }
 
-    study.addSeries(instances);
-    this._broadcastEvent(EVENTS.INSTANCES_ADDED, {
-      StudyInstanceUID,
-      SeriesInstanceUID,
-    });
+    // TODO: Worth identifying why this is being called many times with series
+    // that are already "added"?
+    const didAddSeries = study.addSeries(instances);
+
+    if (didAddSeries) {
+      this._broadcastEvent(EVENTS.INSTANCES_ADDED, {
+        StudyInstanceUID,
+        SeriesInstanceUID,
+      });
+    }
   },
   addStudy(study) {
     const { StudyInstanceUID } = study;

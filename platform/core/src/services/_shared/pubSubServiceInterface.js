@@ -13,7 +13,7 @@ export default {
 };
 
 /**
- * Subscribe to measurement updates.
+ * Subscribe to updates.
  *
  * @param {string} eventName The name of the event
  * @param {Function} callback Events callback
@@ -24,7 +24,7 @@ function subscribe(eventName, callback) {
     const listenerId = guid();
     const subscription = { id: listenerId, callback };
 
-    console.info(`displaySetService: Subscribing to '${eventName}'.`);
+    console.info(`Subscribing to '${eventName}'.`);
     if (Array.isArray(this.listeners[eventName])) {
       this.listeners[eventName].push(subscription);
     } else {
@@ -60,7 +60,7 @@ function _unsubscribe(eventName, listenerId) {
 }
 
 /**
- * Check if a given displaySetService event is valid.
+ * Check if a given event is valid.
  *
  * @param {string} eventName The name of the event
  * @return {boolean} Event name validation
@@ -70,7 +70,7 @@ function _isValidEvent(eventName) {
 }
 
 /**
- * Broadcasts displaySetService changes.
+ * Broadcasts changes.
  *
  * @param {string} eventName - The event name
  * @param {func} callbackProps - Properties to pass callback

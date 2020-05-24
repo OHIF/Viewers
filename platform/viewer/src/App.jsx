@@ -6,7 +6,7 @@ import { ThemeWrapper } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
 import { appConfigContext } from '@state/appConfig.context';
-import { useAppConfig } from './hooks/useAppConfig';
+import { useAppConfig } from '@hooks/useAppConfig';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 

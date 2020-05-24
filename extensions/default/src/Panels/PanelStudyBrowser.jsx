@@ -51,7 +51,7 @@ function PanelStudyBrowser({
 
   // ~~ Initial Thumbnails
   useEffect(() => {
-    const currentDisplaySets = DisplaySetService.activeDisplaySets || [];
+    const currentDisplaySets = DisplaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
       const displaySet = DisplaySetService.getDisplaySetByUID(
@@ -71,7 +71,7 @@ function PanelStudyBrowser({
   // ~~ displaySets
   useEffect(() => {
     // TODO: Are we sure `activeDisplaySets` will always be accurate?
-    const currentDisplaySets = DisplaySetService.activeDisplaySets || [];
+    const currentDisplaySets = DisplaySetService.activeDisplaySets;
     const mappedDisplaySets = _mapDisplaySets(
       currentDisplaySets,
       thumbnailImageSrcMap
@@ -164,6 +164,7 @@ function PanelStudyBrowser({
 PanelStudyBrowser.propTypes = {
   DisplaySetService: PropTypes.shape({
     EVENTS: PropTypes.object.isRequired,
+    activeDisplaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
     getDisplaySetByUID: PropTypes.func.isRequired,
     hasDisplaySetsForStudy: PropTypes.func.isRequired,
     subscribe: PropTypes.func.isRequired,

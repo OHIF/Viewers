@@ -14,6 +14,9 @@ export {
   ImageViewerContext,
   ImageViewerProvider,
   useImageViewer,
+  ViewportGridContext,
+  ViewportGridProvider,
+  useViewportGrid,
 } from './src/contextProviders';
 
 /** COMPONENTS */

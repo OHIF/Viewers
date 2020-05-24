@@ -3,7 +3,11 @@ import { useParams } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
 import { DicomMetadataStore, ToolBarManager } from '@ohif/core';
-import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
+import {
+  DragAndDropProvider,
+  ImageViewerProvider,
+  ViewportGridProvider,
+} from '@ohif/ui';
 //
 import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
@@ -119,23 +123,44 @@ export default function ModeRoute({
     console.log(state, action);
   };
 
+  const viewportGridReducer = (state, action) => {
+    console.log(state, action);
+
+    switch (action.type) {
+      case 'DO_TODO':
+        return state;
+      default:
+        return action.payload;
+    }
+  };
+
   return (
     <ImageViewerProvider
       initialState={{ StudyInstanceUIDs: StudyInstanceUIDsAsArray }}
       reducer={reducer}
     >
-      <CombinedContextProvider>
-        {/* TODO: extensionManager is already provided to the extension module.
-         *  Use it from there instead of passing as a prop here.
-         */}
-        <DragAndDropProvider>
-          <LayoutComponent
-            {...layoutTemplateData.props}
-            StudyInstanceUIDs={StudyInstanceUIDs}
-            ViewportGridComp={ViewportGridWithDataSource}
-          />
-        </DragAndDropProvider>
-      </CombinedContextProvider>
+      <ViewportGridProvider
+        initialState={{
+          numRows: 1,
+          numCols: 1,
+          viewports: [],
+          activeViewportIndex: 0,
+        }}
+        reducer={viewportGridReducer}
+      >
+        <CombinedContextProvider>
+          {/* TODO: extensionManager is already provided to the extension module.
+           *  Use it from there instead of passing as a prop here.
+           */}
+          <DragAndDropProvider>
+            <LayoutComponent
+              {...layoutTemplateData.props}
+              StudyInstanceUIDs={StudyInstanceUIDs}
+              ViewportGridComp={ViewportGridWithDataSource}
+            />
+          </DragAndDropProvider>
+        </CombinedContextProvider>
+      </ViewportGridProvider>
     </ImageViewerProvider>
   );
 }

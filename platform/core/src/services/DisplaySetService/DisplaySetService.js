@@ -6,6 +6,7 @@ const displaySetCache = [];
 export default class DisplaySetService {
   constructor() {
     this.displaySets = {};
+    this.activeDisplaySets = [];
     this.listeners = {};
     this.EVENTS = EVENTS;
 
@@ -77,9 +78,10 @@ export default class DisplaySetService {
       displaySetsAdded = displaySets;
     }
 
+    // TODO: This is tricky. How do we know we're not resetting to the same/existing DSs?
+    // TODO: This is likely run anytime we touch DicomMetadataStore. How do we prevent uneccessary broadcasts?
     if (displaySetsAdded && displaySetsAdded.length) {
       this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, displaySetsAdded);
-
       this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
     }
   };

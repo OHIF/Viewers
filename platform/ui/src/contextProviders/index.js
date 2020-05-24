@@ -16,4 +16,10 @@ export {
   useImageViewer,
 } from './ImageViewerProvider';
 
+export {
+  ViewportGridContext,
+  ViewportGridProvider,
+  useViewportGrid,
+} from './ViewportGridProvider';
+
 export { default as DragAndDropProvider } from './DragAndDropProvider';
