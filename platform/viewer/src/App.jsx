@@ -8,6 +8,7 @@ import {
   ModalProvider,
   SnackbarProvider,
   ThemeWrapper,
+  ViewportGridProvider,
 } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
