@@ -43,6 +43,7 @@
     "react-dnd-html5-backend": "^10.0.2",
     "react-dnd-touch-backend": "^10.0.2",
     "react-dom": "16.11.0",
+    "react-modal": "^3.11.2",
     "react-powerplug": "1.0.0",
     "react-select": "^3.0.8",
     "theme-ui": "^0.2.38"

@@ -40,6 +40,17 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
 
   /**
+   * Sets the implementation of a modal service that can be used by extensions.
+   *
+   * @returns void
+   */
+  useEffect(() => {
+    if (service) {
+      service.setServiceImplementation({ hide, show });
+    }
+  }, [hide, service, show]);
+
+  /**
    * Show the modal and override its configuration props.
    *
    * @param {ModalProps} props { content, contentProps, shouldCloseOnEsc, isOpen, closeButton, title, customClassName }
@@ -57,17 +68,6 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
   const hide = useCallback(() => setOptions(DEFAULT_OPTIONS), [
     DEFAULT_OPTIONS,
   ]);
-
-  /**
-   * Sets the implementation of a modal service that can be used by extensions.
-   *
-   * @returns void
-   */
-  useEffect(() => {
-    if (service) {
-      service.setServiceImplementation({ hide, show });
-    }
-  }, [hide, service, show]);
 
   const {
     content: ModalContent,
@@ -115,18 +115,15 @@ ModalProvider.defaultProps = {
 };
 
 ModalProvider.propTypes = {
-  /** Children that will be wrapped with Modal Context */
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]).isRequired,
-  /** Modal component */
   modal: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
     PropTypes.func,
   ]).isRequired,
-  /** service to be update once modal provider is instanciated */
   service: PropTypes.shape({
     setServiceImplementation: PropTypes.func,
   }),

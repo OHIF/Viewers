@@ -14,6 +14,7 @@ import InputText from './InputText';
 import Label from './Label';
 import MeasurementsPanel from './MeasurementsPanel';
 import MeasurementTable from './MeasurementTable';
+import Modal from './Modal';
 import NavBar from './NavBar';
 import Notification from './Notification';
 import Select from './Select';
@@ -62,6 +63,7 @@ export {
   Label,
   MeasurementsPanel,
   MeasurementTable,
+  Modal,
   NavBar,
   Notification,
   Select,

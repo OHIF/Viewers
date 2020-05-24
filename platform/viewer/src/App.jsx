@@ -2,7 +2,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
-import { ThemeWrapper } from '@ohif/ui';
+import {
+  DialogProvider,
+  Modal,
+  ModalProvider,
+  SnackbarProvider,
+  ThemeWrapper,
+} from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
 import { appConfigContext } from '@state/appConfig.context';
@@ -10,7 +16,7 @@ import { useAppConfig } from '@hooks/useAppConfig';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 
-// Temporarily for testing
+// TODO: Temporarily for testing
 import '@ohif/mode-example';
 
 /**
@@ -40,11 +46,20 @@ function App({ config, defaultExtensions }) {
     extensionManager,
     servicesManager
   );
+  const { UIDialogService, UIModalService, UINotificationService } = servicesManager.services;
 
   return (
     <appConfigContext.Provider value={appConfigContextApi}>
       <Router basename={routerBasename}>
-        <ThemeWrapper>{appRoutes}</ThemeWrapper>
+        <ThemeWrapper>
+          <SnackbarProvider service={UINotificationService}>
+            <DialogProvider service={UIDialogService}>
+              <ModalProvider modal={Modal} service={UIModalService}>
+                {appRoutes}
+              </ModalProvider>
+            </DialogProvider>
+          </SnackbarProvider>
+        </ThemeWrapper>
       </Router>
     </appConfigContext.Provider>
   );
