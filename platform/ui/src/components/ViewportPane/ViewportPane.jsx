@@ -10,10 +10,8 @@ function ViewportPane({
   children,
   className,
   isActive,
-  onClick,
   onDrop,
-  onScroll,
-  onWheel,
+  onInteraction,
   acceptDropsFor,
 }) {
   const [{ isHovered, isHighlighted }, drop] = useDrop({
@@ -24,6 +22,7 @@ function ViewportPane({
       const isOver = monitor.isOver();
 
       if (canDrop && isOver && onDrop) {
+        onInteraction();
         onDrop(droppedItem);
       }
     },
@@ -40,11 +39,9 @@ function ViewportPane({
       // onInteraction...
       // https://reactjs.org/docs/events.html#mouse-events
       // https://stackoverflow.com/questions/8378243/catch-scrolling-event-on-overflowhidden-element
-      // setActiveViewport
-      onClick={onClick}
-      onScroll={onScroll}
-      onWheel={onWheel}
-      onSc
+      onClick={onInteraction}
+      onScroll={onInteraction}
+      onWheel={onInteraction}
       className={classnames(
         'rounded-lg hover:border-primary-light transition duration-300 outline-none overflow-hidden',
         {
@@ -68,19 +65,16 @@ ViewportPane.propTypes = {
   isActive: PropTypes.bool.isRequired,
   /** Indicates drag items we should accept for drops */
   acceptDropsFor: PropTypes.string.isRequired,
-  onClick: PropTypes.func,
   /** Function that handles drop events */
   onDrop: PropTypes.func.isRequired,
-  onScroll: PropTypes.func,
-  onWheel: PropTypes.func,
+  /** Called when the viewportPane is interacted with by the user */
+  onInteraction: PropTypes.func.isRequired,
 };
 
 const noop = () => {};
 
 ViewportPane.defaultProps = {
-  onClick: noop,
-  onScroll: noop,
-  onWheel: noop,
+  onInteraction: noop,
 }
 
 export default ViewportPane;
