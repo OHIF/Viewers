@@ -54,8 +54,8 @@ function App({ config, defaultExtensions }) {
     console.log(state, action);
 
     switch (action.type) {
-      case 'DO_TODO':
-        return state;
+      case 'SET_ACTIVE_VIEWPORT_INDEX':
+        return { ...state, ...{ activeViewportIndex: action.payload } };
       default:
         return action.payload;
     }
