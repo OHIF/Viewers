@@ -154,11 +154,21 @@ const _sortStudyDisplaySet = (study, studyMetadata) => {
   studyMetadata.sortDisplaySets(study.displaySets);
 };
 
+const _thinStudyData = study => {
+  return {
+    StudyInstanceUID: study.StudyInstanceUID,
+    series: study.series.map(item => ({
+      SeriesInstanceUID: item.SeriesInstanceUID
+    })),
+  }
+};
+
 function ViewerRetrieveStudyData({
   server,
   studyInstanceUIDs,
   seriesInstanceUIDs,
   clearViewportSpecificData,
+  setStudyData,
 }) {
   // hooks
   const [error, setError] = useState(false);
@@ -220,6 +230,7 @@ function ViewerRetrieveStudyData({
     if (Array.isArray(studiesData) && studiesData.length > 0) {
       // Map studies to new format, update metadata manager?
       const studies = studiesData.map(study => {
+        setStudyData(study.StudyInstanceUID, _thinStudyData(study));
         const studyMetadata = new OHIFStudyMetadata(
           study,
           study.StudyInstanceUID
@@ -369,6 +380,7 @@ ViewerRetrieveStudyData.propTypes = {
   seriesInstanceUIDs: PropTypes.array,
   server: PropTypes.object,
   clearViewportSpecificData: PropTypes.func.isRequired,
+  setStudyData: PropTypes.func.isRequired,
 };
 
 export default ViewerRetrieveStudyData;
