@@ -62,26 +62,20 @@ function ViewerViewportGrid(props) {
   //   return unsubscribe;
   // }, []);
 
-  // TODO: either need hover to change "active viewport"
-  // so we can use it as our target for setting the displaySet,
-  // or the dropHandler needs to know which viewport was dropped on
-  // in event data
-  const onDropHandler = ({ displaySetInstanceUID }) => {
-    const droppedDisplaySet = DisplaySetService.getDisplaySetByUID(
-      displaySetInstanceUID
-    );
-    const updatedViewportGridState = HangingProtocolService([
-      droppedDisplaySet,
-    ]);
-
-    console.warn(
-      'DROPPED: ',
-      displaySetInstanceUID,
-      droppedDisplaySet,
-      updatedViewportGridState
-    );
-
-    dispatch({ type: 'action-name', payload: updatedViewportGridState });
+    // const droppedDisplaySet = DisplaySetService.getDisplaySetByUID(
+    //   displaySetInstanceUID
+    // );
+    // const updatedViewportGridState = HangingProtocolService([
+    //   droppedDisplaySet,
+    // ]);
+  const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
+    console.warn(`DROPPED: ${displaySetInstanceUID}`);
+    dispatch({ type: 'SET_DISPLAYSET_FOR_VIEWPORT', payload:
+      {
+        viewportIndex,
+        displaySetInstanceUID
+      }
+    });
   };
 
   const getViewportPanes = () => {
@@ -99,7 +93,7 @@ function ViewerViewportGrid(props) {
             key={viewportIndex}
             className="m-1"
             acceptDropsFor="displayset"
-            onDrop={onDropHandler}
+            onDrop={onDropHandler.bind(null, viewportIndex)}
             onInteraction={() => { setActiveViewportIndex(viewportIndex); }}
             isActive={activeViewportIndex === viewportIndex}
           >

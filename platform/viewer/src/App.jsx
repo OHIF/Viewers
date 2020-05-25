@@ -56,6 +56,13 @@ function App({ config, defaultExtensions }) {
     switch (action.type) {
       case 'SET_ACTIVE_VIEWPORT_INDEX':
         return { ...state, ...{ activeViewportIndex: action.payload } };
+      case 'SET_DISPLAYSET_FOR_VIEWPORT':
+        const { viewportIndex, displaySetInstanceUID } = action.payload;
+        const viewports = state.viewports.slice();
+
+        viewports[viewportIndex] = { displaySetInstanceUID };
+
+        return { ...state, ...{ viewports } };
       default:
         return action.payload;
     }
