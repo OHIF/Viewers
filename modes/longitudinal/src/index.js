@@ -74,12 +74,15 @@ export default function mode({ modeConfiguration }) {
             id: 'org.ohif.default.layoutTemplateModule.viewerLayout',
             props: {
               // named slots
-              leftPanels: ['org.ohif.default.panelModule.seriesList'],
+              leftPanels: [
+                'org.ohif.measurement-tracking.panelModule.seriesList',
+              ],
               // TODO: Should be optional, or required to pass empty array for slots?
               rightPanels: [], // // ['org.ohif.default.panelModule.measure'],
               viewports: [
                 {
-                  namespace: 'org.ohif.measurement-tracking.viewportModule.cornerstone-tracked',
+                  namespace:
+                    'org.ohif.measurement-tracking.viewportModule.cornerstone-tracked',
                   displaySetsToDisplay: [
                     'org.ohif.default.sopClassHandlerModule.stack',
                   ],

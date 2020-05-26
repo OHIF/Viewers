@@ -212,7 +212,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
       date: ds.SeriesDate,
       numInstances: ds.numImageFrames,
       StudyInstanceUID: ds.StudyInstanceUID,
-      componentType: 'thumbnail', // 'thumbnailNoImage' || 'thumbnailTracked' // TODO: PUT THIS SOMEWHERE ELSE
+      componentType: 'thumbnailTracked', // 'thumbnailNoImage' || 'thumbnail' // TODO: PUT THIS SOMEWHERE ELSE
       imageSrc,
       dragData: {
         type: 'displayset',
@@ -222,7 +222,6 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
     };
   });
 }
-
 
 /**
  *

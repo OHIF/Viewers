@@ -11,6 +11,7 @@ const ThumbnailTracked = ({
   description,
   seriesNumber,
   numInstances,
+  dragData,
   onClick,
   viewportIdentificator,
   isTracked,
@@ -25,7 +26,7 @@ const ThumbnailTracked = ({
         className
       )}
     >
-      <div className="flex flex-col flex-2 items-center">
+      <div className="flex flex-col items-center flex-2">
         <div
           className={classnames(
             'flex flex-col items-center justify-start p-2 mb-2 relative cursor-pointer',
@@ -49,14 +50,14 @@ const ThumbnailTracked = ({
                     </span>
                   )}
                 </div>
-                <div className="flex flex-2 items-center justify-center">
+                <div className="flex items-center justify-center flex-2">
                   <Icon name="info-link" className="text-primary-active" />
                 </div>
               </div>
             }
           >
-            <Icon name={trackedIcon} className="text-primary-light mb-2 w-4" />
-            <div className="text-white text-xl leading-tight h-5">
+            <Icon name={trackedIcon} className="w-4 mb-2 text-primary-light" />
+            <div className="h-5 text-xl leading-tight text-white">
               {viewportIdentificator}
             </div>
           </Tooltip>
@@ -64,13 +65,14 @@ const ThumbnailTracked = ({
         {isTracked && (
           <Icon
             name="cancel"
-            className="text-primary-active excludeButton w-4"
+            className="w-4 text-primary-active excludeButton"
           />
         )}
       </div>
       <Thumbnail
         imageSrc={imageSrc}
         imageAltText={imageAltText}
+        dragData={dragData}
         description={description}
         seriesNumber={seriesNumber}
         numInstances={numInstances}
@@ -82,6 +84,17 @@ const ThumbnailTracked = ({
 };
 
 ThumbnailTracked.propTypes = {
+  /**
+   * Data the thumbnail should expose to a receiving drop target. Use a matching
+   * `dragData.type` to identify which targets can receive this draggable item.
+   * If this is not set, drag-n-drop will be disabled for this thumbnail.
+   *
+   * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
+   */
+  dragData: PropTypes.shape({
+    /** Must match the "type" a dropTarget expects */
+    type: PropTypes.string.isRequired,
+  }),
   className: PropTypes.string,
   imageSrc: PropTypes.string,
   imageAltText: PropTypes.string,

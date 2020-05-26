@@ -43,17 +43,6 @@ const ThumbnailList = ({
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                 />
               );
-            case 'thumbnailNoImage':
-              return (
-                <ThumbnailNoImage
-                  key={displaySetInstanceUID}
-                  dragData={dragData}
-                  modality={modality}
-                  seriesDate={seriesDate}
-                  description={description}
-                  onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                />
-              );
             case 'thumbnailTracked':
               return (
                 <ThumbnailTracked
@@ -67,6 +56,17 @@ const ThumbnailList = ({
                   viewportIdentificator={viewportIdentificator}
                   isTracked={isTracked}
                   isActive={isActive}
+                  onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                />
+              );
+            case 'thumbnailNoImage':
+              return (
+                <ThumbnailNoImage
+                  key={displaySetInstanceUID}
+                  dragData={dragData}
+                  modality={modality}
+                  seriesDate={seriesDate}
+                  description={description}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                 />
               );

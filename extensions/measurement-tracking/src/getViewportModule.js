@@ -13,19 +13,7 @@ const OHIFCornerstoneViewport = props => {
 };
 
 function getViewportModule({ commandsManager }) {
-  const ExtendedOHIFCornerstoneViewport = props => {
-    const onNewImageHandler = jumpData => {
-      alert('here we are!')
-      commandsManager.runCommand('jumpToImage', jumpData);
-    };
-    return (
-      <OHIFCornerstoneViewport {...props} onNewImage={onNewImageHandler} />
-    );
-  };
-
-  return [
-    { name: 'cornerstone-tracked', component: ExtendedOHIFCornerstoneViewport },
-  ];
-};
+  return [{ name: 'cornerstone-tracked', component: OHIFCornerstoneViewport }];
+}
 
 export default getViewportModule;
