@@ -66,6 +66,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
   // TODO: Remove this
   if (!appConfig.modes.length) {
     appConfig.modes.push(window.exampleMode);
+    appConfig.modes.push(window.longitudinalMode);
   }
 
   return {

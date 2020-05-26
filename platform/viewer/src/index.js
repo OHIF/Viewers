@@ -23,11 +23,16 @@ import ReactDOM from 'react-dom';
  */
 import OHIFDefaultExtension from '@ohif/extension-default';
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
+import OHIFMeasurementTrackingExtension from '@ohif/extension-measurement-tracking';
 
 /** Combine our appConfiguration and "baked-in" extensions */
 const appProps = {
   config: window ? window.config : {},
-  defaultExtensions: [OHIFDefaultExtension, OHIFCornerstoneExtension],
+  defaultExtensions: [
+    OHIFDefaultExtension,
+    OHIFCornerstoneExtension,
+    OHIFMeasurementTrackingExtension,
+  ],
 };
 
 /** Create App */

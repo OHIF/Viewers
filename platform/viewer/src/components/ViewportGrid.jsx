@@ -114,7 +114,7 @@ function ViewerViewportGrid(props) {
   };
 
   // const ViewportPanes = React.useMemo(getViewportPanes, [
-  //   viewportComp'onents,
+  //   viewportComponents,
   //   activeViewportIndex,
   //   viewportGrid,
   // ]);
