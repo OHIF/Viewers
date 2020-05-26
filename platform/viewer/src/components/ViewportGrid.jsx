@@ -116,6 +116,7 @@ function ViewerViewportGrid(props) {
             className="m-1"
             acceptDropsFor="displayset"
             onDrop={onDropHandler}
+            onInteraction={() => { setActiveViewportIndex(viewportIndex); }}
             isActive={activeViewportIndex === viewportIndex}
           >
             <ViewportComponent
