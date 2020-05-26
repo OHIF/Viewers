@@ -191,8 +191,8 @@ class OHIFStandaloneViewer extends Component {
                   {match === null ? (
                     <></>
                   ) : (
-                    <Component match={match} location={this.props.location} />
-                  )}
+                      <Component match={match} location={this.props.location} />
+                    )}
                 </CSSTransition>
               )}
             </Route>

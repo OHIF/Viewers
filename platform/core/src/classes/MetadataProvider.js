@@ -1,7 +1,7 @@
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
-import { getFallbackTagFromInstance } from '../utils/metadataProvider/metadataProviderFallbackTags';
+import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacingInformation';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import fetchOverlayData from '../utils/metadataProvider/fetchOverlayData';
 
@@ -58,9 +58,7 @@ class MetadataProvider {
 
     Object.assign(instance, naturalizedDataset);
 
-    if (options.server) {
-      await this._checkBulkDataAndInlineBinaries(instance, options.server);
-    }
+    await this._checkBulkDataAndInlineBinaries(instance, options.server);
 
     return instance;
   }
@@ -163,18 +161,6 @@ class MetadataProvider {
       return instance[naturalizedTagOrWADOImageLoaderTag];
     }
 
-    if (options.fallback) {
-      // Perhaps the tag has fallbacks?
-      const fallbackTag = getFallbackTagFromInstance(
-        naturalizedTagOrWADOImageLoaderTag,
-        instance
-      );
-
-      if (fallbackTag) {
-        return fallbackTag;
-      }
-    }
-
     // Maybe its a legacy CornerstoneWADOImageLoader tag then:
     return this._getCornerstoneWADOImageLoaderTag(
       naturalizedTagOrWADOImageLoaderTag,
@@ -220,10 +206,9 @@ class MetadataProvider {
         const { ImageOrientationPatient } = instance;
 
         // Fallback for DX images.
-        const PixelSpacing = getFallbackTagFromInstance(
-          'PixelSpacing',
-          instance
-        );
+        // TODO: We should use the rest of the results of this function
+        // to update the UI somehow
+        const { PixelSpacing } = getPixelSpacingInformation(instance);
 
         let rowPixelSpacing;
         let columnPixelSpacing;
@@ -344,7 +329,7 @@ class MetadataProvider {
 
         break;
       case WADO_IMAGE_LOADER_TAGS.OVERLAY_PLANE_MODULE:
-        metadata = [];
+        const overlays = [];
 
         for (
           let overlayGroup = 0x00;
@@ -389,8 +374,12 @@ class MetadataProvider {
             roiStandardDeviation: instance[ROIStandardDeviationTag],
           };
 
-          metadata.push(overlay);
+          overlays.push(overlay);
         }
+
+        metadata = {
+          overlays,
+        };
 
         break;
 
@@ -411,6 +400,7 @@ class MetadataProvider {
 
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
+          sopInstanceUid: instance.SOPInstanceUID,
           instanceNumber: instance.InstanceNumber,
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,

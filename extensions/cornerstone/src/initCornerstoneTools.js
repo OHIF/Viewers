@@ -2,6 +2,9 @@ import Hammer from 'hammerjs';
 import cornerstone from 'cornerstone-core';
 import cornerstoneMath from 'cornerstone-math';
 import cornerstoneTools from 'cornerstone-tools';
+import OHIF from '@ohif/core';
+
+const { log } = OHIF;
 
 export default function(configuration = {}) {
   // For debugging
@@ -11,6 +14,13 @@ export default function(configuration = {}) {
   cornerstoneTools.external.Hammer = Hammer;
   cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
   cornerstoneTools.init(configuration);
+
+  cornerstoneTools.loadHandlerManager.setErrorLoadingHandler(
+    (element, imageId, error) => {
+      log.error(imageId);
+      throw error;
+    }
+  );
 
   // Set the tool font and font size
   // context.font = "[style] [variant] [weight] [size]/[line height] [font family]";

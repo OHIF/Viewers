@@ -1,6 +1,8 @@
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 
-export default function initWebWorkers() {  
+let initialized = false;
+
+export default function initWebWorkers() {
   const config = {
     maxWebWorkers: Math.max(navigator.hardwareConcurrency - 1, 1),
     startWebWorkersOnDemand: true,
@@ -13,5 +15,8 @@ export default function initWebWorkers() {
     },
   };
 
-  cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+  if (!initialized) {
+    cornerstoneWADOImageLoader.webWorkerManager.initialize(config);
+    initialized = true;
+  }
 }

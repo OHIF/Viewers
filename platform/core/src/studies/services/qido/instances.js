@@ -1,6 +1,8 @@
 import DICOMWeb from '../../../DICOMWeb/';
 import { api } from 'dicomweb-client';
 
+import errorHandler from '../../../errorHandler';
+
 /**
  * Parses data returned from a QIDO search and transforms it into
  * an array of series that are present in the study
@@ -79,6 +81,7 @@ export default function Instances(server, StudyInstanceUID) {
   const config = {
     url: server.qidoRoot,
     headers: DICOMWeb.getAuthorizationHeader(server),
+    errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
   const dicomWeb = new api.DICOMwebClient(config);
   const queryParams = getQIDOQueryParams(

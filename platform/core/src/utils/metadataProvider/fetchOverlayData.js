@@ -1,5 +1,9 @@
 import { api } from 'dicomweb-client';
 import DICOMWeb from '../../DICOMWeb';
+import str2ab from '../str2ab';
+import unpackOverlay from './unpackOverlay';
+
+import errorHandler from '../../errorHandler';
 
 export default async function fetchOverlayData(instance, server) {
   const OverlayDataPromises = [];
@@ -15,11 +19,24 @@ export default async function fetchOverlayData(instance, server) {
 
       const OverlayDataTag = `${groupStr}3000`;
 
-      if (instance[OverlayDataTag] && instance[OverlayDataTag].BulkDataURI) {
+      if (instance[OverlayDataTag] && instance[OverlayDataTag].InlineBinary) {
+        const inlineBinaryData = atob(instance[OverlayDataTag].InlineBinary);
+        const arraybuffer = str2ab(inlineBinaryData);
+
+        instance[OverlayDataTag] = unpackOverlay(arraybuffer);
+      } else if (
+        instance[OverlayDataTag] &&
+        instance[OverlayDataTag].BulkDataURI
+      ) {
         OverlayDataPromises.push(
           _getOverlayData(instance[OverlayDataTag], server)
         );
         OverlayDataTags.push(OverlayDataTag);
+      } else if (
+        instance[OverlayDataTag] &&
+        instance[OverlayDataTag] instanceof ArrayBuffer
+      ) {
+        instance[OverlayDataTag] = unpackOverlay(instance[OverlayDataTag]);
       }
     }
 
@@ -51,6 +68,7 @@ async function _getOverlayData(tag, server) {
   const config = {
     url: server.wadoRoot, //BulkDataURI is absolute, so this isn't used
     headers: DICOMWeb.getAuthorizationHeader(server),
+    errorInterceptor: errorHandler.getHTTPErrorHandler(),
   };
   const dicomWeb = new api.DICOMwebClient(config);
   const options = {
@@ -60,19 +78,5 @@ async function _getOverlayData(tag, server) {
   return dicomWeb
     .retrieveBulkData(options)
     .then(result => result[0])
-    .then(_unpackOverlay);
-}
-
-function _unpackOverlay(arrayBuffer) {
-  const bitArray = new Uint8Array(arrayBuffer);
-  const byteArray = new Uint8Array(8 * bitArray.length);
-
-  for (let byteIndex = 0; byteIndex < byteArray.length; byteIndex++) {
-    const bitIndex = byteIndex % 8;
-    const bitByteIndex = Math.floor(byteIndex / 8);
-    byteArray[byteIndex] =
-      1 * ((bitArray[bitByteIndex] & (1 << bitIndex)) >> bitIndex);
-  }
-
-  return byteArray;
+    .then(unpackOverlay);
 }

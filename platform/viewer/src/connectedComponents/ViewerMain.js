@@ -4,6 +4,10 @@ import { Component } from 'react';
 import { ConnectedViewportGrid } from './../components/ViewportGrid/index.js';
 import PropTypes from 'prop-types';
 import React from 'react';
+import memoize from 'lodash/memoize';
+import _values from 'lodash/values';
+
+var values = memoize(_values);
 
 class ViewerMain extends Component {
   static propTypes = {
@@ -77,6 +81,7 @@ class ViewerMain extends Component {
   }
 
   fillEmptyViewportPanes = () => {
+    // TODO: Here is the entry point for filling viewports on load.
     const dirtyViewportPanes = [];
     const { layout, viewportSpecificData } = this.props;
     const { displaySets } = this.state;
@@ -139,14 +144,13 @@ class ViewerMain extends Component {
 
   render() {
     const { viewportSpecificData } = this.props;
-    const viewportData = viewportSpecificData
-      ? Object.values(viewportSpecificData)
-      : [];
+    const viewportData = values(viewportSpecificData);
 
     return (
       <div className="ViewerMain">
         {this.state.displaySets.length && (
           <ConnectedViewportGrid
+            isStudyLoaded={this.props.isStudyLoaded}
             studies={this.props.studies}
             viewportData={viewportData}
             setViewportData={this.setViewportData}

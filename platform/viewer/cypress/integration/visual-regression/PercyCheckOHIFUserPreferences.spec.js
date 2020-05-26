@@ -7,10 +7,11 @@ describe('Visual Regression - OHIF User Preferences', () => {
     beforeEach(() => {
       // Open User Preferences modal
       cy.openPreferences();
-      cy.initPreferencesModalAliases();
     });
 
     it('checks displayed information on User Preferences modal', function() {
+      // Go go hotkeys tab
+      cy.selectPreferencesTab('@userPreferencesHotkeysTab');
       cy.get('@restoreBtn').scrollIntoView();
 
       // Visual comparison
@@ -21,8 +22,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
     });
 
     it('checks translation by selecting Spanish language', function() {
-      cy.changePreferencesTab('@userPreferencesGeneralTab');
-      cy.get('@userPreferencesGeneralTab').should('have.class', 'active');
+      cy.selectPreferencesTab('@userPreferencesGeneralTab');
 
       // Language dropdown should be displayed
       cy.get('#language-select').should('be.visible');
@@ -51,7 +51,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
 
   context('Study Viewer Page', function() {
     before(() => {
-      cy.openStudy('MISTER^MR');
+      cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
       cy.expectMinimumThumbnails(5);
     });
 
@@ -59,12 +59,14 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.initCommonElementsAliases();
       cy.resetViewport();
 
-      cy.resetUserHoktkeyPreferences();
+      cy.resetUserHotkeyPreferences();
       // Open User Preferences modal
       cy.openPreferences();
     });
 
     it('checks displayed information on User Preferences modal', function() {
+      // Go go hotkeys tab
+      cy.selectPreferencesTab('@userPreferencesHotkeysTab');
       cy.get('@restoreBtn').scrollIntoView();
 
       // Visual comparison
@@ -74,9 +76,18 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.get('[data-cy="close-button"]').click(); //close User Preferences modal
     });
 
+    it('checks if W/L Preferences table is being displayed in the Window Level tab', function() {
+      //Navigate to Window Level tab
+      cy.selectPreferencesTab('@userPreferencesWindowLevelTab');
+
+      // Visual comparison
+      cy.percyCanvasSnapshot(
+        'User Preferences Modal - Window Level Presets Tab'
+      );
+    });
+
     it('checks translation by selecting Spanish language', function() {
-      cy.changePreferencesTab('@userPreferencesGeneralTab');
-      cy.get('@userPreferencesGeneralTab').should('have.class', 'active');
+      cy.selectPreferencesTab('@userPreferencesGeneralTab');
 
       // Visual comparison
       cy.percyCanvasSnapshot(
@@ -100,8 +111,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
     });
 
     it('checks if user can restore to default the language selection and application will be in English', function() {
-      cy.changePreferencesTab('@userPreferencesGeneralTab');
-      cy.get('@userPreferencesGeneralTab').should('have.class', 'active');
+      cy.selectPreferencesTab('@userPreferencesGeneralTab');
 
       // Set language to Spanish
       cy.setLanguage('Spanish');
@@ -110,7 +120,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.openPreferences();
 
       // Go to general tab
-      cy.changePreferencesTab('@userPreferencesGeneralTab');
+      cy.selectPreferencesTab('@userPreferencesGeneralTab');
 
       cy.get('@restoreBtn')
         .scrollIntoView()
@@ -136,8 +146,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
 
     it('checks new hotkeys for "Next" and "Previous" Image on Viewport', function() {
       // Go go hotkeys tab
-      cy.changePreferencesTab('@userPreferencesHotkeysTab');
-      cy.get('@userPreferencesHotkeysTab').should('have.class', 'active');
+      cy.selectPreferencesTab('@userPreferencesHotkeysTab');
 
       // Set new hotkey for 'Next Image Viewport' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
