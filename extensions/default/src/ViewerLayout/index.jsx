@@ -135,11 +135,13 @@ function ViewerLayout({
         style={{ height: 'calc(100vh - 57px' }}
       >
         {/* LEFT SIDEPANELS */}
-        <SidePanel
-          side="left"
-          defaultComponentOpen={leftPanelComponents[0].name}
-          childComponents={leftPanelComponents}
-        />
+        {leftPanelComponents.length && (
+          <SidePanel
+            side="left"
+            defaultComponentOpen={leftPanelComponents[0].name}
+            childComponents={leftPanelComponents}
+          />
+        )}
         {/* TOOLBAR + GRID */}
         <div className="flex flex-col flex-1 h-full">
           <div className="flex h-12 border-b border-transparent flex-2 w-100">
@@ -206,11 +208,13 @@ function ViewerLayout({
             />*/}
           </div>
         </div>
-        <SidePanel
-          side="right"
-          defaultComponentOpen={rightPanelComponents[0].name}
-          childComponents={rightPanelComponents}
-        />
+        {rightPanelComponents.length && (
+          <SidePanel
+            side="right"
+            defaultComponentOpen={rightPanelComponents[0].name}
+            childComponents={rightPanelComponents}
+          />
+        )}
       </div>
     </div>
   );
@@ -235,6 +239,11 @@ ViewerLayout.propTypes = {
   rightPanels: PropTypes.array,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
   children: PropTypes.oneOfType(PropTypes.node, PropTypes.func).isRequired,
+};
+
+ViewerLayout.defaultProps = {
+  leftPanels: [],
+  rightPanels: [],
 };
 
 export default ViewerLayout;
