@@ -84,49 +84,30 @@ function ViewerViewportGrid(props) {
 
     for (let i = 0; i < numViewportPanes; i++) {
       const viewportIndex = i;
-      const paneMeta = viewports[i];
-      const isEmpty = !paneMeta || !paneMeta.displaySetInstanceUID;
+      const paneMetadata = viewports[i] || {};
+      const { displaySetInstanceUID } = paneMetadata;
+      const displaySet = DisplaySetService.getDisplaySetByUID(displaySetInstanceUID) || {};
+      const ViewportComponent =  _getViewportComponent(
+        displaySet.SOPClassHandlerId,
+        viewportComponents
+      );
 
-      if (isEmpty) {
-        viewportPanes[i] = (
-          <ViewportPane
-            key={viewportIndex}
-            className="m-1"
-            acceptDropsFor="displayset"
-            onDrop={onDropHandler.bind(null, viewportIndex)}
-            onInteraction={() => { setActiveViewportIndex(viewportIndex); }}
-            isActive={activeViewportIndex === viewportIndex}
-          >
-            <EmptyViewport />
-          </ViewportPane>
-        );
-      } else {
-        const displaySet = DisplaySetService.getDisplaySetByUID(
-          paneMeta.displaySetInstanceUID
-        );
-
-        const ViewportComponent = _getViewportComponent(
-          displaySet,
-          viewportComponents
-        );
-
-        viewportPanes[i] = (
-          <ViewportPane
-            key={viewportIndex}
-            className="m-1"
-            acceptDropsFor="displayset"
-            onDrop={onDropHandler}
-            onInteraction={() => { setActiveViewportIndex(viewportIndex); }}
-            isActive={activeViewportIndex === viewportIndex}
-          >
-            <ViewportComponent
-              displaySet={displaySet}
-              viewportIndex={viewportIndex}
-              dataSource={dataSource}
-            />
-          </ViewportPane>
-        );
-      }
+      viewportPanes[i] = (
+        <ViewportPane
+          key={viewportIndex}
+          className="m-1"
+          acceptDropsFor="displayset"
+          onDrop={onDropHandler.bind(null, viewportIndex)}
+          onInteraction={() => { setActiveViewportIndex(viewportIndex); }}
+          isActive={activeViewportIndex === viewportIndex}
+        >
+          <ViewportComponent
+            displaySet={displaySet}
+            viewportIndex={viewportIndex}
+            dataSource={dataSource}
+          />
+        </ViewportPane>
+      );
     }
 
     return viewportPanes;
@@ -154,8 +135,10 @@ ViewerViewportGrid.defaultProps = {
   viewportComponents: [],
 };
 
-function _getViewportComponent(displaySet, viewportComponents) {
-  const { SOPClassHandlerId } = displaySet;
+function _getViewportComponent(SOPClassHandlerId, viewportComponents) {
+  if (!SOPClassHandlerId) {
+    return EmptyViewport;
+  }
 
   for (let i = 0; i < viewportComponents.length; i++) {
     if (
