@@ -15,7 +15,7 @@
   "Elliptical": "Эллиптический",
   "Flip H": "Перевернуть ↔",
   "Flip V": "Перевернуть ↕",
-  "Freehand": "Рука",
+  "Freehand": "От руки",
   "Invert": "Инвертировать",
   "Layout": "$t(Common:Layout)",
   "Length": "Длина",
@@ -39,5 +39,6 @@
   "Stack Scroll": "Прокрутка серии",
   "Stop": "$t(Common:Stop)",
   "Themes": "Темы",
-  "Zoom": "Приблизить"
+  "Zoom": "Лупа",
+  "Annotate": "Примечание"
 }

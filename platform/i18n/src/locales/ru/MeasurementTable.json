@@ -5,5 +5,7 @@
   "MAX": "МАКС",
   "NonTargets": "Нецелевые",
   "Relabel": "Переназначить",
-  "Targets": "Цели"
+  "Targets": "Цели",
+  "Measurements": "Измерения",
+  "StudyDate": "Дата исследования"
 }
