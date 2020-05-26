@@ -1,7 +1,7 @@
 import {
   PanelStudyBrowserTracking,
   PanelMeasurementTableTracking,
-} from './Panels';
+} from './panels';
 
 // TODO:
 // - No loading UI exists yet

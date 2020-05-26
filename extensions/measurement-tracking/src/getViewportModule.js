@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Component = React.lazy(() => {
-  return import('./Viewports/OHIFCornerstoneViewport');
+  return import('./viewports/OHIFCornerstoneViewport');
 });
 
 const OHIFCornerstoneViewport = props => {
