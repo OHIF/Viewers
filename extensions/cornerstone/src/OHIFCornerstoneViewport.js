@@ -5,6 +5,29 @@ import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import debounce from 'lodash.debounce';
+import throttle from 'lodash.throttle';
+
+
+// const {
+//   onAdded,
+//   onRemoved,
+//   onModified,
+// } = OHIF.measurements.MeasurementHandlers;
+
+// // TODO: Transition to enums for the action names so that we can ensure they stay up to date
+// // everywhere they're used.
+// const MEASUREMENT_ACTION_MAP = {
+//   added: onAdded,
+//   removed: onRemoved,
+//   modified: throttle(event => {
+//     return onModified(event);
+//   }, 300),
+// };
+
+// const cine = viewportSpecificData.cine;
+
+// isPlaying = cine.isPlaying === true;
+// frameRate = cine.cineFrameRate || frameRate;
 
 const { StackManager } = OHIF.utils;
 
@@ -187,24 +210,12 @@ class OHIFCornerstoneViewport extends Component {
 
     return (
       <>
-        {/* <ConnectedCornerstoneViewport
-          viewportIndex={viewportIndex}
-          imageIds={imageIds}
-          imageIdIndex={currentImageIdIndex}
-          onNewImage={debouncedNewImageHandler}
-          // ~~ Connected (From REDUX)
-          // frameRate={frameRate}
-          // isPlaying={false}
-          // isStackPrefetchEnabled={true}
-          // onElementEnabled={() => {}}
-          // setViewportActive{() => {}}
-          {...this.props.customProps}
-        /> */}
         <CornerstoneViewport
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
           onNewImage={debouncedNewImageHandler}
+          // TODO: ViewportGrid Context?
           isActive={true} // todo
           isStackPrefetchEnabled={true} // todo
           isPlaying={false}
