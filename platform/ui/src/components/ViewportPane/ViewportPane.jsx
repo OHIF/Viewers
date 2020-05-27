@@ -43,6 +43,7 @@ function ViewportPane({
       onScroll={onInteraction}
       onWheel={onInteraction}
       className={classnames(
+        'flex flex-col',
         'rounded-lg hover:border-primary-light transition duration-300 outline-none overflow-hidden',
         {
           'border-2 border-primary-light m-0': isActive,
