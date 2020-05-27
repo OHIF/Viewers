@@ -35,14 +35,14 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
   const renderIconStatus = () => {
     if (modality === 'SR') {
       return (
-        <div className="flex p-1 border-primary-light border rounded relative">
-          <span className="leading-none text-sm font-bold text-primary-light">
+        <div className="relative flex p-1 border rounded border-primary-light">
+          <span className="text-sm font-bold leading-none text-primary-light">
             SR
           </span>
           {isLocked && (
             <Icon
               name="lock"
-              className="w-3 text-white absolute"
+              className="absolute w-3 text-white"
               style={{ top: -6, right: -6 }}
             />
           )}
@@ -53,7 +53,7 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
     return (
       <div className="relative">
         {!isTracked ? (
-          <Icon name="dotted-circle" className="text-primary-light w-6" />
+          <Icon name="dotted-circle" className="w-6 text-primary-light" />
         ) : (
           <Tooltip
             position="bottom-left"
@@ -65,35 +65,39 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
                 <div className="flex ml-4">
                   <span className="text-base text-common-light">
                     Series is
-                    <span className="text-white font-bold"> tracked</span> and
+                    <span className="font-bold text-white"> tracked</span> and
                     can be viewed <br /> in the measurement panel
                   </span>
                 </div>
               </div>
             }
           >
-            <Icon name="tracked" className="text-primary-light w-6" />
+            <Icon name="tracked" className="w-6 text-primary-light" />
           </Tooltip>
         )}
       </div>
     );
   };
   return (
-    <div className="flex items-center mx-2 mt-2 pb-2 border-b border-primary-light">
+    <div className="flex items-center p-2 border-b border-primary-light">
       <div className="flex flex-grow">
         <div className="flex items-center">
           {renderIconStatus()}
-          <span className="text-large text-white ml-2">{label}</span>
+          <span className="ml-2 text-white text-large">{label}</span>
         </div>
         <div className="flex flex-col justify-start ml-4">
           <div className="flex">
             <span className="text-base text-white">{studyDate}</span>
-            <span className="border-l border-primary-light ml-2 pl-2 text-base text-primary-light">
+            <span className="pl-2 ml-2 text-base border-l border-primary-light text-primary-light">
               S: {currentSeries}
             </span>
           </div>
           <div className="flex">
-            <p className="text-base truncate max-w-72 text-primary-light">
+            {/* This is tricky. Our "no-wrap" in truncate means this has a hard
+                length. The overflow forces ellipse. If we don't set max width
+                appropriately, this causes the ActionBar to overflow
+             */}
+            <p className="text-base truncate max-w-40 text-primary-light">
               {seriesDescription}
             </p>
           </div>
@@ -103,17 +107,17 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
         <ButtonGroup>
           <Button
             size="initial"
-            className="py-1 px-2"
+            className="px-2 py-1"
             onClick={() => onSeriesChange('left')}
           >
-            <Icon name="chevron-left" className="text-white w-4" />
+            <Icon name="chevron-left" className="w-4 text-white" />
           </Button>
           <Button
             size="initial"
-            className="py-1 px-2"
+            className="px-2 py-1"
             onClick={() => onSeriesChange('right')}
           >
-            <Icon name="chevron-right" className="text-white w-4" />
+            <Icon name="chevron-right" className="w-4 text-white" />
           </Button>
         </ButtonGroup>
       </div>
@@ -129,7 +133,7 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
                 <span className="text-base font-bold text-white">
                   {patientName}
                 </span>
-                <div className="flex mt-4 pb-4 mb-4 border-b border-secondary-main">
+                <div className="flex pb-4 mt-4 mb-4 border-b border-secondary-main">
                   <div className={classnames(classes.firstRow)}>
                     <span className={classnames(classes.infoHeader)}>Sex</span>
                     <span className={classnames(classes.infoText)}>
@@ -177,12 +181,12 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
             </div>
           }
         >
-          <div className="showTooltipOnHover flex justify-end relative">
+          <div className="relative flex justify-end showTooltipOnHover">
             <div className="relative">
-              <Icon name="profile" className="text-white w-5" />
+              <Icon name="profile" className="w-5 text-white" />
               <Icon
                 name="info-link"
-                className="bg-black text-white w-5 absolute"
+                className="absolute w-5 text-white bg-black"
                 style={{ right: -7, bottom: -10 }}
               />
             </div>
