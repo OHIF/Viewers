@@ -49,8 +49,8 @@ function Test() {
   return <div
     onClick={() => {
       dispatch({ type: '', payload: {
-        numCols: 3,
-        numRows: 3,
+        numCols: 2,
+        numRows: 2,
         activeViewportIndex: 0,
         viewports: [],
       }})

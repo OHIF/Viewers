@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF from '@ohif/core';
+import OHIF, { DicomMetadataStore } from '@ohif/core';
 import { ViewportActionBar } from '@ohif/ui';
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
@@ -156,27 +156,42 @@ class OHIFCornerstoneViewport extends Component {
       });
     }
 
+    // We have...
+    // StudyInstanceUid, DisplaySetInstanceUid
+    // Use displaySetInstanceUid --> SeriesInstanceUid
+    // Get meta for series, map to actionBar
+    // const displaySet = DisplaySetService.getDisplaySetByUID(
+    //   dSet.displaySetInstanceUID
+    // );
+    // TODO: This display contains the meta for all instances.
+    // That can't be right...
+    console.log('DISPLAYSET', this.props.displaySet)
+    const seriesMeta = DicomMetadataStore.getSeries(this.props.displaySet.StudyInstanceUID, '');
+    console.log(seriesMeta);
+
+    const { Modality, SeriesDate, SeriesDescription, SeriesNumber } = this.props.displaySet;
+    const { PatientID, PatientName, PatientSex, PatientAge, SliceThickness,  } = this.props.displaySet.images[0];
+
     return (
       <>
         <ViewportActionBar
           onSeriesChange={direction => alert(`Series ${direction}`)}
           studyData={{
-            label: 'A',
+            label: '',
             isTracked: false,
             isLocked: false,
-            studyDate: '07-Sep-2011',
-            currentSeries: 1,
-            seriesDescription:
-              'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
-            modality: 'CT',
+            studyDate: SeriesDate, // TODO: This is series date. Is that ok?
+            currentSeries: SeriesNumber,
+            seriesDescription: SeriesDescription,
+            modality: Modality,
             patientInformation: {
-              patientName: 'Smith, Jane',
-              patientSex: 'F',
-              patientAge: '59',
-              MRN: '10000001',
-              thickness: '5.0mm',
-              spacing: '1.25mm',
-              scanner: 'Aquilion',
+              patientName: PatientName ? PatientName.Alphabetic || '' : '',
+              patientSex: PatientSex || '',
+              patientAge: PatientAge || '',
+              MRN: PatientID || '',
+              thickness: `${SliceThickness}mm`,
+              spacing: '',
+              scanner: '',
             },
           }}
         />
