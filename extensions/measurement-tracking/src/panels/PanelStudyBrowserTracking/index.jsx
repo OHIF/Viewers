@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 //
-import PanelStudyBrowser from './PanelStudyBrowser';
+import PanelStudyBrowserTracking from './PanelStudyBrowserTracking';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
 import getStudiesForPatientByStudyInstanceUID from './getStudiesForPatientByStudyInstanceUID';
 import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStudy';
@@ -13,7 +13,7 @@ import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStu
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowser({
+function WrappedPanelStudyBrowserTracking({
   commandsManager,
   extensionManager,
   servicesManager,
@@ -34,7 +34,7 @@ function WrappedPanelStudyBrowser({
   );
 
   return (
-    <PanelStudyBrowser
+    <PanelStudyBrowserTracking
       DisplaySetService={servicesManager.services.DisplaySetService}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
@@ -69,10 +69,10 @@ function _createGetImageSrcFromImageIdFn(getCommand) {
   }
 }
 
-WrappedPanelStudyBrowser.propTypes = {
+WrappedPanelStudyBrowserTracking.propTypes = {
   commandsManager: PropTypes.object.isRequired,
   extensionManager: PropTypes.object.isRequired,
   servicesManager: PropTypes.object.isRequired,
 };
 
-export default WrappedPanelStudyBrowser;
+export default WrappedPanelStudyBrowserTracking;

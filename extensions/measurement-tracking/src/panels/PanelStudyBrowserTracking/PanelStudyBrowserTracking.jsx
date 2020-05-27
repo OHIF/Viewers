@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { StudyBrowser, useImageViewer } from '@ohif/ui';
+import { useTrackedMeasurements } from '../../getContextModule';
 
 /**
  *
  * @param {*} param0
  */
-function PanelStudyBrowser({
+function PanelStudyBrowserTracking({
   DisplaySetService,
   getImageSrc,
   getStudiesForPatientByStudyInstanceUID,
@@ -16,12 +17,31 @@ function PanelStudyBrowser({
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
-  const [{ StudyInstanceUIDs }, dispatch] = useImageViewer();
+  const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
+  const [
+    trackedMeasurements,
+    dispatchTrackedMeasurements,
+  ] = useTrackedMeasurements();
+  console.warn('trackedMeasurementsState: ', trackedMeasurements);
   const [activeTabName, setActiveTabName] = useState('primary');
-  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([]);
+  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState(
+    []
+  );
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
+
+  // TODO: REPLACE ME
+  useEffect(() => {
+    dispatchTrackedMeasurements({
+      type: 'TRACK_SERIES',
+      payload: {
+        StudyInstanceUID:
+          '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.1',
+        SeriesInstanceUID: '2.25.406240484039997428244790346419850090743',
+      },
+    });
+  }, [dispatchTrackedMeasurements]);
 
   // ~~ studyDisplayList
   useEffect(() => {
@@ -66,7 +86,7 @@ function PanelStudyBrowser({
         return { ...prevState, ...newImageSrcEntry };
       });
     });
-  }, []);
+  }, [DisplaySetService, dataSource, getImageSrc]);
 
   // ~~ displaySets
   useEffect(() => {
@@ -78,7 +98,7 @@ function PanelStudyBrowser({
     );
 
     setDisplaySets(mappedDisplaySets);
-  }, [thumbnailImageSrcMap]);
+  }, [DisplaySetService.activeDisplaySets, thumbnailImageSrcMap]);
 
   // ~~ subscriptions --> displaySets
   useEffect(() => {
@@ -123,7 +143,7 @@ function PanelStudyBrowser({
       SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
     };
-  }, []);
+  }, [DisplaySetService, dataSource, getImageSrc, thumbnailImageSrcMap]);
 
   const tabs = _createStudyBrowserTabs(
     StudyInstanceUIDs,
@@ -161,7 +181,7 @@ function PanelStudyBrowser({
   );
 }
 
-PanelStudyBrowser.propTypes = {
+PanelStudyBrowserTracking.propTypes = {
   DisplaySetService: PropTypes.shape({
     EVENTS: PropTypes.object.isRequired,
     activeDisplaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -177,7 +197,7 @@ PanelStudyBrowser.propTypes = {
   requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
 };
 
-export default PanelStudyBrowser;
+export default PanelStudyBrowserTracking;
 
 /**
  * Maps from the DataSource's format to a naturalized object
