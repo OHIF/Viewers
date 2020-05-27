@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF from '@ohif/core';
+import { ViewportActionBar } from '@ohif/ui';
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
 
@@ -157,6 +158,28 @@ class OHIFCornerstoneViewport extends Component {
 
     return (
       <>
+        <ViewportActionBar
+          onSeriesChange={direction => alert(`Series ${direction}`)}
+          studyData={{
+            label: 'A',
+            isTracked: true,
+            isLocked: false,
+            studyDate: '07-Sep-2011',
+            currentSeries: 1,
+            seriesDescription:
+              'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
+            modality: 'CT',
+            patientInformation: {
+              patientName: 'Smith, Jane',
+              patientSex: 'F',
+              patientAge: '59',
+              MRN: '10000001',
+              thickness: '5.0mm',
+              spacing: '1.25mm',
+              scanner: 'Aquilion',
+            },
+          }}
+        />
         <CornerstoneViewport
           viewportIndex={viewportIndex}
           imageIds={imageIds}
