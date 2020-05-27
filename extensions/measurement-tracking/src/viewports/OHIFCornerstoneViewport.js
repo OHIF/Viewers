@@ -162,7 +162,7 @@ class OHIFCornerstoneViewport extends Component {
           onSeriesChange={direction => alert(`Series ${direction}`)}
           studyData={{
             label: 'A',
-            isTracked: true,
+            isTracked: false,
             isLocked: false,
             studyDate: '07-Sep-2011',
             currentSeries: 1,
