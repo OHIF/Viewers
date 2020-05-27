@@ -93,9 +93,12 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
             </span>
           </div>
           <div className="flex">
-            {/* This is tricky. Our "no-wrap" in truncate means this has a hard
+            {/* TODO:
+                This is tricky. Our "no-wrap" in truncate means this has a hard
                 length. The overflow forces ellipse. If we don't set max width
-                appropriately, this causes the ActionBar to overflow
+                appropriately, this causes the ActionBar to overflow.
+                Can clean up by setting percentage widths + calc on parent
+                containers
              */}
             <p className="text-base truncate max-w-40 text-primary-light">
               {seriesDescription}
