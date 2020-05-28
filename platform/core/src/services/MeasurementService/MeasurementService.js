@@ -33,6 +33,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'id',
   'SOPInstanceUID',
   'FrameOfReferenceUID',
+  'referenceStudyUID',
   'referenceSeriesUID',
   'label',
   'description',
@@ -263,7 +264,6 @@ class MeasurementService {
     const sourceInfo = this._getSourceInfo(source);
 
     if (!definition) {
-      console.log('TEST');
       log.warn('No source definition provided. Exiting early.');
       return;
     }
@@ -337,33 +337,6 @@ class MeasurementService {
 
     return newMeasurement.id;
   }
-
-  /**
-   * Subscribe to measurement updates.
-   *
-   * @param {string} eventName The name of the event
-   * @param {Function} callback Events callback
-   * @return {Object} Observable object with actions
-  //  */
-  // subscribe(eventName, callback) {
-  //   if (this._isValidEvent(eventName)) {
-  //     const listenerId = guid();
-  //     const subscription = { id: listenerId, callback };
-
-  //     console.info(`Subscribing to '${eventName}'.`);
-  //     if (Array.isArray(this.listeners[eventName])) {
-  //       this.listeners[eventName].push(subscription);
-  //     } else {
-  //       this.listeners[eventName] = [subscription];
-  //     }
-
-  //     return {
-  //       unsubscribe: () => this._unsubscribe(eventName, listenerId),
-  //     };
-  //   } else {
-  //     throw new Error(`Event ${eventName} not supported.`);
-  //   }
-  // }
 
   _getMappingByMeasurementSource(measurementId, definition) {
     const measurement = this.getMeasurement(measurementId);
@@ -448,28 +421,6 @@ class MeasurementService {
       });
     }
   }
-
-  /**
-   * Unsubscribe to measurement updates.
-   *
-   * @param {string} eventName The name of the event
-  //  * @param {string} listenerId The listeners id
-  //  * @return void
-  //  */
-  // _unsubscribe(eventName, listenerId) {
-  //   if (!this.listeners[eventName]) {
-  //     return;
-  //   }
-
-  //   const listeners = this.listeners[eventName];
-  //   if (Array.isArray(listeners)) {
-  //     this.listeners[eventName] = listeners.filter(
-  //       ({ id }) => id !== listenerId
-  //     );
-  //   } else {
-  //     this.listeners[eventName] = undefined;
-  //   }
-  // }
 
   /**
    * Check if a given measurement data is valid.

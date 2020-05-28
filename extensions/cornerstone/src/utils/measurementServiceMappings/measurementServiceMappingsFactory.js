@@ -65,6 +65,7 @@ const measurementServiceMappingsFactory = measurementService => {
       SOPInstanceUID,
       FrameOfReferenceUID,
       SeriesInstanceUID,
+      StudyInstanceUID,
     } = _getAttributes(element);
 
     const points = [];
@@ -75,6 +76,7 @@ const measurementServiceMappingsFactory = measurementService => {
       SOPInstanceUID: SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
+      referenceStudyUID: StudyInstanceUID,
       label: measurementData.text,
       description: measurementData.description,
       unit: measurementData.unit,
@@ -96,6 +98,7 @@ const measurementServiceMappingsFactory = measurementService => {
       SOPInstanceUID: instance.SOPInstanceUID,
       FrameOfReferenceUID: instance.FrameOfReferenceUID,
       SeriesInstanceUID: instance.SeriesInstanceUID,
+      StudyInstanceUID: instance.StudyInstanceUID,
     };
   };
 
