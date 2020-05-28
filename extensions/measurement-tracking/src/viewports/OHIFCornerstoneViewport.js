@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
-import { ViewportActionBar } from '@ohif/ui';
+import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
 import { useTrackedMeasurements } from './../getContextModule';
@@ -23,6 +23,7 @@ function OHIFCornerstoneViewport({
   viewportIndex,
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
+  const [{ viewports }, dispatchViewportGrid] = useViewportGrid();
   const [viewportData, setViewportData] = useState(null);
   // TODO: Still needed? Better way than import `OHIF` and destructure?
   // Why is this managed by `core`?
@@ -101,6 +102,10 @@ function OHIFCornerstoneViewport({
   // const seriesMeta = DicomMetadataStore.getSeries(this.props.displaySet.StudyInstanceUID, '');
   // console.log(seriesMeta);
 
+  // TODO: Share this logic so it isn't out of sync where we retrieve
+  const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(
+    vp => vp.displaySetInstanceUID === displaySet.displaySetInstanceUID
+  );
   const { trackedSeries } = trackedMeasurements.context;
   const {
     Modality,
@@ -122,7 +127,7 @@ function OHIFCornerstoneViewport({
       <ViewportActionBar
         onSeriesChange={direction => alert(`Series ${direction}`)}
         studyData={{
-          label: '',
+          label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
           isTracked: trackedSeries.includes(SeriesInstanceUID),
           isLocked: false,
           studyDate: SeriesDate, // TODO: This is series date. Is that ok?
@@ -166,6 +171,8 @@ OHIFCornerstoneViewport.propTypes = {
 OHIFCornerstoneViewport.defaultProps = {
   customProps: {},
 };
+
+const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
 /**
  * Obtain the CornerstoneTools Stack for the specified display set.

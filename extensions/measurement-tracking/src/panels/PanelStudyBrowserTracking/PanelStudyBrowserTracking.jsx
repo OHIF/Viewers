@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { StudyBrowser, useImageViewer } from '@ohif/ui';
+import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
 /**
@@ -19,6 +19,7 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
+  const [{ viewports }, dispatchViewportGrid] = useViewportGrid();
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -109,7 +110,8 @@ function PanelStudyBrowserTracking({
     const mappedDisplaySets = _mapDisplaySets(
       currentDisplaySets,
       thumbnailImageSrcMap,
-      trackedSeries
+      trackedSeries,
+      viewports
     );
 
     setDisplaySets(mappedDisplaySets);
@@ -117,6 +119,7 @@ function PanelStudyBrowserTracking({
     DisplaySetService.activeDisplaySets,
     trackedSeries,
     thumbnailImageSrcMap,
+    viewports,
   ]);
 
   // ~~ subscriptions --> displaySets
@@ -152,7 +155,8 @@ function PanelStudyBrowserTracking({
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
           thumbnailImageSrcMap,
-          trackedSeries
+          trackedSeries,
+          viewports,
         );
 
         setDisplaySets(mappedDisplaySets);
@@ -169,6 +173,7 @@ function PanelStudyBrowserTracking({
     getImageSrc,
     thumbnailImageSrcMap,
     trackedSeries,
+    viewports,
   ]);
 
   const tabs = _createStudyBrowserTabs(
@@ -250,10 +255,17 @@ function _mapDataSourceStudies(studies) {
 function _mapDisplaySets(
   displaySets,
   thumbnailImageSrcMap,
-  trackedSeriesInstanceUIDs
+  trackedSeriesInstanceUIDs,
+  viewports // TODO: make array of `displaySetInstanceUIDs`?
 ) {
   return displaySets.map(ds => {
+    const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(
+      vp => vp.displaySetInstanceUID === ds.displaySetInstanceUID
+    );
+    const viewportIdentificator =
+      _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid] || '';
     const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
+
     return {
       displaySetInstanceUID: ds.displaySetInstanceUID,
       description: ds.SeriesDescription,
@@ -270,9 +282,12 @@ function _mapDisplaySets(
         // .. Any other data to pass
       },
       isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
+      viewportIdentificator,
     };
   });
 }
+
+const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
 /**
  *
