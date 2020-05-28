@@ -14,7 +14,7 @@ function ViewerViewportGrid(props) {
   ] = useViewportGrid();
   const setActiveViewportIndex = index => {
     dispatch({ type: 'SET_ACTIVE_VIEWPORT_INDEX', payload: index });
-  }
+  };
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const { DisplaySetService } = servicesManager.services;
@@ -62,19 +62,20 @@ function ViewerViewportGrid(props) {
   //   return unsubscribe;
   // }, []);
 
-    // const droppedDisplaySet = DisplaySetService.getDisplaySetByUID(
-    //   displaySetInstanceUID
-    // );
-    // const updatedViewportGridState = HangingProtocolService([
-    //   droppedDisplaySet,
-    // ]);
+  // const droppedDisplaySet = DisplaySetService.getDisplaySetByUID(
+  //   displaySetInstanceUID
+  // );
+  // const updatedViewportGridState = HangingProtocolService([
+  //   droppedDisplaySet,
+  // ]);
   const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
     console.warn(`DROPPED: ${displaySetInstanceUID}`);
-    dispatch({ type: 'SET_DISPLAYSET_FOR_VIEWPORT', payload:
-      {
+    dispatch({
+      type: 'SET_DISPLAYSET_FOR_VIEWPORT',
+      payload: {
         viewportIndex,
-        displaySetInstanceUID
-      }
+        displaySetInstanceUID,
+      },
     });
   };
 
@@ -86,8 +87,9 @@ function ViewerViewportGrid(props) {
       const viewportIndex = i;
       const paneMetadata = viewports[i] || {};
       const { displaySetInstanceUID } = paneMetadata;
-      const displaySet = DisplaySetService.getDisplaySetByUID(displaySetInstanceUID) || {};
-      const ViewportComponent =  _getViewportComponent(
+      const displaySet =
+        DisplaySetService.getDisplaySetByUID(displaySetInstanceUID) || {};
+      const ViewportComponent = _getViewportComponent(
         displaySet.SOPClassHandlerId,
         viewportComponents
       );
@@ -98,7 +100,9 @@ function ViewerViewportGrid(props) {
           className="m-1"
           acceptDropsFor="displayset"
           onDrop={onDropHandler.bind(null, viewportIndex)}
-          onInteraction={() => { setActiveViewportIndex(viewportIndex); }}
+          onInteraction={() => {
+            setActiveViewportIndex(viewportIndex);
+          }}
           isActive={activeViewportIndex === viewportIndex}
         >
           <ViewportComponent
