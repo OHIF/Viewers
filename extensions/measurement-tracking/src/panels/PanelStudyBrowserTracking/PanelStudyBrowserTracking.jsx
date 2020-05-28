@@ -32,12 +32,7 @@ function PanelStudyBrowserTracking({
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
 
-  // Listen for measurement service "adds" (really shouldn't be added until cornerstone-tools "complete")
-  // const {
-  //   MEASUREMENT_ADDED,
-  //   MEASUREMENT_UPDATED,
-  // } = measurementService.EVENTS;
-
+  // TODO: Listen for measurement service "adds" (really shouldn't be added until cornerstone-tools "complete")
   useEffect(() => {
     const { unsubscribe } = MeasurementService.subscribe(
       MeasurementService.EVENTS.MEASUREMENT_ADDED,
@@ -58,11 +53,7 @@ function PanelStudyBrowserTracking({
     );
 
     return unsubscribe;
-  }, []);
-
-  // TODO: REPLACE ME
-  useEffect(() => {
-  }, [sendTrackedMeasurementsEvent]);
+  }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
 
