@@ -6,11 +6,7 @@ import OHIF, { DicomMetadataStore } from '@ohif/core';
 import { ViewportActionBar } from '@ohif/ui';
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
-
-// const [
-//   trackedMeasurements,
-//   sendTrackedMeasurementsEvent,
-// ] = useTrackedMeasurements();
+import { useTrackedMeasurements } from './../getContextModule';
 
 
 // const cine = viewportSpecificData.cine;
@@ -26,6 +22,7 @@ function OHIFCornerstoneViewport({
   displaySet,
   viewportIndex,
 }) {
+  const [trackedMeasurements] = useTrackedMeasurements();
   const [viewportData, setViewportData] = useState(null);
   // TODO: Still needed? Better way than import `OHIF` and destructure?
   // Why is this managed by `core`?
@@ -56,6 +53,7 @@ function OHIFCornerstoneViewport({
       setViewportData({ ...viewportData });
     });
   }, [
+    dataSource,
     displaySet,
     displaySet.StudyInstanceUID,
     displaySet.displaySetInstanceUID,
@@ -103,7 +101,14 @@ function OHIFCornerstoneViewport({
   // const seriesMeta = DicomMetadataStore.getSeries(this.props.displaySet.StudyInstanceUID, '');
   // console.log(seriesMeta);
 
-  const { Modality, SeriesDate, SeriesDescription, SeriesNumber } = displaySet;
+  const { trackedSeries } = trackedMeasurements.context;
+  const {
+    Modality,
+    SeriesDate,
+    SeriesDescription,
+    SeriesInstanceUID,
+    SeriesNumber,
+  } = displaySet;
   const {
     PatientID,
     PatientName,
@@ -118,7 +123,7 @@ function OHIFCornerstoneViewport({
         onSeriesChange={direction => alert(`Series ${direction}`)}
         studyData={{
           label: '',
-          isTracked: false,
+          isTracked: trackedSeries.includes(SeriesInstanceUID),
           isLocked: false,
           studyDate: SeriesDate, // TODO: This is series date. Is that ok?
           currentSeries: SeriesNumber,
