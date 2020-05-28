@@ -35,6 +35,7 @@ function WrappedPanelStudyBrowserTracking({
 
   return (
     <PanelStudyBrowserTracking
+      MeasurementService={servicesManager.services.MeasurementService}
       DisplaySetService={servicesManager.services.DisplaySetService}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}

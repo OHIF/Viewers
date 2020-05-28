@@ -8,6 +8,7 @@ import { useTrackedMeasurements } from '../../getContextModule';
  * @param {*} param0
  */
 function PanelStudyBrowserTracking({
+  MeasurementService,
   DisplaySetService,
   getImageSrc,
   getStudiesForPatientByStudyInstanceUID,
@@ -31,13 +32,36 @@ function PanelStudyBrowserTracking({
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
 
+  // Listen for measurement service "adds" (really shouldn't be added until cornerstone-tools "complete")
+  // const {
+  //   MEASUREMENT_ADDED,
+  //   MEASUREMENT_UPDATED,
+  // } = measurementService.EVENTS;
+
+  useEffect(() => {
+    const { unsubscribe } = MeasurementService.subscribe(
+      MeasurementService.EVENTS.MEASUREMENT_ADDED,
+      ({ source, measurement }) => {
+        const {
+          referenceSeriesUID: SeriesInstanceUID,
+          referenceStudyUID: StudyInstanceUID,
+        } = measurement;
+
+        sendTrackedMeasurementsEvent('TRACK_SERIES', {
+          StudyInstanceUID,
+          SeriesInstanceUID,
+        });
+
+        console.log('PANEL:', measurement);
+        // console.log('Mapped:', annotation);
+      }
+    );
+
+    return unsubscribe;
+  }, []);
+
   // TODO: REPLACE ME
   useEffect(() => {
-    sendTrackedMeasurementsEvent('TRACK_SERIES', {
-      StudyInstanceUID: '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.1',
-      SeriesInstanceUID: '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.2',
-      //'2.25.406240484039997428244790346419850090743',
-    });
   }, [sendTrackedMeasurementsEvent]);
 
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
