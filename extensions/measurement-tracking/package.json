@@ -36,6 +36,8 @@
   },
   "dependencies": {
     "@babel/runtime": "7.7.6",
+    "@xstate/immer": "^0.1.0",
+    "@xstate/react": "^0.8.1",
     "xstate": "^4.10.0"
   }
 }

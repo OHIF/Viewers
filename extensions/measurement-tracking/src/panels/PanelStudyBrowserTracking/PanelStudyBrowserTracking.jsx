@@ -20,7 +20,7 @@ function PanelStudyBrowserTracking({
   const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
   const [
     trackedMeasurements,
-    dispatchTrackedMeasurements,
+    sendTrackedMeasurementsEvent,
   ] = useTrackedMeasurements();
   console.warn('trackedMeasurementsState: ', trackedMeasurements);
   const [activeTabName, setActiveTabName] = useState('primary');
@@ -33,15 +33,14 @@ function PanelStudyBrowserTracking({
 
   // TODO: REPLACE ME
   useEffect(() => {
-    dispatchTrackedMeasurements({
-      type: 'TRACK_SERIES',
-      payload: {
-        StudyInstanceUID:
-          '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.1',
-        SeriesInstanceUID: '2.25.406240484039997428244790346419850090743',
-      },
+    sendTrackedMeasurementsEvent('TRACK_SERIES', {
+      StudyInstanceUID: '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.1',
+      SeriesInstanceUID: '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.2',
+      //'2.25.406240484039997428244790346419850090743',
     });
-  }, [dispatchTrackedMeasurements]);
+  }, [sendTrackedMeasurementsEvent]);
+
+  const { trackedStudy, trackedSeries } = trackedMeasurements.context;
 
   // ~~ studyDisplayList
   useEffect(() => {
@@ -94,11 +93,16 @@ function PanelStudyBrowserTracking({
     const currentDisplaySets = DisplaySetService.activeDisplaySets;
     const mappedDisplaySets = _mapDisplaySets(
       currentDisplaySets,
-      thumbnailImageSrcMap
+      thumbnailImageSrcMap,
+      trackedSeries
     );
 
     setDisplaySets(mappedDisplaySets);
-  }, [DisplaySetService.activeDisplaySets, thumbnailImageSrcMap]);
+  }, [
+    DisplaySetService.activeDisplaySets,
+    trackedSeries,
+    thumbnailImageSrcMap,
+  ]);
 
   // ~~ subscriptions --> displaySets
   useEffect(() => {
@@ -132,7 +136,8 @@ function PanelStudyBrowserTracking({
       changedDisplaySets => {
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
-          thumbnailImageSrcMap
+          thumbnailImageSrcMap,
+          trackedSeries
         );
 
         setDisplaySets(mappedDisplaySets);
@@ -143,7 +148,13 @@ function PanelStudyBrowserTracking({
       SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
     };
-  }, [DisplaySetService, dataSource, getImageSrc, thumbnailImageSrcMap]);
+  }, [
+    DisplaySetService,
+    dataSource,
+    getImageSrc,
+    thumbnailImageSrcMap,
+    trackedSeries,
+  ]);
 
   const tabs = _createStudyBrowserTabs(
     StudyInstanceUIDs,
@@ -221,7 +232,11 @@ function _mapDataSourceStudies(studies) {
   });
 }
 
-function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
+function _mapDisplaySets(
+  displaySets,
+  thumbnailImageSrcMap,
+  trackedSeriesInstanceUIDs
+) {
   return displaySets.map(ds => {
     const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
     return {
@@ -239,6 +254,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
         displaySetInstanceUID: ds.displaySetInstanceUID,
         // .. Any other data to pass
       },
+      isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
     };
   });
 }

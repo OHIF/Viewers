@@ -1,13 +1,10 @@
-import React, { useContext, useReducer } from 'react';
-
-const TRACKED_MEASUREMENTS_INITIAL_STATE = {
-  /** StudyInstanceUID */
-  trackedStudy: '',
-  /** string[] of SeriesInstanceUID */
-  trackedSeries: [],
-  /** key, value => displaySetInstanceUID, string label */
-  viewportLabels: new Map(),
-};
+import React, { useContext } from 'react';
+import PropTypes from 'prop-types';
+import { useMachine } from '@xstate/react';
+import {
+  measurementTrackingMachine,
+  defaultOptions,
+} from './measurementTrackingMachine';
 
 const TrackedMeasurementsContext = React.createContext();
 
@@ -20,48 +17,26 @@ const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
  * @param {*} param0
  */
 function TrackedMeasurementsContextProvider({ children }) {
-  /**
-   *
-   * @param {object} state - previous state
-   * @param {object} action
-   * @param {string} action.type
-   * @param {object} action.payload
-   */
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case 'TRACK_SERIES':
-        const { StudyInstanceUID, SeriesInstanceUID } = action.payload;
-        return state;
-      case 'UNTRACK_SERIES':
-        return state;
-      default:
-        return state;
-    }
-  };
-
-  // Computed:
-  // numTrackedSeries
-
-  // API
-  // -
-  // - TrackSeries(studyUid, seriesUid) (or... TrackViewport?)
-  //    - Checks against tracked study + series
-  //    - Initiates prompt if required
-  //    - does nothing for SR modality? (how do we know SR viewport?????????)
-  // - UntrackSeries(seriesUid)
-  const [trackedMeasurements, dispatchTrackedMeasurements] = useReducer(
-    reducer,
-    TRACKED_MEASUREMENTS_INITIAL_STATE
-  );
+  // TODO: Configure `UIViewportNotificationService` for appropriate actions
+  const measurementTrackingMachineOptions = Object.assign({}, defaultOptions);
+  const [
+    trackedMeasurements,
+    sendTrackedMeasurementsEvent,
+    trackedMeasurementsService,
+  ] = useMachine(measurementTrackingMachine, measurementTrackingMachineOptions);
 
   return (
     <TrackedMeasurementsContext.Provider
-      value={[trackedMeasurements, dispatchTrackedMeasurements]}
+      value={[trackedMeasurements, sendTrackedMeasurementsEvent]}
     >
       {children}
     </TrackedMeasurementsContext.Provider>
   );
 }
+
+TrackedMeasurementsContextProvider.propTypes = {
+  children: PropTypes.oneOf([PropTypes.func, PropTypes.node]),
+};
 
 export {
   TrackedMeasurementsContext,
