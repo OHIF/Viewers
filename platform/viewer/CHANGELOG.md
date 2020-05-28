@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.0.0...@ohif/viewer@4.1.0) (2020-05-15)
+
+
+### Features
+
+* expose some app internals as window.app ([#1735](https://github.com/OHIF/Viewers/issues/1735)) ([63fd656](https://github.com/OHIF/Viewers/commit/63fd65690cba450721870a6222e0fb3ad71bb291))
+
+
+
+
+
 # [4.0.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@3.11.11...@ohif/viewer@4.0.0) (2020-05-14)
 
 
