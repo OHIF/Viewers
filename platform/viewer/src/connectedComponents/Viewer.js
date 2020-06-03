@@ -321,7 +321,7 @@ class Viewer extends Component {
 
           {/* MAIN */}
           <div className={classNames('main-content')}>
-            <ErrorBoundaryDialog context="MainViewer">
+            <ErrorBoundaryDialog context="ViewerMain">
               <ConnectedViewerMain
                 studies={this.props.studies}
                 isStudyLoaded={this.props.isStudyLoaded}
