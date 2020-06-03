@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
-import { withDialog, ErrorBoundary } from '@ohif/ui';
+import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedHeader from './ConnectedHeader.js';
 import ToolbarRow from './ToolbarRow.js';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
+import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
 
 // Contexts
@@ -25,6 +26,7 @@ class Viewer extends Component {
       PropTypes.shape({
         StudyInstanceUID: PropTypes.string.isRequired,
         StudyDate: PropTypes.string,
+        PatientID: PropTypes.string,
         displaySets: PropTypes.arrayOf(
           PropTypes.shape({
             displaySetInstanceUID: PropTypes.string.isRequired,
@@ -255,7 +257,7 @@ class Viewer extends Component {
         </WhiteLabelingContext.Consumer>
 
         {/* TOOLBAR */}
-        <ErrorBoundary context='ToolbarRow'>
+        <ErrorBoundaryDialog context="ToolbarRow">
           <ToolbarRow
             isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
             isRightSidePanelOpen={this.state.isRightSidePanelOpen}
@@ -292,7 +294,7 @@ class Viewer extends Component {
             }}
             studies={this.props.studies}
           />
-        </ErrorBoundary>
+        </ErrorBoundaryDialog>
 
         {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
         {/*<StudyPrefetcher studies={this.props.studies} />*/}
@@ -300,7 +302,7 @@ class Viewer extends Component {
         {/* VIEWPORTS + SIDEPANELS */}
         <div className="FlexboxLayout">
           {/* LEFT */}
-          <ErrorBoundary context='LeftSidePanel'>
+          <ErrorBoundaryDialog context="LeftSidePanel">
             <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
               {VisiblePanelLeft ? (
                 <VisiblePanelLeft
@@ -309,23 +311,26 @@ class Viewer extends Component {
                   activeIndex={this.props.activeViewportIndex}
                 />
               ) : (
-                  <ConnectedStudyBrowser
-                    studies={this.state.thumbnails}
-                    studyMetadata={this.props.studies}
-                  />
-                )}
+                <ConnectedStudyBrowser
+                  studies={this.state.thumbnails}
+                  studyMetadata={this.props.studies}
+                />
+              )}
             </SidePanel>
-          </ErrorBoundary>
+          </ErrorBoundaryDialog>
 
           {/* MAIN */}
           <div className={classNames('main-content')}>
-            <ErrorBoundary context='MainViewer'>
-              <ConnectedViewerMain studies={this.props.studies} isStudyLoaded={this.props.isStudyLoaded} />
-            </ErrorBoundary>
+            <ErrorBoundaryDialog context="MainViewer">
+              <ConnectedViewerMain
+                studies={this.props.studies}
+                isStudyLoaded={this.props.isStudyLoaded}
+              />
+            </ErrorBoundaryDialog>
           </div>
 
           {/* RIGHT */}
-          <ErrorBoundary context='RightSidePanel'>
+          <ErrorBoundaryDialog context="RightSidePanel">
             <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
               {VisiblePanelRight && (
                 <VisiblePanelRight
@@ -336,7 +341,7 @@ class Viewer extends Component {
                 />
               )}
             </SidePanel>
-          </ErrorBoundary>
+          </ErrorBoundaryDialog>
         </div>
       </>
     );
@@ -356,7 +361,7 @@ export default withDialog(Viewer);
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function (studies) {
+const _mapStudiesToThumbnails = function(studies) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
 
