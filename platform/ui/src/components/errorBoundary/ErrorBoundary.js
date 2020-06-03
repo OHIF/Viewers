@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ErrorBoundary } from 'react-error-boundary';
 import './ErrorFallback.css';
 
@@ -9,15 +10,15 @@ const ErrorFallback = ({ error, componentStack, resetErrorBoundary }) => {
       <pre>{error.message}</pre>
       <pre>{componentStack}</pre>
     </div>
-  )
+  );
 };
 
 const OHIFErrorBoundary = ({
   context = 'OHIF',
-  onReset = () => { },
-  onError = () => { },
+  onReset = () => {},
+  onError = () => {},
   fallbackComponent,
-  children
+  children,
 }) => {
   const onErrorHandler = (error, componentStack) => {
     console.error(`${context} Error Boundary`, error, componentStack);
@@ -37,6 +38,14 @@ const OHIFErrorBoundary = ({
       {children}
     </ErrorBoundary>
   );
+};
+
+OHIFErrorBoundary.propTypes = {
+  context: PropTypes.string,
+  onReset: PropTypes.func,
+  onError: PropTypes.func,
+  children: PropTypes.node.isRequired,
+  fallbackComponent: PropTypes.element,
 };
 
 export default OHIFErrorBoundary;
