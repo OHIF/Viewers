@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   MeasurementsPanel,
   Button,
@@ -6,9 +7,49 @@ import {
   Icon,
   IconButton,
 } from '@ohif/ui';
+import { useTrackedMeasurements } from '../../getContextModule';
 
-export default function MeasurementTable({ servicesManager, commandsManager }) {
+function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
   const { MeasurementService } = servicesManager.services;
+  const [
+    trackedMeasurements,
+    sendTrackedMeasurementsEvent,
+  ] = useTrackedMeasurements();
+  const [displayMeasurements, setDisplayMeasurements] = useState([]);
+
+  // TODO: initial measurements + initial tracked?
+  // TODO: measurements subscribtion
+  // TODO: tracked changes
+
+  // Initial?
+  useEffect(() => {
+    const measurements = MeasurementService.getMeasurements();
+    const mappedMeasurements = measurements.map(m =>
+      _mapMeasurementToDisplay(m)
+    );
+    setDisplayMeasurements(mappedMeasurements);
+    // eslint-ignore-next-line
+  }, [MeasurementService, trackedMeasurements]);
+
+  // TODO: Listen for measurement service "adds" (really shouldn't be added until cornerstone-tools "complete")
+  useEffect(() => {
+    // const { unsubscribe } = MeasurementService.subscribe(
+    //   MeasurementService.EVENTS.MEASUREMENT_ADDED,
+    //   ({ source, measurement }) => {
+    //     const {
+    //       referenceSeriesUID: SeriesInstanceUID,
+    //       referenceStudyUID: StudyInstanceUID,
+    //     } = measurement;
+    //     sendTrackedMeasurementsEvent('TRACK_SERIES', {
+    //       StudyInstanceUID,
+    //       SeriesInstanceUID,
+    //     });
+    //     console.log('PANEL:', measurement);
+    //     // console.log('Mapped:', annotation);
+    //   }
+    // );
+    // return unsubscribe;
+  }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
   console.log('MeasurementTable rendering!!!!!!!!!!!!!');
 
@@ -52,13 +93,14 @@ export default function MeasurementTable({ servicesManager, commandsManager }) {
 
   const measurementTableData = {
     title: 'Measurements',
-    amount: 10,
-    data: new Array(10).fill({}).map((el, i) => ({
-      id: i + 1,
-      label: 'Label short description',
-      displayText: '24.0 x 24.0 mm (S:4, I:22)',
-      isActive: activeMeasurementItem === i + 1,
-    })),
+    amount: displayMeasurements.length,
+    data: displayMeasurements,
+    // new Array(10).fill({}).map((el, i) => ({
+    //   id: i + 1,
+    //   label: 'Label short description',
+    //   displayText: '24.0 x 24.0 mm (S:4, I:22)',
+    //   isActive: activeMeasurementItem === i + 1,
+    // })),
     // onClick: id => setActiveMeasurementItem(s => (s === id ? null : id)),
     onClick: () => {},
     onEdit: id => alert(`Edit: ${id}`),
@@ -72,3 +114,30 @@ export default function MeasurementTable({ servicesManager, commandsManager }) {
     />
   );
 }
+
+PanelMeasurementTableTracking.propTypes = {};
+
+// 'id',
+// 'SOPInstanceUID',
+// 'FrameOfReferenceUID',
+// 'referenceStudyUID',
+// 'referenceSeriesUID',
+// 'label',
+// 'description',
+// 'type',
+// 'unit',
+// 'area', // TODO: Add concept names instead (descriptor)
+// 'points',
+// 'source',
+function _mapMeasurementToDisplay(measurement) {
+  const { id, label, description: displayText } = measurement;
+  return {
+    id,
+    label, // 'Label short description',
+    displayText, // '24.0 x 24.0 mm (S:4, I:22)',
+    // TODO: handle one layer down
+    isActive: false, // activeMeasurementItem === i + 1,
+  };
+}
+
+export default PanelMeasurementTableTracking;
