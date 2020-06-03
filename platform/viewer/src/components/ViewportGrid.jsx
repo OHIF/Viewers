@@ -12,6 +12,7 @@ function ViewerViewportGrid(props) {
     { numCols, numRows, activeViewportIndex, viewports },
     dispatch,
   ] = useViewportGrid();
+
   const setActiveViewportIndex = index => {
     dispatch({ type: 'SET_ACTIVE_VIEWPORT_INDEX', payload: index });
   };
@@ -87,6 +88,7 @@ function ViewerViewportGrid(props) {
       const viewportIndex = i;
       const paneMetadata = viewports[i] || {};
       const { displaySetInstanceUID } = paneMetadata;
+
       const displaySet =
         DisplaySetService.getDisplaySetByUID(displaySetInstanceUID) || {};
       const ViewportComponent = _getViewportComponent(

@@ -19,6 +19,7 @@ import appInit from './appInit.js';
 
 // TODO: Temporarily for testing
 import '@ohif/mode-example';
+import '@ohif/sr-mode-example';
 import '@ohif/mode-longitudinal';
 
 /**
@@ -48,7 +49,12 @@ function App({ config, defaultExtensions }) {
     extensionManager,
     servicesManager
   );
-  const { UIDialogService, UIModalService, UINotificationService } = servicesManager.services;
+
+  const {
+    UIDialogService,
+    UIModalService,
+    UINotificationService,
+  } = servicesManager.services;
 
   // A UI Service may need to use the ViewportGrid context
   const viewportGridReducer = (state, action) => {

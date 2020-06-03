@@ -59,6 +59,7 @@
     "@ohif/extension-dicom-pdf": "^1.0.1",
     "@ohif/extension-lesion-tracker": "^0.2.0",
     "@ohif/extension-measurement-tracking": "^0.0.1",
+    "@ohif/extension-dicom-sr": "^0.0.1",
     "@ohif/extension-vtk": "^1.5.6",
     "@ohif/i18n": "^0.52.8",
     "@ohif/mode-longitudinal": "^0.0.1",

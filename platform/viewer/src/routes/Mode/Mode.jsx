@@ -2,11 +2,8 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
-import { DicomMetadataStore, ToolBarManager } from '@ohif/core';
-import {
-  DragAndDropProvider,
-  ImageViewerProvider,
-} from '@ohif/ui';
+import { DicomMetadataStore } from '@ohif/core';
+import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 //
 import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
@@ -131,8 +128,8 @@ export default function ModeRoute({
     >
       <CombinedContextProvider>
         {/* TODO: extensionManager is already provided to the extension module.
-          *  Use it from there instead of passing as a prop here.
-          */}
+         *  Use it from there instead of passing as a prop here.
+         */}
         <DragAndDropProvider>
           <LayoutComponent
             {...layoutTemplateData.props}
