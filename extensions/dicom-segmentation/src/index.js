@@ -4,7 +4,6 @@ import init from './init.js';
 import toolbarModule from './toolbarModule.js';
 import getSopClassHandlerModule from './getOHIFDicomSegSopClassHandler.js';
 import SegmentationPanel from './components/SegmentationPanel/SegmentationPanel.js';
-import { ErrorBoundary } from '@ohif/ui';
 
 export default {
   /**
@@ -47,7 +46,7 @@ export default {
       const onSegmentVisibilityChangeHandler = (segmentNumber, visible) => {
         commandsManager.runCommand('setSegmentConfiguration', {
           segmentNumber,
-          visible
+          visible,
         });
       };
 
@@ -56,7 +55,7 @@ export default {
           globalOpacity: configuration.fillAlpha,
           outlineThickness: configuration.outlineWidth,
           renderOutline: configuration.renderOutline,
-          visible: configuration.renderFill
+          visible: configuration.renderFill,
         });
       };
 
@@ -65,18 +64,16 @@ export default {
       };
 
       return (
-        <ErrorBoundary context='Segmentation Panel'>
-          <SegmentationPanel
-            {...props}
-            activeContexts={activeContexts}
-            contexts={api.contexts}
-            onSegmentItemClick={segmentItemClickHandler}
-            onSegmentVisibilityChange={onSegmentVisibilityChangeHandler}
-            onConfigurationChange={onConfigurationChangeHandler}
-            onSelectedSegmentationChange={onSelectedSegmentationChangeHandler}
-            onDisplaySetLoadFailure={onDisplaySetLoadFailureHandler}
-          />
-        </ErrorBoundary>
+        <SegmentationPanel
+          {...props}
+          activeContexts={activeContexts}
+          contexts={api.contexts}
+          onSegmentItemClick={segmentItemClickHandler}
+          onSegmentVisibilityChange={onSegmentVisibilityChangeHandler}
+          onConfigurationChange={onConfigurationChangeHandler}
+          onSelectedSegmentationChange={onSelectedSegmentationChangeHandler}
+          onDisplaySetLoadFailure={onDisplaySetLoadFailureHandler}
+        />
       );
     };
 

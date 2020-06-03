@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { utils } from '@ohif/core';
-import { useSnackbarContext, ErrorBoundary } from '@ohif/ui';
+import { useSnackbarContext } from '@ohif/ui';
 //
 import ViewportPane from './ViewportPane.js';
 import DefaultViewport from './DefaultViewport.js';
@@ -12,7 +12,7 @@ import EmptyViewport from './EmptyViewport.js';
 
 const { loadAndCacheDerivedDisplaySets } = utils;
 
-const ViewportGrid = function (props) {
+const ViewportGrid = function(props) {
   const {
     activeViewportIndex,
     availablePlugins,
@@ -24,7 +24,7 @@ const ViewportGrid = function (props) {
     studies,
     viewportData,
     children,
-    isStudyLoaded
+    isStudyLoaded,
   } = props;
 
   const rowSize = 100 / numRows;
@@ -54,7 +54,7 @@ const ViewportGrid = function (props) {
         });
       });
     }
-  }, [studies, viewportData, isStudyLoaded]);
+  }, [studies, viewportData, isStudyLoaded, snackbar]);
 
   const getViewportPanes = () =>
     layout.viewports.map((layout, viewportIndex) => {
@@ -120,20 +120,18 @@ const ViewportGrid = function (props) {
   ]);
 
   return (
-    <ErrorBoundary context='ViewportGrid'>
-      <div
-        data-cy="viewprt-grid"
-        style={{
-          display: 'grid',
-          gridTemplateRows: `repeat(${numRows}, ${rowSize}%)`,
-          gridTemplateColumns: `repeat(${numColumns}, ${colSize}%)`,
-          height: '100%',
-          width: '100%',
-        }}
-      >
-        {ViewportPanes}
-      </div>
-    </ErrorBoundary>
+    <div
+      data-cy="viewprt-grid"
+      style={{
+        display: 'grid',
+        gridTemplateRows: `repeat(${numRows}, ${rowSize}%)`,
+        gridTemplateColumns: `repeat(${numColumns}, ${colSize}%)`,
+        height: '100%',
+        width: '100%',
+      }}
+    >
+      {ViewportPanes}
+    </div>
   );
 };
 

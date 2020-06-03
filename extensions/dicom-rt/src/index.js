@@ -4,7 +4,6 @@ import init from './init.js';
 import sopClassHandlerModule from './OHIFDicomRTStructSopClassHandler';
 import id from './id.js';
 import RTPanel from './components/RTPanel/RTPanel';
-import { ErrorBoundary } from '@ohif/ui';
 
 export default {
   /**
@@ -30,14 +29,12 @@ export default {
       };
 
       return (
-        <ErrorBoundary context='RTPanel'>
-          <RTPanel
-            {...props}
-            onContourItemClick={contourItemClickHandler}
-            activeContexts={activeContexts}
-            contexts={api.contexts}
-          />
-        </ErrorBoundary>
+        <RTPanel
+          {...props}
+          onContourItemClick={contourItemClickHandler}
+          activeContexts={activeContexts}
+          contexts={api.contexts}
+        />
       );
     };
 

@@ -3,7 +3,6 @@ import init from './init.js';
 import commandsModule from './commandsModule.js';
 import toolbarModule from './toolbarModule.js';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
-import { ErrorBoundary } from '@ohif/ui';
 
 const Component = React.lazy(() => {
   return import('./OHIFCornerstoneViewport');
@@ -12,9 +11,7 @@ const Component = React.lazy(() => {
 const OHIFCornerstoneViewport = props => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
-      <ErrorBoundary context='OHIFCornerstoneViewport'>
-        <Component {...props} />
-      </ErrorBoundary>
+      <Component {...props} />
     </React.Suspense>
   );
 };
@@ -42,7 +39,9 @@ export default {
       const onNewImageHandler = jumpData => {
         commandsManager.runCommand('jumpToImage', jumpData);
       };
-      return <OHIFCornerstoneViewport {...props} onNewImage={onNewImageHandler} />;
+      return (
+        <OHIFCornerstoneViewport {...props} onNewImage={onNewImageHandler} />
+      );
     };
 
     return ExtendedOHIFCornerstoneViewport;
