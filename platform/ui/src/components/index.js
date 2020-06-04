@@ -12,7 +12,6 @@ import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
 import Label from './Label';
-import MeasurementsPanel from './MeasurementsPanel';
 import MeasurementTable from './MeasurementTable';
 import Modal from './Modal';
 import NavBar from './NavBar';
@@ -21,12 +20,13 @@ import Select from './Select';
 import SegmentationTable from './SegmentationTable';
 import SidePanel from './SidePanel';
 import StudyBrowser from './StudyBrowser';
+import StudyItem from './StudyItem';
 import StudyListExpandedRow from './StudyListExpandedRow';
+import StudyListFilter from './StudyListFilter';
 import StudyListPagination from './StudyListPagination';
 import { StudyListTable, StudyListTableRow } from './StudyListTable';
+import StudySummary from './StudySummary';
 import Svg from './Svg';
-import StudyItem from './StudyItem';
-import StudyListFilter from './StudyListFilter';
 import Table from './Table';
 import TableBody from './TableBody';
 import TableCell from './TableCell';
@@ -61,7 +61,6 @@ export {
   InputMultiSelect,
   InputText,
   Label,
-  MeasurementsPanel,
   MeasurementTable,
   Modal,
   NavBar,
@@ -76,6 +75,7 @@ export {
   StudyListPagination,
   StudyListTable,
   StudyListTableRow,
+  StudySummary,
   Svg,
   Table,
   TableBody,

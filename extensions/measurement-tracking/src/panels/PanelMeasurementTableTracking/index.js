@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  MeasurementsPanel,
-  Button,
-  ButtonGroup,
-  Icon,
-  IconButton,
-} from '@ohif/ui';
+import { StudySummary, MeasurementTable } from '@ohif/ui';
+import { DicomMetadataStore } from '@ohif/core';
+import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 
 function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
@@ -15,6 +11,11 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
   ] = useTrackedMeasurements();
+  const [displayStudySummary, setDisplayStudySummary] = useState({
+    date: '', // '07-Sep-2010',
+    modality: '', // 'CT',
+    description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
+  });
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   // TODO: initial measurements + initial tracked?
@@ -24,8 +25,8 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
   // Initial?
   useEffect(() => {
     const measurements = MeasurementService.getMeasurements();
-    const mappedMeasurements = measurements.map(m =>
-      _mapMeasurementToDisplay(m)
+    const mappedMeasurements = measurements.map((m, index) =>
+      _mapMeasurementToDisplay(m, index)
     );
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
@@ -51,93 +52,101 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
     // return unsubscribe;
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
-  console.log('MeasurementTable rendering!!!!!!!!!!!!!');
-
-  const actionButtons = (
-    <React.Fragment>
-      <ButtonGroup onClick={() => alert('Export')}>
-        <Button
-          className="px-2 py-2 text-base text-white bg-black border-primary-main"
-          size="initial"
-          color="inherit"
-        >
-          Export
-        </Button>
-        <IconButton
-          className="px-2 text-white bg-black border-primary-main"
-          color="inherit"
-          size="initial"
-        >
-          <Icon name="arrow-down" />
-        </IconButton>
-      </ButtonGroup>
-      <Button
-        className="px-2 py-2 ml-2 text-base text-white bg-black border border-primary-main"
-        variant="outlined"
-        size="initial"
-        color="inherit"
-        onClick={() => alert('Create Report')}
-      >
-        Create Report
-      </Button>
-    </React.Fragment>
-  );
-
-  const descriptionData = {
-    date: '07-Sep-2010',
-    modality: 'CT',
-    description: 'CHEST/ABD/PELVIS W CONTRAST',
-  };
-
   const activeMeasurementItem = 0;
 
-  const measurementTableData = {
-    title: 'Measurements',
-    amount: displayMeasurements.length,
-    data: displayMeasurements,
-    // new Array(10).fill({}).map((el, i) => ({
-    //   id: i + 1,
-    //   label: 'Label short description',
-    //   displayText: '24.0 x 24.0 mm (S:4, I:22)',
-    //   isActive: activeMeasurementItem === i + 1,
-    // })),
-    // onClick: id => setActiveMeasurementItem(s => (s === id ? null : id)),
-    onClick: () => {},
-    onEdit: id => alert(`Edit: ${id}`),
-  };
-
   return (
-    <MeasurementsPanel
-      descriptionData={descriptionData}
-      measurementTableData={measurementTableData}
-      actionButtons={actionButtons}
-    />
+    <>
+      <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
+        <StudySummary
+          date={displayStudySummary.date}
+          modality={displayStudySummary.modality}
+          description={displayStudySummary.description}
+        />
+        <MeasurementTable
+          title="Measurements"
+          amount={displayMeasurements.length}
+          data={displayMeasurements}
+          onClick={() => {}}
+          onEdit={id => alert(`Edit: ${id}`)}
+        />
+      </div>
+      <div className="flex justify-center p-4">
+        <ActionButtons />
+      </div>
+    </>
   );
 }
 
 PanelMeasurementTableTracking.propTypes = {};
 
-// 'id',
-// 'SOPInstanceUID',
-// 'FrameOfReferenceUID',
-// 'referenceStudyUID',
-// 'referenceSeriesUID',
-// 'label',
-// 'description',
-// 'type',
-// 'unit',
-// 'area', // TODO: Add concept names instead (descriptor)
-// 'points',
-// 'source',
-function _mapMeasurementToDisplay(measurement) {
-  const { id, label, description: displayText } = measurement;
-  return {
+// TODO: This could be a MeasurementService mapper
+function _mapMeasurementToDisplay(measurement, index) {
+  const {
     id,
-    label, // 'Label short description',
-    displayText, // '24.0 x 24.0 mm (S:4, I:22)',
+    label,
+    description,
+    // Reference IDs
+    referenceStudyUID,
+    referenceSeriesUID,
+    SOPInstanceUID,
+  } = measurement;
+  const instance = DicomMetadataStore.getInstance(
+    referenceStudyUID,
+    referenceSeriesUID,
+    SOPInstanceUID
+  );
+  const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;
+
+  console.log('mapping....', measurement);
+  console.log(instance);
+
+  return {
+    id: index + 1,
+    label: '(empty)', // 'Label short description',
+    displayText: _getDisplayText(
+      measurement.points,
+      PixelSpacing,
+      SeriesNumber,
+      InstanceNumber
+    ),
     // TODO: handle one layer down
     isActive: false, // activeMeasurementItem === i + 1,
   };
+}
+
+/**
+ *
+ * @param {*} points
+ * @param {*} pixelSpacing
+ */
+function _getDisplayText(points, pixelSpacing, seriesNumber, instanceNumber) {
+  // TODO: determination of shape influences text
+  // Length:  'xx.x unit (S:x, I:x)'
+  // Rectangle: 'xx.x x xx.x unit (S:x, I:x)',
+  // Ellipse?
+  // Bidirectional?
+  // Freehand?
+
+  const hasPixelSpacing =
+    pixelSpacing !== undefined &&
+    Array.isArray(pixelSpacing) &&
+    pixelSpacing.length === 2;
+  const [rowPixelSpacing, colPixelSpacing] = hasPixelSpacing
+    ? pixelSpacing
+    : [1, 1];
+  const unit = hasPixelSpacing ? 'mm' : 'px';
+
+  const { x: x1, y: y1 } = points[0];
+  const { x: x2, y: y2 } = points[1];
+  const dx = x2 - x1 * colPixelSpacing;
+  const dy = y2 - y1 * rowPixelSpacing;
+  const length = _round(Math.sqrt(dx * dx + dy * dy), 1);
+
+  return `${length} ${unit} (S:${seriesNumber}, I:${instanceNumber})`;
+}
+
+function _round(value, decimals) {
+  return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 }
 
 export default PanelMeasurementTableTracking;

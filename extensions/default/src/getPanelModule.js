@@ -1,7 +1,7 @@
 import React from 'react';
 import { WrappedPanelStudyBrowser } from './Panels';
 
-import MeasurementTable from './MeasurementTable.js';
+import PanelMeasurementTable from './PanelMeasurementTable.js';
 
 // TODO:
 // - No loading UI exists yet
@@ -15,7 +15,7 @@ function getPanelModule({
 }) {
   const wrappedMeasurementPanel = () => {
     return (
-      <MeasurementTable
+      <PanelMeasurementTable
         commandsManager={commandsManager}
         servicesManager={servicesManager}
       />
