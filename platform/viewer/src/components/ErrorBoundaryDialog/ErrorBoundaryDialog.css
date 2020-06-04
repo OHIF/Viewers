@@ -3,8 +3,6 @@
 }
 
 .ErrorBoundaryDialogButton {
-  display: inline-flex;
-  align-items: center;
   outline: none;
 }
 
@@ -12,6 +10,7 @@
   margin-right: 5px;
   width: 10px;
   transform: rotate(-90deg);
+  vertical-align: middle;
 }
 
 .ErrorBoundaryDialogIcon.opened {
