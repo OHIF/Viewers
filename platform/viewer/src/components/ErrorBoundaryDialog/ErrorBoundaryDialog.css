@@ -1,0 +1,19 @@
+.ErrorBoundaryDialogTitle {
+  margin-top: 0;
+}
+
+.ErrorBoundaryDialogButton {
+  display: inline-flex;
+  align-items: center;
+  outline: none;
+}
+
+.ErrorBoundaryDialogIcon {
+  margin-right: 5px;
+  width: 10px;
+  transform: rotate(-90deg);
+}
+
+.ErrorBoundaryDialogIcon.opened {
+  transform: rotate(0deg);
+}
