@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import { MODULE_TYPES } from '@ohif/core';
-import OHIF, { DICOMSR } from '@ohif/core';
+import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedHeader from './ConnectedHeader.js';
@@ -11,6 +10,7 @@ import ToolbarRow from './ToolbarRow.js';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
+import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
 
 // Contexts
@@ -26,6 +26,7 @@ class Viewer extends Component {
       PropTypes.shape({
         StudyInstanceUID: PropTypes.string.isRequired,
         StudyDate: PropTypes.string,
+        PatientID: PropTypes.string,
         displaySets: PropTypes.arrayOf(
           PropTypes.shape({
             displaySetInstanceUID: PropTypes.string.isRequired,
@@ -256,42 +257,44 @@ class Viewer extends Component {
         </WhiteLabelingContext.Consumer>
 
         {/* TOOLBAR */}
-        <ToolbarRow
-          isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
-          isRightSidePanelOpen={this.state.isRightSidePanelOpen}
-          selectedLeftSidePanel={
-            this.state.isLeftSidePanelOpen
-              ? this.state.selectedLeftSidePanel
-              : ''
-          }
-          selectedRightSidePanel={
-            this.state.isRightSidePanelOpen
-              ? this.state.selectedRightSidePanel
-              : ''
-          }
-          handleSidePanelChange={(side, selectedPanel) => {
-            const sideClicked = side && side[0].toUpperCase() + side.slice(1);
-            const openKey = `is${sideClicked}SidePanelOpen`;
-            const selectedKey = `selected${sideClicked}SidePanel`;
-            const updatedState = Object.assign({}, this.state);
-
-            const isOpen = updatedState[openKey];
-            const prevSelectedPanel = updatedState[selectedKey];
-            // RoundedButtonGroup returns `null` if selected button is clicked
-            const isSameSelectedPanel =
-              prevSelectedPanel === selectedPanel || selectedPanel === null;
-
-            updatedState[selectedKey] = selectedPanel || prevSelectedPanel;
-
-            const isClosedOrShouldClose = !isOpen || isSameSelectedPanel;
-            if (isClosedOrShouldClose) {
-              updatedState[openKey] = !updatedState[openKey];
+        <ErrorBoundaryDialog context="ToolbarRow">
+          <ToolbarRow
+            isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
+            isRightSidePanelOpen={this.state.isRightSidePanelOpen}
+            selectedLeftSidePanel={
+              this.state.isLeftSidePanelOpen
+                ? this.state.selectedLeftSidePanel
+                : ''
             }
+            selectedRightSidePanel={
+              this.state.isRightSidePanelOpen
+                ? this.state.selectedRightSidePanel
+                : ''
+            }
+            handleSidePanelChange={(side, selectedPanel) => {
+              const sideClicked = side && side[0].toUpperCase() + side.slice(1);
+              const openKey = `is${sideClicked}SidePanelOpen`;
+              const selectedKey = `selected${sideClicked}SidePanel`;
+              const updatedState = Object.assign({}, this.state);
 
-            this.setState(updatedState);
-          }}
-          studies={this.props.studies}
-        />
+              const isOpen = updatedState[openKey];
+              const prevSelectedPanel = updatedState[selectedKey];
+              // RoundedButtonGroup returns `null` if selected button is clicked
+              const isSameSelectedPanel =
+                prevSelectedPanel === selectedPanel || selectedPanel === null;
+
+              updatedState[selectedKey] = selectedPanel || prevSelectedPanel;
+
+              const isClosedOrShouldClose = !isOpen || isSameSelectedPanel;
+              if (isClosedOrShouldClose) {
+                updatedState[openKey] = !updatedState[openKey];
+              }
+
+              this.setState(updatedState);
+            }}
+            studies={this.props.studies}
+          />
+        </ErrorBoundaryDialog>
 
         {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
         {/*<StudyPrefetcher studies={this.props.studies} />*/}
@@ -299,37 +302,46 @@ class Viewer extends Component {
         {/* VIEWPORTS + SIDEPANELS */}
         <div className="FlexboxLayout">
           {/* LEFT */}
-          <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
-            {VisiblePanelLeft ? (
-              <VisiblePanelLeft
-                viewports={this.props.viewports}
-                studies={this.props.studies}
-                activeIndex={this.props.activeViewportIndex}
-              />
-            ) : (
+          <ErrorBoundaryDialog context="LeftSidePanel">
+            <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
+              {VisiblePanelLeft ? (
+                <VisiblePanelLeft
+                  viewports={this.props.viewports}
+                  studies={this.props.studies}
+                  activeIndex={this.props.activeViewportIndex}
+                />
+              ) : (
                 <ConnectedStudyBrowser
                   studies={this.state.thumbnails}
                   studyMetadata={this.props.studies}
                 />
               )}
-          </SidePanel>
+            </SidePanel>
+          </ErrorBoundaryDialog>
 
           {/* MAIN */}
           <div className={classNames('main-content')}>
-            <ConnectedViewerMain studies={this.props.studies} isStudyLoaded={this.props.isStudyLoaded} />
+            <ErrorBoundaryDialog context="ViewerMain">
+              <ConnectedViewerMain
+                studies={this.props.studies}
+                isStudyLoaded={this.props.isStudyLoaded}
+              />
+            </ErrorBoundaryDialog>
           </div>
 
           {/* RIGHT */}
-          <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
-            {VisiblePanelRight && (
-              <VisiblePanelRight
-                isOpen={this.state.isRightSidePanelOpen}
-                viewports={this.props.viewports}
-                studies={this.props.studies}
-                activeIndex={this.props.activeViewportIndex}
-              />
-            )}
-          </SidePanel>
+          <ErrorBoundaryDialog context="RightSidePanel">
+            <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
+              {VisiblePanelRight && (
+                <VisiblePanelRight
+                  isOpen={this.state.isRightSidePanelOpen}
+                  viewports={this.props.viewports}
+                  studies={this.props.studies}
+                  activeIndex={this.props.activeViewportIndex}
+                />
+              )}
+            </SidePanel>
+          </ErrorBoundaryDialog>
         </div>
       </>
     );
@@ -349,7 +361,7 @@ export default withDialog(Viewer);
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function (studies) {
+const _mapStudiesToThumbnails = function(studies) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
 

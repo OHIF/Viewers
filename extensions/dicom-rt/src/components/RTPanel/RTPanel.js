@@ -31,7 +31,18 @@ const refreshViewport = () => {
  * @param {number} props.isOpen - isOpen
  * @returns component
  */
-const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }) => {
+const RTPanel = ({
+  studies,
+  viewports,
+  activeIndex,
+  isOpen,
+  onContourItemClick,
+  activeContexts = [],
+  contexts = {}
+}) => {
+  const isVTK = () => activeContexts.includes(contexts.VTK);
+  const isCornerstone = () => activeContexts.includes(contexts.CORNERSTONE);
+
   const [selectedContour, setSelectedContour] = useState();
   const DEFAULT_SET_INDEX = 0;
   const DEFAULT_STATE = {
@@ -119,33 +130,35 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }
         onClick={() => {
           setSelectedContour(isSameContour ? null : ROINumber);
 
-          const enabledElements = cornerstone.getEnabledElements();
-          const element = enabledElements[activeIndex].element;
-          const toolState = cornerstoneTools.getToolState(element, 'stack');
+          if (isCornerstone()) {
+            const enabledElements = cornerstone.getEnabledElements();
+            const element = enabledElements[activeIndex].element;
+            const toolState = cornerstoneTools.getToolState(element, 'stack');
 
-          if (!toolState) {
-            return;
+            if (!toolState) {
+              return;
+            }
+
+            const imageIds = toolState.data[0].imageIds;
+
+            const module = cornerstoneTools.getModule('rtstruct');
+            const imageId = module.getters.imageIdOfCenterFrameOfROIContour(
+              state.selectedSet.SeriesInstanceUID,
+              ROINumber,
+              imageIds
+            );
+
+            const frameIndex = imageIds.indexOf(imageId);
+            const SOPInstanceUID = cornerstone.metaData.get('SOPInstanceUID', imageId);
+            const StudyInstanceUID = cornerstone.metaData.get('StudyInstanceUID', imageId);
+
+            onContourItemClick({
+              StudyInstanceUID,
+              SOPInstanceUID,
+              frameIndex,
+              activeViewportIndex: activeIndex
+            });
           }
-
-          const imageIds = toolState.data[0].imageIds;
-
-          const module = cornerstoneTools.getModule('rtstruct');
-          const imageId = module.getters.imageIdOfCenterFrameOfROIContour(
-            state.selectedSet.SeriesInstanceUID,
-            ROINumber,
-            imageIds
-          );
-
-          const frameIndex = imageIds.indexOf(imageId);
-          const SOPInstanceUID = cornerstone.metaData.get('SOPInstanceUID', imageId);
-          const StudyInstanceUID = cornerstone.metaData.get('StudyInstanceUID', imageId);
-
-          onContourItemClick({
-            StudyInstanceUID,
-            SOPInstanceUID,
-            frameIndex,
-            activeViewportIndex: activeIndex
-          });
         }}
         label={`${ROIName} ${interpretedType}`}
         index={ROINumber}
