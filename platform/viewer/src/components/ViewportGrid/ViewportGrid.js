@@ -12,7 +12,7 @@ import EmptyViewport from './EmptyViewport.js';
 
 const { loadAndCacheDerivedDisplaySets } = utils;
 
-const ViewportGrid = function(props) {
+const ViewportGrid = function (props) {
   const {
     activeViewportIndex,
     availablePlugins,
@@ -24,6 +24,7 @@ const ViewportGrid = function(props) {
     studies,
     viewportData,
     children,
+    isStudyLoaded
   } = props;
 
   const rowSize = 100 / numRows;
@@ -37,21 +38,23 @@ const ViewportGrid = function(props) {
   const snackbar = useSnackbarContext();
 
   useEffect(() => {
-    viewportData.forEach(displaySet => {
-      const promises = loadAndCacheDerivedDisplaySets(displaySet, studies);
+    if (isStudyLoaded) {
+      viewportData.forEach(displaySet => {
+        const promises = loadAndCacheDerivedDisplaySets(displaySet, studies);
 
-      promises.forEach(promise => {
-        promise.catch(error => {
-          snackbar.show({
-            title: 'Error loading derived display set:',
-            message: error.message,
-            type: 'error',
-            autoClose: false,
+        promises.forEach(promise => {
+          promise.catch(error => {
+            snackbar.show({
+              title: 'Error loading derived display set:',
+              message: error.message,
+              type: 'error',
+              autoClose: false,
+            });
           });
         });
       });
-    });
-  }, [studies, viewportData]);
+    }
+  }, [studies, viewportData, isStudyLoaded]);
 
   const getViewportPanes = () =>
     layout.viewports.map((layout, viewportIndex) => {

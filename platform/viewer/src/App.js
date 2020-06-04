@@ -71,6 +71,14 @@ let extensionManager;
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
 
+window.ohif = window.ohif || {};
+window.ohif.app = {
+  commandsManager,
+  hotkeysManager,
+  servicesManager,
+  extensionManager,
+};
+
 class App extends Component {
   static propTypes = {
     config: PropTypes.oneOfType([

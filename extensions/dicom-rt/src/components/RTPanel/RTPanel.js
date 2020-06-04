@@ -190,7 +190,7 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }
         />
       </div>
       {!state.referencedDisplaysets.length && <LoadingIndicator expand height="70px" width="70px" />}
-      {state.referencedDisplaysets.map(displaySet => {
+      {state.sets && state.referencedDisplaysets.map(displaySet => {
         const { SeriesInstanceUID, metadata, isLoaded } = displaySet;
 
         const module = cornerstoneTools.getModule('rtstruct');
@@ -205,9 +205,14 @@ const RTPanel = ({ studies, viewports, activeIndex, isOpen, onContourItemClick }
             visible={isLoaded && loadedSet.visible}
             hideVisibleButton={!isLoaded}
             expanded={isLoaded && loadedSet.SeriesInstanceUID === state.selectedSet.SeriesInstanceUID}
-            onVisibilityChange={() => {
+            onVisibilityChange={newVisibility => {
               const module = cornerstoneTools.getModule('rtstruct');
-              module.setters.toggleStructureSet(SeriesInstanceUID);
+              loadedSet.ROIContours.forEach(({ ROINumber }) => {
+                module.setters.toggleROIContour(loadedSet.SeriesInstanceUID, ROINumber);
+              });
+              const sets = module.getters.structuresSetsWhichReferenceSeriesInstanceUid(viewports[activeIndex].SeriesInstanceUID);
+              setState(state => ({ ...state, sets }));
+              refreshViewport();
             }}
             onExpandChange={async () => {
               if (!isLoaded) {
