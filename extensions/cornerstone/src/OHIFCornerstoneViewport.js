@@ -4,7 +4,6 @@ import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
-import debounce from 'lodash.debounce';
 
 const { StackManager } = OHIF.utils;
 
@@ -216,9 +215,10 @@ class OHIFCornerstoneViewport extends Component {
       });
     }
 
-    const debouncedNewImageHandler = debounce(({ currentImageIdIndex, sopInstanceUid }) => {
+    const newImageHandler = ({ currentImageIdIndex, sopInstanceUid }) => {
       const { displaySet } = this.props.viewportData;
       const { StudyInstanceUID } = displaySet;
+
       if (currentImageIdIndex > 0) {
         this.props.onNewImage({
           StudyInstanceUID,
@@ -227,7 +227,7 @@ class OHIFCornerstoneViewport extends Component {
           activeViewportIndex: viewportIndex,
         });
       }
-    }, 700);
+    };
 
     return (
       <>
@@ -235,7 +235,8 @@ class OHIFCornerstoneViewport extends Component {
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
-          onNewImage={debouncedNewImageHandler}
+          onNewImage={newImageHandler}
+          onNewImageDebounceTime={700}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}
