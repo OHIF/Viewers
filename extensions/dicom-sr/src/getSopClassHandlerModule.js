@@ -92,21 +92,37 @@ function _getMeasurements(
     debugger;
   }
 
-  const MeasurementGroup = _getSequenceAsArray(
+  const MeasurementGroups = _getSequenceAsArray(
     ImagingMeasurements.ContentSequence
-  ).find(
+  ).filter(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.MeasurementGroup
   );
 
-  const Measurements = _getSequenceAsArray(
-    MeasurementGroup.ContentSequence
-  ).filter(group => group.ValueType === 'NUM');
+  const measurements = [];
 
-  debugger;
+  MeasurementGroups.forEach(MeasurementGroup => {
+    const measurement = _processMeasurementGroup(MeasurementGroup);
+
+    if (measurement) {
+      measurements.push(measurement);
+    }
+  });
 
   _getSequenceAsArray(MeasurementGroup.ContentSequence).forEach(item => {});
+}
+
+function _processMeasurementGroup(MeasurementGroup) {
+  const contentItemNum = _getSequenceAsArray(
+    MeasurementGroup.ContentSequence
+  ).find(group => group.ValueType === 'NUM');
+
+  // TODO: Need to process MeasurementGroups as they may be implictly linked, or explictly linked by tracking uids.
+
+  // TODO -> Look at RelationshipType => Contains means
+
+  debugger;
 }
 
 function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
