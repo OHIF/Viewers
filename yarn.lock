@@ -2679,6 +2679,14 @@
   dependencies:
     "@types/node" ">= 8"
 
+"@ohif/extension-lesion-tracker@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-lesion-tracker/-/extension-lesion-tracker-0.2.0.tgz#37fda345204041539051750fad17551846fba40f"
+  integrity sha512-XAqHQXXOnVXvN6JcbIdJ4lLd48ap700uSomtO0fMHVFB229c3YgsWeFscbJVU5jgMJHxQ0SbUg2WMtkRjmWmLA==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    classnames "^2.2.6"
+
 "@ohif/i18n@^0.2.3":
   version "0.2.5"
   resolved "https://registry.yarnpkg.com/@ohif/i18n/-/i18n-0.2.5.tgz#2b92a78109823ce0f50dd590201d980a5fd64974"
@@ -7930,7 +7938,7 @@ docz-utils@^2.3.0:
     unist-util-is "^3.0.0"
     unist-util-visit "^1.4.1"
 
-docz@^2.2.0:
+docz@^2.3.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/docz/-/docz-2.3.1.tgz#931cd840e2f9a25691fb7c67fa48d4a6ef1476a3"
   integrity sha512-HlbLqpizhieqvjD6xxNr6Nj8sk00vnHbLh4wHabXUpOi8ZkILBDSLmnfGzozAgmT+HN18CbszYMXCOlbcr4MXQ==

@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "classnames": "^2.2.6",
-    "docz": "^2.2.0",
+    "docz": "^2.3.0",
     "gatsby": "2.22.19",
     "gatsby-plugin-postcss": "2.3.3",
     "gatsby-plugin-react-svg": "3.0.0",
