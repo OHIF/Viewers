@@ -89,10 +89,6 @@ function _getMeasurements(
       CodeNameCodeSequenceValues.ImagingMeasurements
   );
 
-  if (SOPInstanceUID === '2.25.435452399240481307327287169369305113868') {
-    debugger;
-  }
-
   const MeasurementGroups = _getSequenceAsArray(
     ImagingMeasurements.ContentSequence
   ).filter(
@@ -104,8 +100,6 @@ function _getMeasurements(
   const mergedContentSequencesByTrackingUniqueIdentifiers = _getMergedContentSequencesByTrackingUniqueIdentifiers(
     MeasurementGroups
   );
-
-  debugger;
 
   let allMeasurements = [];
 
@@ -131,8 +125,6 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
   const mergedContentSequencesByTrackingUniqueIdentifiers = {};
 
   MeasurementGroups.forEach(MeasurementGroup => {
-    debugger;
-
     const ContentSequence = _getSequenceAsArray(
       MeasurementGroup.ContentSequence
     );
@@ -196,14 +188,16 @@ function _processMeasurement(mergedContentSequence) {
 
   NUMContentItems.forEach(item => {
     debugger;
+
+    const { ContentSequence } = item;
+
+    // GET -> REPRESENTATION, REFERNECED IMAGE, measurement value
   });
 
   // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
   // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
 
   // TODO -> Look at RelationshipType => Contains means
-
-  debugger;
 
   return [];
 }
