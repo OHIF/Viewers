@@ -17,6 +17,7 @@ const CodeNameCodeSequenceValues = {
   ImagingMeasurements: '126010',
   MeasurementGroup: '125007',
   ImageLibraryGroup: '126200',
+  TrackingUniqueIdentifier: '112040',
 };
 
 /**
@@ -100,29 +101,119 @@ function _getMeasurements(
       CodeNameCodeSequenceValues.MeasurementGroup
   );
 
-  const measurements = [];
+  const mergedContentSequencesByTrackingUniqueIdentifiers = _getMergedContentSequencesByTrackingUniqueIdentifiers(
+    MeasurementGroups
+  );
+
+  debugger;
+
+  let allMeasurements = [];
+
+  Object.keys(mergedContentSequencesByTrackingUniqueIdentifiers).forEach(
+    trackingUniqueIdentifier => {
+      const mergedContentSequence =
+        mergedContentSequencesByTrackingUniqueIdentifiers[
+          trackingUniqueIdentifier
+        ];
+
+      const measurements = _processMeasurement(mergedContentSequence);
+
+      if (measurements) {
+        allMeasurements = allMeasurements.concat(measurements);
+      }
+    }
+  );
+}
+
+function _getMergedContentSequencesByTrackingUniqueIdentifiers(
+  MeasurementGroups
+) {
+  const mergedContentSequencesByTrackingUniqueIdentifiers = {};
 
   MeasurementGroups.forEach(MeasurementGroup => {
-    const measurement = _processMeasurementGroup(MeasurementGroup);
+    debugger;
 
-    if (measurement) {
-      measurements.push(measurement);
+    const ContentSequence = _getSequenceAsArray(
+      MeasurementGroup.ContentSequence
+    );
+
+    const TrackingUniqueIdentifierItem = ContentSequence.find(
+      item =>
+        item.ConceptNameCodeSequence.CodeValue ===
+        CodeNameCodeSequenceValues.TrackingUniqueIdentifier
+    );
+
+    if (!TrackingUniqueIdentifierItem) {
+      console.warn(
+        'No Tracking Unique Identifier, skipping ambiguous measurement.'
+      );
+    }
+
+    const trackingUniqueIdentifier = TrackingUniqueIdentifierItem.UID;
+
+    if (
+      mergedContentSequencesByTrackingUniqueIdentifiers[
+        trackingUniqueIdentifier
+      ] === undefined
+    ) {
+      // Add the full ContentSequence
+      mergedContentSequencesByTrackingUniqueIdentifiers[
+        trackingUniqueIdentifier
+      ] = [...ContentSequence];
+    } else {
+      // Add the ContentSequence minus the tracking identifier, as we have this
+      // Information in the merged ContentSequence anyway.
+      ContentSequence.forEach(item => {
+        if (
+          item.ConceptNameCodeSequence.CodeValue !==
+          CodeNameCodeSequenceValues.TrackingUniqueIdentifier
+        ) {
+          mergedContentSequencesByTrackingUniqueIdentifiers[
+            trackingUniqueIdentifier
+          ].push(item);
+        }
+      });
     }
   });
 
-  _getSequenceAsArray(MeasurementGroup.ContentSequence).forEach(item => {});
+  return mergedContentSequencesByTrackingUniqueIdentifiers;
 }
 
-function _processMeasurementGroup(MeasurementGroup) {
-  const contentItemNum = _getSequenceAsArray(
-    MeasurementGroup.ContentSequence
-  ).find(group => group.ValueType === 'NUM');
+function _processMeasurement(mergedContentSequence) {
+  debugger;
 
-  // TODO: Need to process MeasurementGroups as they may be implictly linked, or explictly linked by tracking uids.
+  if (
+    mergedContentSequence.some(
+      group => group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D'
+    )
+  ) {
+    return _processTID1410Measurement(mergedContentSequence);
+  }
+
+  const NUMContentItems = mergedContentSequence.filter(
+    group => group.ValueType === 'NUM'
+  );
+
+  NUMContentItems.forEach(item => {
+    debugger;
+  });
+
+  // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
+  // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
 
   // TODO -> Look at RelationshipType => Contains means
 
   debugger;
+
+  return [];
+}
+
+function _processTID1410Measurement(mergedContentSequence) {
+  // TODO
+  console.error('TODO => Process TID1410Measurement');
+  debugger;
+
+  return [ß];
 }
 
 function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
