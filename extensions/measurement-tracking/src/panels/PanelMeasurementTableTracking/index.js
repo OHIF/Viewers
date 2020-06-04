@@ -12,6 +12,7 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
     sendTrackedMeasurementsEvent,
   ] = useTrackedMeasurements();
   const [displayStudySummary, setDisplayStudySummary] = useState({
+    key: '', //
     date: '', // '07-Sep-2010',
     modality: '', // 'CT',
     description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
@@ -31,6 +32,23 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
   }, [MeasurementService, trackedMeasurements]);
+
+  useEffect(() => {
+    if (trackedMeasurements.matches('tracking')) {
+      const StudyInstanceUID = trackedMeasurements.context.trackedStudy;
+      const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
+      const instanceMeta = studyMeta.series[0].instances[0];
+      const { Modality, StudyDate, StudyDescription } = instanceMeta;
+
+      // TODO: check key against current before setting
+      setDisplayStudySummary({
+        key: StudyInstanceUID,
+        date: StudyDate, // TODO: Format: '07-Sep-2010'
+        modality: Modality,
+        description: StudyDescription,
+      });
+    }
+  }, [trackedMeasurements]);
 
   // TODO: Listen for measurement service "adds" (really shouldn't be added until cornerstone-tools "complete")
   useEffect(() => {
