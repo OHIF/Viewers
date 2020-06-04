@@ -10,7 +10,7 @@ const StudySummary = ({ date, modality, description }) => {
           {modality}
         </span>
       </div>
-      <div className="text-base leading-none truncate text-primary-light ellipse">
+      <div className="pt-2 text-base leading-none truncate text-primary-light ellipse">
         {description}
       </div>
     </div>

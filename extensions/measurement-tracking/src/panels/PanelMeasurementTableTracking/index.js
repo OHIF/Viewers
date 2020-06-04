@@ -5,18 +5,22 @@ import { DicomMetadataStore } from '@ohif/core';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 
+const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
+  key: undefined, //
+  date: undefined, // '07-Sep-2010',
+  modality: undefined, // 'CT',
+  description: undefined, // 'CHEST/ABD/PELVIS W CONTRAST',
+};
+
 function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
   const { MeasurementService } = servicesManager.services;
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
   ] = useTrackedMeasurements();
-  const [displayStudySummary, setDisplayStudySummary] = useState({
-    key: '', //
-    date: '', // '07-Sep-2010',
-    modality: '', // 'CT',
-    description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
-  });
+  const [displayStudySummary, setDisplayStudySummary] = useState(
+    DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
+  );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   // TODO: initial measurements + initial tracked?
@@ -33,6 +37,7 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
     // eslint-ignore-next-line
   }, [MeasurementService, trackedMeasurements]);
 
+  // ~~ DisplayStudySummary
   useEffect(() => {
     if (trackedMeasurements.matches('tracking')) {
       const StudyInstanceUID = trackedMeasurements.context.trackedStudy;
@@ -40,15 +45,18 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
       const instanceMeta = studyMeta.series[0].instances[0];
       const { Modality, StudyDate, StudyDescription } = instanceMeta;
 
-      // TODO: check key against current before setting
-      setDisplayStudySummary({
-        key: StudyInstanceUID,
-        date: StudyDate, // TODO: Format: '07-Sep-2010'
-        modality: Modality,
-        description: StudyDescription,
-      });
+      if (displayStudySummary.key !== StudyInstanceUID) {
+        setDisplayStudySummary({
+          key: StudyInstanceUID,
+          date: StudyDate, // TODO: Format: '07-Sep-2010'
+          modality: Modality,
+          description: StudyDescription,
+        });
+      }
+    } else if (trackedMeasurements.matches('notTracking')) {
+      setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
     }
-  }, [trackedMeasurements]);
+  }, [displayStudySummary.key, trackedMeasurements]);
 
   // TODO: Listen for measurement service "adds" (really shouldn't be added until cornerstone-tools "complete")
   useEffect(() => {
@@ -75,11 +83,13 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
   return (
     <>
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
-        <StudySummary
-          date={displayStudySummary.date}
-          modality={displayStudySummary.modality}
-          description={displayStudySummary.description}
-        />
+        {displayStudySummary.key && (
+          <StudySummary
+            date={displayStudySummary.date}
+            modality={displayStudySummary.modality}
+            description={displayStudySummary.description}
+          />
+        )}
         <MeasurementTable
           title="Measurements"
           amount={displayMeasurements.length}
