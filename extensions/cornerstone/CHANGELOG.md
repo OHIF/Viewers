@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.8.0...@ohif/extension-cornerstone@2.8.1) (2020-06-04)
+
+
+### Bug Fixes
+
+* 🐛 Infinite frame index change when quickly jumping between ([#1734](https://github.com/OHIF/Viewers/issues/1734)) ([a830577](https://github.com/OHIF/Viewers/commit/a8305772d0fbec506549ad7ea08504a8bc3a4f39)), closes [#1733](https://github.com/OHIF/Viewers/issues/1733)
+
+
+
+
+
 # [2.8.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.7.3...@ohif/extension-cornerstone@2.8.0) (2020-06-04)
 
 
