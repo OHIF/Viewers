@@ -1,26 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { ErrorBoundary } from '@ohif/ui';
+import { ErrorBoundary, Icon } from '@ohif/ui';
 import { servicesManager } from './../../App';
+
+import './ErrorBoundaryDialog.css';
 
 const { UIModalService } = servicesManager.services;
 
 const ErrorBoundaryDialog = ({ context, children }) => {
   const handleOnError = (error, componentStack) => {
-    const ErrorDialog = () => (
-      <div className="ErrorFallback" role="alert">
-        <div>
-          <h3>
-            {context}: <span>{error.message}</span>
-          </h3>
+    const ErrorDialog = () => {
+      const [open, setOpen] = useState(false);
+
+      return (
+        <div className="ErrorFallback" role="alert">
+          <div className="ErrorBoundaryDialog">
+            <h3 className="ErrorBoundaryDialogTitle">
+              {context}: <span>{error.message}</span>
+            </h3>
+          </div>
+          <button
+            className="btn btn-primary btn-sm ErrorBoundaryDialogButton"
+            onClick={() => setOpen(s => !s)}
+          >
+            <Icon
+              name="chevron-down"
+              className={classnames('ErrorBoundaryDialogIcon', {
+                opened: open,
+              })}
+            />
+            Stack Trace
+          </button>
+
+          {open && <pre>{componentStack}</pre>}
         </div>
-        <pre>{componentStack}</pre>
-      </div>
-    );
+      );
+    };
 
     UIModalService.show({
       content: ErrorDialog,
-      title: `${context}: ${error.message}`,
+      title: `Something went wrong in ${context}`,
     });
   };
 
