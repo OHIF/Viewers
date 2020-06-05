@@ -16,25 +16,27 @@ export default function addMeasurement(
   console.log(imageId);
   console.log('============================');
 
-  // TODO -> GET TRACKING UID AND ADD IT TO TOOL DATA AND ALSO THE MEASUREMENT ENTRY.
   // TODO -> Render rotated ellipse .
 
   debugger;
 
   const toolName = TOOL_NAMES.DICOM_SR_DISPLAY_TOOL;
 
-  const measurementData = {};
+  const measurementData = {
+    TrackingUniqueIdentifier: measurement.TrackingUniqueIdentifier,
+    renderableData: {},
+  };
 
   measurement.coords.forEach(coord => {
     const { GraphicType, GraphicData } = coord;
 
-    if (measurementData[GraphicType] === undefined) {
-      measurementData[GraphicType] = [];
+    if (measurementData.renderableData[GraphicType] === undefined) {
+      measurementData.renderableData[GraphicType] = [];
     }
 
-    const renderableData = _getRenderableData(GraphicType, GraphicData);
-
-    measurementData[GraphicType].push(renderableData);
+    measurementData.renderableData[GraphicType].push(
+      _getRenderableData(GraphicType, GraphicData)
+    );
   });
 
   const toolState = globalImageIdSpecificToolStateManager.saveToolState();
@@ -59,6 +61,8 @@ export default function addMeasurement(
   measurement.loaded = true;
   measurement.imageId = imageId;
   measurement.displaySetInstanceUID = displaySetInstanceUID;
+  delete measurement.coords;
+
   debugger;
 }
 

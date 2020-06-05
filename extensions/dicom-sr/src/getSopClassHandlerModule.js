@@ -6,6 +6,11 @@ const { ImageSet } = classes;
 
 const sopClassHandlerName = 'dicom-sr';
 
+// TODO ->
+// Add SR thumbnail
+// Make viewport
+// Get stacks from referenced displayInstanceUID and load into wrapped CornerStone viewport.
+
 const sopClassUids = [
   '1.2.840.10008.5.1.4.1.1.88.11', //BASIC_TEXT_SR:
   '1.2.840.10008.5.1.4.1.1.88.22', //ENHANCED_SR:
@@ -327,6 +332,10 @@ function _processTID1410Measurement(mergedContentSequence) {
     group => group.ValueType === 'SCOORD'
   );
 
+  const UIDREFContentItem = mergedContentSequence.find(
+    group => group.ValueType === 'UIDREF'
+  );
+
   if (!graphicItem) {
     console.warn(
       `graphic ValueType ${graphicItem.ValueType} not currently supported, skipping annotation.`
@@ -342,6 +351,7 @@ function _processTID1410Measurement(mergedContentSequence) {
     loaded: false,
     labels: [],
     coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
+    TrackingUniqueIdentifier: UIDREFContentItem.UID,
   };
 
   NUMContentItems.forEach(item => {
@@ -365,11 +375,18 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     group => group.ValueType === 'NUM'
   );
 
+  const UIDREFContentItem = mergedContentSequence.find(
+    group => group.ValueType === 'UIDREF'
+  );
+
   const measurement = {
     loaded: false,
     labels: [],
     coords: [],
+    TrackingUniqueIdentifier: UIDREFContentItem.UID,
   };
+
+  debugger;
 
   NUMContentItems.forEach(item => {
     const {

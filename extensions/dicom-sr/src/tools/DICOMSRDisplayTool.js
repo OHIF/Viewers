@@ -45,23 +45,28 @@ export default class DICOMSRDisplayTool extends BaseTool {
 
     for (let i = 0; i < toolState.data.length; i++) {
       const data = toolState.data[i];
+      const { renderableData } = data;
 
-      Object.keys(data).forEach(GraphicType => {
-        const renderableData = data[GraphicType];
+      Object.keys(renderableData).forEach(GraphicType => {
+        const renderableDataForGraphicType = renderableData[GraphicType];
 
         switch (GraphicType) {
           case SCOORD_TYPES.POINT:
           case SCOORD_TYPES.MULTIPOINT:
-            renderPointOrMultipoint(renderableData, eventData, options);
+            renderPointOrMultipoint(
+              renderableDataForGraphicType,
+              eventData,
+              options
+            );
             break;
           case SCOORD_TYPES.POLYLINE:
-            renderPolyLine(renderableData, eventData, options);
+            renderPolyLine(renderableDataForGraphicType, eventData, options);
             break;
           case SCOORD_TYPES.CIRCLE:
-            renderCircle(renderableData, eventData, options);
+            renderCircle(renderableDataForGraphicType, eventData, options);
             break;
           case SCOORD_TYPES.ELLIPSE:
-            renderEllipse(renderableData, eventData, options);
+            renderEllipse(renderableDataForGraphicType, eventData, options);
             break;
         }
       });
