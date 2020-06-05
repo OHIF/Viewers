@@ -4,7 +4,7 @@ import { ViewportActionBar, Notification, Button } from '@ohif/ui';
 
 const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="relative flex flex-col h-full">
       <div className="absolute top-0 left-0 w-full">
         <ViewportActionBar
           onSeriesChange={onSeriesChange}
@@ -13,17 +13,28 @@ const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
 
         {/* TODO: NOTIFICATION API DEFINITION - OHIF-112 */}
         <Notification
-          text="Track all measurement for this series?"
+          message="Track all measurement for this series?"
           type="info"
-          actionButtons={
-            <div>
-              <Button>No</Button>
-              <Button className="ml-2">No, do not ask again</Button>
-              <Button className="ml-2" color="primary">
-                Yes
-              </Button>
-            </div>
-          }
+          actions={[
+            {
+              type: 'cancel',
+              text: 'No',
+              value: 0,
+            },
+            {
+              type: 'secondary',
+              text: 'No, do not ask again',
+              value: -1,
+            },
+            {
+              type: 'primary',
+              text: 'Yes',
+              value: 1,
+            },
+          ]}
+          onSubmit={value => {
+            window.alert(value);
+          }}
         />
       </div>
 

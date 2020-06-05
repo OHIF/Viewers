@@ -3,11 +3,15 @@ import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
-import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
+import {
+  Notification,
+  ViewportActionBar,
+  useViewportGrid,
+  useViewportDialog,
+} from '@ohif/ui';
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
 import { useTrackedMeasurements } from './../getContextModule';
-
 
 // const cine = viewportSpecificData.cine;
 
@@ -16,7 +20,7 @@ import { useTrackedMeasurements } from './../getContextModule';
 
 const { StackManager } = OHIF.utils;
 
-function OHIFCornerstoneViewport({
+function TrackedCornerstoneViewport({
   children,
   dataSource,
   displaySet,
@@ -24,6 +28,10 @@ function OHIFCornerstoneViewport({
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
   const [{ viewports }, dispatchViewportGrid] = useViewportGrid();
+  // viewportIndex, onSubmit
+  const [viewportDialogState, viewportDialogApi] = useViewportDialog();
+  console.warn('VIEWPORT DIALOG', viewportDialogState, viewportDialogApi);
+
   const [viewportData, setViewportData] = useState(null);
   // TODO: Still needed? Better way than import `OHIF` and destructure?
   // Why is this managed by `core`?
@@ -98,7 +106,7 @@ function OHIFCornerstoneViewport({
   // );
   // TODO: This display contains the meta for all instances.
   // That can't be right...
-  console.log('DISPLAYSET', displaySet)
+  console.log('DISPLAYSET', displaySet);
   // const seriesMeta = DicomMetadataStore.getSeries(this.props.displaySet.StudyInstanceUID, '');
   // console.log(seriesMeta);
 
@@ -145,22 +153,35 @@ function OHIFCornerstoneViewport({
           },
         }}
       />
-      <CornerstoneViewport
-        viewportIndex={viewportIndex}
-        imageIds={imageIds}
-        imageIdIndex={currentImageIdIndex}
-        // TODO: ViewportGrid Context?
-        isActive={true} // todo
-        isStackPrefetchEnabled={true} // todo
-        isPlaying={false}
-        frameRate={24}
-      />
-      {childrenWithProps}
+      {/* TODO: Viewport interface to accept stack or layers of content like this? */}
+      <div className="relative flex flex-row w-full h-full">
+        <CornerstoneViewport
+          viewportIndex={viewportIndex}
+          imageIds={imageIds}
+          imageIdIndex={currentImageIdIndex}
+          // TODO: ViewportGrid Context?
+          isActive={true} // todo
+          isStackPrefetchEnabled={true} // todo
+          isPlaying={false}
+          frameRate={24}
+        />
+        <div style={{ position: 'absolute' }}>
+          {viewportDialogState.viewportIndex === viewportIndex && (
+            <Notification
+              message={viewportDialogState.message}
+              type={viewportDialogState.type}
+              actions={viewportDialogState.actions}
+              onSubmit={viewportDialogState.onSubmit}
+            />
+          )}
+        </div>
+        {childrenWithProps}
+      </div>
     </>
   );
 }
 
-OHIFCornerstoneViewport.propTypes = {
+TrackedCornerstoneViewport.propTypes = {
   displaySet: PropTypes.object.isRequired,
   viewportIndex: PropTypes.number.isRequired,
   dataSource: PropTypes.object,
@@ -168,7 +189,7 @@ OHIFCornerstoneViewport.propTypes = {
   customProps: PropTypes.object,
 };
 
-OHIFCornerstoneViewport.defaultProps = {
+TrackedCornerstoneViewport.defaultProps = {
   customProps: {},
 };
 
@@ -207,6 +228,6 @@ async function _getViewportData(dataSource, displaySet) {
   };
 
   return viewportData;
-};
+}
 
-export default OHIFCornerstoneViewport;
+export default TrackedCornerstoneViewport;

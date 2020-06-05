@@ -5,7 +5,7 @@ route: components/notification
 ---
 
 import { Playground, Props } from 'docz';
-import { Notification, Button } from '@ohif/ui';
+import { Notification } from '@ohif/ui';
 
 # Notification
 
@@ -22,23 +22,31 @@ import { Notification } from '@ohif/ui';
 
 <Playground>
   {() => {
-    const actionButtons = () => {
-      return (
-        <div>
-          <Button>No</Button>
-          <Button className="ml-2">No, do not ask again</Button>
-          <Button className="ml-2" color="primary">
-            Yes
-          </Button>
-        </div>
-      );
-    };
     return (
       <div className="p-4 w-full lg:w-2/3">
         <Notification
-          text="Track all measurement for this series?"
+          message="Track all measurement for this series?"
           type="info"
-          actionButtons={actionButtons()}
+          actions={[
+            {
+              type: 'cancel',
+              text: 'No',
+              value: 0,
+            },
+            {
+              type: 'secondary',
+              text: 'No, do not ask again',
+              value: -1,
+            },
+            {
+              type: 'primary',
+              text: 'Yes',
+              value: 1,
+            },
+          ]}
+          onSubmit={value => {
+            window.alert(value);
+          }}
         />
       </div>
     );

@@ -27,7 +27,7 @@ const machineConfiguration = {
         prompt: {
           invoke: {
             id: 'shouldTrackPrompt',
-            src: () => confirmDialog('Should we start tracking?'),
+            src: 'shouldTrackPrompt',
             onDone: {
               target: 'validateResponse',
               actions: assign({ promptResponse: (ctx, evt) => evt.data }),
@@ -135,6 +135,11 @@ function confirmDialog(msg) {
 }
 
 const defaultOptions = {
+  services: {
+    shouldTrackPrompt: () => {
+      return confirmDialog('Should we start tracking?');
+    },
+  },
   actions: {
     clearContext: assign({
       prevTrackedStudy: '',
@@ -186,11 +191,13 @@ const defaultOptions = {
   },
 };
 
-const measurementTrackingMachine = Machine(machineConfiguration, defaultOptions);
+// const measurementTrackingMachine = Machine(
+//   machineConfiguration,
+//   defaultOptions
+// );
 // .transition(state, eventArgument).value
 // const service = interpret(measurementTrackingMachine).start();
 // .send(event): nextState
 // .state (getter)
 // .onTransition(state => { state.vale })
-export { defaultOptions, machineConfiguration, measurementTrackingMachine };
-export default measurementTrackingMachine;
+export { defaultOptions, machineConfiguration };

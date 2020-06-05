@@ -17,7 +17,8 @@ const publicAPI = {
 };
 
 const serviceImplementation = {
-  _viewports: [],
+  _hide: () => console.warn('hide() NOT IMPLEMENTED'),
+  _show: () => console.warn('show() NOT IMPLEMENTED'),
 };
 
 /**
@@ -25,39 +26,21 @@ const serviceImplementation = {
  *
  * @param {ViewportDialogProps} props { content, contentProps, viewportIndex }
  */
-function _show({ content = null, contentProps = null, viewportIndex }) {
-  const viewportIndexImplementation =
-    (viewportIndex !== undefined &&
-      serviceImplementation._viewports[viewportIndex]) ||
-    {};
-
-  if (!viewportIndexImplementation._show) {
-    console.warn('show() NOT IMPLEMENTED');
-    return;
-  }
-
-  return viewportIndexImplementation._show({
-    content,
-    contentProps,
+function _show({ viewportIndex, type, message, actions, onSubmit }) {
+  return serviceImplementation._show({
     viewportIndex,
+    type,
+    message,
+    actions,
+    onSubmit,
   });
 }
 
 /**
  * Hides/dismisses the viewport dialog, if currently shown
- *
- * @param {*} { viewportIndex }
  */
-function _hide({ viewportIndex }) {
-  const viewportIndexImplementation =
-    (viewportIndex && serviceImplementation._viewports[viewportIndex]) || {};
-
-  if (!viewportIndexImplementation._hide) {
-    console.warn('hide() NOT IMPLEMENTED');
-    return;
-  }
-
-  return viewportIndexImplementation._hide();
+function _hide() {
+  return serviceImplementation._hide();
 }
 
 /**
@@ -72,22 +55,12 @@ function _hide({ viewportIndex }) {
 function setServiceImplementation({
   hide: hideImplementation,
   show: showImplementation,
-  viewportIndex,
 }) {
-  if (viewportIndex !== undefined) {
-    const newImplementations = {};
-    if (hideImplementation) {
-      newImplementations._hide = hideImplementation;
-    }
-    if (showImplementation) {
-      newImplementations._show = showImplementation;
-    }
-
-    serviceImplementation._viewports[viewportIndex] = Object.assign(
-      {},
-      serviceImplementation._viewports[viewportIndex],
-      newImplementations
-    );
+  if (hideImplementation) {
+    serviceImplementation._hide = hideImplementation;
+  }
+  if (showImplementation) {
+    serviceImplementation._show = showImplementation;
   }
 }
 

@@ -6,8 +6,10 @@ import {
   DialogProvider,
   Modal,
   ModalProvider,
+  Notification,
   SnackbarProvider,
   ThemeWrapper,
+  ViewportDialogProvider,
   ViewportGridProvider,
 } from '@ohif/ui';
 // Viewer Project
@@ -48,7 +50,12 @@ function App({ config, defaultExtensions }) {
     extensionManager,
     servicesManager
   );
-  const { UIDialogService, UIModalService, UINotificationService } = servicesManager.services;
+  const {
+    UIDialogService,
+    UIModalService,
+    UINotificationService,
+    UIViewportDialogService,
+  } = servicesManager.services;
 
   // A UI Service may need to use the ViewportGrid context
   const viewportGridReducer = (state, action) => {
@@ -82,13 +89,15 @@ function App({ config, defaultExtensions }) {
             }}
             reducer={viewportGridReducer}
           >
-            <SnackbarProvider service={UINotificationService}>
-              <DialogProvider service={UIDialogService}>
-                <ModalProvider modal={Modal} service={UIModalService}>
-                  {appRoutes}
-                </ModalProvider>
-              </DialogProvider>
-            </SnackbarProvider>
+            <ViewportDialogProvider service={UIViewportDialogService}>
+              <SnackbarProvider service={UINotificationService}>
+                <DialogProvider service={UIDialogService}>
+                  <ModalProvider modal={Modal} service={UIModalService}>
+                    {appRoutes}
+                  </ModalProvider>
+                </DialogProvider>
+              </SnackbarProvider>
+            </ViewportDialogProvider>
           </ViewportGridProvider>
         </ThemeWrapper>
       </Router>
