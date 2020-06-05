@@ -106,12 +106,21 @@ class OHIFStandaloneViewer extends Component {
 
               userManager.removeUser().then(() => {
                 if (targetLinkUri !== null) {
+                  const ohifRedirectTo = {
+                    pathname: new URL(targetLinkUri).pathname,
+                  };
                   sessionStorage.setItem(
                     'ohif-redirect-to',
-                    new URL(targetLinkUri).pathname
+                    JSON.stringify(ohifRedirectTo)
                   );
                 } else {
-                  sessionStorage.setItem('ohif-redirect-to', '/');
+                  const ohifRedirectTo = {
+                    pathname: '/',
+                  };
+                  sessionStorage.setItem(
+                    'ohif-redirect-to',
+                    JSON.stringify(ohifRedirectTo)
+                  );
                 }
 
                 if (loginHint !== null) {
