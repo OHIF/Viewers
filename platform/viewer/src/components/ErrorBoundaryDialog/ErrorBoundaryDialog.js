@@ -30,7 +30,7 @@ const ErrorBoundaryDialog = ({ context, children }) => {
                 opened: open,
               })}
             />
-            Toggle stack trace
+            Stack Trace
           </button>
 
           {open && <pre>{componentStack}</pre>}
