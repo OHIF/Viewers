@@ -13,6 +13,8 @@ import {
   // redux as reduxOHIF,
 } from '@ohif/core';
 
+// TODO -> this feels bad.
+
 /**
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
  * @param {object[]} defaultExtensions - array of extension objects

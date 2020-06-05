@@ -1,6 +1,7 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import id from './id.js';
+import init from './init';
 
 const Component = React.lazy(() => {
   return import('./OHIFCornerstoneSRViewport');
@@ -22,6 +23,10 @@ export default {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
+
+  preRegistration({ servicesManager, configuration = {} }) {
+    init({ servicesManager, configuration });
+  },
 
   /**
    *

@@ -17,9 +17,12 @@ export default class ExtensionManager {
       this.modules[moduleType] = [];
     });
     this.dataSourceMap = {};
+    this.defaultDataSourceName = appConfig.defaultDataSourceName;
+    this.activeDataSource = undefined;
+  }
 
-    console.log('modules map');
-    console.log(this.modulesMap);
+  setActiveDataSource(dataSourceName) {
+    this.activeDataSource = dataSourceName;
   }
 
   /**
@@ -137,6 +140,10 @@ export default class ExtensionManager {
   };
 
   getDataSources = dataSourceName => {
+    if (dataSourceName === undefined) {
+      dataSourceName = this.activeDataSource;
+    }
+
     // Note: this currently uses the data source name, which feels weird...
     return this.dataSourceMap[dataSourceName];
   };

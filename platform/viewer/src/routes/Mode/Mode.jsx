@@ -27,12 +27,15 @@ export default function ModeRoute({
       : [StudyInstanceUIDs];
 
   const { extensions, sopClassHandlers } = mode;
-  // TODO:
-  // - Check query/params for specific dataSource
-  //     - If provided, query for that dataSource instance
-  //     - If not provided, select default datasource
-  // - Update `extensionManager` to have a method to retrieve the default source
-  const dataSources = extensionManager.getDataSources(dataSourceName);
+
+  if (dataSourceName === undefined) {
+    dataSourceName = extensionManager.defaultDataSourceName;
+  }
+
+  extensionManager.setActiveDataSource(dataSourceName);
+
+  const dataSources = extensionManager.getDataSources();
+
   const dataSource = dataSources[0];
   const route = mode.routes[0];
 

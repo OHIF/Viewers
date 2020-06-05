@@ -1,5 +1,8 @@
 import id from './id';
-import { utils } from '@ohif/core';
+import { utils, classes } from '@ohif/core';
+import addMeasurement from './utils/addMeasurement.js';
+
+const { ImageSet } = classes;
 
 const sopClassHandlerName = 'dicom-sr';
 
@@ -9,8 +12,6 @@ const sopClassUids = [
   '1.2.840.10008.5.1.4.1.1.88.33', //COMPREHENSIVE_SR:
 ];
 
-const scoordTypes = ['POINT', 'MULTIPOINT', 'POLYLINE', 'CIRCLE', 'ELLIPSE'];
-
 const CodeNameCodeSequenceValues = {
   ImagingMeasurementReport: '126000',
   ImageLibrary: '111028',
@@ -18,6 +19,10 @@ const CodeNameCodeSequenceValues = {
   MeasurementGroup: '125007',
   ImageLibraryGroup: '126200',
   TrackingUniqueIdentifier: '112040',
+};
+
+const RELATIONSHIP_TYPE = {
+  INFERRED_FROM: 'INFERRED FROM',
 };
 
 /**
@@ -29,16 +34,23 @@ const CodeNameCodeSequenceValues = {
  * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
  * @returns {Array} The list of display sets created for the given series object
  */
-function getDisplaySetsFromSeries(instances) {
+function _getDisplaySetsFromSeries(
+  instances,
+  servicesManager,
+  extensionManager
+) {
   // If the series has no instances, stop here
   if (!instances || !instances.length) {
     throw new Error('No instances were provided');
   }
 
+  const { DisplaySetService } = servicesManager.services;
+  const dataSources = extensionManager.getDataSources();
+  const dataSource = dataSources[0];
+
   const instance = instances[0];
 
   const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-
   const { ConceptNameCodeSequence, ContentSequence } = instance;
 
   if (
@@ -51,10 +63,6 @@ function getDisplaySetsFromSeries(instances) {
     return [];
   }
 
-  const referencedImages = _getReferencedImagesList(ContentSequence);
-
-  const measurements = _getMeasurements(ContentSequence, SOPInstanceUID);
-
   const displaySet = {
     plugin: id,
     Modality: 'SR',
@@ -63,13 +71,141 @@ function getDisplaySetsFromSeries(instances) {
     SeriesInstanceUID,
     StudyInstanceUID,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
-    referencedImages,
+    referencedImages: _getReferencedImagesList(ContentSequence),
+    measurements: _getMeasurements(ContentSequence),
   };
+
+  console.log(DisplaySetService);
+
+  // Check currently added displaySets and add measurements if the sources exist.
+  DisplaySetService.activeDisplaySets.forEach(activeDisplaySet => {
+    _checkIfCanAddMeasurementsToDisplaySet(
+      displaySet,
+      activeDisplaySet,
+      dataSource
+    );
+  });
+
+  // Subscribe to new displaySets as the source may come in after.
+  DisplaySetService.subscribe(
+    DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
+    newDisplaySets => {
+      // If there are still some measurements that have not yet been loaded into cornerstone,
+      // See if we can load them onto any of the new displaySets.
+      newDisplaySets.forEach(newDisplaySet => {
+        _checkIfCanAddMeasurementsToDisplaySet(
+          displaySet,
+          newDisplaySet,
+          dataSource
+        );
+      });
+    }
+  );
 
   return [displaySet];
 }
 
-function getSopClassHandlerModule() {
+function _checkIfCanAddMeasurementsToDisplaySet(
+  srDisplaySet,
+  newDisplaySet,
+  dataSource
+) {
+  let unloadedMeasurements = srDisplaySet.measurements.filter(
+    measurement => measurement.loaded === false
+  );
+
+  if (unloadedMeasurements.length === 0) {
+    // All already loaded!
+    return;
+  }
+
+  if (!newDisplaySet instanceof ImageSet) {
+    // This also filters out _this_ displaySet, as it is not an ImageSet.
+    return;
+  }
+
+  const { sopClassUids, images } = newDisplaySet;
+
+  // Check if any have the newDisplaySet is the correct SOPClass.
+  unloadedMeasurements = unloadedMeasurements.filter(measurement =>
+    measurement.coords.some(coord =>
+      sopClassUids.includes(coord.ReferencedSOPSequence.ReferencedSOPClassUID)
+    )
+  );
+
+  if (unloadedMeasurements.length === 0) {
+    // New displaySet isn't the correct SOPClass, so can't contain the referenced images.
+    return;
+  }
+
+  const SOPInstanceUIDs = [];
+
+  unloadedMeasurements.forEach(measurement => {
+    const { coords } = measurement;
+
+    coords.forEach(coord => {
+      const SOPInstanceUID =
+        coord.ReferencedSOPSequence.ReferencedSOPInstanceUID;
+
+      if (!SOPInstanceUIDs.includes(SOPInstanceUID)) {
+        SOPInstanceUIDs.push(SOPInstanceUID);
+      }
+    });
+  });
+
+  const imageIdsForDisplaySet = dataSource.getImageIdsForDisplaySet(
+    newDisplaySet
+  );
+
+  for (let i = 0; i < images.length; i++) {
+    if (!unloadedMeasurements.length) {
+      // All measurements loaded.
+      break;
+    }
+
+    const image = images[i];
+    const { SOPInstanceUID } = image;
+    if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
+      const imageId = imageIdsForDisplaySet[i];
+
+      for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
+        const measurement = unloadedMeasurements[j];
+        if (_measurmentReferencesSOPInstanceUID(measurement, SOPInstanceUID)) {
+          addMeasurement(
+            measurement,
+            imageId,
+            newDisplaySet.displaySetInstanceUID
+          );
+
+          unloadedMeasurements.splice(j, 1);
+        }
+      }
+    }
+  }
+}
+
+function _measurmentReferencesSOPInstanceUID(measurement, SOPInstanceUID) {
+  const { coords } = measurement;
+
+  for (let j = 0; j < coords.length; j++) {
+    const coord = coords[j];
+    const { ReferencedSOPInstanceUID } = coord.ReferencedSOPSequence;
+
+    if (ReferencedSOPInstanceUID === SOPInstanceUID) {
+      return true;
+    }
+  }
+}
+
+function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+  const getDisplaySetsFromSeries = instances => {
+    return _getDisplaySetsFromSeries(
+      instances,
+      servicesManager,
+      extensionManager
+    );
+  };
+
   return [
     {
       name: sopClassHandlerName,
@@ -79,10 +215,7 @@ function getSopClassHandlerModule() {
   ];
 }
 
-function _getMeasurements(
-  ImagingMeasurementReportContentSequence,
-  SOPInstanceUID
-) {
+function _getMeasurements(ImagingMeasurementReportContentSequence) {
   const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
@@ -101,7 +234,7 @@ function _getMeasurements(
     MeasurementGroups
   );
 
-  let allMeasurements = [];
+  let measurements = [];
 
   Object.keys(mergedContentSequencesByTrackingUniqueIdentifiers).forEach(
     trackingUniqueIdentifier => {
@@ -110,13 +243,15 @@ function _getMeasurements(
           trackingUniqueIdentifier
         ];
 
-      const measurements = _processMeasurement(mergedContentSequence);
+      const measurement = _processMeasurement(mergedContentSequence);
 
-      if (measurements) {
-        allMeasurements = allMeasurements.concat(measurements);
+      if (measurement) {
+        measurements.push(measurement);
       }
     }
   );
+
+  return measurements;
 }
 
 function _getMergedContentSequencesByTrackingUniqueIdentifiers(
@@ -172,8 +307,6 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
 }
 
 function _processMeasurement(mergedContentSequence) {
-  debugger;
-
   if (
     mergedContentSequence.some(
       group => group.ValueType === 'SCOORD' || group.ValueType === 'SCOORD3D'
@@ -182,34 +315,134 @@ function _processMeasurement(mergedContentSequence) {
     return _processTID1410Measurement(mergedContentSequence);
   }
 
+  return _processNonGeometricallyDefinedMeasurement(mergedContentSequence);
+}
+
+function _processTID1410Measurement(mergedContentSequence) {
+  // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
+  // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
+  // TODO -> Look at RelationshipType => Contains means
+
+  const graphicItem = mergedContentSequence.find(
+    group => group.ValueType === 'SCOORD'
+  );
+
+  if (!graphicItem) {
+    console.warn(
+      `graphic ValueType ${graphicItem.ValueType} not currently supported, skipping annotation.`
+    );
+    return;
+  }
+
   const NUMContentItems = mergedContentSequence.filter(
     group => group.ValueType === 'NUM'
   );
 
-  const measurements = [];
+  const measurement = {
+    loaded: false,
+    labels: [],
+    coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
+  };
 
   NUMContentItems.forEach(item => {
-    debugger;
+    const { ConceptNameCodeSequence, MeasuredValueSequence } = item;
 
-    const { ContentSequence, MeasuredValueSequence } = item;
-
-    // GET -> REPRESENTATION, REFERNECED IMAGE, measurement value
+    if (MeasuredValueSequence) {
+      measurement.labels.push(
+        _getLabelFromMeasuredValueSequence(
+          ConceptNameCodeSequence,
+          MeasuredValueSequence
+        )
+      );
+    }
   });
 
-  // Need to deal with TID 1410 style measurements, which will have a SCOORD or SCOORD3D at the top level,
-  // And non-geometric representations where each NUM has "INFERRED FROM" SCOORD/SCOORD3D
-
-  // TODO -> Look at RelationshipType => Contains means
-
-  return [];
+  return measurement;
 }
 
-function _processTID1410Measurement(mergedContentSequence) {
-  // TODO
-  console.error('TODO => Process TID1410Measurement');
-  debugger;
+function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
+  const NUMContentItems = mergedContentSequence.filter(
+    group => group.ValueType === 'NUM'
+  );
 
-  return [ß];
+  const measurement = {
+    loaded: false,
+    labels: [],
+    coords: [],
+  };
+
+  NUMContentItems.forEach(item => {
+    const {
+      ConceptNameCodeSequence,
+      ContentSequence,
+      MeasuredValueSequence,
+    } = item;
+
+    const { ValueType } = ContentSequence;
+
+    if (!ValueType === 'SCOORD') {
+      console.warn(
+        `Graphic ${ValueType} not currently supported, skipping annotation.`
+      );
+
+      return;
+    }
+
+    const coords = _getCoordsFromSCOORDOrSCOORD3D(ContentSequence);
+
+    if (coords) {
+      measurement.coords.push(coords);
+    }
+
+    if (MeasuredValueSequence) {
+      measurement.labels.push(
+        _getLabelFromMeasuredValueSequence(
+          ConceptNameCodeSequence,
+          MeasuredValueSequence
+        )
+      );
+    }
+  });
+
+  return measurement;
+}
+
+function _getCoordsFromSCOORDOrSCOORD3D(item) {
+  const { ValueType, RelationshipType, GraphicType, GraphicData } = item;
+
+  if (RelationshipType !== RELATIONSHIP_TYPE.INFERRED_FROM) {
+    console.warn(
+      `Relationshiptype === ${RelationshipType}. Cannot deal with NON TID-1400 SCOORD group with RelationshipType !== "INFERRED FROM."`
+    );
+
+    return;
+  }
+
+  const coords = { ValueType, GraphicType, GraphicData };
+
+  // ContentSequence has length of 1 as RelationshipType === 'INFERRED FROM'
+  if (ValueType === 'SCOORD') {
+    const { ReferencedSOPSequence } = item.ContentSequence;
+
+    coords.ReferencedSOPSequence = ReferencedSOPSequence;
+  } else if (ValueType === 'SCOORD3D') {
+    const { ReferencedFrameOfReferenceSequence } = item.ContentSequence;
+
+    coords.ReferencedFrameOfReferenceSequence = ReferencedFrameOfReferenceSequence;
+  }
+
+  return coords;
+}
+
+function _getLabelFromMeasuredValueSequence(
+  ConceptNameCodeSequence,
+  MeasuredValueSequence
+) {
+  const { CodeMeaning } = ConceptNameCodeSequence;
+  const { NumericValue, MeasurementUnitsCodeSequence } = MeasuredValueSequence;
+  const { CodeValue } = MeasurementUnitsCodeSequence;
+
+  return { label: CodeMeaning, value: `${NumericValue} ${CodeValue}` }; // E.g. Long Axis: 31.0 mm
 }
 
 function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {

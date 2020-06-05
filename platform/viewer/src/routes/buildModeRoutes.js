@@ -68,6 +68,30 @@ export default function buildModeRoutes(
         exact: true,
       });
     });
+
+    const defaultDataSourceName = extensionManager.defaultDataSourceName;
+
+    // Add default DataSource route.
+    const path = `/${mode.id}`;
+
+    // TODO move up.
+    const component = ({ location }) => (
+      <ViewModelProvider>
+        <ModeRoute
+          location={location}
+          mode={mode}
+          dataSourceName={defaultDataSourceName}
+          extensionManager={extensionManager}
+          servicesManager={servicesManager}
+        />
+      </ViewModelProvider>
+    );
+
+    routes.push({
+      path,
+      component,
+      exact: true,
+    });
   });
 
   return routes;

@@ -29,8 +29,7 @@ const createRoutes = (
   const routes =
     buildModeRoutes(modes, dataSources, extensionManager, servicesManager) ||
     [];
-  // TODO: Shouldn't need to guard input routes with an empty array?
-  const allRoutes = [...(routes || []), ...bakedInRoutes];
+  const allRoutes = [...routes, ...bakedInRoutes];
 
   console.log(
     'Creating Routes: ',
