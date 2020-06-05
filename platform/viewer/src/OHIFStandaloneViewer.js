@@ -52,10 +52,13 @@ class OHIFStandaloneViewer extends Component {
     const { appConfig = {} } = this.context;
     const userNotLoggedIn = userManager && (!user || user.expired);
     if (userNotLoggedIn) {
-      const pathname = this.props.location.pathname;
+      const { pathname, search } = this.props.location;
 
       if (pathname !== '/callback') {
-        sessionStorage.setItem('ohif-redirect-to', pathname);
+        sessionStorage.setItem(
+          'ohif-redirect-to',
+          JSON.stringify({ pathname, search })
+        );
       }
 
       return (
@@ -191,10 +194,10 @@ class OHIFStandaloneViewer extends Component {
                   {match === null ? (
                     <></>
                   ) : (
-                      <ErrorBoundary context={match.url}>
-                        <Component match={match} location={this.props.location} />
-                      </ErrorBoundary>
-                    )}
+                    <ErrorBoundary context={match.url}>
+                      <Component match={match} location={this.props.location} />
+                    </ErrorBoundary>
+                  )}
                 </CSSTransition>
               )}
             </Route>
