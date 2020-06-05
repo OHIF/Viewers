@@ -186,10 +186,12 @@ function _processMeasurement(mergedContentSequence) {
     group => group.ValueType === 'NUM'
   );
 
+  const measurements = [];
+
   NUMContentItems.forEach(item => {
     debugger;
 
-    const { ContentSequence } = item;
+    const { ContentSequence, MeasuredValueSequence } = item;
 
     // GET -> REPRESENTATION, REFERNECED IMAGE, measurement value
   });
