@@ -244,12 +244,11 @@ const _connectToolsToMeasurementService = measurementService => {
           csToolsAnnotation.id = measurementData._measurementServiceId;
 
           addOrUpdate(csToolName, csToolsAnnotation);
-
         } catch (error) {
           console.warn('Failed to add or update measurement:', error);
         }
       };
-      [csTools.EVENTS.MEASUREMENT_ADDED].forEach(csToolsEvtName => {
+      [csTools.EVENTS.MEASUREMENT_COMPLETED].forEach(csToolsEvtName => {
         event.detail.element.addEventListener(
           csToolsEvtName,
           ({ detail: csToolsAnnotation }) => {
