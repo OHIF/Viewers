@@ -10,7 +10,9 @@ function getCommandsModule({ servicesManager }) {
     toggleLayoutSelectionDialog: {
       commandFn: () => {
         if (!UIDialogService) {
-          window.alert('Unable to show dialog; no UI Dialog Service available.');
+          window.alert(
+            'Unable to show dialog; no UI Dialog Service available.'
+          );
           return;
         }
 
@@ -26,13 +28,12 @@ function getCommandsModule({ servicesManager }) {
           showOverlay: true,
           content: Test,
         });
-
       },
       storeContexts: [],
       options: {},
       context: 'VIEWER',
     },
-  }
+  };
 
   return {
     definitions,
@@ -46,19 +47,22 @@ function Test() {
     dispatch,
   ] = useViewportGrid();
 
-  return <div
-    onClick={() => {
-      dispatch({ type: '', payload: {
-        numCols: 2,
-        numRows: 2,
-        activeViewportIndex: 0,
-        viewports: [],
-      }})
-    }}
-    style={{ color: 'white' }}
-  >
-    Hello World!
-  </div>
+  return (
+    <div
+      onClick={() => {
+        dispatch({
+          type: 'SET_LAYOUT',
+          payload: {
+            numCols: 2,
+            numRows: 2,
+          },
+        });
+      }}
+      style={{ color: 'white' }}
+    >
+      Hello World!
+    </div>
+  );
 }
 
 export default getCommandsModule;
