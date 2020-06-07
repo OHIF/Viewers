@@ -19,7 +19,7 @@ function TrackedMeasurementsContextProvider(
   UIViewportDialogService,
   { children }
 ) {
-  function promptUser(ctx, evt) {
+  function promptUser(message, ctx, evt) {
     const { StudyInstanceUID, SeriesInstanceUID } = evt;
     // TODO: ... ActiveViewport? Or Study + Series --> Viewport?
     // Let's just use zero for meow?
@@ -33,7 +33,7 @@ function TrackedMeasurementsContextProvider(
       UIViewportDialogService.show({
         viewportIndex: 0,
         type: 'info',
-        message: 'Would you like to track?',
+        message,
         actions: [
           { type: 'cancel', text: 'No', value: 0 },
           { type: 'secondary', text: 'No, do not ask again', value: -1 },
@@ -47,9 +47,9 @@ function TrackedMeasurementsContextProvider(
   const machOptions = Object.assign({}, defaultOptions);
   // Merge services
   machOptions.services = Object.assign({}, machOptions.services, {
-    promptBeginTracking: promptUser,
-    promptTrackNewStudy: promptUser,
-    promptTrackNewSeries: promptUser,
+    promptBeginTracking: promptUser.bind(null, 'Start tracking?'),
+    promptTrackNewStudy: promptUser.bind(null, 'New study?'),
+    promptTrackNewSeries: promptUser.bind(null, 'New series?'),
   });
 
   console.log(
