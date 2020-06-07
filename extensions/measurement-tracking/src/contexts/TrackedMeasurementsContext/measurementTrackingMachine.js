@@ -129,18 +129,20 @@ const defaultOptions = {
       trackedSeries: [...ctx.trackedSeries, evt.data.SeriesInstanceUID],
     })),
     removeTrackedSeries: assign((ctx, evt) => ({
-      trackedSeries: [
-        ...ctx.trackedSeries(ser => ser !== evt.SeriesInstanceUID),
-      ],
+      trackedSeries: ctx.trackedSeries
+        .slice()
+        .filter(ser => ser !== evt.SeriesInstanceUID),
     })),
   },
   guards: {
     promptAccepted: (ctx, evt) => evt.data && evt.data.userResponse === 1,
     promptCanceled: (ctx, evt) => evt.data && evt.data.userResponse === 0,
     promptDeclined: (ctx, evt) => evt.data && evt.data.userResponse === -1,
+    // Has more than 1, or SeriesInstanceUID is not in list
+    // --> Post removal would have non-empty trackedSeries array
     hasRemainingTrackedSeries: (ctx, evt) =>
-      ctx.trackedSeries.length === 1 &&
-      ctx.trackedSeries.includes(evt.SeriesInstanceUID),
+      ctx.trackedSeries.length > 1 ||
+      !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
     isNewStudy: (ctx, evt) => ctx.trackedStudy !== evt.StudyInstanceUID,
     isNewSeries: (ctx, evt) =>
       !ctx.trackedSeries.includes(evt.SeriesInstanceUID),

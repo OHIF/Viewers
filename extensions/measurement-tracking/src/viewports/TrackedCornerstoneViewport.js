@@ -104,7 +104,7 @@ function TrackedCornerstoneViewport({
   // );
   // TODO: This display contains the meta for all instances.
   // That can't be right...
-  console.log('DISPLAYSET', displaySet);
+  // console.log('DISPLAYSET', displaySet);
   // const seriesMeta = DicomMetadataStore.getSeries(this.props.displaySet.StudyInstanceUID, '');
   // console.log(seriesMeta);
 

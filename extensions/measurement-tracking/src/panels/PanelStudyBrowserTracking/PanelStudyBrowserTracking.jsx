@@ -211,9 +211,16 @@ function PanelStudyBrowserTracking({
       onClickTab={clickedTabName => {
         setActiveTabName(clickedTabName);
       }}
-      onClickUntrack={displaySetInstanceUID =>
-        console.log(displaySetInstanceUID)
-      }
+      onClickUntrack={displaySetInstanceUID => {
+        const displaySet = DisplaySetService.getDisplaySetByUID(
+          displaySetInstanceUID
+        );
+        // TODO: shift this somewhere else where we're centralizing this logic?
+        // Potentially a helper from displaySetInstanceUID to this
+        sendTrackedMeasurementsEvent('UNTRACK_SERIES', {
+          SeriesInstanceUID: displaySet.SeriesInstanceUID,
+        });
+      }}
     />
   );
 }
