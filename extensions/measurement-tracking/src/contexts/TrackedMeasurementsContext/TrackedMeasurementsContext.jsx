@@ -19,13 +19,15 @@ function TrackedMeasurementsContextProvider(
   UIViewportDialogService,
   { children }
 ) {
-  function promptUser() {
+  function promptUser(ctx, evt) {
+    const { StudyInstanceUID, SeriesInstanceUID } = evt;
     // TODO: ... ActiveViewport? Or Study + Series --> Viewport?
     // Let's just use zero for meow?
     return new Promise(function(resolve, reject) {
       const handleSubmit = result => {
         UIViewportDialogService.hide();
-        resolve(result);
+        // evt.data available for event transition
+        resolve({ userResponse: result, StudyInstanceUID, SeriesInstanceUID });
       };
 
       UIViewportDialogService.show({
@@ -45,7 +47,9 @@ function TrackedMeasurementsContextProvider(
   const machOptions = Object.assign({}, defaultOptions);
   // Merge services
   machOptions.services = Object.assign({}, machOptions.services, {
-    shouldTrackPrompt: promptUser,
+    promptBeginTracking: promptUser,
+    promptTrackNewStudy: promptUser,
+    promptTrackNewSeries: promptUser,
   });
 
   console.log(

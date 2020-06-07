@@ -1,124 +1,101 @@
-import { Machine, assign } from 'xstate';
-// import { assign } from '@xstate/immer';
+import { assign } from 'xstate';
 
 const machineConfiguration = {
   id: 'measurementTracking',
-  initial: 'notTracking',
+  initial: 'idle',
   context: {
-    prevTrackedStudy: '',
-    prevTrackedSeries: [],
     trackedStudy: '',
     trackedSeries: [],
-    promptResponse: 0,
   },
   states: {
-    notTracking: {
+    off: {
+      type: 'final',
+    },
+    idle: {
       entry: 'clearContext',
       on: {
-        TRACK_SERIES: {
-          target: 'awaitShouldTrackPrompt',
-          actions: 'trackSeries',
-        },
+        TRACK_SERIES: 'promptBeginTracking',
       },
     },
-    awaitShouldTrackPrompt: {
-      initial: 'prompt',
-      states: {
-        prompt: {
-          invoke: {
-            id: 'shouldTrackPrompt',
-            src: 'shouldTrackPrompt',
-            onDone: {
-              target: 'validateResponse',
-              actions: assign({ promptResponse: (ctx, evt) => evt.data }),
-            },
-            onError: {
-              target: 'validateResponse',
-              actions: assign({ promptResponse: (ctx, evt) => evt.data }),
-            },
+    promptBeginTracking: {
+      invoke: {
+        src: 'promptBeginTracking',
+        onDone: [
+          {
+            target: 'tracking',
+            actions: ['setTrackedStudyAndSeries'],
+            cond: 'promptAccepted',
           },
-        },
-        validateResponse: {
-          on: {
-            '': [
-              {
-                target: '#measurementTracking.tracking',
-                cond: 'acceptResponse',
-              },
-              {
-                target: '#measurementTracking.neverTrack',
-                cond: 'rejectResponse',
-              },
-              {
-                target: '#measurementTracking.notTracking',
-                cond: 'cancelResponse',
-              },
-            ],
+          {
+            target: 'off',
+            cond: 'promptDeclined',
           },
+          {
+            target: 'idle',
+          },
+        ],
+        onError: {
+          target: 'idle',
         },
       },
-    },
-    neverTrack: {
-      type: 'final',
     },
     tracking: {
       on: {
         TRACK_SERIES: [
           {
-            target: 'tracking',
-            cond: 'hasNewSeriesForTrackedStudy',
-            actions: 'trackSeries',
+            target: 'promptTrackNewStudy',
+            cond: 'isNewStudy',
           },
           {
-            target: 'awaitShouldTrackNewStudyPrompt',
-            cond: 'willTrackNewStudy',
-            actions: ['setPrevTracked', 'clearTrackedSeries', 'trackSeries'],
+            target: 'promptTrackNewSeries',
+            cond: 'isNewSeries',
           },
         ],
         UNTRACK_SERIES: [
           {
-            target: 'notTracking',
-            cond: 'willBeEmpty',
-            actions: 'untrackSeries',
+            target: 'tracking',
+            actions: ['removeTrackedSeries'],
+            cond: 'hasRemainingTrackedSeries',
           },
           {
-            target: 'tracking',
-            actions: 'untrackSeries',
+            target: 'idle',
           },
         ],
       },
     },
-    awaitShouldTrackNewStudyPrompt: {
-      initial: 'prompt',
-      states: {
-        prompt: {
-          invoke: {
-            id: 'shouldTrackPrompt',
-            src: () => confirmDialog('Should we track new study?'),
-            onDone: {
-              target: 'validateResponse',
-              actions: assign({ promptResponse: (ctx, evt) => evt.data }),
-            },
-            onError: {
-              target: 'validateResponse',
-              actions: assign({ promptResponse: (ctx, evt) => evt.data }),
-            },
+    promptTrackNewStudy: {
+      invoke: {
+        src: 'promptTrackNewStudy',
+        onDone: [
+          {
+            target: 'tracking',
+            actions: ['setTrackedStudyAndSeries'],
+            cond: 'promptAccepted',
           },
+          {
+            target: 'tracking',
+          },
+        ],
+        onError: {
+          target: 'idle',
         },
-        validateResponse: {
-          on: {
-            '': [
-              {
-                target: '#measurementTracking.tracking',
-                cond: 'acceptResponse',
-              },
-              {
-                target: '#measurementTracking.tracking',
-                cond: 'rejectResponse',
-                actions: 'restorePrevTracked',
-              },
-            ],
+      },
+    },
+    promptTrackNewSeries: {
+      invoke: {
+        src: 'promptTrackNewSeries',
+        onDone: [
+          {
+            target: 'tracking',
+            actions: ['addTrackedSeries'],
+            cond: 'promptAccepted',
           },
+          {
+            target: 'tracking',
+          },
+        ],
+        onError: {
+          target: 'idle',
         },
       },
     },
@@ -126,68 +103,47 @@ const machineConfiguration = {
   strict: true,
 };
 
-function confirmDialog(msg) {
-  return new Promise(function(resolve, reject) {
-    let confirmed = window.confirm(msg);
-
-    return confirmed ? resolve(1) : reject(-1);
-  });
-}
-
 const defaultOptions = {
   services: {
-    shouldTrackPrompt: () => {
-      return confirmDialog('Should we start tracking?');
+    promptBeginTracking: (ctx, evt) => {
+      // return { userResponse, StudyInstanceUID, SeriesInstanceUID }
+    },
+    promptTrackNewStudy: (ctx, evt) => {
+      // return { userResponse, StudyInstanceUID, SeriesInstanceUID }
+    },
+    promptTrackNewSeries: (ctx, evt) => {
+      // return { userResponse, StudyInstanceUID, SeriesInstanceUID }
     },
   },
   actions: {
     clearContext: assign({
-      prevTrackedStudy: '',
-      prevTrackedSeries: [],
       trackedStudy: '',
       trackedSeries: [],
-      promptResponse: 0,
     }),
-    setPrevTracked: assign(ctx => ({
-      prevTrackedStudy: ctx.trackedStudy,
-      prevTrackedSeries: ctx.trackedSeries.slice(),
+    // Promise resolves w/ `evt.data.*`
+    setTrackedStudyAndSeries: assign((ctx, evt) => ({
+      trackedStudy: evt.data.StudyInstanceUID,
+      trackedSeries: [evt.data.SeriesInstanceUID],
     })),
-    restorePrevTracked: assign(ctx => ({
-      trackedStudy: ctx.prevTrackedStudy,
-      trackedSeries: ctx.prevTrackedSeries.slice(),
+    addTrackedSeries: assign((ctx, evt) => ({
+      trackedSeries: [...ctx.trackedSeries, evt.data.SeriesInstanceUID],
     })),
-    clearTrackedSeries: assign(() => ({
-      trackedStudy: '',
-      trackedSeries: [],
+    removeTrackedSeries: assign((ctx, evt) => ({
+      trackedSeries: [
+        ...ctx.trackedSeries(ser => ser !== evt.SeriesInstanceUID),
+      ],
     })),
-    trackSeries: assign((ctx, evt) => {
-      const prevTrackedSeries = ctx.trackedSeries.slice();
-      return {
-        trackedStudy: evt.StudyInstanceUID || '',
-        trackedSeries: [...prevTrackedSeries, evt.SeriesInstanceUID],
-      };
-    }),
-    untrackSeries: assign((ctx, evt) => {
-      const prevTrackedSeries = ctx.trackedSeries.slice();
-      return {
-        trackedSeries: prevTrackedSeries.filter(
-          serUid => serUid !== evt.SeriesInstanceUID
-        ),
-      };
-    }),
   },
   guards: {
-    hasNewSeriesForTrackedStudy: (ctx, evt) =>
-      evt.StudyInstanceUID === ctx.trackedStudy &&
-      !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
-    willTrackNewStudy: ctx => ctx.StudyInstanceUID !== ctx.trackedStudy,
-    willBeEmpty: (ctx, evt) =>
-      evt.SeriesInstanceUID &&
+    promptAccepted: (ctx, evt) => evt.data && evt.data.userResponse === 1,
+    promptCanceled: (ctx, evt) => evt.data && evt.data.userResponse === 0,
+    promptDeclined: (ctx, evt) => evt.data && evt.data.userResponse === -1,
+    hasRemainingTrackedSeries: (ctx, evt) =>
       ctx.trackedSeries.length === 1 &&
-      ctx.trackedSeries[0] === evt.SeriesInstanceUID,
-    acceptResponse: ctx => ctx.promptResponse === 1,
-    cancelResponse: ctx => ctx.promptResponse === 0,
-    rejectResponse: ctx => ctx.promptResponse === -1,
+      ctx.trackedSeries.includes(evt.SeriesInstanceUID),
+    isNewStudy: (ctx, evt) => ctx.trackedStudy !== evt.StudyInstanceUID,
+    isNewSeries: (ctx, evt) =>
+      !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
   },
 };
 
