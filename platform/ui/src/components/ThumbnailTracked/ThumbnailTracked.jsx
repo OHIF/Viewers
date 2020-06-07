@@ -13,6 +13,7 @@ const ThumbnailTracked = ({
   numInstances,
   dragData,
   onClick,
+  onClickUntrack,
   viewportIdentificator,
   isTracked,
   isActive,
@@ -22,7 +23,7 @@ const ThumbnailTracked = ({
   return (
     <div
       className={classnames(
-        'flex flex-row flex-1 px-3 py-2 showExcludeButtonOnHover cursor-pointer outline-none',
+        'flex flex-row flex-1 px-3 py-2 cursor-pointer outline-none',
         className
       )}
     >
@@ -63,10 +64,9 @@ const ThumbnailTracked = ({
           </Tooltip>
         </div>
         {isTracked && (
-          <Icon
-            name="cancel"
-            className="w-4 text-primary-active excludeButton"
-          />
+          <div onClick={onClickUntrack}>
+            <Icon name="cancel" className="w-4 text-primary-active" />
+          </div>
         )}
       </div>
       <Thumbnail
@@ -102,6 +102,7 @@ ThumbnailTracked.propTypes = {
   seriesNumber: PropTypes.number.isRequired,
   numInstances: PropTypes.number.isRequired,
   onClick: PropTypes.func.isRequired,
+  onClickUntrack: PropTypes.func.isRequired,
   viewportIdentificator: PropTypes.string,
   isTracked: PropTypes.bool,
   isActive: PropTypes.bool.isRequired,

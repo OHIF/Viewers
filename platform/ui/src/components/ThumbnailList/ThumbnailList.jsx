@@ -7,6 +7,7 @@ const ThumbnailList = ({
   thumbnails,
   thumbnailActive,
   onThumbnailClick,
+  onClickUntrack,
 }) => {
   return (
     <div className="py-3 bg-black">
@@ -57,6 +58,7 @@ const ThumbnailList = ({
                   isTracked={isTracked}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
                 />
               );
             case 'thumbnailNoImage':
@@ -111,6 +113,7 @@ ThumbnailList.propTypes = {
   ),
   thumbnailActive: PropTypes.string,
   onThumbnailClick: PropTypes.func,
+  onClickUntrack: PropTypes.func.isRequired,
 };
 
 export default ThumbnailList;

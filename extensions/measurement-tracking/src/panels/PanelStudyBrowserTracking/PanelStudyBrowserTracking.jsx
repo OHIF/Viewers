@@ -50,9 +50,6 @@ function PanelStudyBrowserTracking({
           StudyInstanceUID,
           SeriesInstanceUID,
         });
-
-        console.log('PANEL:', measurement);
-        // console.log('Mapped:', annotation);
       }
     );
 
@@ -159,7 +156,7 @@ function PanelStudyBrowserTracking({
           changedDisplaySets,
           thumbnailImageSrcMap,
           trackedSeries,
-          viewports,
+          viewports
         );
 
         setDisplaySets(mappedDisplaySets);
@@ -214,6 +211,9 @@ function PanelStudyBrowserTracking({
       onClickTab={clickedTabName => {
         setActiveTabName(clickedTabName);
       }}
+      onClickUntrack={displaySetInstanceUID =>
+        console.log(displaySetInstanceUID)
+      }
     />
   );
 }
