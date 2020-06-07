@@ -30,8 +30,6 @@ function TrackedCornerstoneViewport({
   const [{ viewports }, dispatchViewportGrid] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
-  console.warn('VIEWPORT DIALOG', viewportDialogState, viewportDialogApi);
-
   const [viewportData, setViewportData] = useState(null);
   // TODO: Still needed? Better way than import `OHIF` and destructure?
   // Why is this managed by `core`?
