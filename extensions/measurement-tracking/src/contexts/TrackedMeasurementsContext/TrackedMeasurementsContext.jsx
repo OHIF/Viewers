@@ -20,7 +20,8 @@ function TrackedMeasurementsContextProvider(
   { children }
 ) {
   function promptUser(message, ctx, evt) {
-    const { StudyInstanceUID, SeriesInstanceUID } = evt;
+    console.log('promput user:', evt);
+    const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
     // TODO: ... ActiveViewport? Or Study + Series --> Viewport?
     // Let's just use zero for meow?
     return new Promise(function(resolve, reject) {
@@ -31,7 +32,7 @@ function TrackedMeasurementsContextProvider(
       };
 
       UIViewportDialogService.show({
-        viewportIndex: 0,
+        viewportIndex,
         type: 'info',
         message,
         actions: [

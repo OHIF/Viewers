@@ -19,12 +19,14 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
-  const [{ viewports }, dispatchViewportGrid] = useViewportGrid();
+  const [
+    { activeViewportIndex, viewports },
+    dispatchViewportGrid,
+  ] = useViewportGrid();
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
   ] = useTrackedMeasurements();
-  console.warn('trackedMeasurementsState: ', trackedMeasurements);
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState(
     []
@@ -44,6 +46,7 @@ function PanelStudyBrowserTracking({
         } = measurement;
 
         sendTrackedMeasurementsEvent('TRACK_SERIES', {
+          viewportIndex: activeViewportIndex,
           StudyInstanceUID,
           SeriesInstanceUID,
         });
@@ -54,7 +57,7 @@ function PanelStudyBrowserTracking({
     );
 
     return unsubscribe;
-  }, [MeasurementService, sendTrackedMeasurementsEvent]);
+  }, [MeasurementService, activeViewportIndex, sendTrackedMeasurementsEvent]);
 
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
 
@@ -188,8 +191,11 @@ function PanelStudyBrowserTracking({
       StudyInstanceUID
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
-      // eslint-disable-next-line prettier/prettier
-      ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
+      ? [
+          ...expandedStudyInstanceUIDs.filter(
+            stdyUid => stdyUid !== StudyInstanceUID
+          ),
+        ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
