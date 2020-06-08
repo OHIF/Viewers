@@ -100,12 +100,34 @@ function save(promise, listOfUIDs) {
     });
 }
 
+function upload(promise, serverConfig) {
+  return Promise.resolve(promise)
+    .then(async instances => {
+      OHIF.log.info('Instances successfully downloaded:', instances);
+
+      const { config } = serverConfig;
+      const dicomWeb = new api.DICOMwebClient(config);
+      const options = {
+        datasets: [instances],
+      };
+
+      await dicomWeb.storeInstances(options);
+
+      return instances;
+    })
+    .catch(error => {
+      OHIF.log.error('Failed to create Zip file...', error);
+      return null;
+    });
+}
+
 function getStudyInstanceUIDFromStudies(studies) {
   return Object.keys(Object(Object(studies).studyData)).slice(0, 1);
 }
 
 export {
   save,
+  upload,
   validDicomUid,
   getDicomWebClientFromConfig,
   getDicomWebClientFromContext,
