@@ -2,6 +2,7 @@ import OHIF from '@ohif/core';
 import {
   save,
   getDicomWebClientFromContext,
+  getStudyInstanceUIDFromStudies,
   getSOPInstanceReferenceFromActiveViewport,
   getSOPInstanceReferencesFromViewports,
 } from './utils';
@@ -41,6 +42,14 @@ export function getCommands(context) {
         listOfUIDs
       );
     },
+    downloadAndZipStudy({ servers, studies, progress }) {
+      const dicomWebClient = getDicomWebClientFromContext(context, servers);
+      const listOfUIDs = getStudyInstanceUIDFromStudies(studies);
+      return save(
+        _downloadAndZip(dicomWebClient, listOfUIDs, { progress }),
+        listOfUIDs
+      );
+    },
     downloadAndZipSeriesOnViewports({ servers, viewports, progress }) {
       const dicomWebClient = getDicomWebClientFromContext(context, servers);
       const listOfUIDs = getSOPInstanceReferencesFromViewports(viewports);
@@ -63,6 +72,11 @@ export function getCommands(context) {
     downloadAndZip: {
       commandFn: queue.bindSafe(actions.downloadAndZip, error),
       storeContexts: ['servers'],
+    },
+    downloadAndZipStudy: {
+      commandFn: queue.bindSafe(actions.downloadAndZipStudy, error),
+      storeContexts: ['servers', 'studies'],
+      options: { progress },
     },
     downloadAndZipSeriesOnViewports: {
       commandFn: queue.bindSafe(actions.downloadAndZipSeriesOnViewports, error),

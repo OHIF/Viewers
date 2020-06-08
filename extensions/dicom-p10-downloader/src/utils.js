@@ -100,11 +100,16 @@ function save(promise, listOfUIDs) {
     });
 }
 
+function getStudyInstanceUIDFromStudies(studies) {
+  return Object.keys(Object(Object(studies).studyData)).slice(0, 1);
+}
+
 export {
   save,
   validDicomUid,
   getDicomWebClientFromConfig,
   getDicomWebClientFromContext,
+  getStudyInstanceUIDFromStudies,
   getSOPInstanceReferenceFromActiveViewport,
   getSOPInstanceReferencesFromViewports,
 };

@@ -46,7 +46,7 @@ export default {
       const onSegmentVisibilityChangeHandler = (segmentNumber, visible) => {
         commandsManager.runCommand('setSegmentConfiguration', {
           segmentNumber,
-          visible
+          visible,
         });
       };
 
@@ -55,7 +55,7 @@ export default {
           globalOpacity: configuration.fillAlpha,
           outlineThickness: configuration.outlineWidth,
           renderOutline: configuration.renderOutline,
-          visible: configuration.renderFill
+          visible: configuration.renderFill,
         });
       };
 

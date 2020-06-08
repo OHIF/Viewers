@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.0...@ohif/ui@1.5.1) (2020-06-05)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.4...@ohif/ui@1.5.0) (2020-06-04)
+
+
+### Features
+
+* 🎸 1729 - error boundary wrapper ([#1764](https://github.com/OHIF/Viewers/issues/1764)) ([c02b232](https://github.com/OHIF/Viewers/commit/c02b232b0cc24f38af5d5e3831d987d048e60ada))
+
+
+
+
+
 ## [1.4.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.3...@ohif/ui@1.4.4) (2020-05-04)
 
 

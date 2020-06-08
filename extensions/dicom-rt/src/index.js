@@ -20,14 +20,21 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getPanelModule({ commandsManager }) {
+  getPanelModule({ commandsManager, api }) {
     const ExtendedRTPanel = props => {
+      const { activeContexts } = api.hooks.useAppContext();
+
       const contourItemClickHandler = contourData => {
         commandsManager.runCommand('jumpToImage', contourData);
       };
 
       return (
-        <RTPanel {...props} onContourItemClick={contourItemClickHandler} />
+        <RTPanel
+          {...props}
+          onContourItemClick={contourItemClickHandler}
+          activeContexts={activeContexts}
+          contexts={api.contexts}
+        />
       );
     };
 

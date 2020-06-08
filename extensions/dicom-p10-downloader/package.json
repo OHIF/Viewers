@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-p10-downloader",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OHIF extension for downloading DICOM P10 files",
   "author": "OHIF",
   "license": "MIT",
