@@ -20,14 +20,17 @@ function TrackedMeasurementsContextProvider(
   { children }
 ) {
   function promptUser(message, ctx, evt) {
-    console.log('promput user:', evt);
     const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
-    // TODO: ... ActiveViewport? Or Study + Series --> Viewport?
-    // Let's just use zero for meow?
+
     return new Promise(function(resolve, reject) {
+      /**
+       * TODO: Will have issues if "SeriesInstanceUID" exists in multiple displaySets?
+       *
+       * @param {number} result - -1 | 0 | 1 --> deny | cancel | accept
+       * @return resolve { userResponse: number, StudyInstanceUID: string, SeriesInstanceUID: string }
+       */
       const handleSubmit = result => {
         UIViewportDialogService.hide();
-        // evt.data available for event transition
         resolve({ userResponse: result, StudyInstanceUID, SeriesInstanceUID });
       };
 
@@ -45,20 +48,19 @@ function TrackedMeasurementsContextProvider(
     });
   }
 
-  const machOptions = Object.assign({}, defaultOptions);
-  // Merge services
-  machOptions.services = Object.assign({}, machOptions.services, {
+  // Set StateMachine behavior for prompts (invoked services)
+  const machineOptions = Object.assign({}, defaultOptions);
+  machineOptions.services = Object.assign({}, machineOptions.services, {
     promptBeginTracking: promptUser.bind(null, 'Start tracking?'),
     promptTrackNewStudy: promptUser.bind(null, 'New study?'),
     promptTrackNewSeries: promptUser.bind(null, 'New series?'),
   });
 
-  console.log(
-    '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
-    machOptions
-  );
 
-  const measurementTrackingMachine = Machine(machineConfiguration, machOptions);
+  const measurementTrackingMachine = Machine(
+    machineConfiguration,
+    machineOptions
+  );
 
   const [
     trackedMeasurements,
