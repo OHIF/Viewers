@@ -70,7 +70,7 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
           description: StudyDescription,
         });
       }
-    } else if (trackedMeasurements.matches('notTracking')) {
+    } else if (trackedStudy === '' || trackedStudy === undefined) {
       setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
     }
   }, [displayStudySummary.key, trackedMeasurements, trackedStudy]);
