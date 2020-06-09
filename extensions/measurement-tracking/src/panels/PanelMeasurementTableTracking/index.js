@@ -169,8 +169,8 @@ function _getDisplayText(points, pixelSpacing, seriesNumber, instanceNumber) {
 
   const { x: x1, y: y1 } = points[0];
   const { x: x2, y: y2 } = points[1];
-  const dx = x2 - x1 * colPixelSpacing;
-  const dy = y2 - y1 * rowPixelSpacing;
+  const dx = (x2 - x1) * colPixelSpacing;
+  const dy = (y2 - y1) * rowPixelSpacing;
   const length = _round(Math.sqrt(dx * dx + dy * dy), 1);
 
   return `${length} ${unit} (S:${seriesNumber}, I:${instanceNumber})`;
