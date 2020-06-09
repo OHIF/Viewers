@@ -162,6 +162,7 @@ function TrackedCornerstoneViewport({
           isStackPrefetchEnabled={true} // todo
           isPlaying={false}
           frameRate={24}
+          isOverlayVisible={false}
         />
         <div style={{ position: 'absolute' }}>
           {viewportDialogState.viewportIndex === viewportIndex && (
