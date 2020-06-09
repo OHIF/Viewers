@@ -164,7 +164,7 @@ function TrackedCornerstoneViewport({
           frameRate={24}
           isOverlayVisible={false}
         />
-        <div style={{ position: 'absolute' }}>
+        <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
             <Notification
               message={viewportDialogState.message}
