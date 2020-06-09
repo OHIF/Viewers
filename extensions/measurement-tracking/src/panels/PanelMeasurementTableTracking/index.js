@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { StudySummary, MeasurementTable } from '@ohif/ui';
 import { DicomMetadataStore } from '@ohif/core';
+import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 
@@ -13,6 +14,13 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
 };
 
 function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
+  const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(
+    Date.now().toString()
+  );
+  const debouncedMeasurementChangeTimestamp = useDebounce(
+    measurementChangeTimestamp,
+    200
+  );
   const { MeasurementService } = servicesManager.services;
   const [
     trackedMeasurements,
@@ -39,6 +47,12 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
   }, [MeasurementService, trackedStudy, trackedSeries]);
+  }, [
+    MeasurementService,
+    trackedStudy,
+    trackedSeries,
+    debouncedMeasurementChangeTimestamp,
+  ]);
 
   // ~~ DisplayStudySummary
   useEffect(() => {
@@ -62,23 +76,30 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
   }, [displayStudySummary.key, trackedMeasurements, trackedStudy]);
 
   // TODO: Listen for measurement service "adds" and updates
+  // TODO: Better way to consolidated, debounce, check on change?
+  // Are we exposing the right API for measurementService?
+  // This watches for ALL MeasurementService changes. It updates a timestamp,
+  // which is debounced. After a brief period of inactivity, this triggers
+  // a re-render where we grab up-to-date measurements.
   useEffect(() => {
-    // const { unsubscribe } = MeasurementService.subscribe(
-    //   MeasurementService.EVENTS.MEASUREMENT_ADDED,
-    //   ({ source, measurement }) => {
-    //     const {
-    //       referenceSeriesUID: SeriesInstanceUID,
-    //       referenceStudyUID: StudyInstanceUID,
-    //     } = measurement;
-    //     sendTrackedMeasurementsEvent('TRACK_SERIES', {
-    //       StudyInstanceUID,
-    //       SeriesInstanceUID,
-    //     });
-    //     console.log('PANEL:', measurement);
-    //     // console.log('Mapped:', annotation);
-    //   }
-    // );
-    // return unsubscribe;
+    const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
+    const updated = MeasurementService.EVENTS.MEASUREMENT_UPDATED;
+    const removed = MeasurementService.EVENTS.MEASUREMENT_REMOVED;
+    const subscriptions = [];
+
+    [added, updated, removed].forEach(evt => {
+      subscriptions.push(
+        MeasurementService.subscribe(evt, () => {
+          setMeasurementsUpdated(Date.now().toString());
+        })
+      );
+    });
+
+    return () => {
+      subscriptions.forEach(unsub => {
+        unsub();
+      });
+    };
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
   const activeMeasurementItem = 0;
