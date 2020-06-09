@@ -46,7 +46,6 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
     );
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
-  }, [MeasurementService, trackedStudy, trackedSeries]);
   }, [
     MeasurementService,
     trackedStudy,
@@ -75,7 +74,6 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
     }
   }, [displayStudySummary.key, trackedMeasurements, trackedStudy]);
 
-  // TODO: Listen for measurement service "adds" and updates
   // TODO: Better way to consolidated, debounce, check on change?
   // Are we exposing the right API for measurementService?
   // This watches for ALL MeasurementService changes. It updates a timestamp,

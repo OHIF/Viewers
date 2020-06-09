@@ -35,7 +35,7 @@ function PanelStudyBrowserTracking({
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
 
-  // TODO: Listen for measurement service "adds" (really shouldn't be added until cornerstone-tools "complete")
+  // TODO: Should this be somewhere else? Feels more like a mode "lifecycle" setup/destroy?
   useEffect(() => {
     const { unsubscribe } = MeasurementService.subscribe(
       MeasurementService.EVENTS.MEASUREMENT_ADDED,
