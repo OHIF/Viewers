@@ -18,29 +18,32 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
   ] = useTrackedMeasurements();
+  const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
-
-  // TODO: initial measurements + initial tracked?
   // TODO: measurements subscribtion
-  // TODO: tracked changes
 
   // Initial?
   useEffect(() => {
     const measurements = MeasurementService.getMeasurements();
-    const mappedMeasurements = measurements.map((m, index) =>
+    const filteredMeasurements = measurements.filter(
+      m =>
+        trackedStudy === m.referenceStudyUID &&
+        trackedSeries.includes(m.referenceSeriesUID)
+    );
+    const mappedMeasurements = filteredMeasurements.map((m, index) =>
       _mapMeasurementToDisplay(m, index)
     );
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
-  }, [MeasurementService, trackedMeasurements]);
+  }, [MeasurementService, trackedStudy, trackedSeries]);
 
   // ~~ DisplayStudySummary
   useEffect(() => {
     if (trackedMeasurements.matches('tracking')) {
-      const StudyInstanceUID = trackedMeasurements.context.trackedStudy;
+      const StudyInstanceUID = trackedStudy;
       const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
       const instanceMeta = studyMeta.series[0].instances[0];
       const { Modality, StudyDate, StudyDescription } = instanceMeta;
@@ -56,9 +59,9 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
     } else if (trackedMeasurements.matches('notTracking')) {
       setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
     }
-  }, [displayStudySummary.key, trackedMeasurements]);
+  }, [displayStudySummary.key, trackedMeasurements, trackedStudy]);
 
-  // TODO: Listen for measurement service "adds" (really shouldn't be added until cornerstone-tools "complete")
+  // TODO: Listen for measurement service "adds" and updates
   useEffect(() => {
     // const { unsubscribe } = MeasurementService.subscribe(
     //   MeasurementService.EVENTS.MEASUREMENT_ADDED,
