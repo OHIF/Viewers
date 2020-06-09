@@ -195,68 +195,99 @@ const _connectToolsToMeasurementService = measurementService => {
   const csToolsVer4MeasurementSource = _initMeasurementService(
     measurementService
   );
-  const { addOrUpdate } = csToolsVer4MeasurementSource;
+  const { addOrUpdate, remove } = csToolsVer4MeasurementSource;
+  const elementEnabledEvt = cornerstone.EVENTS.ELEMENT_ENABLED;
 
   /* Measurement Service Events */
-  cornerstone.events.addEventListener(
-    cornerstone.EVENTS.ELEMENT_ENABLED,
-    event => {
-      // const {
-      //   MEASUREMENT_ADDED,
-      //   MEASUREMENT_UPDATED,
-      // } = measurementService.EVENTS;
+  cornerstone.events.addEventListener(elementEnabledEvt, evt => {
+    // TODO: Debounced update of measurements that are modified
 
-      // measurementService.subscribe(
-      //   MEASUREMENT_ADDED,
-      //   ({ source, measurement }) => {
-      //     if (![sourceId].includes(source.id)) {
-      //       const annotation = getAnnotation('Length', measurement.id);
+    function addMeasurement(csToolsEvent) {
+      console.log('CSTOOLS::addOrUpdate', csToolsEvent, csToolsEvent.detail);
+      try {
+        const evtDetail = csToolsEvent.detail;
+        const { toolName, toolType, measurementData } = evtDetail;
+        const csToolName = toolName || measurementData.toolType || toolType;
+        const measurementId = addOrUpdate(csToolName, evtDetail);
 
-      //       console.log(
-      //         'Measurement Service [Cornerstone]: Measurement added',
-      //         measurement
-      //       );
-      //       console.log('Mapped annotation:', annotation);
-      //     }
-      //   }
-      // );
-
-      // measurementService.subscribe(
-      //   MEASUREMENT_UPDATED,
-      //   ({ source, measurement }) => {
-      //     if (![sourceId].includes(source.id)) {
-      //       const annotation = getAnnotation('Length', measurement.id);
-
-      //       console.log(
-      //         'Measurement Service [Cornerstone]: Measurement updated',
-      //         measurement
-      //       );
-      //       console.log('Mapped annotation:', annotation);
-      //     }
-      //   }
-      // );
-
-      const addOrUpdateMeasurement = csToolsAnnotation => {
-        try {
-          const { toolName, toolType, measurementData } = csToolsAnnotation;
-          const csToolName = toolName || measurementData.toolType || toolType;
-
-          csToolsAnnotation.id = measurementData._measurementServiceId;
-
-          addOrUpdate(csToolName, csToolsAnnotation);
-        } catch (error) {
-          console.warn('Failed to add or update measurement:', error);
+        if (measurementId) {
+          measurementData.id = measurementId;
         }
-      };
-      [csTools.EVENTS.MEASUREMENT_COMPLETED].forEach(csToolsEvtName => {
-        event.detail.element.addEventListener(
-          csToolsEvtName,
-          ({ detail: csToolsAnnotation }) => {
-            console.log(`csTools::${csToolsEvtName}`);
-            addOrUpdateMeasurement(csToolsAnnotation);
-          }
-        );
-      });
+      } catch (error) {
+        console.warn('Failed to add measurement:', error);
+      }
     }
-  );
+
+    function updateMeasurement(csToolsEvent) {
+      try {
+        if (!csToolsEvent.detail.measurementData.id) {
+          return;
+        }
+        const evtDetail = csToolsEvent.detail;
+        const { toolName, toolType, measurementData } = evtDetail;
+        const csToolName = toolName || measurementData.toolType || toolType;
+
+        evtDetail.id = csToolsEvent.detail.measurementData.id;
+        addOrUpdate(csToolName, evtDetail);
+        //
+      } catch (error) {
+        console.warn('Failed to update measurement:', error);
+      }
+    }
+
+    function removeMeasurement(csToolsEvent) {
+      console.log('~~ removeEvt', csToolsEvent);
+      try {
+        if (csToolsEvent.detail.measurementData.id) {
+          remove(csToolsEvent.detail.measurementData.id);
+        }
+      } catch (error) {
+        console.warn('Failed to remove measurement:', error);
+      }
+    }
+
+    const enabledElement = evt.detail.element;
+    const completedEvt = csTools.EVENTS.MEASUREMENT_COMPLETED;
+    const updatedEvt = csTools.EVENTS.MEASUREMENT_MODIFIED;
+    const removedEvt = csTools.EVENTS.MEASUREMENT_REMOVED;
+
+    enabledElement.addEventListener(completedEvt, addMeasurement);
+    enabledElement.addEventListener(updatedEvt, updateMeasurement);
+    enabledElement.addEventListener(removedEvt, removeMeasurement);
+  });
 };
+
+// const {
+//   MEASUREMENT_ADDED,
+//   MEASUREMENT_UPDATED,
+// } = measurementService.EVENTS;
+
+// measurementService.subscribe(
+//   MEASUREMENT_ADDED,
+//   ({ source, measurement }) => {
+//     if (![sourceId].includes(source.id)) {
+//       const annotation = getAnnotation('Length', measurement.id);
+
+//       console.log(
+//         'Measurement Service [Cornerstone]: Measurement added',
+//         measurement
+//       );
+//       console.log('Mapped annotation:', annotation);
+//     }
+//   }
+// );
+
+// measurementService.subscribe(
+//   MEASUREMENT_UPDATED,
+//   ({ source, measurement }) => {
+//     if (![sourceId].includes(source.id)) {
+//       const annotation = getAnnotation('Length', measurement.id);
+
+//       console.log(
+//         'Measurement Service [Cornerstone]: Measurement updated',
+//         measurement
+//       );
+//       console.log('Mapped annotation:', annotation);
+//     }
+//   }
+// );
