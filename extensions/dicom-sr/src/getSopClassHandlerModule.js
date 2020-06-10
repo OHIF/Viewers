@@ -78,6 +78,7 @@ function _getDisplaySetsFromSeries(
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
     referencedImages: _getReferencedImagesList(ContentSequence),
     measurements: _getMeasurements(ContentSequence),
+    sopClassUids,
   };
 
   console.log(DisplaySetService);
@@ -385,8 +386,6 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     coords: [],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
   };
-
-  debugger;
 
   NUMContentItems.forEach(item => {
     const {

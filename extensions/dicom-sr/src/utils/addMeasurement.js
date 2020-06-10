@@ -6,6 +6,8 @@ import { cornerstone } from '../../../../platform/core/src';
 const globalImageIdSpecificToolStateManager =
   cornerstoneTools.globalImageIdSpecificToolStateManager;
 
+console.log(globalImageIdSpecificToolStateManager);
+
 export default function addMeasurement(
   measurement,
   imageId,
@@ -17,8 +19,6 @@ export default function addMeasurement(
   console.log('============================');
 
   // TODO -> Render rotated ellipse .
-
-  debugger;
 
   const toolName = TOOL_NAMES.DICOM_SR_DISPLAY_TOOL;
 
@@ -62,8 +62,6 @@ export default function addMeasurement(
   measurement.imageId = imageId;
   measurement.displaySetInstanceUID = displaySetInstanceUID;
   delete measurement.coords;
-
-  debugger;
 }
 
 function _getRenderableData(GraphicType, GraphicData) {

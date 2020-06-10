@@ -1,5 +1,7 @@
 import cornerstoneTools from 'cornerstone-tools';
 import DICOMSRDisplayTool from './tools/DICOMSRDisplayTool';
+import dicomSRModule from './tools/modules/dicomSRModule';
+import id from './id';
 
 import TOOL_NAMES from './constants/toolNames';
 
@@ -17,5 +19,7 @@ export default function init({ configuration = {} }) {
 
   TOOL_NAMES.DICOM_SR_DISPLAY_TOOL = conifg.TOOL_NAMES.DICOM_SR_DISPLAY_TOOL;
 
+  cornerstoneTools.register('module', id, dicomSRModule);
   cornerstoneTools.addTool(DICOMSRDisplayTool);
+  cornerstoneTools.setToolEnabled(TOOL_NAMES.DICOM_SR_DISPLAY_TOOL);
 }

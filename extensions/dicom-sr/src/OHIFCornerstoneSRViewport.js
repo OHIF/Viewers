@@ -1,27 +1,12 @@
-import React, { Component } from 'react';
-import CornerstoneViewport from 'react-cornerstone-viewport';
-//import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
-import OHIF from '@ohif/core';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import cornerstone from 'cornerstone-core';
-import debounce from 'lodash.debounce';
-import throttle from 'lodash.throttle';
+import cornerstoneTools from 'cornerstone-tools';
 
-// const {
-//   onAdded,
-//   onRemoved,
-//   onModified,
-// } = OHIF.measurements.MeasurementHandlers;
-
-// // TODO: Transition to enums for the action names so that we can ensure they stay up to date
-// // everywhere they're used.
-// const MEASUREMENT_ACTION_MAP = {
-//   added: onAdded,
-//   removed: onRemoved,
-//   modified: throttle(event => {
-//     return onModified(event);
-//   }, 300),
-// };
+import CornerstoneViewport from 'react-cornerstone-viewport';
+import OHIF from '@ohif/core';
+import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
+import TOOL_NAMES from './constants/toolNames';
+import id from './id';
 
 // const cine = viewportSpecificData.cine;
 
@@ -30,96 +15,53 @@ import throttle from 'lodash.throttle';
 
 const { StackManager } = OHIF.utils;
 
-class OHIFCornerstoneViewport extends Component {
-  state = {
-    viewportData: null,
-  };
+function OHIFCornerstoneSRViewport({
+  children,
+  dataSource,
+  displaySet,
+  viewportIndex,
+  DisplaySetService,
+}) {
+  const [viewportGrid, dispatchViewportGrid] = useViewportGrid();
+  const [measurementSelected, setMeasurementSelected] = useState(0);
+  const [measurementCount, setMeasurementCount] = useState(1);
+  const [viewportData, setViewportData] = useState(null);
+  const [activeDisplaySetData, setActiveDisplaySetData] = useState({});
+  const [element, setElement] = useState(null);
 
-  static defaultProps = {
-    customProps: {},
-  };
+  const { viewports } = viewportGrid;
 
-  static propTypes = {
-    displaySet: PropTypes.object,
-    viewportIndex: PropTypes.number,
-    dataSource: PropTypes.object,
-    children: PropTypes.node,
-    customProps: PropTypes.object,
-  };
+  const onElementEnabled = evt => {
+    const eventData = evt.detail;
+    const { element } = eventData;
 
-  static name = 'OHIFCornerstoneViewport';
+    const { measurements } = displaySet;
 
-  static init() {
-    console.log('OHIFCornerstoneViewport init()');
-  }
+    const srModule = cornerstoneTools.getModule(id);
 
-  static destroy() {
-    console.log('OHIFCornerstoneViewport destroy()');
-    StackManager.clearStacks();
-  }
-
-  /**
-   * Obtain the CornerstoneTools Stack for the specified display set.
-   *
-   * @param {Object} displaySet
-   * @param {Object} dataSource
-   * @return {Object} CornerstoneTools Stack
-   */
-  static getCornerstoneStack(displaySet, dataSource) {
-    const { frameIndex } = displaySet;
-
-    // Get stack from Stack Manager
-    const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
-
-    // Clone the stack here so we don't mutate it
-    const stack = Object.assign({}, storedStack);
-
-    stack.currentImageIdIndex = frameIndex;
-
-    // TODO -> Do we ever use this like this?
-    // if (SOPInstanceUID) {
-    //   const index = stack.imageIds.findIndex(imageId => {
-    //     const imageIdSOPInstanceUID = cornerstone.metaData.get(
-    //       'SOPInstanceUID',
-    //       imageId
-    //     );
-
-    //     return imageIdSOPInstanceUID === SOPInstanceUID;
-    //   });
-
-    //   if (index > -1) {
-    //     stack.currentImageIdIndex = index;
-    //   } else {
-    //     console.warn(
-    //       'SOPInstanceUID provided was not found in specified DisplaySet'
-    //     );
-    //   }
-    // }
-
-    return stack;
-  }
-
-  getViewportData = async displaySet => {
-    let viewportData;
-
-    const { dataSource } = this.props;
-
-    const stack = OHIFCornerstoneViewport.getCornerstoneStack(
-      displaySet,
-      dataSource
+    srModule.setters.trackingUniqueIdentifiersForElement(
+      element,
+      measurements.map(measurement => measurement.TrackingUniqueIdentifier),
+      measurementSelected
     );
 
-    viewportData = {
-      StudyInstanceUID: displaySet.StudyInstanceUID,
-      displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      stack,
-    };
-
-    return viewportData;
+    setElement(element);
   };
 
-  setStateFromProps() {
-    const { displaySet } = this.props;
+  useEffect(() => {
+    const numMeasurements = displaySet.measurements.length;
+
+    console.log(`MEASUREMENT COUNT: ${numMeasurements}`);
+
+    setMeasurementCount(numMeasurements);
+  }, [
+    dataSource,
+    displaySet,
+    displaySet.StudyInstanceUID,
+    displaySet.displaySetInstanceUID,
+  ]);
+
+  const updateViewport = () => {
     const {
       StudyInstanceUID,
       displaySetInstanceUID,
@@ -136,97 +78,219 @@ class OHIFCornerstoneViewport extends Component {
       );
     }
 
-    this.getViewportData(displaySet).then(viewportData => {
-      this.setState({
-        viewportData,
-      });
+    console.log(measurementSelected);
+
+    _getViewportData(
+      dataSource,
+      displaySet,
+      measurementSelected,
+      DisplaySetService,
+      element
+    ).then(viewportData => {
+      setViewportData({ ...viewportData });
+    });
+  };
+
+  useEffect(() => {
+    updateViewport();
+  }, [
+    dataSource,
+    displaySet,
+    displaySet.StudyInstanceUID,
+    displaySet.displaySetInstanceUID,
+    measurementSelected,
+  ]);
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  let childrenWithProps = null;
+
+  if (!viewportData) {
+    return null;
+  }
+
+  const {
+    imageIds,
+    currentImageIdIndex,
+    // If this comes from the instance, would be a better default
+    // `FrameTime` in the instance
+    // frameRate = 0,
+  } = viewportData.stack;
+
+  // TODO: Does it make more sense to use Context?
+  if (children && children.length) {
+    childrenWithProps = children.map((child, index) => {
+      return (
+        child &&
+        React.cloneElement(child, {
+          viewportIndex,
+          key: index,
+        })
+      );
     });
   }
 
-  componentDidMount() {
-    this.setStateFromProps();
-  }
+  const {
+    Modality,
+    SeriesDate,
+    SeriesDescription,
+    SeriesInstanceUID,
+    SeriesNumber,
+  } = displaySet;
 
-  componentDidUpdate(prevProps) {
-    const { displaySet } = this.props;
-    const prevDisplaySet = prevProps.displaySet;
+  // TODO -> Get this from the associated stack.
 
-    if (
-      displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
-      displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
-      displaySet.frameIndex !== prevDisplaySet.frameIndex
-    ) {
-      this.setStateFromProps();
-    }
-  }
+  const {
+    PatientID,
+    PatientName,
+    PatientSex,
+    PatientAge,
+    SliceThickness,
+  } = activeDisplaySetData;
 
-  render() {
-    let childrenWithProps = null;
+  const onMeasurementChange = direction => {
+    let newMeausrementSelected = measurementSelected;
 
-    if (!this.state.viewportData) {
-      return null;
-    }
-    const { viewportIndex } = this.props;
-    const {
-      imageIds,
-      currentImageIdIndex,
-      // If this comes from the instance, would be a better default
-      // `FrameTime` in the instance
-      // frameRate = 0,
-    } = this.state.viewportData.stack;
+    if (direction === 'right') {
+      newMeausrementSelected++;
 
-    // TODO: Does it make more sense to use Context?
-    if (this.props.children && this.props.children.length) {
-      childrenWithProps = this.props.children.map((child, index) => {
-        return (
-          child &&
-          React.cloneElement(child, {
-            viewportIndex: this.props.viewportIndex,
-            key: index,
-          })
-        );
-      });
+      if (newMeausrementSelected >= measurementCount) {
+        newMeausrementSelected = 0;
+      }
+    } else {
+      newMeausrementSelected--;
+
+      if (newMeausrementSelected < 0) {
+        newMeausrementSelected = measurementCount - 1;
+      }
     }
 
-    const debouncedNewImageHandler = debounce(
-      ({ currentImageIdIndex, sopInstanceUid }) => {
-        const { displaySet } = this.props;
-        const { StudyInstanceUID } = displaySet;
-        if (currentImageIdIndex > 0) {
-          this.props.onNewImage({
-            StudyInstanceUID,
-            SOPInstanceUID: sopInstanceUid,
-            frameIndex: currentImageIdIndex,
-            activeViewportIndex: viewportIndex,
-          });
-        }
-      },
-      700
-    );
+    if (newMeausrementSelected === measurementSelected) {
+      updateViewport();
+    }
 
-    // TODO -> We may still want a wrapped component to define all the measurement api stuff.
+    setMeasurementSelected(newMeausrementSelected);
+  };
 
-    return (
-      <>
-        <CornerstoneViewport
-          viewportIndex={viewportIndex}
-          imageIds={imageIds}
-          imageIdIndex={currentImageIdIndex}
-          onNewImage={debouncedNewImageHandler}
-          // TODO: ViewportGrid Context?
-          isActive={true} // todo
-          isStackPrefetchEnabled={true} // todo
-          isPlaying={false}
-          frameRate={24}
-        />
-        {childrenWithProps}
-      </>
-    );
-  }
+  console.log(currentImageIdIndex);
+
+  return (
+    <>
+      <ViewportActionBar
+        onSeriesChange={onMeasurementChange}
+        studyData={{
+          label: '',
+          isTracked: false,
+          isLocked: false,
+          studyDate: SeriesDate, // TODO: This is series date. Is that ok?
+          currentSeries: SeriesNumber,
+          seriesDescription: SeriesDescription,
+          modality: Modality,
+          patientInformation: {
+            patientName: PatientName ? PatientName.Alphabetic || '' : '',
+            patientSex: PatientSex || '',
+            patientAge: PatientAge || '',
+            MRN: PatientID || '',
+            thickness: `${SliceThickness}mm`,
+            spacing: '',
+            scanner: '',
+          },
+        }}
+      />
+      <CornerstoneViewport
+        onElementEnabled={onElementEnabled}
+        viewportIndex={viewportIndex}
+        imageIds={imageIds}
+        imageIdIndex={currentImageIdIndex}
+        // TODO: ViewportGrid Context?
+        isActive={true} // todo
+        isStackPrefetchEnabled={true} // todo
+        isPlaying={false}
+        frameRate={24}
+      />
+      {childrenWithProps}
+    </>
+  );
 }
 
-const temp = () => <div>Hello SR Viewport!</div>;
+OHIFCornerstoneSRViewport.propTypes = {
+  displaySet: PropTypes.object.isRequired,
+  viewportIndex: PropTypes.number.isRequired,
+  dataSource: PropTypes.object,
+  children: PropTypes.node,
+  customProps: PropTypes.object,
+};
 
-//export default OHIFCornerstoneViewport;
-export default temp;
+OHIFCornerstoneSRViewport.defaultProps = {
+  customProps: {},
+};
+
+/**
+ * Obtain the CornerstoneTools Stack for the specified display set.
+ *
+ * @param {Object} displaySet
+ * @param {Object} dataSource
+ * @return {Object} CornerstoneTools Stack
+ */
+function _getCornerstoneStack(
+  measurement,
+  dataSource,
+  DisplaySetService,
+  element
+) {
+  const { displaySetInstanceUID, TrackingUniqueIdentifier } = measurement;
+
+  const displaySet = DisplaySetService.getDisplaySetByUID(
+    displaySetInstanceUID
+  );
+
+  // Get stack from Stack Manager
+  const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
+
+  // Clone the stack here so we don't mutate it
+  const stack = Object.assign({}, storedStack);
+
+  const { imageId } = measurement;
+
+  stack.currentImageIdIndex = stack.imageIds.findIndex(i => i === imageId);
+
+  if (element) {
+    const srModule = cornerstoneTools.getModule(id);
+
+    srModule.setters.activeTrackingUniqueIdentifierForElement(
+      element,
+      TrackingUniqueIdentifier
+    );
+  }
+
+  return stack;
+}
+
+async function _getViewportData(
+  dataSource,
+  displaySet,
+  measurementSelected,
+  DisplaySetService,
+  element
+) {
+  let viewportData;
+
+  const { measurements } = displaySet;
+  const measurement = measurements[measurementSelected];
+
+  const stack = _getCornerstoneStack(
+    measurement,
+    dataSource,
+    DisplaySetService,
+    element
+  );
+
+  viewportData = {
+    StudyInstanceUID: displaySet.StudyInstanceUID,
+    displaySetInstanceUID: displaySet.displaySetInstanceUID,
+    stack,
+  };
+
+  return viewportData;
+}
+
+export default OHIFCornerstoneSRViewport;

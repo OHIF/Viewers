@@ -34,13 +34,15 @@ export default {
    * @param {object} [configuration={}]
    * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
    */
-  getViewportModule({ commandsManager }) {
+  getViewportModule({ servicesManager }) {
     const ExtendedOHIFCornerstoneSRViewport = props => {
-      const onNewImageHandler = jumpData => {
-        commandsManager.runCommand('jumpToImage', jumpData);
-      };
+      const { DisplaySetService } = servicesManager.services;
+
       return (
-        <OHIFCornerstoneSRViewport {...props} onNewImage={onNewImageHandler} />
+        <OHIFCornerstoneSRViewport
+          DisplaySetService={DisplaySetService}
+          {...props}
+        />
       );
     };
 
