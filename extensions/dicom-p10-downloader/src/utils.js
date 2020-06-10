@@ -105,8 +105,7 @@ function upload(promise, serverConfig) {
     .then(async instances => {
       OHIF.log.info('Instances successfully downloaded:', instances);
 
-      const { config } = serverConfig;
-      const dicomWeb = new api.DICOMwebClient(config);
+      const dicomWeb = new api.DICOMwebClient(serverConfig);
       const options = {
         datasets: [instances],
       };
