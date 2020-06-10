@@ -81,8 +81,6 @@ function _getDisplaySetsFromSeries(
     sopClassUids,
   };
 
-  console.log(DisplaySetService);
-
   // Check currently added displaySets and add measurements if the sources exist.
   DisplaySetService.activeDisplaySets.forEach(activeDisplaySet => {
     _checkIfCanAddMeasurementsToDisplaySet(

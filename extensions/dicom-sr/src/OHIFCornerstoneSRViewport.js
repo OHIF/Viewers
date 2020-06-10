@@ -51,8 +51,6 @@ function OHIFCornerstoneSRViewport({
   useEffect(() => {
     const numMeasurements = displaySet.measurements.length;
 
-    console.log(`MEASUREMENT COUNT: ${numMeasurements}`);
-
     setMeasurementCount(numMeasurements);
   }, [
     dataSource,
@@ -78,16 +76,15 @@ function OHIFCornerstoneSRViewport({
       );
     }
 
-    console.log(measurementSelected);
-
-    _getViewportData(
+    _getViewportAndActiveDisplaySetData(
       dataSource,
       displaySet,
       measurementSelected,
       DisplaySetService,
       element
-    ).then(viewportData => {
+    ).then(({ viewportData, activeDisplaySetData }) => {
       setViewportData({ ...viewportData });
+      setActiveDisplaySetData({ ...activeDisplaySetData });
     });
   };
 
@@ -129,13 +126,7 @@ function OHIFCornerstoneSRViewport({
     });
   }
 
-  const {
-    Modality,
-    SeriesDate,
-    SeriesDescription,
-    SeriesInstanceUID,
-    SeriesNumber,
-  } = displaySet;
+  const { Modality } = displaySet;
 
   // TODO -> Get this from the associated stack.
 
@@ -145,7 +136,13 @@ function OHIFCornerstoneSRViewport({
     PatientSex,
     PatientAge,
     SliceThickness,
+    StudyDate,
+    SeriesDescription,
+    SeriesInstanceUID,
+    SeriesNumber,
   } = activeDisplaySetData;
+
+  debugger;
 
   const onMeasurementChange = direction => {
     let newMeausrementSelected = measurementSelected;
@@ -165,7 +162,7 @@ function OHIFCornerstoneSRViewport({
     }
 
     if (newMeausrementSelected === measurementSelected) {
-      updateViewport();
+      // TODO -> Jump to image in this case.
     }
 
     setMeasurementSelected(newMeausrementSelected);
@@ -178,10 +175,10 @@ function OHIFCornerstoneSRViewport({
       <ViewportActionBar
         onSeriesChange={onMeasurementChange}
         studyData={{
-          label: '',
+          label: `${measurementSelected + 1}`,
           isTracked: false,
           isLocked: false,
-          studyDate: SeriesDate, // TODO: This is series date. Is that ok?
+          studyDate: StudyDate,
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription,
           modality: Modality,
@@ -265,7 +262,7 @@ function _getCornerstoneStack(
   return stack;
 }
 
-async function _getViewportData(
+async function _getViewportAndActiveDisplaySetData(
   dataSource,
   displaySet,
   measurementSelected,
@@ -290,7 +287,28 @@ async function _getViewportData(
     stack,
   };
 
-  return viewportData;
+  const { displaySetInstanceUID } = measurement;
+
+  const referencedDisplaySet = DisplaySetService.getDisplaySetByUID(
+    displaySetInstanceUID
+  );
+
+  const image0 = referencedDisplaySet.images[0];
+  const activeDisplaySetData = {
+    PatientID: image0.PatientID,
+    PatientName: image0.PatientName,
+    PatientSex: image0.PatientSex,
+    PatientAge: image0.PatientAge,
+    SliceThickness: image0.SliceThickness,
+    StudyDate: image0.StudyDate,
+    SeriesDescription: image0.SeriesDescription,
+    SeriesInstanceUID: image0.SeriesInstanceUID,
+    SeriesNumber: image0.SeriesNumber,
+  };
+
+  debugger;
+
+  return { viewportData, activeDisplaySetData };
 }
 
 export default OHIFCornerstoneSRViewport;
