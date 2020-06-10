@@ -18,7 +18,9 @@ function PanelStudyBrowser({
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatch] = useImageViewer();
   const [activeTabName, setActiveTabName] = useState('primary');
-  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([]);
+  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState(
+    []
+  );
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
@@ -137,8 +139,12 @@ function PanelStudyBrowser({
       StudyInstanceUID
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
-      // eslint-disable-next-line prettier/prettier
-      ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
+      ? // eslint-disable-next-line prettier/prettier
+        [
+          ...expandedStudyInstanceUIDs.filter(
+            stdyUid => stdyUid !== StudyInstanceUID
+          ),
+        ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -202,27 +208,55 @@ function _mapDataSourceStudies(studies) {
 }
 
 function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
-  return displaySets.map(ds => {
+  const thumbnailDisplaySets = [];
+  const thumbnailNoImageDisplaySets = [];
+
+  displaySets.forEach(ds => {
     const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
-    return {
+    const componentType = _getComponentType(ds.Modality);
+
+    const array =
+      componentType === 'thumbnail'
+        ? thumbnailDisplaySets
+        : thumbnailNoImageDisplaySets;
+
+    array.push({
       displaySetInstanceUID: ds.displaySetInstanceUID,
       description: ds.SeriesDescription,
       seriesNumber: ds.SeriesNumber,
       modality: ds.Modality,
-      date: ds.SeriesDate,
+      seriesDate: ds.SeriesDate,
       numInstances: ds.numImageFrames,
       StudyInstanceUID: ds.StudyInstanceUID,
-      componentType: 'thumbnail', // 'thumbnailNoImage' || 'thumbnailTracked' // TODO: PUT THIS SOMEWHERE ELSE
+      componentType,
       imageSrc,
       dragData: {
         type: 'displayset',
         displaySetInstanceUID: ds.displaySetInstanceUID,
         // .. Any other data to pass
       },
-    };
+    });
   });
+
+  return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
 
+const thumbnailNoImageModalities = [
+  'SR',
+  'SEG',
+  'RTSTRUCT',
+  'RTPLAN',
+  'RTDOSE',
+];
+
+function _getComponentType(Modality) {
+  if (thumbnailNoImageModalities.includes(Modality)) {
+    // TODO probably others.
+    return 'thumbnailNoImage';
+  }
+
+  return 'thumbnail';
+}
 
 /**
  *

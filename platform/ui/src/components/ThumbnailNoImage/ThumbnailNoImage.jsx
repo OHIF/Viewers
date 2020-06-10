@@ -1,11 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useDrag } from 'react-dnd';
 
 import { Icon } from '@ohif/ui';
 
-const ThumbnailNoImage = ({ description, seriesDate, modality, onClick }) => {
+const ThumbnailNoImage = ({
+  description,
+  seriesDate,
+  modality,
+  onClick,
+  dragData,
+}) => {
+  const [collectedProps, drag, dragPreview] = useDrag({
+    item: { ...dragData },
+    canDrag: function(monitor) {
+      return Object.keys(dragData).length !== 0;
+    },
+  });
+
   return (
     <div
+      ref={drag}
       className="flex flex-row flex-1 px-4 py-3 cursor-pointer"
       onClick={onClick}
       onKeyDown={onClick}

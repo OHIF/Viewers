@@ -55,7 +55,14 @@ function _getDisplaySetsFromSeries(
 
   const instance = instances[0];
 
-  const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
+  const {
+    StudyInstanceUID,
+    SeriesInstanceUID,
+    SOPInstanceUID,
+    SeriesDescription,
+    SeriesNumber,
+    SeriesDate,
+  } = instance;
   const { ConceptNameCodeSequence, ContentSequence } = instance;
 
   if (
@@ -72,6 +79,9 @@ function _getDisplaySetsFromSeries(
     plugin: id,
     Modality: 'SR',
     displaySetInstanceUID: utils.guid(),
+    SeriesDescription,
+    SeriesNumber,
+    SeriesDate,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,

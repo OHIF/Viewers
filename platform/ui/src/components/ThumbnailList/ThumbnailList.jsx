@@ -3,11 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '@ohif/ui';
 
-const ThumbnailList = ({
-  thumbnails,
-  thumbnailActive,
-  onThumbnailClick,
-}) => {
+const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
   return (
     <div className="py-3 bg-black">
       {thumbnails.map(
