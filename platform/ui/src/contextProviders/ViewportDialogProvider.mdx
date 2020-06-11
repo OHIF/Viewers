@@ -28,19 +28,26 @@ component across all application.
     const ViewportNotification = ({ hide }) => {
       return (
         <Notification
-          text="Track all measurement for this series?"
+          message="Track all measurement for this series?"
           type="info"
-          actionButtons={
-            <div>
-              <Button onClick={hide}>No</Button>
-              <Button onClick={hide} className="ml-2">
-                No, do not ask again
-              </Button>
-              <Button onClick={hide} className="ml-2" color="primary">
-                Yes
-              </Button>
-            </div>
-          }
+          actions={[
+            {
+              type: 'cancel',
+              text: 'No',
+              value: 0,
+            },
+            {
+              type: 'secondary',
+              text: 'No, do not ask again',
+              value: -1,
+            },
+            {
+              type: 'primary',
+              text: 'Yes',
+              value: 1,
+            },
+          ]}
+          onSubmit={value => { window.alert(value); }}
         />
       );
     };
@@ -88,17 +95,26 @@ component across all application.
     const ViewportNotification = ({ hide }) => {
       return (
         <Notification
-          text="Track all measurement for this series?"
+          message="Track all measurement for this series?"
           type="info"
-          actionButtons={
-            <div>
-              <Button onClick={hide}>No</Button>
-              <Button className="ml-2">No, do not ask again</Button>
-              <Button className="ml-2" color="primary">
-                Yes
-              </Button>
-            </div>
-          }
+          actions={[
+            {
+              type: 'cancel',
+              text: 'No',
+              value: 0,
+            },
+            {
+              type: 'secondary',
+              text: 'No, do not ask again',
+              value: -1,
+            },
+            {
+              type: 'primary',
+              text: 'Yes',
+              value: 1,
+            },
+          ]}
+          onSubmit={value => { window.alert(value); }}
         />
       );
     };

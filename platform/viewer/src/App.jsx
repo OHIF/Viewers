@@ -6,8 +6,10 @@ import {
   DialogProvider,
   Modal,
   ModalProvider,
+  Notification,
   SnackbarProvider,
   ThemeWrapper,
+  ViewportDialogProvider,
   ViewportGridProvider,
 } from '@ohif/ui';
 // Viewer Project
@@ -49,11 +51,11 @@ function App({ config, defaultExtensions }) {
     extensionManager,
     servicesManager
   );
-
   const {
     UIDialogService,
     UIModalService,
     UINotificationService,
+    UIViewportDialogService,
   } = servicesManager.services;
 
   // A UI Service may need to use the ViewportGrid context
@@ -63,13 +65,33 @@ function App({ config, defaultExtensions }) {
     switch (action.type) {
       case 'SET_ACTIVE_VIEWPORT_INDEX':
         return { ...state, ...{ activeViewportIndex: action.payload } };
-      case 'SET_DISPLAYSET_FOR_VIEWPORT':
+      case 'SET_DISPLAYSET_FOR_VIEWPORT': {
         const { viewportIndex, displaySetInstanceUID } = action.payload;
         const viewports = state.viewports.slice();
 
         viewports[viewportIndex] = { displaySetInstanceUID };
 
         return { ...state, ...{ viewports } };
+      }
+      case 'SET_LAYOUT': {
+        const { numCols, numRows } = action.payload;
+        const numPanes = numCols * numRows;
+        const viewports = state.viewports.slice();
+        const activeViewportIndex =
+          state.activeViewportIndex >= numPanes ? 0 : state.activeViewportIndex;
+
+        while (viewports.length < numPanes) {
+          viewports.push({});
+        }
+        while (viewports.length > numPanes) {
+          viewports.pop();
+        }
+
+        return {
+          ...state,
+          ...{ activeViewportIndex, numCols, numRows, viewports },
+        };
+      }
       default:
         return action.payload;
     }
@@ -88,13 +110,15 @@ function App({ config, defaultExtensions }) {
             }}
             reducer={viewportGridReducer}
           >
-            <SnackbarProvider service={UINotificationService}>
-              <DialogProvider service={UIDialogService}>
-                <ModalProvider modal={Modal} service={UIModalService}>
-                  {appRoutes}
-                </ModalProvider>
-              </DialogProvider>
-            </SnackbarProvider>
+            <ViewportDialogProvider service={UIViewportDialogService}>
+              <SnackbarProvider service={UINotificationService}>
+                <DialogProvider service={UIDialogService}>
+                  <ModalProvider modal={Modal} service={UIModalService}>
+                    {appRoutes}
+                  </ModalProvider>
+                </DialogProvider>
+              </SnackbarProvider>
+            </ViewportDialogProvider>
           </ViewportGridProvider>
         </ThemeWrapper>
       </Router>

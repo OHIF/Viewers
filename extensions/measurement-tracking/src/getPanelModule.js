@@ -25,7 +25,7 @@ function getPanelModule({
       }),
     },
     {
-      name: 'measure',
+      name: 'trackedMeasurements',
       iconName: 'list-bullets',
       iconLabel: 'Measure',
       label: 'Measurements',

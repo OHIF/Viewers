@@ -19,12 +19,14 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
-  const [{ viewports }, dispatchViewportGrid] = useViewportGrid();
+  const [
+    { activeViewportIndex, viewports },
+    dispatchViewportGrid,
+  ] = useViewportGrid();
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
   ] = useTrackedMeasurements();
-  console.warn('trackedMeasurementsState: ', trackedMeasurements);
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState(
     []
@@ -33,7 +35,7 @@ function PanelStudyBrowserTracking({
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
 
-  // TODO: Listen for measurement service "adds" (really shouldn't be added until cornerstone-tools "complete")
+  // TODO: Should this be somewhere else? Feels more like a mode "lifecycle" setup/destroy?
   useEffect(() => {
     const { unsubscribe } = MeasurementService.subscribe(
       MeasurementService.EVENTS.MEASUREMENT_ADDED,
@@ -44,17 +46,15 @@ function PanelStudyBrowserTracking({
         } = measurement;
 
         sendTrackedMeasurementsEvent('TRACK_SERIES', {
+          viewportIndex: activeViewportIndex,
           StudyInstanceUID,
           SeriesInstanceUID,
         });
-
-        console.log('PANEL:', measurement);
-        // console.log('Mapped:', annotation);
       }
     );
 
     return unsubscribe;
-  }, [MeasurementService, sendTrackedMeasurementsEvent]);
+  }, [MeasurementService, activeViewportIndex, sendTrackedMeasurementsEvent]);
 
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
 
@@ -156,7 +156,7 @@ function PanelStudyBrowserTracking({
           changedDisplaySets,
           thumbnailImageSrcMap,
           trackedSeries,
-          viewports,
+          viewports
         );
 
         setDisplaySets(mappedDisplaySets);
@@ -188,8 +188,11 @@ function PanelStudyBrowserTracking({
       StudyInstanceUID
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
-      // eslint-disable-next-line prettier/prettier
-      ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
+      ? [
+          ...expandedStudyInstanceUIDs.filter(
+            stdyUid => stdyUid !== StudyInstanceUID
+          ),
+        ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -207,6 +210,16 @@ function PanelStudyBrowserTracking({
       onClickStudy={_handleStudyClick}
       onClickTab={clickedTabName => {
         setActiveTabName(clickedTabName);
+      }}
+      onClickUntrack={displaySetInstanceUID => {
+        const displaySet = DisplaySetService.getDisplaySetByUID(
+          displaySetInstanceUID
+        );
+        // TODO: shift this somewhere else where we're centralizing this logic?
+        // Potentially a helper from displaySetInstanceUID to this
+        sendTrackedMeasurementsEvent('UNTRACK_SERIES', {
+          SeriesInstanceUID: displaySet.SeriesInstanceUID,
+        });
       }}
     />
   );

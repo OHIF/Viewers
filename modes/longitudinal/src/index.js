@@ -1,3 +1,13 @@
+const ohif = {
+  layout: 'org.ohif.default.layoutTemplateModule.viewerLayout',
+  sopClassHandler: 'org.ohif.default.sopClassHandlerModule.stack',
+};
+const tracked = {
+  measurements: 'org.ohif.measurement-tracking.panelModule.trackedMeasurements',
+  thumbnailList: 'org.ohif.measurement-tracking.panelModule.seriesList',
+  viewport: 'org.ohif.measurement-tracking.viewportModule.cornerstone-tracked',
+};
+
 export default function mode({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
@@ -71,21 +81,15 @@ export default function mode({ modeConfiguration }) {
         },
         layoutTemplate: ({ routeProps }) => {
           return {
-            id: 'org.ohif.default.layoutTemplateModule.viewerLayout',
+            id: ohif.layout,
             props: {
-              // named slots
-              leftPanels: [
-                'org.ohif.measurement-tracking.panelModule.seriesList',
-              ],
+              leftPanels: [tracked.thumbnailList],
               // TODO: Should be optional, or required to pass empty array for slots?
-              rightPanels: [], // // ['org.ohif.default.panelModule.measure'],
+              rightPanels: [tracked.measurements],
               viewports: [
                 {
-                  namespace:
-                    'org.ohif.measurement-tracking.viewportModule.cornerstone-tracked',
-                  displaySetsToDisplay: [
-                    'org.ohif.default.sopClassHandlerModule.stack',
-                  ],
+                  namespace: tracked.viewport,
+                  displaySetsToDisplay: [ohif.sopClassHandler],
                 },
               ],
             },
@@ -93,8 +97,12 @@ export default function mode({ modeConfiguration }) {
         },
       },
     ],
-    extensions: ['org.ohif.default', 'org.ohif.cornerstone', 'org.ohif.measurement-tracking'],
-    sopClassHandlers: ['org.ohif.default.sopClassHandlerModule.stack'],
+    extensions: [
+      'org.ohif.default',
+      'org.ohif.cornerstone',
+      'org.ohif.measurement-tracking',
+    ],
+    sopClassHandlers: [ohif.sopClassHandler],
   };
 }
 

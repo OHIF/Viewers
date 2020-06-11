@@ -47,6 +47,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
 const EVENTS = {
   MEASUREMENT_UPDATED: 'event::measurement_updated',
   MEASUREMENT_ADDED: 'event::measurement_added',
+  MEASUREMENT_REMOVED: 'event::measurement_removed',
 };
 
 const VALUE_TYPES = {
@@ -135,6 +136,9 @@ class MeasurementService {
     };
     source.addOrUpdate = (definition, measurement) => {
       return this.addOrUpdate(source, definition, measurement);
+    };
+    source.remove = id => {
+      return this.remove(source, id);
     };
     source.getAnnotation = (definition, measurementId) => {
       return this.getAnnotation(source, definition, measurementId);
@@ -336,6 +340,16 @@ class MeasurementService {
     }
 
     return newMeasurement.id;
+  }
+
+  remove(source, id) {
+    if (!id || !this.measurements[id]) {
+      log.warn(`No id provided, or unable to find measurement by id.`);
+      return;
+    }
+
+    delete this.measurements[id];
+    this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED, source, id);
   }
 
   _getMappingByMeasurementSource(measurementId, definition) {

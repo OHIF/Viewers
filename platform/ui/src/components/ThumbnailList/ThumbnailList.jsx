@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 
 import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '@ohif/ui';
 
-const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
+const ThumbnailList = ({
+  thumbnails,
+  thumbnailActive,
+  onThumbnailClick,
+  onClickUntrack,
+}) => {
   return (
     <div className="py-3 bg-black">
       {thumbnails.map(
@@ -53,6 +58,7 @@ const ThumbnailList = ({ thumbnails, thumbnailActive, onThumbnailClick }) => {
                   isTracked={isTracked}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
                 />
               );
             case 'thumbnailNoImage':
@@ -107,6 +113,7 @@ ThumbnailList.propTypes = {
   ),
   thumbnailActive: PropTypes.string,
   onThumbnailClick: PropTypes.func,
+  onClickUntrack: PropTypes.func.isRequired,
 };
 
 export default ThumbnailList;

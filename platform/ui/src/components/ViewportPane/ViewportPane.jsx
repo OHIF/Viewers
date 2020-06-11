@@ -39,6 +39,7 @@ function ViewportPane({
       // onInteraction...
       // https://reactjs.org/docs/events.html#mouse-events
       // https://stackoverflow.com/questions/8378243/catch-scrolling-event-on-overflowhidden-element
+      onMouseDown={onInteraction}
       onClick={onInteraction}
       onScroll={onInteraction}
       onWheel={onInteraction}
@@ -76,6 +77,6 @@ const noop = () => {};
 
 ViewportPane.defaultProps = {
   onInteraction: noop,
-}
+};
 
 export default ViewportPane;

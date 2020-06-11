@@ -25,6 +25,7 @@ const StudyBrowser = ({
   onClickTab,
   onClickStudy,
   onClickThumbnail,
+  onClickUntrack,
 }) => {
   const [thumbnailActive, setThumbnailActive] = useState(null);
 
@@ -58,15 +59,16 @@ const StudyBrowser = ({
               <ThumbnailList
                 thumbnails={displaySets}
                 thumbnailActive={thumbnailActive}
-                onThumbnailClick={thumbnailId => {
+                onThumbnailClick={displaySetInstanceUID => {
                   setThumbnailActive(
-                    thumbnailId === thumbnailActive ? null : thumbnailId
+                    displaySetInstanceUID === thumbnailActive
+                      ? null
+                      : displaySetInstanceUID
                   );
-
-                  if (onClickThumbnail) {
-                    // TODO: what is thumbnailId? Should pass display set instead
-                    onClickThumbnail(thumbnailId);
-                  }
+                  onClickThumbnail(displaySetInstanceUID);
+                }}
+                onClickUntrack={displaySetInstanceUID => {
+                  onClickUntrack(displaySetInstanceUID);
                 }}
               />
             )}
@@ -116,6 +118,7 @@ StudyBrowser.propTypes = {
   onClickTab: PropTypes.func.isRequired,
   onClickStudy: PropTypes.func,
   onClickThumbnail: PropTypes.func,
+  onClickUntrack: PropTypes.func,
   activeTabName: PropTypes.string.isRequired,
   expandedStudyInstanceUIDs: PropTypes.arrayOf(PropTypes.string).isRequired,
   tabs: PropTypes.arrayOf(
@@ -162,6 +165,15 @@ StudyBrowser.propTypes = {
       ).isRequired,
     })
   ),
+};
+
+const noop = () => {};
+
+StudyBrowser.defaultProps = {
+  onClickTab: noop,
+  onClickStudy: noop,
+  onClickThumbnail: noop,
+  onClickUntrack: noop,
 };
 
 export default StudyBrowser;

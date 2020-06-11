@@ -1,74 +1,202 @@
-import React from 'react';
-import {
-  MeasurementsPanel,
-  Button,
-  ButtonGroup,
-  Icon,
-  IconButton,
-} from '@ohif/ui';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { StudySummary, MeasurementTable } from '@ohif/ui';
+import { DicomMetadataStore } from '@ohif/core';
+import { useDebounce } from '@hooks';
+import ActionButtons from './ActionButtons';
+import { useTrackedMeasurements } from '../../getContextModule';
 
-export default function MeasurementTable({ servicesManager, commandsManager }) {
-  const { MeasurementService } = servicesManager.services;
+const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
+  key: undefined, //
+  date: undefined, // '07-Sep-2010',
+  modality: undefined, // 'CT',
+  description: undefined, // 'CHEST/ABD/PELVIS W CONTRAST',
+};
 
-  console.log('MeasurementTable rendering!!!!!!!!!!!!!');
-
-  const actionButtons = (
-    <React.Fragment>
-      <ButtonGroup onClick={() => alert('Export')}>
-        <Button
-          className="px-2 py-2 text-base text-white bg-black border-primary-main"
-          size="initial"
-          color="inherit"
-        >
-          Export
-        </Button>
-        <IconButton
-          className="px-2 text-white bg-black border-primary-main"
-          color="inherit"
-          size="initial"
-        >
-          <Icon name="arrow-down" />
-        </IconButton>
-      </ButtonGroup>
-      <Button
-        className="px-2 py-2 ml-2 text-base text-white bg-black border border-primary-main"
-        variant="outlined"
-        size="initial"
-        color="inherit"
-        onClick={() => alert('Create Report')}
-      >
-        Create Report
-      </Button>
-    </React.Fragment>
+function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
+  const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(
+    Date.now().toString()
   );
+  const debouncedMeasurementChangeTimestamp = useDebounce(
+    measurementChangeTimestamp,
+    200
+  );
+  const { MeasurementService } = servicesManager.services;
+  const [
+    trackedMeasurements,
+    sendTrackedMeasurementsEvent,
+  ] = useTrackedMeasurements();
+  const { trackedStudy, trackedSeries } = trackedMeasurements.context;
+  const [displayStudySummary, setDisplayStudySummary] = useState(
+    DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
+  );
+  const [displayMeasurements, setDisplayMeasurements] = useState([]);
+  // TODO: measurements subscribtion
 
-  const descriptionData = {
-    date: '07-Sep-2010',
-    modality: 'CT',
-    description: 'CHEST/ABD/PELVIS W CONTRAST',
-  };
+  // Initial?
+  useEffect(() => {
+    const measurements = MeasurementService.getMeasurements();
+    const filteredMeasurements = measurements.filter(
+      m =>
+        trackedStudy === m.referenceStudyUID &&
+        trackedSeries.includes(m.referenceSeriesUID)
+    );
+    const mappedMeasurements = filteredMeasurements.map((m, index) =>
+      _mapMeasurementToDisplay(m, index)
+    );
+    setDisplayMeasurements(mappedMeasurements);
+    // eslint-ignore-next-line
+  }, [
+    MeasurementService,
+    trackedStudy,
+    trackedSeries,
+    debouncedMeasurementChangeTimestamp,
+  ]);
+
+  // ~~ DisplayStudySummary
+  useEffect(() => {
+    if (trackedMeasurements.matches('tracking')) {
+      const StudyInstanceUID = trackedStudy;
+      const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
+      const instanceMeta = studyMeta.series[0].instances[0];
+      const { Modality, StudyDate, StudyDescription } = instanceMeta;
+
+      if (displayStudySummary.key !== StudyInstanceUID) {
+        setDisplayStudySummary({
+          key: StudyInstanceUID,
+          date: StudyDate, // TODO: Format: '07-Sep-2010'
+          modality: Modality,
+          description: StudyDescription,
+        });
+      }
+    } else if (trackedStudy === '' || trackedStudy === undefined) {
+      setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
+    }
+  }, [displayStudySummary.key, trackedMeasurements, trackedStudy]);
+
+  // TODO: Better way to consolidated, debounce, check on change?
+  // Are we exposing the right API for measurementService?
+  // This watches for ALL MeasurementService changes. It updates a timestamp,
+  // which is debounced. After a brief period of inactivity, this triggers
+  // a re-render where we grab up-to-date measurements.
+  useEffect(() => {
+    const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
+    const updated = MeasurementService.EVENTS.MEASUREMENT_UPDATED;
+    const removed = MeasurementService.EVENTS.MEASUREMENT_REMOVED;
+    const subscriptions = [];
+
+    [added, updated, removed].forEach(evt => {
+      subscriptions.push(
+        MeasurementService.subscribe(evt, () => {
+          setMeasurementsUpdated(Date.now().toString());
+        })
+      );
+    });
+
+    return () => {
+      subscriptions.forEach(unsub => {
+        unsub();
+      });
+    };
+  }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
   const activeMeasurementItem = 0;
 
-  const measurementTableData = {
-    title: 'Measurements',
-    amount: 10,
-    data: new Array(10).fill({}).map((el, i) => ({
-      id: i + 1,
-      label: 'Label short description',
-      displayText: '24.0 x 24.0 mm (S:4, I:22)',
-      isActive: activeMeasurementItem === i + 1,
-    })),
-    // onClick: id => setActiveMeasurementItem(s => (s === id ? null : id)),
-    onClick: () => {},
-    onEdit: id => alert(`Edit: ${id}`),
-  };
-
   return (
-    <MeasurementsPanel
-      descriptionData={descriptionData}
-      measurementTableData={measurementTableData}
-      actionButtons={actionButtons}
-    />
+    <>
+      <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
+        {displayStudySummary.key && (
+          <StudySummary
+            date={displayStudySummary.date}
+            modality={displayStudySummary.modality}
+            description={displayStudySummary.description}
+          />
+        )}
+        <MeasurementTable
+          title="Measurements"
+          amount={displayMeasurements.length}
+          data={displayMeasurements}
+          onClick={() => {}}
+          onEdit={id => alert(`Edit: ${id}`)}
+        />
+      </div>
+      <div className="flex justify-center p-4">
+        <ActionButtons />
+      </div>
+    </>
   );
 }
+
+PanelMeasurementTableTracking.propTypes = {};
+
+// TODO: This could be a MeasurementService mapper
+function _mapMeasurementToDisplay(measurement, index) {
+  const {
+    id,
+    label,
+    description,
+    // Reference IDs
+    referenceStudyUID,
+    referenceSeriesUID,
+    SOPInstanceUID,
+  } = measurement;
+  const instance = DicomMetadataStore.getInstance(
+    referenceStudyUID,
+    referenceSeriesUID,
+    SOPInstanceUID
+  );
+  const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;
+
+  console.log('mapping....', measurement);
+  console.log(instance);
+
+  return {
+    id: index + 1,
+    label: '(empty)', // 'Label short description',
+    displayText: _getDisplayText(
+      measurement.points,
+      PixelSpacing,
+      SeriesNumber,
+      InstanceNumber
+    ),
+    // TODO: handle one layer down
+    isActive: false, // activeMeasurementItem === i + 1,
+  };
+}
+
+/**
+ *
+ * @param {*} points
+ * @param {*} pixelSpacing
+ */
+function _getDisplayText(points, pixelSpacing, seriesNumber, instanceNumber) {
+  // TODO: determination of shape influences text
+  // Length:  'xx.x unit (S:x, I:x)'
+  // Rectangle: 'xx.x x xx.x unit (S:x, I:x)',
+  // Ellipse?
+  // Bidirectional?
+  // Freehand?
+
+  const hasPixelSpacing =
+    pixelSpacing !== undefined &&
+    Array.isArray(pixelSpacing) &&
+    pixelSpacing.length === 2;
+  const [rowPixelSpacing, colPixelSpacing] = hasPixelSpacing
+    ? pixelSpacing
+    : [1, 1];
+  const unit = hasPixelSpacing ? 'mm' : 'px';
+
+  const { x: x1, y: y1 } = points[0];
+  const { x: x2, y: y2 } = points[1];
+  const dx = (x2 - x1) * colPixelSpacing;
+  const dy = (y2 - y1) * rowPixelSpacing;
+  const length = _round(Math.sqrt(dx * dx + dy * dy), 1);
+
+  return `${length} ${unit} (S:${seriesNumber}, I:${instanceNumber})`;
+}
+
+function _round(value, decimals) {
+  return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+}
+
+export default PanelMeasurementTableTracking;
