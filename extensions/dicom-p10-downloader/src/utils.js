@@ -107,10 +107,17 @@ function upload(promise, serverConfig) {
 
       const dicomWeb = new api.DICOMwebClient(serverConfig);
       const options = {
-        datasets: [instances],
+        datasets: instances,
       };
 
-      await dicomWeb.storeInstances(options);
+      OHIF.log.info(`Uploading study to ${serverConfig.url}`);
+
+      try {
+        await dicomWeb.storeInstances(options);
+        OHIF.log.info('Successfully uploaded');
+      } catch (error) {
+        OHIF.log.error('Failed to upload:', error);
+      }
 
       return instances;
     })
