@@ -4,11 +4,11 @@
 
 ## Development
 ```
-# Build platform/viewer
+# Build platform/viewer from top level
 QUICK_BUILD=true SKIP_SERVICE_WORKER=true PUBLIC_URL=./ yarn run build
 
 # Run Electron app in development mode
-cd platform/viewer
+cd platform/desktop
 yarn install
 yarn run copy-viewer
 yarn run copy-config
