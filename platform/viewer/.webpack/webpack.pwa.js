@@ -11,6 +11,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { BaseHrefWebpackPlugin } = require('base-href-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -27,11 +28,13 @@ const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
+const SKIP_SERVICE_WORKER = process.env.SKIP_SERVICE_WORKER === 'true';
 
 module.exports = (env, argv) => {
   const baseConfig = webpackBase(env, argv, { SRC_DIR, DIST_DIR });
   const isProdBuild = process.env.NODE_ENV === 'production';
   const hasProxy = PROXY_TARGET && PROXY_DOMAIN;
+  const skipServiceWorker = SKIP_SERVICE_WORKER;
 
   const mergedConfig = merge(baseConfig, {
     entry: {
@@ -86,14 +89,9 @@ module.exports = (env, argv) => {
           PUBLIC_URL: PUBLIC_URL,
         },
       }),
+      new BaseHrefWebpackPlugin({ baseHref: PUBLIC_URL }),
       // No longer maintained; but good for generating icons + manifest
       // new FaviconsWebpackPlugin( path.join(PUBLIC_DIR, 'assets', 'icons-512.png')),
-      new InjectManifest({
-        swDest: 'sw.js',
-        swSrc: path.join(SRC_DIR, 'service-worker.js'),
-        // Increase the limit to 4mb:
-        // maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
-      }),
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
@@ -116,6 +114,17 @@ module.exports = (env, argv) => {
   if (hasProxy) {
     mergedConfig.devServer.proxy = {};
     mergedConfig.devServer.proxy[PROXY_TARGET] = PROXY_DOMAIN;
+  }
+
+  if (!skipServiceWorker) {
+    mergedConfig.plugins.push(
+      new InjectManifest({
+        swDest: 'sw.js',
+        swSrc: path.join(SRC_DIR, 'service-worker.js'),
+        // Increase the limit to 4mb:
+        // maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
+      })
+    );
   }
 
   if (!isProdBuild) {

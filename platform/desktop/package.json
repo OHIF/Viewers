@@ -1,0 +1,22 @@
+{
+  "name": "@ohif/desktop",
+  "version": "1.0.0",
+  "description": "A minimal Electron application, with PouchDB",
+  "main": "src/main.js",
+  "license": "MIT",
+  "scripts": {
+    "copy-viewer": "npx shx cp -R ../viewer/dist/* ./front-end/",
+    "copy-config": "npx shx cp app-config.js ./front-end/",
+    "start": "PREFIX='' electron src/main.js"
+  },
+  "devDependencies": {
+    "electron": "^7.1.2",
+    "electron-rebuild": "^1.8.8"
+  },
+  "dependencies": {
+    "dicomweb-server": "^0.1.2",
+    "express-pouchdb": "^4.2.0",
+    "morgan": "^1.9.1",
+    "pouchdb": "^7.1.1"
+  }
+}

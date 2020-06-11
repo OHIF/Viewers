@@ -1,0 +1,19 @@
+.DS_Store
+.idea/
+node_modules
+mydb-sqlite
+_replicator/
+_users/
+yarn-error.log
+config.json
+package-lock.json
+
+# Temporary
+data/Mister^MR
+
+# Our database storage location
+__ohif-pouchdb-storage
+
+# Not sure why these keep appearing
+chronicle
+log.txt
