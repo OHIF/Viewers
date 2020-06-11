@@ -103,20 +103,33 @@ function save(promise, listOfUIDs) {
 function upload(promise, serverConfig) {
   return Promise.resolve(promise)
     .then(async instances => {
-      OHIF.log.info('Instances successfully downloaded:', instances);
-
-      const dicomWeb = new api.DICOMwebClient(serverConfig);
-      const options = {
-        datasets: instances,
-      };
-
+      const instancesAmount = instances.length;
       OHIF.log.info(`Uploading study to ${serverConfig.url}`);
+      OHIF.log.info(
+        `${instancesAmount} instances are being uploaded. Don't close your browser.`
+      );
 
       try {
-        await dicomWeb.storeInstances(options);
-        OHIF.log.info('Successfully uploaded');
+        const dicomWeb = new api.DICOMwebClient(serverConfig);
+        let progress = 0;
+
+        for (const instance of instances) {
+          const options = {
+            datasets: [instance],
+          };
+
+          await dicomWeb.storeInstances(options);
+
+          progress++;
+
+          OHIF.log.info(
+            `Progress: ${((progress * 100) / instancesAmount).toFixed()}%`
+          );
+        }
+
+        OHIF.log.info('Successfully uploaded!');
       } catch (error) {
-        OHIF.log.error('Failed to upload:', error);
+        OHIF.log.error(`Failed to upload: ${error}`);
       }
 
       return instances;
