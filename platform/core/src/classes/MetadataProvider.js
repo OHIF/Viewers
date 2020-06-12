@@ -210,6 +210,8 @@ class MetadataProvider {
         // to update the UI somehow
         const { PixelSpacing } = getPixelSpacingInformation(instance);
 
+        if (!PixelSpacing) return;
+
         let rowPixelSpacing;
         let columnPixelSpacing;
 
@@ -242,6 +244,8 @@ class MetadataProvider {
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PIXEL_MODULE:
+        if (!instance.BitsAllocated || instance.Rows || instance.Columns)
+          return;
         metadata = {
           samplesPerPixel: instance.SamplesPerPixel,
           photometricInterpretation: instance.PhotometricInterpretation,
