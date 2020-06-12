@@ -229,7 +229,7 @@ const definitions = [
       {
         id: 'FullScreen',
         label: 'Full Screen',
-        icon: 'arrows',
+        icon: 'fullscreen',
         //
         type: TOOLBAR_BUTTON_TYPES.COMMAND,
         commandName: 'fullScreen',
@@ -237,7 +237,7 @@ const definitions = [
       {
         id: 'Print',
         label: 'Print',
-        icon: 'arrows',
+        icon: 'print',
         //
         type: TOOLBAR_BUTTON_TYPES.COMMAND,
         commandName: 'print',

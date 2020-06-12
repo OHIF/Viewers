@@ -87,6 +87,8 @@ import user from './icons/user.svg';
 import youtube from './icons/youtube.svg';
 import eye from './icons/eye.svg';
 import eyeClosed from './icons/eye-closed.svg';
+import print from './icons/print.svg';
+import fullscreen from './icons/fullscreen.svg';
 
 const ICONS = {
   eye,
@@ -176,6 +178,8 @@ const ICONS = {
   lung,
   liver,
   save: saveRegular,
+  print,
+  fullscreen,
 };
 
 /**
