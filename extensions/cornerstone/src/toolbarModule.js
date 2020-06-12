@@ -234,6 +234,14 @@ const definitions = [
         type: TOOLBAR_BUTTON_TYPES.COMMAND,
         commandName: 'fullScreen',
       },
+      {
+        id: 'Print',
+        label: 'Print',
+        icon: 'arrows',
+        //
+        type: TOOLBAR_BUTTON_TYPES.COMMAND,
+        commandName: 'print',
+      },
     ],
   },
   {
