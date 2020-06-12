@@ -113,6 +113,10 @@ function upload(promise, serverConfig) {
         const dicomWeb = new api.DICOMwebClient(serverConfig);
         let progress = 0;
 
+        const getProgress = () => {
+          return ((progress * 100) / instancesAmount).toFixed();
+        };
+
         for (const instance of instances) {
           const options = {
             datasets: [instance],
@@ -122,9 +126,7 @@ function upload(promise, serverConfig) {
 
           progress++;
 
-          OHIF.log.info(
-            `Progress: ${((progress * 100) / instancesAmount).toFixed()}%`
-          );
+          OHIF.log.info(`Progress: ${getProgress()}%`);
         }
 
         OHIF.log.info('Successfully uploaded!');
