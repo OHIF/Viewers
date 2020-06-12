@@ -137,7 +137,7 @@ function upload(promise, serverConfig) {
       return instances;
     })
     .catch(error => {
-      OHIF.log.error('Failed to create Zip file...', error);
+      OHIF.log.error(`Failed to upload: ${error}`);
       return null;
     });
 }
