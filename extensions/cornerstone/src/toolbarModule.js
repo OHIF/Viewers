@@ -226,6 +226,14 @@ const definitions = [
           togglable: true,
         },
       },
+      {
+        id: 'FullScreen',
+        label: 'Full Screen',
+        icon: 'arrows',
+        //
+        type: TOOLBAR_BUTTON_TYPES.COMMAND,
+        commandName: 'fullScreen',
+      },
     ],
   },
   {
