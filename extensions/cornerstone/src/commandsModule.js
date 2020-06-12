@@ -294,18 +294,23 @@ const commandsModule = ({ servicesManager }) => {
       StudyInstanceUID,
       SOPInstanceUID,
       frameIndex,
-      activeViewportIndex
+      activeViewportIndex,
     }) => {
       const study = studyMetadataManager.get(StudyInstanceUID);
 
       const displaySet = study.findDisplaySet(ds => {
-        return ds.images && ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
+        return (
+          ds.images &&
+          ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
+        );
       });
 
       displaySet.SOPInstanceUID = SOPInstanceUID;
       displaySet.frameIndex = frameIndex;
 
-      window.store.dispatch(setViewportSpecificData(activeViewportIndex, displaySet));
+      window.store.dispatch(
+        setViewportSpecificData(activeViewportIndex, displaySet)
+      );
 
       cornerstone.getEnabledElements().forEach(enabledElement => {
         cornerstone.updateImage(enabledElement.element);
@@ -320,6 +325,33 @@ const commandsModule = ({ servicesManager }) => {
       } else {
         closeFullscreen(document);
       }
+    },
+    print: ({ viewports }) => {
+      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+      const canvas = enabledElement.firstElementChild;
+      const popup = window.open(
+        '',
+        'PRINT',
+        `height=${canvas.height},width=${canvas.width}`
+      );
+      popup.document.write(
+        `<html>
+          <head>
+            <title>${document.title}</title></head>
+          </head>
+          <body>
+            <h1>${document.title}</h1>
+            <img src="${canvas.toDataURL()}"/>
+          </body>
+        </html>`
+      );
+      setTimeout(() => {
+        popup.document.close(); // necessary for IE >= 10
+        popup.focus(); // necessary for IE >= 10*/
+        popup.print();
+        popup.close();
+      });
+      return true;
     },
   };
 
@@ -439,6 +471,11 @@ const commandsModule = ({ servicesManager }) => {
     fullScreen: {
       commandFn: actions.fullScreen,
       storeContexts: [],
+      options: {},
+    },
+    print: {
+      commandFn: actions.print,
+      storeContexts: ['viewports'],
       options: {},
     },
   };
