@@ -6,32 +6,138 @@ const EVENTS = {
 
 export default class ToolBarService {
   constructor() {
-    this.displaySets = {};
     this.EVENTS = EVENTS;
     this.listeners = {};
+    this.buttons = {};
+    this.buttonSections = {
+      /**
+       * primary: ['Zoom', 'Wwwc'],
+       * secondary: ['Length', 'RectangleRoi']
+       */
+    };
 
     Object.assign(this, pubSubServiceInterface);
   }
 
   init(extensionManager) {
-    this.buttons = {};
     this.extensionManager = extensionManager;
   }
 
-  addButtons(buttons) {
-    buttons.forEach(button => {
-      const buttonDefinition = this.extensionManager.getModuleEntry(
-        button.namespace
+  getButtons() {
+    return this.buttons;
+  }
+
+  setButtons(buttons) {
+    this.buttons = buttons;
+    this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {});
+  }
+
+  _buttonTypes() {
+    console.log(this.extensionManager.modules);
+    const buttonTypes = {};
+    const registeredToolbarModules = this.extensionManager.modules[
+      'toolbarModule'
+    ];
+
+    if (
+      Array.isArray(registeredToolbarModules) &&
+      registeredToolbarModules.length
+    ) {
+      registeredToolbarModules.forEach(toolbarModule =>
+        toolbarModule.module.forEach(def => {
+          buttonTypes[def.name] = def;
+        })
       );
+    }
 
-      const id = button.id || buttonDefinition.id;
+    return buttonTypes;
+  }
 
-      this.buttons[id] = buttonDefinition;
+
+  createButtonSection(key, buttons) {
+    // Maybe do this mapping at time of return, instead of time of create
+    // Props check important for validation here...
+
+    this.buttonSections[key] = buttons;
+    this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {});
+  }
+
+  getButtonSection(key) {
+    const buttonSection = this.buttonSections[key];
+    const buttonsInSection = [];
+
+    if (!buttonSection) {
+      return buttonsInSection;
+    }
+
+    buttonSection.forEach(btnId => {
+      const button = this.buttons[btnId];
+      if (button) {
+        buttonsInSection.push(button);
+      } else {
+        console.warn(`${btnId} is not a registered button.`);
+      }
     });
+
+    const mappedButtonSection = buttonsInSection.map(bt => {
+      const { id, type, component, props } = bt;
+      const buttonType = this._buttonTypes()[type];
+
+      // Filter out & warn
+      if (!buttonType) {
+        return;
+      }
+
+      const onClick = evt => {
+        console.warn(
+          `Handling click for: BTN::${id}`,
+          evt,
+          bt,
+          buttonType,
+          btnSection
+        );
+        const btnSection = key;
+        if (buttonType.clickHandler) {
+          buttonType.clickHandler(evt, bt, btnSection);
+        }
+        if (bt.props.onClick) {
+          bt.onClick(evt, bt, btnSection);
+        }
+        if (bt.props.clickHandler) {
+          bt.clickHandler(evt, bt, btnSection);
+        }
+
+        this._trySetButtonActive(id);
+      };
+
+      return {
+        id,
+        Component: component || buttonType.defaultComponent,
+        componentProps: Object.assign({}, props, { onClick }), //
+      };
+    });
+
+    return mappedButtonSection;
   }
 
   /**
-   * Broadcasts displaySetService changes.
+   *
+   * @param {object[]} buttons
+   * @param {string} buttons[].id
+   */
+  addButtons(buttons) {
+    buttons.forEach(button => {
+      if (!this.buttons[button.id]) {
+        this.buttons[button.id] = button;
+      }
+    });
+
+    this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {});
+  }
+  }
+
+  /**
+   * Broadcasts toolbarService changes.
    *
    * @param {string} eventName The event name
    * @return void
@@ -46,34 +152,4 @@ export default class ToolBarService {
       });
     }
   };
-
-  setToolBarLayout(layouts) {
-    const toolBarLayout = [];
-
-    layouts.forEach(layout => {
-      const toolBarDefinitions = { tools: [], moreTools: [] };
-
-      const { tools, moreTools } = layout;
-
-      tools &&
-        tools.forEach(element => {
-          const button = this.buttons[element];
-
-          toolBarDefinitions.tools.push(button);
-        });
-
-      moreTools &&
-        moreTools.forEach(element => {
-          const button = this.buttons[element];
-
-          toolBarDefinitions.moreTools.push(button);
-        });
-
-      toolBarLayout.push(toolBarDefinitions);
-    });
-
-    this.toolBarLayout = toolBarLayout;
-
-    this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, toolBarLayout);
-  }
 }
