@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavBar, Svg, Icon, IconButton, Toolbar } from '@ohif/ui';
+import { NavBar, Svg, Icon, IconButton } from '@ohif/ui';
 
 const Header = () => {
   const [activeTool, setActiveTool] = useState('Zoom');
@@ -34,15 +34,15 @@ const Header = () => {
           {dropdownContent.map((row, i) => (
             <div
               key={i}
-              className="flex justify-between py-2 px-3 hover:bg-secondary-dark cursor-pointer"
+              className="flex justify-between px-3 py-2 cursor-pointer hover:bg-secondary-dark"
             >
               <div>
                 <span className="text-base text-white">{row.name}</span>
-                <span className="text-base text-primary-light ml-3">
+                <span className="ml-3 text-base text-primary-light">
                   {row.value}
                 </span>
               </div>
-              <span className="text-base text-primary-active ml-4">{i}</span>
+              <span className="ml-4 text-base text-primary-active">{i}</span>
             </div>
           ))}
         </div>
@@ -75,12 +75,12 @@ const Header = () => {
   ];
   return (
     <NavBar className="justify-between border-b-4 border-black">
-      <div className="flex flex-1 justify-between">
+      <div className="flex justify-between flex-1">
         <div className="flex items-center">
-          <div className="mr-3 inline-flex items-center">
+          <div className="inline-flex items-center mr-3">
             <Icon
               name="chevron-left"
-              className="text-primary-active w-8 cursor-pointer"
+              className="w-8 cursor-pointer text-primary-active"
               onClick={() => alert('Navigate to previous page')}
             />
             <a href="#" className="ml-4">
@@ -89,10 +89,10 @@ const Header = () => {
           </div>
         </div>
         <div className="flex items-center">
-          <Toolbar tools={tools} activeTool={activeTool} moreTools={tools} />
+          {/* <Toolbar tools={tools} activeTool={activeTool} moreTools={tools} /> */}
         </div>
         <div className="flex items-center">
-          <span className="mr-3 text-common-light text-lg">
+          <span className="mr-3 text-lg text-common-light">
             FOR INVESTIGATIONAL USE ONLY
           </span>
           <IconButton

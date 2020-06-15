@@ -1,4 +1,3 @@
-import getCommandsModule from './getCommandsModule.js';
 import getContextModule from './getContextModule.js';
 import getDataSourcesModule from './getDataSourcesModule.js';
 import getLayoutTemplateModule from './getLayoutTemplateModule.js';
@@ -12,7 +11,6 @@ export default {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
-  getCommandsModule,
   getContextModule,
   getDataSourcesModule,
   getLayoutTemplateModule,

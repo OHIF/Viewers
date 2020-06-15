@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 //
-import { NavBar, Svg, Icon, IconButton, Toolbar } from '@ohif/ui';
+import { NavBar, Svg, Icon, IconButton } from '@ohif/ui';
 
-function Header({ tools, moreTools }) {
-  const [activeTool, setActiveTool] = useState('Zoom');
+function Header({ children }) {
   // const dropdownContent = [
   //   {
   //     name: 'Soft tissue',
@@ -14,80 +13,16 @@ function Header({ tools, moreTools }) {
   //   { name: 'Liver', value: '150 / 90' },
   //   { name: 'Bone', value: '2500 / 480' },
   //   { name: 'Brain', value: '80 / 40' },
-  // ];
+  // ]
 
-  // TODO -> In ToolBarManager => Consume commandName and commandOptions and create onClick?
-
-  /*
-  const tools = [
-    {
-      id: 'Zoom',
-      label: 'Zoom',
-      icon: 'tool-zoom',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Zoom' },
-      onClick: () => setActiveTool('Zoom'),
-    },
-    {
-      id: 'Wwwc',
-      label: 'Levels',
-      icon: 'tool-window-level',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Wwwc' },
-      onClick: () => setActiveTool('Wwwc'),
-      dropdownContent: (
-        <div>
-          {dropdownContent.map((row, i) => (
-            <div
-              key={i}
-              className="flex justify-between py-2 px-3 hover:bg-secondary-dark cursor-pointer"
-            >
-              <div>
-                <span className="text-base text-white">{row.name}</span>
-                <span className="text-base text-primary-light ml-3">
-                  {row.value}
-                </span>
-              </div>
-              <span className="text-base text-primary-active ml-4">{i}</span>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      id: 'Pan',
-      label: 'Pan',
-      icon: 'tool-move',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Pan' },
-      onClick: () => setActiveTool('Pan'),
-    },
-    {
-      id: 'Capture',
-      label: 'Capture',
-      icon: 'tool-capture',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Capture' },
-      onClick: () => setActiveTool('Capture'),
-    },
-    {
-      id: 'Layout',
-      label: 'Layout',
-      icon: 'tool-layout',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Layout' },
-      onClick: () => setActiveTool('Layout'),
-    },
-  ];
-  */
   return (
     <NavBar className="justify-between border-b-4 border-black">
-      <div className="flex flex-1 justify-between">
+      <div className="flex justify-between flex-1">
         <div className="flex items-center">
-          <div className="mr-3 inline-flex items-center">
+          <div className="inline-flex items-center mr-3">
             <Icon
               name="chevron-left"
-              className="text-primary-active w-8 cursor-pointer"
+              className="w-8 cursor-pointer text-primary-active"
               onClick={() => alert('Navigate to previous page')}
             />
             <a href="#" className="ml-4">
@@ -95,15 +30,9 @@ function Header({ tools, moreTools }) {
             </a>
           </div>
         </div>
+        <div className="flex items-center">{children}</div>
         <div className="flex items-center">
-          <Toolbar
-            tools={tools}
-            activeTool={activeTool}
-            moreTools={moreTools}
-          />
-        </div>
-        <div className="flex items-center">
-          <span className="mr-3 text-common-light text-lg">
+          <span className="mr-3 text-lg text-common-light">
             FOR INVESTIGATIONAL USE ONLY
           </span>
           <IconButton
@@ -123,8 +52,7 @@ function Header({ tools, moreTools }) {
 }
 
 Header.propTypes = {
-  tools: PropTypes.array.isRequired,
-  moreTools: PropTypes.array.isRequired,
+  children: PropTypes.any.isRequired,
 };
 
 export default Header;

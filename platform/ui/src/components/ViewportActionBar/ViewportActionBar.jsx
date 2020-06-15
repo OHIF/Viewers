@@ -184,7 +184,7 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
             </div>
           }
         >
-          <div className="relative flex justify-end showTooltipOnHover">
+          <div className="relative flex justify-end">
             <div className="relative">
               <Icon name="profile" className="w-5 text-white" />
               <Icon

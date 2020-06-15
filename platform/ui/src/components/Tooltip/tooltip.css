@@ -1,10 +1,10 @@
 .tooltip {
-  @apply z-10 absolute;
+  @apply absolute z-10;
 }
 
 /* TOOLTIP WORKAROUND FOR ARROW UP */
 .tooltip.tooltip-bottom .tooltip-box::before {
-  @apply bg-primary-dark absolute z-10;
+  @apply absolute z-10 bg-primary-dark;
   content: '';
   width: 14px;
   height: 1px;
@@ -44,7 +44,7 @@
 }
 
 .tooltip.tooltip-right .tooltip-box::before {
-  @apply bg-primary-dark absolute z-10;
+  @apply absolute z-10 bg-primary-dark;
   content: '';
   width: 2px;
   height: 15px;
@@ -54,7 +54,7 @@
 }
 
 .tooltip.tooltip-left .tooltip-box::before {
-  @apply bg-primary-dark absolute z-10;
+  @apply absolute z-10 bg-primary-dark;
   content: '';
   width: 2px;
   height: 15px;
@@ -64,7 +64,7 @@
 }
 
 .tooltip.tooltip-bottom-right .tooltip-box::before {
-  @apply bg-primary-dark absolute z-10;
+  @apply absolute z-10 bg-primary-dark;
   content: '';
   width: 15px;
   height: 2px;
@@ -73,19 +73,10 @@
 }
 
 .tooltip.tooltip-bottom-left .tooltip-box::before {
-  @apply bg-primary-dark absolute z-10;
+  @apply absolute z-10 bg-primary-dark;
   content: '';
   width: 15px;
   height: 2px;
   left: 5px;
   top: -1px;
-}
-
-/* TODO: REMOVE BELOW CLASS "showTooltipOnHover" AFTER TOOLTIP REPLACEMENT */
-.showTooltipOnHover .tooltip {
-  display: none;
-}
-
-.showTooltipOnHover:hover .tooltip {
-  display: block;
 }

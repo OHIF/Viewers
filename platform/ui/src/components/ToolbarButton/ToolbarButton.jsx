@@ -28,6 +28,7 @@ const ToolbarButton = ({
   return (
     <div key={id}>
       <Tooltip
+        isSticky={shouldShowDropdown}
         content={shouldShowDropdown ? dropdownContent : label}
         tight={shouldShowDropdown}
       >
@@ -51,6 +52,7 @@ ToolbarButton.defaultProps = {
 };
 
 ToolbarButton.propTypes = {
+  /* Influences background/hover styling */
   type: PropTypes.oneOf(['primary', 'secondary']),
   id: PropTypes.string.isRequired,
   isActive: PropTypes.bool,
@@ -58,7 +60,7 @@ ToolbarButton.propTypes = {
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   /** Tooltip content can be replaced for a customized content by passing a node to this value. */
-  dropdownContent: PropTypes.node,
+  dropdownContent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
 };
 
 export default ToolbarButton;

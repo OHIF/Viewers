@@ -1,112 +1,138 @@
+import ImageSet from '@ohif/core/src/classes/ImageSet';
+import { IWebApiDataSource } from '@ohif/core';
+
 /**
  *
  */
 export default {
-  /**
-   * Only required property. Should be a unique value across all extensions.
-   */
-  id: 'example-extension',
+  id: 'org.ohif.*',
 
   /**
    * LIFECYCLE HOOKS
    */
-
-  preRegistration({
-    servicesManager = {},
-    commandsManager = {},
-    appConfig = {},
-    configuration = {},
-  }) {},
+  preRegistration() {},
+  beforeExtInit() {},
+  beforeExtDestroy() {},
 
   /**
-   * MODULE GETTERS
+   * MODULES
    */
-  getViewportModule() {
-    return '... react component ...';
-  },
-  getSopClassHandlerModule() {
-    return sopClassHandlerModule;
-  },
-  getPanelModule() {
-    return panelModule;
-  },
-  getToolbarModule() {
-    return panelModule;
-  },
-  getCommandsModule(/* store */) {
-    return commandsModule;
-  },
+  getCommandsModule,
+  getContextModule,
+  getDataSourcesModule,
+  getLayoutTemplateModule,
+  getPanelModule,
+  getSopClassHandlerModule,
+  getToolbarModule() {},
+  getViewportModule,
 };
+
+// appConfig,
+// extensionConfig,
+// dataSources,
+// servicesManager,
+// extensionManager,
+// commandsManager,
 
 /**
  *
  */
-const commandsModule = {
-  actions: {
-    // Store Contexts + Options
-    exampleAction: ({ viewports, param1 }) => {
-      console.log(`There are ${viewports.length} viewports`);
-      console.log(`param1's value is: ${param1}`);
-    },
-  },
+const getCommandsModule = () => ({
   definitions: {
     exampleActionDef: {
-      commandFn: this.actions.exampleAction,
-      storeContexts: ['viewports'],
+      commandFn: ({ param1 }) => {
+        console.log(`param1's value is: ${param1}`);
+      },
+      // storeContexts: ['viewports'],
       options: { param1: 'hello world' },
+      context: 'VIEWER', // optional
     },
   },
-};
+  defaultContext: 'ACTIVE_VIEWPORT::DICOMSR',
+});
 
-/**
- *
- */
-const sopClassHandlerModule = {
-  id: 'OHIFDicomHtmlSopClassHandler',
-  sopClassUIDs: Object.values({
-    BASIC_TEXT_SR: '1.2.840.10008.5.1.4.1.1.88.11',
-    ENHANCED_SR: '1.2.840.10008.5.1.4.1.1.88.22',
-    COMPREHENSIVE_SR: '1.2.840.10008.5.1.4.1.1.88.33',
-    PROCEDURE_LOG_STORAGE: '1.2.840.10008.5.1.4.1.1.88.40',
-    MAMMOGRAPHY_CAD_SR: '1.2.840.10008.5.1.4.1.1.88.50',
-    CHEST_CAD_SR: '1.2.840.10008.5.1.4.1.1.88.65',
-    X_RAY_RADIATION_DOSE_SR: '1.2.840.10008.5.1.4.1.1.88.67',
-  }),
-  getDisplaySetFromSeries(series, study, dicomWebClient, authorizationHeaders) {
-    const instance = series.getFirstInstance();
+const ExampleContext = React.createContext();
 
-    return {
-      plugin: 'html',
-      displaySetInstanceUID: 0, //utils.guid(),
-      wadoRoot: study.getData().wadoRoot,
-      wadoUri: instance.getData().wadouri,
-      SOPInstanceUID: instance.getSOPInstanceUID(),
-      SeriesInstanceUID: series.getSeriesInstanceUID(),
-      StudyInstanceUID: study.getStudyInstanceUID(),
-      authorizationHeaders,
-    };
+function ExampleContextProvider({ children }) {
+  return (
+    <ExampleContext.Provider value={{ example: 'value' }}>
+      {children}
+    </TrackedMeasurementsContext.Provider>
+  );
+}
+
+const getContextModule = () => [
+  {
+    name: 'ExampleContext',
+    context: ExampleContext,
+    provider: ExampleContextProvider,
   },
+];
+
+const getDataSourcesModule = () => [
+  {
+    name: 'exampleDataSource',
+    type: 'webApi', // 'webApi' | 'local' | 'other'
+    createDataSource: dataSourceConfig => {
+      return IWebApiDataSource.create(/* */);
+    },
+  },
+];
+
+const getLayoutTemplateModule = (/* ... */) => [
+  {
+    id: 'exampleLayout',
+    name: 'exampleLayout',
+    component: ExampleLayoutComponent,
+  },
+];
+
+const getPanelModule = () => {
+  return [
+    {
+      name: 'exampleSidePanel',
+      iconName: 'info-circle-o',
+      iconLabel: 'Example',
+      label: 'Hello World',
+      isDisabled: studies => {}, // optional
+      component: ExamplePanelContentComponent,
+    },
+  ];
 };
 
-/**
- *
- */
-const panelModule = {
-  menuOptions: [
+const getSopClassHandlerModule = (/* ... */) => {
+  const BASIC_TEXT_SR = '1.2.840.10008.5.1.4.1.1.88.11';
+
+  return [
     {
-      icon: 'th-list',
-      label: 'Segments',
-      target: 'segment-panel',
-      isDisabled: studies => {
-        return false;
+      name: 'ExampleSopClassHandle',
+      sopClassUids: [BASIC_TEXT_SR],
+      getDisplaySetsFromSeries: instances => {
+        const imageSet = new ImageSet(instances);
+
+        imageSet.setAttributes(/** */);
+        imageSet.sortBy((a, b) => 0);
+
+        return imageSet;
       },
     },
-  ],
-  components: [
-    {
-      id: 'segment-panel',
-      component: '... react component ...',
-    },
-  ],
-  defaultContext: ['VIEWER'],
+  ];
+};
+
+const getToolbarModule = () => {};
+
+// displaySet, viewportIndex, dataSource
+const getViewportModule = () => {
+  const wrappedViewport = props => {
+    return (
+      <ExampleViewport
+        {...props}
+        onEvent={data => {
+          commandsManager.runCommand('commandName', data);
+        }}
+      />
+    );
+  };
+
+  return [{ name: 'example', component: wrappedViewport }];
 };

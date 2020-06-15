@@ -148,13 +148,13 @@ const commandsModule = ({ servicesManager }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
       return enabledElement;
     },
-    showDownloadViewportModal: ({ title, viewports }) => {
-      const activeViewportIndex = viewports.activeViewportIndex;
+    showDownloadViewportModal: () => {
+      const activeViewportIndex = 1; // viewports.activeViewportIndex;
       const { UIModalService } = servicesManager.services;
       if (UIModalService) {
         UIModalService.show({
           content: CornerstoneViewportDownloadForm,
-          title,
+          title: 'Download High Quality Image',
           contentProps: {
             activeViewportIndex,
             onClose: UIModalService.hide,
@@ -318,7 +318,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     getActiveViewportEnabledElement: {

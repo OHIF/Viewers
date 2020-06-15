@@ -12,6 +12,7 @@ import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
 import Label from './Label';
+import LayoutSelector from './LayoutSelector';
 import MeasurementTable from './MeasurementTable';
 import Modal from './Modal';
 import NavBar from './NavBar';
@@ -37,7 +38,6 @@ import Thumbnail from './Thumbnail';
 import ThumbnailNoImage from './ThumbnailNoImage';
 import ThumbnailTracked from './ThumbnailTracked';
 import ThumbnailList from './ThumbnailList';
-import Toolbar from './Toolbar';
 import ToolbarButton from './ToolbarButton';
 import Tooltip from './Tooltip';
 import Typography from './Typography';
@@ -61,6 +61,7 @@ export {
   InputMultiSelect,
   InputText,
   Label,
+  LayoutSelector,
   MeasurementTable,
   Modal,
   NavBar,
@@ -87,7 +88,6 @@ export {
   ThumbnailNoImage,
   ThumbnailTracked,
   ThumbnailList,
-  Toolbar,
   ToolbarButton,
   Tooltip,
   Typography,

@@ -1,7 +1,6 @@
 import React from 'react';
 import init from './init.js';
 import commandsModule from './commandsModule.js';
-import toolbarModule from './toolbarModule.js';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 
 const Component = React.lazy(() => {
@@ -47,9 +46,6 @@ export default {
     return [
       { name: 'cornerstone', component: ExtendedOHIFCornerstoneViewport },
     ];
-  },
-  getToolbarModule() {
-    return toolbarModule;
   },
   getCommandsModule({ servicesManager }) {
     return commandsModule({ servicesManager });

@@ -6,32 +6,116 @@ const EVENTS = {
 
 export default class ToolBarService {
   constructor() {
-    this.displaySets = {};
     this.EVENTS = EVENTS;
     this.listeners = {};
+    this.buttons = {};
+    this.buttonSections = {
+      /**
+       * primary: ['Zoom', 'Wwwc'],
+       * secondary: ['Length', 'RectangleRoi']
+       */
+    };
 
     Object.assign(this, pubSubServiceInterface);
   }
 
   init(extensionManager) {
-    this.buttons = {};
     this.extensionManager = extensionManager;
   }
 
-  addButtons(buttons) {
-    buttons.forEach(button => {
-      const buttonDefinition = this.extensionManager.getModuleEntry(
-        button.namespace
+  getButtons() {
+    return this.buttons;
+  }
+
+  setButtons(buttons) {
+    this.buttons = buttons;
+    this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {});
+  }
+
+  _buttonTypes() {
+    console.log(this.extensionManager.modules);
+    const buttonTypes = {};
+    const registeredToolbarModules = this.extensionManager.modules[
+      'toolbarModule'
+    ];
+
+    if (
+      Array.isArray(registeredToolbarModules) &&
+      registeredToolbarModules.length
+    ) {
+      registeredToolbarModules.forEach(toolbarModule =>
+        toolbarModule.module.forEach(def => {
+          buttonTypes[def.name] = def;
+        })
       );
+    }
 
-      const id = button.id || buttonDefinition.id;
+    return buttonTypes;
+  }
 
-      this.buttons[id] = buttonDefinition;
+
+  createButtonSection(key, buttons) {
+    // Maybe do this mapping at time of return, instead of time of create
+    // Props check important for validation here...
+
+    this.buttonSections[key] = buttons;
+    this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {});
+  }
+
+  getButtonSection(key) {
+    const buttonSectionIds = this.buttonSections[key];
+    const buttonsInSection = [];
+
+    if (!buttonSectionIds) {
+      return buttonsInSection;
+    }
+
+    buttonSectionIds.forEach(btnIdOrArray => {
+      const isNested = Array.isArray(btnIdOrArray);
+
+      if (isNested) {
+        const btnIds = btnIdOrArray;
+        const nestedButtons = [];
+
+        btnIds.forEach(nestedBtnId => {
+          const nestedBtn = this.buttons[nestedBtnId];
+          const mappedNestedBtn = this._mapButtonToDisplay(nestedBtn, key);
+
+          nestedButtons.push(mappedNestedBtn);
+        });
+
+        if (nestedButtons.length) {
+          buttonsInSection.push(nestedButtons);
+        }
+      } else {
+        const btnId = btnIdOrArray;
+        const btn = this.buttons[btnId];
+        const mappedBtn = this._mapButtonToDisplay(btn, key);
+
+        buttonsInSection.push(mappedBtn);
+      }
     });
+
+    return buttonsInSection;
   }
 
   /**
-   * Broadcasts displaySetService changes.
+   *
+   * @param {object[]} buttons
+   * @param {string} buttons[].id
+   */
+  addButtons(buttons) {
+    buttons.forEach(button => {
+      if (!this.buttons[button.id]) {
+        this.buttons[button.id] = button;
+      }
+    });
+
+    this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {});
+  }
+
+  /**
+   * Broadcasts toolbarService changes.
    *
    * @param {string} eventName The event name
    * @return void
@@ -47,33 +131,35 @@ export default class ToolBarService {
     }
   };
 
-  setToolBarLayout(layouts) {
-    const toolBarLayout = [];
+  /**
+   *
+   * @param {*} btn
+   * @param {*} btnSection
+   */
+  _mapButtonToDisplay(btn, btnSection) {
+    const { id, type, component, props } = btn;
+    const buttonType = this._buttonTypes()[type];
 
-    layouts.forEach(layout => {
-      const toolBarDefinitions = { tools: [], moreTools: [] };
+    if (!buttonType) {
+      return;
+    }
 
-      const { tools, moreTools } = layout;
+    const onClick = evt => {
+      if (buttonType.clickHandler) {
+        buttonType.clickHandler(evt, btn, btnSection);
+      }
+      if (btn.props.onClick) {
+        btn.onClick(evt, btn, btnSection);
+      }
+      if (btn.props.clickHandler) {
+        btn.clickHandler(evt, btn, btnSection);
+      }
+    };
 
-      tools &&
-        tools.forEach(element => {
-          const button = this.buttons[element];
-
-          toolBarDefinitions.tools.push(button);
-        });
-
-      moreTools &&
-        moreTools.forEach(element => {
-          const button = this.buttons[element];
-
-          toolBarDefinitions.moreTools.push(button);
-        });
-
-      toolBarLayout.push(toolBarDefinitions);
-    });
-
-    this.toolBarLayout = toolBarLayout;
-
-    this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, toolBarLayout);
+    return {
+      id,
+      Component: component || buttonType.defaultComponent,
+      componentProps: Object.assign({}, props, { onClick }), //
+    };
   }
 }
