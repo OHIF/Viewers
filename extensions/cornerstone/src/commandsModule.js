@@ -318,7 +318,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     getActiveViewportEnabledElement: {
