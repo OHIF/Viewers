@@ -67,7 +67,6 @@ export {
   ThumbnailNoImage,
   ThumbnailTracked,
   ThumbnailList,
-  Toolbar,
   ToolbarButton,
   Tooltip,
   Typography,

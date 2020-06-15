@@ -51,6 +51,7 @@ ToolbarButton.defaultProps = {
 };
 
 ToolbarButton.propTypes = {
+  /* Influences background/hover styling */
   type: PropTypes.oneOf(['primary', 'secondary']),
   id: PropTypes.string.isRequired,
   isActive: PropTypes.bool,

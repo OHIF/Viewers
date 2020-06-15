@@ -1,14 +1,7 @@
 import React from 'react';
-import {
-  SidePanel,
-  StudyBrowser,
-  DragAndDropProvider,
-  ViewportGrid,
-  ViewportPane,
-} from '@ohif/ui';
+import { SidePanel, StudyBrowser, DragAndDropProvider } from '@ohif/ui';
 
 import Header from './components/Header';
-import ViewportToolbar from './components/ViewportToolBar';
 
 const Viewer = () => {
   return (
@@ -16,7 +9,7 @@ const Viewer = () => {
       <div>
         <Header />
         <div
-          className="flex flex-row flex-no-wrap flex-1 items-stretch overflow-hidden w-full"
+          className="flex flex-row flex-no-wrap items-stretch flex-1 w-full overflow-hidden"
           style={{ height: 'calc(100vh - 57px' }}
         >
           <SidePanel
@@ -28,8 +21,8 @@ const Viewer = () => {
           >
             <StudyBrowser />
           </SidePanel>
-          <div className="flex flex-1 h-100 overflow-hidden bg-primary-main items-center justify-center text-white">
-            <ViewportToolbar />
+          <div className="flex items-center justify-center flex-1 overflow-hidden text-white h-100 bg-primary-main">
+            {/* <ViewportToolbar /> */}
             <div>CONTENT</div>
           </div>
           <SidePanel
@@ -39,7 +32,7 @@ const Viewer = () => {
             componentLabel="Measurements"
             defaultIsOpen={false}
           >
-            <div className="flex justify-center text-white p-2">
+            <div className="flex justify-center p-2 text-white">
               panel placeholder
             </div>
           </SidePanel>
