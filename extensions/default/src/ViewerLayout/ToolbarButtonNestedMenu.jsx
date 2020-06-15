@@ -2,18 +2,18 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ToolbarButton } from '@ohif/ui';
 
-function NestedToolbar({ children }) {
+function NestedMenu({ children }) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    function closeNestedToolbar() {
+    function closeNestedMenu() {
       if (isOpen) {
         setIsOpen(false);
       }
     }
-    window.addEventListener('click', closeNestedToolbar);
+    window.addEventListener('click', closeNestedMenu);
     return () => {
-      window.removeEventListener('click', closeNestedToolbar);
+      window.removeEventListener('click', closeNestedMenu);
     };
   }, [isOpen]);
 
@@ -34,8 +34,8 @@ function NestedToolbar({ children }) {
   );
 }
 
-NestedToolbar.propTypes = {
+NestedMenu.propTypes = {
   children: PropTypes.any.isRequired,
 };
 
-export default NestedToolbar;
+export default NestedMenu;

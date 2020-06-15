@@ -65,7 +65,7 @@ const Tooltip = ({ content, isSticky, position, tight, children }) => {
             }
           )}
         >
-          {content}
+          {typeof content === 'function' ? content() : content}
           <svg
             className="absolute h-4 text-primary-dark stroke-secondary-main"
             style={arrowPositionStyle[position]}
@@ -87,7 +87,7 @@ Tooltip.defaultProps = {
 };
 
 Tooltip.propTypes = {
-  content: PropTypes.node.isRequired,
+  content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
   position: PropTypes.oneOf([
     'bottom',
     'bottom-left',

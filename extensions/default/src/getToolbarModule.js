@@ -1,5 +1,6 @@
 import { ToolbarButton } from '@ohif/ui';
 import ToolbarDivider from './Toolbar/ToolbarDivider.jsx';
+import ToolbarLayoutSelector from './Toolbar/ToolbarLayoutSelector.jsx';
 
 export default function getToolbarModule({ commandsManager, servicesManager }) {
   const toolbarService = servicesManager.services.ToolBarService;
@@ -60,6 +61,15 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       },
     },
     {
+      name: 'ohif.layoutSelector',
+      defaultComponent: ToolbarLayoutSelector,
+      requiredConfig: [],
+      optionalConfig: [],
+      requiredProps: [],
+      optionalProps: [],
+      clickHandler: (evt, clickedBtn, btnSectionName) => {},
+    },
+    {
       name: 'ohif.toggle',
       defaultComponent: ToolbarButton,
       requiredConfig: [],
@@ -76,7 +86,9 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
 
         // Run button logic/command
         // MAKE SURE THIS SUPPORTS TOGGLE!
-        commandsManager.runCommand(props.commandName, props.commandOptions);
+        // commandsManager.runCommand(props.commandName, props.commandOptions);
+        // What if just toggled "content"?
+        // commandName OR content?
 
         // Set buttons & trigger notification
         toolbarService.setButtons(allButtons);

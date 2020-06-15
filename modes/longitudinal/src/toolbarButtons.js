@@ -1,3 +1,6 @@
+// TODO: torn, can either bake this here; or have to create a whole new button type
+// Only ways that you can pass in a custom React component for render :l
+
 export default [
   // Divider
   {
@@ -60,8 +63,11 @@ export default [
       type: 'primary',
     },
   },
-  // Layout
-  // Expanded/Nested?
+  {
+    id: 'Layout',
+    type: 'ohif.layoutSelector',
+  },
+  // ~~ Primary: NESTED
   // ~~ Secondary
   {
     id: 'Annotate',

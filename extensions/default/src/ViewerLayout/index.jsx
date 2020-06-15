@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { SidePanel } from '@ohif/ui';
 import Header from './Header.jsx';
-import NestedToolbar from './NestedToolbar.jsx';
+import NestedMenu from './ToolbarButtonNestedMenu.jsx';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -90,14 +90,14 @@ function ViewerLayout({
               return <Component key={id} id={id} {...componentProps} />;
             } else {
               return (
-                <NestedToolbar>
+                <NestedMenu>
                   <div className="flex">
                     {toolDef.map(x => {
                       const { id, Component, componentProps } = x;
                       return <Component key={id} id={id} {...componentProps} />;
                     })}
                   </div>
-                </NestedToolbar>
+                </NestedMenu>
               );
             }
           })}

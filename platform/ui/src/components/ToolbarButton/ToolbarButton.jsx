@@ -60,7 +60,7 @@ ToolbarButton.propTypes = {
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   /** Tooltip content can be replaced for a customized content by passing a node to this value. */
-  dropdownContent: PropTypes.node,
+  dropdownContent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
 };
 
 export default ToolbarButton;

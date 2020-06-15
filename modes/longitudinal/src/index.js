@@ -35,7 +35,7 @@ export default function mode({ modeConfiguration }) {
             'Wwwc',
             'Pan',
             'Capture',
-            // 'Layout', // toggle --> command to open layout dialog? needs to know when it should be off? (promise?)
+            'Layout',
             'Divider',
             ['Zoom', 'Wwwc'],
           ]);

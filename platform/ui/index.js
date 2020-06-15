@@ -41,6 +41,7 @@ export {
   InputMultiSelect,
   InputText,
   Label,
+  LayoutSelector,
   MeasurementTable,
   Modal,
   NavBar,

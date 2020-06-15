@@ -154,8 +154,6 @@ export default class ToolBarService {
       if (btn.props.clickHandler) {
         btn.clickHandler(evt, btn, btnSection);
       }
-
-      this._trySetButtonActive(id);
     };
 
     return {
