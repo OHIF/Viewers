@@ -13,7 +13,7 @@ const findMostRecentStructuredReport = studies => {
       // Skip series that may not have instances yet
       // This can happen if we have retrieved just the initial
       // details about the series via QIDO-RS, but not the full metadata
-      if (!series.instances.length) {
+      if (!series.instances || !series.instances.length) {
         return;
       }
 

@@ -13,6 +13,7 @@ import {
   ModalProvider,
   DialogProvider,
   OHIFModal,
+  ErrorBoundary
 } from '@ohif/ui';
 
 import {
@@ -167,53 +168,57 @@ class App extends Component {
 
     if (this._userManager) {
       return (
-        <Provider store={store}>
-          <AppProvider config={this._appConfig}>
-            <I18nextProvider i18n={i18n}>
-              <OidcProvider store={store} userManager={this._userManager}>
-                <UserManagerContext.Provider value={this._userManager}>
-                  <Router basename={routerBasename}>
-                    <WhiteLabelingContext.Provider value={whiteLabeling}>
-                      <SnackbarProvider service={UINotificationService}>
-                        <DialogProvider service={UIDialogService}>
-                          <ModalProvider
-                            modal={OHIFModal}
-                            service={UIModalService}
-                          >
-                            <OHIFStandaloneViewer
-                              userManager={this._userManager}
-                            />
-                          </ModalProvider>
-                        </DialogProvider>
-                      </SnackbarProvider>
-                    </WhiteLabelingContext.Provider>
-                  </Router>
-                </UserManagerContext.Provider>
-              </OidcProvider>
-            </I18nextProvider>
-          </AppProvider>
-        </Provider>
+        <ErrorBoundary context='App'>
+          <Provider store={store}>
+            <AppProvider config={this._appConfig}>
+              <I18nextProvider i18n={i18n}>
+                <OidcProvider store={store} userManager={this._userManager}>
+                  <UserManagerContext.Provider value={this._userManager}>
+                    <Router basename={routerBasename}>
+                      <WhiteLabelingContext.Provider value={whiteLabeling}>
+                        <SnackbarProvider service={UINotificationService}>
+                          <DialogProvider service={UIDialogService}>
+                            <ModalProvider
+                              modal={OHIFModal}
+                              service={UIModalService}
+                            >
+                              <OHIFStandaloneViewer
+                                userManager={this._userManager}
+                              />
+                            </ModalProvider>
+                          </DialogProvider>
+                        </SnackbarProvider>
+                      </WhiteLabelingContext.Provider>
+                    </Router>
+                  </UserManagerContext.Provider>
+                </OidcProvider>
+              </I18nextProvider>
+            </AppProvider>
+          </Provider>
+        </ErrorBoundary>
       );
     }
 
     return (
-      <Provider store={store}>
-        <AppProvider config={this._appConfig}>
-          <I18nextProvider i18n={i18n}>
-            <Router basename={routerBasename}>
-              <WhiteLabelingContext.Provider value={whiteLabeling}>
-                <SnackbarProvider service={UINotificationService}>
-                  <DialogProvider service={UIDialogService}>
-                    <ModalProvider modal={OHIFModal} service={UIModalService}>
-                      <OHIFStandaloneViewer />
-                    </ModalProvider>
-                  </DialogProvider>
-                </SnackbarProvider>
-              </WhiteLabelingContext.Provider>
-            </Router>
-          </I18nextProvider>
-        </AppProvider>
-      </Provider>
+      <ErrorBoundary context='App'>
+        <Provider store={store}>
+          <AppProvider config={this._appConfig}>
+            <I18nextProvider i18n={i18n}>
+              <Router basename={routerBasename}>
+                <WhiteLabelingContext.Provider value={whiteLabeling}>
+                  <SnackbarProvider service={UINotificationService}>
+                    <DialogProvider service={UIDialogService}>
+                      <ModalProvider modal={OHIFModal} service={UIModalService}>
+                        <OHIFStandaloneViewer />
+                      </ModalProvider>
+                    </DialogProvider>
+                  </SnackbarProvider>
+                </WhiteLabelingContext.Provider>
+              </Router>
+            </I18nextProvider>
+          </AppProvider>
+        </Provider>
+      </ErrorBoundary>
     );
   }
 

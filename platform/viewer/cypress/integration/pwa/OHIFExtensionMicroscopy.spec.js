@@ -1,7 +1,7 @@
 describe('OHIF Microscopy Extension', () => {
   before(() => {
     cy.openStudyModality('SM');
-    cy.expectMinimumThumbnails(6);
+    cy.expectMinimumThumbnails(2);
   });
 
   it('checks if series thumbnails are being displayed', () => {

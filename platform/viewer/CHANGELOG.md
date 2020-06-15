@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.3...@ohif/viewer@4.2.4) (2020-06-15)
+
+
+### Bug Fixes
+
+* OIDC Redirect erases query parameters ([#1773](https://github.com/OHIF/Viewers/issues/1773)) ([6123741](https://github.com/OHIF/Viewers/commit/6123741765e81d0bea8fbd5dbb0f310aaca0fb33))
+
+
+
+
+
+## [4.2.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.2...@ohif/viewer@4.2.3) (2020-06-05)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.1...@ohif/viewer@4.2.2) (2020-06-04)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.0...@ohif/viewer@4.2.1) (2020-06-04)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [4.2.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.1.0...@ohif/viewer@4.2.0) (2020-06-04)
+
+
+### Features
+
+* 🎸 1729 - error boundary wrapper ([#1764](https://github.com/OHIF/Viewers/issues/1764)) ([c02b232](https://github.com/OHIF/Viewers/commit/c02b232b0cc24f38af5d5e3831d987d048e60ada))
+
+
+
+
+
 # [4.1.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.0.0...@ohif/viewer@4.1.0) (2020-05-15)
 
 
