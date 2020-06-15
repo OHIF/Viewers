@@ -34,10 +34,10 @@ export default function mode({ modeConfiguration }) {
             'Zoom',
             'Wwwc',
             'Pan',
-            'Capture', // toggle --> command to open capture modal? needs to know when it should be off? (promise?)
-            'Layout', // toggle --> command to open layout dialog? needs to know when it should be off? (promise?)
+            'Capture',
+            // 'Layout', // toggle --> command to open layout dialog? needs to know when it should be off? (promise?)
             'Divider',
-            'Zoom', // ? array of arrays?
+            ['Zoom', 'Wwwc'],
           ]);
           ToolBarService.createButtonSection('secondary', [
             'Annotate',

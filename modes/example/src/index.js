@@ -55,17 +55,17 @@ export default function mode({ modeConfiguration }) {
           ]);
 
           // Could import layout selector here from org.ohif.default (when it exists!)
-          ToolBarService.setToolBarLayout([
-            // Primary
-            {
-              tools: ['Zoom', 'Levels', 'Pan', 'Capture', 'Layout'],
-              moreTools: ['Zoom'],
-            },
-            // Secondary
-            {
-              tools: ['Annotate', 'Bidirectional', 'Ellipse', 'Length'],
-            },
-          ]);
+          // ToolBarService.setToolBarLayout([
+          //   // Primary
+          //   {
+          //     tools: ['Zoom', 'Levels', 'Pan', 'Capture', 'Layout'],
+          //     moreTools: ['Zoom'],
+          //   },
+          //   // Secondary
+          //   {
+          //     tools: ['Annotate', 'Bidirectional', 'Ellipse', 'Length'],
+          //   },
+          // ]);
         },
         layoutTemplate: ({ routeProps }) => {
           return {

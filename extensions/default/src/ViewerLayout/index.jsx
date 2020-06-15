@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { SidePanel, ToolbarButton } from '@ohif/ui';
+import { SidePanel } from '@ohif/ui';
 import Header from './Header.jsx';
+import NestedToolbar from './NestedToolbar.jsx';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -79,12 +80,26 @@ function ViewerLayout({
   return (
     <div>
       <Header>
-        {/* relative, flex, justify-center */}
-        <div className="flex">
+        <div className="relative flex justify-center">
           {toolbars.primary.map(toolDef => {
-            const { id, Component, componentProps } = toolDef;
+            const isNested = Array.isArray(toolDef);
 
-            return <Component key={id} id={id} {...componentProps} />;
+            if (!isNested) {
+              const { id, Component, componentProps } = toolDef;
+
+              return <Component key={id} id={id} {...componentProps} />;
+            } else {
+              return (
+                <NestedToolbar>
+                  <div className="flex">
+                    {toolDef.map(x => {
+                      const { id, Component, componentProps } = x;
+                      return <Component key={id} id={id} {...componentProps} />;
+                    })}
+                  </div>
+                </NestedToolbar>
+              );
+            }
           })}
         </div>
       </Header>

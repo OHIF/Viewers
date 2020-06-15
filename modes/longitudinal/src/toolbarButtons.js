@@ -4,7 +4,7 @@ export default [
     id: 'Divider',
     type: 'ohif.divider',
   },
-  // Primary
+  // ~~ Primary
   {
     id: 'Zoom',
     type: 'ohif.radioGroup',
@@ -50,7 +50,19 @@ export default [
       type: 'primary',
     },
   },
-  // Secondary
+  {
+    id: 'Capture',
+    type: 'ohif.action',
+    props: {
+      icon: 'tool-capture',
+      label: 'Capture',
+      commandName: 'showDownloadViewportModal',
+      type: 'primary',
+    },
+  },
+  // Layout
+  // Expanded/Nested?
+  // ~~ Secondary
   {
     id: 'Annotate',
     type: 'ohif.radioGroup',
@@ -63,8 +75,7 @@ export default [
       label: 'Annotate',
       commandName: 'setToolActive',
       commandOptions: { toolName: 'ArrowAnnotate' },
-      type: 'secondary', // Purely for background color/hover styles :|
-      // Layout Template can set this?
+      type: 'secondary',
     },
   },
   {

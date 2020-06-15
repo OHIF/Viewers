@@ -63,61 +63,40 @@ export default class ToolBarService {
   }
 
   getButtonSection(key) {
-    const buttonSection = this.buttonSections[key];
+    const buttonSectionIds = this.buttonSections[key];
     const buttonsInSection = [];
 
-    if (!buttonSection) {
+    if (!buttonSectionIds) {
       return buttonsInSection;
     }
 
-    buttonSection.forEach(btnId => {
-      const button = this.buttons[btnId];
-      if (button) {
-        buttonsInSection.push(button);
+    buttonSectionIds.forEach(btnIdOrArray => {
+      const isNested = Array.isArray(btnIdOrArray);
+
+      if (isNested) {
+        const btnIds = btnIdOrArray;
+        const nestedButtons = [];
+
+        btnIds.forEach(nestedBtnId => {
+          const nestedBtn = this.buttons[nestedBtnId];
+          const mappedNestedBtn = this._mapButtonToDisplay(nestedBtn, key);
+
+          nestedButtons.push(mappedNestedBtn);
+        });
+
+        if (nestedButtons.length) {
+          buttonsInSection.push(nestedButtons);
+        }
       } else {
-        console.warn(`${btnId} is not a registered button.`);
+        const btnId = btnIdOrArray;
+        const btn = this.buttons[btnId];
+        const mappedBtn = this._mapButtonToDisplay(btn, key);
+
+        buttonsInSection.push(mappedBtn);
       }
     });
 
-    const mappedButtonSection = buttonsInSection.map(bt => {
-      const { id, type, component, props } = bt;
-      const buttonType = this._buttonTypes()[type];
-
-      // Filter out & warn
-      if (!buttonType) {
-        return;
-      }
-
-      const onClick = evt => {
-        console.warn(
-          `Handling click for: BTN::${id}`,
-          evt,
-          bt,
-          buttonType,
-          btnSection
-        );
-        const btnSection = key;
-        if (buttonType.clickHandler) {
-          buttonType.clickHandler(evt, bt, btnSection);
-        }
-        if (bt.props.onClick) {
-          bt.onClick(evt, bt, btnSection);
-        }
-        if (bt.props.clickHandler) {
-          bt.clickHandler(evt, bt, btnSection);
-        }
-
-        this._trySetButtonActive(id);
-      };
-
-      return {
-        id,
-        Component: component || buttonType.defaultComponent,
-        componentProps: Object.assign({}, props, { onClick }), //
-      };
-    });
-
-    return mappedButtonSection;
+    return buttonsInSection;
   }
 
   /**
@@ -152,4 +131,38 @@ export default class ToolBarService {
       });
     }
   };
+
+  /**
+   *
+   * @param {*} btn
+   * @param {*} btnSection
+   */
+  _mapButtonToDisplay(btn, btnSection) {
+    const { id, type, component, props } = btn;
+    const buttonType = this._buttonTypes()[type];
+
+    if (!buttonType) {
+      return;
+    }
+
+    const onClick = evt => {
+      if (buttonType.clickHandler) {
+        buttonType.clickHandler(evt, btn, btnSection);
+      }
+      if (btn.props.onClick) {
+        btn.onClick(evt, btn, btnSection);
+      }
+      if (btn.props.clickHandler) {
+        btn.clickHandler(evt, btn, btnSection);
+      }
+
+      this._trySetButtonActive(id);
+    };
+
+    return {
+      id,
+      Component: component || buttonType.defaultComponent,
+      componentProps: Object.assign({}, props, { onClick }), //
+    };
+  }
 }

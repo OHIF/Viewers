@@ -24,7 +24,7 @@ const arrowPositionStyle = {
   },
 };
 
-const Tooltip = ({ position, content, tight, children }) => {
+const Tooltip = ({ content, isSticky, position, tight, children }) => {
   const [isActive, setIsActive] = useState(false);
 
   const handleMouseOver = () => {
@@ -39,6 +39,8 @@ const Tooltip = ({ position, content, tight, children }) => {
     }
   };
 
+  const isOpen = isSticky || isActive;
+
   return (
     <div
       className="relative "
@@ -51,8 +53,8 @@ const Tooltip = ({ position, content, tight, children }) => {
       {children}
       <div
         className={classnames(`tooltip tooltip-${position}`, {
-          block: isActive,
-          hidden: !isActive,
+          block: isOpen,
+          hidden: !isOpen,
         })}
       >
         <div
@@ -65,7 +67,7 @@ const Tooltip = ({ position, content, tight, children }) => {
         >
           {content}
           <svg
-            className="absolute text-primary-dark h-4 stroke-secondary-main"
+            className="absolute h-4 text-primary-dark stroke-secondary-main"
             style={arrowPositionStyle[position]}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -80,11 +82,12 @@ const Tooltip = ({ position, content, tight, children }) => {
 
 Tooltip.defaultProps = {
   tight: false,
+  isSticky: false,
   position: 'bottom',
 };
 
 Tooltip.propTypes = {
-  tight: PropTypes.bool,
+  content: PropTypes.node.isRequired,
   position: PropTypes.oneOf([
     'bottom',
     'bottom-left',
@@ -92,8 +95,9 @@ Tooltip.propTypes = {
     'left',
     'right',
   ]),
+  isSticky: PropTypes.bool,
+  tight: PropTypes.bool,
   children: PropTypes.node.isRequired,
-  content: PropTypes.node.isRequired,
 };
 
 export default Tooltip;

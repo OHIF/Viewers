@@ -37,7 +37,6 @@ import Thumbnail from './Thumbnail';
 import ThumbnailNoImage from './ThumbnailNoImage';
 import ThumbnailTracked from './ThumbnailTracked';
 import ThumbnailList from './ThumbnailList';
-import Toolbar from './Toolbar';
 import ToolbarButton from './ToolbarButton';
 import Tooltip from './Tooltip';
 import Typography from './Typography';
@@ -87,7 +86,6 @@ export {
   ThumbnailNoImage,
   ThumbnailTracked,
   ThumbnailList,
-  Toolbar,
   ToolbarButton,
   Tooltip,
   Typography,

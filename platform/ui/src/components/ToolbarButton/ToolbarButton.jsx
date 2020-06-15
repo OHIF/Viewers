@@ -28,6 +28,7 @@ const ToolbarButton = ({
   return (
     <div key={id}>
       <Tooltip
+        isSticky={shouldShowDropdown}
         content={shouldShowDropdown ? dropdownContent : label}
         tight={shouldShowDropdown}
       >
