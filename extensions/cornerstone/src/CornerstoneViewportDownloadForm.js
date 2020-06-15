@@ -145,4 +145,8 @@ CornerstoneViewportDownloadForm.propTypes = {
   activeViewportIndex: PropTypes.number.isRequired,
 };
 
-export default CornerstoneViewportDownloadForm;
+// export default CornerstoneViewportDownloadForm;
+
+export default function HelloWorld() {
+  return <div>Hello World</div>;
+}
