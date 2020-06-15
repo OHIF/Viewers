@@ -10,6 +10,11 @@ const tracked = {
   viewport: 'org.ohif.measurement-tracking.viewportModule.cornerstone-tracked',
 };
 
+const dicomsr = {
+  sopClassHandler: 'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr',
+  viewport: 'org.ohif.dicom-sr.viewportModule.dicom-sr',
+};
+
 export default function mode({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
@@ -60,6 +65,10 @@ export default function mode({ modeConfiguration }) {
                   namespace: tracked.viewport,
                   displaySetsToDisplay: [ohif.sopClassHandler],
                 },
+                {
+                  namespace: dicomsr.viewport,
+                  displaySetsToDisplay: [dicomsr.sopClassHandler],
+                },
               ],
             },
           };
@@ -70,8 +79,9 @@ export default function mode({ modeConfiguration }) {
       'org.ohif.default',
       'org.ohif.cornerstone',
       'org.ohif.measurement-tracking',
+      'org.ohif.dicom-sr',
     ],
-    sopClassHandlers: [ohif.sopClassHandler],
+    sopClassHandlers: [ohif.sopClassHandler, dicomsr.sopClassHandler],
   };
 }
 

@@ -1,12 +1,13 @@
 import cornerstoneTools from 'cornerstone-tools';
+import cornerstoneMath from 'cornerstone-math';
+import cornerstone from 'cornerstone-core';
 import TOOL_NAMES from '../constants/toolNames';
 import SCOORD_TYPES from '../constants/scoordTypes';
-import { cornerstone } from '../../../../platform/core/src';
+
+window.cornerstone = cornerstone;
 
 const globalImageIdSpecificToolStateManager =
   cornerstoneTools.globalImageIdSpecificToolStateManager;
-
-console.log(globalImageIdSpecificToolStateManager);
 
 export default function addMeasurement(
   measurement,

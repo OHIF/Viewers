@@ -93,7 +93,11 @@ export default function mode({ modeConfiguration }) {
         },
       },
     ],
-    extensions: ['org.ohif.default', 'org.ohif.cornerstone'],
+    extensions: [
+      'org.ohif.default',
+      'org.ohif.cornerstone',
+      'org.ohif.dicom-sr',
+    ],
     sopClassHandlers: [
       'org.ohif.default.sopClassHandlerModule.stack',
       'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr',

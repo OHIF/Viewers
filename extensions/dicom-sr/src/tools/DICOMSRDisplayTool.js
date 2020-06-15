@@ -9,6 +9,7 @@ const draw = importInternal('drawing/draw');
 const drawJoinedLines = importInternal('drawing/drawJoinedLines');
 const drawCircle = importInternal('drawing/drawCircle');
 const drawEllipse = importInternal('drawing/drawEllipse');
+const drawHandles = importInternal('drawing/drawHandles');
 const getNewContext = importInternal('drawing/getNewContext');
 const BaseTool = importInternal('base/BaseTool');
 

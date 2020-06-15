@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
+import cornerstone from 'cornerstone-core';
 
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF from '@ohif/core';
 import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
 import TOOL_NAMES from './constants/toolNames';
 import id from './id';
+
+const BaseAnnotationTool = cornerstoneTools.importInternal(
+  'base/BaseAnnotationTool'
+);
 
 // const cine = viewportSpecificData.cine;
 
@@ -33,19 +38,65 @@ function OHIFCornerstoneSRViewport({
 
   const onElementEnabled = evt => {
     const eventData = evt.detail;
-    const { element } = eventData;
+    const targetElement = eventData.element;
 
+    debugger;
+
+    // TODO -> This will only be temporary until we set a tool on, and isn't very customizable.
+    const globalTools = cornerstoneTools.store.state.globalTools;
+
+    const toolNames = Object.keys(globalTools);
+
+    Object.keys(globalTools).forEach(globalToolName => {
+      cornerstoneTools.setToolDisabledForElement(targetElement, globalToolName);
+    });
+
+    debugger;
+
+    cornerstoneTools.setToolEnabledForElement(
+      targetElement,
+      TOOL_NAMES.DICOM_SR_DISPLAY_TOOL
+    );
+
+    cornerstoneTools.setToolActiveForElement(targetElement, 'PanMultiTouch', {
+      pointers: 2,
+    });
+    cornerstoneTools.setToolActiveForElement(
+      targetElement,
+      'ZoomTouchPinch',
+      {}
+    );
+
+    cornerstoneTools.setToolActiveForElement(targetElement, 'Wwwc', {
+      mouseButtonMask: 1,
+    });
+    cornerstoneTools.setToolActiveForElement(targetElement, 'Pan', {
+      mouseButtonMask: 4,
+    });
+    cornerstoneTools.setToolActiveForElement(targetElement, 'Zoom', {
+      mouseButtonMask: 2,
+    });
+    cornerstoneTools.setToolActiveForElement(
+      targetElement,
+      'StackScrollMouseWheel',
+      {}
+    );
+
+    setTrackingUniqueIdentifiersForElement(targetElement);
+
+    setElement(targetElement);
+  };
+
+  const setTrackingUniqueIdentifiersForElement = targetElement => {
     const { measurements } = displaySet;
 
     const srModule = cornerstoneTools.getModule(id);
 
     srModule.setters.trackingUniqueIdentifiersForElement(
-      element,
+      targetElement,
       measurements.map(measurement => measurement.TrackingUniqueIdentifier),
       measurementSelected
     );
-
-    setElement(element);
   };
 
   useEffect(() => {
@@ -85,17 +136,34 @@ function OHIFCornerstoneSRViewport({
     ).then(({ viewportData, activeDisplaySetData }) => {
       setViewportData({ ...viewportData });
       setActiveDisplaySetData({ ...activeDisplaySetData });
+
+      if (element !== null) {
+        cornerstone.updateImage(element);
+      }
     });
   };
 
   useEffect(() => {
-    updateViewport();
+    if (element !== null) {
+      debugger;
+      setTrackingUniqueIdentifiersForElement(element);
+    }
   }, [
     dataSource,
     displaySet,
     displaySet.StudyInstanceUID,
     displaySet.displaySetInstanceUID,
+  ]);
+
+  useEffect(() => {
+    updateViewport();
+  }, [
     measurementSelected,
+    dataSource,
+    displaySet,
+    displaySet.StudyInstanceUID,
+    displaySet.displaySetInstanceUID,
+    element,
   ]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,8 +209,6 @@ function OHIFCornerstoneSRViewport({
     SeriesInstanceUID,
     SeriesNumber,
   } = activeDisplaySetData;
-
-  debugger;
 
   const onMeasurementChange = direction => {
     let newMeausrementSelected = measurementSelected;
@@ -305,8 +371,6 @@ async function _getViewportAndActiveDisplaySetData(
     SeriesInstanceUID: image0.SeriesInstanceUID,
     SeriesNumber: image0.SeriesNumber,
   };
-
-  debugger;
 
   return { viewportData, activeDisplaySetData };
 }
