@@ -17,9 +17,6 @@ export default class ExtensionManager {
       this.modules[moduleType] = [];
     });
     this.dataSourceMap = {};
-
-    console.log('modules map');
-    console.log(this.modulesMap);
   }
 
   /**
@@ -102,9 +99,6 @@ export default class ExtensionManager {
             );
             break;
           case MODULE_TYPES.TOOLBAR:
-            this._initToolBarModule(extensionModule, extensionId);
-            break;
-
           case MODULE_TYPES.VIEWPORT:
           case MODULE_TYPES.PANEL:
           case MODULE_TYPES.SOP_CLASS_HANDLER:
@@ -112,7 +106,6 @@ export default class ExtensionManager {
           case MODULE_TYPES.LAYOUT_TEMPLATE:
             // Default for most extension points,
             // Just adds each entry ready for consumption by mode.
-
             extensionModule.forEach(element => {
               this.modulesMap[
                 `${extensionId}.${moduleType}.${element.name}`
@@ -141,27 +134,6 @@ export default class ExtensionManager {
     return this.dataSourceMap[dataSourceName];
   };
 
-  _initToolBarModule = (extensionModule, extensionId) => {
-    let { definitions, defaultContext } = extensionModule;
-    if (!definitions || Object.keys(definitions).length === 0) {
-      log.warn('Commands Module contains no command definitions');
-      return;
-    }
-
-    defaultContext = defaultContext || 'VIEWER';
-
-    definitions.forEach(definition => {
-      console.log(`${extensionId}.${MODULE_TYPES.TOOLBAR}.${definition.id}`);
-
-      // TODO -> Deep copy instead of mutation? We only do this once, but would be better.
-      definition.context = definition.context || defaultContext;
-
-      this.modulesMap[
-        `${extensionId}.${MODULE_TYPES.TOOLBAR}.${definition.id}`
-      ] = definition;
-    });
-  };
-
   /**
    * @private
    * @param {string} moduleType
@@ -178,13 +150,13 @@ export default class ExtensionManager {
 
     try {
       const extensionModule = getModuleFn({
-        getDataSources: this.getDataSources, // Why pass this in if we're passing in `extensionManager`?
-        servicesManager: this._servicesManager,
-        commandsManager: this._commandsManager,
         appConfig: this._appConfig,
+        getDataSources: this.getDataSources, // Why pass this in if we're passing in `extensionManager`?
+        commandsManager: this._commandsManager,
+        extensionManager: this,
+        servicesManager: this._servicesManager,
         configuration,
         api: this._api,
-        extensionManager: this,
       });
 
       if (!extensionModule) {

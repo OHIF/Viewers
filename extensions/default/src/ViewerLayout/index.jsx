@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { SidePanel, Toolbar } from '@ohif/ui';
-//
+import { SidePanel, ToolbarButton } from '@ohif/ui';
 import Header from './Header.jsx';
 
 function ViewerLayout({
@@ -54,71 +54,23 @@ function ViewerLayout({
     };
   };
 
-  const handleToolBarSubscription = newToolBarLayout => {
-    // Get buttons to pass to toolbars.
-    console.log(commandsManager);
-
-    const firstTool = newToolBarLayout[0].tools[0];
-
-    const toolBarLayout = [];
-
-    newToolBarLayout.forEach(newToolBar => {
-      const toolBar = { tools: [], moreTools: [] };
-
-      Object.keys(newToolBar).forEach(key => {
-        if (newToolBar[key].length) {
-          newToolBar[key].forEach(tool => {
-            const commandOptions = tool.commandOptions || {};
-
-            toolBar[key].push({
-              context: tool.context,
-              icon: tool.icon,
-              id: tool.id,
-              label: tool.label,
-              type: 'setToolActive',
-              onClick: () => {
-                commandsManager.runCommand(tool.commandName, commandOptions);
-              },
-            });
-          });
-        }
-      });
-
-      toolBarLayout.push(toolBar);
-
-      // if (newToolBar.moreTools && newToolBar.moreTools.length) {
-      //   newToolBar.moreTools.forEach(tool => {
-      //     const commandOptions = tool.commandOptions || {};
-
-      //     toolBar.push({
-      //       context: tool.context,
-      //       icon: tool.icon,
-      //       id: tool.id,
-      //       label: tool.label,
-      //       type: 'setToolActive',
-      //       command: () =>
-      //         commandsManager.runCommand(tool.commandName, commandOptions),
-      //     });
-      //   });
-      // }
-    });
-
-    setToolBarLayout(toolBarLayout);
-  };
-
-  const [toolBarLayout, setToolBarLayout] = useState([
-    { tools: [], moreTools: [] },
-    { tools: [] },
-  ]);
+  const [toolbars, setToolbars] = useState({ primary: [], secondary: [] });
 
   useEffect(() => {
     const { unsubscribe } = ToolBarService.subscribe(
       ToolBarService.EVENTS.TOOL_BAR_MODIFIED,
-      handleToolBarSubscription
+      () => {
+        console.warn('~~~ TOOL BAR MODIFIED EVENT CAUGHT');
+        const updatedToolbars = {
+          primary: ToolBarService.getButtonSection('primary'),
+          secondary: ToolBarService.getButtonSection('secondary'),
+        };
+        setToolbars(updatedToolbars);
+      }
     );
 
     return unsubscribe;
-  }, []);
+  }, [ToolBarService]);
 
   const leftPanelComponents = leftPanels.map(getPanelData);
   const rightPanelComponents = rightPanels.map(getPanelData);
@@ -126,10 +78,16 @@ function ViewerLayout({
 
   return (
     <div>
-      <Header
-        tools={toolBarLayout[0].tools}
-        moreTools={toolBarLayout[0].moreTools}
-      />
+      <Header>
+        {/* relative, flex, justify-center */}
+        <div className="flex">
+          {toolbars.primary.map(toolDef => {
+            const { id, Component, componentProps } = toolDef;
+
+            return <Component key={id} id={id} {...componentProps} />;
+          })}
+        </div>
+      </Header>
       <div
         className="flex flex-row flex-no-wrap items-stretch w-full overflow-hidden"
         style={{ height: 'calc(100vh - 57px' }}
@@ -145,67 +103,17 @@ function ViewerLayout({
         {/* TOOLBAR + GRID */}
         <div className="flex flex-col flex-1 h-full">
           <div className="flex h-12 border-b border-transparent flex-2 w-100">
-            <Toolbar type="secondary" tools={toolBarLayout[1].tools} />
+            {toolbars.secondary.map(toolDef => {
+              const { id, Component, componentProps } = toolDef;
+
+              return <Component key={id} id={id} {...componentProps} />;
+            })}
           </div>
           <div className="flex items-center justify-center flex-1 h-full pt-1 pb-2 overflow-hidden bg-black">
             <ViewportGridComp
               servicesManager={servicesManager}
               viewportComponents={viewportComponents}
             />
-            {/*
-              viewportContents={[
-                <Viewport
-                  viewportIndex={0}
-                  onSeriesChange={direction => alert(`Series ${direction}`)}
-                  studyData={{
-                    label: 'A',
-                    isTracked: true,
-                    isLocked: false,
-                    studyDate: '07-Sep-2011',
-                    currentSeries: 1,
-                    seriesDescription:
-                      'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
-                    modality: 'CT',
-                    patientInformation: {
-                      patientName: 'Smith, Jane',
-                      patientSex: 'F',
-                      patientAge: '59',
-                      MRN: '10000001',
-                      thickness: '5.0mm',
-                      spacing: '1.25mm',
-                      scanner: 'Aquilion',
-                    },
-                  }}
-                >
-                </Viewport>,
-                <Viewport
-                  viewportIndex={1}
-                  onSeriesChange={direction => alert(`Series ${direction}`)}
-                  studyData={{
-                    label: 'A',
-                    isTracked: false,
-                    isLocked: true,
-                    studyDate: '07-Sep-2010',
-                    currentSeries: 2,
-                    seriesDescription:
-                      'Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit Series description lorem ipsum dolor sit ',
-                    modality: 'SR',
-                    patientInformation: {
-                      patientName: 'Smith, Jane',
-                      patientSex: 'F',
-                      patientAge: '59',
-                      MRN: '10000001',
-                      thickness: '2.0mm',
-                      spacing: '1.25mm',
-                      scanner: 'Aquilion',
-                    },
-                  }}
-                >
-                </Viewport>,
-              ]}
-              setActiveViewportIndex={setActiveViewportIndex}
-              activeViewportIndex={activeViewportIndex}
-            />*/}
           </div>
         </div>
         {rightPanelComponents.length && (
@@ -227,14 +135,6 @@ ViewerLayout.propTypes = {
   }).isRequired,
   commandsManager: PropTypes.object,
   // From modes
-  // TODO: Not in love with this shape,
-  toolBarLayout: PropTypes.arrayOf(
-    PropTypes.shape({
-      tools: PropTypes.array,
-      moreTools: PropTypes.array,
-    })
-  ).isRequired,
-  //displaySetInstanceUids: PropTypes.any.isRequired,
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
