@@ -122,6 +122,143 @@ jobs:
             docker push ohif/viewer:PR_BUILD-$CIRCLE_BUILD_NUM
 
   ###
+  # Workflow: PR_OPTIONAL_ELECTRON_BUILD
+  # Borrowed from Rick Herrick from XNAT (https://bitbucket.org/xnatdev/xnat-desktop-client/src/master/.circleci/config.yml)
+  ###
+  ELECTRON_BUILD_WIN_AND_LINUX:
+    environment:
+      TERM: xterm # Enable colors in term
+      QUICK_BUILD: true
+      SKIP_SERVICE_WORKER: true
+      PUBLIC_URL: ./
+      DEBUG: electron-builder
+    docker:
+      - image: electronuserland/builder:wine
+    steps:
+      # Enable yarn workspaces
+      - run: yarn config set workspaces-experimental true
+      # Checkout code and ALL Git Tags
+      - checkout:
+          post:
+            - git fetch --all
+      - restore_cache:
+          name: Restore Yarn and Cypress Package Cache
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - yarn-packages-{{ checksum "yarn.lock" }}
+            - yarn-packages-
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - run:
+          name: Prepare Electron Desktop version
+          command: |
+            yarn run build
+
+            # Run Electron app in development mode
+            cd platform/desktop
+            yarn install
+            yarn run copy-viewer
+            yarn run copy-config
+      - run:
+          # Builds are performed in parallel, so, it is highly recommended to
+          # specify multiple platforms/targets in one build command
+          # https://www.electron.build/multi-platform-build
+          name: Build Windows and Linux 64-bit executables and installer
+          command: |
+            cd platform/desktop
+            yarn dist-win-and-linux-x64
+      - run:
+          name: Copy build artifacts to artifacts folder
+          command: |
+            mkdir artifacts
+            find platform/desktop/dist -mindepth 1 -maxdepth 1 -type f -print0 | xargs --null -I {} cp {} artifacts
+      - run:
+          name: Upload artifacts to Github release page when the build is on the master branch
+          command: |
+            [[ ${CIRCLE_BRANCH} == "master" ]] && {
+                echo "This version of the CircleCI build configuration does not yet support uploads to the application downloads page"
+                echo ""
+                echo "Target: https://api.bitbucket.org/2.0/repositories/${BB_REPO_SLUG}/${TARGET}/downloads"
+                echo ""
+                echo "Artifacts:"
+                for ARTIFACT in $(find artifacts -type f); do
+                    echo " * ${ARTIFACT}"
+                done
+            } || {
+                echo "Build on ${CIRCLE_BRANCH} branch, no artifacts pushed to application downloads page"
+            }
+      - store_artifacts:
+          path: artifacts
+
+  ###
+  # Workflow: PR_OPTIONAL_ELECTRON_BUILD_MAC
+  # Borrowed from Rick Herrick from XNAT (https://bitbucket.org/xnatdev/xnat-desktop-client/src/master/.circleci/config.yml)
+  ###
+  ELECTRON_BUILD_MAC:
+    environment:
+      TERM: xterm # Enable colors in term
+      QUICK_BUILD: true
+      SKIP_SERVICE_WORKER: true
+      PUBLIC_URL: ./
+    macos:
+      xcode: "11.5.0"
+    steps:
+      # Install latest yarn
+      - run: curl -o- -L https://yarnpkg.com/install.sh | bash
+      # Enable yarn workspaces
+      - run: yarn config set workspaces-experimental true
+      # Checkout code and ALL Git Tags
+      - checkout:
+          post:
+            - git fetch --all
+      - restore_cache:
+          name: Restore Yarn and Cypress Package Cache for Mac
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - mac-yarn-packages-{{ checksum "yarn.lock" }}
+            - mac-yarn-packages-
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - run:
+          name: Prepare Electron Desktop version
+          command: |
+            yarn run build
+
+            # Run Electron app in development mode
+            cd platform/desktop
+            yarn install
+            yarn run copy-viewer
+            yarn run copy-config
+      - run:
+          name: Build Mac 64-bit executable and installer
+          command: |
+            cd platform/desktop
+            yarn dist-mac
+      - run:
+          name: Copy build artifacts to artifacts folder
+          command: |
+            mkdir artifacts
+            find platform/desktop/dist -mindepth 1 -maxdepth 1 -type f | xargs -I {} cp {} artifacts
+      - run:
+          name: Upload artifacts to Github release page when the build is on the master branch
+          command: |
+            [[ ${CIRCLE_BRANCH} == "master" ]] && {
+                echo "This version of the CircleCI build configuration does not yet support uploads to the application downloads page"
+                echo ""
+                echo "Target: https://api.bitbucket.org/2.0/repositories/${BB_REPO_SLUG}/${TARGET}/downloads"
+                echo ""
+                echo "Artifacts:"
+                for ARTIFACT in $(find artifacts -type f); do
+                    echo " * ${ARTIFACT}"
+                done
+            } || {
+                echo "Build on ${CIRCLE_BRANCH} branch, no artifacts pushed to application downloads page"
+            }
+      - store_artifacts:
+          path: artifacts
+  ###
   # Workflow: DEPLOY
   ###
   BUILD:
@@ -401,6 +538,24 @@ workflows:
       # Update hub.docker.org
       - DOCKER_PR_PUBLISH:
           context: Docker Hub
+          requires:
+            - AWAIT_APPROVAL
+
+  PR_OPTIONAL_ELECTRON_BUILD_MAC:
+    jobs:
+      # https://circleci.com/docs/2.0/workflows/#holding-a-workflow-for-a-manual-approval
+      - AWAIT_APPROVAL:
+          type: approval
+      - ELECTRON_BUILD_MAC:
+          requires:
+            - AWAIT_APPROVAL
+
+  PR_OPTIONAL_ELECTRON_BUILD_WIN_AND_LINUX:
+    jobs:
+      # https://circleci.com/docs/2.0/workflows/#holding-a-workflow-for-a-manual-approval
+      - AWAIT_APPROVAL:
+          type: approval
+      - ELECTRON_BUILD_WIN_AND_LINUX:
           requires:
             - AWAIT_APPROVAL
 

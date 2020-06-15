@@ -1,23 +1,26 @@
 {
-  "name": "@ohif/desktop",
+  "name": "OHIF-Viewer",
   "version": "0.0.1",
   "description": "Open Health Imaging Foundation (OHIF) DICOM Viewer for Desktop",
   "main": "src/main.js",
   "author": "Open Health Imaging Foundation (OHIF)",
   "license": "MIT",
-  "productName": "OHIF Viewer",
   "scripts": {
     "copy-viewer": "npx shx cp -R ../viewer/dist/* ./front-end/",
     "copy-config": "npx shx cp app-config.js ./front-end/",
     "start": "PREFIX='' electron src/main.js",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder",
+    "dist-mac": "electron-builder --mac",
+    "dist-win-x64": "electron-builder --win --x64",
+    "dist-win": "electron-builder --win",
+    "dist-linux": "electron-builder --linux",
+    "dist-linux-x64": "electron-builder --linux --x64",
+    "dist-win-and-linux-x64": "electron-builder --win --linux --x64",
     "postinstall": "electron-builder install-app-deps"
   },
   "devDependencies": {
     "electron": "9.0.3",
-    "electron-builder": "^22.7.0",
-    "electron-rebuild": "^1.11.0"
+    "electron-builder": "^22.7.0"
   },
   "dependencies": {
     "dicomweb-server": "^0.1.2",
@@ -25,10 +28,28 @@
     "morgan": "^1.10.0",
     "pouchdb": "^7.2.1"
   },
+  "productName": "OHIF Viewer",
   "build": {
     "appId": "ohif.desktop",
+    "productName": "OHIF Viewer",
     "mac": {
       "category": "public.app-category.medical"
+    },
+    "linux": {
+      "executableName": "OHIFViewer"
+    },
+    "nsis": {
+      "artifactName": "${productName}-Setup-${version}.exe",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": false,
+      "perMachine": true,
+      "runAfterFinish": true,
+      "createDesktopShortcut": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "OHIF",
+      "repo": "Viewers"
     }
   }
 }

@@ -4605,6 +4605,11 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
+base-href-webpack-plugin@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/base-href-webpack-plugin/-/base-href-webpack-plugin-2.0.0.tgz#4ef8e916756437daed61d55e3aeddf6c5766a577"
+  integrity sha512-e/EJg7MZrKvc5MzaGN+kvGOvq0xOetGvvMYcplAkz2VQZcSQmo4IpRiuhcHpH0AQsxMyNYyNtOixQvuqr+2sFA==
+
 base62@0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/base62/-/base62-0.1.1.tgz#7b4174c2f94449753b11c2651c083da841a7b084"
