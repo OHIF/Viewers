@@ -113,7 +113,6 @@ export default class ToolBarService {
 
     this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {});
   }
-  }
 
   /**
    * Broadcasts toolbarService changes.
