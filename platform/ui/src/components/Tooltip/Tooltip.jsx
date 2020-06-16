@@ -87,7 +87,8 @@ Tooltip.defaultProps = {
 };
 
 Tooltip.propTypes = {
-  content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
+  // Allow null
+  content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   position: PropTypes.oneOf([
     'bottom',
     'bottom-left',
