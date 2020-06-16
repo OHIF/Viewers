@@ -10,7 +10,12 @@ const classes = {
   row: 'flex flex-col ml-4',
 };
 
-const ViewportActionBar = ({ studyData, onSeriesChange }) => {
+const ViewportActionBar = ({
+  studyData,
+  showNavArrows,
+  showPatientInfo,
+  onSeriesChange,
+}) => {
   const {
     label,
     isTracked,
@@ -106,102 +111,47 @@ const ViewportActionBar = ({ studyData, onSeriesChange }) => {
           </div>
         </div>
       </div>
-      <div className="ml-2">
-        <ButtonGroup>
-          <Button
-            size="initial"
-            className="px-2 py-1"
-            onClick={() => onSeriesChange('left')}
-          >
-            <Icon name="chevron-left" className="w-4 text-white" />
-          </Button>
-          <Button
-            size="initial"
-            className="px-2 py-1"
-            onClick={() => onSeriesChange('right')}
-          >
-            <Icon name="chevron-right" className="w-4 text-white" />
-          </Button>
-        </ButtonGroup>
-      </div>
-      <div className="flex ml-4 mr-2">
-        <Tooltip
-          position="bottom-right"
-          content={
-            <div className="flex py-2">
-              <div className="flex pt-1">
-                <Icon name="info-link" className="w-4 text-primary-main" />
-              </div>
-              <div className="flex flex-col ml-2">
-                <span className="text-base font-bold text-white">
-                  {patientName}
-                </span>
-                <div className="flex pb-4 mt-4 mb-4 border-b border-secondary-main">
-                  <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>Sex</span>
-                    <span className={classnames(classes.infoText)}>
-                      {patientSex}
-                    </span>
-                  </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>Age</span>
-                    <span className={classnames(classes.infoText)}>
-                      {patientAge}
-                    </span>
-                  </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>MRN</span>
-                    <span className={classnames(classes.infoText)}>{MRN}</span>
-                  </div>
-                </div>
-                <div className="flex">
-                  <div className={classnames(classes.firstRow)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      Thickness
-                    </span>
-                    <span className={classnames(classes.infoText)}>
-                      {thickness}
-                    </span>
-                  </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      Spacing
-                    </span>
-                    <span className={classnames(classes.infoText)}>
-                      {spacing}
-                    </span>
-                  </div>
-                  <div className={classnames(classes.row)}>
-                    <span className={classnames(classes.infoHeader)}>
-                      Scanner
-                    </span>
-                    <span className={classnames(classes.infoText)}>
-                      {scanner}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          }
-        >
-          <div className="relative flex justify-end">
-            <div className="relative">
-              <Icon name="profile" className="w-5 text-white" />
-              <Icon
-                name="info-link"
-                className="absolute w-5 text-white bg-black"
-                style={{ right: -7, bottom: -10 }}
-              />
-            </div>
-          </div>
-        </Tooltip>
-      </div>
+      {showNavArrows && (
+        <div className="ml-2">
+          <ButtonGroup>
+            <Button
+              size="initial"
+              className="px-2 py-1"
+              onClick={() => onSeriesChange('left')}
+            >
+              <Icon name="chevron-left" className="w-4 text-white" />
+            </Button>
+            <Button
+              size="initial"
+              className="px-2 py-1"
+              onClick={() => onSeriesChange('right')}
+            >
+              <Icon name="chevron-right" className="w-4 text-white" />
+            </Button>
+          </ButtonGroup>
+        </div>
+      )}
+      {showPatientInfo && (
+        <div className="flex ml-4 mr-2">
+          <PatientInfo
+            patientName={patientName}
+            patientSex={patientSex}
+            patientAge={patientAge}
+            MRN={MRN}
+            thickness={thickness}
+            spacing={spacing}
+            scanner={scanner}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
 ViewportActionBar.propTypes = {
   onSeriesChange: PropTypes.func.isRequired,
+  showNavArrows: PropTypes.bool,
+  showPatientInfo: PropTypes.bool,
   studyData: PropTypes.shape({
     label: PropTypes.string.isRequired,
     isTracked: PropTypes.bool.isRequired,
@@ -221,5 +171,85 @@ ViewportActionBar.propTypes = {
     }),
   }).isRequired,
 };
+
+ViewportActionBar.defaultProps = {
+  showNavArrows: true,
+  showPatientInfo: true,
+};
+
+function PatientInfo({
+  patientName,
+  patientSex,
+  patientAge,
+  MRN,
+  thickness,
+  spacing,
+  scanner,
+}) {
+  return (
+    <Tooltip
+      position="bottom-right"
+      content={
+        <div className="flex py-2">
+          <div className="flex pt-1">
+            <Icon name="info-link" className="w-4 text-primary-main" />
+          </div>
+          <div className="flex flex-col ml-2">
+            <span className="text-base font-bold text-white">
+              {patientName}
+            </span>
+            <div className="flex pb-4 mt-4 mb-4 border-b border-secondary-main">
+              <div className={classnames(classes.firstRow)}>
+                <span className={classnames(classes.infoHeader)}>Sex</span>
+                <span className={classnames(classes.infoText)}>
+                  {patientSex}
+                </span>
+              </div>
+              <div className={classnames(classes.row)}>
+                <span className={classnames(classes.infoHeader)}>Age</span>
+                <span className={classnames(classes.infoText)}>
+                  {patientAge}
+                </span>
+              </div>
+              <div className={classnames(classes.row)}>
+                <span className={classnames(classes.infoHeader)}>MRN</span>
+                <span className={classnames(classes.infoText)}>{MRN}</span>
+              </div>
+            </div>
+            <div className="flex">
+              <div className={classnames(classes.firstRow)}>
+                <span className={classnames(classes.infoHeader)}>
+                  Thickness
+                </span>
+                <span className={classnames(classes.infoText)}>
+                  {thickness}
+                </span>
+              </div>
+              <div className={classnames(classes.row)}>
+                <span className={classnames(classes.infoHeader)}>Spacing</span>
+                <span className={classnames(classes.infoText)}>{spacing}</span>
+              </div>
+              <div className={classnames(classes.row)}>
+                <span className={classnames(classes.infoHeader)}>Scanner</span>
+                <span className={classnames(classes.infoText)}>{scanner}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <div className="relative flex justify-end">
+        <div className="relative">
+          <Icon name="profile" className="w-5 text-white" />
+          <Icon
+            name="info-link"
+            className="absolute w-5 text-white bg-black"
+            style={{ right: -7, bottom: -10 }}
+          />
+        </div>
+      </div>
+    </Tooltip>
+  );
+}
 
 export default ViewportActionBar;

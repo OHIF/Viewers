@@ -27,7 +27,10 @@ function TrackedCornerstoneViewport({
   viewportIndex,
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [{ viewports }, dispatchViewportGrid] = useViewportGrid();
+  const [
+    { activeViewportIndex, viewports },
+    dispatchViewportGrid,
+  ] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
@@ -132,6 +135,8 @@ function TrackedCornerstoneViewport({
     <>
       <ViewportActionBar
         onSeriesChange={direction => alert(`Series ${direction}`)}
+        showPatientInfo={viewportIndex === activeViewportIndex}
+        showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
           label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
           isTracked: trackedSeries.includes(SeriesInstanceUID),
