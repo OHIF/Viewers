@@ -79,7 +79,7 @@ export class StudyMetadata extends Metadata {
     Object.defineProperty(this, 'studyInstanceUID', {
       configurable: false,
       enumerable: false,
-      get: function () {
+      get: function() {
         return this.getStudyInstanceUID();
       },
     });
@@ -292,6 +292,7 @@ export class StudyMetadata extends Metadata {
 
     // Loop through the series (SeriesMetadata)
     this.forEachSeries(series => {
+      // #1776: SEG series doesnt exists ?????
       const displaySetsForSeries = this._createDisplaySetsForSeries(
         sopClassHandlerModules,
         series
@@ -314,6 +315,7 @@ export class StudyMetadata extends Metadata {
    * @returns {boolean} Returns true on success or false on failure (e.g., the series does not belong to this study)
    */
   createAndAddDisplaySetsForSeries(sopClassHandlerModules, series) {
+    debugger;
     if (!this.containsSeries(series)) {
       return false;
     }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { metadata, studies, utils, log } from '@ohif/core';
 import usePrevious from '../customHooks/usePrevious';
 
@@ -7,12 +7,12 @@ import PropTypes from 'prop-types';
 import { extensionManager } from './../App.js';
 import { useSnackbarContext } from '@ohif/ui';
 
+// Contexts
+import AppContext from '../context/AppContext';
+
 const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
 const { retrieveStudiesMetadata, deleteStudyMetadataPromise } = studies;
 const { studyMetadataManager, makeCancelable } = utils;
-
-// Contexts
-import AppContext from '../context/AppContext';
 
 const _promoteToFront = (list, value, searchMethod) => {
   let response = [...list];
@@ -105,13 +105,14 @@ const _showUserMessage = (queryParamApplied, message, dialog = {}) => {
     return;
   }
 
-  const { show: showUserMessage = () => { } } = dialog;
+  const { show: showUserMessage = () => {} } = dialog;
   showUserMessage({
     message,
   });
 };
 
 const _addSeriesToStudy = (studyMetadata, series) => {
+  // #1776 Analyze this method.
   const sopClassHandlerModules =
     extensionManager.modules['sopClassHandlerModule'];
   const study = studyMetadata.getData();
@@ -123,10 +124,15 @@ const _addSeriesToStudy = (studyMetadata, series) => {
     studyMetadata.addSeries(seriesMetadata);
   }
 
+  // #1776 When the loop is "SEG", it removes the "SEG" modality from
+  // the displaySets and updates the study.displaySets removing the SEG
+  // Analyze createAndAddDisplaySetsForSeries
   studyMetadata.createAndAddDisplaySetsForSeries(
     sopClassHandlerModules,
-    seriesMetadata,
+    seriesMetadata
   );
+
+  // #1776 displaySets are replaced
   study.displaySets = studyMetadata.getDisplaySets();
   _updateStudyMetadataManager(study, studyMetadata);
 };
@@ -143,6 +149,7 @@ const _updateStudyDisplaySets = (study, studyMetadata) => {
   const sopClassHandlerModules =
     extensionManager.modules['sopClassHandlerModule'];
 
+  // #1776: displaySets already exists so createDisplaySets is never called again
   if (!study.displaySets) {
     study.displaySets = studyMetadata.createDisplaySets(sopClassHandlerModules);
   }
@@ -158,9 +165,9 @@ const _thinStudyData = study => {
   return {
     StudyInstanceUID: study.StudyInstanceUID,
     series: study.series.map(item => ({
-      SeriesInstanceUID: item.SeriesInstanceUID
+      SeriesInstanceUID: item.SeriesInstanceUID,
     })),
-  }
+  };
 };
 
 function ViewerRetrieveStudyData({
@@ -236,6 +243,8 @@ function ViewerRetrieveStudyData({
           study.StudyInstanceUID
         );
 
+        // #1776 study already has displaySets but without the Segmentation
+        // Check getDisplaySets
         _updateStudyDisplaySets(study, studyMetadata);
         _updateStudyMetadataManager(study, studyMetadata);
 
@@ -276,7 +285,8 @@ function ViewerRetrieveStudyData({
       return loadNextSeries();
     };
 
-    const concurrentRequestsAllowed = maxConcurrentMetadataRequests || studyMetadata.getSeriesCount();
+    const concurrentRequestsAllowed =
+      maxConcurrentMetadataRequests || studyMetadata.getSeriesCount();
     const promises = Array(concurrentRequestsAllowed)
       .fill(null)
       .map(loadNextSeries);
@@ -301,6 +311,7 @@ function ViewerRetrieveStudyData({
       }
 
       cancelableStudiesPromises[studyInstanceUIDs] = makeCancelable(
+        // #1776 when retrieving, study already has displayset
         retrieveStudiesMetadata(...retrieveParams)
       )
         .then(result => {
@@ -322,7 +333,7 @@ function ViewerRetrieveStudyData({
     }
   };
 
-  const purgeCancellablePromises = () => {
+  const purgeCancellablePromises = useCallback(() => {
     for (let studyInstanceUIDs in cancelableStudiesPromises) {
       if ('cancel' in cancelableStudiesPromises[studyInstanceUIDs]) {
         cancelableStudiesPromises[studyInstanceUIDs].cancel();
@@ -336,7 +347,7 @@ function ViewerRetrieveStudyData({
         studyMetadataManager.remove(studyInstanceUIDs);
       }
     }
-  };
+  });
 
   const prevStudyInstanceUIDs = usePrevious(studyInstanceUIDs);
 
@@ -350,7 +361,7 @@ function ViewerRetrieveStudyData({
       studyMetadataManager.purge();
       purgeCancellablePromises();
     }
-  }, [studyInstanceUIDs]);
+  }, [prevStudyInstanceUIDs, purgeCancellablePromises, studyInstanceUIDs]);
 
   useEffect(() => {
     cancelableSeriesPromises = {};
