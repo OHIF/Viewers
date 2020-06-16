@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { MODULE_TYPES } from '@ohif/core';
 //
-import { appConfigContext } from '../state/appConfig.context';
+import { useAppConfig } from '@state';
 import { extensionManager } from '../App.jsx';
 
 /**
@@ -15,7 +15,7 @@ import { extensionManager } from '../App.jsx';
  * @param {function} props.children - Layout Template React Component
  */
 function DataSourceWrapper(props) {
-  const { appConfig } = useContext(appConfigContext);
+  const [appConfig] = useAppConfig();
   const { children: LayoutTemplate, history, ...rest } = props;
   const queryFilterValues = _getQueryFilterValues(history.location.search);
 

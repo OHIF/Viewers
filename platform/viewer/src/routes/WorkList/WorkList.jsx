@@ -6,7 +6,8 @@ import moment from 'moment';
 import qs from 'query-string';
 //
 import filtersMeta from './filtersMeta.js';
-import { useDebounce, useQuery } from './../../hooks';
+import { useAppConfig } from '@state';
+import { useDebounce, useQuery } from '@hooks';
 
 import {
   Icon,
@@ -28,6 +29,9 @@ const seriesInStudiesMap = new Map();
  * - debounce `setFilterValues` (150ms?)
  */
 function WorkList({ history, data: studies, dataSource }) {
+  // ~ Modes
+  const [appConfig] = useAppConfig();
+  console.warn('~~~~~~~~~~~~', appConfig);
   // ~ Filters
   const query = useQuery();
   const queryFilterValues = _getQueryFilterValues(query);
@@ -176,7 +180,7 @@ function WorkList({ history, data: studies, dataSource }) {
         continue;
       }
 
-      console.log(`fetching for ${expandedRowIndex}`)
+      console.log(`fetching for ${expandedRowIndex}`);
       fetchSeries(studyInstanceUid);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -319,7 +323,7 @@ function WorkList({ history, data: studies, dataSource }) {
             rounded="full"
             variant="outlined"
             endIcon={<Icon name="launch-info" />}
-            className="font-bold ml-4"
+            className="ml-4 font-bold"
           >
             View: Segmentation
           </Button>
@@ -348,7 +352,7 @@ function WorkList({ history, data: studies, dataSource }) {
           </div>
         </div>
         <div className="flex items-center">
-          <span className="mr-3 text-common-light text-lg">
+          <span className="mr-3 text-lg text-common-light">
             FOR INVESTIGATIONAL USE ONLY
           </span>
           <IconButton

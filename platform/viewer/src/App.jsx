@@ -14,8 +14,7 @@ import {
 } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
-import { appConfigContext } from '@state/appConfig.context';
-import { useAppConfig } from '@hooks/useAppConfig';
+import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 
@@ -41,8 +40,8 @@ function App({ config, defaultExtensions }) {
   servicesManager = init.servicesManager;
 
   // Set appConfig
-  const appConfigContextApi = useAppConfig(init.appConfig);
-  const { routerBasename, modes, dataSources } = appConfigContextApi.appConfig;
+  const appConfigState = init.appConfig;
+  const { routerBasename, modes, dataSources } = appConfigState;
   // Use config to create routes
   const appRoutes = createRoutes(
     modes,
@@ -97,7 +96,7 @@ function App({ config, defaultExtensions }) {
   };
 
   return (
-    <appConfigContext.Provider value={appConfigContextApi}>
+    <AppConfigProvider value={appConfigState}>
       <Router basename={routerBasename}>
         <ThemeWrapper>
           <ViewportGridProvider
@@ -121,7 +120,7 @@ function App({ config, defaultExtensions }) {
           </ViewportGridProvider>
         </ThemeWrapper>
       </Router>
-    </appConfigContext.Provider>
+    </AppConfigProvider>
   );
 }
 
