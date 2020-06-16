@@ -40,8 +40,6 @@ function OHIFCornerstoneSRViewport({
     const eventData = evt.detail;
     const targetElement = eventData.element;
 
-    debugger;
-
     // TODO -> This will only be temporary until we set a tool on, and isn't very customizable.
     const globalTools = cornerstoneTools.store.state.globalTools;
 
@@ -50,8 +48,6 @@ function OHIFCornerstoneSRViewport({
     Object.keys(globalTools).forEach(globalToolName => {
       cornerstoneTools.setToolDisabledForElement(targetElement, globalToolName);
     });
-
-    debugger;
 
     cornerstoneTools.setToolEnabledForElement(
       targetElement,
@@ -87,7 +83,7 @@ function OHIFCornerstoneSRViewport({
     setElement(targetElement);
   };
 
-  const setTrackingUniqueIdentifiersForElement = targetElement => {
+  const setTrackingUniqueIdentifiersForElement = useCallback(targetElement => {
     const { measurements } = displaySet;
 
     const srModule = cornerstoneTools.getModule(id);
@@ -97,7 +93,7 @@ function OHIFCornerstoneSRViewport({
       measurements.map(measurement => measurement.TrackingUniqueIdentifier),
       measurementSelected
     );
-  };
+  });
 
   useEffect(() => {
     const numMeasurements = displaySet.measurements.length;
@@ -145,7 +141,6 @@ function OHIFCornerstoneSRViewport({
 
   useEffect(() => {
     if (element !== null) {
-      debugger;
       setTrackingUniqueIdentifiersForElement(element);
     }
   }, [
