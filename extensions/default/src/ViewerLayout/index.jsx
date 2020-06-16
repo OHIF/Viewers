@@ -118,11 +118,13 @@ function ViewerLayout({
         {/* TOOLBAR + GRID */}
         <div className="flex flex-col flex-1 h-full">
           <div className="flex h-12 border-b border-transparent flex-2 w-100">
-            {toolbars.secondary.map(toolDef => {
-              const { id, Component, componentProps } = toolDef;
+            <div className="flex items-center w-full px-3 bg-primary-dark">
+              {toolbars.secondary.map(toolDef => {
+                const { id, Component, componentProps } = toolDef;
 
-              return <Component key={id} id={id} {...componentProps} />;
-            })}
+                return <Component key={id} id={id} {...componentProps} />;
+              })}
+            </div>
           </div>
           <div className="flex items-center justify-center flex-1 h-full pt-1 pb-2 overflow-hidden bg-black">
             <ViewportGridComp
