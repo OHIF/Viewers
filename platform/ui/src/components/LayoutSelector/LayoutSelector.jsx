@@ -35,8 +35,8 @@ function LayoutSelector({ onSelection }) {
             const y = Math.floor(index / 3);
 
             onSelection({
-              numRows: x + 1,
-              numCols: y + 1,
+              numRows: y + 1,
+              numCols: x + 1,
             });
           }}
           onMouseEnter={() => setHoveredIndex(index)}
