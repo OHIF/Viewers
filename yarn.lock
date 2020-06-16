@@ -17889,6 +17889,16 @@ react-cornerstone-viewport@2.3.8:
     prop-types "^15.7.2"
     react-resize-detector "^4.2.1"
 
+react-cornerstone-viewport@2.3.9:
+  version "2.3.9"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.3.9.tgz#f9761da8e536f0a217137c6ca1a983f5882249f9"
+  integrity sha512-qrhq8CbX/jq6b93cQjV2qC/mhHOvFBpxzxcHlvHzEQZt/rmRMcaYxCqjpNaNbUmmBu61wNkxesUVsggkPTTcqg==
+  dependencies:
+    classnames "^2.2.6"
+    date-fns "^2.2.1"
+    prop-types "^15.7.2"
+    react-resize-detector "^4.2.1"
+
 react-dates@21.2.1:
   version "21.2.1"
   resolved "https://registry.yarnpkg.com/react-dates/-/react-dates-21.2.1.tgz#a979ed6876326ccfbf754a019bc95458cc061ad8"

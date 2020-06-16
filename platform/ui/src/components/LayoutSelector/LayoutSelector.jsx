@@ -1,80 +1,58 @@
-// // SEE:
-// // https://github.com/OHIF/Viewers/blob/b58aa4575ab72fe3f493cc5a4261b4f8256516ab/platform/viewer/src/appExtensions/MeasurementsPanel/index.js#L18-L49
-// import React from 'react';
-// import { useViewportGrid } from '@ohif/ui';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
-// function getCommandsModule({ servicesManager }) {
-//   const { UIDialogService } = servicesManager.services;
+function LayoutSelector({ onSelection }) {
+  const [hoveredIndex, setHoveredIndex] = useState();
+  const hoverX = hoveredIndex % 3;
+  const hoverY = Math.floor(hoveredIndex / 3);
+  const isHovered = index => {
+    const x = index % 3;
+    const y = Math.floor(index / 3);
 
-//   const definitions = {
-//     toggleLayoutSelectionDialog: {
-//       commandFn: () => {
-//         if (!UIDialogService) {
-//           window.alert(
-//             'Unable to show dialog; no UI Dialog Service available.'
-//           );
-//           return;
-//         }
+    return x <= hoverX && y <= hoverY;
+  };
 
-//         // TODO: use SimpleDialog component
-//         // TODO: update position on window resize
-//         // TODO: Expand service API to check if dialog w/ ID is already open
-//         // TODO: Import and call `useViewportGrid`
-//         UIDialogService.dismiss({ id: 'layoutSelection' });
-//         UIDialogService.create({
-//           id: 'layoutSelection',
-//           centralize: true,
-//           isDraggable: false,
-//           showOverlay: true,
-//           content: Test,
-//         });
-//       },
-//       storeContexts: [],
-//       options: {},
-//       context: 'VIEWER',
-//     },
-//   };
-
-//   return {
-//     definitions,
-//     defaultContext: 'VIEWER',
-//   };
-// }
-
-// function Test() {
-//   const [
-//     { numCols, numRows, activeViewportIndex, viewports },
-//     dispatch,
-//   ] = useViewportGrid();
-
-//   return (
-//     <div
-//       onClick={() => {
-//         dispatch({
-//           type: 'SET_LAYOUT',
-//           payload: {
-//             numCols: 2,
-//             numRows: 2,
-//           },
-//         });
-//       }}
-//       style={{ color: 'white' }}
-//     >
-//       Hello World!
-//     </div>
-//   );
-// }
-
-// export default getCommandsModule;
-
-import React from 'react';
-
-function LayoutSelector() {
   return (
-    <>
-      <div>LAYOUT SELECTOR PLACEHOLDER!</div>
-    </>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '20px 20px 20px',
+        gridTemplateRows: '20px 20px 20px',
+        backgroundColor: '#090c29', // primary-dark
+      }}
+      className="p-2"
+    >
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(index => (
+        <div
+          key={index}
+          style={{
+            border: '1px solid white',
+            backgroundColor: isHovered(index) ? '#5acce6' : '#0b1a42',
+          }}
+          className="cursor-pointer"
+          onClick={() => {
+            const x = index % 3;
+            const y = Math.floor(index / 3);
+
+            onSelection({
+              numRows: x + 1,
+              numCols: y + 1,
+            });
+          }}
+          onMouseEnter={() => setHoveredIndex(index)}
+          onMouseLeave={() => setHoveredIndex(-1)}
+        ></div>
+      ))}
+    </div>
   );
 }
+
+LayoutSelector.defaultProps = {
+  onSelection: () => {},
+};
+
+LayoutSelector.propTypes = {
+  onSelection: PropTypes.func.isRequired,
+};
 
 export default LayoutSelector;

@@ -63,10 +63,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     {
       name: 'ohif.layoutSelector',
       defaultComponent: ToolbarLayoutSelector,
-      requiredConfig: [],
-      optionalConfig: [],
-      requiredProps: [],
-      optionalProps: [],
       clickHandler: (evt, clickedBtn, btnSectionName) => {},
     },
     {
