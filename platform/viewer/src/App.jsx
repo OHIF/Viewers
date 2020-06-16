@@ -21,7 +21,6 @@ import appInit from './appInit.js';
 
 // TODO: Temporarily for testing
 import '@ohif/mode-example';
-import '@ohif/sr-mode-example';
 import '@ohif/mode-longitudinal';
 
 /**

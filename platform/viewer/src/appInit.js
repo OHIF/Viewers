@@ -71,7 +71,6 @@ function appInit(appConfigOrFunc, defaultExtensions) {
   if (!appConfig.modes.length) {
     appConfig.modes.push(window.exampleMode);
     appConfig.modes.push(window.longitudinalMode);
-    appConfig.modes.push(window.SRViewportExample);
   }
 
   return {
