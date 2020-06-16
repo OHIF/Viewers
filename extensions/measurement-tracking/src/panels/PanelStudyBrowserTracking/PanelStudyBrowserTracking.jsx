@@ -271,23 +271,32 @@ function _mapDisplaySets(
   trackedSeriesInstanceUIDs,
   viewports // TODO: make array of `displaySetInstanceUIDs`?
 ) {
-  return displaySets.map(ds => {
+  const thumbnailDisplaySets = [];
+  const thumbnailNoImageDisplaySets = [];
+
+  displaySets.forEach(ds => {
+    const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
+    const componentType = _getComponentType(ds.Modality);
     const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(
       vp => vp.displaySetInstanceUID === ds.displaySetInstanceUID
     );
     const viewportIdentificator =
       _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid] || '';
-    const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
 
-    return {
+    const array =
+      componentType === 'thumbnailTracked'
+        ? thumbnailDisplaySets
+        : thumbnailNoImageDisplaySets;
+
+    array.push({
       displaySetInstanceUID: ds.displaySetInstanceUID,
       description: ds.SeriesDescription,
       seriesNumber: ds.SeriesNumber,
       modality: ds.Modality,
-      date: ds.SeriesDate,
+      seriesDate: ds.SeriesDate,
       numInstances: ds.numImageFrames,
       StudyInstanceUID: ds.StudyInstanceUID,
-      componentType: 'thumbnailTracked', // 'thumbnailNoImage' || 'thumbnail' // TODO: PUT THIS SOMEWHERE ELSE
+      componentType,
       imageSrc,
       dragData: {
         type: 'displayset',
@@ -296,8 +305,26 @@ function _mapDisplaySets(
       },
       isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
       viewportIdentificator,
-    };
+    });
   });
+
+  return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
+}
+
+const thumbnailNoImageModalities = [
+  'SR',
+  'SEG',
+  'RTSTRUCT',
+  'RTPLAN',
+  'RTDOSE',
+];
+
+function _getComponentType(Modality) {
+  if (thumbnailNoImageModalities.includes(Modality)) {
+    return 'thumbnailNoImage';
+  }
+
+  return 'thumbnailTracked';
 }
 
 const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
