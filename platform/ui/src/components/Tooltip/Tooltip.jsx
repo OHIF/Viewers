@@ -65,7 +65,7 @@ const Tooltip = ({ content, isSticky, position, tight, children }) => {
             }
           )}
         >
-          {typeof content === 'function' ? content() : content}
+          {content}
           <svg
             className="absolute h-4 text-primary-dark stroke-secondary-main"
             style={arrowPositionStyle[position]}
