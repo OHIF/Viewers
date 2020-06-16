@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   LayoutSelector as OHIFLayoutSelector,
   ToolbarButton,
   useViewportGrid,
 } from '@ohif/ui';
 
-function LayoutSelector({ onSelection }) {
+function LayoutSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const [viewportGridState, dispatch] = useViewportGrid();
 
   useEffect(() => {
-    function LayoutSelector() {
+    function closeOnOutsideClick() {
       if (isOpen) {
         setIsOpen(false);
       }
     }
-    window.addEventListener('click', LayoutSelector);
+    window.addEventListener('click', closeOnOutsideClick);
     return () => {
-      window.removeEventListener('click', LayoutSelector);
+      window.removeEventListener('click', closeOnOutsideClick);
     };
   }, [isOpen]);
 
@@ -33,33 +32,24 @@ function LayoutSelector({ onSelection }) {
         setIsOpen(!isOpen);
       }}
       dropdownContent={
-        <DropdownContent
-          onSelection={({ numRows, numCols }) => {
-            dispatch({
-              type: 'SET_LAYOUT',
-              payload: {
-                numCols,
-                numRows,
-              },
-            });
-          }}
-        />
+        DropdownContent !== null && (
+          <DropdownContent
+            onSelection={({ numRows, numCols }) => {
+              dispatch({
+                type: 'SET_LAYOUT',
+                payload: {
+                  numCols,
+                  numRows,
+                },
+              });
+            }}
+          />
+        )
       }
       isActive={isOpen}
       type="primary"
     />
   );
 }
-
-LayoutSelector.propTypes = {
-  /* Callback for grid selection */
-  onSelection: PropTypes.func.isRequired,
-};
-
-LayoutSelector.defaultProps = {
-  onSelection: () => {
-    console.warn('layoutSelector missing `onSelection` prop');
-  },
-};
 
 export default LayoutSelector;
