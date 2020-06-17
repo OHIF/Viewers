@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.4...@ohif/viewer@4.2.5) (2020-06-15)
+
+
+### Bug Fixes
+
+* 🐛 Disable seg panel when data for seg unavailable ([#1732](https://github.com/OHIF/Viewers/issues/1732)) ([698e900](https://github.com/OHIF/Viewers/commit/698e900b85121d3c2a46747c443ef69fb7a8c95b)), closes [#1728](https://github.com/OHIF/Viewers/issues/1728)
+
+
+
+
+
+## [4.2.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.3...@ohif/viewer@4.2.4) (2020-06-15)
+
+
+### Bug Fixes
+
+* OIDC Redirect erases query parameters ([#1773](https://github.com/OHIF/Viewers/issues/1773)) ([6123741](https://github.com/OHIF/Viewers/commit/6123741765e81d0bea8fbd5dbb0f310aaca0fb33))
+
+
+
+
+
 ## [4.2.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.2...@ohif/viewer@4.2.3) (2020-06-05)
 
 **Note:** Version bump only for package @ohif/viewer

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.8](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.7...@ohif/core@2.9.8) (2020-06-15)
+
+
+### Bug Fixes
+
+* 🐛 Disable seg panel when data for seg unavailable ([#1732](https://github.com/OHIF/Viewers/issues/1732)) ([698e900](https://github.com/OHIF/Viewers/commit/698e900b85121d3c2a46747c443ef69fb7a8c95b)), closes [#1728](https://github.com/OHIF/Viewers/issues/1728)
+
+
+
+
+
 ## [2.9.7](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.6...@ohif/core@2.9.7) (2020-06-04)
 
 **Note:** Version bump only for package @ohif/core

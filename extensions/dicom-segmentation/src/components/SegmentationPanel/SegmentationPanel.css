@@ -8,6 +8,11 @@
   flex-direction: column;
 }
 
+.dcmseg-segmentation-panel.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 .dcmseg-segmentation-panel h3 {
   padding-left: 20px;
   margin-top: 0;
