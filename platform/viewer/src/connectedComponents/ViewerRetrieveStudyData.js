@@ -112,7 +112,6 @@ const _showUserMessage = (queryParamApplied, message, dialog = {}) => {
 };
 
 const _addSeriesToStudy = (studyMetadata, series) => {
-  // #1776 Analyze this method.
   const sopClassHandlerModules =
     extensionManager.modules['sopClassHandlerModule'];
   const study = studyMetadata.getData();
@@ -124,16 +123,16 @@ const _addSeriesToStudy = (studyMetadata, series) => {
     studyMetadata.addSeries(seriesMetadata);
   }
 
-  // #1776 When the loop is "SEG", it removes the "SEG" modality from
-  // the displaySets and updates the study.displaySets removing the SEG
-  // Analyze createAndAddDisplaySetsForSeries
   studyMetadata.createAndAddDisplaySetsForSeries(
     sopClassHandlerModules,
     seriesMetadata
   );
 
-  // #1776 displaySets are replaced
   study.displaySets = studyMetadata.getDisplaySets();
+
+  study.derivedDisplaySets = studyMetadata.getDerivedDatasets({
+    Modality: series.Modality,
+  });
   _updateStudyMetadataManager(study, studyMetadata);
 };
 
@@ -149,9 +148,12 @@ const _updateStudyDisplaySets = (study, studyMetadata) => {
   const sopClassHandlerModules =
     extensionManager.modules['sopClassHandlerModule'];
 
-  // #1776: displaySets already exists so createDisplaySets is never called again
   if (!study.displaySets) {
     study.displaySets = studyMetadata.createDisplaySets(sopClassHandlerModules);
+  }
+
+  if (study.derivedDisplaySets) {
+    studyMetadata._addDerivedDisplaySets(study.derivedDisplaySets);
   }
 
   studyMetadata.setDisplaySets(study.displaySets);
@@ -238,13 +240,12 @@ function ViewerRetrieveStudyData({
       // Map studies to new format, update metadata manager?
       const studies = studiesData.map(study => {
         setStudyData(study.StudyInstanceUID, _thinStudyData(study));
+
         const studyMetadata = new OHIFStudyMetadata(
           study,
           study.StudyInstanceUID
         );
 
-        // #1776 study already has displaySets but without the Segmentation
-        // Check getDisplaySets
         _updateStudyDisplaySets(study, studyMetadata);
         _updateStudyMetadataManager(study, studyMetadata);
 
@@ -311,7 +312,6 @@ function ViewerRetrieveStudyData({
       }
 
       cancelableStudiesPromises[studyInstanceUIDs] = makeCancelable(
-        // #1776 when retrieving, study already has displayset
         retrieveStudiesMetadata(...retrieveParams)
       )
         .then(result => {

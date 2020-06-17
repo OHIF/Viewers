@@ -216,6 +216,14 @@ export class StudyMetadata extends Metadata {
   }
 
   /**
+   * Adds the displaySets to the studies list of derived displaySets.
+   * @param {array} displaySets The displaySets array to append to the derived displaysets list.
+   */
+  _addDerivedDisplaySets(displaySets) {
+    displaySets.map(displaySet => this._derivedDisplaySets.push(displaySet));
+  }
+
+  /**
    * Returns a list of derived datasets in the study, filtered by the given filter.
    * @param {object} filter An object containing search filters
    * @param {object} filter.Modality
@@ -263,7 +271,7 @@ export class StudyMetadata extends Metadata {
       filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
         displaySet =>
           displaySet.ReferencedFrameOfReferenceUID ===
-          ReferencedFrameOfReferenceUID
+          referencedFrameOfReferenceUID
       );
     }
 
@@ -292,7 +300,6 @@ export class StudyMetadata extends Metadata {
 
     // Loop through the series (SeriesMetadata)
     this.forEachSeries(series => {
-      // #1776: SEG series doesnt exists ?????
       const displaySetsForSeries = this._createDisplaySetsForSeries(
         sopClassHandlerModules,
         series
@@ -315,7 +322,6 @@ export class StudyMetadata extends Metadata {
    * @returns {boolean} Returns true on success or false on failure (e.g., the series does not belong to this study)
    */
   createAndAddDisplaySetsForSeries(sopClassHandlerModules, series) {
-    debugger;
     if (!this.containsSeries(series)) {
       return false;
     }
@@ -844,7 +850,7 @@ function _getDisplaySetFromSopClassModule(
     errorInterceptor,
   });
 
-  let displaySet = plugin.getDisplaySetFromSeries(
+  const displaySet = plugin.getDisplaySetFromSeries(
     series,
     study,
     dicomWebClient,
