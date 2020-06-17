@@ -9,9 +9,7 @@ import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
 import TOOL_NAMES from './constants/toolNames';
 import id from './id';
 
-const BaseAnnotationTool = cornerstoneTools.importInternal(
-  'base/BaseAnnotationTool'
-);
+const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 
 // const cine = viewportSpecificData.cine;
 
@@ -34,18 +32,19 @@ function OHIFCornerstoneSRViewport({
   const [activeDisplaySetData, setActiveDisplaySetData] = useState({});
   const [element, setElement] = useState(null);
 
-  const { viewports } = viewportGrid;
+  const { viewports, activeViewportIndex } = viewportGrid;
 
   const onElementEnabled = evt => {
     const eventData = evt.detail;
     const targetElement = eventData.element;
 
     // TODO -> This will only be temporary until we set a tool on, and isn't very customizable.
+    // Need to discuss how to deal with tools in general in the redesign, since we
+    // Previously just had Tool mode state global across the entire viewer.
     const globalTools = cornerstoneTools.store.state.globalTools;
+    const globalToolNames = Object.keys(globalTools);
 
-    const toolNames = Object.keys(globalTools);
-
-    Object.keys(globalTools).forEach(globalToolName => {
+    globalToolNames.forEach(globalToolName => {
       cornerstoneTools.setToolDisabledForElement(targetElement, globalToolName);
     });
 
@@ -106,7 +105,7 @@ function OHIFCornerstoneSRViewport({
     displaySet.displaySetInstanceUID,
   ]);
 
-  const updateViewport = () => {
+  const updateViewport = newMeasurementSelected => {
     const {
       StudyInstanceUID,
       displaySetInstanceUID,
@@ -126,14 +125,16 @@ function OHIFCornerstoneSRViewport({
     _getViewportAndActiveDisplaySetData(
       dataSource,
       displaySet,
-      measurementSelected,
+      newMeasurementSelected,
       DisplaySetService,
       element
     ).then(({ viewportData, activeDisplaySetData }) => {
       setViewportData({ ...viewportData });
       setActiveDisplaySetData({ ...activeDisplaySetData });
+      setMeasurementSelected(newMeasurementSelected);
 
       if (element !== null) {
+        scrollToIndex(element, viewportData.stack.currentImageIdIndex);
         cornerstone.updateImage(element);
       }
     });
@@ -151,15 +152,18 @@ function OHIFCornerstoneSRViewport({
   ]);
 
   useEffect(() => {
-    updateViewport();
+    updateViewport(measurementSelected);
   }, [
-    measurementSelected,
     dataSource,
     displaySet,
     displaySet.StudyInstanceUID,
     displaySet.displaySetInstanceUID,
     element,
   ]);
+
+  const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(
+    vp => vp.displaySetInstanceUID === displaySet.displaySetInstanceUID
+  );
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -206,27 +210,27 @@ function OHIFCornerstoneSRViewport({
   } = activeDisplaySetData;
 
   const onMeasurementChange = direction => {
-    let newMeausrementSelected = measurementSelected;
+    let newMeasurementSelected = measurementSelected;
 
     if (direction === 'right') {
-      newMeausrementSelected++;
+      newMeasurementSelected++;
 
-      if (newMeausrementSelected >= measurementCount) {
-        newMeausrementSelected = 0;
+      if (newMeasurementSelected >= measurementCount) {
+        newMeasurementSelected = 0;
       }
     } else {
-      newMeausrementSelected--;
+      newMeasurementSelected--;
 
-      if (newMeausrementSelected < 0) {
-        newMeausrementSelected = measurementCount - 1;
+      if (newMeasurementSelected < 0) {
+        newMeasurementSelected = measurementCount - 1;
       }
     }
 
-    if (newMeausrementSelected === measurementSelected) {
+    if (newMeasurementSelected === measurementSelected) {
       // TODO -> Jump to image in this case.
     }
 
-    setMeasurementSelected(newMeausrementSelected);
+    updateViewport(newMeasurementSelected);
   };
 
   console.log(currentImageIdIndex);
@@ -235,8 +239,10 @@ function OHIFCornerstoneSRViewport({
     <>
       <ViewportActionBar
         onSeriesChange={onMeasurementChange}
+        showPatientInfo={viewportIndex === activeViewportIndex}
+        showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
-          label: `${measurementSelected + 1}`,
+          label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
           isTracked: false,
           isLocked: false,
           studyDate: StudyDate,
@@ -264,11 +270,14 @@ function OHIFCornerstoneSRViewport({
         isStackPrefetchEnabled={true} // todo
         isPlaying={false}
         frameRate={24}
+        isOverlayVisible={false}
       />
       {childrenWithProps}
     </>
   );
 }
+
+const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
 OHIFCornerstoneSRViewport.propTypes = {
   displaySet: PropTypes.object.isRequired,
