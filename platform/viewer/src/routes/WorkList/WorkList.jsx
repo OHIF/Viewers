@@ -31,7 +31,6 @@ const seriesInStudiesMap = new Map();
 function WorkList({ history, data: studies, dataSource }) {
   // ~ Modes
   const [appConfig] = useAppConfig();
-  console.warn('~~~~~~~~~~~~', appConfig);
   // ~ Filters
   const query = useQuery();
   const queryFilterValues = _getQueryFilterValues(query);
