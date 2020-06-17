@@ -43,7 +43,18 @@ export default function mode({ modeConfiguration }) {
             'Capture',
             'Layout',
             'Divider',
-            ['Zoom', 'Wwwc'],
+            [
+              'ResetView',
+              'RotateClockwise',
+              'FlipHorizontally',
+              'StackScroll',
+              'Magnify',
+              'Invert',
+              'Cine',
+              'Angle',
+              'Probe',
+              'RectangleRoi',
+            ],
           ]);
           ToolBarService.createButtonSection('secondary', [
             'Annotate',
