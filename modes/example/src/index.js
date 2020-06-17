@@ -1,6 +1,7 @@
 export default function mode({ modeConfiguration }) {
   return {
     id: 'example-mode',
+    displayName: 'Basic Viewer',
     validationTags: {
       study: [],
       series: [],

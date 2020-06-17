@@ -20,6 +20,7 @@ export default function mode({ modeConfiguration }) {
     // TODO: We're using this as a route segment
     // We should not be.
     id: 'longitudinal-workflow',
+    displayName: 'Comparison',
     validationTags: {
       study: [],
       series: [],

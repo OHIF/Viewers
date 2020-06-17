@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+// TODO: This may fail if package is split from PWA build
+import { useHistory } from 'react-router-dom';
 //
 import { NavBar, Svg, Icon, IconButton } from '@ohif/ui';
 
 function Header({ children }) {
+  const history = useHistory();
   // const dropdownContent = [
   //   {
   //     name: 'Soft tissue',
@@ -19,15 +22,19 @@ function Header({ children }) {
     <NavBar className="justify-between border-b-4 border-black">
       <div className="flex justify-between flex-1">
         <div className="flex items-center">
-          <div className="inline-flex items-center mr-3">
+          {/* // TODO: Should preserve filter/sort
+              // Either injected service? Or context (like react router's `useLocation`?) */}
+          <div
+            className="inline-flex items-center mr-3"
+            onClick={() => history.push('/')}
+          >
             <Icon
               name="chevron-left"
               className="w-8 cursor-pointer text-primary-active"
-              onClick={() => alert('Navigate to previous page')}
             />
-            <a href="#" className="ml-4">
+            <div className="ml-4 cursor-pointer">
               <Svg name="logo-ohif" />
-            </a>
+            </div>
           </div>
         </div>
         <div className="flex items-center">{children}</div>

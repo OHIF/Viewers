@@ -310,23 +310,33 @@ function WorkList({ history, data: studies, dataSource }) {
               : []
           }
         >
-          <Button
-            rounded="full"
-            variant="outlined"
-            disabled={true}
-            endIcon={<Icon name="launch-info" />}
-            className="font-bold"
-          >
-            Comparison
-          </Button>
-          <Button
-            rounded="full"
-            variant="outlined"
-            endIcon={<Icon name="launch-info" />}
-            className="ml-4 font-bold"
-          >
-            View: Segmentation
-          </Button>
+          {appConfig.modes.map((mode, i) => {
+            const isFirst = i === 0;
+
+            // TODO: Homes need a default/target route? We mostly support a single one for now.
+            // We should also be using the route path, but currently are not
+            // mode.id
+            // mode.routes[x].path
+            // Don't specify default data source, and it should just be picked up... (this may not currently be the case)
+            // How do we know which params to pass? Today, it's just StudyInstanceUIDs
+            return (
+              <Link
+                key={i}
+                to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
+                // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+              >
+                <Button
+                  rounded="full"
+                  variant="contained" // outlined
+                  disabled={false}
+                  endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
+                  className={classnames('font-bold', { 'ml-2': !isFirst })}
+                >
+                  {mode.displayName}
+                </Button>
+              </Link>
+            );
+          })}
         </StudyListExpandedRow>
       ),
       onClickRow: () =>
