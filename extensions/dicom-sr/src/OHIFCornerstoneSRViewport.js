@@ -34,7 +34,7 @@ function OHIFCornerstoneSRViewport({
   const [activeDisplaySetData, setActiveDisplaySetData] = useState({});
   const [element, setElement] = useState(null);
 
-  const { viewports } = viewportGrid;
+  const { viewports, activeViewportIndex } = viewportGrid;
 
   const onElementEnabled = evt => {
     const eventData = evt.detail;
@@ -161,6 +161,10 @@ function OHIFCornerstoneSRViewport({
     element,
   ]);
 
+  const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(
+    vp => vp.displaySetInstanceUID === displaySet.displaySetInstanceUID
+  );
+
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
 
@@ -235,8 +239,10 @@ function OHIFCornerstoneSRViewport({
     <>
       <ViewportActionBar
         onSeriesChange={onMeasurementChange}
+        showPatientInfo={viewportIndex === activeViewportIndex}
+        showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
-          label: `${measurementSelected + 1}`,
+          label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
           isTracked: false,
           isLocked: false,
           studyDate: StudyDate,
@@ -264,11 +270,14 @@ function OHIFCornerstoneSRViewport({
         isStackPrefetchEnabled={true} // todo
         isPlaying={false}
         frameRate={24}
+        isOverlayVisible={false}
       />
       {childrenWithProps}
     </>
   );
 }
+
+const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
 
 OHIFCornerstoneSRViewport.propTypes = {
   displaySet: PropTypes.object.isRequired,
