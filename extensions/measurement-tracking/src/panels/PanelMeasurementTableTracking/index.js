@@ -89,7 +89,7 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
       subscriptions.push(
         MeasurementService.subscribe(evt, () => {
           setMeasurementsUpdated(Date.now().toString());
-        })
+        }).unsubscribe
       );
     });
 
