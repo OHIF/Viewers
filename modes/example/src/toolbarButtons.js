@@ -74,7 +74,7 @@ export default [
     props: {
       icon: 'tool-capture',
       label: 'Reset View',
-      commandName: '',
+      commandName: 'resetViewport',
       type: 'primary',
     },
   },
@@ -84,7 +84,7 @@ export default [
     props: {
       icon: 'tool-capture',
       label: 'Rotate Right',
-      commandName: '',
+      commandName: 'rotateViewportCW',
       type: 'primary',
     },
   },
@@ -94,7 +94,7 @@ export default [
     props: {
       icon: 'tool-capture',
       label: 'Flip Horizontally',
-      commandName: '',
+      commandName: 'flipViewportHorizontal',
       type: 'primary',
     },
   },
@@ -134,7 +134,7 @@ export default [
     props: {
       icon: 'tool-capture',
       label: 'Invert',
-      commandName: '',
+      commandName: 'invertViewport',
       type: 'primary',
     },
   },

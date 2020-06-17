@@ -24,8 +24,9 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.setViewport(enabledElement, viewport);
       }
     },
-    flipViewportHorizontal: ({ viewports }) => {
-      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+    flipViewportHorizontal: () => {
+      const activeViewportIndex = 0;
+      const enabledElement = getEnabledElement(activeViewportIndex);
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -56,15 +57,17 @@ const commandsModule = ({ servicesManager }) => {
         }
       }
     },
-    resetViewport: ({ viewports }) => {
-      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+    resetViewport: () => {
+      const activeViewportIndex = 0;
+      const enabledElement = getEnabledElement(activeViewportIndex);
 
       if (enabledElement) {
         cornerstone.reset(enabledElement);
       }
     },
-    invertViewport: ({ viewports }) => {
-      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+    invertViewport: () => {
+      const activeViewportIndex = 0;
+      const enabledElement = getEnabledElement(activeViewportIndex);
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -149,7 +152,7 @@ const commandsModule = ({ servicesManager }) => {
       return enabledElement;
     },
     showDownloadViewportModal: () => {
-      const activeViewportIndex = 1; // viewports.activeViewportIndex;
+      const activeViewportIndex = 0; // viewports.activeViewportIndex;
       const { UIModalService } = servicesManager.services;
       if (UIModalService) {
         UIModalService.show({
@@ -328,7 +331,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     rotateViewportCW: {
       commandFn: actions.rotateViewport,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: { rotation: 90 },
     },
     rotateViewportCCW: {
@@ -338,7 +341,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     invertViewport: {
       commandFn: actions.invertViewport,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     flipViewportVertical: {
@@ -348,7 +351,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     flipViewportHorizontal: {
       commandFn: actions.flipViewportHorizontal,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     scaleUpViewport: {
@@ -368,7 +371,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     resetViewport: {
       commandFn: actions.resetViewport,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     clearAnnotations: {

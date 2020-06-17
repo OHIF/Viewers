@@ -7,6 +7,7 @@ import cornerstone from 'cornerstone-core';
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
 
+import { setEnabledElement } from './state';
 
 // const {
 //   onAdded,
@@ -220,6 +221,14 @@ class OHIFCornerstoneViewport extends Component {
           isStackPrefetchEnabled={true} // todo
           isPlaying={false}
           frameRate={24}
+          // TODO: How do we share/track this?
+          // For example, Tracked Extension also wraps this component
+          // Could use window? Doesn't have to be reactive
+          // Need to expose viewportGrid as a "UI Service"
+          onElementEnabled={evt => {
+            const enabledElement = evt.detail.element;
+            setEnabledElement(viewportIndex, enabledElement);
+          }}
         />
         {childrenWithProps}
       </>
