@@ -129,10 +129,10 @@ const _addSeriesToStudy = (studyMetadata, series) => {
   );
 
   study.displaySets = studyMetadata.getDisplaySets();
-
   study.derivedDisplaySets = studyMetadata.getDerivedDatasets({
     Modality: series.Modality,
   });
+
   _updateStudyMetadataManager(study, studyMetadata);
 };
 
@@ -240,7 +240,6 @@ function ViewerRetrieveStudyData({
       // Map studies to new format, update metadata manager?
       const studies = studiesData.map(study => {
         setStudyData(study.StudyInstanceUID, _thinStudyData(study));
-
         const studyMetadata = new OHIFStudyMetadata(
           study,
           study.StudyInstanceUID
