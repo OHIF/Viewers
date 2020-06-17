@@ -850,7 +850,7 @@ function _getDisplaySetFromSopClassModule(
     errorInterceptor,
   });
 
-  const displaySet = plugin.getDisplaySetFromSeries(
+  let displaySet = plugin.getDisplaySetFromSeries(
     series,
     study,
     dicomWebClient,
