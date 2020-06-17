@@ -66,6 +66,7 @@ export default function init({ servicesManager, configuration }) {
       csTools.EllipticalRoiTool,
       csTools.DragProbeTool,
       csTools.RectangleRoiTool,
+      csTools.ProbeTool,
     ],
     other: [
       csTools.PanTool,
