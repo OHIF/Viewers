@@ -28,14 +28,16 @@ const ThumbnailNoImage = ({
       tabIndex="0"
     >
       <div className="flex flex-col flex-1">
-        <div className="flex flex-row flex-1 items-center mb-2">
-          <Icon name="list-bullets" className="text-secondary-light w-12" />
-          <div className="px-3 bg-primary-main rounded-sm mr-4 text-lg text-white">
+        <div className="flex flex-row items-center flex-1 mb-2">
+          <Icon name="list-bullets" className="w-12 text-secondary-light" />
+          <div className="px-3 mr-4 text-lg text-white rounded-sm bg-primary-main">
             {modality}
           </div>
-          <span className="text-blue-300 text-base">{seriesDate}</span>
+          <span className="text-base text-blue-300">{seriesDate}</span>
         </div>
-        <div className="text-white text-base ml-12">{description}</div>
+        <div className="ml-12 text-base text-white break-all">
+          {description}
+        </div>
       </div>
     </div>
   );

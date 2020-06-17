@@ -68,7 +68,7 @@ const Thumbnail = ({
           <Icon name="group-layers" className="w-3 mr-2" /> {numInstances}
         </div>
       </div>
-      <div className="text-base text-white">{description}</div>
+      <div className="text-base text-white break-all">{description}</div>
     </div>
   );
 };
