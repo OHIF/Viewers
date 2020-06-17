@@ -9,9 +9,7 @@ import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
 import TOOL_NAMES from './constants/toolNames';
 import id from './id';
 
-const BaseAnnotationTool = cornerstoneTools.importInternal(
-  'base/BaseAnnotationTool'
-);
+const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 
 // const cine = viewportSpecificData.cine;
 
@@ -41,11 +39,12 @@ function OHIFCornerstoneSRViewport({
     const targetElement = eventData.element;
 
     // TODO -> This will only be temporary until we set a tool on, and isn't very customizable.
+    // Need to discuss how to deal with tools in general in the redesign, since we
+    // Previously just had Tool mode state global across the entire viewer.
     const globalTools = cornerstoneTools.store.state.globalTools;
+    const globalToolNames = Object.keys(globalTools);
 
-    const toolNames = Object.keys(globalTools);
-
-    Object.keys(globalTools).forEach(globalToolName => {
+    globalToolNames.forEach(globalToolName => {
       cornerstoneTools.setToolDisabledForElement(targetElement, globalToolName);
     });
 
@@ -106,7 +105,7 @@ function OHIFCornerstoneSRViewport({
     displaySet.displaySetInstanceUID,
   ]);
 
-  const updateViewport = () => {
+  const updateViewport = newMeasurementSelected => {
     const {
       StudyInstanceUID,
       displaySetInstanceUID,
@@ -126,14 +125,16 @@ function OHIFCornerstoneSRViewport({
     _getViewportAndActiveDisplaySetData(
       dataSource,
       displaySet,
-      measurementSelected,
+      newMeasurementSelected,
       DisplaySetService,
       element
     ).then(({ viewportData, activeDisplaySetData }) => {
       setViewportData({ ...viewportData });
       setActiveDisplaySetData({ ...activeDisplaySetData });
+      setMeasurementSelected(newMeasurementSelected);
 
       if (element !== null) {
+        scrollToIndex(element, viewportData.stack.currentImageIdIndex);
         cornerstone.updateImage(element);
       }
     });
@@ -151,9 +152,8 @@ function OHIFCornerstoneSRViewport({
   ]);
 
   useEffect(() => {
-    updateViewport();
+    updateViewport(measurementSelected);
   }, [
-    measurementSelected,
     dataSource,
     displaySet,
     displaySet.StudyInstanceUID,
@@ -210,27 +210,27 @@ function OHIFCornerstoneSRViewport({
   } = activeDisplaySetData;
 
   const onMeasurementChange = direction => {
-    let newMeausrementSelected = measurementSelected;
+    let newMeasurementSelected = measurementSelected;
 
     if (direction === 'right') {
-      newMeausrementSelected++;
+      newMeasurementSelected++;
 
-      if (newMeausrementSelected >= measurementCount) {
-        newMeausrementSelected = 0;
+      if (newMeasurementSelected >= measurementCount) {
+        newMeasurementSelected = 0;
       }
     } else {
-      newMeausrementSelected--;
+      newMeasurementSelected--;
 
-      if (newMeausrementSelected < 0) {
-        newMeausrementSelected = measurementCount - 1;
+      if (newMeasurementSelected < 0) {
+        newMeasurementSelected = measurementCount - 1;
       }
     }
 
-    if (newMeausrementSelected === measurementSelected) {
+    if (newMeasurementSelected === measurementSelected) {
       // TODO -> Jump to image in this case.
     }
 
-    setMeasurementSelected(newMeausrementSelected);
+    updateViewport(newMeasurementSelected);
   };
 
   console.log(currentImageIdIndex);
