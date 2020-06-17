@@ -109,7 +109,7 @@ Cypress.Commands.add('waitStudyList', () => {
 
 Cypress.Commands.add('waitVTKLoading', () => {
   // Wait for start loading
-  cy.get('[data-cy="viewprt-grid"]', { timeout: 10000 }).should($grid => {
+  cy.get('[data-cy="viewprt-grid"]', { timeout: 20000 }).should($grid => {
     expect($grid).to.contain.text('Loading');
   });
 
