@@ -49,6 +49,7 @@ function PanelStudyBrowser({
     }
 
     StudyInstanceUIDs.forEach(sid => fetchStudiesForPatient(sid));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [StudyInstanceUIDs, getStudiesForPatientByStudyInstanceUID]);
 
   // ~~ Initial Thumbnails
@@ -62,12 +63,18 @@ function PanelStudyBrowser({
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-      // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-      newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
-      setThumbnailImageSrcMap(prevState => {
-        return { ...prevState, ...newImageSrcEntry };
-      });
+      // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+      if (imageId) {
+        // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
+          imageId
+        );
+        setThumbnailImageSrcMap(prevState => {
+          return { ...prevState, ...newImageSrcEntry };
+        });
+      }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ~~ displaySets
@@ -80,6 +87,7 @@ function PanelStudyBrowser({
     );
 
     setDisplaySets(mappedDisplaySets);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [thumbnailImageSrcMap]);
 
   // ~~ subscriptions --> displaySets
@@ -96,13 +104,16 @@ function PanelStudyBrowser({
           const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
           const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-          // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-          newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
-            imageId
-          );
-          setThumbnailImageSrcMap(prevState => {
-            return { ...prevState, ...newImageSrcEntry };
-          });
+          // TODO: Is it okay that imageIds are not returned here for SR displaysets?
+          if (imageId) {
+            // When the image arrives, render it and store the result in the thumbnailImgSrcMap
+            newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
+              imageId
+            );
+            setThumbnailImageSrcMap(prevState => {
+              return { ...prevState, ...newImageSrcEntry };
+            });
+          }
         });
       }
     );
@@ -125,6 +136,7 @@ function PanelStudyBrowser({
       SubscriptionDisplaySetsAdded.unsubscribe();
       SubscriptionDisplaySetsChanged.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const tabs = _createStudyBrowserTabs(
