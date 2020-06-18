@@ -79,7 +79,7 @@ export class StudyMetadata extends Metadata {
     Object.defineProperty(this, 'studyInstanceUID', {
       configurable: false,
       enumerable: false,
-      get: function () {
+      get: function() {
         return this.getStudyInstanceUID();
       },
     });
@@ -216,6 +216,14 @@ export class StudyMetadata extends Metadata {
   }
 
   /**
+   * Adds the displaySets to the studies list of derived displaySets.
+   * @param {array} displaySets The displaySets array to append to the derived displaysets list.
+   */
+  _addDerivedDisplaySets(displaySets) {
+    displaySets.map(displaySet => this._derivedDisplaySets.push(displaySet));
+  }
+
+  /**
    * Returns a list of derived datasets in the study, filtered by the given filter.
    * @param {object} filter An object containing search filters
    * @param {object} filter.Modality
@@ -263,7 +271,7 @@ export class StudyMetadata extends Metadata {
       filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
         displaySet =>
           displaySet.ReferencedFrameOfReferenceUID ===
-          ReferencedFrameOfReferenceUID
+          referencedFrameOfReferenceUID
       );
     }
 
