@@ -76,6 +76,11 @@ const Select = ({
       options={options}
       value={selectedOptions}
       onChange={(selectedOptions, { action }) => {
+        if (!isMulti) {
+          onChange(selectedOptions, action);
+          return;
+        }
+
         const newSelection = selectedOptions.reduce(
           (acc, curr) => acc.concat([curr.value]),
           []

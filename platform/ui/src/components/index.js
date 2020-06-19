@@ -10,6 +10,7 @@ import InputDateRange from './InputDateRange';
 import InputGroup from './InputGroup';
 import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
+import InputNumber from './InputNumber';
 import InputText from './InputText';
 import Label from './Label';
 import LayoutSelector from './LayoutSelector';
@@ -43,6 +44,7 @@ import Tooltip from './Tooltip';
 import Typography from './Typography';
 import Viewport from './Viewport';
 import ViewportActionBar from './ViewportActionBar';
+import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
 
@@ -59,6 +61,7 @@ export {
   InputGroup,
   InputLabelWrapper,
   InputMultiSelect,
+  InputNumber,
   InputText,
   Label,
   LayoutSelector,
@@ -93,6 +96,7 @@ export {
   Typography,
   Viewport,
   ViewportActionBar,
+  ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
 };

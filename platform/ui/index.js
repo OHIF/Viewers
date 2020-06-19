@@ -39,6 +39,7 @@ export {
   InputGroup,
   InputLabelWrapper,
   InputMultiSelect,
+  InputNumber,
   InputText,
   Label,
   LayoutSelector,
@@ -73,6 +74,7 @@ export {
   Typography,
   Viewport,
   ViewportActionBar,
+  ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
 } from './src/components';

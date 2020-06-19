@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Input, InputLabelWrapper } from '@ohif/ui';
 
-const InputText = ({
+const InputNumber = ({
   label,
   isSortable,
   sortDirection,
@@ -20,7 +20,7 @@ const InputText = ({
     >
       <Input
         className="border-primary-main mt-2 bg-black"
-        type="text"
+        type="number"
         containerClassName="mr-2"
         value={value}
         onChange={event => {
@@ -31,20 +31,20 @@ const InputText = ({
   );
 };
 
-InputText.defaultProps = {
+InputNumber.defaultProps = {
   value: '',
   isSortable: false,
   onLabelClick: () => {},
   sortDirection: 'none',
 };
 
-InputText.propTypes = {
+InputNumber.propTypes = {
   label: PropTypes.string.isRequired,
   isSortable: PropTypes.bool,
   sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
   onLabelClick: PropTypes.func,
-  value: PropTypes.string,
+  value: PropTypes.number,
   onChange: PropTypes.func.isRequired,
 };
 
-export default InputText;
+export default InputNumber;

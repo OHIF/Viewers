@@ -3,13 +3,16 @@ import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
 import classNames from 'classnames';
 
+import { Typography } from '@ohif/ui';
+
 const customStyle = {
   overlay: {
     zIndex: 1071,
-    backgroundColor: 'rgb(0, 0, 0, 0.5)',
+    backgroundColor: 'rgb(0, 0, 0, 0.8)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: '40px 0',
   },
 };
 
@@ -27,10 +30,14 @@ const Modal = ({
   const renderHeader = () => {
     return (
       title && (
-        <header>
-          <h4>{title}</h4>
+        <header className="mb-6 pb-4 border-b border-secondary-main">
+          <Typography variant="h4">{title}</Typography>
           {closeButton && (
-            <button data-cy="close-button" onClick={onClose}>
+            <button
+              className="absolute top-0 right-0 bg-primary-main focus:outline-none text-white rounded-full text-2xl w-8 h-8 flex justify-center items-center -mr-3 -mt-3"
+              data-cy="close-button"
+              onClick={onClose}
+            >
               ×
             </button>
           )}
@@ -41,18 +48,29 @@ const Modal = ({
 
   return (
     <ReactModal
-      className={classNames(className)}
+      className={classNames(
+        `relative py-6 w-11/12 lg:w-10/12 xl:w-1/2 max-h-full outline-none bg-primary-dark border border-secondary-main text-white rounded ${className}`
+      )}
       shouldCloseOnEsc={shouldCloseOnEsc}
       isOpen={isOpen}
       title={title}
       style={customStyle}
     >
       <>
-        {renderHeader()}
-        <section>{children}</section>
+        <div className="px-6">{renderHeader()}</div>
+        <section
+          className="ohif-scrollbar overflow-y-auto px-6"
+          style={{ maxHeight: 'calc(100vh - 200px)' }}
+        >
+          {children}
+        </section>
       </>
     </ReactModal>
   );
+};
+
+Modal.defaultProps = {
+  shouldCloseOnEsc: true,
 };
 
 Modal.propTypes = {
