@@ -79,18 +79,33 @@ async function downloadAndZip(dicomWebClient, listOfUIDs, options) {
   if (dicomWebClient instanceof api.DICOMwebClient) {
     const settings = buildSettings(listOfUIDs, options);
     const { compression } = settings.tasks;
-    // Register user-provided progress handler as a task list observer
-    progressUtils.addObserver(settings.taskList, settings.options.progress);
-    const buffers = await downloadAll(dicomWebClient, settings).catch(error => {
-      // Reject promise from compression task on download failure
-      compression.deferred.reject(error);
-      throw error;
-    });
+    const buffers = await downloadBuffers(settings, dicomWebClient);
     compression.deferred.resolve(zipAll(buffers, settings));
     const url = await compression.deferred.promise;
     return url;
   }
   throw new Error('A valid DICOM Web Client instance is expected');
+}
+
+async function downloadInstances(dicomWebClient, listOfUIDs, options) {
+  if (dicomWebClient instanceof api.DICOMwebClient) {
+    const settings = buildSettings(listOfUIDs, options);
+    const buffers = await downloadBuffers(settings, dicomWebClient);
+    return buffers;
+  }
+  throw new Error('A valid DICOM Web Client instance is expected');
+}
+
+async function downloadBuffers(settings, dicomWebClient) {
+  const { compression } = settings.tasks;
+  // Register user-provided progress handler as a task list observer
+  progressUtils.addObserver(settings.taskList, settings.options.progress);
+  const buffers = await downloadAll(dicomWebClient, settings).catch(error => {
+    // Reject promise from compression task on download failure
+    compression.deferred.reject(error);
+    throw error;
+  });
+  return buffers;
 }
 
 /**
@@ -241,4 +256,4 @@ async function download(
  * Exports
  */
 
-export { downloadAndZip as default, downloadAndZip };
+export { downloadAndZip as default, downloadAndZip, downloadInstances };
