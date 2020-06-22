@@ -388,10 +388,13 @@ const ViewportDownloadForm = ({
         </div>
 
         {viewportPreview.src ? (
-          <div className="preview" data-cy="image-preview">
-            <div className="preview-header">Image preview</div>
+          <div
+            className="p-4 rounded bg-secondary-dark border-secondary-primary"
+            data-cy="image-preview"
+          >
+            <Typography variant="h5">Image preview</Typography>
             <img
-              className="viewport-preview"
+              className="mt-4"
               src={viewportPreview.src}
               alt="Preview"
               data-cy="image-preview"
