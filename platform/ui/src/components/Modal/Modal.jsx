@@ -10,7 +10,7 @@ const customStyle = {
     zIndex: 1071,
     backgroundColor: 'rgb(0, 0, 0, 0.8)',
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
     padding: '40px 0',
   },
