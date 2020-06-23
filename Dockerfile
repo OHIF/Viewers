@@ -21,7 +21,7 @@
 
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
-FROM node:10.16.3-slim as builder
+FROM node:14.3.0-slim as builder
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
@@ -30,6 +30,7 @@ WORKDIR /usr/src/app
 COPY .docker /usr/src/app/.docker
 COPY .webpack /usr/src/app/.webpack
 COPY extensions /usr/src/app/extensions
+COPY modes /usr/src/app/modes
 COPY platform /usr/src/app/platform
 COPY .browserslistrc /usr/src/app/.browserslistrc
 COPY aliases.config.js /usr/src/app/aliases.config.js
