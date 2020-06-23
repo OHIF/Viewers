@@ -33,7 +33,7 @@ const serviceImplementation = {
 function _show({
   content = null,
   contentProps = null,
-  shouldCloseOnEsc = false,
+  shouldCloseOnEsc = true,
   isOpen = true,
   closeButton = true,
   title = null,

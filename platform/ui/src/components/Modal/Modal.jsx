@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
 import classNames from 'classnames';
 
-import { Typography } from '@ohif/ui';
+import { Typography, useModal } from '@ohif/ui';
 
 const customStyle = {
   overlay: {
@@ -27,6 +27,12 @@ const Modal = ({
   onClose,
   children,
 }) => {
+  const { hide } = useModal();
+
+  const handleClose = () => {
+    hide();
+  };
+
   const renderHeader = () => {
     return (
       title && (
@@ -52,6 +58,7 @@ const Modal = ({
         `relative py-6 w-11/12 lg:w-10/12 xl:w-1/2 max-h-full outline-none bg-primary-dark border border-secondary-main text-white rounded ${className}`
       )}
       shouldCloseOnEsc={shouldCloseOnEsc}
+      onRequestClose={handleClose}
       isOpen={isOpen}
       title={title}
       style={customStyle}
