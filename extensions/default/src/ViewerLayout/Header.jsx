@@ -3,10 +3,28 @@ import PropTypes from 'prop-types';
 // TODO: This may fail if package is split from PWA build
 import { useHistory } from 'react-router-dom';
 //
-import { NavBar, Svg, Icon, IconButton } from '@ohif/ui';
+import { NavBar, Svg, Icon, IconButton, Dropdown, useModal } from '@ohif/ui';
 
 function Header({ children }) {
   const history = useHistory();
+  const { show } = useModal();
+
+  const showAboutModal = () => {
+    const modalComponent = () => <div>About modal</div>;
+    show({
+      title: 'About',
+      content: modalComponent,
+    });
+  };
+
+  const showPreferencesModal = () => {
+    const modalComponent = () => <div>Preferences modal</div>;
+    show({
+      title: 'Preferences',
+      content: modalComponent,
+    });
+  };
+
   // const dropdownContent = [
   //   {
   //     name: 'Soft tissue',
@@ -42,16 +60,29 @@ function Header({ children }) {
           <span className="mr-3 text-lg text-common-light">
             FOR INVESTIGATIONAL USE ONLY
           </span>
-          <IconButton
-            variant="text"
-            color="inherit"
-            className="text-primary-active"
-            onClick={() => {}}
-          >
-            <React.Fragment>
-              <Icon name="settings" /> <Icon name="chevron-down" />
-            </React.Fragment>
-          </IconButton>
+          <Dropdown
+            titleElement={
+              <IconButton
+                variant="text"
+                color="inherit"
+                size="initial"
+                className="text-primary-active"
+                onClick={() => {}}
+              >
+                <React.Fragment>
+                  <Icon name="settings" /> <Icon name="chevron-down" />
+                </React.Fragment>
+              </IconButton>
+            }
+            list={[
+              { title: 'About', icon: 'info', onClick: () => showAboutModal() },
+              {
+                title: 'Preferences',
+                icon: 'settings',
+                onClick: () => showPreferencesModal(),
+              },
+            ]}
+          />
         </div>
       </div>
     </NavBar>

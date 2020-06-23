@@ -9,13 +9,14 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useQuery } from '@hooks';
 
+import PreferencesDropdown from '../../components/PreferencesDropdown';
+
 import {
   Icon,
   StudyListExpandedRow,
   Button,
   NavBar,
   Svg,
-  IconButton,
   EmptyStudies,
   StudyListTable,
   StudyListPagination,
@@ -364,17 +365,7 @@ function WorkList({ history, data: studies, dataSource }) {
           <span className="mr-3 text-lg text-common-light">
             FOR INVESTIGATIONAL USE ONLY
           </span>
-          <IconButton
-            variant="text"
-            color="inherit"
-            className="text-primary-active"
-            onClick={() => {}}
-          >
-            <React.Fragment>
-              <Icon name="settings" />
-              <Icon name="chevron-down" />
-            </React.Fragment>
-          </IconButton>
+          <PreferencesDropdown />
         </div>
       </NavBar>
       <StudyListFilter
