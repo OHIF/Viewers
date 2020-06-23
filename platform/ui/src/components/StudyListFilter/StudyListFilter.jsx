@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Icon, Typography, InputGroup } from '@ohif/ui';
+import { Button, Icon, Typography, InputGroup, useModal } from '@ohif/ui';
 
 const StudyListFilter = ({
   filtersMeta,
@@ -20,6 +20,16 @@ const StudyListFilter = ({
     });
   };
   const isSortingEnable = numOfStudies > 0 && numOfStudies <= 100;
+  const { show } = useModal();
+
+  const showLearnMoreContent = () => {
+    const modalContent = () => <div>Search Instructions</div>;
+
+    show({
+      content: modalContent,
+      title: 'Learn More',
+    });
+  };
 
   return (
     <React.Fragment>
@@ -40,7 +50,7 @@ const StudyListFilter = ({
                     startIcon={<Icon name="info-link" className="w-2" />}
                   >
                     <span className="flex flex-col flex-1">
-                      <span>Learn more</span>
+                      <span onClick={showLearnMoreContent}>Learn more</span>
                       <span className="opacity-50 pt-1 border-b border-primary-active"></span>
                     </span>
                   </Button>
