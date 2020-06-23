@@ -31,6 +31,7 @@ export {
   ButtonGroup,
   DateRange,
   Dialog,
+  Dropdown,
   EmptyStudies,
   Icon,
   IconButton,
