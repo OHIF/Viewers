@@ -10,7 +10,7 @@ const Dropdown = ({ titleElement, title, list }) => {
 
   const renderTitleElement = () => {
     if (titleElement) {
-      return <>{titleElement}</>;
+      return titleElement;
     }
 
     return (
@@ -44,29 +44,35 @@ const Dropdown = ({ titleElement, title, list }) => {
           }
         )}
       >
-        {list.map((item, idx) => (
-          <div
-            key={item.title}
-            className={classnames(
-              'flex px-4 py-2 cursor-pointer items-center transition duration-300 hover:bg-secondary-main',
-              {
-                'border-b border-secondary-main': itemsAmount !== idx + 1,
-              }
-            )}
-            onClick={() => {
-              setOpen(false);
-
-              if (item.onClick) {
-                item.onClick();
-              }
-            }}
-          >
-            {!!item.icon && (
-              <Icon name={item.icon} className="text-white w-4 mr-2" />
-            )}
-            <Typography>{item.title}</Typography>
-          </div>
-        ))}
+        {list.map(
+          (
+            {
+              title: itemTitle,
+              icon: itemIcon,
+              onClick: itemOnClick = () => {},
+            },
+            idx
+          ) => (
+            <div
+              key={itemTitle}
+              className={classnames(
+                'flex px-4 py-2 cursor-pointer items-center transition duration-300 hover:bg-secondary-main',
+                {
+                  'border-b border-secondary-main': itemsAmount !== idx + 1,
+                }
+              )}
+              onClick={() => {
+                setOpen(false);
+                itemOnClick();
+              }}
+            >
+              {!!itemIcon && (
+                <Icon name={itemIcon} className="text-white w-4 mr-2" />
+              )}
+              <Typography>{itemTitle}</Typography>
+            </div>
+          )
+        )}
       </div>
     );
   };
