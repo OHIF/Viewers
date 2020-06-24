@@ -10,7 +10,7 @@ const Dropdown = ({ titleElement, title, list }) => {
 
   const renderTitleElement = () => {
     if (titleElement) {
-      return titleElement;
+      return <>{titleElement}</>;
     }
 
     return (
@@ -74,10 +74,10 @@ const Dropdown = ({ titleElement, title, list }) => {
   useEffect(() => {
     document.addEventListener('click', handleClick);
 
-    return () => {
+    if (!open) {
       document.removeEventListener('click', handleClick);
-    };
-  }, []);
+    }
+  }, [open]);
 
   return (
     <div data-cy="dropdown" ref={element} className="relative">
@@ -92,12 +92,12 @@ const Dropdown = ({ titleElement, title, list }) => {
 
 Dropdown.propTypes = {
   titleElement: PropTypes.node,
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   /** Items to render in the select's drop down */
   list: PropTypes.arrayOf(
     PropTypes.shape({
       title: PropTypes.string.isRequired,
-      icon: PropTypes.object,
+      icon: PropTypes.string,
       onClick: PropTypes.func,
       link: PropTypes.string,
     })
