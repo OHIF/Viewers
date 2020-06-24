@@ -4,19 +4,17 @@ import classnames from 'classnames';
 
 import { Icon, Typography } from '@ohif/ui';
 
-const Dropdown = ({ titleElement, title, list }) => {
+const Dropdown = ({ children, showDropdownIcon, list }) => {
   const [open, setOpen] = useState(false);
   const element = useRef(null);
 
   const renderTitleElement = () => {
-    if (titleElement) {
-      return titleElement;
-    }
-
     return (
-      <div className="flex">
-        <Typography>{title}</Typography>
-        <Icon name="chevron-down" className="text-white ml-1" />
+      <div className="flex text-white items-center">
+        {children}
+        {showDropdownIcon && (
+          <Icon name="chevron-down" className="text-white ml-1" />
+        )}
       </div>
     );
   };
@@ -96,9 +94,13 @@ const Dropdown = ({ titleElement, title, list }) => {
   );
 };
 
+Dropdown.defaultProps = {
+  showDropdownIcon: true,
+};
+
 Dropdown.propTypes = {
-  titleElement: PropTypes.node,
-  title: PropTypes.string,
+  children: PropTypes.node.isRequired,
+  showDropdownIcon: PropTypes.bool,
   /** Items to render in the select's drop down */
   list: PropTypes.arrayOf(
     PropTypes.shape({

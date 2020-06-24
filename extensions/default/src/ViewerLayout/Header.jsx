@@ -67,26 +67,7 @@ function Header({ children }) {
             {t('Header:INVESTIGATIONAL USE ONLY')}
           </span>
           <Dropdown
-            titleElement={
-              <>
-                <IconButton
-                  variant="text"
-                  color="inherit"
-                  size="initial"
-                  className="text-primary-active"
-                >
-                  <Icon name="settings" />
-                </IconButton>
-                <IconButton
-                  variant="text"
-                  color="inherit"
-                  size="initial"
-                  className="text-primary-active"
-                >
-                  <Icon name="chevron-down" />
-                </IconButton>
-              </>
-            }
+            showDropdownIcon={false}
             list={[
               {
                 title: t('Header:About'),
@@ -99,7 +80,24 @@ function Header({ children }) {
                 onClick: showPreferencesModal,
               },
             ]}
-          />
+          >
+            <IconButton
+              variant="text"
+              color="inherit"
+              size="initial"
+              className="text-primary-active"
+            >
+              <Icon name="settings" />
+            </IconButton>
+            <IconButton
+              variant="text"
+              color="inherit"
+              size="initial"
+              className="text-primary-active"
+            >
+              <Icon name="chevron-down" />
+            </IconButton>
+          </Dropdown>
         </div>
       </div>
     </NavBar>

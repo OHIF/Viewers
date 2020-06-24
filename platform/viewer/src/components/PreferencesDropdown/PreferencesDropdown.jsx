@@ -23,27 +23,7 @@ const PreferencesDropdown = () => {
 
   return (
     <Dropdown
-      titleElement={
-        <>
-          <IconButton
-            variant="text"
-            color="inherit"
-            size="initial"
-            className="text-primary-active"
-          >
-            <Icon name="settings" />
-          </IconButton>
-          <IconButton
-            variant="text"
-            color="inherit"
-            size="initial"
-            className="text-primary-active"
-            onClick={() => {}}
-          >
-            <Icon name="chevron-down" />
-          </IconButton>
-        </>
-      }
+      showDropdownIcon={false}
       list={[
         { title: 'About', icon: 'info', onClick: showAboutModal },
         {
@@ -52,7 +32,25 @@ const PreferencesDropdown = () => {
           onClick: showPreferencesModal,
         },
       ]}
-    />
+    >
+      <IconButton
+        variant="text"
+        color="inherit"
+        size="initial"
+        className="text-primary-active"
+      >
+        <Icon name="settings" />
+      </IconButton>
+      <IconButton
+        variant="text"
+        color="inherit"
+        size="initial"
+        className="text-primary-active"
+        onClick={() => {}}
+      >
+        <Icon name="chevron-down" />
+      </IconButton>
+    </Dropdown>
   );
 };
 
