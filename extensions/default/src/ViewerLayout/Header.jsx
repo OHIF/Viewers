@@ -1,26 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 // TODO: This may fail if package is split from PWA build
 import { useHistory } from 'react-router-dom';
 //
 import { NavBar, Svg, Icon, IconButton, Dropdown, useModal } from '@ohif/ui';
 
 function Header({ children }) {
+  const { t } = useTranslation();
   const history = useHistory();
   const { show } = useModal();
 
   const showAboutModal = () => {
-    const modalComponent = () => <div>About modal</div>;
+    const modalComponent = () => (
+      <div>{t('AboutModal:OHIF Viewer - About')}</div>
+    );
     show({
-      title: 'About',
+      title: t('AboutModal:OHIF Viewer - About'),
       content: modalComponent,
     });
   };
 
   const showPreferencesModal = () => {
-    const modalComponent = () => <div>Preferences modal</div>;
+    const modalComponent = () => (
+      <div>{t('UserPreferencesModal:User Preferences')}</div>
+    );
     show({
-      title: 'Preferences',
+      title: t('UserPreferencesModal:User Preferences'),
       content: modalComponent,
     });
   };
@@ -58,7 +64,7 @@ function Header({ children }) {
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
           <span className="mr-3 text-lg text-common-light">
-            FOR INVESTIGATIONAL USE ONLY
+            {t('Header:INVESTIGATIONAL USE ONLY')}
           </span>
           <Dropdown
             titleElement={
@@ -75,9 +81,13 @@ function Header({ children }) {
               </IconButton>
             }
             list={[
-              { title: 'About', icon: 'info', onClick: () => showAboutModal() },
               {
-                title: 'Preferences',
+                title: t('Header:About'),
+                icon: 'info',
+                onClick: () => showAboutModal(),
+              },
+              {
+                title: t('Header:Preferences'),
                 icon: 'settings',
                 onClick: () => showPreferencesModal(),
               },
