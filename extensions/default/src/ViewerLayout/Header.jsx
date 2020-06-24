@@ -91,12 +91,12 @@ function Header({ children }) {
               {
                 title: t('Header:About'),
                 icon: 'info',
-                onClick: () => showAboutModal(),
+                onClick: showAboutModal,
               },
               {
                 title: t('Header:Preferences'),
                 icon: 'settings',
-                onClick: () => showPreferencesModal(),
+                onClick: showPreferencesModal,
               },
             ]}
           />

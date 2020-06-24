@@ -45,11 +45,11 @@ const PreferencesDropdown = () => {
         </>
       }
       list={[
-        { title: 'About', icon: 'info', onClick: () => showAboutModal() },
+        { title: 'About', icon: 'info', onClick: showAboutModal },
         {
           title: 'Preferences',
           icon: 'settings',
-          onClick: () => showPreferencesModal(),
+          onClick: showPreferencesModal,
         },
       ]}
     />
