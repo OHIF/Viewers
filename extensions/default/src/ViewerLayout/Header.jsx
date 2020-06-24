@@ -75,9 +75,8 @@ function Header({ children }) {
                 className="text-primary-active"
                 onClick={() => {}}
               >
-                <React.Fragment>
-                  <Icon name="settings" /> <Icon name="chevron-down" />
-                </React.Fragment>
+                <Icon name="settings" />
+                <Icon name="chevron-down" />
               </IconButton>
             }
             list={[
