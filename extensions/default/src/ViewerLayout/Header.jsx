@@ -68,16 +68,24 @@ function Header({ children }) {
           </span>
           <Dropdown
             titleElement={
-              <IconButton
-                variant="text"
-                color="inherit"
-                size="initial"
-                className="text-primary-active"
-                onClick={() => {}}
-              >
-                <Icon name="settings" />
-                <Icon name="chevron-down" />
-              </IconButton>
+              <>
+                <IconButton
+                  variant="text"
+                  color="inherit"
+                  size="initial"
+                  className="text-primary-active"
+                >
+                  <Icon name="settings" />
+                </IconButton>
+                <IconButton
+                  variant="text"
+                  color="inherit"
+                  size="initial"
+                  className="text-primary-active"
+                >
+                  <Icon name="chevron-down" />
+                </IconButton>
+              </>
             }
             list={[
               {

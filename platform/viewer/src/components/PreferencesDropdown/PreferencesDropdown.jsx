@@ -24,16 +24,25 @@ const PreferencesDropdown = () => {
   return (
     <Dropdown
       titleElement={
-        <IconButton
-          variant="text"
-          color="inherit"
-          size="initial"
-          className="text-primary-active"
-          onClick={() => {}}
-        >
-          <Icon name="settings" />
-          <Icon name="chevron-down" />
-        </IconButton>
+        <>
+          <IconButton
+            variant="text"
+            color="inherit"
+            size="initial"
+            className="text-primary-active"
+          >
+            <Icon name="settings" />
+          </IconButton>
+          <IconButton
+            variant="text"
+            color="inherit"
+            size="initial"
+            className="text-primary-active"
+            onClick={() => {}}
+          >
+            <Icon name="chevron-down" />
+          </IconButton>
+        </>
       }
       list={[
         { title: 'About', icon: 'info', onClick: () => showAboutModal() },
