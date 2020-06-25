@@ -9,7 +9,6 @@ import React, {
 import {
   Typography,
   InputText,
-  InputNumber,
   Tooltip,
   IconButton,
   Icon,
@@ -169,7 +168,10 @@ const ViewportDownloadForm = ({
     );
   };
 
-  const validSize = value => (value >= minimumSize ? value : minimumSize);
+  const validSize = useCallback(
+    value => (value >= minimumSize ? value : minimumSize),
+    [minimumSize]
+  );
 
   const loadAndUpdateViewports = useCallback(async () => {
     const { width: scaledWidth, height: scaledHeight } = await loadImage(
@@ -286,7 +288,8 @@ const ViewportDownloadForm = ({
           <div className="flex w-1/3">
             <div className="flex flex-col flex-grow">
               <div className="w-full">
-                <InputNumber
+                <InputText
+                  type="number"
                   min={minimumSize}
                   max={maximumSize}
                   label="Image width (px)"
@@ -297,7 +300,8 @@ const ViewportDownloadForm = ({
                 {renderErrorHandler('width')}
               </div>
               <div className="w-full mt-4">
-                <InputNumber
+                <InputText
+                  type="number"
                   min={minimumSize}
                   max={maximumSize}
                   label="Image height (px)"
