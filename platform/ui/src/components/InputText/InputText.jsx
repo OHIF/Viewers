@@ -10,9 +10,6 @@ const InputText = ({
   onLabelClick,
   value,
   onChange,
-  type,
-  min,
-  max,
 }) => {
   return (
     <InputLabelWrapper
@@ -23,9 +20,7 @@ const InputText = ({
     >
       <Input
         className="border-primary-main mt-2 bg-black"
-        min={min}
-        max={max}
-        type={type}
+        type="text"
         containerClassName="mr-2"
         value={value}
         onChange={event => {
@@ -41,9 +36,6 @@ InputText.defaultProps = {
   isSortable: false,
   onLabelClick: () => {},
   sortDirection: 'none',
-  type: 'text',
-  min: null,
-  max: null,
 };
 
 InputText.propTypes = {
@@ -53,11 +45,6 @@ InputText.propTypes = {
   onLabelClick: PropTypes.func,
   value: PropTypes.any,
   onChange: PropTypes.func.isRequired,
-  type: PropTypes.string,
-  /** User for input type=number */
-  min: PropTypes.number,
-  /** User for input type=number */
-  max: PropTypes.number,
 };
 
 export default InputText;
