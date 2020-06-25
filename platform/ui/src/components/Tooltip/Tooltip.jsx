@@ -88,7 +88,7 @@ Tooltip.defaultProps = {
 };
 
 Tooltip.propTypes = {
-  // Allow null
+/** prevents tooltip from rendering despite hover/active/sticky */
   isDisabled: PropTypes.bool,
   content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   position: PropTypes.oneOf([
