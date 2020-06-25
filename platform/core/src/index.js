@@ -30,8 +30,9 @@ import {
   //
   DicomMetadataStore,
   DisplaySetService,
-  ToolBarSerivce,
+  ToolBarSerivce, // TODO: Typo
   MeasurementService,
+  ViewportGridService,
 } from './services';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -70,7 +71,8 @@ const OHIF = {
   UIViewportDialogService,
   DisplaySetService,
   MeasurementService,
-  ToolBarSerivce,
+  ToolBarSerivce, // TODO: TYPO
+  ViewportGridService,
   IWebApiDataSource,
   DicomMetadataStore,
   //
@@ -112,6 +114,7 @@ export {
   DisplaySetService,
   MeasurementService,
   ToolBarSerivce,
+  ViewportGridService,
   IWebApiDataSource,
   DicomMetadataStore,
   ViewModelProvider,

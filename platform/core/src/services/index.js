@@ -7,6 +7,7 @@ import UIViewportDialogService from './UIViewportDialogService';
 import DicomMetadataStore from './DicomMetadataStore';
 import DisplaySetService from './DisplaySetService';
 import ToolBarSerivce from './ToolBarService';
+import ViewportGridService from './ViewportGridService';
 
 export {
   MeasurementService,
@@ -18,4 +19,5 @@ export {
   DicomMetadataStore,
   DisplaySetService,
   ToolBarSerivce,
+  ViewportGridService,
 };

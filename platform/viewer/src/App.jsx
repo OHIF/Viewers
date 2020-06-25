@@ -54,60 +54,14 @@ function App({ config, defaultExtensions }) {
     UIModalService,
     UINotificationService,
     UIViewportDialogService,
+    ViewportGridService, // TODO: Should this be a "UI" Service?
   } = servicesManager.services;
-
-  // A UI Service may need to use the ViewportGrid context
-  const viewportGridReducer = (state, action) => {
-    console.log(state, action);
-
-    switch (action.type) {
-      case 'SET_ACTIVE_VIEWPORT_INDEX':
-        return { ...state, ...{ activeViewportIndex: action.payload } };
-      case 'SET_DISPLAYSET_FOR_VIEWPORT': {
-        const { viewportIndex, displaySetInstanceUID } = action.payload;
-        const viewports = state.viewports.slice();
-
-        viewports[viewportIndex] = { displaySetInstanceUID };
-
-        return { ...state, ...{ viewports } };
-      }
-      case 'SET_LAYOUT': {
-        const { numCols, numRows } = action.payload;
-        const numPanes = numCols * numRows;
-        const viewports = state.viewports.slice();
-        const activeViewportIndex =
-          state.activeViewportIndex >= numPanes ? 0 : state.activeViewportIndex;
-
-        while (viewports.length < numPanes) {
-          viewports.push({});
-        }
-        while (viewports.length > numPanes) {
-          viewports.pop();
-        }
-
-        return {
-          ...state,
-          ...{ activeViewportIndex, numCols, numRows, viewports },
-        };
-      }
-      default:
-        return action.payload;
-    }
-  };
 
   return (
     <AppConfigProvider value={appConfigState}>
       <Router basename={routerBasename}>
         <ThemeWrapper>
-          <ViewportGridProvider
-            initialState={{
-              numRows: 1,
-              numCols: 1,
-              viewports: [],
-              activeViewportIndex: 0,
-            }}
-            reducer={viewportGridReducer}
-          >
+          <ViewportGridProvider service={ViewportGridService}>
             <ViewportDialogProvider service={UIViewportDialogService}>
               <SnackbarProvider service={UINotificationService}>
                 <DialogProvider service={UIDialogService}>
