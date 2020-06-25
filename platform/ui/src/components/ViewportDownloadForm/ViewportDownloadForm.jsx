@@ -8,7 +8,7 @@ import React, {
 
 import {
   Typography,
-  InputText,
+  Input,
   Tooltip,
   IconButton,
   Icon,
@@ -276,7 +276,7 @@ const ViewportDownloadForm = ({
 
       <div className="mt-6 flex flex-col">
         <div className="w-full mb-4">
-          <InputText
+          <Input
             data-cy="file-name"
             value={filename}
             onChange={value => setFilename(value)}
@@ -288,7 +288,7 @@ const ViewportDownloadForm = ({
           <div className="flex w-1/3">
             <div className="flex flex-col flex-grow">
               <div className="w-full">
-                <InputText
+                <Input
                   type="number"
                   min={minimumSize}
                   max={maximumSize}
@@ -300,7 +300,7 @@ const ViewportDownloadForm = ({
                 {renderErrorHandler('width')}
               </div>
               <div className="w-full mt-4">
-                <InputText
+                <Input
                   type="number"
                   min={minimumSize}
                   max={maximumSize}
