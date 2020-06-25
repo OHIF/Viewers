@@ -20,6 +20,8 @@ function NestedMenu({ children, label, icon }) {
     };
   }, [isOpen]);
 
+  const isActive = isOpen || children.props.children.some(c => c.props.isActive);
+
   return (
     <ToolbarButton
       id="NestedMenu"
@@ -27,7 +29,7 @@ function NestedMenu({ children, label, icon }) {
       icon={icon}
       onClick={toggleNestedMenu}
       dropdownContent={isOpen && children}
-      isActive={isOpen}
+      isActive={isActive}
       type="primary"
     />
   );
