@@ -8,6 +8,42 @@ const Dropdown = ({ children, showDropdownIcon, list }) => {
   const [open, setOpen] = useState(false);
   const element = useRef(null);
 
+  const DropdownItem = ({ title, icon, onClick, index }) => {
+    const itemsAmount = list.length;
+    const isLastItem = itemsAmount === index + 1;
+
+    return (
+      <div
+        key={title}
+        className={classnames(
+          'flex px-4 py-2 cursor-pointer items-center transition duration-300 hover:bg-secondary-main',
+          {
+            'border-b border-secondary-main': !isLastItem,
+          }
+        )}
+        onClick={() => {
+          setOpen(false);
+          onClick();
+        }}
+      >
+        {!!icon && <Icon name={icon} className="text-white w-4 mr-2" />}
+        <Typography>{title}</Typography>
+      </div>
+    );
+  };
+
+  DropdownItem.defaultProps = {
+    icon: '',
+    onClick: () => {},
+  };
+
+  DropdownItem.propTypes = {
+    title: PropTypes.string.isRequired,
+    icon: PropTypes.string,
+    onClick: PropTypes.func,
+    index: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  };
+
   const renderTitleElement = () => {
     return (
       <div className="flex text-white items-center">
@@ -30,8 +66,6 @@ const Dropdown = ({ children, showDropdownIcon, list }) => {
   };
 
   const renderList = () => {
-    const itemsAmount = list.length;
-
     return (
       <div
         className={classnames(
@@ -42,35 +76,15 @@ const Dropdown = ({ children, showDropdownIcon, list }) => {
           }
         )}
       >
-        {list.map(
-          (
-            {
-              title: itemTitle,
-              icon: itemIcon,
-              onClick: itemOnClick = () => {},
-            },
-            idx
-          ) => (
-            <div
-              key={itemTitle}
-              className={classnames(
-                'flex px-4 py-2 cursor-pointer items-center transition duration-300 hover:bg-secondary-main',
-                {
-                  'border-b border-secondary-main': itemsAmount !== idx + 1,
-                }
-              )}
-              onClick={() => {
-                setOpen(false);
-                itemOnClick();
-              }}
-            >
-              {!!itemIcon && (
-                <Icon name={itemIcon} className="text-white w-4 mr-2" />
-              )}
-              <Typography>{itemTitle}</Typography>
-            </div>
-          )
-        )}
+        {list.map((item, idx) => (
+          <DropdownItem
+            title={item.title}
+            icon={item.icon}
+            onClick={item.onClick}
+            key={idx}
+            index={idx}
+          />
+        ))}
       </div>
     );
   };
@@ -107,7 +121,6 @@ Dropdown.propTypes = {
       title: PropTypes.string.isRequired,
       icon: PropTypes.string,
       onClick: PropTypes.func,
-      link: PropTypes.string,
     })
   ),
 };
