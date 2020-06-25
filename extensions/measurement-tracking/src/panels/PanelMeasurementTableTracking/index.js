@@ -126,7 +126,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     );
 
     console.log(servicesManager);
-    console.log(extensionManager);
 
     const dataSources = extensionManager.getDataSources();
     // TODO -> Eventually deal with multiple dataSources.
