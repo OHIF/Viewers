@@ -76,7 +76,7 @@ const Select = ({
       options={options}
       value={selectedOptions}
       onChange={(selectedOptions, { action }) => {
-        const newSelection = selectedOptions.reduce(
+        const newSelection = !selectedOptions.length ? selectedOptions : selectedOptions.reduce(
           (acc, curr) => acc.concat([curr.value]),
           []
         );

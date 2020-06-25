@@ -16,6 +16,13 @@ module.exports = {
       initial: 'initial',
       inherit: 'inherit',
 
+      indigo: {
+        dark: '#0b1a42'
+      },
+      aqua: {
+        pale: '#7bb2ce'
+      },
+
       primary: {
         light: '#5acce6',
         main: '#0944b3',

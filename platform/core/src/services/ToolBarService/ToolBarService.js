@@ -156,6 +156,9 @@ export default class ToolBarService {
       if (btn.props.clickHandler) {
         btn.clickHandler(evt, btn, btnSection);
       }
+      if (props && props.onClick) {
+        props.onClick(evt, btn, btnSection, props);
+      }
     };
 
     return {

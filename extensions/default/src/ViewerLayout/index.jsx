@@ -63,13 +63,20 @@ function ViewerLayout({
     setActiveTool(isNested ? tool : defaultTool);
   };
 
+  const onPrimaryClickHandler = (evt, btn) => {
+    if (btn.props && btn.props.commands && evt.value && btn.props.commands[evt.value]) {
+      const { commandName, commandOptions } = btn.props.commands[evt.value];
+      commandsManager.runCommand(commandName, commandOptions);
+    }
+  };
+
   useEffect(() => {
     const { unsubscribe } = ToolBarService.subscribe(
       ToolBarService.EVENTS.TOOL_BAR_MODIFIED,
       () => {
         console.warn('~~~ TOOL BAR MODIFIED EVENT CAUGHT');
         const updatedToolbars = {
-          primary: ToolBarService.getButtonSection('primary', { setActiveTool: setActiveToolHandler }),
+          primary: ToolBarService.getButtonSection('primary', { onClick: onPrimaryClickHandler, setActiveTool: setActiveToolHandler }),
           secondary: ToolBarService.getButtonSection('secondary', { setActiveTool: setActiveToolHandler }),
         };
         setToolbars(updatedToolbars);
