@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ToolbarButton } from '@ohif/ui';
 
-function NestedMenu({ children, label, icon }) {
+function NestedMenu({ children, label, icon, isActive }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleNestedMenu = () => setIsOpen(!isOpen);
@@ -20,8 +20,6 @@ function NestedMenu({ children, label, icon }) {
     };
   }, [isOpen]);
 
-  const isActive = isOpen || children.props.children.some(c => c.props.isActive);
-
   return (
     <ToolbarButton
       id="NestedMenu"
@@ -29,7 +27,7 @@ function NestedMenu({ children, label, icon }) {
       icon={icon}
       onClick={toggleNestedMenu}
       dropdownContent={isOpen && children}
-      isActive={isActive}
+      isActive={isActive || isOpen}
       type="primary"
     />
   );

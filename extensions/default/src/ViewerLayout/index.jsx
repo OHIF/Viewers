@@ -55,7 +55,7 @@ function ViewerLayout({
     };
   };
 
-  const defaultTool = { icon: 'tool-more-menu', label: 'More' };
+  const defaultTool = { icon: 'tool-more-menu', label: 'More', isActive: false };
   const [toolbars, setToolbars] = useState({ primary: [], secondary: [] });
   const [activeTool, setActiveTool] = useState(defaultTool);
 
@@ -102,7 +102,7 @@ function ViewerLayout({
               return <Component key={id} id={id} {...componentProps} />;
             } else {
               return (
-                <NestedMenu icon={activeTool.icon} label={activeTool.label}>
+                <NestedMenu isActive={activeTool.isActive} icon={activeTool.icon} label={activeTool.label}>
                   <div className="flex">
                     {toolDef.map(x => {
                       const { id, Component, componentProps } = x;
