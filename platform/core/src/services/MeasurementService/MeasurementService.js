@@ -40,6 +40,10 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'type',
   'unit',
   'area', // TODO: Add concept names instead (descriptor)
+  'length',
+  'shortestDiameter',
+  'longestDiameter',
+  'text', // NOTE: There is nothing like this in SR.
   'points',
   'source',
 ];
@@ -53,6 +57,7 @@ const EVENTS = {
 const VALUE_TYPES = {
   POLYLINE: 'value_type::polyline',
   POINT: 'value_type::point',
+  BIDIRECTIONAL: 'value_type::shortAxisLongAxis', // TODO -> Discuss with Danny. => just using SCOORD values isn't enough here.
   ELLIPSE: 'value_type::ellipse',
   MULTIPOINT: 'value_type::multipoint',
   CIRCLE: 'value_type::circle',

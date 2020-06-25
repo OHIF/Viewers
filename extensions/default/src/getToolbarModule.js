@@ -9,7 +9,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     {
       name: 'ohif.divider',
       defaultComponent: ToolbarDivider,
-      clickHandler: () => {},
+      clickHandler: () => { },
     },
     {
       name: 'ohif.action',
@@ -30,7 +30,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
       optionalConfig: [],
       requiredProps: [],
       optionalProps: [],
-      clickHandler: (evt, clickedBtn, btnSectionName) => {
+      clickHandler: (evt, clickedBtn, btnSectionName, metadata, viewerProps) => {
         const { props } = clickedBtn;
         const allButtons = toolbarService.getButtons();
 
@@ -47,6 +47,10 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
             clickedBtn.config.groupName === btn.config.groupName
           ) {
             btn.props.isActive = false;
+
+            if (viewerProps.setActiveTool) {
+              viewerProps.setActiveTool(props, metadata.isNested);
+            }
           }
         });
 
@@ -63,7 +67,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     {
       name: 'ohif.layoutSelector',
       defaultComponent: ToolbarLayoutSelector,
-      clickHandler: (evt, clickedBtn, btnSectionName) => {},
+      clickHandler: (evt, clickedBtn, btnSectionName) => { },
     },
     {
       name: 'ohif.toggle',

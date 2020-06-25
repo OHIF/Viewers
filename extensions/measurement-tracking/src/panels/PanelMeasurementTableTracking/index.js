@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { StudySummary, MeasurementTable } from '@ohif/ui';
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore, DICOMSR } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
+import cornerstoneTools from 'cornerstone-tools';
+import cornerstone from 'cornerstone-core';
+import dcmjs from 'dcmjs';
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
@@ -13,7 +16,7 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   description: undefined, // 'CHEST/ABD/PELVIS W CONTRAST',
 };
 
-function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
+function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(
     Date.now().toString()
   );
@@ -42,7 +45,7 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
     const mappedMeasurements = filteredMeasurements.map((m, index) =>
-      _mapMeasurementToDisplay(m, index)
+      _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
     );
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
@@ -102,6 +105,35 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
 
   const activeMeasurementItem = 0;
 
+  const onExportClick = () => {
+    const measurements = MeasurementService.getMeasurements();
+    const trackedMeasurements = measurements.filter(
+      m =>
+        trackedStudy === m.referenceStudyUID &&
+        trackedSeries.includes(m.referenceSeriesUID)
+    );
+
+    // TODO -> local download.
+    DICOMSR.downloadReport(trackedMeasurements, dataSource);
+  };
+
+  const onCreateReportClick = () => {
+    const measurements = MeasurementService.getMeasurements();
+    const trackedMeasurements = measurements.filter(
+      m =>
+        trackedStudy === m.referenceStudyUID &&
+        trackedSeries.includes(m.referenceSeriesUID)
+    );
+
+
+    const dataSources = extensionManager.getDataSources();
+    // TODO -> Eventually deal with multiple dataSources.
+    // Would need some way of saying which one is the "push" dataSource
+    const dataSource = dataSources[0];
+
+    DICOMSR.storeMeasurements(trackedMeasurements, dataSource);
+  };
+
   return (
     <>
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
@@ -121,7 +153,10 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
         />
       </div>
       <div className="flex justify-center p-4">
-        <ActionButtons />
+        <ActionButtons
+          onExportClick={onExportClick}
+          onCreateReportClick={onCreateReportClick}
+        />
       </div>
     </>
   );
@@ -130,7 +165,7 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
 PanelMeasurementTableTracking.propTypes = {};
 
 // TODO: This could be a MeasurementService mapper
-function _mapMeasurementToDisplay(measurement, index) {
+function _mapMeasurementToDisplay(measurement, index, types) {
   const {
     id,
     label,
@@ -153,12 +188,14 @@ function _mapMeasurementToDisplay(measurement, index) {
   return {
     id: index + 1,
     label: '(empty)', // 'Label short description',
-    displayText: _getDisplayText(
-      measurement.points,
-      PixelSpacing,
-      SeriesNumber,
-      InstanceNumber
-    ),
+    displayText:
+      _getDisplayText(
+        measurement,
+        PixelSpacing,
+        SeriesNumber,
+        InstanceNumber,
+        types
+      ) || [],
     // TODO: handle one layer down
     isActive: false, // activeMeasurementItem === i + 1,
   };
@@ -169,13 +206,21 @@ function _mapMeasurementToDisplay(measurement, index) {
  * @param {*} points
  * @param {*} pixelSpacing
  */
-function _getDisplayText(points, pixelSpacing, seriesNumber, instanceNumber) {
+function _getDisplayText(
+  measurement,
+  pixelSpacing,
+  seriesNumber,
+  instanceNumber,
+  types
+) {
   // TODO: determination of shape influences text
   // Length:  'xx.x unit (S:x, I:x)'
   // Rectangle: 'xx.x x xx.x unit (S:x, I:x)',
   // Ellipse?
   // Bidirectional?
   // Freehand?
+
+  const { type, points } = measurement;
 
   const hasPixelSpacing =
     pixelSpacing !== undefined &&
@@ -186,13 +231,37 @@ function _getDisplayText(points, pixelSpacing, seriesNumber, instanceNumber) {
     : [1, 1];
   const unit = hasPixelSpacing ? 'mm' : 'px';
 
-  const { x: x1, y: y1 } = points[0];
-  const { x: x2, y: y2 } = points[1];
-  const dx = (x2 - x1) * colPixelSpacing;
-  const dy = (y2 - y1) * rowPixelSpacing;
-  const length = _round(Math.sqrt(dx * dx + dy * dy), 1);
+  switch (type) {
+    case types.POLYLINE:
+      const { length } = measurement;
 
-  return `${length} ${unit} (S:${seriesNumber}, I:${instanceNumber})`;
+      const roundedLength = _round(length, 1);
+
+      return [
+        `${roundedLength} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
+      ];
+
+    case types.BIDIRECTIONAL:
+      const { shortestDiameter, longestDiameter } = measurement;
+
+      const roundedShortestDiameter = _round(shortestDiameter, 1);
+      const roundedLongestDiameter = _round(longestDiameter, 1);
+
+      return [
+        `l: ${roundedLongestDiameter} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
+        `s: ${roundedShortestDiameter} ${unit}`,
+      ];
+    case types.ELLIPSE:
+      const { area } = measurement;
+
+      const roundedArea = _round(area, 1);
+      return [
+        `${roundedArea} ${unit}2 (S:${seriesNumber}, I:${instanceNumber})`,
+      ];
+    case types.POINT:
+      const { text } = measurement;
+      return [`${text} (S:${seriesNumber}, I:${instanceNumber})`];
+  }
 }
 
 function _round(value, decimals) {

@@ -25,6 +25,7 @@ const ToolbarButton = ({
   };
 
   const shouldShowDropdown = !!isActive && !!dropdownContent;
+
   return (
     <div key={id}>
       <Tooltip
