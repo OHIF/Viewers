@@ -24,7 +24,7 @@ const arrowPositionStyle = {
   },
 };
 
-const Tooltip = ({ content, isSticky, position, tight, children }) => {
+const Tooltip = ({ content, isSticky, position, tight, children, isDisabled }) => {
   const [isActive, setIsActive] = useState(false);
 
   const handleMouseOver = () => {
@@ -39,7 +39,7 @@ const Tooltip = ({ content, isSticky, position, tight, children }) => {
     }
   };
 
-  const isOpen = isSticky || isActive;
+  const isOpen = (isSticky || isActive) && !isDisabled;
 
   return (
     <div
@@ -84,10 +84,12 @@ Tooltip.defaultProps = {
   tight: false,
   isSticky: false,
   position: 'bottom',
+  isDisabled: false
 };
 
 Tooltip.propTypes = {
   // Allow null
+  isDisabled: PropTypes.bool,
   content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   position: PropTypes.oneOf([
     'bottom',

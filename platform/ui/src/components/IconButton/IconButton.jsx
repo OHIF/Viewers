@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const baseClasses =
-  'text-center items-center justify-center outline-none transition duration-300 ease-in-out font-bold focus:outline-none';
+  'text-center items-center justify-center outline-none font-bold focus:outline-none';
 
 const roundedClasses = {
   none: '',
@@ -113,7 +113,7 @@ const IconButton = ({
 };
 
 IconButton.defaultProps = {
-  onClick: () => {},
+  onClick: () => { },
   color: 'default',
   disabled: false,
   fullWidth: false,
