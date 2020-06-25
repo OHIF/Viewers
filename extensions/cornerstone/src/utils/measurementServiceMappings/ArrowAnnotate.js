@@ -1,5 +1,4 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
-import getHandlesFromPoints from './utils/getHandlesFromPoints';
 import getPointsFromHandles from './utils/getPointsFromHandles';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
