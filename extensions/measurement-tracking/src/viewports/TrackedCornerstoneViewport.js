@@ -209,14 +209,17 @@ function TrackedCornerstoneViewport({
     SeriesInstanceUID,
     SeriesNumber,
   } = displaySet;
+
   const {
     PatientID,
     PatientName,
     PatientSex,
     PatientAge,
     SliceThickness,
+    ManufacturerModelName
   } = displaySet.images[0];
 
+  console.log(displaySet.images);
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
@@ -226,7 +229,6 @@ function TrackedCornerstoneViewport({
     <>
       <ViewportActionBar
         onSeriesChange={direction => alert(`Series ${direction}`)}
-        showPatientInfo={viewportIndex === activeViewportIndex}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
           label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
@@ -243,7 +245,7 @@ function TrackedCornerstoneViewport({
             MRN: PatientID || '',
             thickness: `${SliceThickness}mm`,
             spacing: '',
-            scanner: '',
+            scanner: ManufacturerModelName || '',
           },
         }}
       />

@@ -203,6 +203,7 @@ function OHIFCornerstoneSRViewport({
     PatientSex,
     PatientAge,
     SliceThickness,
+    ManufacturerModelName,
     StudyDate,
     SeriesDescription,
     SeriesInstanceUID,
@@ -233,13 +234,10 @@ function OHIFCornerstoneSRViewport({
     updateViewport(newMeasurementSelected);
   };
 
-  console.log(currentImageIdIndex);
-
   return (
     <>
       <ViewportActionBar
         onSeriesChange={onMeasurementChange}
-        showPatientInfo={viewportIndex === activeViewportIndex}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
           label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
@@ -256,7 +254,7 @@ function OHIFCornerstoneSRViewport({
             MRN: PatientID || '',
             thickness: `${SliceThickness}mm`,
             spacing: '',
-            scanner: '',
+            scanner: ManufacturerModelName || '',
           },
         }}
       />
