@@ -55,7 +55,20 @@ function ViewerLayout({
     };
   };
 
+  const defaultTool = { icon: 'tool-more-menu', label: 'More', isActive: false };
   const [toolbars, setToolbars] = useState({ primary: [], secondary: [] });
+  const [activeTool, setActiveTool] = useState(defaultTool);
+
+  const setActiveToolHandler = (tool, isNested) => {
+    setActiveTool(isNested ? tool : defaultTool);
+  };
+
+  const onPrimaryClickHandler = (evt, btn) => {
+    if (btn.props && btn.props.commands && evt.value && btn.props.commands[evt.value]) {
+      const { commandName, commandOptions } = btn.props.commands[evt.value];
+      commandsManager.runCommand(commandName, commandOptions);
+    }
+  };
 
   useEffect(() => {
     const { unsubscribe } = ToolBarService.subscribe(
@@ -63,8 +76,8 @@ function ViewerLayout({
       () => {
         console.warn('~~~ TOOL BAR MODIFIED EVENT CAUGHT');
         const updatedToolbars = {
-          primary: ToolBarService.getButtonSection('primary'),
-          secondary: ToolBarService.getButtonSection('secondary'),
+          primary: ToolBarService.getButtonSection('primary', { onClick: onPrimaryClickHandler, setActiveTool: setActiveToolHandler }),
+          secondary: ToolBarService.getButtonSection('secondary', { setActiveTool: setActiveToolHandler }),
         };
         setToolbars(updatedToolbars);
       }
@@ -86,11 +99,10 @@ function ViewerLayout({
 
             if (!isNested) {
               const { id, Component, componentProps } = toolDef;
-
               return <Component key={id} id={id} {...componentProps} />;
             } else {
               return (
-                <NestedMenu>
+                <NestedMenu isActive={activeTool.isActive} icon={activeTool.icon} label={activeTool.label}>
                   <div className="flex">
                     {toolDef.map(x => {
                       const { id, Component, componentProps } = x;
