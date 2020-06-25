@@ -1,0 +1,74 @@
+import SUPPORTED_TOOLS from './constants/supportedTools';
+import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
+
+const EllipticalRoi = {
+  toAnnotation: (measurement, definition) => {
+    // TODO -> Implement when this is needed.
+  },
+  toMeasurement: (csToolsAnnotation, getValueTypeFromToolType) => {
+    const { element, measurementData } = csToolsAnnotation;
+    const tool =
+      csToolsAnnotation.toolType ||
+      csToolsAnnotation.toolName ||
+      measurementData.toolType;
+
+    const validToolType = toolName => SUPPORTED_TOOLS.includes(toolName);
+
+    if (!validToolType(tool)) {
+      throw new Error('Tool not supported');
+    }
+
+    const {
+      SOPInstanceUID,
+      FrameOfReferenceUID,
+      SeriesInstanceUID,
+      StudyInstanceUID,
+    } = getSOPInstanceAttributes(element);
+
+    const { start, end } = measurementData.handles;
+
+    const halfXLength = Math.abs(start.x - end.x) / 2;
+    const halfYLength = Math.abs(start.y - end.y) / 2;
+
+    const points = [];
+    const center = { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 };
+
+    // To store similar to SR.
+    if (halfXLength > halfYLength) {
+      // X-axis major
+      // Major axis
+      points.push({ x: center.x - halfXLength, y: center.y });
+      points.push({ x: center.x + halfXLength, y: center.y });
+      // Minor axis
+      points.push({ x: center.x, y: center.y - halfYLength });
+      points.push({ x: center.x, y: center.y + halfYLength });
+    } else {
+      // Y-axis major
+      // Major axis
+      points.push({ x: center.x, y: center.y - halfYLength });
+      points.push({ x: center.x, y: center.y + halfYLength });
+      // Minor axis
+      points.push({ x: center.x - halfXLength, y: center.y });
+      points.push({ x: center.x + halfXLength, y: center.y });
+    }
+
+    return {
+      id: measurementData._measurementServiceId,
+      SOPInstanceUID: SOPInstanceUID,
+      FrameOfReferenceUID,
+      referenceSeriesUID: SeriesInstanceUID,
+      referenceStudyUID: StudyInstanceUID,
+      label: measurementData.text,
+      description: measurementData.description,
+      unit: measurementData.unit,
+      area:
+        measurementData.cachedStats &&
+        measurementData.cachedStats
+          .area /* TODO: Add concept names instead (descriptor) */,
+      type: getValueTypeFromToolType(tool),
+      points,
+    };
+  },
+};
+
+export default EllipticalRoi;
