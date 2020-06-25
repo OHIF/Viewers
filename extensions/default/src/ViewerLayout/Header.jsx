@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 // TODO: This may fail if package is split from PWA build
@@ -11,7 +11,8 @@ function Header({ children }) {
   const history = useHistory();
   const { show } = useModal();
 
-  const showAboutModal = () => {
+  // TODO: IT SHOULD BE REFACTORED WHEN THE MODAL CONTENT IS DEFINED
+  const showAboutModal = useCallback(() => {
     const modalComponent = () => (
       <div>{t('AboutModal:OHIF Viewer - About')}</div>
     );
@@ -19,9 +20,10 @@ function Header({ children }) {
       title: t('AboutModal:OHIF Viewer - About'),
       content: modalComponent,
     });
-  };
+  }, [show, t]);
 
-  const showPreferencesModal = () => {
+  // TODO: IT SHOULD BE REFACTORED WHEN THE MODAL CONTENT IS DEFINED
+  const showPreferencesModal = useCallback(() => {
     const modalComponent = () => (
       <div>{t('UserPreferencesModal:User Preferences')}</div>
     );
@@ -29,18 +31,7 @@ function Header({ children }) {
       title: t('UserPreferencesModal:User Preferences'),
       content: modalComponent,
     });
-  };
-
-  // const dropdownContent = [
-  //   {
-  //     name: 'Soft tissue',
-  //     value: '400/40',
-  //   },
-  //   { name: 'Lung', value: '1500 / -600' },
-  //   { name: 'Liver', value: '150 / 90' },
-  //   { name: 'Bone', value: '2500 / 480' },
-  //   { name: 'Brain', value: '80 / 40' },
-  // ]
+  }, [show, t]);
 
   return (
     <NavBar className="justify-between border-b-4 border-black">
