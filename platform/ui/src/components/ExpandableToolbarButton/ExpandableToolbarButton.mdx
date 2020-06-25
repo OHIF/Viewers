@@ -1,0 +1,58 @@
+---
+name: Expandable Toolbar Button
+menu: General
+route: components/expandableToolbarButton
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import { ExpandableToolbarButton, ListMenu } from '@ohif/ui';
+
+# Toolbar Button
+
+Expandable Toolbar Buttons are used to populate the Toolbar.
+
+## Import
+
+```javascript
+import { ExpandableToolbarButton, ListMenu } from '@ohif/ui';
+```
+
+<Playground>
+  {() => {
+    const props = {
+      content: ListMenu,
+      contentProps: {
+        options: [
+          { value: 'windowLevelPreset1', title: 'Soft tissue', subtitle: '400 / 40' },
+          { value: 'windowLevelPreset2', title: 'Lung', subtitle: '1500 / -600' },
+          { value: 'windowLevelPreset3', title: 'Liver', subtitle: '150 / 90' },
+          { value: 'windowLevelPreset4', title: 'Bone', subtitle: '80 / 40' },
+          { value: 'windowLevelPreset5', title: 'Brain', subtitle: '2500 / 480' },
+        ],
+        renderer: ({ title, subtitle, isActive, index }) => (
+          <>
+            <div>
+              <span className={classnames(isActive ? "text-black" : "text-white", "mr-2 text-base")}>
+                {title}
+              </span>
+              <span className={classnames(isActive ? "text-black" : "text-aqua-pale", "font-thin text-sm")}>
+                {subtitle}
+              </span>
+            </div>
+            <span className={classnames(isActive ? "text-black" : "text-primary-active", "text-sm")}>{index + 1}</span>
+          </>
+        )
+      }
+    };
+    return (
+      <div className="py-10 flex justify-center">
+        <ExpandableToolbarButton {...props} />
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={ToolbarButton} />

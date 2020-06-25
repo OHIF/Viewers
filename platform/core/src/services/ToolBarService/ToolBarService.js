@@ -62,7 +62,7 @@ export default class ToolBarService {
     this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {});
   }
 
-  getButtonSection(key) {
+  getButtonSection(key, props) {
     const buttonSectionIds = this.buttonSections[key];
     const buttonsInSection = [];
 
@@ -79,7 +79,7 @@ export default class ToolBarService {
 
         btnIds.forEach(nestedBtnId => {
           const nestedBtn = this.buttons[nestedBtnId];
-          const mappedNestedBtn = this._mapButtonToDisplay(nestedBtn, key);
+          const mappedNestedBtn = this._mapButtonToDisplay(nestedBtn, key, props);
 
           nestedButtons.push(mappedNestedBtn);
         });
@@ -90,7 +90,7 @@ export default class ToolBarService {
       } else {
         const btnId = btnIdOrArray;
         const btn = this.buttons[btnId];
-        const mappedBtn = this._mapButtonToDisplay(btn, key);
+        const mappedBtn = this._mapButtonToDisplay(btn, key, props);
 
         buttonsInSection.push(mappedBtn);
       }
@@ -136,8 +136,8 @@ export default class ToolBarService {
    * @param {*} btn
    * @param {*} btnSection
    */
-  _mapButtonToDisplay(btn, btnSection) {
-    const { id, type, component, props } = btn;
+  _mapButtonToDisplay(btn, btnSection, props) {
+    const { id, type, component } = btn;
     const buttonType = this._buttonTypes()[type];
 
     if (!buttonType) {
@@ -154,12 +154,15 @@ export default class ToolBarService {
       if (btn.props.clickHandler) {
         btn.clickHandler(evt, btn, btnSection);
       }
+      if (props && props.onClick) {
+        props.onClick(evt, btn, btnSection, props);
+      }
     };
 
     return {
       id,
       Component: component || buttonType.defaultComponent,
-      componentProps: Object.assign({}, props, { onClick }), //
+      componentProps: Object.assign({}, btn.props, props, { onClick }), //
     };
   }
 }

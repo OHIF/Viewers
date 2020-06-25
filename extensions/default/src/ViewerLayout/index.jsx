@@ -57,13 +57,20 @@ function ViewerLayout({
 
   const [toolbars, setToolbars] = useState({ primary: [], secondary: [] });
 
+  const onPrimaryClickHandler = (evt, btn) => {
+    if (btn.props && btn.props.commands && evt.value && btn.props.commands[evt.value]) {
+      const { commandName, commandOptions } = btn.props.commands[evt.value];
+      commandsManager.runCommand(commandName, commandOptions);
+    }
+  };
+
   useEffect(() => {
     const { unsubscribe } = ToolBarService.subscribe(
       ToolBarService.EVENTS.TOOL_BAR_MODIFIED,
       () => {
         console.warn('~~~ TOOL BAR MODIFIED EVENT CAUGHT');
         const updatedToolbars = {
-          primary: ToolBarService.getButtonSection('primary'),
+          primary: ToolBarService.getButtonSection('primary', { onClick: onPrimaryClickHandler }),
           secondary: ToolBarService.getButtonSection('secondary'),
         };
         setToolbars(updatedToolbars);

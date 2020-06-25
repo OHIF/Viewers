@@ -1,0 +1,16 @@
+.ExpandableToolbarButton:hover .ExpandableToolbarButton__arrow:after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  border-width: 10px 10px 0;
+  border-style: solid;
+  border-color:#5acce6 transparent;
+}
+
+.ExpandableToolbarButton .ExpandableToolbarButton__content {
+  display: none;
+}
+
+.ExpandableToolbarButton:hover .ExpandableToolbarButton__content {
+  display: block;
+}
