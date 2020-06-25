@@ -66,7 +66,6 @@ function TrackedCornerstoneViewport({
     const toolsForElement = allTools.filter(tool => tool.element === element);
 
     toolsForElement.forEach(tool => {
-      debugger;
       if (
         tool instanceof ArrowAnnotateTool ||
         tool instanceof BidirectionalTool ||
