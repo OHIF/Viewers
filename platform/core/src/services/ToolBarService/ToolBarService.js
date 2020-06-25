@@ -79,7 +79,8 @@ export default class ToolBarService {
 
         btnIds.forEach(nestedBtnId => {
           const nestedBtn = this.buttons[nestedBtnId];
-          const mappedNestedBtn = this._mapButtonToDisplay(nestedBtn, key, props);
+          const metadata = { isNested: true };
+          const mappedNestedBtn = this._mapButtonToDisplay(nestedBtn, key, metadata, props);
 
           nestedButtons.push(mappedNestedBtn);
         });
@@ -90,7 +91,8 @@ export default class ToolBarService {
       } else {
         const btnId = btnIdOrArray;
         const btn = this.buttons[btnId];
-        const mappedBtn = this._mapButtonToDisplay(btn, key, props);
+        const metadata = { isNested: false };
+        const mappedBtn = this._mapButtonToDisplay(btn, key, metadata, props);
 
         buttonsInSection.push(mappedBtn);
       }
@@ -136,7 +138,7 @@ export default class ToolBarService {
    * @param {*} btn
    * @param {*} btnSection
    */
-  _mapButtonToDisplay(btn, btnSection, props) {
+  _mapButtonToDisplay(btn, btnSection, metadata, props) {
     const { id, type, component } = btn;
     const buttonType = this._buttonTypes()[type];
 
@@ -146,7 +148,7 @@ export default class ToolBarService {
 
     const onClick = evt => {
       if (buttonType.clickHandler) {
-        buttonType.clickHandler(evt, btn, btnSection);
+        buttonType.clickHandler(evt, btn, btnSection, metadata, props);
       }
       if (btn.props.onClick) {
         btn.onClick(evt, btn, btnSection);
@@ -162,7 +164,7 @@ export default class ToolBarService {
     return {
       id,
       Component: component || buttonType.defaultComponent,
-      componentProps: Object.assign({}, btn.props, props, { onClick }), //
+      componentProps: Object.assign({}, btn.props, { onClick }), //
     };
   }
 }
