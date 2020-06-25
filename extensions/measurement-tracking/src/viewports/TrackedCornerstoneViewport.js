@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
+import cornerstoneTools from 'cornerstone-tools';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF, { DicomMetadataStore } from '@ohif/core';
 import {
@@ -12,6 +13,18 @@ import {
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
 import { useTrackedMeasurements } from './../getContextModule';
+
+// TODO -> Get this list from the list of tracked measurements.
+const {
+  ArrowAnnotateTool,
+  BidirectionalTool,
+  EllipticalRoiTool,
+  LengthTool,
+} = cornerstoneTools;
+
+const BaseAnnotationTool = cornerstoneTools.importInternal(
+  'base/BaseAnnotationTool'
+);
 
 // const cine = viewportSpecificData.cine;
 
@@ -27,6 +40,7 @@ function TrackedCornerstoneViewport({
   viewportIndex,
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
+
   const [
     { activeViewportIndex, viewports },
     dispatchViewportGrid,
@@ -34,6 +48,8 @@ function TrackedCornerstoneViewport({
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
+  const [element, setElement] = useState(null);
+  const [isTracked, setIsTracked] = useState(false);
   // TODO: Still needed? Better way than import `OHIF` and destructure?
   // Why is this managed by `core`?
   useEffect(() => {
@@ -41,6 +57,75 @@ function TrackedCornerstoneViewport({
       StackManager.clearStacks();
     };
   }, []);
+
+  useEffect(() => {
+    if (!element) {
+      return;
+    }
+    const allTools = cornerstoneTools.store.state.tools;
+    const toolsForElement = allTools.filter(tool => tool.element === element);
+
+    toolsForElement.forEach(tool => {
+      if (
+        tool instanceof ArrowAnnotateTool ||
+        tool instanceof BidirectionalTool ||
+        tool instanceof EllipticalRoiTool ||
+        tool instanceof LengthTool
+      ) {
+        const configuration = tool.configuration;
+
+        configuration.renderDashed = !isTracked;
+
+        tool.configuration = configuration;
+      }
+    });
+
+    const enabledElement = cornerstone.getEnabledElement(element);
+
+    if (enabledElement.image) {
+      cornerstone.updateImage(element);
+    }
+  }, [isTracked]);
+
+  const onElementEnabled = evt => {
+    const eventData = evt.detail;
+    const targetElement = eventData.element;
+
+    const allTools = cornerstoneTools.store.state.tools;
+
+    const toolsForElement = allTools.filter(
+      tool => tool.element === targetElement
+    );
+
+    toolsForElement.forEach(tool => {
+      if (
+        tool instanceof ArrowAnnotateTool ||
+        tool instanceof BidirectionalTool ||
+        tool instanceof EllipticalRoiTool ||
+        tool instanceof LengthTool
+      ) {
+        const configuration = tool.configuration;
+
+        configuration.renderDashed = !isTracked;
+
+        tool.configuration = configuration;
+      } else if (tool instanceof BaseAnnotationTool) {
+        const configuration = tool.configuration;
+
+        configuration.renderDashed = true;
+
+        tool.configuration = configuration;
+      }
+    });
+
+    const enabledElement = cornerstone.getEnabledElement(targetElement);
+
+    if (enabledElement.image) {
+      cornerstone.updateImage(targetElement);
+    }
+
+    setElement(targetElement);
+  };
 
   useEffect(() => {
     const {
@@ -116,6 +201,7 @@ function TrackedCornerstoneViewport({
     vp => vp.displaySetInstanceUID === displaySet.displaySetInstanceUID
   );
   const { trackedSeries } = trackedMeasurements.context;
+
   const {
     Modality,
     SeriesDate,
@@ -130,6 +216,11 @@ function TrackedCornerstoneViewport({
     PatientAge,
     SliceThickness,
   } = displaySet.images[0];
+
+
+  if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
+    setIsTracked(!isTracked);
+  }
 
   return (
     <>
@@ -159,6 +250,7 @@ function TrackedCornerstoneViewport({
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
       <div className="relative flex flex-row w-full h-full">
         <CornerstoneViewport
+          onElementEnabled={onElementEnabled}
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
