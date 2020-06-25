@@ -58,9 +58,9 @@ function ViewerLayout({
   const defaultTool = { icon: 'tool-more-menu', label: 'More' };
   const [toolbars, setToolbars] = useState({ primary: [], secondary: [] });
   const [activeTool, setActiveTool] = useState(defaultTool);
-  const onSecondaryClickHandler = () => setActiveTool(defaultTool);
-  const onPrimaryClickHandler = (evt, btn) => {
-    setActiveTool(btn.props.isActive ? btn.props : defaultTool);
+
+  const setActiveToolHandler = (tool, isNested) => {
+    setActiveTool(isNested ? tool : defaultTool);
   };
 
   useEffect(() => {
@@ -69,8 +69,8 @@ function ViewerLayout({
       () => {
         console.warn('~~~ TOOL BAR MODIFIED EVENT CAUGHT');
         const updatedToolbars = {
-          primary: ToolBarService.getButtonSection('primary', { onClick: onPrimaryClickHandler }),
-          secondary: ToolBarService.getButtonSection('secondary', { onClick: onSecondaryClickHandler }),
+          primary: ToolBarService.getButtonSection('primary', { setActiveTool: setActiveToolHandler }),
+          secondary: ToolBarService.getButtonSection('secondary', { setActiveTool: setActiveToolHandler }),
         };
         setToolbars(updatedToolbars);
       }
