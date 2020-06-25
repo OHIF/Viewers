@@ -139,3 +139,8 @@ ViewportGridProvider.propTypes = {
 };
 
 export const useViewportGrid = () => useContext(ViewportGridContext);
+
+// TODO:
+// - Update dependents of `useViewportGrid` to use new API instead of generic `dispatch`
+// - Update `@ohif/core` interface `setServiceImplementation` to accomodate defined API methods
+// - Update `@ohif/ext-cornerstone` commands to use new service to get the activeViewportIndex and restore command functionality
