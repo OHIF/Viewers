@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -8,18 +8,12 @@ const Dropdown = ({ children, showDropdownIcon, list }) => {
   const [open, setOpen] = useState(false);
   const element = useRef(null);
 
-  const DropdownItem = ({ title, icon, onClick, index }) => {
-    const itemsAmount = list.length;
-    const isLastItem = itemsAmount === index + 1;
-
+  const DropdownItem = useCallback(({ title, icon, onClick }) => {
     return (
       <div
         key={title}
         className={classnames(
-          'flex px-4 py-2 cursor-pointer items-center transition duration-300 hover:bg-secondary-main',
-          {
-            'border-b border-secondary-main': !isLastItem,
-          }
+          'flex px-4 py-2 cursor-pointer items-center transition duration-300 hover:bg-secondary-main border-b last:border-b-0 border-secondary-main'
         )}
         onClick={() => {
           setOpen(false);
@@ -30,18 +24,16 @@ const Dropdown = ({ children, showDropdownIcon, list }) => {
         <Typography>{title}</Typography>
       </div>
     );
-  };
+  }, []);
 
   DropdownItem.defaultProps = {
     icon: '',
-    onClick: () => {},
   };
 
   DropdownItem.propTypes = {
     title: PropTypes.string.isRequired,
     icon: PropTypes.string,
-    onClick: PropTypes.func,
-    index: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    onClick: PropTypes.func.isRequired,
   };
 
   const renderTitleElement = () => {
@@ -82,7 +74,6 @@ const Dropdown = ({ children, showDropdownIcon, list }) => {
             icon={item.icon}
             onClick={item.onClick}
             key={idx}
-            index={idx}
           />
         ))}
       </div>
@@ -120,9 +111,9 @@ Dropdown.propTypes = {
     PropTypes.shape({
       title: PropTypes.string.isRequired,
       icon: PropTypes.string,
-      onClick: PropTypes.func,
+      onClick: PropTypes.func.isRequired,
     })
-  ),
+  ).isRequired,
 };
 
 export default Dropdown;
