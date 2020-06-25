@@ -91,7 +91,6 @@ function TrackedCornerstoneViewport({
     const eventData = evt.detail;
     const targetElement = eventData.element;
 
-    debugger;
     const allTools = cornerstoneTools.store.state.tools;
 
     const toolsForElement = allTools.filter(
