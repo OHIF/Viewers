@@ -4,11 +4,11 @@ import Label from '../Label';
 import classnames from 'classnames';
 
 const baseInputClasses =
-  'shadow transition duration-300 appearance-none border rounded w-full py-2 px-3 text-sm text-white hover:border-gray-500 leading-tight focus:border-gray-500 focus:outline-none';
+  'shadow transition duration-300 appearance-none border border-primary-main hover:border-gray-500 focus:border-gray-500 focus:outline-none rounded w-full py-2 px-3 text-sm text-white leading-tight focus:outline-none';
 
 const transparentClasses = {
   true: 'bg-transparent',
-  false: '',
+  false: 'bg-black',
 };
 
 const Input = ({
@@ -16,7 +16,7 @@ const Input = ({
   containerClassName = '',
   labelClassName = '',
   className = '',
-  transparent = true,
+  transparent = false,
   type = 'text',
   value,
   onChange,
