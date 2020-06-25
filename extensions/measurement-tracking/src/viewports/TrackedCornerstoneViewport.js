@@ -219,7 +219,6 @@ function TrackedCornerstoneViewport({
     SliceThickness,
   } = displaySet.images[0];
 
-  console.log('TRACKED SERIES');
   console.log();
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
