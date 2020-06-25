@@ -46,14 +46,17 @@ function DataSourceWrapper(props) {
   // studies.processResults --> <LayoutTemplate studies={} />
   // But only for LayoutTemplate type of 'list'?
   // Or no data fetching here, and just hand down my source
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     // 204: no content
     async function getData() {
+      setIsLoading(true);
       const searchResults = await dataSource.query.studies.search(
         queryFilterValues
       );
       setData(searchResults);
+      setIsLoading(false);
     }
 
     try {
@@ -61,23 +64,19 @@ function DataSourceWrapper(props) {
     } catch (ex) {
       console.warn(ex);
     }
-    console.log('DataSourceWrapper: useEffect');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history.location.search]);
   // queryFilterValues
 
   // TODO: Better way to pass DataSource?
   return (
-    <React.Fragment>
-      {data && (
-        <LayoutTemplate
-          {...rest}
-          history={history}
-          data={data}
-          dataSource={dataSource}
-        />
-      )}
-    </React.Fragment>
+    <LayoutTemplate
+      {...rest}
+      history={history}
+      data={data}
+      dataSource={dataSource}
+      isLoadingData={isLoading}
+    />
   );
 }
 
