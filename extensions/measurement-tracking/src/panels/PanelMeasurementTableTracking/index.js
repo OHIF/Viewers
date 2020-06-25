@@ -125,7 +125,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    console.log(servicesManager);
 
     const dataSources = extensionManager.getDataSources();
     // TODO -> Eventually deal with multiple dataSources.
