@@ -69,7 +69,7 @@ const Dropdown = ({ children, showDropdownIcon, list }) => {
     return (
       <div
         className={classnames(
-          'absolute origin-top-right transition duration-300 transform top-100 right-0 mt-2 z-10 bg-primary-dark border border-secondary-main rounded shadow',
+          'absolute top-100 right-0 mt-2 z-10 origin-top-right transition duration-300 transform bg-primary-dark border border-secondary-main rounded shadow',
           {
             'scale-0': !open,
             'scale-100': open,
