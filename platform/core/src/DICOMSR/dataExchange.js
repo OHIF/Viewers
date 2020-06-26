@@ -82,6 +82,11 @@ const storeMeasurementsOld = async (measurementData, filter, server) => {
   }
 };
 
+/**
+ *
+ * @param {object[]} measurementData An array of measurements from the measurements service
+ * that you wish to serialize.
+ */
 const downloadReport = measurementData => {
   const srDataset = generateReport(measurementData);
   const reportBlob = dcmjs.data.datasetToBlob(srDataset);
@@ -91,6 +96,11 @@ const downloadReport = measurementData => {
   window.location.assign(objectUrl);
 };
 
+/**
+ *
+ * @param {object[]} measurementData An array of measurements from the measurements service
+ * that you wish to serialize.
+ */
 const generateReport = measurementData => {
   const ids = measurementData.map(md => md.id);
   const filteredToolState = _getFilteredCornerstoneToolState(ids);
@@ -103,6 +113,12 @@ const generateReport = measurementData => {
   return report.dataset;
 };
 
+/**
+ *
+ * @param {object[]} measurementData An array of measurements from the measurements service
+ * that you wish to serialize.
+ * @param {object} dataSource The dataSource that you wish to use to persist the data.
+ */
 const storeMeasurements = async (measurementData, dataSource) => {
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
   // But it is good enough for now whilst we only have cornerstone as a datasource.
