@@ -207,6 +207,7 @@ function OHIFCornerstoneSRViewport({
     StudyDate,
     SeriesDescription,
     SeriesInstanceUID,
+    PixelSpacing,
     SeriesNumber,
   } = activeDisplaySetData;
 
@@ -253,7 +254,7 @@ function OHIFCornerstoneSRViewport({
             patientAge: PatientAge || '',
             MRN: PatientID || '',
             thickness: `${SliceThickness}mm`,
-            spacing: '',
+            spacing: `${PixelSpacing[0]}mm x ${PixelSpacing[1]}mm`,
             scanner: ManufacturerModelName || '',
           },
         }}
