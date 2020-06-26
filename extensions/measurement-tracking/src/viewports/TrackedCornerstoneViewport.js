@@ -10,8 +10,6 @@ import {
   useViewportGrid,
   useViewportDialog,
 } from '@ohif/ui';
-import debounce from 'lodash.debounce';
-import throttle from 'lodash.throttle';
 import { useTrackedMeasurements } from './../getContextModule';
 
 // TODO -> Get this list from the list of tracked measurements.
@@ -43,7 +41,6 @@ function TrackedCornerstoneViewport({
 
   const [
     { activeViewportIndex, viewports },
-    dispatchViewportGrid,
   ] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
@@ -216,7 +213,6 @@ function TrackedCornerstoneViewport({
     PatientAge,
     SliceThickness,
   } = displaySet.images[0];
-
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
