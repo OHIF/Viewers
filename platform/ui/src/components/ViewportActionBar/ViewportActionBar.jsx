@@ -14,7 +14,7 @@ const ViewportActionBar = ({
   studyData,
   showNavArrows,
   showPatientInfo,
-  onSeriesChange,
+  onNavigationClick,
 }) => {
   const {
     label,
@@ -117,14 +117,14 @@ const ViewportActionBar = ({
             <Button
               size="initial"
               className="px-2 py-1"
-              onClick={() => onSeriesChange('left')}
+              onClick={() => onNavigationClick('left')}
             >
               <Icon name="chevron-left" className="w-4 text-white" />
             </Button>
             <Button
               size="initial"
               className="px-2 py-1"
-              onClick={() => onSeriesChange('right')}
+              onClick={() => onNavigationClick('right')}
             >
               <Icon name="chevron-right" className="w-4 text-white" />
             </Button>
@@ -149,7 +149,7 @@ const ViewportActionBar = ({
 };
 
 ViewportActionBar.propTypes = {
-  onSeriesChange: PropTypes.func.isRequired,
+  onNavigationClick: PropTypes.func.isRequired,
   showNavArrows: PropTypes.bool,
   showPatientInfo: PropTypes.bool,
   studyData: PropTypes.shape({

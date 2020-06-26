@@ -238,7 +238,7 @@ function OHIFCornerstoneSRViewport({
   return (
     <>
       <ViewportActionBar
-        onSeriesChange={onMeasurementChange}
+        onNavigationClick={onMeasurementChange}
         showPatientInfo={viewportIndex === activeViewportIndex}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{

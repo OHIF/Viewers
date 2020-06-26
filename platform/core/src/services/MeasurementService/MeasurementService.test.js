@@ -28,7 +28,7 @@ describe('MeasurementService.js', () => {
     measurement = {
       SOPInstanceUID: '123',
       FrameOfReferenceUID: '1234',
-      referenceSeriesUID: '12345',
+      referencedSeriesUID: '12345',
       label: 'Label',
       description: 'Description',
       unit: 'mm',

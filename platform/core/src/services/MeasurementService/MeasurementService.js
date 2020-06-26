@@ -18,7 +18,7 @@ import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
  * @property {number} id -
  * @property {string} sopInstanceUid -
  * @property {string} FrameOfReferenceUID -
- * @property {string} referenceSeriesUID -
+ * @property {string} referencedSeriesUID -
  * @property {string} label -
  * @property {string} description -
  * @property {string} type -
@@ -33,8 +33,8 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'id',
   'SOPInstanceUID',
   'FrameOfReferenceUID',
-  'referenceStudyUID',
-  'referenceSeriesUID',
+  'referencedStudyUID',
+  'referencedSeriesUID',
   'label',
   'description',
   'type',

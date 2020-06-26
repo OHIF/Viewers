@@ -41,8 +41,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     const measurements = MeasurementService.getMeasurements();
     const filteredMeasurements = measurements.filter(
       m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
+        trackedStudy === m.referencedStudyUID &&
+        trackedSeries.includes(m.referencedSeriesUID)
     );
     const mappedMeasurements = filteredMeasurements.map((m, index) =>
       _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
@@ -109,11 +109,10 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
+        trackedStudy === m.referencedStudyUID &&
+        trackedSeries.includes(m.referencedSeriesUID)
     );
 
-    // TODO -> local download.
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
   };
 
@@ -121,10 +120,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
+        trackedStudy === m.referencedStudyUID &&
+        trackedSeries.includes(m.referencedSeriesUID)
     );
-
 
     const dataSources = extensionManager.getDataSources();
     // TODO -> Eventually deal with multiple dataSources.
@@ -171,13 +169,13 @@ function _mapMeasurementToDisplay(measurement, index, types) {
     label,
     description,
     // Reference IDs
-    referenceStudyUID,
-    referenceSeriesUID,
+    referencedStudyUID,
+    referencedSeriesUID,
     SOPInstanceUID,
   } = measurement;
   const instance = DicomMetadataStore.getInstance(
-    referenceStudyUID,
-    referenceSeriesUID,
+    referencedStudyUID,
+    referencedSeriesUID,
     SOPInstanceUID
   );
   const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;

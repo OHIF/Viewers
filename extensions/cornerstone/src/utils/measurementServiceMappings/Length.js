@@ -13,7 +13,7 @@ const Length = {
       unit,
       SOPInstanceUID,
       FrameOfReferenceUID,
-      referenceSeriesUID,
+      referencedSeriesUID,
     } = measurement;
 
     return {
@@ -21,7 +21,7 @@ const Length = {
       measurementData: {
         sopInstanceUid: SOPInstanceUID,
         frameOfReferenceUID: FrameOfReferenceUID,
-        SeriesInstanceUID: referenceSeriesUID,
+        SeriesInstanceUID: referencedSeriesUID,
         unit,
         text: label,
         description,
@@ -64,8 +64,8 @@ const Length = {
       id: measurementData._measurementServiceId,
       SOPInstanceUID: SOPInstanceUID,
       FrameOfReferenceUID,
-      referenceSeriesUID: SeriesInstanceUID,
-      referenceStudyUID: StudyInstanceUID,
+      referencedSeriesUID: SeriesInstanceUID,
+      referencedStudyUID: StudyInstanceUID,
       label: measurementData.text,
       description: measurementData.description,
       unit: measurementData.unit,

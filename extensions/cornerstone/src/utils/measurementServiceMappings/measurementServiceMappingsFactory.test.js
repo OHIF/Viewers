@@ -57,7 +57,7 @@ describe('measurementServiceMappings.js', () => {
       id: 1,
       SOPInstanceUID: '123',
       FrameOfReferenceUID: '123',
-      referenceSeriesUID: '123',
+      referencedSeriesUID: '123',
       label: 'Test',
       description: 'Test',
       unit: 'mm',

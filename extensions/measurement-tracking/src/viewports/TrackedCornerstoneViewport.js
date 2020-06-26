@@ -13,6 +13,7 @@ import {
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
 import { useTrackedMeasurements } from './../getContextModule';
+import jumpToNextAnnotation from './utils/jumpToNextAnnotation';
 
 // TODO -> Get this list from the list of tracked measurements.
 const {
@@ -38,8 +39,11 @@ function TrackedCornerstoneViewport({
   dataSource,
   displaySet,
   viewportIndex,
+  servicesManager,
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
+
+  const [trackedMeasurementId, setTrackedMeasurementId] = useState(null);
 
   const [
     { activeViewportIndex, viewports },
@@ -217,15 +221,37 @@ function TrackedCornerstoneViewport({
     SliceThickness,
   } = displaySet.images[0];
 
-
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
+  }
+
+  /**
+   * If the series is tracked, jumps through tracked measurements in this series.
+   * if the series is not tracked, jumps through potentially trackable measurements
+   * (those tracked by the MeasurementService.)
+   * @param {string} direction 'right' or 'left' navigation through the measurements.
+   */
+  function switchMeasurement(direction) {
+    if (!element) {
+      // Element not yet enabled.
+      return;
+    }
+
+    const newTrackedMeasurementId = _switchMeasurementAndGetMeasurementId(
+      direction,
+      element,
+      SeriesInstanceUID,
+      servicesManager,
+      trackedMeasurementId
+    );
+
+    setTrackedMeasurementId(newTrackedMeasurementId);
   }
 
   return (
     <>
       <ViewportActionBar
-        onSeriesChange={direction => alert(`Series ${direction}`)}
+        onNavigationClick={switchMeasurement}
         showPatientInfo={viewportIndex === activeViewportIndex}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
@@ -327,3 +353,59 @@ async function _getViewportData(dataSource, displaySet) {
 }
 
 export default TrackedCornerstoneViewport;
+
+function _switchMeasurementAndGetMeasurementId(
+  direction,
+  element,
+  SeriesInstanceUID,
+  servicesManager,
+  trackedMeasurementId
+) {
+  const { MeasurementService } = servicesManager.services;
+  const measurements = MeasurementService.getMeasurements();
+
+  // Get the potentially trackable measurements for this series,
+  // The measurements to jump between are the same
+  // regardless if this series is tracked or not.
+
+  const filteredMeasurements = measurements.filter(
+    m => m.referencedSeriesUID === SeriesInstanceUID
+  );
+
+  if (!filteredMeasurements.length) {
+    // No measurements on this series.
+    return;
+  }
+
+  const measurementCount = filteredMeasurements.length;
+
+  const ids = filteredMeasurements.map(fm => fm.id);
+  let measurementIndex = ids.findIndex(id => id === trackedMeasurementId);
+
+  if (measurementIndex === -1) {
+    // Not tracking a measurement, or previous measurement now deleted, revert to 0.
+    measurementIndex = 0;
+  }
+
+  if (direction === 'left') {
+    measurementIndex--;
+
+    if (measurementIndex < 0) {
+      measurementIndex = measurementCount - 1;
+    }
+  } else if (direction === 'right') {
+    measurementIndex++;
+
+    if (measurementIndex === measurementCount) {
+      measurementIndex = 0;
+    }
+  }
+
+  console.log(measurementIndex);
+
+  const newTrackedMeasurementId = ids[measurementIndex];
+
+  jumpToNextAnnotation(trackedMeasurementId, newTrackedMeasurementId, element);
+
+  return newTrackedMeasurementId;
+}

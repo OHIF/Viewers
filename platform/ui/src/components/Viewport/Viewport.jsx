@@ -2,12 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ViewportActionBar, Notification, Button } from '@ohif/ui';
 
-const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
+const Viewport = ({
+  viewportIndex,
+  onNavigationClick,
+  studyData,
+  children,
+}) => {
   return (
     <div className="relative flex flex-col h-full">
       <div className="absolute top-0 left-0 w-full">
         <ViewportActionBar
-          onSeriesChange={onSeriesChange}
+          onNavigationClick={onNavigationClick}
           studyData={studyData}
         />
 
@@ -48,7 +53,7 @@ const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
 
 Viewport.propTypes = {
   viewportIndex: PropTypes.number.isRequired,
-  onSeriesChange: PropTypes.func.isRequired,
+  onNavigationClick: PropTypes.func.isRequired,
   studyData: PropTypes.shape({
     label: PropTypes.string.isRequired,
     isTracked: PropTypes.bool.isRequired,

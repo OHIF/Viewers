@@ -4,7 +4,7 @@ const Component = React.lazy(() => {
   return import('./viewports/TrackedCornerstoneViewport');
 });
 
-const OHIFCornerstoneViewport = props => {
+const TrackedOHIFCornerstoneViewport = props => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
       <Component {...props} />
@@ -12,8 +12,22 @@ const OHIFCornerstoneViewport = props => {
   );
 };
 
-function getViewportModule({ commandsManager }) {
-  return [{ name: 'cornerstone-tracked', component: OHIFCornerstoneViewport }];
+function getViewportModule({ servicesManager }) {
+  const WrappedTrackedOHIFCornerstoneViewport = props => {
+    return (
+      <TrackedOHIFCornerstoneViewport
+        {...props}
+        servicesManager={servicesManager}
+      />
+    );
+  };
+
+  return [
+    {
+      name: 'cornerstone-tracked',
+      component: WrappedTrackedOHIFCornerstoneViewport,
+    },
+  ];
 }
 
 export default getViewportModule;

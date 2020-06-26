@@ -41,8 +41,8 @@ function PanelStudyBrowserTracking({
       MeasurementService.EVENTS.MEASUREMENT_ADDED,
       ({ source, measurement }) => {
         const {
-          referenceSeriesUID: SeriesInstanceUID,
-          referenceStudyUID: StudyInstanceUID,
+          referencedSeriesUID: SeriesInstanceUID,
+          referencedStudyUID: StudyInstanceUID,
         } = measurement;
 
         sendTrackedMeasurementsEvent('TRACK_SERIES', {

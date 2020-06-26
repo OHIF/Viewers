@@ -44,45 +44,6 @@ const retrieveMeasurements = server => {
 };
 
 /**
- *  Function to be registered into MeasurementAPI to store measurements into DICOM Structured Reports
- *
- * @param {Object} measurementData - OHIF measurementData object
- * @param {Object} filter
- * @param {serverType} server
- * @returns {Object} With message to be displayed on success
- */
-const storeMeasurementsOld = async (measurementData, filter, server) => {
-  log.info('[DICOMSR] storeMeasurements');
-
-  if (!server || server.type !== 'dicomWeb') {
-    log.error('[DICOMSR] DicomWeb server is required!');
-    return Promise.reject({});
-  }
-
-  const serverUrl = server.wadoRoot;
-  const firstMeasurementKey = Object.keys(measurementData)[0];
-  const firstMeasurement = measurementData[firstMeasurementKey][0];
-  const StudyInstanceUID =
-    firstMeasurement && firstMeasurement.StudyInstanceUID;
-
-  try {
-    await stowSRFromMeasurements(measurementData, serverUrl);
-    if (StudyInstanceUID) {
-      studies.deleteStudyMetadataPromise(StudyInstanceUID);
-    }
-
-    return {
-      message: 'Measurements saved successfully',
-    };
-  } catch (error) {
-    log.error(
-      `[DICOMSR] Error while saving the measurements: ${error.message}`
-    );
-    throw new Error('Error while saving the measurements.');
-  }
-};
-
-/**
  *
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
