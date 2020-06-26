@@ -15,6 +15,7 @@ import makeCancelable from './makeCancelable';
 import hotkeys from './hotkeys';
 import Queue from './Queue';
 import isDicomUid from './isDicomUid';
+import formatPN from './formatPN';
 import resolveObjectPath from './resolveObjectPath';
 import * as hierarchicalListUtils from './hierarchicalListUtils';
 import * as progressTrackingUtils from './progressTrackingUtils';
@@ -26,6 +27,7 @@ const utils = {
   addServers,
   sortBy,
   writeScript,
+  formatPN,
   b64toBlob,
   StackManager,
   studyMetadataManager,
