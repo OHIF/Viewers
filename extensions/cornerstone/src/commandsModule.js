@@ -13,12 +13,17 @@ const { setViewportSpecificData } = OHIF.redux.actions;
 const commandsModule = ({ servicesManager }) => {
   const { ViewportGridService } = servicesManager.services;
 
+  function _getActiveViewportsEnabledElement() {
+    const { activeViewportIndex } = ViewportGridService.getState();
+    return getEnabledElement(activeViewportIndex);
+  }
+
   const actions = {
     getCornerstoneLibraries: () => {
       return { cornerstone, cornerstoneTools };
     },
-    rotateViewport: ({ viewports, rotation }) => {
-      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+    rotateViewport: ({ rotation }) => {
+      const enabledElement = _getActiveViewportsEnabledElement();
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -27,8 +32,7 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     flipViewportHorizontal: () => {
-      const activeViewportIndex = 0;
-      const enabledElement = getEnabledElement(activeViewportIndex);
+      const enabledElement = _getActiveViewportsEnabledElement();
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -36,8 +40,8 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.setViewport(enabledElement, viewport);
       }
     },
-    flipViewportVertical: ({ viewports }) => {
-      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+    flipViewportVertical: () => {
+      const enabledElement = _getActiveViewportsEnabledElement();
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -45,8 +49,8 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.setViewport(enabledElement, viewport);
       }
     },
-    scaleViewport: ({ direction, viewports }) => {
-      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+    scaleViewport: ({ direction }) => {
+      const enabledElement = _getActiveViewportsEnabledElement();
       const step = direction * 0.15;
 
       if (enabledElement) {
@@ -60,16 +64,14 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     resetViewport: () => {
-      const activeViewportIndex = 0;
-      const enabledElement = getEnabledElement(activeViewportIndex);
+      const enabledElement = _getActiveViewportsEnabledElement();
 
       if (enabledElement) {
         cornerstone.reset(enabledElement);
       }
     },
     invertViewport: () => {
-      const { activeViewportIndex } = ViewportGridService.getState();
-      const enabledElement = getEnabledElement(activeViewportIndex);
+      const enabledElement = _getActiveViewportsEnabledElement();
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -85,8 +87,8 @@ const commandsModule = ({ servicesManager }) => {
       }
       cornerstoneTools.setToolActive(toolName, { mouseButtonMask: 1 });
     },
-    clearAnnotations: ({ viewports }) => {
-      const element = getEnabledElement(viewports.activeViewportIndex);
+    clearAnnotations: () => {
+      const element = _getActiveViewportsEnabledElement();
       if (!element) {
         return;
       }
@@ -141,16 +143,16 @@ const commandsModule = ({ servicesManager }) => {
         });
       });
     },
-    nextImage: ({ viewports }) => {
-      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+    nextImage: () => {
+      const enabledElement = _getActiveViewportsEnabledElement();
       scroll(enabledElement, 1);
     },
-    previousImage: ({ viewports }) => {
-      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+    previousImage: () => {
+      const enabledElement = _getActiveViewportsEnabledElement();
       scroll(enabledElement, -1);
     },
-    getActiveViewportEnabledElement: ({ viewports }) => {
-      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+    getActiveViewportEnabledElement: () => {
+      const enabledElement = _getActiveViewportsEnabledElement();
       return enabledElement;
     },
     showDownloadViewportModal: () => {
@@ -253,8 +255,8 @@ const commandsModule = ({ servicesManager }) => {
     setCornerstoneLayout: () => {
       setCornerstoneLayout();
     },
-    setWindowLevel: ({ viewports, window, level }) => {
-      const enabledElement = getEnabledElement(viewports.activeViewportIndex);
+    setWindowLevel: ({ window, level }) => {
+      const enabledElement = _getActiveViewportsEnabledElement();
 
       if (enabledElement) {
         let viewport = cornerstone.getViewport(enabledElement);
@@ -328,7 +330,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     getActiveViewportEnabledElement: {
       commandFn: actions.getActiveViewportEnabledElement,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     rotateViewportCW: {
@@ -338,7 +340,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     rotateViewportCCW: {
       commandFn: actions.rotateViewport,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: { rotation: -90 },
     },
     invertViewport: {
@@ -348,7 +350,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     flipViewportVertical: {
       commandFn: actions.flipViewportVertical,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     flipViewportHorizontal: {
@@ -358,17 +360,17 @@ const commandsModule = ({ servicesManager }) => {
     },
     scaleUpViewport: {
       commandFn: actions.scaleViewport,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: { direction: 1 },
     },
     scaleDownViewport: {
       commandFn: actions.scaleViewport,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: { direction: -1 },
     },
     fitViewportToWindow: {
       commandFn: actions.scaleViewport,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: { direction: 0 },
     },
     resetViewport: {
@@ -378,17 +380,17 @@ const commandsModule = ({ servicesManager }) => {
     },
     clearAnnotations: {
       commandFn: actions.clearAnnotations,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     nextImage: {
       commandFn: actions.nextImage,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     previousImage: {
       commandFn: actions.previousImage,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
     // TOOLS
@@ -410,7 +412,7 @@ const commandsModule = ({ servicesManager }) => {
     },
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
-      storeContexts: ['viewports'],
+      storeContexts: [],
       options: {},
     },
   };
