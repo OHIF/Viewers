@@ -203,9 +203,11 @@ function OHIFCornerstoneSRViewport({
     PatientSex,
     PatientAge,
     SliceThickness,
+    ManufacturerModelName,
     StudyDate,
     SeriesDescription,
     SeriesInstanceUID,
+    PixelSpacing,
     SeriesNumber,
   } = activeDisplaySetData;
 
@@ -233,13 +235,10 @@ function OHIFCornerstoneSRViewport({
     updateViewport(newMeasurementSelected);
   };
 
-  console.log(currentImageIdIndex);
-
   return (
     <>
       <ViewportActionBar
         onSeriesChange={onMeasurementChange}
-        showPatientInfo={viewportIndex === activeViewportIndex}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
           label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
@@ -255,8 +254,8 @@ function OHIFCornerstoneSRViewport({
             patientAge: PatientAge || '',
             MRN: PatientID || '',
             thickness: `${SliceThickness}mm`,
-            spacing: '',
-            scanner: '',
+            spacing: PixelSpacing && PixelSpacing.length ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(2)}mm` : '',
+            scanner: ManufacturerModelName || '',
           },
         }}
       />
