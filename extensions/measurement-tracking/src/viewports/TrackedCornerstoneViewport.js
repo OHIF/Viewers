@@ -38,10 +38,7 @@ function TrackedCornerstoneViewport({
   viewportIndex,
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
-
-  const [
-    { activeViewportIndex, viewports },
-  ] = useViewportGrid();
+  const [{ activeViewportIndex, viewports }] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
@@ -122,6 +119,18 @@ function TrackedCornerstoneViewport({
     }
 
     setElement(targetElement);
+
+    const OHIFCornerstoneEnabledElementEvent = new CustomEvent(
+      'ohif-cornerstone-enabled-element-event',
+      {
+        detail: {
+          enabledElement: targetElement,
+          viewportIndex,
+        },
+      }
+    );
+
+    document.dispatchEvent(OHIFCornerstoneEnabledElementEvent);
   };
 
   useEffect(() => {

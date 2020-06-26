@@ -12,11 +12,11 @@ function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [
     { numCols, numRows, activeViewportIndex, viewports },
-    dispatch,
+    viewportGridService,
   ] = useViewportGrid();
 
   const setActiveViewportIndex = index => {
-    dispatch({ type: 'SET_ACTIVE_VIEWPORT_INDEX', payload: index });
+    viewportGridService.setActiveViewportIndex(index);
   };
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
@@ -96,12 +96,9 @@ function ViewerViewportGrid(props) {
   // ]);
   const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
     console.warn(`DROPPED: ${displaySetInstanceUID}`);
-    dispatch({
-      type: 'SET_DISPLAYSET_FOR_VIEWPORT',
-      payload: {
-        viewportIndex,
-        displaySetInstanceUID,
-      },
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex,
+      displaySetInstanceUID,
     });
   };
 

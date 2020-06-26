@@ -25,7 +25,7 @@ function OHIFCornerstoneSRViewport({
   viewportIndex,
   DisplaySetService,
 }) {
-  const [viewportGrid, dispatchViewportGrid] = useViewportGrid();
+  const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementSelected, setMeasurementSelected] = useState(0);
   const [measurementCount, setMeasurementCount] = useState(1);
   const [viewportData, setViewportData] = useState(null);
