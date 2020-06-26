@@ -82,7 +82,7 @@ export default [
     id: 'RotateClockwise',
     type: 'ohif.action',
     props: {
-      icon: 'tool-capture',
+      icon: 'old-rotate-right',
       label: 'Rotate Right',
       commandName: 'rotateViewportCW',
       type: 'primary',
@@ -92,7 +92,7 @@ export default [
     id: 'FlipHorizontally',
     type: 'ohif.action',
     props: {
-      icon: 'tool-capture',
+      icon: 'old-ellipse-h',
       label: 'Flip Horizontally',
       commandName: 'flipViewportHorizontal',
       type: 'primary',
@@ -106,7 +106,7 @@ export default [
     },
     props: {
       isActive: false,
-      icon: 'tool-move',
+      icon: 'old-bars',
       label: 'Stack Scroll',
       commandName: 'setToolActive',
       commandOptions: { toolName: 'StackScroll' },
@@ -121,7 +121,7 @@ export default [
     },
     props: {
       isActive: false,
-      icon: 'tool-move',
+      icon: 'old-circle',
       label: 'Magnify',
       commandName: 'setToolActive',
       commandOptions: { toolName: 'Magnify' },
@@ -132,7 +132,7 @@ export default [
     id: 'Invert',
     type: 'ohif.action',
     props: {
-      icon: 'tool-capture',
+      icon: 'old-invert',
       label: 'Invert',
       commandName: 'invertViewport',
       type: 'primary',
