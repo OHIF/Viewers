@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon, ButtonGroup, Button, Tooltip } from '@ohif/ui';
@@ -13,9 +13,11 @@ const classes = {
 const ViewportActionBar = ({
   studyData,
   showNavArrows,
-  showPatientInfo,
+  showPatientInfo: patientInfoVisibility,
   onSeriesChange,
 }) => {
+  const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
+
   const {
     label,
     isTracked,
@@ -36,6 +38,8 @@ const ViewportActionBar = ({
     spacing,
     scanner,
   } = patientInformation;
+
+  const onPatientInfoClick = () => setShowPatientInfo(!showPatientInfo)
 
   const renderIconStatus = () => {
     if (modality === 'SR') {
@@ -60,29 +64,30 @@ const ViewportActionBar = ({
         {!isTracked ? (
           <Icon name="dotted-circle" className="w-6 text-primary-light" />
         ) : (
-          <Tooltip
-            position="bottom-left"
-            content={
-              <div className="flex py-2">
-                <div className="flex pt-1">
-                  <Icon name="info-link" className="w-4 text-primary-main" />
-                </div>
-                <div className="flex ml-4">
-                  <span className="text-base text-common-light">
-                    Series is
+            <Tooltip
+              position="bottom-left"
+              content={
+                <div className="flex py-2">
+                  <div className="flex pt-1">
+                    <Icon name="info-link" className="w-4 text-primary-main" />
+                  </div>
+                  <div className="flex ml-4">
+                    <span className="text-base text-common-light">
+                      Series is
                     <span className="font-bold text-white"> tracked</span> and
                     can be viewed <br /> in the measurement panel
                   </span>
+                  </div>
                 </div>
-              </div>
-            }
-          >
-            <Icon name="tracked" className="w-6 text-primary-light" />
-          </Tooltip>
-        )}
+              }
+            >
+              <Icon name="tracked" className="w-6 text-primary-light" />
+            </Tooltip>
+          )}
       </div>
     );
   };
+
   return (
     <div className="flex items-center p-2 border-b border-primary-light">
       <div className="flex flex-grow">
@@ -131,19 +136,18 @@ const ViewportActionBar = ({
           </ButtonGroup>
         </div>
       )}
-      {showPatientInfo && (
-        <div className="flex ml-4 mr-2">
-          <PatientInfo
-            patientName={patientName}
-            patientSex={patientSex}
-            patientAge={patientAge}
-            MRN={MRN}
-            thickness={thickness}
-            spacing={spacing}
-            scanner={scanner}
-          />
-        </div>
-      )}
+      <div className="flex ml-4 mr-2 cursor-pointer" onClick={onPatientInfoClick}>
+        <PatientInfo
+          isOpen={showPatientInfo}
+          patientName={patientName}
+          patientSex={patientSex}
+          patientAge={patientAge}
+          MRN={MRN}
+          thickness={thickness}
+          spacing={spacing}
+          scanner={scanner}
+        />
+      </div>
     </div>
   );
 };
@@ -174,7 +178,7 @@ ViewportActionBar.propTypes = {
 
 ViewportActionBar.defaultProps = {
   showNavArrows: true,
-  showPatientInfo: true,
+  showPatientInfo: false,
 };
 
 function PatientInfo({
@@ -185,11 +189,14 @@ function PatientInfo({
   thickness,
   spacing,
   scanner,
+  isOpen,
 }) {
   return (
     <Tooltip
+      isSticky
+      isDisabled={!isOpen}
       position="bottom-right"
-      content={
+      content={isOpen && (
         <div className="flex py-2">
           <div className="flex pt-1">
             <Icon name="info-link" className="w-4 text-primary-main" />
@@ -236,7 +243,7 @@ function PatientInfo({
             </div>
           </div>
         </div>
-      }
+      )}
     >
       <div className="relative flex justify-end">
         <div className="relative">

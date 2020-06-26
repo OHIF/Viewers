@@ -76,10 +76,9 @@ const Select = ({
       options={options}
       value={selectedOptions}
       onChange={(selectedOptions, { action }) => {
-        const newSelection = !selectedOptions.length ? selectedOptions : selectedOptions.reduce(
-          (acc, curr) => acc.concat([curr.value]),
-          []
-        );
+        const newSelection = !selectedOptions.length
+          ? selectedOptions
+          : selectedOptions.reduce((acc, curr) => acc.concat([curr.value]), []);
         onChange(newSelection, action);
       }}
     ></ReactSelect>

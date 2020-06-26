@@ -69,7 +69,7 @@
     "cornerstone-math": "^0.1.8",
     "cornerstone-tools": "4.16.0",
     "cornerstone-wado-image-loader": "^3.1.2",
-    "dcmjs": "^0.12.2",
+    "dcmjs": "0.14.0",
     "dicom-parser": "^1.8.3",
     "dicomweb-client": "^0.4.4",
     "dotenv-webpack": "^1.7.0",

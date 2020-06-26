@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, ButtonGroup, Icon, IconButton } from '@ohif/ui';
 
-function ActionButtons() {
+function ActionButtons({ onExportClick, onCreateReportClick }) {
   return (
     <React.Fragment>
-      <ButtonGroup onClick={() => alert('Export')}>
+      <ButtonGroup onClick={onExportClick}>
         <Button
           className="px-2 py-2 text-base text-white bg-black border-primary-main"
           size="initial"
@@ -26,12 +26,22 @@ function ActionButtons() {
         variant="outlined"
         size="initial"
         color="inherit"
-        onClick={() => alert('Create Report')}
+        onClick={onCreateReportClick}
       >
         Create Report
       </Button>
     </React.Fragment>
   );
 }
+
+ActionButtons.propTypes = {
+  onExportClick: PropTypes.func,
+  onCreateReportClick: PropTypes.func,
+};
+
+ActionButtons.defaultProps = {
+  onExportClick: () => alert('Export'),
+  onCreateReportClick: () => alert('Create Report'),
+};
 
 export default ActionButtons;

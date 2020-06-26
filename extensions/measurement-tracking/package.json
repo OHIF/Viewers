@@ -28,11 +28,12 @@
   },
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
-    "dcmjs": "^0.12.4",
+    "dcmjs": "0.14.0",
     "prop-types": "^15.6.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "webpack": "^4.0.0"
+    "webpack": "^4.0.0",
+    "cornerstone-tools": "4.15.1"
   },
   "dependencies": {
     "@babel/runtime": "7.7.6",

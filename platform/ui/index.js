@@ -76,6 +76,7 @@ export {
   Typography,
   Viewport,
   ViewportActionBar,
+  ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
 } from './src/components';

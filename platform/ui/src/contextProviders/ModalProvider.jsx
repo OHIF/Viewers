@@ -19,7 +19,7 @@ export const useModal = () => useContext(ModalContext);
  * @typedef {Object} ModalProps
  * @property {ReactElement|HTMLElement} [content=null] Modal content.
  * @property {Object} [contentProps=null] Modal content props.
- * @property {boolean} [shouldCloseOnEsc=false] Modal is dismissible via the esc key.
+ * @property {boolean} [shouldCloseOnEsc=true] Modal is dismissible via the esc key.
  * @property {boolean} [isOpen=true] Make the Modal visible or hidden.
  * @property {boolean} [closeButton=true] Should the modal body render the close button.
  * @property {string} [title=null] Should the modal render the title independently of the body content.
@@ -30,7 +30,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
   const DEFAULT_OPTIONS = {
     content: null,
     contentProps: null,
-    shouldCloseOnEsc: false,
+    shouldCloseOnEsc: true,
     isOpen: true,
     closeButton: true,
     title: null,

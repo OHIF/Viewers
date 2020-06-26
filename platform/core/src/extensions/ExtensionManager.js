@@ -137,11 +137,16 @@ export default class ExtensionManager {
 
   getDataSources = dataSourceName => {
     if (dataSourceName === undefined) {
+      // Default to the activeDataSource
       dataSourceName = this.activeDataSource;
     }
 
     // Note: this currently uses the data source name, which feels weird...
     return this.dataSourceMap[dataSourceName];
+  };
+
+  getActiveDataSource = () => {
+    return this.activeDataSource;
   };
 
   /**

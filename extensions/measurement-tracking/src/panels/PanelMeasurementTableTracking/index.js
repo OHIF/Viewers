@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { StudySummary, MeasurementTable } from '@ohif/ui';
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore, DICOMSR } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
+import cornerstoneTools from 'cornerstone-tools';
+import cornerstone from 'cornerstone-core';
+import dcmjs from 'dcmjs';
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
@@ -13,7 +16,7 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   description: undefined, // 'CHEST/ABD/PELVIS W CONTRAST',
 };
 
-function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
+function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(
     Date.now().toString()
   );
@@ -102,6 +105,35 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
 
   const activeMeasurementItem = 0;
 
+  const onExportClick = () => {
+    const measurements = MeasurementService.getMeasurements();
+    const trackedMeasurements = measurements.filter(
+      m =>
+        trackedStudy === m.referenceStudyUID &&
+        trackedSeries.includes(m.referenceSeriesUID)
+    );
+
+    // TODO -> local download.
+    DICOMSR.downloadReport(trackedMeasurements, dataSource);
+  };
+
+  const onCreateReportClick = () => {
+    const measurements = MeasurementService.getMeasurements();
+    const trackedMeasurements = measurements.filter(
+      m =>
+        trackedStudy === m.referenceStudyUID &&
+        trackedSeries.includes(m.referenceSeriesUID)
+    );
+
+
+    const dataSources = extensionManager.getDataSources();
+    // TODO -> Eventually deal with multiple dataSources.
+    // Would need some way of saying which one is the "push" dataSource
+    const dataSource = dataSources[0];
+
+    DICOMSR.storeMeasurements(trackedMeasurements, dataSource);
+  };
+
   return (
     <>
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
@@ -121,7 +153,10 @@ function PanelMeasurementTableTracking({ servicesManager, commandsManager }) {
         />
       </div>
       <div className="flex justify-center p-4">
-        <ActionButtons />
+        <ActionButtons
+          onExportClick={onExportClick}
+          onCreateReportClick={onCreateReportClick}
+        />
       </div>
     </>
   );

@@ -15,6 +15,7 @@ import { DicomMetadataStore } from '@ohif/core';
 function create({
   query,
   retrieve,
+  store,
   retrieveSeriesMetadata,
   getImageIdsForDisplaySet,
 }) {
@@ -44,13 +45,20 @@ function create({
     series: {},
   };
 
+  const defaultStore = {
+    dicom: async naturalizedDataset => {
+      throw new Error(
+        'store.dicom(naturalizedDicom, StudyInstanceUID) not implemented for dataSource.'
+      );
+    },
+  };
+
   return {
     query: query || defaultQuery,
     retrieve: retrieve || defaultRetrieve,
+    store: store || defaultStore,
     getImageIdsForDisplaySet,
     retrieveSeriesMetadata,
-    // then go get all series level metadata.
-    // Store this in the DICOM MetadataStore.
   };
 }
 
