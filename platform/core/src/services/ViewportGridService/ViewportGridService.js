@@ -2,39 +2,56 @@ const name = 'ViewportGridService';
 
 const publicAPI = {
   name,
-  hide: _hide,
-  show: _show,
+  getState: _getState,
+  setActiveViewportIndex: _setActiveViewportIndex,
+  setDisplaysetForViewport: _setDisplaysetForViewport,
+  setLayout: _setLayout,
   setServiceImplementation,
 };
 
 const serviceImplementation = {
-  _hide: () => console.warn('hide() NOT IMPLEMENTED'),
-  _show: () => console.warn('show() NOT IMPLEMENTED'),
+  _getState: () => console.warn('getState() NOT IMPLEMENTED'),
+  _setActiveViewportIndex: () => console.warn('setActiveViewportIndex() NOT IMPLEMENTED'),
+  _setDisplaysetForViewport: () => console.warn('setDisplaysetForViewport() NOT IMPLEMENTED'),
+  _setLayout: () => console.warn('setLayout() NOT IMPLEMENTED'),
 };
 
-function _show({ viewportIndex, type, message, actions, onSubmit }) {
-  return serviceImplementation._show({
+function _getState() {
+  return serviceImplementation._getState();
+}
+
+function _setActiveViewportIndex(index) {
+  return serviceImplementation._setActiveViewportIndex(index);
+}
+
+function _setDisplaysetForViewport({ viewportIndex, displaySetInstanceUID }) {
+  return serviceImplementation._setDisplaysetForViewport({
     viewportIndex,
-    type,
-    message,
-    actions,
-    onSubmit,
+    displaySetInstanceUID,
   });
 }
 
-function _hide() {
-  return serviceImplementation._hide();
+function _setLayout({ numCols, numRows }) {
+  return serviceImplementation._setLayout({ numCols, numRows });
 }
 
 function setServiceImplementation({
-  hide: hideImplementation,
-  show: showImplementation,
+  getState: getStateImplementation,
+  setActiveViewportIndex: setActiveViewportIndexImplementation,
+  setDisplaysetForViewport: setDisplaysetForViewportImplementation,
+  setLayout: setLayoutImplementation,
 }) {
-  if (hideImplementation) {
-    serviceImplementation._hide = hideImplementation;
+  if (getStateImplementation) {
+    serviceImplementation._getState = getStateImplementation;
   }
-  if (showImplementation) {
-    serviceImplementation._show = showImplementation;
+  if (setActiveViewportIndexImplementation) {
+    serviceImplementation._setActiveViewportIndex = setActiveViewportIndexImplementation;
+  }
+  if (setDisplaysetForViewportImplementation) {
+    serviceImplementation._setDisplaysetForViewport = setDisplaysetForViewportImplementation;
+  }
+  if (setLayoutImplementation) {
+    serviceImplementation._setLayout = setLayoutImplementation;
   }
 }
 
@@ -44,11 +61,3 @@ export default {
     return publicAPI;
   },
 };
-
-// initialState={{
-//   numRows: 1,
-//   numCols: 1,
-//   viewports: [],
-//   activeViewportIndex: 0,
-// }}
-// reducer={viewportGridReducer}
