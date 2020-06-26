@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { SidePanel } from '@ohif/ui';
+import { SidePanel, ErrorBoundary } from '@ohif/ui';
 import Header from './Header.jsx';
 import NestedMenu from './ToolbarButtonNestedMenu.jsx';
 
@@ -93,27 +92,28 @@ function ViewerLayout({
   return (
     <div>
       <Header>
-        <div className="relative flex justify-center">
-          {toolbars.primary.map(toolDef => {
-            const isNested = Array.isArray(toolDef);
-
-            if (!isNested) {
-              const { id, Component, componentProps } = toolDef;
-              return <Component key={id} id={id} {...componentProps} />;
-            } else {
-              return (
-                <NestedMenu isActive={activeTool.isActive} icon={activeTool.icon} label={activeTool.label}>
-                  <div className="flex">
-                    {toolDef.map(x => {
-                      const { id, Component, componentProps } = x;
-                      return <Component key={id} id={id} {...componentProps} />;
-                    })}
-                  </div>
-                </NestedMenu>
-              );
-            }
-          })}
-        </div>
+        <ErrorBoundary context="Primary Toolbar">
+          <div className="relative flex justify-center">
+            {toolbars.primary.map(toolDef => {
+              const isNested = Array.isArray(toolDef);
+              if (!isNested) {
+                const { id, Component, componentProps } = toolDef;
+                return <Component key={id} id={id} {...componentProps} />;
+              } else {
+                return (
+                  <NestedMenu isActive={activeTool.isActive} icon={activeTool.icon} label={activeTool.label}>
+                    <div className="flex">
+                      {toolDef.map(x => {
+                        const { id, Component, componentProps } = x;
+                        return <Component key={id} id={id} {...componentProps} />;
+                      })}
+                    </div>
+                  </NestedMenu>
+                );
+              }
+            })}
+          </div>
+        </ErrorBoundary>
       </Header>
       <div
         className="flex flex-row flex-no-wrap items-stretch w-full overflow-hidden"
@@ -121,36 +121,43 @@ function ViewerLayout({
       >
         {/* LEFT SIDEPANELS */}
         {leftPanelComponents.length && (
-          <SidePanel
-            side="left"
-            defaultComponentOpen={leftPanelComponents[0].name}
-            childComponents={leftPanelComponents}
-          />
+          <ErrorBoundary context="Left Panel">
+            <SidePanel
+              side="left"
+              defaultComponentOpen={leftPanelComponents[0].name}
+              childComponents={leftPanelComponents}
+            />
+          </ErrorBoundary>
         )}
         {/* TOOLBAR + GRID */}
         <div className="flex flex-col flex-1 h-full">
           <div className="flex h-12 border-b border-transparent flex-2 w-100">
-            <div className="flex items-center w-full px-3 bg-primary-dark">
-              {toolbars.secondary.map(toolDef => {
-                const { id, Component, componentProps } = toolDef;
-
-                return <Component key={id} id={id} {...componentProps} />;
-              })}
-            </div>
+            <ErrorBoundary context="Secondary Toolbar">
+              <div className="flex items-center w-full px-3 bg-primary-dark">
+                {toolbars.secondary.map(toolDef => {
+                  const { id, Component, componentProps } = toolDef;
+                  return <Component key={id} id={id} {...componentProps} />;
+                })}
+              </div>
+            </ErrorBoundary>
           </div>
           <div className="flex items-center justify-center flex-1 h-full pt-1 pb-2 overflow-hidden bg-black">
-            <ViewportGridComp
-              servicesManager={servicesManager}
-              viewportComponents={viewportComponents}
-            />
+            <ErrorBoundary context="Grid">
+              <ViewportGridComp
+                servicesManager={servicesManager}
+                viewportComponents={viewportComponents}
+              />
+            </ErrorBoundary>
           </div>
         </div>
         {rightPanelComponents.length && (
-          <SidePanel
-            side="right"
-            defaultComponentOpen={rightPanelComponents[0].name}
-            childComponents={rightPanelComponents}
-          />
+          <ErrorBoundary context="Right Panel">
+            <SidePanel
+              side="right"
+              defaultComponentOpen={rightPanelComponents[0].name}
+              childComponents={rightPanelComponents}
+            />
+          </ErrorBoundary>
         )}
       </div>
     </div>
