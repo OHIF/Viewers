@@ -122,6 +122,18 @@ function TrackedCornerstoneViewport({
     }
 
     setElement(targetElement);
+
+    const OHIFCornerstoneEnabledElementEvent = new CustomEvent(
+      'ohif-cornerstone-enabled-element-event',
+      {
+        detail: {
+          enabledElement: targetElement,
+          viewportIndex,
+        },
+      }
+    );
+
+    document.dispatchEvent(OHIFCornerstoneEnabledElementEvent);
   };
 
   useEffect(() => {

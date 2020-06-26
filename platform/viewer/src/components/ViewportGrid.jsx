@@ -13,8 +13,6 @@ function ViewerViewportGrid(props) {
     viewportGridService,
   ] = useViewportGrid();
 
-  debugger;
-
   const setActiveViewportIndex = index => {
     viewportGridService.setActiveViewportIndex(index);
   };
