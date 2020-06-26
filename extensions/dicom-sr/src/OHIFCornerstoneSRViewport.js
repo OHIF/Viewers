@@ -254,7 +254,7 @@ function OHIFCornerstoneSRViewport({
             patientAge: PatientAge || '',
             MRN: PatientID || '',
             thickness: `${SliceThickness}mm`,
-            spacing: `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(2)}mm`,
+            spacing: PixelSpacing && PixelSpacing.length ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(2)}mm` : '',
             scanner: ManufacturerModelName || '',
           },
         }}
