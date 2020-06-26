@@ -10,8 +10,6 @@ import {
   useViewportGrid,
   useViewportDialog,
 } from '@ohif/ui';
-import debounce from 'lodash.debounce';
-import throttle from 'lodash.throttle';
 import { useTrackedMeasurements } from './../getContextModule';
 
 // TODO -> Get this list from the list of tracked measurements.
@@ -40,7 +38,6 @@ function TrackedCornerstoneViewport({
   viewportIndex,
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
-
   const [{ activeViewportIndex, viewports }] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
@@ -218,14 +215,16 @@ function TrackedCornerstoneViewport({
     SeriesInstanceUID,
     SeriesNumber,
   } = displaySet;
+
   const {
     PatientID,
     PatientName,
     PatientSex,
     PatientAge,
     SliceThickness,
+    PixelSpacing,
+    ManufacturerModelName
   } = displaySet.images[0];
-
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
@@ -235,7 +234,6 @@ function TrackedCornerstoneViewport({
     <>
       <ViewportActionBar
         onSeriesChange={direction => alert(`Series ${direction}`)}
-        showPatientInfo={viewportIndex === activeViewportIndex}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
           label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
@@ -246,13 +244,13 @@ function TrackedCornerstoneViewport({
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
-            patientName: PatientName ? PatientName.Alphabetic || '' : '',
+            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
             thickness: `${SliceThickness}mm`,
-            spacing: '',
-            scanner: '',
+            spacing: PixelSpacing && PixelSpacing.length ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(2)}mm` : '',
+            scanner: ManufacturerModelName || '',
           },
         }}
       />

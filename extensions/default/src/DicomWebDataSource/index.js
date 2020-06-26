@@ -17,8 +17,10 @@ const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
 const { urlUtil } = utils;
 
-const VERSION_NAME = 'OHIF-0.1';
-const SR_TRANSFER_SYNTAX_UID = '1.2.840.10008.1.2.1';
+const ImplementationClassUID =
+  '2.25.270695996825855179949881587723571202391.2.0.0';
+const ImplementationVersionName = 'OHIF-VIEWER-2.0.0';
+const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
 
 /**
  *
@@ -140,9 +142,9 @@ function createDicomWebApi(dicomWebConfig) {
             dataset._meta.FileMetaInformationVersion.Value,
           MediaStorageSOPClassUID: dataset.SOPClassUID,
           MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
-          TransferSyntaxUID: SR_TRANSFER_SYNTAX_UID,
-          ImplementationClassUID: DicomMetaDictionary.uid(),
-          ImplementationVersionName: VERSION_NAME,
+          TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
+          ImplementationClassUID,
+          ImplementationVersionName,
         };
 
         const denaturalized = denaturalizeDataset(meta);

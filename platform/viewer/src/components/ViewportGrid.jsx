@@ -1,10 +1,12 @@
 /**
  * CSS Grid Reference: http://grid.malven.co/
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
+import { classes } from '@ohif/core';
+const { ImageSet } = classes;
 
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
@@ -19,6 +21,29 @@ function ViewerViewportGrid(props) {
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const { DisplaySetService } = servicesManager.services;
+
+  useEffect(() => {
+    const { unsubscribe } = DisplaySetService.subscribe(
+      DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
+      displaySets => {
+        displaySets.sort((a, b) => {
+          const isImageSet = x => x instanceof ImageSet;
+          return (isImageSet(a) === isImageSet(b)) ? 0 : isImageSet(a) ? -1 : 1;
+        });
+        dispatch({
+          type: 'SET_DISPLAYSET_FOR_VIEWPORT',
+          payload: {
+            viewportIndex: 0,
+            displaySetInstanceUID: displaySets[0].displaySetInstanceUID,
+          },
+        });
+      },
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   // TODO -> Make a HangingProtocolService
   const HangingProtocolService = displaySets => {

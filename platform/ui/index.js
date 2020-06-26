@@ -31,6 +31,7 @@ export {
   ButtonGroup,
   DateRange,
   Dialog,
+  Dropdown,
   EmptyStudies,
   ExpandableToolbarButton,
   ListMenu,
@@ -75,6 +76,7 @@ export {
   Typography,
   Viewport,
   ViewportActionBar,
+  ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
 } from './src/components';

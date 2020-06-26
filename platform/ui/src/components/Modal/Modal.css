@@ -1,0 +1,3 @@
+.modal-content {
+  max-height: calc(100vh - theme('spacing.250px'));
+}

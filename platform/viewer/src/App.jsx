@@ -1,12 +1,13 @@
 // External
 import React from 'react';
 import PropTypes from 'prop-types';
+import i18n from '@ohif/i18n';
+import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import {
   DialogProvider,
   Modal,
   ModalProvider,
-  Notification,
   SnackbarProvider,
   ThemeWrapper,
   ViewportDialogProvider,
@@ -59,21 +60,23 @@ function App({ config, defaultExtensions }) {
 
   return (
     <AppConfigProvider value={appConfigState}>
-      <Router basename={routerBasename}>
-        <ThemeWrapper>
-          <ViewportGridProvider service={ViewportGridService}>
-            <ViewportDialogProvider service={UIViewportDialogService}>
-              <SnackbarProvider service={UINotificationService}>
-                <DialogProvider service={UIDialogService}>
-                  <ModalProvider modal={Modal} service={UIModalService}>
-                    {appRoutes}
-                  </ModalProvider>
-                </DialogProvider>
-              </SnackbarProvider>
-            </ViewportDialogProvider>
-          </ViewportGridProvider>
-        </ThemeWrapper>
-      </Router>
+      <I18nextProvider i18n={i18n}>
+        <Router basename={routerBasename}>
+          <ThemeWrapper>
+            <ViewportGridProvider service={ViewportGridService}>
+              <ViewportDialogProvider service={UIViewportDialogService}>
+                <SnackbarProvider service={UINotificationService}>
+                  <DialogProvider service={UIDialogService}>
+                    <ModalProvider modal={Modal} service={UIModalService}>
+                      {appRoutes}
+                    </ModalProvider>
+                  </DialogProvider>
+                </SnackbarProvider>
+              </ViewportDialogProvider>
+            </ViewportGridProvider>
+          </ThemeWrapper>
+        </Router>
+      </I18nextProvider>
     </AppConfigProvider>
   );
 }

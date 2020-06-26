@@ -5,21 +5,39 @@ import {
   useViewportGrid,
 } from '@ohif/ui';
 
+const DEFAULT_LAYOUT = {
+  type: 'SET_LAYOUT',
+  payload: {
+    numCols: 1,
+    numRows: 1,
+  },
+};
+
 function LayoutSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
 
-  useEffect(() => {
-    function closeOnOutsideClick() {
-      if (isOpen) {
-        setIsOpen(false);
-      }
+  const closeOnOutsideClick = () => {
+    if (isOpen) {
+      setIsOpen(false);
     }
+  };
+
+  useEffect(() => {
     window.addEventListener('click', closeOnOutsideClick);
     return () => {
       window.removeEventListener('click', closeOnOutsideClick);
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    /* Reset to default layout when component unmounts */
+    return () => {
+      dispatch(DEFAULT_LAYOUT);
+    };
+  }, []);
+
+  const onClickHandler = () => setIsOpen(!isOpen);
 
   const DropdownContent = isOpen ? OHIFLayoutSelector : null;
 
@@ -28,9 +46,7 @@ function LayoutSelector() {
       id="Layout"
       label="Grid Layout"
       icon="tool-layout"
-      onClick={() => {
-        setIsOpen(!isOpen);
-      }}
+      onClick={onClickHandler}
       dropdownContent={
         DropdownContent !== null && (
           <DropdownContent

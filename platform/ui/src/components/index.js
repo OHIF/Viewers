@@ -2,6 +2,7 @@ import Button from './Button';
 import ButtonGroup from './ButtonGroup';
 import DateRange from './DateRange';
 import Dialog from './Dialog';
+import Dropdown from './Dropdown';
 import EmptyStudies from './EmptyStudies';
 import Icon from './Icon';
 import IconButton from './IconButton';
@@ -45,6 +46,7 @@ import Tooltip from './Tooltip';
 import Typography from './Typography';
 import Viewport from './Viewport';
 import ViewportActionBar from './ViewportActionBar';
+import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
 
@@ -53,6 +55,7 @@ export {
   ButtonGroup,
   DateRange,
   Dialog,
+  Dropdown,
   EmptyStudies,
   ExpandableToolbarButton,
   ListMenu,
@@ -97,6 +100,7 @@ export {
   Typography,
   Viewport,
   ViewportActionBar,
+  ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
 };

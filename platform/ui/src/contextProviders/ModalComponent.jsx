@@ -16,7 +16,7 @@ const ModalComponent = ({
 ModalComponent.defaultProps = {
   content: null,
   contentProps: null,
-  shouldCloseOnEsc: false,
+  shouldCloseOnEsc: true,
   isOpen: true,
   closeButton: true,
   title: null,
