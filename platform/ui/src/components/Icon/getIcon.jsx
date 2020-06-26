@@ -4,6 +4,7 @@ import React from 'react';
 import arrowDown from './../../assets/icons/arrow-down.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
+import close from './../../assets/icons/close.svg';
 import dottedCircle from './../../assets/icons/dotted-circle.svg';
 import circledCheckmark from './../../assets/icons/circled-checkmark.svg';
 import chevronDown from './../../assets/icons/chevron-down.svg';
@@ -16,6 +17,7 @@ import info from './../../assets/icons/info.svg';
 import infoLink from './../../assets/icons/info-link.svg';
 import launchArrow from './../../assets/icons/launch-arrow.svg';
 import launchInfo from './../../assets/icons/launch-info.svg';
+import link from './../../assets/icons/link.svg';
 import listBullets from './../../assets/icons/list-bullets.svg';
 import lock from './../../assets/icons/lock.svg';
 import logoOhifSmall from './../../assets/icons/logo-ohif-small.svg';
@@ -30,6 +32,7 @@ import sorting from './../../assets/icons/sorting.svg';
 import sortingActiveDown from './../../assets/icons/sorting-active-down.svg';
 import sortingActiveUp from './../../assets/icons/sorting-active-up.svg';
 import tracked from './../../assets/icons/tracked.svg';
+import unlink from './../../assets/icons/unlink.svg';
 
 /** Tools */
 import toolZoom from './../../assets/icons/tool-zoom.svg';
@@ -47,6 +50,7 @@ const ICONS = {
   'arrow-down': arrowDown,
   calendar: calendar,
   cancel: cancel,
+  close: close,
   'dotted-circle': dottedCircle,
   'circled-checkmark': circledCheckmark,
   'chevron-down': chevronDown,
@@ -59,6 +63,7 @@ const ICONS = {
   'info-link': infoLink,
   'launch-arrow': launchArrow,
   'launch-info': launchInfo,
+  link: link,
   'list-bullets': listBullets,
   lock: lock,
   'logo-ohif-small': logoOhifSmall,
@@ -73,6 +78,7 @@ const ICONS = {
   'sorting-active-up': sortingActiveUp,
   sorting: sorting,
   tracked: tracked,
+  unlink: unlink,
 
   /** Tools */
   'tool-zoom': toolZoom,

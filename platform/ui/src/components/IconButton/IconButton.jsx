@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 const baseClasses =
-  'text-center items-center justify-center outline-none font-bold focus:outline-none';
+  'text-center items-center justify-center transition duration-300 ease-in-out outline-none font-bold focus:outline-none';
 
 const roundedClasses = {
   none: '',
@@ -84,7 +84,7 @@ const IconButton = ({
 }) => {
   const buttonElement = useRef(null);
 
-  const handleOnClick = (e) => {
+  const handleOnClick = e => {
     buttonElement.current.blur();
     onClick(e);
   };
@@ -113,7 +113,7 @@ const IconButton = ({
 };
 
 IconButton.defaultProps = {
-  onClick: () => { },
+  onClick: () => {},
   color: 'default',
   disabled: false,
   fullWidth: false,

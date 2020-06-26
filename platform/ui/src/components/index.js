@@ -45,6 +45,7 @@ import Tooltip from './Tooltip';
 import Typography from './Typography';
 import Viewport from './Viewport';
 import ViewportActionBar from './ViewportActionBar';
+import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
 
@@ -97,6 +98,7 @@ export {
   Typography,
   Viewport,
   ViewportActionBar,
+  ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
 };
