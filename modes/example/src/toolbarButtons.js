@@ -72,7 +72,7 @@ export default [
     id: 'ResetView',
     type: 'ohif.action',
     props: {
-      icon: 'tool-capture',
+      icon: 'old-reset',
       label: 'Reset View',
       commandName: 'resetViewport',
       type: 'primary',
