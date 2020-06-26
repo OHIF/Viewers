@@ -51,7 +51,7 @@ const StudyListFilter = ({
                     onClick={showLearnMoreContent}
                   >
                     <span className="flex flex-col flex-1">
-                      <span onClick={showLearnMoreContent}>Learn more</span>
+                      <span>Learn more</span>
                       <span className="opacity-50 pt-1 border-b border-primary-active"></span>
                     </span>
                   </Button>
