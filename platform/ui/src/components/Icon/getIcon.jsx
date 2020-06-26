@@ -56,6 +56,7 @@ import oldYoutube from './../../assets/icons/old-youtube.svg';
 import oldDotCircle from './../../assets/icons/old-dot-circle.svg';
 import oldAngleLeft from './../../assets/icons/old-angle-left.svg';
 import oldReset from './../../assets/icons/old-reset.svg';
+import oldCircleO from './../../assets/icons/old-circle-o.svg';
 
 const ICONS = {
   'arrow-down': arrowDown,
@@ -112,7 +113,8 @@ const ICONS = {
   'old-youtube': oldYoutube,
   'old-dot-circle': oldDotCircle,
   'old-angle-left': oldAngleLeft,
-  'old-reset': oldReset
+  'old-reset': oldReset,
+  'old-circle-o': oldCircleO
 };
 
 /**

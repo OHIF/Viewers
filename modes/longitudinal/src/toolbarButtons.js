@@ -236,7 +236,7 @@ export default [
     },
     props: {
       isActive: false,
-      icon: 'tool-move',
+      icon: 'old-circle-o',
       label: 'Rectangle',
       commandName: 'setToolActive',
       commandOptions: { toolName: 'RectangleRoi' },
