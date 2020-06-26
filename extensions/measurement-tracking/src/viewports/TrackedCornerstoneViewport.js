@@ -9,8 +9,11 @@ import {
   ViewportActionBar,
   useViewportGrid,
   useViewportDialog,
+  utils,
 } from '@ohif/ui';
 import { useTrackedMeasurements } from './../getContextModule';
+
+const { getFormattedDate } = utils;
 
 // TODO -> Get this list from the list of tracked measurements.
 const {
@@ -228,7 +231,7 @@ function TrackedCornerstoneViewport({
           label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
           isTracked: trackedSeries.includes(SeriesInstanceUID),
           isLocked: false,
-          studyDate: SeriesDate, // TODO: This is series date. Is that ok?
+          studyDate: getFormattedDate(SeriesDate), // TODO: This is series date. Is that ok?
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription,
           modality: Modality,
