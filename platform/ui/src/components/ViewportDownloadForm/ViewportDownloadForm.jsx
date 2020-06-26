@@ -6,6 +6,8 @@ import React, {
   useRef,
 } from 'react';
 
+import classnames from 'classnames';
+
 import {
   Typography,
   Input,
@@ -370,20 +372,18 @@ const ViewportDownloadForm = ({
 
       <div className="mt-8">
         <div
+          className="hidden"
           style={{
             height: viewportElementDimensions.height,
             width: viewportElementDimensions.width,
-            position: 'absolute',
-            left: '9999px',
           }}
           ref={ref => setViewportElement(ref)}
         >
           <canvas
-            className={canvasClass}
+            className={classnames('block', canvasClass)}
             style={{
               height: downloadCanvas.height,
               width: downloadCanvas.width,
-              display: 'block',
             }}
             width={downloadCanvas.width}
             height={downloadCanvas.height}
