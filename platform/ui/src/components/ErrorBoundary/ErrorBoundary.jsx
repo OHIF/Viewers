@@ -1,5 +1,6 @@
 import React from 'react';
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
+import PropTypes from 'prop-types';
 import './ErrorFallback.css';
 
 const isProduction = process.env.NODE_ENV === 'production';
