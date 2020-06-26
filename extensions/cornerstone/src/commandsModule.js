@@ -11,6 +11,8 @@ const { studyMetadataManager } = OHIF.utils;
 const { setViewportSpecificData } = OHIF.redux.actions;
 
 const commandsModule = ({ servicesManager }) => {
+  const { ViewportGridService } = servicesManager.services;
+
   const actions = {
     getCornerstoneLibraries: () => {
       return { cornerstone, cornerstoneTools };
@@ -66,7 +68,7 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     invertViewport: () => {
-      const activeViewportIndex = 0;
+      const { activeViewportIndex } = ViewportGridService.getState();
       const enabledElement = getEnabledElement(activeViewportIndex);
 
       if (enabledElement) {
