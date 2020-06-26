@@ -46,6 +46,18 @@ import toolBidirectional from './../../assets/icons/tool-bidirectional.svg';
 import toolElipse from './../../assets/icons/tool-elipse.svg';
 import toolLength from './../../assets/icons/tool-length.svg';
 
+/** Old OHIF */
+import oldBars from './../../assets/icons/old-bars.svg';
+import oldCircle from './../../assets/icons/old-circle.svg';
+import oldEllipseH from './../../assets/icons/old-ellipse-h.svg';
+import oldInvert from './../../assets/icons/old-invert.svg';
+import oldRotateRight from './../../assets/icons/old-rotate-right.svg';
+import oldYoutube from './../../assets/icons/old-youtube.svg';
+import oldDotCircle from './../../assets/icons/old-dot-circle.svg';
+import oldAngleLeft from './../../assets/icons/old-angle-left.svg';
+import oldReset from './../../assets/icons/old-reset.svg';
+import oldCircleO from './../../assets/icons/old-circle-o.svg';
+
 const ICONS = {
   'arrow-down': arrowDown,
   calendar: calendar,
@@ -91,6 +103,18 @@ const ICONS = {
   'tool-bidirectional': toolBidirectional,
   'tool-elipse': toolElipse,
   'tool-length': toolLength,
+
+  /** Old OHIF */
+  'old-bars': oldBars,
+  'old-circle': oldCircle,
+  'old-ellipse-h': oldEllipseH,
+  'old-invert': oldInvert,
+  'old-rotate-right': oldRotateRight,
+  'old-youtube': oldYoutube,
+  'old-dot-circle': oldDotCircle,
+  'old-angle-left': oldAngleLeft,
+  'old-reset': oldReset,
+  'old-circle-o': oldCircleO
 };
 
 /**
