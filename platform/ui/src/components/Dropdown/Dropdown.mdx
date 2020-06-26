@@ -1,0 +1,68 @@
+---
+name: Dropdown
+menu: General
+route: components/dropdown
+---
+
+import { Playground, Props } from 'docz';
+import { Dropdown, IconButton, Icon } from '@ohif/ui';
+
+# Dropdown
+
+This component is used when there are more than a few options to choose from. By
+hovering or clicking on the trigger, a dropdown menu will appear, which allows
+you to choose an option and execute the relevant action.
+
+## Import
+
+```javascript
+import { Dropdown } from '@ohif/ui';
+```
+
+<Playground>
+  {() => {
+    const handleClick = () => {
+      alert("Clicked");
+    }
+    return (
+      <div className="py-4">
+        <Dropdown
+            showDropdownIcon={false}
+            list={[
+              {
+                title: 'Option 1',
+                icon: 'info',
+                onClick: handleClick,
+              },
+              {
+                title: 'Option 2',
+                icon: 'settings',
+                onClick: handleClick,
+              },
+            ]}
+          >
+            <IconButton
+              variant="text"
+              color="inherit"
+              size="initial"
+              className="text-primary-active"
+            >
+              <Icon name="settings" />
+            </IconButton>
+            <IconButton
+              variant="text"
+              color="inherit"
+              size="initial"
+              className="text-primary-active"
+            >
+              <Icon name="chevron-down" />
+            </IconButton>
+          </Dropdown>
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={Dropdown} />
