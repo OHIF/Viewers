@@ -7,7 +7,14 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-export const ViewportGridContext = createContext();
+const DEFAULT_STATE = {
+  numRows: 1,
+  numCols: 1,
+  viewports: [],
+  activeViewportIndex: 0,
+};
+
+export const ViewportGridContext = createContext(DEFAULT_STATE);
 
 // export function ViewportGridProvider({ reducer, initialState, children }) {
 //   return (
@@ -18,13 +25,6 @@ export const ViewportGridContext = createContext();
 // }
 
 export function ViewportGridProvider({ children, service }) {
-  const DEFAULT_STATE = {
-    numRows: 1,
-    numCols: 1,
-    viewports: [],
-    activeViewportIndex: 0,
-  };
-
   const viewportGridReducer = (state, action) => {
     switch (action.type) {
       case 'SET_ACTIVE_VIEWPORT_INDEX':
@@ -62,8 +62,8 @@ export function ViewportGridProvider({ children, service }) {
   };
 
   const [viewportGridState, dispatch] = useReducer(
+    viewportGridReducer,
     DEFAULT_STATE,
-    viewportGridReducer
   );
 
   const getState = useCallback(() => viewportGridState, [viewportGridState]);
