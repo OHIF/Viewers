@@ -39,9 +39,7 @@ function TrackedCornerstoneViewport({
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
 
-  const [
-    { activeViewportIndex, viewports },
-  ] = useViewportGrid();
+  const [{ activeViewportIndex, viewports }] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
@@ -214,12 +212,17 @@ function TrackedCornerstoneViewport({
     PatientAge,
     SliceThickness,
     PixelSpacing,
-    ManufacturerModelName
+    ManufacturerModelName,
   } = displaySet.images[0];
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
   }
+
+  const label =
+    viewports.length > 1
+      ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
+      : '';
 
   return (
     <>
@@ -227,7 +230,7 @@ function TrackedCornerstoneViewport({
         onSeriesChange={direction => alert(`Series ${direction}`)}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
-          label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
+          label,
           isTracked: trackedSeries.includes(SeriesInstanceUID),
           isLocked: false,
           studyDate: SeriesDate, // TODO: This is series date. Is that ok?
@@ -235,12 +238,19 @@ function TrackedCornerstoneViewport({
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
-            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
+            patientName: PatientName
+              ? OHIF.utils.formatPN(PatientName.Alphabetic)
+              : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
             thickness: `${SliceThickness}mm`,
-            spacing: PixelSpacing && PixelSpacing.length ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(2)}mm` : '',
+            spacing:
+              PixelSpacing && PixelSpacing.length
+                ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
+                    2
+                  )}mm`
+                : '',
             scanner: ManufacturerModelName || '',
           },
         }}
