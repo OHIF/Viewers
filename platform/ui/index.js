@@ -33,6 +33,7 @@ export {
   Dialog,
   Dropdown,
   EmptyStudies,
+  ErrorBoundary,
   ExpandableToolbarButton,
   ListMenu,
   Icon,

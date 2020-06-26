@@ -136,7 +136,7 @@ const ViewportActionBar = ({
           </ButtonGroup>
         </div>
       )}
-      <div className="flex ml-4 mr-2 cursor-pointer" onClick={onPatientInfoClick}>
+      <div className="flex ml-4 mr-2" onClick={onPatientInfoClick}>
         <PatientInfo
           isOpen={showPatientInfo}
           patientName={patientName}
@@ -245,7 +245,7 @@ function PatientInfo({
         </div>
       )}
     >
-      <div className="relative flex justify-end">
+      <div className="relative flex justify-end cursor-pointer">
         <div className="relative">
           <Icon name="profile" className="w-5 text-white" />
           <Icon
