@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
 import classNames from 'classnames';
 
+import './Modal.css';
+
 import { Typography, useModal, IconButton, Icon } from '@ohif/ui';
 
 ReactModal.setAppElement(document.getElementById('root'));
@@ -56,10 +58,7 @@ const Modal = ({
     >
       <>
         <div className="px-6">{renderHeader()}</div>
-        <section
-          className="ohif-scrollbar overflow-y-auto px-6"
-          style={{ maxHeight: 'calc(100vh - 200px)' }}
-        >
+        <section className="ohif-scrollbar modal-content overflow-y-auto px-6">
           {children}
         </section>
       </>
