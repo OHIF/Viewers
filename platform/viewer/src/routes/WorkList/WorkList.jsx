@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -28,15 +28,13 @@ const seriesInStudiesMap = new Map();
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function WorkList({ history, data: studies, dataSource }) {
+function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
   const query = useQuery();
   const queryFilterValues = _getQueryFilterValues(query);
-  const [filterValues, _setFilterValues] = useState(
-    Object.assign({}, defaultFilterValues, queryFilterValues)
-  );
+  const [filterValues, _setFilterValues] = useState({ ...defaultFilterValues, ...queryFilterValues });
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
 
@@ -80,6 +78,7 @@ function WorkList({ history, data: studies, dataSource }) {
 
       return 0;
     });
+
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
@@ -190,6 +189,7 @@ function WorkList({ history, data: studies, dataSource }) {
       return filterValues[name] !== defaultFilterValues[name];
     });
   };
+
   const tableDataSource = sortedStudies.map((study, key) => {
     const rowKey = key + 1;
     const isExpanded = expandedRows.some(k => k === rowKey);
@@ -211,8 +211,8 @@ function WorkList({ history, data: studies, dataSource }) {
           content: patientName ? (
             patientName
           ) : (
-            <span className="text-gray-700">(Empty)</span>
-          ),
+              <span className="text-gray-700">(Empty)</span>
+            ),
           title: patientName,
           gridCol: 4,
         },
@@ -299,13 +299,13 @@ function WorkList({ history, data: studies, dataSource }) {
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                  return {
-                    description: s.description || '(empty)',
-                    seriesNumber: s.seriesNumber || '',
-                    modality: s.modality || '',
-                    instances: s.numSeriesInstances || '',
-                  };
-                })
+                return {
+                  description: s.description || '(empty)',
+                  seriesNumber: s.seriesNumber || '',
+                  modality: s.modality || '',
+                  instances: s.numSeriesInstances || '',
+                };
+              })
               : []
           }
         >
@@ -322,7 +322,7 @@ function WorkList({ history, data: studies, dataSource }) {
               <Link
                 key={i}
                 to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
-                // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+              // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
@@ -368,7 +368,7 @@ function WorkList({ history, data: studies, dataSource }) {
             variant="text"
             color="inherit"
             className="text-primary-active"
-            onClick={() => {}}
+            onClick={() => { }}
           >
             <React.Fragment>
               <Icon name="settings" />
@@ -403,10 +403,10 @@ function WorkList({ history, data: studies, dataSource }) {
           />
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center pt-48">
-          <EmptyStudies />
-        </div>
-      )}
+          <div className="flex flex-col items-center justify-center pt-48">
+            <EmptyStudies isLoading={isLoadingData} />
+          </div>
+        )}
     </div>
   );
 }
