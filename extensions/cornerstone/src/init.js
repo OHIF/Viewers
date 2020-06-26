@@ -65,7 +65,6 @@ export default function init({ servicesManager, configuration }) {
   const handleOhifCornerstoneEnabledElementEvent = function(evt) {
     const { viewportIndex, enabledElement } = evt.detail;
 
-    console.log(evt, viewportIndex, enabledElement);
     setEnabledElement(viewportIndex, enabledElement);
   };
 

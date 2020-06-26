@@ -16,14 +16,6 @@ const DEFAULT_STATE = {
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
 
-// export function ViewportGridProvider({ reducer, initialState, children }) {
-//   return (
-//     <ViewportGridContext.Provider value={useReducer(reducer, initialState)}>
-//       {children}
-//     </ViewportGridContext.Provider>
-//   );
-// }
-
 export function ViewportGridProvider({ children, service }) {
   const viewportGridReducer = (state, action) => {
     switch (action.type) {
@@ -139,8 +131,3 @@ ViewportGridProvider.propTypes = {
 };
 
 export const useViewportGrid = () => useContext(ViewportGridContext);
-
-// TODO:
-// - Update dependents of `useViewportGrid` to use new API instead of generic `dispatch`
-// - Update `@ohif/core` interface `setServiceImplementation` to accomodate defined API methods
-// - Update `@ohif/ext-cornerstone` commands to use new service to get the activeViewportIndex and restore command functionality
