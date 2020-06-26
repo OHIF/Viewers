@@ -30,12 +30,9 @@ function ViewerViewportGrid(props) {
           const isImageSet = x => x instanceof ImageSet;
           return (isImageSet(a) === isImageSet(b)) ? 0 : isImageSet(a) ? -1 : 1;
         });
-        dispatch({
-          type: 'SET_DISPLAYSET_FOR_VIEWPORT',
-          payload: {
-            viewportIndex: 0,
-            displaySetInstanceUID: displaySets[0].displaySetInstanceUID,
-          },
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex: 0,
+          displaySetInstanceUID: displaySets[0].displaySetInstanceUID,
         });
       },
     );
