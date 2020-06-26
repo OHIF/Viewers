@@ -7,7 +7,7 @@ import {
 
 function LayoutSelector() {
   const [isOpen, setIsOpen] = useState(false);
-  const [viewportGridState, dispatch] = useViewportGrid();
+  const [viewportGridState, viewportGridService] = useViewportGrid();
 
   useEffect(() => {
     function closeOnOutsideClick() {
@@ -35,13 +35,7 @@ function LayoutSelector() {
         DropdownContent !== null && (
           <DropdownContent
             onSelection={({ numRows, numCols }) => {
-              dispatch({
-                type: 'SET_LAYOUT',
-                payload: {
-                  numCols,
-                  numRows,
-                },
-              });
+              viewportGridService.setLayout({ numCols, numRows });
             }}
           />
         )

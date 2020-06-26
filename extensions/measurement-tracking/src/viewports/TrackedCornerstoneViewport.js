@@ -41,10 +41,7 @@ function TrackedCornerstoneViewport({
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
 
-  const [
-    { activeViewportIndex, viewports },
-    dispatchViewportGrid,
-  ] = useViewportGrid();
+  const [{ activeViewportIndex, viewports }] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);

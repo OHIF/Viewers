@@ -19,10 +19,7 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
-  const [
-    { activeViewportIndex, viewports },
-    dispatchViewportGrid,
-  ] = useViewportGrid();
+  const [{ activeViewportIndex, viewports }] = useViewportGrid();
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
