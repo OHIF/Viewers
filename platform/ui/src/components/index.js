@@ -11,7 +11,6 @@ import InputDateRange from './InputDateRange';
 import InputGroup from './InputGroup';
 import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
-import InputNumber from './InputNumber';
 import InputText from './InputText';
 import Label from './Label';
 import LayoutSelector from './LayoutSelector';
@@ -67,7 +66,6 @@ export {
   InputGroup,
   InputLabelWrapper,
   InputMultiSelect,
-  InputNumber,
   InputText,
   Label,
   LayoutSelector,

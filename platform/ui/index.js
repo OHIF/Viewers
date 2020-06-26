@@ -42,7 +42,6 @@ export {
   InputGroup,
   InputLabelWrapper,
   InputMultiSelect,
-  InputNumber,
   InputText,
   Label,
   LayoutSelector,
