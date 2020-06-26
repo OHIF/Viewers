@@ -14,7 +14,7 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
       </div>
       <div className="overflow-y-auto overflow-x-hidden ohif-scrollbar max-h-112">
         {!!data.length &&
-          data.map((measurementItem) => {
+          data.map(measurementItem => {
             const { id, label, displayText, isActive } = measurementItem;
             return (
               <div
@@ -45,9 +45,11 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
                   <span className="text-base text-primary-light mb-1">
                     {label}
                   </span>
-                  <span className="pl-2 border-l border-primary-light text-base text-white">
-                    {displayText}
-                  </span>
+                  {displayText.map(line => (
+                    <span className="pl-2 border-l border-primary-light text-base text-white">
+                      {line}
+                    </span>
+                  ))}
                   <Icon
                     className={classnames(
                       'text-white w-4 absolute cursor-pointer transition duration-300',
@@ -61,7 +63,7 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
                       right: 4,
                       transform: isActive ? '' : 'translateX(100%)',
                     }}
-                    onClick={(e) => {
+                    onClick={e => {
                       // stopPropagation needed to avoid disable the current active item
                       e.stopPropagation();
                       onEdit(id);
@@ -108,7 +110,7 @@ MeasurementTable.propTypes = {
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       label: PropTypes.string,
-      displayText: PropTypes.string,
+      displayText: PropTypes.arrayOf(PropTypes.string),
       isActive: PropTypes.bool,
     })
   ),

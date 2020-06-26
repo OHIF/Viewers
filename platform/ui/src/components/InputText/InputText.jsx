@@ -43,7 +43,7 @@ InputText.propTypes = {
   isSortable: PropTypes.bool,
   sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
   onLabelClick: PropTypes.func,
-  value: PropTypes.string,
+  value: PropTypes.any,
   onChange: PropTypes.func.isRequired,
 };
 

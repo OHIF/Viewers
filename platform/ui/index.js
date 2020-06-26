@@ -33,6 +33,8 @@ export {
   Dialog,
   Dropdown,
   EmptyStudies,
+  ExpandableToolbarButton,
+  ListMenu,
   Icon,
   IconButton,
   Input,

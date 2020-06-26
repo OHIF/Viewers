@@ -1,25 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
-import classNames from 'classnames';
 
-import { Typography, useModal } from '@ohif/ui';
+import './Modal.css';
 
-const customStyle = {
-  overlay: {
-    zIndex: 1071,
-    backgroundColor: 'rgb(0, 0, 0, 0.8)',
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    padding: '40px 0',
-  },
-};
+import { Typography, useModal, IconButton, Icon } from '@ohif/ui';
 
 ReactModal.setAppElement(document.getElementById('root'));
 
 const Modal = ({
-  className,
   closeButton,
   shouldCloseOnEsc,
   isOpen,
@@ -39,13 +28,15 @@ const Modal = ({
         <header className="mb-6 pb-4 border-b border-secondary-main">
           <Typography variant="h4">{title}</Typography>
           {closeButton && (
-            <button
-              className="absolute top-0 right-0 bg-primary-main focus:outline-none text-white rounded-full text-2xl w-8 h-8 flex justify-center items-center -mr-3 -mt-3"
+            <IconButton
+              className="absolute top-0 right-0 focus:outline-none flex -mr-3 -mt-3"
               data-cy="close-button"
+              color="primary"
               onClick={onClose}
+              rounded="full"
             >
-              ×
-            </button>
+              <Icon name="close" className="text-white w-8 h-8" />
+            </IconButton>
           )}
         </header>
       )
@@ -54,24 +45,17 @@ const Modal = ({
 
   return (
     <ReactModal
-      className={classNames(
-        `relative py-6 w-11/12 lg:w-10/12 xl:w-1/2 max-h-full outline-none bg-primary-dark border border-secondary-main text-white rounded ${className}`
-      )}
+      className="relative py-6 w-11/12 lg:w-10/12 xl:w-1/2 max-h-full outline-none bg-primary-dark border border-secondary-main text-white rounded"
+      overlayClassName="fixed top-0 left-0 right-0 bottom-0 z-50 bg-overlay flex items-start justify-center py-16"
       shouldCloseOnEsc={shouldCloseOnEsc}
       onRequestClose={handleClose}
       isOpen={isOpen}
       title={title}
-      style={customStyle}
     >
-      <>
-        <div className="px-6">{renderHeader()}</div>
-        <section
-          className="ohif-scrollbar overflow-y-auto px-6"
-          style={{ maxHeight: 'calc(100vh - 200px)' }}
-        >
-          {children}
-        </section>
-      </>
+      <div className="px-6">{renderHeader()}</div>
+      <section className="ohif-scrollbar modal-content overflow-y-auto px-6">
+        {children}
+      </section>
     </ReactModal>
   );
 };
@@ -81,7 +65,6 @@ Modal.defaultProps = {
 };
 
 Modal.propTypes = {
-  className: PropTypes.string,
   closeButton: PropTypes.bool,
   shouldCloseOnEsc: PropTypes.bool,
   isOpen: PropTypes.bool,

@@ -12,8 +12,15 @@ import getImageId from './utils/getImageId';
 import * as dcmjs from 'dcmjs';
 import { retrieveStudyMetadata } from './retrieveStudyMetadata.js';
 
-const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
+const { DicomMetaDictionary, DicomDict } = dcmjs.data;
+
+const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
 const { urlUtil } = utils;
+
+const ImplementationClassUID =
+  '2.25.270695996825855179949881587723571202391.2.0.0';
+const ImplementationVersionName = 'OHIF-VIEWER-2.0.0';
+const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
 
 /**
  *
@@ -126,6 +133,32 @@ function createDicomWebApi(dicomWebConfig) {
             });
           });
         },
+      },
+    },
+    store: {
+      dicom: async dataset => {
+        const meta = {
+          FileMetaInformationVersion:
+            dataset._meta.FileMetaInformationVersion.Value,
+          MediaStorageSOPClassUID: dataset.SOPClassUID,
+          MediaStorageSOPInstanceUID: dataset.SOPInstanceUID,
+          TransferSyntaxUID: EXPLICIT_VR_LITTLE_ENDIAN,
+          ImplementationClassUID,
+          ImplementationVersionName,
+        };
+
+        const denaturalized = denaturalizeDataset(meta);
+        const dicomDict = new DicomDict(denaturalized);
+
+        dicomDict.dict = denaturalizeDataset(dataset);
+
+        const part10Buffer = dicomDict.write();
+
+        const options = {
+          datasets: [part10Buffer],
+        };
+
+        await wadoDicomWebClient.storeInstances(options);
       },
     },
     retrieveSeriesMetadata: async ({ StudyInstanceUID } = {}) => {

@@ -90,6 +90,7 @@ export default function init({ servicesManager, configuration }) {
 
   /* Add extension tools configuration here. */
   const internalToolsConfig = {
+    /* TODO ArrowAnnotate input
     ArrowAnnotate: {
       configuration: {
         getTextCallback: (callback, eventDetails) =>
@@ -98,6 +99,7 @@ export default function init({ servicesManager, configuration }) {
           callInputDialog(data, eventDetails, callback),
       },
     },
+    */
   };
 
   /* Abstract tools configuration using extension configuration. */
@@ -166,27 +168,48 @@ export default function init({ servicesManager, configuration }) {
 
 const _initMeasurementService = measurementService => {
   /* Initialization */
-  const { toAnnotation, toMeasurement } = measurementServiceMappingsFactory(
-    measurementService
-  );
+  const {
+    Length,
+    Bidirectional,
+    EllipticalRoi,
+    ArrowAnnotate,
+  } = measurementServiceMappingsFactory(measurementService);
   const csToolsVer4MeasurementSource = measurementService.createSource(
     'CornerstoneTools',
     '4'
   );
 
-  /* Matching Criterias */
-  const matchingCriteria = {
-    valueType: measurementService.VALUE_TYPES.POLYLINE,
-    points: 2,
-  };
-
   /* Mappings */
   measurementService.addMapping(
     csToolsVer4MeasurementSource,
     'Length',
-    matchingCriteria,
-    toAnnotation,
-    toMeasurement
+    Length.matchingCriteria,
+    Length.toAnnotation,
+    Length.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csToolsVer4MeasurementSource,
+    'Bidirectional',
+    Bidirectional.matchingCriteria,
+    Bidirectional.toAnnotation,
+    Bidirectional.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csToolsVer4MeasurementSource,
+    'EllipticalRoi',
+    EllipticalRoi.matchingCriteria,
+    EllipticalRoi.toAnnotation,
+    EllipticalRoi.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csToolsVer4MeasurementSource,
+    'ArrowAnnotate',
+    ArrowAnnotate.matchingCriteria,
+    ArrowAnnotate.toAnnotation,
+    ArrowAnnotate.toMeasurement
   );
 
   return csToolsVer4MeasurementSource;

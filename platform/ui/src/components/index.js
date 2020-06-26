@@ -41,6 +41,8 @@ import ThumbnailNoImage from './ThumbnailNoImage';
 import ThumbnailTracked from './ThumbnailTracked';
 import ThumbnailList from './ThumbnailList';
 import ToolbarButton from './ToolbarButton';
+import ExpandableToolbarButton from './ExpandableToolbarButton';
+import ListMenu from './ListMenu';
 import Tooltip from './Tooltip';
 import Typography from './Typography';
 import Viewport from './Viewport';
@@ -56,6 +58,8 @@ export {
   Dialog,
   Dropdown,
   EmptyStudies,
+  ExpandableToolbarButton,
+  ListMenu,
   Icon,
   IconButton,
   Input,

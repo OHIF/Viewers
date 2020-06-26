@@ -28,7 +28,7 @@
   },
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
-    "dcmjs": "^0.12.3",
+    "dcmjs": "0.14.0",
     "prop-types": "^15.6.2",
     "react": "^16.11.0",
     "react-dom": "^16.11.0"

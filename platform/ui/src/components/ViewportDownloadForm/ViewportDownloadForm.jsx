@@ -6,10 +6,11 @@ import React, {
   useRef,
 } from 'react';
 
+import classnames from 'classnames';
+
 import {
   Typography,
-  InputText,
-  InputNumber,
+  Input,
   Tooltip,
   IconButton,
   Icon,
@@ -169,7 +170,10 @@ const ViewportDownloadForm = ({
     );
   };
 
-  const validSize = value => (value >= minimumSize ? value : minimumSize);
+  const validSize = useCallback(
+    value => (value >= minimumSize ? value : minimumSize),
+    [minimumSize]
+  );
 
   const loadAndUpdateViewports = useCallback(async () => {
     const { width: scaledWidth, height: scaledHeight } = await loadImage(
@@ -274,7 +278,7 @@ const ViewportDownloadForm = ({
 
       <div className="mt-6 flex flex-col">
         <div className="w-full mb-4">
-          <InputText
+          <Input
             data-cy="file-name"
             value={filename}
             onChange={value => setFilename(value)}
@@ -286,7 +290,8 @@ const ViewportDownloadForm = ({
           <div className="flex w-1/3">
             <div className="flex flex-col flex-grow">
               <div className="w-full">
-                <InputNumber
+                <Input
+                  type="number"
                   min={minimumSize}
                   max={maximumSize}
                   label="Image width (px)"
@@ -297,7 +302,8 @@ const ViewportDownloadForm = ({
                 {renderErrorHandler('width')}
               </div>
               <div className="w-full mt-4">
-                <InputNumber
+                <Input
+                  type="number"
                   min={minimumSize}
                   max={maximumSize}
                   label="Image height (px)"
@@ -366,20 +372,18 @@ const ViewportDownloadForm = ({
 
       <div className="mt-8">
         <div
+          className="hidden"
           style={{
             height: viewportElementDimensions.height,
             width: viewportElementDimensions.width,
-            position: 'absolute',
-            left: '9999px',
           }}
           ref={ref => setViewportElement(ref)}
         >
           <canvas
-            className={canvasClass}
+            className={classnames('block', canvasClass)}
             style={{
               height: downloadCanvas.height,
               width: downloadCanvas.width,
-              display: 'block',
             }}
             width={downloadCanvas.width}
             height={downloadCanvas.height}

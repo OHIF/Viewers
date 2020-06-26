@@ -127,7 +127,6 @@ function PanelStudyBrowser({
           changedDisplaySets,
           thumbnailImageSrcMap
         );
-
         setDisplaySets(mappedDisplaySets);
       }
     );
@@ -152,11 +151,11 @@ function PanelStudyBrowser({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-        [
-          ...expandedStudyInstanceUIDs.filter(
-            stdyUid => stdyUid !== StudyInstanceUID
-          ),
-        ]
+      [
+        ...expandedStudyInstanceUIDs.filter(
+          stdyUid => stdyUid !== StudyInstanceUID
+        ),
+      ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
