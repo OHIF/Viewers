@@ -52,7 +52,9 @@ import oldCircle from './../../assets/icons/old-circle.svg';
 import oldEllipseH from './../../assets/icons/old-ellipse-h.svg';
 import oldInvert from './../../assets/icons/old-invert.svg';
 import oldRotateRight from './../../assets/icons/old-rotate-right.svg';
-
+import oldYoutube from './../../assets/icons/old-youtube.svg';
+import oldDotCircle from './../../assets/icons/old-dot-circle.svg';
+import oldAngleLeft from './../../assets/icons/old-angle-left.svg';
 const ICONS = {
   'arrow-down': arrowDown,
   calendar: calendar,
@@ -104,7 +106,10 @@ const ICONS = {
   'old-circle': oldCircle,
   'old-ellipse-h': oldEllipseH,
   'old-invert': oldInvert,
-  'old-rotate-right': oldRotateRight
+  'old-rotate-right': oldRotateRight,
+  'old-youtube': oldYoutube,
+  'old-dot-circle': oldDotCircle,
+  'old-angle-left': oldAngleLeft
 };
 
 /**

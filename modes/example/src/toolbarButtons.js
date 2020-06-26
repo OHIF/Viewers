@@ -143,7 +143,7 @@ export default [
     id: 'Cine',
     type: 'ohif.action',
     props: {
-      icon: 'tool-capture',
+      icon: 'old-youtube',
       label: 'Cine',
       commandName: '',
       type: 'primary',
@@ -158,7 +158,7 @@ export default [
     },
     props: {
       isActive: false,
-      icon: 'tool-move',
+      icon: 'old-angle-left',
       label: 'Angle',
       commandName: 'setToolActive',
       commandOptions: { toolName: 'Angle' },
@@ -173,7 +173,7 @@ export default [
     },
     props: {
       isActive: false,
-      icon: 'tool-move',
+      icon: 'old-dot-circle',
       label: 'Probe',
       commandName: 'setToolActive',
       commandOptions: { toolName: 'Probe' },
