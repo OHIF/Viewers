@@ -250,7 +250,7 @@ function OHIFCornerstoneSRViewport({
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
-            patientName: PatientName ? PatientName.Alphabetic || '' : '',
+            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
