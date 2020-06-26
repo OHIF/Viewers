@@ -220,8 +220,6 @@ function TrackedCornerstoneViewport({
     ManufacturerModelName
   } = displaySet.images[0];
 
-  console.log(displaySet.images);
-
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
   }
