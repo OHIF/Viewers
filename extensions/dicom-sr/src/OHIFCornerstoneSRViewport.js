@@ -4,12 +4,12 @@ import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF from '@ohif/core';
-import { ViewportActionBar, useViewportGrid, utils } from '@ohif/ui';
+import OHIF, { utils } from '@ohif/core';
+import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
 import TOOL_NAMES from './constants/toolNames';
 import id from './id';
 
-const { getFormattedDate } = utils;
+const { formatDate } = utils;
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 
 // const cine = viewportSpecificData.cine;
@@ -246,7 +246,7 @@ function OHIFCornerstoneSRViewport({
           label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
           isTracked: false,
           isLocked: false,
-          studyDate: getFormattedDate(StudyDate),
+          studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription,
           modality: Modality,

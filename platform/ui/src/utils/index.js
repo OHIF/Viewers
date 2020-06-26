@@ -1,8 +1,7 @@
 import getMockedStudies from './getMockedStudies';
-import getFormattedDate from './getFormattedDate';
 
-const utils = { getMockedStudies, getFormattedDate };
+const utils = { getMockedStudies };
 
-export { getMockedStudies, getFormattedDate };
+export { getMockedStudies };
 
 export default utils;

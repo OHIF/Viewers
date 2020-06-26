@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { StudyBrowser, useImageViewer, utils } from '@ohif/ui';
+import { StudyBrowser, useImageViewer } from '@ohif/ui';
+import { utils } from '@ohif/core';
 
-const { getFormattedDate } = utils;
+const { formatDate } = utils;
 
 /**
  *
@@ -39,7 +40,7 @@ function PanelStudyBrowser({
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
         return {
           studyInstanceUid: qidoStudy.StudyInstanceUID,
-          date: getFormattedDate(qidoStudy.StudyDate),
+          date: formatDate(qidoStudy.StudyDate),
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: qidoStudy.NumInstances,
