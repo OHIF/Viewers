@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
 import classNames from 'classnames';
 
-import { Typography, useModal } from '@ohif/ui';
+import { Typography, useModal, IconButton, Icon } from '@ohif/ui';
 
 ReactModal.setAppElement(document.getElementById('root'));
 
@@ -28,13 +28,15 @@ const Modal = ({
         <header className="mb-6 pb-4 border-b border-secondary-main">
           <Typography variant="h4">{title}</Typography>
           {closeButton && (
-            <button
-              className="absolute top-0 right-0 bg-primary-main focus:outline-none text-white rounded-full text-2xl w-8 h-8 flex justify-center items-center -mr-3 -mt-3"
+            <IconButton
+              className="absolute top-0 right-0 focus:outline-none flex -mr-3 -mt-3"
               data-cy="close-button"
+              color="primary"
               onClick={onClose}
+              rounded="full"
             >
-              ×
-            </button>
+              <Icon name="close" className="text-white w-8 h-8" />
+            </IconButton>
           )}
         </header>
       )
