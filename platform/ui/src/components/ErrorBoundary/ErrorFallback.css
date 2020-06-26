@@ -1,0 +1,21 @@
+.ErrorFallback {
+  padding: 10px;
+
+  &,
+  pre {
+    color: #7cc5e9;
+  }
+
+  p {
+    font-weight: bold;
+  }
+
+  span {
+    color: gray;
+  }
+
+  pre {
+    background-color: black;
+    border: none;
+  }
+}

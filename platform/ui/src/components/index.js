@@ -3,6 +3,7 @@ import ButtonGroup from './ButtonGroup';
 import DateRange from './DateRange';
 import Dialog from './Dialog';
 import EmptyStudies from './EmptyStudies';
+import ErrorBoundary from './ErrorBoundary';
 import Icon from './Icon';
 import IconButton from './IconButton';
 import Input from './Input';
@@ -54,6 +55,7 @@ export {
   DateRange,
   Dialog,
   EmptyStudies,
+  ErrorBoundary,
   ExpandableToolbarButton,
   ListMenu,
   Icon,

@@ -32,6 +32,7 @@ export {
   DateRange,
   Dialog,
   EmptyStudies,
+  ErrorBoundary,
   ExpandableToolbarButton,
   ListMenu,
   Icon,
