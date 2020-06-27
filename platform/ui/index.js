@@ -29,6 +29,7 @@ export {
 export {
   Button,
   ButtonGroup,
+  ContextMenu,
   DateRange,
   Dialog,
   Dropdown,
@@ -73,6 +74,7 @@ export {
   ThumbnailTracked,
   ThumbnailList,
   ToolbarButton,
+  ContextMenuMeasurements,
   Tooltip,
   TooltipClipboard,
   Typography,
