@@ -18,7 +18,7 @@ export class HotkeysManager {
 
     if (!commandsManager) {
       log.warn(
-        'HotkeysManager instantiated without a commandsManager. Hotkeys will be unable to find and run commands.'
+        '[hotkeys] HotkeysManager instantiated without a commandsManager. Hotkeys will be unable to find and run commands.'
       );
     }
 
@@ -147,7 +147,7 @@ export class HotkeysManager {
    */
   registerHotkeys({ commandName, keys, label } = {}, extension) {
     if (!commandName) {
-      log.warn(`No command was defined for hotkey "${keys}"`);
+      log.warn(`[hotkeys] No command was defined for hotkey "${keys}"`);
       return;
     }
 
@@ -156,13 +156,13 @@ export class HotkeysManager {
     if (previouslyRegisteredDefinition) {
       const previouslyRegisteredKeys = previouslyRegisteredDefinition.keys;
       this._unbindHotkeys(commandName, previouslyRegisteredKeys);
-      log.info(`Unbinding ${commandName} from ${previouslyRegisteredKeys}`);
+      log.info(`[hotkeys] Unbinding ${commandName} from ${previouslyRegisteredKeys}`);
     }
 
     // Set definition & bind
     this.hotkeyDefinitions[commandName] = { keys, label };
     this._bindHotkeys(commandName, keys);
-    log.info(`Binding ${commandName} to ${keys}`);
+    log.info(`[hotkeys] Binding ${commandName} to ${keys}`);
   }
 
   /**
