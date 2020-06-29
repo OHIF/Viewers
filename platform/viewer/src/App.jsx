@@ -30,7 +30,7 @@ const Router = JSON.parse(process.env.USE_HASH_ROUTER)
   ? HashRouter
   : BrowserRouter;
 
-let commandsManager, extensionManager, servicesManager;
+let commandsManager, extensionManager, servicesManager, hotkeysManager;
 
 function App({ config, defaultExtensions }) {
   const init = appInit(config, defaultExtensions);
@@ -39,17 +39,19 @@ function App({ config, defaultExtensions }) {
   commandsManager = init.commandsManager;
   extensionManager = init.extensionManager;
   servicesManager = init.servicesManager;
+  hotkeysManager = init.hotkeysManager;
 
   // Set appConfig
   const appConfigState = init.appConfig;
   const { routerBasename, modes, dataSources } = appConfigState;
   // Use config to create routes
-  const appRoutes = createRoutes(
+  const appRoutes = createRoutes({
     modes,
     dataSources,
     extensionManager,
-    servicesManager
-  );
+    servicesManager,
+    hotkeysManager
+  });
   const {
     UIDialogService,
     UIModalService,

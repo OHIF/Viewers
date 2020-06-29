@@ -21,19 +21,25 @@ const bakedInRoutes = [
   { component: NotFound },
 ];
 
-const createRoutes = (
+const createRoutes = ({
   modes,
   dataSources,
   extensionManager,
-  servicesManager
-) => {
-  const routes =
-    buildModeRoutes(modes, dataSources, extensionManager, servicesManager) ||
-    [];
+  servicesManager,
+  hotkeysManager
+}) => {
+  const routes = buildModeRoutes({
+    modes,
+    dataSources,
+    extensionManager,
+    servicesManager,
+    hotkeysManager
+  }) || [];
+
   const allRoutes = [...routes, ...bakedInRoutes];
 
   console.log(
-    'Creating Routes: ',
+    'Creating Routes:',
     modes,
     dataSources,
     routes,

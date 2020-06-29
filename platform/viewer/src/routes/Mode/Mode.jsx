@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { DicomMetadataStore } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 //
-import { useQuery } from '@hooks';
+import { useQuery, useHotkeys } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
 
@@ -15,7 +15,9 @@ export default function ModeRoute({
   dataSourceName,
   extensionManager,
   servicesManager,
+  hotkeysManager
 }) {
+  const isHotkeysLoaded = useHotkeys(hotkeysManager, mode.hotkeys);
   // Parse route params/querystring
   const query = useQuery();
   const queryStudyInstanceUIDs = query.get('StudyInstanceUIDs');
@@ -83,6 +85,8 @@ export default function ModeRoute({
     route,
     servicesManager,
     extensionManager,
+    hotkeysManager,
+    isHotkeysLoaded
   ]);
 
   // This queries for series, but... What does it do with them?
