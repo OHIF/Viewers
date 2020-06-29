@@ -15,13 +15,21 @@ const ViewportActionBar = ({
   showNavArrows,
   showPatientInfo: patientInfoVisibility,
   onSeriesChange,
+  onHydrationClick,
 }) => {
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
+
+  // TODO -> Remake this component with a bunch of generic slots that can be filled,
+  // Its not generic at all, isTracked etc shouldn't be parts of this component.
+  // It shouldn't care that a tracking mode or SR exists.
+  // Things like the right/left buttons should be made into smaller
+  // Components you can compose.
 
   const {
     label,
     isTracked,
     isLocked,
+    isHydrated,
     modality,
     studyDate,
     currentSeries,
@@ -39,23 +47,35 @@ const ViewportActionBar = ({
     scanner,
   } = patientInformation;
 
-  const onPatientInfoClick = () => setShowPatientInfo(!showPatientInfo)
+  const onPatientInfoClick = () => setShowPatientInfo(!showPatientInfo);
 
   const renderIconStatus = () => {
     if (modality === 'SR') {
       return (
-        <div className="relative flex p-1 border rounded border-primary-light">
-          <span className="text-sm font-bold leading-none text-primary-light">
-            SR
-          </span>
-          {isLocked && (
-            <Icon
-              name="lock"
-              className="absolute w-3 text-white"
-              style={{ top: -6, right: -6 }}
-            />
+        <>
+          <div className="relative flex p-1 border rounded border-primary-light">
+            <span className="text-sm font-bold leading-none text-primary-light">
+              SR
+            </span>
+            {isLocked && (
+              <Icon
+                name="lock"
+                className="absolute w-3 text-white"
+                style={{ top: -6, right: -6 }}
+              />
+            )}
+          </div>
+          {!isLocked && !isHydrated && (
+            <div className="relative flex p-1 border rounded border-primary-light">
+              <span
+                className="text-sm font-bold leading-none text-primary-light"
+                onClick={onHydrationClick}
+              >
+                Edit
+              </span>
+            </div>
           )}
-        </div>
+        </>
       );
     }
 
@@ -64,26 +84,26 @@ const ViewportActionBar = ({
         {!isTracked ? (
           <Icon name="dotted-circle" className="w-6 text-primary-light" />
         ) : (
-            <Tooltip
-              position="bottom-left"
-              content={
-                <div className="flex py-2">
-                  <div className="flex pt-1">
-                    <Icon name="info-link" className="w-4 text-primary-main" />
-                  </div>
-                  <div className="flex ml-4">
-                    <span className="text-base text-common-light">
-                      Series is
+          <Tooltip
+            position="bottom-left"
+            content={
+              <div className="flex py-2">
+                <div className="flex pt-1">
+                  <Icon name="info-link" className="w-4 text-primary-main" />
+                </div>
+                <div className="flex ml-4">
+                  <span className="text-base text-common-light">
+                    Series is
                     <span className="font-bold text-white"> tracked</span> and
                     can be viewed <br /> in the measurement panel
                   </span>
-                  </div>
                 </div>
-              }
-            >
-              <Icon name="tracked" className="w-6 text-primary-light" />
-            </Tooltip>
-          )}
+              </div>
+            }
+          >
+            <Icon name="tracked" className="w-6 text-primary-light" />
+          </Tooltip>
+        )}
       </div>
     );
   };
@@ -196,54 +216,64 @@ function PatientInfo({
       isSticky
       isDisabled={!isOpen}
       position="bottom-right"
-      content={isOpen && (
-        <div className="flex py-2">
-          <div className="flex pt-1">
-            <Icon name="info-link" className="w-4 text-primary-main" />
-          </div>
-          <div className="flex flex-col ml-2">
-            <span className="text-base font-bold text-white">
-              {patientName}
-            </span>
-            <div className="flex pb-4 mt-4 mb-4 border-b border-secondary-main">
-              <div className={classnames(classes.firstRow)}>
-                <span className={classnames(classes.infoHeader)}>Sex</span>
-                <span className={classnames(classes.infoText)}>
-                  {patientSex}
-                </span>
+      content={
+        isOpen && (
+          <div className="flex py-2">
+            <div className="flex pt-1">
+              <Icon name="info-link" className="w-4 text-primary-main" />
+            </div>
+            <div className="flex flex-col ml-2">
+              <span className="text-base font-bold text-white">
+                {patientName}
+              </span>
+              <div className="flex pb-4 mt-4 mb-4 border-b border-secondary-main">
+                <div className={classnames(classes.firstRow)}>
+                  <span className={classnames(classes.infoHeader)}>Sex</span>
+                  <span className={classnames(classes.infoText)}>
+                    {patientSex}
+                  </span>
+                </div>
+                <div className={classnames(classes.row)}>
+                  <span className={classnames(classes.infoHeader)}>Age</span>
+                  <span className={classnames(classes.infoText)}>
+                    {patientAge}
+                  </span>
+                </div>
+                <div className={classnames(classes.row)}>
+                  <span className={classnames(classes.infoHeader)}>MRN</span>
+                  <span className={classnames(classes.infoText)}>{MRN}</span>
+                </div>
               </div>
-              <div className={classnames(classes.row)}>
-                <span className={classnames(classes.infoHeader)}>Age</span>
-                <span className={classnames(classes.infoText)}>
-                  {patientAge}
-                </span>
-              </div>
-              <div className={classnames(classes.row)}>
-                <span className={classnames(classes.infoHeader)}>MRN</span>
-                <span className={classnames(classes.infoText)}>{MRN}</span>
+              <div className="flex">
+                <div className={classnames(classes.firstRow)}>
+                  <span className={classnames(classes.infoHeader)}>
+                    Thickness
+                  </span>
+                  <span className={classnames(classes.infoText)}>
+                    {thickness}
+                  </span>
+                </div>
+                <div className={classnames(classes.row)}>
+                  <span className={classnames(classes.infoHeader)}>
+                    Spacing
+                  </span>
+                  <span className={classnames(classes.infoText)}>
+                    {spacing}
+                  </span>
+                </div>
+                <div className={classnames(classes.row)}>
+                  <span className={classnames(classes.infoHeader)}>
+                    Scanner
+                  </span>
+                  <span className={classnames(classes.infoText)}>
+                    {scanner}
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="flex">
-              <div className={classnames(classes.firstRow)}>
-                <span className={classnames(classes.infoHeader)}>
-                  Thickness
-                </span>
-                <span className={classnames(classes.infoText)}>
-                  {thickness}
-                </span>
-              </div>
-              <div className={classnames(classes.row)}>
-                <span className={classnames(classes.infoHeader)}>Spacing</span>
-                <span className={classnames(classes.infoText)}>{spacing}</span>
-              </div>
-              <div className={classnames(classes.row)}>
-                <span className={classnames(classes.infoHeader)}>Scanner</span>
-                <span className={classnames(classes.infoText)}>{scanner}</span>
-              </div>
-            </div>
           </div>
-        </div>
-      )}
+        )
+      }
     >
       <div className="relative flex justify-end cursor-pointer">
         <div className="relative">

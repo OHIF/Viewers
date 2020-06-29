@@ -13,6 +13,10 @@ import {
 import { useTrackedMeasurements } from './../getContextModule';
 
 // TODO -> Get this list from the list of tracked measurements.
+// TODO -> We can now get a list of tool names from the measurement service.
+// Use the toolnames to check which tools we have instead, using the
+// Classes isn't really extensible unless we add the classes to the measurement
+// Service definition, which feels wrong.
 const {
   ArrowAnnotateTool,
   BidirectionalTool,
@@ -223,7 +227,7 @@ function TrackedCornerstoneViewport({
     PatientAge,
     SliceThickness,
     PixelSpacing,
-    ManufacturerModelName
+    ManufacturerModelName,
   } = displaySet.images[0];
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
@@ -244,12 +248,19 @@ function TrackedCornerstoneViewport({
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
-            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
+            patientName: PatientName
+              ? OHIF.utils.formatPN(PatientName.Alphabetic)
+              : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
             thickness: `${SliceThickness}mm`,
-            spacing: PixelSpacing && PixelSpacing.length ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(2)}mm` : '',
+            spacing:
+              PixelSpacing && PixelSpacing.length
+                ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
+                    2
+                  )}mm`
+                : '',
             scanner: ManufacturerModelName || '',
           },
         }}

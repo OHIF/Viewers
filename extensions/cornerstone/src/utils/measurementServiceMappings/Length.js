@@ -26,7 +26,7 @@ const Length = {
         text: label,
         description,
         handles: getHandlesFromPoints(points),
-        _measurementServiceId: id,
+        idid,
       },
     };
   },
@@ -56,9 +56,6 @@ const Length = {
       SeriesInstanceUID,
       StudyInstanceUID,
     } = getSOPInstanceAttributes(element);
-
-    const points = [];
-    points.push(measurementData.handles);
 
     return {
       id: measurementData._measurementServiceId,

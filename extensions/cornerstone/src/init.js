@@ -246,10 +246,14 @@ const _connectToolsToMeasurementService = measurementService => {
 
     function addMeasurement(csToolsEvent) {
       console.log('CSTOOLS::addOrUpdate', csToolsEvent, csToolsEvent.detail);
+
       try {
         const evtDetail = csToolsEvent.detail;
         const { toolName, toolType, measurementData } = evtDetail;
         const csToolName = toolName || measurementData.toolType || toolType;
+
+        debugger;
+
         const measurementId = addOrUpdate(csToolName, evtDetail);
 
         if (measurementId) {

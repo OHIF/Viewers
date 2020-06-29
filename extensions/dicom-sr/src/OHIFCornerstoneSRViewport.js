@@ -2,35 +2,35 @@ import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
-
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF from '@ohif/core';
+import OHIF, { DicomMetadataStore } from '@ohif/core';
 import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
 import TOOL_NAMES from './constants/toolNames';
+import { adapters } from 'dcmjs';
+import getToolStateToCornerstoneMeasurementSchema from './utils/getToolStateToCornerstoneMeasurementSchema';
 import id from './id';
 
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
+const globalImageIdSpecificToolStateManager =
+  cornerstoneTools.globalImageIdSpecificToolStateManager;
 
-// const cine = viewportSpecificData.cine;
-
-// isPlaying = cine.isPlaying === true;
-// frameRate = cine.cineFrameRate || frameRate;
-
-const { StackManager } = OHIF.utils;
+const { StackManager, guid } = OHIF.utils;
 
 function OHIFCornerstoneSRViewport({
   children,
   dataSource,
   displaySet,
   viewportIndex,
-  DisplaySetService,
+  servicesManager,
 }) {
+  const { DisplaySetService, MeasurementService } = servicesManager.services;
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementSelected, setMeasurementSelected] = useState(0);
   const [measurementCount, setMeasurementCount] = useState(1);
   const [viewportData, setViewportData] = useState(null);
   const [activeDisplaySetData, setActiveDisplaySetData] = useState({});
   const [element, setElement] = useState(null);
+  const [isHydrated, setIsHydrated] = useState(displaySet.isHydrated);
 
   const { viewports, activeViewportIndex } = viewportGrid;
 
@@ -195,8 +195,6 @@ function OHIFCornerstoneSRViewport({
 
   const { Modality } = displaySet;
 
-  // TODO -> Get this from the associated stack.
-
   const {
     PatientID,
     PatientName,
@@ -228,33 +226,122 @@ function OHIFCornerstoneSRViewport({
       }
     }
 
-    if (newMeasurementSelected === measurementSelected) {
-      // TODO -> Jump to image in this case.
-    }
-
     updateViewport(newMeasurementSelected);
   };
+
+  function hydrateMeasurementService() {
+    // TODO -> We should define a strict versioning somewhere.
+    const mappings = MeasurementService.getSourceMappings(
+      'CornerstoneTools',
+      '4'
+    );
+
+    if (!mappings || !mappings.length) {
+      throw new Error(
+        `Attempting to hydrate measurements service when no mappings present. This shouldn't be reached.`
+      );
+    }
+
+    const instance = DicomMetadataStore.getInstance(
+      displaySet.StudyInstanceUID,
+      displaySet.SeriesInstanceUID,
+      displaySet.SOPInstanceUID
+    );
+
+    const { MeasurementReport } = adapters.Cornerstone;
+
+    const sopInstanceUIDToImageId = {};
+
+    displaySet.measurements.forEach(measurement => {
+      const { ReferencedSOPInstanceUID, imageId } = measurement;
+      if (!sopInstanceUIDToImageId[ReferencedSOPInstanceUID]) {
+        sopInstanceUIDToImageId[ReferencedSOPInstanceUID] = imageId;
+      }
+    });
+
+    // Use dcmjs to generate toolState.
+    const storedMeasurementByToolType = MeasurementReport.generateToolState(
+      instance
+    );
+
+    // Filter what is found by DICOM SR to measurements we support.
+    const mappingDefinitions = mappings.map(m => m.definition);
+    const hydratableMeasurementsInSR = {};
+
+    Object.keys(storedMeasurementByToolType).forEach(key => {
+      if (mappingDefinitions.includes(key)) {
+        hydratableMeasurementsInSR[key] = storedMeasurementByToolType[key];
+      }
+    });
+
+    Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
+      const toolDataForToolType = hydratableMeasurementsInSR[toolType];
+
+      toolDataForToolType.forEach(data => {
+        // Add the measurement to toolState
+        const imageId = sopInstanceUIDToImageId[data.sopInstanceUid];
+
+        data.id = guid();
+
+        _addToolDataToCornerstoneTools(data, toolType, imageId);
+
+        // Let the measurement service know we added to toolState
+        const toMeasurementSchema = getToolStateToCornerstoneMeasurementSchema(
+          toolType,
+          MeasurementService,
+          imageId
+        );
+
+        const source = MeasurementService.getSource('CornerstoneTools', '4');
+
+        MeasurementService.addRawMeasurement(
+          source,
+          toolType,
+          data,
+          toMeasurementSchema
+        );
+      });
+    });
+
+    displaySet.isHydrated = true;
+
+    setIsHydrated(true);
+
+    // TODO -> Switch to cornerstone viewport.
+    // TODO -> Tell measurement service to track the series on which the measurements were added.
+    // TODO -> set displaySet as inactive.
+    debugger;
+  }
 
   return (
     <>
       <ViewportActionBar
         onSeriesChange={onMeasurementChange}
+        onHydrationClick={hydrateMeasurementService}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
           label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
           isTracked: false,
-          isLocked: false,
+          isLocked: displaySet.isLocked,
+          isHydrated,
           studyDate: StudyDate,
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
-            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
+            patientName: PatientName
+              ? OHIF.utils.formatPN(PatientName.Alphabetic)
+              : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
             thickness: `${SliceThickness}mm`,
-            spacing: PixelSpacing && PixelSpacing.length ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(2)}mm` : '',
+            spacing:
+              PixelSpacing && PixelSpacing.length
+                ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
+                    2
+                  )}mm`
+                : '',
             scanner: ManufacturerModelName || '',
           },
         }}
@@ -376,6 +463,27 @@ async function _getViewportAndActiveDisplaySetData(
   };
 
   return { viewportData, activeDisplaySetData };
+}
+
+function _addToolDataToCornerstoneTools(data, toolType, imageId) {
+  const toolState = globalImageIdSpecificToolStateManager.saveToolState();
+
+  if (toolState[imageId] === undefined) {
+    toolState[imageId] = {};
+  }
+
+  const imageIdToolState = toolState[imageId];
+
+  // If we don't have tool state for this type of tool, add an empty object
+  if (imageIdToolState[toolType] === undefined) {
+    imageIdToolState[toolType] = {
+      data: [],
+    };
+  }
+
+  const toolData = imageIdToolState[toolType];
+
+  toolData.data.push(data);
 }
 
 export default OHIFCornerstoneSRViewport;

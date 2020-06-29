@@ -30,7 +30,7 @@ const ArrowAnnotate = {
     points.push(measurementData.handles);
 
     return {
-      id: measurementData._measurementServiceId,
+      id: measurementData.id,
       SOPInstanceUID: SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
