@@ -15,6 +15,7 @@ export default function ModeRoute({
   dataSourceName,
   extensionManager,
   servicesManager,
+  hotkeysManager
 }) {
   // Parse route params/querystring
   const query = useQuery();
@@ -26,7 +27,7 @@ export default function ModeRoute({
       ? StudyInstanceUIDs
       : [StudyInstanceUIDs];
 
-  const { extensions, sopClassHandlers } = mode;
+  const { extensions, sopClassHandlers, hotkeys } = mode;
 
   if (dataSourceName === undefined) {
     dataSourceName = extensionManager.defaultDataSourceName;
@@ -75,6 +76,22 @@ export default function ModeRoute({
   }
 
   useEffect(() => {
+    if (!hotkeys) {
+      console.warn('[hotkeys] No bindings defined for hotkeys hook!');
+      return;
+    }
+
+    console.debug('[hotkeys] Setting up hotkeys...');
+    hotkeysManager.setDefaultHotKeys(hotkeys);
+    hotkeysManager.setHotkeys(hotkeys);
+
+    return () => {
+      console.debug('[hotkeys] Removing hotkeys...');
+      hotkeysManager.destroy();
+    };
+  }, []);
+
+  useEffect(() => {
     route.init({ servicesManager, extensionManager });
   }, [
     mode,
@@ -83,6 +100,7 @@ export default function ModeRoute({
     route,
     servicesManager,
     extensionManager,
+    hotkeysManager
   ]);
 
   // This queries for series, but... What does it do with them?

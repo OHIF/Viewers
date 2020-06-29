@@ -22,12 +22,13 @@ import { ViewModelProvider } from '@ohif/core';
 
   /:modeId/:modeRoute/?queryParameters=example
  */
-export default function buildModeRoutes(
+export default function buildModeRoutes({
   modes,
   dataSources,
   extensionManager,
-  servicesManager
-) {
+  servicesManager,
+  hotkeysManager
+}) {
   const routes = [];
 
   // const dataSources = Object.keys(extensionManager.dataSourceMap).map(a =>
@@ -58,6 +59,7 @@ export default function buildModeRoutes(
             dataSourceName={dataSourceName}
             extensionManager={extensionManager}
             servicesManager={servicesManager}
+            hotkeysManager={hotkeysManager}
           />
         </ViewModelProvider>
       );
@@ -83,6 +85,7 @@ export default function buildModeRoutes(
           dataSourceName={defaultDataSourceName}
           extensionManager={extensionManager}
           servicesManager={servicesManager}
+          hotkeysManager={hotkeysManager}
         />
       </ViewModelProvider>
     );
