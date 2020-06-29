@@ -1,3 +1,5 @@
+import windowLevelPresets from "./windowLevelPresets";
+
 /*
  * Supported Keys: https://craig.is/killing/mice
  */
@@ -45,56 +47,56 @@ export default [
   },
   /** Window level presets */
   {
-    commandName: 'setWindowLevelPreset',
-    commandOptions: { preset: 1 },
+    commandName: 'setWindowLevel',
+    commandOptions: windowLevelPresets[1],
     label: 'W/L Preset 1',
     keys: ['1'],
   },
   {
-    commandName: 'setWindowLevelPreset',
-    commandOptions: { preset: 2 },
+    commandName: 'setWindowLevel',
+    commandOptions: windowLevelPresets[2],
     label: 'W/L Preset 2',
     keys: ['2'],
   },
   {
-    commandName: 'setWindowLevelPreset',
-    commandOptions: { preset: 3 },
+    commandName: 'setWindowLevel',
+    commandOptions: windowLevelPresets[3],
     label: 'W/L Preset 3',
     keys: ['3'],
   },
   {
-    commandName: 'setWindowLevelPreset',
-    commandOptions: { preset: 4 },
+    commandName: 'setWindowLevel',
+    commandOptions: windowLevelPresets[4],
     label: 'W/L Preset 4',
     keys: ['4'],
   },
   {
-    commandName: 'setWindowLevelPreset',
-    commandOptions: { preset: 5 },
+    commandName: 'setWindowLevel',
+    commandOptions: windowLevelPresets[5],
     label: 'W/L Preset 5',
     keys: ['5'],
   },
   {
-    commandName: 'setWindowLevelPreset',
-    commandOptions: { preset: 6 },
+    commandName: 'setWindowLevel',
+    commandOptions: windowLevelPresets[6],
     label: 'W/L Preset 6',
     keys: ['6'],
   },
   {
-    commandName: 'setWindowLevelPreset',
-    commandOptions: { preset: 7 },
+    commandName: 'setWindowLevel',
+    commandOptions: windowLevelPresets[7],
     label: 'W/L Preset 7',
     keys: ['7'],
   },
   {
-    commandName: 'setWindowLevelPreset',
-    commandOptions: { preset: 8 },
+    commandName: 'setWindowLevel',
+    commandOptions: windowLevelPresets[8],
     label: 'W/L Preset 8',
     keys: ['8'],
   },
   {
-    commandName: 'setWindowLevelPreset',
-    commandOptions: { preset: 9 },
+    commandName: 'setWindowLevel',
+    commandOptions: windowLevelPresets[9],
     label: 'W/L Preset 9',
     keys: ['9'],
   },

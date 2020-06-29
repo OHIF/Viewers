@@ -15,6 +15,7 @@ describe('Top level exports', () => {
       'UIDialogService',
       'MeasurementService',
       //
+      'defaults',
       'utils',
       'hotkeys',
       'studies',

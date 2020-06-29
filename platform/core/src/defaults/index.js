@@ -1,2 +1,4 @@
 import hotkeyBindings from './hotkeyBindings';
-export { hotkeyBindings };
+import windowLevelPresets from './windowLevelPresets';
+export { hotkeyBindings, windowLevelPresets };
+export default { hotkeyBindings, windowLevelPresets };
