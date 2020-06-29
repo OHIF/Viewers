@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { StudyBrowser, useImageViewer } from '@ohif/ui';
+import { utils } from '@ohif/core';
+
+const { formatDate } = utils;
 
 /**
  *
@@ -37,7 +40,7 @@ function PanelStudyBrowser({
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
         return {
           studyInstanceUid: qidoStudy.StudyInstanceUID,
-          date: qidoStudy.StudyDate,
+          date: formatDate(qidoStudy.StudyDate),
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: qidoStudy.NumInstances,
@@ -151,11 +154,11 @@ function PanelStudyBrowser({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-      [
-        ...expandedStudyInstanceUIDs.filter(
-          stdyUid => stdyUid !== StudyInstanceUID
-        ),
-      ]
+        [
+          ...expandedStudyInstanceUIDs.filter(
+            stdyUid => stdyUid !== StudyInstanceUID
+          ),
+        ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);

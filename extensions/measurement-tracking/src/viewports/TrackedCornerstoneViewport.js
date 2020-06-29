@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF, { DicomMetadataStore } from '@ohif/core';
+import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
 import {
   Notification,
   ViewportActionBar,
@@ -11,6 +11,8 @@ import {
   useViewportDialog,
 } from '@ohif/ui';
 import { useTrackedMeasurements } from './../getContextModule';
+
+const { formatDate } = utils;
 
 // TODO -> Get this list from the list of tracked measurements.
 const {
@@ -239,7 +241,7 @@ function TrackedCornerstoneViewport({
           label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
           isTracked: trackedSeries.includes(SeriesInstanceUID),
           isLocked: false,
-          studyDate: SeriesDate, // TODO: This is series date. Is that ok?
+          studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription,
           modality: Modality,
