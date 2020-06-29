@@ -5,14 +5,6 @@ import {
   useViewportGrid,
 } from '@ohif/ui';
 
-const DEFAULT_LAYOUT = {
-  type: 'SET_LAYOUT',
-  payload: {
-    numCols: 1,
-    numRows: 1,
-  },
-};
-
 function LayoutSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const [viewportGridState, viewportGridService] = useViewportGrid();
@@ -33,7 +25,7 @@ function LayoutSelector() {
   useEffect(() => {
     /* Reset to default layout when component unmounts */
     return () => {
-      dispatch(DEFAULT_LAYOUT);
+      viewportGridService.setLayout({ numCols: 1, numRows: 1 });
     };
   }, []);
 
