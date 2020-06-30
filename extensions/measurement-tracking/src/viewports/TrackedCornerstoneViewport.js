@@ -277,6 +277,7 @@ function TrackedCornerstoneViewport({
               type={viewportDialogState.type}
               actions={viewportDialogState.actions}
               onSubmit={viewportDialogState.onSubmit}
+              onOutsideClick={viewportDialogState.onOutsideClick}
             />
           )}
         </div>

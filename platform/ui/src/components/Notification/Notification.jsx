@@ -1,16 +1,35 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Button, Icon } from '@ohif/ui';
 
-const Notification = ({ type, message, actions, onSubmit }) => {
+const Notification = ({ type, message, actions, onSubmit, onOutsideClick }) => {
+  const notificationRef = useRef(null);
+
+  useEffect(() => {
+    const notificationElement = notificationRef.current;
+    const handleClick = function(event) {
+      const isClickInside = notificationElement.contains(event.target);
+
+      if (!isClickInside) {
+        onOutsideClick();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+    };
+  }, [onOutsideClick]);
+
   const iconsByType = {
     error: {
       icon: 'info',
       color: 'text-red-700',
     },
     warning: {
-      icon: 'info',
+      icon: 'notificationwarning-diamond',
       color: 'text-yellow-500',
     },
     info: {
@@ -35,7 +54,10 @@ const Notification = ({ type, message, actions, onSubmit }) => {
   const { icon, color } = getIconData();
 
   return (
-    <div className="flex flex-col p-2 mx-2 mt-2 rounded bg-common-bright">
+    <div
+      ref={notificationRef}
+      className="flex flex-col p-2 mx-2 mt-2 rounded bg-common-bright"
+    >
       <div className="flex flex-grow">
         <Icon name={icon} className={classnames('w-5', color)} />
         <span className="ml-2 text-base text-black">{message}</span>
@@ -65,6 +87,7 @@ const Notification = ({ type, message, actions, onSubmit }) => {
 
 Notification.defaultProps = {
   type: 'info',
+  onOutsideClick: () => {},
 };
 
 Notification.propTypes = {
@@ -78,6 +101,8 @@ Notification.propTypes = {
     })
   ).isRequired,
   onSubmit: PropTypes.func.isRequired,
+  /** Can be used as a callback to dismiss the notification for clicks that occur outside of it */
+  onOutsideClick: PropTypes.func,
 };
 
 export default Notification;

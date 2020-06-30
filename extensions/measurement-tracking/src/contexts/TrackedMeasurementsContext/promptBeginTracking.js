@@ -50,6 +50,10 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
       message,
       actions,
       onSubmit,
+      onOutsideClick: () => {
+        UIViewportDialogService.hide();
+        resolve(RESPONSE.CANCEL);
+      },
     });
   });
 }

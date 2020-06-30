@@ -63,6 +63,10 @@ function _askShouldAddMeasurements(UIViewportDialogService, viewportIndex) {
       message,
       actions,
       onSubmit,
+      onOutsideClick: () => {
+        UIViewportDialogService.hide();
+        resolve(RESPONSE.CANCEL);
+      },
     });
   });
 }
@@ -91,10 +95,14 @@ function _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex) {
 
     UIViewportDialogService.show({
       viewportIndex,
-      type: 'info', // TODO: warn
+      type: 'warning',
       message,
       actions,
       onSubmit,
+      onOutsideClick: () => {
+        UIViewportDialogService.hide();
+        resolve(RESPONSE.CANCEL);
+      },
     });
   });
 }
