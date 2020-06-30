@@ -18,6 +18,9 @@ const DEFAULT_STATE = {
   onSubmit: () => {
     console.log('btn value?');
   },
+  onOutsideClick: () => {
+    console.warn('default: onOutsideClick')
+  },
   onDismiss: () => {
     console.log('dismiss? -1');
   },

@@ -5,6 +5,7 @@ import DataSourceWrapper from './DataSourceWrapper';
 import WorkList from './WorkList';
 import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
+import { ErrorBoundary } from '@ohif/ui';
 
 // TODO: Make these configurable
 // TODO: Include "routes" debug route if dev build
@@ -20,19 +21,25 @@ const bakedInRoutes = [
   { component: NotFound },
 ];
 
-const createRoutes = (
+const createRoutes = ({
   modes,
   dataSources,
   extensionManager,
-  servicesManager
-) => {
-  const routes =
-    buildModeRoutes(modes, dataSources, extensionManager, servicesManager) ||
-    [];
+  servicesManager,
+  hotkeysManager
+}) => {
+  const routes = buildModeRoutes({
+    modes,
+    dataSources,
+    extensionManager,
+    servicesManager,
+    hotkeysManager
+  }) || [];
+
   const allRoutes = [...routes, ...bakedInRoutes];
 
   console.log(
-    'Creating Routes: ',
+    'Creating Routes:',
     modes,
     dataSources,
     routes,
@@ -43,6 +50,7 @@ const createRoutes = (
   return (
     <Switch>
       {allRoutes.map((route, i) => {
+        console.log(route);
         return (
           <Route
             key={i}
@@ -51,7 +59,9 @@ const createRoutes = (
             strict={route.strict}
             render={props => (
               // eslint-disable-next-line react/jsx-props-no-spreading
-              <route.component {...props} {...route.props} route={route} />
+              <ErrorBoundary context={`Route ${route.path}`} fallbackRoute="/">
+                <route.component {...props} {...route.props} route={route} />
+              </ErrorBoundary>
             )}
           />
         );

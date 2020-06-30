@@ -44,6 +44,7 @@
     "isomorphic-base64": "^1.0.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.1",
+    "moment": "^2.24.0",
     "mousetrap": "^1.6.3",
     "validate.js": "^0.12.0"
   }

@@ -21,13 +21,21 @@ const InputLabelWrapper = ({
   className,
   children,
 }) => {
+  const onClickHandler = e => {
+    if (!isSortable) {
+      return;
+    }
+
+    onLabelClick(e);
+  };
+
   return (
     <label className={classnames(baseLabelClassName, className)}>
       <span
         role="button"
         className={spanClassName}
-        onClick={onLabelClick}
-        onKeyDown={onLabelClick}
+        onClick={onClickHandler}
+        onKeyDown={onClickHandler}
         tabIndex="0"
       >
         {label}

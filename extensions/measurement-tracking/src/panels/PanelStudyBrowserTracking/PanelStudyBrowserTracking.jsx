@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { utils } from '@ohif/core';
 import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
+
+const { formatDate } = utils;
 
 /**
  *
@@ -19,10 +22,7 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
-  const [
-    { activeViewportIndex, viewports },
-    dispatchViewportGrid,
-  ] = useViewportGrid();
+  const [{ activeViewportIndex, viewports }] = useViewportGrid();
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -71,7 +71,7 @@ function PanelStudyBrowserTracking({
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
         return {
           studyInstanceUid: qidoStudy.StudyInstanceUID,
-          date: qidoStudy.StudyDate,
+          date: formatDate(qidoStudy.StudyDate),
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: qidoStudy.NumInstances,

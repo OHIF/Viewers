@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF, { DicomMetadataStore } from '@ohif/core';
+import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
 import {
   Notification,
   ViewportActionBar,
@@ -11,6 +11,8 @@ import {
   useViewportDialog,
 } from '@ohif/ui';
 import { useTrackedMeasurements } from './../getContextModule';
+
+const { formatDate } = utils;
 
 // TODO -> Get this list from the list of tracked measurements.
 const {
@@ -38,7 +40,6 @@ function TrackedCornerstoneViewport({
   viewportIndex,
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
-
   const [{ activeViewportIndex, viewports }] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
@@ -120,6 +121,18 @@ function TrackedCornerstoneViewport({
     }
 
     setElement(targetElement);
+
+    const OHIFCornerstoneEnabledElementEvent = new CustomEvent(
+      'ohif-cornerstone-enabled-element-event',
+      {
+        detail: {
+          enabledElement: targetElement,
+          viewportIndex,
+        },
+      }
+    );
+
+    document.dispatchEvent(OHIFCornerstoneEnabledElementEvent);
   };
 
   useEffect(() => {
@@ -233,7 +246,7 @@ function TrackedCornerstoneViewport({
           label,
           isTracked: trackedSeries.includes(SeriesInstanceUID),
           isLocked: false,
-          studyDate: SeriesDate, // TODO: This is series date. Is that ok?
+          studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription,
           modality: Modality,
@@ -244,7 +257,7 @@ function TrackedCornerstoneViewport({
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness ? `${SliceThickness}mm` : '',
+            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
@@ -276,6 +289,7 @@ function TrackedCornerstoneViewport({
               type={viewportDialogState.type}
               actions={viewportDialogState.actions}
               onSubmit={viewportDialogState.onSubmit}
+              onOutsideClick={viewportDialogState.onOutsideClick}
             />
           )}
         </div>

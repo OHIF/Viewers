@@ -9,13 +9,14 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useQuery } from '@hooks';
 
+import PreferencesDropdown from '../../components/PreferencesDropdown';
+
 import {
   Icon,
   StudyListExpandedRow,
   Button,
   NavBar,
   Svg,
-  IconButton,
   EmptyStudies,
   StudyListTable,
   StudyListPagination,
@@ -34,7 +35,10 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   // ~ Filters
   const query = useQuery();
   const queryFilterValues = _getQueryFilterValues(query);
-  const [filterValues, _setFilterValues] = useState({ ...defaultFilterValues, ...queryFilterValues });
+  const [filterValues, _setFilterValues] = useState({
+    ...defaultFilterValues,
+    ...queryFilterValues,
+  });
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
 
@@ -211,8 +215,8 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           content: patientName ? (
             patientName
           ) : (
-              <span className="text-gray-700">(Empty)</span>
-            ),
+            <span className="text-gray-700">(Empty)</span>
+          ),
           title: patientName,
           gridCol: 4,
         },
@@ -299,13 +303,13 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                return {
-                  description: s.description || '(empty)',
-                  seriesNumber: s.seriesNumber || '',
-                  modality: s.modality || '',
-                  instances: s.numSeriesInstances || '',
-                };
-              })
+                  return {
+                    description: s.description || '(empty)',
+                    seriesNumber: s.seriesNumber || '',
+                    modality: s.modality || '',
+                    instances: s.numSeriesInstances || '',
+                  };
+                })
               : []
           }
         >
@@ -322,7 +326,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
               <Link
                 key={i}
                 to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
-              // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+                // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
@@ -364,17 +368,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           <span className="mr-3 text-lg text-common-light">
             FOR INVESTIGATIONAL USE ONLY
           </span>
-          <IconButton
-            variant="text"
-            color="inherit"
-            className="text-primary-active"
-            onClick={() => { }}
-          >
-            <React.Fragment>
-              <Icon name="settings" />
-              <Icon name="chevron-down" />
-            </React.Fragment>
-          </IconButton>
+          <PreferencesDropdown />
         </div>
       </NavBar>
       <StudyListFilter
@@ -403,10 +397,10 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           />
         </>
       ) : (
-          <div className="flex flex-col items-center justify-center pt-48">
-            <EmptyStudies isLoading={isLoadingData} />
-          </div>
-        )}
+        <div className="flex flex-col items-center justify-center pt-48">
+          <EmptyStudies isLoading={isLoadingData} />
+        </div>
+      )}
     </div>
   );
 }

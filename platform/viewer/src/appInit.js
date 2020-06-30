@@ -2,7 +2,7 @@ import {
   CommandsManager,
   ExtensionManager,
   ServicesManager,
-  // HotkeysManager,
+  HotkeysManager,
   UINotificationService,
   UIModalService,
   UIDialogService,
@@ -10,6 +10,7 @@ import {
   MeasurementService,
   DisplaySetService,
   ToolBarSerivce,
+  ViewportGridService,
   // utils,
   // redux as reduxOHIF,
 } from '@ohif/core';
@@ -30,13 +31,14 @@ function appInit(appConfigOrFunc, defaultExtensions) {
   // TODO: Wire this up to Rodrigo's basic Context "ContextService"
   const commandsManagerConfig = {
     /** Used by commands to inject `viewports` from "redux" */
-    getAppState: () => {},
+    getAppState: () => { },
     /** Used by commands to determine active context */
     getActiveContexts: () => ['VIEWER', 'ACTIVE_VIEWPORT::CORNERSTONE'],
   };
-  const commandsManager = new CommandsManager(commandsManagerConfig);
+
   const servicesManager = new ServicesManager();
-  // const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
+  const commandsManager = new CommandsManager(commandsManagerConfig);
+  const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
   const extensionManager = new ExtensionManager({
     commandsManager,
     servicesManager,
@@ -51,6 +53,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     MeasurementService,
     DisplaySetService,
     ToolBarSerivce,
+    ViewportGridService,
   ]);
 
   /**
@@ -62,7 +65,6 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     appConfig.dataSources
   );
 
-  // TODO: Init global hotkeys, or the hotkeys manager?
   // TODO: We no longer use `utils.addServer`
   // TODO: We no longer init webWorkers at app level
   // TODO: We no longer init the user Manager
@@ -78,6 +80,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     commandsManager,
     extensionManager,
     servicesManager,
+    hotkeysManager
   };
 }
 

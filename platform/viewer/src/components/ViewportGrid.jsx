@@ -12,11 +12,11 @@ function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [
     { numCols, numRows, activeViewportIndex, viewports },
-    dispatch,
+    viewportGridService,
   ] = useViewportGrid();
 
   const setActiveViewportIndex = index => {
-    dispatch({ type: 'SET_ACTIVE_VIEWPORT_INDEX', payload: index });
+    viewportGridService.setActiveViewportIndex(index);
   };
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
@@ -30,12 +30,9 @@ function ViewerViewportGrid(props) {
           const isImageSet = x => x instanceof ImageSet;
           return (isImageSet(a) === isImageSet(b)) ? 0 : isImageSet(a) ? -1 : 1;
         });
-        dispatch({
-          type: 'SET_DISPLAYSET_FOR_VIEWPORT',
-          payload: {
-            viewportIndex: 0,
-            displaySetInstanceUID: displaySets[0].displaySetInstanceUID,
-          },
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex: 0,
+          displaySetInstanceUID: displaySets[0].displaySetInstanceUID,
         });
       },
     );
@@ -96,12 +93,9 @@ function ViewerViewportGrid(props) {
   // ]);
   const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
     console.warn(`DROPPED: ${displaySetInstanceUID}`);
-    dispatch({
-      type: 'SET_DISPLAYSET_FOR_VIEWPORT',
-      payload: {
-        viewportIndex,
-        displaySetInstanceUID,
-      },
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex,
+      displaySetInstanceUID,
     });
   };
 
@@ -121,15 +115,17 @@ function ViewerViewportGrid(props) {
         viewportComponents
       );
 
+      const onInterationHandler = () => {
+        setActiveViewportIndex(viewportIndex);
+      };
+
       viewportPanes[i] = (
         <ViewportPane
           key={viewportIndex}
           className="m-1"
           acceptDropsFor="displayset"
           onDrop={onDropHandler.bind(null, viewportIndex)}
-          onInteraction={() => {
-            setActiveViewportIndex(viewportIndex);
-          }}
+          onInteraction={onInterationHandler}
           isActive={activeViewportIndex === viewportIndex}
         >
           <ViewportComponent

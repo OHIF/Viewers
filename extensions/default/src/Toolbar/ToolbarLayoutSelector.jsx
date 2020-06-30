@@ -5,17 +5,9 @@ import {
   useViewportGrid,
 } from '@ohif/ui';
 
-const DEFAULT_LAYOUT = {
-  type: 'SET_LAYOUT',
-  payload: {
-    numCols: 1,
-    numRows: 1,
-  },
-};
-
 function LayoutSelector() {
   const [isOpen, setIsOpen] = useState(false);
-  const [viewportGridState, dispatch] = useViewportGrid();
+  const [viewportGridState, viewportGridService] = useViewportGrid();
 
   const closeOnOutsideClick = () => {
     if (isOpen) {
@@ -33,7 +25,7 @@ function LayoutSelector() {
   useEffect(() => {
     /* Reset to default layout when component unmounts */
     return () => {
-      dispatch(DEFAULT_LAYOUT);
+      viewportGridService.setLayout({ numCols: 1, numRows: 1 });
     };
   }, []);
 
@@ -51,13 +43,7 @@ function LayoutSelector() {
         DropdownContent !== null && (
           <DropdownContent
             onSelection={({ numRows, numCols }) => {
-              dispatch({
-                type: 'SET_LAYOUT',
-                payload: {
-                  numCols,
-                  numRows,
-                },
-              });
+              viewportGridService.setLayout({ numCols, numRows });
             }}
           />
         )

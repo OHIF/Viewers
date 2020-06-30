@@ -6,6 +6,8 @@ import merge from 'lodash.merge';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import initWADOImageLoader from './initWADOImageLoader.js';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
+//
+import { setEnabledElement } from './state';
 
 /**
  *
@@ -54,6 +56,22 @@ export default function init({ servicesManager, configuration }) {
   };
 
   initCornerstoneTools(defaultCsToolsConfig);
+  // TODO: Extensions are still registered at time of registration globally
+  // These should be registered as a part of mode route spin up,
+  // and they need to self-clean on mode route destroy
+  // THIS
+  // is a way for extensions that "depend" on this extension to notify it of
+  // new cornerstone enabled elements so it's commands continue to work.
+  const handleOhifCornerstoneEnabledElementEvent = function(evt) {
+    const { viewportIndex, enabledElement } = evt.detail;
+
+    setEnabledElement(viewportIndex, enabledElement);
+  };
+
+  document.addEventListener(
+    'ohif-cornerstone-enabled-element-event',
+    handleOhifCornerstoneEnabledElementEvent
+  );
 
   const toolsGroupedByType = {
     touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],

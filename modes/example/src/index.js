@@ -1,4 +1,5 @@
 import toolbarButtons from './toolbarButtons.js';
+import { hotkeys } from '@ohif/core';
 
 export default function mode({ modeConfiguration }) {
   return {
@@ -68,6 +69,9 @@ export default function mode({ modeConfiguration }) {
     ],
     extensions: ['org.ohif.default', 'org.ohif.cornerstone'],
     sopClassHandlers: ['org.ohif.default.sopClassHandlerModule.stack'],
+    hotkeys: [
+      ...hotkeys.defaults.hotkeyBindings
+    ]
   };
 }
 

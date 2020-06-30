@@ -4,11 +4,12 @@ import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF from '@ohif/core';
+import OHIF, { utils } from '@ohif/core';
 import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
 import TOOL_NAMES from './constants/toolNames';
 import id from './id';
 
+const { formatDate } = utils;
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 
 // const cine = viewportSpecificData.cine;
@@ -25,7 +26,7 @@ function OHIFCornerstoneSRViewport({
   viewportIndex,
   DisplaySetService,
 }) {
-  const [viewportGrid, dispatchViewportGrid] = useViewportGrid();
+  const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementSelected, setMeasurementSelected] = useState(0);
   const [measurementCount, setMeasurementCount] = useState(1);
   const [viewportData, setViewportData] = useState(null);
@@ -244,17 +245,24 @@ function OHIFCornerstoneSRViewport({
           label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
           isTracked: false,
           isLocked: false,
-          studyDate: StudyDate,
+          studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
-            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
+            patientName: PatientName
+              ? OHIF.utils.formatPN(PatientName.Alphabetic)
+              : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: `${SliceThickness}mm`,
-            spacing: PixelSpacing && PixelSpacing.length ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(2)}mm` : '',
+            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
+            spacing:
+              PixelSpacing && PixelSpacing.length
+                ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
+                    2
+                  )}mm`
+                : '',
             scanner: ManufacturerModelName || '',
           },
         }}

@@ -28,6 +28,8 @@
   },
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
+    "@ohif/i18n": "^0.52.8",
+    "react-i18next": "^10.11.0",
     "prop-types": "^15.6.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

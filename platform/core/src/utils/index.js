@@ -15,6 +15,7 @@ import makeCancelable from './makeCancelable';
 import hotkeys from './hotkeys';
 import Queue from './Queue';
 import isDicomUid from './isDicomUid';
+import formatDate from './formatDate';
 import formatPN from './formatPN';
 import resolveObjectPath from './resolveObjectPath';
 import * as hierarchicalListUtils from './hierarchicalListUtils';
@@ -27,6 +28,7 @@ const utils = {
   addServers,
   sortBy,
   writeScript,
+  formatDate,
   formatPN,
   b64toBlob,
   StackManager,
@@ -50,6 +52,7 @@ export {
   absoluteUrl,
   addServers,
   sortBy,
+  formatDate,
   writeScript,
   b64toBlob,
   StackManager,
