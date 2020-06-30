@@ -256,6 +256,27 @@ class MeasurementService {
     }
   }
 
+  update(id, measurement) {
+    if (this.measurements[id]) {
+      const updatedMeasurement = {
+        ...measurement,
+        modifiedTimestamp: Math.floor(Date.now() / 1000)
+      };
+
+      log.info(`Updating measurement...`, updatedMeasurement);
+
+      this.measurements[id] = updatedMeasurement;
+
+      this._broadcastChange(
+        this.EVENTS.MEASUREMENT_UPDATED,
+        measurement.source,
+        updatedMeasurement
+      );
+
+      return updatedMeasurement.id;
+    }
+  }
+
   /**
    * Adds or update persisted measurements.
    *

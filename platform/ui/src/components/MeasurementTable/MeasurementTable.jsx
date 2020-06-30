@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon } from '@ohif/ui';
 
-const MeasurementItem = ({ id, label, displayText, isActive, onClick, onEdit }) => {
+const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onEdit }) => {
   const onEditHandler = event => {
     /* Stop propagation to avoid disable the current active item */
     event.stopPropagation();
@@ -17,7 +17,7 @@ const MeasurementItem = ({ id, label, displayText, isActive, onClick, onEdit }) 
   return (
     <div
       className={classnames(
-        'group flex cursor-default bg-black border outline-none border-transparent transition duration-300 ',
+        'group flex cursor-default bg-black border outline-none border-transparent transition duration-300',
         {
           'rounded overflow-hidden border-primary-light': isActive,
         }
@@ -36,7 +36,7 @@ const MeasurementItem = ({ id, label, displayText, isActive, onClick, onEdit }) 
           }
         )}
       >
-        {id}
+        {index}
       </div>
       <div className="px-2 py-1 flex flex-1 flex-col relative">
         <span className="text-base text-primary-light mb-1">
@@ -68,7 +68,6 @@ const MeasurementItem = ({ id, label, displayText, isActive, onClick, onEdit }) 
 };
 
 const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
-  console.log(data);
   return (
     <div>
       <div className="flex justify-between px-2 py-1 bg-secondary-main">
@@ -78,8 +77,9 @@ const MeasurementTable = ({ data, title, amount, onClick, onEdit }) => {
         <span className="text-base font-bold text-white">{amount}</span>
       </div>
       <div className="overflow-y-auto overflow-x-hidden ohif-scrollbar max-h-112">
-        {data.length && data.map(measurementItem => (
+        {data.length && data.map((measurementItem, index) => (
           <MeasurementItem
+            index={index + 1}
             key={measurementItem.id}
             {...measurementItem}
             onClick={onClick}

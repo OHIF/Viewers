@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { StudySummary, MeasurementTable } from '@ohif/ui';
+import { StudySummary, MeasurementTable, Dialog, Input, Button } from '@ohif/ui';
 import { DicomMetadataStore, DICOMSR } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
@@ -31,6 +31,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
+  const [measurements, setMeasurements] = useState([]);
+  const [measurementProps, setMeasurementProps] = useState({});
   // TODO: measurements subscribtion
 
   // Initial?
@@ -45,6 +47,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
     );
     setDisplayMeasurements(mappedMeasurements);
+    setMeasurements(filteredMeasurements);
     // eslint-ignore-next-line
   }, [
     MeasurementService,
@@ -100,8 +103,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     };
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
-  const activeMeasurementItem = 0;
-
   const exportReport = () => {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
@@ -155,6 +156,54 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     }
   };
 
+  const onMeasurementItemEditHandler = (id) => {
+    const measurement = measurements.find(m => m.id === id);
+
+    const dialogId = UIDialogService.create({
+      centralize: true,
+      isDraggable: false,
+      useLastPosition: false,
+      showOverlay: true,
+      content: Dialog,
+      contentProps: {
+        title: 'Edit',
+        noCloseButton: true,
+        state: { label: measurement.label },
+        body: ({ state, setState }) => {
+          const onChangeHandler = () => setState(state => ({
+            ...state, label: event.target.value
+          }));
+          return (
+            <div className="p-4">
+              <Input
+                className="border-primary-main mt-2 bg-black"
+                type="text"
+                containerClassName="mr-2"
+                value={state.label}
+                onChange={onChangeHandler}
+              />
+            </div>
+          );
+        },
+        actions: [
+          { id: 'edit', text: 'Edit', type: 'primary' },
+          { id: 'cancel', text: 'Cancel', type: 'secondary' }
+        ],
+        onSubmit: (action) => {
+          switch (action.id) {
+            case 'edit': {
+              MeasurementService.update(id, {
+                ...measurement,
+                ...action.state
+              });
+            }
+          }
+          UIDialogService.dismiss({ id: dialogId });
+        },
+      }
+    });
+  };
+
   const onMeasurementItemClickHandler = (id) => {
     const measurements = [...displayMeasurements];
     const measurement = measurements.find(m => m.id === id);
@@ -178,7 +227,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           amount={displayMeasurements.length}
           data={displayMeasurements}
           onClick={onMeasurementItemClickHandler}
-          onEdit={id => alert(`Edit: ${id}`)}
+          onEdit={onMeasurementItemEditHandler}
         />
       </div>
       <div className="flex justify-center p-4">
@@ -211,12 +260,9 @@ function _mapMeasurementToDisplay(measurement, index, types) {
   );
   const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;
 
-  console.log('mapping....', measurement);
-  console.log(instance);
-
   return {
-    id: index + 1,
-    label: '(empty)', // 'Label short description',
+    id: measurement.id,
+    label: measurement.label || '(empty)',
     displayText:
       _getDisplayText(
         measurement,
