@@ -230,7 +230,8 @@ function PanelStudyBrowserTracking({
         `thumbnail-${displaySetInstanceUID}`
       );
 
-      if (element) {
+      if (element && typeof element.scrollIntoView === 'function') {
+        // TODO: Any way to support IE here?
         element.scrollIntoView({ behavior: 'smooth' });
 
         setJumpToDisplaySet(null);
