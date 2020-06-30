@@ -22,7 +22,10 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
-  const [{ activeViewportIndex, viewports }] = useViewportGrid();
+  const [
+    { activeViewportIndex, viewports },
+    viewportGridService,
+  ] = useViewportGrid();
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -34,6 +37,13 @@ function PanelStudyBrowserTracking({
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
+
+  const onClickThumbnailHandler = displaySetInstanceUID => {
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex: activeViewportIndex,
+      displaySetInstanceUID,
+    });
+  };
 
   // TODO: Should this be somewhere else? Feels more like a mode "lifecycle" setup/destroy?
   useEffect(() => {
@@ -233,6 +243,7 @@ function PanelStudyBrowserTracking({
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
         });
       }}
+      onClickThumbnail={onClickThumbnailHandler}
     />
   );
 }
