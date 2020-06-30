@@ -114,10 +114,11 @@ function _getDisplaySetsFromSeries(
   // Subscribe to new displaySets as the source may come in after.
   DisplaySetService.subscribe(
     DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-    newDisplaySets => {
+    data => {
+      const { displaySetsAdded } = data;
       // If there are still some measurements that have not yet been loaded into cornerstone,
       // See if we can load them onto any of the new displaySets.
-      newDisplaySets.forEach(newDisplaySet => {
+      displaySetsAdded.forEach(newDisplaySet => {
         _checkIfCanAddMeasurementsToDisplaySet(
           displaySet,
           newDisplaySet,

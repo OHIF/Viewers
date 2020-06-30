@@ -34,6 +34,7 @@ function PanelStudyBrowserTracking({
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
+  const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
 
   // TODO: Should this be somewhere else? Feels more like a mode "lifecycle" setup/destroy?
   useEffect(() => {
@@ -136,18 +137,26 @@ function PanelStudyBrowserTracking({
     // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
     const SubscriptionDisplaySetsAdded = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      newDisplaySets => {
-        newDisplaySets.forEach(async dSet => {
+      data => {
+        const { displaySetsAdded, options } = data;
+        displaySetsAdded.forEach(async dSet => {
+          const displaySetInstanceUID = dSet.displaySetInstanceUID;
+
           const newImageSrcEntry = {};
           const displaySet = DisplaySetService.getDisplaySetByUID(
-            dSet.displaySetInstanceUID
+            displaySetInstanceUID
           );
+
+          if (options.madeInClient) {
+            setJumpToDisplaySet(displaySetInstanceUID);
+          }
+
           const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
           const imageId = imageIds[Math.floor(imageIds.length / 2)];
           // TODO: Is it okay that imageIds are not returned here for SR displaysets?
           if (imageId) {
             // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-            newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(
+            newImageSrcEntry[displaySetInstanceUID] = await getImageSrc(
               imageId
             );
             setThumbnailImageSrcMap(prevState => {
@@ -213,6 +222,51 @@ function PanelStudyBrowserTracking({
       requestDisplaySetCreationForStudy(DisplaySetService, StudyInstanceUID);
     }
   }
+
+  useEffect(() => {
+    if (jumpToDisplaySet) {
+      // Get element by displaySetInstanceUID
+      const displaySetInstanceUID = jumpToDisplaySet;
+      const element = document.getElementById(
+        `thumbnail-${displaySetInstanceUID}`
+      );
+
+      if (element && typeof element.scrollIntoView === 'function') {
+        // TODO: Any way to support IE here?
+        element.scrollIntoView({ behavior: 'smooth' });
+
+        setJumpToDisplaySet(null);
+      }
+    }
+  }, [jumpToDisplaySet, expandedStudyInstanceUIDs, activeTabName]);
+
+  useEffect(() => {
+    if (!jumpToDisplaySet) {
+      return;
+    }
+
+    const displaySetInstanceUID = jumpToDisplaySet;
+    // Set the activeTabName and expand the study
+    const thumbnailLocation = _findTabAndStudyOfDisplaySet(
+      displaySetInstanceUID,
+      tabs
+    );
+    if (!thumbnailLocation) {
+      console.warn('jumpToThumbnail: displaySet thumbnail not found.');
+
+      return;
+    }
+    const { tabName, StudyInstanceUID } = thumbnailLocation;
+    setActiveTabName(tabName);
+    const studyExpanded = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
+    if (!studyExpanded) {
+      const updatedExpandedStudyInstanceUIDs = [
+        ...expandedStudyInstanceUIDs,
+        StudyInstanceUID,
+      ];
+      setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
+    }
+  }, [jumpToDisplaySet]);
 
   return (
     <StudyBrowser
@@ -400,4 +454,25 @@ function _createStudyBrowserTabs(
   ];
 
   return tabs;
+}
+
+function _findTabAndStudyOfDisplaySet(displaySetInstanceUID, tabs) {
+  for (let t = 0; t < tabs.length; t++) {
+    const { studies } = tabs[t];
+
+    for (let s = 0; s < studies.length; s++) {
+      const { displaySets } = studies[s];
+
+      for (let d = 0; d < displaySets.length; d++) {
+        const displaySet = displaySets[d];
+
+        if (displaySet.displaySetInstanceUID === displaySetInstanceUID) {
+          return {
+            tabName: tabs[t].name,
+            StudyInstanceUID: studies[s].studyInstanceUid,
+          };
+        }
+      }
+    }
+  }
 }
