@@ -52,7 +52,7 @@ export default class DisplaySetService {
       displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUid
     );
 
-  makeDisplaySets = (input, batch = false) => {
+  makeDisplaySets = (input, { batch = false, madeInClient = false } = {}) => {
     if (!input || !input.length) {
       throw new Error('No instances were provided.');
     }
@@ -78,11 +78,20 @@ export default class DisplaySetService {
       displaySetsAdded = displaySets;
     }
 
+    const options = {};
+
+    if (madeInClient) {
+      options.madeInClient = true;
+    }
+
     // TODO: This is tricky. How do we know we're not resetting to the same/existing DSs?
     // TODO: This is likely run anytime we touch DicomMetadataStore. How do we prevent uneccessary broadcasts?
     if (displaySetsAdded && displaySetsAdded.length) {
-      this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, displaySetsAdded);
       this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+      this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, {
+        displaySetsAdded,
+        options,
+      });
     }
   };
 

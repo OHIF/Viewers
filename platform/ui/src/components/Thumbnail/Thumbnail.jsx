@@ -9,6 +9,7 @@ import { Icon } from '@ohif/ui';
  *
  */
 const Thumbnail = ({
+  displaySetInstanceUID,
   className,
   imageSrc,
   imageAltText,
@@ -36,6 +37,7 @@ const Thumbnail = ({
         className,
         'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none'
       )}
+      id={`thumbnail-${displaySetInstanceUID}`}
       onClick={onClick}
       onKeyDown={onClick}
       role="button"

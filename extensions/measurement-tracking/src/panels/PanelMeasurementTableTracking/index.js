@@ -117,7 +117,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
   };
 
-  const createReport = () => {
+  const createReport = async () => {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -134,7 +134,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       trackedMeasurements,
       dataSource,
       naturalizedReport => {
-        DisplaySetService.makeDisplaySets([naturalizedReport]);
+        DisplaySetService.makeDisplaySets([naturalizedReport], {
+          madeInClient: true,
+        });
       }
     );
   };
