@@ -26,7 +26,7 @@ const Length = {
         text: label,
         description,
         handles: getHandlesFromPoints(points),
-        idid,
+        id,
       },
     };
   },
@@ -58,7 +58,7 @@ const Length = {
     } = getSOPInstanceAttributes(element);
 
     return {
-      id: measurementData._measurementServiceId,
+      id,
       SOPInstanceUID: SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
