@@ -12,6 +12,7 @@ const drawEllipse = importInternal('drawing/drawEllipse');
 const drawHandles = importInternal('drawing/drawHandles');
 const getNewContext = importInternal('drawing/getNewContext');
 const BaseTool = importInternal('base/BaseTool');
+const drawLinkedTextBox = importInternal('drawing/drawLinkedTextBox');
 
 /**
  * @class DICOMSRDisplayTool - Renders DICOMSR data in a read only manner (i.e. as an overlay).
@@ -61,16 +62,16 @@ export default class DICOMSRDisplayTool extends BaseTool {
 
     for (let i = 0; i < filteredToolData.length; i++) {
       const data = filteredToolData[i];
-      const { renderableData } = data;
+      const { renderableData, labels } = data;
 
       const color =
         data.TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
           ? toolColors.getActiveColor()
           : toolColors.getToolColor();
-
+      const lineWidth = 2;
       const options = {
         color,
-        lineWidth: 2,
+        lineWidth,
         handleRadius: 6,
       };
 
@@ -104,6 +105,43 @@ export default class DICOMSRDisplayTool extends BaseTool {
             );
             break;
         }
+      });
+
+      const { element } = eventData;
+      const context = getNewContext(eventData.canvasContext.canvas);
+
+      debugger;
+
+      const text = _getTextBoxLinesFromLabels(labels);
+
+      debugger;
+
+      function textBoxAnchorPoints() {
+        return [{ x: 1000, y: 1000 }];
+      }
+
+      draw(context, context => {
+        drawLinkedTextBox(
+          context,
+          element,
+          {
+            active: false,
+            hasMoved: false,
+            movesIndependently: false,
+            drawnIndependently: true,
+            allowedOutsideImage: true,
+            hasBoundingBox: true,
+            x: 256,
+            y: 256,
+          },
+          text,
+          null,
+          textBoxAnchorPoints,
+          color,
+          lineWidth,
+          10,
+          true
+        );
       });
     }
   }
@@ -160,4 +198,36 @@ export default class DICOMSRDisplayTool extends BaseTool {
       );
     });
   }
+}
+
+function _getTextBoxLinesFromLabels(labels) {
+  // TODO -> max 2 for now, need a generic solution for this!
+
+  const labelLength = Math.min(labels.length, 2);
+
+  const lines = [];
+
+  for (let i = 0; i < labelLength; i++) {
+    const labelEntry = labels[i];
+    lines.push(`${_labelToShorthand(labelEntry.label)}${labelEntry.value}`);
+  }
+
+  return lines;
+}
+
+const SHORT_HAND_MAP = {
+  'Short Axis': 'S ',
+  'Long Axis': 'L ',
+  AREA: 'Area ',
+  Length: '',
+};
+
+function _labelToShorthand(label) {
+  const shortHand = SHORT_HAND_MAP[label];
+
+  if (shortHand !== undefined) {
+    return shortHand;
+  }
+
+  return label;
 }

@@ -26,6 +26,7 @@ export default function addMeasurement(
   const measurementData = {
     TrackingUniqueIdentifier: measurement.TrackingUniqueIdentifier,
     renderableData: {},
+    labels: measurement.labels,
   };
 
   measurement.coords.forEach(coord => {
