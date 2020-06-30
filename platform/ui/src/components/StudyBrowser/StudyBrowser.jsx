@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -26,9 +26,8 @@ const StudyBrowser = ({
   onClickStudy,
   onClickThumbnail,
   onClickUntrack,
+  currentDisplaySetInstanceUID,
 }) => {
-  const [thumbnailActive, setThumbnailActive] = useState(null);
-
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
 
@@ -58,18 +57,9 @@ const StudyBrowser = ({
             {isExpanded && displaySets && (
               <ThumbnailList
                 thumbnails={displaySets}
-                thumbnailActive={thumbnailActive}
-                onThumbnailClick={displaySetInstanceUID => {
-                  setThumbnailActive(
-                    displaySetInstanceUID === thumbnailActive
-                      ? null
-                      : displaySetInstanceUID
-                  );
-                  onClickThumbnail(displaySetInstanceUID);
-                }}
-                onClickUntrack={displaySetInstanceUID => {
-                  onClickUntrack(displaySetInstanceUID);
-                }}
+                currentDisplaySetInstanceUID={currentDisplaySetInstanceUID}
+                onThumbnailClick={onClickThumbnail}
+                onClickUntrack={onClickUntrack}
               />
             )}
           </React.Fragment>
@@ -121,6 +111,7 @@ StudyBrowser.propTypes = {
   onClickUntrack: PropTypes.func,
   activeTabName: PropTypes.string.isRequired,
   expandedStudyInstanceUIDs: PropTypes.arrayOf(PropTypes.string).isRequired,
+  currentDisplaySetInstanceUID: PropTypes.string.isRequired,
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,

@@ -5,7 +5,7 @@ import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '@ohif/ui';
 
 const ThumbnailList = ({
   thumbnails,
-  thumbnailActive,
+  currentDisplaySetInstanceUID,
   onThumbnailClick,
   onClickUntrack,
 }) => {
@@ -26,7 +26,8 @@ const ThumbnailList = ({
           imageSrc,
           imageAltText,
         }) => {
-          const isActive = thumbnailActive === displaySetInstanceUID;
+          const isActive =
+            currentDisplaySetInstanceUID === displaySetInstanceUID;
 
           switch (componentType) {
             case 'thumbnail':
@@ -112,7 +113,7 @@ ThumbnailList.propTypes = {
       }),
     })
   ),
-  thumbnailActive: PropTypes.string,
+  currentDisplaySetInstanceUID: PropTypes.string,
   onThumbnailClick: PropTypes.func,
   onClickUntrack: PropTypes.func.isRequired,
 };
