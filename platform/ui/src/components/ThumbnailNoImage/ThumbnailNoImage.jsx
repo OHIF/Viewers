@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
 
 import { Icon } from '@ohif/ui';
+import blurHandlerListener from '../../utils/blurHandlerListener';
 
 const ThumbnailNoImage = ({
   description,
@@ -20,9 +21,12 @@ const ThumbnailNoImage = ({
     },
   });
 
+  const thumbnailElement = useRef(null);
+
   return (
     <div
-      ref={drag}
+      ref={thumbnailElement}
+      onFocus={() => blurHandlerListener(thumbnailElement)}
       className={classnames(
         'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded',
         isActive ? 'border-2 border-primary-light' : 'border'
@@ -31,16 +35,18 @@ const ThumbnailNoImage = ({
       role="button"
       tabIndex="0"
     >
-      <div className="flex flex-col flex-1">
-        <div className="flex flex-row items-center flex-1 mb-2">
-          <Icon name="list-bullets" className="w-12 text-secondary-light" />
-          <div className="px-3 mr-4 text-lg text-white rounded-sm bg-primary-main">
-            {modality}
+      <div ref={drag}>
+        <div className="flex flex-col flex-1">
+          <div className="flex flex-row items-center flex-1 mb-2">
+            <Icon name="list-bullets" className="w-12 text-secondary-light" />
+            <div className="px-3 mr-4 text-lg text-white rounded-sm bg-primary-main">
+              {modality}
+            </div>
+            <span className="text-base text-blue-300">{seriesDate}</span>
           </div>
-          <span className="text-base text-blue-300">{seriesDate}</span>
-        </div>
-        <div className="ml-12 text-base text-white break-all">
-          {description}
+          <div className="ml-12 text-base text-white break-all">
+            {description}
+          </div>
         </div>
       </div>
     </div>
