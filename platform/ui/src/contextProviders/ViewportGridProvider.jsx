@@ -12,6 +12,7 @@ const DEFAULT_STATE = {
   numCols: 1,
   viewports: [],
   activeViewportIndex: 0,
+  currentDisplaySetData: {},
 };
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
@@ -19,15 +20,17 @@ export const ViewportGridContext = createContext(DEFAULT_STATE);
 export function ViewportGridProvider({ children, service }) {
   const viewportGridReducer = (state, action) => {
     switch (action.type) {
-      case 'SET_ACTIVE_VIEWPORT_INDEX':
-        return { ...state, ...{ activeViewportIndex: action.payload } };
+      case 'SET_ACTIVE_VIEWPORT_INDEX': {
+        const activeViewportIndex = action.payload;
+        const currentDisplaySetData = state.viewports[activeViewportIndex];
+        return { ...state, ...{ activeViewportIndex, currentDisplaySetData } };
+      }
       case 'SET_DISPLAYSET_FOR_VIEWPORT': {
         const { viewportIndex, displaySetInstanceUID } = action.payload;
         const viewports = state.viewports.slice();
-
+        const currentDisplaySetData = { displaySetInstanceUID };
         viewports[viewportIndex] = { displaySetInstanceUID };
-
-        return { ...state, ...{ viewports } };
+        return { ...state, ...{ viewports, currentDisplaySetData } };
       }
       case 'SET_LAYOUT': {
         const { numCols, numRows } = action.payload;
@@ -55,7 +58,7 @@ export function ViewportGridProvider({ children, service }) {
 
   const [viewportGridState, dispatch] = useReducer(
     viewportGridReducer,
-    DEFAULT_STATE,
+    DEFAULT_STATE
   );
 
   const getState = useCallback(() => viewportGridState, [viewportGridState]);
