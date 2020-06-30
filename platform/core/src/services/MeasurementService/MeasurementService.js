@@ -297,8 +297,6 @@ class MeasurementService {
       return;
     }
 
-    debugger;
-
     const sourceInfo = this._getSourceInfo(source);
 
     if (!definition) {

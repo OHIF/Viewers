@@ -15,6 +15,18 @@ const machineConfiguration = {
       entry: 'clearContext',
       on: {
         TRACK_SERIES: 'promptBeginTracking',
+        SET_TRACKED_SERIES: [
+          {
+            target: 'tracking',
+            actions: ['setTrackedStudyAndSeries'],
+            cond: 'isNewStudy',
+          },
+          {
+            target: 'tracking',
+            actions: ['addTrackedSeries'],
+            cond: 'isNewSeries',
+          },
+        ],
       },
     },
     promptBeginTracking: {
@@ -51,6 +63,7 @@ const machineConfiguration = {
             cond: 'isNewSeries',
           },
         ],
+
         UNTRACK_SERIES: [
           {
             target: 'tracking',

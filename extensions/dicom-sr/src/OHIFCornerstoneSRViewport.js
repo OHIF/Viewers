@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
@@ -16,12 +16,15 @@ const globalImageIdSpecificToolStateManager =
 
 const { StackManager, guid } = OHIF.utils;
 
+const MEASUREMENT_TRACKING_EXTENSION_ID = 'org.ohif.measurement-tracking';
+
 function OHIFCornerstoneSRViewport({
   children,
   dataSource,
   displaySet,
   viewportIndex,
   servicesManager,
+  extensionManager,
 }) {
   const { DisplaySetService, MeasurementService } = servicesManager.services;
   const [viewportGrid, viewportGridService] = useViewportGrid();
@@ -31,8 +34,28 @@ function OHIFCornerstoneSRViewport({
   const [activeDisplaySetData, setActiveDisplaySetData] = useState({});
   const [element, setElement] = useState(null);
   const [isHydrated, setIsHydrated] = useState(displaySet.isHydrated);
-
   const { viewports, activeViewportIndex } = viewportGrid;
+
+  // Optional hook into tracking extension, if present.
+  let trackedMeasurements;
+  let sendTrackedMeasurementsEvent;
+
+  if (
+    extensionManager.registeredExtensionIds.includes(
+      MEASUREMENT_TRACKING_EXTENSION_ID
+    )
+  ) {
+    const contextModule = extensionManager.getModuleEntry(
+      'org.ohif.measurement-tracking.contextModule.TrackedMeasurementsContext'
+    );
+
+    const useTrackedMeasurements = () => useContext(contextModule.context);
+
+    [
+      trackedMeasurements,
+      sendTrackedMeasurementsEvent,
+    ] = useTrackedMeasurements();
+  }
 
   const onElementEnabled = evt => {
     const eventData = evt.detail;
@@ -207,6 +230,7 @@ function OHIFCornerstoneSRViewport({
     SeriesInstanceUID,
     PixelSpacing,
     SeriesNumber,
+    displaySetInstanceUID,
   } = activeDisplaySetData;
 
   const onMeasurementChange = direction => {
@@ -274,6 +298,8 @@ function OHIFCornerstoneSRViewport({
       }
     });
 
+    const imageIds = [];
+
     Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
       const toolDataForToolType = hydratableMeasurementsInSR[toolType];
 
@@ -300,6 +326,10 @@ function OHIFCornerstoneSRViewport({
           data,
           toMeasurementSchema
         );
+
+        if (!imageIds.includes(imageId)) {
+          imageIds.push(imageId);
+        }
       });
     });
 
@@ -309,8 +339,53 @@ function OHIFCornerstoneSRViewport({
 
     // TODO -> Switch to cornerstone viewport.
     // TODO -> Tell measurement service to track the series on which the measurements were added.
-    // TODO -> set displaySet as inactive.
+
+    // Deal with optional extensions
+
+    if (
+      extensionManager.registeredExtensionIds.includes(
+        MEASUREMENT_TRACKING_EXTENSION_ID
+      )
+    ) {
+      // Set the series touched as tracked.
+
+      let targetStudyInstanceUID;
+      const SeriesInstanceUIDs = [];
+
+      for (let i = 0; i < imageIds.length; i++) {
+        const imageId = imageIds[0];
+        const {
+          SeriesInstanceUID,
+          StudyInstanceUID,
+        } = cornerstone.metaData.get('instance', imageId);
+
+        if (!SeriesInstanceUIDs.includes(SeriesInstanceUID)) {
+          SeriesInstanceUIDs.push(SeriesInstanceUID);
+        }
+
+        if (!targetStudyInstanceUID) {
+          targetStudyInstanceUID = StudyInstanceUID;
+        } else if (targetStudyInstanceUID !== StudyInstanceUID) {
+          console.warn(
+            'NO SUPPORT FOR SRs THAT HAVE MEASUREMENTS FROM MULTIPLE STUDIES.'
+          );
+        }
+      }
+
+      debugger;
+
+      sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
+        StudyInstanceUID: targetStudyInstanceUID,
+        SeriesInstanceUID: SeriesInstanceUIDs[0],
+      });
+    }
+
     debugger;
+
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex: activeViewportIndex,
+      displaySetInstanceUID: activeDisplaySetData.displaySetInstanceUID,
+    });
   }
 
   return (
@@ -460,6 +535,7 @@ async function _getViewportAndActiveDisplaySetData(
     SeriesDescription: image0.SeriesDescription,
     SeriesInstanceUID: image0.SeriesInstanceUID,
     SeriesNumber: image0.SeriesNumber,
+    displaySetInstanceUID,
   };
 
   return { viewportData, activeDisplaySetData };

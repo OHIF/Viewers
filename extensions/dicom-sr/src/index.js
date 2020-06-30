@@ -29,6 +29,10 @@ export default {
       id: 'org.ohif.cornerstone',
       version: '3.0.0',
     },
+    {
+      id: 'org.ohif.measurement-tracking',
+      version: '^0.0.1',
+    },
   ],
 
   preRegistration({ servicesManager, configuration = {} }) {
@@ -41,11 +45,12 @@ export default {
    * @param {object} [configuration={}]
    * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
    */
-  getViewportModule({ servicesManager }) {
+  getViewportModule({ servicesManager, extensionManager }) {
     const ExtendedOHIFCornerstoneSRViewport = props => {
       return (
         <OHIFCornerstoneSRViewport
           servicesManager={servicesManager}
+          extensionManager={extensionManager}
           {...props}
         />
       );
