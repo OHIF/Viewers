@@ -24,7 +24,7 @@ const ThumbnailNoImage = ({
     <div
       ref={drag}
       className={classnames(
-        'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 rounded',
+        'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded',
         isActive ? 'border-2 border-primary-light' : 'border'
       )}
       onDoubleClick={onClick}

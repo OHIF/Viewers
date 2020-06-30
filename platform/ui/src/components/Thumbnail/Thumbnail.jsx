@@ -34,7 +34,7 @@ const Thumbnail = ({
       ref={drag}
       className={classnames(
         className,
-        'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none'
+        'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none group'
       )}
       onDoubleClick={onClick}
       role="button"
@@ -45,7 +45,7 @@ const Thumbnail = ({
           'flex flex-1 items-center justify-center rounded-md bg-black text-base text-white overflow-hidden mb-2 min-h-32',
           isActive
             ? 'border-2 border-primary-light'
-            : 'border border-secondary-light hover:border-blue-300'
+            : 'border border-secondary-light group-focus:border-blue-300 hover:border-blue-300'
         )}
       >
         {imageSrc ? (
