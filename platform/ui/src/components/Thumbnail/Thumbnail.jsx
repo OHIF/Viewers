@@ -36,8 +36,7 @@ const Thumbnail = ({
         className,
         'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none'
       )}
-      onClick={onClick}
-      onKeyDown={onClick}
+      onDoubleClick={onClick}
       role="button"
       tabIndex="0"
     >

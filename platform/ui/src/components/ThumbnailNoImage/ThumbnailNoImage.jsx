@@ -1,4 +1,5 @@
 import React from 'react';
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
 
@@ -10,6 +11,7 @@ const ThumbnailNoImage = ({
   modality,
   onClick,
   dragData,
+  isActive,
 }) => {
   const [collectedProps, drag, dragPreview] = useDrag({
     item: { ...dragData },
@@ -21,9 +23,11 @@ const ThumbnailNoImage = ({
   return (
     <div
       ref={drag}
-      className="flex flex-row flex-1 px-4 py-3 cursor-pointer"
-      onClick={onClick}
-      onKeyDown={onClick}
+      className={classnames(
+        'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 rounded',
+        isActive ? 'border-2 border-primary-light' : 'border'
+      )}
+      onDoubleClick={onClick}
       role="button"
       tabIndex="0"
     >
@@ -44,10 +48,22 @@ const ThumbnailNoImage = ({
 };
 
 ThumbnailNoImage.propTypes = {
+  /**
+   * Data the thumbnail should expose to a receiving drop target. Use a matching
+   * `dragData.type` to identify which targets can receive this draggable item.
+   * If this is not set, drag-n-drop will be disabled for this thumbnail.
+   *
+   * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
+   */
+  dragData: PropTypes.shape({
+    /** Must match the "type" a dropTarget expects */
+    type: PropTypes.string.isRequired,
+  }),
   description: PropTypes.string.isRequired,
   modality: PropTypes.string.isRequired,
   seriesDate: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
+  isActive: PropTypes.bool.isRequired,
 };
 
 export default ThumbnailNoImage;
