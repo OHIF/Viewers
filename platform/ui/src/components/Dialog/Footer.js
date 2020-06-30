@@ -9,9 +9,10 @@ const Footer = ({ actions, withDivisor, className, onSubmit, state }) => {
   const border =
     withDivisor && 'border-t-2 border-solid border-black rounded-b';
   const spacing = 'p-6';
+  const theme = 'bg-primary-dark';
 
   return (
-    <div className={classNames(flex, border, spacing, className)}>
+    <div className={classNames(flex, border, spacing, theme, className)}>
       {actions.map((action, index) => {
         const isFirst = index === 0;
         const isPrimary = action.type === 'primary';

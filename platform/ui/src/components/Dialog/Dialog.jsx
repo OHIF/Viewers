@@ -62,17 +62,18 @@ Dialog.propTypes = {
   text: PropTypes.string,
   onClose: PropTypes.func,
   noCloseButton: PropTypes.bool,
-  header: PropTypes.node,
-  body: PropTypes.node,
-  footer: PropTypes.node,
+  header: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  body: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  footer: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   withHeaderDivisor: PropTypes.bool,
   withFooterDivisor: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
   state: PropTypes.object,
   actions: PropTypes.arrayOf(
     PropTypes.shape({
+      id: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
-      value: PropTypes.any.isRequired,
+      value: PropTypes.any,
       type: PropTypes.oneOf(['primary', 'secondary', 'cancel']).isRequired,
     })
   ).isRequired,

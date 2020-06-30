@@ -174,7 +174,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
             ...state, label: event.target.value
           }));
           return (
-            <div className="p-4">
+            <div className="p-4 bg-primary-dark">
               <Input
                 className="border-primary-main mt-2 bg-black"
                 type="text"
