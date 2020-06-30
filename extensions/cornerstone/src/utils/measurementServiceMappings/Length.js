@@ -58,7 +58,7 @@ const Length = {
     } = getSOPInstanceAttributes(element);
 
     return {
-      id,
+      id: measurementData.id,
       SOPInstanceUID: SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
