@@ -37,8 +37,6 @@ function OHIFCornerstoneSRViewport({
   const [isHydrated, setIsHydrated] = useState(displaySet.isHydrated);
   const { viewports, activeViewportIndex } = viewportGrid;
 
-  console.log(isHydrated);
-
   // Optional hook into tracking extension, if present.
   let trackedMeasurements;
   let sendTrackedMeasurementsEvent;
