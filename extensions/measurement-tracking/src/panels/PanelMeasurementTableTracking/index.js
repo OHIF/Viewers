@@ -24,7 +24,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const { MeasurementService } = servicesManager.services;
+  const { MeasurementService, UINotificationService, UIDialogService } = servicesManager.services;
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -117,21 +117,40 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
   };
 
-  const onCreateReportClick = () => {
-    const measurements = MeasurementService.getMeasurements();
-    const trackedMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
-    );
+  const onCreateReportClick = async () => {
+    // TODO: Create a loading service that uses the dialog service with these options?
+    const loadingDialogId = UIDialogService.create({
+      showOverlay: true,
+      isDraggable: false,
+      centralize: true,
+      // TODO: Create a loading indicator component + zeplin design?
+      content: () => <div className="text-primary-active">Loading...</div>
+    });
 
+    try {
+      const measurements = MeasurementService.getMeasurements();
+      const trackedMeasurements = measurements.filter(
+        m =>
+          trackedStudy === m.referenceStudyUID &&
+          trackedSeries.includes(m.referenceSeriesUID)
+      );
 
-    const dataSources = extensionManager.getDataSources();
-    // TODO -> Eventually deal with multiple dataSources.
-    // Would need some way of saying which one is the "push" dataSource
-    const dataSource = dataSources[0];
+      const dataSources = extensionManager.getDataSources();
+      // TODO -> Eventually deal with multiple dataSources.
+      // Would need some way of saying which one is the "push" dataSource
+      const dataSource = dataSources[0];
 
-    DICOMSR.storeMeasurements(trackedMeasurements, dataSource);
+      const { message } = await DICOMSR.storeMeasurements(trackedMeasurements, dataSource);
+      UINotificationService.show({ title: 'STOW SR', message, type: 'success' });
+    } catch (error) {
+      UINotificationService.show({
+        title: 'STOW SR',
+        message: error.message || 'Failed to store measurements',
+        type: 'error',
+      });
+    } finally {
+      UIDialogService.dismiss({ id: loadingDialogId });
+    }
   };
 
   return (
@@ -148,7 +167,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           title="Measurements"
           amount={displayMeasurements.length}
           data={displayMeasurements}
-          onClick={() => {}}
+          onClick={() => { }}
           onEdit={id => alert(`Edit: ${id}`)}
         />
       </div>
