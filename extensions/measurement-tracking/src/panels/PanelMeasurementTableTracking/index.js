@@ -117,7 +117,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
   };
 
-  const createReport = () => {
+  const createReport = async () => {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -130,7 +130,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     // Would need some way of saying which one is the "push" dataSource
     const dataSource = dataSources[0];
 
-    DICOMSR.storeMeasurements(
+    await DICOMSR.storeMeasurements(
       trackedMeasurements,
       dataSource,
       DisplaySetService

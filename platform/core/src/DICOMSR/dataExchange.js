@@ -104,7 +104,9 @@ const storeMeasurements = async (
       dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
     }
 
-    displaySetService.makeDisplaySets([naturalizedReport]);
+    displaySetService.makeDisplaySets([naturalizedReport], {
+      madeInClient: true,
+    });
 
     return {
       message: 'Measurements saved successfully',
