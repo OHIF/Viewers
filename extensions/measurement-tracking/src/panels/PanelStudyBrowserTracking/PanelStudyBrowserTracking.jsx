@@ -291,8 +291,11 @@ function _mapDisplaySets(
     const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(
       vp => vp.displaySetInstanceUID === ds.displaySetInstanceUID
     );
+
     const viewportIdentificator =
-      _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid] || '';
+      viewports.length > 1
+        ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
+        : '';
 
     const array =
       componentType === 'thumbnailTracked'
