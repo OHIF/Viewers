@@ -133,7 +133,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DICOMSR.storeMeasurements(
       trackedMeasurements,
       dataSource,
-      DisplaySetService
+      naturalizedReport => {
+        DisplaySetService.makeDisplaySets([naturalizedReport]);
+      }
     );
   };
 

@@ -80,11 +80,7 @@ const generateReport = measurementData => {
  * that you wish to serialize.
  * @param {object} dataSource The dataSource that you wish to use to persist the data.
  */
-const storeMeasurements = async (
-  measurementData,
-  dataSource,
-  displaySetService
-) => {
+const storeMeasurements = async (measurementData, dataSource, onSuccess) => {
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
   // But it is good enough for now whilst we only have cornerstone as a datasource.
   log.info('[DICOMSR] storeMeasurements');
@@ -104,7 +100,9 @@ const storeMeasurements = async (
       dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
     }
 
-    displaySetService.makeDisplaySets([naturalizedReport]);
+    if (onSuccess) {
+      onSuccess(naturalizedReport);
+    }
 
     return {
       message: 'Measurements saved successfully',
