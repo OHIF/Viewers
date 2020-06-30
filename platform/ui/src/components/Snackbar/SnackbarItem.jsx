@@ -19,10 +19,12 @@ const SnackbarItem = ({ options, onClose }) => {
     [SnackbarTypes.ERROR]: 'bg-red-600'
   };
 
+  const hidden = 'duration-300 transition-all ease-in-out h-0 opacity-0 pt-0 mb-0 pb-0';
+
   return (
     <div
       className={classNames(
-        `${options.visible ? '' : 'sb-hidden'} sb-item`,
+        `${options.visible ? '' : hidden} sb-item`,
         typeClasses[options.type]
       )}
     >

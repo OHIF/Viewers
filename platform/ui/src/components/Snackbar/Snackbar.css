@@ -134,20 +134,6 @@
     0 3px 5px -1px rgba(0, 0, 0, 0.14);
 }
 
-.sb-item a {
-  color: white;
-  text-decoration: underline;
-}
-
-.sb-hidden {
-  padding-top: 0;
-  padding-bottom: 0;
-  margin-bottom: 0;
-  height: 0;
-  opacity: 0;
-  transition: all 300ms ease;
-}
-
 @keyframes fadein {
   from {
     opacity: 0;

@@ -136,17 +136,14 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       // Would need some way of saying which one is the "push" dataSource
       const dataSource = dataSources[0];
 
-      const { message } = await DICOMSR.storeMeasurements(
-        trackedMeasurements,
-        dataSource,
-        naturalizedReport => {
-          DisplaySetService.makeDisplaySets([naturalizedReport], {
-            madeInClient: true,
-          });
-        }
-      );
+      const naturalizedReport = await DICOMSR.storeMeasurements(trackedMeasurements, dataSource);
 
-      UINotificationService.show({ title: 'STOW SR', message, type: 'success' });
+      DisplaySetService.makeDisplaySets([naturalizedReport], { madeInClient: true });
+      UINotificationService.show({
+        title: 'STOW SR',
+        message: 'Measurements saved successfully',
+        type: 'success'
+      });
     } catch (error) {
       UINotificationService.show({
         title: 'STOW SR',
