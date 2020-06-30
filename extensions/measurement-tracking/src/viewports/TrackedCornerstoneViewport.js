@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF, { DicomMetadataStore } from '@ohif/core';
+import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
 import {
   Notification,
   ViewportActionBar,
@@ -11,6 +11,10 @@ import {
   useViewportDialog,
 } from '@ohif/ui';
 import { useTrackedMeasurements } from './../getContextModule';
+
+import ViewportOverlay from './ViewportOverlay';
+
+const { formatDate } = utils;
 
 // TODO -> Get this list from the list of tracked measurements.
 // TODO -> We can now get a list of tool names from the measurement service.
@@ -40,6 +44,7 @@ function TrackedCornerstoneViewport({
   dataSource,
   displaySet,
   viewportIndex,
+  ToolBarService,
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
   const [{ activeViewportIndex, viewports }] = useViewportGrid();
@@ -234,16 +239,21 @@ function TrackedCornerstoneViewport({
     setIsTracked(!isTracked);
   }
 
+  const label =
+    viewports.length > 1
+      ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
+      : '';
+
   return (
     <>
       <ViewportActionBar
         onSeriesChange={direction => alert(`Series ${direction}`)}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
-          label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
+          label,
           isTracked: trackedSeries.includes(SeriesInstanceUID),
           isLocked: false,
-          studyDate: SeriesDate, // TODO: This is series date. Is that ok?
+          studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription,
           modality: Modality,
@@ -254,7 +264,7 @@ function TrackedCornerstoneViewport({
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: `${SliceThickness}mm`,
+            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
@@ -277,7 +287,15 @@ function TrackedCornerstoneViewport({
           isStackPrefetchEnabled={true} // todo
           isPlaying={false}
           frameRate={24}
-          isOverlayVisible={false}
+          isOverlayVisible={true}
+          viewportOverlayComponent={props => {
+            return (
+              <ViewportOverlay
+                {...props}
+                activeTools={ToolBarService.getActiveTools()}
+              />
+            );
+          }}
         />
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
@@ -286,6 +304,7 @@ function TrackedCornerstoneViewport({
               type={viewportDialogState.type}
               actions={viewportDialogState.actions}
               onSubmit={viewportDialogState.onSubmit}
+              onOutsideClick={viewportDialogState.onOutsideClick}
             />
           )}
         </div>

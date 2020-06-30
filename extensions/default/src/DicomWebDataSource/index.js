@@ -10,7 +10,10 @@ import { DicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 
 import getImageId from './utils/getImageId';
 import * as dcmjs from 'dcmjs';
-import { retrieveStudyMetadata } from './retrieveStudyMetadata.js';
+import {
+  retrieveStudyMetadata,
+  deleteStudyMetadataPromise,
+} from './retrieveStudyMetadata.js';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 
@@ -187,6 +190,7 @@ function createDicomWebApi(dicomWebConfig) {
         storeInstances(instances);
       });
     },
+    deleteStudyMetadataPromise,
     getImageIdsForDisplaySet(displaySet) {
       const images = displaySet.images;
       const imageIds = [];

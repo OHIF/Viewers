@@ -17,6 +17,7 @@ function create({
   retrieve,
   store,
   retrieveSeriesMetadata,
+  deleteStudyMetadataPromise,
   getImageIdsForDisplaySet,
 }) {
   const defaultQuery = {
@@ -59,6 +60,7 @@ function create({
     store: store || defaultStore,
     getImageIdsForDisplaySet,
     retrieveSeriesMetadata,
+    deleteStudyMetadataPromise,
   };
 }
 

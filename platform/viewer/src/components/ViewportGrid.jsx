@@ -115,15 +115,17 @@ function ViewerViewportGrid(props) {
         viewportComponents
       );
 
+      const onInterationHandler = () => {
+        setActiveViewportIndex(viewportIndex);
+      };
+
       viewportPanes[i] = (
         <ViewportPane
           key={viewportIndex}
           className="m-1"
           acceptDropsFor="displayset"
           onDrop={onDropHandler.bind(null, viewportIndex)}
-          onInteraction={() => {
-            setActiveViewportIndex(viewportIndex);
-          }}
+          onInteraction={onInterationHandler}
           isActive={activeViewportIndex === viewportIndex}
         >
           <ViewportComponent

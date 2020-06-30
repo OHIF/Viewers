@@ -20,7 +20,8 @@ import studies from './studies/';
 import ui from './ui';
 import user from './user.js';
 import { ViewModelProvider, useViewModel } from './ViewModelContext';
-import utils, { hotkeys } from './utils/';
+import utils from './utils/';
+import defaults from './defaults';
 
 import {
   UIDialogService,
@@ -37,6 +38,11 @@ import {
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
 
+const hotkeys = {
+  ...utils.hotkeys,
+  defaults: { hotkeyBindings: defaults.hotkeyBindings }
+};
+
 const OHIF = {
   MODULE_TYPES,
   //
@@ -45,6 +51,7 @@ const OHIF = {
   HotkeysManager,
   ServicesManager,
   //
+  defaults,
   utils,
   hotkeys,
   studies,
@@ -88,6 +95,7 @@ export {
   HotkeysManager,
   ServicesManager,
   //
+  defaults,
   utils,
   hotkeys,
   studies,

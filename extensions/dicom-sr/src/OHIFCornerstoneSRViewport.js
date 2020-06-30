@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF, { DicomMetadataStore } from '@ohif/core';
+import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
 import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
 import TOOL_NAMES from './constants/toolNames';
 import { adapters } from 'dcmjs';
 import getToolStateToCornerstoneMeasurementSchema from './utils/getToolStateToCornerstoneMeasurementSchema';
 import id from './id';
 
+const { formatDate } = utils;
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 const globalImageIdSpecificToolStateManager =
   cornerstoneTools.globalImageIdSpecificToolStateManager;
@@ -298,7 +299,59 @@ function OHIFCornerstoneSRViewport({
       }
     });
 
-    const imageIds = [];
+    if (
+      extensionManager.registeredExtensionIds.includes(
+        MEASUREMENT_TRACKING_EXTENSION_ID
+      )
+    ) {
+      // Set the series touched as tracked.
+      const imageIds = [];
+
+      Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
+        const toolDataForToolType = hydratableMeasurementsInSR[toolType];
+
+        toolDataForToolType.forEach(data => {
+          // Add the measurement to toolState
+          const imageId = sopInstanceUIDToImageId[data.sopInstanceUid];
+
+          if (!imageIds.includes(imageId)) {
+            imageIds.push(imageId);
+          }
+        });
+      });
+
+      let targetStudyInstanceUID;
+      const SeriesInstanceUIDs = [];
+
+      for (let i = 0; i < imageIds.length; i++) {
+        const imageId = imageIds[0];
+        const {
+          SeriesInstanceUID,
+          StudyInstanceUID,
+        } = cornerstone.metaData.get('instance', imageId);
+
+        if (!SeriesInstanceUIDs.includes(SeriesInstanceUID)) {
+          SeriesInstanceUIDs.push(SeriesInstanceUID);
+        }
+
+        if (!targetStudyInstanceUID) {
+          targetStudyInstanceUID = StudyInstanceUID;
+        } else if (targetStudyInstanceUID !== StudyInstanceUID) {
+          console.warn(
+            'NO SUPPORT FOR SRs THAT HAVE MEASUREMENTS FROM MULTIPLE STUDIES.'
+          );
+        }
+      }
+
+      debugger;
+
+      sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
+        StudyInstanceUID: targetStudyInstanceUID,
+        SeriesInstanceUIDs,
+      });
+
+      debugger;
+    }
 
     Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
       const toolDataForToolType = hydratableMeasurementsInSR[toolType];
@@ -342,44 +395,6 @@ function OHIFCornerstoneSRViewport({
 
     // Deal with optional extensions
 
-    if (
-      extensionManager.registeredExtensionIds.includes(
-        MEASUREMENT_TRACKING_EXTENSION_ID
-      )
-    ) {
-      // Set the series touched as tracked.
-
-      let targetStudyInstanceUID;
-      const SeriesInstanceUIDs = [];
-
-      for (let i = 0; i < imageIds.length; i++) {
-        const imageId = imageIds[0];
-        const {
-          SeriesInstanceUID,
-          StudyInstanceUID,
-        } = cornerstone.metaData.get('instance', imageId);
-
-        if (!SeriesInstanceUIDs.includes(SeriesInstanceUID)) {
-          SeriesInstanceUIDs.push(SeriesInstanceUID);
-        }
-
-        if (!targetStudyInstanceUID) {
-          targetStudyInstanceUID = StudyInstanceUID;
-        } else if (targetStudyInstanceUID !== StudyInstanceUID) {
-          console.warn(
-            'NO SUPPORT FOR SRs THAT HAVE MEASUREMENTS FROM MULTIPLE STUDIES.'
-          );
-        }
-      }
-
-      debugger;
-
-      sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
-        StudyInstanceUID: targetStudyInstanceUID,
-        SeriesInstanceUID: SeriesInstanceUIDs[0],
-      });
-    }
-
     debugger;
 
     viewportGridService.setDisplaysetForViewport({
@@ -399,7 +414,7 @@ function OHIFCornerstoneSRViewport({
           isTracked: false,
           isLocked: displaySet.isLocked,
           isHydrated,
-          studyDate: StudyDate,
+          studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription,
           modality: Modality,
@@ -410,7 +425,7 @@ function OHIFCornerstoneSRViewport({
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: `${SliceThickness}mm`,
+            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(

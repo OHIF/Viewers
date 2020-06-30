@@ -53,7 +53,7 @@ const filtersMeta = [
     name: 'instances',
     displayName: 'Instances',
     inputType: 'None',
-    isSortable: true,
+    isSortable: false,
     gridCol: 2,
   },
 ];

@@ -14,6 +14,7 @@ function ViewportPane({
   onInteraction,
   acceptDropsFor,
 }) {
+  let dropElement = null;
   const [{ isHovered, isHighlighted }, drop] = useDrop({
     accept: acceptDropsFor,
     // TODO: pass in as prop?
@@ -22,7 +23,7 @@ function ViewportPane({
       const isOver = monitor.isOver();
 
       if (canDrop && isOver && onDrop) {
-        onInteraction();
+        onInteractionHandler();
         onDrop(droppedItem);
       }
     },
@@ -33,16 +34,32 @@ function ViewportPane({
     }),
   });
 
+  const focus = () => {
+    if (dropElement) {
+      dropElement.focus();
+    }
+  };
+
+  const onInteractionHandler = () => {
+    onInteraction();
+    focus();
+  };
+
+  const refHandler = element => {
+    drop(element);
+    dropElement = element;
+  };
+
   return (
     <div
-      ref={drop}
-      // onInteraction...
+      ref={refHandler}
+      // onInteractionHandler...
       // https://reactjs.org/docs/events.html#mouse-events
       // https://stackoverflow.com/questions/8378243/catch-scrolling-event-on-overflowhidden-element
-      onMouseDown={onInteraction}
-      onClick={onInteraction}
-      onScroll={onInteraction}
-      onWheel={onInteraction}
+      onMouseDown={onInteractionHandler}
+      onClick={onInteractionHandler}
+      onScroll={onInteractionHandler}
+      onWheel={onInteractionHandler}
       className={classnames(
         'flex flex-col',
         'rounded-lg hover:border-primary-light transition duration-300 outline-none overflow-hidden',
@@ -73,7 +90,7 @@ ViewportPane.propTypes = {
   onInteraction: PropTypes.func.isRequired,
 };
 
-const noop = () => {};
+const noop = () => { };
 
 ViewportPane.defaultProps = {
   onInteraction: noop,

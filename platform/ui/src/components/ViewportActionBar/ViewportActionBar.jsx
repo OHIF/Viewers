@@ -250,7 +250,7 @@ function PatientInfo({
                     Thickness
                   </span>
                   <span className={classnames(classes.infoText)}>
-                    {thickness}
+                    {thickness ? thickness : 'N/A'}
                   </span>
                 </div>
                 <div className={classnames(classes.row)}>

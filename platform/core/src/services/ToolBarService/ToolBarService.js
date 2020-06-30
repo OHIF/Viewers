@@ -27,6 +27,15 @@ export default class ToolBarService {
     return this.buttons;
   }
 
+  getActiveTools() {
+    return Object.keys(this.buttons).filter(key => {
+      const button = this.buttons[key];
+      if (button && button.props && button.props.isActive) {
+        return button;
+      }
+    });
+  }
+
   setButtons(buttons) {
     this.buttons = buttons;
     this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {});

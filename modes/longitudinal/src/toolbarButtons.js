@@ -1,8 +1,11 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
-import { ExpandableToolbarButton, ListMenu } from '@ohif/ui';
 import React from 'react';
 import classnames from 'classnames';
+import { ExpandableToolbarButton, ListMenu } from '@ohif/ui';
+import { defaults } from '@ohif/core';
+
+const { windowLevelPresets } = defaults;
 
 export default [
   // Divider
@@ -39,36 +42,36 @@ export default [
       commandName: 'setToolActive',
       commandOptions: { toolName: 'Wwwc' },
       commands: {
-        'windowLevelPreset1': {
-          commandName: 'windowLevelPreset1',
-          commandOptions: {},
+        1: {
+          commandName: 'setWindowLevel',
+          commandOptions: windowLevelPresets[1],
         },
-        'windowLevelPreset2': {
-          commandName: 'windowLevelPreset2',
-          commandOptions: {},
+        2: {
+          commandName: 'setWindowLevel',
+          commandOptions: windowLevelPresets[2],
         },
-        'windowLevelPreset3': {
-          commandName: 'windowLevelPreset3',
-          commandOptions: {},
+        3: {
+          commandName: 'setWindowLevel',
+          commandOptions: windowLevelPresets[3],
         },
-        'windowLevelPreset4': {
-          commandName: 'windowLevelPreset4',
-          commandOptions: {},
+        4: {
+          commandName: 'setWindowLevel',
+          commandOptions: windowLevelPresets[4],
         },
-        'windowLevelPreset5': {
-          commandName: 'windowLevelPreset5',
-          commandOptions: {},
+        5: {
+          commandName: 'setWindowLevel',
+          commandOptions: windowLevelPresets[5],
         }
       },
       type: 'primary',
       content: ListMenu,
       contentProps: {
         options: [
-          { value: 'windowLevelPreset1', title: 'Soft tissue', subtitle: '400 / 40' },
-          { value: 'windowLevelPreset2', title: 'Lung', subtitle: '1500 / -600' },
-          { value: 'windowLevelPreset3', title: 'Liver', subtitle: '150 / 90' },
-          { value: 'windowLevelPreset4', title: 'Bone', subtitle: '80 / 40' },
-          { value: 'windowLevelPreset5', title: 'Brain', subtitle: '2500 / 480' },
+          { value: 1, title: 'Soft tissue', subtitle: '400 / 40' },
+          { value: 2, title: 'Lung', subtitle: '1500 / -600' },
+          { value: 3, title: 'Liver', subtitle: '150 / 90' },
+          { value: 4, title: 'Bone', subtitle: '80 / 40' },
+          { value: 5, title: 'Brain', subtitle: '2500 / 480' },
         ],
         renderer: ({ title, subtitle, isActive, index }) => (
           <>

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { utils } from '@ohif/core';
 import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
+
+const { formatDate } = utils;
 
 /**
  *
@@ -68,7 +71,7 @@ function PanelStudyBrowserTracking({
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
         return {
           studyInstanceUid: qidoStudy.StudyInstanceUID,
-          date: qidoStudy.StudyDate,
+          date: formatDate(qidoStudy.StudyDate),
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
           numInstances: qidoStudy.NumInstances,
@@ -198,10 +201,10 @@ function PanelStudyBrowserTracking({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? [
-        ...expandedStudyInstanceUIDs.filter(
-          stdyUid => stdyUid !== StudyInstanceUID
-        ),
-      ]
+          ...expandedStudyInstanceUIDs.filter(
+            stdyUid => stdyUid !== StudyInstanceUID
+          ),
+        ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -288,8 +291,11 @@ function _mapDisplaySets(
     const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(
       vp => vp.displaySetInstanceUID === ds.displaySetInstanceUID
     );
+
     const viewportIdentificator =
-      _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid] || '';
+      viewports.length > 1
+        ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
+        : '';
 
     const array =
       componentType === 'thumbnailTracked'
