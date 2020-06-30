@@ -64,6 +64,7 @@ const ThumbnailList = ({
             case 'thumbnailNoImage':
               return (
                 <ThumbnailNoImage
+                  isActive={isActive}
                   key={displaySetInstanceUID}
                   dragData={dragData}
                   modality={modality}
