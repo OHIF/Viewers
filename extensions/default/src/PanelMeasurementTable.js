@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { MeasurementTable } from '@ohif/ui';
 import { DicomMetadataStore } from '@ohif/core';
+import debounce from './debounce.js';
 
 export default function PanelMeasurementTable({
   servicesManager,
@@ -11,11 +12,34 @@ export default function PanelMeasurementTable({
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   useEffect(() => {
-    const measurements = MeasurementService.getMeasurements();
-    const mappedMeasurements = measurements.map((m, index) =>
-      _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
+    const debouncedSetDisplayMeasurements = debounce(
+      setDisplayMeasurements,
+      100
     );
-    setDisplayMeasurements(mappedMeasurements);
+    // ~~ Initial
+    setDisplayMeasurements(_getMappedMeasurements(MeasurementService));
+
+    // ~~ Subscription
+    const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
+    const updated = MeasurementService.EVENTS.MEASUREMENT_UPDATED;
+    const removed = MeasurementService.EVENTS.MEASUREMENT_REMOVED;
+    const subscriptions = [];
+
+    [added, updated, removed].forEach(evt => {
+      subscriptions.push(
+        MeasurementService.subscribe(evt, () => {
+          debouncedSetDisplayMeasurements(
+            _getMappedMeasurements(MeasurementService)
+          );
+        }).unsubscribe
+      );
+    });
+
+    return () => {
+      subscriptions.forEach(unsub => {
+        unsub();
+      });
+    };
   }, [MeasurementService]);
 
   // const activeMeasurementItem = 0;
@@ -40,11 +64,22 @@ PanelMeasurementTable.propTypes = {
     services: PropTypes.shape({
       MeasurementService: PropTypes.shape({
         getMeasurements: PropTypes.func.isRequired,
+        subscribe: PropTypes.func.isRequired,
+        EVENTS: PropTypes.object.isRequired,
         VALUE_TYPES: PropTypes.object.isRequired,
       }).isRequired,
     }).isRequired,
   }).isRequired,
 };
+
+function _getMappedMeasurements(MeasurementService) {
+  const measurements = MeasurementService.getMeasurements();
+  const mappedMeasurements = measurements.map((m, index) =>
+    _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
+  );
+
+  return mappedMeasurements;
+}
 
 function _mapMeasurementToDisplay(measurement, index, types) {
   const {
