@@ -328,6 +328,8 @@ module.exports = {
       '0': '0',
       auto: 'auto',
       full: '100%',
+      viewport: '0.5rem',
+      'viewport-scrollbar': '1.3rem'
     },
     letterSpacing: {
       tighter: '-0.05em',

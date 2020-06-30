@@ -12,6 +12,8 @@ import {
 } from '@ohif/ui';
 import { useTrackedMeasurements } from './../getContextModule';
 
+import ViewportOverlay from './ViewportOverlay';
+
 const { formatDate } = utils;
 
 // TODO -> Get this list from the list of tracked measurements.
@@ -38,6 +40,7 @@ function TrackedCornerstoneViewport({
   dataSource,
   displaySet,
   viewportIndex,
+  ToolBarService
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
   const [{ activeViewportIndex, viewports }] = useViewportGrid();
@@ -280,7 +283,15 @@ function TrackedCornerstoneViewport({
           isStackPrefetchEnabled={true} // todo
           isPlaying={false}
           frameRate={24}
-          isOverlayVisible={false}
+          isOverlayVisible={true}
+          viewportOverlayComponent={props => {
+            return (
+              <ViewportOverlay
+                {...props}
+                activeTools={ToolBarService.getActiveTools()}
+              />
+            );
+          }}
         />
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
