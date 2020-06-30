@@ -1,7 +1,7 @@
 {
-  "name": "@ohif/mode-example",
+  "name": "@ohif/mode-segmentation",
   "version": "0.0.1",
-  "description": "Example mode for OHIF",
+  "description": "Segmentation mode for OHIF",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
