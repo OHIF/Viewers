@@ -141,6 +141,14 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     );
   };
 
+  const onMeasurementItemClickHandler = (id) => {
+    const measurements = [...displayMeasurements];
+    const measurement = measurements.find(m => m.id === id);
+    measurements.forEach(m => m.isActive = m.id !== id ? false : true);
+    measurement.isActive = true;
+    setDisplayMeasurements(measurements);
+  };
+
   return (
     <>
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
@@ -155,7 +163,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           title="Measurements"
           amount={displayMeasurements.length}
           data={displayMeasurements}
-          onClick={() => {}}
+          onClick={onMeasurementItemClickHandler}
           onEdit={id => alert(`Edit: ${id}`)}
         />
       </div>

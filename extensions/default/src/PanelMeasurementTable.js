@@ -43,7 +43,7 @@ export default function PanelMeasurementTable({
           title="Measurements"
           amount={measurementTableData.data.length}
           data={measurementTableData.data}
-          onClick={() => {}}
+          onClick={() => { }}
           onEdit={id => alert(`Edit: ${id}`)}
         />
       </div>
