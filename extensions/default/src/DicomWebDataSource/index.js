@@ -37,7 +37,7 @@ const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
  * @param {bool} lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
  */
 function createDicomWebApi(dicomWebConfig) {
-  const { qidoRoot, wadoRoot, enableStudyLazyLoad } = dicomWebConfig;
+  const { qidoRoot, wadoRoot, enableStudyLazyLoad, supportsFuzzyMatching } = dicomWebConfig;
 
   const qidoConfig = {
     url: qidoRoot,
@@ -57,9 +57,9 @@ function createDicomWebApi(dicomWebConfig) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function(origParams) {
+        search: async function (origParams) {
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
-            mapParams(origParams) || {};
+            mapParams(origParams, { supportsFuzzyMatching }) || {};
 
           const results = await qidoSearch(
             qidoDicomWebClient,
@@ -74,7 +74,7 @@ function createDicomWebApi(dicomWebConfig) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function(studyInstanceUid) {
+        search: async function (studyInstanceUid) {
           const results = await seriesInStudy(
             qidoDicomWebClient,
             studyInstanceUid
