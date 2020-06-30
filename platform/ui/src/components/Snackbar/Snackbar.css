@@ -1,45 +1,29 @@
 /* TODO: Create tailwind styles for this component */
 .sb-topLeft {
-  top: 0;
-  bottom: auto;
-  left: 0;
-  right: auto;
+  @apply top-0 left-0 bottom-auto right-auto;
 }
 
 .sb-topCenter {
-  left: 50%;
-  top: 0;
-  bottom: auto;
   transform: translateX(-50%);
+  @apply top-0 bottom-auto left-1/2;
 }
 
 .sb-topRight {
-  top: 0;
-  bottom: auto;
-  left: auto;
-  right: 0;
+  @apply right-0 top-0 left-auto bottom-auto;
 }
 
 .sb-bottomLeft {
-  top: auto;
-  bottom: 0px;
-  left: 0px;
-  right: auto;
+  @apply right-auto left-0 bottom-0 top-auto;
 }
 
 .sb-bottomCenter {
-  left: 50%;
-  bottom: 0;
-  top: auto;
+  @apply top-auto bottom-0 left-1/2;
   transform: translateX(-50%);
 }
 
 .sb-bottomRight {
-  top: auto;
-  bottom: 0px;
-  left: auto;
-  right: 0px;
   margin: 10px 0 0;
+  @apply top-auto bottom-0 left-auto right-0;
 }
 
 .sb-topLeft .sb-item,
@@ -55,20 +39,12 @@
 }
 
 .sb-closeBtn {
-  height: 20px;
-  opacity: 1;
-  overflow: hidden;
-  padding: 2px;
-  text-align: center;
   text-shadow: none;
   width: 20px;
-  cursor: pointer;
-  position: absolute;
+  height: 20px;
   right: 5px;
   top: 5px;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 100%;
+  @apply overflow-hidden opacity-100 rounded-full p-1 bg-white cursor-pointer absolute text-center duration-300 transition-all ease-in-out;
 }
 
 .sb-closeBtn:hover {
@@ -76,31 +52,20 @@
 }
 
 .sb-closeIcon {
-  display: block;
-  font-size: 0;
-  height: 100%;
-  line-height: 0;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
+  @apply w-full relative overflow-hidden h-full block leading-none;
 }
 
 .sb-closeIcon:after,
 .sb-closeIcon:before {
   content: ' ';
-  display: block;
   height: 2px;
-  transition: all 0.3s ease;
   width: 12px;
-  background-color: #222;
-  opacity: 1;
-  position: absolute;
+  @apply duration-300 transition-all ease-in-out block bg-black opacity-100 absolute;
 }
 
 .sb-closeIcon:before {
   left: 4px;
   top: 3px;
-
   transform: rotate(45deg);
   transform-origin: 0px 50%;
 }
@@ -113,46 +78,38 @@
 }
 
 .sb-title {
-  font-size: 16px;
-  font-weight: bold;
+  @apply break-normal text-lg font-bold;
 }
 
 .sb-message {
-  font-size: 14px;
-  word-break: normal;
+  @apply break-normal text-base;
 }
 
 .sb-item {
-  position: relative;
-  transition: height 300ms ease;
   animation: fadein 1s;
-  padding: 20px;
-  color: white;
-  overflow: hidden;
-  border-radius: 4px;
   box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.2), 0 1px 18px 0 rgba(0, 0, 0, 0.12),
     0 3px 5px -1px rgba(0, 0, 0, 0.14);
+  @apply relative p-5 text-white overflow-hidden rounded-md transition-height ease-in-out duration-300;
 }
 
 @keyframes fadein {
   from {
-    opacity: 0;
     top: 30px;
+    @apply opacity-0;
   }
   to {
-    opacity: 1;
-    top: 0;
+    @apply opacity-100 top-0;
   }
 }
 
 /* Internet Explorer */
 @-ms-keyframes fadein {
   from {
-    opacity: 0;
     top: 30px;
+    @apply opacity-0;
   }
   to {
-    opacity: 1;
+    @apply opacity-100;
     top: 0;
   }
 }
