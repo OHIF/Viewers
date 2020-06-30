@@ -34,6 +34,7 @@ const ThumbnailList = ({
               return (
                 <Thumbnail
                   key={displaySetInstanceUID}
+                  displaySetInstanceUID={displaySetInstanceUID}
                   dragData={dragData}
                   description={description}
                   seriesNumber={seriesNumber}
@@ -49,6 +50,7 @@ const ThumbnailList = ({
               return (
                 <ThumbnailTracked
                   key={displaySetInstanceUID}
+                  displaySetInstanceUID={displaySetInstanceUID}
                   dragData={dragData}
                   description={description}
                   seriesNumber={seriesNumber}
@@ -67,6 +69,7 @@ const ThumbnailList = ({
                 <ThumbnailNoImage
                   isActive={isActive}
                   key={displaySetInstanceUID}
+                  displaySetInstanceUID={displaySetInstanceUID}
                   dragData={dragData}
                   modality={modality}
                   seriesDate={seriesDate}

@@ -10,6 +10,7 @@ import blurHandlerListener from '../../utils/blurHandlerListener';
  *
  */
 const Thumbnail = ({
+  displaySetInstanceUID,
   className,
   imageSrc,
   imageAltText,
@@ -40,6 +41,7 @@ const Thumbnail = ({
         className,
         'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none group'
       )}
+      id={`thumbnail-${displaySetInstanceUID}`}
       onDoubleClick={onClick}
       role="button"
       tabIndex="0"
@@ -79,6 +81,7 @@ const Thumbnail = ({
 };
 
 Thumbnail.propTypes = {
+  displaySetInstanceUID: PropTypes.string.isRequired,
   className: PropTypes.string,
   imageSrc: PropTypes.string,
   /**

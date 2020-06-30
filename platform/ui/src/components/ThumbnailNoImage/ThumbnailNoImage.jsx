@@ -1,12 +1,14 @@
 import React, { useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 
 import { Icon } from '@ohif/ui';
 import blurHandlerListener from '../../utils/blurHandlerListener';
 
 const ThumbnailNoImage = ({
+  displaySetInstanceUID,
   description,
   seriesDate,
   modality,
@@ -31,6 +33,7 @@ const ThumbnailNoImage = ({
         'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded',
         isActive ? 'border-2 border-primary-light' : 'border'
       )}
+      id={`thumbnail-${displaySetInstanceUID}`}
       onDoubleClick={onClick}
       role="button"
       tabIndex="0"
@@ -54,6 +57,7 @@ const ThumbnailNoImage = ({
 };
 
 ThumbnailNoImage.propTypes = {
+  displaySetInstanceUID: PropTypes.string.isRequired,
   /**
    * Data the thumbnail should expose to a receiving drop target. Use a matching
    * `dragData.type` to identify which targets can receive this draggable item.

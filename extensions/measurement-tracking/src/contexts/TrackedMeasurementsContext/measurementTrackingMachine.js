@@ -1,5 +1,13 @@
 import { assign } from 'xstate';
 
+const RESPONSE = {
+  NO_NEVER: -1,
+  CANCEL: 0,
+  CREATE_REPORT: 1,
+  ADD_SERIES: 2,
+  SET_STUDY_AND_SERIES: 3,
+};
+
 const machineConfiguration = {
   id: 'measurementTracking',
   initial: 'idle',
@@ -24,11 +32,11 @@ const machineConfiguration = {
           {
             target: 'tracking',
             actions: ['setTrackedStudyAndSeries'],
-            cond: 'promptAccepted',
+            cond: 'shouldSetStudyAndSeries',
           },
           {
             target: 'off',
-            cond: 'promptDeclined',
+            cond: 'shouldKillMachine',
           },
           {
             target: 'idle',
@@ -63,15 +71,21 @@ const machineConfiguration = {
         ],
       },
     },
-    promptTrackNewStudy: {
+    promptTrackNewSeries: {
       invoke: {
-        src: 'promptTrackNewStudy',
+        src: 'promptTrackNewSeries',
         onDone: [
           {
             target: 'tracking',
-            actions: ['setTrackedStudyAndSeries'],
-            cond: 'promptAccepted',
+            actions: ['addTrackedSeries'],
+            cond: 'shouldAddSeries',
           },
+          {
+            target: 'tracking',
+            actions: ['setTrackedStudyAndSeries'],
+            cond: 'shouldSetStudyAndSeries',
+          },
+          // CREATE_REPORT && CANCEL
           {
             target: 'tracking',
           },
@@ -81,14 +95,14 @@ const machineConfiguration = {
         },
       },
     },
-    promptTrackNewSeries: {
+    promptTrackNewStudy: {
       invoke: {
-        src: 'promptTrackNewSeries',
+        src: 'promptTrackNewStudy',
         onDone: [
           {
             target: 'tracking',
-            actions: ['addTrackedSeries'],
-            cond: 'promptAccepted',
+            actions: ['setTrackedStudyAndSeries'],
+            cond: 'shouldSetStudyAndSeries',
           },
           {
             target: 'tracking',
@@ -135,9 +149,12 @@ const defaultOptions = {
     })),
   },
   guards: {
-    promptAccepted: (ctx, evt) => evt.data && evt.data.userResponse === 1,
-    promptCanceled: (ctx, evt) => evt.data && evt.data.userResponse === 0,
-    promptDeclined: (ctx, evt) => evt.data && evt.data.userResponse === -1,
+    shouldKillMachine: (ctx, evt) =>
+      evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
+    shouldAddSeries: (ctx, evt) =>
+      evt.data && evt.data.userResponse === RESPONSE.ADD_SERIES,
+    shouldSetStudyAndSeries: (ctx, evt) =>
+      evt.data && evt.data.userResponse === RESPONSE.SET_STUDY_AND_SERIES,
     // Has more than 1, or SeriesInstanceUID is not in list
     // --> Post removal would have non-empty trackedSeries array
     hasRemainingTrackedSeries: (ctx, evt) =>
@@ -149,13 +166,4 @@ const defaultOptions = {
   },
 };
 
-// const measurementTrackingMachine = Machine(
-//   machineConfiguration,
-//   defaultOptions
-// );
-// .transition(state, eventArgument).value
-// const service = interpret(measurementTrackingMachine).start();
-// .send(event): nextState
-// .state (getter)
-// .onTransition(state => { state.vale })
 export { defaultOptions, machineConfiguration };

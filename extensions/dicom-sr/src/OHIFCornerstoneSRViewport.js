@@ -250,12 +250,19 @@ function OHIFCornerstoneSRViewport({
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
-            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
+            patientName: PatientName
+              ? OHIF.utils.formatPN(PatientName.Alphabetic)
+              : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: `${SliceThickness}mm`,
-            spacing: PixelSpacing && PixelSpacing.length ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(2)}mm` : '',
+            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
+            spacing:
+              PixelSpacing && PixelSpacing.length
+                ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
+                    2
+                  )}mm`
+                : '',
             scanner: ManufacturerModelName || '',
           },
         }}

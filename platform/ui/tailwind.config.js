@@ -328,6 +328,9 @@ module.exports = {
       '0': '0',
       auto: 'auto',
       full: '100%',
+      viewport: '0.5rem',
+      '1/2': '50%',
+      'viewport-scrollbar': '1.3rem'
     },
     letterSpacing: {
       tighter: '-0.05em',
@@ -681,6 +684,7 @@ module.exports = {
     transitionProperty: {
       none: 'none',
       all: 'all',
+      'height': 'height',
       default:
         'background-color, border-color, color, fill, stroke, opacity, box-shadow, transform',
       colors: 'background-color, border-color, color, fill, stroke',

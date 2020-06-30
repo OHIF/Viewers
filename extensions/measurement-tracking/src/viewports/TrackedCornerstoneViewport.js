@@ -12,6 +12,8 @@ import {
 } from '@ohif/ui';
 import { useTrackedMeasurements } from './../getContextModule';
 
+import ViewportOverlay from './ViewportOverlay';
+
 const { formatDate } = utils;
 
 // TODO -> Get this list from the list of tracked measurements.
@@ -38,6 +40,7 @@ function TrackedCornerstoneViewport({
   dataSource,
   displaySet,
   viewportIndex,
+  ToolBarService
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
   const [{ activeViewportIndex, viewports }] = useViewportGrid();
@@ -225,12 +228,17 @@ function TrackedCornerstoneViewport({
     PatientAge,
     SliceThickness,
     PixelSpacing,
-    ManufacturerModelName
+    ManufacturerModelName,
   } = displaySet.images[0];
 
   if (trackedSeries.includes(SeriesInstanceUID) !== isTracked) {
     setIsTracked(!isTracked);
   }
+
+  const label =
+    viewports.length > 1
+      ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
+      : '';
 
   return (
     <>
@@ -238,7 +246,7 @@ function TrackedCornerstoneViewport({
         onSeriesChange={direction => alert(`Series ${direction}`)}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
-          label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
+          label,
           isTracked: trackedSeries.includes(SeriesInstanceUID),
           isLocked: false,
           studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
@@ -246,12 +254,19 @@ function TrackedCornerstoneViewport({
           seriesDescription: SeriesDescription,
           modality: Modality,
           patientInformation: {
-            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
+            patientName: PatientName
+              ? OHIF.utils.formatPN(PatientName.Alphabetic)
+              : '',
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: `${SliceThickness}mm`,
-            spacing: PixelSpacing && PixelSpacing.length ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(2)}mm` : '',
+            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
+            spacing:
+              PixelSpacing && PixelSpacing.length
+                ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
+                    2
+                  )}mm`
+                : '',
             scanner: ManufacturerModelName || '',
           },
         }}
@@ -268,7 +283,15 @@ function TrackedCornerstoneViewport({
           isStackPrefetchEnabled={true} // todo
           isPlaying={false}
           frameRate={24}
-          isOverlayVisible={false}
+          isOverlayVisible={true}
+          viewportOverlayComponent={props => {
+            return (
+              <ViewportOverlay
+                {...props}
+                activeTools={ToolBarService.getActiveTools()}
+              />
+            );
+          }}
         />
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
@@ -277,6 +300,7 @@ function TrackedCornerstoneViewport({
               type={viewportDialogState.type}
               actions={viewportDialogState.actions}
               onSubmit={viewportDialogState.onSubmit}
+              onOutsideClick={viewportDialogState.onOutsideClick}
             />
           )}
         </div>

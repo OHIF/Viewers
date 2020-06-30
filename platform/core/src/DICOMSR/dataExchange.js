@@ -44,45 +44,6 @@ const retrieveMeasurements = server => {
 };
 
 /**
- *  Function to be registered into MeasurementAPI to store measurements into DICOM Structured Reports
- *
- * @param {Object} measurementData - OHIF measurementData object
- * @param {Object} filter
- * @param {serverType} server
- * @returns {Object} With message to be displayed on success
- */
-const storeMeasurementsOld = async (measurementData, filter, server) => {
-  log.info('[DICOMSR] storeMeasurements');
-
-  if (!server || server.type !== 'dicomWeb') {
-    log.error('[DICOMSR] DicomWeb server is required!');
-    return Promise.reject({});
-  }
-
-  const serverUrl = server.wadoRoot;
-  const firstMeasurementKey = Object.keys(measurementData)[0];
-  const firstMeasurement = measurementData[firstMeasurementKey][0];
-  const StudyInstanceUID =
-    firstMeasurement && firstMeasurement.StudyInstanceUID;
-
-  try {
-    await stowSRFromMeasurements(measurementData, serverUrl);
-    if (StudyInstanceUID) {
-      studies.deleteStudyMetadataPromise(StudyInstanceUID);
-    }
-
-    return {
-      message: 'Measurements saved successfully',
-    };
-  } catch (error) {
-    log.error(
-      `[DICOMSR] Error while saving the measurements: ${error.message}`
-    );
-    throw new Error('Error while saving the measurements.');
-  }
-};
-
-/**
  *
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
@@ -118,6 +79,7 @@ const generateReport = measurementData => {
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
  * @param {object} dataSource The dataSource that you wish to use to persist the data.
+ * @return {object} The naturalized report
  */
 const storeMeasurements = async (measurementData, dataSource) => {
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
@@ -129,24 +91,22 @@ const storeMeasurements = async (measurementData, dataSource) => {
     return Promise.reject({});
   }
 
-  const naturalizedReport = generateReport(measurementData);
-  const { StudyInstanceUID } = naturalizedReport;
-
   try {
+    const naturalizedReport = generateReport(measurementData);
+    const { StudyInstanceUID } = naturalizedReport;
+
     await dataSource.store.dicom(naturalizedReport);
 
     if (StudyInstanceUID) {
-      studies.deleteStudyMetadataPromise(StudyInstanceUID);
+      dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
     }
 
-    return {
-      message: 'Measurements saved successfully',
-    };
+    return naturalizedReport;
   } catch (error) {
     log.error(
       `[DICOMSR] Error while saving the measurements: ${error.message}`
     );
-    throw new Error('Error while saving the measurements.');
+    throw new Error(error.message || 'Error while saving the measurements.');
   }
 };
 

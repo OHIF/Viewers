@@ -72,16 +72,16 @@ const BaseImplementation = {
       study = _model.studies[_model.studies.length - 1];
     }
 
-    // TODO: Worth identifying why this is being called many times with series
-    // that are already "added"?
-    const didAddSeries = study.addSeries(instances);
+    study.addSeries(instances);
 
-    if (didAddSeries) {
-      this._broadcastEvent(EVENTS.INSTANCES_ADDED, {
-        StudyInstanceUID,
-        SeriesInstanceUID,
-      });
-    }
+    // Broadcast an event even if we used cached data.
+    // This is because the mode needs to listen to instances that are added to build up its active displaySets.
+    // It will see there are cached displaySets and end early if this Series has already been fired in this
+    // Mode session for some reason.
+    this._broadcastEvent(EVENTS.INSTANCES_ADDED, {
+      StudyInstanceUID,
+      SeriesInstanceUID,
+    });
   },
   addStudy(study) {
     const { StudyInstanceUID } = study;
