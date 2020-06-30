@@ -28,7 +28,6 @@ function PanelStudyBrowser({
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
 
-  console.log(DisplaySetService);
   // ~~ studyDisplayList
   useEffect(() => {
     // Fetch all studies for the patient in each primary study
