@@ -150,7 +150,7 @@ export default function searchStudies(server, filter) {
  * @param serverSupportsQIDOIncludeField
  * @returns {string} The URL with encoded filter query data
  */
-function mapParams(params, options) {
+function mapParams(params, options = {}) {
   if (!params) {
     return;
   }
@@ -170,7 +170,7 @@ function mapParams(params, options) {
     // Other
     limit: params.limit || 101,
     offset: params.offset || 0,
-    fuzzymatching: params.fuzzymatching || options.supportsFuzzyMatching || true,
+    fuzzymatching: options.supportsFuzzyMatching === true,
     includefield: commaSeparatedFields, // serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all',
   };
 
