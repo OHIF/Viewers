@@ -5,9 +5,6 @@ import { DicomMetadataStore, DICOMSR } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
-import cornerstoneTools from 'cornerstone-tools';
-import cornerstone from 'cornerstone-core';
-import dcmjs from 'dcmjs';
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
@@ -24,7 +21,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const { MeasurementService, DisplaySetService } = servicesManager.services;
+  const { MeasurementService, UINotificationService, UIDialogService, DisplaySetService } = servicesManager.services;
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -118,27 +115,44 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   };
 
   const createReport = async () => {
-    const measurements = MeasurementService.getMeasurements();
-    const trackedMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
-    );
+    const loadingDialogId = UIDialogService.create({
+      showOverlay: true,
+      isDraggable: false,
+      centralize: true,
+      // TODO: Create a loading indicator component + zeplin design?
+      content: () => <div className="text-primary-active">Loading...</div>
+    });
 
-    const dataSources = extensionManager.getDataSources();
-    // TODO -> Eventually deal with multiple dataSources.
-    // Would need some way of saying which one is the "push" dataSource
-    const dataSource = dataSources[0];
+    try {
+      const measurements = MeasurementService.getMeasurements();
+      const trackedMeasurements = measurements.filter(
+        m =>
+          trackedStudy === m.referenceStudyUID &&
+          trackedSeries.includes(m.referenceSeriesUID)
+      );
 
-    DICOMSR.storeMeasurements(
-      trackedMeasurements,
-      dataSource,
-      naturalizedReport => {
-        DisplaySetService.makeDisplaySets([naturalizedReport], {
-          madeInClient: true,
-        });
-      }
-    );
+      const dataSources = extensionManager.getDataSources();
+      // TODO -> Eventually deal with multiple dataSources.
+      // Would need some way of saying which one is the "push" dataSource
+      const dataSource = dataSources[0];
+
+      const naturalizedReport = await DICOMSR.storeMeasurements(trackedMeasurements, dataSource);
+
+      DisplaySetService.makeDisplaySets([naturalizedReport], { madeInClient: true });
+      UINotificationService.show({
+        title: 'STOW SR',
+        message: 'Measurements saved successfully',
+        type: 'success'
+      });
+    } catch (error) {
+      UINotificationService.show({
+        title: 'STOW SR',
+        message: error.message || 'Failed to store measurements',
+        type: 'error',
+      });
+    } finally {
+      UIDialogService.dismiss({ id: loadingDialogId });
+    }
   };
 
   const onMeasurementItemClickHandler = (id) => {

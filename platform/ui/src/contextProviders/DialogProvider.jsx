@@ -5,11 +5,14 @@ import React, {
   useCallback,
   useEffect,
 } from 'react';
+
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import classNames from 'classnames';
+
 import { utils } from '@ohif/core';
 
+import './DialogProvider.css';
 
 const DialogContext = createContext(null);
 
@@ -150,6 +153,7 @@ const DialogProvider = ({ children, service }) => {
         onStart,
         onStop,
         onDrag,
+        showOverlay,
       } = dialog;
 
       let position =
@@ -158,13 +162,13 @@ const DialogProvider = ({ children, service }) => {
         position = centerPositions.find(position => position.id === id);
       }
 
-      return (
+      const dragableItem = () => (
         <Draggable
           key={id}
           disabled={!isDraggable}
           position={position}
           defaultPosition={position}
-          bounds="parent"
+          bounds='parent'
           onStart={event => {
             const e = event || window.event;
             const target = e.target || e.srcElement;
@@ -215,6 +219,21 @@ const DialogProvider = ({ children, service }) => {
           </div>
         </Draggable>
       );
+
+      const withOverlay = component => {
+        const background = 'bg-black bg-opacity-50';
+        const overlay = 'fixed z-50 left-0 top-0 w-full h-full overflow-auto';
+        return (
+          <div
+            className={classNames(overlay, background)}
+            key={id}
+          >
+            {component}
+          </div>
+        );
+      };
+
+      return showOverlay ? withOverlay(dragableItem()) : dragableItem();
     });
 
   /**
@@ -236,13 +255,11 @@ const DialogProvider = ({ children, service }) => {
 
   return (
     <DialogContext.Provider value={{ create, dismiss, dismissAll, isEmpty }}>
-      <div className="DraggableArea">
-        {dialogs.some(dialog => dialog.showOverlay) ? (
-          <div className="Overlay active">{renderDialogs()}</div>
-        ) : (
-          renderDialogs()
-        )}
-      </div>
+      {!isEmpty() &&
+        <div className='w-full h-full absolute'>
+          {renderDialogs()}
+        </div>
+      }
       {children}
     </DialogContext.Provider>
   );
