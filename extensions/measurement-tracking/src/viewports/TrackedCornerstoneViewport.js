@@ -401,7 +401,6 @@ function _switchMeasurementAndGetMeasurementId(
     }
   }
 
-  console.log(measurementIndex);
 
   const newTrackedMeasurementId = ids[measurementIndex];
 
