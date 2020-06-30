@@ -5,9 +5,6 @@ import { DicomMetadataStore, DICOMSR } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
-import cornerstoneTools from 'cornerstone-tools';
-import cornerstone from 'cornerstone-core';
-import dcmjs from 'dcmjs';
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
@@ -24,7 +21,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const { MeasurementService, UINotificationService, UIDialogService } = servicesManager.services;
+  const { MeasurementService, UINotificationService, UIDialogService, DisplaySetService } = servicesManager.services;
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -105,7 +102,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
   const activeMeasurementItem = 0;
 
-  const onExportClick = () => {
+  const exportReport = () => {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -117,8 +114,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
   };
 
-  const onCreateReportClick = async () => {
-    // TODO: Create a loading service that uses the dialog service with these options?
+  const createReport = async () => {
     const loadingDialogId = UIDialogService.create({
       showOverlay: true,
       isDraggable: false,
@@ -140,7 +136,16 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       // Would need some way of saying which one is the "push" dataSource
       const dataSource = dataSources[0];
 
-      const { message } = await DICOMSR.storeMeasurements(trackedMeasurements, dataSource);
+      const { message } = await DICOMSR.storeMeasurements(
+        trackedMeasurements,
+        dataSource,
+        naturalizedReport => {
+          DisplaySetService.makeDisplaySets([naturalizedReport], {
+            madeInClient: true,
+          });
+        }
+      );
+
       UINotificationService.show({ title: 'STOW SR', message, type: 'success' });
     } catch (error) {
       UINotificationService.show({
@@ -173,8 +178,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       </div>
       <div className="flex justify-center p-4">
         <ActionButtons
-          onExportClick={onExportClick}
-          onCreateReportClick={onCreateReportClick}
+          onExportClick={exportReport}
+          onCreateReportClick={createReport}
         />
       </div>
     </>
