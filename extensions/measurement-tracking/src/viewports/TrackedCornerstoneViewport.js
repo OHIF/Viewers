@@ -40,7 +40,6 @@ function TrackedCornerstoneViewport({
   dataSource,
   displaySet,
   viewportIndex,
-  servicesManager,
   ToolBarService
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
