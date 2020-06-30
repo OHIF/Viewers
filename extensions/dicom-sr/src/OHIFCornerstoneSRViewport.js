@@ -343,14 +343,10 @@ function OHIFCornerstoneSRViewport({
         }
       }
 
-      debugger;
-
       sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
         StudyInstanceUID: targetStudyInstanceUID,
         SeriesInstanceUIDs,
       });
-
-      debugger;
     }
 
     Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
@@ -389,13 +385,6 @@ function OHIFCornerstoneSRViewport({
     displaySet.isHydrated = true;
 
     setIsHydrated(true);
-
-    // TODO -> Switch to cornerstone viewport.
-    // TODO -> Tell measurement service to track the series on which the measurements were added.
-
-    // Deal with optional extensions
-
-    debugger;
 
     viewportGridService.setDisplaysetForViewport({
       viewportIndex: activeViewportIndex,
