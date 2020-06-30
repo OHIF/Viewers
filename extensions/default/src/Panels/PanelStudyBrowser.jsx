@@ -100,8 +100,9 @@ function PanelStudyBrowser({
     // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
     const SubscriptionDisplaySetsAdded = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      newDisplaySets => {
-        newDisplaySets.forEach(async dSet => {
+      data => {
+        const { displaySetsAdded } = data;
+        displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
           const displaySet = DisplaySetService.getDisplaySetByUID(
             dSet.displaySetInstanceUID

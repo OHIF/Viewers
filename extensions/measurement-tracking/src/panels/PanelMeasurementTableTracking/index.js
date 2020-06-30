@@ -130,10 +130,14 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     // Would need some way of saying which one is the "push" dataSource
     const dataSource = dataSources[0];
 
-    await DICOMSR.storeMeasurements(
+    DICOMSR.storeMeasurements(
       trackedMeasurements,
       dataSource,
-      DisplaySetService
+      naturalizedReport => {
+        DisplaySetService.makeDisplaySets([naturalizedReport], {
+          madeInClient: true,
+        });
+      }
     );
   };
 

@@ -137,8 +137,9 @@ function PanelStudyBrowserTracking({
     // DISPLAY_SETS_ADDED returns an array of DisplaySets that were added
     const SubscriptionDisplaySetsAdded = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      newDisplaySets => {
-        newDisplaySets.forEach(async dSet => {
+      data => {
+        const { displaySetsAdded, options } = data;
+        displaySetsAdded.forEach(async dSet => {
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
 
           const newImageSrcEntry = {};
@@ -146,7 +147,7 @@ function PanelStudyBrowserTracking({
             displaySetInstanceUID
           );
 
-          if (dSet.madeInClient) {
+          if (options.madeInClient) {
             setJumpToDisplaySet(displaySetInstanceUID);
           }
 
