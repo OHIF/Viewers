@@ -24,7 +24,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const { MeasurementService } = servicesManager.services;
+  const { MeasurementService, DisplaySetService } = servicesManager.services;
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -105,7 +105,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
   const activeMeasurementItem = 0;
 
-  const onExportClick = () => {
+  const exportReport = () => {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -117,7 +117,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
   };
 
-  const onCreateReportClick = () => {
+  const createReport = () => {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -125,13 +125,18 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-
     const dataSources = extensionManager.getDataSources();
     // TODO -> Eventually deal with multiple dataSources.
     // Would need some way of saying which one is the "push" dataSource
     const dataSource = dataSources[0];
 
-    DICOMSR.storeMeasurements(trackedMeasurements, dataSource);
+    DICOMSR.storeMeasurements(
+      trackedMeasurements,
+      dataSource,
+      naturalizedReport => {
+        DisplaySetService.makeDisplaySets([naturalizedReport]);
+      }
+    );
   };
 
   return (
@@ -154,8 +159,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       </div>
       <div className="flex justify-center p-4">
         <ActionButtons
-          onExportClick={onExportClick}
-          onCreateReportClick={onCreateReportClick}
+          onExportClick={exportReport}
+          onCreateReportClick={createReport}
         />
       </div>
     </>
