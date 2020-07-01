@@ -38,7 +38,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
-  const [measurements, setMeasurements] = useState([]);
 
   useEffect(() => {
     const measurements = MeasurementService.getMeasurements();
@@ -51,7 +50,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
     );
     setDisplayMeasurements(mappedMeasurements);
-    setMeasurements(filteredMeasurements);
     // eslint-ignore-next-line
   }, [
     MeasurementService,
@@ -146,6 +144,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const jumpToImage = id => {
     onMeasurementItemClickHandler(id);
 
+    const measurements = MeasurementService.getMeasurements();
     const measurement = measurements.find(m => m.id === id);
     const { referenceSeriesUID, SOPInstanceUID } = measurement;
 
@@ -165,6 +164,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   };
 
   const onMeasurementItemEditHandler = (id) => {
+    const measurements = MeasurementService.getMeasurements();
     const measurement = measurements.find(m => m.id === id);
 
     const dialogId = UIDialogService.create({
