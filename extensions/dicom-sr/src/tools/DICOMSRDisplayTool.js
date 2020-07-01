@@ -175,23 +175,20 @@ export default class DICOMSRDisplayTool extends BaseTool {
     // }
   }
 
-  repositionTextBox(toolData, eventData) {
-    debugger;
+  // repositionTextBox(toolData, eventData) {
+  //   const toolBoundingBoxes = [];
 
-    const toolBoundingBoxes = [];
+  //   for (let i = 0; i < toolData.length; i++) {
+  //     const toolDataI = toolData[i];
 
-    for (let i = 0; i < toolData.length; i++) {
-      const toolDataI = toolData[i];
+  //     const { textBox } = toolDataI.handles;
+  //     const { anchorPoints } = textBox;
 
-      const { textBox } = toolDataI.handles;
-      const { anchorPoints } = textBox;
-
-      const boundingBox = _getBoundingBoxFromAnchorPoints(anchorPoints);
-      // Get the textbox bounding locations.
-      // Get the tool extents.
-      debugger;
-    }
-  }
+  //     const boundingBox = _getBoundingBoxFromAnchorPoints(anchorPoints);
+  //     // Get the textbox bounding locations.
+  //     // Get the tool extents.
+  //   }
+  // }
 
   renderPolyLine(renderableData, eventData, options) {
     const { element } = eventData;
@@ -216,7 +213,6 @@ export default class DICOMSRDisplayTool extends BaseTool {
 
   renderPoint(renderableData, eventData, options) {
     // Render single point as an arrow.
-    debugger;
     const { element, image } = eventData;
     const { rows, columns } = image;
     const context = getNewContext(eventData.canvasContext.canvas);
@@ -228,8 +224,6 @@ export default class DICOMSRDisplayTool extends BaseTool {
     const xOffset = columns / 10;
     const yOffset = rows / 10;
 
-    debugger;
-
     renderableData.forEach(points => {
       const point = points[0]; // The SCOORD type is POINT so the array length is 1.
       draw(context, context => {
@@ -239,8 +233,6 @@ export default class DICOMSRDisplayTool extends BaseTool {
           x: point.x + xOffset,
           y: point.y + yOffset,
         });
-
-        debugger;
 
         drawArrow(
           context,
