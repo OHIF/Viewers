@@ -5,6 +5,7 @@ import { DicomMetadataStore, DICOMSR } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
+import createReportAsync from './../../_shared/createReportAsync.js';
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
@@ -21,12 +22,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const {
-    MeasurementService,
-    UINotificationService,
-    UIDialogService,
-    DisplaySetService,
-  } = servicesManager.services;
+  const { MeasurementService } = servicesManager.services;
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -103,7 +99,20 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     };
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
-  const activeMeasurementItem = 0;
+  function createReport() {
+    // TODO -> Eventually deal with multiple dataSources.
+    // Would need some way of saying which one is the "push" dataSource
+    const dataSources = extensionManager.getDataSources();
+    const dataSource = dataSources[0];
+    const measurements = MeasurementService.getMeasurements();
+    const trackedMeasurements = measurements.filter(
+      m =>
+        trackedStudy === m.referenceStudyUID &&
+        trackedSeries.includes(m.referenceSeriesUID)
+    );
+
+    return createReportAsync(servicesManager, dataSource, trackedMeasurements);
+  }
 
   const exportReport = () => {
     const measurements = MeasurementService.getMeasurements();
@@ -115,52 +124,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
     // TODO -> local download.
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
-  };
-
-  const createReport = async () => {
-    const loadingDialogId = UIDialogService.create({
-      showOverlay: true,
-      isDraggable: false,
-      centralize: true,
-      // TODO: Create a loading indicator component + zeplin design?
-      content: () => <div className="text-primary-active">Loading...</div>,
-    });
-
-    try {
-      const measurements = MeasurementService.getMeasurements();
-      const trackedMeasurements = measurements.filter(
-        m =>
-          trackedStudy === m.referenceStudyUID &&
-          trackedSeries.includes(m.referenceSeriesUID)
-      );
-
-      const dataSources = extensionManager.getDataSources();
-      // TODO -> Eventually deal with multiple dataSources.
-      // Would need some way of saying which one is the "push" dataSource
-      const dataSource = dataSources[0];
-
-      const naturalizedReport = await DICOMSR.storeMeasurements(
-        trackedMeasurements,
-        dataSource
-      );
-
-      DisplaySetService.makeDisplaySets([naturalizedReport], {
-        madeInClient: true,
-      });
-      UINotificationService.show({
-        title: 'STOW SR',
-        message: 'Measurements saved successfully',
-        type: 'success',
-      });
-    } catch (error) {
-      UINotificationService.show({
-        title: 'STOW SR',
-        message: error.message || 'Failed to store measurements',
-        type: 'error',
-      });
-    } finally {
-      UIDialogService.dismiss({ id: loadingDialogId });
-    }
   };
 
   return (
