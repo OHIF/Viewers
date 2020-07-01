@@ -31,9 +31,9 @@ function PanelStudyBrowserTracking({
     sendTrackedMeasurementsEvent,
   ] = useTrackedMeasurements();
   const [activeTabName, setActiveTabName] = useState('primary');
-  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState(
-    []
-  );
+  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
+    ...StudyInstanceUIDs,
+  ]);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
@@ -308,6 +308,10 @@ function PanelStudyBrowserTracking({
 }
 
 PanelStudyBrowserTracking.propTypes = {
+  MeasurementService: PropTypes.shape({
+    subscribe: PropTypes.func.isRequired,
+    EVENTS: PropTypes.object.isRequired,
+  }).isRequired,
   DisplaySetService: PropTypes.shape({
     EVENTS: PropTypes.object.isRequired,
     activeDisplaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
