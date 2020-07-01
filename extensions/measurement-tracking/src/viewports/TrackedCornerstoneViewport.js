@@ -357,7 +357,7 @@ function _getCornerstoneStack(displaySet, dataSource) {
 async function _getViewportData(dataSource, displaySet, imageIndex) {
   let viewportData;
 
-  if (imageIndex) {
+  if (imageIndex !== undefined) {
     displaySet.frameIndex = imageIndex;
   }
 

@@ -143,8 +143,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   }
 
   const jumpToImage = ({ id, isActive }) => {
-    onMeasurementItemClickHandler({ id, isActive });
-
     const measurement = MeasurementService.getMeasurement(id);
     const { referenceSeriesUID, SOPInstanceUID } = measurement;
 
@@ -155,11 +153,14 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
     const imageIndex = displaySet.images.map(i => i.SOPInstanceUID).indexOf(SOPInstanceUID);
 
+    console.debug('[measurement-tracking] Setting new image index...');
     viewportGridService.setDisplaysetForViewport({
       viewportIndex: viewportGrid.activeViewportIndex,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       imageIndex
     });
+
+    onMeasurementItemClickHandler({ id, isActive });
   };
 
   const onMeasurementItemEditHandler = ({ id }) => {
