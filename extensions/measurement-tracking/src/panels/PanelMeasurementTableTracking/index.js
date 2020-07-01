@@ -53,25 +53,32 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     debouncedMeasurementChangeTimestamp,
   ]);
 
-  // ~~ DisplayStudySummary
-  useEffect(() => {
+  const test = async () => {
     if (trackedMeasurements.matches('tracking')) {
       const StudyInstanceUID = trackedStudy;
       const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
       const instanceMeta = studyMeta.series[0].instances[0];
-      const { Modality, StudyDate, StudyDescription } = instanceMeta;
+      const { StudyDate, StudyDescription } = instanceMeta;
+
+      const dataSource = extensionManager.getDataSources('dicomweb')[0];
+      const [getStudyResult] = await dataSource.query.studies.search({ studyInstanceUid: StudyInstanceUID });
 
       if (displayStudySummary.key !== StudyInstanceUID) {
         setDisplayStudySummary({
           key: StudyInstanceUID,
           date: StudyDate, // TODO: Format: '07-Sep-2010'
-          modality: Modality,
+          modality: getStudyResult.modalities,
           description: StudyDescription,
         });
       }
     } else if (trackedStudy === '' || trackedStudy === undefined) {
       setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
     }
+  };
+
+  // ~~ DisplayStudySummary
+  useEffect(() => {
+    test();
   }, [displayStudySummary.key, trackedMeasurements, trackedStudy]);
 
   // TODO: Better way to consolidated, debounce, check on change?
