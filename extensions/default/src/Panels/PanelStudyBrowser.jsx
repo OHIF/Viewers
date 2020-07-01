@@ -21,14 +21,12 @@ function PanelStudyBrowser({
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatch] = useImageViewer();
   const [activeTabName, setActiveTabName] = useState('primary');
-  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState(
-    []
-  );
+  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
+    ...StudyInstanceUIDs,
+  ]);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
-
-  console.log(DisplaySetService);
 
   // ~~ studyDisplayList
   useEffect(() => {
