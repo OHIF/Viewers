@@ -281,7 +281,6 @@ function TrackedCornerstoneViewport({
           imageIdIndex={currentImageIdIndex}
           onNewImageDebounceTime={700}
           onNewImage={({ currentImageIdIndex }) => {
-            console.debug('[measurement-tracking] Setting new image index...');
             viewportGridService.setDisplaysetForViewport({
               viewportIndex: activeViewportIndex,
               displaySetInstanceUID: displaySet.displaySetInstanceUID,
