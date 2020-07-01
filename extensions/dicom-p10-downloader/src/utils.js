@@ -100,12 +100,55 @@ function save(promise, listOfUIDs) {
     });
 }
 
+function upload(promise, serverConfig) {
+  return Promise.resolve(promise)
+    .then(async instances => {
+      const instancesAmount = instances.length;
+      OHIF.log.info(`Uploading study to ${serverConfig.url}`);
+      OHIF.log.info(
+        `${instancesAmount} instances are being uploaded. Don't close your browser.`
+      );
+
+      try {
+        const dicomWeb = new api.DICOMwebClient(serverConfig);
+        let progress = 0;
+
+        const getProgress = () => {
+          return ((progress * 100) / instancesAmount).toFixed();
+        };
+
+        for (const instance of instances) {
+          const options = {
+            datasets: [instance],
+          };
+
+          await dicomWeb.storeInstances(options);
+
+          progress++;
+
+          OHIF.log.info(`Progress: ${getProgress()}%`);
+        }
+
+        OHIF.log.info('Successfully uploaded!');
+      } catch (error) {
+        OHIF.log.error(`Failed to upload: ${error}`);
+      }
+
+      return instances;
+    })
+    .catch(error => {
+      OHIF.log.error(`Failed to upload: ${error}`);
+      return null;
+    });
+}
+
 function getStudyInstanceUIDFromStudies(studies) {
   return Object.keys(Object(Object(studies).studyData)).slice(0, 1);
 }
 
 export {
   save,
+  upload,
   validDicomUid,
   getDicomWebClientFromConfig,
   getDicomWebClientFromContext,
