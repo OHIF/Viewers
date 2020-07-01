@@ -20,8 +20,8 @@ import createRoutes from './routes';
 import appInit from './appInit.js';
 
 // TODO: Temporarily for testing
-import '@ohif/mode-example';
 import '@ohif/mode-longitudinal';
+import '@ohif/mode-segmentation';
 
 /**
  * ENV Variable to determine routing behavior
@@ -50,7 +50,7 @@ function App({ config, defaultExtensions }) {
     dataSources,
     extensionManager,
     servicesManager,
-    hotkeysManager
+    hotkeysManager,
   });
   const {
     UIDialogService,

@@ -5,8 +5,9 @@ import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '@ohif/ui';
 
 const ThumbnailList = ({
   thumbnails,
-  thumbnailActive,
+  activeDisplaySetInstanceUID,
   onThumbnailClick,
+  onThumbnailDoubleClick,
   onClickUntrack,
 }) => {
   return (
@@ -26,7 +27,8 @@ const ThumbnailList = ({
           imageSrc,
           imageAltText,
         }) => {
-          const isActive = thumbnailActive === displaySetInstanceUID;
+          const isActive =
+            activeDisplaySetInstanceUID === displaySetInstanceUID;
 
           switch (componentType) {
             case 'thumbnail':
@@ -43,6 +45,9 @@ const ThumbnailList = ({
                   viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() =>
+                    onThumbnailDoubleClick(displaySetInstanceUID)
+                  }
                 />
               );
             case 'thumbnailTracked':
@@ -60,12 +65,16 @@ const ThumbnailList = ({
                   isTracked={isTracked}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() =>
+                    onThumbnailDoubleClick(displaySetInstanceUID)
+                  }
                   onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
                 />
               );
             case 'thumbnailNoImage':
               return (
                 <ThumbnailNoImage
+                  isActive={isActive}
                   key={displaySetInstanceUID}
                   displaySetInstanceUID={displaySetInstanceUID}
                   dragData={dragData}
@@ -73,6 +82,9 @@ const ThumbnailList = ({
                   seriesDate={seriesDate}
                   description={description}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() =>
+                    onThumbnailDoubleClick(displaySetInstanceUID)
+                  }
                 />
               );
             default:
@@ -114,8 +126,9 @@ ThumbnailList.propTypes = {
       }),
     })
   ),
-  thumbnailActive: PropTypes.string,
-  onThumbnailClick: PropTypes.func,
+  activeDisplaySetInstanceUID: PropTypes.string,
+  onThumbnailClick: PropTypes.func.isRequired,
+  onThumbnailDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
 };
 

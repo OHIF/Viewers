@@ -4,6 +4,7 @@ import { DicomMetadataStore, DICOMSR, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
+import createReportAsync from './../../_shared/createReportAsync.js';
 
 const { formatDate } = utils;
 
@@ -32,7 +33,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
   const [measurements, setMeasurements] = useState([]);
 
-  // Initial?
   useEffect(() => {
     const measurements = MeasurementService.getMeasurements();
     const filteredMeasurements = measurements.filter(
@@ -107,7 +107,24 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     };
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
-  const exportReport = () => {
+  function createReport() {
+    // TODO -> Eventually deal with multiple dataSources.
+    // Would need some way of saying which one is the "push" dataSource
+    const dataSources = extensionManager.getDataSources();
+    const dataSource = dataSources[0];
+    const measurements = MeasurementService.getMeasurements();
+    const trackedMeasurements = measurements.filter(
+      m =>
+        trackedStudy === m.referenceStudyUID &&
+        trackedSeries.includes(m.referenceSeriesUID)
+    );
+
+    return createReportAsync(servicesManager, dataSource, trackedMeasurements);
+  }
+
+  function exportReport() {
+    const dataSources = extensionManager.getDataSources();
+    const dataSource = dataSources[0];
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -117,48 +134,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
     // TODO -> local download.
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
-  };
-
-  const createReport = async () => {
-    const loadingDialogId = UIDialogService.create({
-      showOverlay: true,
-      isDraggable: false,
-      centralize: true,
-      // TODO: Create a loading indicator component + zeplin design?
-      content: () => <div className="text-primary-active">Loading...</div>
-    });
-
-    try {
-      const measurements = MeasurementService.getMeasurements();
-      const trackedMeasurements = measurements.filter(
-        m =>
-          trackedStudy === m.referenceStudyUID &&
-          trackedSeries.includes(m.referenceSeriesUID)
-      );
-
-      const dataSources = extensionManager.getDataSources();
-      // TODO -> Eventually deal with multiple dataSources.
-      // Would need some way of saying which one is the "push" dataSource
-      const dataSource = dataSources[0];
-
-      const naturalizedReport = await DICOMSR.storeMeasurements(trackedMeasurements, dataSource);
-
-      DisplaySetService.makeDisplaySets([naturalizedReport], { madeInClient: true });
-      UINotificationService.show({
-        title: 'STOW SR',
-        message: 'Measurements saved successfully',
-        type: 'success'
-      });
-    } catch (error) {
-      UINotificationService.show({
-        title: 'STOW SR',
-        message: error.message || 'Failed to store measurements',
-        type: 'error',
-      });
-    } finally {
-      UIDialogService.dismiss({ id: loadingDialogId });
-    }
-  };
+  }
 
   const jumpToImage = id => {
     onMeasurementItemClickHandler(id);
@@ -270,7 +246,16 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   );
 }
 
-PanelMeasurementTableTracking.propTypes = {};
+PanelMeasurementTableTracking.propTypes = {
+  servicesManager: PropTypes.shape({
+    services: PropTypes.shape({
+      MeasurementService: PropTypes.shape({
+        getMeasurements: PropTypes.func.isRequired,
+        VALUE_TYPES: PropTypes.object.isRequired,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
+};
 
 // TODO: This could be a MeasurementService mapper
 function _mapMeasurementToDisplay(measurement, index, types) {
@@ -318,15 +303,7 @@ function _getDisplayText(
   instanceNumber,
   types
 ) {
-  // TODO: determination of shape influences text
-  // Length:  'xx.x unit (S:x, I:x)'
-  // Rectangle: 'xx.x x xx.x unit (S:x, I:x)',
-  // Ellipse?
-  // Bidirectional?
-  // Freehand?
-
   const { type, points } = measurement;
-
   const hasPixelSpacing =
     pixelSpacing !== undefined &&
     Array.isArray(pixelSpacing) &&
@@ -337,18 +314,16 @@ function _getDisplayText(
   const unit = hasPixelSpacing ? 'mm' : 'px';
 
   switch (type) {
-    case types.POLYLINE:
+    case types.POLYLINE: {
       const { length } = measurement;
-
       const roundedLength = _round(length, 1);
 
       return [
         `${roundedLength} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
       ];
-
-    case types.BIDIRECTIONAL:
+    }
+    case types.BIDIRECTIONAL: {
       const { shortestDiameter, longestDiameter } = measurement;
-
       const roundedShortestDiameter = _round(shortestDiameter, 1);
       const roundedLongestDiameter = _round(longestDiameter, 1);
 
@@ -356,16 +331,19 @@ function _getDisplayText(
         `l: ${roundedLongestDiameter} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
         `s: ${roundedShortestDiameter} ${unit}`,
       ];
-    case types.ELLIPSE:
+    }
+    case types.ELLIPSE: {
       const { area } = measurement;
-
       const roundedArea = _round(area, 1);
+
       return [
         `${roundedArea} ${unit}2 (S:${seriesNumber}, I:${instanceNumber})`,
       ];
-    case types.POINT:
+    }
+    case types.POINT: {
       const { text } = measurement;
       return [`${text} (S:${seriesNumber}, I:${instanceNumber})`];
+    }
   }
 }
 
