@@ -17,7 +17,7 @@ const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onE
   return (
     <div
       className={classnames(
-        'group flex cursor-default bg-black border outline-none border-transparent transition duration-300',
+        'group flex cursor-pointer bg-black border outline-none border-transparent transition duration-300',
         {
           'rounded overflow-hidden border-primary-light': isActive,
         }

@@ -43,7 +43,7 @@ function TrackedCornerstoneViewport({
   ToolBarService
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [{ activeViewportIndex, viewports }] = useViewportGrid();
+  const [{ activeViewportIndex, viewports }, viewportGridService] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
@@ -155,7 +155,11 @@ function TrackedCornerstoneViewport({
       );
     }
 
-    _getViewportData(dataSource, displaySet).then(viewportData => {
+    const { frameIndex } = viewports.find(viewport => {
+      return viewport.displaySetInstanceUID === displaySetInstanceUID;
+    });
+
+    _getViewportData(dataSource, displaySet, frameIndex).then(viewportData => {
       setViewportData({ ...viewportData });
     });
   }, [
@@ -164,6 +168,7 @@ function TrackedCornerstoneViewport({
     displaySet.StudyInstanceUID,
     displaySet.displaySetInstanceUID,
     displaySet.frameIndex,
+    viewports
   ]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -264,8 +269,8 @@ function TrackedCornerstoneViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+                  2
+                )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -278,6 +283,13 @@ function TrackedCornerstoneViewport({
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
+          onNewImage={({ currentImageIdIndex }) => {
+            viewportGridService.setDisplaysetForViewport({
+              viewportIndex: activeViewportIndex,
+              displaySetInstanceUID: displaySet.displaySetInstanceUID,
+              frameIndex: currentImageIdIndex
+            });
+          }}
           // TODO: ViewportGrid Context?
           isActive={true} // todo
           isStackPrefetchEnabled={true} // todo
@@ -345,8 +357,12 @@ function _getCornerstoneStack(displaySet, dataSource) {
   return stack;
 }
 
-async function _getViewportData(dataSource, displaySet) {
+async function _getViewportData(dataSource, displaySet, frameIndex) {
   let viewportData;
+
+  if (frameIndex !== undefined) {
+    displaySet.frameIndex = frameIndex;
+  }
 
   const stack = _getCornerstoneStack(displaySet, dataSource);
 

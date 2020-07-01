@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { StudySummary, MeasurementTable, Dialog, Input, Button } from '@ohif/ui';
+import { StudySummary, MeasurementTable, Dialog, Input, useViewportGrid } from '@ohif/ui';
 import { DicomMetadataStore, DICOMSR } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
+import cornerstone from 'cornerstone-core';
 import { useTrackedMeasurements } from '../../getContextModule';
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
@@ -14,6 +14,7 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
 };
 
 function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
+  const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(
     Date.now().toString()
   );
@@ -22,18 +23,13 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     200
   );
   const { MeasurementService, UINotificationService, UIDialogService, DisplaySetService } = servicesManager.services;
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-  ] = useTrackedMeasurements();
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
   const [measurements, setMeasurements] = useState([]);
-  const [measurementProps, setMeasurementProps] = useState({});
-  // TODO: measurements subscribtion
 
   // Initial?
   useEffect(() => {
@@ -156,6 +152,27 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     }
   };
 
+  const jumpToImage = id => {
+    onMeasurementItemClickHandler(id);
+
+    const measurement = measurements.find(m => m.id === id);
+    const { referenceSeriesUID, SOPInstanceUID } = measurement;
+
+    const displaySets = DisplaySetService.getDisplaySetsForSeries(referenceSeriesUID);
+
+    const displaySet = displaySets.find(ds => {
+      return ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+    });
+
+    const frameIndex = displaySet.images.map(i => i.SOPInstanceUID).indexOf(SOPInstanceUID);
+
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex: viewportGrid.activeViewportIndex,
+      displaySetInstanceUID: displaySet.displaySetInstanceUID,
+      frameIndex
+    });
+  };
+
   const onMeasurementItemEditHandler = (id) => {
     const measurement = measurements.find(m => m.id === id);
 
@@ -226,7 +243,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           title="Measurements"
           amount={displayMeasurements.length}
           data={displayMeasurements}
-          onClick={onMeasurementItemClickHandler}
+          onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
         />
       </div>
