@@ -15,13 +15,22 @@ const ViewportActionBar = ({
   showNavArrows,
   showPatientInfo: patientInfoVisibility,
   onSeriesChange,
+  onHydrationClick,
 }) => {
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
+
+  // TODO -> Remake this component with a bunch of generic slots that can be filled,
+  // Its not generic at all, isTracked etc shouldn't be parts of this component.
+  // It shouldn't care that a tracking mode or SR exists.
+  // Things like the right/left buttons should be made into smaller
+  // Components you can compose.
+  // OHIF-200 ticket.
 
   const {
     label,
     isTracked,
     isLocked,
+    isHydrated,
     modality,
     studyDate,
     currentSeries,
@@ -44,18 +53,30 @@ const ViewportActionBar = ({
   const renderIconStatus = () => {
     if (modality === 'SR') {
       return (
-        <div className="relative flex p-1 border rounded border-primary-light">
-          <span className="text-sm font-bold leading-none text-primary-light">
-            SR
-          </span>
-          {isLocked && (
-            <Icon
-              name="lock"
-              className="absolute w-3 text-white"
-              style={{ top: -6, right: -6 }}
-            />
+        <>
+          <div className="relative flex p-1 border rounded border-primary-light">
+            <span className="text-sm font-bold leading-none text-primary-light">
+              SR
+            </span>
+            {isLocked && (
+              <Icon
+                name="lock"
+                className="absolute w-3 text-white"
+                style={{ top: -6, right: -6 }}
+              />
+            )}
+          </div>
+          {!isLocked && !isHydrated && (
+            <div className="relative flex p-1 border rounded border-primary-light">
+              <span
+                className="text-sm font-bold leading-none text-primary-light"
+                onClick={onHydrationClick}
+              >
+                Edit
+              </span>
+            </div>
           )}
-        </div>
+        </>
       );
     }
 

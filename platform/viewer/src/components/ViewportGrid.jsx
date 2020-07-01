@@ -28,13 +28,13 @@ function ViewerViewportGrid(props) {
       displaySets => {
         displaySets.sort((a, b) => {
           const isImageSet = x => x instanceof ImageSet;
-          return (isImageSet(a) === isImageSet(b)) ? 0 : isImageSet(a) ? -1 : 1;
+          return isImageSet(a) === isImageSet(b) ? 0 : isImageSet(a) ? -1 : 1;
         });
         viewportGridService.setDisplaysetForViewport({
           viewportIndex: 0,
           displaySetInstanceUID: displaySets[0].displaySetInstanceUID,
         });
-      },
+      }
     );
 
     return () => {
