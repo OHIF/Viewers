@@ -99,8 +99,8 @@ export default function jumpToRowItem(
     }
 
     displaySet.SOPInstanceUID = data.SOPInstanceUID;
-    if (data.frameIndex) {
-      displaySet.frameIndex = data.frameIndex;
+    if (data.imageIndex) {
+      displaySet.imageIndex = data.imageIndex;
     }
 
     viewportIndex =

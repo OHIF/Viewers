@@ -60,7 +60,7 @@ class OHIFVTKViewport extends Component {
         displaySetInstanceUID: PropTypes.string,
         sopClassUIDs: PropTypes.arrayOf(PropTypes.string),
         SOPInstanceUID: PropTypes.string,
-        frameIndex: PropTypes.number,
+        imageIndex: PropTypes.number,
       }),
     }),
     viewportIndex: PropTypes.number,
@@ -69,7 +69,7 @@ class OHIFVTKViewport extends Component {
   };
 
   static defaultProps = {
-    onScroll: () => {},
+    onScroll: () => { },
   };
 
   static id = 'OHIFVTKViewport';
@@ -88,7 +88,7 @@ class OHIFVTKViewport extends Component {
     StudyInstanceUID,
     displaySetInstanceUID,
     SOPInstanceUID,
-    frameIndex
+    imageIndex
   ) {
     // Create shortcut to displaySet
     const study = studies.find(
@@ -105,8 +105,8 @@ class OHIFVTKViewport extends Component {
     // Clone the stack here so we don't mutate it
     const stack = Object.assign({}, storedStack);
 
-    if (frameIndex !== undefined) {
-      stack.currentImageIdIndex = frameIndex;
+    if (imageIndex !== undefined) {
+      stack.currentImageIdIndex = imageIndex;
     } else if (SOPInstanceUID) {
       const index = stack.imageIds.findIndex(imageId => {
         const imageIdSOPInstanceUID = cornerstone.metaData.get(
@@ -133,7 +133,7 @@ class OHIFVTKViewport extends Component {
     displaySetInstanceUID,
     SOPClassUID,
     SOPInstanceUID,
-    frameIndex
+    imageIndex
   ) => {
     const stack = OHIFVTKViewport.getCornerstoneStack(
       studies,
@@ -141,7 +141,7 @@ class OHIFVTKViewport extends Component {
       displaySetInstanceUID,
       SOPClassUID,
       SOPInstanceUID,
-      frameIndex
+      imageIndex
     );
 
     const imageDataObject = getImageData(stack.imageIds, displaySetInstanceUID);
@@ -270,7 +270,7 @@ class OHIFVTKViewport extends Component {
       displaySetInstanceUID,
       sopClassUIDs,
       SOPInstanceUID,
-      frameIndex,
+      imageIndex,
     } = displaySet;
 
     if (sopClassUIDs.length > 1) {
@@ -302,7 +302,7 @@ class OHIFVTKViewport extends Component {
       StudyInstanceUID,
       displaySetInstanceUID,
       SOPInstanceUID,
-      frameIndex
+      imageIndex
     );
 
     this.imageDataObject = imageDataObject;
@@ -351,9 +351,9 @@ class OHIFVTKViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
+      prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
-      displaySet.frameIndex !== prevDisplaySet.frameIndex
+      displaySet.imageIndex !== prevDisplaySet.imageIndex
     ) {
       this.setStateFromProps();
     }

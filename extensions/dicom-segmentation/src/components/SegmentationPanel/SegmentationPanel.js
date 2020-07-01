@@ -320,7 +320,7 @@ const SegmentationPanel = ({
 
             const imageIds = toolState.data[0].imageIds;
             const imageId = imageIds[closest];
-            const frameIndex = imageIds.indexOf(imageId);
+            const imageIndex = imageIds.indexOf(imageId);
 
             const SOPInstanceUID = cornerstone.metaData.get(
               'SOPInstanceUID',
@@ -334,7 +334,7 @@ const SegmentationPanel = ({
             onSegmentItemClick({
               StudyInstanceUID,
               SOPInstanceUID,
-              frameIndex,
+              imageIndex,
               activeViewportIndex: activeIndex,
             });
           }
@@ -360,7 +360,7 @@ const SegmentationPanel = ({
               SOPClassUID: viewports[activeIndex].sopClassUIDs[0],
               SOPInstanceUID: currentDisplaySet.SOPInstanceUID,
               segmentNumber,
-              frameIndex: closest,
+              imageIndex: closest,
               frame,
             });
           }
@@ -637,7 +637,7 @@ const _setActiveLabelmap = async (
   displaySet,
   firstImageId,
   activeLabelmapIndex,
-  callback = () => {},
+  callback = () => { },
   onDisplaySetLoadFailure
 ) => {
   if (displaySet.labelmapIndex === activeLabelmapIndex) {

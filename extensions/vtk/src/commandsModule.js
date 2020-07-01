@@ -163,9 +163,9 @@ const commandsModule = ({ commandsManager }) => {
       SOPClassUID,
       SOPInstanceUID,
       segmentNumber,
-      frameIndex,
+      imageIndex,
       frame,
-      done = () => {},
+      done = () => { },
     }) => {
       let api = apis[viewports.activeViewportIndex];
 
@@ -180,7 +180,7 @@ const commandsModule = ({ commandsManager }) => {
         displaySetInstanceUID,
         SOPClassUID,
         SOPInstanceUID,
-        frameIndex
+        imageIndex
       );
 
       const imageDataObject = getImageData(
@@ -211,7 +211,7 @@ const commandsModule = ({ commandsManager }) => {
       x /= count;
       y /= count;
 
-      const position = [x, y, frameIndex];
+      const position = [x, y, imageIndex];
       const worldPos = _convertModelToWorldSpace(
         position,
         imageDataObject.vtkImageData

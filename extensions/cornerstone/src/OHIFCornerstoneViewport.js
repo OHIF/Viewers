@@ -67,7 +67,7 @@ class OHIFCornerstoneViewport extends Component {
    * @return {Object} CornerstoneTools Stack
    */
   static getCornerstoneStack(displaySet, dataSource) {
-    const { frameIndex } = displaySet;
+    const { imageIndex } = displaySet;
 
     // Get stack from Stack Manager
     const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
@@ -75,7 +75,7 @@ class OHIFCornerstoneViewport extends Component {
     // Clone the stack here so we don't mutate it
     const stack = Object.assign({}, storedStack);
 
-    stack.currentImageIdIndex = frameIndex;
+    stack.currentImageIdIndex = imageIndex;
 
     // TODO -> Do we ever use this like this?
     // if (SOPInstanceUID) {
@@ -156,7 +156,7 @@ class OHIFCornerstoneViewport extends Component {
       displaySet.displaySetInstanceUID !==
       prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
-      displaySet.frameIndex !== prevDisplaySet.frameIndex
+      displaySet.imageIndex !== prevDisplaySet.imageIndex
     ) {
       this.setStateFromProps();
     }
@@ -198,7 +198,7 @@ class OHIFCornerstoneViewport extends Component {
           this.props.onNewImage({
             StudyInstanceUID,
             SOPInstanceUID: sopInstanceUid,
-            frameIndex: currentImageIdIndex,
+            imageIndex: currentImageIdIndex,
             activeViewportIndex: viewportIndex,
           });
         }

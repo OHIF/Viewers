@@ -1,6 +1,6 @@
 import cornerstone from 'cornerstone-core';
 
-export default function(element) {
+export default function (element) {
   // Get the Cornerstone imageId
   const enabledElement = cornerstone.getEnabledElement(element);
   const imageId = enabledElement.image.imageId;
@@ -14,14 +14,14 @@ export default function(element) {
   } = cornerstone.metaData.get('instance', imageId);
 
   const splitImageId = imageId.split('&frame');
-  const frameIndex =
+  const imageIndex =
     splitImageId[1] !== undefined ? Number(splitImageId[1]) : 0;
 
   const imagePath = [
     StudyInstanceUID,
     SeriesInstanceUID,
     SOPInstanceUID,
-    frameIndex,
+    imageIndex,
   ].join('_');
 
   return {
@@ -29,7 +29,7 @@ export default function(element) {
     StudyInstanceUID,
     SeriesInstanceUID,
     SOPInstanceUID,
-    frameIndex,
+    imageIndex,
     imagePath,
   };
 }

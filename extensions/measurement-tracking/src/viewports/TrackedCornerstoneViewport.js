@@ -157,13 +157,14 @@ function TrackedCornerstoneViewport({
       );
     }
 
-    // This grabs `imageIndex from first matching
-    // We actually want whichever is at our `viewportIndex`
+    /*
+     * This grabs `imageIndex from first matching
+     * We actually want whichever is at our `viewportIndex`
+     */
     const { imageIndex } = viewports[viewportIndex];
+    displaySet.imageIndex = imageIndex;
 
-    _getViewportData(dataSource, displaySet, imageIndex).then(viewportData => {
-      setViewportData({ ...viewportData });
-    });
+    _getViewportData(dataSource, displaySet).then(setViewportData);
   }, [dataSource, displaySet, viewports, viewportIndex]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -341,7 +342,7 @@ const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
  * @return {Object} CornerstoneTools Stack
  */
 function _getCornerstoneStack(displaySet, dataSource) {
-  const { frameIndex } = displaySet;
+  const { imageIndex } = displaySet;
 
   // Get stack from Stack Manager
   const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
@@ -349,21 +350,22 @@ function _getCornerstoneStack(displaySet, dataSource) {
   // Clone the stack here so we don't mutate it
   const stack = Object.assign({}, storedStack);
 
-  stack.currentImageIdIndex = frameIndex;
+  stack.currentImageIdIndex = imageIndex;
 
   return stack;
 }
 
-async function _getViewportData(dataSource, displaySet, imageIndex) {
-  let viewportData;
-
-  if (imageIndex !== undefined) {
-    displaySet.frameIndex = imageIndex;
-  }
-
+/**
+ * Builds the viewport data from a datasource and a displayset.
+ *
+ * @param {Object} dataSource
+ * @param {Object} displaySet
+ * @return {Object} viewport data
+ */
+async function _getViewportData(dataSource, displaySet) {
   const stack = _getCornerstoneStack(displaySet, dataSource);
 
-  viewportData = {
+  const viewportData = {
     StudyInstanceUID: displaySet.StudyInstanceUID,
     displaySetInstanceUID: displaySet.displaySetInstanceUID,
     stack,
