@@ -20,11 +20,10 @@ CloseButton.propTypes = {
   onClick: PropTypes.func,
 };
 
-const Header = ({ title, noCloseButton, withDivisor, onClose }) => {
+const Header = ({ title, noCloseButton, onClose }) => {
   const theme = 'bg-secondary-main';
   const flex = 'flex items-center justify-between';
-  const border =
-    withDivisor && 'border-b-2 border-solid border-black rounded-t';
+  const border = 'border-b-2 border-solid border-black rounded-t';
   const spacing = 'p-4';
 
   return (
@@ -41,12 +40,10 @@ Header.propTypes = {
   className: PropTypes.string,
   title: PropTypes.string,
   noCloseButton: PropTypes.bool,
-  withDivisor: PropTypes.bool,
   onClose: PropTypes.func,
 };
 
 Header.defaultProps = {
-  withDivisor: true,
   noCloseButton: false
 };
 

@@ -16,11 +16,9 @@ const Dialog = ({
   header: HeaderComponent,
   body: BodyComponent,
   footer: FooterComponent,
-  withHeaderDivisor,
-  withFooterDivisor,
-  state: defaultState
+  value: defaultValue
 }) => {
-  const [state, setState] = useState(defaultState);
+  const [value, setValue] = useState(defaultValue);
 
   const theme = 'bg-secondary-light';
   const flex = 'flex flex-col';
@@ -37,21 +35,19 @@ const Dialog = ({
         title={title}
         noCloseButton={noCloseButton}
         onClose={onClose}
-        withDivisor={withHeaderDivisor}
-        state={state}
-        setState={setState}
+        value={value}
+        setValue={setValue}
       />
       <BodyComponent
         text={text}
-        state={state}
-        setState={setState}
+        value={value}
+        setValue={setValue}
       />
       <FooterComponent
         actions={actions}
         onSubmit={onSubmit}
-        withDivisor={withFooterDivisor}
-        state={state}
-        setState={setState}
+        value={value}
+        setValue={setValue}
       />
     </div>
   );
@@ -65,10 +61,8 @@ Dialog.propTypes = {
   header: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   body: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   footer: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-  withHeaderDivisor: PropTypes.bool,
-  withFooterDivisor: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
-  state: PropTypes.object,
+  value: PropTypes.object,
   actions: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -83,7 +77,7 @@ Dialog.defaultProps = {
   header: Header,
   footer: Footer,
   body: Body,
-  state: {}
+  value: {}
 };
 
 export default Dialog;

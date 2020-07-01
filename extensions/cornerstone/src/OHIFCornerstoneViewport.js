@@ -3,7 +3,6 @@ import CornerstoneViewport from 'react-cornerstone-viewport';
 //import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
-import cornerstone from 'cornerstone-core';
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
 

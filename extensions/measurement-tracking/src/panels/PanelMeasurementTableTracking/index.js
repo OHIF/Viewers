@@ -185,10 +185,10 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       contentProps: {
         title: 'Edit',
         noCloseButton: true,
-        state: { label: measurement.label },
-        body: ({ state, setState }) => {
-          const onChangeHandler = () => setState(state => ({
-            ...state, label: event.target.value
+        value: { label: measurement.label || '' },
+        body: ({ value, setValue }) => {
+          const onChangeHandler = () => setValue(value => ({
+            ...value, label: event.target.value
           }));
           return (
             <div className="p-4 bg-primary-dark">
@@ -196,7 +196,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
                 className="border-primary-main mt-2 bg-black"
                 type="text"
                 containerClassName="mr-2"
-                value={state.label}
+                value={value.label}
                 onChange={onChangeHandler}
               />
             </div>
@@ -206,12 +206,17 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           { id: 'edit', text: 'Edit', type: 'primary' },
           { id: 'cancel', text: 'Cancel', type: 'secondary' }
         ],
-        onSubmit: (action) => {
+        onSubmit: ({ action, value }) => {
           switch (action.id) {
             case 'edit': {
               MeasurementService.update(id, {
                 ...measurement,
-                ...action.state
+                ...value
+              });
+              UINotificationService.show({
+                title: 'Measurements',
+                message: 'Label updated successfully',
+                type: 'success'
               });
             }
           }

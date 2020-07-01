@@ -4,10 +4,9 @@ import PropTypes from 'prop-types';
 
 import { Button } from '..';
 
-const Footer = ({ actions, withDivisor, className, onSubmit, state }) => {
+const Footer = ({ actions, className, onSubmit, value }) => {
   const flex = 'flex items-center justify-end';
-  const border =
-    withDivisor && 'border-t-2 border-solid border-black rounded-b';
+  const border = 'border-t-2 border-solid border-black rounded-b';
   const spacing = 'p-6';
   const theme = 'bg-primary-dark';
 
@@ -22,7 +21,7 @@ const Footer = ({ actions, withDivisor, className, onSubmit, state }) => {
             key={index}
             className={classNames({ 'ml-2': !isFirst })}
             color={isPrimary ? 'primary' : undefined}
-            onClick={() => onSubmit({ ...action, state })}
+            onClick={() => onSubmit({ action, value })}
             style={{ transition: 'all .15s ease', height: 34 }}
           >
             {action.text}
@@ -37,7 +36,6 @@ const noop = () => { };
 
 Footer.propTypes = {
   className: PropTypes.string,
-  withDivisor: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
   actions: PropTypes.arrayOf(
     PropTypes.shape({
@@ -50,7 +48,6 @@ Footer.propTypes = {
 };
 
 Footer.defaultProps = {
-  withDivisor: true,
   onSubmit: noop,
   actions: []
 };
