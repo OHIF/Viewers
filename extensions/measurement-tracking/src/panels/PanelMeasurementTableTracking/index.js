@@ -142,14 +142,13 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
   }
 
-  const jumpToImage = id => {
-    onMeasurementItemClickHandler(id);
+  const jumpToImage = ({ id, isActive }) => {
+    onMeasurementItemClickHandler({ id, isActive });
 
     const measurement = MeasurementService.getMeasurement(id);
     const { referenceSeriesUID, SOPInstanceUID } = measurement;
 
     const displaySets = DisplaySetService.getDisplaySetsForSeries(referenceSeriesUID);
-
     const displaySet = displaySets.find(ds => {
       return ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
     });
@@ -163,7 +162,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     });
   };
 
-  const onMeasurementItemEditHandler = (id) => {
+  const onMeasurementItemEditHandler = ({ id }) => {
     const measurement = MeasurementService.getMeasurement(id);
 
     const dialogId = UIDialogService.create({
@@ -216,12 +215,14 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     });
   };
 
-  const onMeasurementItemClickHandler = (id) => {
-    const measurements = [...displayMeasurements];
-    const measurement = measurements.find(m => m.id === id);
-    measurements.forEach(m => m.isActive = m.id !== id ? false : true);
-    measurement.isActive = true;
-    setDisplayMeasurements(measurements);
+  const onMeasurementItemClickHandler = ({ id, isActive }) => {
+    if (!isActive) {
+      const measurements = [...displayMeasurements];
+      const measurement = measurements.find(m => m.id === id);
+      measurements.forEach(m => m.isActive = m.id !== id ? false : true);
+      measurement.isActive = true;
+      setDisplayMeasurements(measurements);
+    }
   };
 
   return (

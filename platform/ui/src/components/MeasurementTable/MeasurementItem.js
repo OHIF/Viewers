@@ -5,17 +5,11 @@ import { Icon } from '@ohif/ui';
 
 const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onEdit }) => {
   const onEditHandler = event => {
-    /*
-     * This is a click event under a click event, this way we have to
-     * stop propagation to avoid disabling the current active item
-     */
     event.stopPropagation();
-    onEdit(id);
+    onEdit({ id, isActive, event });
   };
 
-  const onClickHandler = event => {
-    onClick(id);
-  };
+  const onClickHandler = event => onClick({ id, isActive, event });
 
   return (
     <div
