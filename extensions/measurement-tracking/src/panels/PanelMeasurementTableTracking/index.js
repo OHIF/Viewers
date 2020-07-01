@@ -65,14 +65,15 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       const instanceMeta = studyMeta.series[0].instances[0];
       const { StudyDate, StudyDescription } = instanceMeta;
 
-      const dataSource = extensionManager.getDataSources('dicomweb')[0];
-      const [getStudyResult] = await dataSource.query.studies.search({ studyInstanceUid: StudyInstanceUID });
+      const modalities = new Set();
+      studyMeta.series.forEach(serie => modalities.add(serie.instances[0].Modality));
+      const modality = Array.from(modalities).join('/');
 
       if (displayStudySummary.key !== StudyInstanceUID) {
         setDisplayStudySummary({
           key: StudyInstanceUID,
           date: StudyDate, // TODO: Format: '07-Sep-2010'
-          modality: getStudyResult.modalities,
+          modality,
           description: StudyDescription,
         });
       }
