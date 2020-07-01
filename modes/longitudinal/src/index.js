@@ -20,8 +20,8 @@ export default function mode({ modeConfiguration }) {
   return {
     // TODO: We're using this as a route segment
     // We should not be.
-    id: 'longitudinal-workflow',
-    displayName: 'Comparison',
+    id: 'viewer',
+    displayName: 'Basic Viewer',
     validationTags: {
       study: [],
       series: [],
@@ -95,9 +95,7 @@ export default function mode({ modeConfiguration }) {
       'org.ohif.dicom-sr',
     ],
     sopClassHandlers: [ohif.sopClassHandler, dicomsr.sopClassHandler],
-    hotkeys: [
-      ...hotkeys.defaults.hotkeyBindings
-    ]
+    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 

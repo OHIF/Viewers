@@ -1,55 +1,170 @@
-import React from 'react';
-import { StudySummary, MeasurementTable } from '@ohif/ui';
-import ActionButtons from './ActionButtons.jsx';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { MeasurementTable } from '@ohif/ui';
+import { DicomMetadataStore } from '@ohif/core';
+import debounce from './debounce.js';
 
 export default function PanelMeasurementTable({
   servicesManager,
-  commandsManager,
+  // commandsManager,
 }) {
   const { MeasurementService } = servicesManager.services;
+  const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
-  console.log('MeasurementTable rendering!!!!!!!!!!!!!');
+  useEffect(() => {
+    const debouncedSetDisplayMeasurements = debounce(
+      setDisplayMeasurements,
+      100
+    );
+    // ~~ Initial
+    setDisplayMeasurements(_getMappedMeasurements(MeasurementService));
 
-  const descriptionData = {
-    date: '07-Sep-2010',
-    modality: 'CT',
-    description: 'CHEST/ABD/PELVIS W CONTRAST',
-  };
+    // ~~ Subscription
+    const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
+    const updated = MeasurementService.EVENTS.MEASUREMENT_UPDATED;
+    const removed = MeasurementService.EVENTS.MEASUREMENT_REMOVED;
+    const subscriptions = [];
 
-  const activeMeasurementItem = 0;
+    [added, updated, removed].forEach(evt => {
+      subscriptions.push(
+        MeasurementService.subscribe(evt, () => {
+          debouncedSetDisplayMeasurements(
+            _getMappedMeasurements(MeasurementService)
+          );
+        }).unsubscribe
+      );
+    });
 
-  const measurementTableData = {
-    title: 'Measurements',
-    amount: 10,
-    data: new Array(10).fill({}).map((el, i) => ({
-      id: i + 1,
-      label: 'Label short description',
-      displayText: '24.0 x 24.0 mm (S:4, I:22)',
-      isActive: activeMeasurementItem === i + 1,
-    })),
-    onClick: id => setActiveMeasurementItem(s => (s === id ? null : id)),
-    onEdit: id => alert(`Edit: ${id}`),
-  };
+    return () => {
+      subscriptions.forEach(unsub => {
+        unsub();
+      });
+    };
+  }, [MeasurementService]);
+
+  // const activeMeasurementItem = 0;
 
   return (
     <>
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
-        <StudySummary
-          date={descriptionData.date}
-          modality={descriptionData.modality}
-          description={descriptionData.description}
-        />
         <MeasurementTable
           title="Measurements"
-          amount={measurementTableData.data.length}
-          data={measurementTableData.data}
+          amount={displayMeasurements.length}
+          data={displayMeasurements}
           onClick={() => {}}
           onEdit={id => alert(`Edit: ${id}`)}
         />
       </div>
-      <div className="flex justify-center p-4">
-        <ActionButtons />
-      </div>
     </>
   );
+}
+
+PanelMeasurementTable.propTypes = {
+  servicesManager: PropTypes.shape({
+    services: PropTypes.shape({
+      MeasurementService: PropTypes.shape({
+        getMeasurements: PropTypes.func.isRequired,
+        subscribe: PropTypes.func.isRequired,
+        EVENTS: PropTypes.object.isRequired,
+        VALUE_TYPES: PropTypes.object.isRequired,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
+};
+
+function _getMappedMeasurements(MeasurementService) {
+  const measurements = MeasurementService.getMeasurements();
+  const mappedMeasurements = measurements.map((m, index) =>
+    _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
+  );
+
+  return mappedMeasurements;
+}
+
+function _mapMeasurementToDisplay(measurement, index, types) {
+  const {
+    id,
+    label,
+    description,
+    // Reference IDs
+    referenceStudyUID,
+    referenceSeriesUID,
+    SOPInstanceUID,
+  } = measurement;
+  const instance = DicomMetadataStore.getInstance(
+    referenceStudyUID,
+    referenceSeriesUID,
+    SOPInstanceUID
+  );
+  const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;
+
+  return {
+    id: index + 1,
+    label: '(empty)', // 'Label short description',
+    displayText:
+      _getDisplayText(
+        measurement,
+        PixelSpacing,
+        SeriesNumber,
+        InstanceNumber,
+        types
+      ) || [],
+    // TODO: handle one layer down
+    isActive: false, // activeMeasurementItem === i + 1,
+  };
+}
+
+function _getDisplayText(
+  measurement,
+  pixelSpacing,
+  seriesNumber,
+  instanceNumber,
+  types
+) {
+  const { type, points } = measurement;
+  const hasPixelSpacing =
+    pixelSpacing !== undefined &&
+    Array.isArray(pixelSpacing) &&
+    pixelSpacing.length === 2;
+  const [rowPixelSpacing, colPixelSpacing] = hasPixelSpacing
+    ? pixelSpacing
+    : [1, 1];
+  const unit = hasPixelSpacing ? 'mm' : 'px';
+
+  switch (type) {
+    case types.POLYLINE: {
+      const { length } = measurement;
+      const roundedLength = _round(length, 1);
+
+      return [
+        `${roundedLength} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
+      ];
+    }
+    case types.BIDIRECTIONAL: {
+      const { shortestDiameter, longestDiameter } = measurement;
+      const roundedShortestDiameter = _round(shortestDiameter, 1);
+      const roundedLongestDiameter = _round(longestDiameter, 1);
+
+      return [
+        `l: ${roundedLongestDiameter} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
+        `s: ${roundedShortestDiameter} ${unit}`,
+      ];
+    }
+    case types.ELLIPSE: {
+      const { area } = measurement;
+      const roundedArea = _round(area, 1);
+
+      return [
+        `${roundedArea} ${unit}2 (S:${seriesNumber}, I:${instanceNumber})`,
+      ];
+    }
+    case types.POINT: {
+      const { text } = measurement;
+      return [`${text} (S:${seriesNumber}, I:${instanceNumber})`];
+    }
+  }
+}
+
+function _round(value, decimals) {
+  return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 }

@@ -5,9 +5,7 @@ import { DicomMetadataStore, DICOMSR } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
-import cornerstoneTools from 'cornerstone-tools';
-import cornerstone from 'cornerstone-core';
-import dcmjs from 'dcmjs';
+import createReportAsync from './../../_shared/createReportAsync.js';
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
@@ -24,7 +22,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const { MeasurementService, DisplaySetService } = servicesManager.services;
+  const { MeasurementService } = servicesManager.services;
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -34,9 +32,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
-  // TODO: measurements subscribtion
 
-  // Initial?
   useEffect(() => {
     const measurements = MeasurementService.getMeasurements();
     const filteredMeasurements = measurements.filter(
@@ -103,9 +99,24 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     };
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
-  const activeMeasurementItem = 0;
+  function createReport() {
+    // TODO -> Eventually deal with multiple dataSources.
+    // Would need some way of saying which one is the "push" dataSource
+    const dataSources = extensionManager.getDataSources();
+    const dataSource = dataSources[0];
+    const measurements = MeasurementService.getMeasurements();
+    const trackedMeasurements = measurements.filter(
+      m =>
+        trackedStudy === m.referenceStudyUID &&
+        trackedSeries.includes(m.referenceSeriesUID)
+    );
 
-  const exportReport = () => {
+    return createReportAsync(servicesManager, dataSource, trackedMeasurements);
+  }
+
+  function exportReport() {
+    const dataSources = extensionManager.getDataSources();
+    const dataSource = dataSources[0];
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -115,31 +126,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
     // TODO -> local download.
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
-  };
-
-  const createReport = async () => {
-    const measurements = MeasurementService.getMeasurements();
-    const trackedMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
-    );
-
-    const dataSources = extensionManager.getDataSources();
-    // TODO -> Eventually deal with multiple dataSources.
-    // Would need some way of saying which one is the "push" dataSource
-    const dataSource = dataSources[0];
-
-    DICOMSR.storeMeasurements(
-      trackedMeasurements,
-      dataSource,
-      naturalizedReport => {
-        DisplaySetService.makeDisplaySets([naturalizedReport], {
-          madeInClient: true,
-        });
-      }
-    );
-  };
+  }
 
   return (
     <>
@@ -169,7 +156,16 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   );
 }
 
-PanelMeasurementTableTracking.propTypes = {};
+PanelMeasurementTableTracking.propTypes = {
+  servicesManager: PropTypes.shape({
+    services: PropTypes.shape({
+      MeasurementService: PropTypes.shape({
+        getMeasurements: PropTypes.func.isRequired,
+        VALUE_TYPES: PropTypes.object.isRequired,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
+};
 
 // TODO: This could be a MeasurementService mapper
 function _mapMeasurementToDisplay(measurement, index, types) {
@@ -188,9 +184,6 @@ function _mapMeasurementToDisplay(measurement, index, types) {
     SOPInstanceUID
   );
   const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;
-
-  console.log('mapping....', measurement);
-  console.log(instance);
 
   return {
     id: index + 1,
@@ -220,15 +213,7 @@ function _getDisplayText(
   instanceNumber,
   types
 ) {
-  // TODO: determination of shape influences text
-  // Length:  'xx.x unit (S:x, I:x)'
-  // Rectangle: 'xx.x x xx.x unit (S:x, I:x)',
-  // Ellipse?
-  // Bidirectional?
-  // Freehand?
-
   const { type, points } = measurement;
-
   const hasPixelSpacing =
     pixelSpacing !== undefined &&
     Array.isArray(pixelSpacing) &&
@@ -239,18 +224,16 @@ function _getDisplayText(
   const unit = hasPixelSpacing ? 'mm' : 'px';
 
   switch (type) {
-    case types.POLYLINE:
+    case types.POLYLINE: {
       const { length } = measurement;
-
       const roundedLength = _round(length, 1);
 
       return [
         `${roundedLength} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
       ];
-
-    case types.BIDIRECTIONAL:
+    }
+    case types.BIDIRECTIONAL: {
       const { shortestDiameter, longestDiameter } = measurement;
-
       const roundedShortestDiameter = _round(shortestDiameter, 1);
       const roundedLongestDiameter = _round(longestDiameter, 1);
 
@@ -258,16 +241,19 @@ function _getDisplayText(
         `l: ${roundedLongestDiameter} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
         `s: ${roundedShortestDiameter} ${unit}`,
       ];
-    case types.ELLIPSE:
+    }
+    case types.ELLIPSE: {
       const { area } = measurement;
-
       const roundedArea = _round(area, 1);
+
       return [
         `${roundedArea} ${unit}2 (S:${seriesNumber}, I:${instanceNumber})`,
       ];
-    case types.POINT:
+    }
+    case types.POINT: {
       const { text } = measurement;
       return [`${text} (S:${seriesNumber}, I:${instanceNumber})`];
+    }
   }
 }
 

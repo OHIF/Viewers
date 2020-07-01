@@ -3,8 +3,10 @@ import { hotkeys } from '@ohif/core';
 
 export default function mode({ modeConfiguration }) {
   return {
-    id: 'example-mode',
-    displayName: 'Basic Viewer',
+    // TODO: Mode uses 'id' for route when it should use `slug`, if provided, and
+    // the route path
+    id: 'segmentation',
+    displayName: 'Segmentation',
     validationTags: {
       study: [],
       series: [],
@@ -15,7 +17,7 @@ export default function mode({ modeConfiguration }) {
     },
     routes: [
       {
-        path: 'viewer',
+        path: 'segmentation',
         init: ({ servicesManager, extensionManager }) => {
           const { ToolBarService } = servicesManager.services;
           ToolBarService.init(extensionManager);
@@ -51,7 +53,6 @@ export default function mode({ modeConfiguration }) {
           return {
             id: 'org.ohif.default.layoutTemplateModule.viewerLayout',
             props: {
-              // named slots
               leftPanels: ['org.ohif.default.panelModule.seriesList'],
               rightPanels: ['org.ohif.default.panelModule.measure'],
               viewports: [
@@ -69,10 +70,8 @@ export default function mode({ modeConfiguration }) {
     ],
     extensions: ['org.ohif.default', 'org.ohif.cornerstone'],
     sopClassHandlers: ['org.ohif.default.sopClassHandlerModule.stack'],
-    hotkeys: [
-      ...hotkeys.defaults.hotkeyBindings
-    ]
+    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 
-window.exampleMode = mode({});
+window.segmentationMode = mode({});

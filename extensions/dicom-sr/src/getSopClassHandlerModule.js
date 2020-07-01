@@ -1,9 +1,7 @@
 import id from './id';
 import { utils, classes } from '@ohif/core';
-import addMeasurement from './utils/addMeasurement.js';
-import { adapters } from 'dcmjs';
-
-const cornerstoneAdapters = adapters.Cornerstone;
+import addMeasurement from './utils/addMeasurement';
+import isRehydratable from './utils/isRehydratable';
 
 const { ImageSet } = classes;
 
@@ -95,7 +93,12 @@ function _getDisplaySetsFromSeries(
     sopClassUids,
   };
 
-  if (_isRehydratable(displaySet, MeasurementService)) {
+  const mappings = MeasurementService.getSourceMappings(
+    'CornerstoneTools',
+    '4'
+  );
+
+  if (isRehydratable(displaySet, mappings)) {
     displaySet.isLocked = false;
     displaySet.isHydrated = false;
   } else {

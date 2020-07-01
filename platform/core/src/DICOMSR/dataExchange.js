@@ -79,8 +79,9 @@ const generateReport = measurementData => {
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
  * @param {object} dataSource The dataSource that you wish to use to persist the data.
+ * @return {object} The naturalized report
  */
-const storeMeasurements = async (measurementData, dataSource, onSuccess) => {
+const storeMeasurements = async (measurementData, dataSource) => {
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
   // But it is good enough for now whilst we only have cornerstone as a datasource.
   log.info('[DICOMSR] storeMeasurements');
@@ -90,28 +91,22 @@ const storeMeasurements = async (measurementData, dataSource, onSuccess) => {
     return Promise.reject({});
   }
 
-  const naturalizedReport = generateReport(measurementData);
-  const { StudyInstanceUID } = naturalizedReport;
-
   try {
+    const naturalizedReport = generateReport(measurementData);
+    const { StudyInstanceUID } = naturalizedReport;
+
     await dataSource.store.dicom(naturalizedReport);
 
     if (StudyInstanceUID) {
       dataSource.deleteStudyMetadataPromise(StudyInstanceUID);
     }
 
-    if (onSuccess) {
-      onSuccess(naturalizedReport);
-    }
-
-    return {
-      message: 'Measurements saved successfully',
-    };
+    return naturalizedReport;
   } catch (error) {
     log.error(
       `[DICOMSR] Error while saving the measurements: ${error.message}`
     );
-    throw new Error('Error while saving the measurements.');
+    throw new Error(error.message || 'Error while saving the measurements.');
   }
 };
 

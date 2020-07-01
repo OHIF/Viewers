@@ -76,6 +76,12 @@ const machineConfiguration = {
             target: 'idle',
           },
         ],
+        SET_TRACKED_SERIES: [
+          {
+            target: 'tracking',
+            actions: ['setTrackedStudyAndMultipleSeries'],
+          },
+        ],
       },
     },
     promptTrackNewSeries: {

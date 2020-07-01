@@ -2,16 +2,18 @@ import React from 'react';
 import SnackbarItem from './SnackbarItem';
 import { useSnackbar } from '../../contextProviders';
 
+import './Snackbar.css';
+
 const SnackbarContainer = () => {
   const { snackbarItems, hide } = useSnackbar();
 
-  const renderItem = item => {
-    return <SnackbarItem key={item.itemId} options={item} onClose={hide} />;
-  };
-
-  if (!snackbarItems) {
-    return null;
-  }
+  const renderItem = item => (
+    <SnackbarItem
+      key={item.itemId}
+      options={item}
+      onClose={hide}
+    />
+  );
 
   const renderItems = () => {
     const items = {
@@ -23,11 +25,9 @@ const SnackbarContainer = () => {
       bottomRight: [],
     };
 
-    snackbarItems.map(item => {
-      items[item.position].push(item);
-    });
+    snackbarItems.forEach(item => items[item.position].push(item));
 
-    return (
+    return snackbarItems && (
       <div>
         {Object.keys(items).map(pos => {
           if (!items[pos].length) {
@@ -35,7 +35,7 @@ const SnackbarContainer = () => {
           }
 
           return (
-            <div key={pos} className={`sb-container sb-${pos}`}>
+            <div key={pos} className={`fixed z-50 p-6 box-border h-auto sb-${pos}`}>
               {items[pos].map((item, index) => (
                 <div key={item.id + index}>{renderItem(item)}</div>
               ))}
