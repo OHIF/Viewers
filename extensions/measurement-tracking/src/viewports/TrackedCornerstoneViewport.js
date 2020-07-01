@@ -29,7 +29,6 @@ const BaseAnnotationTool = cornerstoneTools.importInternal(
 );
 
 // const cine = viewportSpecificData.cine;
-
 // isPlaying = cine.isPlaying === true;
 // frameRate = cine.cineFrameRate || frameRate;
 
@@ -40,10 +39,13 @@ function TrackedCornerstoneViewport({
   dataSource,
   displaySet,
   viewportIndex,
-  ToolBarService
+  ToolBarService,
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [{ activeViewportIndex, viewports }, viewportGridService] = useViewportGrid();
+  const [
+    { activeViewportIndex, viewports },
+    viewportGridService,
+  ] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
@@ -155,21 +157,14 @@ function TrackedCornerstoneViewport({
       );
     }
 
-    const { frameIndex } = viewports.find(viewport => {
-      return viewport.displaySetInstanceUID === displaySetInstanceUID;
-    });
+    // This grabs `frameIndex from first matching
+    // We actually want whichever is at our `viewportIndex`
+    const { frameIndex } = viewports[viewportIndex];
 
     _getViewportData(dataSource, displaySet, frameIndex).then(viewportData => {
       setViewportData({ ...viewportData });
     });
-  }, [
-    dataSource,
-    displaySet,
-    displaySet.StudyInstanceUID,
-    displaySet.displaySetInstanceUID,
-    displaySet.frameIndex,
-    viewports
-  ]);
+  }, [dataSource, displaySet, viewports, viewportIndex]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -269,8 +264,8 @@ function TrackedCornerstoneViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                  2
-                )}mm`
+                    2
+                  )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -287,7 +282,7 @@ function TrackedCornerstoneViewport({
             viewportGridService.setDisplaysetForViewport({
               viewportIndex: activeViewportIndex,
               displaySetInstanceUID: displaySet.displaySetInstanceUID,
-              frameIndex: currentImageIdIndex
+              frameIndex: currentImageIdIndex,
             });
           }}
           // TODO: ViewportGrid Context?
