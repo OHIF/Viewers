@@ -65,7 +65,6 @@ const machineConfiguration = {
             cond: 'isNewSeries',
           },
         ],
-
         UNTRACK_SERIES: [
           {
             target: 'tracking',
@@ -74,6 +73,12 @@ const machineConfiguration = {
           },
           {
             target: 'idle',
+          },
+        ],
+        SET_TRACKED_SERIES: [
+          {
+            target: 'tracking',
+            actions: ['setTrackedStudyAndMultipleSeries'],
           },
         ],
       },

@@ -1,9 +1,7 @@
 import id from './id';
 import { utils, classes } from '@ohif/core';
-import addMeasurement from './utils/addMeasurement.js';
-import { adapters } from 'dcmjs';
-
-const cornerstoneAdapters = adapters.Cornerstone;
+import addMeasurement from './utils/addMeasurement';
+import isRehydratable from './utils/isRehydratable';
 
 const { ImageSet } = classes;
 
@@ -95,7 +93,12 @@ function _getDisplaySetsFromSeries(
     sopClassUids,
   };
 
-  if (_isRehydratable(displaySet, MeasurementService)) {
+  const mappings = MeasurementService.getSourceMappings(
+    'CornerstoneTools',
+    '4'
+  );
+
+  if (isRehydratable(displaySet, mappings)) {
     displaySet.isLocked = false;
     displaySet.isHydrated = false;
   } else {
@@ -129,49 +132,6 @@ function _getDisplaySetsFromSeries(
   );
 
   return [displaySet];
-}
-
-function _isRehydratable(displaySet, MeasurementService) {
-  const mappings = MeasurementService.getSourceMappings(
-    'CornerstoneTools',
-    '4'
-  );
-
-  if (!mappings || !mappings.length) {
-    return false;
-  }
-
-  const mappingDefinitions = mappings.map(m => m.definition);
-  const { measurements } = displaySet;
-
-  const adapterKeys = Object.keys(cornerstoneAdapters).filter(
-    adapterKey =>
-      typeof cornerstoneAdapters[adapterKey]
-        .isValidCornerstoneTrackingIdentifier === 'function'
-  );
-
-  const adapters = [];
-
-  adapterKeys.forEach(key => {
-    if (mappingDefinitions.includes(key)) {
-      // Must have both a dcmjs adapter and a MeasurementService
-      // Definition in order to be a candidate for import.
-      adapters.push(cornerstoneAdapters[key]);
-    }
-  });
-
-  for (let i = 0; i < measurements.length; i++) {
-    const TrackingIdentifier = measurements[i].TrackingIdentifier;
-    const hydratable = adapters.some(adapter =>
-      adapter.isValidCornerstoneTrackingIdentifier(TrackingIdentifier)
-    );
-
-    if (hydratable) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 function _checkIfCanAddMeasurementsToDisplaySet(

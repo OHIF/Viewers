@@ -14,6 +14,7 @@ export default function getToolStateToCornerstoneMeasurementSchema(
     // TODO -> I get why this was attemped, but its not nearly flexible enough.
     // A single measurement may have an ellipse + a bidirectional measurement, for instances.
     // You can't define a bidirectional tool as a single type..
+    // OHIF-230
     const TOOL_TYPE_TO_VALUE_TYPE = {
       Length: POLYLINE,
       EllipticalRoi: ELLIPSE,
