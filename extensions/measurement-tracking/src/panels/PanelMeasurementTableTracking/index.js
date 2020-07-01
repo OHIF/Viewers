@@ -144,8 +144,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const jumpToImage = id => {
     onMeasurementItemClickHandler(id);
 
-    const measurements = MeasurementService.getMeasurements();
-    const measurement = measurements.find(m => m.id === id);
+    const measurement = MeasurementService.getMeasurement(id);
     const { referenceSeriesUID, SOPInstanceUID } = measurement;
 
     const displaySets = DisplaySetService.getDisplaySetsForSeries(referenceSeriesUID);
@@ -164,8 +163,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   };
 
   const onMeasurementItemEditHandler = (id) => {
-    const measurements = MeasurementService.getMeasurements();
-    const measurement = measurements.find(m => m.id === id);
+    const measurement = MeasurementService.getMeasurement(id);
 
     const dialogId = UIDialogService.create({
       centralize: true,
