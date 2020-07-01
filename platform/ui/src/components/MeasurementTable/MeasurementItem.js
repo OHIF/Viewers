@@ -5,7 +5,10 @@ import { Icon } from '@ohif/ui';
 
 const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onEdit }) => {
   const onEditHandler = event => {
-    /* Stop propagation to avoid disable the current active item */
+    /*
+     * This is a click event under a click event, this way we have to
+     * stop propagation to avoid disabling the current active item
+     */
     event.stopPropagation();
     onEdit(id);
   };
