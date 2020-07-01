@@ -62,10 +62,6 @@ export default class DICOMSRDisplayTool extends BaseTool {
       trackingUniqueIdentifiers.includes(td.TrackingUniqueIdentifier)
     );
 
-    // First: Render annotations with textboxes moved to closest side
-    // TODO: Render all annotations and get their locations.
-    // TODO: Find suitable places for textboxes that aren't covered.
-
     let shouldRepositionTextBoxes = false;
 
     for (let i = 0; i < filteredToolData.length; i++) {
@@ -170,6 +166,30 @@ export default class DICOMSRDisplayTool extends BaseTool {
           true
         );
       });
+    }
+
+    // TOOD -> text boxes may overlap with other annotations at the moment.
+    // To be fixed after we get requirements.
+    // if (shouldRepositionTextBoxes) {
+    //   this.repositionTextBox(filteredToolData, eventData);
+    // }
+  }
+
+  repositionTextBox(toolData, eventData) {
+    debugger;
+
+    const toolBoundingBoxes = [];
+
+    for (let i = 0; i < toolData.length; i++) {
+      const toolDataI = toolData[i];
+
+      const { textBox } = toolDataI.handles;
+      const { anchorPoints } = textBox;
+
+      const boundingBox = _getBoundingBoxFromAnchorPoints(anchorPoints);
+      // Get the textbox bounding locations.
+      // Get the tool extents.
+      debugger;
     }
   }
 
@@ -362,4 +382,27 @@ function _getTextBoxAnchorPointsForRenderableData(renderableData, eventData) {
   });
 
   return anchorPoints;
+}
+
+function _getBoundingBoxFromAnchorPoints(anchorPoints) {
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+
+  anchorPoints.forEach(point => {
+    const { x, y } = point;
+
+    if (x > maxX) {
+      maxX = x;
+    } else if (x < minX) {
+      minX = x;
+    }
+
+    if (y > maxX) {
+      maxY = y;
+    } else if (y < minY) {
+      minY = y;
+    }
+  });
 }

@@ -523,7 +523,12 @@ function _getLabelFromMeasuredValueSequence(
   const { NumericValue, MeasurementUnitsCodeSequence } = MeasuredValueSequence;
   const { CodeValue } = MeasurementUnitsCodeSequence;
 
-  return { label: CodeMeaning, value: `${NumericValue} ${CodeValue}` }; // E.g. Long Axis: 31.0 mm
+  const formatedNumericValue = NumericValue ? NumericValue.toFixed(2) : '';
+
+  return {
+    label: CodeMeaning,
+    value: `${formatedNumericValue} ${CodeValue}`,
+  }; // E.g. Long Axis: 31.0 mm
 }
 
 function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
