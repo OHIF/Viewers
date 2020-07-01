@@ -5,27 +5,22 @@ import { Button, ButtonGroup, Icon, IconButton } from '@ohif/ui';
 function ActionButtons({ onExportClick, onCreateReportClick }) {
   return (
     <React.Fragment>
-      <ButtonGroup className="group outline-none" onClick={onExportClick}>
-        <Button
-          className="px-2 py-2 text-base text-white bg-black border-primary-main group-hover:border-black group-hover:bg-primary-main group-focus:bg-primary-main group-focus:border-black"
-          size="initial"
-          color="inherit"
-        >
-          Export
-        </Button>
+      <ButtonGroup color="black" onClick={onExportClick} size="inherit">
+        <Button className="text-base px-2 py-2">Export</Button>
         <IconButton
-          className="px-2 text-white bg-black border-primary-main group-hover:bg-primary-main group-hover:border-black group-focus:bg-primary-main group-focus:border-black"
-          color="inherit"
+          className="px-2"
+          color="black"
           size="initial"
+          variant="outlined"
         >
           <Icon name="arrow-down" />
         </IconButton>
       </ButtonGroup>
       <Button
-        className="px-2 py-2 ml-2 text-base text-white bg-black border border-primary-main hover:bg-primary-main hover:border-black focus:bg-primary-main focus:border-black"
+        className="ml-2 text-base"
         variant="outlined"
-        size="initial"
-        color="inherit"
+        size="small"
+        color="black"
         onClick={onCreateReportClick}
       >
         Create Report

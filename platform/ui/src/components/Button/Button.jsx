@@ -38,6 +38,8 @@ const variantClasses = {
       'text-secondary-light hover:bg-secondary-light hover:text-white active:opacity-80 focus:bg-secondary-light focus:text-white',
     white:
       'text-white hover:bg-white hover:text-black active:opacity-80 focus:bg-white focus:text-black',
+    black:
+      'text-black hover:bg-black hover:text-white focus:bg-black focus:text-white active:opacity-80',
   },
   outlined: {
     default:
@@ -48,6 +50,8 @@ const variantClasses = {
       'border bg-transparent border-secondary-light text-secondary-light hover:opacity-80 active:opacity-100 focus:opacity-80',
     white:
       'border bg-transparent border-white text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    black:
+      'border bg-black border-primary-main text-white hover:bg-primary-main focus:bg-primary-main hover:border-black focus:border-black',
   },
   contained: {
     default:
@@ -58,6 +62,8 @@ const variantClasses = {
       'bg-secondary-light text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
     white:
       'bg-white text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
+    black:
+      'bg-black text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
 };
 
@@ -104,7 +110,7 @@ const Button = ({
   );
   const buttonElement = useRef(null);
 
-  const handleOnClick = (e) => {
+  const handleOnClick = e => {
     buttonElement.current.blur();
     if (rest.onClick) {
       rest.onClick(e);
@@ -144,6 +150,7 @@ Button.propTypes = {
     'primary',
     'secondary',
     'white',
+    'black',
     'inherit',
   ]),
   fullWidth: PropTypes.bool,
