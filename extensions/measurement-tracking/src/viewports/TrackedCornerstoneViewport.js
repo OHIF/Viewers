@@ -157,11 +157,11 @@ function TrackedCornerstoneViewport({
       );
     }
 
-    // This grabs `frameIndex from first matching
+    // This grabs `imageIndex from first matching
     // We actually want whichever is at our `viewportIndex`
-    const { frameIndex } = viewports[viewportIndex];
+    const { imageIndex } = viewports[viewportIndex];
 
-    _getViewportData(dataSource, displaySet, frameIndex).then(viewportData => {
+    _getViewportData(dataSource, displaySet, imageIndex).then(viewportData => {
       setViewportData({ ...viewportData });
     });
   }, [dataSource, displaySet, viewports, viewportIndex]);
@@ -264,8 +264,8 @@ function TrackedCornerstoneViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+                  2
+                )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -278,11 +278,12 @@ function TrackedCornerstoneViewport({
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
+          onNewImageDebounceTime={700}
           onNewImage={({ currentImageIdIndex }) => {
             viewportGridService.setDisplaysetForViewport({
               viewportIndex: activeViewportIndex,
               displaySetInstanceUID: displaySet.displaySetInstanceUID,
-              frameIndex: currentImageIdIndex,
+              imageIndex: currentImageIdIndex,
             });
           }}
           // TODO: ViewportGrid Context?
@@ -352,11 +353,11 @@ function _getCornerstoneStack(displaySet, dataSource) {
   return stack;
 }
 
-async function _getViewportData(dataSource, displaySet, frameIndex) {
+async function _getViewportData(dataSource, displaySet, imageIndex) {
   let viewportData;
 
-  if (frameIndex !== undefined) {
-    displaySet.frameIndex = frameIndex;
+  if (imageIndex) {
+    displaySet.frameIndex = imageIndex;
   }
 
   const stack = _getCornerstoneStack(displaySet, dataSource);

@@ -51,7 +51,7 @@ export default function PanelMeasurementTable({
           title="Measurements"
           amount={displayMeasurements.length}
           data={displayMeasurements}
-          onClick={() => {}}
+          onClick={id => alert(`Click: ${id}`)}
           onEdit={id => alert(`Edit: ${id}`)}
         />
       </div>

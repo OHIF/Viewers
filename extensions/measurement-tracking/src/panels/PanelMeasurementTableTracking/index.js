@@ -60,7 +60,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     debouncedMeasurementChangeTimestamp,
   ]);
 
-  const test = async () => {
+  const updateDisplayStudySummary = async () => {
     if (trackedMeasurements.matches('tracking')) {
       const StudyInstanceUID = trackedStudy;
       const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
@@ -85,7 +85,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
   // ~~ DisplayStudySummary
   useEffect(() => {
-    test();
+    updateDisplayStudySummary();
   }, [displayStudySummary.key, trackedMeasurements, trackedStudy]);
 
   // TODO: Better way to consolidated, debounce, check on change?
@@ -155,12 +155,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       return ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
     });
 
-    const frameIndex = displaySet.images.map(i => i.SOPInstanceUID).indexOf(SOPInstanceUID);
+    const imageIndex = displaySet.images.map(i => i.SOPInstanceUID).indexOf(SOPInstanceUID);
 
     viewportGridService.setDisplaysetForViewport({
       viewportIndex: viewportGrid.activeViewportIndex,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      frameIndex
+      imageIndex
     });
   };
 
