@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { StudySummary, MeasurementTable, Dialog, Input, useViewportGrid } from '@ohif/ui';
-import { DicomMetadataStore, DICOMSR } from '@ohif/core';
+import { DicomMetadataStore, DICOMSR, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
-import cornerstone from 'cornerstone-core';
 import { useTrackedMeasurements } from '../../getContextModule';
+
+const { formatDate } = utils;
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
@@ -239,7 +240,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
         {displayStudySummary.key && (
           <StudySummary
-            date={displayStudySummary.date}
+            date={formatDate(displayStudySummary.date)}
             modality={displayStudySummary.modality}
             description={displayStudySummary.description}
           />
