@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StudySummary, MeasurementTable, Dialog, Input, useViewportGrid } from '@ohif/ui';
+import PropTypes from 'prop-types';
+import {
+  StudySummary,
+  MeasurementTable,
+  Dialog,
+  Input,
+  useViewportGrid,
+} from '@ohif/ui';
 import { DicomMetadataStore, DICOMSR, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
@@ -177,7 +184,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           return (
             <div className="p-4 bg-primary-dark">
               <Input
-                className="border-primary-main mt-2 bg-black"
+                className="mt-2 bg-black border-primary-main"
                 type="text"
                 containerClassName="mr-2"
                 value={value.label}
