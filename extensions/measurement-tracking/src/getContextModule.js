@@ -4,11 +4,10 @@ import {
   useTrackedMeasurements,
 } from './contexts';
 
-function getContextModule({ servicesManager }) {
-  const { UIViewportDialogService } = servicesManager.services;
+function getContextModule({ servicesManager, extensionManager }) {
   const BoundTrackedMeasurementsContextProvider = TrackedMeasurementsContextProvider.bind(
     null,
-    UIViewportDialogService
+    { servicesManager, extensionManager }
   );
 
   return [
