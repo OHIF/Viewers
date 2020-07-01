@@ -284,7 +284,7 @@ function TrackedCornerstoneViewport({
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
           onNewImageDebounceTime={700}
-          onNewImage={({ currentImageIdIndex }) => {
+          onNewImageDebounced={({ currentImageIdIndex }) => {
             viewportGridService.setDisplaysetForViewport({
               viewportIndex: activeViewportIndex,
               displaySetInstanceUID: displaySet.displaySetInstanceUID,
