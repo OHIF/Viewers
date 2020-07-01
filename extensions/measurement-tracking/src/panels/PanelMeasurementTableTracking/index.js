@@ -114,7 +114,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     return createReportAsync(servicesManager, dataSource, trackedMeasurements);
   }
 
-  const exportReport = () => {
+  function exportReport() {
+    const dataSources = extensionManager.getDataSources();
+    const dataSource = dataSources[0];
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -124,7 +126,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
     // TODO -> local download.
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
-  };
+  }
 
   return (
     <>
