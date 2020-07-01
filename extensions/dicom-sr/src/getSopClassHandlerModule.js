@@ -26,11 +26,15 @@ const CodeNameCodeSequenceValues = {
   ImageLibraryGroup: '126200',
   TrackingUniqueIdentifier: '112040',
   TrackingIdentifier: '112039',
+  Finding: '121071',
 };
 
 const RELATIONSHIP_TYPE = {
   INFERRED_FROM: 'INFERRED FROM',
 };
+
+const CORNERSTONE_CODING_SCHEME_DESIGNATOR = 'CST4';
+const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
 
 /**
  * Basic SOPClassHandler:
@@ -68,8 +72,9 @@ function _getDisplaySetsFromSeries(
   const { ConceptNameCodeSequence, ContentSequence } = instance;
 
   if (
+    !ConceptNameCodeSequence ||
     ConceptNameCodeSequence.CodeValue !==
-    CodeNameCodeSequenceValues.ImagingMeasurementReport
+      CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
     console.warn(
       'Only support Imaging Measurement Report SRs (TID1500) for now'
@@ -132,49 +137,6 @@ function _getDisplaySetsFromSeries(
   );
 
   return [displaySet];
-}
-
-function _isRehydratable(displaySet, MeasurementService) {
-  const mappings = MeasurementService.getSourceMappings(
-    'CornerstoneTools',
-    '4'
-  );
-
-  if (!mappings || !mappings.length) {
-    return false;
-  }
-
-  const mappingDefinitions = mappings.map(m => m.definition);
-  const { measurements } = displaySet;
-
-  const adapterKeys = Object.keys(cornerstoneAdapters).filter(
-    adapterKey =>
-      typeof cornerstoneAdapters[adapterKey]
-        .isValidCornerstoneTrackingIdentifier === 'function'
-  );
-
-  const adapters = [];
-
-  adapterKeys.forEach(key => {
-    if (mappingDefinitions.includes(key)) {
-      // Must have both a dcmjs adapter and a MeasurementService
-      // Definition in order to be a candidate for import.
-      adapters.push(cornerstoneAdapters[key]);
-    }
-  });
-
-  for (let i = 0; i < measurements.length; i++) {
-    const TrackingIdentifier = measurements[i].TrackingIdentifier;
-    const hydratable = adapters.some(adapter =>
-      adapter.isValidCornerstoneTrackingIdentifier(TrackingIdentifier)
-    );
-
-    if (hydratable) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 function _checkIfCanAddMeasurementsToDisplaySet(
@@ -459,6 +421,12 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
       CodeNameCodeSequenceValues.TrackingIdentifier
   );
 
+  const Findings = mergedContentSequence.filter(
+    item =>
+      item.ConceptNameCodeSequence.CodeValue ===
+      CodeNameCodeSequenceValues.Finding
+  );
+
   const measurement = {
     loaded: false,
     labels: [],
@@ -466,6 +434,23 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
     TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
+
+  if (Findings.length) {
+    // TODO -> Pull in labels when we have them, just free text for now.
+    const cornerstoneFreeTextFinding = Findings.find(
+      Finding =>
+        Finding.ConceptCodeSequence.CodingSchemeDesignator ===
+          CORNERSTONE_CODING_SCHEME_DESIGNATOR &&
+        Finding.ConceptCodeSequence.CodeValue ===
+          CORNERSTONE_FREETEXT_CODE_VALUE
+    );
+    if (cornerstoneFreeTextFinding) {
+      measurement.labels.push({
+        label: CORNERSTONE_FREETEXT_CODE_VALUE,
+        value: cornerstoneFreeTextFinding.ConceptCodeSequence.CodeMeaning,
+      });
+    }
+  }
 
   NUMContentItems.forEach(item => {
     const {

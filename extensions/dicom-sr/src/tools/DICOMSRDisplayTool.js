@@ -1,4 +1,5 @@
 import { importInternal, getToolState, toolColors } from 'cornerstone-tools';
+import { pixelToCanvas } from 'cornerstone-core';
 
 import TOOL_NAMES from '../constants/toolNames';
 import SCOORD_TYPES from '../constants/scoordTypes';
@@ -10,6 +11,7 @@ const drawJoinedLines = importInternal('drawing/drawJoinedLines');
 const drawCircle = importInternal('drawing/drawCircle');
 const drawEllipse = importInternal('drawing/drawEllipse');
 const drawHandles = importInternal('drawing/drawHandles');
+const drawArrow = importInternal('drawing/drawArrow');
 const getNewContext = importInternal('drawing/getNewContext');
 const BaseTool = importInternal('base/BaseTool');
 const drawLinkedTextBox = importInternal('drawing/drawLinkedTextBox');
@@ -60,6 +62,12 @@ export default class DICOMSRDisplayTool extends BaseTool {
       trackingUniqueIdentifiers.includes(td.TrackingUniqueIdentifier)
     );
 
+    // First: Render annotations with textboxes moved to closest side
+    // TODO: Render all annotations and get their locations.
+    // TODO: Find suitable places for textboxes that aren't covered.
+
+    let shouldRepositionTextBoxes = false;
+
     for (let i = 0; i < filteredToolData.length; i++) {
       const data = filteredToolData[i];
       const { renderableData, labels } = data;
@@ -80,8 +88,10 @@ export default class DICOMSRDisplayTool extends BaseTool {
 
         switch (GraphicType) {
           case SCOORD_TYPES.POINT:
+            this.renderPoint(renderableDataForGraphicType, eventData, options);
+            break;
           case SCOORD_TYPES.MULTIPOINT:
-            this.renderPointOrMultipoint(
+            this.renderMultipoint(
               renderableDataForGraphicType,
               eventData,
               options
@@ -110,36 +120,53 @@ export default class DICOMSRDisplayTool extends BaseTool {
       const { element } = eventData;
       const context = getNewContext(eventData.canvasContext.canvas);
 
-      debugger;
+      if (!data.handles || !data.handles.textBox) {
+        const textBox = {
+          active: false,
+          hasMoved: true,
+          movesIndependently: false,
+          drawnIndependently: true,
+          allowedOutsideImage: true,
+          hasBoundingBox: true,
+        };
+
+        const anchorPoints = _getTextBoxAnchorPointsForRenderableData(
+          renderableData,
+          eventData
+        );
+        textBox.anchorPoints = anchorPoints;
+
+        const bottomRight = {
+          x: Math.max(...anchorPoints.map(point => point.x)),
+          y: Math.max(...anchorPoints.map(point => point.y)),
+        };
+
+        textBox.x = bottomRight.x;
+        textBox.y = bottomRight.y;
+
+        data.handles = {};
+        data.handles.textBox = textBox;
+
+        shouldRepositionTextBoxes = true;
+      }
 
       const text = _getTextBoxLinesFromLabels(labels);
 
-      debugger;
-
       function textBoxAnchorPoints() {
-        return [{ x: 1000, y: 1000 }];
+        return data.handles.textBox.anchorPoints;
       }
 
       draw(context, context => {
         drawLinkedTextBox(
           context,
           element,
-          {
-            active: false,
-            hasMoved: false,
-            movesIndependently: false,
-            drawnIndependently: true,
-            allowedOutsideImage: true,
-            hasBoundingBox: true,
-            x: 256,
-            y: 256,
-          },
+          data.handles.textBox,
           text,
-          null,
+          data.handles,
           textBoxAnchorPoints,
           color,
           lineWidth,
-          10,
+          0,
           true
         );
       });
@@ -157,12 +184,52 @@ export default class DICOMSRDisplayTool extends BaseTool {
     });
   }
 
-  renderPointOrMultipoint(renderableData, eventData, options) {
+  renderMultipoint(renderableData, eventData, options) {
     const context = getNewContext(eventData.canvasContext.canvas);
 
     renderableData.forEach(points => {
       draw(context, context => {
         drawHandles(context, eventData, points, options);
+      });
+    });
+  }
+
+  renderPoint(renderableData, eventData, options) {
+    // Render single point as an arrow.
+    debugger;
+    const { element, image } = eventData;
+    const { rows, columns } = image;
+    const context = getNewContext(eventData.canvasContext.canvas);
+
+    const { color, lineWidth } = options;
+
+    // Find a suitable length for the image size.
+
+    const xOffset = columns / 10;
+    const yOffset = rows / 10;
+
+    debugger;
+
+    renderableData.forEach(points => {
+      const point = points[0]; // The SCOORD type is POINT so the array length is 1.
+      draw(context, context => {
+        // Draw the arrow
+        const handleStartCanvas = pixelToCanvas(element, point);
+        const handleEndCanvas = pixelToCanvas(element, {
+          x: point.x + xOffset,
+          y: point.y + yOffset,
+        });
+
+        debugger;
+
+        drawArrow(
+          context,
+          handleEndCanvas,
+          handleStartCanvas,
+          color,
+          lineWidth,
+          false
+        );
       });
     });
   }
@@ -220,6 +287,7 @@ const SHORT_HAND_MAP = {
   'Long Axis': 'L ',
   AREA: 'Area ',
   Length: '',
+  CORNERSTONEFREETEXT: '',
 };
 
 function _labelToShorthand(label) {
@@ -230,4 +298,68 @@ function _labelToShorthand(label) {
   }
 
   return label;
+}
+
+function _getTextBoxAnchorPointsForRenderableData(renderableData, eventData) {
+  let anchorPoints = [];
+
+  Object.keys(renderableData).forEach(GraphicType => {
+    const renderableDataForGraphicType = renderableData[GraphicType];
+
+    switch (GraphicType) {
+      case SCOORD_TYPES.POINT:
+        renderableDataForGraphicType.forEach(points => {
+          anchorPoints = [...anchorPoints, ...points];
+
+          // Add other arrow point based on image size.
+          const { image } = eventData;
+          const { rows, columns } = image;
+
+          const xOffset = columns / 10;
+          const yOffset = rows / 10;
+          const point = points[0];
+
+          anchorPoints.push({ x: point.x + xOffset, y: point.y + yOffset });
+        });
+
+        break;
+      case SCOORD_TYPES.MULTIPOINT:
+      case SCOORD_TYPES.POLYLINE:
+        renderableDataForGraphicType.forEach(points => {
+          anchorPoints = [...anchorPoints, ...points];
+        });
+        break;
+      case SCOORD_TYPES.CIRCLE:
+        renderableDataForGraphicType.forEach(circle => {
+          const { center, radius } = circle;
+
+          anchorPoints.push({ x: center.x + radius, y: center.y });
+          anchorPoints.push({ x: center.x - radius, y: center.y });
+          anchorPoints.push({ x: center.x, y: center.y + radius });
+          anchorPoints.push({ x: center.x, y: center.y - radius });
+        });
+
+        break;
+      case SCOORD_TYPES.ELLIPSE:
+        renderableDataForGraphicType.forEach(ellipse => {
+          const { corner1, corner2 } = ellipse;
+
+          const halfWidth = Math.abs(corner1.x - corner2.x) / 2;
+          const halfHeight = Math.abs(corner1.y - corner2.y) / 2;
+
+          const center = {
+            x: (corner1.x + corner2.x) / 2,
+            y: (corner1.y + corner2.y) / 2,
+          };
+
+          anchorPoints.push({ x: center.x + halfWidth, y: center.y });
+          anchorPoints.push({ x: center.x - halfWidth, y: center.y });
+          anchorPoints.push({ x: center.x, y: center.y + halfHeight });
+          anchorPoints.push({ x: center.x, y: center.y - halfHeight });
+        });
+        break;
+    }
+  });
+
+  return anchorPoints;
 }
