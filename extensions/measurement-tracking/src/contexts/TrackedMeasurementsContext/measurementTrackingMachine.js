@@ -65,6 +65,7 @@ const machineConfiguration = {
             cond: 'isNewSeries',
           },
         ],
+
         UNTRACK_SERIES: [
           {
             target: 'tracking',

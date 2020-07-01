@@ -14,11 +14,6 @@ export default function addMeasurement(
   imageId,
   displaySetInstanceUID
 ) {
-  console.log('== ADD MEASUREMENT TO CST ==');
-  console.log(measurement);
-  console.log(imageId);
-  console.log('============================');
-
   // TODO -> Render rotated ellipse .
 
   const toolName = TOOL_NAMES.DICOM_SR_DISPLAY_TOOL;
@@ -26,6 +21,7 @@ export default function addMeasurement(
   const measurementData = {
     TrackingUniqueIdentifier: measurement.TrackingUniqueIdentifier,
     renderableData: {},
+    labels: measurement.labels,
   };
 
   measurement.coords.forEach(coord => {

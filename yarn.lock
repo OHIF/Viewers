@@ -2679,6 +2679,17 @@
   dependencies:
     "@types/node" ">= 8"
 
+"@ohif/extension-cornerstone@^2.4.0":
+  version "2.8.2"
+  resolved "https://registry.yarnpkg.com/@ohif/extension-cornerstone/-/extension-cornerstone-2.8.2.tgz#b8d95610b91eb43c05f84adcdd699183918a57ff"
+  integrity sha512-fIkPPQdDCkoVHCYTUFB4UhmdL9VJRyYawa6FxXiKXjj9OcUsrkXj+BORYgzcEkLWTLmrB+66qtIqpQ7FyXlzJQ==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    classnames "^2.2.6"
+    lodash.merge "^4.6.2"
+    lodash.throttle "^4.1.1"
+    react-cornerstone-viewport "2.3.9"
+
 "@ohif/extension-lesion-tracker@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@ohif/extension-lesion-tracker/-/extension-lesion-tracker-0.2.0.tgz#37fda345204041539051750fad17551846fba40f"
@@ -7353,10 +7364,10 @@ dateformat@^3.0.0:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dcmjs@0.14.0:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.14.0.tgz#0dc6cb2d15ddcff759bc9002f2a9704537735d1c"
-  integrity sha512-VL/Ibxe5RDsc5j5SEv3aEqdlKuBXz81/bBuW59Or0cos9vgK3XnVl3rr0ct6DWXJGK8vGIUMBOguyd/NRvlN0w==
+dcmjs@0.14.1:
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.14.1.tgz#4a4f18d1e5332d38429e2d77340a6ad0052ec71e"
+  integrity sha512-GGGQt4zjX7Fp0rLO5rcIQgmxZdLsEwBSZ1T74iXeJG5W32P1yiodJfBW900tNZCKj3zWamO3f5jDC1Xkv81fdg==
   dependencies:
     "@babel/polyfill" "^7.8.3"
     "@babel/runtime" "^7.8.4"
@@ -17883,6 +17894,16 @@ react-cornerstone-viewport@2.3.8:
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.3.8.tgz#7af8360f29bca986ae4e36b4e503269b88ddc52f"
   integrity sha512-aiG2uVNrDY6SQx4t/HBxIA3zsMsCwT+6TpcXK9qSSoXhs+X6OTmYEKncWUqL0jtxU1yfh6JTUz8ARTg03gtF+A==
+  dependencies:
+    classnames "^2.2.6"
+    date-fns "^2.2.1"
+    prop-types "^15.7.2"
+    react-resize-detector "^4.2.1"
+
+react-cornerstone-viewport@2.3.9:
+  version "2.3.9"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.3.9.tgz#f9761da8e536f0a217137c6ca1a983f5882249f9"
+  integrity sha512-qrhq8CbX/jq6b93cQjV2qC/mhHOvFBpxzxcHlvHzEQZt/rmRMcaYxCqjpNaNbUmmBu61wNkxesUVsggkPTTcqg==
   dependencies:
     classnames "^2.2.6"
     date-fns "^2.2.1"
