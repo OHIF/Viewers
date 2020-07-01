@@ -23,7 +23,7 @@ function PanelStudyBrowserTracking({
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
   const [
-    { activeViewportIndex, viewports, currentDisplaySetData },
+    { activeViewportIndex, viewports },
     viewportGridService,
   ] = useViewportGrid();
   const [
@@ -39,15 +39,15 @@ function PanelStudyBrowserTracking({
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
 
-  const onClickThumbnailHandler = displaySetInstanceUID => {
+  const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     viewportGridService.setDisplaysetForViewport({
       viewportIndex: activeViewportIndex,
       displaySetInstanceUID,
     });
   };
 
-  const currentDisplaySetInstanceUID =
-    currentDisplaySetData.displaySetInstanceUID || '';
+  const activeDisplaySetInstanceUID =
+    viewports[activeViewportIndex]?.displaySetInstanceUID;
 
   // TODO: Should this be somewhere else? Feels more like a mode "lifecycle" setup/destroy?
   useEffect(() => {
@@ -300,8 +300,9 @@ function PanelStudyBrowserTracking({
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
         });
       }}
-      onClickThumbnail={onClickThumbnailHandler}
-      currentDisplaySetInstanceUID={currentDisplaySetInstanceUID}
+      onClickThumbnail={() => {}}
+      onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+      activeDisplaySetInstanceUID={activeDisplaySetInstanceUID}
     />
   );
 }

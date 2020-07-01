@@ -10,9 +10,12 @@ import PropTypes from 'prop-types';
 const DEFAULT_STATE = {
   numRows: 1,
   numCols: 1,
-  viewports: [],
+  viewports: [
+    // {
+    //    displaySetInstanceUID: string,
+    // }
+  ],
   activeViewportIndex: 0,
-  currentDisplaySetData: {},
 };
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
@@ -21,16 +24,15 @@ export function ViewportGridProvider({ children, service }) {
   const viewportGridReducer = (state, action) => {
     switch (action.type) {
       case 'SET_ACTIVE_VIEWPORT_INDEX': {
-        const activeViewportIndex = action.payload;
-        const currentDisplaySetData = state.viewports[activeViewportIndex];
-        return { ...state, ...{ activeViewportIndex, currentDisplaySetData } };
+        return { ...state, ...{ activeViewportIndex: action.payload } };
       }
       case 'SET_DISPLAYSET_FOR_VIEWPORT': {
         const { viewportIndex, displaySetInstanceUID } = action.payload;
         const viewports = state.viewports.slice();
-        const currentDisplaySetData = { displaySetInstanceUID };
+
         viewports[viewportIndex] = { displaySetInstanceUID };
-        return { ...state, ...{ viewports, currentDisplaySetData } };
+
+        return { ...state, ...{ viewports } };
       }
       case 'SET_LAYOUT': {
         const { numCols, numRows } = action.payload;

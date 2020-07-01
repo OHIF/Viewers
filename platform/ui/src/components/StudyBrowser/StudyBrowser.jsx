@@ -25,8 +25,9 @@ const StudyBrowser = ({
   onClickTab,
   onClickStudy,
   onClickThumbnail,
+  onDoubleClickThumbnail,
   onClickUntrack,
-  currentDisplaySetInstanceUID,
+  activeDisplaySetInstanceUID,
 }) => {
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
@@ -57,8 +58,9 @@ const StudyBrowser = ({
             {isExpanded && displaySets && (
               <ThumbnailList
                 thumbnails={displaySets}
-                currentDisplaySetInstanceUID={currentDisplaySetInstanceUID}
+                activeDisplaySetInstanceUID={activeDisplaySetInstanceUID}
                 onThumbnailClick={onClickThumbnail}
+                onThumbnailDoubleClick={onDoubleClickThumbnail}
                 onClickUntrack={onClickUntrack}
               />
             )}
@@ -108,10 +110,11 @@ StudyBrowser.propTypes = {
   onClickTab: PropTypes.func.isRequired,
   onClickStudy: PropTypes.func,
   onClickThumbnail: PropTypes.func,
+  onDoubleClickThumbnail: PropTypes.func,
   onClickUntrack: PropTypes.func,
   activeTabName: PropTypes.string.isRequired,
   expandedStudyInstanceUIDs: PropTypes.arrayOf(PropTypes.string).isRequired,
-  currentDisplaySetInstanceUID: PropTypes.string.isRequired,
+  activeDisplaySetInstanceUID: PropTypes.string,
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
@@ -164,6 +167,7 @@ StudyBrowser.defaultProps = {
   onClickTab: noop,
   onClickStudy: noop,
   onClickThumbnail: noop,
+  onDoubleClickThumbnail: noop,
   onClickUntrack: noop,
 };
 

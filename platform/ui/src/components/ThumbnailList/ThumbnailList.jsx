@@ -5,8 +5,9 @@ import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '@ohif/ui';
 
 const ThumbnailList = ({
   thumbnails,
-  currentDisplaySetInstanceUID,
+  activeDisplaySetInstanceUID,
   onThumbnailClick,
+  onThumbnailDoubleClick,
   onClickUntrack,
 }) => {
   return (
@@ -27,7 +28,7 @@ const ThumbnailList = ({
           imageAltText,
         }) => {
           const isActive =
-            currentDisplaySetInstanceUID === displaySetInstanceUID;
+            activeDisplaySetInstanceUID === displaySetInstanceUID;
 
           switch (componentType) {
             case 'thumbnail':
@@ -44,6 +45,9 @@ const ThumbnailList = ({
                   viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() =>
+                    onThumbnailDoubleClick(displaySetInstanceUID)
+                  }
                 />
               );
             case 'thumbnailTracked':
@@ -61,6 +65,9 @@ const ThumbnailList = ({
                   isTracked={isTracked}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() =>
+                    onThumbnailDoubleClick(displaySetInstanceUID)
+                  }
                   onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
                 />
               );
@@ -75,6 +82,9 @@ const ThumbnailList = ({
                   seriesDate={seriesDate}
                   description={description}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() =>
+                    onThumbnailDoubleClick(displaySetInstanceUID)
+                  }
                 />
               );
             default:
@@ -116,8 +126,9 @@ ThumbnailList.propTypes = {
       }),
     })
   ),
-  currentDisplaySetInstanceUID: PropTypes.string,
-  onThumbnailClick: PropTypes.func,
+  activeDisplaySetInstanceUID: PropTypes.string,
+  onThumbnailClick: PropTypes.func.isRequired,
+  onThumbnailDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
 };
 

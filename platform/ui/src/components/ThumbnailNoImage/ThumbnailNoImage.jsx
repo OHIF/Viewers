@@ -1,9 +1,7 @@
 import React, { useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
-
 import { Icon } from '@ohif/ui';
 import blurHandlerListener from '../../utils/blurHandlerListener';
 
@@ -13,6 +11,7 @@ const ThumbnailNoImage = ({
   seriesDate,
   modality,
   onClick,
+  onDoubleClick,
   dragData,
   isActive,
 }) => {
@@ -34,7 +33,8 @@ const ThumbnailNoImage = ({
         isActive ? 'border-2 border-primary-light' : 'border'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
-      onDoubleClick={onClick}
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
       role="button"
       tabIndex="0"
     >
@@ -73,6 +73,7 @@ ThumbnailNoImage.propTypes = {
   modality: PropTypes.string.isRequired,
   seriesDate: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
+  onDoubleClick: PropTypes.func.isRequired,
   isActive: PropTypes.bool.isRequired,
 };
 

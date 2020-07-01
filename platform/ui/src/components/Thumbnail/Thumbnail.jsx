@@ -1,8 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
-//
 import { Icon } from '@ohif/ui';
 import blurHandlerListener from '../../utils/blurHandlerListener';
 
@@ -20,6 +19,7 @@ const Thumbnail = ({
   dragData,
   isActive,
   onClick,
+  onDoubleClick,
 }) => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
@@ -42,7 +42,8 @@ const Thumbnail = ({
         'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none group'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
-      onDoubleClick={onClick}
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
       role="button"
       tabIndex="0"
     >
@@ -101,6 +102,7 @@ Thumbnail.propTypes = {
   numInstances: PropTypes.number.isRequired,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
+  onDoubleClick: PropTypes.func.isRequired,
 };
 
 Thumbnail.defaultProps = {
