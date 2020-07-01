@@ -66,7 +66,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       const { StudyDate, StudyDescription } = instanceMeta;
 
       const modalities = new Set();
-      studyMeta.series.forEach(serie => modalities.add(serie.instances[0].Modality));
+      studyMeta.series.forEach(series => modalities.add(series.instances[0].Modality));
       const modality = Array.from(modalities).join('/');
 
       if (displayStudySummary.key !== StudyInstanceUID) {
