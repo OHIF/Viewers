@@ -523,7 +523,11 @@ function _getLabelFromMeasuredValueSequence(
   const { NumericValue, MeasurementUnitsCodeSequence } = MeasuredValueSequence;
   const { CodeValue } = MeasurementUnitsCodeSequence;
 
-  const formatedNumericValue = NumericValue ? NumericValue.toFixed(2) : '';
+  debugger;
+
+  const formatedNumericValue = NumericValue
+    ? Number(NumericValue).toFixed(2)
+    : '';
 
   return {
     label: CodeMeaning,
