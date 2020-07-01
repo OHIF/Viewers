@@ -17,6 +17,10 @@ import ViewportOverlay from './ViewportOverlay';
 const { formatDate } = utils;
 
 // TODO -> Get this list from the list of tracked measurements.
+// TODO -> We can now get a list of tool names from the measurement service.
+// Use the toolnames to check which tools we have instead, using the
+// Classes isn't really extensible unless we add the classes to the measurement
+// Service definition, which feels wrong.
 const {
   ArrowAnnotateTool,
   BidirectionalTool,
@@ -40,7 +44,7 @@ function TrackedCornerstoneViewport({
   dataSource,
   displaySet,
   viewportIndex,
-  ToolBarService
+  ToolBarService,
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
   const [{ activeViewportIndex, viewports }] = useViewportGrid();

@@ -155,6 +155,32 @@ class MeasurementService {
     return source;
   }
 
+  getSource(name, version) {
+    const { sources } = this;
+    const id = this._getSourceId(name, version);
+
+    return sources[id];
+  }
+
+  getSourceMappings(name, version) {
+    const { mappings } = this;
+    const id = this._getSourceId(name, version);
+
+    return mappings[id];
+  }
+
+  _getSourceId(name, version) {
+    const { sources } = this;
+
+    const sourceId = Object.keys(sources).find(sourceId => {
+      const source = sources[sourceId];
+
+      return source.name === name && source.version === version;
+    });
+
+    return sourceId;
+  }
+
   /**
    * Add a new measurement matching criteria along with mapping functions.
    *
@@ -254,6 +280,93 @@ class MeasurementService {
       const { toSourceSchema, definition } = matchingMapping;
       return toSourceSchema(measurement, definition);
     }
+  }
+
+  /**
+   * Add a raw measurement into a source so that it may be
+   * Converted to/from annotation in the same way. E.g. import serialized data
+   * Of the same form as the measurement source.
+   * @param {MeasurementSource} source The measurement source instance.
+   * @param {string} definition The source definition you want to add the measuremnet to.
+   * @param {object} data The data you wish to add to the source.
+   * @param {function} toMeasurementSchema A function to get the `data` into the same shape as the source definition.
+   */
+  addRawMeasurement(source, definition, data, toMeasurementSchema) {
+    if (!this._isValidSource(source)) {
+      log.warn('Invalid source. Exiting early.');
+      return;
+    }
+
+    const sourceInfo = this._getSourceInfo(source);
+
+    if (!definition) {
+      log.warn('No source definition provided. Exiting early.');
+      return;
+    }
+
+    if (!this._sourceHasMappings(source)) {
+      log.warn(
+        `No measurement mappings found for '${sourceInfo}' source. Exiting early.`
+      );
+      return;
+    }
+
+    let measurement = {};
+    try {
+      /* Convert measurement */
+      measurement = toMeasurementSchema(data);
+
+      /* Assign measurement source instance */
+      measurement.source = source;
+    } catch (error) {
+      log.warn(
+        `Failed to map '${sourceInfo}' measurement for definition ${definition}:`,
+        error.message
+      );
+      return;
+    }
+
+    if (!this._isValidMeasurement(measurement)) {
+      log.warn(
+        `Attempting to add or update a invalid measurement provided by '${sourceInfo}'. Exiting early.`
+      );
+      return;
+    }
+
+    let internalId = data.id;
+    if (!internalId) {
+      internalId = guid();
+      log.warn(`Measurement ID not found. Generating UID: ${internalId}`);
+    }
+
+    const newMeasurement = {
+      ...measurement,
+      modifiedTimestamp: Math.floor(Date.now() / 1000),
+      id: internalId,
+    };
+
+    if (this.measurements[internalId]) {
+      log.info(
+        `Measurement already defined. Updating measurement.`,
+        newMeasurement
+      );
+      this.measurements[internalId] = newMeasurement;
+      this._broadcastChange(
+        this.EVENTS.MEASUREMENT_UPDATED,
+        source,
+        newMeasurement
+      );
+    } else {
+      log.info(`Measurement added.`, newMeasurement);
+      this.measurements[internalId] = newMeasurement;
+      this._broadcastChange(
+        this.EVENTS.MEASUREMENT_ADDED,
+        source,
+        newMeasurement
+      );
+    }
+
+    return newMeasurement.id;
   }
 
   /**

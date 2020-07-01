@@ -1,6 +1,7 @@
 import id from './id';
 import { utils, classes } from '@ohif/core';
-import addMeasurement from './utils/addMeasurement.js';
+import addMeasurement from './utils/addMeasurement';
+import isRehydratable from './utils/isRehydratable';
 
 const { ImageSet } = classes;
 
@@ -24,6 +25,7 @@ const CodeNameCodeSequenceValues = {
   MeasurementGroup: '125007',
   ImageLibraryGroup: '126200',
   TrackingUniqueIdentifier: '112040',
+  TrackingIdentifier: '112039',
 };
 
 const RELATIONSHIP_TYPE = {
@@ -49,7 +51,7 @@ function _getDisplaySetsFromSeries(
     throw new Error('No instances were provided');
   }
 
-  const { DisplaySetService } = servicesManager.services;
+  const { DisplaySetService, MeasurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
 
@@ -90,6 +92,18 @@ function _getDisplaySetsFromSeries(
     measurements: _getMeasurements(ContentSequence),
     sopClassUids,
   };
+
+  const mappings = MeasurementService.getSourceMappings(
+    'CornerstoneTools',
+    '4'
+  );
+
+  if (isRehydratable(displaySet, mappings)) {
+    displaySet.isLocked = false;
+    displaySet.isHydrated = false;
+  } else {
+    displaySet.isLocked = true;
+  }
 
   // Check currently added displaySets and add measurements if the sources exist.
   DisplaySetService.activeDisplaySets.forEach(activeDisplaySet => {
@@ -346,6 +360,12 @@ function _processTID1410Measurement(mergedContentSequence) {
     group => group.ValueType === 'UIDREF'
   );
 
+  const TrackingIdentifierContentItem = mergedContentSequence.find(
+    item =>
+      item.ConceptNameCodeSequence.CodeValue ===
+      CodeNameCodeSequenceValues.TrackingIdentifier
+  );
+
   if (!graphicItem) {
     console.warn(
       `graphic ValueType ${graphicItem.ValueType} not currently supported, skipping annotation.`
@@ -362,6 +382,7 @@ function _processTID1410Measurement(mergedContentSequence) {
     labels: [],
     coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
+    TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
 
   NUMContentItems.forEach(item => {
@@ -389,11 +410,18 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     group => group.ValueType === 'UIDREF'
   );
 
+  const TrackingIdentifierContentItem = mergedContentSequence.find(
+    item =>
+      item.ConceptNameCodeSequence.CodeValue ===
+      CodeNameCodeSequenceValues.TrackingIdentifier
+  );
+
   const measurement = {
     loaded: false,
     labels: [],
     coords: [],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
+    TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
 
   NUMContentItems.forEach(item => {
