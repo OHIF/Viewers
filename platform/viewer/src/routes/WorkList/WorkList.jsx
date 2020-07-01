@@ -234,7 +234,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
                 {date &&
                   moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
                   moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(
-                    'MMM-DD-YYYY'
+                    'DD-MMM-YYYY'
                   )}
               </span>
               {time && (
