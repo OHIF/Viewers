@@ -89,7 +89,6 @@ function ViewerViewportGrid(props) {
         });
       });
 
-      viewportGridService.setCachedLayout();
       return;
     }
 
@@ -99,18 +98,18 @@ function ViewerViewportGrid(props) {
       };
     });
 
-    viewportGridService.setCachedLayout({
-      numCols,
-      numRows,
-      viewports: cachedViewports,
-    });
-
     viewportGridService.setDisplaysetForViewport({
       viewportIndex: 0,
       displaySetInstanceUID: viewports[viewportIndex].displaySetInstanceUID,
     });
 
     viewportGridService.setLayout({ numCols: 1, numRows: 1 });
+
+    viewportGridService.setCachedLayout({
+      numCols,
+      numRows,
+      viewports: cachedViewports,
+    });
   };
 
   // TODO:

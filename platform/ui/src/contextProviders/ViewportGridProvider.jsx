@@ -32,7 +32,7 @@ export function ViewportGridProvider({ children, service }) {
 
         viewports[viewportIndex] = { displaySetInstanceUID };
 
-        return { ...state, ...{ viewports } };
+        return { ...state, ...{ viewports }, cachedLayout: undefined };
       }
       case 'SET_LAYOUT': {
         const { numCols, numRows } = action.payload;
@@ -51,6 +51,7 @@ export function ViewportGridProvider({ children, service }) {
         return {
           ...state,
           ...{ activeViewportIndex, numCols, numRows, viewports },
+          cachedLayout: undefined,
         };
       }
       case 'SET_CACHED_LAYOUT': {
