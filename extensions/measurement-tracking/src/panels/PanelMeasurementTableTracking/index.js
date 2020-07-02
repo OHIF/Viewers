@@ -46,6 +46,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedStudy === m.referenceStudyUID &&
         trackedSeries.includes(m.referenceSeriesUID)
     );
+
     const mappedMeasurements = filteredMeasurements.map((m, index) =>
       _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
     );
@@ -333,7 +334,7 @@ function _getDisplayText(
   switch (type) {
     case types.POLYLINE: {
       const { length } = measurement;
-      const roundedLength = _round(length, 1);
+      const roundedLength = _round(length, 2);
 
       return [
         `${roundedLength} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
@@ -351,7 +352,7 @@ function _getDisplayText(
     }
     case types.ELLIPSE: {
       const { area } = measurement;
-      const roundedArea = _round(area, 1);
+      const roundedArea = _round(area, 2);
 
       return [
         `${roundedArea} ${unit}2 (S:${seriesNumber}, I:${instanceNumber})`,
@@ -365,7 +366,7 @@ function _getDisplayText(
 }
 
 function _round(value, decimals) {
-  return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+  return parseFloat(value).toFixed(decimals);
 }
 
 export default PanelMeasurementTableTracking;
