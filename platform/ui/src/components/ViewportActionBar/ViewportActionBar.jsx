@@ -80,31 +80,40 @@ const ViewportActionBar = ({
       );
     }
 
+    const trackedIcon = isTracked ? 'tracked' : 'dotted-circle';
+
     return (
       <div className="relative">
-        {!isTracked ? (
-          <Icon name="dotted-circle" className="w-6 text-primary-light" />
-        ) : (
-          <Tooltip
-            position="bottom-left"
-            content={
-              <div className="flex py-2">
-                <div className="flex pt-1">
-                  <Icon name="info-link" className="w-4 text-primary-main" />
-                </div>
-                <div className="flex ml-4">
-                  <span className="text-base text-common-light">
-                    Series is
-                    <span className="font-bold text-white"> tracked</span> and
-                    can be viewed <br /> in the measurement panel
-                  </span>
-                </div>
+        <Tooltip
+          position="bottom-left"
+          content={
+            <div className="flex py-2">
+              <div className="flex pt-1">
+                <Icon name="info-link" className="w-4 text-primary-main" />
               </div>
-            }
-          >
-            <Icon name="tracked" className="w-6 text-primary-light" />
-          </Tooltip>
-        )}
+              <div className="flex ml-4">
+                <span className="text-base text-common-light">
+                  {isTracked ? (
+                    <>
+                      Series is
+                      <span className="font-bold text-white"> tracked</span> and
+                      can be viewed <br /> in the measurement panel
+                    </>
+                  ) : (
+                    <>
+                      Measurements for
+                      <span className="font-bold text-white"> untracked </span>
+                      series <br /> will not be shown in the <br /> measurements
+                      panel
+                    </>
+                  )}
+                </span>
+              </div>
+            </div>
+          }
+        >
+          <Icon name={trackedIcon} className="w-6 text-primary-light" />
+        </Tooltip>
       </div>
     );
   };
