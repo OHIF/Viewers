@@ -40,6 +40,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedStudy === m.referenceStudyUID &&
         trackedSeries.includes(m.referenceSeriesUID)
     );
+
     const mappedMeasurements = filteredMeasurements.map((m, index) =>
       _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
     );
