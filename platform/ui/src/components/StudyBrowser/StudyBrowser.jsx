@@ -79,8 +79,9 @@ const StudyBrowser = ({
           className="border rounded-md border-secondary-light"
         >
           {tabs.map(tab => {
-            const { name, label } = tab;
+            const { name, label, studies } = tab;
             const isActive = activeTabName === name;
+            const isDisabled = !studies.length;
             return (
               <Button
                 key={name}
@@ -92,6 +93,7 @@ const StudyBrowser = ({
                 onClick={() => {
                   onClickTab(name);
                 }}
+                disabled={isDisabled}
               >
                 {label}
               </Button>
