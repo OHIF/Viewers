@@ -194,20 +194,6 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     });
   };
 
-  useEffect(() => {
-    if (studies && studies.length && studies.length < 101) {
-      const defaults = defaultFilterValues;
-      const { sortBy, sortDirection } = filterValues;
-      if (sortBy === defaults.sortBy && sortDirection === defaults.sortDirection) {
-        setFilterValues(filterValues => ({
-          ...filterValues,
-          sortBy: 'studyDate',
-          sortDirection: 'descending'
-        }));
-      }
-    }
-  }, [studies, filterValues]);
-
   const tableDataSource = sortedStudies.map((study, key) => {
     const rowKey = key + 1;
     const isExpanded = expandedRows.some(k => k === rowKey);
