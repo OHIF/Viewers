@@ -194,6 +194,20 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     });
   };
 
+  useEffect(() => {
+    if (studies && studies.length && studies.length < 101) {
+      const defaults = defaultFilterValues;
+      const { sortBy, sortDirection } = filterValues;
+      if (sortBy === defaults.sortBy && sortDirection === defaults.sortDirection) {
+        setFilterValues(filterValues => ({
+          ...filterValues,
+          sortBy: 'studyDate',
+          sortDirection: 'descending'
+        }));
+      }
+    }
+  }, [studies, filterValues]);
+
   const tableDataSource = sortedStudies.map((study, key) => {
     const rowKey = key + 1;
     const isExpanded = expandedRows.some(k => k === rowKey);
@@ -215,8 +229,8 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           content: patientName ? (
             patientName
           ) : (
-            <span className="text-gray-700">(Empty)</span>
-          ),
+              <span className="text-gray-700">(Empty)</span>
+            ),
           title: patientName,
           gridCol: 4,
         },
@@ -303,13 +317,13 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                  return {
-                    description: s.description || '(empty)',
-                    seriesNumber: s.seriesNumber || '',
-                    modality: s.modality || '',
-                    instances: s.numSeriesInstances || '',
-                  };
-                })
+                return {
+                  description: s.description || '(empty)',
+                  seriesNumber: s.seriesNumber || '',
+                  modality: s.modality || '',
+                  instances: s.numSeriesInstances || '',
+                };
+              })
               : []
           }
         >
@@ -326,7 +340,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
               <Link
                 key={i}
                 to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
-                // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+              // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
@@ -397,10 +411,10 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           />
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center pt-48">
-          <EmptyStudies isLoading={isLoadingData} />
-        </div>
-      )}
+          <div className="flex flex-col items-center justify-center pt-48">
+            <EmptyStudies isLoading={isLoadingData} />
+          </div>
+        )}
     </div>
   );
 }
