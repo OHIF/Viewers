@@ -85,6 +85,7 @@ const ThumbnailList = ({
                   onDoubleClick={() =>
                     onThumbnailDoubleClick(displaySetInstanceUID)
                   }
+                  viewportIdentificator={viewportIdentificator}
                 />
               );
             default:
