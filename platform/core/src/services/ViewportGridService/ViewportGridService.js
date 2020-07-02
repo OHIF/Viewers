@@ -6,14 +6,18 @@ const publicAPI = {
   setActiveViewportIndex: _setActiveViewportIndex,
   setDisplaysetForViewport: _setDisplaysetForViewport,
   setLayout: _setLayout,
+  setCachedLayout: _setCachedLayout,
   setServiceImplementation,
 };
 
 const serviceImplementation = {
   _getState: () => console.warn('getState() NOT IMPLEMENTED'),
-  _setActiveViewportIndex: () => console.warn('setActiveViewportIndex() NOT IMPLEMENTED'),
-  _setDisplaysetForViewport: () => console.warn('setDisplaysetForViewport() NOT IMPLEMENTED'),
+  _setActiveViewportIndex: () =>
+    console.warn('setActiveViewportIndex() NOT IMPLEMENTED'),
+  _setDisplaysetForViewport: () =>
+    console.warn('setDisplaysetForViewport() NOT IMPLEMENTED'),
   _setLayout: () => console.warn('setLayout() NOT IMPLEMENTED'),
+  _setCachedLayout: () => console.warn('setCachedLayout() NOT IMPLEMENTED'),
 };
 
 function _getState() {
@@ -35,10 +39,15 @@ function _setLayout({ numCols, numRows }) {
   return serviceImplementation._setLayout({ numCols, numRows });
 }
 
+function _setCachedLayout({ numCols, numRows, viewports }) {
+  return serviceImplementation._setLayout({ numCols, numRows, viewports });
+}
+
 function setServiceImplementation({
   getState: getStateImplementation,
   setActiveViewportIndex: setActiveViewportIndexImplementation,
   setDisplaysetForViewport: setDisplaysetForViewportImplementation,
+  setCachedLayout: setCachedLayoutImplementation,
   setLayout: setLayoutImplementation,
 }) {
   if (getStateImplementation) {
@@ -52,6 +61,9 @@ function setServiceImplementation({
   }
   if (setLayoutImplementation) {
     serviceImplementation._setLayout = setLayoutImplementation;
+  }
+  if (setCachedLayoutImplementation) {
+    serviceImplementation._setCachedLayout = setCachedLayoutImplementation;
   }
 }
 

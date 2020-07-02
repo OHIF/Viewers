@@ -11,7 +11,7 @@ const { ImageSet } = classes;
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [
-    { numCols, numRows, activeViewportIndex, viewports },
+    { numCols, numRows, activeViewportIndex, viewports, cachedLayout },
     viewportGridService,
   ] = useViewportGrid();
 
@@ -74,18 +74,43 @@ function ViewerViewportGrid(props) {
     console.log(numRows);
     console.log(viewports);
 
+    console.log(cachedLayout);
+
+    if (cachedLayout) {
+      viewportGridService.setLayout({
+        numCols: cachedLayout.numCols,
+        numRows: cachedLayout.numRows,
+      });
+
+      cachedLayout.viewports.forEach((viewport, viewportIndex) => {
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex,
+          displaySetInstanceUID: viewport.displaySetInstanceUID,
+        });
+      });
+
+      viewportGridService.setCachedLayout();
+      return;
+    }
+
     const cachedViewports = viewports.map(viewport => {
-      displaySetInstanceUID: viewport.displaySetInstanceUID;
+      return {
+        displaySetInstanceUID: viewport.displaySetInstanceUID,
+      };
     });
 
-    const cachedLayout = { numCols, numRows, viewports: cachedViewports };
-
-    const { displaySetInstanceUID } = viewports[viewportIndex];
+    viewportGridService.setCachedLayout({
+      numCols,
+      numRows,
+      viewports: cachedViewports,
+    });
 
     viewportGridService.setDisplaysetForViewport({
       viewportIndex: 0,
-      displaySetInstanceUID,
+      displaySetInstanceUID: viewports[viewportIndex].displaySetInstanceUID,
     });
+
+    viewportGridService.setLayout({ numCols: 1, numRows: 1 });
   };
 
   // TODO:
