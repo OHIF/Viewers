@@ -13,6 +13,7 @@ import {
 import { useTrackedMeasurements } from './../getContextModule';
 
 import ViewportOverlay from './ViewportOverlay';
+import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 
 const { formatDate } = utils;
 
@@ -268,8 +269,8 @@ function TrackedCornerstoneViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+                  2
+                )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -288,6 +289,7 @@ function TrackedCornerstoneViewport({
           isPlaying={false}
           frameRate={24}
           isOverlayVisible={true}
+          loadingIndicatorComponent={ViewportLoadingIndicator}
           viewportOverlayComponent={props => {
             return (
               <ViewportOverlay
