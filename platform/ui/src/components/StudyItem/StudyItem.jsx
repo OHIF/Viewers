@@ -37,7 +37,7 @@ const StudyItem = ({
         </div>
         <div className="flex flex-row py-1">
           <div className="pr-5 text-xl text-blue-300">{modalities}</div>
-          <div className="text-base text-blue-300">{description}</div>
+          <div className="text-base text-blue-300 break-words truncate-2-lines">{description}</div>
         </div>
       </div>
       {!!trackedSeries && (

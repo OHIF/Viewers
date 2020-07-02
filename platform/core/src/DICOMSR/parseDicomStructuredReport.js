@@ -40,13 +40,13 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
       const { StudyInstanceUID, PatientID } = study;
       const { SeriesInstanceUID } = series;
       /* TODO: Update frameIndex to imageIndex for measurements */
-      const { sopInstanceUid, frameIndex: imageIndex } = measurement;
+      const { sopInstanceUid, frameIndex } = measurement;
 
       const imagePath = getImagePath(
         StudyInstanceUID,
         SeriesInstanceUID,
         sopInstanceUid,
-        imageIndex
+        frameIndex
       );
 
       const imageId = instanceMetadata.getImageId();
@@ -83,16 +83,16 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
  * @param {string} StudyInstanceUID
  * @param {string} SeriesInstanceUID
  * @param {string} SOPInstanceUID
- * @param {string} imageIndex
+ * @param {string} frameIndex
  * @returns
  */
 const getImagePath = (
   StudyInstanceUID,
   SeriesInstanceUID,
   SOPInstanceUID,
-  imageIndex
+  frameIndex
 ) => {
-  return [StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, imageIndex].join(
+  return [StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID, frameIndex].join(
     '_'
   );
 };

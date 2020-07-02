@@ -4,3 +4,13 @@
 
 /* IMPORT CUSTOM FONT */
 @import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
+
+/* Trincate 2 lines utility */
+.truncate-2-lines {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.3;
+  height: 2rem;
+}
