@@ -68,14 +68,6 @@ function ViewerViewportGrid(props) {
   };
 
   const onDoubleClick = viewportIndex => {
-    debugger;
-
-    console.log(numCols);
-    console.log(numRows);
-    console.log(viewports);
-
-    console.log(cachedLayout);
-
     if (cachedLayout) {
       viewportGridService.setLayout({
         numCols: cachedLayout.numCols,

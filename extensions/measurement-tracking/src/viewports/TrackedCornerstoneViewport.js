@@ -276,7 +276,10 @@ function TrackedCornerstoneViewport({
         }}
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
-      <div className="relative flex flex-row w-full h-full">
+      <div
+        className="relative flex flex-row w-full h-full"
+        onDoubleClick={_onDoubleClick}
+      >
         <CornerstoneViewport
           onElementEnabled={onElementEnabled}
           viewportIndex={viewportIndex}
@@ -347,6 +350,16 @@ function _getCornerstoneStack(displaySet, dataSource) {
   stack.currentImageIdIndex = frameIndex;
 
   return stack;
+}
+
+function _onDoubleClick() {
+  const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
+    'manipulatorState'
+  ).setters.cancelActiveManipulatorsForElement;
+  const enabledElements = cornerstoneTools.store.state.enabledElements;
+  enabledElements.forEach(element => {
+    cancelActiveManipulatorsForElement(element);
+  });
 }
 
 async function _getViewportData(dataSource, displaySet) {

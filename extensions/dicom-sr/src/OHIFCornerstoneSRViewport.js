@@ -425,18 +425,23 @@ function OHIFCornerstoneSRViewport({
           },
         }}
       />
-      <CornerstoneViewport
-        onElementEnabled={onElementEnabled}
-        viewportIndex={viewportIndex}
-        imageIds={imageIds}
-        imageIdIndex={currentImageIdIndex}
-        // TODO: ViewportGrid Context?
-        isActive={true} // todo
-        isStackPrefetchEnabled={true} // todo
-        isPlaying={false}
-        frameRate={24}
-        isOverlayVisible={false}
-      />
+      <div
+        className="relative flex flex-row w-full h-full"
+        onDoubleClick={_onDoubleClick}
+      >
+        <CornerstoneViewport
+          onElementEnabled={onElementEnabled}
+          viewportIndex={viewportIndex}
+          imageIds={imageIds}
+          imageIdIndex={currentImageIdIndex}
+          // TODO: ViewportGrid Context?
+          isActive={true} // todo
+          isStackPrefetchEnabled={true} // todo
+          isPlaying={false}
+          frameRate={24}
+          isOverlayVisible={false}
+        />
+      </div>
       {childrenWithProps}
     </>
   );
@@ -564,6 +569,16 @@ function _addToolDataToCornerstoneTools(data, toolType, imageId) {
   const toolData = imageIdToolState[toolType];
 
   toolData.data.push(data);
+}
+
+function _onDoubleClick() {
+  const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
+    'manipulatorState'
+  ).setters.cancelActiveManipulatorsForElement;
+  const enabledElements = cornerstoneTools.store.state.enabledElements;
+  enabledElements.forEach(element => {
+    cancelActiveManipulatorsForElement(element);
+  });
 }
 
 export default OHIFCornerstoneSRViewport;
