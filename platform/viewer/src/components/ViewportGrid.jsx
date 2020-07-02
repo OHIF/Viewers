@@ -67,6 +67,27 @@ function ViewerViewportGrid(props) {
     };
   };
 
+  const onDoubleClick = viewportIndex => {
+    debugger;
+
+    console.log(numCols);
+    console.log(numRows);
+    console.log(viewports);
+
+    const cachedViewports = viewports.map(viewport => {
+      displaySetInstanceUID: viewport.displaySetInstanceUID;
+    });
+
+    const cachedLayout = { numCols, numRows, viewports: cachedViewports };
+
+    const { displaySetInstanceUID } = viewports[viewportIndex];
+
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex: 0,
+      displaySetInstanceUID,
+    });
+  };
+
   // TODO:
   // Hmm... Should a "displaySet" being added update the viewport based on HP?
   // I guess it might.
@@ -126,6 +147,7 @@ function ViewerViewportGrid(props) {
           acceptDropsFor="displayset"
           onDrop={onDropHandler.bind(null, viewportIndex)}
           onInteraction={onInterationHandler}
+          onDoubleClick={() => onDoubleClick(viewportIndex)}
           isActive={activeViewportIndex === viewportIndex}
         >
           <ViewportComponent
