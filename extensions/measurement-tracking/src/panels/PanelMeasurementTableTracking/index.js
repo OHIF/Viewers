@@ -173,7 +173,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Edit',
+        title: 'Enter label for your annotation:',
         noCloseButton: true,
         value: { label: measurement.label || '' },
         body: ({ value, setValue }) => {
@@ -193,12 +193,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           );
         },
         actions: [
-          { id: 'edit', text: 'Edit', type: 'primary' },
-          { id: 'cancel', text: 'Cancel', type: 'secondary' }
+          { id: 'cancel', text: 'Cancel', type: 'secondary' },
+          { id: 'save', text: 'Save', type: 'primary' },
         ],
         onSubmit: ({ action, value }) => {
           switch (action.id) {
-            case 'edit': {
+            case 'save': {
               MeasurementService.update(id, {
                 ...measurement,
                 ...value
