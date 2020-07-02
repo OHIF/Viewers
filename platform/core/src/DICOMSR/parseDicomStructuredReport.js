@@ -39,7 +39,9 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
       const { _study: study, _series: series } = instanceMetadata;
       const { StudyInstanceUID, PatientID } = study;
       const { SeriesInstanceUID } = series;
+      /* TODO: Update frameIndex to imageIndex for measurements */
       const { sopInstanceUid, frameIndex } = measurement;
+
       const imagePath = getImagePath(
         StudyInstanceUID,
         SeriesInstanceUID,

@@ -165,7 +165,7 @@ const commandsModule = ({ commandsManager }) => {
       segmentNumber,
       frameIndex,
       frame,
-      done = () => {},
+      done = () => { },
     }) => {
       let api = apis[viewports.activeViewportIndex];
 

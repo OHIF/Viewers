@@ -70,7 +70,7 @@ function _getDisplaySetsFromSeries(
   if (
     !ConceptNameCodeSequence ||
     ConceptNameCodeSequence.CodeValue !==
-      CodeNameCodeSequenceValues.ImagingMeasurementReport
+    CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
     console.warn(
       'Only support Imaging Measurement Report SRs (TID1500) for now'
@@ -282,7 +282,7 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
     trackingUniqueIdentifier => {
       const mergedContentSequence =
         mergedContentSequencesByTrackingUniqueIdentifiers[
-          trackingUniqueIdentifier
+        trackingUniqueIdentifier
         ];
 
       const measurement = _processMeasurement(mergedContentSequence);
@@ -322,7 +322,7 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
 
     if (
       mergedContentSequencesByTrackingUniqueIdentifiers[
-        trackingUniqueIdentifier
+      trackingUniqueIdentifier
       ] === undefined
     ) {
       // Add the full ContentSequence
@@ -448,9 +448,9 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     const cornerstoneFreeTextFinding = Findings.find(
       Finding =>
         Finding.ConceptCodeSequence.CodingSchemeDesignator ===
-          CORNERSTONE_CODING_SCHEME_DESIGNATOR &&
+        CORNERSTONE_CODING_SCHEME_DESIGNATOR &&
         Finding.ConceptCodeSequence.CodeValue ===
-          CORNERSTONE_FREETEXT_CODE_VALUE
+        CORNERSTONE_FREETEXT_CODE_VALUE
     );
     if (cornerstoneFreeTextFinding) {
       measurement.labels.push({
