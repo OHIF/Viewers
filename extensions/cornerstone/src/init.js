@@ -134,6 +134,7 @@ export default function init({ servicesManager, configuration }) {
     /**
      * drawHandles - Never/Always show handles
      * drawHandlesOnHover - Only show handles on handle hover (pointNearHandle)
+     * hideHandlesIfMoving - Hides the handles whilst you are moving them, for better visibility.
      *
      * Does not apply to tools where handles aren't placed in predictable
      * locations.
@@ -144,8 +145,12 @@ export default function init({ servicesManager, configuration }) {
     ) {
       if (props.configuration) {
         parsedProps.configuration.drawHandlesOnHover = true;
+        parsedProps.configuration.hideHandlesIfMoving = true;
       } else {
-        parsedProps.configuration = { drawHandlesOnHover: true };
+        parsedProps.configuration = {
+          drawHandlesOnHover: true,
+          hideHandlesIfMoving: true,
+        };
       }
     }
 
