@@ -166,7 +166,24 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const onMeasurementItemEditHandler = ({ id }) => {
     const measurement = MeasurementService.getMeasurement(id);
 
-    const dialogId = UIDialogService.create({
+    let dialogId;
+    const onSubmitHandler = ({ action, value }) => {
+      switch (action.id) {
+        case 'save': {
+          MeasurementService.update(id, {
+            ...measurement,
+            ...value
+          });
+          UINotificationService.show({
+            title: 'Measurements',
+            message: 'Label updated successfully',
+            type: 'success'
+          });
+        }
+      }
+      UIDialogService.dismiss({ id: dialogId });
+    };
+    dialogId = UIDialogService.create({
       centralize: true,
       isDraggable: false,
       useLastPosition: false,
@@ -180,6 +197,11 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           const onChangeHandler = () => setValue(value => ({
             ...value, label: event.target.value
           }));
+          const onKeyPressHandler = event => {
+            if (event.key === 'Enter') {
+              onSubmitHandler({ value, action: { id: 'save' } });
+            }
+          };
           return (
             <div className="p-4 bg-primary-dark">
               <Input
@@ -189,6 +211,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
                 containerClassName="mr-2"
                 value={value.label}
                 onChange={onChangeHandler}
+                onKeyPress={onKeyPressHandler}
               />
             </div>
           );
@@ -197,22 +220,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           { id: 'cancel', text: 'Cancel', type: 'secondary' },
           { id: 'save', text: 'Save', type: 'primary' },
         ],
-        onSubmit: ({ action, value }) => {
-          switch (action.id) {
-            case 'save': {
-              MeasurementService.update(id, {
-                ...measurement,
-                ...value
-              });
-              UINotificationService.show({
-                title: 'Measurements',
-                message: 'Label updated successfully',
-                type: 'success'
-              });
-            }
-          }
-          UIDialogService.dismiss({ id: dialogId });
-        },
+        onSubmit: onSubmitHandler
       }
     });
   };

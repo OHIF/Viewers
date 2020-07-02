@@ -22,6 +22,7 @@ const Input = ({
   onChange,
   onFocus,
   autoFocus,
+  onKeyPress,
   ...otherProps
 }) => {
   return (
@@ -38,6 +39,7 @@ const Input = ({
         value={value}
         onChange={onChange}
         onFocus={onFocus}
+        onKeyPress={onKeyPress}
         {...otherProps}
       />
     </div>
@@ -54,7 +56,8 @@ Input.propTypes = {
   value: PropTypes.any,
   onChange: PropTypes.func,
   onFocus: PropTypes.func,
-  onFocus: PropTypes.bool
+  autoFocus: PropTypes.bool,
+  onKeyPress: PropTypes.func,
 };
 
 export default Input;
