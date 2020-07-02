@@ -107,7 +107,6 @@ function OHIFCornerstoneSRViewport({
   };
 
   useEffect(() => {
-    debugger;
     if (!displaySet.isLoaded) {
       displaySet.load();
       setIsHydrated(displaySet.isHydrated);
