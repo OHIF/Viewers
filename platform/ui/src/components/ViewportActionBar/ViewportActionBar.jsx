@@ -77,7 +77,7 @@ const ViewportActionBar = ({
             </div>
           </Tooltip>
           {!isLocked && !isHydrated && (
-            <div className="relative flex p-1 border rounded border-primary-light">
+            <div className="relative ml-1 flex p-1 border rounded border-primary-light cursor-pointer">
               <span
                 className="text-sm font-bold leading-none text-primary-light"
                 onClick={onHydrationClick}
