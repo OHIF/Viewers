@@ -190,13 +190,15 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       showOverlay: true,
       content: Dialog,
       contentProps: {
-        title: 'Enter label for your annotation:',
+        title: 'Enter your annotation',
         noCloseButton: true,
         value: { label: measurement.label || '' },
         body: ({ value, setValue }) => {
-          const onChangeHandler = () => setValue(value => ({
-            ...value, label: event.target.value
-          }));
+          const onChangeHandler = (event) => {
+            event.persist();
+            setValue(value => ({ ...value, label: event.target.value }));
+          };
+
           const onKeyPressHandler = event => {
             if (event.key === 'Enter') {
               onSubmitHandler({ value, action: { id: 'save' } });

@@ -51,7 +51,7 @@ const ViewportOverlay = ({
           <div className="flex flex-row">
             <span className="mr-1">I:</span>
             <span className="font-thin">
-              {`${instanceNumber}/${stackSize}`}
+              {`${instanceNumber} ${imageIndex}/${stackSize}`}
             </span>
           </div>
         )}

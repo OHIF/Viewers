@@ -16,12 +16,14 @@ const Footer = ({ actions, className, onSubmit, value }) => {
         const isFirst = index === 0;
         const isPrimary = action.type === 'primary';
 
+        const onClickHandler = event => onSubmit({ action, value, event });
+
         return (
           <Button
             key={index}
             className={classNames({ 'ml-2': !isFirst })}
             color={isPrimary ? 'primary' : undefined}
-            onClick={() => onSubmit({ action, value })}
+            onClick={onClickHandler}
             style={{ transition: 'all .15s ease', height: 34 }}
           >
             {action.text}
