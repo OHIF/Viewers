@@ -40,9 +40,9 @@ const ViewportOverlay = ({
         {isWwwcActive && (
           <div className="flex flex-row">
             <span className="mr-1">W:</span>
-            <span className="font-thin ml-1 mr-2">{windowWidth.toFixed(0)}</span>
+            <span className="ml-1 mr-2 font-thin">{windowWidth.toFixed(0)}</span>
             <span className="mr-1">L:</span>
-            <span className="font-thin ml-1">{windowCenter.toFixed(0)}</span>
+            <span className="ml-1 font-thin">{windowCenter.toFixed(0)}</span>
           </div>
         )}
       </div>
@@ -56,10 +56,8 @@ const ViewportOverlay = ({
           </div>
         )}
       </div>
-      <div className={classnames(overlay, bottomRight)}>
-      </div>
-      <div className={classnames(overlay, bottomLeft)}>
-      </div>
+      <div className={classnames(overlay, bottomRight)}></div>
+      <div className={classnames(overlay, bottomLeft)}></div>
     </div>
   );
 };
