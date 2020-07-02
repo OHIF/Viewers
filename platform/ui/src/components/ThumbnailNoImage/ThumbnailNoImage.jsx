@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import { Icon } from '@ohif/ui';
+import { Icon, Tooltip, Typography } from '@ohif/ui';
 import blurHandlerListener from '../../utils/blurHandlerListener';
 
 const ThumbnailNoImage = ({
@@ -14,6 +14,7 @@ const ThumbnailNoImage = ({
   onDoubleClick,
   dragData,
   isActive,
+  viewportIdentificator = '',
 }) => {
   const [collectedProps, drag, dragPreview] = useDrag({
     item: { ...dragData },
@@ -42,10 +43,25 @@ const ThumbnailNoImage = ({
         <div className="flex flex-col flex-1">
           <div className="flex flex-row items-center flex-1 mb-2">
             <Icon name="list-bullets" className="w-12 text-secondary-light" />
-            <div className="px-3 mr-4 text-lg text-white rounded-sm bg-primary-main">
-              {modality}
-            </div>
-            <span className="text-base text-blue-300">{seriesDate}</span>
+            <Tooltip
+              position="bottom"
+              content={
+                <Typography>
+                  Structured Report
+                  {isActive && (
+                    <div>
+                      is displayed in{' '}
+                      <div>Viewport {viewportIdentificator}</div>
+                    </div>
+                  )}
+                </Typography>
+              }
+            >
+              <div className="px-3 text-lg text-white rounded-sm bg-primary-main">
+                {modality}
+              </div>
+            </Tooltip>
+            <span className="text-base text-blue-300 ml-4">{seriesDate}</span>
           </div>
           <div className="ml-12 text-base text-white break-all">
             {description}
@@ -75,6 +91,7 @@ ThumbnailNoImage.propTypes = {
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
   isActive: PropTypes.bool.isRequired,
+  viewportIdentificator: PropTypes.string,
 };
 
 export default ThumbnailNoImage;
