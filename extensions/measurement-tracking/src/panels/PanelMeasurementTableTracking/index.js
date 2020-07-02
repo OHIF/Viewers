@@ -183,6 +183,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           return (
             <div className="p-4 bg-primary-dark">
               <Input
+                autoFocus
                 className="mt-2 bg-black border-primary-main"
                 type="text"
                 containerClassName="mr-2"

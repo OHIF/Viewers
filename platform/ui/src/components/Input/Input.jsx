@@ -21,6 +21,7 @@ const Input = ({
   value,
   onChange,
   onFocus,
+  autoFocus,
   ...otherProps
 }) => {
   return (
@@ -32,6 +33,7 @@ const Input = ({
           baseInputClasses,
           transparentClasses[transparent]
         )}
+        autoFocus
         type={type}
         value={value}
         onChange={onChange}
@@ -52,6 +54,7 @@ Input.propTypes = {
   value: PropTypes.any,
   onChange: PropTypes.func,
   onFocus: PropTypes.func,
+  onFocus: PropTypes.bool
 };
 
 export default Input;
