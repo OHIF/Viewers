@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon } from '@ohif/ui';
 
 const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onEdit }) => {
+  const [isHovering, setIsHovering] = useState(false);
+
   const onEditHandler = event => {
     event.stopPropagation();
     onEdit({ id, isActive, event });
   };
 
   const onClickHandler = event => onClick({ id, isActive, event });
+
+  const onMouseEnter = () => setIsHovering(true);
+  const onMouseLeave = () => setIsHovering(false);
 
   return (
     <div
@@ -19,6 +24,8 @@ const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onE
           'rounded overflow-hidden border-primary-light': isActive,
         }
       )}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       onClick={onClickHandler}
       onKeyDown={onClickHandler}
       role="button"
@@ -47,15 +54,14 @@ const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onE
         <Icon
           className={classnames(
             'text-white w-4 absolute cursor-pointer transition duration-300',
-            {
-              'invisible opacity-0 mr-2': !isActive,
-            }
+            { 'invisible opacity-0 mr-2': !isActive && !isHovering },
+            { 'visible opacity-1': !isActive && isHovering }
           )}
           name="pencil"
           style={{
             top: 4,
             right: 4,
-            transform: isActive ? '' : 'translateX(100%)',
+            transform: isActive || isHovering ? '' : 'translateX(100%)',
           }}
           onClick={onEditHandler}
         />
