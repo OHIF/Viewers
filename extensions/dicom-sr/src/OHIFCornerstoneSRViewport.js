@@ -434,17 +434,14 @@ function OHIFCornerstoneSRViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+                  2
+                )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
         }}
       />
-      <div
-        className="relative flex flex-row w-full h-full"
-        onDoubleClick={_onDoubleClick}
-      >
+      <div className="relative flex flex-row w-full h-full overflow-hidden" onDoubleClick={_onDoubleClick}>
         <CornerstoneViewport
           onElementEnabled={onElementEnabled}
           viewportIndex={viewportIndex}
@@ -457,8 +454,8 @@ function OHIFCornerstoneSRViewport({
           frameRate={24}
           isOverlayVisible={false}
         />
+        {childrenWithProps}
       </div>
-      {childrenWithProps}
     </>
   );
 }

@@ -329,7 +329,7 @@ function TrackedCornerstoneViewport({
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
       <div
-        className="relative flex flex-row w-full h-full"
+        className="relative flex flex-row w-full h-full overflow-hidden"
         onDoubleClick={_onDoubleClick}
       >
         <CornerstoneViewport
