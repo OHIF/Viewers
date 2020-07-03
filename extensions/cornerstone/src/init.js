@@ -38,12 +38,13 @@ export default function init({ servicesManager, configuration }) {
           ],
           onSubmit: ({ action, value }) => {
             switch (action.id) {
-              case 'save': callback(value.label);
+              case 'save':
+                callback(value.label);
             }
             UIDialogService.dismiss({ id: dialogId });
           },
           body: ({ value, setValue }) => {
-            const onChangeHandler = (event) => {
+            const onChangeHandler = event => {
               event.persist();
               setValue(value => ({ ...value, label: event.target.value }));
             };
@@ -93,7 +94,7 @@ export default function init({ servicesManager, configuration }) {
   // THIS
   // is a way for extensions that "depend" on this extension to notify it of
   // new cornerstone enabled elements so it's commands continue to work.
-  const handleOhifCornerstoneEnabledElementEvent = function (evt) {
+  const handleOhifCornerstoneEnabledElementEvent = function(evt) {
     const { viewportIndex, enabledElement } = evt.detail;
 
     setEnabledElement(viewportIndex, enabledElement);
@@ -271,7 +272,10 @@ const _connectToolsToMeasurementService = measurementService => {
   const csToolsVer4MeasurementSource = _initMeasurementService(
     measurementService
   );
-  _connectMeasurementServiceToTools(measurementService, csToolsVer4MeasurementSource);
+  _connectMeasurementServiceToTools(
+    measurementService,
+    csToolsVer4MeasurementSource
+  );
   const { addOrUpdate, remove } = csToolsVer4MeasurementSource;
   const elementEnabledEvt = cornerstone.EVENTS.ELEMENT_ENABLED;
 
@@ -336,14 +340,18 @@ const _connectToolsToMeasurementService = measurementService => {
   });
 };
 
-const _connectMeasurementServiceToTools = (measurementService, measurementSource) => {
-  const { MEASUREMENTS_CLEARED, MEASUREMENT_REMOVED } = measurementService.EVENTS;
+const _connectMeasurementServiceToTools = (
+  measurementService,
+  measurementSource
+) => {
+  const {
+    MEASUREMENTS_CLEARED,
+    MEASUREMENT_REMOVED,
+  } = measurementService.EVENTS;
   const sourceId = measurementSource.id;
 
   measurementService.subscribe(MEASUREMENTS_CLEARED, () => {
-    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
-      {}
-    );
+    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
     cornerstone.getEnabledElements().forEach(enabledElement => {
       cornerstone.updateImage(enabledElement.element);
     });

@@ -32,7 +32,7 @@ export function ViewportGridProvider({ children, service }) {
 
         viewports[viewportIndex] = { displaySetInstanceUID, imageIndex };
 
-        return { ...state, ...{ viewports } };
+        return { ...state, ...{ viewports }, cachedLayout: undefined };
       }
       case 'SET_LAYOUT': {
         const { numCols, numRows } = action.payload;
@@ -51,7 +51,11 @@ export function ViewportGridProvider({ children, service }) {
         return {
           ...state,
           ...{ activeViewportIndex, numCols, numRows, viewports },
+          cachedLayout: undefined,
         };
+      }
+      case 'SET_CACHED_LAYOUT': {
+        return { ...state, cachedLayout: action.payload };
       }
       default:
         return action.payload;
@@ -93,6 +97,15 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
+  const setCachedLayout = useCallback(
+    payload =>
+      dispatch({
+        type: 'SET_CACHED_LAYOUT',
+        payload,
+      }),
+    [dispatch]
+  );
+
   /**
    * Sets the implementation of a modal service that can be used by extensions.
    *
@@ -105,6 +118,7 @@ export function ViewportGridProvider({ children, service }) {
         setActiveViewportIndex,
         setDisplaysetForViewport,
         setLayout,
+        setCachedLayout,
       });
     }
   }, [
@@ -113,6 +127,7 @@ export function ViewportGridProvider({ children, service }) {
     setActiveViewportIndex,
     setDisplaysetForViewport,
     setLayout,
+    setCachedLayout,
   ]);
 
   const api = {
@@ -120,6 +135,7 @@ export function ViewportGridProvider({ children, service }) {
     setActiveViewportIndex,
     setDisplaysetForViewport,
     setLayout,
+    setCachedLayout,
   };
 
   return (
