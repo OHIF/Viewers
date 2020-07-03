@@ -5,7 +5,6 @@ const displaySetCache = [];
 
 export default class DisplaySetService {
   constructor() {
-    this.displaySets = {};
     this.activeDisplaySets = [];
     this.listeners = {};
     this.EVENTS = EVENTS;
@@ -31,6 +30,10 @@ export default class DisplaySetService {
     displaySets.forEach(displaySet => {
       activeDisplaySets.push(displaySet);
     });
+  }
+
+  getDisplaySetCache() {
+    return displaySetCache;
   }
 
   getActiveDisplaySets() {

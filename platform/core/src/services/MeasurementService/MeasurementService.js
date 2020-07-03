@@ -52,6 +52,7 @@ const EVENTS = {
   MEASUREMENT_UPDATED: 'event::measurement_updated',
   MEASUREMENT_ADDED: 'event::measurement_added',
   MEASUREMENT_REMOVED: 'event::measurement_removed',
+  MEASUREMENTS_CLEARED: 'event::measurements_cleared',
 };
 
 const VALUE_TYPES = {
@@ -286,7 +287,7 @@ class MeasurementService {
     if (this.measurements[id]) {
       const updatedMeasurement = {
         ...measurement,
-        modifiedTimestamp: Math.floor(Date.now() / 1000)
+        modifiedTimestamp: Math.floor(Date.now() / 1000),
       };
 
       log.info(`Updating measurement...`, updatedMeasurement);
@@ -489,6 +490,12 @@ class MeasurementService {
 
     delete this.measurements[id];
     this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED, source, id);
+  }
+
+  clearMeasurements() {
+    this.measurements = {};
+
+    this._broadcastChange(this.EVENTS.MEASUREMENTS_CLEARED);
   }
 
   _getMappingByMeasurementSource(measurementId, definition) {

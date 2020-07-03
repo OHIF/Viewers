@@ -1,6 +1,7 @@
 import getContextModule from './getContextModule.js';
 import getPanelModule from './getPanelModule.js';
 import getViewportModule from './getViewportModule.js';
+import getOnSwitchModeRouteModule from './getOnSwitchModeRouteModule';
 
 export default {
   /**
@@ -10,4 +11,5 @@ export default {
   getContextModule,
   getPanelModule,
   getViewportModule,
+  getOnSwitchModeRouteModule,
 };

@@ -15,7 +15,7 @@ export default function ModeRoute({
   dataSourceName,
   extensionManager,
   servicesManager,
-  hotkeysManager
+  hotkeysManager,
 }) {
   // Parse route params/querystring
   const query = useQuery();
@@ -35,15 +35,19 @@ export default function ModeRoute({
 
   extensionManager.setActiveDataSource(dataSourceName);
 
-  const dataSources = extensionManager.getDataSources();
+  const dataSources = extensionManager.getActiveDataSource();
 
+  // Only handling one instance of the datasource type (E.g. one DICOMWeb server)
   const dataSource = dataSources[0];
+  // Only handling one route per mode for now
   const route = mode.routes[0];
 
-  const { DisplaySetService } = servicesManager.services;
+  const {
+    DisplaySetService,
+    MeasurementService,
+    ViewportGridService,
+  } = servicesManager.services;
 
-  // Only handling one route per mode for now
-  // You can test via http://localhost:3000/example-mode/dicomweb
   const layoutTemplateData = route.layoutTemplate({ location });
   const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
     layoutTemplateData.id
@@ -92,6 +96,12 @@ export default function ModeRoute({
   }, []);
 
   useEffect(() => {
+    // Core
+    MeasurementService.clearMeasurements();
+    ViewportGridService.reset();
+    // Extension
+    extensionManager.onSwitchModeRoute();
+    // Mode
     route.init({ servicesManager, extensionManager });
   }, [
     mode,
@@ -100,7 +110,7 @@ export default function ModeRoute({
     route,
     servicesManager,
     extensionManager,
-    hotkeysManager
+    hotkeysManager,
   ]);
 
   // This queries for series, but... What does it do with them?

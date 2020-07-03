@@ -25,6 +25,22 @@ export default class ExtensionManager {
     this.activeDataSource = dataSourceName;
   }
 
+  onSwitchModeRoute() {
+    console.log(this);
+
+    const { registeredExtensionIds, getModuleEntry } = this;
+
+    registeredExtensionIds.forEach(extentionId => {
+      const onSwitchModeRoute = getModuleEntry(
+        `${extentionId}.onSwitchModeRouteModule`
+      );
+
+      if (typeof onSwitchModeRoute === 'function') {
+        onSwitchModeRoute();
+      }
+    });
+  }
+
   /**
    * An array of extensions, or an array of arrays that contains extension
    * configuration pairs.
@@ -104,6 +120,9 @@ export default class ExtensionManager {
               dataSources
             );
             break;
+          case MODULE_TYPES.ON_SWITCH_MODE_ROUTE:
+            this.modulesMap[`${extensionId}.${moduleType}`] = extensionModule;
+            break;
           case MODULE_TYPES.TOOLBAR:
           case MODULE_TYPES.VIEWPORT:
           case MODULE_TYPES.PANEL:
@@ -146,7 +165,7 @@ export default class ExtensionManager {
   };
 
   getActiveDataSource = () => {
-    return this.activeDataSource;
+    return this.dataSourceMap[this.activeDataSource];
   };
 
   /**

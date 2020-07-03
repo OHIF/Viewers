@@ -5,6 +5,7 @@ import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import initCornerstoneTools from './initCornerstoneTools.js';
+import cornerstoneTools from 'cornerstone-tools';
 import initWADOImageLoader from './initWADOImageLoader.js';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 //
@@ -38,12 +39,13 @@ export default function init({ servicesManager, configuration }) {
           ],
           onSubmit: ({ action, value }) => {
             switch (action.id) {
-              case 'save': callback(value.label);
+              case 'save':
+                callback(value.label);
             }
             UIDialogService.dismiss({ id: dialogId });
           },
           body: ({ value, setValue }) => {
-            const onChangeHandler = (event) => {
+            const onChangeHandler = event => {
               event.persist();
               setValue(value => ({ ...value, label: event.target.value }));
             };
@@ -93,7 +95,7 @@ export default function init({ servicesManager, configuration }) {
   // THIS
   // is a way for extensions that "depend" on this extension to notify it of
   // new cornerstone enabled elements so it's commands continue to work.
-  const handleOhifCornerstoneEnabledElementEvent = function (evt) {
+  const handleOhifCornerstoneEnabledElementEvent = function(evt) {
     const { viewportIndex, enabledElement } = evt.detail;
 
     setEnabledElement(viewportIndex, enabledElement);
@@ -315,6 +317,7 @@ const _connectToolsToMeasurementService = measurementService => {
 
     function removeMeasurement(csToolsEvent) {
       console.log('~~ removeEvt', csToolsEvent);
+      debugger;
       try {
         if (csToolsEvent.detail.measurementData.id) {
           remove(csToolsEvent.detail.measurementData.id);
@@ -323,6 +326,14 @@ const _connectToolsToMeasurementService = measurementService => {
         console.warn('Failed to remove measurement:', error);
       }
     }
+
+    const { MEASUREMENTS_CLEARED } = measurementService.EVENTS;
+
+    measurementService.subscribe(MEASUREMENTS_CLEARED, () => {
+      cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
+        {}
+      );
+    });
 
     const enabledElement = evt.detail.element;
     const completedEvt = csTools.EVENTS.MEASUREMENT_COMPLETED;
