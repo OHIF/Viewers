@@ -16,6 +16,7 @@ export default class ExtensionManager {
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
     });
+    this._extensionLifeCycleHooks = { onModeEnter: {} };
     this.dataSourceMap = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
     this.activeDataSource = undefined;
@@ -23,6 +24,27 @@ export default class ExtensionManager {
 
   setActiveDataSource(dataSourceName) {
     this.activeDataSource = dataSourceName;
+  }
+
+  onModeEnter() {
+    const {
+      registeredExtensionIds,
+      getModuleEntry,
+      _servicesManager,
+      _commandsManager,
+      _extensionLifeCycleHooks,
+    } = this;
+
+    registeredExtensionIds.forEach(extensionId => {
+      const onModeEnter = _extensionLifeCycleHooks.onModeEnter[extensionId];
+
+      if (typeof onModeEnter === 'function') {
+        onModeEnter({
+          servicesManager: _servicesManager,
+          commandsManager: _commandsManager,
+        });
+      }
+    });
   }
 
   /**
@@ -81,6 +103,11 @@ export default class ExtensionManager {
         appConfig: this._appConfig,
         configuration,
       });
+    }
+
+    if (extension.onModeEnter) {
+      this._extensionLifeCycleHooks.onModeEnter[extensionId] =
+        extension.onModeEnter;
     }
 
     // Register Modules
@@ -146,7 +173,7 @@ export default class ExtensionManager {
   };
 
   getActiveDataSource = () => {
-    return this.activeDataSource;
+    return this.dataSourceMap[this.activeDataSource];
   };
 
   /**

@@ -57,6 +57,7 @@ import oldDotCircle from './../../assets/icons/old-dot-circle.svg';
 import oldAngleLeft from './../../assets/icons/old-angle-left.svg';
 import oldReset from './../../assets/icons/old-reset.svg';
 import oldCircleO from './../../assets/icons/old-circle-o.svg';
+import oldTrash from './../../assets/icons/old-trash.svg';
 
 const ICONS = {
   'arrow-down': arrowDown,
@@ -114,7 +115,8 @@ const ICONS = {
   'old-dot-circle': oldDotCircle,
   'old-angle-left': oldAngleLeft,
   'old-reset': oldReset,
-  'old-circle-o': oldCircleO
+  'old-circle-o': oldCircleO,
+  'old-trash': oldTrash
 };
 
 /**

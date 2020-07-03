@@ -11,7 +11,7 @@ const { ImageSet } = classes;
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
   const [
-    { numCols, numRows, activeViewportIndex, viewports },
+    { numCols, numRows, activeViewportIndex, viewports, cachedLayout },
     viewportGridService,
   ] = useViewportGrid();
 
@@ -65,6 +65,43 @@ function ViewerViewportGrid(props) {
         },
       ],
     };
+  };
+
+  const onDoubleClick = viewportIndex => {
+    if (cachedLayout) {
+      viewportGridService.setLayout({
+        numCols: cachedLayout.numCols,
+        numRows: cachedLayout.numRows,
+      });
+
+      cachedLayout.viewports.forEach((viewport, viewportIndex) => {
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex,
+          displaySetInstanceUID: viewport.displaySetInstanceUID,
+        });
+      });
+
+      return;
+    }
+
+    const cachedViewports = viewports.map(viewport => {
+      return {
+        displaySetInstanceUID: viewport.displaySetInstanceUID,
+      };
+    });
+
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex: 0,
+      displaySetInstanceUID: viewports[viewportIndex].displaySetInstanceUID,
+    });
+
+    viewportGridService.setLayout({ numCols: 1, numRows: 1 });
+
+    viewportGridService.setCachedLayout({
+      numCols,
+      numRows,
+      viewports: cachedViewports,
+    });
   };
 
   // TODO:
@@ -127,6 +164,7 @@ function ViewerViewportGrid(props) {
           acceptDropsFor="displayset"
           onDrop={onDropHandler.bind(null, viewportIndex)}
           onInteraction={onInterationHandler}
+          onDoubleClick={() => onDoubleClick(viewportIndex)}
           isActive={activeViewportIndex === viewportIndex}
         >
           <ViewportComponent

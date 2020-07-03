@@ -1,11 +1,9 @@
-import id from './id';
+import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import { utils, classes } from '@ohif/core';
 import addMeasurement from './utils/addMeasurement';
 import isRehydratable from './utils/isRehydratable';
 
 const { ImageSet } = classes;
-
-const sopClassHandlerName = 'dicom-sr';
 
 // TODO ->
 // Add SR thumbnail
@@ -70,7 +68,7 @@ function _getDisplaySetsFromSeries(
   if (
     !ConceptNameCodeSequence ||
     ConceptNameCodeSequence.CodeValue !==
-    CodeNameCodeSequenceValues.ImagingMeasurementReport
+      CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
     console.warn(
       'Only support Imaging Measurement Report SRs (TID1500) for now'
@@ -79,7 +77,7 @@ function _getDisplaySetsFromSeries(
   }
 
   const displaySet = {
-    plugin: id,
+    //plugin: id,
     Modality: 'SR',
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
@@ -88,7 +86,7 @@ function _getDisplaySetsFromSeries(
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
-    SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
+    SOPClassHandlerId,
     referencedImages: null,
     measurements: null,
     isDerivedDisplaySet: true,
@@ -119,6 +117,7 @@ function _load(displaySet, servicesManager, extensionManager) {
 
   displaySet.isHydrated = false;
   displaySet.isLocked = isRehydratable(displaySet, mappings) ? false : true;
+  displaySet.isLoaded = true;
 
   // Check currently added displaySets and add measurements if the sources exist.
   DisplaySetService.activeDisplaySets.forEach(activeDisplaySet => {
@@ -250,7 +249,7 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
 
   return [
     {
-      name: sopClassHandlerName,
+      name: SOPClassHandlerName,
       sopClassUids,
       getDisplaySetsFromSeries,
     },
@@ -282,7 +281,7 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
     trackingUniqueIdentifier => {
       const mergedContentSequence =
         mergedContentSequencesByTrackingUniqueIdentifiers[
-        trackingUniqueIdentifier
+          trackingUniqueIdentifier
         ];
 
       const measurement = _processMeasurement(mergedContentSequence);
@@ -322,7 +321,7 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
 
     if (
       mergedContentSequencesByTrackingUniqueIdentifiers[
-      trackingUniqueIdentifier
+        trackingUniqueIdentifier
       ] === undefined
     ) {
       // Add the full ContentSequence
@@ -448,9 +447,9 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     const cornerstoneFreeTextFinding = Findings.find(
       Finding =>
         Finding.ConceptCodeSequence.CodingSchemeDesignator ===
-        CORNERSTONE_CODING_SCHEME_DESIGNATOR &&
+          CORNERSTONE_CODING_SCHEME_DESIGNATOR &&
         Finding.ConceptCodeSequence.CodeValue ===
-        CORNERSTONE_FREETEXT_CODE_VALUE
+          CORNERSTONE_FREETEXT_CODE_VALUE
     );
     if (cornerstoneFreeTextFinding) {
       measurement.labels.push({
