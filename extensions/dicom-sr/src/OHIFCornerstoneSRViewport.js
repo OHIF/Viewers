@@ -109,8 +109,8 @@ function OHIFCornerstoneSRViewport({
   useEffect(() => {
     if (!displaySet.isLoaded) {
       displaySet.load();
-      setIsHydrated(displaySet.isHydrated);
     }
+    setIsHydrated(displaySet.isHydrated);
   }, [displaySet]);
 
   const setTrackingUniqueIdentifiersForElement = useCallback(targetElement => {

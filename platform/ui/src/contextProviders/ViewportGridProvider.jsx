@@ -27,7 +27,11 @@ export function ViewportGridProvider({ children, service }) {
         return { ...state, ...{ activeViewportIndex: action.payload } };
       }
       case 'SET_DISPLAYSET_FOR_VIEWPORT': {
-        const { viewportIndex, displaySetInstanceUID, imageIndex } = action.payload;
+        const {
+          viewportIndex,
+          displaySetInstanceUID,
+          imageIndex,
+        } = action.payload;
         const viewports = state.viewports.slice();
 
         viewports[viewportIndex] = { displaySetInstanceUID, imageIndex };
@@ -54,6 +58,17 @@ export function ViewportGridProvider({ children, service }) {
           cachedLayout: undefined,
         };
       }
+      case 'RESET': {
+        return {
+          numCols: 1,
+          numRows: 1,
+          activeViewportIndex: 0,
+          viewports: [
+            { displaySetInstanceUID: undefined, imageIndex: undefined },
+          ],
+        };
+      }
+
       case 'SET_CACHED_LAYOUT': {
         return { ...state, cachedLayout: action.payload };
       }
@@ -79,7 +94,7 @@ export function ViewportGridProvider({ children, service }) {
         payload: {
           viewportIndex,
           displaySetInstanceUID,
-          imageIndex
+          imageIndex,
         },
       }),
     [dispatch]
@@ -97,6 +112,14 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
+  const reset = useCallback(
+    () =>
+      dispatch({
+        type: 'RESET',
+        payload: {},
+      }),
+    [dispatch]
+  );
   const setCachedLayout = useCallback(
     payload =>
       dispatch({
@@ -118,6 +141,7 @@ export function ViewportGridProvider({ children, service }) {
         setActiveViewportIndex,
         setDisplaysetForViewport,
         setLayout,
+        reset,
         setCachedLayout,
       });
     }
@@ -127,6 +151,7 @@ export function ViewportGridProvider({ children, service }) {
     setActiveViewportIndex,
     setDisplaysetForViewport,
     setLayout,
+    reset,
     setCachedLayout,
   ]);
 

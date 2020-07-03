@@ -5,6 +5,7 @@ import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import initCornerstoneTools from './initCornerstoneTools.js';
+import cornerstoneTools from 'cornerstone-tools';
 import initWADOImageLoader from './initWADOImageLoader.js';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 //
@@ -328,6 +329,14 @@ const _connectToolsToMeasurementService = measurementService => {
         console.warn('Failed to remove measurement:', error);
       }
     }
+
+    const { MEASUREMENTS_CLEARED } = measurementService.EVENTS;
+
+    measurementService.subscribe(MEASUREMENTS_CLEARED, () => {
+      cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
+        {}
+      );
+    });
 
     const enabledElement = evt.detail.element;
     const completedEvt = csTools.EVENTS.MEASUREMENT_COMPLETED;
