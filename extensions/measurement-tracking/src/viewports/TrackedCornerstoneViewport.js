@@ -60,8 +60,6 @@ function TrackedCornerstoneViewport({
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementId, setTrackedMeasurementId] = useState(null);
 
-  console.log(trackedMeasurementId);
-
   // TODO: Still needed? Better way than import `OHIF` and destructure?
   // Why is this managed by `core`?
   useEffect(() => {
@@ -273,7 +271,6 @@ function TrackedCornerstoneViewport({
 
     const { MeasurementService } = servicesManager.services;
     const measurements = MeasurementService.getMeasurements();
-
     const measurement = measurements.find(
       m => m.id === newTrackedMeasurementId
     );
