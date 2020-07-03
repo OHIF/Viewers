@@ -31,8 +31,16 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const { MeasurementService, UINotificationService, UIDialogService, DisplaySetService } = servicesManager.services;
-  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
+  const {
+    MeasurementService,
+    UINotificationService,
+    UIDialogService,
+    DisplaySetService,
+  } = servicesManager.services;
+  const [
+    trackedMeasurements,
+    sendTrackedMeasurementsEvent,
+  ] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
@@ -90,7 +98,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   // ~~ DisplayStudySummary
   useEffect(() => {
     updateDisplayStudySummary();
-  }, [displayStudySummary.key, trackedMeasurements, trackedStudy]);
+  }, [
+    displayStudySummary.key,
+    trackedMeasurements,
+    trackedStudy,
+    updateDisplayStudySummary,
+  ]);
 
   // TODO: Better way to consolidated, debounce, check on change?
   // Are we exposing the right API for measurementService?
@@ -152,17 +165,23 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     const measurement = MeasurementService.getMeasurement(id);
     const { referenceSeriesUID, SOPInstanceUID } = measurement;
 
-    const displaySets = DisplaySetService.getDisplaySetsForSeries(referenceSeriesUID);
+    const displaySets = DisplaySetService.getDisplaySetsForSeries(
+      referenceSeriesUID
+    );
     const displaySet = displaySets.find(ds => {
-      return ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+      return (
+        ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+      );
     });
 
-    const imageIndex = displaySet.images.map(i => i.SOPInstanceUID).indexOf(SOPInstanceUID);
+    const imageIndex = displaySet.images
+      .map(i => i.SOPInstanceUID)
+      .indexOf(SOPInstanceUID);
 
     viewportGridService.setDisplaysetForViewport({
       viewportIndex: viewportGrid.activeViewportIndex,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      imageIndex
+      imageIndex,
     });
 
     onMeasurementItemClickHandler({ id, isActive });
@@ -177,12 +196,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         case 'save': {
           MeasurementService.update(id, {
             ...measurement,
-            ...value
+            ...value,
           });
           UINotificationService.show({
             title: 'Measurements',
             message: 'Label updated successfully',
-            type: 'success'
+            type: 'success',
           });
         }
       }
@@ -199,7 +218,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         noCloseButton: true,
         value: { label: measurement.label || '' },
         body: ({ value, setValue }) => {
-          const onChangeHandler = (event) => {
+          const onChangeHandler = event => {
             event.persist();
             setValue(value => ({ ...value, label: event.target.value }));
           };
@@ -227,8 +246,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           { id: 'cancel', text: 'Cancel', type: 'secondary' },
           { id: 'save', text: 'Save', type: 'primary' },
         ],
-        onSubmit: onSubmitHandler
-      }
+        onSubmit: onSubmitHandler,
+      },
     });
   };
 
@@ -236,11 +255,19 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     if (!isActive) {
       const measurements = [...displayMeasurements];
       const measurement = measurements.find(m => m.id === id);
-      measurements.forEach(m => m.isActive = m.id !== id ? false : true);
+
+      measurements.forEach(m => (m.isActive = m.id !== id ? false : true));
       measurement.isActive = true;
       setDisplayMeasurements(measurements);
     }
   };
+
+  const displayMeasurementsWithoutFindings = displayMeasurements.filter(
+    dm => dm.measurementType !== MeasurementService.VALUE_TYPES.POINT
+  );
+  const additionalFindings = displayMeasurements.filter(
+    dm => dm.measurementType === MeasurementService.VALUE_TYPES.POINT
+  );
 
   return (
     <>
@@ -254,11 +281,20 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         )}
         <MeasurementTable
           title="Measurements"
-          amount={displayMeasurements.length}
-          data={displayMeasurements}
+          amount={displayMeasurementsWithoutFindings.length}
+          data={displayMeasurementsWithoutFindings}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
         />
+        {additionalFindings.length !== 0 && (
+          <MeasurementTable
+            title="Additional Findings"
+            amount={additionalFindings.length}
+            data={additionalFindings}
+            onClick={jumpToImage}
+            onEdit={onMeasurementItemEditHandler}
+          />
+        )}
       </div>
       <div className="flex justify-center p-4">
         <ActionButtons
@@ -298,19 +334,19 @@ function _mapMeasurementToDisplay(measurement, index, types) {
     SOPInstanceUID
   );
   const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;
+  const displayText = _getDisplayText(
+    measurement,
+    PixelSpacing,
+    SeriesNumber,
+    InstanceNumber,
+    types
+  );
 
   return {
     id: measurement.id,
     label: measurement.label || '(empty)',
-    displayText:
-      _getDisplayText(
-        measurement,
-        PixelSpacing,
-        SeriesNumber,
-        InstanceNumber,
-        types
-      ) || [],
-    // TODO: handle one layer down
+    measurementType: measurement.type,
+    displayText: displayText || [],
     isActive: false, // activeMeasurementItem === i + 1,
   };
 }
@@ -365,8 +401,8 @@ function _getDisplayText(
       ];
     }
     case types.POINT: {
-      const { text } = measurement;
-      return [`${text} (S:${seriesNumber}, I:${instanceNumber})`];
+      const { text } = measurement; // Will display in "short description"
+      return [`(S:${seriesNumber}, I:${instanceNumber})`];
     }
   }
 }
