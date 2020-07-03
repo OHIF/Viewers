@@ -247,6 +247,12 @@ function TrackedCornerstoneViewport({
   return (
     <>
       <ViewportActionBar
+        onDoubleClick={evt => {
+          console.log('HI DANNY');
+          debugger;
+          evt.stopPropagation();
+          evt.preventDefault();
+        }}
         onSeriesChange={direction => alert(`Series ${direction}`)}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{

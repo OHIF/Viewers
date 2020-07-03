@@ -400,6 +400,11 @@ function OHIFCornerstoneSRViewport({
   return (
     <>
       <ViewportActionBar
+        onDoubleClick={evt => {
+          debugger;
+          evt.stopPropagation();
+          evt.preventDefault();
+        }}
         onSeriesChange={onMeasurementChange}
         onHydrationClick={hydrateMeasurementService}
         showNavArrows={viewportIndex === activeViewportIndex}
