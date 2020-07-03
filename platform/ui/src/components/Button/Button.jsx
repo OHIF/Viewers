@@ -91,6 +91,8 @@ const Button = ({
   startIcon: startIconProp,
   endIcon: endIconProp,
   className,
+  onClick,
+  /** TODO: All possible props should be explicitly defined -- avoid spreading props  */
   ...rest
 }) => {
   const startIcon = startIconProp && (
@@ -112,8 +114,8 @@ const Button = ({
 
   const handleOnClick = e => {
     buttonElement.current.blur();
-    if (rest.onClick) {
-      rest.onClick(e);
+    if (!disabled) {
+      onClick(e);
     }
   };
 
@@ -159,6 +161,7 @@ Button.propTypes = {
   startIcon: PropTypes.node,
   endIcon: PropTypes.node,
   className: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default Button;
