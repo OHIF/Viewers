@@ -11,6 +11,7 @@ function ViewportPane({
   className,
   isActive,
   onDrop,
+  onDoubleClick,
   onInteraction,
   acceptDropsFor,
 }) {
@@ -57,6 +58,7 @@ function ViewportPane({
       // https://reactjs.org/docs/events.html#mouse-events
       // https://stackoverflow.com/questions/8378243/catch-scrolling-event-on-overflowhidden-element
       onMouseDown={onInteractionHandler}
+      onDoubleClick={onDoubleClick}
       onClick={onInteractionHandler}
       onScroll={onInteractionHandler}
       onWheel={onInteractionHandler}
@@ -95,6 +97,8 @@ ViewportPane.propTypes = {
   onDrop: PropTypes.func.isRequired,
   /** Called when the viewportPane is interacted with by the user */
   onInteraction: PropTypes.func.isRequired,
+  /** Executed when the pane is double clicked */
+  onDoubleClick: PropTypes.func,
 };
 
 const noop = () => {};
