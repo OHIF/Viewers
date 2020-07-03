@@ -392,6 +392,11 @@ function OHIFCornerstoneSRViewport({
     });
   }
 
+  const label =
+    viewports.length > 1
+      ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
+      : '';
+
   return (
     <>
       <ViewportActionBar
@@ -399,7 +404,7 @@ function OHIFCornerstoneSRViewport({
         onHydrationClick={hydrateMeasurementService}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
-          label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
+          label,
           isTracked: false,
           isLocked: displaySet.isLocked,
           isHydrated,
