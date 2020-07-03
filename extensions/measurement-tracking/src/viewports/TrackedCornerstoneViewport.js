@@ -44,8 +44,9 @@ function TrackedCornerstoneViewport({
   dataSource,
   displaySet,
   viewportIndex,
-  ToolBarService,
+  servicesManager,
 }) {
+  const { ToolBarService, DisplaySetService } = servicesManager.services;
   const [trackedMeasurements] = useTrackedMeasurements();
   const [
     { activeViewportIndex, viewports },
@@ -55,7 +56,10 @@ function TrackedCornerstoneViewport({
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
   const [element, setElement] = useState(null);
+
   const [isTracked, setIsTracked] = useState(false);
+  const [trackedMeasurementId, setTrackedMeasurementId] = useState(null);
+
   // TODO: Still needed? Better way than import `OHIF` and destructure?
   // Why is this managed by `core`?
   useEffect(() => {
@@ -246,6 +250,48 @@ function TrackedCornerstoneViewport({
       ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
       : '';
 
+  function switchMeasurement(direction) {
+    if (!element) {
+      // Element not yet enabled.
+      return;
+    }
+
+    const newTrackedMeasurementId = _getNextMeasurementId(
+      direction,
+      servicesManager,
+      trackedMeasurementId,
+      trackedMeasurements
+    );
+
+    if (!newTrackedMeasurementId) {
+      return;
+    }
+
+    setTrackedMeasurementId(newTrackedMeasurementId);
+
+    const { MeasurementService } = servicesManager.services;
+    const measurements = MeasurementService.getMeasurements();
+    const measurement = measurements.find(
+      m => m.id === newTrackedMeasurementId
+    );
+
+    const {
+      displaySetInstanceUID,
+      imageIndex,
+    } = _getViewportDataFromTrackedMeasurementId(
+      measurement,
+      DisplaySetService
+    );
+
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex,
+      displaySetInstanceUID,
+      imageIndex,
+    });
+  }
+
+  const showNavArrows = isTracked && viewportIndex === activeViewportIndex;
+
   return (
     <>
       <ViewportActionBar
@@ -255,11 +301,11 @@ function TrackedCornerstoneViewport({
           evt.stopPropagation();
           evt.preventDefault();
         }}
-        onSeriesChange={direction => alert(`Series ${direction}`)}
-        showNavArrows={viewportIndex === activeViewportIndex}
+        onSeriesChange={direction => switchMeasurement(direction)}
+        showNavArrows={showNavArrows}
         studyData={{
           label,
-          isTracked: trackedSeries.includes(SeriesInstanceUID),
+          isTracked,
           isLocked: false,
           studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
           currentSeries: SeriesNumber,
@@ -276,8 +322,8 @@ function TrackedCornerstoneViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                  2
-                )}mm`
+                    2
+                  )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -399,6 +445,81 @@ async function _getViewportData(dataSource, displaySet) {
   };
 
   return viewportData;
+}
+
+function _getNextMeasurementId(
+  direction,
+  servicesManager,
+  trackedMeasurementId,
+  trackedMeasurements
+) {
+  const { MeasurementService } = servicesManager.services;
+  const measurements = MeasurementService.getMeasurements();
+
+  const { trackedSeries } = trackedMeasurements.context;
+
+  // Get the potentially trackable measurements for this series,
+  // The measurements to jump between are the same
+  // regardless if this series is tracked or not.
+
+  const filteredMeasurements = measurements.filter(m =>
+    trackedSeries.includes(m.referenceSeriesUID)
+  );
+
+  if (!filteredMeasurements.length) {
+    // No measurements on this series.
+    return;
+  }
+
+  const measurementCount = filteredMeasurements.length;
+
+  const ids = filteredMeasurements.map(fm => fm.id);
+  let measurementIndex = ids.findIndex(id => id === trackedMeasurementId);
+
+  if (measurementIndex === -1) {
+    // Not tracking a measurement, or previous measurement now deleted, revert to 0.
+    measurementIndex = 0;
+  } else {
+    if (direction === 'left') {
+      measurementIndex--;
+
+      if (measurementIndex < 0) {
+        measurementIndex = measurementCount - 1;
+      }
+    } else if (direction === 'right') {
+      measurementIndex++;
+
+      if (measurementIndex === measurementCount) {
+        measurementIndex = 0;
+      }
+    }
+  }
+
+  const newTrackedMeasurementId = ids[measurementIndex];
+
+  return newTrackedMeasurementId;
+}
+
+function _getViewportDataFromTrackedMeasurementId(
+  measurement,
+  DisplaySetService
+) {
+  const { referenceSeriesUID: SeriesInstanceUID, SOPInstanceUID } = measurement;
+
+  const activeDisplaySets = DisplaySetService.getActiveDisplaySets();
+
+  const displaySet = activeDisplaySets.find(
+    ds => ds.SeriesInstanceUID === SeriesInstanceUID
+  );
+
+  const imageIndex = displaySet.images.findIndex(
+    image => image.SOPInstanceUID === SOPInstanceUID
+  );
+
+  return {
+    imageIndex,
+    displaySetInstanceUID: displaySet.displaySetInstanceUID,
+  };
 }
 
 export default TrackedCornerstoneViewport;

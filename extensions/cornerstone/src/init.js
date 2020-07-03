@@ -163,6 +163,7 @@ export default function init({ servicesManager, configuration }) {
     /**
      * drawHandles - Never/Always show handles
      * drawHandlesOnHover - Only show handles on handle hover (pointNearHandle)
+     * hideHandlesIfMoving - Hides the handles whilst you are moving them, for better visibility.
      *
      * Does not apply to tools where handles aren't placed in predictable
      * locations.
@@ -173,8 +174,12 @@ export default function init({ servicesManager, configuration }) {
     ) {
       if (props.configuration) {
         parsedProps.configuration.drawHandlesOnHover = true;
+        parsedProps.configuration.hideHandlesIfMoving = true;
       } else {
-        parsedProps.configuration = { drawHandlesOnHover: true };
+        parsedProps.configuration = {
+          drawHandlesOnHover: true,
+          hideHandlesIfMoving: true,
+        };
       }
     }
 
@@ -266,6 +271,7 @@ const _connectToolsToMeasurementService = measurementService => {
   const csToolsVer4MeasurementSource = _initMeasurementService(
     measurementService
   );
+  _connectMeasurementServiceToTools(measurementService, csToolsVer4MeasurementSource);
   const { addOrUpdate, remove } = csToolsVer4MeasurementSource;
   const elementEnabledEvt = cornerstone.EVENTS.ELEMENT_ENABLED;
 
@@ -328,6 +334,30 @@ const _connectToolsToMeasurementService = measurementService => {
     enabledElement.addEventListener(updatedEvt, updateMeasurement);
     enabledElement.addEventListener(removedEvt, removeMeasurement);
   });
+};
+
+const _connectMeasurementServiceToTools = (measurementService, measurementSource) => {
+  const { MEASUREMENTS_CLEARED, MEASUREMENT_REMOVED } = measurementService.EVENTS;
+  const sourceId = measurementSource.id;
+
+  measurementService.subscribe(MEASUREMENTS_CLEARED, () => {
+    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
+      {}
+    );
+    cornerstone.getEnabledElements().forEach(enabledElement => {
+      cornerstone.updateImage(enabledElement.element);
+    });
+  });
+
+  /* TODO: Remove per measurement
+  measurementService.subscribe(MEASUREMENT_REMOVED,
+    ({ source, measurement }) => {
+      if ([sourceId].includes(source.id)) {
+        // const annotation = getAnnotation('Length', measurement.id);
+        // iterate tool state
+      }
+    }
+  ); */
 };
 
 // const {
