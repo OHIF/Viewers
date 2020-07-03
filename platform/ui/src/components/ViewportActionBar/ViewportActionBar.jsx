@@ -52,14 +52,14 @@ const ViewportActionBar = ({
 
   const renderIconStatus = () => {
     if (modality === 'SR') {
-      const tooltipMessage = isLocked
-        ? 'This SR is locked. <br /> Measurements cannot be duplicated.'
-        : "This SR is unlocked. <br /> You can duplicate measurements on your current report <br /> by clicking 'Edit'.";
+const TooltipMessage = isLocked
+    ? (<div>This SR is locked. <br />Measurements cannot be duplicated.</div>)
+    : (<div>This SR is unlocked. <br />You can duplicate measurements on your current report <br /> by clicking 'Edit'.</div>);
       return (
         <>
           <Tooltip
             content={
-              <div dangerouslySetInnerHTML={{ __html: tooltipMessage }} />
+              <TooltipMessage />
             }
             position="bottom-left"
           >
