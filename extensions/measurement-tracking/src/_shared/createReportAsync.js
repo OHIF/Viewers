@@ -25,13 +25,13 @@ async function createReportAsync(servicesManager, dataSource, measurements) {
       madeInClient: true,
     });
     UINotificationService.show({
-      title: 'STOW SR',
+      title: 'Create Report',
       message: 'Measurements saved successfully',
       type: 'success',
     });
   } catch (error) {
     UINotificationService.show({
-      title: 'STOW SR',
+      title: 'Create Report',
       message: error.message || 'Failed to store measurements',
       type: 'error',
     });
