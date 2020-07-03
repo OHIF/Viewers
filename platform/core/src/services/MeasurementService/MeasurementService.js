@@ -52,6 +52,7 @@ const EVENTS = {
   MEASUREMENT_UPDATED: 'event::measurement_updated',
   MEASUREMENT_ADDED: 'event::measurement_added',
   MEASUREMENT_REMOVED: 'event::measurement_removed',
+  MEASUREMENTS_CLEARED: 'event::measurements_cleared',
 };
 
 const VALUE_TYPES = {
@@ -501,13 +502,11 @@ class MeasurementService {
   }
 
   /**
-   * Clear all measurements and broadcasts removed events to their corresponding sources.
+   * Clear all measurements and broadcasts cleared event.
    */
   clear() {
-    log.info(`Removing all measurements...`,);
-    Object.keys(this.measurements).forEach(id => {
-      this.remove(this.measurements[id].source, id);
-    });
+    this.measurements = {};
+    this._broadcastChange(this.EVENTS.MEASUREMENTS_CLEARED);
   }
 
   /**

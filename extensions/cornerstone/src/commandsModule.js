@@ -71,9 +71,7 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     clearMeasurements: () => {
-      console.debug('[cornerstone] Erasing all measurements from measurement service...');
       MeasurementService.clear();
-      /** TODO: Clear annotations */
     },
     invertViewport: () => {
       const enabledElement = _getActiveViewportsEnabledElement();
