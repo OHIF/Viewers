@@ -1,5 +1,6 @@
+import React from 'react';
 import OHIF from '@ohif/core';
-import { SimpleDialog } from '@ohif/ui';
+import { Dialog, Input } from '@ohif/ui';
 import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
@@ -23,17 +24,47 @@ export default function init({ servicesManager, configuration }) {
       let dialogId = UIDialogService.create({
         centralize: true,
         isDraggable: false,
-        content: SimpleDialog.InputDialog,
+        content: Dialog,
         useLastPosition: false,
         showOverlay: true,
         contentProps: {
           title: 'Enter your annotation',
-          label: 'New label',
-          measurementData: data ? { description: data.text } : {},
+          value: { label: data ? data.text : '' },
+          noCloseButton: true,
           onClose: () => UIDialogService.dismiss({ id: dialogId }),
-          onSubmit: value => {
-            callback(value);
+          actions: [
+            { id: 'cancel', text: 'Cancel', type: 'secondary' },
+            { id: 'save', text: 'Save', type: 'primary' },
+          ],
+          onSubmit: ({ action, value }) => {
+            switch (action.id) {
+              case 'save': callback(value.label);
+            }
             UIDialogService.dismiss({ id: dialogId });
+          },
+          body: ({ value, setValue }) => {
+            const onChangeHandler = (event) => {
+              event.persist();
+              setValue(value => ({ ...value, label: event.target.value }));
+            };
+            const onKeyPressHandler = event => {
+              if (event.key === 'Enter') {
+                onSubmitHandler({ value, action: { id: 'save' } });
+              }
+            };
+            return (
+              <div className="p-4 bg-primary-dark">
+                <Input
+                  autoFocus
+                  className="mt-2 bg-black border-primary-main"
+                  type="text"
+                  containerClassName="mr-2"
+                  value={value.label}
+                  onChange={onChangeHandler}
+                  onKeyPress={onKeyPressHandler}
+                />
+              </div>
+            );
           },
         },
       });
@@ -62,7 +93,7 @@ export default function init({ servicesManager, configuration }) {
   // THIS
   // is a way for extensions that "depend" on this extension to notify it of
   // new cornerstone enabled elements so it's commands continue to work.
-  const handleOhifCornerstoneEnabledElementEvent = function(evt) {
+  const handleOhifCornerstoneEnabledElementEvent = function (evt) {
     const { viewportIndex, enabledElement } = evt.detail;
 
     setEnabledElement(viewportIndex, enabledElement);
@@ -108,7 +139,6 @@ export default function init({ servicesManager, configuration }) {
 
   /* Add extension tools configuration here. */
   const internalToolsConfig = {
-    /* TODO ArrowAnnotate input
     ArrowAnnotate: {
       configuration: {
         getTextCallback: (callback, eventDetails) =>
@@ -117,7 +147,6 @@ export default function init({ servicesManager, configuration }) {
           callInputDialog(data, eventDetails, callback),
       },
     },
-    */
   };
 
   /* Abstract tools configuration using extension configuration. */

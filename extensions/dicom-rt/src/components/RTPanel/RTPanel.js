@@ -150,7 +150,7 @@ const RTPanel = ({
             imageIds
           );
 
-          const frameIndex = imageIds.indexOf(imageId);
+          const imageIndex = imageIds.indexOf(imageId);
           const SOPInstanceUID = cornerstone.metaData.get(
             'SOPInstanceUID',
             imageId
@@ -163,7 +163,7 @@ const RTPanel = ({
           onContourItemClick({
             StudyInstanceUID,
             SOPInstanceUID,
-            frameIndex,
+            imageIndex,
             activeViewportIndex: activeIndex,
           });
         }}
@@ -237,7 +237,7 @@ const RTPanel = ({
               expanded={
                 isLoaded &&
                 loadedSet.SeriesInstanceUID ===
-                  state.selectedSet.SeriesInstanceUID
+                state.selectedSet.SeriesInstanceUID
               }
               onVisibilityChange={newVisibility => {
                 const module = cornerstoneTools.getModule('rtstruct');

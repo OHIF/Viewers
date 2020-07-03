@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { StudySummary, MeasurementTable } from '@ohif/ui';
-import { DicomMetadataStore, DICOMSR } from '@ohif/core';
+import {
+  StudySummary,
+  MeasurementTable,
+  Dialog,
+  Input,
+  useViewportGrid,
+} from '@ohif/ui';
+import { DicomMetadataStore, DICOMSR, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 import createReportAsync from './../../_shared/createReportAsync.js';
+
+const { formatDate } = utils;
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
@@ -15,6 +23,7 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
 };
 
 function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
+  const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(
     Date.now().toString()
   );
@@ -22,11 +31,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const { MeasurementService } = servicesManager.services;
-  const [
-    trackedMeasurements,
-    sendTrackedMeasurementsEvent,
-  ] = useTrackedMeasurements();
+  const { MeasurementService, UINotificationService, UIDialogService, DisplaySetService } = servicesManager.services;
+  const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
@@ -40,6 +46,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedStudy === m.referenceStudyUID &&
         trackedSeries.includes(m.referenceSeriesUID)
     );
+
     const mappedMeasurements = filteredMeasurements.map((m, index) =>
       _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
     );
@@ -52,25 +59,37 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     debouncedMeasurementChangeTimestamp,
   ]);
 
-  // ~~ DisplayStudySummary
-  useEffect(() => {
+  const updateDisplayStudySummary = async () => {
     if (trackedMeasurements.matches('tracking')) {
       const StudyInstanceUID = trackedStudy;
       const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
       const instanceMeta = studyMeta.series[0].instances[0];
-      const { Modality, StudyDate, StudyDescription } = instanceMeta;
+      const { StudyDate, StudyDescription } = instanceMeta;
+
+      const modalities = new Set();
+      studyMeta.series.forEach(series => {
+        if (trackedSeries.includes(series.SeriesInstanceUID)) {
+          modalities.add(series.instances[0].Modality);
+        }
+      });
+      const modality = Array.from(modalities).join('/');
 
       if (displayStudySummary.key !== StudyInstanceUID) {
         setDisplayStudySummary({
           key: StudyInstanceUID,
           date: StudyDate, // TODO: Format: '07-Sep-2010'
-          modality: Modality,
+          modality,
           description: StudyDescription,
         });
       }
     } else if (trackedStudy === '' || trackedStudy === undefined) {
       setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
     }
+  };
+
+  // ~~ DisplayStudySummary
+  useEffect(() => {
+    updateDisplayStudySummary();
   }, [displayStudySummary.key, trackedMeasurements, trackedStudy]);
 
   // TODO: Better way to consolidated, debounce, check on change?
@@ -128,12 +147,106 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
   }
 
+  const jumpToImage = ({ id, isActive }) => {
+    const measurement = MeasurementService.getMeasurement(id);
+    const { referenceSeriesUID, SOPInstanceUID } = measurement;
+
+    const displaySets = DisplaySetService.getDisplaySetsForSeries(referenceSeriesUID);
+    const displaySet = displaySets.find(ds => {
+      return ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+    });
+
+    const imageIndex = displaySet.images.map(i => i.SOPInstanceUID).indexOf(SOPInstanceUID);
+
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex: viewportGrid.activeViewportIndex,
+      displaySetInstanceUID: displaySet.displaySetInstanceUID,
+      imageIndex
+    });
+
+    onMeasurementItemClickHandler({ id, isActive });
+  };
+
+  const onMeasurementItemEditHandler = ({ id }) => {
+    const measurement = MeasurementService.getMeasurement(id);
+
+    let dialogId;
+    const onSubmitHandler = ({ action, value }) => {
+      switch (action.id) {
+        case 'save': {
+          MeasurementService.update(id, {
+            ...measurement,
+            ...value
+          });
+          UINotificationService.show({
+            title: 'Measurements',
+            message: 'Label updated successfully',
+            type: 'success'
+          });
+        }
+      }
+      UIDialogService.dismiss({ id: dialogId });
+    };
+    dialogId = UIDialogService.create({
+      centralize: true,
+      isDraggable: false,
+      useLastPosition: false,
+      showOverlay: true,
+      content: Dialog,
+      contentProps: {
+        title: 'Enter your annotation',
+        noCloseButton: true,
+        value: { label: measurement.label || '' },
+        body: ({ value, setValue }) => {
+          const onChangeHandler = (event) => {
+            event.persist();
+            setValue(value => ({ ...value, label: event.target.value }));
+          };
+
+          const onKeyPressHandler = event => {
+            if (event.key === 'Enter') {
+              onSubmitHandler({ value, action: { id: 'save' } });
+            }
+          };
+          return (
+            <div className="p-4 bg-primary-dark">
+              <Input
+                autoFocus
+                className="mt-2 bg-black border-primary-main"
+                type="text"
+                containerClassName="mr-2"
+                value={value.label}
+                onChange={onChangeHandler}
+                onKeyPress={onKeyPressHandler}
+              />
+            </div>
+          );
+        },
+        actions: [
+          { id: 'cancel', text: 'Cancel', type: 'secondary' },
+          { id: 'save', text: 'Save', type: 'primary' },
+        ],
+        onSubmit: onSubmitHandler
+      }
+    });
+  };
+
+  const onMeasurementItemClickHandler = ({ id, isActive }) => {
+    if (!isActive) {
+      const measurements = [...displayMeasurements];
+      const measurement = measurements.find(m => m.id === id);
+      measurements.forEach(m => m.isActive = m.id !== id ? false : true);
+      measurement.isActive = true;
+      setDisplayMeasurements(measurements);
+    }
+  };
+
   return (
     <>
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
         {displayStudySummary.key && (
           <StudySummary
-            date={displayStudySummary.date}
+            date={formatDate(displayStudySummary.date)}
             modality={displayStudySummary.modality}
             description={displayStudySummary.description}
           />
@@ -142,8 +255,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           title="Measurements"
           amount={displayMeasurements.length}
           data={displayMeasurements}
-          onClick={() => {}}
-          onEdit={id => alert(`Edit: ${id}`)}
+          onClick={jumpToImage}
+          onEdit={onMeasurementItemEditHandler}
         />
       </div>
       <div className="flex justify-center p-4">
@@ -186,8 +299,8 @@ function _mapMeasurementToDisplay(measurement, index, types) {
   const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;
 
   return {
-    id: index + 1,
-    label: '(empty)', // 'Label short description',
+    id: measurement.id,
+    label: measurement.label || '(empty)',
     displayText:
       _getDisplayText(
         measurement,
@@ -226,7 +339,7 @@ function _getDisplayText(
   switch (type) {
     case types.POLYLINE: {
       const { length } = measurement;
-      const roundedLength = _round(length, 1);
+      const roundedLength = _round(length, 2);
 
       return [
         `${roundedLength} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
@@ -244,7 +357,7 @@ function _getDisplayText(
     }
     case types.ELLIPSE: {
       const { area } = measurement;
-      const roundedArea = _round(area, 1);
+      const roundedArea = _round(area, 2);
 
       return [
         `${roundedArea} ${unit}2 (S:${seriesNumber}, I:${instanceNumber})`,
@@ -258,7 +371,7 @@ function _getDisplayText(
 }
 
 function _round(value, decimals) {
-  return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+  return parseFloat(value).toFixed(decimals);
 }
 
 export default PanelMeasurementTableTracking;

@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import { Icon } from '@ohif/ui';
+import { Icon, Tooltip, Typography } from '@ohif/ui';
 import blurHandlerListener from '../../utils/blurHandlerListener';
 
 const ThumbnailNoImage = ({
@@ -10,10 +10,12 @@ const ThumbnailNoImage = ({
   description,
   seriesDate,
   modality,
+  modalityTooltip,
   onClick,
   onDoubleClick,
   dragData,
   isActive,
+  viewportIdentificator = '',
 }) => {
   const [collectedProps, drag, dragPreview] = useDrag({
     item: { ...dragData },
@@ -29,7 +31,7 @@ const ThumbnailNoImage = ({
       ref={thumbnailElement}
       onFocus={() => blurHandlerListener(thumbnailElement)}
       className={classnames(
-        'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded',
+        'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded select-none',
         isActive ? 'border-2 border-primary-light' : 'border'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
@@ -42,10 +44,15 @@ const ThumbnailNoImage = ({
         <div className="flex flex-col flex-1">
           <div className="flex flex-row items-center flex-1 mb-2">
             <Icon name="list-bullets" className="w-12 text-secondary-light" />
-            <div className="px-3 mr-4 text-lg text-white rounded-sm bg-primary-main">
-              {modality}
-            </div>
-            <span className="text-base text-blue-300">{seriesDate}</span>
+            <Tooltip
+              position="bottom"
+              content={<Typography>{modalityTooltip}</Typography>}
+            >
+              <div className="px-3 text-lg text-white rounded-sm bg-primary-main">
+                {modality}
+              </div>
+            </Tooltip>
+            <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
           </div>
           <div className="ml-12 text-base text-white break-all">
             {description}
@@ -71,10 +78,13 @@ ThumbnailNoImage.propTypes = {
   }),
   description: PropTypes.string.isRequired,
   modality: PropTypes.string.isRequired,
+  /* Tooltip message to display when modality text is hovered */
+  modalityTooltip: PropTypes.string.isRequired,
   seriesDate: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
   isActive: PropTypes.bool.isRequired,
+  viewportIdentificator: PropTypes.string,
 };
 
 export default ThumbnailNoImage;

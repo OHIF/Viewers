@@ -17890,20 +17890,20 @@ react-clientside-effect@^1.2.2:
   dependencies:
     "@babel/runtime" "^7.0.0"
 
-react-cornerstone-viewport@2.3.8:
-  version "2.3.8"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.3.8.tgz#7af8360f29bca986ae4e36b4e503269b88ddc52f"
-  integrity sha512-aiG2uVNrDY6SQx4t/HBxIA3zsMsCwT+6TpcXK9qSSoXhs+X6OTmYEKncWUqL0jtxU1yfh6JTUz8ARTg03gtF+A==
+react-cornerstone-viewport@2.3.9:
+  version "2.3.9"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.3.9.tgz#f9761da8e536f0a217137c6ca1a983f5882249f9"
+  integrity sha512-qrhq8CbX/jq6b93cQjV2qC/mhHOvFBpxzxcHlvHzEQZt/rmRMcaYxCqjpNaNbUmmBu61wNkxesUVsggkPTTcqg==
   dependencies:
     classnames "^2.2.6"
     date-fns "^2.2.1"
     prop-types "^15.7.2"
     react-resize-detector "^4.2.1"
 
-react-cornerstone-viewport@2.3.9:
-  version "2.3.9"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.3.9.tgz#f9761da8e536f0a217137c6ca1a983f5882249f9"
-  integrity sha512-qrhq8CbX/jq6b93cQjV2qC/mhHOvFBpxzxcHlvHzEQZt/rmRMcaYxCqjpNaNbUmmBu61wNkxesUVsggkPTTcqg==
+react-cornerstone-viewport@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-3.0.0.tgz#c7be6dc29762fc844c639a73c3292feb69e31ba5"
+  integrity sha512-hLneVVOrZZlCkIhsKVdIHBGVPbOmeu5tsrPXaeCfsOlA5y7JhtacjuKHL4xzGmlXiCipftgiZ9+4gC2gcJSlcw==
   dependencies:
     classnames "^2.2.6"
     date-fns "^2.2.1"
