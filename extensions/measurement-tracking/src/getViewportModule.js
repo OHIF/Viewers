@@ -14,17 +14,17 @@ const OHIFCornerstoneViewport = props => {
 
 function getViewportModule({ servicesManager }) {
   const ExtendedOHIFCornerstoneSRViewport = props => {
-    const { ToolBarService } = servicesManager.services;
-
     return (
-      <OHIFCornerstoneViewport
-        ToolBarService={ToolBarService}
-        {...props}
-      />
+      <OHIFCornerstoneViewport servicesManager={servicesManager} {...props} />
     );
   };
 
-  return [{ name: 'cornerstone-tracked', component: ExtendedOHIFCornerstoneSRViewport }];
+  return [
+    {
+      name: 'cornerstone-tracked',
+      component: ExtendedOHIFCornerstoneSRViewport,
+    },
+  ];
 }
 
 export default getViewportModule;
