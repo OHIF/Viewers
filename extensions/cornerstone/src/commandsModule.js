@@ -11,7 +11,7 @@ const { studyMetadataManager } = OHIF.utils;
 const { setViewportSpecificData } = OHIF.redux.actions;
 
 const commandsModule = ({ servicesManager }) => {
-  const { ViewportGridService } = servicesManager.services;
+  const { ViewportGridService, MeasurementService } = servicesManager.services;
 
   function _getActiveViewportsEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
@@ -70,6 +70,11 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.reset(enabledElement);
       }
     },
+    clearMeasurements: () => {
+      console.debug('[cornerstone] Erasing all measurements from measurement service...');
+      MeasurementService.clear();
+      /** TODO: Clear annotations */
+    },
     invertViewport: () => {
       const enabledElement = _getActiveViewportsEnabledElement();
 
@@ -121,6 +126,7 @@ const commandsModule = ({ servicesManager }) => {
             lesionNamingNumber,
             measurementNumber,
           } = measurementData;
+
           if (!_id) {
             return;
           }
@@ -315,6 +321,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     removeToolState: {
       commandFn: actions.removeToolState,
+      storeContexts: [],
+      options: {},
+    },
+    clearMeasurements: {
+      commandFn: actions.clearMeasurements,
       storeContexts: [],
       options: {},
     },

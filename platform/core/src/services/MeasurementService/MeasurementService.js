@@ -501,6 +501,16 @@ class MeasurementService {
   }
 
   /**
+   * Clear all measurements and broadcasts removed events to their corresponding sources.
+   */
+  clear() {
+    log.info(`Removing all measurements...`,);
+    Object.keys(this.measurements).forEach(id => {
+      this.remove(this.measurements[id].source, id);
+    });
+  }
+
+  /**
    * Get measurement mapping function if matching criteria.
    *
    * @param {MeasurementSource} source Measurement source instance
@@ -559,14 +569,26 @@ class MeasurementService {
   /**
    * Broadcasts measurement changes.
    *
-   * @param {string} measurementId The measurement id
-   * @param {MeasurementSource} source The measurement source
    * @param {string} eventName The event name
+   * @param {MeasurementSource} source The measurement source
+   * @param {string} measurement The measurement id
    * @return void
    */
   _broadcastChange(eventName, source, measurement) {
     const hasListeners = Object.keys(this.listeners).length > 0;
     const hasCallbacks = Array.isArray(this.listeners[eventName]);
+
+    if (!source) {
+      /* Broadcast to all sources */
+      /* Object.keys(this.sources).forEach(source => {
+        if (hasListeners && hasCallbacks) {
+          this.listeners[eventName].forEach(listener => {
+            listener.callback({ source, measurement });
+          });
+        }
+      });
+      return; */
+    }
 
     if (hasListeners && hasCallbacks) {
       this.listeners[eventName].forEach(listener => {
