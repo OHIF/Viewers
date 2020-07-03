@@ -7,5 +7,4 @@ export default {
   VIEWPORT: 'viewportModule',
   CONTEXT: 'contextModule',
   LAYOUT_TEMPLATE: 'layoutTemplateModule',
-  ON_SWITCH_MODE_ROUTE: 'onSwitchModeRouteModule',
 };

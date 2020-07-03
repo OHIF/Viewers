@@ -1,6 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import getOnSwitchModeRouteModule from './getOnSwitchModeRouteModule';
+import onModeEnter from './onModeEnter';
 import id from './id.js';
 import init from './init';
 
@@ -61,5 +61,5 @@ export default {
     return [{ name: 'dicom-sr', component: ExtendedOHIFCornerstoneSRViewport }];
   },
   getSopClassHandlerModule,
-  getOnSwitchModeRouteModule,
+  onModeEnter,
 };

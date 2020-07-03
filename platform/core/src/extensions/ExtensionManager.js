@@ -16,6 +16,7 @@ export default class ExtensionManager {
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
     });
+    this._extensionLifeCycleHooks = { onModeEnter: {} };
     this.dataSourceMap = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
     this.activeDataSource = undefined;
@@ -25,18 +26,23 @@ export default class ExtensionManager {
     this.activeDataSource = dataSourceName;
   }
 
-  onSwitchModeRoute() {
-    console.log(this);
+  onModeEnter() {
+    const {
+      registeredExtensionIds,
+      getModuleEntry,
+      _servicesManager,
+      _commandsManager,
+      _extensionLifeCycleHooks,
+    } = this;
 
-    const { registeredExtensionIds, getModuleEntry } = this;
+    registeredExtensionIds.forEach(extensionId => {
+      const onModeEnter = _extensionLifeCycleHooks.onModeEnter[extensionId];
 
-    registeredExtensionIds.forEach(extentionId => {
-      const onSwitchModeRoute = getModuleEntry(
-        `${extentionId}.onSwitchModeRouteModule`
-      );
-
-      if (typeof onSwitchModeRoute === 'function') {
-        onSwitchModeRoute();
+      if (typeof onModeEnter === 'function') {
+        onModeEnter({
+          servicesManager: _servicesManager,
+          commandsManager: _commandsManager,
+        });
       }
     });
   }
@@ -99,6 +105,11 @@ export default class ExtensionManager {
       });
     }
 
+    if (extension.onModeEnter) {
+      this._extensionLifeCycleHooks.onModeEnter[extensionId] =
+        extension.onModeEnter;
+    }
+
     // Register Modules
     this.moduleTypeNames.forEach(moduleType => {
       const extensionModule = this._getExtensionModule(
@@ -119,9 +130,6 @@ export default class ExtensionManager {
               extensionId,
               dataSources
             );
-            break;
-          case MODULE_TYPES.ON_SWITCH_MODE_ROUTE:
-            this.modulesMap[`${extensionId}.${moduleType}`] = extensionModule;
             break;
           case MODULE_TYPES.TOOLBAR:
           case MODULE_TYPES.VIEWPORT:

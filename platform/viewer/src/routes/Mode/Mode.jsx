@@ -97,10 +97,12 @@ export default function ModeRoute({
 
   useEffect(() => {
     // Core
+
+    // TOOD -> iterate through services.
     MeasurementService.clearMeasurements();
     ViewportGridService.reset();
     // Extension
-    extensionManager.onSwitchModeRoute();
+    extensionManager.onModeEnter();
     // Mode
     route.init({ servicesManager, extensionManager });
   }, [
