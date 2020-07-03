@@ -13,6 +13,7 @@ import {
 import { useTrackedMeasurements } from './../getContextModule';
 
 import ViewportOverlay from './ViewportOverlay';
+import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 
 const { formatDate } = utils;
 
@@ -297,6 +298,7 @@ function TrackedCornerstoneViewport({
           isPlaying={false}
           frameRate={24}
           isOverlayVisible={true}
+          loadingIndicatorComponent={ViewportLoadingIndicator}
           viewportOverlayComponent={props => {
             return (
               <ViewportOverlay

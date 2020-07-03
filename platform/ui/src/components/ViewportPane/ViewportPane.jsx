@@ -64,11 +64,18 @@ function ViewportPane({
         'flex flex-col',
         'rounded-lg hover:border-primary-light transition duration-300 outline-none overflow-hidden',
         {
-          'border-2 border-primary-light m-0': isActive,
+          'border-2 border-primary-light': isActive,
           'border border-secondary-light': !isActive,
         },
         className
       )}
+      // Normally, we'd use tailwindcss classes here, but margin and border classes use different units
+      // m-# (rem), border-# (px). To make sure we don't change the box size of our viewports
+      // and trigger a canvas resize, we have to use this little trick for margin.
+      // Assumes a :root font-fize of `16px`
+      style={{
+        margin: isActive ? '3px' : '4px',
+      }}
     >
       {children}
     </div>
@@ -90,7 +97,7 @@ ViewportPane.propTypes = {
   onInteraction: PropTypes.func.isRequired,
 };
 
-const noop = () => { };
+const noop = () => {};
 
 ViewportPane.defaultProps = {
   onInteraction: noop,
