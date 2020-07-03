@@ -109,8 +109,8 @@ function OHIFCornerstoneSRViewport({
   useEffect(() => {
     if (!displaySet.isLoaded) {
       displaySet.load();
-      setIsHydrated(displaySet.isHydrated);
     }
+    setIsHydrated(displaySet.isHydrated);
   }, [displaySet]);
 
   const setTrackingUniqueIdentifiersForElement = useCallback(targetElement => {
@@ -399,14 +399,23 @@ function OHIFCornerstoneSRViewport({
     });
   }
 
+  const label =
+    viewports.length > 1
+      ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
+      : '';
+
   return (
     <>
       <ViewportActionBar
+        onDoubleClick={evt => {
+          evt.stopPropagation();
+          evt.preventDefault();
+        }}
         onSeriesChange={onMeasurementChange}
         onHydrationClick={hydrateMeasurementService}
         showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
-          label: _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid],
+          label,
           isTracked: false,
           isLocked: displaySet.isLocked,
           isHydrated,
@@ -573,6 +582,16 @@ function _addToolDataToCornerstoneTools(data, toolType, imageId) {
   const toolData = imageIdToolState[toolType];
 
   toolData.data.push(data);
+}
+
+function _onDoubleClick() {
+  const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
+    'manipulatorState'
+  ).setters.cancelActiveManipulatorsForElement;
+  const enabledElements = cornerstoneTools.store.state.enabledElements;
+  enabledElements.forEach(element => {
+    cancelActiveManipulatorsForElement(element);
+  });
 }
 
 export default OHIFCornerstoneSRViewport;

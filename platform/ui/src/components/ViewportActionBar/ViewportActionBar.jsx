@@ -16,6 +16,7 @@ const ViewportActionBar = ({
   showPatientInfo: patientInfoVisibility,
   onSeriesChange,
   onHydrationClick,
+  onDoubleClick,
 }) => {
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
 
@@ -135,7 +136,10 @@ const ViewportActionBar = ({
   };
 
   return (
-    <div className="flex items-center p-2 border-b select-none border-primary-light min-h-12">
+    <div
+      className="flex items-center p-2 border-b select-none border-primary-light min-h-12"
+      onDoubleClick={onDoubleClick}
+    >
       <div className="flex flex-grow">
         <div className="flex items-center">
           {renderIconStatus()}

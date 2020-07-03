@@ -52,6 +52,7 @@ const EVENTS = {
   MEASUREMENT_UPDATED: 'event::measurement_updated',
   MEASUREMENT_ADDED: 'event::measurement_added',
   MEASUREMENT_REMOVED: 'event::measurement_removed',
+  MEASUREMENTS_CLEARED: 'event::measurements_cleared',
 };
 
 const VALUE_TYPES = {
@@ -286,7 +287,7 @@ class MeasurementService {
     if (this.measurements[id]) {
       const updatedMeasurement = {
         ...measurement,
-        modifiedTimestamp: Math.floor(Date.now() / 1000)
+        modifiedTimestamp: Math.floor(Date.now() / 1000),
       };
 
       log.info(`Updating measurement...`, updatedMeasurement);
@@ -491,6 +492,12 @@ class MeasurementService {
     this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED, source, id);
   }
 
+  clearMeasurements() {
+    this.measurements = {};
+
+    this._broadcastChange(this.EVENTS.MEASUREMENTS_CLEARED);
+  }
+
   _getMappingByMeasurementSource(measurementId, definition) {
     const measurement = this.getMeasurement(measurementId);
     if (this._isValidSource(measurement.source)) {
@@ -498,6 +505,14 @@ class MeasurementService {
         m => m.definition === definition
       );
     }
+  }
+
+  /**
+   * Clear all measurements and broadcasts cleared event.
+   */
+  clear() {
+    this.measurements = {};
+    this._broadcastChange(this.EVENTS.MEASUREMENTS_CLEARED);
   }
 
   /**
@@ -559,14 +574,26 @@ class MeasurementService {
   /**
    * Broadcasts measurement changes.
    *
-   * @param {string} measurementId The measurement id
-   * @param {MeasurementSource} source The measurement source
    * @param {string} eventName The event name
+   * @param {MeasurementSource} source The measurement source
+   * @param {string} measurement The measurement id
    * @return void
    */
   _broadcastChange(eventName, source, measurement) {
     const hasListeners = Object.keys(this.listeners).length > 0;
     const hasCallbacks = Array.isArray(this.listeners[eventName]);
+
+    if (!source) {
+      /* Broadcast to all sources */
+      /* Object.keys(this.sources).forEach(source => {
+        if (hasListeners && hasCallbacks) {
+          this.listeners[eventName].forEach(listener => {
+            listener.callback({ source, measurement });
+          });
+        }
+      });
+      return; */
+    }
 
     if (hasListeners && hasCallbacks) {
       this.listeners[eventName].forEach(listener => {

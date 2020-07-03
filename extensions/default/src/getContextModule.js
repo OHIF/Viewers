@@ -3,7 +3,7 @@ import { ViewModelContext } from '@ohif/core';
 
 const HelloWorldContext = React.createContext({
   message: 'HelloWorldContextTesting',
-  setMessage: () => {},
+  setMessage: () => { },
 });
 
 HelloWorldContext.displayName = 'HelloWorldContext';
