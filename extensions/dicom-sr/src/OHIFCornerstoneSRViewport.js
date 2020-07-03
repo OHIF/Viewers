@@ -425,26 +425,28 @@ function OHIFCornerstoneSRViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+                  2
+                )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
         }}
       />
-      <CornerstoneViewport
-        onElementEnabled={onElementEnabled}
-        viewportIndex={viewportIndex}
-        imageIds={imageIds}
-        imageIdIndex={currentImageIdIndex}
-        // TODO: ViewportGrid Context?
-        isActive={true} // todo
-        isStackPrefetchEnabled={true} // todo
-        isPlaying={false}
-        frameRate={24}
-        isOverlayVisible={false}
-      />
-      {childrenWithProps}
+      <div className="relative flex flex-row w-full h-full overflow-hidden">
+        <CornerstoneViewport
+          onElementEnabled={onElementEnabled}
+          viewportIndex={viewportIndex}
+          imageIds={imageIds}
+          imageIdIndex={currentImageIdIndex}
+          // TODO: ViewportGrid Context?
+          isActive={true} // todo
+          isStackPrefetchEnabled={true} // todo
+          isPlaying={false}
+          frameRate={24}
+          isOverlayVisible={false}
+        />
+        {childrenWithProps}
+      </div>
     </>
   );
 }
