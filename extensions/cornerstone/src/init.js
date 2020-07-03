@@ -329,7 +329,6 @@ const _connectToolsToMeasurementService = measurementService => {
     const { MEASUREMENT_REMOVED } = measurementService.EVENTS;
 
     measurementService.subscribe(MEASUREMENT_REMOVED, ({ id }) => {
-      //
 
       const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
     });
