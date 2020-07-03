@@ -282,6 +282,27 @@ class MeasurementService {
     }
   }
 
+  update(id, measurement) {
+    if (this.measurements[id]) {
+      const updatedMeasurement = {
+        ...measurement,
+        modifiedTimestamp: Math.floor(Date.now() / 1000)
+      };
+
+      log.info(`Updating measurement...`, updatedMeasurement);
+
+      this.measurements[id] = updatedMeasurement;
+
+      this._broadcastChange(
+        this.EVENTS.MEASUREMENT_UPDATED,
+        measurement.source,
+        updatedMeasurement
+      );
+
+      return updatedMeasurement.id;
+    }
+  }
+
   /**
    * Add a raw measurement into a source so that it may be
    * Converted to/from annotation in the same way. E.g. import serialized data
