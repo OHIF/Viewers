@@ -278,7 +278,7 @@ function TrackedCornerstoneViewport({
         }}
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
-      <div className="relative flex flex-row w-full h-full">
+      <div className="relative flex flex-row w-full h-full overflow-hidden">
         <CornerstoneViewport
           onElementEnabled={onElementEnabled}
           viewportIndex={viewportIndex}
