@@ -102,10 +102,6 @@ class OHIFCornerstoneViewport extends Component {
   }
 
   getViewportData = async displaySet => {
-    if (!displaySet) {
-      return;
-    }
-
     let viewportData;
 
     const { dataSource } = this.props;
@@ -143,11 +139,9 @@ class OHIFCornerstoneViewport extends Component {
     }
 
     this.getViewportData(displaySet).then(viewportData => {
-      if (viewportData) {
-        this.setState({
-          viewportData,
-        });
-      }
+      this.setState({
+        viewportData,
+      });
     });
   }
 
