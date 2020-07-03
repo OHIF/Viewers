@@ -408,7 +408,6 @@ function OHIFCornerstoneSRViewport({
     <>
       <ViewportActionBar
         onDoubleClick={evt => {
-          debugger;
           evt.stopPropagation();
           evt.preventDefault();
         }}

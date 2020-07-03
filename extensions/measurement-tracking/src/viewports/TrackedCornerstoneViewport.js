@@ -296,8 +296,6 @@ function TrackedCornerstoneViewport({
     <>
       <ViewportActionBar
         onDoubleClick={evt => {
-          console.log('HI DANNY');
-          debugger;
           evt.stopPropagation();
           evt.preventDefault();
         }}
