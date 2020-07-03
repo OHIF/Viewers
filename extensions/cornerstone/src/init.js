@@ -317,7 +317,6 @@ const _connectToolsToMeasurementService = measurementService => {
 
     function removeMeasurement(csToolsEvent) {
       console.log('~~ removeEvt', csToolsEvent);
-      debugger;
       try {
         if (csToolsEvent.detail.measurementData.id) {
           remove(csToolsEvent.detail.measurementData.id);
@@ -326,6 +325,14 @@ const _connectToolsToMeasurementService = measurementService => {
         console.warn('Failed to remove measurement:', error);
       }
     }
+
+    const { MEASUREMENT_REMOVED } = measurementService.EVENTS;
+
+    measurementService.subscribe(MEASUREMENT_REMOVED, ({ id }) => {
+      //
+
+      const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+    });
 
     const { MEASUREMENTS_CLEARED } = measurementService.EVENTS;
 

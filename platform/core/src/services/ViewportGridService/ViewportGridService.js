@@ -48,7 +48,7 @@ function setServiceImplementation({
   setActiveViewportIndex: setActiveViewportIndexImplementation,
   setDisplaysetForViewport: setDisplaysetForViewportImplementation,
   setLayout: setLayoutImplementation,
-  setReset: setResetImplementation,
+  reset: resetImplementation,
 }) {
   if (getStateImplementation) {
     serviceImplementation._getState = getStateImplementation;
@@ -61,6 +61,9 @@ function setServiceImplementation({
   }
   if (setLayoutImplementation) {
     serviceImplementation._setLayout = setLayoutImplementation;
+  }
+  if (resetImplementation) {
+    serviceImplementation._reset = resetImplementation;
   }
 }
 

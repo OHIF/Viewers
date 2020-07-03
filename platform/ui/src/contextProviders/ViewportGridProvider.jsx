@@ -27,7 +27,11 @@ export function ViewportGridProvider({ children, service }) {
         return { ...state, ...{ activeViewportIndex: action.payload } };
       }
       case 'SET_DISPLAYSET_FOR_VIEWPORT': {
-        const { viewportIndex, displaySetInstanceUID, imageIndex } = action.payload;
+        const {
+          viewportIndex,
+          displaySetInstanceUID,
+          imageIndex,
+        } = action.payload;
         const viewports = state.viewports.slice();
 
         viewports[viewportIndex] = { displaySetInstanceUID, imageIndex };
@@ -53,6 +57,17 @@ export function ViewportGridProvider({ children, service }) {
           ...{ activeViewportIndex, numCols, numRows, viewports },
         };
       }
+      case 'RESET': {
+        return {
+          numCols: 1,
+          numRows: 1,
+          activeViewportIndex: 0,
+          viewports: [
+            { displaySetInstanceUID: undefined, imageIndex: undefined },
+          ],
+        };
+      }
+
       default:
         return action.payload;
     }
@@ -75,7 +90,7 @@ export function ViewportGridProvider({ children, service }) {
         payload: {
           viewportIndex,
           displaySetInstanceUID,
-          imageIndex
+          imageIndex,
         },
       }),
     [dispatch]
@@ -93,6 +108,15 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
+  const reset = useCallback(
+    () =>
+      dispatch({
+        type: 'RESET',
+        payload: {},
+      }),
+    [dispatch]
+  );
+
   /**
    * Sets the implementation of a modal service that can be used by extensions.
    *
@@ -105,6 +129,7 @@ export function ViewportGridProvider({ children, service }) {
         setActiveViewportIndex,
         setDisplaysetForViewport,
         setLayout,
+        reset,
       });
     }
   }, [
@@ -113,6 +138,7 @@ export function ViewportGridProvider({ children, service }) {
     setActiveViewportIndex,
     setDisplaysetForViewport,
     setLayout,
+    reset,
   ]);
 
   const api = {
