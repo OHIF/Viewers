@@ -48,7 +48,12 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     .sort((s1, s2) => {
       const noSortApplied = sortBy === '' || !sortBy;
       const sortModifier = sortDirection === 'descending' ? 1 : -1;
-      if (noSortApplied) {
+
+      if (noSortApplied && studies.length < 101) {
+        const ascendingSortModifier = -1;
+
+        return _sortStringDates(s1, s2, ascendingSortModifier);
+      } else if (noSortApplied) {
         return 0;
       }
 
@@ -64,20 +69,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
       } else if (!s2Prop && s1Prop) {
         return 1 * sortModifier;
       } else if (sortBy === 'studyDate') {
-        // TODO: Delimiters are non-standard. Should we support them?
-        const s1Date = moment(s1.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
-        const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
-
-        if (s1Date.isValid() && s2Date.isValid()) {
-          return (
-            (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) *
-            sortModifier
-          );
-        } else if (s1Date.isValid()) {
-          return sortModifier;
-        } else if (s2Date.isValid()) {
-          return -1 * sortModifier;
-        }
+        return _sortStringDates(s1, s2, sortModifier);
       }
 
       return 0;
@@ -176,13 +168,12 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     // Note: expanded rows index begins at 1
     for (let z = 0; z < expandedRows.length; z++) {
       const expandedRowIndex = expandedRows[z] - 1;
-      console.log(sortedStudies[expandedRowIndex]);
       const studyInstanceUid = sortedStudies[expandedRowIndex].studyInstanceUid;
+
       if (studiesWithSeriesData.includes(studyInstanceUid)) {
         continue;
       }
 
-      console.log(`fetching for ${expandedRowIndex}`);
       fetchSeries(studyInstanceUid);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -215,8 +206,8 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           content: patientName ? (
             patientName
           ) : (
-              <span className="text-gray-700">(Empty)</span>
-            ),
+            <span className="text-gray-700">(Empty)</span>
+          ),
           title: patientName,
           gridCol: 4,
         },
@@ -303,13 +294,13 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                return {
-                  description: s.description || '(empty)',
-                  seriesNumber: s.seriesNumber || '',
-                  modality: s.modality || '',
-                  instances: s.numSeriesInstances || '',
-                };
-              })
+                  return {
+                    description: s.description || '(empty)',
+                    seriesNumber: s.seriesNumber || '',
+                    modality: s.modality || '',
+                    instances: s.numSeriesInstances || '',
+                  };
+                })
               : []
           }
         >
@@ -326,7 +317,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
               <Link
                 key={i}
                 to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
-              // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+                // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
@@ -397,10 +388,10 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           />
         </>
       ) : (
-          <div className="flex flex-col items-center justify-center pt-48">
-            <EmptyStudies isLoading={isLoadingData} />
-          </div>
-        )}
+        <div className="flex flex-col items-center justify-center pt-48">
+          <EmptyStudies isLoading={isLoadingData} />
+        </div>
+      )}
     </div>
   );
 }
@@ -467,6 +458,22 @@ function _getQueryFilterValues(query) {
       }
     }
     return retValue;
+  }
+}
+
+function _sortStringDates(s1, s2, sortModifier) {
+  // TODO: Delimiters are non-standard. Should we support them?
+  const s1Date = moment(s1.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
+  const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
+
+  if (s1Date.isValid() && s2Date.isValid()) {
+    return (
+      (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier
+    );
+  } else if (s1Date.isValid()) {
+    return sortModifier;
+  } else if (s2Date.isValid()) {
+    return -1 * sortModifier;
   }
 }
 

@@ -26,31 +26,22 @@ const createRoutes = ({
   dataSources,
   extensionManager,
   servicesManager,
-  hotkeysManager
+  hotkeysManager,
 }) => {
-  const routes = buildModeRoutes({
-    modes,
-    dataSources,
-    extensionManager,
-    servicesManager,
-    hotkeysManager
-  }) || [];
+  const routes =
+    buildModeRoutes({
+      modes,
+      dataSources,
+      extensionManager,
+      servicesManager,
+      hotkeysManager,
+    }) || [];
 
   const allRoutes = [...routes, ...bakedInRoutes];
-
-  console.log(
-    'Creating Routes:',
-    modes,
-    dataSources,
-    routes,
-    bakedInRoutes,
-    allRoutes
-  );
 
   return (
     <Switch>
       {allRoutes.map((route, i) => {
-        console.log(route);
         return (
           <Route
             key={i}

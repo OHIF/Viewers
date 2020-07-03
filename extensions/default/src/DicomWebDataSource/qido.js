@@ -26,13 +26,6 @@ import { DICOMWeb, utils } from '@ohif/core';
 
 const { getString, getName, getModalities } = DICOMWeb;
 
-const FIXED_QUERY_KEYS = [
-  'fuzzymatching',
-  'includefield',
-  'limit',
-  'offset',
-];
-
 /**
  * Parses resulting data from a QIDO call into a set of Study MetaData
  *
@@ -118,12 +111,8 @@ async function search(
     studyInstanceUid: undefined,
     queryParams: queryParameters,
   });
-  const hasSearchQuery = Object.keys(queryParameters).some(k => !FIXED_QUERY_KEYS.includes(k));
-  return !hasSearchQuery && searchResult.length < 101 ? searchResult.sort((a, b) => {
-    const aDate = getString(a['00080020']);
-    const bDate = getString(b['00080020']);
-    return aDate - bDate;
-  }) : searchResult;
+
+  return searchResult;
 }
 
 /**
