@@ -271,6 +271,7 @@ const _connectToolsToMeasurementService = measurementService => {
   const csToolsVer4MeasurementSource = _initMeasurementService(
     measurementService
   );
+  _connectMeasurementServiceToTools(measurementService, csToolsVer4MeasurementSource);
   const { addOrUpdate, remove } = csToolsVer4MeasurementSource;
   const elementEnabledEvt = cornerstone.EVENTS.ELEMENT_ENABLED;
 
@@ -333,6 +334,30 @@ const _connectToolsToMeasurementService = measurementService => {
     enabledElement.addEventListener(updatedEvt, updateMeasurement);
     enabledElement.addEventListener(removedEvt, removeMeasurement);
   });
+};
+
+const _connectMeasurementServiceToTools = (measurementService, measurementSource) => {
+  const { MEASUREMENTS_CLEARED, MEASUREMENT_REMOVED } = measurementService.EVENTS;
+  const sourceId = measurementSource.id;
+
+  measurementService.subscribe(MEASUREMENTS_CLEARED, () => {
+    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
+      {}
+    );
+    cornerstone.getEnabledElements().forEach(enabledElement => {
+      cornerstone.updateImage(enabledElement.element);
+    });
+  });
+
+  /* TODO: Remove per measurement
+  measurementService.subscribe(MEASUREMENT_REMOVED,
+    ({ source, measurement }) => {
+      if ([sourceId].includes(source.id)) {
+        // const annotation = getAnnotation('Length', measurement.id);
+        // iterate tool state
+      }
+    }
+  ); */
 };
 
 // const {

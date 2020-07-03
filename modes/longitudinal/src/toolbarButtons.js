@@ -307,4 +307,19 @@ export default [
       type: 'secondary',
     },
   },
+  {
+    id: 'Clear',
+    type: 'ohif.action',
+    config: {
+      groupName: 'primaryTool',
+    },
+    props: {
+      isActive: false,
+      icon: 'old-trash',
+      label: 'Clear',
+      commandName: 'clearMeasurements',
+      commandOptions: {},
+      type: 'secondary',
+    },
+  },
 ];
