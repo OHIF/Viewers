@@ -30,7 +30,7 @@ const ThumbnailNoImage = ({
       ref={thumbnailElement}
       onFocus={() => blurHandlerListener(thumbnailElement)}
       className={classnames(
-        'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded',
+        'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded select-none',
         isActive ? 'border-2 border-primary-light' : 'border'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
@@ -61,7 +61,7 @@ const ThumbnailNoImage = ({
                 {modality}
               </div>
             </Tooltip>
-            <span className="text-base text-blue-300 ml-4">{seriesDate}</span>
+            <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
           </div>
           <div className="ml-12 text-base text-white break-all">
             {description}

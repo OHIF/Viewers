@@ -119,7 +119,7 @@ const ViewportActionBar = ({
   };
 
   return (
-    <div className="flex items-center p-2 border-b border-primary-light min-h-12">
+    <div className="flex items-center p-2 border-b select-none border-primary-light min-h-12">
       <div className="flex flex-grow">
         <div className="flex items-center">
           {renderIconStatus()}
