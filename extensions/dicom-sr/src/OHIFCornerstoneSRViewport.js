@@ -106,6 +106,13 @@ function OHIFCornerstoneSRViewport({
     setElement(targetElement);
   };
 
+  useEffect(() => {
+    if (!displaySet.isLoaded) {
+      displaySet.load();
+      setIsHydrated(displaySet.isHydrated);
+    }
+  }, [displaySet]);
+
   const setTrackingUniqueIdentifiersForElement = useCallback(targetElement => {
     const { measurements } = displaySet;
 

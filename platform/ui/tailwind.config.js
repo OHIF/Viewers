@@ -330,7 +330,7 @@ module.exports = {
       full: '100%',
       viewport: '0.5rem',
       '1/2': '50%',
-      'viewport-scrollbar': '1.3rem'
+      'viewport-scrollbar': '1.3rem',
     },
     letterSpacing: {
       tighter: '-0.05em',
@@ -684,7 +684,7 @@ module.exports = {
     transitionProperty: {
       none: 'none',
       all: 'all',
-      'height': 'height',
+      height: 'height',
       default:
         'background-color, border-color, color, fill, stroke, opacity, box-shadow, transform',
       colors: 'background-color, border-color, color, fill, stroke',
@@ -716,12 +716,26 @@ module.exports = {
     alignSelf: ['responsive'],
     appearance: ['responsive'],
     backgroundAttachment: ['responsive'],
-    backgroundColor: ['responsive', 'hover', 'focus', 'active', 'group-hover'],
+    backgroundColor: [
+      'responsive',
+      'hover',
+      'focus',
+      'active',
+      'group-focus',
+      'group-hover',
+    ],
     backgroundPosition: ['responsive'],
     backgroundRepeat: ['responsive'],
     backgroundSize: ['responsive'],
     borderCollapse: ['responsive'],
-    borderColor: ['responsive', 'hover', 'focus', 'active', 'group-focus'],
+    borderColor: [
+      'responsive',
+      'hover',
+      'focus',
+      'active',
+      'group-focus',
+      'group-hover',
+    ],
     borderRadius: ['responsive', 'focus', 'first', 'last'],
     borderStyle: ['responsive', 'focus'],
     borderWidth: ['responsive', 'focus', 'first', 'last'],

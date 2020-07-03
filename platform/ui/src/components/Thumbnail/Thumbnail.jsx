@@ -39,7 +39,7 @@ const Thumbnail = ({
       ref={thumbnailElement}
       className={classnames(
         className,
-        'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none group'
+        'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none select-none group'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       onClick={onClick}

@@ -13,6 +13,7 @@ import {
 import { useTrackedMeasurements } from './../getContextModule';
 
 import ViewportOverlay from './ViewportOverlay';
+import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 
 const { formatDate } = utils;
 
@@ -33,7 +34,6 @@ const BaseAnnotationTool = cornerstoneTools.importInternal(
 );
 
 // const cine = viewportSpecificData.cine;
-
 // isPlaying = cine.isPlaying === true;
 // frameRate = cine.cineFrameRate || frameRate;
 
@@ -47,7 +47,10 @@ function TrackedCornerstoneViewport({
   ToolBarService,
 }) {
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [{ activeViewportIndex, viewports }] = useViewportGrid();
+  const [
+    { activeViewportIndex, viewports },
+    viewportGridService,
+  ] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
@@ -159,16 +162,15 @@ function TrackedCornerstoneViewport({
       );
     }
 
-    _getViewportData(dataSource, displaySet).then(viewportData => {
-      setViewportData({ ...viewportData });
-    });
-  }, [
-    dataSource,
-    displaySet,
-    displaySet.StudyInstanceUID,
-    displaySet.displaySetInstanceUID,
-    displaySet.frameIndex,
-  ]);
+    /*
+     * This grabs `imageIndex from first matching
+     * We actually want whichever is at our `viewportIndex`
+     */
+    const { imageIndex } = viewports[viewportIndex];
+    displaySet.imageIndex = imageIndex;
+
+    _getViewportData(dataSource, displaySet).then(setViewportData);
+  }, [dataSource, displaySet, viewports, viewportIndex]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -274,8 +276,8 @@ function TrackedCornerstoneViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+                  2
+                )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -291,12 +293,21 @@ function TrackedCornerstoneViewport({
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
+          onNewImageDebounceTime={700}
+          onNewImageDebounced={({ currentImageIdIndex }) => {
+            viewportGridService.setDisplaysetForViewport({
+              viewportIndex: activeViewportIndex,
+              displaySetInstanceUID: displaySet.displaySetInstanceUID,
+              imageIndex: currentImageIdIndex,
+            });
+          }}
           // TODO: ViewportGrid Context?
           isActive={true} // todo
           isStackPrefetchEnabled={true} // todo
           isPlaying={false}
           frameRate={24}
           isOverlayVisible={true}
+          loadingIndicatorComponent={ViewportLoadingIndicator}
           viewportOverlayComponent={props => {
             return (
               <ViewportOverlay
@@ -345,7 +356,7 @@ const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
  * @return {Object} CornerstoneTools Stack
  */
 function _getCornerstoneStack(displaySet, dataSource) {
-  const { frameIndex } = displaySet;
+  const { imageIndex } = displaySet;
 
   // Get stack from Stack Manager
   const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
@@ -353,10 +364,11 @@ function _getCornerstoneStack(displaySet, dataSource) {
   // Clone the stack here so we don't mutate it
   const stack = Object.assign({}, storedStack);
 
-  stack.currentImageIdIndex = frameIndex;
+  stack.currentImageIdIndex = imageIndex;
 
   return stack;
 }
+
 
 function _onDoubleClick() {
   const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
@@ -368,12 +380,19 @@ function _onDoubleClick() {
   });
 }
 
-async function _getViewportData(dataSource, displaySet) {
-  let viewportData;
 
+/**
+ * Builds the viewport data from a datasource and a displayset.
+ *
+ * @param {Object} dataSource
+ * @param {Object} displaySet
+ * @return {Object} viewport data
+ */
+
+async function _getViewportData(dataSource, displaySet) {
   const stack = _getCornerstoneStack(displaySet, dataSource);
 
-  viewportData = {
+  const viewportData = {
     StudyInstanceUID: displaySet.StudyInstanceUID,
     displaySetInstanceUID: displaySet.displaySetInstanceUID,
     stack,

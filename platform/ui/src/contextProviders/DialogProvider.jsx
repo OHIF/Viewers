@@ -4,6 +4,7 @@ import React, {
   useContext,
   useCallback,
   useEffect,
+  useRef
 } from 'react';
 
 import PropTypes from 'prop-types';
@@ -251,12 +252,18 @@ const DialogProvider = ({ children, service }) => {
     });
   };
 
+  const onKeyDownHandler = event => {
+    if (event.key === "Escape") {
+      dismissAll();
+    }
+  };
+
   const validCallback = callback => callback && typeof callback === 'function';
 
   return (
     <DialogContext.Provider value={{ create, dismiss, dismissAll, isEmpty }}>
       {!isEmpty() &&
-        <div className='w-full h-full absolute'>
+        <div className='w-full h-full absolute' onKeyDown={onKeyDownHandler}>
           {renderDialogs()}
         </div>
       }

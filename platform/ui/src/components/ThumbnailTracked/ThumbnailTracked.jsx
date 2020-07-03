@@ -43,7 +43,10 @@ const ThumbnailTracked = ({
               <div className="flex flex-row flex-1">
                 <div className="flex flex-col flex-1 pr-4">
                   <span>
-                    Series is <span className="text-white">tracked</span>
+                    Series is
+                    <span className="text-white">
+                      {isTracked ? ' tracked' : ' untracked'}
+                    </span>
                   </span>
                   {viewportIdentificator && (
                     <span>
@@ -73,7 +76,7 @@ const ThumbnailTracked = ({
         )}
       </div>
       <Thumbnail
-         displaySetInstanceUID={displaySetInstanceUID}
+        displaySetInstanceUID={displaySetInstanceUID}
         imageSrc={imageSrc}
         imageAltText={imageAltText}
         dragData={dragData}

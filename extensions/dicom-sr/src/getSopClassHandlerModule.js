@@ -55,10 +55,6 @@ function _getDisplaySetsFromSeries(
     throw new Error('No instances were provided');
   }
 
-  const { DisplaySetService, MeasurementService } = servicesManager.services;
-  const dataSources = extensionManager.getDataSources();
-  const dataSource = dataSources[0];
-
   const instance = instances[0];
 
   const {
@@ -68,13 +64,13 @@ function _getDisplaySetsFromSeries(
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    ConceptNameCodeSequence,
   } = instance;
-  const { ConceptNameCodeSequence, ContentSequence } = instance;
 
   if (
     !ConceptNameCodeSequence ||
     ConceptNameCodeSequence.CodeValue !==
-      CodeNameCodeSequenceValues.ImagingMeasurementReport
+    CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
     console.warn(
       'Only support Imaging Measurement Report SRs (TID1500) for now'
@@ -93,22 +89,36 @@ function _getDisplaySetsFromSeries(
     SeriesInstanceUID,
     StudyInstanceUID,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
-    referencedImages: _getReferencedImagesList(ContentSequence),
-    measurements: _getMeasurements(ContentSequence),
+    referencedImages: null,
+    measurements: null,
+    isDerivedDisplaySet: true,
+    isLoaded: false,
     sopClassUids,
+    instance,
   };
+
+  displaySet.load = () => _load(displaySet, servicesManager, extensionManager);
+
+  return [displaySet];
+}
+
+function _load(displaySet, servicesManager, extensionManager) {
+  const { DisplaySetService, MeasurementService } = servicesManager.services;
+  const dataSources = extensionManager.getDataSources();
+  const dataSource = dataSources[0];
+
+  const { ContentSequence } = displaySet.instance;
+
+  displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
+  displaySet.measurements = _getMeasurements(ContentSequence);
 
   const mappings = MeasurementService.getSourceMappings(
     'CornerstoneTools',
     '4'
   );
 
-  if (isRehydratable(displaySet, mappings)) {
-    displaySet.isLocked = false;
-    displaySet.isHydrated = false;
-  } else {
-    displaySet.isLocked = true;
-  }
+  displaySet.isHydrated = false;
+  displaySet.isLocked = isRehydratable(displaySet, mappings) ? false : true;
 
   // Check currently added displaySets and add measurements if the sources exist.
   DisplaySetService.activeDisplaySets.forEach(activeDisplaySet => {
@@ -135,8 +145,6 @@ function _getDisplaySetsFromSeries(
       });
     }
   );
-
-  return [displaySet];
 }
 
 function _checkIfCanAddMeasurementsToDisplaySet(
@@ -274,7 +282,7 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
     trackingUniqueIdentifier => {
       const mergedContentSequence =
         mergedContentSequencesByTrackingUniqueIdentifiers[
-          trackingUniqueIdentifier
+        trackingUniqueIdentifier
         ];
 
       const measurement = _processMeasurement(mergedContentSequence);
@@ -314,7 +322,7 @@ function _getMergedContentSequencesByTrackingUniqueIdentifiers(
 
     if (
       mergedContentSequencesByTrackingUniqueIdentifiers[
-        trackingUniqueIdentifier
+      trackingUniqueIdentifier
       ] === undefined
     ) {
       // Add the full ContentSequence
@@ -440,9 +448,9 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     const cornerstoneFreeTextFinding = Findings.find(
       Finding =>
         Finding.ConceptCodeSequence.CodingSchemeDesignator ===
-          CORNERSTONE_CODING_SCHEME_DESIGNATOR &&
+        CORNERSTONE_CODING_SCHEME_DESIGNATOR &&
         Finding.ConceptCodeSequence.CodeValue ===
-          CORNERSTONE_FREETEXT_CODE_VALUE
+        CORNERSTONE_FREETEXT_CODE_VALUE
     );
     if (cornerstoneFreeTextFinding) {
       measurement.labels.push({

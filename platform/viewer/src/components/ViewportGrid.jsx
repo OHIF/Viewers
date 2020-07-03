@@ -147,6 +147,7 @@ function ViewerViewportGrid(props) {
 
       const displaySet =
         DisplaySetService.getDisplaySetByUID(displaySetInstanceUID) || {};
+
       const ViewportComponent = _getViewportComponent(
         displaySet.SOPClassHandlerId,
         viewportComponents
