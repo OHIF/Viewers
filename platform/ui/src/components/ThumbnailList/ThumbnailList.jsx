@@ -79,6 +79,7 @@ const ThumbnailList = ({
                   displaySetInstanceUID={displaySetInstanceUID}
                   dragData={dragData}
                   modality={modality}
+                  modalityTooltip={_getModalityTooltip(modality)}
                   seriesDate={seriesDate}
                   description={description}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
@@ -131,6 +132,19 @@ ThumbnailList.propTypes = {
   onThumbnailClick: PropTypes.func.isRequired,
   onThumbnailDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
+};
+
+// TODO: Support "Viewport Identificator"?
+function _getModalityTooltip(modality) {
+  if (_modalityTooltips.hasOwnProperty(modality)) {
+    return _modalityTooltips[modality];
+  }
+
+  return 'Unknown';
+}
+
+const _modalityTooltips = {
+  SR: 'Structured Report',
 };
 
 export default ThumbnailList;

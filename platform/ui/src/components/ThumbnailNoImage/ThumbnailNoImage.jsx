@@ -10,6 +10,7 @@ const ThumbnailNoImage = ({
   description,
   seriesDate,
   modality,
+  modalityTooltip,
   onClick,
   onDoubleClick,
   dragData,
@@ -45,17 +46,7 @@ const ThumbnailNoImage = ({
             <Icon name="list-bullets" className="w-12 text-secondary-light" />
             <Tooltip
               position="bottom"
-              content={
-                <Typography>
-                  Structured Report
-                  {isActive && (
-                    <div>
-                      is displayed in{' '}
-                      <div>Viewport {viewportIdentificator}</div>
-                    </div>
-                  )}
-                </Typography>
-              }
+              content={<Typography>{modalityTooltip}</Typography>}
             >
               <div className="px-3 text-lg text-white rounded-sm bg-primary-main">
                 {modality}
@@ -87,6 +78,8 @@ ThumbnailNoImage.propTypes = {
   }),
   description: PropTypes.string.isRequired,
   modality: PropTypes.string.isRequired,
+  /* Tooltip message to display when modality text is hovered */
+  modalityTooltip: PropTypes.string.isRequired,
   seriesDate: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
