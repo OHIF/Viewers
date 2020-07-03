@@ -441,7 +441,7 @@ function OHIFCornerstoneSRViewport({
           },
         }}
       />
-      <div className="relative flex flex-row w-full h-full overflow-hidden">
+      <div className="relative flex flex-row w-full h-full overflow-hidden" onDoubleClick={_onDoubleClick}>
         <CornerstoneViewport
           onElementEnabled={onElementEnabled}
           viewportIndex={viewportIndex}
