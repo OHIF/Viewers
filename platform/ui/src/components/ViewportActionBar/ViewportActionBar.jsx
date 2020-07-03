@@ -52,18 +52,24 @@ const ViewportActionBar = ({
 
   const renderIconStatus = () => {
     if (modality === 'SR') {
-const TooltipMessage = isLocked
-    ? (<div>This SR is locked. <br />Measurements cannot be duplicated.</div>)
-    : (<div>This SR is unlocked. <br />You can duplicate measurements on your current report <br /> by clicking 'Edit'.</div>);
+      const TooltipMessage = isLocked
+        ? () => (
+            <div>
+              This SR is locked. <br />
+              Measurements cannot be duplicated.
+            </div>
+          )
+        : () => (
+            <div>
+              This SR is unlocked. <br />
+              You can duplicate measurements on your current report <br /> by
+              clicking &apos;Edit&apos;.
+            </div>
+          );
       return (
         <>
-          <Tooltip
-            content={
-              <TooltipMessage />
-            }
-            position="bottom-left"
-          >
-            <div className="relative flex p-1 border rounded border-primary-light cursor-default">
+          <Tooltip content={<TooltipMessage />} position="bottom-left">
+            <div className="relative flex p-1 border rounded cursor-default border-primary-light">
               <span className="text-sm font-bold leading-none text-primary-light">
                 SR
               </span>
@@ -77,7 +83,7 @@ const TooltipMessage = isLocked
             </div>
           </Tooltip>
           {!isLocked && !isHydrated && (
-            <div className="relative ml-1 flex p-1 border rounded border-primary-light cursor-pointer">
+            <div className="relative flex p-1 ml-1 border rounded cursor-pointer border-primary-light">
               <span
                 className="text-sm font-bold leading-none text-primary-light"
                 onClick={onHydrationClick}
