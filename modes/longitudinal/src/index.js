@@ -62,6 +62,7 @@ export default function mode({ modeConfiguration }) {
             'Bidirectional',
             'Ellipse',
             'Length',
+            'Clear',
           ]);
 
           // Could import layout selector here from org.ohif.default (when it exists!)

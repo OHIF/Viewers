@@ -33,7 +33,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     /** Used by commands to inject `viewports` from "redux" */
     getAppState: () => { },
     /** Used by commands to determine active context */
-    getActiveContexts: () => ['VIEWER', 'ACTIVE_VIEWPORT::CORNERSTONE'],
+    getActiveContexts: () => ['VIEWER', 'DEFAULT', 'ACTIVE_VIEWPORT::CORNERSTONE'],
   };
 
   const servicesManager = new ServicesManager();

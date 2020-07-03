@@ -121,6 +121,7 @@ const commandsModule = ({ servicesManager }) => {
             lesionNamingNumber,
             measurementNumber,
           } = measurementData;
+
           if (!_id) {
             return;
           }
