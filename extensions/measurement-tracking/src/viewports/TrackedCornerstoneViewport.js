@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
+import OHIF, { utils } from '@ohif/core';
 import {
   Notification,
   ViewportActionBar,
@@ -345,6 +345,9 @@ function TrackedCornerstoneViewport({
               imageIndex: currentImageIdIndex,
             });
           }}
+          // Sync resize throttle w/ sidepanel animation duration to prevent
+          // seizure inducing strobe blinking effect
+          resizeRefreshRateMs={150}
           // TODO: ViewportGrid Context?
           isActive={true} // todo
           isStackPrefetchEnabled={true} // todo

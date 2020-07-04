@@ -1,28 +1,11 @@
 import React, { Component } from 'react';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-//import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
-import throttle from 'lodash.throttle';
 
 import { setEnabledElement } from './state';
 
-// const {
-//   onAdded,
-//   onRemoved,
-//   onModified,
-// } = OHIF.measurements.MeasurementHandlers;
-
-// // TODO: Transition to enums for the action names so that we can ensure they stay up to date
-// // everywhere they're used.
-// const MEASUREMENT_ACTION_MAP = {
-//   added: onAdded,
-//   removed: onRemoved,
-//   modified: throttle(event => {
-//     return onModified(event);
-//   }, 300),
-// };
 
 // const cine = viewportSpecificData.cine;
 
@@ -228,6 +211,9 @@ class OHIFCornerstoneViewport extends Component {
             const enabledElement = evt.detail.element;
             setEnabledElement(viewportIndex, enabledElement);
           }}
+          // Sync resize throttle w/ sidepanel animation duration to prevent
+          // seizure inducing strobe blinking effect
+          resizeRefreshRateMs={150}
         />
         {childrenWithProps}
       </>
