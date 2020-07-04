@@ -453,6 +453,9 @@ function OHIFCornerstoneSRViewport({
           isPlaying={false}
           frameRate={24}
           isOverlayVisible={false}
+          // Sync resize throttle w/ sidepanel animation duration to prevent
+          // seizure inducing strobe blinking effect
+          resizeRefreshRateMs={150}
         />
         {childrenWithProps}
       </div>
