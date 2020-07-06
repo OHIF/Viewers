@@ -292,6 +292,8 @@ function TrackedCornerstoneViewport({
 
   const showNavArrows = isTracked && viewportIndex === activeViewportIndex;
 
+  // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
+
   return (
     <>
       <ViewportActionBar
@@ -328,10 +330,7 @@ function TrackedCornerstoneViewport({
         }}
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
-      <div
-        className="relative flex flex-row w-full h-full overflow-hidden"
-        onDoubleClick={_onDoubleClick}
-      >
+      <div className="relative flex flex-row w-full h-full overflow-hidden">
         <CornerstoneViewport
           onElementEnabled={onElementEnabled}
           viewportIndex={viewportIndex}
@@ -416,7 +415,6 @@ function _getCornerstoneStack(displaySet, dataSource) {
   return stack;
 }
 
-
 function _onDoubleClick() {
   const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
     'manipulatorState'
@@ -426,7 +424,6 @@ function _onDoubleClick() {
     cancelActiveManipulatorsForElement(element);
   });
 }
-
 
 /**
  * Builds the viewport data from a datasource and a displayset.
