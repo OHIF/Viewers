@@ -224,7 +224,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           key: 'mrn',
           content: mrn,
           title: mrn,
-          gridCol: 2,
+          gridCol: 3,
         },
         {
           key: 'studyDate',
@@ -253,7 +253,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           key: 'accession',
           content: accession,
           title: accession,
-          gridCol: 4,
+          gridCol: 3,
         },
         {
           key: 'instances',

@@ -11,7 +11,7 @@ const filtersMeta = [
     displayName: 'MRN',
     inputType: 'Text',
     isSortable: true,
-    gridCol: 2,
+    gridCol: 3,
   },
   {
     name: 'studyDate',
@@ -47,7 +47,7 @@ const filtersMeta = [
     displayName: 'Accession',
     inputType: 'Text',
     isSortable: true,
-    gridCol: 4,
+    gridCol: 3,
   },
   {
     name: 'instances',
