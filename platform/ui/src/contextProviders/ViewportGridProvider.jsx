@@ -36,7 +36,7 @@ export function ViewportGridProvider({ children, service }) {
 
         viewports[viewportIndex] = { displaySetInstanceUID, imageIndex };
 
-        return { ...state, ...{ viewports }, cachedLayout: undefined };
+        return { ...state, ...{ viewports }, cachedLayout: null };
       }
       case 'SET_LAYOUT': {
         const { numCols, numRows } = action.payload;
@@ -55,7 +55,7 @@ export function ViewportGridProvider({ children, service }) {
         return {
           ...state,
           ...{ activeViewportIndex, numCols, numRows, viewports },
-          cachedLayout: undefined,
+          cachedLayout: null,
         };
       }
       case 'RESET': {
@@ -63,15 +63,21 @@ export function ViewportGridProvider({ children, service }) {
           numCols: 1,
           numRows: 1,
           activeViewportIndex: 0,
-          viewports: [
-            { displaySetInstanceUID: undefined, imageIndex: undefined },
-          ],
+          viewports: [{ displaySetInstanceUID: null, imageIndex: null }],
+          cachedLayout: null,
         };
       }
 
       case 'SET_CACHED_LAYOUT': {
         return { ...state, cachedLayout: action.payload };
       }
+      case 'SET': {
+        return {
+          ...state,
+          ...action.payload,
+        };
+      }
+
       default:
         return action.payload;
     }
@@ -129,6 +135,15 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
+  const set = useCallback(
+    payload =>
+      dispatch({
+        type: 'SET',
+        payload,
+      }),
+    [dispatch]
+  );
+
   /**
    * Sets the implementation of a modal service that can be used by extensions.
    *
@@ -143,6 +158,7 @@ export function ViewportGridProvider({ children, service }) {
         setLayout,
         reset,
         setCachedLayout,
+        set,
       });
     }
   }, [
@@ -153,6 +169,7 @@ export function ViewportGridProvider({ children, service }) {
     setLayout,
     reset,
     setCachedLayout,
+    set,
   ]);
 
   const api = {
@@ -161,6 +178,8 @@ export function ViewportGridProvider({ children, service }) {
     setDisplaysetForViewport,
     setLayout,
     setCachedLayout,
+    reset,
+    set,
   };
 
   return (

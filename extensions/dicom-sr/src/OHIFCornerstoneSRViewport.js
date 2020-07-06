@@ -404,6 +404,8 @@ function OHIFCornerstoneSRViewport({
       ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
       : '';
 
+  // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
+
   return (
     <>
       <ViewportActionBar
@@ -434,14 +436,15 @@ function OHIFCornerstoneSRViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                  2
-                )}mm`
+                    2
+                  )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
         }}
       />
-      <div className="relative flex flex-row w-full h-full overflow-hidden" onDoubleClick={_onDoubleClick}>
+
+      <div className="relative flex flex-row w-full h-full overflow-hidden">
         <CornerstoneViewport
           onElementEnabled={onElementEnabled}
           viewportIndex={viewportIndex}

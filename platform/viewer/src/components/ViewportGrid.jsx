@@ -30,6 +30,7 @@ function ViewerViewportGrid(props) {
           const isImageSet = x => x instanceof ImageSet;
           return isImageSet(a) === isImageSet(b) ? 0 : isImageSet(a) ? -1 : 1;
         });
+
         viewportGridService.setDisplaysetForViewport({
           viewportIndex: 0,
           displaySetInstanceUID: displaySets[0].displaySetInstanceUID,
@@ -68,17 +69,17 @@ function ViewerViewportGrid(props) {
   };
 
   const onDoubleClick = viewportIndex => {
+    // TODO -> Disabled for now.
+    // onNewImage on a cornerstone viewport is firing setDisplaySetForViewport.
+    // Which it really really shouldn't. We need a larger fix for jump to
+    // measurements and all cornerstone "imageIndex" state to fix this.
     if (cachedLayout) {
-      viewportGridService.setLayout({
+      viewportGridService.set({
         numCols: cachedLayout.numCols,
         numRows: cachedLayout.numRows,
-      });
-
-      cachedLayout.viewports.forEach((viewport, viewportIndex) => {
-        viewportGridService.setDisplaysetForViewport({
-          viewportIndex,
-          displaySetInstanceUID: viewport.displaySetInstanceUID,
-        });
+        activeViewportIndex: cachedLayout.activeViewportIndex,
+        viewports: cachedLayout.viewports,
+        cachedLayout: null,
       });
 
       return;
@@ -90,17 +91,22 @@ function ViewerViewportGrid(props) {
       };
     });
 
-    viewportGridService.setDisplaysetForViewport({
-      viewportIndex: 0,
-      displaySetInstanceUID: viewports[viewportIndex].displaySetInstanceUID,
-    });
-
-    viewportGridService.setLayout({ numCols: 1, numRows: 1 });
-
-    viewportGridService.setCachedLayout({
-      numCols,
-      numRows,
-      viewports: cachedViewports,
+    viewportGridService.set({
+      numCols: 1,
+      numRows: 1,
+      activeViewportIndex: 0,
+      viewports: [
+        {
+          displaySetInstanceUID: viewports[viewportIndex].displaySetInstanceUID,
+          imageIndex: undefined,
+        },
+      ],
+      cachedLayout: {
+        numCols,
+        numRows,
+        viewports: cachedViewports,
+        activeViewportIndex: viewportIndex,
+      },
     });
   };
 
@@ -157,6 +163,9 @@ function ViewerViewportGrid(props) {
         setActiveViewportIndex(viewportIndex);
       };
 
+      // TEMP -> Double click disabled for now
+      // onDoubleClick={() => onDoubleClick(viewportIndex)}
+
       viewportPanes[i] = (
         <ViewportPane
           key={viewportIndex}
@@ -164,7 +173,6 @@ function ViewerViewportGrid(props) {
           acceptDropsFor="displayset"
           onDrop={onDropHandler.bind(null, viewportIndex)}
           onInteraction={onInterationHandler}
-          onDoubleClick={() => onDoubleClick(viewportIndex)}
           isActive={activeViewportIndex === viewportIndex}
         >
           <ViewportComponent
