@@ -199,6 +199,15 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
       date,
       time,
     } = study;
+    const studyDate =
+      date &&
+      moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
+      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format('MMM-DD-YYYY');
+    const studyTime =
+      time &&
+      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
+      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format('hh:mm A');
+
     return {
       row: [
         {
@@ -221,30 +230,11 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           key: 'studyDate',
           content: (
             <div>
-              <span className="mr-4">
-                {date &&
-                  moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
-                  moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(
-                    'MMM-DD-YYYY'
-                  )}
-              </span>
-              {time && (
-                <span>
-                  {time &&
-                    moment(time, [
-                      'HH',
-                      'HHmm',
-                      'HHmmss',
-                      'HHmmss.SSS',
-                    ]).isValid() &&
-                    moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(
-                      'hh:mm A'
-                    )}
-                </span>
-              )}
+              {studyDate && <span className="mr-4">{studyDate}</span>}
+              {studyTime && <span>{studyTime}</span>}
             </div>
           ),
-          title: 'time',
+          title: `${studyDate || ''} ${studyTime || ''}`,
           gridCol: 5,
         },
         {
