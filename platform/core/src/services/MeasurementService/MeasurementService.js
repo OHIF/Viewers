@@ -492,11 +492,16 @@ class MeasurementService {
     this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED, source, id);
   }
 
-  clearMeasurements() {
+  /**
+   * Clear all measurements and broadcasts MEASUREMENTS_CLEARED event.
+   *
+   * @return void
+   */
+  clear() {
     this.measurements = {};
-
     this._broadcastChange(this.EVENTS.MEASUREMENTS_CLEARED);
   }
+
 
   _getMappingByMeasurementSource(measurementId, definition) {
     const measurement = this.getMeasurement(measurementId);
@@ -505,14 +510,6 @@ class MeasurementService {
         m => m.definition === definition
       );
     }
-  }
-
-  /**
-   * Clear all measurements and broadcasts cleared event.
-   */
-  clear() {
-    this.measurements = {};
-    this._broadcastChange(this.EVENTS.MEASUREMENTS_CLEARED);
   }
 
   /**

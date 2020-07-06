@@ -15,9 +15,9 @@ const defaultConfig = {
  * @param {object} configuration
  */
 export default function init({ configuration = {}, servicesManager }) {
-  const conifg = Object.assign({}, defaultConfig, configuration);
+  const config = Object.assign({}, defaultConfig, configuration);
 
-  TOOL_NAMES.DICOM_SR_DISPLAY_TOOL = conifg.TOOL_NAMES.DICOM_SR_DISPLAY_TOOL;
+  TOOL_NAMES.DICOM_SR_DISPLAY_TOOL = config.TOOL_NAMES.DICOM_SR_DISPLAY_TOOL;
 
   cornerstoneTools.register('module', id, dicomSRModule);
   cornerstoneTools.addTool(DICOMSRDisplayTool);

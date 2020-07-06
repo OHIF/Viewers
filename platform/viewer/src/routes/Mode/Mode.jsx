@@ -99,7 +99,7 @@ export default function ModeRoute({
     // Core
 
     // TOOD -> iterate through services.
-    MeasurementService.clearMeasurements();
+    MeasurementService.clear();
     ViewportGridService.reset();
     // Extension
     extensionManager.onModeEnter();

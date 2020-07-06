@@ -5,7 +5,7 @@ import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import initCornerstoneTools from './initCornerstoneTools.js';
-import cornerstoneTools from 'cornerstone-tools';
+import cornerstoneTools, { globalImageIdSpecificToolStateManager } from 'cornerstone-tools';
 import initWADOImageLoader from './initWADOImageLoader.js';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 //
@@ -95,7 +95,7 @@ export default function init({ servicesManager, configuration }) {
   // THIS
   // is a way for extensions that "depend" on this extension to notify it of
   // new cornerstone enabled elements so it's commands continue to work.
-  const handleOhifCornerstoneEnabledElementEvent = function(evt) {
+  const handleOhifCornerstoneEnabledElementEvent = function (evt) {
     const { viewportIndex, enabledElement } = evt.detail;
 
     setEnabledElement(viewportIndex, enabledElement);
@@ -330,14 +330,6 @@ const _connectToolsToMeasurementService = measurementService => {
       }
     }
 
-    const { MEASUREMENTS_CLEARED } = measurementService.EVENTS;
-
-    measurementService.subscribe(MEASUREMENTS_CLEARED, () => {
-      cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
-        {}
-      );
-    });
-
     const enabledElement = evt.detail.element;
     const completedEvt = csTools.EVENTS.MEASUREMENT_COMPLETED;
     const updatedEvt = csTools.EVENTS.MEASUREMENT_MODIFIED;
@@ -360,7 +352,18 @@ const _connectMeasurementServiceToTools = (
   const sourceId = measurementSource.id;
 
   measurementService.subscribe(MEASUREMENTS_CLEARED, () => {
-    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
+    const DICOM_SR_DISPLAY_TOOL = 'DICOMSRDisplayTool';
+    const toolState = globalImageIdSpecificToolStateManager.saveToolState();
+
+    Object.keys(toolState).forEach(image => {
+      Object.keys(toolState[image]).forEach(toolType => {
+        if (toolType !== DICOM_SR_DISPLAY_TOOL) {
+          delete toolState[image][toolType];
+        }
+      });
+    });
+
+    globalImageIdSpecificToolStateManager.restoreToolState(toolState);
     cornerstone.getEnabledElements().forEach(enabledElement => {
       cornerstone.updateImage(enabledElement.element);
     });
