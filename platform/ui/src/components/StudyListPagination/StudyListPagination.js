@@ -20,7 +20,7 @@ const StudyListPagination = ({
           <div className="flex items-center">
             <div className="relative mr-3">
               <select
-                defaultValue={perPage}
+                value={perPage}
                 className="block appearance-none w-full bg-transparent border border-common-active text-white text-base px-2 pr-4 rounded leading-tight focus:outline-none h-8"
                 onChange={e => onChangePerPage(e.target.value)}
                 onBlur={() => {}}
