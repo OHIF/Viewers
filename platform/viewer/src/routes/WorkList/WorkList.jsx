@@ -1,9 +1,10 @@
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
+import { isEqual } from 'lodash';
 //
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
@@ -39,6 +40,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     ...defaultFilterValues,
     ...queryFilterValues,
   });
+
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
 
@@ -181,7 +183,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
 
   const isFiltering = (filterValues, defaultFilterValues) => {
     return Object.keys(defaultFilterValues).some(name => {
-      return filterValues[name] !== defaultFilterValues[name];
+      return !isEqual(filterValues[name], defaultFilterValues[name]);
     });
   };
 
@@ -315,6 +317,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
                   disabled={false}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
+                  onClick={() => {}}
                 >
                   {mode.displayName}
                 </Button>
@@ -394,14 +397,15 @@ WorkList.propTypes = {
   dataSource: PropTypes.shape({
     query: PropTypes.object.isRequired,
   }).isRequired,
+  isLoadingData: PropTypes.bool.isRequired,
 };
 
 const defaultFilterValues = {
   patientName: '',
   mrn: '',
   studyDate: {
-    startDate: undefined,
-    endDate: undefined,
+    startDate: null,
+    endDate: null,
   },
   description: '',
   modalities: [],
