@@ -79,7 +79,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
   const numOfStudies = studies.length;
-  const totalPages = Math.floor(numOfStudies / resultsPerPage);
+  const totalPages = Math.floor(numOfStudies / resultsPerPage) + 1;
 
   const setFilterValues = val => {
     if (filterValues.pageNumber === val.pageNumber) {
