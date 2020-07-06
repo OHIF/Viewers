@@ -50,11 +50,14 @@ const Thumbnail = ({
       <div ref={drag}>
         <div
           className={classnames(
-            'flex flex-1 items-center justify-center rounded-md bg-black text-base text-white overflow-hidden mb-2 min-h-32',
+            'flex flex-1 items-center justify-center rounded-md bg-black text-base text-white overflow-hidden min-h-32',
             isActive
               ? 'border-2 border-primary-light'
               : 'border border-secondary-light group-focus:border-blue-300 hover:border-blue-300'
           )}
+          style={{
+            margin: isActive ? '0' : '1px',
+          }}
         >
           {imageSrc ? (
             <img
@@ -66,7 +69,7 @@ const Thumbnail = ({
             <div>{imageAltText}</div>
           )}
         </div>
-        <div className="flex flex-row items-center flex-1 text-base text-blue-300">
+        <div className="flex flex-row items-center flex-1 text-base text-blue-300 pt-2">
           <div className="mr-4">
             <span className="font-bold text-primary-main">{'S: '}</span>
             {seriesNumber}

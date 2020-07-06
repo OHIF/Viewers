@@ -31,9 +31,12 @@ const ThumbnailNoImage = ({
       ref={thumbnailElement}
       onFocus={() => blurHandlerListener(thumbnailElement)}
       className={classnames(
-        'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded select-none',
+        'flex flex-row flex-1 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded select-none',
         isActive ? 'border-2 border-primary-light' : 'border'
       )}
+      style={{
+        padding: isActive ? '11px' : '12px',
+      }}
       id={`thumbnail-${displaySetInstanceUID}`}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
