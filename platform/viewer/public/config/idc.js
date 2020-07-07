@@ -14,6 +14,6 @@ window.config = function(props) {
       console.warn('test, navigate to https://ohif.org/');
       window.location = 'https://ohif.org/';
     },
-    healthcareApiEndpoint: 'https://idc-sandbox-002.appspot.com/v1beta1',
+    healthcareApiEndpoint: 'https://proxy-dot-idc-dev.appspot.com/v1beta1', //https://idc-sandbox-002.appspot.com/v1beta1',
   };
 };
