@@ -399,10 +399,7 @@ function OHIFCornerstoneSRViewport({
     });
   }
 
-  const label =
-    viewports.length > 1
-      ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
-      : '';
+  const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
 
   // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
 

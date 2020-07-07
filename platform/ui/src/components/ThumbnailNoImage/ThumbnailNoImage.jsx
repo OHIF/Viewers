@@ -15,7 +15,6 @@ const ThumbnailNoImage = ({
   onDoubleClick,
   dragData,
   isActive,
-  viewportIdentificator = '',
 }) => {
   const [collectedProps, drag, dragPreview] = useDrag({
     item: { ...dragData },
@@ -84,7 +83,6 @@ ThumbnailNoImage.propTypes = {
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
   isActive: PropTypes.bool.isRequired,
-  viewportIdentificator: PropTypes.string,
 };
 
 export default ThumbnailNoImage;
