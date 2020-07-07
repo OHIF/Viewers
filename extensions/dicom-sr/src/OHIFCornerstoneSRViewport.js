@@ -436,8 +436,8 @@ function OHIFCornerstoneSRViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+                  2
+                )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -563,6 +563,8 @@ async function _getViewportAndActiveDisplaySetData(
     SeriesDescription: image0.SeriesDescription,
     SeriesInstanceUID: image0.SeriesInstanceUID,
     SeriesNumber: image0.SeriesNumber,
+    ManufacturerModelName: image0.ManufacturerModelName,
+    PixelSpacing: image0.PixelSpacing,
     displaySetInstanceUID,
   };
 
