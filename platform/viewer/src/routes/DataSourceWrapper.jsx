@@ -100,9 +100,7 @@ function _getQueryFilterValues(query) {
     patientId: query.get('mrn'),
     patientName: query.get('patientName'),
     studyDescription: query.get('description'),
-    modalitiesInStudy: query.get('modalities')
-      ? query.get('modalities').split(',')
-      : [],
+    modalitiesInStudy: query.get('modalities') && query.get('modalities').split(','),
     accessionNumber: query.get('accession'),
     //
     startDate: query.get('startDate'),

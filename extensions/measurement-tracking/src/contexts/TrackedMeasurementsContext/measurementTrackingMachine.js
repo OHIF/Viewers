@@ -23,6 +23,12 @@ const machineConfiguration = {
       entry: 'clearContext',
       on: {
         TRACK_SERIES: 'promptBeginTracking',
+        SET_TRACKED_SERIES: [
+          {
+            target: 'tracking',
+            actions: ['setTrackedStudyAndMultipleSeries'],
+          },
+        ],
       },
     },
     promptBeginTracking: {
@@ -59,6 +65,7 @@ const machineConfiguration = {
             cond: 'isNewSeries',
           },
         ],
+
         UNTRACK_SERIES: [
           {
             target: 'tracking',
@@ -67,6 +74,12 @@ const machineConfiguration = {
           },
           {
             target: 'idle',
+          },
+        ],
+        SET_TRACKED_SERIES: [
+          {
+            target: 'tracking',
+            actions: ['setTrackedStudyAndMultipleSeries'],
           },
         ],
       },
@@ -138,6 +151,10 @@ const defaultOptions = {
     setTrackedStudyAndSeries: assign((ctx, evt) => ({
       trackedStudy: evt.data.StudyInstanceUID,
       trackedSeries: [evt.data.SeriesInstanceUID],
+    })),
+    setTrackedStudyAndMultipleSeries: assign((ctx, evt) => ({
+      trackedStudy: evt.StudyInstanceUID,
+      trackedSeries: [...ctx.trackedSeries, ...evt.SeriesInstanceUIDs],
     })),
     addTrackedSeries: assign((ctx, evt) => ({
       trackedSeries: [...ctx.trackedSeries, evt.data.SeriesInstanceUID],

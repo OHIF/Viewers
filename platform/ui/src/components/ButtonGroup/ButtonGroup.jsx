@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const baseButtonClass = 'border';
+const baseButtonClass = 'border outline-none';
 const roundedClasses = {
   vertical: {
     none: '',
@@ -41,18 +41,22 @@ const variantClasses = {
     primary: 'border-primary-main',
     secondary: 'border-secondary-light',
     white: 'border-white',
+    black: 'border-primary-main',
   },
   outlined: {
     default: '',
     primary: '',
     secondary: '',
     white: '',
+    black:
+      'border-primary-main group-hover:bg-primary-main group-hover:border-black',
   },
   contained: {
     default: 'border-white',
     primary: 'border-white',
     secondary: 'border-white',
     white: 'border-black',
+    black: 'border-primary-main',
   },
 };
 
@@ -89,6 +93,7 @@ const ButtonGroup = ({
     <div
       role="group"
       className={classnames(
+        'group',
         className,
         orientationClasses[orientation],
         fullWidth ? fullWidthDisplayClass : baseDisplayClass
@@ -96,7 +101,7 @@ const ButtonGroup = ({
       ref={ref}
       {...other}
     >
-      {React.Children.map(children, (child) => {
+      {React.Children.map(children, child => {
         if (!React.isValidElement(child)) {
           return null;
         }
@@ -118,7 +123,14 @@ const ButtonGroup = ({
 ButtonGroup.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  color: PropTypes.oneOf(['default', 'inherit', 'primary', 'secondary']),
+  color: PropTypes.oneOf([
+    'default',
+    'inherit',
+    'primary',
+    'secondary',
+    'white',
+    'black',
+  ]),
   disabled: PropTypes.bool,
   fullWidth: PropTypes.bool,
   orientation: PropTypes.oneOf(['vertical', 'horizontal']),

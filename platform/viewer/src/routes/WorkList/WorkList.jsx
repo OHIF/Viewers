@@ -48,7 +48,12 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     .sort((s1, s2) => {
       const noSortApplied = sortBy === '' || !sortBy;
       const sortModifier = sortDirection === 'descending' ? 1 : -1;
-      if (noSortApplied) {
+
+      if (noSortApplied && studies.length < 101) {
+        const ascendingSortModifier = -1;
+
+        return _sortStringDates(s1, s2, ascendingSortModifier);
+      } else if (noSortApplied) {
         return 0;
       }
 
@@ -64,20 +69,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
       } else if (!s2Prop && s1Prop) {
         return 1 * sortModifier;
       } else if (sortBy === 'studyDate') {
-        // TODO: Delimiters are non-standard. Should we support them?
-        const s1Date = moment(s1.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
-        const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
-
-        if (s1Date.isValid() && s2Date.isValid()) {
-          return (
-            (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) *
-            sortModifier
-          );
-        } else if (s1Date.isValid()) {
-          return sortModifier;
-        } else if (s2Date.isValid()) {
-          return -1 * sortModifier;
-        }
+        return _sortStringDates(s1, s2, sortModifier);
       }
 
       return 0;
@@ -87,7 +79,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
   const numOfStudies = studies.length;
-  const totalPages = Math.floor(numOfStudies / resultsPerPage);
+  const totalPages = Math.floor(numOfStudies / resultsPerPage) + 1;
 
   const setFilterValues = val => {
     if (filterValues.pageNumber === val.pageNumber) {
@@ -176,13 +168,12 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     // Note: expanded rows index begins at 1
     for (let z = 0; z < expandedRows.length; z++) {
       const expandedRowIndex = expandedRows[z] - 1;
-      console.log(sortedStudies[expandedRowIndex]);
       const studyInstanceUid = sortedStudies[expandedRowIndex].studyInstanceUid;
+
       if (studiesWithSeriesData.includes(studyInstanceUid)) {
         continue;
       }
 
-      console.log(`fetching for ${expandedRowIndex}`);
       fetchSeries(studyInstanceUid);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -208,6 +199,15 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
       date,
       time,
     } = study;
+    const studyDate =
+      date &&
+      moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
+      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format('MMM-DD-YYYY');
+    const studyTime =
+      time &&
+      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
+      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format('hh:mm A');
+
     return {
       row: [
         {
@@ -224,36 +224,17 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           key: 'mrn',
           content: mrn,
           title: mrn,
-          gridCol: 2,
+          gridCol: 3,
         },
         {
           key: 'studyDate',
           content: (
             <div>
-              <span className="mr-4">
-                {date &&
-                  moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
-                  moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format(
-                    'MMM-DD-YYYY'
-                  )}
-              </span>
-              {time && (
-                <span>
-                  {time &&
-                    moment(time, [
-                      'HH',
-                      'HHmm',
-                      'HHmmss',
-                      'HHmmss.SSS',
-                    ]).isValid() &&
-                    moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format(
-                      'hh:mm A'
-                    )}
-                </span>
-              )}
+              {studyDate && <span className="mr-4">{studyDate}</span>}
+              {studyTime && <span>{studyTime}</span>}
             </div>
           ),
-          title: 'time',
+          title: `${studyDate || ''} ${studyTime || ''}`,
           gridCol: 5,
         },
         {
@@ -272,7 +253,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           key: 'accession',
           content: accession,
           title: accession,
-          gridCol: 4,
+          gridCol: 3,
         },
         {
           key: 'instances',
@@ -467,6 +448,22 @@ function _getQueryFilterValues(query) {
       }
     }
     return retValue;
+  }
+}
+
+function _sortStringDates(s1, s2, sortModifier) {
+  // TODO: Delimiters are non-standard. Should we support them?
+  const s1Date = moment(s1.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
+  const s2Date = moment(s2.date, ['YYYYMMDD', 'YYYY.MM.DD'], true);
+
+  if (s1Date.isValid() && s2Date.isValid()) {
+    return (
+      (s1Date.toISOString() > s2Date.toISOString() ? 1 : -1) * sortModifier
+    );
+  } else if (s1Date.isValid()) {
+    return sortModifier;
+  } else if (s2Date.isValid()) {
+    return -1 * sortModifier;
   }
 }
 

@@ -1,9 +1,11 @@
+import React from 'react';
 import OHIF from '@ohif/core';
-import { SimpleDialog } from '@ohif/ui';
+import { Dialog, Input } from '@ohif/ui';
 import cornerstone from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import initCornerstoneTools from './initCornerstoneTools.js';
+import cornerstoneTools from 'cornerstone-tools';
 import initWADOImageLoader from './initWADOImageLoader.js';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 //
@@ -23,17 +25,48 @@ export default function init({ servicesManager, configuration }) {
       let dialogId = UIDialogService.create({
         centralize: true,
         isDraggable: false,
-        content: SimpleDialog.InputDialog,
+        content: Dialog,
         useLastPosition: false,
         showOverlay: true,
         contentProps: {
           title: 'Enter your annotation',
-          label: 'New label',
-          measurementData: data ? { description: data.text } : {},
+          value: { label: data ? data.text : '' },
+          noCloseButton: true,
           onClose: () => UIDialogService.dismiss({ id: dialogId }),
-          onSubmit: value => {
-            callback(value);
+          actions: [
+            { id: 'cancel', text: 'Cancel', type: 'secondary' },
+            { id: 'save', text: 'Save', type: 'primary' },
+          ],
+          onSubmit: ({ action, value }) => {
+            switch (action.id) {
+              case 'save':
+                callback(value.label);
+            }
             UIDialogService.dismiss({ id: dialogId });
+          },
+          body: ({ value, setValue }) => {
+            const onChangeHandler = event => {
+              event.persist();
+              setValue(value => ({ ...value, label: event.target.value }));
+            };
+            const onKeyPressHandler = event => {
+              if (event.key === 'Enter') {
+                onSubmitHandler({ value, action: { id: 'save' } });
+              }
+            };
+            return (
+              <div className="p-4 bg-primary-dark">
+                <Input
+                  autoFocus
+                  className="mt-2 bg-black border-primary-main"
+                  type="text"
+                  containerClassName="mr-2"
+                  value={value.label}
+                  onChange={onChangeHandler}
+                  onKeyPress={onKeyPressHandler}
+                />
+              </div>
+            );
           },
         },
       });
@@ -108,7 +141,6 @@ export default function init({ servicesManager, configuration }) {
 
   /* Add extension tools configuration here. */
   const internalToolsConfig = {
-    /* TODO ArrowAnnotate input
     ArrowAnnotate: {
       configuration: {
         getTextCallback: (callback, eventDetails) =>
@@ -117,7 +149,6 @@ export default function init({ servicesManager, configuration }) {
           callInputDialog(data, eventDetails, callback),
       },
     },
-    */
   };
 
   /* Abstract tools configuration using extension configuration. */
@@ -134,6 +165,7 @@ export default function init({ servicesManager, configuration }) {
     /**
      * drawHandles - Never/Always show handles
      * drawHandlesOnHover - Only show handles on handle hover (pointNearHandle)
+     * hideHandlesIfMoving - Hides the handles whilst you are moving them, for better visibility.
      *
      * Does not apply to tools where handles aren't placed in predictable
      * locations.
@@ -144,8 +176,12 @@ export default function init({ servicesManager, configuration }) {
     ) {
       if (props.configuration) {
         parsedProps.configuration.drawHandlesOnHover = true;
+        parsedProps.configuration.hideHandlesIfMoving = true;
       } else {
-        parsedProps.configuration = { drawHandlesOnHover: true };
+        parsedProps.configuration = {
+          drawHandlesOnHover: true,
+          hideHandlesIfMoving: true,
+        };
       }
     }
 
@@ -237,6 +273,10 @@ const _connectToolsToMeasurementService = measurementService => {
   const csToolsVer4MeasurementSource = _initMeasurementService(
     measurementService
   );
+  _connectMeasurementServiceToTools(
+    measurementService,
+    csToolsVer4MeasurementSource
+  );
   const { addOrUpdate, remove } = csToolsVer4MeasurementSource;
   const elementEnabledEvt = cornerstone.EVENTS.ELEMENT_ENABLED;
 
@@ -246,10 +286,12 @@ const _connectToolsToMeasurementService = measurementService => {
 
     function addMeasurement(csToolsEvent) {
       console.log('CSTOOLS::addOrUpdate', csToolsEvent, csToolsEvent.detail);
+
       try {
         const evtDetail = csToolsEvent.detail;
         const { toolName, toolType, measurementData } = evtDetail;
         const csToolName = toolName || measurementData.toolType || toolType;
+
         const measurementId = addOrUpdate(csToolName, evtDetail);
 
         if (measurementId) {
@@ -288,6 +330,14 @@ const _connectToolsToMeasurementService = measurementService => {
       }
     }
 
+    const { MEASUREMENTS_CLEARED } = measurementService.EVENTS;
+
+    measurementService.subscribe(MEASUREMENTS_CLEARED, () => {
+      cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
+        {}
+      );
+    });
+
     const enabledElement = evt.detail.element;
     const completedEvt = csTools.EVENTS.MEASUREMENT_COMPLETED;
     const updatedEvt = csTools.EVENTS.MEASUREMENT_MODIFIED;
@@ -297,6 +347,34 @@ const _connectToolsToMeasurementService = measurementService => {
     enabledElement.addEventListener(updatedEvt, updateMeasurement);
     enabledElement.addEventListener(removedEvt, removeMeasurement);
   });
+};
+
+const _connectMeasurementServiceToTools = (
+  measurementService,
+  measurementSource
+) => {
+  const {
+    MEASUREMENTS_CLEARED,
+    MEASUREMENT_REMOVED,
+  } = measurementService.EVENTS;
+  const sourceId = measurementSource.id;
+
+  measurementService.subscribe(MEASUREMENTS_CLEARED, () => {
+    cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
+    cornerstone.getEnabledElements().forEach(enabledElement => {
+      cornerstone.updateImage(enabledElement.element);
+    });
+  });
+
+  /* TODO: Remove per measurement
+  measurementService.subscribe(MEASUREMENT_REMOVED,
+    ({ source, measurement }) => {
+      if ([sourceId].includes(source.id)) {
+        // const annotation = getAnnotation('Length', measurement.id);
+        // iterate tool state
+      }
+    }
+  ); */
 };
 
 // const {

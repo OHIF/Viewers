@@ -1,10 +1,9 @@
-import id from './id';
+import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import { utils, classes } from '@ohif/core';
-import addMeasurement from './utils/addMeasurement.js';
+import addMeasurement from './utils/addMeasurement';
+import isRehydratable from './utils/isRehydratable';
 
 const { ImageSet } = classes;
-
-const sopClassHandlerName = 'dicom-sr';
 
 // TODO ->
 // Add SR thumbnail
@@ -24,11 +23,16 @@ const CodeNameCodeSequenceValues = {
   MeasurementGroup: '125007',
   ImageLibraryGroup: '126200',
   TrackingUniqueIdentifier: '112040',
+  TrackingIdentifier: '112039',
+  Finding: '121071',
 };
 
 const RELATIONSHIP_TYPE = {
   INFERRED_FROM: 'INFERRED FROM',
 };
+
+const CORNERSTONE_CODING_SCHEME_DESIGNATOR = 'CST4';
+const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
 
 /**
  * Basic SOPClassHandler:
@@ -49,10 +53,6 @@ function _getDisplaySetsFromSeries(
     throw new Error('No instances were provided');
   }
 
-  const { DisplaySetService } = servicesManager.services;
-  const dataSources = extensionManager.getDataSources();
-  const dataSource = dataSources[0];
-
   const instance = instances[0];
 
   const {
@@ -62,12 +62,13 @@ function _getDisplaySetsFromSeries(
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    ConceptNameCodeSequence,
   } = instance;
-  const { ConceptNameCodeSequence, ContentSequence } = instance;
 
   if (
+    !ConceptNameCodeSequence ||
     ConceptNameCodeSequence.CodeValue !==
-    CodeNameCodeSequenceValues.ImagingMeasurementReport
+      CodeNameCodeSequenceValues.ImagingMeasurementReport
   ) {
     console.warn(
       'Only support Imaging Measurement Report SRs (TID1500) for now'
@@ -76,7 +77,7 @@ function _getDisplaySetsFromSeries(
   }
 
   const displaySet = {
-    plugin: id,
+    //plugin: id,
     Modality: 'SR',
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
@@ -85,11 +86,38 @@ function _getDisplaySetsFromSeries(
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
-    SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
-    referencedImages: _getReferencedImagesList(ContentSequence),
-    measurements: _getMeasurements(ContentSequence),
+    SOPClassHandlerId,
+    referencedImages: null,
+    measurements: null,
+    isDerivedDisplaySet: true,
+    isLoaded: false,
     sopClassUids,
+    instance,
   };
+
+  displaySet.load = () => _load(displaySet, servicesManager, extensionManager);
+
+  return [displaySet];
+}
+
+function _load(displaySet, servicesManager, extensionManager) {
+  const { DisplaySetService, MeasurementService } = servicesManager.services;
+  const dataSources = extensionManager.getDataSources();
+  const dataSource = dataSources[0];
+
+  const { ContentSequence } = displaySet.instance;
+
+  displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
+  displaySet.measurements = _getMeasurements(ContentSequence);
+
+  const mappings = MeasurementService.getSourceMappings(
+    'CornerstoneTools',
+    '4'
+  );
+
+  displaySet.isHydrated = false;
+  displaySet.isLocked = isRehydratable(displaySet, mappings) ? false : true;
+  displaySet.isLoaded = true;
 
   // Check currently added displaySets and add measurements if the sources exist.
   DisplaySetService.activeDisplaySets.forEach(activeDisplaySet => {
@@ -116,8 +144,6 @@ function _getDisplaySetsFromSeries(
       });
     }
   );
-
-  return [displaySet];
 }
 
 function _checkIfCanAddMeasurementsToDisplaySet(
@@ -223,7 +249,7 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
 
   return [
     {
-      name: sopClassHandlerName,
+      name: SOPClassHandlerName,
       sopClassUids,
       getDisplaySetsFromSeries,
     },
@@ -346,6 +372,12 @@ function _processTID1410Measurement(mergedContentSequence) {
     group => group.ValueType === 'UIDREF'
   );
 
+  const TrackingIdentifierContentItem = mergedContentSequence.find(
+    item =>
+      item.ConceptNameCodeSequence.CodeValue ===
+      CodeNameCodeSequenceValues.TrackingIdentifier
+  );
+
   if (!graphicItem) {
     console.warn(
       `graphic ValueType ${graphicItem.ValueType} not currently supported, skipping annotation.`
@@ -362,6 +394,7 @@ function _processTID1410Measurement(mergedContentSequence) {
     labels: [],
     coords: [_getCoordsFromSCOORDOrSCOORD3D(graphicItem)],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
+    TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
 
   NUMContentItems.forEach(item => {
@@ -389,12 +422,42 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     group => group.ValueType === 'UIDREF'
   );
 
+  const TrackingIdentifierContentItem = mergedContentSequence.find(
+    item =>
+      item.ConceptNameCodeSequence.CodeValue ===
+      CodeNameCodeSequenceValues.TrackingIdentifier
+  );
+
+  const Findings = mergedContentSequence.filter(
+    item =>
+      item.ConceptNameCodeSequence.CodeValue ===
+      CodeNameCodeSequenceValues.Finding
+  );
+
   const measurement = {
     loaded: false,
     labels: [],
     coords: [],
     TrackingUniqueIdentifier: UIDREFContentItem.UID,
+    TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
+
+  if (Findings.length) {
+    // TODO -> Pull in labels when we have them, just free text for now.
+    const cornerstoneFreeTextFinding = Findings.find(
+      Finding =>
+        Finding.ConceptCodeSequence.CodingSchemeDesignator ===
+          CORNERSTONE_CODING_SCHEME_DESIGNATOR &&
+        Finding.ConceptCodeSequence.CodeValue ===
+          CORNERSTONE_FREETEXT_CODE_VALUE
+    );
+    if (cornerstoneFreeTextFinding) {
+      measurement.labels.push({
+        label: CORNERSTONE_FREETEXT_CODE_VALUE,
+        value: cornerstoneFreeTextFinding.ConceptCodeSequence.CodeMeaning,
+      });
+    }
+  }
 
   NUMContentItems.forEach(item => {
     const {
@@ -467,7 +530,14 @@ function _getLabelFromMeasuredValueSequence(
   const { NumericValue, MeasurementUnitsCodeSequence } = MeasuredValueSequence;
   const { CodeValue } = MeasurementUnitsCodeSequence;
 
-  return { label: CodeMeaning, value: `${NumericValue} ${CodeValue}` }; // E.g. Long Axis: 31.0 mm
+  const formatedNumericValue = NumericValue
+    ? Number(NumericValue).toFixed(2)
+    : '';
+
+  return {
+    label: CodeMeaning,
+    value: `${formatedNumericValue} ${CodeValue}`,
+  }; // E.g. Long Axis: 31.0 mm
 }
 
 function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {

@@ -14,6 +14,7 @@ const ThumbnailTracked = ({
   numInstances,
   dragData,
   onClick,
+  onDoubleClick,
   onClickUntrack,
   viewportIdentificator,
   isTracked,
@@ -42,7 +43,10 @@ const ThumbnailTracked = ({
               <div className="flex flex-row flex-1">
                 <div className="flex flex-col flex-1 pr-4">
                   <span>
-                    Series is <span className="text-white">tracked</span>
+                    Series is
+                    <span className="text-white">
+                      {isTracked ? ' tracked' : ' untracked'}
+                    </span>
                   </span>
                   {viewportIdentificator && (
                     <span>
@@ -72,6 +76,7 @@ const ThumbnailTracked = ({
         )}
       </div>
       <Thumbnail
+        displaySetInstanceUID={displaySetInstanceUID}
         imageSrc={imageSrc}
         imageAltText={imageAltText}
         dragData={dragData}
@@ -80,6 +85,7 @@ const ThumbnailTracked = ({
         numInstances={numInstances}
         isActive={isActive}
         onClick={onClick}
+        onDoubleClick={onDoubleClick}
       />
     </div>
   );
@@ -97,6 +103,7 @@ ThumbnailTracked.propTypes = {
     /** Must match the "type" a dropTarget expects */
     type: PropTypes.string.isRequired,
   }),
+  displaySetInstanceUID: PropTypes.string.isRequired,
   className: PropTypes.string,
   imageSrc: PropTypes.string,
   imageAltText: PropTypes.string,
@@ -104,6 +111,7 @@ ThumbnailTracked.propTypes = {
   seriesNumber: PropTypes.number.isRequired,
   numInstances: PropTypes.number.isRequired,
   onClick: PropTypes.func.isRequired,
+  onDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
   viewportIdentificator: PropTypes.string,
   isTracked: PropTypes.bool,

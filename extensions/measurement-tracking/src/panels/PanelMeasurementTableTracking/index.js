@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { StudySummary, MeasurementTable } from '@ohif/ui';
-import { DicomMetadataStore, DICOMSR } from '@ohif/core';
+import {
+  StudySummary,
+  MeasurementTable,
+  Dialog,
+  Input,
+  useViewportGrid,
+} from '@ohif/ui';
+import { DicomMetadataStore, DICOMSR, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
-import cornerstoneTools from 'cornerstone-tools';
-import cornerstone from 'cornerstone-core';
-import dcmjs from 'dcmjs';
+import createReportAsync from './../../_shared/createReportAsync.js';
+
+const { formatDate } = utils;
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
@@ -17,6 +23,7 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
 };
 
 function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
+  const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(
     Date.now().toString()
   );
@@ -24,7 +31,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const { MeasurementService, DisplaySetService } = servicesManager.services;
+  const {
+    MeasurementService,
+    UINotificationService,
+    UIDialogService,
+    DisplaySetService,
+  } = servicesManager.services;
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -34,9 +46,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
-  // TODO: measurements subscribtion
 
-  // Initial?
   useEffect(() => {
     const measurements = MeasurementService.getMeasurements();
     const filteredMeasurements = measurements.filter(
@@ -44,6 +54,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedStudy === m.referenceStudyUID &&
         trackedSeries.includes(m.referenceSeriesUID)
     );
+
     const mappedMeasurements = filteredMeasurements.map((m, index) =>
       _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
     );
@@ -56,26 +67,43 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     debouncedMeasurementChangeTimestamp,
   ]);
 
-  // ~~ DisplayStudySummary
-  useEffect(() => {
+  const updateDisplayStudySummary = async () => {
     if (trackedMeasurements.matches('tracking')) {
       const StudyInstanceUID = trackedStudy;
       const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
       const instanceMeta = studyMeta.series[0].instances[0];
-      const { Modality, StudyDate, StudyDescription } = instanceMeta;
+      const { StudyDate, StudyDescription } = instanceMeta;
+
+      const modalities = new Set();
+      studyMeta.series.forEach(series => {
+        if (trackedSeries.includes(series.SeriesInstanceUID)) {
+          modalities.add(series.instances[0].Modality);
+        }
+      });
+      const modality = Array.from(modalities).join('/');
 
       if (displayStudySummary.key !== StudyInstanceUID) {
         setDisplayStudySummary({
           key: StudyInstanceUID,
           date: StudyDate, // TODO: Format: '07-Sep-2010'
-          modality: Modality,
+          modality,
           description: StudyDescription,
         });
       }
     } else if (trackedStudy === '' || trackedStudy === undefined) {
       setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
     }
-  }, [displayStudySummary.key, trackedMeasurements, trackedStudy]);
+  };
+
+  // ~~ DisplayStudySummary
+  useEffect(() => {
+    updateDisplayStudySummary();
+  }, [
+    displayStudySummary.key,
+    trackedMeasurements,
+    trackedStudy,
+    updateDisplayStudySummary,
+  ]);
 
   // TODO: Better way to consolidated, debounce, check on change?
   // Are we exposing the right API for measurementService?
@@ -86,9 +114,10 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
     const updated = MeasurementService.EVENTS.MEASUREMENT_UPDATED;
     const removed = MeasurementService.EVENTS.MEASUREMENT_REMOVED;
+    const cleared = MeasurementService.EVENTS.MEASUREMENTS_CLEARED;
     const subscriptions = [];
 
-    [added, updated, removed].forEach(evt => {
+    [added, updated, removed, cleared].forEach(evt => {
       subscriptions.push(
         MeasurementService.subscribe(evt, () => {
           setMeasurementsUpdated(Date.now().toString());
@@ -103,9 +132,24 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     };
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
-  const activeMeasurementItem = 0;
+  function createReport() {
+    // TODO -> Eventually deal with multiple dataSources.
+    // Would need some way of saying which one is the "push" dataSource
+    const dataSources = extensionManager.getDataSources();
+    const dataSource = dataSources[0];
+    const measurements = MeasurementService.getMeasurements();
+    const trackedMeasurements = measurements.filter(
+      m =>
+        trackedStudy === m.referenceStudyUID &&
+        trackedSeries.includes(m.referenceSeriesUID)
+    );
 
-  const exportReport = () => {
+    return createReportAsync(servicesManager, dataSource, trackedMeasurements);
+  }
+
+  function exportReport() {
+    const dataSources = extensionManager.getDataSources();
+    const dataSource = dataSources[0];
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -115,49 +159,142 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
     // TODO -> local download.
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
+  }
+
+  const jumpToImage = ({ id, isActive }) => {
+    const measurement = MeasurementService.getMeasurement(id);
+    const { referenceSeriesUID, SOPInstanceUID } = measurement;
+
+    const displaySets = DisplaySetService.getDisplaySetsForSeries(
+      referenceSeriesUID
+    );
+    const displaySet = displaySets.find(ds => {
+      return (
+        ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+      );
+    });
+
+    const imageIndex = displaySet.images
+      .map(i => i.SOPInstanceUID)
+      .indexOf(SOPInstanceUID);
+
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex: viewportGrid.activeViewportIndex,
+      displaySetInstanceUID: displaySet.displaySetInstanceUID,
+      imageIndex,
+    });
+
+    onMeasurementItemClickHandler({ id, isActive });
   };
 
-  const createReport = async () => {
-    const measurements = MeasurementService.getMeasurements();
-    const trackedMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
-    );
+  const onMeasurementItemEditHandler = ({ id }) => {
+    const measurement = MeasurementService.getMeasurement(id);
 
-    const dataSources = extensionManager.getDataSources();
-    // TODO -> Eventually deal with multiple dataSources.
-    // Would need some way of saying which one is the "push" dataSource
-    const dataSource = dataSources[0];
-
-    DICOMSR.storeMeasurements(
-      trackedMeasurements,
-      dataSource,
-      naturalizedReport => {
-        DisplaySetService.makeDisplaySets([naturalizedReport], {
-          madeInClient: true,
-        });
+    let dialogId;
+    const onSubmitHandler = ({ action, value }) => {
+      switch (action.id) {
+        case 'save': {
+          MeasurementService.update(id, {
+            ...measurement,
+            ...value,
+          });
+          UINotificationService.show({
+            title: 'Measurements',
+            message: 'Label updated successfully',
+            type: 'success',
+          });
+        }
       }
-    );
+      UIDialogService.dismiss({ id: dialogId });
+    };
+    dialogId = UIDialogService.create({
+      centralize: true,
+      isDraggable: false,
+      useLastPosition: false,
+      showOverlay: true,
+      content: Dialog,
+      contentProps: {
+        title: 'Enter your annotation',
+        noCloseButton: true,
+        value: { label: measurement.label || '' },
+        body: ({ value, setValue }) => {
+          const onChangeHandler = event => {
+            event.persist();
+            setValue(value => ({ ...value, label: event.target.value }));
+          };
+
+          const onKeyPressHandler = event => {
+            if (event.key === 'Enter') {
+              onSubmitHandler({ value, action: { id: 'save' } });
+            }
+          };
+          return (
+            <div className="p-4 bg-primary-dark">
+              <Input
+                autoFocus
+                className="mt-2 bg-black border-primary-main"
+                type="text"
+                containerClassName="mr-2"
+                value={value.label}
+                onChange={onChangeHandler}
+                onKeyPress={onKeyPressHandler}
+              />
+            </div>
+          );
+        },
+        actions: [
+          { id: 'cancel', text: 'Cancel', type: 'secondary' },
+          { id: 'save', text: 'Save', type: 'primary' },
+        ],
+        onSubmit: onSubmitHandler,
+      },
+    });
   };
+
+  const onMeasurementItemClickHandler = ({ id, isActive }) => {
+    if (!isActive) {
+      const measurements = [...displayMeasurements];
+      const measurement = measurements.find(m => m.id === id);
+
+      measurements.forEach(m => (m.isActive = m.id !== id ? false : true));
+      measurement.isActive = true;
+      setDisplayMeasurements(measurements);
+    }
+  };
+
+  const displayMeasurementsWithoutFindings = displayMeasurements.filter(
+    dm => dm.measurementType !== MeasurementService.VALUE_TYPES.POINT
+  );
+  const additionalFindings = displayMeasurements.filter(
+    dm => dm.measurementType === MeasurementService.VALUE_TYPES.POINT
+  );
 
   return (
     <>
       <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
         {displayStudySummary.key && (
           <StudySummary
-            date={displayStudySummary.date}
+            date={formatDate(displayStudySummary.date)}
             modality={displayStudySummary.modality}
             description={displayStudySummary.description}
           />
         )}
         <MeasurementTable
           title="Measurements"
-          amount={displayMeasurements.length}
-          data={displayMeasurements}
-          onClick={() => {}}
-          onEdit={id => alert(`Edit: ${id}`)}
+          amount={displayMeasurementsWithoutFindings.length}
+          data={displayMeasurementsWithoutFindings}
+          onClick={jumpToImage}
+          onEdit={onMeasurementItemEditHandler}
         />
+        {additionalFindings.length !== 0 && (
+          <MeasurementTable
+            title="Additional Findings"
+            amount={additionalFindings.length}
+            data={additionalFindings}
+            onClick={jumpToImage}
+            onEdit={onMeasurementItemEditHandler}
+          />
+        )}
       </div>
       <div className="flex justify-center p-4">
         <ActionButtons
@@ -169,7 +306,16 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   );
 }
 
-PanelMeasurementTableTracking.propTypes = {};
+PanelMeasurementTableTracking.propTypes = {
+  servicesManager: PropTypes.shape({
+    services: PropTypes.shape({
+      MeasurementService: PropTypes.shape({
+        getMeasurements: PropTypes.func.isRequired,
+        VALUE_TYPES: PropTypes.object.isRequired,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
+};
 
 // TODO: This could be a MeasurementService mapper
 function _mapMeasurementToDisplay(measurement, index, types) {
@@ -188,22 +334,19 @@ function _mapMeasurementToDisplay(measurement, index, types) {
     SOPInstanceUID
   );
   const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;
-
-  console.log('mapping....', measurement);
-  console.log(instance);
+  const displayText = _getDisplayText(
+    measurement,
+    PixelSpacing,
+    SeriesNumber,
+    InstanceNumber,
+    types
+  );
 
   return {
-    id: index + 1,
-    label: '(empty)', // 'Label short description',
-    displayText:
-      _getDisplayText(
-        measurement,
-        PixelSpacing,
-        SeriesNumber,
-        InstanceNumber,
-        types
-      ) || [],
-    // TODO: handle one layer down
+    id: measurement.id,
+    label: measurement.label || '(empty)',
+    measurementType: measurement.type,
+    displayText: displayText || [],
     isActive: false, // activeMeasurementItem === i + 1,
   };
 }
@@ -220,15 +363,7 @@ function _getDisplayText(
   instanceNumber,
   types
 ) {
-  // TODO: determination of shape influences text
-  // Length:  'xx.x unit (S:x, I:x)'
-  // Rectangle: 'xx.x x xx.x unit (S:x, I:x)',
-  // Ellipse?
-  // Bidirectional?
-  // Freehand?
-
   const { type, points } = measurement;
-
   const hasPixelSpacing =
     pixelSpacing !== undefined &&
     Array.isArray(pixelSpacing) &&
@@ -239,18 +374,16 @@ function _getDisplayText(
   const unit = hasPixelSpacing ? 'mm' : 'px';
 
   switch (type) {
-    case types.POLYLINE:
+    case types.POLYLINE: {
       const { length } = measurement;
-
-      const roundedLength = _round(length, 1);
+      const roundedLength = _round(length, 2);
 
       return [
         `${roundedLength} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
       ];
-
-    case types.BIDIRECTIONAL:
+    }
+    case types.BIDIRECTIONAL: {
       const { shortestDiameter, longestDiameter } = measurement;
-
       const roundedShortestDiameter = _round(shortestDiameter, 1);
       const roundedLongestDiameter = _round(longestDiameter, 1);
 
@@ -258,21 +391,24 @@ function _getDisplayText(
         `l: ${roundedLongestDiameter} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
         `s: ${roundedShortestDiameter} ${unit}`,
       ];
-    case types.ELLIPSE:
+    }
+    case types.ELLIPSE: {
       const { area } = measurement;
+      const roundedArea = _round(area, 2);
 
-      const roundedArea = _round(area, 1);
       return [
         `${roundedArea} ${unit}2 (S:${seriesNumber}, I:${instanceNumber})`,
       ];
-    case types.POINT:
-      const { text } = measurement;
-      return [`${text} (S:${seriesNumber}, I:${instanceNumber})`];
+    }
+    case types.POINT: {
+      const { text } = measurement; // Will display in "short description"
+      return [`(S:${seriesNumber}, I:${instanceNumber})`];
+    }
   }
 }
 
 function _round(value, decimals) {
-  return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+  return parseFloat(value).toFixed(decimals);
 }
 
 export default PanelMeasurementTableTracking;

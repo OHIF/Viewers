@@ -10,7 +10,11 @@ import PropTypes from 'prop-types';
 const DEFAULT_STATE = {
   numRows: 1,
   numCols: 1,
-  viewports: [],
+  viewports: [
+    // {
+    //    displaySetInstanceUID: string,
+    // }
+  ],
   activeViewportIndex: 0,
 };
 
@@ -19,15 +23,20 @@ export const ViewportGridContext = createContext(DEFAULT_STATE);
 export function ViewportGridProvider({ children, service }) {
   const viewportGridReducer = (state, action) => {
     switch (action.type) {
-      case 'SET_ACTIVE_VIEWPORT_INDEX':
+      case 'SET_ACTIVE_VIEWPORT_INDEX': {
         return { ...state, ...{ activeViewportIndex: action.payload } };
+      }
       case 'SET_DISPLAYSET_FOR_VIEWPORT': {
-        const { viewportIndex, displaySetInstanceUID } = action.payload;
+        const {
+          viewportIndex,
+          displaySetInstanceUID,
+          imageIndex,
+        } = action.payload;
         const viewports = state.viewports.slice();
 
-        viewports[viewportIndex] = { displaySetInstanceUID };
+        viewports[viewportIndex] = { displaySetInstanceUID, imageIndex };
 
-        return { ...state, ...{ viewports } };
+        return { ...state, ...{ viewports }, cachedLayout: null };
       }
       case 'SET_LAYOUT': {
         const { numCols, numRows } = action.payload;
@@ -46,8 +55,29 @@ export function ViewportGridProvider({ children, service }) {
         return {
           ...state,
           ...{ activeViewportIndex, numCols, numRows, viewports },
+          cachedLayout: null,
         };
       }
+      case 'RESET': {
+        return {
+          numCols: 1,
+          numRows: 1,
+          activeViewportIndex: 0,
+          viewports: [{ displaySetInstanceUID: null, imageIndex: null }],
+          cachedLayout: null,
+        };
+      }
+
+      case 'SET_CACHED_LAYOUT': {
+        return { ...state, cachedLayout: action.payload };
+      }
+      case 'SET': {
+        return {
+          ...state,
+          ...action.payload,
+        };
+      }
+
       default:
         return action.payload;
     }
@@ -55,7 +85,7 @@ export function ViewportGridProvider({ children, service }) {
 
   const [viewportGridState, dispatch] = useReducer(
     viewportGridReducer,
-    DEFAULT_STATE,
+    DEFAULT_STATE
   );
 
   const getState = useCallback(() => viewportGridState, [viewportGridState]);
@@ -64,12 +94,13 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
   const setDisplaysetForViewport = useCallback(
-    ({ viewportIndex, displaySetInstanceUID }) =>
+    ({ viewportIndex, displaySetInstanceUID, imageIndex }) =>
       dispatch({
         type: 'SET_DISPLAYSET_FOR_VIEWPORT',
         payload: {
           viewportIndex,
           displaySetInstanceUID,
+          imageIndex,
         },
       }),
     [dispatch]
@@ -87,6 +118,32 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
+  const reset = useCallback(
+    () =>
+      dispatch({
+        type: 'RESET',
+        payload: {},
+      }),
+    [dispatch]
+  );
+  const setCachedLayout = useCallback(
+    payload =>
+      dispatch({
+        type: 'SET_CACHED_LAYOUT',
+        payload,
+      }),
+    [dispatch]
+  );
+
+  const set = useCallback(
+    payload =>
+      dispatch({
+        type: 'SET',
+        payload,
+      }),
+    [dispatch]
+  );
+
   /**
    * Sets the implementation of a modal service that can be used by extensions.
    *
@@ -99,6 +156,9 @@ export function ViewportGridProvider({ children, service }) {
         setActiveViewportIndex,
         setDisplaysetForViewport,
         setLayout,
+        reset,
+        setCachedLayout,
+        set,
       });
     }
   }, [
@@ -107,6 +167,9 @@ export function ViewportGridProvider({ children, service }) {
     setActiveViewportIndex,
     setDisplaysetForViewport,
     setLayout,
+    reset,
+    setCachedLayout,
+    set,
   ]);
 
   const api = {
@@ -114,6 +177,9 @@ export function ViewportGridProvider({ children, service }) {
     setActiveViewportIndex,
     setDisplaysetForViewport,
     setLayout,
+    setCachedLayout,
+    reset,
+    set,
   };
 
   return (

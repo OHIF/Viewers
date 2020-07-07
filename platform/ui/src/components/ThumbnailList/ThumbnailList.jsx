@@ -5,8 +5,9 @@ import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '@ohif/ui';
 
 const ThumbnailList = ({
   thumbnails,
-  thumbnailActive,
+  activeDisplaySetInstanceUID,
   onThumbnailClick,
+  onThumbnailDoubleClick,
   onClickUntrack,
 }) => {
   return (
@@ -26,7 +27,8 @@ const ThumbnailList = ({
           imageSrc,
           imageAltText,
         }) => {
-          const isActive = thumbnailActive === displaySetInstanceUID;
+          const isActive =
+            activeDisplaySetInstanceUID === displaySetInstanceUID;
 
           switch (componentType) {
             case 'thumbnail':
@@ -43,6 +45,9 @@ const ThumbnailList = ({
                   viewportIdentificator={viewportIdentificator}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() =>
+                    onThumbnailDoubleClick(displaySetInstanceUID)
+                  }
                 />
               );
             case 'thumbnailTracked':
@@ -60,19 +65,28 @@ const ThumbnailList = ({
                   isTracked={isTracked}
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() =>
+                    onThumbnailDoubleClick(displaySetInstanceUID)
+                  }
                   onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
                 />
               );
             case 'thumbnailNoImage':
               return (
                 <ThumbnailNoImage
+                  isActive={isActive}
                   key={displaySetInstanceUID}
                   displaySetInstanceUID={displaySetInstanceUID}
                   dragData={dragData}
                   modality={modality}
+                  modalityTooltip={_getModalityTooltip(modality)}
                   seriesDate={seriesDate}
                   description={description}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() =>
+                    onThumbnailDoubleClick(displaySetInstanceUID)
+                  }
+                  viewportIdentificator={viewportIdentificator}
                 />
               );
             default:
@@ -114,9 +128,23 @@ ThumbnailList.propTypes = {
       }),
     })
   ),
-  thumbnailActive: PropTypes.string,
-  onThumbnailClick: PropTypes.func,
+  activeDisplaySetInstanceUID: PropTypes.string,
+  onThumbnailClick: PropTypes.func.isRequired,
+  onThumbnailDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
+};
+
+// TODO: Support "Viewport Identificator"?
+function _getModalityTooltip(modality) {
+  if (_modalityTooltips.hasOwnProperty(modality)) {
+    return _modalityTooltips[modality];
+  }
+
+  return 'Unknown';
+}
+
+const _modalityTooltips = {
+  SR: 'Structured Report',
 };
 
 export default ThumbnailList;

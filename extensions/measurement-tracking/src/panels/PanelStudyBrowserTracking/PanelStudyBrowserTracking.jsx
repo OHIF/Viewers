@@ -22,19 +22,32 @@ function PanelStudyBrowserTracking({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
-  const [{ activeViewportIndex, viewports }] = useViewportGrid();
+  const [
+    { activeViewportIndex, viewports },
+    viewportGridService,
+  ] = useViewportGrid();
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
   ] = useTrackedMeasurements();
   const [activeTabName, setActiveTabName] = useState('primary');
-  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState(
-    []
-  );
+  const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
+    ...StudyInstanceUIDs,
+  ]);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
+
+  const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex: activeViewportIndex,
+      displaySetInstanceUID,
+    });
+  };
+
+  const activeDisplaySetInstanceUID =
+    viewports[activeViewportIndex]?.displaySetInstanceUID;
 
   // TODO: Should this be somewhere else? Feels more like a mode "lifecycle" setup/destroy?
   useEffect(() => {
@@ -287,11 +300,18 @@ function PanelStudyBrowserTracking({
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
         });
       }}
+      onClickThumbnail={() => {}}
+      onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+      activeDisplaySetInstanceUID={activeDisplaySetInstanceUID}
     />
   );
 }
 
 PanelStudyBrowserTracking.propTypes = {
+  MeasurementService: PropTypes.shape({
+    subscribe: PropTypes.func.isRequired,
+    EVENTS: PropTypes.object.isRequired,
+  }).isRequired,
   DisplaySetService: PropTypes.shape({
     EVENTS: PropTypes.object.isRequired,
     activeDisplaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -361,7 +381,7 @@ function _mapDisplaySets(
       description: ds.SeriesDescription,
       seriesNumber: ds.SeriesNumber,
       modality: ds.Modality,
-      seriesDate: ds.SeriesDate,
+      seriesDate: formatDate(ds.SeriesDate),
       numInstances: ds.numImageFrames,
       StudyInstanceUID: ds.StudyInstanceUID,
       componentType,

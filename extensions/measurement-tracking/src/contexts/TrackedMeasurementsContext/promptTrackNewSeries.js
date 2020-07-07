@@ -1,3 +1,5 @@
+import createReportAsync from './../../_shared/createReportAsync.js';
+
 const RESPONSE = {
   NO_NEVER: -1,
   CANCEL: 0,
@@ -6,8 +8,13 @@ const RESPONSE = {
   SET_STUDY_AND_SERIES: 3,
 };
 
-function promptUser(UIViewportDialogService, ctx, evt) {
+function promptUser({ servicesManager, extensionManager }, ctx, evt) {
+  const {
+    UIViewportDialogService,
+    MeasurementService,
+  } = servicesManager.services;
   const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
+  const { trackedStudy, trackedSeries } = ctx;
 
   return new Promise(async function(resolve, reject) {
     let promptResult = await _askShouldAddMeasurements(
@@ -22,9 +29,19 @@ function promptUser(UIViewportDialogService, ctx, evt) {
       );
     }
 
-    // TODO: Hook into @JamesAPetts createReport
     if (promptResult === RESPONSE.CREATE_REPORT) {
-      window.alert('CREATE REPORT');
+      // TODO -> Eventually deal with multiple dataSources.
+      // Would need some way of saying which one is the "push" dataSource
+      const dataSources = extensionManager.getDataSources();
+      const dataSource = dataSources[0];
+      const measurements = MeasurementService.getMeasurements();
+      const trackedMeasurements = measurements.filter(
+        m =>
+          trackedStudy === m.referenceStudyUID &&
+          trackedSeries.includes(m.referenceSeriesUID)
+      );
+
+      createReportAsync(servicesManager, dataSource, trackedMeasurements);
     }
 
     resolve({

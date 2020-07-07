@@ -1,0 +1,8 @@
+/* TODO: Find a better way to set the cursor for all contents of dialog. */
+.DraggableItem.draggable div {
+  cursor: grab !important;
+}
+
+.DraggableItem.draggable.dragging div {
+  cursor: grabbing !important;
+}

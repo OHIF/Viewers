@@ -1,29 +1,11 @@
 import React, { Component } from 'react';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-//import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
-import cornerstone from 'cornerstone-core';
 import debounce from 'lodash.debounce';
-import throttle from 'lodash.throttle';
 
 import { setEnabledElement } from './state';
 
-// const {
-//   onAdded,
-//   onRemoved,
-//   onModified,
-// } = OHIF.measurements.MeasurementHandlers;
-
-// // TODO: Transition to enums for the action names so that we can ensure they stay up to date
-// // everywhere they're used.
-// const MEASUREMENT_ACTION_MAP = {
-//   added: onAdded,
-//   removed: onRemoved,
-//   modified: throttle(event => {
-//     return onModified(event);
-//   }, 300),
-// };
 
 // const cine = viewportSpecificData.cine;
 
@@ -68,7 +50,7 @@ class OHIFCornerstoneViewport extends Component {
    * @return {Object} CornerstoneTools Stack
    */
   static getCornerstoneStack(displaySet, dataSource) {
-    const { frameIndex } = displaySet;
+    const { imageIndex } = displaySet;
 
     // Get stack from Stack Manager
     const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
@@ -76,7 +58,7 @@ class OHIFCornerstoneViewport extends Component {
     // Clone the stack here so we don't mutate it
     const stack = Object.assign({}, storedStack);
 
-    stack.currentImageIdIndex = frameIndex;
+    stack.currentImageIdIndex = imageIndex;
 
     // TODO -> Do we ever use this like this?
     // if (SOPInstanceUID) {
@@ -155,9 +137,9 @@ class OHIFCornerstoneViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
+      prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
-      displaySet.frameIndex !== prevDisplaySet.frameIndex
+      displaySet.imageIndex !== prevDisplaySet.imageIndex
     ) {
       this.setStateFromProps();
     }
@@ -199,7 +181,7 @@ class OHIFCornerstoneViewport extends Component {
           this.props.onNewImage({
             StudyInstanceUID,
             SOPInstanceUID: sopInstanceUid,
-            frameIndex: currentImageIdIndex,
+            imageIndex: currentImageIdIndex,
             activeViewportIndex: viewportIndex,
           });
         }
@@ -229,6 +211,9 @@ class OHIFCornerstoneViewport extends Component {
             const enabledElement = evt.detail.element;
             setEnabledElement(viewportIndex, enabledElement);
           }}
+          // Sync resize throttle w/ sidepanel animation duration to prevent
+          // seizure inducing strobe blinking effect
+          resizeRefreshRateMs={150}
         />
         {childrenWithProps}
       </>

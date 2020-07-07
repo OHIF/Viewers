@@ -6,7 +6,8 @@ const RESPONSE = {
   SET_STUDY_AND_SERIES: 3,
 };
 
-function promptUser(UIViewportDialogService, ctx, evt) {
+function promptUser({ servicesManager }, ctx, evt) {
+  const { UIViewportDialogService } = servicesManager.services;
   const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
 
   return new Promise(async function(resolve, reject) {

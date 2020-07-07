@@ -15,13 +15,23 @@ const ViewportActionBar = ({
   showNavArrows,
   showPatientInfo: patientInfoVisibility,
   onSeriesChange,
+  onHydrationClick,
+  onDoubleClick,
 }) => {
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
+
+  // TODO -> Remake this component with a bunch of generic slots that can be filled,
+  // Its not generic at all, isTracked etc shouldn't be parts of this component.
+  // It shouldn't care that a tracking mode or SR exists.
+  // Things like the right/left buttons should be made into smaller
+  // Components you can compose.
+  // OHIF-200 ticket.
 
   const {
     label,
     isTracked,
     isLocked,
+    isHydrated,
     modality,
     studyDate,
     currentSeries,
@@ -43,53 +53,93 @@ const ViewportActionBar = ({
 
   const renderIconStatus = () => {
     if (modality === 'SR') {
+      const TooltipMessage = isLocked
+        ? () => (
+            <div>
+              This SR is locked. <br />
+              Measurements cannot be duplicated.
+            </div>
+          )
+        : () => (
+            <div>
+              This SR is unlocked. <br />
+              You can duplicate measurements on your current report <br /> by
+              clicking &apos;Edit&apos;.
+            </div>
+          );
       return (
-        <div className="relative flex p-1 border rounded border-primary-light">
-          <span className="text-sm font-bold leading-none text-primary-light">
-            SR
-          </span>
-          {isLocked && (
-            <Icon
-              name="lock"
-              className="absolute w-3 text-white"
-              style={{ top: -6, right: -6 }}
-            />
+        <>
+          <Tooltip content={<TooltipMessage />} position="bottom-left">
+            <div className="relative flex p-1 border rounded cursor-default border-primary-light">
+              <span className="text-sm font-bold leading-none text-primary-light">
+                SR
+              </span>
+              {isLocked && (
+                <Icon
+                  name="lock"
+                  className="absolute w-3 text-white"
+                  style={{ top: -6, right: -6 }}
+                />
+              )}
+            </div>
+          </Tooltip>
+          {!isLocked && !isHydrated && (
+            <div className="relative flex p-1 ml-1 border rounded cursor-pointer border-primary-light">
+              <span
+                className="text-sm font-bold leading-none text-primary-light"
+                onClick={onHydrationClick}
+              >
+                Edit
+              </span>
+            </div>
           )}
-        </div>
+        </>
       );
     }
 
+    const trackedIcon = isTracked ? 'tracked' : 'dotted-circle';
+
     return (
       <div className="relative">
-        {!isTracked ? (
-          <Icon name="dotted-circle" className="w-6 text-primary-light" />
-        ) : (
-          <Tooltip
-            position="bottom-left"
-            content={
-              <div className="flex py-2">
-                <div className="flex pt-1">
-                  <Icon name="info-link" className="w-4 text-primary-main" />
-                </div>
-                <div className="flex ml-4">
-                  <span className="text-base text-common-light">
-                    Series is
-                    <span className="font-bold text-white"> tracked</span> and
-                    can be viewed <br /> in the measurement panel
-                  </span>
-                </div>
+        <Tooltip
+          position="bottom-left"
+          content={
+            <div className="flex py-2">
+              <div className="flex pt-1">
+                <Icon name="info-link" className="w-4 text-primary-main" />
               </div>
-            }
-          >
-            <Icon name="tracked" className="w-6 text-primary-light" />
-          </Tooltip>
-        )}
+              <div className="flex ml-4">
+                <span className="text-base text-common-light">
+                  {isTracked ? (
+                    <>
+                      Series is
+                      <span className="font-bold text-white"> tracked</span> and
+                      can be viewed <br /> in the measurement panel
+                    </>
+                  ) : (
+                    <>
+                      Measurements for
+                      <span className="font-bold text-white"> untracked </span>
+                      series <br /> will not be shown in the <br /> measurements
+                      panel
+                    </>
+                  )}
+                </span>
+              </div>
+            </div>
+          }
+        >
+          <Icon name={trackedIcon} className="w-6 text-primary-light" />
+        </Tooltip>
       </div>
     );
   };
 
   return (
-    <div className="flex items-center p-2 border-b border-primary-light">
+    <div
+      className="flex items-center p-2 border-b select-none border-primary-light min-h-12"
+      onDoubleClick={onDoubleClick}
+    >
       <div className="flex flex-grow">
         <div className="flex items-center">
           {renderIconStatus()}

@@ -121,6 +121,7 @@ const commandsModule = ({ servicesManager }) => {
             lesionNamingNumber,
             measurementNumber,
           } = measurementData;
+
           if (!_id) {
             return;
           }
@@ -271,7 +272,7 @@ const commandsModule = ({ servicesManager }) => {
     jumpToImage: ({
       StudyInstanceUID,
       SOPInstanceUID,
-      frameIndex,
+      imageIndex,
       activeViewportIndex,
     }) => {
       const study = studyMetadataManager.get(StudyInstanceUID);
@@ -284,7 +285,7 @@ const commandsModule = ({ servicesManager }) => {
       });
 
       displaySet.SOPInstanceUID = SOPInstanceUID;
-      displaySet.frameIndex = frameIndex;
+      displaySet.imageIndex = imageIndex;
 
       window.store.dispatch(
         setViewportSpecificData(activeViewportIndex, displaySet)

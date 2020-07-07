@@ -1,5 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
+import onModeEnter from './onModeEnter';
 import id from './id.js';
 import init from './init';
 
@@ -23,6 +24,18 @@ export default {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
+  dependencies: [
+    // TODO -> This isn't used anywhere yet, but we do have a hard dependency, and need to check for these in the future.
+    // OHIF-229
+    {
+      id: 'org.ohif.cornerstone',
+      version: '3.0.0',
+    },
+    {
+      id: 'org.ohif.measurement-tracking',
+      version: '^0.0.1',
+    },
+  ],
 
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
@@ -34,13 +47,12 @@ export default {
    * @param {object} [configuration={}]
    * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
    */
-  getViewportModule({ servicesManager }) {
+  getViewportModule({ servicesManager, extensionManager }) {
     const ExtendedOHIFCornerstoneSRViewport = props => {
-      const { DisplaySetService } = servicesManager.services;
-
       return (
         <OHIFCornerstoneSRViewport
-          DisplaySetService={DisplaySetService}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
           {...props}
         />
       );
@@ -49,4 +61,5 @@ export default {
     return [{ name: 'dicom-sr', component: ExtendedOHIFCornerstoneSRViewport }];
   },
   getSopClassHandlerModule,
+  onModeEnter,
 };

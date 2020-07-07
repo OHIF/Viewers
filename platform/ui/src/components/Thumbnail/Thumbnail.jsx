@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
-//
 import { Icon } from '@ohif/ui';
+import blurHandlerListener from '../../utils/blurHandlerListener';
 
 /**
  *
@@ -19,6 +19,7 @@ const Thumbnail = ({
   dragData,
   isActive,
   onClick,
+  onDoubleClick,
 }) => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
@@ -30,52 +31,58 @@ const Thumbnail = ({
     },
   });
 
+  const thumbnailElement = useRef(null);
+
   return (
     <div
-      ref={drag}
+      onFocus={() => blurHandlerListener(thumbnailElement)}
+      ref={thumbnailElement}
       className={classnames(
         className,
-        'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none'
+        'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none select-none group'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       onClick={onClick}
-      onKeyDown={onClick}
+      onDoubleClick={onDoubleClick}
       role="button"
       tabIndex="0"
     >
-      <div
-        className={classnames(
-          'flex flex-1 items-center justify-center rounded-md bg-black text-base text-white overflow-hidden mb-2 min-h-32',
-          isActive
-            ? 'border-2 border-primary-light'
-            : 'border border-secondary-light hover:border-blue-300'
-        )}
-      >
-        {imageSrc ? (
-          <img
-            src={imageSrc}
-            alt={imageAltText}
-            className="object-none min-h-32"
-          />
-        ) : (
-          <div>{imageAltText}</div>
-        )}
-      </div>
-      <div className="flex flex-row items-center flex-1 text-base text-blue-300">
-        <div className="mr-4">
-          <span className="font-bold text-primary-main">{'S: '}</span>
-          {seriesNumber}
+      <div ref={drag}>
+        <div
+          className={classnames(
+            'flex flex-1 items-center justify-center rounded-md bg-black text-base text-white overflow-hidden mb-2 min-h-32',
+            isActive
+              ? 'border-2 border-primary-light'
+              : 'border border-secondary-light group-focus:border-blue-300 hover:border-blue-300'
+          )}
+        >
+          {imageSrc ? (
+            <img
+              src={imageSrc}
+              alt={imageAltText}
+              className="object-none min-h-32"
+            />
+          ) : (
+            <div>{imageAltText}</div>
+          )}
         </div>
-        <div className="flex flex-row items-center flex-1">
-          <Icon name="group-layers" className="w-3 mr-2" /> {numInstances}
+        <div className="flex flex-row items-center flex-1 text-base text-blue-300">
+          <div className="mr-4">
+            <span className="font-bold text-primary-main">{'S: '}</span>
+            {seriesNumber}
+          </div>
+          <div className="flex flex-row items-center flex-1">
+            <Icon name="group-layers" className="w-3 mr-2" /> {numInstances}
+          </div>
         </div>
+        <div className="text-base text-white break-all">{description}</div>
       </div>
-      <div className="text-base text-white break-all">{description}</div>
     </div>
   );
 };
 
 Thumbnail.propTypes = {
+  displaySetInstanceUID: PropTypes.string.isRequired,
   className: PropTypes.string,
   imageSrc: PropTypes.string,
   /**
@@ -95,6 +102,7 @@ Thumbnail.propTypes = {
   numInstances: PropTypes.number.isRequired,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
+  onDoubleClick: PropTypes.func.isRequired,
 };
 
 Thumbnail.defaultProps = {

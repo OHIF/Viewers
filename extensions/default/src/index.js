@@ -4,6 +4,7 @@ import getLayoutTemplateModule from './getLayoutTemplateModule.js';
 import getPanelModule from './getPanelModule.js';
 import getSopClassHandlerModule from './getSopClassHandlerModule.js';
 import getToolbarModule from './getToolbarModule.js';
+import commandsModule from './commandsModule';
 import id from './id';
 
 export default {
@@ -17,4 +18,7 @@ export default {
   getPanelModule,
   getSopClassHandlerModule,
   getToolbarModule,
+  getCommandsModule({ servicesManager }) {
+    return commandsModule({ servicesManager });
+  },
 };

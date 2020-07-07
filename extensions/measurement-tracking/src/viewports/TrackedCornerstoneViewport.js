@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import CornerstoneViewport from 'react-cornerstone-viewport';
-import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
+import OHIF, { utils } from '@ohif/core';
 import {
   Notification,
   ViewportActionBar,
@@ -13,10 +13,15 @@ import {
 import { useTrackedMeasurements } from './../getContextModule';
 
 import ViewportOverlay from './ViewportOverlay';
+import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 
 const { formatDate } = utils;
 
 // TODO -> Get this list from the list of tracked measurements.
+// TODO -> We can now get a list of tool names from the measurement service.
+// Use the toolnames to check which tools we have instead, using the
+// Classes isn't really extensible unless we add the classes to the measurement
+// Service definition, which feels wrong.
 const {
   ArrowAnnotateTool,
   BidirectionalTool,
@@ -29,7 +34,6 @@ const BaseAnnotationTool = cornerstoneTools.importInternal(
 );
 
 // const cine = viewportSpecificData.cine;
-
 // isPlaying = cine.isPlaying === true;
 // frameRate = cine.cineFrameRate || frameRate;
 
@@ -40,15 +44,22 @@ function TrackedCornerstoneViewport({
   dataSource,
   displaySet,
   viewportIndex,
-  ToolBarService
+  servicesManager,
 }) {
+  const { ToolBarService, DisplaySetService } = servicesManager.services;
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [{ activeViewportIndex, viewports }] = useViewportGrid();
+  const [
+    { activeViewportIndex, viewports },
+    viewportGridService,
+  ] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
   const [element, setElement] = useState(null);
+
   const [isTracked, setIsTracked] = useState(false);
+  const [trackedMeasurementId, setTrackedMeasurementId] = useState(null);
+
   // TODO: Still needed? Better way than import `OHIF` and destructure?
   // Why is this managed by `core`?
   useEffect(() => {
@@ -155,16 +166,15 @@ function TrackedCornerstoneViewport({
       );
     }
 
-    _getViewportData(dataSource, displaySet).then(viewportData => {
-      setViewportData({ ...viewportData });
-    });
-  }, [
-    dataSource,
-    displaySet,
-    displaySet.StudyInstanceUID,
-    displaySet.displaySetInstanceUID,
-    displaySet.frameIndex,
-  ]);
+    /*
+     * This grabs `imageIndex from first matching
+     * We actually want whichever is at our `viewportIndex`
+     */
+    const { imageIndex } = viewports[viewportIndex];
+    displaySet.imageIndex = imageIndex;
+
+    _getViewportData(dataSource, displaySet).then(setViewportData);
+  }, [dataSource, displaySet, viewports, viewportIndex]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -240,14 +250,62 @@ function TrackedCornerstoneViewport({
       ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
       : '';
 
+  function switchMeasurement(direction) {
+    if (!element) {
+      // Element not yet enabled.
+      return;
+    }
+
+    const newTrackedMeasurementId = _getNextMeasurementId(
+      direction,
+      servicesManager,
+      trackedMeasurementId,
+      trackedMeasurements
+    );
+
+    if (!newTrackedMeasurementId) {
+      return;
+    }
+
+    setTrackedMeasurementId(newTrackedMeasurementId);
+
+    const { MeasurementService } = servicesManager.services;
+    const measurements = MeasurementService.getMeasurements();
+    const measurement = measurements.find(
+      m => m.id === newTrackedMeasurementId
+    );
+
+    const {
+      displaySetInstanceUID,
+      imageIndex,
+    } = _getViewportDataFromTrackedMeasurementId(
+      measurement,
+      DisplaySetService
+    );
+
+    viewportGridService.setDisplaysetForViewport({
+      viewportIndex,
+      displaySetInstanceUID,
+      imageIndex,
+    });
+  }
+
+  const showNavArrows = isTracked && viewportIndex === activeViewportIndex;
+
+  // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
+
   return (
     <>
       <ViewportActionBar
-        onSeriesChange={direction => alert(`Series ${direction}`)}
-        showNavArrows={viewportIndex === activeViewportIndex}
+        onDoubleClick={evt => {
+          evt.stopPropagation();
+          evt.preventDefault();
+        }}
+        onSeriesChange={direction => switchMeasurement(direction)}
+        showNavArrows={showNavArrows}
         studyData={{
           label,
-          isTracked: trackedSeries.includes(SeriesInstanceUID),
+          isTracked,
           isLocked: false,
           studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
           currentSeries: SeriesNumber,
@@ -272,18 +330,30 @@ function TrackedCornerstoneViewport({
         }}
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
-      <div className="relative flex flex-row w-full h-full">
+      <div className="relative flex flex-row w-full h-full overflow-hidden">
         <CornerstoneViewport
           onElementEnabled={onElementEnabled}
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
+          onNewImageDebounceTime={700}
+          onNewImageDebounced={({ currentImageIdIndex }) => {
+            viewportGridService.setDisplaysetForViewport({
+              viewportIndex: activeViewportIndex,
+              displaySetInstanceUID: displaySet.displaySetInstanceUID,
+              imageIndex: currentImageIdIndex,
+            });
+          }}
+          // Sync resize throttle w/ sidepanel animation duration to prevent
+          // seizure inducing strobe blinking effect
+          resizeRefreshRateMs={150}
           // TODO: ViewportGrid Context?
           isActive={true} // todo
           isStackPrefetchEnabled={true} // todo
           isPlaying={false}
           frameRate={24}
           isOverlayVisible={true}
+          loadingIndicatorComponent={ViewportLoadingIndicator}
           viewportOverlayComponent={props => {
             return (
               <ViewportOverlay
@@ -332,7 +402,7 @@ const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
  * @return {Object} CornerstoneTools Stack
  */
 function _getCornerstoneStack(displaySet, dataSource) {
-  const { frameIndex } = displaySet;
+  const { imageIndex } = displaySet;
 
   // Get stack from Stack Manager
   const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
@@ -340,23 +410,114 @@ function _getCornerstoneStack(displaySet, dataSource) {
   // Clone the stack here so we don't mutate it
   const stack = Object.assign({}, storedStack);
 
-  stack.currentImageIdIndex = frameIndex;
+  stack.currentImageIdIndex = imageIndex;
 
   return stack;
 }
 
-async function _getViewportData(dataSource, displaySet) {
-  let viewportData;
+function _onDoubleClick() {
+  const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
+    'manipulatorState'
+  ).setters.cancelActiveManipulatorsForElement;
+  const enabledElements = cornerstoneTools.store.state.enabledElements;
+  enabledElements.forEach(element => {
+    cancelActiveManipulatorsForElement(element);
+  });
+}
 
+/**
+ * Builds the viewport data from a datasource and a displayset.
+ *
+ * @param {Object} dataSource
+ * @param {Object} displaySet
+ * @return {Object} viewport data
+ */
+
+async function _getViewportData(dataSource, displaySet) {
   const stack = _getCornerstoneStack(displaySet, dataSource);
 
-  viewportData = {
+  const viewportData = {
     StudyInstanceUID: displaySet.StudyInstanceUID,
     displaySetInstanceUID: displaySet.displaySetInstanceUID,
     stack,
   };
 
   return viewportData;
+}
+
+function _getNextMeasurementId(
+  direction,
+  servicesManager,
+  trackedMeasurementId,
+  trackedMeasurements
+) {
+  const { MeasurementService } = servicesManager.services;
+  const measurements = MeasurementService.getMeasurements();
+
+  const { trackedSeries } = trackedMeasurements.context;
+
+  // Get the potentially trackable measurements for this series,
+  // The measurements to jump between are the same
+  // regardless if this series is tracked or not.
+
+  const filteredMeasurements = measurements.filter(m =>
+    trackedSeries.includes(m.referenceSeriesUID)
+  );
+
+  if (!filteredMeasurements.length) {
+    // No measurements on this series.
+    return;
+  }
+
+  const measurementCount = filteredMeasurements.length;
+
+  const ids = filteredMeasurements.map(fm => fm.id);
+  let measurementIndex = ids.findIndex(id => id === trackedMeasurementId);
+
+  if (measurementIndex === -1) {
+    // Not tracking a measurement, or previous measurement now deleted, revert to 0.
+    measurementIndex = 0;
+  } else {
+    if (direction === 'left') {
+      measurementIndex--;
+
+      if (measurementIndex < 0) {
+        measurementIndex = measurementCount - 1;
+      }
+    } else if (direction === 'right') {
+      measurementIndex++;
+
+      if (measurementIndex === measurementCount) {
+        measurementIndex = 0;
+      }
+    }
+  }
+
+  const newTrackedMeasurementId = ids[measurementIndex];
+
+  return newTrackedMeasurementId;
+}
+
+function _getViewportDataFromTrackedMeasurementId(
+  measurement,
+  DisplaySetService
+) {
+  const { referenceSeriesUID: SeriesInstanceUID, SOPInstanceUID } = measurement;
+
+  const activeDisplaySets = DisplaySetService.getActiveDisplaySets();
+
+  const displaySet = activeDisplaySets.find(
+    ds => ds.SeriesInstanceUID === SeriesInstanceUID
+  );
+
+  const imageIndex = displaySet.images.findIndex(
+    image => image.SOPInstanceUID === SOPInstanceUID
+  );
+
+  return {
+    imageIndex,
+    displaySetInstanceUID: displaySet.displaySetInstanceUID,
+  };
 }
 
 export default TrackedCornerstoneViewport;

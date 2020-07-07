@@ -33,7 +33,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     /** Used by commands to inject `viewports` from "redux" */
     getAppState: () => { },
     /** Used by commands to determine active context */
-    getActiveContexts: () => ['VIEWER', 'ACTIVE_VIEWPORT::CORNERSTONE'],
+    getActiveContexts: () => ['VIEWER', 'DEFAULT', 'ACTIVE_VIEWPORT::CORNERSTONE'],
   };
 
   const servicesManager = new ServicesManager();
@@ -71,8 +71,8 @@ function appInit(appConfigOrFunc, defaultExtensions) {
 
   // TODO: Remove this
   if (!appConfig.modes.length) {
-    appConfig.modes.push(window.exampleMode);
     appConfig.modes.push(window.longitudinalMode);
+    // appConfig.modes.push(window.segmentationMode);
   }
 
   return {
@@ -80,7 +80,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     commandsManager,
     extensionManager,
     servicesManager,
-    hotkeysManager
+    hotkeysManager,
   };
 }
 

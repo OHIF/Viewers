@@ -1,0 +1,12 @@
+0 silly argv { _: [ 'run' ],
+0 silly argv   stream: true,
+0 silly argv   lernaVersion: '3.22.0',
+0 silly argv   '$0':
+0 silly argv    '/Users/jamesapetts/cornerstonejs/Viewers/node_modules/.bin/lerna',
+0 silly argv   script: 'dev:viewer' }
+1 notice cli v3.22.0
+2 verbose rootPath /Users/jamesapetts/cornerstonejs/Viewers
+3 info versioning independent
+4 error JSONError: Unexpected token < in JSON at position 871 while parsing near '...ne-core": "^2.3.0",<<<<<<< HEAD    "co...' in platform/core/package.json
+4 error     at module.exports (/Users/jamesapetts/cornerstonejs/Viewers/node_modules/parse-json/index.js:26:19)
+4 error     at parse (/Users/jamesapetts/cornerstonejs/Viewers/node_modules/load-json-file/index.js:15:9)

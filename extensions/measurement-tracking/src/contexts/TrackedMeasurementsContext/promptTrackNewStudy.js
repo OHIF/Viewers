@@ -1,3 +1,5 @@
+import createReportAsync from './../../_shared/createReportAsync.js';
+
 const RESPONSE = {
   NO_NEVER: -1,
   CANCEL: 0,
@@ -6,10 +8,15 @@ const RESPONSE = {
   SET_STUDY_AND_SERIES: 3,
 };
 
-function promptUser(UIViewportDialogService, ctx, evt) {
+function promptUser({ servicesManager, extensionManager }, ctx, evt) {
+  const {
+    UIViewportDialogService,
+    MeasurementService,
+  } = servicesManager.services;
   const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
+  const { trackedStudy, trackedSeries } = ctx;
 
-  return new Promise(async function(resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     let promptResult = await _askTrackMeasurements(
       UIViewportDialogService,
       viewportIndex
@@ -22,9 +29,19 @@ function promptUser(UIViewportDialogService, ctx, evt) {
       );
     }
 
-    // TODO: Hook into @JamesAPetts createReport
     if (promptResult === RESPONSE.CREATE_REPORT) {
-      window.alert('CREATE REPORT');
+      // TODO -> Eventually deal with multiple dataSources.
+      // Would need some way of saying which one is the "push" dataSource
+      const dataSources = extensionManager.getDataSources();
+      const dataSource = dataSources[0];
+      const measurements = MeasurementService.getMeasurements();
+      const trackedMeasurements = measurements.filter(
+        m =>
+          trackedStudy === m.referenceStudyUID &&
+          trackedSeries.includes(m.referenceSeriesUID)
+      );
+
+      createReportAsync(servicesManager, dataSource, trackedMeasurements);
     }
 
     resolve({
@@ -36,7 +53,7 @@ function promptUser(UIViewportDialogService, ctx, evt) {
 }
 
 function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const message = 'Track measurements for this series?';
     const actions = [
       { type: 'cancel', text: 'No', value: RESPONSE.CANCEL },
@@ -66,14 +83,14 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
 }
 
 function _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const message =
       'Measurements cannot span across multiple studies. Do you want to save your tracked measurements?';
     const actions = [
       { type: 'cancel', text: 'Cancel', value: RESPONSE.CANCEL },
       {
         type: 'secondary',
-        text: 'No, discard previosuly tracked series & measurements',
+        text: 'No, discard previously tracked series & measurements',
         value: RESPONSE.SET_STUDY_AND_SERIES,
       },
       {
