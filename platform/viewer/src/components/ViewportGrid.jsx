@@ -22,19 +22,25 @@ function ViewerViewportGrid(props) {
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const { DisplaySetService } = servicesManager.services;
 
+  /*
+   * TODO: Create new event after all display sets were
+   * added to set displayset for viewport only once.
+   */
   useEffect(() => {
     const { unsubscribe } = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
-      displaySets => {
-        displaySets.sort((a, b) => {
+      DisplaySetService.EVENTS.ALL_DISPLAY_SETS_ADDED,
+      ({ activeDisplaySets }) => {
+        activeDisplaySets.sort((a, b) => {
           const isImageSet = x => x instanceof ImageSet;
           return isImageSet(a) === isImageSet(b) ? 0 : isImageSet(a) ? -1 : 1;
         });
 
         viewportGridService.setDisplaysetForViewport({
           viewportIndex: 0,
-          displaySetInstanceUID: displaySets[0].displaySetInstanceUID,
+          displaySetInstanceUID: activeDisplaySets[0].displaySetInstanceUID,
         });
+
+        unsubscribe();
       }
     );
 

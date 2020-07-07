@@ -5,6 +5,7 @@ const displaySetCache = [];
 
 export default class DisplaySetService {
   constructor() {
+    this.inputsAmount = 0;
     this.activeDisplaySets = [];
     this.listeners = {};
     this.EVENTS = EVENTS;
@@ -55,7 +56,7 @@ export default class DisplaySetService {
       displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUid
     );
 
-  makeDisplaySets = (input, { batch = false, madeInClient = false } = {}) => {
+  makeDisplaySets = (input, { batch = false, madeInClient = false, total = null } = {}) => {
     if (!input || !input.length) {
       throw new Error('No instances were provided.');
     }
@@ -68,6 +69,7 @@ export default class DisplaySetService {
 
     // If array of instances => One instance.
     let displaySetsAdded = [];
+    this.inputsAmount++;
 
     if (batch) {
       input.forEach(instances => {
@@ -93,6 +95,13 @@ export default class DisplaySetService {
       this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
       this._broadcastEvent(EVENTS.DISPLAY_SETS_ADDED, {
         displaySetsAdded,
+        options,
+      });
+    }
+
+    if (total && total === this.inputsAmount) {
+      this._broadcastEvent(EVENTS.ALL_DISPLAY_SETS_ADDED, {
+        activeDisplaySets: this.activeDisplaySets,
         options,
       });
     }

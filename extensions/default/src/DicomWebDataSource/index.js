@@ -57,7 +57,7 @@ function createDicomWebApi(dicomWebConfig) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function(origParams) {
+        search: async function (origParams) {
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams) || {};
 
@@ -74,7 +74,7 @@ function createDicomWebApi(dicomWebConfig) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function(studyInstanceUid) {
+        search: async function (studyInstanceUid) {
           const results = await seriesInStudy(
             qidoDicomWebClient,
             studyInstanceUid
@@ -111,10 +111,9 @@ function createDicomWebApi(dicomWebConfig) {
             );
           }
 
-          const storeInstances = instances => {
+          const storeInstances = (instances, options) => {
             const naturalizedInstances = instances.map(naturalizeDataset);
-
-            DicomMetadataStore.addInstances(naturalizedInstances);
+            DicomMetadataStore.addInstances(naturalizedInstances, options);
             callback(naturalizedInstances);
           };
 
@@ -130,7 +129,7 @@ function createDicomWebApi(dicomWebConfig) {
             studyPromise.then(seriesPromises => {
               seriesPromises.forEach(seriesPromise => {
                 seriesPromise.then(instances => {
-                  storeInstances(instances);
+                  storeInstances(instances, { total: seriesPromises.length });
                 });
               });
             });
@@ -179,15 +178,14 @@ function createDicomWebApi(dicomWebConfig) {
       );
 
       // Async load series, store as retrieved
-      function storeInstances(instances) {
+      function storeInstances(instances, options) {
         const naturalizedInstances = instances.map(naturalizeDataset);
-
-        DicomMetadataStore.addInstances(naturalizedInstances);
+        DicomMetadataStore.addInstances(naturalizedInstances, options);
       }
 
       seriesPromises.forEach(async seriesPromise => {
         const instances = await seriesPromise;
-        storeInstances(instances);
+        storeInstances(instances, { total: seriesPromises.length });
       });
     },
     deleteStudyMetadataPromise,

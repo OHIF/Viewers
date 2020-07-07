@@ -122,15 +122,14 @@ export default function ModeRoute({
 
     // TODO: This should be baked into core, not manuel?
     // DisplaySetService would wire this up?
-    const { unsubscribe } = DicomMetadataStore.subscribe(
+    const { unsubscribe: unsubscribeAdded } = DicomMetadataStore.subscribe(
       DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-      ({ StudyInstanceUID, SeriesInstanceUID }) => {
+      ({ StudyInstanceUID, SeriesInstanceUID, total }) => {
         const seriesMetadata = DicomMetadataStore.getSeries(
           StudyInstanceUID,
           SeriesInstanceUID
         );
-
-        DisplaySetService.makeDisplaySets(seriesMetadata.instances);
+        DisplaySetService.makeDisplaySets(seriesMetadata.instances, { total });
       }
     );
 
@@ -138,7 +137,10 @@ export default function ModeRoute({
       dataSource.retrieveSeriesMetadata({ StudyInstanceUID });
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribeAdded();
+      unsubscribeAllAdded();
+    };
   }, [
     mode,
     dataSourceName,
