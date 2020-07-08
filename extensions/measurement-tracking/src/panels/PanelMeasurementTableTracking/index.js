@@ -148,8 +148,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   }
 
   function exportReport() {
-    const dataSources = extensionManager.getDataSources();
-    const dataSource = dataSources[0];
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -157,8 +155,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    // TODO -> local download.
-    DICOMSR.downloadReport(trackedMeasurements, dataSource);
+    DICOMSR.downloadReport(trackedMeasurements, ['ArrowAnnotate']);
   }
 
   const jumpToImage = ({ id, isActive }) => {

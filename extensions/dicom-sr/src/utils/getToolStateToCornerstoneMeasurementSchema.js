@@ -51,7 +51,7 @@ function Length(measurementData, imageId, _getValueTypeFromToolType) {
     StudyInstanceUID,
   } = instance;
 
-  const { handles } = measurementData;
+  const { handles, findingSites, findings } = measurementData;
 
   const points = [];
   Object.keys(handles).map(handle => {
@@ -75,7 +75,24 @@ function Length(measurementData, imageId, _getValueTypeFromToolType) {
     length: measurementData.length,
     type: _getValueTypeFromToolType(tool),
     points,
+    label: _getLabel(findingSites, findings),
   };
+}
+
+function _getLabel(findingSites = [], findings = []) {
+  let freeTextLabel = findingSites.find(
+    fs => fs.CodeValue === 'CORNERSTONEFREETEXT'
+  );
+
+  if (freeTextLabel) {
+    return freeTextLabel.CodeMeaning;
+  }
+
+  freeTextLabel = findings.find(f => f.CodeValue === 'CORNERSTONEFREETEXT');
+
+  if (freeTextLabel) {
+    return freeTextLabel.CodeMeaning;
+  }
 }
 
 function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
@@ -88,7 +105,7 @@ function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
     StudyInstanceUID,
   } = instance;
 
-  const { handles } = measurementData;
+  const { handles, findingSites, findings } = measurementData;
 
   const longAxis = [handles.start, handles.end];
   const shortAxis = [handles.perpendicularStart, handles.perpendicularEnd];
@@ -106,6 +123,7 @@ function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
     longestDiameter: measurementData.longestDiameter,
     type: _getValueTypeFromToolType(tool),
     points: { longAxis, shortAxis },
+    label: _getLabel(findingSites, findings),
   };
 }
 
@@ -119,7 +137,9 @@ function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
     StudyInstanceUID,
   } = instance;
 
-  const { start, end } = measurementData.handles;
+  const { handles, findingSites, findings } = measurementData;
+
+  const { start, end } = handles;
 
   const halfXLength = Math.abs(start.x - end.x) / 2;
   const halfYLength = Math.abs(start.y - end.y) / 2;
@@ -161,6 +181,7 @@ function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
         .area /* TODO: Add concept names instead (descriptor) */,
     type: _getValueTypeFromToolType(tool),
     points,
+    label: _getLabel(findingSites, findings),
   };
 }
 
@@ -174,7 +195,7 @@ function ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType) {
     StudyInstanceUID,
   } = instance;
 
-  const { handles } = measurementData;
+  const { handles, findingSites, findings } = measurementData;
 
   const points = [];
   Object.keys(handles).map(handle => {
@@ -198,5 +219,6 @@ function ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType) {
     text: measurementData.text,
     type: _getValueTypeFromToolType(tool),
     points,
+    label: _getLabel(findingSites, findings),
   };
 }
