@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon, ButtonGroup, Button, Tooltip } from '@ohif/ui';
@@ -50,6 +50,19 @@ const ViewportActionBar = ({
   } = patientInformation;
 
   const onPatientInfoClick = () => setShowPatientInfo(!showPatientInfo);
+
+  const closePatientInfo = useCallback(() => {
+    if (showPatientInfo) {
+      setShowPatientInfo(false);
+    }
+  }, [showPatientInfo]);
+
+  useEffect(() => {
+    window.addEventListener('click', closePatientInfo);
+    return () => {
+      window.removeEventListener('click', closePatientInfo);
+    };
+  }, [closePatientInfo]);
 
   const renderIconStatus = () => {
     if (modality === 'SR') {
