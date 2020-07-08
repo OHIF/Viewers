@@ -63,12 +63,16 @@ const downloadReport = measurementData => {
  * that you wish to serialize.
  */
 const generateReport = measurementData => {
-  const ids = measurementData.map(md => md.id);
-  const filteredToolState = _getFilteredCornerstoneToolState(ids);
+  const filteredToolState = _getFilteredCornerstoneToolState(measurementData);
 
   const report = MeasurementReport.generateReport(
     filteredToolState,
-    cornerstone.metaData
+    cornerstone.metaData,
+    {
+      findings: {
+        // Each finding with a given tag
+      },
+    }
   );
 
   return report.dataset;
@@ -85,6 +89,8 @@ const storeMeasurements = async (measurementData, dataSource) => {
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
   // But it is good enough for now whilst we only have cornerstone as a datasource.
   log.info('[DICOMSR] storeMeasurements');
+
+  debugger;
 
   if (!dataSource || !dataSource.store || !dataSource.store.dicom) {
     log.error('[DICOMSR] datasource has no dataSource.store.dicom endpoint!');
@@ -110,7 +116,11 @@ const storeMeasurements = async (measurementData, dataSource) => {
   }
 };
 
-function _getFilteredCornerstoneToolState(uidFilter) {
+function _getFilteredCornerstoneToolState(measurementData) {
+  const uidFilter = measurementData.map(md => md.id);
+
+  debugger;
+
   const globalToolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
   const filteredToolState = {};
 
@@ -127,7 +137,20 @@ function _getFilteredCornerstoneToolState(uidFilter) {
       };
     }
 
+    const measurmentDataI = measurementData.find(md => md.id === toolDataI.id);
+
+    debugger;
+
     const toolData = imageIdSpecificToolState[toolType].data;
+
+    // TODO -> Pass in a map of what is a measurement and what is an annotation,
+    // As that's mode/extension specific logic.
+
+    const findings = {};
+
+    const measurement = Object.assign({}, toolDataI, {
+      findings: measurmentDataI.label,
+    });
 
     toolData.push(toolDataI);
   }
