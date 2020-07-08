@@ -8,6 +8,7 @@ import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
 import TOOL_NAMES from './constants/toolNames';
 import { adapters } from 'dcmjs';
 import getToolStateToCornerstoneMeasurementSchema from './utils/getToolStateToCornerstoneMeasurementSchema';
+import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
 import id from './id';
 
 const { formatDate } = utils;
@@ -374,7 +375,11 @@ function OHIFCornerstoneSRViewport({
           imageId
         );
 
+        debugger;
+
         const source = MeasurementService.getSource('CornerstoneTools', '4');
+
+        data.label = getLabelFromDCMJSImportedToolData(data);
 
         MeasurementService.addRawMeasurement(
           source,
