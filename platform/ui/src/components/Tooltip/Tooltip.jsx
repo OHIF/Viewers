@@ -24,7 +24,15 @@ const arrowPositionStyle = {
   },
 };
 
-const Tooltip = ({ content, isSticky, position, tight, children, isDisabled }) => {
+const Tooltip = ({
+  content,
+  isSticky,
+  position,
+  tight,
+  children,
+  isDisabled,
+  tooltipRef,
+}) => {
   const [isActive, setIsActive] = useState(false);
 
   const handleMouseOver = () => {
@@ -49,6 +57,7 @@ const Tooltip = ({ content, isSticky, position, tight, children, isDisabled }) =
       onMouseOut={handleMouseOut}
       onBlur={handleMouseOut}
       role="tooltip"
+      ref={tooltipRef}
     >
       {children}
       <div
@@ -84,11 +93,12 @@ Tooltip.defaultProps = {
   tight: false,
   isSticky: false,
   position: 'bottom',
-  isDisabled: false
+  isDisabled: false,
+  tooltipRef: () => {},
 };
 
 Tooltip.propTypes = {
-/** prevents tooltip from rendering despite hover/active/sticky */
+  /** prevents tooltip from rendering despite hover/active/sticky */
   isDisabled: PropTypes.bool,
   content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   position: PropTypes.oneOf([
@@ -101,6 +111,10 @@ Tooltip.propTypes = {
   isSticky: PropTypes.bool,
   tight: PropTypes.bool,
   children: PropTypes.node.isRequired,
+  tooltipRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.instanceOf(HTMLElement) }),
+  ]),
 };
 
 export default Tooltip;

@@ -1,7 +1,8 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon, ButtonGroup, Button, Tooltip } from '@ohif/ui';
+import clickOutsideHandler from '../../utils/clickOutsideHandler';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',
@@ -50,19 +51,15 @@ const ViewportActionBar = ({
   } = patientInformation;
 
   const onPatientInfoClick = () => setShowPatientInfo(!showPatientInfo);
+  const closePatientInfo = () => setShowPatientInfo(false);
 
-  const closePatientInfo = useCallback(() => {
-    if (showPatientInfo) {
-      setShowPatientInfo(false);
-    }
-  }, [showPatientInfo]);
+  const showPatientInfoRef = useRef(null);
 
   useEffect(() => {
-    window.addEventListener('click', closePatientInfo);
-    return () => {
-      window.removeEventListener('click', closePatientInfo);
-    };
-  }, [closePatientInfo]);
+    if (showPatientInfo) {
+      clickOutsideHandler(showPatientInfoRef, closePatientInfo);
+    }
+  }, [showPatientInfo]);
 
   const renderIconStatus = () => {
     if (modality === 'SR') {
@@ -201,6 +198,7 @@ const ViewportActionBar = ({
       )}
       <div className="flex ml-4 mr-2" onClick={onPatientInfoClick}>
         <PatientInfo
+          showPatientInfoRef={showPatientInfoRef}
           isOpen={showPatientInfo}
           patientName={patientName}
           patientSex={patientSex}
@@ -253,9 +251,11 @@ function PatientInfo({
   spacing,
   scanner,
   isOpen,
+  showPatientInfoRef,
 }) {
   return (
     <Tooltip
+      tooltipRef={showPatientInfoRef}
       isSticky
       isDisabled={!isOpen}
       position="bottom-right"
