@@ -1,5 +1,7 @@
 export default function getLabelFromDCMJSImportedToolData(toolData) {
-  const { findingSites = [], findings = [] } = toolData;
+  const { findingSites = [], finding } = toolData;
+
+  debugger;
 
   let freeTextLabel = findingSites.find(
     fs => fs.CodeValue === 'CORNERSTONEFREETEXT'
@@ -9,9 +11,7 @@ export default function getLabelFromDCMJSImportedToolData(toolData) {
     return freeTextLabel.CodeMeaning;
   }
 
-  freeTextLabel = findings.find(f => f.CodeValue === 'CORNERSTONEFREETEXT');
-
-  if (freeTextLabel) {
-    return freeTextLabel.CodeMeaning;
+  if (finding && finding.CodeValue === 'CORNERSTONEFREETEXT') {
+    return finding.CodeMeaning;
   }
 }

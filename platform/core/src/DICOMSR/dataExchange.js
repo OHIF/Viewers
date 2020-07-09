@@ -150,7 +150,7 @@ function _getFilteredCornerstoneToolState(
 
     const toolData = imageIdSpecificToolState[toolType].data;
 
-    const findings = [];
+    let finding;
     const findingSites = [];
 
     // NOTE -> Any kind of freetext value abuses the DICOM standard,
@@ -158,11 +158,11 @@ function _getFilteredCornerstoneToolState(
     // Ideally we would actually use SNOMED codes for this.
     if (measurmentDataI.label) {
       if (additionalFindingTypes.includes(toolType)) {
-        findings.push({
+        finding = {
           CodeValue: 'CORNERSTONEFREETEXT',
           CodingSchemeDesignator: 'CST4',
           CodeMeaning: measurmentDataI.label,
-        });
+        };
       } else {
         findingSites.push({
           CodeValue: 'CORNERSTONEFREETEXT',
@@ -173,7 +173,7 @@ function _getFilteredCornerstoneToolState(
     }
 
     const measurement = Object.assign({}, toolDataI, {
-      findings,
+      finding,
       findingSites,
     });
 

@@ -434,7 +434,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
       CodeNameCodeSequenceValues.TrackingIdentifier
   );
 
-  const Findings = mergedContentSequence.filter(
+  const Finding = mergedContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.Finding
@@ -456,20 +456,17 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
 
-  if (Findings.length) {
-    const cornerstoneFreeTextFinding = Findings.find(
-      Finding =>
-        Finding.ConceptCodeSequence.CodingSchemeDesignator ===
-          CodingSchemeDesignators.cornerstoneTools4 &&
-        Finding.ConceptCodeSequence.CodeValue ===
-          CodeNameCodeSequenceValues.CornerstoneFreeText
-    );
-    if (cornerstoneFreeTextFinding) {
-      measurement.labels.push({
-        label: CORNERSTONE_FREETEXT_CODE_VALUE,
-        value: cornerstoneFreeTextFinding.ConceptCodeSequence.CodeMeaning,
-      });
-    }
+  if (
+    Finding &&
+    Finding.ConceptCodeSequence.CodingSchemeDesignator ===
+      CodingSchemeDesignators.cornerstoneTools4 &&
+    Finding.ConceptCodeSequence.CodeValue ===
+      CodeNameCodeSequenceValues.CornerstoneFreeText
+  ) {
+    measurement.labels.push({
+      label: CORNERSTONE_FREETEXT_CODE_VALUE,
+      value: Finding.ConceptCodeSequence.CodeMeaning,
+    });
   }
 
   // TODO -> Eventually hopefully support SNOMED or some proper code library, just free text for now.
