@@ -53,10 +53,7 @@ function TrackedCornerstoneViewport({
     MeasurementService,
   } = servicesManager.services;
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [
-    { activeViewportIndex, viewports },
-    viewportGridService,
-  ] = useViewportGrid();
+  const [{ activeViewportIndex, viewports }] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
@@ -92,7 +89,13 @@ function TrackedCornerstoneViewport({
           return;
         }
 
-        jumpToMeasurement(measurement, element);
+        _jumpToMeasurement(
+          measurement,
+          element,
+          viewportIndex,
+          MeasurementService,
+          DisplaySetService
+        );
       }
     );
 
@@ -110,7 +113,13 @@ function TrackedCornerstoneViewport({
       if (
         measurement.displaySetInstanceUID === displaySet.displaySetInstanceUID
       ) {
-        jumpToMeasurement(measurement, element);
+        _jumpToMeasurement(
+          measurement,
+          element,
+          viewportIndex,
+          MeasurementService,
+          DisplaySetService
+        );
       }
     }
 
@@ -118,41 +127,6 @@ function TrackedCornerstoneViewport({
       unsubscribe();
     };
   }, [element, displaySet]);
-
-  function jumpToMeasurement(measurement, targetElement) {
-    const { displaySetInstanceUID, SOPInstanceUID } = measurement;
-
-    const referencedDisplaySet = DisplaySetService.getDisplaySetByUID(
-      displaySetInstanceUID
-    );
-
-    const imageIndex = referencedDisplaySet.images.findIndex(
-      i => i.SOPInstanceUID === SOPInstanceUID
-    );
-
-    if (targetElement !== null) {
-      const enabledElement = cornerstone.getEnabledElement(targetElement);
-
-      if (enabledElement.image) {
-        // Wait for the image to update or we get a race condition when the element has only just been enabled.
-        const scrollToHandler = evt => {
-          scrollToIndex(targetElement, imageIndex);
-          element.removeEventListener(
-            'cornerstoneimagerendered',
-            scrollToHandler
-          );
-        };
-        targetElement.addEventListener(
-          'cornerstoneimagerendered',
-          scrollToHandler
-        );
-        cornerstone.updateImage(targetElement);
-      }
-
-      // Jump to measurement consumed, remove.
-      MeasurementService.removeJumpToMeasurement(viewportIndex);
-    }
-  }
 
   useEffect(() => {
     if (!element) {
@@ -548,6 +522,47 @@ function _getNextMeasurementId(
   const newTrackedMeasurementId = ids[measurementIndex];
 
   return newTrackedMeasurementId;
+}
+
+function _jumpToMeasurement(
+  measurement,
+  targetElement,
+  viewportIndex,
+  MeasurementService,
+  DisplaySetService
+) {
+  const { displaySetInstanceUID, SOPInstanceUID } = measurement;
+
+  const referencedDisplaySet = DisplaySetService.getDisplaySetByUID(
+    displaySetInstanceUID
+  );
+
+  const imageIndex = referencedDisplaySet.images.findIndex(
+    i => i.SOPInstanceUID === SOPInstanceUID
+  );
+
+  if (targetElement !== null) {
+    const enabledElement = cornerstone.getEnabledElement(targetElement);
+
+    if (enabledElement.image) {
+      // Wait for the image to update or we get a race condition when the element has only just been enabled.
+      const scrollToHandler = evt => {
+        scrollToIndex(targetElement, imageIndex);
+        element.removeEventListener(
+          'cornerstoneimagerendered',
+          scrollToHandler
+        );
+      };
+      targetElement.addEventListener(
+        'cornerstoneimagerendered',
+        scrollToHandler
+      );
+      cornerstone.updateImage(targetElement);
+    }
+
+    // Jump to measurement consumed, remove.
+    MeasurementService.removeJumpToMeasurement(viewportIndex);
+  }
 }
 
 export default TrackedCornerstoneViewport;

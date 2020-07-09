@@ -57,7 +57,7 @@ function ViewerViewportGrid(props) {
 
         // If the viewport does not contain the displaySet, then hang that displaySet.
         if (
-          viewportGrid.viewports[viewportIndex].displaySetInstanceUID !==
+          viewports[viewportIndex].displaySetInstanceUID !==
           referencedDisplaySetInstanceUID
         ) {
           viewportGridService.setDisplaysetForViewport({
@@ -71,7 +71,7 @@ function ViewerViewportGrid(props) {
     return () => {
       unsubscribe();
     };
-  }, [viewportGrid]);
+  }, [viewports]);
 
   // TODO -> Make a HangingProtocolService
   // Commented out whilst not in use to avoid pointlessly regenerating this function.
