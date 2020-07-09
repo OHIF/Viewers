@@ -5,22 +5,27 @@ import { Icon } from '@ohif/ui';
 
 const TooltipClipboard = ({ children, text }) => {
   const [isActive, setIsActive] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
+  const [message, setMessage] = useState(null);
 
-  /** TODO: copyToClipboard likely can be placed in a utils folder */
   const copyToClipboard = async text => {
     try {
       await navigator.clipboard.writeText(text);
+      setMessage('Copied!');
     } catch (err) {
       console.error('Failed to copy: ', err);
+      setMessage('Failed to copy!');
     } finally {
-      setIsCopied(true);
       refreshElementPosition();
 
       setTimeout(() => {
-        setIsActive(false);
-      }, 500);
+        resetState();
+      }, 1000);
     }
+  };
+
+  const resetState = () => {
+    setIsActive(false);
+    setMessage(null);
   };
 
   const handleMouseOver = () => {
@@ -30,7 +35,7 @@ const TooltipClipboard = ({ children, text }) => {
   };
 
   const handleMouseOut = () => {
-    if (isActive && !isCopied) {
+    if (isActive && !message) {
       setIsActive(false);
     }
   };
@@ -64,7 +69,6 @@ const TooltipClipboard = ({ children, text }) => {
       refreshElementPosition();
       window.addEventListener('scroll', refreshElementPositionWhenScrolling);
     } else {
-      setIsCopied(false);
       window.removeEventListener('scroll', refreshElementPositionWhenScrolling);
     }
   }, [refreshElementPositionWhenScrolling, isActive]);
@@ -98,9 +102,7 @@ const TooltipClipboard = ({ children, text }) => {
             'flex items-center relative bg-primary-dark border border-secondary-main text-white text-base rounded px-2 py-2'
           )}
         >
-          {isCopied ? (
-            'Copied!'
-          ) : (
+          {message || (
             <>
               {children}
               <div className="ml-2 pl-2 border-l border-secondary-light">
