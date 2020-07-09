@@ -12,7 +12,7 @@ import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 import createReportAsync from './../../_shared/createReportAsync.js';
-import setCornerstoneMeasurementActive from './setCornerstoneMeasurementActive';
+import setCornerstoneMeasurementActive from '../../_shared/setCornerstoneMeasurementActive';
 
 const { formatDate } = utils;
 

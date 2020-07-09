@@ -14,6 +14,7 @@ import { useTrackedMeasurements } from './../getContextModule';
 
 import ViewportOverlay from './ViewportOverlay';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
+import setCornerstoneMeasurementActive from '../_shared/setCornerstoneMeasurementActive';
 
 const { formatDate } = utils;
 
@@ -274,6 +275,8 @@ function TrackedCornerstoneViewport({
     const measurement = measurements.find(
       m => m.id === newTrackedMeasurementId
     );
+
+    setCornerstoneMeasurementActive(measurement);
 
     const {
       displaySetInstanceUID,
