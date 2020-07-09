@@ -1,7 +1,7 @@
 /**
  * CSS Grid Reference: http://grid.malven.co/
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
@@ -10,17 +10,22 @@ const { ImageSet } = classes;
 
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
-  const [
-    { numCols, numRows, activeViewportIndex, viewports, cachedLayout },
-    viewportGridService,
-  ] = useViewportGrid();
+  const [viewportGrid, viewportGridService] = useViewportGrid();
+
+  const {
+    numCols,
+    numRows,
+    activeViewportIndex,
+    viewports,
+    cachedLayout,
+  } = viewportGrid;
 
   const setActiveViewportIndex = index => {
     viewportGridService.setActiveViewportIndex(index);
   };
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
-  const { DisplaySetService } = servicesManager.services;
+  const { DisplaySetService, MeasurementService } = servicesManager.services;
 
   useEffect(() => {
     const { unsubscribe } = DisplaySetService.subscribe(
@@ -43,30 +48,56 @@ function ViewerViewportGrid(props) {
     };
   }, []);
 
-  // TODO -> Make a HangingProtocolService
-  const HangingProtocolService = displaySets => {
-    let displaySetInstanceUID;
+  useEffect(() => {
+    const { unsubscribe } = MeasurementService.subscribe(
+      MeasurementService.EVENTS.JUMP_TO_MEASUREMENT,
+      ({ viewportIndex, measurement }) => {
+        const referencedDisplaySetInstanceUID =
+          measurement.displaySetInstanceUID;
 
-    // Fallback
-    if (!displaySets || !displaySets.length) {
-      const displaySet = DisplaySetService.activeDisplaySets[0];
-      displaySetInstanceUID = displaySet.displaySetInstanceUID;
-    } else {
-      const displaySet = displaySets[0];
-      displaySetInstanceUID = displaySet.displaySetInstanceUID;
-    }
+        // If the viewport does not contain the displaySet, then hang that displaySet.
+        if (
+          viewportGrid.viewports[viewportIndex].displaySetInstanceUID !==
+          referencedDisplaySetInstanceUID
+        ) {
+          viewportGridService.setDisplaysetForViewport({
+            viewportIndex,
+            displaySetInstanceUID: referencedDisplaySetInstanceUID,
+          });
+        }
+      }
+    );
 
-    return {
-      numRows: 1,
-      numCols: 1,
-      activeViewportIndex: 0,
-      viewports: [
-        {
-          displaySetInstanceUID,
-        },
-      ],
+    return () => {
+      unsubscribe();
     };
-  };
+  }, [viewportGrid]);
+
+  // TODO -> Make a HangingProtocolService
+  // Commented out whilst not in use to avoid pointlessly regenerating this function.
+  // const HangingProtocolService = displaySets => {
+  //   let displaySetInstanceUID;
+
+  //   // Fallback
+  //   if (!displaySets || !displaySets.length) {
+  //     const displaySet = DisplaySetService.activeDisplaySets[0];
+  //     displaySetInstanceUID = displaySet.displaySetInstanceUID;
+  //   } else {
+  //     const displaySet = displaySets[0];
+  //     displaySetInstanceUID = displaySet.displaySetInstanceUID;
+  //   }
+
+  //   return {
+  //     numRows: 1,
+  //     numCols: 1,
+  //     activeViewportIndex: 0,
+  //     viewports: [
+  //       {
+  //         displaySetInstanceUID,
+  //       },
+  //     ],
+  //   };
+  // };
 
   const onDoubleClick = viewportIndex => {
     // TODO -> Disabled for now.

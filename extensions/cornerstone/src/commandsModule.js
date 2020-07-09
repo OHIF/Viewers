@@ -269,32 +269,6 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.setViewport(enabledElement, viewport);
       }
     },
-    jumpToImage: ({
-      StudyInstanceUID,
-      SOPInstanceUID,
-      imageIndex,
-      activeViewportIndex,
-    }) => {
-      const study = studyMetadataManager.get(StudyInstanceUID);
-
-      const displaySet = study.findDisplaySet(ds => {
-        return (
-          ds.images &&
-          ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
-        );
-      });
-
-      displaySet.SOPInstanceUID = SOPInstanceUID;
-      displaySet.imageIndex = imageIndex;
-
-      window.store.dispatch(
-        setViewportSpecificData(activeViewportIndex, displaySet)
-      );
-
-      cornerstone.getEnabledElements().forEach(enabledElement => {
-        cornerstone.updateImage(enabledElement.element);
-      });
-    },
   };
 
   const definitions = {

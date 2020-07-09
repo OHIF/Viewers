@@ -5,7 +5,11 @@ const EllipticalRoi = {
   toAnnotation: (measurement, definition) => {
     // TODO -> Implement when this is needed.
   },
-  toMeasurement: (csToolsAnnotation, getValueTypeFromToolType) => {
+  toMeasurement: (
+    csToolsAnnotation,
+    DisplaySetService,
+    getValueTypeFromToolType
+  ) => {
     const { element, measurementData } = csToolsAnnotation;
     const tool =
       csToolsAnnotation.toolType ||
@@ -24,6 +28,15 @@ const EllipticalRoi = {
       SeriesInstanceUID,
       StudyInstanceUID,
     } = getSOPInstanceAttributes(element);
+
+    const displaySets = DisplaySetService.getDisplaySetsForSeries(
+      SeriesInstanceUID
+    );
+    const displaySet = displaySets.find(ds => {
+      return (
+        ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+      );
+    });
 
     const { start, end } = measurementData.handles;
 
@@ -58,6 +71,7 @@ const EllipticalRoi = {
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: measurementData.text,
       description: measurementData.description,
       unit: measurementData.unit,

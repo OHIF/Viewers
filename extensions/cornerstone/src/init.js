@@ -18,7 +18,11 @@ import { setEnabledElement } from './state';
  * @param {Object|Array} configuration.csToolsConfig
  */
 export default function init({ servicesManager, configuration }) {
-  const { UIDialogService, MeasurementService } = servicesManager.services;
+  const {
+    UIDialogService,
+    MeasurementService,
+    DisplaySetService,
+  } = servicesManager.services;
 
   const callInputDialog = (data, event, callback) => {
     if (UIDialogService) {
@@ -137,7 +141,7 @@ export default function init({ servicesManager, configuration }) {
   );
 
   /* Measurement Service */
-  _connectToolsToMeasurementService(MeasurementService);
+  _connectToolsToMeasurementService(MeasurementService, DisplaySetService);
 
   /* Add extension tools configuration here. */
   const internalToolsConfig = {
@@ -220,21 +224,21 @@ export default function init({ servicesManager, configuration }) {
   csTools.setToolEnabled('Overlay', {});
 }
 
-const _initMeasurementService = measurementService => {
+const _initMeasurementService = (MeasurementService, DisplaySetService) => {
   /* Initialization */
   const {
     Length,
     Bidirectional,
     EllipticalRoi,
     ArrowAnnotate,
-  } = measurementServiceMappingsFactory(measurementService);
-  const csToolsVer4MeasurementSource = measurementService.createSource(
+  } = measurementServiceMappingsFactory(MeasurementService, DisplaySetService);
+  const csToolsVer4MeasurementSource = MeasurementService.createSource(
     'CornerstoneTools',
     '4'
   );
 
   /* Mappings */
-  measurementService.addMapping(
+  MeasurementService.addMapping(
     csToolsVer4MeasurementSource,
     'Length',
     Length.matchingCriteria,
@@ -242,7 +246,7 @@ const _initMeasurementService = measurementService => {
     Length.toMeasurement
   );
 
-  measurementService.addMapping(
+  MeasurementService.addMapping(
     csToolsVer4MeasurementSource,
     'Bidirectional',
     Bidirectional.matchingCriteria,
@@ -250,7 +254,7 @@ const _initMeasurementService = measurementService => {
     Bidirectional.toMeasurement
   );
 
-  measurementService.addMapping(
+  MeasurementService.addMapping(
     csToolsVer4MeasurementSource,
     'EllipticalRoi',
     EllipticalRoi.matchingCriteria,
@@ -258,7 +262,7 @@ const _initMeasurementService = measurementService => {
     EllipticalRoi.toMeasurement
   );
 
-  measurementService.addMapping(
+  MeasurementService.addMapping(
     csToolsVer4MeasurementSource,
     'ArrowAnnotate',
     ArrowAnnotate.matchingCriteria,
@@ -269,12 +273,16 @@ const _initMeasurementService = measurementService => {
   return csToolsVer4MeasurementSource;
 };
 
-const _connectToolsToMeasurementService = measurementService => {
+const _connectToolsToMeasurementService = (
+  MeasurementService,
+  DisplaySetService
+) => {
   const csToolsVer4MeasurementSource = _initMeasurementService(
-    measurementService
+    MeasurementService,
+    DisplaySetService
   );
   _connectMeasurementServiceToTools(
-    measurementService,
+    MeasurementService,
     csToolsVer4MeasurementSource
   );
   const { addOrUpdate, remove } = csToolsVer4MeasurementSource;
@@ -330,9 +338,9 @@ const _connectToolsToMeasurementService = measurementService => {
       }
     }
 
-    const { MEASUREMENTS_CLEARED } = measurementService.EVENTS;
+    const { MEASUREMENTS_CLEARED } = MeasurementService.EVENTS;
 
-    measurementService.subscribe(MEASUREMENTS_CLEARED, () => {
+    MeasurementService.subscribe(MEASUREMENTS_CLEARED, () => {
       cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
         {}
       );
@@ -350,16 +358,16 @@ const _connectToolsToMeasurementService = measurementService => {
 };
 
 const _connectMeasurementServiceToTools = (
-  measurementService,
+  MeasurementService,
   measurementSource
 ) => {
   const {
     MEASUREMENTS_CLEARED,
     MEASUREMENT_REMOVED,
-  } = measurementService.EVENTS;
+  } = MeasurementService.EVENTS;
   const sourceId = measurementSource.id;
 
-  measurementService.subscribe(MEASUREMENTS_CLEARED, () => {
+  MeasurementService.subscribe(MEASUREMENTS_CLEARED, () => {
     cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState({});
     cornerstone.getEnabledElements().forEach(enabledElement => {
       cornerstone.updateImage(enabledElement.element);
@@ -367,7 +375,7 @@ const _connectMeasurementServiceToTools = (
   });
 
   /* TODO: Remove per measurement
-  measurementService.subscribe(MEASUREMENT_REMOVED,
+  MeasurementService.subscribe(MEASUREMENT_REMOVED,
     ({ source, measurement }) => {
       if ([sourceId].includes(source.id)) {
         // const annotation = getAnnotation('Length', measurement.id);
@@ -380,9 +388,9 @@ const _connectMeasurementServiceToTools = (
 // const {
 //   MEASUREMENT_ADDED,
 //   MEASUREMENT_UPDATED,
-// } = measurementService.EVENTS;
+// } = MeasurementService.EVENTS;
 
-// measurementService.subscribe(
+// MeasurementService.subscribe(
 //   MEASUREMENT_ADDED,
 //   ({ source, measurement }) => {
 //     if (![sourceId].includes(source.id)) {
@@ -397,7 +405,7 @@ const _connectMeasurementServiceToTools = (
 //   }
 // );
 
-// measurementService.subscribe(
+// MeasurementService.subscribe(
 //   MEASUREMENT_UPDATED,
 //   ({ source, measurement }) => {
 //     if (![sourceId].includes(source.id)) {

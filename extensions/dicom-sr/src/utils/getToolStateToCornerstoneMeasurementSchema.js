@@ -1,6 +1,7 @@
 export default function getToolStateToCornerstoneMeasurementSchema(
   toolType,
   MeasurementService,
+  DisplaySetService,
   imageId
 ) {
   const _getValueTypeFromToolType = toolType => {
@@ -28,20 +29,45 @@ export default function getToolStateToCornerstoneMeasurementSchema(
   switch (toolType) {
     case 'Length':
       return measurementData =>
-        Length(measurementData, imageId, _getValueTypeFromToolType);
+        Length(
+          measurementData,
+          imageId,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        );
     case 'Bidirectional':
       return measurementData =>
-        Bidirectional(measurementData, imageId, _getValueTypeFromToolType);
+        Bidirectional(
+          measurementData,
+          imageId,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        );
     case 'EllipticalRoi':
       return measurementData =>
-        EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType);
+        EllipticalRoi(
+          measurementData,
+          imageId,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        );
     case 'ArrowAnnotate':
       return measurementData =>
-        ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType);
+        ArrowAnnotate(
+          measurementData,
+          imageId,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        );
   }
 }
 
-function Length(measurementData, imageId, _getValueTypeFromToolType) {
+function Length(
+  measurementData,
+  imageId,
+  DisplaySetService,
+  _getValueTypeFromToolType
+) {
   const tool = measurementData.toolType || measurementData.toolName;
   const instance = cornerstone.metaData.get('instance', imageId);
   const {
@@ -50,6 +76,15 @@ function Length(measurementData, imageId, _getValueTypeFromToolType) {
     SeriesInstanceUID,
     StudyInstanceUID,
   } = instance;
+
+  const displaySets = DisplaySetService.getDisplaySetsForSeries(
+    SeriesInstanceUID
+  );
+  const displaySet = displaySets.find(ds => {
+    return (
+      ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+    );
+  });
 
   const { handles } = measurementData;
 
@@ -69,6 +104,7 @@ function Length(measurementData, imageId, _getValueTypeFromToolType) {
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
+    displaySetInstanceUID: displaySet.displaySetInstanceUID,
     label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
@@ -78,7 +114,12 @@ function Length(measurementData, imageId, _getValueTypeFromToolType) {
   };
 }
 
-function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
+function Bidirectional(
+  measurementData,
+  imageId,
+  DisplaySetService,
+  _getValueTypeFromToolType
+) {
   const tool = measurementData.toolType || measurementData.toolName;
   const instance = cornerstone.metaData.get('instance', imageId);
   const {
@@ -87,6 +128,15 @@ function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
     SeriesInstanceUID,
     StudyInstanceUID,
   } = instance;
+
+  const displaySets = DisplaySetService.getDisplaySetsForSeries(
+    SeriesInstanceUID
+  );
+  const displaySet = displaySets.find(ds => {
+    return (
+      ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+    );
+  });
 
   const { handles } = measurementData;
 
@@ -99,6 +149,7 @@ function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
+    displaySetInstanceUID: displaySet.displaySetInstanceUID,
     label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
@@ -109,7 +160,12 @@ function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
   };
 }
 
-function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
+function EllipticalRoi(
+  measurementData,
+  imageId,
+  DisplaySetService,
+  _getValueTypeFromToolType
+) {
   const tool = measurementData.toolType || measurementData.toolName;
   const instance = cornerstone.metaData.get('instance', imageId);
   const {
@@ -118,6 +174,15 @@ function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
     SeriesInstanceUID,
     StudyInstanceUID,
   } = instance;
+
+  const displaySets = DisplaySetService.getDisplaySetsForSeries(
+    SeriesInstanceUID
+  );
+  const displaySet = displaySets.find(ds => {
+    return (
+      ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+    );
+  });
 
   const { start, end } = measurementData.handles;
 
@@ -152,6 +217,7 @@ function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
+    displaySetInstanceUID: displaySet.displaySetInstanceUID,
     label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
@@ -164,7 +230,12 @@ function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
   };
 }
 
-function ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType) {
+function ArrowAnnotate(
+  measurementData,
+  imageId,
+  DisplaySetService,
+  _getValueTypeFromToolType
+) {
   const tool = measurementData.toolType || measurementData.toolName;
   const instance = cornerstone.metaData.get('instance', imageId);
   const {
@@ -173,6 +244,15 @@ function ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType) {
     SeriesInstanceUID,
     StudyInstanceUID,
   } = instance;
+
+  const displaySets = DisplaySetService.getDisplaySetsForSeries(
+    SeriesInstanceUID
+  );
+  const displaySet = displaySets.find(ds => {
+    return (
+      ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+    );
+  });
 
   const { handles } = measurementData;
 
@@ -192,6 +272,7 @@ function ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType) {
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
+    displaySetInstanceUID: displaySet.displaySetInstanceUID,
     label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
