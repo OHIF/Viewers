@@ -219,12 +219,14 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           ),
           title: patientName,
           gridCol: 4,
+          enableClipboard: true,
         },
         {
           key: 'mrn',
           content: mrn,
           title: mrn,
           gridCol: 3,
+          enableClipboard: true,
         },
         {
           key: 'studyDate',
@@ -242,6 +244,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           content: description,
           title: description,
           gridCol: 4,
+          enableClipboard: true,
         },
         {
           key: 'modality',
@@ -254,6 +257,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           content: accession,
           title: accession,
           gridCol: 3,
+          enableClipboard: true,
         },
         {
           key: 'instances',
