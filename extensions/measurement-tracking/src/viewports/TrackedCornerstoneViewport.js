@@ -107,7 +107,11 @@ function TrackedCornerstoneViewport({
         measurementIdToJumpTo
       );
 
-      jumpToMeasurement(measurement, element);
+      if (
+        measurement.displaySetInstanceUID === displaySet.displaySetInstanceUID
+      ) {
+        jumpToMeasurement(measurement, element);
+      }
     }
 
     return () => {
@@ -116,40 +120,32 @@ function TrackedCornerstoneViewport({
   }, [element, displaySet]);
 
   function jumpToMeasurement(measurement, targetElement) {
-    const { referenceSeriesUID, SOPInstanceUID } = measurement;
+    const { displaySetInstanceUID, SOPInstanceUID } = measurement;
 
-    const displaySets = DisplaySetService.getDisplaySetsForSeries(
-      referenceSeriesUID
+    const referencedDisplaySet = DisplaySetService.getDisplaySetByUID(
+      displaySetInstanceUID
     );
-    const displaySet = displaySets.find(ds => {
-      return (
-        ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
-      );
-    });
 
-    const imageIndex = displaySet.images
-      .map(i => i.SOPInstanceUID)
-      .indexOf(SOPInstanceUID);
+    const imageIndex = referencedDisplaySet.images.findIndex(
+      i => i.SOPInstanceUID === SOPInstanceUID
+    );
 
     if (targetElement !== null) {
-      scrollToIndex(targetElement, imageIndex);
-
       const enabledElement = cornerstone.getEnabledElement(targetElement);
 
-      // Wait for the image to update or we get a race condition when the element has only just been enabled.
-      const scrollToHandler = evt => {
-        scrollToIndex(targetElement, imageIndex);
-        element.removeEventListener(
+      if (enabledElement.image) {
+        // Wait for the image to update or we get a race condition when the element has only just been enabled.
+        const scrollToHandler = evt => {
+          scrollToIndex(targetElement, imageIndex);
+          element.removeEventListener(
+            'cornerstoneimagerendered',
+            scrollToHandler
+          );
+        };
+        targetElement.addEventListener(
           'cornerstoneimagerendered',
           scrollToHandler
         );
-      };
-      targetElement.addEventListener(
-        'cornerstoneimagerendered',
-        scrollToHandler
-      );
-
-      if (enabledElement.image) {
         cornerstone.updateImage(targetElement);
       }
 
@@ -361,8 +357,6 @@ function TrackedCornerstoneViewport({
   const showNavArrows = isTracked && viewportIndex === activeViewportIndex;
 
   // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
-
-  debugger;
 
   return (
     <>
