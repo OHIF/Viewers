@@ -103,6 +103,8 @@ export default function jumpToRowItem(
       displaySet.frameIndex = data.frameIndex;
     }
 
+    viewportIndex =
+      (viewportIndex + viewportsState.activeViewportIndex) % numViewports;
     viewportSpecificData.push({
       viewportIndex,
       displaySet,

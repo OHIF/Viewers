@@ -135,7 +135,7 @@ console.log(T('$t(Common:Play) my translated text'));
 
 # Main Concepts While Translating
 
-## - Namespaces
+## Namespaces
 
 Namespaces are being used to organize translations in smaller portions, combined
 semantically or by use. Each `.json` file inside `@ohif/i18n` npm package
@@ -157,7 +157,7 @@ NameSpace, like this following example getting data from `Common` NameSpace:
 $t(Common:Reset)
 ```
 
-## - Extending Languages in @ohif/i18n
+## Extending Languages in @ohif/i18n
 
 Sometimes, even using the same language, some nouns or jargons can change
 according to the country, states or even from Hospital to Hospital.
@@ -212,7 +212,7 @@ object like this:
 Please check the `index.js` files inside locales folder for an example of this
 exporting structure.
 
-### - Extending languages dynamically
+### Extending languages dynamically
 
 You have access to the i18next instance, so you can use the
 [addResourceBundle](https://www.i18next.com/how-to/add-or-load-translations#add-after-init)
@@ -314,4 +314,4 @@ REACT_APP_I18N_DEBUG=true yarn run dev
 ### Contributing with new languages
 
 Contributions of any kind are welcome! Please check the
-[instructions](https://docs.ohif.org/contributing.html).
+[instructions](../development/contributing.md).

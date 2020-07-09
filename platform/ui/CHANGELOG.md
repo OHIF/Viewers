@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.0...@ohif/ui@1.5.1) (2020-06-05)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.4...@ohif/ui@1.5.0) (2020-06-04)
+
+
+### Features
+
+* 🎸 1729 - error boundary wrapper ([#1764](https://github.com/OHIF/Viewers/issues/1764)) ([c02b232](https://github.com/OHIF/Viewers/commit/c02b232b0cc24f38af5d5e3831d987d048e60ada))
+
+
+
+
+
+## [1.4.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.3...@ohif/ui@1.4.4) (2020-05-04)
+
+
+### Bug Fixes
+
+* 🐛 Proper error handling for derived display sets ([#1708](https://github.com/OHIF/Viewers/issues/1708)) ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
+
+
+
+
+
+## [1.4.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.2...@ohif/ui@1.4.3) (2020-04-09)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# Change Log
+
+All notable changes to this project will be documented in this file. See
+[Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [1.4.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.1...@ohif/ui@1.4.2) (2020-04-06)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.4.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.0...@ohif/ui@1.4.1) (2020-03-17)
+
+
+### Bug Fixes
+
+* rendering delete button when text is too wide for parent div ([#1526](https://github.com/OHIF/Viewers/issues/1526)) ([b269415](https://github.com/OHIF/Viewers/commit/b269415048dfec50e2abb3dd4f4355a23d6ad75a))
+
+
+
+
+
 # [1.4.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.3.3...@ohif/ui@1.4.0) (2020-03-13)
 
 

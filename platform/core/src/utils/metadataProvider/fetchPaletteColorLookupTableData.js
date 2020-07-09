@@ -1,5 +1,8 @@
 import { api } from 'dicomweb-client';
 import DICOMWeb from '../../DICOMWeb';
+import str2ab from '../str2ab';
+
+import errorHandler from '../../errorHandler';
 
 export default async function fetchPaletteColorLookupTableData(
   instance,
@@ -112,22 +115,14 @@ function _getPaletteColor(server, paletteColorLookupTableData, lutDescriptor) {
   const numLutEntries = lutDescriptor[0];
   const bits = lutDescriptor[2];
 
-  const readUInt16 = (byteArray, position) => {
-    return byteArray[position] + byteArray[position + 1] * 256;
-  };
-
   const arrayBufferToPaletteColorLUT = arraybuffer => {
-    const byteArray = new Uint8Array(arraybuffer);
+    const byteArray = bits === 16 ?
+      new Uint16Array(arraybuffer) :
+      new Uint8Array(arraybuffer);
     const lut = [];
 
-    if (bits === 16) {
-      for (let i = 0; i < numLutEntries; i++) {
-        lut[i] = readUInt16(byteArray, i * 2);
-      }
-    } else {
-      for (let i = 0; i < numLutEntries; i++) {
-        lut[i] = byteArray[i];
-      }
+    for (let i = 0; i < numLutEntries; i++) {
+      lut[i] = byteArray[i];
     }
 
     return lut;
@@ -145,6 +140,7 @@ function _getPaletteColor(server, paletteColorLookupTableData, lutDescriptor) {
     const config = {
       url: server.wadoRoot, //BulkDataURI is absolute, so this isn't used
       headers: DICOMWeb.getAuthorizationHeader(server),
+      errorInterceptor: errorHandler.getHTTPErrorHandler(),
     };
     const dicomWeb = new api.DICOMwebClient(config);
     const options = {
@@ -157,31 +153,14 @@ function _getPaletteColor(server, paletteColorLookupTableData, lutDescriptor) {
       .then(arrayBufferToPaletteColorLUT);
   } else if (paletteColorLookupTableData.InlineBinary) {
     const inlineBinaryData = atob(paletteColorLookupTableData.InlineBinary);
-    const arraybuffer = _str2ab(inlineBinaryData);
+    const arraybuffer = str2ab(inlineBinaryData);
 
     return new Promise(resolve => {
       resolve(arrayBufferToPaletteColorLUT(arraybuffer));
     });
+  } else {
+    return Promise.resolve(
+      arrayBufferToPaletteColorLUT(paletteColorLookupTableData)
+    );
   }
-
-  throw new Error(
-    'Palette Color LUT was not provided as InlineBinary or BulkDataURI'
-  );
-}
-
-/**
- * Convert String to ArrayBuffer
- *
- * @param {String} str Input String
- * @return {ArrayBuffer} Output converted ArrayBuffer
- */
-function _str2ab(str) {
-  const strLen = str.length;
-  const bytes = new Uint8Array(strLen);
-
-  for (let i = 0; i < strLen; i++) {
-    bytes[i] = str.charCodeAt(i);
-  }
-
-  return bytes.buffer;
 }

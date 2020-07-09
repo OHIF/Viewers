@@ -1,14 +1,20 @@
+import React from 'react';
 import init from './init.js';
-import asyncComponent from './asyncComponent.js';
 import commandsModule from './commandsModule.js';
 import toolbarModule from './toolbarModule.js';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 
-const OHIFCornerstoneViewport = asyncComponent(() =>
-  import(
-    /* webpackChunkName: "OHIFCornerstoneViewport" */ './OHIFCornerstoneViewport.js'
-  )
-);
+const Component = React.lazy(() => {
+  return import('./OHIFCornerstoneViewport');
+});
+
+const OHIFCornerstoneViewport = props => {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <Component {...props} />
+    </React.Suspense>
+  );
+};
 
 /**
  *
@@ -28,8 +34,17 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getViewportModule() {
-    return OHIFCornerstoneViewport;
+  getViewportModule({ commandsManager }) {
+    const ExtendedOHIFCornerstoneViewport = props => {
+      const onNewImageHandler = jumpData => {
+        commandsManager.runCommand('jumpToImage', jumpData);
+      };
+      return (
+        <OHIFCornerstoneViewport {...props} onNewImage={onNewImageHandler} />
+      );
+    };
+
+    return ExtendedOHIFCornerstoneViewport;
   },
   getToolbarModule() {
     return toolbarModule;

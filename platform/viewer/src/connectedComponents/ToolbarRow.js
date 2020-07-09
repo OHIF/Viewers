@@ -16,6 +16,7 @@ import { commandsManager, extensionManager } from './../App.js';
 
 import ConnectedCineDialog from './ConnectedCineDialog';
 import ConnectedLayoutButton from './ConnectedLayoutButton';
+import { withAppContext } from '../context/AppContext';
 
 class ToolbarRow extends Component {
   // TODO: Simplify these? isOpen can be computed if we say "any" value for selected,
@@ -136,11 +137,31 @@ class ToolbarRow extends Component {
     }
 
     if (activeContextsChanged) {
-      this.setState({
-        toolbarButtons: _getVisibleToolbarButtons.call(this),
-      });
+      this.setState(
+        {
+          toolbarButtons: _getVisibleToolbarButtons.call(this),
+        },
+        this.closeCineDialogIfNotApplicable
+      );
     }
   }
+
+  closeCineDialogIfNotApplicable = () => {
+    const { dialog } = this.props;
+    let { dialogId, activeButtons, toolbarButtons } = this.state;
+    if (dialogId) {
+      const cineButtonPresent = toolbarButtons.find(
+        button => button.options && button.options.behavior === 'CINE'
+      );
+      if (!cineButtonPresent) {
+        dialog.dismiss({ id: dialogId });
+        activeButtons = activeButtons.filter(
+          button => button.options && button.options.behavior !== 'CINE'
+        );
+        this.setState({ dialogId: null, activeButtons });
+      }
+    }
+  };
 
   render() {
     const buttonComponents = _getButtonComponents.call(
@@ -361,5 +382,5 @@ function _handleBuiltIn(button) {
 }
 
 export default withTranslation(['Common', 'ViewportDownloadForm'])(
-  withModal(withDialog(ToolbarRow))
+  withModal(withDialog(withAppContext(ToolbarRow)))
 );

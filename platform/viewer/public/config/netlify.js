@@ -1,6 +1,5 @@
 window.config = {
   routerBasename: '/pwa',
-  whiteLabelling: {},
   showStudyList: true,
   servers: {
     dicomWeb: [
@@ -13,6 +12,7 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
       },
     ],
   },

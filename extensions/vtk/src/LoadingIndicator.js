@@ -32,16 +32,16 @@ class LoadingIndicator extends PureComponent {
             </div>
           </div>
         ) : (
-          <div className="imageViewerLoadingIndicator loadingIndicator">
-            <div className="indicatorContents">
-              <p>
-                {this.props.t('Reformatting')}...
-                <i className="fa fa-spin fa-circle-o-notch fa-fw" />
-                {percComplete}
-              </p>
+            <div className="imageViewerLoadingIndicator loadingIndicator">
+              <div className="indicatorContents">
+                <p>
+                  {this.props.t('Loading...')}
+                  <i className="fa fa-spin fa-circle-o-notch fa-fw" />
+                  {percComplete}
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </React.Fragment>
     );
   }

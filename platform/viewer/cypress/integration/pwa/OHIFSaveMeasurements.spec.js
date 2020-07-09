@@ -1,7 +1,8 @@
 describe('OHIF Save Measurements', function() {
   before(() => {
-    cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
-    cy.waitDicomImage();
+    cy.checkStudyRouteInViewer(
+      '1.2.840.113619.2.5.1762583153.215519.978957063.78'
+    );
     cy.expectMinimumThumbnails(5);
   });
 
@@ -109,7 +110,7 @@ describe('OHIF Save Measurements', function() {
     cy.get('@measurementsBtn').click();
   });
 
-  it('checks if measurements of unsupported tools were not saved', function() {
+  /*it('checks if measurements of unsupported tools were not saved', function() {
     // Add measurement for supported tool in the viewport
     cy.addLengthMeasurement();
     // Add measurement for unsupported tool in the viewport
@@ -145,5 +146,5 @@ describe('OHIF Save Measurements', function() {
 
     // Close Measurements panel
     cy.get('@measurementsBtn').click();
-  });
+  });*/
 });

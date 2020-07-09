@@ -29,6 +29,7 @@ import {
   Tooltip,
   AboutContent,
   OHIFModal,
+  ErrorBoundary
 } from './components';
 import { useDebounce, useMedia } from './hooks';
 
@@ -123,6 +124,7 @@ export {
   DialogProvider,
   withDialog,
   useDialog,
+  ErrorBoundary,
   // Hooks
   useDebounce,
   useMedia,

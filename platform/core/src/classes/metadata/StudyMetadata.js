@@ -11,6 +11,7 @@ import { api } from 'dicomweb-client';
 import { isImage } from '../../utils/isImage';
 import isDisplaySetReconstructable from '../../utils/isDisplaySetReconstructable';
 import isLowPriorityModality from '../../utils/isLowPriorityModality';
+import errorHandler from '../../errorHandler';
 
 export class StudyMetadata extends Metadata {
   constructor(data, uid) {
@@ -100,20 +101,29 @@ export class StudyMetadata extends Metadata {
    * Split a series metadata object into display sets
    * @param {Array} sopClassHandlerModules List of SOP Class Modules
    * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
-   * @param {Array} [givenDisplaySets] An optional list to which the display sets will be appended
    * @returns {Array} The list of display sets created for the given series object
    */
-  _createDisplaySetsForSeries(
-    sopClassHandlerModules,
-    series,
-    givenDisplaySets
-  ) {
+  _createDisplaySetsForSeries(sopClassHandlerModules, series) {
     const study = this;
-    const displaySets = Array.isArray(givenDisplaySets) ? givenDisplaySets : [];
+    const displaySets = [];
+
     const anyInstances = series.getInstanceCount() > 0;
 
     if (!anyInstances) {
-      return;
+      const displaySet = new ImageSet([]);
+      const seriesData = series.getData();
+
+      displaySet.setAttributes({
+        displaySetInstanceUID: displaySet.uid,
+        SeriesInstanceUID: seriesData.SeriesInstanceUID,
+        SeriesDescription: seriesData.SeriesDescription,
+        SeriesNumber: seriesData.SeriesNumber,
+        Modality: seriesData.Modality,
+      });
+
+      displaySets.push(displaySet);
+
+      return displaySets;
     }
 
     const sopClassUIDs = getSopClassUIDs(series);
@@ -206,22 +216,31 @@ export class StudyMetadata extends Metadata {
   }
 
   /**
+   * Adds the displaySets to the studies list of derived displaySets.
+   * @param {array} displaySets The displaySets array to append to the derived displaysets list.
+   */
+  _addDerivedDisplaySets(displaySets) {
+    displaySets.map(displaySet => this._derivedDisplaySets.push(displaySet));
+  }
+
+  /**
    * Returns a list of derived datasets in the study, filtered by the given filter.
    * @param {object} filter An object containing search filters
-   * @param {object} filter.modality
+   * @param {object} filter.Modality
    * @param {object} filter.referencedSeriesInstanceUID
    * @param {object} filter.referencedFrameOfReferenceUID
    * @return {Array} filtered derived display sets
    */
   getDerivedDatasets(filter) {
     const {
-      modality,
+      Modality,
       referencedSeriesInstanceUID,
       referencedFrameOfReferenceUID,
     } = filter;
+
     let filteredDerivedDisplaySets = this._derivedDisplaySets;
 
-    if (modality) {
+    if (Modality) {
       filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
         displaySet => displaySet.Modality === Modality
       );
@@ -252,7 +271,7 @@ export class StudyMetadata extends Metadata {
       filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
         displaySet =>
           displaySet.ReferencedFrameOfReferenceUID ===
-          ReferencedFrameOfReferenceUID
+          referencedFrameOfReferenceUID
       );
     }
 
@@ -280,14 +299,14 @@ export class StudyMetadata extends Metadata {
     }
 
     // Loop through the series (SeriesMetadata)
-    this.forEachSeries(
-      series =>
-        void this._createDisplaySetsForSeries(
-          sopClassHandlerModules,
-          series,
-          displaySets
-        )
-    );
+    this.forEachSeries(series => {
+      const displaySetsForSeries = this._createDisplaySetsForSeries(
+        sopClassHandlerModules,
+        series
+      );
+
+      displaySets.push(...displaySetsForSeries);
+    });
 
     return sortDisplaySetList(displaySets);
   }
@@ -303,13 +322,30 @@ export class StudyMetadata extends Metadata {
    * @returns {boolean} Returns true on success or false on failure (e.g., the series does not belong to this study)
    */
   createAndAddDisplaySetsForSeries(sopClassHandlerModules, series) {
-    if (this.containsSeries(series)) {
-      this.setDisplaySets(
-        this._createDisplaySetsForSeries(sopClassHandlerModules, series)
-      );
-      return true;
+    if (!this.containsSeries(series)) {
+      return false;
     }
-    return false;
+
+    const displaySets = this._createDisplaySetsForSeries(
+      sopClassHandlerModules,
+      series
+    );
+
+    // Note: filtering in place because this._displaySets has writable: false
+    for (let i = this._displaySets.length - 1; i >= 0; i--) {
+      const displaySet = this._displaySets[i];
+      if (displaySet.SeriesInstanceUID === series.getSeriesInstanceUID()) {
+        this._displaySets.splice(i, 1);
+      }
+    }
+
+    displaySets.forEach(displaySet => {
+      this.addDisplaySet(displaySet);
+    });
+
+    this.sortDisplaySets();
+
+    return true;
   }
 
   /**
@@ -318,6 +354,9 @@ export class StudyMetadata extends Metadata {
    */
   setDisplaySets(displaySets) {
     if (Array.isArray(displaySets) && displaySets.length > 0) {
+      // TODO: This is weird, can we just switch it to writable: true?
+      this._displaySets.splice(0);
+
       displaySets.forEach(displaySet => this.addDisplaySet(displaySet));
       this.sortDisplaySets();
     }
@@ -404,6 +443,30 @@ export class StudyMetadata extends Metadata {
       result = true;
     }
     return result;
+  }
+
+  /**
+   * Update a series in the current study by SeriesInstanceUID.
+   * @param {String} SeriesInstanceUID The SeriesInstanceUID to be updated
+   * @param {SeriesMetadata} series The series to be added to the current study.
+   * @returns {boolean} Returns true on success, false otherwise.
+   */
+  updateSeries(SeriesInstanceUID, series) {
+    const index = this._series.findIndex(series => {
+      return series.getSeriesInstanceUID() === SeriesInstanceUID;
+    });
+
+    if (index < 0) {
+      return false;
+    }
+
+    if (!(series instanceof SeriesMetadata)) {
+      throw new Error('Series must be an instance of SeriesMetadata');
+    }
+
+    this._series[index] = series;
+
+    return true;
   }
 
   /**
@@ -780,9 +843,11 @@ function _getDisplaySetFromSopClassModule(
 
   const plugin = handlersForSopClassUID[0];
   const headers = DICOMWeb.getAuthorizationHeader();
+  const errorInterceptor = errorHandler.getHTTPErrorHandler();
   const dicomWebClient = new dwc({
     url: study.getData().wadoRoot,
     headers,
+    errorInterceptor,
   });
 
   let displaySet = plugin.getDisplaySetFromSeries(

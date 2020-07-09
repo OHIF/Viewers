@@ -50,10 +50,12 @@ import studyMetadataManager from './studyMetadataManager';
 const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
   const { StudyInstanceUID, SeriesInstanceUID } = referencedDisplaySet;
 
+  const promises = [];
+
   const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
 
   if (!studyMetadata) {
-    return;
+    return promises;
   }
 
   const derivedDisplaySets = studyMetadata.getDerivedDatasets({
@@ -61,7 +63,7 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
   });
 
   if (!derivedDisplaySets.length) {
-    return;
+    return promises;
   }
 
   // Filter by type
@@ -88,7 +90,7 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
 
     // find most recent and load it.
     let recentDateTime = 0;
-    let recentDisplaySet;
+    let recentDisplaySet = displaySets[0];
 
     displaySets.forEach(displaySet => {
       const dateTime = Number(
@@ -100,8 +102,10 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
       }
     });
 
-    recentDisplaySet.load(referencedDisplaySet, studies);
+    promises.push(recentDisplaySet.load(referencedDisplaySet, studies));
   });
+
+  return promises;
 };
 
 export default loadAndCacheDerivedDisplaySets;

@@ -1,11 +1,17 @@
-import asyncComponent from './asyncComponent.js';
+import React from 'react';
 import DicomMicroscopySopClassHandler from './DicomMicroscopySopClassHandler.js';
 
-const DicomMicroscopyViewport = asyncComponent(() =>
-  import(
-    /* webpackChunkName: "DicomMicroscopyViewport" */ './DicomMicroscopyViewport.js'
-  )
-);
+const Component = React.lazy(() => {
+  return import('./DicomMicroscopyViewport');
+});
+
+const DicomMicroscopyViewport = props => {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <Component {...props} />
+    </React.Suspense>
+  );
+};
 
 export default {
   /**

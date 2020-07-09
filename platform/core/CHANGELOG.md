@@ -3,6 +3,263 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.9](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.8...@ohif/core@2.9.9) (2020-06-18)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.9.8](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.7...@ohif/core@2.9.8) (2020-06-15)
+
+
+### Bug Fixes
+
+* 🐛 Disable seg panel when data for seg unavailable ([#1732](https://github.com/OHIF/Viewers/issues/1732)) ([698e900](https://github.com/OHIF/Viewers/commit/698e900b85121d3c2a46747c443ef69fb7a8c95b)), closes [#1728](https://github.com/OHIF/Viewers/issues/1728)
+
+
+
+
+
+## [2.9.7](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.6...@ohif/core@2.9.7) (2020-06-04)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.9.6](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.5...@ohif/core@2.9.6) (2020-05-14)
+
+
+### Bug Fixes
+
+* 🐛 Load default display set when no time metadata ([#1684](https://github.com/OHIF/Viewers/issues/1684)) ([f7b8b6a](https://github.com/OHIF/Viewers/commit/f7b8b6a41c4626084ef56b0fdf7363e914b143c4)), closes [#1683](https://github.com/OHIF/Viewers/issues/1683)
+
+
+
+
+
+## [2.9.5](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.4...@ohif/core@2.9.5) (2020-05-12)
+
+
+### Bug Fixes
+
+* 🐛 Fix seg color load ([#1724](https://github.com/OHIF/Viewers/issues/1724)) ([c4f84b1](https://github.com/OHIF/Viewers/commit/c4f84b1174d04ba84d37ed89b6d7ab541be28181))
+
+
+
+
+
+## [2.9.4](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.3...@ohif/core@2.9.4) (2020-05-06)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.9.3](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.2...@ohif/core@2.9.3) (2020-05-04)
+
+
+### Bug Fixes
+
+* 🐛 Proper error handling for derived display sets ([#1708](https://github.com/OHIF/Viewers/issues/1708)) ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
+
+
+
+
+
+## [2.9.2](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.1...@ohif/core@2.9.2) (2020-05-04)
+
+
+### Bug Fixes
+
+* use bit-appropriate array for palette lookup tables ([#1698](https://github.com/OHIF/Viewers/issues/1698)) ([7033886](https://github.com/OHIF/Viewers/commit/70338866978a76fa026c18d7c3c05257c5ece762))
+
+
+
+
+
+## [2.9.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.0...@ohif/core@2.9.1) (2020-04-28)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# [2.9.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.8.1...@ohif/core@2.9.0) (2020-04-24)
+
+
+### Features
+
+* 🎸 Seg jump to slice + show/hide ([835f64d](https://github.com/OHIF/Viewers/commit/835f64d47a9994f6a25aaf3941a4974e215e7e7f))
+
+
+
+
+
+## [2.8.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.8.0...@ohif/core@2.8.1) (2020-04-23)
+
+
+### Bug Fixes
+
+* 🐛 Multiframe fix ([#1661](https://github.com/OHIF/Viewers/issues/1661)) ([7120561](https://github.com/OHIF/Viewers/commit/71205618ecb8b592247c5acb32284bfe7e18fce5))
+
+
+
+
+
+# [2.8.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.7.1...@ohif/core@2.8.0) (2020-04-23)
+
+
+### Features
+
+* configuration to hook into XHR Error handling ([e96205d](https://github.com/OHIF/Viewers/commit/e96205de35e5bec14dc8a9a8509db3dd4e6ecdb6))
+
+
+
+
+
+## [2.7.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.7.0...@ohif/core@2.7.1) (2020-04-22)
+
+
+### Bug Fixes
+
+* whiteLabeling should support component creation by passing React to defined fn ([#1659](https://github.com/OHIF/Viewers/issues/1659)) ([2093a00](https://github.com/OHIF/Viewers/commit/2093a0036584b2cc698c8f06fe62b334523b1029))
+
+
+
+
+
+# [2.7.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.11...@ohif/core@2.7.0) (2020-04-17)
+
+
+### Features
+
+* set the authorization header for DICOMWeb requests if provided in query string ([#1646](https://github.com/OHIF/Viewers/issues/1646)) ([450c80b](https://github.com/OHIF/Viewers/commit/450c80b9d5f172be8b5713b422370360325a0afc))
+
+
+
+
+
+## [2.6.11](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.10...@ohif/core@2.6.11) (2020-04-15)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.6.10](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.9...@ohif/core@2.6.10) (2020-04-09)
+
+
+### Bug Fixes
+
+* Revert "refactor: Reduce bundle size ([#1575](https://github.com/OHIF/Viewers/issues/1575))" ([#1622](https://github.com/OHIF/Viewers/issues/1622)) ([d21af3f](https://github.com/OHIF/Viewers/commit/d21af3f133492fa31492413b8782936c9ff18b44))
+
+
+
+
+
+## [2.6.9](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.8...@ohif/core@2.6.9) (2020-04-09)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+# Change Log
+
+All notable changes to this project will be documented in this file. See
+[Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [2.6.8](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.7...@ohif/core@2.6.8) (2020-04-06)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.6.7](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.6...@ohif/core@2.6.7) (2020-04-02)
+
+
+### Bug Fixes
+
+* 🐛 Fix multiframe images ([#1595](https://github.com/OHIF/Viewers/issues/1595)) ([9e0bd52](https://github.com/OHIF/Viewers/commit/9e0bd52c6a86648eb6673344a8555ad787043e5c))
+
+
+
+
+
+## [2.6.6](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.5...@ohif/core@2.6.6) (2020-04-02)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.6.5](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.4...@ohif/core@2.6.5) (2020-04-01)
+
+
+### Bug Fixes
+
+* segmentation not loading ([#1566](https://github.com/OHIF/Viewers/issues/1566)) ([4a7ce1c](https://github.com/OHIF/Viewers/commit/4a7ce1c09324d74c61048393e3a2427757e4001a))
+
+
+
+
+
+## [2.6.4](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.3...@ohif/core@2.6.4) (2020-03-25)
+
+
+### Bug Fixes
+
+* Add support for single entries in SequenceOfUltrasoundRegions. M… ([#1559](https://github.com/OHIF/Viewers/issues/1559)) ([c1a0d3c](https://github.com/OHIF/Viewers/commit/c1a0d3c662d143b62dfbf1c01f6ce394af3756ca))
+* disable autoFreeze of immer, even in dev mode ([#1560](https://github.com/OHIF/Viewers/issues/1560)) ([d604eba](https://github.com/OHIF/Viewers/commit/d604ebaffd93f688eadd0081e402f27074dd226b))
+
+
+
+
+
+## [2.6.3](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.2...@ohif/core@2.6.3) (2020-03-24)
+
+
+### Bug Fixes
+
+* Ensure we take into account pixel spacing fields properly ([#1555](https://github.com/OHIF/Viewers/issues/1555)) ([77ab0ad](https://github.com/OHIF/Viewers/commit/77ab0ad9a14a135b5560741fc1600704df08c141))
+
+
+
+
+
+## [2.6.2](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.1...@ohif/core@2.6.2) (2020-03-24)
+
+
+### Bug Fixes
+
+* OverlayPlane module usage for ArrayBuffer, BulkDataURI, and InlineBinary cases, as well as PaletteColor LUTs for ArrayBuffer (i.e. local drag/drop) case ([#1546](https://github.com/OHIF/Viewers/issues/1546)) ([404d52f](https://github.com/OHIF/Viewers/commit/404d52fe5c0442dd13e4d407bb0687d72fa5f32c))
+
+
+
+
+
+## [2.6.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.6.0...@ohif/core@2.6.1) (2020-03-23)
+
+
+### Bug Fixes
+
+* avoid-wasteful-renders ([#1544](https://github.com/OHIF/Viewers/issues/1544)) ([e41d339](https://github.com/OHIF/Viewers/commit/e41d339f5faef6b93700bc860f37f29f32ad5ed6))
+
+
+
+
+
 # [2.6.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.5.3...@ohif/core@2.6.0) (2020-03-13)
 
 

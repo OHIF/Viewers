@@ -2,10 +2,19 @@
 //this is intended to be running in a controled docker environment with test data.
 describe('OHIF Study List', function() {
   context('Desktop resolution', function() {
+    before(function() {
+      cy.openStudyList();
+    });
+
     beforeEach(function() {
       cy.viewport(1750, 720);
-      cy.openStudyList();
       cy.initStudyListAliasesOnDesktop();
+      //Clear all text fields
+      cy.get('@PatientName').clear();
+      cy.get('@MRN').clear();
+      cy.get('@AccessionNumber').clear();
+      cy.get('@StudyDescription').clear();
+      cy.get('@modalities').clear();
     });
 
     it('searches Patient Name with exact string', function() {
@@ -13,7 +22,7 @@ describe('OHIF Study List', function() {
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('@searchResult').should($list => {
-        expect($list.length).to.be.eq(2);
+        expect($list.length).to.be.eq(3);
         expect($list).to.contain('Juno');
       });
     });
@@ -43,7 +52,8 @@ describe('OHIF Study List', function() {
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('@searchResult').should($list => {
-        expect($list.length).to.be.eq(15); // TODO: Where are you hiding MISTER^MR?
+        // TODO: Why are we facing some inconsistency with this result? ¯\_(ツ)_/¯
+        expect($list.length).to.be.eq(15);
         expect($list).to.contain('MR');
       });
     });
@@ -101,10 +111,16 @@ describe('OHIF Study List', function() {
   });
 
   context('Tablet resolution', function() {
+    before(function() {
+      cy.openStudyList();
+    });
+
     beforeEach(function() {
       cy.viewport(1000, 660);
-      cy.openStudyList();
       cy.initStudyListAliasesOnTablet();
+      //Clear all text fields
+      cy.get('@patientNameOrMRN').clear();
+      cy.get('@accessionModalityDescription').clear();
     });
 
     it('searches Patient Name with exact string', function() {
@@ -112,7 +128,7 @@ describe('OHIF Study List', function() {
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('@searchResult').should($list => {
-        expect($list.length).to.be.eq(2);
+        expect($list.length).to.be.eq(3);
         expect($list).to.contain('Juno');
       });
     });
@@ -122,7 +138,7 @@ describe('OHIF Study List', function() {
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('@searchResult').should($list => {
-        expect($list.length).to.be.eq(2);
+        expect($list.length).to.be.eq(6);
         expect($list).to.contain('ProstateX-0000');
       });
     });
@@ -132,7 +148,8 @@ describe('OHIF Study List', function() {
       //Wait result list to be displayed
       cy.waitStudyList();
       cy.get('@searchResult').should($list => {
-        expect($list.length).to.be.eq(15); // TODO: Where are you hiding MISTER^MR?
+        // TODO: Why are we facing some inconsistency with this result? ¯\_(ツ)_/¯
+        expect($list.length).to.be.eq(15);
         expect($list).to.contain('MR');
       });
     });

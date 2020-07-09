@@ -84,6 +84,7 @@ export function initPreferencesModalAliases() {
   cy.get('.OHIFModal').as('preferencesModal');
   cy.get('[data-cy="hotkeys"]').as('userPreferencesHotkeysTab');
   cy.get('[data-cy="general"]').as('userPreferencesGeneralTab');
+  cy.get('[data-cy="window-level"]').as('userPreferencesWindowLevelTab');
   initPreferencesModalFooterBtnAliases();
 }
 

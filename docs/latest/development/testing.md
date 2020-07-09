@@ -132,7 +132,7 @@ feature `X` or scenario `Y`? Open an issue and let's discuss.
 [flow-org]: https://flow.org/
 <!-- Talks -->
 [assert-js-talks]: https://www.youtube.com/playlist?list=PLZ66c9_z3umNSrKSb5cmpxdXZcIPNvKGw
-[kent-talk]: https://www.youtube.com/watch?list=PLV5CVI1eNcJgNqzNwcs4UKrlJdhfDjshf
+[kent-talk]: https://www.youtube.com/watch?v=Fha2bVoC8SE
 [gleb-talk]: https://www.youtube.com/watch?v=5FnalKRjpZk
 [kent-blog]: https://kentcdodds.com/blog/unit-vs-integration-vs-e2e-tests
 <!-- Images -->

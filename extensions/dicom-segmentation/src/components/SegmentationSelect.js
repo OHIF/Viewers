@@ -17,6 +17,10 @@ const defaultColor = computedstyle.getPropertyValue('--default-color');
 const uiGrayDark = computedstyle.getPropertyValue('--ui-gray-dark');
 
 const segmentationSelectStyles = {
+  singleValue: (base, state) => ({
+    ...base,
+    width: '100%'
+  }),
   control: (base, state) => ({
     ...base,
     cursor: 'pointer',

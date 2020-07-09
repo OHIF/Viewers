@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.2...@ohif/extension-dicom-html@1.2.3) (2020-06-15)
+
+
+### Bug Fixes
+
+* 🐛 Disable seg panel when data for seg unavailable ([#1732](https://github.com/OHIF/Viewers/issues/1732)) ([698e900](https://github.com/OHIF/Viewers/commit/698e900b85121d3c2a46747c443ef69fb7a8c95b)), closes [#1728](https://github.com/OHIF/Viewers/issues/1728)
+
+
+
+
+
+## [1.2.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.1...@ohif/extension-dicom-html@1.2.2) (2020-05-04)
+
+
+### Bug Fixes
+
+* 🐛 Proper error handling for derived display sets ([#1708](https://github.com/OHIF/Viewers/issues/1708)) ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
+
+
+
+
+
+## [1.2.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.0...@ohif/extension-dicom-html@1.2.1) (2020-04-28)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+# [1.2.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.1.2...@ohif/extension-dicom-html@1.2.0) (2020-04-24)
+
+
+### Features
+
+* 🎸 Seg jump to slice + show/hide ([835f64d](https://github.com/OHIF/Viewers/commit/835f64d47a9994f6a25aaf3941a4974e215e7e7f))
+
+
+
+
+
+## [1.1.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.1.1...@ohif/extension-dicom-html@1.1.2) (2020-04-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
 ## [1.1.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.1.0...@ohif/extension-dicom-html@1.1.1) (2020-03-09)
 
 **Note:** Version bump only for package @ohif/extension-dicom-html
