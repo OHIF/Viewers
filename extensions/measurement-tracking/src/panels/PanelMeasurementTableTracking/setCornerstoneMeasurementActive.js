@@ -10,7 +10,6 @@ export default function setMeasurementActive(measurement) {
 
   Object.keys(toolState).forEach(imageId => {
     const imageIdSpecificToolState = toolState[imageId];
-    debugger;
 
     Object.keys(imageIdSpecificToolState).forEach(toolType => {
       const toolSpecificToolState = imageIdSpecificToolState[toolType];
