@@ -41,9 +41,9 @@ function ViewportPane({
     }
   };
 
-  const onInteractionHandler = () => {
-    onInteraction();
+  const onInteractionHandler = (event) => {
     focus();
+    onInteraction(event);
   };
 
   const refHandler = element => {
@@ -101,7 +101,7 @@ ViewportPane.propTypes = {
   onDoubleClick: PropTypes.func,
 };
 
-const noop = () => {};
+const noop = () => { };
 
 ViewportPane.defaultProps = {
   onInteraction: noop,
