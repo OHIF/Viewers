@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import Icon from './../Icon';
+import { Icon, TooltipClipboard } from '@ohif/ui';
 
 const StudyListTableRow = props => {
   const { tableData } = props;
@@ -35,7 +35,13 @@ const StudyListTableRow = props => {
                   onClick={onClickRow}
                 >
                   {row.map((cell, index) => {
-                    const { content, title, gridCol, name } = cell;
+                    const {
+                      content,
+                      title,
+                      gridCol,
+                      name,
+                      enableClipboard,
+                    } = cell;
 
                     return (
                       <td
@@ -56,7 +62,11 @@ const StudyListTableRow = props => {
                             className="mr-4 inline-flex"
                           />
                         )}
-                        {content}
+                        {enableClipboard ? (
+                          <TooltipClipboard>{content}</TooltipClipboard>
+                        ) : (
+                          content
+                        )}
                       </td>
                     );
                   })}
@@ -86,6 +96,7 @@ StudyListTableRow.propTypes = {
         /** Title attribute to use for provided content */
         title: PropTypes.string,
         gridCol: PropTypes.number.isRequired,
+        enableClipboard: PropTypes.bool,
       })
     ).isRequired,
     expandedContent: PropTypes.node.isRequired,
