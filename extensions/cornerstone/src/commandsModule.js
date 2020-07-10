@@ -79,6 +79,21 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.setViewport(enabledElement, viewport);
       }
     },
+    cancelMeasurement: () => {
+      const enabledElement = _getActiveViewportsEnabledElement();
+
+      if (enabledElement) {
+        debugger;
+
+        const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
+          'manipulatorState'
+        ).setters.cancelActiveManipulatorsForElement;
+
+        cancelActiveManipulatorsForElement(enabledElement);
+
+        cornerstone.updateImage(enabledElement);
+      }
+    },
     // TODO: this is receiving `evt` from `ToolbarRow`. We could use it to have
     //       better mouseButtonMask sets.
     setToolActive: ({ toolName }) => {
@@ -346,6 +361,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     invertViewport: {
       commandFn: actions.invertViewport,
+      storeContexts: [],
+      options: {},
+    },
+    cancelMeasurement: {
+      commandFn: actions.cancelMeasurement,
       storeContexts: [],
       options: {},
     },

@@ -57,7 +57,7 @@
     "@ohif/core": "^2.9.6",
     "@ohif/ui": "^2.0.0",
     "cornerstone-core": "^2.3.0",
-    "cornerstone-tools": "4.18.0",
+    "cornerstone-tools": "4.18.1",
     "cornerstone-wado-image-loader": "^3.1.2",
     "dicom-parser": "^1.8.3",
     "gh-pages": "^2.0.1",
