@@ -375,8 +375,6 @@ function OHIFCornerstoneSRViewport({
           imageId
         );
 
-        debugger;
-
         const source = MeasurementService.getSource('CornerstoneTools', '4');
 
         data.label = getLabelFromDCMJSImportedToolData(data);

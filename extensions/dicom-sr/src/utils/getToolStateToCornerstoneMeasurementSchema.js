@@ -122,9 +122,6 @@ function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
   } = instance;
 
   const { handles, label } = measurementData;
-
-  debugger;
-
   const { start, end } = handles;
 
   const halfXLength = Math.abs(start.x - end.x) / 2;
