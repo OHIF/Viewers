@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography, Icon } from '@ohif/ui';
+import detect from 'browser-detect';
 
 const Link = ({ href, children, showIcon = false }) => {
   return (
@@ -41,6 +42,9 @@ const Row = ({ title, value, link }) => {
 };
 
 const AboutModal = () => {
+  const { os, version, name } = detect();
+  const browser = `${name[0].toUpperCase()}${name.substr(1)} ${version}`;
+
   const renderRowTitle = title => (
     <div className="border-b-2 border-black pb-3 mb-3">
       <Typography variant="h6" className="text-primary-light">
@@ -85,10 +89,10 @@ const AboutModal = () => {
           value="https://github.com/OHIF/Viewers/commits/master"
           link="https://github.com/OHIF/Viewers/commits/master"
         />
-        <Row title="Version Number" value="2.90" />
-        <Row title="Build number" value="7140" />
-        <Row title="Browser" value="Chrome 83.0.4130" />
-        <Row title="OS" value="OS X 10.15.5" />
+        <Row title="Version Number" value={process.env.VERSION_NUMBER} />
+        <Row title="Build number" value={process.env.BUILD_NUM} />
+        <Row title="Browser" value={browser} />
+        <Row title="OS" value={os} />
       </div>
     </div>
   );
