@@ -4,7 +4,7 @@ import Label from '../Label';
 import classnames from 'classnames';
 
 const baseInputClasses =
-  'shadow transition duration-300 appearance-none border border-primary-main hover:border-gray-500 focus:border-gray-500 focus:outline-none rounded w-full py-2 px-3 mt-2 text-sm text-white leading-tight focus:outline-none';
+  'shadow transition duration-300 appearance-none border border-primary-main hover:border-gray-500 focus:border-gray-500 focus:outline-none rounded w-full py-2 px-3 text-sm text-white leading-tight focus:outline-none';
 
 const transparentClasses = {
   true: 'bg-transparent',
@@ -23,6 +23,8 @@ const Input = ({
   onFocus,
   autoFocus,
   onKeyPress,
+  onKeyDown,
+  readOnly,
   ...otherProps
 }) => {
   return (
@@ -30,16 +32,19 @@ const Input = ({
       <Label className={labelClassName} text={label}></Label>
       <input
         className={classnames(
+          label && 'mt-2',
           className,
           baseInputClasses,
           transparentClasses[transparent]
         )}
-        autoFocus
+        readOnly={readOnly}
+        autoFocus={autoFocus}
         type={type}
         value={value}
         onChange={onChange}
         onFocus={onFocus}
         onKeyPress={onKeyPress}
+        onKeyDown={onKeyDown}
         {...otherProps}
       />
     </div>
@@ -57,7 +62,9 @@ Input.propTypes = {
   onChange: PropTypes.func,
   onFocus: PropTypes.func,
   autoFocus: PropTypes.bool,
+  readOnly: PropTypes.bool,
   onKeyPress: PropTypes.func,
+  onKeyDown: PropTypes.func,
 };
 
 export default Input;

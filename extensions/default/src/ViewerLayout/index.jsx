@@ -17,6 +17,7 @@ function ViewerLayout({
   ViewportGridComp,
 }) {
   const { ToolBarService } = servicesManager.services;
+
   /**
    * Set body classes (tailwindcss) that don't allow vertical
    * or horizontal overflow (no scrolling). Also guarantee window

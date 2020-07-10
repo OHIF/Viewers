@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, createContext, useContext } from 'react';
 import { useParams } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
 import { DicomMetadataStore } from '@ohif/core';
-import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
+import { DragAndDropProvider, ImageViewerProvider, ModeProvider } from '@ohif/ui';
 //
 import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
@@ -85,12 +85,10 @@ export default function ModeRoute({
       return;
     }
 
-    console.debug('[hotkeys] Setting up hotkeys...');
     hotkeysManager.setDefaultHotKeys(hotkeys);
     hotkeysManager.setHotkeys(hotkeys);
 
     return () => {
-      console.debug('[hotkeys] Removing hotkeys...');
       hotkeysManager.destroy();
     };
   }, []);
@@ -155,23 +153,25 @@ export default function ModeRoute({
   };
 
   return (
-    <ImageViewerProvider
-      initialState={{ StudyInstanceUIDs: StudyInstanceUIDsAsArray }}
-      reducer={reducer}
-    >
-      <CombinedContextProvider>
-        {/* TODO: extensionManager is already provided to the extension module.
+    <ModeProvider mode={mode}>
+      <ImageViewerProvider
+        initialState={{ StudyInstanceUIDs: StudyInstanceUIDsAsArray }}
+        reducer={reducer}
+      >
+        <CombinedContextProvider>
+          {/* TODO: extensionManager is already provided to the extension module.
          *  Use it from there instead of passing as a prop here.
          */}
-        <DragAndDropProvider>
-          <LayoutComponent
-            {...layoutTemplateData.props}
-            StudyInstanceUIDs={StudyInstanceUIDs}
-            ViewportGridComp={ViewportGridWithDataSource}
-          />
-        </DragAndDropProvider>
-      </CombinedContextProvider>
-    </ImageViewerProvider>
+          <DragAndDropProvider>
+            <LayoutComponent
+              {...layoutTemplateData.props}
+              StudyInstanceUIDs={StudyInstanceUIDs}
+              ViewportGridComp={ViewportGridWithDataSource}
+            />
+          </DragAndDropProvider>
+        </CombinedContextProvider>
+      </ImageViewerProvider>
+    </ModeProvider>
   );
 }
 

@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 // TODO: This may fail if package is split from PWA build
 import { useHistory } from 'react-router-dom';
-//
-import { NavBar, Svg, Icon, IconButton, Dropdown, useModal } from '@ohif/ui';
+import { NavBar, Svg, Icon, IconButton, Dropdown, useModal, UserPreferences, useMode } from '@ohif/ui';
 
 function Header({ children }) {
   const { t } = useTranslation();
   const history = useHistory();
   const { show } = useModal();
+  const { mode } = useMode();
 
   // TODO: IT SHOULD BE REFACTORED WHEN THE MODAL CONTENT IS DEFINED
   const showAboutModal = useCallback(() => {
@@ -24,12 +24,10 @@ function Header({ children }) {
 
   // TODO: IT SHOULD BE REFACTORED WHEN THE MODAL CONTENT IS DEFINED
   const showPreferencesModal = useCallback(() => {
-    const modalComponent = () => (
-      <div>{t('UserPreferencesModal:User Preferences')}</div>
-    );
     show({
       title: t('UserPreferencesModal:User Preferences'),
-      content: modalComponent,
+      content: UserPreferences,
+      contentProps: { hotkeys: mode.hotkeys }
     });
   }, [show, t]);
 

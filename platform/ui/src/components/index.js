@@ -50,8 +50,14 @@ import ViewportActionBar from './ViewportActionBar';
 import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
+import UserPreferences from './UserPreferences';
+import HotkeysPreferences from './HotkeysPreferences';
+import HotkeyField from './HotkeyField';
 
 export {
+  HotkeyField,
+  UserPreferences,
+  HotkeysPreferences,
   Button,
   ButtonGroup,
   DateRange,

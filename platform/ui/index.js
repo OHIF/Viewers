@@ -23,10 +23,15 @@ export {
   ViewportGridContext,
   ViewportGridProvider,
   useViewportGrid,
+  useMode,
+  ModeProvider,
 } from './src/contextProviders';
 
 /** COMPONENTS */
 export {
+  HotkeyField,
+  UserPreferences,
+  HotkeysPreferences,
   Button,
   ButtonGroup,
   DateRange,

@@ -5,6 +5,7 @@ const ohif = {
   layout: 'org.ohif.default.layoutTemplateModule.viewerLayout',
   sopClassHandler: 'org.ohif.default.sopClassHandlerModule.stack',
 };
+
 const tracked = {
   measurements: 'org.ohif.measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: 'org.ohif.measurement-tracking.panelModule.seriesList',
