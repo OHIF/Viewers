@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import { Icon } from '@ohif/ui';
 
 const DELAY_TO_SHOW = 1000;
-const DELAY_TO_HIDE = 10;
+const DELAY_TO_HIDE = 10; // it needs at least a little delay to prevent tooltip to suddenly hide
 const DELAY_TO_HIDE_AFTER_COPYING = 1000;
 
 const TooltipClipboard = ({ children, text }) => {
