@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import { Icon } from '@ohif/ui';
-import clickOutsideHandler from '../../utils/clickOutsideHandler';
+import blurHandlerListener from '../../utils/blurHandlerListener';
 
 /**
  *
@@ -35,7 +35,7 @@ const Thumbnail = ({
 
   return (
     <div
-      onFocus={() => clickOutsideHandler(thumbnailElement)}
+      onFocus={() => blurHandlerListener(thumbnailElement)}
       ref={thumbnailElement}
       className={classnames(
         className,

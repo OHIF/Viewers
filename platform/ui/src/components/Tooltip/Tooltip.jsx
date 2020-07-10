@@ -31,7 +31,6 @@ const Tooltip = ({
   tight,
   children,
   isDisabled,
-  tooltipRef,
 }) => {
   const [isActive, setIsActive] = useState(false);
 
@@ -57,7 +56,6 @@ const Tooltip = ({
       onMouseOut={handleMouseOut}
       onBlur={handleMouseOut}
       role="tooltip"
-      ref={tooltipRef}
     >
       {children}
       <div
@@ -94,7 +92,6 @@ Tooltip.defaultProps = {
   isSticky: false,
   position: 'bottom',
   isDisabled: false,
-  tooltipRef: () => {},
 };
 
 Tooltip.propTypes = {
@@ -111,10 +108,6 @@ Tooltip.propTypes = {
   isSticky: PropTypes.bool,
   tight: PropTypes.bool,
   children: PropTypes.node.isRequired,
-  tooltipRef: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({ current: PropTypes.instanceOf(HTMLElement) }),
-  ]),
 };
 
 export default Tooltip;
