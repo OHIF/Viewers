@@ -4,6 +4,7 @@ const PnpWebpackPlugin = require(`pnp-webpack-plugin`); // Required until Webpac
 
 exports.onCreateWebpackConfig = args => {
   args.actions.setWebpackConfig({
+    node: { fs: 'empty' },
     resolve: {
       plugins: [PnpWebpackPlugin],
       // Note the '..' in the path because docz gatsby project lives in the '.docz' directory

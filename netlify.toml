@@ -22,6 +22,7 @@
   YARN_VERSION = "1.22.0"
   RUBY_VERSION = "2.6.2"
   YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
+  NETLIFY_RESTORE = "1"
 
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.

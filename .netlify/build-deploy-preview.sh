@@ -24,4 +24,7 @@ yarn run build:ui:deploy-preview
 mkdir -p ./.netlify/www/ui
 mv platform/ui/.docz/dist/* .netlify/www/ui -v
 
+# Cache all of the node_module dependencies in
+# extensions, modules, and platform packages
+yarn run lerna:cache
 echo 'Nothing left to see here. Go home, folks.'
