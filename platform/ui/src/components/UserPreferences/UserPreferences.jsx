@@ -10,7 +10,7 @@ const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit
   const { t } = useTranslation('UserPreferencesModal');
 
   const onSubmitHandler = () => {
-    i18n.changeLanguage(state.language);
+    i18n.changeLanguage(state.language.value);
     onSubmit(state);
   };
 

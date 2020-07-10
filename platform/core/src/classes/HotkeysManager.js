@@ -62,7 +62,6 @@ export class HotkeysManager {
   setHotkeys(hotkeyDefinitions = []) {
     try {
       const definitions = this._getValidDefinitions(hotkeyDefinitions);
-
       definitions.forEach(definition => this.registerHotkeys(definition));
     } catch (error) {
       const { UINotificationService } = this._servicesManager.services;
@@ -164,7 +163,7 @@ export class HotkeysManager {
     }
 
     // Set definition & bind
-    this.hotkeyDefinitions[commandHash] = { keys, label };
+    this.hotkeyDefinitions[commandHash] = { commandName, keys, label };
     this._bindHotkeys(commandName, commandOptions, keys);
     log.info(`[hotkeys] Binding ${commandName} with ${options} options to ${keys}`);
   }

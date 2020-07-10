@@ -42,7 +42,15 @@ function ViewerLayout({
         show({
           title: t('UserPreferencesModal:User Preferences'),
           content: UserPreferences,
-          contentProps: { hotkeyDefaults, hotkeyDefinitions, onCancel: hide }
+          contentProps: {
+            hotkeyDefaults,
+            hotkeyDefinitions,
+            onCancel: hide,
+            onSubmit: ({ hotkeyDefinitions }) => {
+              hide();
+              hotkeysManager.setHotkeys(hotkeyDefinitions);
+            }
+          }
         });
       }
     },
