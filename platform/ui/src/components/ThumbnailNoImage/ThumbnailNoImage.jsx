@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
 import { Icon, Tooltip, Typography } from '@ohif/ui';
-import clickOutsideHandler from '../../utils/clickOutsideHandler';
+import blurHandlerListener from '../../utils/blurHandlerListener';
 
 const ThumbnailNoImage = ({
   displaySetInstanceUID,
@@ -29,7 +29,7 @@ const ThumbnailNoImage = ({
   return (
     <div
       ref={thumbnailElement}
-      onFocus={() => clickOutsideHandler(thumbnailElement)}
+      onFocus={() => blurHandlerListener(thumbnailElement)}
       className={classnames(
         'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded select-none',
         isActive ? 'border-2 border-primary-light' : 'border'
