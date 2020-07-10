@@ -156,6 +156,7 @@ Button.propTypes = {
     'white',
     'black',
     'inherit',
+    'light'
   ]),
   fullWidth: PropTypes.bool,
   disabled: PropTypes.bool,

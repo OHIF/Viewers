@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { SidePanel, ErrorBoundary } from '@ohif/ui';
+import { useTranslation } from 'react-i18next';
+import { SidePanel, ErrorBoundary, useModal, UserPreferences } from '@ohif/ui';
+
 import Header from './Header.jsx';
 import NestedMenu from './ToolbarButtonNestedMenu.jsx';
 
@@ -9,6 +11,7 @@ function ViewerLayout({
   extensionManager,
   servicesManager,
   commandsManager,
+  hotkeysManager,
   // From Modes
   leftPanels,
   rightPanels,
@@ -16,7 +19,34 @@ function ViewerLayout({
   children,
   ViewportGridComp,
 }) {
+  const { t } = useTranslation();
+  const { show, hide } = useModal();
   const { ToolBarService } = servicesManager.services;
+  const { hotkeyDefaults, hotkeyDefinitions } = hotkeysManager;
+
+  const menuOptions = [
+    {
+      title: t('Header:About'),
+      icon: 'info',
+      onClick: () => {
+        show({
+          title: t('AboutModal:OHIF Viewer - About'),
+          content: () => <div>{t('AboutModal:OHIF Viewer - About')}</div>,
+        });
+      }
+    },
+    {
+      title: t('Header:Preferences'),
+      icon: 'settings',
+      onClick: () => {
+        show({
+          title: t('UserPreferencesModal:User Preferences'),
+          content: UserPreferences,
+          contentProps: { hotkeyDefaults, hotkeyDefinitions, onCancel: hide }
+        });
+      }
+    },
+  ];
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -92,7 +122,7 @@ function ViewerLayout({
 
   return (
     <div>
-      <Header>
+      <Header menuOptions={menuOptions}>
         <ErrorBoundary context="Primary Toolbar">
           <div className="relative flex justify-center">
             {toolbars.primary.map(toolDef => {

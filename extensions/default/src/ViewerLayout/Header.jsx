@@ -1,35 +1,13 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 // TODO: This may fail if package is split from PWA build
 import { useHistory } from 'react-router-dom';
-import { NavBar, Svg, Icon, IconButton, Dropdown, useModal, UserPreferences, useMode } from '@ohif/ui';
+import { NavBar, Svg, Icon, IconButton, Dropdown } from '@ohif/ui';
 
-function Header({ children }) {
+function Header({ children, menuOptions }) {
   const { t } = useTranslation();
   const history = useHistory();
-  const { show } = useModal();
-  const { mode } = useMode();
-
-  // TODO: IT SHOULD BE REFACTORED WHEN THE MODAL CONTENT IS DEFINED
-  const showAboutModal = useCallback(() => {
-    const modalComponent = () => (
-      <div>{t('AboutModal:OHIF Viewer - About')}</div>
-    );
-    show({
-      title: t('AboutModal:OHIF Viewer - About'),
-      content: modalComponent,
-    });
-  }, [show, t]);
-
-  // TODO: IT SHOULD BE REFACTORED WHEN THE MODAL CONTENT IS DEFINED
-  const showPreferencesModal = useCallback(() => {
-    show({
-      title: t('UserPreferencesModal:User Preferences'),
-      content: UserPreferences,
-      contentProps: { hotkeys: mode.hotkeys }
-    });
-  }, [show, t]);
 
   return (
     <NavBar className="justify-between border-b-4 border-black">
@@ -57,18 +35,7 @@ function Header({ children }) {
           </span>
           <Dropdown
             showDropdownIcon={false}
-            list={[
-              {
-                title: t('Header:About'),
-                icon: 'info',
-                onClick: showAboutModal,
-              },
-              {
-                title: t('Header:Preferences'),
-                icon: 'settings',
-                onClick: showPreferencesModal,
-              },
-            ]}
+            list={menuOptions}
           >
             <IconButton
               variant="text"

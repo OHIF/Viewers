@@ -2,13 +2,14 @@ import MODULE_TYPES from './MODULE_TYPES.js';
 import log from './../log.js';
 
 export default class ExtensionManager {
-  constructor({ commandsManager, servicesManager, api, appConfig = {} }) {
+  constructor({ commandsManager, servicesManager, hotkeysManager, api, appConfig = {} }) {
     this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
     //
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
+    this._hotkeysManager = hotkeysManager;
     this._appConfig = appConfig;
     this._api = api;
 
@@ -32,6 +33,7 @@ export default class ExtensionManager {
       getModuleEntry,
       _servicesManager,
       _commandsManager,
+      _hotkeysManager,
       _extensionLifeCycleHooks,
     } = this;
 
@@ -42,6 +44,7 @@ export default class ExtensionManager {
         onModeEnter({
           servicesManager: _servicesManager,
           commandsManager: _commandsManager,
+          hotkeysManager: _hotkeysManager
         });
       }
     });
@@ -100,6 +103,7 @@ export default class ExtensionManager {
       extension.preRegistration({
         servicesManager: this._servicesManager,
         commandsManager: this._commandsManager,
+        hotkeysManager: this._hotkeysManager,
         appConfig: this._appConfig,
         configuration,
       });
@@ -195,8 +199,9 @@ export default class ExtensionManager {
         appConfig: this._appConfig,
         getDataSources: this.getDataSources, // Why pass this in if we're passing in `extensionManager`?
         commandsManager: this._commandsManager,
-        extensionManager: this,
         servicesManager: this._servicesManager,
+        hotkeysManager: this._hotkeysManager,
+        extensionManager: this,
         configuration,
         api: this._api,
       });

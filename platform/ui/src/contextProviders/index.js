@@ -14,11 +14,6 @@ export {
 } from './ModalProvider';
 
 export {
-  default as ModeProvider,
-  useMode,
-} from './ModeProvider';
-
-export {
   ImageViewerContext,
   ImageViewerProvider,
   useImageViewer,

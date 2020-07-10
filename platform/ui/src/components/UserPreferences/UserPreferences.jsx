@@ -1,8 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Select, Typography, Button, HotkeysPreferences } from '@ohif/ui';
+import i18n from '@ohif/i18n';
+import { useTranslation } from 'react-i18next';
+const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
-const UserPreferences = ({ hotkeys, languageOptions, onCancel, onSubmit, onReset }) => {
+const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit, onReset }) => {
+  console.log('>>> UserPreferences');
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [state, setState] = useState({ hotkeyDefinitions, language: currentLanguage });
+  const { t } = useTranslation('UserPreferencesModal');
+
+  const onSubmitHandler = () => {
+    i18n.changeLanguage(state.language);
+    onSubmit(state);
+  };
+
+  const onResetHandler = () => {
+    setState(state => ({ ...state, language: defaultLanguage }));
+    resetHotkeyDefinitions();
+    onReset(state);
+  };
+
+  const onCancelHandler = () => {
+    setState({ hotkeyDefinitions, language: currentLanguage });
+    onCancel();
+  };
+
+  const resetHotkeyDefinitions = () => {
+    const defaultHotkeyDefinitions = {};
+
+    hotkeyDefaults.map(hotkey => {
+      const { commandName, ...values } = hotkey;
+      defaultHotkeyDefinitions[commandName] = { ...values };
+    });
+
+    setState(state => ({
+      ...state,
+      hotkeyDefinitions: defaultHotkeyDefinitions
+    }));
+  };
+
+  const onHotkeysChangeHandler = ({ errors }) => {
+    const hasErrors = Object.keys(errors).some(key => !!errors[key]);
+    setIsDisabled(hasErrors);
+  };
+
   const Section = ({ title, children }) => (
     <>
       <div className="border-b-2 border-black mb-2">
@@ -27,24 +70,35 @@ const UserPreferences = ({ hotkeys, languageOptions, onCancel, onSubmit, onReset
             Language
           </Typography>
           <Select
-            onChange={() => { }}
-            options={languageOptions}
+            isClearable={false}
+            onChange={value => setState(state => ({ ...state, language: value }))}
+            options={availableLanguages}
+            value={state.language}
           />
         </div>
       </Section>
       <Section title="Hotkeys">
-        <HotkeysPreferences hotkeys={hotkeys} />
+        <HotkeysPreferences
+          hotkeyDefinitions={state.hotkeyDefinitions}
+          onChange={onHotkeysChangeHandler}
+        />
       </Section>
       <div className="flex flex-row justify-between">
-        <Button variant="outlined" onClick={onReset}>
-          Restore Defaults
+        <Button variant="outlined" onClick={onResetHandler}>
+          {t('Reset to Defaults')}
         </Button>
-        <div>
-          <Button variant="outlined" onClick={onCancel}>
-            Cancel
+        <div className="flex flex-row">
+          <Button variant="outlined" onClick={onCancelHandler}>
+            {t('Cancel')}
           </Button>
-          <Button variant="contained" color="light" className="ml-2" onClick={onSubmit}>
-            Save
+          <Button
+            variant="contained"
+            disabled={isDisabled}
+            color="light"
+            className="ml-2"
+            onClick={onSubmitHandler}
+          >
+            {t('Save')}
           </Button>
         </div>
       </div>
@@ -52,24 +106,30 @@ const UserPreferences = ({ hotkeys, languageOptions, onCancel, onSubmit, onReset
   );
 };
 
+const noop = () => { };
+
 UserPreferences.propTypes = {
-  hotkeys: PropTypes.arrayOf(PropTypes.object).isRequired,
+  hotkeyDefaults: PropTypes.array.isRequired,
+  hotkeyDefinitions: PropTypes.object.isRequired,
   languageOptions: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       value: PropTypes.any.isRequired,
     })
   ),
-  onCancel: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  onClick: PropTypes.func.isRequired,
+  onCancel: PropTypes.func,
+  onSubmit: PropTypes.func,
+  onReset: PropTypes.func,
 };
 
 UserPreferences.defaultProps = {
   languageOptions: [
     { value: 'ONE', label: 'ONE' },
     { value: 'TWO', label: 'TWO' },
-  ]
+  ],
+  onCancel: noop,
+  onSubmit: noop,
+  onReset: noop,
 };
 
 export default UserPreferences;

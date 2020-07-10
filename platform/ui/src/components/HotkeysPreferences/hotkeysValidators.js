@@ -35,19 +35,13 @@ const modifierValidator = ({ pressedKeys }) => {
   // Check if it has a valid modifier
   const isModifier = MODIFIER_KEYS.includes(lastPressedKey);
   if (isModifier) {
-    return {
-      hasError: true,
-      errorMessage: ERROR_MESSAGES.MODIFIER,
-    };
+    return { error: ERROR_MESSAGES.MODIFIER };
   }
 };
 
 const emptyValidator = ({ pressedKeys = [] }) => {
   if (!pressedKeys.length) {
-    return {
-      hasError: true,
-      errorMessage: ERROR_MESSAGES.EMPTY,
-    };
+    return { error: ERROR_MESSAGES.EMPTY };
   }
 };
 
@@ -60,8 +54,7 @@ const conflictingValidator = ({ commandName, pressedKeys, hotkeys }) => {
 
   if (conflictingCommand) {
     return {
-      hasError: true,
-      errorMessage: `"${conflictingCommand.label}" is already using the "${pressedKeys}" shortcut.`,
+      error: `"${conflictingCommand.label}" is already using the "${pressedKeys}" shortcut.`,
     };
   }
 };
@@ -79,10 +72,7 @@ const disallowedValidator = ({ pressedKeys = [] }) => {
 
   if (hasDisallowedCombinations) {
     return {
-      hasError: true,
-      errorMessage: `"${formatPressedKeys(
-        pressedKeys
-      )}" shortcut combination is not allowed`,
+      error: `"${formatPressedKeys(pressedKeys)}" shortcut combination is not allowed`,
     };
   }
 };

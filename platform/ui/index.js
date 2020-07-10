@@ -23,8 +23,6 @@ export {
   ViewportGridContext,
   ViewportGridProvider,
   useViewportGrid,
-  useMode,
-  ModeProvider,
 } from './src/contextProviders';
 
 /** COMPONENTS */
