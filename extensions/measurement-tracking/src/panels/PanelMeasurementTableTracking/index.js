@@ -12,6 +12,7 @@ import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 import createReportAsync from './../../_shared/createReportAsync.js';
+import setCornerstoneMeasurementActive from '../../_shared/setCornerstoneMeasurementActive';
 
 const { formatDate } = utils;
 
@@ -162,6 +163,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const jumpToImage = ({ id, isActive }) => {
     const measurement = MeasurementService.getMeasurement(id);
     const { referenceSeriesUID, SOPInstanceUID } = measurement;
+
+    setCornerstoneMeasurementActive(measurement);
 
     const displaySets = DisplaySetService.getDisplaySetsForSeries(
       referenceSeriesUID
