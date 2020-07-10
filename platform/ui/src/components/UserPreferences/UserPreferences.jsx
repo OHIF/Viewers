@@ -6,9 +6,7 @@ import { useTranslation } from 'react-i18next';
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit, onReset }) => {
-  console.log('>>> UserPreferences');
-  const [isDisabled, setIsDisabled] = useState(false);
-  const [state, setState] = useState({ hotkeyDefinitions, language: currentLanguage });
+  const [state, setState] = useState({ isDisabled: false, hotkeyErrors: {}, hotkeyDefinitions, language: currentLanguage });
   const { t } = useTranslation('UserPreferencesModal');
 
   const onSubmitHandler = () => {
@@ -19,7 +17,7 @@ const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit
   const onResetHandler = () => {
     setState(state => ({ ...state, language: defaultLanguage }));
     resetHotkeyDefinitions();
-    onReset(state);
+    onReset();
   };
 
   const onCancelHandler = () => {
@@ -35,15 +33,19 @@ const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit
       defaultHotkeyDefinitions[commandName] = { ...values };
     });
 
-    setState(state => ({
-      ...state,
-      hotkeyDefinitions: defaultHotkeyDefinitions
-    }));
+    setState(state => ({ ...state, hotkeyDefinitions: defaultHotkeyDefinitions }));
   };
 
-  const onHotkeysChangeHandler = ({ errors }) => {
-    const hasErrors = Object.keys(errors).some(key => !!errors[key]);
-    setIsDisabled(hasErrors);
+  const onHotkeysChangeHandler = (id, definition, errors) => {
+    setState(state => ({
+      ...state,
+      isDisabled: Object.values(errors).every(e => e !== undefined),
+      hotkeyErrors: errors,
+      hotkeyDefinitions: {
+        ...state.hotkeyDefinitions,
+        [id]: definition,
+      }
+    }));
   };
 
   const Section = ({ title, children }) => (
@@ -81,6 +83,7 @@ const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit
         <HotkeysPreferences
           hotkeyDefinitions={state.hotkeyDefinitions}
           onChange={onHotkeysChangeHandler}
+          errors={state.hotkeyErrors}
         />
       </Section>
       <div className="flex flex-row justify-between">
@@ -93,7 +96,7 @@ const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit
           </Button>
           <Button
             variant="contained"
-            disabled={isDisabled}
+            disabled={state.isDisabled}
             color="light"
             className="ml-2"
             onClick={onSubmitHandler}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { HotkeyField, Typography } from '@ohif/ui';
@@ -7,11 +7,11 @@ import { HotkeyField, Typography } from '@ohif/ui';
 import { MODIFIER_KEYS } from './hotkeysConfig';
 import { validate, splitHotkeyDefinitionsAndCreateTuples } from './utils';
 
-const HotkeysPreferences = ({ hotkeyDefinitions, onChange }) => {
-  const [state, setState] = useState({ hotkeys: hotkeyDefinitions, errors: {} });
+const HotkeysPreferences = ({ hotkeyDefinitions, errors: controlledErrors, onChange }) => {
+  const [errors, setErrors] = useState(controlledErrors);
 
-  const hasHotkeys = Object.keys(state.hotkeys).length;
-  const splitedHotkeys = splitHotkeyDefinitionsAndCreateTuples(state.hotkeys);
+  const hasHotkeys = Object.keys(hotkeyDefinitions).length;
+  const splitedHotkeys = splitHotkeyDefinitionsAndCreateTuples(hotkeyDefinitions);
 
   if (!hasHotkeys) {
     return 'No hotkeys definitions';
@@ -21,28 +21,15 @@ const HotkeysPreferences = ({ hotkeyDefinitions, onChange }) => {
     const { error } = validate({
       commandName: id,
       pressedKeys: definition.keys,
-      hotkeys: state.hotkeys,
+      hotkeys: hotkeyDefinitions,
     });
 
-    setState(prevState => {
-      const newState = {
-        hotkeys: {
-          ...prevState.hotkeys,
-          [id]: definition,
-        },
-        errors: {
-          ...prevState.errors,
-          [id]: error,
-        },
-      };
-
-      return newState;
+    setErrors(prevState => {
+      const errors = { ...prevState, [id]: error };
+      onChange(id, definition, errors);
+      return errors;
     });
   };
-
-  useEffect(() => {
-    onChange(state);
-  }, [state]);
 
   return (
     <div className="flex flex-row justify-center">
@@ -52,13 +39,10 @@ const HotkeysPreferences = ({ hotkeyDefinitions, onChange }) => {
             <div className="p-2 text-right flex flex-col">
               {hotkeys.map((hotkey, hotkeyIndex) => {
                 const [id, definition] = hotkey;
-                const { keys, label } = definition;
                 const isFirst = hotkeyIndex === 0;
-                const error = state.errors[id];
+                const error = errors[id];
 
-                const onChangeHandler = keys => {
-                  onHotkeyChangeHandler(id, { ...definition, keys });
-                };
+                const onChangeHandler = keys => onHotkeyChangeHandler(id, { ...definition, keys });
 
                 return (
                   <div key={`HotkeyItem@${hotkeyIndex}`} className="flex flex-row justify-end mb-2">
@@ -72,7 +56,7 @@ const HotkeysPreferences = ({ hotkeyDefinitions, onChange }) => {
                       <Typography
                         variant="subtitle"
                         className={classNames("pr-6 h-full flex flex-row items-center", isFirst && 'mt-5')}>
-                        {label}
+                        {definition.label}
                       </Typography>
                     </div>
                     <div className="flex flex-col">
@@ -84,7 +68,7 @@ const HotkeysPreferences = ({ hotkeyDefinitions, onChange }) => {
                       </Typography>
                       <div className={classNames('flex flex-col w-32', isFirst && 'mt-5')}>
                         <HotkeyField
-                          keys={keys}
+                          keys={definition.keys}
                           modifierKeys={MODIFIER_KEYS}
                           onChange={onChangeHandler}
                           className="text-lg h-8"
