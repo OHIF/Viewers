@@ -51,7 +51,7 @@ function Length(measurementData, imageId, _getValueTypeFromToolType) {
     StudyInstanceUID,
   } = instance;
 
-  const { handles } = measurementData;
+  const { handles, label } = measurementData;
 
   const points = [];
   Object.keys(handles).map(handle => {
@@ -75,6 +75,7 @@ function Length(measurementData, imageId, _getValueTypeFromToolType) {
     length: measurementData.length,
     type: _getValueTypeFromToolType(tool),
     points,
+    label,
   };
 }
 
@@ -88,7 +89,7 @@ function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
     StudyInstanceUID,
   } = instance;
 
-  const { handles } = measurementData;
+  const { handles, label } = measurementData;
 
   const longAxis = [handles.start, handles.end];
   const shortAxis = [handles.perpendicularStart, handles.perpendicularEnd];
@@ -106,6 +107,7 @@ function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
     longestDiameter: measurementData.longestDiameter,
     type: _getValueTypeFromToolType(tool),
     points: { longAxis, shortAxis },
+    label,
   };
 }
 
@@ -119,7 +121,8 @@ function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
     StudyInstanceUID,
   } = instance;
 
-  const { start, end } = measurementData.handles;
+  const { handles, label } = measurementData;
+  const { start, end } = handles;
 
   const halfXLength = Math.abs(start.x - end.x) / 2;
   const halfYLength = Math.abs(start.y - end.y) / 2;
@@ -161,6 +164,7 @@ function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
         .area /* TODO: Add concept names instead (descriptor) */,
     type: _getValueTypeFromToolType(tool),
     points,
+    label,
   };
 }
 
@@ -198,5 +202,6 @@ function ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType) {
     text: measurementData.text,
     type: _getValueTypeFromToolType(tool),
     points,
+    label,
   };
 }

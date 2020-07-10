@@ -29,7 +29,7 @@
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
     "cornerstone-tools": "4.18.1",
-    "dcmjs": "0.14.2",
+    "dcmjs": "0.16.0",
     "prop-types": "^15.6.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
