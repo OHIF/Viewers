@@ -151,7 +151,7 @@ export default function searchStudies(server, filter) {
  * @param serverSupportsQIDOIncludeField
  * @returns {string} The URL with encoded filter query data
  */
-function mapParams(params) {
+function mapParams(params, options = {}) {
   if (!params) {
     return;
   }
@@ -161,17 +161,22 @@ function mapParams(params) {
     // Add more fields here if you want them in the result
   ].join(',');
 
+  const { supportsWildcard } = options;
+  const withWildcard = value => {
+    return supportsWildcard && value ? `*${value}*` : value;
+  };
+
   const parameters = {
     // Named
-    PatientName: params.patientName,
-    PatientID: params.patientId,
-    AccessionNumber: params.accessionNumber,
-    StudyDescription: params.studyDescription,
+    PatientName: withWildcard(params.patientName),
+    PatientID: withWildcard(params.patientId),
+    AccessionNumber: withWildcard(params.accessionNumber),
+    StudyDescription: withWildcard(params.studyDescription),
     ModalitiesInStudy: params.modalitiesInStudy,
     // Other
     limit: params.limit || 101,
     offset: params.offset || 0,
-    fuzzymatching: params.fuzzymatching === undefined ? false : true,
+    fuzzymatching: options.supportsFuzzyMatching === true,
     includefield: commaSeparatedFields, // serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all',
   };
 
