@@ -71,59 +71,24 @@ function TrackedCornerstoneViewport({
   }, []);
 
   useEffect(() => {
-    const { unsubscribe } = MeasurementService.subscribe(
-      MeasurementService.EVENTS.JUMP_TO_MEASUREMENT,
-      ({ viewportIndex: jumpToMeasurementViewportIndex, measurement }) => {
-
-        // check if the correct viewport index.
-        if (viewportIndex !== jumpToMeasurementViewportIndex) {
-          // Event for a different viewport.
-          return;
-        }
-
-        if (
-          measurement.displaySetInstanceUID !== displaySet.displaySetInstanceUID
-        ) {
-          // Not for this displaySet.
-          return;
-        }
-
-        _jumpToMeasurement(
-          measurement,
-          element,
-          viewportIndex,
-          MeasurementService,
-          DisplaySetService
-        );
-      }
+    const unsubcribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
+      MeasurementService,
+      DisplaySetService,
+      element,
+      viewportIndex,
+      displaySet.displaySetInstanceUID
     );
 
-    // Check if there is a queued jumpToMeasurement event
-    const measurementIdToJumpTo = MeasurementService.getJumpToMeasurement(
-      viewportIndex
+    _checkForCachedJumpToMeasurementEvents(
+      MeasurementService,
+      DisplaySetService,
+      element,
+      viewportIndex,
+      displaySet.displaySetInstanceUID
     );
-
-    if (measurementIdToJumpTo && element) {
-      // Jump to measurement if the measurement exists
-      const measurement = MeasurementService.getMeasurement(
-        measurementIdToJumpTo
-      );
-
-      if (
-        measurement.displaySetInstanceUID === displaySet.displaySetInstanceUID
-      ) {
-        _jumpToMeasurement(
-          measurement,
-          element,
-          viewportIndex,
-          MeasurementService,
-          DisplaySetService
-        );
-      }
-    }
 
     return () => {
-      unsubscribe();
+      unsubcribeFromJumpToMeasurementEvents();
     };
   }, [element, displaySet]);
 
@@ -521,6 +486,70 @@ function _getNextMeasurementId(
   const newTrackedMeasurementId = ids[measurementIndex];
 
   return newTrackedMeasurementId;
+}
+
+function _subscribeToJumpToMeasurementEvents(
+  MeasurementService,
+  DisplaySetService,
+  element,
+  viewportIndex,
+  displaySetInstanceUID
+) {
+  const { unsubscribe } = MeasurementService.subscribe(
+    MeasurementService.EVENTS.JUMP_TO_MEASUREMENT,
+    ({ viewportIndex: jumpToMeasurementViewportIndex, measurement }) => {
+      // check if the correct viewport index.
+      if (viewportIndex !== jumpToMeasurementViewportIndex) {
+        // Event for a different viewport.
+        return;
+      }
+
+      if (measurement.displaySetInstanceUID !== displaySetInstanceUID) {
+        // Not for this displaySet.
+        return;
+      }
+
+      _jumpToMeasurement(
+        measurement,
+        element,
+        viewportIndex,
+        MeasurementService,
+        DisplaySetService
+      );
+    }
+  );
+
+  return unsubscribe;
+}
+
+function _checkForCachedJumpToMeasurementEvents(
+  MeasurementService,
+  DisplaySetService,
+  element,
+  viewportIndex,
+  displaySetInstanceUID
+) {
+  // Check if there is a queued jumpToMeasurement event
+  const measurementIdToJumpTo = MeasurementService.getJumpToMeasurement(
+    viewportIndex
+  );
+
+  if (measurementIdToJumpTo && element) {
+    // Jump to measurement if the measurement exists
+    const measurement = MeasurementService.getMeasurement(
+      measurementIdToJumpTo
+    );
+
+    if (measurement.displaySetInstanceUID === displaySetInstanceUID) {
+      _jumpToMeasurement(
+        measurement,
+        element,
+        viewportIndex,
+        MeasurementService,
+        DisplaySetService
+      );
+    }
+  }
 }
 
 function _jumpToMeasurement(

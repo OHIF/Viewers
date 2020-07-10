@@ -61,14 +61,10 @@ const Length = {
       StudyInstanceUID,
     } = getSOPInstanceAttributes(element);
 
-    const displaySets = DisplaySetService.getDisplaySetsForSeries(
+    const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      SOPInstanceUID,
       SeriesInstanceUID
     );
-    const displaySet = displaySets.find(ds => {
-      return (
-        ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
-      );
-    });
 
     return {
       id: measurementData.id,

@@ -77,14 +77,11 @@ function Length(
     StudyInstanceUID,
   } = instance;
 
-  const displaySets = DisplaySetService.getDisplaySetsForSeries(
-    SeriesInstanceUID
+  const displaySetInstanceUID = _getDisplaySetInstanceUID(
+    DisplaySetService,
+    SeriesInstanceUID,
+    SOPInstanceUID
   );
-  const displaySet = displaySets.find(ds => {
-    return (
-      ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
-    );
-  });
 
   const { handles } = measurementData;
 
@@ -104,7 +101,7 @@ function Length(
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
-    displaySetInstanceUID: displaySet.displaySetInstanceUID,
+    displaySetInstanceUID,
     label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
@@ -129,14 +126,11 @@ function Bidirectional(
     StudyInstanceUID,
   } = instance;
 
-  const displaySets = DisplaySetService.getDisplaySetsForSeries(
-    SeriesInstanceUID
+  const displaySetInstanceUID = _getDisplaySetInstanceUID(
+    DisplaySetService,
+    SeriesInstanceUID,
+    SOPInstanceUID
   );
-  const displaySet = displaySets.find(ds => {
-    return (
-      ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
-    );
-  });
 
   const { handles } = measurementData;
 
@@ -149,7 +143,7 @@ function Bidirectional(
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
-    displaySetInstanceUID: displaySet.displaySetInstanceUID,
+    displaySetInstanceUID,
     label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
@@ -175,14 +169,11 @@ function EllipticalRoi(
     StudyInstanceUID,
   } = instance;
 
-  const displaySets = DisplaySetService.getDisplaySetsForSeries(
-    SeriesInstanceUID
+  const displaySetInstanceUID = _getDisplaySetInstanceUID(
+    DisplaySetService,
+    SeriesInstanceUID,
+    SOPInstanceUID
   );
-  const displaySet = displaySets.find(ds => {
-    return (
-      ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
-    );
-  });
 
   const { start, end } = measurementData.handles;
 
@@ -217,7 +208,7 @@ function EllipticalRoi(
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
-    displaySetInstanceUID: displaySet.displaySetInstanceUID,
+    displaySetInstanceUID,
     label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
@@ -245,14 +236,11 @@ function ArrowAnnotate(
     StudyInstanceUID,
   } = instance;
 
-  const displaySets = DisplaySetService.getDisplaySetsForSeries(
-    SeriesInstanceUID
+  const displaySetInstanceUID = _getDisplaySetInstanceUID(
+    DisplaySetService,
+    SeriesInstanceUID,
+    SOPInstanceUID
   );
-  const displaySet = displaySets.find(ds => {
-    return (
-      ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
-    );
-  });
 
   const { handles } = measurementData;
 
@@ -272,7 +260,7 @@ function ArrowAnnotate(
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
-    displaySetInstanceUID: displaySet.displaySetInstanceUID,
+    displaySetInstanceUID,
     label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
@@ -280,4 +268,17 @@ function ArrowAnnotate(
     type: _getValueTypeFromToolType(tool),
     points,
   };
+}
+
+function _getDisplaySetInstanceUID(
+  DisplaySetService,
+  SeriesInstanceUID,
+  SOPInstanceUID
+) {
+  const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+    SOPInstanceUID,
+    SeriesInstanceUID
+  );
+
+  return displaySet.displaySetInstanceUID;
 }
