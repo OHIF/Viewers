@@ -254,7 +254,7 @@ function PatientInfo({
   showPatientInfoRef,
 }) {
   return (
-    <div tooltipRef={showPatientInfoRef}>
+    <div ref={showPatientInfoRef}>
       <Tooltip
         isSticky
         isDisabled={!isOpen}
