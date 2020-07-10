@@ -155,7 +155,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    DICOMSR.downloadReport(trackedMeasurements, ['ArrowAnnotate']);
+    const additionalFindings = ['ArrowAnnotate'];
+
+    DICOMSR.downloadReport(trackedMeasurements, additionalFindings);
   }
 
   const jumpToImage = ({ id, isActive }) => {
