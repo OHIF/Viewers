@@ -23,7 +23,7 @@ function PanelStudyBrowserTracking({
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
   const [
-    { activeViewportIndex, viewports },
+    { activeViewportIndex, viewports, numCols, numRows },
     viewportGridService,
   ] = useViewportGrid();
   const [
@@ -48,6 +48,8 @@ function PanelStudyBrowserTracking({
 
   const activeDisplaySetInstanceUID =
     viewports[activeViewportIndex]?.displaySetInstanceUID;
+
+  const isSingleViewport = numCols === 1 && numRows === 1;
 
   // TODO: Should this be somewhere else? Feels more like a mode "lifecycle" setup/destroy?
   useEffect(() => {
@@ -133,7 +135,8 @@ function PanelStudyBrowserTracking({
       currentDisplaySets,
       thumbnailImageSrcMap,
       trackedSeries,
-      viewports
+      viewports,
+      isSingleViewport
     );
 
     setDisplaySets(mappedDisplaySets);
@@ -189,7 +192,8 @@ function PanelStudyBrowserTracking({
           changedDisplaySets,
           thumbnailImageSrcMap,
           trackedSeries,
-          viewports
+          viewports,
+          isSingleViewport
         );
 
         setDisplaySets(mappedDisplaySets);
@@ -279,7 +283,7 @@ function PanelStudyBrowserTracking({
       ];
       setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
     }
-  }, [jumpToDisplaySet]);
+  }, [expandedStudyInstanceUIDs, jumpToDisplaySet, tabs]);
 
   return (
     <StudyBrowser
@@ -355,21 +359,22 @@ function _mapDisplaySets(
   displaySets,
   thumbnailImageSrcMap,
   trackedSeriesInstanceUIDs,
-  viewports // TODO: make array of `displaySetInstanceUIDs`?
+  viewports, // TODO: make array of `displaySetInstanceUIDs`?
+  isSingleViewport
 ) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
   displaySets.forEach(ds => {
     const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
     const componentType = _getComponentType(ds.Modality);
-    const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(
-      vp => vp.displaySetInstanceUID === ds.displaySetInstanceUID
-    );
-
-    const viewportIdentificator =
-      viewports.length > 1
-        ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
-        : '';
+    const viewportIdentificator = isSingleViewport
+      ? []
+      : viewports.reduce((acc, viewportData, index) => {
+          if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
+            acc.push(_viewportLabels[index]);
+          }
+          return acc;
+        }, []);
 
     const array =
       componentType === 'thumbnailTracked'
