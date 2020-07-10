@@ -33,7 +33,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   );
   const {
     MeasurementService,
-    UINotificationService,
     UIDialogService,
     DisplaySetService,
   } = servicesManager.services;
@@ -196,11 +195,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           MeasurementService.update(id, {
             ...measurement,
             ...value,
-          });
-          UINotificationService.show({
-            title: 'Measurements',
-            message: 'Label updated successfully',
-            type: 'success',
           });
         }
       }

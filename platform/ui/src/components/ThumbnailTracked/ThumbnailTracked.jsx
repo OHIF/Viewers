@@ -21,6 +21,35 @@ const ThumbnailTracked = ({
   isActive,
 }) => {
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
+  const viewportIdentificatorLabel = viewportIdentificator.join(', ');
+  const renderViewportLabels = () => {
+    const MAX_LABELS_PER_COL = 3;
+    const shouldShowStack = viewportIdentificator.length > MAX_LABELS_PER_COL;
+    if (shouldShowStack) {
+      return (
+        <div>
+          <div>
+            {viewportIdentificator.slice(0, MAX_LABELS_PER_COL).map(label => (
+              <div key={label}>{label}</div>
+            ))}
+          </div>
+          <Tooltip
+            position="right"
+            content={
+              <div className="text-left max-w-40">
+                Series is displayed <br /> in viewport{' '}
+                {viewportIdentificatorLabel}
+              </div>
+            }
+          >
+            <Icon name="tool-more-menu" className="text-white py-2" />
+          </Tooltip>
+        </div>
+      );
+    }
+
+    return viewportIdentificator.map(label => <div key={label}>{label}</div>);
+  };
 
   return (
     <div
@@ -48,11 +77,11 @@ const ThumbnailTracked = ({
                       {isTracked ? ' tracked' : ' untracked'}
                     </span>
                   </span>
-                  {viewportIdentificator && (
+                  {!!viewportIdentificator.length && (
                     <span>
                       in viewport
                       <span className="ml-1 text-white">
-                        {viewportIdentificator}
+                        {viewportIdentificatorLabel}
                       </span>
                     </span>
                   )}
@@ -64,10 +93,10 @@ const ThumbnailTracked = ({
             }
           >
             <Icon name={trackedIcon} className="w-4 mb-2 text-primary-light" />
-            <div className="h-5 text-xl leading-tight text-white">
-              {viewportIdentificator}
-            </div>
           </Tooltip>
+          <div className="text-xl leading-tight text-white text-center">
+            {renderViewportLabels()}
+          </div>
         </div>
         {isTracked && (
           <div onClick={onClickUntrack}>
@@ -113,7 +142,7 @@ ThumbnailTracked.propTypes = {
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
-  viewportIdentificator: PropTypes.string,
+  viewportIdentificator: PropTypes.array,
   isTracked: PropTypes.bool,
   isActive: PropTypes.bool.isRequired,
 };
