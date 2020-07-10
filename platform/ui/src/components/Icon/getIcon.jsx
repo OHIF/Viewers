@@ -115,7 +115,7 @@ const ICONS = {
   'old-rotate-right': oldRotateRight,
   'old-youtube': oldYoutube,
   'old-dot-circle': oldDotCircle,
-  'old-angle,-left': oldAngleLeft,
+  'old-angle-left': oldAngleLeft,
   'old-reset': oldReset,
   'old-circle-o': oldCircleO,
   'old-trash': oldTrash,
