@@ -548,7 +548,7 @@ function _jumpToMeasurement(
       // Wait for the image to update or we get a race condition when the element has only just been enabled.
       const scrollToHandler = evt => {
         scrollToIndex(targetElement, imageIndex);
-        element.removeEventListener(
+        targetElement.removeEventListener(
           'cornerstoneimagerendered',
           scrollToHandler
         );
