@@ -33,7 +33,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   );
   const {
     MeasurementService,
-    UINotificationService,
     UIDialogService,
     DisplaySetService,
   } = servicesManager.services;
@@ -148,8 +147,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   }
 
   function exportReport() {
-    const dataSources = extensionManager.getDataSources();
-    const dataSource = dataSources[0];
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -157,8 +154,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    // TODO -> local download.
-    DICOMSR.downloadReport(trackedMeasurements, dataSource);
+    const additionalFindings = ['ArrowAnnotate'];
+
+    DICOMSR.downloadReport(trackedMeasurements, additionalFindings);
   }
 
   const jumpToImage = ({ id, isActive }) => {
@@ -177,11 +175,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           MeasurementService.update(id, {
             ...measurement,
             ...value,
-          });
-          UINotificationService.show({
-            title: 'Measurements',
-            message: 'Label updated successfully',
-            type: 'success',
           });
         }
       }

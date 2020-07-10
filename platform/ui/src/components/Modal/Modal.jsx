@@ -4,7 +4,7 @@ import ReactModal from 'react-modal';
 
 import './Modal.css';
 
-import { Typography, useModal, IconButton, Icon } from '@ohif/ui';
+import { Typography, useModal, Icon } from '@ohif/ui';
 
 ReactModal.setAppElement(document.getElementById('root'));
 
@@ -25,18 +25,20 @@ const Modal = ({
   const renderHeader = () => {
     return (
       title && (
-        <header className="mb-6 pb-4 border-b border-secondary-main">
-          <Typography variant="h4">{title}</Typography>
+        <header className="flex items-center p-4 border-b-2 border-black bg-secondary-dark rounded-tl rounded-tr">
+          <Typography
+            variant="h4"
+            className="flex flex-grow text-primary-light font-light"
+          >
+            {title}
+          </Typography>
           {closeButton && (
-            <IconButton
-              className="absolute top-0 right-0 focus:outline-none flex -mr-3 -mt-3"
+            <Icon
               data-cy="close-button"
-              color="primary"
               onClick={onClose}
-              rounded="full"
-            >
-              <Icon name="close" className="text-white w-8 h-8" />
-            </IconButton>
+              name="close"
+              className="cursor-pointer text-primary-active w-6 h-6"
+            />
           )}
         </header>
       )
@@ -45,15 +47,15 @@ const Modal = ({
 
   return (
     <ReactModal
-      className="relative py-6 w-11/12 lg:w-10/12 xl:w-1/2 max-h-full outline-none bg-primary-dark border border-secondary-main text-white rounded"
+      className="relative w-11/12 lg:w-10/12 xl:w-1/2 max-h-full outline-none  text-white"
       overlayClassName="fixed top-0 left-0 right-0 bottom-0 z-50 bg-overlay flex items-start justify-center py-16"
       shouldCloseOnEsc={shouldCloseOnEsc}
       onRequestClose={handleClose}
       isOpen={isOpen}
       title={title}
     >
-      <div className="px-6">{renderHeader()}</div>
-      <section className="ohif-scrollbar modal-content overflow-y-auto px-6">
+      {renderHeader()}
+      <section className="ohif-scrollbar modal-content overflow-y-auto px-4 py-6 rounded-bl rounded-br bg-primary-dark">
         {children}
       </section>
     </ReactModal>

@@ -46,10 +46,12 @@ const retrieveMeasurements = server => {
 /**
  *
  * @param {object[]} measurementData An array of measurements from the measurements service
+ * @param {string[]} additionalFindingTypes toolTypes that should be stored with labels as Findings
+ * as opposed to Finding Sites.
  * that you wish to serialize.
  */
-const downloadReport = measurementData => {
-  const srDataset = generateReport(measurementData);
+const downloadReport = (measurementData, additionalFindingTypes = []) => {
+  const srDataset = generateReport(measurementData, additionalFindingTypes);
   const reportBlob = dcmjs.data.datasetToBlob(srDataset);
 
   //Create a URL for the binary.
@@ -61,10 +63,13 @@ const downloadReport = measurementData => {
  *
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
+ * @param {string[]} additionalFindingTypes toolTypes that should be stored with labels as Findings
  */
-const generateReport = measurementData => {
-  const ids = measurementData.map(md => md.id);
-  const filteredToolState = _getFilteredCornerstoneToolState(ids);
+const generateReport = (measurementData, additionalFindingTypes) => {
+  const filteredToolState = _getFilteredCornerstoneToolState(
+    measurementData,
+    additionalFindingTypes
+  );
 
   const report = MeasurementReport.generateReport(
     filteredToolState,
@@ -79,9 +84,15 @@ const generateReport = measurementData => {
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
  * @param {object} dataSource The dataSource that you wish to use to persist the data.
+ * @param {string[]} additionalFindingTypes toolTypes that should be stored with labels as Findings
+ * as opposed to Finding Sites.
  * @return {object} The naturalized report
  */
-const storeMeasurements = async (measurementData, dataSource) => {
+const storeMeasurements = async (
+  measurementData,
+  dataSource,
+  additionalFindingTypes = []
+) => {
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
   // But it is good enough for now whilst we only have cornerstone as a datasource.
   log.info('[DICOMSR] storeMeasurements');
@@ -92,7 +103,10 @@ const storeMeasurements = async (measurementData, dataSource) => {
   }
 
   try {
-    const naturalizedReport = generateReport(measurementData);
+    const naturalizedReport = generateReport(
+      measurementData,
+      additionalFindingTypes
+    );
     const { StudyInstanceUID } = naturalizedReport;
 
     await dataSource.store.dicom(naturalizedReport);
@@ -110,7 +124,12 @@ const storeMeasurements = async (measurementData, dataSource) => {
   }
 };
 
-function _getFilteredCornerstoneToolState(uidFilter) {
+function _getFilteredCornerstoneToolState(
+  measurementData,
+  additionalFindingTypes
+) {
+  const uidFilter = measurementData.map(md => md.id);
+
   const globalToolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
   const filteredToolState = {};
 
@@ -127,9 +146,38 @@ function _getFilteredCornerstoneToolState(uidFilter) {
       };
     }
 
+    const measurmentDataI = measurementData.find(md => md.id === toolDataI.id);
+
     const toolData = imageIdSpecificToolState[toolType].data;
 
-    toolData.push(toolDataI);
+    let finding;
+    const findingSites = [];
+
+    // NOTE -> Any kind of freetext value abuses the DICOM standard,
+    // As CodeValues should map 1:1 with CodeMeanings.
+    // Ideally we would actually use SNOMED codes for this.
+    if (measurmentDataI.label) {
+      if (additionalFindingTypes.includes(toolType)) {
+        finding = {
+          CodeValue: 'CORNERSTONEFREETEXT',
+          CodingSchemeDesignator: 'CST4',
+          CodeMeaning: measurmentDataI.label,
+        };
+      } else {
+        findingSites.push({
+          CodeValue: 'CORNERSTONEFREETEXT',
+          CodingSchemeDesignator: 'CST4',
+          CodeMeaning: measurmentDataI.label,
+        });
+      }
+    }
+
+    const measurement = Object.assign({}, toolDataI, {
+      finding,
+      findingSites,
+    });
+
+    toolData.push(measurement);
   }
 
   const uids = uidFilter.slice();

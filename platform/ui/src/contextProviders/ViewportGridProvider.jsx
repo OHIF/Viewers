@@ -84,6 +84,8 @@ export function ViewportGridProvider({ children, service }) {
     DEFAULT_STATE
   );
 
+  console.log('viewportGridState',viewportGridState)
+
   const getState = useCallback(() => viewportGridState, [viewportGridState]);
   const setActiveViewportIndex = useCallback(
     index => dispatch({ type: 'SET_ACTIVE_VIEWPORT_INDEX', payload: index }),

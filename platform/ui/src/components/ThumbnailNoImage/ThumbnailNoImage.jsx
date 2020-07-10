@@ -15,7 +15,6 @@ const ThumbnailNoImage = ({
   onDoubleClick,
   dragData,
   isActive,
-  viewportIdentificator = '',
 }) => {
   const [collectedProps, drag, dragPreview] = useDrag({
     item: { ...dragData },
@@ -31,9 +30,12 @@ const ThumbnailNoImage = ({
       ref={thumbnailElement}
       onFocus={() => blurHandlerListener(thumbnailElement)}
       className={classnames(
-        'flex flex-row flex-1 px-4 py-3 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded select-none',
+        'flex flex-row flex-1 cursor-pointer outline-none border-transparent hover:border-blue-300 focus:border-blue-300 rounded select-none',
         isActive ? 'border-2 border-primary-light' : 'border'
       )}
+      style={{
+        padding: isActive ? '11px' : '12px',
+      }}
       id={`thumbnail-${displaySetInstanceUID}`}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
@@ -84,7 +86,6 @@ ThumbnailNoImage.propTypes = {
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
   isActive: PropTypes.bool.isRequired,
-  viewportIdentificator: PropTypes.string,
 };
 
 export default ThumbnailNoImage;

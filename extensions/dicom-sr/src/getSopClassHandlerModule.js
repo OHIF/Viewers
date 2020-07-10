@@ -25,13 +25,19 @@ const CodeNameCodeSequenceValues = {
   TrackingUniqueIdentifier: '112040',
   TrackingIdentifier: '112039',
   Finding: '121071',
+  FindingSite: 'G-C0E3', // SRT
+  CornerstoneFreeText: 'CORNERSTONEFREETEXT', // CST4
+};
+
+const CodingSchemeDesignators = {
+  SRT: 'SRT',
+  cornerstoneTools4: 'CST4',
 };
 
 const RELATIONSHIP_TYPE = {
   INFERRED_FROM: 'INFERRED FROM',
 };
 
-const CORNERSTONE_CODING_SCHEME_DESIGNATOR = 'CST4';
 const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
 
 /**
@@ -428,10 +434,18 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
       CodeNameCodeSequenceValues.TrackingIdentifier
   );
 
-  const Findings = mergedContentSequence.filter(
+  const Finding = mergedContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue ===
       CodeNameCodeSequenceValues.Finding
+  );
+
+  const FindingSites = mergedContentSequence.filter(
+    item =>
+      item.ConceptNameCodeSequence.CodingSchemeDesignator ===
+        CodingSchemeDesignators.SRT &&
+      item.ConceptNameCodeSequence.CodeValue ===
+        CodeNameCodeSequenceValues.FindingSite
   );
 
   const measurement = {
@@ -442,19 +456,33 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     TrackingIdentifier: TrackingIdentifierContentItem.TextValue,
   };
 
-  if (Findings.length) {
-    // TODO -> Pull in labels when we have them, just free text for now.
-    const cornerstoneFreeTextFinding = Findings.find(
-      Finding =>
-        Finding.ConceptCodeSequence.CodingSchemeDesignator ===
-          CORNERSTONE_CODING_SCHEME_DESIGNATOR &&
-        Finding.ConceptCodeSequence.CodeValue ===
-          CORNERSTONE_FREETEXT_CODE_VALUE
+  if (
+    Finding &&
+    Finding.ConceptCodeSequence.CodingSchemeDesignator ===
+      CodingSchemeDesignators.cornerstoneTools4 &&
+    Finding.ConceptCodeSequence.CodeValue ===
+      CodeNameCodeSequenceValues.CornerstoneFreeText
+  ) {
+    measurement.labels.push({
+      label: CORNERSTONE_FREETEXT_CODE_VALUE,
+      value: Finding.ConceptCodeSequence.CodeMeaning,
+    });
+  }
+
+  // TODO -> Eventually hopefully support SNOMED or some proper code library, just free text for now.
+  if (FindingSites.length) {
+    const cornerstoneFreeTextFindingSite = FindingSites.find(
+      FindingSite =>
+        FindingSite.ConceptCodeSequence.CodingSchemeDesignator ===
+          CodingSchemeDesignators.cornerstoneTools4 &&
+        FindingSite.ConceptCodeSequence.CodeValue ===
+          CodeNameCodeSequenceValues.CornerstoneFreeText
     );
-    if (cornerstoneFreeTextFinding) {
+
+    if (cornerstoneFreeTextFindingSite) {
       measurement.labels.push({
         label: CORNERSTONE_FREETEXT_CODE_VALUE,
-        value: cornerstoneFreeTextFinding.ConceptCodeSequence.CodeMeaning,
+        value: cornerstoneFreeTextFindingSite.ConceptCodeSequence.CodeMeaning,
       });
     }
   }
