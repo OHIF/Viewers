@@ -74,9 +74,8 @@ function TrackedCornerstoneViewport({
     const { unsubscribe } = MeasurementService.subscribe(
       MeasurementService.EVENTS.JUMP_TO_MEASUREMENT,
       ({ viewportIndex: jumpToMeasurementViewportIndex, measurement }) => {
-        // check if the correct viewport index.
-        // TODO -> Jump to measurement implementation.
 
+        // check if the correct viewport index.
         if (viewportIndex !== jumpToMeasurementViewportIndex) {
           // Event for a different viewport.
           return;
