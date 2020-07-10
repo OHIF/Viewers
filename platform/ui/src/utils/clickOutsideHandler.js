@@ -1,11 +1,10 @@
-export default (element, callback = () => {}) => {
-  const handleClickOutside = event => {
+export default (element, onClickOutside) => {
+  const clickOutsideHandler = event => {
     if (element.current && !element.current.contains(event.target)) {
-      element.current.blur();
-      callback();
-      document.removeEventListener('mousedown', handleClickOutside);
+      onClickOutside();
+      document.removeEventListener('mousedown', clickOutsideHandler);
     }
   };
 
-  document.addEventListener('mousedown', handleClickOutside);
+  document.addEventListener('mousedown', clickOutsideHandler);
 };
