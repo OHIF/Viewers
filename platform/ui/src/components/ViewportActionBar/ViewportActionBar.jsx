@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon, ButtonGroup, Button, Tooltip } from '@ohif/ui';
-import clickOutsideHandler from '../../utils/clickOutsideHandler';
+import useOnClickOutside from '../../utils/useOnClickOutside';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',
@@ -54,12 +54,20 @@ const ViewportActionBar = ({
   const closePatientInfo = () => setShowPatientInfo(false);
 
   const showPatientInfoRef = useRef(null);
+  const clickOutsideListener = useOnClickOutside(
+    showPatientInfoRef,
+    closePatientInfo
+  );
 
   useEffect(() => {
     if (showPatientInfo) {
-      clickOutsideHandler(showPatientInfoRef, closePatientInfo);
+      clickOutsideListener.add();
+    } else {
+      clickOutsideListener.remove();
     }
-  }, [showPatientInfo]);
+
+    return () => clickOutsideListener.remove();
+  }, [clickOutsideListener, showPatientInfo]);
 
   const renderIconStatus = () => {
     if (modality === 'SR') {
