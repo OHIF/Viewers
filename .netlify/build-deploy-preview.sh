@@ -20,7 +20,12 @@ mv platform/viewer/dist/* .netlify/www/pwa -v
 # yarn run build:package
 
 # Build && Move Docz Output
-yarn run build:ui:deploy-preview
+# Using local yarn install to prevent Gatsby from needing to access
+# node_modules above the platform/ui folder
+cd platform/ui
+yarn install
+yarn run build
+cd ../..
 mkdir -p ./.netlify/www/ui
 mv platform/ui/.docz/dist/* .netlify/www/ui -v
 

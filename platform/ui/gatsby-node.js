@@ -9,8 +9,6 @@ exports.onCreateWebpackConfig = args => {
       plugins: [PnpWebpackPlugin],
       // Note the '..' in the path because docz gatsby project lives in the '.docz' directory
       modules: [
-        // monorepo root
-        path.resolve(__dirname, '../../../node_modules'),
         // platform/ui
         path.resolve(__dirname, '../node_modules'),
         // .docz
