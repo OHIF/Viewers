@@ -1,15 +1,14 @@
 import React from 'react';
-
+import AboutModal from './AboutModal';
 import { Dropdown, IconButton, Icon, useModal } from '@ohif/ui';
 
 const PreferencesDropdown = () => {
   const { show } = useModal();
 
   const showAboutModal = () => {
-    const modalComponent = () => <div>About modal</div>;
     show({
-      content: modalComponent,
-      title: 'About',
+      content: AboutModal,
+      title: 'About OHIF Viewer',
     });
   };
 
