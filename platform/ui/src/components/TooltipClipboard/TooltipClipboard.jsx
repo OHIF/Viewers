@@ -1,13 +1,23 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon } from '@ohif/ui';
 
+const DELAY_TO_SHOW = 1000;
+const DELAY_TO_HIDE = 10;
+const DELAY_TO_HIDE_AFTER_COPYING = 1000;
+
 const TooltipClipboard = ({ children, text }) => {
   const [isActive, setIsActive] = useState(false);
   const [message, setMessage] = useState(null);
+  const [isCopying, setIsCopying] = useState(false);
+  const timeoutShow = useRef(null);
+  const timeoutHide = useRef(null);
+  const tooltipBoxRef = useRef(null);
+  const tooltipContainerRef = useRef(null);
 
   const copyToClipboard = async text => {
+    setIsCopying(true);
     try {
       await navigator.clipboard.writeText(text);
       setMessage('Copied!');
@@ -19,34 +29,49 @@ const TooltipClipboard = ({ children, text }) => {
 
       setTimeout(() => {
         resetState();
-      }, 1000);
+      }, DELAY_TO_HIDE_AFTER_COPYING);
     }
   };
 
   const resetState = () => {
     setIsActive(false);
     setMessage(null);
+    setIsCopying(false);
+  };
+
+  const resetTimeout = timeOut => {
+    if (timeOut.current !== null) {
+      clearTimeout(timeOut.current);
+    }
   };
 
   const handleMouseOver = () => {
+    resetTimeout(timeoutHide);
+
     if (!isActive) {
-      setIsActive(true);
+      timeoutShow.current = setTimeout(() => {
+        timeoutShow.current = null;
+        setIsActive(true);
+      }, DELAY_TO_SHOW);
     }
   };
 
-  const handleMouseOut = () => {
-    if (isActive && !message) {
-      setIsActive(false);
+  const handleMouseOut = e => {
+    resetTimeout(timeoutShow);
+
+    if (isActive && !isCopying) {
+      timeoutHide.current = setTimeout(() => {
+        timeoutHide.current = null;
+        resetState();
+      }, DELAY_TO_HIDE);
     }
   };
 
-  const tooltipBoxRef = useRef(null);
-  const tooltipContainerRef = useRef(null);
-
-  const refreshElementPositionWhenScrolling = useCallback(() => {
-    refreshElementPosition();
-  }, []);
-
+  /**
+   * Trick to set the tooltip position based on its parent position
+   * because the tooltip box is not relative-positioned to avoid the tooltip
+   * to be clipped if the parent container is overflow-hidden
+   */
   const refreshElementPosition = () => {
     const tooltipContainer = tooltipContainerRef.current;
     const tooltipBox = tooltipBoxRef.current;
@@ -67,11 +92,13 @@ const TooltipClipboard = ({ children, text }) => {
   useEffect(() => {
     if (isActive) {
       refreshElementPosition();
-      window.addEventListener('scroll', refreshElementPositionWhenScrolling);
+      window.addEventListener('scroll', refreshElementPosition);
     } else {
-      window.removeEventListener('scroll', refreshElementPositionWhenScrolling);
+      window.removeEventListener('scroll', refreshElementPosition);
     }
-  }, [refreshElementPositionWhenScrolling, isActive]);
+
+    return () => window.removeEventListener('scroll', refreshElementPosition);
+  }, [isActive]);
 
   const onClickHandler = e => {
     e.stopPropagation();
