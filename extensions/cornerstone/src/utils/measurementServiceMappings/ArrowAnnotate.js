@@ -28,6 +28,7 @@ const ArrowAnnotate = {
       FrameOfReferenceUID,
       SeriesInstanceUID,
       StudyInstanceUID,
+      FrameNumber,
     } = getSOPInstanceAttributes(element);
 
     const displaySets = DisplaySetService.getDisplaySetsForSeries(
@@ -48,6 +49,7 @@ const ArrowAnnotate = {
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      FrameNumber,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: measurementData.text,
       description: measurementData.description,

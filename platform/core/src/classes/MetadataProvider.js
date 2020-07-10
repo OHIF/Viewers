@@ -139,7 +139,9 @@ class MetadataProvider {
       return instance;
     }
 
-    return this.getTagFromInstance(query, instance, options);
+    const frame = this.getFrameNumberFromImageId(imageId);
+
+    return this.getTagFromInstance(query, instance, options, frame);
   }
 
   getTag(query, imageId, options) {
@@ -150,10 +152,28 @@ class MetadataProvider {
     return this.get(INSTANCE, imageId);
   }
 
+  getFrameNumberFromImageId(imageId) {
+    let frame;
+
+    if (imageId.includes('frames/')) {
+      frame = imageId.split('frames/')[1];
+    } else if (imageId.includes('?frame=')) {
+      frame = imageId.split('?frame=')[1];
+    } else {
+      console.warn(
+        'multiframe non WADO-RS/WADO-URI image id not currently supported.'
+      );
+      frame = 1;
+    }
+
+    return Number(frame);
+  }
+
   getTagFromInstance(
     naturalizedTagOrWADOImageLoaderTag,
     instance,
-    options = { fallback: false }
+    options = { fallback: false },
+    frame
   ) {
     if (!instance) {
       return;
@@ -167,12 +187,15 @@ class MetadataProvider {
     // Maybe its a legacy CornerstoneWADOImageLoader tag then:
     return this._getCornerstoneWADOImageLoaderTag(
       naturalizedTagOrWADOImageLoaderTag,
-      instance
+      instance,
+      frame
     );
   }
 
-  _getCornerstoneWADOImageLoaderTag(wadoImageLoaderTag, instance) {
+  _getCornerstoneWADOImageLoaderTag(wadoImageLoaderTag, instance, frame) {
     let metadata;
+
+    const isMultiFrame = this._isMultiFrame(instance);
 
     switch (wadoImageLoaderTag) {
       case WADO_IMAGE_LOADER_TAGS.GENERAL_SERIES_MODULE:
@@ -206,40 +229,77 @@ class MetadataProvider {
         };
         break;
       case WADO_IMAGE_LOADER_TAGS.IMAGE_PLANE_MODULE:
-        const { ImageOrientationPatient } = instance;
+        let imageOrientationPatient;
+        let imagePositionPatient;
 
-        // Fallback for DX images.
-        // TODO: We should use the rest of the results of this function
-        // to update the UI somehow
-        const { PixelSpacing } = getPixelSpacingInformation(instance);
-
+        let pixelSpacing;
         let rowPixelSpacing;
         let columnPixelSpacing;
+        let sliceThickness;
 
         let rowCosines;
         let columnCosines;
 
-        if (PixelSpacing) {
-          rowPixelSpacing = PixelSpacing[0];
-          columnPixelSpacing = PixelSpacing[1];
-        }
+        if (isMultiFrame) {
+          const {
+            SharedFunctionalGroupsSequence,
+            PerFrameFunctionalGroupsSequence,
+          } = instance;
 
-        if (ImageOrientationPatient) {
-          rowCosines = ImageOrientationPatient.slice(0, 3);
-          columnCosines = ImageOrientationPatient.slice(3, 6);
+          imageOrientationPatient = SharedFunctionalGroupsSequence.PlaneOrientationSequence
+            ? SharedFunctionalGroupsSequence.PlaneOrientationSequence
+                .ImageOrientationPatient
+            : PerFrameFunctionalGroupsSequence[frame - 1]
+                .PlaneOrientationSequence.ImageOrientationPatient;
+
+          rowCosines = imageOrientationPatient.slice(0, 3);
+          columnCosines = imageOrientationPatient.slice(3, 6);
+
+          const PixelMeasuresSequence = SharedFunctionalGroupsSequence.PixelMeasuresSequence
+            ? SharedFunctionalGroupsSequence.PixelMeasuresSequence
+            : PerFrameFunctionalGroupsSequence[frame - 1].PixelMeasuresSequence;
+
+          pixelSpacing = PixelMeasuresSequence.PixelSpacing;
+          sliceThickness = PixelMeasuresSequence.SliceThickness;
+          rowPixelSpacing = pixelSpacing[0];
+          columnPixelSpacing = pixelSpacing[1];
+
+          imagePositionPatient =
+            PerFrameFunctionalGroupsSequence[frame - 1].PlanePositionSequence
+              .ImagePositionPatient;
+        } else {
+          // Fallback for DX images.
+          // TODO: We should use the rest of the results of this function
+          // to update the UI somehow
+          const pixelSpacingInformation = getPixelSpacingInformation(instance);
+
+          pixelSpacing = pixelSpacingInformation.PixelSpacing;
+          imageOrientationPatient = instance.ImageOrientationPatient;
+          sliceThickness = instance.sliceThickness;
+          imagePositionPatient = instance.ImagePositionPatient;
+
+          if (pixelSpacing) {
+            rowPixelSpacing = pixelSpacing[0];
+            columnPixelSpacing = pixelSpacing[1];
+          }
+
+          if (imageOrientationPatient) {
+            rowCosines = imageOrientationPatient.slice(0, 3);
+            columnCosines = imageOrientationPatient.slice(3, 6);
+          }
         }
 
         metadata = {
           frameOfReferenceUID: instance.FrameOfReferenceUID,
           rows: instance.Rows,
           columns: instance.Columns,
-          imageOrientationPatient: ImageOrientationPatient,
+          imageOrientationPatient,
           rowCosines,
           columnCosines,
-          imagePositionPatient: instance.ImagePositionPatient,
-          sliceThickness: instance.SliceThickness,
+          imagePositionPatient,
+          sliceThickness,
           sliceLocation: instance.SliceLocation,
-          pixelSpacing: PixelSpacing,
+          pixelSpacing,
           rowPixelSpacing,
           columnPixelSpacing,
         };
@@ -455,6 +515,10 @@ class MetadataProvider {
       return this.imageIdToUIDs.get(imageId);
     }
   }
+
+  _isMultiFrame(instance) {
+    return multiFrameSOPClassUIDs.includes(instance.SOPClassUID);
+  }
 }
 
 const metadataProvider = new MetadataProvider();
@@ -479,5 +543,26 @@ const WADO_IMAGE_LOADER_TAGS = {
   GENERAL_STUDY_MODULE: 'generalStudyModule',
   CINE_MODULE: 'cineModule',
 };
+
+// TODO: Feels like this should be an object gettable from dcmjs in the future.
+// TODO: This may not be complete?
+const multiFrameSOPClassUIDs = [
+  '1.2.840.10008.5.1.4.1.1.2.1', //EnhancedCTImageStorage:
+  '1.2.840.10008.5.1.4.1.1.2.2', // LegacyConvertedEnhancedCTImageStorage:
+  '1.2.840.10008.5.1.4.1.1.3.1', //UltrasoundMultiframeImageStorage:
+  '1.2.840.10008.5.1.4.1.1.4.1', //EnhancedMRImageStorage:
+  '1.2.840.10008.5.1.4.1.1.4.3', //EnhancedMRColorImageStorage:
+  '1.2.840.10008.5.1.4.1.1.4.4', //LegacyConvertedEnhancedMRImageStorage:
+  '1.2.840.10008.5.1.4.1.1.6.2', //EnhancedUSVolumeStorage:
+  '1.2.840.10008.5.1.4.1.1.7.1', //MultiframeSingleBitSecondaryCaptureImageStorage:
+  '1.2.840.10008.5.1.4.1.1.7.2', //MultiframeGrayscaleByteSecondaryCaptureImageStorage:
+  '1.2.840.10008.5.1.4.1.1.7.3', //MultiframeGrayscaleWordSecondaryCaptureImageStorage:
+  '1.2.840.10008.5.1.4.1.1.7.4', //MultiframeTrueColorSecondaryCaptureImageStorage:
+  '1.2.840.10008.5.1.4.1.1.12.1.1', //EnhancedXAImageStorage:
+  '1.2.840.10008.5.1.4.1.1.12.2.1', //EnhancedXRFImageStorage:
+  '1.2.840.10008.5.1.4.1.1.20', //NuclearMedicineImageStorage:
+  '1.2.840.10008.5.1.4.1.1.130', //EnhancedPETImageStorage:
+  '1.2.840.10008.5.1.4.1.1.128.1', //LegacyConvertedEnhancedPETImageStorage:
+];
 
 const INSTANCE = 'instance';

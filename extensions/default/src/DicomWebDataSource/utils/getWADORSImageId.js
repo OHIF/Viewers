@@ -5,10 +5,9 @@ function buildInstanceWadoRsUri(instance, config) {
 
 function buildInstanceFrameWadoRsUri(instance, config, frame) {
   const baseWadoRsUri = buildInstanceWadoRsUri(instance, config);
+  const frameNumber = frame !== undefined ? frame : 1;
 
-  frame = frame != null || 1;
-
-  return `${baseWadoRsUri}/frames/${frame}`;
+  return `${baseWadoRsUri}/frames/${frameNumber}`;
 }
 
 // function getWADORSImageUrl(instance, frame) {

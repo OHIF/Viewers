@@ -206,7 +206,7 @@ function createDicomWebApi(dicomWebConfig) {
           for (let i = 0; i < NumberOfFrames; i++) {
             const imageId = getImageId({
               instance,
-              frame: i,
+              frame: i + 1,
               config: dicomWebConfig,
             });
             imageIds.push(imageId);

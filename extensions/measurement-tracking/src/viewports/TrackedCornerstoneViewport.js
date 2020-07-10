@@ -75,7 +75,6 @@ function TrackedCornerstoneViewport({
       MeasurementService.EVENTS.JUMP_TO_MEASUREMENT,
       ({ viewportIndex: jumpToMeasurementViewportIndex, measurement }) => {
         // check if the correct viewport index.
-        // TODO -> Jump to measurement implementation.
 
         if (viewportIndex !== jumpToMeasurementViewportIndex) {
           // Event for a different viewport.
@@ -537,9 +536,17 @@ function _jumpToMeasurement(
     displaySetInstanceUID
   );
 
-  const imageIndex = referencedDisplaySet.images.findIndex(
-    i => i.SOPInstanceUID === SOPInstanceUID
-  );
+  debugger;
+
+  let imageIndex;
+
+  if (referencedDisplaySet.isMultiframe) {
+    imageIndex = measurement.FrameNumber - 1;
+  } else {
+    imageIndex = referencedDisplaySet.images.findIndex(
+      i => i.SOPInstanceUID === SOPInstanceUID
+    );
+  }
 
   if (targetElement !== null) {
     const enabledElement = cornerstone.getEnabledElement(targetElement);
