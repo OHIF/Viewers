@@ -245,10 +245,7 @@ function TrackedCornerstoneViewport({
     setIsTracked(!isTracked);
   }
 
-  const label =
-    viewports.length > 1
-      ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
-      : '';
+  const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
 
   function switchMeasurement(direction) {
     if (!element) {
