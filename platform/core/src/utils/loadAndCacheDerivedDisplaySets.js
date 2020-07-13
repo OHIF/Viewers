@@ -82,9 +82,14 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
   // For each type, see if any are loaded, if not load the most recent.
   Object.keys(displaySetsPerModality).forEach(key => {
     const displaySets = displaySetsPerModality[key];
+
     const isLoaded = displaySets.some(displaySet => displaySet.isLoaded);
 
     if (isLoaded) {
+      return;
+    }
+
+    if (displaySets.some(displaySet => displaySet.loadError)) {
       return;
     }
 
@@ -101,6 +106,8 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
         recentDisplaySet = displaySet;
       }
     });
+
+    recentDisplaySet.isLoading = true;
 
     promises.push(recentDisplaySet.load(referencedDisplaySet, studies));
   });
