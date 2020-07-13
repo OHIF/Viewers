@@ -13,6 +13,6 @@ window.config = function(props) {
       console.warn('test, navigate to https://ohif.org/');
       window.location = 'https://ohif.org/';
     },
-    healthcareApiEndpoint: 'https://proxy-dot-idc-dev.appspot.com/v1beta1',
+    healthcareApiEndpoint: 'https://dev-viewer.canceridc.dev/', //'https://proxy-dot-idc-dev.appspot.com/v1beta1',
   };
 };
