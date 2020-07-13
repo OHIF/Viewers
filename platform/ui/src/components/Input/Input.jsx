@@ -25,6 +25,7 @@ const Input = ({
   onKeyPress,
   onKeyDown,
   readOnly,
+  disabled,
   ...otherProps
 }) => {
   return (
@@ -35,8 +36,10 @@ const Input = ({
           label && 'mt-2',
           className,
           baseInputClasses,
-          transparentClasses[transparent]
+          transparentClasses[transparent],
+          { 'cursor-not-allowed': disabled }
         )}
+        disabled={disabled}
         readOnly={readOnly}
         autoFocus={autoFocus}
         type={type}
@@ -65,6 +68,7 @@ Input.propTypes = {
   readOnly: PropTypes.bool,
   onKeyPress: PropTypes.func,
   onKeyDown: PropTypes.func,
+  disabled: PropTypes.bool
 };
 
 export default Input;

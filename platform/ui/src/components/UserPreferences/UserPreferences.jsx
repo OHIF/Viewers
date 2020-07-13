@@ -5,7 +5,7 @@ import i18n from '@ohif/i18n';
 import { useTranslation } from 'react-i18next';
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
-const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit, onReset }) => {
+const UserPreferences = ({ disabled, hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit, onReset }) => {
   const { t } = useTranslation('UserPreferencesModal');
   const [state, setState] = useState({
     isDisabled: false,
@@ -83,13 +83,14 @@ const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit
       </Section>
       <Section title="Hotkeys">
         <HotkeysPreferences
+          disabled={disabled}
           hotkeyDefinitions={state.hotkeyDefinitions}
           onChange={onHotkeysChangeHandler}
           errors={state.hotkeyErrors}
         />
       </Section>
       <div className="flex flex-row justify-between">
-        <Button variant="outlined" onClick={onResetHandler}>
+        <Button variant="outlined" onClick={onResetHandler} disabled={disabled}>
           {t('Reset to Defaults')}
         </Button>
         <div className="flex flex-row">
@@ -98,7 +99,7 @@ const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit
           </Button>
           <Button
             variant="contained"
-            disabled={state.isDisabled}
+            disabled={disabled} /* state.isDisabled */
             color="light"
             className="ml-2"
             onClick={onSubmitHandler}
@@ -114,6 +115,7 @@ const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit
 const noop = () => { };
 
 UserPreferences.propTypes = {
+  disabled: PropTypes.bool,
   hotkeyDefaults: PropTypes.object.isRequired,
   hotkeyDefinitions: PropTypes.object.isRequired,
   languageOptions: PropTypes.arrayOf(
@@ -135,6 +137,7 @@ UserPreferences.defaultProps = {
   onCancel: noop,
   onSubmit: noop,
   onReset: noop,
+  disabled: true
 };
 
 export default UserPreferences;

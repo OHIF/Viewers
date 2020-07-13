@@ -12,11 +12,12 @@ import { getKeys, formatKeysForInput } from './utils';
  *
  * @param {object} props component props
  * @param {Array[]} props.keys keys to be controlled by this field
+ * @param {Array[]} props.disabled disables the field
  * @param {function} props.onChange callback with changed values
  * @param {string} props.className input classes
  * @param {Array[]} props.modifierKeys
  */
-const HotkeyField = ({ keys, onChange, className, modifierKeys }) => {
+const HotkeyField = ({ disabled, keys, onChange, className, modifierKeys }) => {
   const inputValue = formatKeysForInput(keys);
 
   const onInputKeyDown = event => {
@@ -38,6 +39,7 @@ const HotkeyField = ({ keys, onChange, className, modifierKeys }) => {
   return (
     <Input
       readOnly
+      disabled={disabled}
       value={inputValue}
       onKeyDown={onInputKeyDown}
       onFocus={onFocus}
@@ -51,6 +53,11 @@ HotkeyField.propTypes = {
   onChange: PropTypes.func.isRequired,
   className: PropTypes.string,
   modifierKeys: PropTypes.array,
+  disabled: PropTypes.bool,
+};
+
+HotkeyField.propTypes = {
+  disabled: true
 };
 
 export default HotkeyField;

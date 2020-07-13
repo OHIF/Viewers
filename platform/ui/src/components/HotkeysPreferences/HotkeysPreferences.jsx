@@ -7,7 +7,7 @@ import { HotkeyField, Typography } from '@ohif/ui';
 import { MODIFIER_KEYS } from './hotkeysConfig';
 import { validate, splitHotkeyDefinitionsAndCreateTuples } from './utils';
 
-const HotkeysPreferences = ({ hotkeyDefinitions, errors: controlledErrors, onChange }) => {
+const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErrors, onChange }) => {
   const [errors, setErrors] = useState(controlledErrors);
 
   const hasHotkeys = Object.keys(hotkeyDefinitions).length;
@@ -68,6 +68,7 @@ const HotkeysPreferences = ({ hotkeyDefinitions, errors: controlledErrors, onCha
                       </Typography>
                       <div className={classNames('flex flex-col w-32', isFirst && 'mt-5')}>
                         <HotkeyField
+                          disabled={disabled}
                           keys={definition.keys}
                           modifierKeys={MODIFIER_KEYS}
                           onChange={onChangeHandler}
@@ -91,11 +92,13 @@ const noop = () => { };
 
 HotkeysPreferences.propTypes = {
   onChange: PropTypes.func,
+  disabled: PropTypes.bool,
   hotkeyDefinitions: PropTypes.object.isRequired,
 };
 
 HotkeysPreferences.defaultProps = {
   onChange: noop,
+  disabled: true
 };
 
 export default HotkeysPreferences;
