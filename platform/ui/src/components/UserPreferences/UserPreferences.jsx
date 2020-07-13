@@ -6,8 +6,13 @@ import { useTranslation } from 'react-i18next';
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit, onReset }) => {
-  const [state, setState] = useState({ isDisabled: false, hotkeyErrors: {}, hotkeyDefinitions, language: currentLanguage });
   const { t } = useTranslation('UserPreferencesModal');
+  const [state, setState] = useState({
+    isDisabled: false,
+    hotkeyErrors: {},
+    hotkeyDefinitions,
+    language: currentLanguage()
+  });
 
   const onSubmitHandler = () => {
     i18n.changeLanguage(state.language.value);
@@ -21,19 +26,16 @@ const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit
   };
 
   const onCancelHandler = () => {
-    setState({ hotkeyDefinitions, language: currentLanguage });
+    setState({ hotkeyDefinitions });
     onCancel();
   };
 
   const resetHotkeyDefinitions = () => {
-    const defaultHotkeyDefinitions = {};
+    setState(state => ({ ...state, hotkeyDefinitions: hotkeyDefaults }));
+  };
 
-    hotkeyDefaults.map(hotkey => {
-      const { commandName, ...values } = hotkey;
-      defaultHotkeyDefinitions[commandName] = { ...values };
-    });
-
-    setState(state => ({ ...state, hotkeyDefinitions: defaultHotkeyDefinitions }));
+  const onLanguageChangeHandler = (value) => {
+    setState(state => ({ ...state, language: value }));
   };
 
   const onHotkeysChangeHandler = (id, definition, errors) => {
@@ -73,7 +75,7 @@ const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit
           </Typography>
           <Select
             isClearable={false}
-            onChange={value => setState(state => ({ ...state, language: value }))}
+            onChange={onLanguageChangeHandler}
             options={availableLanguages}
             value={state.language}
           />
@@ -112,7 +114,7 @@ const UserPreferences = ({ hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit
 const noop = () => { };
 
 UserPreferences.propTypes = {
-  hotkeyDefaults: PropTypes.array.isRequired,
+  hotkeyDefaults: PropTypes.object.isRequired,
   hotkeyDefinitions: PropTypes.object.isRequired,
   languageOptions: PropTypes.arrayOf(
     PropTypes.shape({
