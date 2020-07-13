@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.10...@ohif/viewer@4.2.11) (2020-07-13)
+
+
+### Bug Fixes
+
+* 🐛 - Put guards in all places that a cornerstone re-render ([#1899](https://github.com/OHIF/Viewers/issues/1899)) ([451f7ea](https://github.com/OHIF/Viewers/commit/451f7eab9258e7a193eb362e0926b13aedc4b3c9))
+
+
+
+
+
 ## [4.2.10](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.9...@ohif/viewer@4.2.10) (2020-07-13)
 
 **Note:** Version bump only for package @ohif/viewer
