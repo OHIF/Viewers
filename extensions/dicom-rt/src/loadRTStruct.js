@@ -16,7 +16,6 @@ export default async function loadRTStruct(
   studies
 ) {
   const rtStructModule = cornerstoneTools.getModule('rtstruct');
-
   // Set here is loading is asynchronous.
   // If this function throws its set back to false.
   rtStructDisplaySet.isLoaded = true;
@@ -68,7 +67,6 @@ export default async function loadRTStruct(
   const rtStructDisplayToolName = TOOL_NAMES.RTSTRUCT_DISPLAY_TOOL;
 
   for (let i = 0; i < ROIContourSequence.length; i++) {
-
     const ROIContour = ROIContourSequence[i];
     const { ReferencedROINumber, ContourSequence } = ROIContour;
 
