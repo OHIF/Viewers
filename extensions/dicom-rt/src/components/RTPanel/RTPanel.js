@@ -58,6 +58,7 @@ const RTPanel = ({
   const [state, setState] = useState(DEFAULT_STATE);
   const [showSettings, setShowSettings] = useState(false);
   const activeViewport = viewports[activeIndex];
+
   /*
    * TODO: Improve the way we notify parts of the app that depends on rts to be loaded.
    *
