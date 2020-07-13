@@ -236,7 +236,7 @@ function _setROIContourRTROIObservations(
 
 function _setToolEnabledIfNotEnabled(toolName) {
   cornerstone.getEnabledElements().forEach(enabledElement => {
-    const { element } = enabledElement;
+    const { element, image } = enabledElement;
     const tool = cornerstoneTools.getToolForElement(element, toolName);
 
     if (tool.mode !== 'enabled') {
@@ -244,7 +244,9 @@ function _setToolEnabledIfNotEnabled(toolName) {
       cornerstoneTools.setToolEnabled(toolName);
     }
 
-    cornerstone.updateImage(element);
+    if (image) {
+      cornerstone.updateImage(element);
+    }
   });
 }
 
