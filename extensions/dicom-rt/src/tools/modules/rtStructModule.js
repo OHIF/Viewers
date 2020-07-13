@@ -5,7 +5,9 @@ import structureSetReferencesSeriesInstanceUid from './lib/structureSetReference
 // We should put this as a helper somewhere as we are using it in mutliple places.
 function refreshViewport() {
   cornerstone.getEnabledElements().forEach(enabledElement => {
-    cornerstone.updateImage(enabledElement.element);
+    if (enabledElement.image) {
+      cornerstone.updateImage(enabledElement.element);
+    }
   });
 }
 
