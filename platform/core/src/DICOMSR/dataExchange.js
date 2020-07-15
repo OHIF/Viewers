@@ -1,10 +1,10 @@
 import log from '../log';
-import studies from '../studies';
+// import studies from '../studies';
 import utils from '../utils';
-import {
-  retrieveMeasurementFromSR,
-  stowSRFromMeasurements,
-} from './handleStructuredReport';
+// import {
+//   retrieveMeasurementFromSR,
+//   stowSRFromMeasurements,
+// } from './handleStructuredReport';
 import findMostRecentStructuredReport from './utils/findMostRecentStructuredReport';
 import cornerstoneTools from 'cornerstone-tools';
 import dcmjs from 'dcmjs';

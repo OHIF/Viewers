@@ -2,13 +2,10 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import OHIF from '@ohif/core';
 
-import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
+//import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
 import { getEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 const scroll = cornerstoneTools.import('util/scroll');
-
-const { studyMetadataManager } = OHIF.utils;
-const { setViewportSpecificData } = OHIF.redux.actions;
 
 const commandsModule = ({ servicesManager }) => {
   const { ViewportGridService } = servicesManager.services;
@@ -268,9 +265,9 @@ const commandsModule = ({ servicesManager }) => {
       cornerstoneTools.removeToolState(element, toolType, tool);
       cornerstone.updateImage(element);
     },
-    setCornerstoneLayout: () => {
-      setCornerstoneLayout();
-    },
+    // setCornerstoneLayout: () => {
+    //   setCornerstoneLayout();
+    // },
     setWindowLevel: ({ window, level }) => {
       const enabledElement = _getActiveViewportsEnabledElement();
 
@@ -283,32 +280,6 @@ const commandsModule = ({ servicesManager }) => {
         };
         cornerstone.setViewport(enabledElement, viewport);
       }
-    },
-    jumpToImage: ({
-      StudyInstanceUID,
-      SOPInstanceUID,
-      imageIndex,
-      activeViewportIndex,
-    }) => {
-      const study = studyMetadataManager.get(StudyInstanceUID);
-
-      const displaySet = study.findDisplaySet(ds => {
-        return (
-          ds.images &&
-          ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
-        );
-      });
-
-      displaySet.SOPInstanceUID = SOPInstanceUID;
-      displaySet.imageIndex = imageIndex;
-
-      window.store.dispatch(
-        setViewportSpecificData(activeViewportIndex, displaySet)
-      );
-
-      cornerstone.getEnabledElements().forEach(enabledElement => {
-        cornerstone.updateImage(enabledElement.element);
-      });
     },
   };
 
@@ -425,12 +396,12 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: { toolName: 'Zoom' },
     },
-    setCornerstoneLayout: {
-      commandFn: actions.setCornerstoneLayout,
-      storeContexts: [],
-      options: {},
-      context: 'VIEWER',
-    },
+    // setCornerstoneLayout: {
+    //   commandFn: actions.setCornerstoneLayout,
+    //   storeContexts: [],
+    //   options: {},
+    //   context: 'VIEWER',
+    // },
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
       storeContexts: [],

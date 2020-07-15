@@ -8,20 +8,24 @@ import DICOMWeb from './DICOMWeb';
 import DICOMSR from './DICOMSR';
 import cornerstone from './cornerstone.js';
 import errorHandler from './errorHandler.js';
-import hangingProtocols from './hanging-protocols';
+//import hangingProtocols from './hanging-protocols';
 import header from './header.js';
 import log from './log.js';
-import measurements from './measurements';
-import metadata from './classes/metadata/';
+//import measurements from './measurements';
+//import metadata from './classes/metadata/';
 import object from './object.js';
-import redux from './redux/';
+//import redux from './redux/';
 import string from './string.js';
-import studies from './studies/';
-import ui from './ui';
+//import studies from './studies/';
+//import ui from './ui';
 import user from './user.js';
 import { ViewModelProvider, useViewModel } from './ViewModelContext';
 import utils from './utils/';
 import defaults from './defaults';
+
+// Commented out unused functionality.
+// Studies is not being used.
+// Hanging protocols is not being used. It needs to be remade as a service.
 
 import {
   UIDialogService,
@@ -40,7 +44,7 @@ import IWebApiDataSource from './DataSources/IWebApiDataSource';
 
 const hotkeys = {
   ...utils.hotkeys,
-  defaults: { hotkeyBindings: defaults.hotkeyBindings }
+  defaults: { hotkeyBindings: defaults.hotkeyBindings },
 };
 
 const OHIF = {
@@ -54,14 +58,14 @@ const OHIF = {
   defaults,
   utils,
   hotkeys,
-  studies,
-  redux,
+  //studies,
+  //redux,
   classes,
-  metadata,
+  //metadata,
   header,
   cornerstone,
   string,
-  ui,
+  //ui,
   user,
   errorHandler,
   object,
@@ -69,8 +73,8 @@ const OHIF = {
   DICOMWeb,
   DICOMSR,
   viewer: {},
-  measurements,
-  hangingProtocols,
+  //measurements,
+  //hangingProtocols,
   //
   UIDialogService,
   UIModalService,
@@ -98,22 +102,22 @@ export {
   defaults,
   utils,
   hotkeys,
-  studies,
-  redux,
+  //studies,
+  //redux,
   classes,
-  metadata,
+  //metadata,
   header,
   cornerstone,
   string,
-  ui,
+  //ui,
   user,
   errorHandler,
   object,
   log,
   DICOMWeb,
   DICOMSR,
-  measurements,
-  hangingProtocols,
+  //measurements,
+  //hangingProtocols,
   //
   UIDialogService,
   UIModalService,
