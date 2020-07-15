@@ -7,9 +7,9 @@ import {
 
 const cornerstone = {
   metadataProvider,
-  getBoundingBox,
-  pixelToPage,
-  repositionTextBox,
+  // getBoundingBox,
+  // pixelToPage,
+  // repositionTextBox,
 };
 
 export default cornerstone;

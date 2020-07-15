@@ -9,7 +9,7 @@ import studyMetadataManager from './studyMetadataManager';
 import writeScript from './writeScript.js';
 import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
-import loadAndCacheDerivedDisplaySets from './loadAndCacheDerivedDisplaySets.js';
+//import loadAndCacheDerivedDisplaySets from './loadAndCacheDerivedDisplaySets.js';
 import * as urlUtil from './urlUtil';
 import makeDeferred from './makeDeferred';
 import makeCancelable from './makeCancelable';
@@ -23,6 +23,10 @@ import * as hierarchicalListUtils from './hierarchicalListUtils';
 import * as progressTrackingUtils from './progressTrackingUtils';
 import isLowPriorityModality from './isLowPriorityModality';
 
+// Commented out unused functionality.
+// Now that we have the DicomMetadataStore, we no longer need the studyMetadataManager
+// Need to implement new mechanism for dervived displaySets using the displaySetManager.
+
 const utils = {
   guid,
   ObjectPath,
@@ -35,10 +39,10 @@ const utils = {
   formatPN,
   b64toBlob,
   StackManager,
-  studyMetadataManager,
+  //studyMetadataManager,
   DicomLoaderService,
   urlUtil,
-  loadAndCacheDerivedDisplaySets,
+  //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
   hotkeys,
@@ -60,10 +64,10 @@ export {
   writeScript,
   b64toBlob,
   StackManager,
-  studyMetadataManager,
+  //studyMetadataManager,
   DicomLoaderService,
   urlUtil,
-  loadAndCacheDerivedDisplaySets,
+  //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
   hotkeys,

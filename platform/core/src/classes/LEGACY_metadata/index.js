@@ -6,24 +6,25 @@ import { OHIFStudyMetadata } from './OHIFStudyMetadata';
 import { SeriesMetadata } from './SeriesMetadata';
 import { StudyMetadata } from './StudyMetadata';
 
+// This is all unused.
+
 const metadata = {
-  Metadata,
-  StudyMetadata,
-  SeriesMetadata,
-  InstanceMetadata,
-  OHIFStudyMetadata,
-  OHIFSeriesMetadata,
-  OHIFInstanceMetadata,
+  // Metadata,
+  // StudyMetadata,
+  // SeriesMetadata,
+  // InstanceMetadata,
+  // OHIFStudyMetadata,
+  // OHIFSeriesMetadata,
+  // OHIFInstanceMetadata,
 };
 
-export {
-  Metadata,
-  StudyMetadata,
-  SeriesMetadata,
-  InstanceMetadata,
-  OHIFStudyMetadata,
-  OHIFSeriesMetadata,
-  OHIFInstanceMetadata,
-};
+export // Metadata,
+// StudyMetadata,
+// SeriesMetadata,
+// InstanceMetadata,
+// OHIFStudyMetadata,
+// OHIFSeriesMetadata,
+// OHIFInstanceMetadata,
+{};
 
 export default metadata;
