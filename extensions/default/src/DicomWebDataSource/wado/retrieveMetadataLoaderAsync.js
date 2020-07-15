@@ -1,9 +1,6 @@
 import dcmjs from 'dcmjs';
-import { studies } from '@ohif/core';
+import { sortStudySeries, sortingCriteria } from '../utils/sortStudy';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
-
-const { sortStudySeries, sortingCriteria } = studies;
-
 
 /**
  * Creates an immutable series loader object which loads each series sequentially using the iterator interface

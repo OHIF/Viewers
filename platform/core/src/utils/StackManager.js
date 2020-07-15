@@ -1,6 +1,4 @@
 import OHIFError from '../classes/OHIFError.js';
-import getImageId from './getImageId';
-import metadataProvider from '../classes/MetadataProvider.js';
 
 let stackMap = {};
 let configuration = {};
