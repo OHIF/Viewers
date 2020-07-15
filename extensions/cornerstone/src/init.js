@@ -74,7 +74,7 @@ export default function init({ servicesManager, configuration }) {
   };
 
   const { csToolsConfig } = configuration;
-  const metadataProvider = OHIF.cornerstone.metadataProvider;
+  const metadataProvider = OHIF.classes.MetadataProvider;
 
   cornerstone.metaData.addProvider(
     metadataProvider.get.bind(metadataProvider),
