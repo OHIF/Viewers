@@ -271,7 +271,7 @@ export default function init({
   }
 
   const { csToolsConfig } = configuration;
-  const metadataProvider = OHIF.cornerstone.metadataProvider;
+  const metadataProvider = OHIF.classes.MetadataProvider;
 
   cs.metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
