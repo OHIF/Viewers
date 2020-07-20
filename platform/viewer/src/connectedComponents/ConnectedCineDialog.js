@@ -4,11 +4,10 @@ import OHIF from '@ohif/core';
 import csTools from 'cornerstone-tools';
 import { commandsManager } from './../App.js';
 // Our target output kills the `as` and "import" throws a keyword error
-// import { import as toolImport, getToolState } from 'cornerstone-tools';
 import cloneDeep from 'lodash.clonedeep';
 
-const toolImport = csTools.import;
-const scrollToIndex = toolImport('util/scrollToIndex');
+const scrollToIndex = csTools.import('util/scrollToIndex');
+const { incrementTimePoint, getToolState } = csTools;
 const { setViewportSpecificData } = OHIF.redux.actions;
 
 // Why do I need or care about any of this info?
@@ -68,27 +67,93 @@ const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {
       });
     },
     onClickNextButton: () => {
-      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      const stackData = getToolState(activeEnabledElement, 'stack');
       if (!stackData || !stackData.data || !stackData.data.length) return;
+
+      if (stackData.data.length > 1) {
+        const timeSeriesToolData = getToolState(
+          activeEnabledElement,
+          'timeSeries'
+        );
+
+        if (timeSeriesToolData && timeSeriesToolData.data) {
+          incrementTimePoint(activeEnabledElement, 1, false);
+
+          return;
+        }
+      }
+
       const { currentImageIdIndex, imageIds } = stackData.data[0];
       if (currentImageIdIndex >= imageIds.length - 1) return;
       scrollToIndex(activeEnabledElement, currentImageIdIndex + 1);
     },
     onClickBackButton: () => {
-      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      const stackData = getToolState(activeEnabledElement, 'stack');
       if (!stackData || !stackData.data || !stackData.data.length) return;
+
+      if (stackData.data.length > 1) {
+        const timeSeriesToolData = getToolState(
+          activeEnabledElement,
+          'timeSeries'
+        );
+
+        if (timeSeriesToolData && timeSeriesToolData.data) {
+          incrementTimePoint(activeEnabledElement, -1, false);
+
+          return;
+        }
+      }
+
       const { currentImageIdIndex } = stackData.data[0];
       if (currentImageIdIndex === 0) return;
       scrollToIndex(activeEnabledElement, currentImageIdIndex - 1);
     },
     onClickSkipToStart: () => {
-      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      const stackData = getToolState(activeEnabledElement, 'stack');
       if (!stackData || !stackData.data || !stackData.data.length) return;
+
+      if (stackData.data.length > 1) {
+        const timeSeriesToolData = getToolState(
+          activeEnabledElement,
+          'timeSeries'
+        );
+
+        if (timeSeriesToolData && timeSeriesToolData.data) {
+          const { currentStackIndex } = timeSeriesToolData.data[0];
+
+          incrementTimePoint(activeEnabledElement, -currentStackIndex, false);
+
+          return;
+        }
+      }
+
       scrollToIndex(activeEnabledElement, 0);
     },
     onClickSkipToEnd: () => {
-      const stackData = csTools.getToolState(activeEnabledElement, 'stack');
+      const stackData = getToolState(activeEnabledElement, 'stack');
       if (!stackData || !stackData.data || !stackData.data.length) return;
+
+      if (stackData.data.length > 1) {
+        const timeSeriesToolData = getToolState(
+          activeEnabledElement,
+          'timeSeries'
+        );
+
+        if (timeSeriesToolData && timeSeriesToolData.data) {
+          const timeSeriesToolData0 = timeSeriesToolData.data[0];
+          const { currentStackIndex } = timeSeriesToolData0;
+          const maxIndex = timeSeriesToolData0.stacks.length - 1;
+
+          incrementTimePoint(
+            activeEnabledElement,
+            maxIndex - currentStackIndex,
+            false
+          );
+
+          return;
+        }
+      }
+
       const lastIndex = stackData.data[0].imageIds.length - 1;
       scrollToIndex(activeEnabledElement, lastIndex);
     },
