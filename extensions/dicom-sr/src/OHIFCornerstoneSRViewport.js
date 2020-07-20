@@ -263,6 +263,7 @@ function OHIFCornerstoneSRViewport({
   };
 
   function hydrateMeasurementService() {
+    debugger;
     // TODO -> We should define a strict versioning somewhere.
     const mappings = MeasurementService.getSourceMappings(
       'CornerstoneTools',
@@ -368,16 +369,21 @@ function OHIFCornerstoneSRViewport({
 
         _addToolDataToCornerstoneTools(data, toolType, imageId);
 
+        debugger;
+
         // Let the measurement service know we added to toolState
         const toMeasurementSchema = getToolStateToCornerstoneMeasurementSchema(
           toolType,
           MeasurementService,
+          DisplaySetService,
           imageId
         );
 
         const source = MeasurementService.getSource('CornerstoneTools', '4');
 
         data.label = getLabelFromDCMJSImportedToolData(data);
+
+        debugger;
 
         MeasurementService.addRawMeasurement(
           source,
@@ -436,8 +442,8 @@ function OHIFCornerstoneSRViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                  2
-                )}mm`
+                    2
+                  )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
