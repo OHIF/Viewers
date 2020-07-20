@@ -575,6 +575,8 @@ function _jumpToMeasurement(
     i => i.SOPInstanceUID === SOPInstanceUID
   );
 
+  setCornerstoneMeasurementActive(measurement);
+
   if (targetElement !== null) {
     const enabledElement = cornerstone.getEnabledElement(targetElement);
 
