@@ -1,4 +1,4 @@
-import windowLevelPresets from "./windowLevelPresets";
+import windowLevelPresets from './windowLevelPresets';
 
 /*
  * Supported Keys: https://craig.is/killing/mice
@@ -19,6 +19,11 @@ export default [
   { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'] },
   { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
   { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
+  {
+    commandName: 'cancelMeasurement',
+    label: 'Cancel Cornerstone Measurement',
+    keys: ['esc'],
+  },
   {
     commandName: 'flipViewportVertical',
     label: 'Flip Horizontally',

@@ -83,7 +83,7 @@ function Length(
     SOPInstanceUID
   );
 
-  const { handles } = measurementData;
+  const { handles, label } = measurementData;
 
   const points = [];
   Object.keys(handles).map(handle => {
@@ -108,6 +108,7 @@ function Length(
     length: measurementData.length,
     type: _getValueTypeFromToolType(tool),
     points,
+    label,
   };
 }
 
@@ -126,6 +127,7 @@ function Bidirectional(
     StudyInstanceUID,
   } = instance;
 
+<<<<<<< HEAD
   const displaySetInstanceUID = _getDisplaySetInstanceUID(
     DisplaySetService,
     SeriesInstanceUID,
@@ -133,6 +135,9 @@ function Bidirectional(
   );
 
   const { handles } = measurementData;
+=======
+  const { handles, label } = measurementData;
+>>>>>>> upstream/feat/v2-main
 
   const longAxis = [handles.start, handles.end];
   const shortAxis = [handles.perpendicularStart, handles.perpendicularEnd];
@@ -151,6 +156,7 @@ function Bidirectional(
     longestDiameter: measurementData.longestDiameter,
     type: _getValueTypeFromToolType(tool),
     points: { longAxis, shortAxis },
+    label,
   };
 }
 
@@ -169,6 +175,7 @@ function EllipticalRoi(
     StudyInstanceUID,
   } = instance;
 
+<<<<<<< HEAD
   const displaySetInstanceUID = _getDisplaySetInstanceUID(
     DisplaySetService,
     SeriesInstanceUID,
@@ -176,6 +183,10 @@ function EllipticalRoi(
   );
 
   const { start, end } = measurementData.handles;
+=======
+  const { handles, label } = measurementData;
+  const { start, end } = handles;
+>>>>>>> upstream/feat/v2-main
 
   const halfXLength = Math.abs(start.x - end.x) / 2;
   const halfYLength = Math.abs(start.y - end.y) / 2;
@@ -218,6 +229,7 @@ function EllipticalRoi(
         .area /* TODO: Add concept names instead (descriptor) */,
     type: _getValueTypeFromToolType(tool),
     points,
+    label,
   };
 }
 
@@ -267,6 +279,7 @@ function ArrowAnnotate(
     text: measurementData.text,
     type: _getValueTypeFromToolType(tool),
     points,
+    label,
   };
 }
 

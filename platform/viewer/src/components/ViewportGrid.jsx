@@ -7,6 +7,7 @@ import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
 import { classes } from '@ohif/core';
 const { ImageSet } = classes;
+import classNames from 'classnames';
 
 function ViewerViewportGrid(props) {
   const { servicesManager, viewportComponents, dataSource } = props;
@@ -19,10 +20,6 @@ function ViewerViewportGrid(props) {
     viewports,
     cachedLayout,
   } = viewportGrid;
-
-  const setActiveViewportIndex = index => {
-    viewportGridService.setActiveViewportIndex(index);
-  };
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
   const { DisplaySetService, MeasurementService } = servicesManager.services;
@@ -179,6 +176,7 @@ function ViewerViewportGrid(props) {
 
     for (let i = 0; i < numViewportPanes; i++) {
       const viewportIndex = i;
+      const isActive = activeViewportIndex === viewportIndex;
       const paneMetadata = viewports[i] || {};
       const { displaySetInstanceUID } = paneMetadata;
 
@@ -190,8 +188,15 @@ function ViewerViewportGrid(props) {
         viewportComponents
       );
 
-      const onInterationHandler = () => {
-        setActiveViewportIndex(viewportIndex);
+      const onInterationHandler = (event) => {
+        if (isActive) return;
+
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        viewportGridService.setActiveViewportIndex(viewportIndex);
       };
 
       // TEMP -> Double click disabled for now
@@ -204,13 +209,15 @@ function ViewerViewportGrid(props) {
           acceptDropsFor="displayset"
           onDrop={onDropHandler.bind(null, viewportIndex)}
           onInteraction={onInterationHandler}
-          isActive={activeViewportIndex === viewportIndex}
+          isActive={isActive}
         >
-          <ViewportComponent
-            displaySet={displaySet}
-            viewportIndex={viewportIndex}
-            dataSource={dataSource}
-          />
+          <div className={classNames('h-full w-full flex flex-col align-center', { 'pointer-events-none': !isActive })}>
+            <ViewportComponent
+              displaySet={displaySet}
+              viewportIndex={viewportIndex}
+              dataSource={dataSource}
+            />
+          </div>
         </ViewportPane>
       );
     }

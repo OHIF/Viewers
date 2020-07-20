@@ -14,6 +14,7 @@ import { useTrackedMeasurements } from './../getContextModule';
 
 import ViewportOverlay from './ViewportOverlay';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
+import setCornerstoneMeasurementActive from '../_shared/setCornerstoneMeasurementActive';
 
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 const { formatDate } = utils;
@@ -262,10 +263,7 @@ function TrackedCornerstoneViewport({
     setIsTracked(!isTracked);
   }
 
-  const label =
-    viewports.length > 1
-      ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
-      : '';
+  const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
 
   function switchMeasurement(direction) {
     if (!element) {
