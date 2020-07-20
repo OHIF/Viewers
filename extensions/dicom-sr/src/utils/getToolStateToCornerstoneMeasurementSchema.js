@@ -76,7 +76,6 @@ function Length(
     SeriesInstanceUID,
     StudyInstanceUID,
   } = instance;
-
   const displaySetInstanceUID = _getDisplaySetInstanceUID(
     DisplaySetService,
     SeriesInstanceUID,
@@ -126,18 +125,25 @@ function Bidirectional(
     SeriesInstanceUID,
     StudyInstanceUID,
   } = instance;
+<<<<<<< HEAD
 
 <<<<<<< HEAD
+=======
+>>>>>>> 19359737c12ed4a58eed724e829650f810e612cb
   const displaySetInstanceUID = _getDisplaySetInstanceUID(
     DisplaySetService,
     SeriesInstanceUID,
     SOPInstanceUID
   );
 
+<<<<<<< HEAD
   const { handles } = measurementData;
 =======
   const { handles, label } = measurementData;
 >>>>>>> upstream/feat/v2-main
+=======
+  const { handles, label } = measurementData;
+>>>>>>> 19359737c12ed4a58eed724e829650f810e612cb
 
   const longAxis = [handles.start, handles.end];
   const shortAxis = [handles.perpendicularStart, handles.perpendicularEnd];
@@ -174,19 +180,28 @@ function EllipticalRoi(
     SeriesInstanceUID,
     StudyInstanceUID,
   } = instance;
+<<<<<<< HEAD
 
 <<<<<<< HEAD
+=======
+>>>>>>> 19359737c12ed4a58eed724e829650f810e612cb
   const displaySetInstanceUID = _getDisplaySetInstanceUID(
     DisplaySetService,
     SeriesInstanceUID,
     SOPInstanceUID
   );
+<<<<<<< HEAD
 
   const { start, end } = measurementData.handles;
 =======
   const { handles, label } = measurementData;
   const { start, end } = handles;
 >>>>>>> upstream/feat/v2-main
+=======
+
+  const { handles, label } = measurementData;
+  const { start, end } = handles;
+>>>>>>> 19359737c12ed4a58eed724e829650f810e612cb
 
   const halfXLength = Math.abs(start.x - end.x) / 2;
   const halfYLength = Math.abs(start.y - end.y) / 2;
