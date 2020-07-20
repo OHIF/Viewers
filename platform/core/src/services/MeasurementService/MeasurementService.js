@@ -338,7 +338,6 @@ class MeasurementService {
     let measurement = {};
     try {
       /* Convert measurement */
-      debugger;
       measurement = toMeasurementSchema(data);
 
       /* Assign measurement source instance */

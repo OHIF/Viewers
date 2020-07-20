@@ -284,6 +284,14 @@ function TrackedCornerstoneViewport({
 
     setTrackedMeasurementId(newTrackedMeasurementId);
 
+    const { MeasurementService } = servicesManager.services;
+    const measurements = MeasurementService.getMeasurements();
+    const measurement = measurements.find(
+      m => m.id === newTrackedMeasurementId
+    );
+
+    setCornerstoneMeasurementActive(measurement);
+
     MeasurementService.jumpToMeasurement(
       viewportIndex,
       newTrackedMeasurementId

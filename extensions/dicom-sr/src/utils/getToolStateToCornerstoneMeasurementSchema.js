@@ -4,7 +4,6 @@ export default function getToolStateToCornerstoneMeasurementSchema(
   DisplaySetService,
   imageId
 ) {
-  debugger;
   const _getValueTypeFromToolType = toolType => {
     const {
       POLYLINE,
@@ -69,7 +68,6 @@ function Length(
   DisplaySetService,
   _getValueTypeFromToolType
 ) {
-  debugger;
   const tool = measurementData.toolType || measurementData.toolName;
   const instance = cornerstone.metaData.get('instance', imageId);
   const {
@@ -104,7 +102,6 @@ function Length(
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
     displaySetInstanceUID,
-    label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
     length: measurementData.length,
@@ -146,7 +143,6 @@ function Bidirectional(
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
     displaySetInstanceUID,
-    label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
     shortestDiameter: measurementData.shortestDiameter,
@@ -212,7 +208,6 @@ function EllipticalRoi(
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
     displaySetInstanceUID,
-    label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
     area:
@@ -271,7 +266,6 @@ function ArrowAnnotate(
     text: measurementData.text,
     type: _getValueTypeFromToolType(tool),
     points,
-    label,
   };
 }
 
