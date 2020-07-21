@@ -71,7 +71,7 @@ class MeasurementService {
     this.mappings = {};
     this.measurements = {};
     this.listeners = {};
-    this._jumpToMeasurmentCache = {};
+    this._jumpToMeasurementCache = {};
     Object.defineProperty(this, 'EVENTS', {
       value: EVENTS,
       writable: false,
@@ -523,15 +523,15 @@ class MeasurementService {
   }
 
   _addJumpToMeasurement(viewportIndex, id) {
-    this._jumpToMeasurmentCache[viewportIndex] = id;
+    this._jumpToMeasurementCache[viewportIndex] = id;
   }
 
   getJumpToMeasurement(viewportIndex) {
-    return this._jumpToMeasurmentCache[viewportIndex];
+    return this._jumpToMeasurementCache[viewportIndex];
   }
 
   removeJumpToMeasurement(viewportIndex) {
-    delete this._jumpToMeasurmentCache[viewportIndex];
+    delete this._jumpToMeasurementCache[viewportIndex];
   }
 
   _getMappingByMeasurementSource(measurementId, definition) {

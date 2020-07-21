@@ -71,8 +71,6 @@ const generateReport = (measurementData, additionalFindingTypes) => {
     additionalFindingTypes
   );
 
-  debugger;
-
   const report = MeasurementReport.generateReport(
     filteredToolState,
     cornerstone.metaData
