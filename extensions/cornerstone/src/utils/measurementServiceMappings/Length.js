@@ -37,7 +37,11 @@ const Length = {
    * @param {Object} cornerstone Cornerstone event data
    * @return {Measurement} Measurement instance
    */
-  toMeasurement: (csToolsAnnotation, getValueTypeFromToolType) => {
+  toMeasurement: (
+    csToolsAnnotation,
+    DisplaySetService,
+    getValueTypeFromToolType
+  ) => {
     const { element, measurementData } = csToolsAnnotation;
     const tool =
       csToolsAnnotation.toolType ||
@@ -57,12 +61,18 @@ const Length = {
       StudyInstanceUID,
     } = getSOPInstanceAttributes(element);
 
+    const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      SOPInstanceUID,
+      SeriesInstanceUID
+    );
+
     return {
       id: measurementData.id,
       SOPInstanceUID: SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: measurementData.text,
       description: measurementData.description,
       unit: measurementData.unit,

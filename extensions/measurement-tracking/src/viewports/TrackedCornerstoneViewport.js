@@ -16,6 +16,7 @@ import ViewportOverlay from './ViewportOverlay';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 import setCornerstoneMeasurementActive from '../_shared/setCornerstoneMeasurementActive';
 
+const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 const { formatDate } = utils;
 
 // TODO -> Get this list from the list of tracked measurements.
@@ -47,12 +48,13 @@ function TrackedCornerstoneViewport({
   viewportIndex,
   servicesManager,
 }) {
-  const { ToolBarService, DisplaySetService } = servicesManager.services;
+  const {
+    ToolBarService,
+    DisplaySetService,
+    MeasurementService,
+  } = servicesManager.services;
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [
-    { activeViewportIndex, viewports },
-    viewportGridService,
-  ] = useViewportGrid();
+  const [{ activeViewportIndex, viewports }] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
@@ -68,6 +70,28 @@ function TrackedCornerstoneViewport({
       StackManager.clearStacks();
     };
   }, []);
+
+  useEffect(() => {
+    const unsubcribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
+      MeasurementService,
+      DisplaySetService,
+      element,
+      viewportIndex,
+      displaySet.displaySetInstanceUID
+    );
+
+    _checkForCachedJumpToMeasurementEvents(
+      MeasurementService,
+      DisplaySetService,
+      element,
+      viewportIndex,
+      displaySet.displaySetInstanceUID
+    );
+
+    return () => {
+      unsubcribeFromJumpToMeasurementEvents();
+    };
+  }, [element, displaySet]);
 
   useEffect(() => {
     if (!element) {
@@ -166,13 +190,6 @@ function TrackedCornerstoneViewport({
         'More than one SOPClassUID in the same series is not yet supported.'
       );
     }
-
-    /*
-     * This grabs `imageIndex from first matching
-     * We actually want whichever is at our `viewportIndex`
-     */
-    const { imageIndex } = viewports[viewportIndex];
-    displaySet.imageIndex = imageIndex;
 
     _getViewportData(dataSource, displaySet).then(setViewportData);
   }, [dataSource, displaySet, viewports, viewportIndex]);
@@ -275,19 +292,10 @@ function TrackedCornerstoneViewport({
 
     setCornerstoneMeasurementActive(measurement);
 
-    const {
-      displaySetInstanceUID,
-      imageIndex,
-    } = _getViewportDataFromTrackedMeasurementId(
-      measurement,
-      DisplaySetService
-    );
-
-    viewportGridService.setDisplaysetForViewport({
+    MeasurementService.jumpToMeasurement(
       viewportIndex,
-      displaySetInstanceUID,
-      imageIndex,
-    });
+      newTrackedMeasurementId
+    );
   }
 
   const showNavArrows = isTracked && viewportIndex === activeViewportIndex;
@@ -336,14 +344,6 @@ function TrackedCornerstoneViewport({
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
-          onNewImageDebounceTime={700}
-          onNewImageDebounced={({ currentImageIdIndex }) => {
-            viewportGridService.setDisplaysetForViewport({
-              viewportIndex: activeViewportIndex,
-              displaySetInstanceUID: displaySet.displaySetInstanceUID,
-              imageIndex: currentImageIdIndex,
-            });
-          }}
           // Sync resize throttle w/ sidepanel animation duration to prevent
           // seizure inducing strobe blinking effect
           resizeRefreshRateMs={150}
@@ -402,15 +402,11 @@ const _viewportLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
  * @return {Object} CornerstoneTools Stack
  */
 function _getCornerstoneStack(displaySet, dataSource) {
-  const { imageIndex } = displaySet;
-
   // Get stack from Stack Manager
   const storedStack = StackManager.findOrCreateStack(displaySet, dataSource);
 
   // Clone the stack here so we don't mutate it
   const stack = Object.assign({}, storedStack);
-
-  stack.currentImageIdIndex = imageIndex;
 
   return stack;
 }
@@ -498,26 +494,111 @@ function _getNextMeasurementId(
   return newTrackedMeasurementId;
 }
 
-function _getViewportDataFromTrackedMeasurementId(
+function _subscribeToJumpToMeasurementEvents(
+  MeasurementService,
+  DisplaySetService,
+  element,
+  viewportIndex,
+  displaySetInstanceUID
+) {
+  const { unsubscribe } = MeasurementService.subscribe(
+    MeasurementService.EVENTS.JUMP_TO_MEASUREMENT,
+    ({ viewportIndex: jumpToMeasurementViewportIndex, measurement }) => {
+      // check if the correct viewport index.
+      if (viewportIndex !== jumpToMeasurementViewportIndex) {
+        // Event for a different viewport.
+        return;
+      }
+
+      if (measurement.displaySetInstanceUID !== displaySetInstanceUID) {
+        // Not for this displaySet.
+        return;
+      }
+
+      _jumpToMeasurement(
+        measurement,
+        element,
+        viewportIndex,
+        MeasurementService,
+        DisplaySetService
+      );
+    }
+  );
+
+  return unsubscribe;
+}
+
+function _checkForCachedJumpToMeasurementEvents(
+  MeasurementService,
+  DisplaySetService,
+  element,
+  viewportIndex,
+  displaySetInstanceUID
+) {
+  // Check if there is a queued jumpToMeasurement event
+  const measurementIdToJumpTo = MeasurementService.getJumpToMeasurement(
+    viewportIndex
+  );
+
+  if (measurementIdToJumpTo && element) {
+    // Jump to measurement if the measurement exists
+    const measurement = MeasurementService.getMeasurement(
+      measurementIdToJumpTo
+    );
+
+    if (measurement.displaySetInstanceUID === displaySetInstanceUID) {
+      _jumpToMeasurement(
+        measurement,
+        element,
+        viewportIndex,
+        MeasurementService,
+        DisplaySetService
+      );
+    }
+  }
+}
+
+function _jumpToMeasurement(
   measurement,
+  targetElement,
+  viewportIndex,
+  MeasurementService,
   DisplaySetService
 ) {
-  const { referenceSeriesUID: SeriesInstanceUID, SOPInstanceUID } = measurement;
+  const { displaySetInstanceUID, SOPInstanceUID } = measurement;
 
-  const activeDisplaySets = DisplaySetService.getActiveDisplaySets();
-
-  const displaySet = activeDisplaySets.find(
-    ds => ds.SeriesInstanceUID === SeriesInstanceUID
+  const referencedDisplaySet = DisplaySetService.getDisplaySetByUID(
+    displaySetInstanceUID
   );
 
-  const imageIndex = displaySet.images.findIndex(
-    image => image.SOPInstanceUID === SOPInstanceUID
+  const imageIndex = referencedDisplaySet.images.findIndex(
+    i => i.SOPInstanceUID === SOPInstanceUID
   );
 
-  return {
-    imageIndex,
-    displaySetInstanceUID: displaySet.displaySetInstanceUID,
-  };
+  setCornerstoneMeasurementActive(measurement);
+
+  if (targetElement !== null) {
+    const enabledElement = cornerstone.getEnabledElement(targetElement);
+
+    if (enabledElement.image) {
+      // Wait for the image to update or we get a race condition when the element has only just been enabled.
+      const scrollToHandler = evt => {
+        scrollToIndex(targetElement, imageIndex);
+        targetElement.removeEventListener(
+          'cornerstoneimagerendered',
+          scrollToHandler
+        );
+      };
+      targetElement.addEventListener(
+        'cornerstoneimagerendered',
+        scrollToHandler
+      );
+      cornerstone.updateImage(targetElement);
+    }
+
+    // Jump to measurement consumed, remove.
+    MeasurementService.removeJumpToMeasurement(viewportIndex);
+  }
 }
 
 export default TrackedCornerstoneViewport;

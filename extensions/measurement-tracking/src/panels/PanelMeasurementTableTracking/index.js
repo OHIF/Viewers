@@ -161,29 +161,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   }
 
   const jumpToImage = ({ id, isActive }) => {
-    const measurement = MeasurementService.getMeasurement(id);
-    const { referenceSeriesUID, SOPInstanceUID } = measurement;
-
-    setCornerstoneMeasurementActive(measurement);
-
-    const displaySets = DisplaySetService.getDisplaySetsForSeries(
-      referenceSeriesUID
-    );
-    const displaySet = displaySets.find(ds => {
-      return (
-        ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
-      );
-    });
-
-    const imageIndex = displaySet.images
-      .map(i => i.SOPInstanceUID)
-      .indexOf(SOPInstanceUID);
-
-    viewportGridService.setDisplaysetForViewport({
-      viewportIndex: viewportGrid.activeViewportIndex,
-      displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      imageIndex,
-    });
+    MeasurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, id);
 
     onMeasurementItemClickHandler({ id, isActive });
   };
