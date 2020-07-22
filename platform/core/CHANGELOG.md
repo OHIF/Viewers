@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.12](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.11...@ohif/core@2.9.12) (2020-07-13)
+
+
+### Bug Fixes
+
+* 🐛 - Put guards in all places that a cornerstone re-render ([#1899](https://github.com/OHIF/Viewers/issues/1899)) ([451f7ea](https://github.com/OHIF/Viewers/commit/451f7eab9258e7a193eb362e0926b13aedc4b3c9))
+
+
+
+
+
+## [2.9.11](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.10...@ohif/core@2.9.11) (2020-07-13)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.9.10](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.9...@ohif/core@2.9.10) (2020-07-13)
+
+
+### Bug Fixes
+
+* 🐛 Fix RT Panel hide/show and Fix looping load errors ([#1877](https://github.com/OHIF/Viewers/issues/1877)) ([e7cc735](https://github.com/OHIF/Viewers/commit/e7cc735c03d02eeb0d3af4ba02c15ed4f81bbec2))
+
+
+
+
+
+## [2.9.9](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.8...@ohif/core@2.9.9) (2020-06-18)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
+## [2.9.8](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.7...@ohif/core@2.9.8) (2020-06-15)
+
+
+### Bug Fixes
+
+* 🐛 Disable seg panel when data for seg unavailable ([#1732](https://github.com/OHIF/Viewers/issues/1732)) ([698e900](https://github.com/OHIF/Viewers/commit/698e900b85121d3c2a46747c443ef69fb7a8c95b)), closes [#1728](https://github.com/OHIF/Viewers/issues/1728)
+
+
+
+
+
 ## [2.9.7](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.6...@ohif/core@2.9.7) (2020-06-04)
 
 **Note:** Version bump only for package @ohif/core

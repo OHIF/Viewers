@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.8.3...@ohif/extension-cornerstone@2.8.4) (2020-07-13)
+
+
+### Bug Fixes
+
+* 🐛 - Put guards in all places that a cornerstone re-render ([#1899](https://github.com/OHIF/Viewers/issues/1899)) ([451f7ea](https://github.com/OHIF/Viewers/commit/451f7eab9258e7a193eb362e0926b13aedc4b3c9))
+
+
+
+
+
+## [2.8.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.8.2...@ohif/extension-cornerstone@2.8.3) (2020-07-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+## [2.8.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.8.1...@ohif/extension-cornerstone@2.8.2) (2020-06-15)
+
+
+### Bug Fixes
+
+* 🐛 Disable seg panel when data for seg unavailable ([#1732](https://github.com/OHIF/Viewers/issues/1732)) ([698e900](https://github.com/OHIF/Viewers/commit/698e900b85121d3c2a46747c443ef69fb7a8c95b)), closes [#1728](https://github.com/OHIF/Viewers/issues/1728)
+
+
+
+
+
 ## [2.8.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.8.0...@ohif/extension-cornerstone@2.8.1) (2020-06-04)
 
 

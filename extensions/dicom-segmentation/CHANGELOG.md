@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.3.2...@ohif/extension-dicom-segmentation@0.3.3) (2020-07-13)
+
+**Note:** Version bump only for package @ohif/extension-dicom-segmentation
+
+
+
+
+
+## [0.3.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.3.1...@ohif/extension-dicom-segmentation@0.3.2) (2020-07-13)
+
+
+### Bug Fixes
+
+* 🐛 Fix RT Panel hide/show and Fix looping load errors ([#1877](https://github.com/OHIF/Viewers/issues/1877)) ([e7cc735](https://github.com/OHIF/Viewers/commit/e7cc735c03d02eeb0d3af4ba02c15ed4f81bbec2))
+
+
+
+
+
+## [0.3.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.3.0...@ohif/extension-dicom-segmentation@0.3.1) (2020-06-15)
+
+
+### Bug Fixes
+
+* 🐛 Disable seg panel when data for seg unavailable ([#1732](https://github.com/OHIF/Viewers/issues/1732)) ([698e900](https://github.com/OHIF/Viewers/commit/698e900b85121d3c2a46747c443ef69fb7a8c95b)), closes [#1728](https://github.com/OHIF/Viewers/issues/1728)
+
+
+
+
+
 # [0.3.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.2.6...@ohif/extension-dicom-segmentation@0.3.0) (2020-06-04)
 
 
