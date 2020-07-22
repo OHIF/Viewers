@@ -4,6 +4,7 @@ import log from '../../log';
 import user from '../../user';
 import getImageAttributes from '../lib/getImageAttributes';
 import getLabel from '../lib/getLabel';
+import refreshCornerstoneViewports from '../lib/refreshCornerstoneViewports';
 
 export default function({ eventData, tool, toolGroupId, toolGroup }) {
   const measurementApi = MeasurementApi.Instance;
@@ -86,9 +87,7 @@ export default function({ eventData, tool, toolGroupId, toolGroup }) {
   }
 
   // TODO: This is very hacky, but will work for now
-  cornerstone.getEnabledElements().forEach(enabledElement => {
-    cornerstone.updateImage(enabledElement.element);
-  });
+  refreshCornerstoneViewports();
 
   // TODO: Notify about the last activated measurement
 

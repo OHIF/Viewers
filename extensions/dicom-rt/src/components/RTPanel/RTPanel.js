@@ -17,7 +17,10 @@ const { studyMetadataManager } = utils;
 
 const refreshViewport = () => {
   cornerstone.getEnabledElements().forEach(enabledElement => {
-    cornerstone.updateImage(enabledElement.element);
+    debugger;
+    if (enabledElement.image) {
+      cornerstone.updateImage(enabledElement.element);
+    }
   });
 };
 
@@ -37,8 +40,9 @@ const RTPanel = ({
   activeIndex,
   isOpen,
   onContourItemClick,
+  noContoursNotification,
   activeContexts = [],
-  contexts = {}
+  contexts = {},
 }) => {
   const isVTK = () => activeContexts.includes(contexts.VTK);
   const isCornerstone = () => activeContexts.includes(contexts.CORNERSTONE);
@@ -76,7 +80,10 @@ const RTPanel = ({
     document.addEventListener('extensiondicomrtrtloaded', updateStructureSets);
 
     return () => {
-      document.removeEventListener('extensiondicomrtrtloaded', updateStructureSets);
+      document.removeEventListener(
+        'extensiondicomrtrtloaded',
+        updateStructureSets
+      );
     };
   }, []);
 
@@ -89,7 +96,9 @@ const RTPanel = ({
         activeViewport.SeriesInstanceUID
       );
 
-      const studyMetadata = studyMetadataManager.get(activeViewport.StudyInstanceUID);
+      const studyMetadata = studyMetadataManager.get(
+        activeViewport.StudyInstanceUID
+      );
       const referencedDisplaysets = studyMetadata.getDerivedDatasets({
         referencedSeriesInstanceUID: activeViewport.SeriesInstanceUID,
         Modality: 'RTSTRUCT',
@@ -100,7 +109,7 @@ const RTPanel = ({
         setState({
           referencedDisplaysets,
           selectedSet: defaultSet,
-          sets: viewportSets
+          sets: viewportSets,
         });
       } else {
         setState(DEFAULT_STATE);
@@ -116,7 +125,10 @@ const RTPanel = ({
     setShowSettings(showSettings && !isOpen);
   }, [isOpen]);
 
-  const toContourItem = ({ ROINumber, ROIName, RTROIObservations, colorArray, visible }, loadedSet) => {
+  const toContourItem = (
+    { ROINumber, ROIName, RTROIObservations, colorArray, visible },
+    loadedSet
+  ) => {
     let interpretedType = '';
     if (RTROIObservations && RTROIObservations.RTROIInterpretedType) {
       interpretedType = `(${RTROIObservations.RTROIInterpretedType})`;
@@ -148,15 +160,27 @@ const RTPanel = ({
               imageIds
             );
 
+            if (!imageId) {
+              noContoursNotification();
+
+              return;
+            }
+
             const frameIndex = imageIds.indexOf(imageId);
-            const SOPInstanceUID = cornerstone.metaData.get('SOPInstanceUID', imageId);
-            const StudyInstanceUID = cornerstone.metaData.get('StudyInstanceUID', imageId);
+            const SOPInstanceUID = cornerstone.metaData.get(
+              'SOPInstanceUID',
+              imageId
+            );
+            const StudyInstanceUID = cornerstone.metaData.get(
+              'StudyInstanceUID',
+              imageId
+            );
 
             onContourItemClick({
               StudyInstanceUID,
               SOPInstanceUID,
               frameIndex,
-              activeViewportIndex: activeIndex
+              activeViewportIndex: activeIndex,
             });
           }
         }}
@@ -166,7 +190,10 @@ const RTPanel = ({
         visible={visible}
         onVisibilityChange={() => {
           const module = cornerstoneTools.getModule('rtstruct');
-          module.setters.toggleROIContour(state.selectedSet.SeriesInstanceUID, ROINumber);
+          module.setters.toggleROIContour(
+            state.selectedSet.SeriesInstanceUID,
+            ROINumber
+          );
         }}
       />
     );
@@ -202,49 +229,70 @@ const RTPanel = ({
           onClick={() => setShowSettings(true)}
         />
       </div>
-      {!state.referencedDisplaysets.length && <LoadingIndicator expand height="70px" width="70px" />}
-      {state.sets && state.referencedDisplaysets.map(displaySet => {
-        const { SeriesInstanceUID, metadata, isLoaded } = displaySet;
+      {!state.referencedDisplaysets.length && (
+        <LoadingIndicator expand height="70px" width="70px" />
+      )}
+      {state.sets &&
+        state.referencedDisplaysets.map(displaySet => {
+          const { SeriesInstanceUID, metadata, isLoaded } = displaySet;
 
-        const module = cornerstoneTools.getModule('rtstruct');
-        const sets = module.getters.structuresSetsWhichReferenceSeriesInstanceUid(viewports[activeIndex].SeriesInstanceUID);
+          const module = cornerstoneTools.getModule('rtstruct');
+          const sets = module.getters.structuresSetsWhichReferenceSeriesInstanceUid(
+            viewports[activeIndex].SeriesInstanceUID
+          );
 
-        const loadedSet = sets.find(set => set.SeriesInstanceUID === SeriesInstanceUID);
-        return (
-          <PanelSection
-            key={SeriesInstanceUID}
-            title={metadata.StructureSetLabel}
-            loading={!isLoaded || !loadedSet}
-            visible={isLoaded && loadedSet.visible}
-            hideVisibleButton={!isLoaded}
-            expanded={isLoaded && loadedSet.SeriesInstanceUID === state.selectedSet.SeriesInstanceUID}
-            onVisibilityChange={newVisibility => {
-              const module = cornerstoneTools.getModule('rtstruct');
-              loadedSet.ROIContours.forEach(({ ROINumber }) => {
-                module.setters.toggleROIContour(loadedSet.SeriesInstanceUID, ROINumber);
-              });
-              const sets = module.getters.structuresSetsWhichReferenceSeriesInstanceUid(viewports[activeIndex].SeriesInstanceUID);
-              setState(state => ({ ...state, sets }));
-              refreshViewport();
-            }}
-            onExpandChange={async () => {
-              if (!isLoaded) {
-                await displaySet.load(viewports[activeIndex], studies);
-                const module = cornerstoneTools.getModule('rtstruct');
-                const sets = module.getters.structuresSetsWhichReferenceSeriesInstanceUid(viewports[activeIndex].SeriesInstanceUID);
-                const selectedSet = sets.find(set => set.SeriesInstanceUID === SeriesInstanceUID);
-                setState(state => ({ ...state, selectedSet, sets }));
+          const loadedSet = sets.find(
+            set => set.SeriesInstanceUID === SeriesInstanceUID
+          );
+          return (
+            <PanelSection
+              key={SeriesInstanceUID}
+              title={metadata.StructureSetLabel}
+              loading={!isLoaded || !loadedSet}
+              visible={isLoaded && loadedSet.visible}
+              hideVisibleButton={!isLoaded}
+              expanded={
+                isLoaded &&
+                loadedSet.SeriesInstanceUID ===
+                  state.selectedSet.SeriesInstanceUID
               }
-            }}
-          >
-            <ScrollableArea>
-              <TableList headless>
-                {isLoaded && loadedSet.ROIContours.map(c => toContourItem(c, loadedSet))}
-              </TableList>
-            </ScrollableArea>
-          </PanelSection>
-        );
-      })}
+              onVisibilityChange={newVisibility => {
+                const module = cornerstoneTools.getModule('rtstruct');
+
+                if (newVisibility) {
+                  module.setters.showStructureSet(loadedSet.SeriesInstanceUID);
+                } else {
+                  module.setters.hideStructureSet(loadedSet.SeriesInstanceUID);
+                }
+                const sets = module.getters.structuresSetsWhichReferenceSeriesInstanceUid(
+                  viewports[activeIndex].SeriesInstanceUID
+                );
+                setState(state => ({ ...state, sets }));
+                refreshViewport();
+              }}
+              onExpandChange={async () => {
+                if (!isLoaded) {
+                  await displaySet.load(viewports[activeIndex], studies);
+                  const module = cornerstoneTools.getModule('rtstruct');
+                  const sets = module.getters.structuresSetsWhichReferenceSeriesInstanceUid(
+                    viewports[activeIndex].SeriesInstanceUID
+                  );
+                  const selectedSet = sets.find(
+                    set => set.SeriesInstanceUID === SeriesInstanceUID
+                  );
+                  setState(state => ({ ...state, selectedSet, sets }));
+                }
+              }}
+            >
+              <ScrollableArea>
+                <TableList headless>
+                  {isLoaded &&
+                    loadedSet.ROIContours.map(c => toContourItem(c, loadedSet))}
+                </TableList>
+              </ScrollableArea>
+            </PanelSection>
+          );
+        })}
     </div>
   );
 };

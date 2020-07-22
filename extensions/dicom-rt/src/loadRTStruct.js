@@ -16,7 +16,6 @@ export default async function loadRTStruct(
   studies
 ) {
   const rtStructModule = cornerstoneTools.getModule('rtstruct');
-
   // Set here is loading is asynchronous.
   // If this function throws its set back to false.
   rtStructDisplaySet.isLoaded = true;
@@ -68,7 +67,6 @@ export default async function loadRTStruct(
   const rtStructDisplayToolName = TOOL_NAMES.RTSTRUCT_DISPLAY_TOOL;
 
   for (let i = 0; i < ROIContourSequence.length; i++) {
-
     const ROIContour = ROIContourSequence[i];
     const { ReferencedROINumber, ContourSequence } = ROIContour;
 
@@ -238,7 +236,7 @@ function _setROIContourRTROIObservations(
 
 function _setToolEnabledIfNotEnabled(toolName) {
   cornerstone.getEnabledElements().forEach(enabledElement => {
-    const { element } = enabledElement;
+    const { element, image } = enabledElement;
     const tool = cornerstoneTools.getToolForElement(element, toolName);
 
     if (tool.mode !== 'enabled') {
@@ -246,7 +244,9 @@ function _setToolEnabledIfNotEnabled(toolName) {
       cornerstoneTools.setToolEnabled(toolName);
     }
 
-    cornerstone.updateImage(element);
+    if (image) {
+      cornerstone.updateImage(element);
+    }
   });
 }
 

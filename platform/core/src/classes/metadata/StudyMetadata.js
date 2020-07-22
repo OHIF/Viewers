@@ -135,6 +135,7 @@ export class StudyMetadata extends Metadata {
         study,
         sopClassUIDs
       );
+
       if (displaySet) {
         displaySet.sopClassModule = true;
 

@@ -5,7 +5,9 @@ import structureSetReferencesSeriesInstanceUid from './lib/structureSetReference
 // We should put this as a helper somewhere as we are using it in mutliple places.
 function refreshViewport() {
   cornerstone.getEnabledElements().forEach(enabledElement => {
-    cornerstone.updateImage(enabledElement.element);
+    if (enabledElement.image) {
+      cornerstone.updateImage(enabledElement.element);
+    }
   });
 }
 
@@ -81,7 +83,9 @@ function _setStructureSetVisible(SeriesInstanceUID, visible = true) {
   const StructureSet = getStructureSet(SeriesInstanceUID);
 
   if (StructureSet) {
-    StructureSet.visible = visible;
+    StructureSet.ROIContours.forEach(ROIContour => {
+      ROIContour.visible = visible;
+    });
 
     refreshViewport();
   }
@@ -154,15 +158,10 @@ function setToggleROIContour(SeriesInstanceUID, ROINumber) {
  * Returns an array of StructureSets which reference the given SeriesInstanceUID.
  * @param {string} SeriesInstanceUID The SeriesInstanceUID to check.
  */
-function getStructuresSetsWhichReferenceSeriesInstanceUid(
-  SeriesInstanceUID
-) {
+function getStructuresSetsWhichReferenceSeriesInstanceUid(SeriesInstanceUID) {
   const { StructureSets } = state;
   return StructureSets.filter(StructureSet =>
-    structureSetReferencesSeriesInstanceUid(
-      StructureSet,
-      SeriesInstanceUID
-    )
+    structureSetReferencesSeriesInstanceUid(StructureSet, SeriesInstanceUID)
   );
 }
 

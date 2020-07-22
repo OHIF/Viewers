@@ -20,9 +20,20 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getPanelModule({ commandsManager, api }) {
+  getPanelModule({ commandsManager, servicesManager, api }) {
+    const { UINotificationService } = servicesManager.services;
+
     const ExtendedRTPanel = props => {
       const { activeContexts } = api.hooks.useAppContext();
+
+      const noContoursNotificationHandler = () => {
+        UINotificationService.show({
+          title: 'ROI Contour empty',
+          message: 'The ROI contour has no structure set data.',
+          type: 'error',
+          autoClose: false,
+        });
+      };
 
       const contourItemClickHandler = contourData => {
         commandsManager.runCommand('jumpToImage', contourData);
@@ -34,6 +45,7 @@ export default {
           onContourItemClick={contourItemClickHandler}
           activeContexts={activeContexts}
           contexts={api.contexts}
+          noContoursNotification={noContoursNotificationHandler}
         />
       );
     };

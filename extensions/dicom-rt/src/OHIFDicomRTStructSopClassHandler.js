@@ -14,7 +14,7 @@ const OHIFDicomRTStructSopClassHandler = {
   id: 'OHIFDicomRTStructSopClassHandler',
   type: MODULE_TYPES.SOP_CLASS_HANDLER,
   sopClassUIDs,
-  getDisplaySetFromSeries: function (
+  getDisplaySetFromSeries: function(
     series,
     study,
     dicomWebClient,
@@ -67,13 +67,14 @@ const OHIFDicomRTStructSopClassHandler = {
       }
     }
 
-    rtStructDisplaySet.load = function (referencedDisplaySet, studies) {
+    rtStructDisplaySet.load = function(referencedDisplaySet, studies) {
       return loadRTStruct(
         rtStructDisplaySet,
         referencedDisplaySet,
         studies
       ).catch(error => {
         rtStructDisplaySet.isLoaded = false;
+        rtStructDisplaySet.loadError = true;
         throw new Error(error);
       });
     };
