@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash.isequal';
 //
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
@@ -182,9 +182,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   }, [expandedRows, studies]);
 
   const isFiltering = (filterValues, defaultFilterValues) => {
-    return Object.keys(defaultFilterValues).some(name => {
-      return !isEqual(filterValues[name], defaultFilterValues[name]);
-    });
+    return !isEqual(filterValues, defaultFilterValues);
   };
 
   const tableDataSource = sortedStudies.map((study, key) => {
