@@ -218,13 +218,11 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           ) : (
             <span className="text-gray-700">(Empty)</span>
           ),
-          title: patientName,
           gridCol: 4,
         },
         {
           key: 'mrn',
           content: <TooltipClipboard>{mrn}</TooltipClipboard>,
-          title: mrn,
           gridCol: 3,
         },
         {
@@ -241,7 +239,6 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
         {
           key: 'description',
           content: <TooltipClipboard>{description}</TooltipClipboard>,
-          title: description,
           gridCol: 4,
         },
         {
@@ -253,7 +250,6 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
         {
           key: 'accession',
           content: <TooltipClipboard>{accession}</TooltipClipboard>,
-          title: accession,
           gridCol: 3,
         },
         {
