@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.13](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.12...@ohif/core@2.9.13) (2020-07-22)
+
+
+### Bug Fixes
+
+* Switch DICOMFileUploader to use the UIModalService ([#1904](https://github.com/OHIF/Viewers/issues/1904)) ([7772fee](https://github.com/OHIF/Viewers/commit/7772fee21ae6a65994e1251e2f1d2554b47781be))
+
+
+
+
+
 ## [2.9.12](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.11...@ohif/core@2.9.12) (2020-07-13)
 
 
