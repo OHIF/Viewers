@@ -17,10 +17,15 @@ export default {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
-  id: 'microscopy',
+  id: 'org.ohif.microscopy',
 
   getViewportModule() {
-    return DicomMicroscopyViewport;
+    return [
+      {
+        name: 'microscopy-default',
+        component: DicomMicroscopyViewport,
+      },
+    ];
   },
   getSopClassHandlerModule() {
     return DicomMicroscopySopClassHandler;

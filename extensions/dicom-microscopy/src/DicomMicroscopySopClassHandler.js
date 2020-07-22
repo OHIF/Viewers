@@ -7,7 +7,7 @@ const SOP_CLASS_UIDS = {
 };
 
 const DicomMicroscopySopClassHandler = {
-  id: 'DicomMicroscopySopClassHandlerPlugin',
+  id: 'microscopy',
   sopClassUIDs: [SOP_CLASS_UIDS.VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE],
   getDisplaySetFromSeries(series, study, dicomWebClient) {
     const instance = series.getFirstInstance();
