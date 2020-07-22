@@ -6,7 +6,7 @@ import useOnClickOutside from '../../utils/useOnClickOutside';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',
-  infoText: 'text-base text-white',
+  infoText: 'text-base text-white max-w-24 truncate',
   firstRow: 'flex flex-col',
   row: 'flex flex-col ml-4',
 };
@@ -274,25 +274,39 @@ function PatientInfo({
                 <Icon name="info-link" className="w-4 text-primary-main" />
               </div>
               <div className="flex flex-col ml-2">
-                <span className="text-base font-bold text-white">
+                <span
+                  className="text-base font-bold text-white"
+                  title={patientName}
+                >
                   {patientName}
                 </span>
                 <div className="flex pb-4 mt-4 mb-4 border-b border-secondary-main">
                   <div className={classnames(classes.firstRow)}>
                     <span className={classnames(classes.infoHeader)}>Sex</span>
-                    <span className={classnames(classes.infoText)}>
+                    <span
+                      className={classnames(classes.infoText)}
+                      title={patientSex}
+                    >
                       {patientSex}
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
                     <span className={classnames(classes.infoHeader)}>Age</span>
-                    <span className={classnames(classes.infoText)}>
+                    <span
+                      className={classnames(classes.infoText)}
+                      title={patientAge}
+                    >
                       {patientAge}
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
                     <span className={classnames(classes.infoHeader)}>MRN</span>
-                    <span className={classnames(classes.infoText)}>{MRN}</span>
+                    <span
+                      className={classnames(classes.infoText)}
+                      title={MRN}
+                    >
+                      {MRN}
+                    </span>
                   </div>
                 </div>
                 <div className="flex">
@@ -300,15 +314,21 @@ function PatientInfo({
                     <span className={classnames(classes.infoHeader)}>
                       Thickness
                     </span>
-                    <span className={classnames(classes.infoText)}>
-                      {thickness ? thickness : 'N/A'}
+                    <span
+                      className={classnames(classes.infoText)}
+                      title={thickness}
+                    >
+                      {thickness}
                     </span>
                   </div>
                   <div className={classnames(classes.row)}>
                     <span className={classnames(classes.infoHeader)}>
                       Spacing
                     </span>
-                    <span className={classnames(classes.infoText)}>
+                    <span
+                      className={classnames(classes.infoText)}
+                      title={spacing}
+                    >
                       {spacing}
                     </span>
                   </div>
@@ -316,7 +336,10 @@ function PatientInfo({
                     <span className={classnames(classes.infoHeader)}>
                       Scanner
                     </span>
-                    <span className={classnames(classes.infoText)}>
+                    <span
+                      className={classnames(classes.infoText)}
+                      title={scanner}
+                    >
                       {scanner}
                     </span>
                   </div>
