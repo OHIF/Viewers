@@ -34,6 +34,9 @@
     "see-changed": "lerna changed",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "release": "yarn run lerna:version && yarn run lerna:publish",
+    "lerna:cache": "[ $NETLIFY_RESTORE = 1 ] && ./netlify-lerna-cache.sh || :",
+    "lerna:restore": "[ $NETLIFY_RESTORE = 1 ] && ./netlify-lerna-restore.sh || :",
+    "preinstall": "yarn lerna:restore",
     "lerna:version": "npx lerna version prerelease --force-publish",
     "lerna:publish": "lerna publish from-package --canary --dist-tag canary",
     "link-list": "npm ls --depth=0 --link=true"

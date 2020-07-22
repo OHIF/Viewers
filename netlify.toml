@@ -8,6 +8,11 @@
 # managed by CircleCI and deployed to our Google Hosting
 #
 
+[build]
+  base = ""
+  publish = ".netlify/www/"
+  command = "chmod +x .netlify/build-deploy-preview.sh && .netlify/build-deploy-preview.sh"
+
 # NODE_VERSION in root `.nvmrc` takes priority
 # YARN_FLAGS: https://www.netlify.com/docs/build-gotchas/#yarn
 [build.environment]
@@ -16,18 +21,12 @@
   YARN_VERSION = "1.17.3"
   RUBY_VERSION = "2.6.2"
   YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
+  NETLIFY_RESTORE = "1"
 
 # Production context: all deploys from the Production branch set in your site's
 # deploy contexts will inherit these settings.
 [context.production]
   ignore = "exit 0" # Never build production; We'll let our CI do that
-
-# Deploy Preview context: all deploys generated from a pull/merge request will
-# inherit these settings.
-[context.deploy-preview]
-  base = ""
-  publish = ".netlify/www/"
-  command = "chmod +x .netlify/build-deploy-preview.sh && .netlify/build-deploy-preview.sh"
 
 [[headers]]
   # Define which paths this specific [[headers]] block will cover.
