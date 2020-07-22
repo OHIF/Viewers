@@ -74,6 +74,7 @@ export {
   ThumbnailList,
   ToolbarButton,
   Tooltip,
+  TooltipClipboard,
   Typography,
   Viewport,
   ViewportActionBar,

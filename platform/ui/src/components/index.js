@@ -44,6 +44,7 @@ import ToolbarButton from './ToolbarButton';
 import ExpandableToolbarButton from './ExpandableToolbarButton';
 import ListMenu from './ListMenu';
 import Tooltip from './Tooltip';
+import TooltipClipboard from './TooltipClipboard';
 import Typography from './Typography';
 import Viewport from './Viewport';
 import ViewportActionBar from './ViewportActionBar';
@@ -99,6 +100,7 @@ export {
   ThumbnailList,
   ToolbarButton,
   Tooltip,
+  TooltipClipboard,
   Typography,
   Viewport,
   ViewportActionBar,

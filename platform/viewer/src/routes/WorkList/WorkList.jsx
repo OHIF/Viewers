@@ -21,6 +21,7 @@ import {
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
+  TooltipClipboard,
 } from '@ohif/ui';
 
 const seriesInStudiesMap = new Map();
@@ -213,17 +214,15 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
         {
           key: 'patientName',
           content: patientName ? (
-            patientName
+            <TooltipClipboard>{patientName}</TooltipClipboard>
           ) : (
             <span className="text-gray-700">(Empty)</span>
           ),
-          title: patientName,
           gridCol: 4,
         },
         {
           key: 'mrn',
-          content: mrn,
-          title: mrn,
+          content: <TooltipClipboard>{mrn}</TooltipClipboard>,
           gridCol: 3,
         },
         {
@@ -239,8 +238,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
         },
         {
           key: 'description',
-          content: description,
-          title: description,
+          content: <TooltipClipboard>{description}</TooltipClipboard>,
           gridCol: 4,
         },
         {
@@ -251,8 +249,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
         },
         {
           key: 'accession',
-          content: accession,
-          title: accession,
+          content: <TooltipClipboard>{accession}</TooltipClipboard>,
           gridCol: 3,
         },
         {

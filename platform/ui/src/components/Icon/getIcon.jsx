@@ -4,6 +4,7 @@ import React from 'react';
 import arrowDown from './../../assets/icons/arrow-down.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
+import clipboard from './../../assets/icons/clipboard.svg';
 import close from './../../assets/icons/close.svg';
 import dottedCircle from './../../assets/icons/dotted-circle.svg';
 import circledCheckmark from './../../assets/icons/circled-checkmark.svg';
@@ -64,6 +65,7 @@ const ICONS = {
   'arrow-down': arrowDown,
   calendar: calendar,
   cancel: cancel,
+  clipboard: clipboard,
   close: close,
   'dotted-circle': dottedCircle,
   'circled-checkmark': circledCheckmark,
