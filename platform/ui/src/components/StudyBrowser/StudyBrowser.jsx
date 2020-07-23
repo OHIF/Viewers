@@ -143,7 +143,7 @@ StudyBrowser.propTypes = {
                 'thumbnailNoImage',
               ]).isRequired,
               isTracked: PropTypes.bool,
-              viewportIdentificator: PropTypes.string,
+              viewportIdentificator: PropTypes.arrayOf(PropTypes.string),
               /**
                * Data the thumbnail should expose to a receiving drop target. Use a matching
                * `dragData.type` to identify which targets can receive this draggable item.

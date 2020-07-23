@@ -29,9 +29,15 @@ async function RetrieveMetadata(
     studyInstanceUid,
     filters
   );
-  const studyMetadata = retrieveMetadataLoader.execLoad();
+  const {
+    preLoadData,
+    promises
+  } = await retrieveMetadataLoader.execLoad();
 
-  return studyMetadata;
+  return {
+    seriesSummaryMetadata: preLoadData,
+    promises
+  };
 }
 
 export default RetrieveMetadata;

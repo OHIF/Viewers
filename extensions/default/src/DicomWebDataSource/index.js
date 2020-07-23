@@ -133,7 +133,8 @@ function createDicomWebApi(dicomWebConfig) {
           );
 
           studyPromises.forEach(studyPromise => {
-            studyPromise.then(seriesPromises => {
+            studyPromise.then(data => {
+              const { seriesSummaryMetadata, promises: seriesPromises } = data;
               seriesPromises.forEach(seriesPromise => {
                 seriesPromise.then(instances => {
                   storeInstances(instances);
@@ -178,7 +179,7 @@ function createDicomWebApi(dicomWebConfig) {
       }
 
       // Get Series
-      const seriesPromises = await retrieveStudyMetadata(
+      const { seriesSummaryMetadata, promises: seriesPromises } = await retrieveStudyMetadata(
         wadoDicomWebClient,
         StudyInstanceUID,
         enableStudyLazyLoad
@@ -190,6 +191,8 @@ function createDicomWebApi(dicomWebConfig) {
 
         DicomMetadataStore.addInstances(naturalizedInstances);
       }
+
+      DicomMetadataStore.addSeries(seriesSummaryMetadata);
 
       seriesPromises.forEach(async seriesPromise => {
         const instances = await seriesPromise;

@@ -23,6 +23,9 @@ export {
   ViewportGridContext,
   ViewportGridProvider,
   useViewportGrid,
+  HangingProtocolContext,
+  HangingProtocolProvider,
+  useHangingProtocol,
 } from './src/contextProviders';
 
 /** COMPONENTS */

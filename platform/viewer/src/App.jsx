@@ -12,6 +12,7 @@ import {
   ThemeWrapper,
   ViewportDialogProvider,
   ViewportGridProvider,
+  HangingProtocolProvider,
 } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
@@ -58,6 +59,7 @@ function App({ config, defaultExtensions }) {
     UINotificationService,
     UIViewportDialogService,
     ViewportGridService, // TODO: Should this be a "UI" Service?
+    HangingProtocolService,
   } = servicesManager.services;
 
   return (
@@ -66,15 +68,17 @@ function App({ config, defaultExtensions }) {
         <Router basename={routerBasename}>
           <ThemeWrapper>
             <ViewportGridProvider service={ViewportGridService}>
-              <ViewportDialogProvider service={UIViewportDialogService}>
-                <SnackbarProvider service={UINotificationService}>
-                  <DialogProvider service={UIDialogService}>
-                    <ModalProvider modal={Modal} service={UIModalService}>
-                      {appRoutes}
-                    </ModalProvider>
-                  </DialogProvider>
-                </SnackbarProvider>
-              </ViewportDialogProvider>
+              <HangingProtocolProvider service={HangingProtocolService}>
+                <ViewportDialogProvider service={UIViewportDialogService}>
+                  <SnackbarProvider service={UINotificationService}>
+                    <DialogProvider service={UIDialogService}>
+                      <ModalProvider modal={Modal} service={UIModalService}>
+                        {appRoutes}
+                      </ModalProvider>
+                    </DialogProvider>
+                  </SnackbarProvider>
+                </ViewportDialogProvider>
+              </HangingProtocolProvider>
             </ViewportGridProvider>
           </ThemeWrapper>
         </Router>

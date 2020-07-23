@@ -135,7 +135,7 @@ ButtonGroup.propTypes = {
   fullWidth: PropTypes.bool,
   orientation: PropTypes.oneOf(['vertical', 'horizontal']),
   rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
-  size: PropTypes.oneOf(['small', 'medium', 'large']),
+  size: PropTypes.oneOf(['small', 'medium', 'large', 'inherit']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
 };
 

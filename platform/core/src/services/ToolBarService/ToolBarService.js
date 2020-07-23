@@ -42,7 +42,6 @@ export default class ToolBarService {
   }
 
   _buttonTypes() {
-    console.log(this.extensionManager.modules);
     const buttonTypes = {};
     const registeredToolbarModules = this.extensionManager.modules[
       'toolbarModule'

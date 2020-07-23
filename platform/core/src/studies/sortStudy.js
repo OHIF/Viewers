@@ -1,4 +1,4 @@
-import getSeriesInfo from './getSeriesInfo';
+import isLowPriorityModality from '../utils/isLowPriorityModality';
 
 /**
  * Series sorting criteria: series considered low priority are moved to the end
@@ -7,15 +7,16 @@ import getSeriesInfo from './getSeriesInfo';
  * @param {Object} secondSeries
  */
 function seriesInfoSortingCriteria(firstSeries, secondSeries) {
-  const a = getSeriesInfo(firstSeries);
-  const b = getSeriesInfo(secondSeries);
-  if (!a.isLowPriority && b.isLowPriority) {
+  const aLowPriority = isLowPriorityModality(firstSeries.Modality);
+  const bLowPriority = isLowPriorityModality(secondSeries.Modality);
+  if (!aLowPriority && bLowPriority) {
     return -1;
   }
-  if (a.isLowPriority && !b.isLowPriority) {
+  if (aLowPriority && !bLowPriority) {
     return 1;
   }
-  return a.SeriesNumber - b.SeriesNumber;
+
+  return firstSeries.SeriesNumber - secondSeries.SeriesNumber;
 }
 
 const seriesSortCriteria = {
@@ -93,4 +94,4 @@ export default function sortStudy(
   return study;
 }
 
-export { sortStudySeries, sortStudyInstances, sortingCriteria };
+export { sortStudy, sortStudySeries, sortStudyInstances, sortingCriteria };

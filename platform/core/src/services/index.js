@@ -8,6 +8,7 @@ import DicomMetadataStore from './DicomMetadataStore';
 import DisplaySetService from './DisplaySetService';
 import ToolBarSerivce from './ToolBarService';
 import ViewportGridService from './ViewportGridService';
+import HangingProtocolService from './HangingProtocolService';
 
 export {
   MeasurementService,
@@ -20,4 +21,5 @@ export {
   DisplaySetService,
   ToolBarSerivce,
   ViewportGridService,
+  HangingProtocolService,
 };

@@ -10,19 +10,31 @@ function createStudyMetadata(StudyInstanceUID) {
      * @param {string} instances[].SeriesInstanceUID
      * @returns {bool} true if series were added; false if series already exist
      */
-    addSeries: function(instances) {
+    addInstancesToSeries: function(instances) {
       const { SeriesInstanceUID } = instances[0];
-      const seriesExists = this.series.some(
+      const existingSeries = this.series.find(
         s => s.SeriesInstanceUID === SeriesInstanceUID
       );
 
-      if (!seriesExists) {
+      if (existingSeries) {
+        existingSeries.instances.push(...instances);
+      } else {
         const series = createSeriesMetadata(instances);
         this.series.push(series);
       }
-
-      return !seriesExists;
     },
+
+    setSeriesMetadata: function (SeriesInstanceUID, seriesMetadata) {
+      let existingSeries = this.series.find(
+        s => s.SeriesInstanceUID === SeriesInstanceUID
+      );
+
+      if (existingSeries) {
+        existingSeries = Object.assign(existingSeries, seriesMetadata);
+      } else {
+        this.series.push(Object.assign({ instances: [] }, seriesMetadata));
+      }
+    }
   };
 }
 

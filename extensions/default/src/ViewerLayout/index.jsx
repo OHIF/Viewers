@@ -94,14 +94,18 @@ function ViewerLayout({
       <Header>
         <ErrorBoundary context="Primary Toolbar">
           <div className="relative flex justify-center">
-            {toolbars.primary.map(toolDef => {
+            {toolbars.primary.map((toolDef, index) => {
               const isNested = Array.isArray(toolDef);
               if (!isNested) {
                 const { id, Component, componentProps } = toolDef;
                 return <Component key={id} id={id} {...componentProps} />;
               } else {
                 return (
-                  <NestedMenu isActive={activeTool.isActive} icon={activeTool.icon} label={activeTool.label}>
+                  <NestedMenu
+                    key={index}
+                    isActive={activeTool.isActive}
+                    icon={activeTool.icon}
+                    label={activeTool.label}>
                     <div className="flex">
                       {toolDef.map(x => {
                         const { id, Component, componentProps } = x;
@@ -174,7 +178,7 @@ ViewerLayout.propTypes = {
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
-  children: PropTypes.oneOfType(PropTypes.node, PropTypes.func).isRequired,
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
 };
 
 ViewerLayout.defaultProps = {

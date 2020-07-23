@@ -113,7 +113,7 @@ ThumbnailList.propTypes = {
         'thumbnailTracked',
         'thumbnailNoImage',
       ]).isRequired,
-      viewportIdentificator: PropTypes.string,
+      viewportIdentificator: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
       isTracked: PropTypes.bool,
       /**
        * Data the thumbnail should expose to a receiving drop target. Use a matching
