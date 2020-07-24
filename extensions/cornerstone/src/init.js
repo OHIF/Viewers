@@ -45,6 +45,10 @@ export default function init({ servicesManager, configuration }) {
             switch (action.id) {
               case 'save':
                 callback(value.label);
+                break;
+              case 'cancel':
+                callback();
+                break;
             }
             UIDialogService.dismiss({ id: dialogId });
           },
@@ -150,11 +154,12 @@ export default function init({ servicesManager, configuration }) {
           callInputDialog(null, eventDetails, callback),
         changeTextCallback: (data, eventDetails, callback) =>
           callInputDialog(data, eventDetails, callback),
+        allowEmptyLabel: true,
       },
     },
     DragProbe: {
-      defaultStrategy: 'minimal'
-    }
+      defaultStrategy: 'minimal',
+    },
   };
 
   /* Abstract tools configuration using extension configuration. */
