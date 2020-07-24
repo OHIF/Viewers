@@ -121,7 +121,6 @@ export default function init({ servicesManager, configuration }) {
       csTools.EllipticalRoiTool,
       csTools.DragProbeTool,
       csTools.RectangleRoiTool,
-      csTools.ProbeTool,
     ],
     other: [
       csTools.PanTool,
@@ -153,6 +152,9 @@ export default function init({ servicesManager, configuration }) {
           callInputDialog(data, eventDetails, callback),
       },
     },
+    DragProbe: {
+      defaultStrategy: 'minimal'
+    }
   };
 
   /* Abstract tools configuration using extension configuration. */
