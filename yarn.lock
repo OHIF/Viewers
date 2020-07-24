@@ -6774,6 +6774,14 @@ cornerstone-tools@4.19.0:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.7"
 
+cornerstone-tools@4.19.1:
+  version "4.19.1"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-4.19.1.tgz#8a3e9473495b83e9f88dcbad99ac79eae65a81d4"
+  integrity sha512-ltobIAUEgnPswhWLSAm05HRP7pw99m07RNBYuoN4NInDD2ctvk3HxAjM1CAV2GO1zv8yMwKOaE/j2m70Na12mQ==
+  dependencies:
+    "@babel/runtime" "7.1.2"
+    cornerstone-math "0.1.7"
+
 cornerstone-wado-image-loader@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/cornerstone-wado-image-loader/-/cornerstone-wado-image-loader-3.1.2.tgz#5113c317938510670061d11d05deb70266e4a35e"
