@@ -196,7 +196,7 @@ export default function init({ servicesManager, configuration }) {
 
   /* Add tools with its custom props through extension configuration. */
   tools.forEach(tool => {
-    const toolName = tool.name.replace('Tool', '');
+    const toolName = new tool().name;
     const externalToolsConfig = configuration.tools || {};
     const externalToolProps = externalToolsConfig[toolName] || {};
     const internalToolProps = internalToolsConfig[toolName] || {};
