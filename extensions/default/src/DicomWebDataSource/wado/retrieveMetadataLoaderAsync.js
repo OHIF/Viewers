@@ -1,15 +1,9 @@
+import dcmjs from 'dcmjs';
+import { studies } from '@ohif/core';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
-//import { sortStudySeries, sortingCriteria } from '../../sortStudy';
-import getSeriesInfo from './utils/getSeriesInfo';
 
-/**
- * Map seriesList to an array of seriesInstanceUid
- * @param {Arrays} seriesList list of Series Instance UIDs
- * @returns {Arrays} A list of Series Instance UIDs
- */
-function mapStudySeries(seriesList) {
-  return seriesList.map(series => getSeriesInfo(series).seriesInstanceUid);
-}
+const { sortStudySeries, sortingCriteria } = studies;
+
 
 /**
  * Creates an immutable series loader object which loads each series sequentially using the iterator interface
@@ -33,7 +27,6 @@ function makeSeriesAsyncLoader(
         studyInstanceUID,
         seriesInstanceUID,
       });
-      // return { studyInstanceUID, seriesInstanceUID, sopInstances };
     },
   });
 }
@@ -73,33 +66,25 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
     const preLoaders = this.getPreLoaders();
     const result = await this.runLoaders(preLoaders);
 
-    // const seriesSorted = sortStudySeries(
-    //   result,
-    //   sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
-    // );
+    const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
+    const naturalized = result.map(naturalizeDataset);
 
-    //const seriesInstanceUidsMap = mapStudySeries(seriesSorted);
-
-    const seriesInstanceUidsMap = mapStudySeries(result);
-
-    return seriesInstanceUidsMap;
+    return sortStudySeries(
+      naturalized,
+      sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
+    );
   }
 
   async load(preLoadData) {
     const { client, studyInstanceUID } = this;
 
+    const seriesInstanceUIDs = preLoadData.map(s => s.SeriesInstanceUID);
+
     const seriesAsyncLoader = makeSeriesAsyncLoader(
       client,
       studyInstanceUID,
-      preLoadData
+      seriesInstanceUIDs
     );
-
-    // const firstSeries = await seriesAsyncLoader.next();
-
-    // return {
-    //   sopInstances: firstSeries.sopInstances,
-    //   asyncLoader: seriesAsyncLoader,
-    // };
 
     const promises = [];
 
@@ -107,22 +92,16 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
       promises.push(seriesAsyncLoader.next());
     }
 
-    return promises;
-
-    // if (asyncLoader.hasNext()) {
+    return {
+      preLoadData,
+      promises,
+    };
   }
 
-  async posLoad(promises) {
-    return promises;
-    // const { client } = this;
-    // const { sopInstances, asyncLoader } = loadData;
-
-    // const study = await createStudyFromSOPInstanceList(server, sopInstances);
-
-    // if (asyncLoader.hasNext()) {
-    //   attachSeriesLoader(server, study, asyncLoader);
-    // }
-
-    // return study;
+  async posLoad({ preLoadData, promises }) {
+    return {
+      preLoadData,
+      promises,
+    };
   }
 }

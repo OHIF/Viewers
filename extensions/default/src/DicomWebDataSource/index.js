@@ -42,7 +42,7 @@ function createDicomWebApi(dicomWebConfig) {
     wadoRoot,
     enableStudyLazyLoad,
     supportsFuzzyMatching,
-    supportsWildcard
+    supportsWildcard,
   } = dicomWebConfig;
 
   const qidoConfig = {
@@ -63,9 +63,12 @@ function createDicomWebApi(dicomWebConfig) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function (origParams) {
+        search: async function(origParams) {
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
-            mapParams(origParams, { supportsFuzzyMatching, supportsWildcard }) || {};
+            mapParams(origParams, {
+              supportsFuzzyMatching,
+              supportsWildcard,
+            }) || {};
 
           const results = await qidoSearch(
             qidoDicomWebClient,
@@ -80,7 +83,7 @@ function createDicomWebApi(dicomWebConfig) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function (studyInstanceUid) {
+        search: async function(studyInstanceUid) {
           const results = await seriesInStudy(
             qidoDicomWebClient,
             studyInstanceUid
@@ -133,7 +136,8 @@ function createDicomWebApi(dicomWebConfig) {
           );
 
           studyPromises.forEach(studyPromise => {
-            studyPromise.then(seriesPromises => {
+            studyPromise.then(data => {
+              const { seriesPromises } = data;
               seriesPromises.forEach(seriesPromise => {
                 seriesPromise.then(instances => {
                   storeInstances(instances);
@@ -178,7 +182,10 @@ function createDicomWebApi(dicomWebConfig) {
       }
 
       // Get Series
-      const seriesPromises = await retrieveStudyMetadata(
+      const {
+        seriesSummaryMetadata,
+        seriesPromises,
+      } = await retrieveStudyMetadata(
         wadoDicomWebClient,
         StudyInstanceUID,
         enableStudyLazyLoad
@@ -190,6 +197,8 @@ function createDicomWebApi(dicomWebConfig) {
 
         DicomMetadataStore.addInstances(naturalizedInstances);
       }
+
+      DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata);
 
       seriesPromises.forEach(async seriesPromise => {
         const instances = await seriesPromise;

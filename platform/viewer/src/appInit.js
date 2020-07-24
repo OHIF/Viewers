@@ -11,6 +11,7 @@ import {
   DisplaySetService,
   ToolBarSerivce,
   ViewportGridService,
+  HangingProtocolService
   // utils,
   // redux as reduxOHIF,
 } from '@ohif/core';
@@ -54,6 +55,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     DisplaySetService,
     ToolBarSerivce,
     ViewportGridService,
+    HangingProtocolService
   ]);
 
   /**
