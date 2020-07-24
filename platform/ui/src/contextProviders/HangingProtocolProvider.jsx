@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 const DEFAULT_STATE = {
   hangingProtocol: null,
-  hpAlreadyApplied: {}
+  hpAlreadyApplied: {},
 };
 
 export const HangingProtocolContext = createContext(DEFAULT_STATE);
@@ -18,15 +18,26 @@ export function HangingProtocolProvider({ children, service }) {
   const hangingProtocolReducer = (state, action) => {
     switch (action.type) {
       case 'SET_HANGING_PROTOCOL': {
-        return { ...state, ...{ hangingProtocol: action.payload.hangingProtocol } };
+        return {
+          ...state,
+          ...{ hangingProtocol: action.payload.hangingProtocol },
+        };
       }
-      case 'SET_HANGING_PROTOCOL_ALREADY_APPLIED': {
-        return { ...state, ...{ hpAlreadyApplied: action.payload.hpAlreadyApplied } };
+      case 'SET_HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT': {
+        const index = action.payload.index;
+        const newHPAlreadyApplied = Object.assign({}, state.hpAlreadyApplied);
+
+        newHPAlreadyApplied[index] = true;
+
+        return {
+          ...state,
+          ...{ hpAlreadyApplied: newHPAlreadyApplied },
+        };
       }
       case 'RESET': {
         return {
           hangingProtocol: null,
-          hpAlreadyApplied: {}
+          hpAlreadyApplied: {},
         };
       }
 
@@ -47,12 +58,14 @@ export function HangingProtocolProvider({ children, service }) {
     DEFAULT_STATE
   );
 
-  console.log('hangingProtocolState',hangingProtocolState)
+  console.log('hangingProtocolState', hangingProtocolState);
 
-  const getState = useCallback(() => hangingProtocolState, [hangingProtocolState]);
+  const getState = useCallback(() => hangingProtocolState, [
+    hangingProtocolState,
+  ]);
 
   const setHangingProtocol = useCallback(
-    (hangingProtocol) =>
+    hangingProtocol =>
       dispatch({
         type: 'SET_HANGING_PROTOCOL',
         payload: {
@@ -62,12 +75,12 @@ export function HangingProtocolProvider({ children, service }) {
     [dispatch]
   );
 
-  const setHPAlreadyApplied = useCallback(
-    (hpAlreadyApplied) =>
+  const setHangingProtocolAppliedForViewport = useCallback(
+    index =>
       dispatch({
-        type: 'SET_HANGING_PROTOCOL_ALREADY_APPLIED',
+        type: 'SET_HANGING_PROTOCOL_APPLIED_FOR_VIEWPORT',
         payload: {
-          hpAlreadyApplied,
+          index,
         },
       }),
     [dispatch]
@@ -101,7 +114,7 @@ export function HangingProtocolProvider({ children, service }) {
       service.setServiceImplementation({
         getState,
         setHangingProtocol,
-        setHPAlreadyApplied,
+        setHangingProtocolAppliedForViewport,
         reset,
         set,
       });
@@ -110,7 +123,7 @@ export function HangingProtocolProvider({ children, service }) {
     getState,
     service,
     setHangingProtocol,
-    setHPAlreadyApplied,
+    setHangingProtocolAppliedForViewport,
     reset,
     set,
   ]);
@@ -118,7 +131,7 @@ export function HangingProtocolProvider({ children, service }) {
   const api = {
     // getState,
     setHangingProtocol,
-    setHPAlreadyApplied,
+    setHangingProtocolAppliedForViewport,
     reset,
     set,
   };

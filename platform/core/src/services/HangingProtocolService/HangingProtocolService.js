@@ -4,7 +4,7 @@ const publicAPI = {
   name,
   getState: _getState,
   setHangingProtocol: _setHangingProtocol,
-  setHPAlreadyApplied: _setHPAlreadyApplied,
+  setHangingProtocolAppliedForViewport: _setHangingProtocolAppliedForViewport,
   setServiceImplementation,
   reset: _reset,
   set: _set,
@@ -12,8 +12,10 @@ const publicAPI = {
 
 const serviceImplementation = {
   _getState: () => console.warn('getState() NOT IMPLEMENTED'),
-  _setHangingProtocol: () => console.warn('_setHangingProtocol() NOT IMPLEMENTED'),
-  _setHPAlreadyApplied: () => console.warn('_setHPAlreadyApplied() NOT IMPLEMENTED'),
+  _setHangingProtocol: () =>
+    console.warn('_setHangingProtocol() NOT IMPLEMENTED'),
+  _setHangingProtocolAppliedForViewport: () =>
+    console.warn('_setHangingProtocolAppliedForViewport() NOT IMPLEMENTED'),
   _reset: () => console.warn('reset() NOT IMPLEMENTED'),
   _set: () => console.warn('set() NOT IMPLEMENTED'),
 };
@@ -26,8 +28,10 @@ function _setHangingProtocol(hangingProtocol) {
   return serviceImplementation._setHangingProtocol(hangingProtocol);
 }
 
-function _setHPAlreadyApplied(hpAlreadyApplied) {
-  return serviceImplementation._setHPAlreadyApplied(hpAlreadyApplied);
+function _setHangingProtocolAppliedForViewport(hpAlreadyApplied) {
+  return serviceImplementation._setHangingProtocolAppliedForViewport(
+    hpAlreadyApplied
+  );
 }
 
 function _set(state) {
@@ -41,7 +45,7 @@ function _reset() {
 function setServiceImplementation({
   getState: getStateImplementation,
   setHangingProtocol: setHangingProtocolImplementation,
-  setHPAlreadyApplied: setHPAlreadyAppliedImplementation,
+  setHangingProtocolAppliedForViewport: setHangingProtocolAppliedForViewportImplementation,
   reset: resetImplementation,
   set: setImplementation,
 }) {
@@ -51,8 +55,8 @@ function setServiceImplementation({
   if (setHangingProtocolImplementation) {
     serviceImplementation._setHangingProtocol = setHangingProtocolImplementation;
   }
-  if (setHPAlreadyAppliedImplementation) {
-    serviceImplementation._setHPAlreadyApplied = setHPAlreadyAppliedImplementation;
+  if (setHangingProtocolAppliedForViewportImplementation) {
+    serviceImplementation._setHangingProtocolAppliedForViewport = setHangingProtocolAppliedForViewportImplementation;
   }
   if (resetImplementation) {
     serviceImplementation._reset = resetImplementation;

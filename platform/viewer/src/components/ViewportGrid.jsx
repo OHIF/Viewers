@@ -22,7 +22,11 @@ function ViewerViewportGrid(props) {
   } = viewportGrid;
 
   // TODO -> Need some way of selecting which displaySets hit the viewports.
-  const { DisplaySetService, MeasurementService, HangingProtocolService } = servicesManager.services;
+  const {
+    DisplaySetService,
+    MeasurementService,
+    HangingProtocolService,
+  } = servicesManager.services;
 
   // This is a placeholder for applying hanging protocols
   // It probably shouldn't be done here
@@ -47,9 +51,11 @@ function ViewerViewportGrid(props) {
           }
 
           // Temporary until matching is ported back over from the Meteor version.
-          const reqSeriesInstanceUID = data.hangingProtocol.stages[0].viewports[0].seriesMatchingRules[0].constraint.equals.value;
+          const reqSeriesInstanceUID =
+            data.hangingProtocol.stages[0].viewports[0].seriesMatchingRules[0]
+              .constraint.equals.value;
           const matchingDisplaySet = displaySetsAdded.find(ds => {
-            return ds.SeriesInstanceUID === reqSeriesInstanceUID
+            return ds.SeriesInstanceUID === reqSeriesInstanceUID;
           });
 
           if (!matchingDisplaySet) {
@@ -61,9 +67,7 @@ function ViewerViewportGrid(props) {
             displaySetInstanceUID: matchingDisplaySet.displaySetInstanceUID,
           });
 
-          hpAlreadyApplied[i] = true;
-
-          HangingProtocolService.setHPAlreadyApplied(hpAlreadyApplied);
+          HangingProtocolService.setHangingProtocolAppliedForViewport(i);
         }
       }
     );
@@ -166,7 +170,7 @@ function ViewerViewportGrid(props) {
         viewportComponents
       );
 
-      const onInterationHandler = (event) => {
+      const onInterationHandler = event => {
         if (isActive) return;
 
         if (event) {
@@ -189,7 +193,11 @@ function ViewerViewportGrid(props) {
           onInteraction={onInterationHandler}
           isActive={isActive}
         >
-          <div className={classNames('h-full w-full flex flex-col align-center', { 'pointer-events-none': !isActive })}>
+          <div
+            className={classNames('h-full w-full flex flex-col align-center', {
+              'pointer-events-none': !isActive,
+            })}
+          >
             <ViewportComponent
               displaySet={displaySet}
               viewportIndex={viewportIndex}

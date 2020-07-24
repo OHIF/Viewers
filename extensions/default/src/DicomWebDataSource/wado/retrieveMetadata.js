@@ -29,14 +29,11 @@ async function RetrieveMetadata(
     studyInstanceUid,
     filters
   );
-  const {
-    preLoadData,
-    promises
-  } = await retrieveMetadataLoader.execLoad();
+  const { preLoadData, promises } = await retrieveMetadataLoader.execLoad();
 
   return {
     seriesSummaryMetadata: preLoadData,
-    promises
+    seriesPromises: promises,
   };
 }
 

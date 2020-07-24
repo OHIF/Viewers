@@ -83,13 +83,12 @@ const BaseImplementation = {
       SeriesInstanceUID,
     });
   },
-  addSeries(seriesSummaryMetadata) {
+  addSeriesMetadata(seriesSummaryMetadata) {
     const { StudyInstanceUID } = seriesSummaryMetadata[0];
     let study = _getStudy(StudyInstanceUID);
     if (!study) {
-      _model.studies.push(createStudyMetadata(StudyInstanceUID));
-
-      study = _model.studies[_model.studies.length - 1];
+      study = createStudyMetadata(StudyInstanceUID);
+      _model.studies.push(study);
     }
 
     seriesSummaryMetadata.forEach(series => {
