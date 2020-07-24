@@ -1,10 +1,14 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { MODULE_TYPES } from '@ohif/core';
+import OHIF, { MODULE_TYPES, DICOMWeb } from '@ohif/core';
 //
 import { useAppConfig } from '@state';
-import { extensionManager } from '../App.jsx';
+import { extensionManager, servicesManager } from '../App.jsx';
+import { withRouter } from 'react-router';
+
+const { getAuthorizationHeader } = DICOMWeb;
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -30,13 +34,10 @@ function DataSourceWrapper(props) {
     return acc.concat(mods);
   }, []);
 
-  // Grabbing first for now. This isn't hydrated yet, but we should
-  // hydrate it somewhere based on config...
-  // ~ default.js
-  const firstAppConfigDataSource = appConfig.dataSources[0];
-  const dataSourceConfig = firstAppConfigDataSource.configuration;
-  const firstWebApiDataSource = webApiDataSources[0];
-  const dataSource = firstWebApiDataSource.createDataSource(dataSourceConfig);
+  // Grabbing first for now - should get active?
+  const name = webApiDataSources[0].name;
+  // TODO: Why does this return an array?
+  const dataSource = extensionManager.getDataSources(name)[0]
 
   // Route props --> studies.mapParams
   // mapParams --> studies.search
@@ -62,12 +63,11 @@ function DataSourceWrapper(props) {
     // 204: no content
     async function getData() {
       setIsLoading(true);
-
       const studies = await dataSource.query.studies.search(queryFilterValues);
 
       setIsLoading(false);
       setData({
-        studies,
+        studies: studies || [],
         total: studies.length,
         resultsPerPage: queryFilterValues.resultsPerPage,
         pageNumber: queryFilterValues.pageNumber,

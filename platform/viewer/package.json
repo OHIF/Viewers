@@ -66,13 +66,16 @@
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.isequal": "4.5.0",
     "moment": "^2.24.0",
+    "oidc-client": "1.11.5",
     "prop-types": "^15.7.2",
     "query-string": "^6.12.1",
     "react-dropzone": "^10.1.7",
     "react-i18next": "^10.11.0",
     "react-resize-detector": "^4.2.0",
     "react-router": "^5.2.0",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "react-redux": "7.2.4",
+    "redux-oidc": "3.1.7"
   },
   "devDependencies": {
     "@percy/cypress": "^2.3.0",

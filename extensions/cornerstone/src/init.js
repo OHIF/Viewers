@@ -5,7 +5,7 @@ import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import getTools, { toolsGroupedByType } from './utils/getTools.js';
 import initCornerstoneTools from './initCornerstoneTools.js';
-import './initWADOImageLoader.js';
+import initWADOImageLoader from './initWADOImageLoader.js';
 import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import { setEnabledElement } from './state';
@@ -69,6 +69,7 @@ export default function init({
     MeasurementService,
     DisplaySetService,
     ToolBarService,
+    UserAuthenticationService,
   } = servicesManager.services;
   const tools = getTools();
 
@@ -274,6 +275,8 @@ export default function init({
   const metadataProvider = OHIF.classes.MetadataProvider;
 
   cs.metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
+
+  initWADOImageLoader(UserAuthenticationService);
 
   // ~~
   const defaultCsToolsConfig = csToolsConfig || {
