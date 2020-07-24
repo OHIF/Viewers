@@ -227,7 +227,7 @@ export default [
       icon: 'old-dot-circle',
       label: 'Probe',
       commandName: 'setToolActive',
-      commandOptions: { toolName: 'Probe' },
+      commandOptions: { toolName: 'DragProbe' },
       type: 'primary',
     },
   },
