@@ -14,6 +14,7 @@ const commandsModule = ({ servicesManager }) => {
   const { ViewportGridService } = servicesManager.services;
 
   function _getActiveViewportsEnabledElement() {
+    debugger;
     const { activeViewportIndex } = ViewportGridService.getState();
     return getEnabledElement(activeViewportIndex);
   }
@@ -158,6 +159,7 @@ const commandsModule = ({ servicesManager }) => {
       });
     },
     nextImage: () => {
+      debugger;
       const enabledElement = _getActiveViewportsEnabledElement();
       scroll(enabledElement, 1);
     },

@@ -102,6 +102,8 @@ export default function init({ servicesManager, configuration }) {
   const handleOhifCornerstoneEnabledElementEvent = function(evt) {
     const { viewportIndex, enabledElement } = evt.detail;
 
+    debugger;
+
     setEnabledElement(viewportIndex, enabledElement);
   };
 
@@ -153,8 +155,8 @@ export default function init({ servicesManager, configuration }) {
       },
     },
     DragProbe: {
-      defaultStrategy: 'minimal'
-    }
+      defaultStrategy: 'minimal',
+    },
   };
 
   /* Abstract tools configuration using extension configuration. */
