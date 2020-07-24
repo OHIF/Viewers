@@ -153,8 +153,8 @@ export default function init({ servicesManager, configuration }) {
       },
     },
     DragProbe: {
-      defaultStrategy: 'minimal'
-    }
+      defaultStrategy: 'minimal',
+    },
   };
 
   /* Abstract tools configuration using extension configuration. */
