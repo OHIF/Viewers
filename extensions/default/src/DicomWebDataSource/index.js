@@ -43,15 +43,19 @@ function createDicomWebApi(dicomWebConfig) {
     enableStudyLazyLoad,
     supportsFuzzyMatching,
     supportsWildcard,
+    requestOptions,
   } = dicomWebConfig;
 
+  // TODO: update headers before every call to handle
+  // newly obtained access tokens following a refresh
   const qidoConfig = {
     url: qidoRoot,
-    // headers: DICOMWeb.getAuthorizationHeader(server),
+    //headers: getAuthorizationHeader({ requestOptions })
   };
 
   const wadoConfig = {
     url: wadoRoot,
+    //headers: getAuthorizationHeader({ requestOptions })
   };
 
   // TODO -> Two clients sucks, but its better than 1000.

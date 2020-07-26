@@ -229,8 +229,7 @@ function Authenticator({
   userManager,
   user,
   oidcAuthority,
-  location
-            }) {
+  location}) {
   const userLoggedIn = userManager && user && !user.expired;
 
   if (userLoggedIn) {

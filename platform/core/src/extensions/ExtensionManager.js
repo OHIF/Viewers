@@ -207,6 +207,7 @@ export default class ExtensionManager {
   };
 
   getDataSources = dataSourceName => {
+    console.warn(this.dataSourceMap);
     if (dataSourceName === undefined) {
       // Default to the activeDataSource
       dataSourceName = this.activeDataSource;
@@ -266,6 +267,8 @@ export default class ExtensionManager {
 
       dataSources.forEach(dataSource => {
         if (dataSource.namespace === namespace) {
+          // TODO: Provide UserAuthenticationService or something to data source
+          // when it is created?
           const dataSourceInstance = element.createDataSource(
             dataSource.configuration
           );

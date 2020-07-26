@@ -27,6 +27,8 @@ export function setConfiguration(appConfig) {
   cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 
   OHIF.user.getAccessToken = () => {
+    debugger;
+
     // TODO: Get the Redux store from somewhere else
     const state = window.store.getState();
     if (!state.oidc || !state.oidc.user) {
@@ -44,6 +46,7 @@ export function setConfiguration(appConfig) {
 
   cornerstoneWADOImageLoader.configure({
     beforeSend: function(xhr) {
+      debugger;
       const headers = OHIF.DICOMWeb.getAuthorizationHeader();
 
       if (headers.Authorization) {
