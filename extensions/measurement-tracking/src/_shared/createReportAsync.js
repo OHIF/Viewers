@@ -17,6 +17,34 @@ async function createReportAsync(servicesManager, dataSource, measurements) {
   });
 
   try {
+    const onSubmitHandler = async ({ action, value }) => {
+      const { SeriesDescription } = value;
+      switch (action.id) {
+        case 'save': {
+          const naturalizedReportValues = { SeriesDescription };
+
+          const naturalizedReport = await DICOMSR.storeMeasurements(
+            measurements,
+            dataSource,
+            ['ArrowAnnotate'],
+            naturalizedReportValues
+          );
+
+          DisplaySetService.makeDisplaySets([naturalizedReport], { madeInClient: true });
+          UINotificationService.show({
+            title: 'Create Report',
+            message: 'Measurements saved successfully',
+            type: 'success',
+          });
+
+          break;
+        }
+        case 'cancel':
+          break;
+      }
+      UIDialogService.dismiss({ id: 'report-title' });
+    };
+
     UIDialogService.create({
       id: 'report-title',
       centralize: true,
@@ -33,33 +61,7 @@ async function createReportAsync(servicesManager, dataSource, measurements) {
           { id: 'cancel', text: 'Cancel', type: 'secondary' },
           { id: 'save', text: 'Save', type: 'primary' },
         ],
-        onSubmit: async ({ action, value }) => {
-          const { SeriesDescription } = value;
-          switch (action.id) {
-            case 'save': {
-              const naturalizedReportValues = { SeriesDescription };
-
-              const naturalizedReport = await DICOMSR.storeMeasurements(
-                measurements,
-                dataSource,
-                ['ArrowAnnotate'],
-                naturalizedReportValues
-              );
-
-              DisplaySetService.makeDisplaySets([naturalizedReport], { madeInClient: true });
-              UINotificationService.show({
-                title: 'Create Report',
-                message: 'Measurements saved successfully',
-                type: 'success',
-              });
-
-              break;
-            }
-            case 'cancel':
-              break;
-          }
-          UIDialogService.dismiss({ id: 'report-title' });
-        },
+        onSubmit: onSubmitHandler,
         body: ({ value, setValue }) => {
           const onChangeHandler = event => {
             event.persist();
