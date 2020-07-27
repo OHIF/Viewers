@@ -146,7 +146,7 @@ class MeasurementService {
       return this.addOrUpdate(source, definition, measurement);
     };
     source.remove = id => {
-      return this.remove(source, id);
+      return this.remove(id, source);
     };
     source.getAnnotation = (definition, measurementId) => {
       return this.getAnnotation(source, definition, measurementId);
@@ -269,9 +269,9 @@ class MeasurementService {
       measurementId,
       definition
     );
+    const measurement = this.getMeasurement(measurementId);
     if (mapping) return mapping.toSourceSchema(measurement, definition);
 
-    const measurement = this.getMeasurement(measurementId);
     const matchingMapping = this._getMatchingMapping(
       source,
       definition,
@@ -484,14 +484,21 @@ class MeasurementService {
     return newMeasurement.id;
   }
 
-  remove(source, id) {
+  /**
+   * Removes a measurement and broadcasts the removed event.
+   *
+   * @param {string} id The measurement id
+   * @param {MeasurementSource} source The measurement source instance
+   * @return {string} A measurement id
+   */
+  remove(id, source) {
     if (!id || !this.measurements[id]) {
       log.warn(`No id provided, or unable to find measurement by id.`);
       return;
     }
 
     delete this.measurements[id];
-    this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED, source, id);
+    this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED, source, { id });
   }
 
   clearMeasurements() {
@@ -612,7 +619,7 @@ class MeasurementService {
    *
    * @param {string} eventName The event name
    * @param {MeasurementSource} source The measurement source
-   * @param {string} measurement The measurement id
+   * @param {string} measurement The measurement 
    * @return void
    */
   _broadcastChange(eventName, source, measurement) {

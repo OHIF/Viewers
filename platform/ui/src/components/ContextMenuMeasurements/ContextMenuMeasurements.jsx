@@ -3,14 +3,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 const ContextMenuMeasurements = ({
+  onGetMenuItems,
   onSetLabel,
   onSetDescription,
-  isTouchEvent,
-  eventData,
   onClose,
   onDelete,
 }) => {
-  const dropdownItems = [
+  const defaultMenuItems = [
     {
       label: 'Delete measurement',
       actionType: 'Delete',
@@ -18,6 +17,7 @@ const ContextMenuMeasurements = ({
         onDelete(item);
         onClose();
       },
+      value: {}
     },
     {
       label: 'Relabel',
@@ -26,31 +26,30 @@ const ContextMenuMeasurements = ({
         onSetLabel(item);
         onClose();
       },
+      value: {}
     },
-    {
+    /* {
       label: 'Add Description',
       actionType: 'setDescription',
       action: item => {
         onSetDescription(item);
         onClose();
       },
-    },
+      value: {}
+    }, */
   ];
 
-  return <ContextMenu items={dropdownItems} />;
+  const menuItems = onGetMenuItems(defaultMenuItems);
+
+  return <ContextMenu items={menuItems} />;
 };
 
 ContextMenuMeasurements.propTypes = {
-  isTouchEvent: PropTypes.bool,
-  eventData: PropTypes.object.isRequired,
   onClose: PropTypes.func.isRequired,
   onSetDescription: PropTypes.func.isRequired,
   onSetLabel: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
-};
-
-ContextMenuMeasurements.defaultProps = {
-  isTouchEvent: false,
+  onGetMenuItems: PropTypes.func.isRequired,
 };
 
 export default ContextMenuMeasurements;
