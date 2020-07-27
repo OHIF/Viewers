@@ -520,10 +520,10 @@ const _connectMeasurementServiceToTools = (MeasurementService, measurementSource
           Object.keys(toolState[imageId]).forEach(toolType => {
             toolState[imageId][toolType].data.forEach((toolData, toolIndex) => {
               if (toolData.id === measurement.id) {
-                /* Update the fields as we tune the arrow annotation mapping. */
                 const updatedAnnotation = source.getAnnotation(toolType, measurement.id);
                 if (updatedAnnotation) {
                   const { measurementData } = updatedAnnotation;
+                  /* TODO: Add more update fields as we tune different mappings. */
                   toolState[imageId][toolType].data[toolIndex].text = measurementData.text;
                 }
               }

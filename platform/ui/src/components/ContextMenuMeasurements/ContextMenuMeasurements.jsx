@@ -28,7 +28,7 @@ const ContextMenuMeasurements = ({
       },
       value: {}
     },
-    /* {
+    /* TODO: Add this back if needed. {
       label: 'Add Description',
       actionType: 'setDescription',
       action: item => {
@@ -46,7 +46,7 @@ const ContextMenuMeasurements = ({
 
 ContextMenuMeasurements.propTypes = {
   onClose: PropTypes.func.isRequired,
-  onSetDescription: PropTypes.func.isRequired,
+  onSetDescription: PropTypes.func,
   onSetLabel: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onGetMenuItems: PropTypes.func.isRequired,
