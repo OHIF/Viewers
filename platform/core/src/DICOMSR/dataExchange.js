@@ -8,6 +8,7 @@ import {
 import findMostRecentStructuredReport from './utils/findMostRecentStructuredReport';
 import cornerstoneTools from 'cornerstone-tools';
 import dcmjs from 'dcmjs';
+import merge from 'lodash.merge';
 
 const { MeasurementReport } = dcmjs.adapters.Cornerstone;
 
@@ -86,12 +87,14 @@ const generateReport = (measurementData, additionalFindingTypes) => {
  * @param {object} dataSource The dataSource that you wish to use to persist the data.
  * @param {string[]} additionalFindingTypes toolTypes that should be stored with labels as Findings
  * as opposed to Finding Sites.
+ * @param {object} naturalizedReportValues Naturalized report tags previsouly defined.
  * @return {object} The naturalized report
  */
 const storeMeasurements = async (
   measurementData,
   dataSource,
-  additionalFindingTypes = []
+  additionalFindingTypes = [],
+  naturalizedReportValues = {}
 ) => {
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
   // But it is good enough for now whilst we only have cornerstone as a datasource.
@@ -103,10 +106,11 @@ const storeMeasurements = async (
   }
 
   try {
-    const naturalizedReport = generateReport(
-      measurementData,
-      additionalFindingTypes
+    let naturalizedReport = merge(
+      generateReport(measurementData, additionalFindingTypes),
+      naturalizedReportValues
     );
+
     const { StudyInstanceUID } = naturalizedReport;
 
     await dataSource.store.dicom(naturalizedReport);
