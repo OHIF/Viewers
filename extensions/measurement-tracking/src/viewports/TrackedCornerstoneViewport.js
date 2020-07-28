@@ -298,8 +298,6 @@ function TrackedCornerstoneViewport({
     );
   }
 
-  const showNavArrows = isTracked && viewportIndex === activeViewportIndex;
-
   // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
 
   return (
@@ -310,7 +308,6 @@ function TrackedCornerstoneViewport({
           evt.preventDefault();
         }}
         onSeriesChange={direction => switchMeasurement(direction)}
-        showNavArrows={showNavArrows}
         studyData={{
           label,
           isTracked,
@@ -330,8 +327,8 @@ function TrackedCornerstoneViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+                  2
+                )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
