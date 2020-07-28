@@ -399,7 +399,7 @@ class MeasurementService {
    * @param {MeasurementSource} source The measurement source instance
    * @param {string} definition The source definition
    * @param {Measurement} measurement The source measurement
-   * @return void
+   * @return {string} A measurement id
    */
   addOrUpdate(source, definition, sourceMeasurement) {
     if (!this._isValidSource(source)) {
@@ -489,7 +489,7 @@ class MeasurementService {
    *
    * @param {string} id The measurement id
    * @param {MeasurementSource} source The measurement source instance
-   * @return {string} A measurement id
+   * @return {string} The removed measurement id
    */
   remove(id, source) {
     if (!id || !this.measurements[id]) {
@@ -499,11 +499,11 @@ class MeasurementService {
 
     delete this.measurements[id];
     this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED, source, { id });
+    return id;
   }
 
   clearMeasurements() {
     this.measurements = {};
-
     this._broadcastChange(this.EVENTS.MEASUREMENTS_CLEARED);
   }
 

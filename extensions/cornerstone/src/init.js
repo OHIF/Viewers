@@ -105,9 +105,7 @@ export default function init({ servicesManager, commandsManager, configuration }
     UIDialogService.create({
       eventData: event.detail,
       content: ContextMenuMeasurements,
-      contentProps: {
-        isTouchEvent: true,
-      },
+      contentProps: { isTouchEvent: true },
     });
   };
 
