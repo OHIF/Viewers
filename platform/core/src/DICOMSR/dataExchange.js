@@ -46,6 +46,8 @@ const retrieveMeasurements = server => {
 /**
  *
  * @param {object[]} measurementData An array of measurements from the measurements service
+ * @param {string[]} options.additionalFindingTypes toolTypes that should be stored with labels as Findings
+ * as opposed to Finding Sites.
  * that you wish to serialize.
  */
 const downloadReport = (measurementData, options = {}) => {
@@ -61,6 +63,7 @@ const downloadReport = (measurementData, options = {}) => {
  *
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
+ * @param {string[]} options.additionalFindingTypes toolTypes that should be stored with labels as Findings
  */
 const generateReport = (measurementData, options = {}) => {
   const ids = measurementData.map(md => md.id);
@@ -84,6 +87,8 @@ const generateReport = (measurementData, options = {}) => {
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
  * @param {object} dataSource The dataSource that you wish to use to persist the data.
+ * @param {string[]} options.additionalFindingTypes toolTypes that should be stored with labels as Findings
+ * as opposed to Finding Sites.
  * @return {object} The naturalized report
  */
 const storeMeasurements = async (measurementData, dataSource, options = {}) => {
@@ -98,7 +103,6 @@ const storeMeasurements = async (measurementData, dataSource, options = {}) => {
 
   try {
     const naturalizedReport = generateReport(measurementData, options);
-
     const { StudyInstanceUID } = naturalizedReport;
 
     await dataSource.store.dicom(naturalizedReport);
@@ -116,7 +120,12 @@ const storeMeasurements = async (measurementData, dataSource, options = {}) => {
   }
 };
 
-function _getFilteredCornerstoneToolState(uidFilter) {
+function _getFilteredCornerstoneToolState(
+  measurementData,
+  additionalFindingTypes
+) {
+  const uidFilter = measurementData.map(md => md.id);
+
   const globalToolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
   const filteredToolState = {};
 
@@ -133,9 +142,38 @@ function _getFilteredCornerstoneToolState(uidFilter) {
       };
     }
 
+    const measurmentDataI = measurementData.find(md => md.id === toolDataI.id);
+
     const toolData = imageIdSpecificToolState[toolType].data;
 
-    toolData.push(toolDataI);
+    let finding;
+    const findingSites = [];
+
+    // NOTE -> Any kind of freetext value abuses the DICOM standard,
+    // As CodeValues should map 1:1 with CodeMeanings.
+    // Ideally we would actually use SNOMED codes for this.
+    if (measurmentDataI.label) {
+      if (additionalFindingTypes.includes(toolType)) {
+        finding = {
+          CodeValue: 'CORNERSTONEFREETEXT',
+          CodingSchemeDesignator: 'CST4',
+          CodeMeaning: measurmentDataI.label,
+        };
+      } else {
+        findingSites.push({
+          CodeValue: 'CORNERSTONEFREETEXT',
+          CodingSchemeDesignator: 'CST4',
+          CodeMeaning: measurmentDataI.label,
+        });
+      }
+    }
+
+    const measurement = Object.assign({}, toolDataI, {
+      finding,
+      findingSites,
+    });
+
+    toolData.push(measurement);
   }
 
   const uids = uidFilter.slice();

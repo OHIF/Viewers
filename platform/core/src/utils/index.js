@@ -20,6 +20,7 @@ import formatPN from './formatPN';
 import resolveObjectPath from './resolveObjectPath';
 import * as hierarchicalListUtils from './hierarchicalListUtils';
 import * as progressTrackingUtils from './progressTrackingUtils';
+import isLowPriorityModality from './isLowPriorityModality';
 
 const utils = {
   guid,
@@ -44,6 +45,7 @@ const utils = {
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
+  isLowPriorityModality
 };
 
 export {
@@ -68,6 +70,7 @@ export {
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
+  isLowPriorityModality
 };
 
 export default utils;

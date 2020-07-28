@@ -1,9 +1,10 @@
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
+import isEqual from 'lodash.isequal';
 //
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
@@ -21,6 +22,7 @@ import {
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
+  TooltipClipboard,
 } from '@ohif/ui';
 
 const seriesInStudiesMap = new Map();
@@ -39,6 +41,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     ...defaultFilterValues,
     ...queryFilterValues,
   });
+
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
 
@@ -180,9 +183,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   }, [expandedRows, studies]);
 
   const isFiltering = (filterValues, defaultFilterValues) => {
-    return Object.keys(defaultFilterValues).some(name => {
-      return filterValues[name] !== defaultFilterValues[name];
-    });
+    return !isEqual(filterValues, defaultFilterValues);
   };
 
   const tableDataSource = sortedStudies.map((study, key) => {
@@ -213,17 +214,15 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
         {
           key: 'patientName',
           content: patientName ? (
-            patientName
+            <TooltipClipboard>{patientName}</TooltipClipboard>
           ) : (
             <span className="text-gray-700">(Empty)</span>
           ),
-          title: patientName,
           gridCol: 4,
         },
         {
           key: 'mrn',
-          content: mrn,
-          title: mrn,
+          content: <TooltipClipboard>{mrn}</TooltipClipboard>,
           gridCol: 3,
         },
         {
@@ -239,8 +238,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
         },
         {
           key: 'description',
-          content: description,
-          title: description,
+          content: <TooltipClipboard>{description}</TooltipClipboard>,
           gridCol: 4,
         },
         {
@@ -251,8 +249,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
         },
         {
           key: 'accession',
-          content: accession,
-          title: accession,
+          content: <TooltipClipboard>{accession}</TooltipClipboard>,
           gridCol: 3,
         },
         {
@@ -315,6 +312,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
                   disabled={false}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
+                  onClick={() => {}}
                 >
                   {mode.displayName}
                 </Button>
@@ -394,14 +392,15 @@ WorkList.propTypes = {
   dataSource: PropTypes.shape({
     query: PropTypes.object.isRequired,
   }).isRequired,
+  isLoadingData: PropTypes.bool.isRequired,
 };
 
 const defaultFilterValues = {
   patientName: '',
   mrn: '',
   studyDate: {
-    startDate: undefined,
-    endDate: undefined,
+    startDate: null,
+    endDate: null,
   },
   description: '',
   modalities: [],

@@ -37,7 +37,13 @@ const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
  * @param {bool} lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
  */
 function createDicomWebApi(dicomWebConfig) {
-  const { qidoRoot, wadoRoot, enableStudyLazyLoad } = dicomWebConfig;
+  const {
+    qidoRoot,
+    wadoRoot,
+    enableStudyLazyLoad,
+    supportsFuzzyMatching,
+    supportsWildcard,
+  } = dicomWebConfig;
 
   const qidoConfig = {
     url: qidoRoot,
@@ -59,7 +65,10 @@ function createDicomWebApi(dicomWebConfig) {
         mapParams: mapParams.bind(),
         search: async function(origParams) {
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
-            mapParams(origParams) || {};
+            mapParams(origParams, {
+              supportsFuzzyMatching,
+              supportsWildcard,
+            }) || {};
 
           const results = await qidoSearch(
             qidoDicomWebClient,
@@ -127,7 +136,8 @@ function createDicomWebApi(dicomWebConfig) {
           );
 
           studyPromises.forEach(studyPromise => {
-            studyPromise.then(seriesPromises => {
+            studyPromise.then(data => {
+              const { seriesPromises } = data;
               seriesPromises.forEach(seriesPromise => {
                 seriesPromise.then(instances => {
                   storeInstances(instances);
@@ -172,7 +182,10 @@ function createDicomWebApi(dicomWebConfig) {
       }
 
       // Get Series
-      const seriesPromises = await retrieveStudyMetadata(
+      const {
+        seriesSummaryMetadata,
+        seriesPromises,
+      } = await retrieveStudyMetadata(
         wadoDicomWebClient,
         StudyInstanceUID,
         enableStudyLazyLoad
@@ -184,6 +197,8 @@ function createDicomWebApi(dicomWebConfig) {
 
         DicomMetadataStore.addInstances(naturalizedInstances);
       }
+
+      DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata);
 
       seriesPromises.forEach(async seriesPromise => {
         const instances = await seriesPromise;

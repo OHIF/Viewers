@@ -164,7 +164,7 @@ SidePanel.propTypes = {
       iconLabel: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
-      content: PropTypes.node,
+      content: PropTypes.func, // TODO: Should be node, but it keeps complaining?
     }),
     PropTypes.arrayOf(
       PropTypes.shape({
@@ -172,7 +172,7 @@ SidePanel.propTypes = {
         iconLabel: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         label: PropTypes.string.isRequired,
-        content: PropTypes.node,
+        content: PropTypes.func, // TODO: Should be node, but it keeps complaining?
       })
     ),
   ]),

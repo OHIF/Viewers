@@ -53,6 +53,7 @@ const EVENTS = {
   MEASUREMENT_ADDED: 'event::measurement_added',
   MEASUREMENT_REMOVED: 'event::measurement_removed',
   MEASUREMENTS_CLEARED: 'event::measurements_cleared',
+  JUMP_TO_MEASUREMENT: 'event:jump_to_measurement',
 };
 
 const VALUE_TYPES = {
@@ -70,6 +71,7 @@ class MeasurementService {
     this.mappings = {};
     this.measurements = {};
     this.listeners = {};
+    this._jumpToMeasurementCache = {};
     Object.defineProperty(this, 'EVENTS', {
       value: EVENTS,
       writable: false,
@@ -496,6 +498,40 @@ class MeasurementService {
     this.measurements = {};
 
     this._broadcastChange(this.EVENTS.MEASUREMENTS_CLEARED);
+  }
+
+  jumpToMeasurement(viewportIndex, id) {
+    const measurement = this.measurements[id];
+
+    if (!measurement) {
+      log.warn(`No id provided, or unable to find measurement by id.`);
+      return;
+    }
+
+    this._addJumpToMeasurement(viewportIndex, id);
+
+    const eventName = this.EVENTS.JUMP_TO_MEASUREMENT;
+
+    const hasListeners = Object.keys(this.listeners).length > 0;
+    const hasCallbacks = Array.isArray(this.listeners[eventName]);
+
+    if (hasListeners && hasCallbacks) {
+      this.listeners[eventName].forEach(listener => {
+        listener.callback({ viewportIndex, measurement });
+      });
+    }
+  }
+
+  _addJumpToMeasurement(viewportIndex, id) {
+    this._jumpToMeasurementCache[viewportIndex] = id;
+  }
+
+  getJumpToMeasurement(viewportIndex) {
+    return this._jumpToMeasurementCache[viewportIndex];
+  }
+
+  removeJumpToMeasurement(viewportIndex) {
+    delete this._jumpToMeasurementCache[viewportIndex];
   }
 
   _getMappingByMeasurementSource(measurementId, definition) {

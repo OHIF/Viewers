@@ -4,6 +4,7 @@ import React from 'react';
 import arrowDown from './../../assets/icons/arrow-down.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
+import clipboard from './../../assets/icons/clipboard.svg';
 import close from './../../assets/icons/close.svg';
 import dottedCircle from './../../assets/icons/dotted-circle.svg';
 import circledCheckmark from './../../assets/icons/circled-checkmark.svg';
@@ -12,6 +13,7 @@ import chevronLeft from './../../assets/icons/chevron-left.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
 import eyeVisible from './../../assets/icons/eye-visible.svg';
 import eyeHidden from './../../assets/icons/eye-hidden.svg';
+import externalLink from './../../assets/icons/external-link.svg';
 import groupLayers from './../../assets/icons/group-layers.svg';
 import info from './../../assets/icons/info.svg';
 import infoLink from './../../assets/icons/info-link.svg';
@@ -63,6 +65,7 @@ const ICONS = {
   'arrow-down': arrowDown,
   calendar: calendar,
   cancel: cancel,
+  clipboard: clipboard,
   close: close,
   'dotted-circle': dottedCircle,
   'circled-checkmark': circledCheckmark,
@@ -71,6 +74,7 @@ const ICONS = {
   'chevron-right': chevronRight,
   'eye-visible': eyeVisible,
   'eye-hidden': eyeHidden,
+  'external-link': externalLink,
   'group-layers': groupLayers,
   info: info,
   'info-link': infoLink,
@@ -116,7 +120,7 @@ const ICONS = {
   'old-angle-left': oldAngleLeft,
   'old-reset': oldReset,
   'old-circle-o': oldCircleO,
-  'old-trash': oldTrash
+  'old-trash': oldTrash,
 };
 
 /**

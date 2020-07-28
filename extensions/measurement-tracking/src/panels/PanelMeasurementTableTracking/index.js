@@ -12,6 +12,7 @@ import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 import createReportAsync from './../../_shared/createReportAsync.js';
+import setCornerstoneMeasurementActive from '../../_shared/setCornerstoneMeasurementActive';
 
 const { formatDate } = utils;
 
@@ -33,7 +34,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   );
   const {
     MeasurementService,
-    UINotificationService,
     UIDialogService,
     DisplaySetService,
   } = servicesManager.services;
@@ -148,8 +148,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   }
 
   function exportReport() {
-    const dataSources = extensionManager.getDataSources();
-    const dataSource = dataSources[0];
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -158,33 +156,15 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     );
 
     // TODO -> Need prompt here.
-
     // TODO -> local download.
-    DICOMSR.downloadReport(trackedMeasurements, dataSource);
+    // DICOMSR.downloadReport(trackedMeasurements, dataSource);
+    const additionalFindings = ['ArrowAnnotate'];
+
+    DICOMSR.downloadReport(trackedMeasurements, additionalFindings);
   }
 
   const jumpToImage = ({ id, isActive }) => {
-    const measurement = MeasurementService.getMeasurement(id);
-    const { referenceSeriesUID, SOPInstanceUID } = measurement;
-
-    const displaySets = DisplaySetService.getDisplaySetsForSeries(
-      referenceSeriesUID
-    );
-    const displaySet = displaySets.find(ds => {
-      return (
-        ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
-      );
-    });
-
-    const imageIndex = displaySet.images
-      .map(i => i.SOPInstanceUID)
-      .indexOf(SOPInstanceUID);
-
-    viewportGridService.setDisplaysetForViewport({
-      viewportIndex: viewportGrid.activeViewportIndex,
-      displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      imageIndex,
-    });
+    MeasurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, id);
 
     onMeasurementItemClickHandler({ id, isActive });
   };
@@ -199,11 +179,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           MeasurementService.update(id, {
             ...measurement,
             ...value,
-          });
-          UINotificationService.show({
-            title: 'Measurements',
-            message: 'Label updated successfully',
-            type: 'success',
           });
         }
       }

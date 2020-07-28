@@ -23,6 +23,9 @@ export {
   ViewportGridContext,
   ViewportGridProvider,
   useViewportGrid,
+  HangingProtocolContext,
+  HangingProtocolProvider,
+  useHangingProtocol,
 } from './src/contextProviders';
 
 /** COMPONENTS */
@@ -74,6 +77,7 @@ export {
   ThumbnailList,
   ToolbarButton,
   Tooltip,
+  TooltipClipboard,
   Typography,
   Viewport,
   ViewportActionBar,

@@ -280,10 +280,9 @@ export default class DICOMSRDisplayTool extends BaseTool {
 }
 
 function _getTextBoxLinesFromLabels(labels) {
-  // TODO -> max 2 for now, need a generic solution for this!
+  // TODO -> max 3 for now (label + shortAxis + longAxis), need a generic solution for this!
 
-  const labelLength = Math.min(labels.length, 2);
-
+  const labelLength = Math.min(labels.length, 3);
   const lines = [];
 
   for (let i = 0; i < labelLength; i++) {

@@ -8,6 +8,7 @@ import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
 import TOOL_NAMES from './constants/toolNames';
 import { adapters } from 'dcmjs';
 import getToolStateToCornerstoneMeasurementSchema from './utils/getToolStateToCornerstoneMeasurementSchema';
+import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
 import id from './id';
 
 const { formatDate } = utils;
@@ -102,8 +103,19 @@ function OHIFCornerstoneSRViewport({
     );
 
     setTrackingUniqueIdentifiersForElement(targetElement);
-
     setElement(targetElement);
+
+    const OHIFCornerstoneEnabledElementEvent = new CustomEvent(
+      'ohif-cornerstone-enabled-element-event',
+      {
+        detail: {
+          enabledElement: targetElement,
+          viewportIndex,
+        },
+      }
+    );
+
+    document.dispatchEvent(OHIFCornerstoneEnabledElementEvent);
   };
 
   useEffect(() => {
@@ -371,10 +383,13 @@ function OHIFCornerstoneSRViewport({
         const toMeasurementSchema = getToolStateToCornerstoneMeasurementSchema(
           toolType,
           MeasurementService,
+          DisplaySetService,
           imageId
         );
 
         const source = MeasurementService.getSource('CornerstoneTools', '4');
+
+        data.label = getLabelFromDCMJSImportedToolData(data);
 
         MeasurementService.addRawMeasurement(
           source,
@@ -399,10 +414,7 @@ function OHIFCornerstoneSRViewport({
     });
   }
 
-  const label =
-    viewports.length > 1
-      ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
-      : '';
+  const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
 
   // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
 
@@ -415,7 +427,6 @@ function OHIFCornerstoneSRViewport({
         }}
         onSeriesChange={onMeasurementChange}
         onHydrationClick={hydrateMeasurementService}
-        showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
           label,
           isTracked: false,
@@ -436,8 +447,8 @@ function OHIFCornerstoneSRViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+                  2
+                )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -563,6 +574,8 @@ async function _getViewportAndActiveDisplaySetData(
     SeriesDescription: image0.SeriesDescription,
     SeriesInstanceUID: image0.SeriesInstanceUID,
     SeriesNumber: image0.SeriesNumber,
+    ManufacturerModelName: image0.ManufacturerModelName,
+    PixelSpacing: image0.PixelSpacing,
     displaySetInstanceUID,
   };
 

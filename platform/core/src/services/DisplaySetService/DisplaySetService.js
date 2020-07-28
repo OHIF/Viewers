@@ -46,6 +46,20 @@ export default class DisplaySetService {
     );
   };
 
+  getDisplaySetForSOPInstanceUID(SOPInstanceUID, SeriesInstanceUID) {
+    const displaySets = SeriesInstanceUID
+      ? this.getDisplaySetsForSeries(SeriesInstanceUID)
+      : this.getDisplaySetCache();
+
+    const displaySet = displaySets.find(ds => {
+      return (
+        ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+      );
+    });
+
+    return displaySet;
+  }
+
   /**
    * @param {string} displaySetInstanceUID
    * @returns {object} displaySet

@@ -6,7 +6,11 @@ const ArrowAnnotate = {
   toAnnotation: (measurement, definition) => {
     // TODO -> Implement when this is needed.
   },
-  toMeasurement: (csToolsAnnotation, getValueTypeFromToolType) => {
+  toMeasurement: (
+    csToolsAnnotation,
+    DisplaySetService,
+    getValueTypeFromToolType
+  ) => {
     const { element, measurementData } = csToolsAnnotation;
     const tool =
       csToolsAnnotation.toolType ||
@@ -26,6 +30,11 @@ const ArrowAnnotate = {
       StudyInstanceUID,
     } = getSOPInstanceAttributes(element);
 
+    const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      SOPInstanceUID,
+      SeriesInstanceUID
+    );
+
     const points = [];
     points.push(measurementData.handles);
 
@@ -35,6 +44,7 @@ const ArrowAnnotate = {
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: measurementData.text,
       description: measurementData.description,
       unit: measurementData.unit,
