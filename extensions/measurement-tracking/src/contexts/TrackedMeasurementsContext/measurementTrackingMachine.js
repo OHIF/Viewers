@@ -6,6 +6,7 @@ const RESPONSE = {
   CREATE_REPORT: 1,
   ADD_SERIES: 2,
   SET_STUDY_AND_SERIES: 3,
+  NO_NOT_FOR_SERIES: 4,
 };
 
 const machineConfiguration = {
@@ -14,6 +15,11 @@ const machineConfiguration = {
   context: {
     trackedStudy: '',
     trackedSeries: [],
+    ignoredSeries: [],
+    //
+    prevTrackedStudy: '',
+    prevTrackedSeries: [],
+    prevIgnoredSeries: [],
   },
   states: {
     off: {
@@ -53,6 +59,7 @@ const machineConfiguration = {
         },
       },
     },
+    // TODO: --> Create report; initiated by save button?
     tracking: {
       on: {
         TRACK_SERIES: [
@@ -65,7 +72,6 @@ const machineConfiguration = {
             cond: 'isNewSeries',
           },
         ],
-
         UNTRACK_SERIES: [
           {
             target: 'tracking',
@@ -95,10 +101,16 @@ const machineConfiguration = {
           },
           {
             target: 'tracking',
-            actions: ['setTrackedStudyAndSeries'],
+            actions: [
+              'discardExternalMeasurements',
+              'setTrackedStudyAndSeries',
+            ],
             cond: 'shouldSetStudyAndSeries',
           },
-          // CREATE_REPORT && CANCEL
+          {
+            target: 'promptSaveReport',
+            cond: 'shouldPromptSaveReport',
+          },
           {
             target: 'tracking',
           },
@@ -114,9 +126,41 @@ const machineConfiguration = {
         onDone: [
           {
             target: 'tracking',
-            actions: ['setTrackedStudyAndSeries'],
+            actions: [
+              'discardExternalMeasurements',
+              'setTrackedStudyAndSeries',
+            ],
             cond: 'shouldSetStudyAndSeries',
           },
+          {
+            target: 'tracking',
+            actions: ['ignoreSeries'],
+            cond: 'shouldAddIgnoredSeries',
+          },
+          {
+            target: 'promptSaveReport',
+            cond: 'shouldPromptSaveReport',
+          },
+          {
+            target: 'tracking',
+          },
+        ],
+        onError: {
+          target: 'idle',
+        },
+      },
+    },
+    promptSaveReport: {
+      invoke: {
+        src: 'promptSaveReport',
+        onDone: [
+          // did save
+          {
+            target: 'idle',
+            actions: ['discardExternalMeasurements'],
+            cond: 'shouldPromptSaveReport',
+          },
+          // cancel
           {
             target: 'tracking',
           },
@@ -143,18 +187,38 @@ const defaultOptions = {
     },
   },
   actions: {
+    discardExternalMeasurements: (ctx, evt) => {
+      console.log('discard external', ctx, evt);
+    },
     clearContext: assign({
       trackedStudy: '',
       trackedSeries: [],
+      ignoredSeries: [],
+      prevTrackedStudy: '',
+      prevTrackedSeries: [],
+      prevIgnoredSeries: [],
     }),
     // Promise resolves w/ `evt.data.*`
     setTrackedStudyAndSeries: assign((ctx, evt) => ({
+      prevTrackedStudy: ctx.trackedStudy,
+      prevTrackedSeries: ctx.trackedSeries.slice(),
+      prevIgnoredSeries: ctx.ignoredSeries.slice(),
+      //
       trackedStudy: evt.data.StudyInstanceUID,
       trackedSeries: [evt.data.SeriesInstanceUID],
+      ignoredSeries: [],
     })),
     setTrackedStudyAndMultipleSeries: assign((ctx, evt) => ({
+      prevTrackedStudy: ctx.trackedStudy,
+      prevTrackedSeries: ctx.trackedSeries.slice(),
+      prevIgnoredSeries: ctx.ignoredSeries.slice(),
+      //
       trackedStudy: evt.StudyInstanceUID,
       trackedSeries: [...ctx.trackedSeries, ...evt.SeriesInstanceUIDs],
+      ignoredSeries: [],
+    })),
+    ignoreSeries: assign((ctx, evt) => ({
+      ignoredSeries: [...ctx.ignoredSeries, evt.data.SeriesInstanceUID],
     })),
     addTrackedSeries: assign((ctx, evt) => ({
       trackedSeries: [...ctx.trackedSeries, evt.data.SeriesInstanceUID],
@@ -172,13 +236,20 @@ const defaultOptions = {
       evt.data && evt.data.userResponse === RESPONSE.ADD_SERIES,
     shouldSetStudyAndSeries: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.SET_STUDY_AND_SERIES,
+    shouldAddIgnoredSeries: (ctx, evt) =>
+      evt.data && evt.data.userResponse === RESPONSE.NO_NOT_FOR_SERIES,
+    shouldPromptSaveReport: (ctx, evt) =>
+      evt.data && evt.data.userResponse === RESPONSE.CREATE_REPORT,
     // Has more than 1, or SeriesInstanceUID is not in list
     // --> Post removal would have non-empty trackedSeries array
     hasRemainingTrackedSeries: (ctx, evt) =>
       ctx.trackedSeries.length > 1 ||
       !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
-    isNewStudy: (ctx, evt) => ctx.trackedStudy !== evt.StudyInstanceUID,
+    isNewStudy: (ctx, evt) =>
+      !ctx.ignoredSeries.includes(evt.SeriesInstanceUID) &&
+      ctx.trackedStudy !== evt.StudyInstanceUID,
     isNewSeries: (ctx, evt) =>
+      !ctx.ignoredSeries.includes(evt.SeriesInstanceUID) &&
       !ctx.trackedSeries.includes(evt.SeriesInstanceUID),
   },
 };

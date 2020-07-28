@@ -6,6 +6,7 @@ const RESPONSE = {
   CREATE_REPORT: 1,
   ADD_SERIES: 2,
   SET_STUDY_AND_SERIES: 3,
+  NO_NOT_FOR_SERIES: 4,
 };
 
 function promptUser({ servicesManager, extensionManager }, ctx, evt) {
@@ -27,21 +28,6 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
         UIViewportDialogService,
         viewportIndex
       );
-    }
-
-    if (promptResult === RESPONSE.CREATE_REPORT) {
-      // TODO -> Eventually deal with multiple dataSources.
-      // Would need some way of saying which one is the "push" dataSource
-      const dataSources = extensionManager.getDataSources();
-      const dataSource = dataSources[0];
-      const measurements = MeasurementService.getMeasurements();
-      const trackedMeasurements = measurements.filter(
-        m =>
-          trackedStudy === m.referenceStudyUID &&
-          trackedSeries.includes(m.referenceSeriesUID)
-      );
-
-      createReportAsync(servicesManager, dataSource, trackedMeasurements);
     }
 
     resolve({
@@ -96,7 +82,7 @@ function _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex) {
       { type: 'cancel', text: 'Cancel', value: RESPONSE.CANCEL },
       {
         type: 'secondary',
-        text: 'Save in report',
+        text: 'Save',
         value: RESPONSE.CREATE_REPORT,
       },
       {

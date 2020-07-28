@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
@@ -9,6 +9,7 @@ import {
 import promptBeginTracking from './promptBeginTracking';
 import promptTrackNewSeries from './promptTrackNewSeries';
 import promptTrackNewStudy from './promptTrackNewStudy';
+import promptSaveReport from './promptSaveReport';
 
 const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
@@ -23,6 +24,23 @@ function TrackedMeasurementsContextProvider(
   { children } // Component props
 ) {
   const machineOptions = Object.assign({}, defaultOptions);
+  machineOptions.actions = Object.assign({}, machineOptions.actions, {
+    discardExternalMeasurements: (ctx, evt) => {
+      const { MeasurementService } = servicesManager.services;
+      const measurements = MeasurementService.getMeasurements();
+      const filteredMeasurements = measurements.filter(ms =>
+        ctx.prevTrackedSeries.includes(ms.referenceSeriesUID)
+      );
+      const measurementIds = filteredMeasurements.reduce(
+        (acc, meas) => [...acc, meas.id],
+        []
+      );
+
+      for (let i = 0; i < measurementIds.length; i++) {
+        MeasurementService.remove('app-source', measurementIds[i]);
+      }
+    },
+  });
   machineOptions.services = Object.assign({}, machineOptions.services, {
     promptBeginTracking: promptBeginTracking.bind(null, {
       servicesManager,
@@ -33,6 +51,10 @@ function TrackedMeasurementsContextProvider(
       extensionManager,
     }),
     promptTrackNewStudy: promptTrackNewStudy.bind(null, {
+      servicesManager,
+      extensionManager,
+    }),
+    promptSaveReport: promptSaveReport.bind(null, {
       servicesManager,
       extensionManager,
     }),

@@ -6,6 +6,7 @@ const RESPONSE = {
   CREATE_REPORT: 1,
   ADD_SERIES: 2,
   SET_STUDY_AND_SERIES: 3,
+  NO_NOT_FOR_SERIES: 4,
 };
 
 function promptUser({ servicesManager, extensionManager }, ctx, evt) {
@@ -29,21 +30,6 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
       );
     }
 
-    if (promptResult === RESPONSE.CREATE_REPORT) {
-      // TODO -> Eventually deal with multiple dataSources.
-      // Would need some way of saying which one is the "push" dataSource
-      const dataSources = extensionManager.getDataSources();
-      const dataSource = dataSources[0];
-      const measurements = MeasurementService.getMeasurements();
-      const trackedMeasurements = measurements.filter(
-        m =>
-          trackedStudy === m.referenceStudyUID &&
-          trackedSeries.includes(m.referenceSeriesUID)
-      );
-
-      createReportAsync(servicesManager, dataSource, trackedMeasurements);
-    }
-
     resolve({
       userResponse: promptResult,
       StudyInstanceUID,
@@ -57,6 +43,11 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
     const message = 'Track measurements for this series?';
     const actions = [
       { type: 'cancel', text: 'No', value: RESPONSE.CANCEL },
+      {
+        type: 'secondary',
+        text: 'No, do not ask again for this series',
+        value: RESPONSE.NO_NOT_FOR_SERIES,
+      },
       {
         type: 'primary',
         text: 'Yes',
