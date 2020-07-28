@@ -16,7 +16,7 @@ import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
  *
  * @typedef {Object} Measurement
  * @property {number} id -
- * @property {string} sopInstanceUid -
+ * @property {string} SOPInstanceUID -
  * @property {string} FrameOfReferenceUID -
  * @property {string} referenceSeriesUID -
  * @property {string} label -

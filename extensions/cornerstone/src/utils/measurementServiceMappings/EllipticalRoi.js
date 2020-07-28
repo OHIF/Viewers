@@ -20,8 +20,8 @@ const EllipticalRoi = {
     return {
       toolName: definition,
       measurementData: {
-        sopInstanceUid: SOPInstanceUID,
-        frameOfReferenceUID: FrameOfReferenceUID,
+        SOPInstanceUID,
+        FrameOfReferenceUID,
         SeriesInstanceUID: referenceSeriesUID,
         unit,
         text: label,
@@ -89,7 +89,7 @@ const EllipticalRoi = {
 
     return {
       id: measurementData.id,
-      SOPInstanceUID: SOPInstanceUID,
+      SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,

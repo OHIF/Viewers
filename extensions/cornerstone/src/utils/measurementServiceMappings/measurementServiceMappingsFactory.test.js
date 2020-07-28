@@ -44,8 +44,8 @@ describe('measurementServiceMappings.js', () => {
       toolName: definition,
       measurementData: {
         _measurementServiceId: 1,
-        sopInstanceUid: '123',
-        frameOfReferenceUID: '123',
+        SOPInstanceUID: '123',
+        FrameOfReferenceUID: '123',
         SeriesInstanceUID: '123',
         handles,
         text: 'Test',
