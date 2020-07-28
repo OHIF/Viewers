@@ -188,7 +188,7 @@ export default function init({ servicesManager, commandsManager, configuration }
             { id: 'cancel', text: 'Cancel', type: 'secondary' },
             { id: 'save', text: 'Save', type: 'primary' },
           ],
-          onSubmit: ({ action, value }) => onSubmitHandler({ action, value }),
+          onSubmit: onSubmitHandler,
           body: ({ value, setValue }) => {
             const onChangeHandler = event => {
               event.persist();
@@ -196,7 +196,6 @@ export default function init({ servicesManager, commandsManager, configuration }
             };
 
             const onKeyPressHandler = event => {
-              event.persist();
               if (event.key === 'Enter') {
                 onSubmitHandler({ value, action: { id: 'save' } });
               }
@@ -370,13 +369,12 @@ export default function init({ servicesManager, commandsManager, configuration }
 
 const _initMeasurementService = (MeasurementService, DisplaySetService) => {
   /* Initialization */
-  const mappings = measurementServiceMappingsFactory(MeasurementService, DisplaySetService);
   const {
     Length,
     Bidirectional,
     EllipticalRoi,
     ArrowAnnotate,
-  } = mappings;
+  } = measurementServiceMappingsFactory(MeasurementService, DisplaySetService);
   const csToolsVer4MeasurementSource = MeasurementService.createSource(
     'CornerstoneTools',
     '4'
@@ -415,25 +413,18 @@ const _initMeasurementService = (MeasurementService, DisplaySetService) => {
     ArrowAnnotate.toMeasurement
   );
 
-  return {
-    source: csToolsVer4MeasurementSource,
-    mappings
-  };
+  return csToolsVer4MeasurementSource;
 };
 
 const _connectToolsToMeasurementService = (
   MeasurementService,
   DisplaySetService
 ) => {
-  const { source: csToolsVer4MeasurementSource, mappings } = _initMeasurementService(
+  const csToolsVer4MeasurementSource = _initMeasurementService(
     MeasurementService,
     DisplaySetService
   );
-  _connectMeasurementServiceToTools(
-    MeasurementService,
-    csToolsVer4MeasurementSource,
-    mappings
-  );
+  _connectMeasurementServiceToTools(MeasurementService, csToolsVer4MeasurementSource);
   const { addOrUpdate, remove } = csToolsVer4MeasurementSource;
   const elementEnabledEvt = cs.EVENTS.ELEMENT_ENABLED;
 

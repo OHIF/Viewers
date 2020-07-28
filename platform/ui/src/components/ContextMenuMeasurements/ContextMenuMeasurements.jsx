@@ -28,15 +28,6 @@ const ContextMenuMeasurements = ({
       },
       value: {}
     },
-    /* TODO: Add this back if needed. {
-      label: 'Add Description',
-      actionType: 'setDescription',
-      action: item => {
-        onSetDescription(item);
-        onClose();
-      },
-      value: {}
-    }, */
   ];
 
   const menuItems = onGetMenuItems(defaultMenuItems);
