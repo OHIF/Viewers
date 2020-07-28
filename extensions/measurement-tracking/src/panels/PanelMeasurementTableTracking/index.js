@@ -157,6 +157,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
+    // TODO -> Need prompt here.
+
     // TODO -> local download.
     DICOMSR.downloadReport(trackedMeasurements, dataSource);
   }

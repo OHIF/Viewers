@@ -48,8 +48,8 @@ const retrieveMeasurements = server => {
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
  */
-const downloadReport = measurementData => {
-  const srDataset = generateReport(measurementData);
+const downloadReport = (measurementData, options = {}) => {
+  const srDataset = generateReport(measurementData, options);
   const reportBlob = dcmjs.data.datasetToBlob(srDataset);
 
   //Create a URL for the binary.
@@ -62,7 +62,7 @@ const downloadReport = measurementData => {
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
  */
-const generateReport = measurementData => {
+const generateReport = (measurementData, options = {}) => {
   const ids = measurementData.map(md => md.id);
   const filteredToolState = _getFilteredCornerstoneToolState(ids);
 
@@ -71,7 +71,12 @@ const generateReport = measurementData => {
     cornerstone.metaData
   );
 
-  return report.dataset;
+  const { dataset } = report;
+
+  // Add in top level series options
+  Object.assign(dataset, options);
+
+  return dataset;
 };
 
 /**
@@ -81,7 +86,7 @@ const generateReport = measurementData => {
  * @param {object} dataSource The dataSource that you wish to use to persist the data.
  * @return {object} The naturalized report
  */
-const storeMeasurements = async (measurementData, dataSource) => {
+const storeMeasurements = async (measurementData, dataSource, options = {}) => {
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
   // But it is good enough for now whilst we only have cornerstone as a datasource.
   log.info('[DICOMSR] storeMeasurements');
@@ -92,7 +97,8 @@ const storeMeasurements = async (measurementData, dataSource) => {
   }
 
   try {
-    const naturalizedReport = generateReport(measurementData);
+    const naturalizedReport = generateReport(measurementData, options);
+
     const { StudyInstanceUID } = naturalizedReport;
 
     await dataSource.store.dicom(naturalizedReport);

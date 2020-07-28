@@ -32,7 +32,11 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
           trackedSeries.includes(m.referenceSeriesUID)
       );
 
-      createReportAsync(servicesManager, dataSource, trackedMeasurements);
+      const SeriesDescription = promptResult.value;
+
+      createReportAsync(servicesManager, dataSource, trackedMeasurements, {
+        SeriesDescription,
+      });
     } else if (promptResult.action === RESPONSE.CANCEL) {
       // Do nothing
     }
@@ -48,7 +52,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
 export default promptUser;
 
 function _createReportDialogPrompt(UIDialogService) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     let dialogId = undefined;
 
     const _handleClose = () => {

@@ -1,7 +1,12 @@
 import React from 'react';
 import { DICOMSR } from '@ohif/core';
 
-async function createReportAsync(servicesManager, dataSource, measurements) {
+async function createReportAsync(
+  servicesManager,
+  dataSource,
+  measurements,
+  options
+) {
   const {
     UINotificationService,
     UIDialogService,
@@ -18,7 +23,8 @@ async function createReportAsync(servicesManager, dataSource, measurements) {
   try {
     const naturalizedReport = await DICOMSR.storeMeasurements(
       measurements,
-      dataSource
+      dataSource,
+      options
     );
 
     DisplaySetService.makeDisplaySets([naturalizedReport], {
