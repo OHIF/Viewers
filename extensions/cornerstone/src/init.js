@@ -393,17 +393,19 @@ const _connectMeasurementServiceToTools = (
   // --> csTools.deleteById --> internally checks all registered modules/managers?
   //
   // This implementation assumes a single globalImageIdSpecificToolStateManager
-  // It iterates all toolState for all toolTypes, and deletes any with a matchin id
+  // It iterates all toolState for all toolTypes, and deletes any with a matching id
   //
   // Could potentially use "source" from event to determine tool type and skip some
   // iterations?
   MeasurementService.subscribe(
     MEASUREMENT_REMOVED,
     ({ source, measurement: removedMeasurementId }) => {
+      // THIS POINTS TO ORIGINAL; Not a copy
       const imageIdSpecificToolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
 
+      // ImageId -->
       Object.keys(imageIdSpecificToolState).forEach(imageId => {
-        // if(!imageId.includes())
+        // ImageId --> Tool -->
         Object.keys(imageIdSpecificToolState[imageId]).forEach(toolName => {
           const toolState = imageIdSpecificToolState[imageId][toolName];
 
@@ -412,7 +414,6 @@ const _connectMeasurementServiceToTools = (
             const annotation = toolState.data[annotationIndex];
 
             if (annotation.id === removedMeasurementId) {
-              console.warn('removing....', removedMeasurementId);
               toolState.data.splice(annotationIndex, 1);
             }
 

@@ -104,7 +104,7 @@ const machineConfiguration = {
           {
             target: 'tracking',
             actions: [
-              'discardExternalMeasurements',
+              'discardPreviouslyTrackedMeasurements',
               'setTrackedStudyAndSeries',
             ],
             cond: 'shouldSetStudyAndSeries',
@@ -129,7 +129,7 @@ const machineConfiguration = {
           {
             target: 'tracking',
             actions: [
-              'discardExternalMeasurements',
+              'discardPreviouslyTrackedMeasurements',
               'setTrackedStudyAndSeries',
             ],
             cond: 'shouldSetStudyAndSeries',
@@ -157,6 +157,8 @@ const machineConfiguration = {
         src: 'promptSaveReport',
         onDone: [
           // "clicked the save button"
+          // - should clear all measurements
+          // - show DICOM SR
           {
             target: 'idle',
             actions: [
@@ -166,11 +168,17 @@ const machineConfiguration = {
             cond: 'shouldSaveAndContinueWithSameReport',
           },
           // "starting a new report"
+          // - remove "just saved" measurements
+          // - start tracking a new study + report
           {
-            target: 'idle',
-            actions: ['discardExternalMeasurements'],
+            target: 'tracking',
+            actions: [
+              'discardPreviouslyTrackedMeasurements',
+              'setTrackedStudyAndSeries',
+            ],
             cond: 'shouldSaveAndStartNewReport',
           },
+          // Cancel, back to tracking
           {
             target: 'tracking',
           },
@@ -218,8 +226,8 @@ const defaultOptions = {
     },
   },
   actions: {
-    discardExternalMeasurements: (ctx, evt) => {
-      console.log('discardExternalMeasurements: not implemented');
+    discardPreviouslyTrackedMeasurements: (ctx, evt) => {
+      console.log('discardPreviouslyTrackedMeasurements: not implemented');
     },
     clearAllMeasurements: (ctx, evt) => {
       console.log('clearAllMeasurements: not implemented');
@@ -267,12 +275,17 @@ const defaultOptions = {
       };
     }),
     ignoreSeries: assign((ctx, evt) => ({
+      prevIgnoredSeries: [...ctx.ignoredSeries],
       ignoredSeries: [...ctx.ignoredSeries, evt.data.SeriesInstanceUID],
     })),
     addTrackedSeries: assign((ctx, evt) => ({
+      prevTrackedSeries: [...ctx.trackedSeries],
       trackedSeries: [...ctx.trackedSeries, evt.data.SeriesInstanceUID],
     })),
     removeTrackedSeries: assign((ctx, evt) => ({
+      prevTrackedSeries: ctx.trackedSeries
+        .slice()
+        .filter(ser => ser !== evt.SeriesInstanceUID),
       trackedSeries: ctx.trackedSeries
         .slice()
         .filter(ser => ser !== evt.SeriesInstanceUID),

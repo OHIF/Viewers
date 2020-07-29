@@ -21,10 +21,18 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
     );
 
     // Need to do action here... So we can set state...
-    const { StudyInstanceUID, SeriesInstanceUIDs } = hydrateStructuredReport(
-      { servicesManager, extensionManager },
-      displaySetInstanceUID
-    );
+    let StudyInstanceUID, SeriesInstanceUIDs;
+
+    if (promptResult === RESPONSE.HYDRATE_REPORT) {
+      console.warn('!! HYDRATING STRUCTURED REPORT');
+      const hydrationResult = hydrateStructuredReport(
+        { servicesManager, extensionManager },
+        displaySetInstanceUID
+      );
+
+      StudyInstanceUID = hydrationResult.StudyInstanceUID;
+      SeriesInstanceUIDs = hydrationResult.SeriesInstanceUIDs;
+    }
 
     resolve({
       userResponse: promptResult,

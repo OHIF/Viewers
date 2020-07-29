@@ -48,7 +48,6 @@ function TrackedMeasurementsContextProvider(
       }
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
-      debugger;
       if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
         const StructuredReportDisplaySetInstanceUID =
           evt.data.createdDisplaySetInstanceUIDs[0].displaySetInstanceUID;
@@ -59,8 +58,7 @@ function TrackedMeasurementsContextProvider(
         });
       }
     },
-    discardExternalMeasurements: (ctx, evt) => {
-      debugger;
+    discardPreviouslyTrackedMeasurements: (ctx, evt) => {
       const { MeasurementService } = servicesManager.services;
       const measurements = MeasurementService.getMeasurements();
       const filteredMeasurements = measurements.filter(ms =>
@@ -73,7 +71,6 @@ function TrackedMeasurementsContextProvider(
       }
     },
     clearAllMeasurements: (ctx, evt) => {
-      debugger;
       const { MeasurementService } = servicesManager.services;
       const measurements = MeasurementService.getMeasurements();
       const measurementIds = measurements.map(fm => fm.id);
