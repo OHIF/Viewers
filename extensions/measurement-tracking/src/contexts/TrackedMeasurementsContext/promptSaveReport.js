@@ -40,7 +40,6 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
 
       createReportAsync(servicesManager, dataSource, trackedMeasurements, {
         SeriesDescription,
-        additionalFindingTypes: ['ArrowAnnotate'],
       });
     } else if (promptResult.action === RESPONSE.CANCEL) {
       // Do nothing

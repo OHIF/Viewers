@@ -140,8 +140,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     );
 
     // TODO -> Need prompt here.
-    // TODO -> local download.
-    // DICOMSR.downloadReport(trackedMeasurements, dataSource);
     const additionalFindings = ['ArrowAnnotate'];
 
     DICOMSR.downloadReport(trackedMeasurements, additionalFindings);
