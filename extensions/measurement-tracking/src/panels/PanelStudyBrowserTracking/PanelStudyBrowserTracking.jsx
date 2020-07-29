@@ -165,6 +165,13 @@ function PanelStudyBrowserTracking({
 
           if (options.madeInClient) {
             setJumpToDisplaySet(displaySetInstanceUID);
+
+            // TODO -> load this series into the active viewport.
+
+            viewportGridService.setDisplaysetForViewport({
+              viewportIndex: activeViewportIndex,
+              displaySetInstanceUID,
+            });
           }
 
           const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
@@ -448,7 +455,7 @@ function _createStudyBrowserTabs(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
 
-    displaySetsForStudy.sort((a,b) => {
+    displaySetsForStudy.sort((a, b) => {
       if (a.seriesNumber !== b.seriesNumber) {
         return a.seriesNumber - b.seriesNumber;
       }

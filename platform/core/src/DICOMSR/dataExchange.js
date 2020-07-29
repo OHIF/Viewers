@@ -81,7 +81,6 @@ const generateReport = (
   additionalFindingTypes,
   options = {}
 ) => {
-  debugger;
   const filteredToolState = _getFilteredCornerstoneToolState(
     measurementData,
     additionalFindingTypes
@@ -115,7 +114,6 @@ const storeMeasurements = async (
   additionalFindingTypes,
   options = {}
 ) => {
-  debugger;
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
   // But it is good enough for now whilst we only have cornerstone as a datasource.
   log.info('[DICOMSR] storeMeasurements');
@@ -152,7 +150,6 @@ function _getFilteredCornerstoneToolState(
   measurementData,
   additionalFindingTypes
 ) {
-  debugger;
   const uidFilter = measurementData.map(md => md.id);
 
   const globalToolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();

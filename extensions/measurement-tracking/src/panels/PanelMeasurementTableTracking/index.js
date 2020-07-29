@@ -13,6 +13,16 @@ import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 import createReportAsync from './../../_shared/createReportAsync.js';
 import setCornerstoneMeasurementActive from '../../_shared/setCornerstoneMeasurementActive';
+import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
+
+const RESPONSE = {
+  NO_NEVER: -1,
+  CANCEL: 0,
+  CREATE_REPORT: 1,
+  ADD_SERIES: 2,
+  SET_STUDY_AND_SERIES: 3,
+  NO_NOT_FOR_SERIES: 4,
+};
 
 const { formatDate } = utils;
 
@@ -132,33 +142,53 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     };
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
-  function createReport() {
+  async function createReport() {
     // TODO -> Eventually deal with multiple dataSources.
     // Would need some way of saying which one is the "push" dataSource
-    const dataSources = extensionManager.getDataSources();
-    const dataSource = dataSources[0];
-    const measurements = MeasurementService.getMeasurements();
-    const trackedMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
-    );
+    const promptResult = await createReportDialogPrompt(UIDialogService);
 
-    return createReportAsync(servicesManager, dataSource, trackedMeasurements);
+    if (promptResult.action === RESPONSE.CREATE_REPORT) {
+      // TODO -> Danny will need to fix this up, I think we'll want to do some state machine stuff here?
+      const dataSources = extensionManager.getDataSources();
+      const dataSource = dataSources[0];
+      const measurements = MeasurementService.getMeasurements();
+      const trackedMeasurements = measurements.filter(
+        m =>
+          trackedStudy === m.referenceStudyUID &&
+          trackedSeries.includes(m.referenceSeriesUID)
+      );
+
+      const SeriesDescription = promptResult.value;
+
+      return createReportAsync(
+        servicesManager,
+        dataSource,
+        trackedMeasurements,
+        {
+          SeriesDescription,
+        }
+      );
+    }
   }
 
-  function exportReport() {
-    const measurements = MeasurementService.getMeasurements();
-    const trackedMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
-    );
+  async function exportReport() {
+    const promptResult = await createReportDialogPrompt(UIDialogService);
 
-    // TODO -> Need prompt here.
-    const additionalFindings = ['ArrowAnnotate'];
+    if (promptResult.action === RESPONSE.CREATE_REPORT) {
+      const measurements = MeasurementService.getMeasurements();
+      const trackedMeasurements = measurements.filter(
+        m =>
+          trackedStudy === m.referenceStudyUID &&
+          trackedSeries.includes(m.referenceSeriesUID)
+      );
 
-    DICOMSR.downloadReport(trackedMeasurements, additionalFindings);
+      const additionalFindings = ['ArrowAnnotate'];
+      const SeriesDescription = promptResult.value;
+
+      DICOMSR.downloadReport(trackedMeasurements, additionalFindings, {
+        SeriesDescription,
+      });
+    }
   }
 
   const jumpToImage = ({ id, isActive }) => {
