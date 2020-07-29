@@ -25,19 +25,20 @@ export default function init({ configuration = {}, servicesManager }) {
 
   const { DisplaySetService } = servicesManager.services;
 
-  DisplaySetService.subscribe(
-    DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-    data => {
-      const { displaySetsAdded, options } = data;
-      displaySetsAdded.forEach(dSet => {
-        if (options.madeInClient) {
-          // Set just made displaySets as hydrated.
-          if (!dSet.isLoaded) {
-            dSet.load();
-          }
-          dSet.isHydrated = true;
-        }
-      });
-    }
-  );
+  // I don't think we need this now
+  // DisplaySetService.subscribe(
+  //   DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
+  //   data => {
+  //     const { displaySetsAdded, options } = data;
+  //     displaySetsAdded.forEach(dSet => {
+  //       if (options.madeInClient) {
+  //         // Set just made displaySets as hydrated.
+  //         if (!dSet.isLoaded) {
+  //           dSet.load();
+  //         }
+  //         dSet.isHydrated = true;
+  //       }
+  //     });
+  //   }
+  // );
 }

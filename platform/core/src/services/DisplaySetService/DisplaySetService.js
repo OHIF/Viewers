@@ -69,6 +69,12 @@ export default class DisplaySetService {
       displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUid
     );
 
+  /**
+   *
+   * @param {*} input
+   * @param {*} param1
+   * @returns {string[]} - added displaySetInstanceUIDs
+   */
   makeDisplaySets = (input, { batch = false, madeInClient = false } = {}) => {
     if (!input || !input.length) {
       throw new Error('No instances were provided.');
@@ -109,6 +115,8 @@ export default class DisplaySetService {
         displaySetsAdded,
         options,
       });
+
+      return displaySetsAdded;
     }
   };
 

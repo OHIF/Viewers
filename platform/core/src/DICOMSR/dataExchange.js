@@ -159,7 +159,6 @@ function _getFilteredCornerstoneToolState(
   measurementData,
   additionalFindingTypes
 ) {
-  debugger;
   const uidFilter = measurementData.map(md => md.id);
 
   const globalToolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();

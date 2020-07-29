@@ -448,7 +448,7 @@ function _createStudyBrowserTabs(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
 
-    displaySetsForStudy.sort((a,b) => {
+    displaySetsForStudy.sort((a, b) => {
       if (a.seriesNumber !== b.seriesNumber) {
         return a.seriesNumber - b.seriesNumber;
       }

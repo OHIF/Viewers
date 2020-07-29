@@ -16,6 +16,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
   const { UIDialogService, MeasurementService } = servicesManager.services;
   const { StudyInstanceUID, SeriesInstanceUID } = evt;
   const { trackedStudy, trackedSeries } = ctx;
+  let displaySetInstanceUIDs;
 
   return new Promise(async function(resolve, reject) {
     // TODO: Fallback if (UIDialogService) {
@@ -38,9 +39,14 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
           ? 'Research Derived Series' // default
           : promptResult.value; // provided value
 
-      createReportAsync(servicesManager, dataSource, trackedMeasurements, {
-        SeriesDescription,
-      });
+      displaySetInstanceUIDs = await createReportAsync(
+        servicesManager,
+        dataSource,
+        trackedMeasurements,
+        {
+          SeriesDescription,
+        }
+      );
     } else if (promptResult.action === RESPONSE.CANCEL) {
       // Do nothing
     }
@@ -49,6 +55,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
       userResponse: promptResult.action,
       StudyInstanceUID,
       SeriesInstanceUID,
+      createdDisplaySetInstanceUIDs: displaySetInstanceUIDs,
     });
   });
 }

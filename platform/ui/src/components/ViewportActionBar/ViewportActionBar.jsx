@@ -16,7 +16,6 @@ const ViewportActionBar = ({
   showNavArrows,
   showPatientInfo: patientInfoVisibility,
   onSeriesChange,
-  onHydrationClick,
   onDoubleClick,
 }) => {
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
@@ -32,7 +31,6 @@ const ViewportActionBar = ({
     label,
     isTracked,
     isLocked,
-    isHydrated,
     modality,
     studyDate,
     currentSeries,
@@ -101,16 +99,6 @@ const ViewportActionBar = ({
               )}
             </div>
           </Tooltip>
-          {!isLocked && !isHydrated && (
-            <div className="relative flex p-1 ml-1 border rounded cursor-pointer border-primary-light">
-              <span
-                className="text-sm font-bold leading-none text-primary-light"
-                onClick={onHydrationClick}
-              >
-                Edit
-              </span>
-            </div>
-          )}
         </>
       );
     }
@@ -301,10 +289,7 @@ function PatientInfo({
                   </div>
                   <div className={classnames(classes.row)}>
                     <span className={classnames(classes.infoHeader)}>MRN</span>
-                    <span
-                      className={classnames(classes.infoText)}
-                      title={MRN}
-                    >
+                    <span className={classnames(classes.infoText)} title={MRN}>
                       {MRN}
                     </span>
                   </div>

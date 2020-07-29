@@ -7,6 +7,7 @@ const RESPONSE = {
   ADD_SERIES: 2,
   SET_STUDY_AND_SERIES: 3,
   NO_NOT_FOR_SERIES: 4,
+  HYDRATE_REPORT: 5,
 };
 
 const machineConfiguration = {
@@ -35,6 +36,7 @@ const machineConfiguration = {
             actions: ['setTrackedStudyAndMultipleSeries'],
           },
         ],
+        PROMPT_HYDRATE_SR: 'promptHydrateStructuredReport',
       },
     },
     promptBeginTracking: {
@@ -59,7 +61,6 @@ const machineConfiguration = {
         },
       },
     },
-    // TODO: --> Create report; initiated by save button?
     tracking: {
       on: {
         TRACK_SERIES: [
@@ -158,10 +159,12 @@ const machineConfiguration = {
           // did save
           {
             target: 'idle',
-            actions: ['discardExternalMeasurements'],
+            actions: [
+              'discardExternalMeasurements',
+              'showStructuredReportDisplaySetInActiveViewport',
+            ],
             cond: 'shouldPromptSaveReport',
           },
-          // cancel
           {
             target: 'tracking',
           },
@@ -171,22 +174,17 @@ const machineConfiguration = {
         },
       },
     },
-    // Transition to this after `promptSaveReport`
-    // When first entered (maybe previous state)
-    //  - Exit if already tracking? Can't transition into if tracking from tracking?
-    //  - Triggered by watch on ViewportGridService? If type is SR, send this event
-    //  - If not tracking....
-    //  - Show dialog
-    //  - Action that rehydrates and moves to tracking
-    //  - Needs new promise/prompt + action
     promptHydrateStructuredReport: {
       invoke: {
-        src: 'promptSaveReport',
+        src: 'promptHydrateStructuredReport',
         onDone: [
           {
             target: 'tracking',
-            actions: [''], //
-            cond: '', // yes
+            actions: [
+              'setTrackedStudyAndMultipleSeries',
+              'showSeriesInActiveViewport',
+            ],
+            cond: 'shouldHydrateStructuredReport',
           },
           {
             target: 'idle',
@@ -215,7 +213,15 @@ const defaultOptions = {
   },
   actions: {
     discardExternalMeasurements: (ctx, evt) => {
-      console.log('discard external', ctx, evt);
+      console.log('discardExternalMeasurements: not implemented');
+    },
+    showSeriesInActiveViewport: (ctx, evt) => {
+      console.warn('showSeriesInActiveViewport: not implemented');
+    },
+    showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
+      console.warn(
+        'showStructuredReportDisplaySetInActiveViewport: not implemented'
+      );
     },
     clearContext: assign({
       trackedStudy: '',
@@ -235,15 +241,22 @@ const defaultOptions = {
       trackedSeries: [evt.data.SeriesInstanceUID],
       ignoredSeries: [],
     })),
-    setTrackedStudyAndMultipleSeries: assign((ctx, evt) => ({
-      prevTrackedStudy: ctx.trackedStudy,
-      prevTrackedSeries: ctx.trackedSeries.slice(),
-      prevIgnoredSeries: ctx.ignoredSeries.slice(),
-      //
-      trackedStudy: evt.StudyInstanceUID,
-      trackedSeries: [...ctx.trackedSeries, ...evt.SeriesInstanceUIDs],
-      ignoredSeries: [],
-    })),
+    setTrackedStudyAndMultipleSeries: assign((ctx, evt) => {
+      const studyInstanceUID =
+        evt.StudyInstanceUID || evt.data.StudyInstanceUID;
+      const seriesInstanceUIDs =
+        evt.SeriesInstanceUIDs || evt.data.SeriesInstanceUIDs;
+
+      return {
+        prevTrackedStudy: ctx.trackedStudy,
+        prevTrackedSeries: ctx.trackedSeries.slice(),
+        prevIgnoredSeries: ctx.ignoredSeries.slice(),
+        //
+        trackedStudy: studyInstanceUID,
+        trackedSeries: [...ctx.trackedSeries, ...seriesInstanceUIDs],
+        ignoredSeries: [],
+      };
+    }),
     ignoreSeries: assign((ctx, evt) => ({
       ignoredSeries: [...ctx.ignoredSeries, evt.data.SeriesInstanceUID],
     })),
@@ -267,6 +280,8 @@ const defaultOptions = {
       evt.data && evt.data.userResponse === RESPONSE.NO_NOT_FOR_SERIES,
     shouldPromptSaveReport: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.CREATE_REPORT,
+    shouldHydrateStructuredReport: (ctx, evt) =>
+      evt.data && evt.data.userResponse === RESPONSE.HYDRATE_REPORT,
     // Has more than 1, or SeriesInstanceUID is not in list
     // --> Post removal would have non-empty trackedSeries array
     hasRemainingTrackedSeries: (ctx, evt) =>

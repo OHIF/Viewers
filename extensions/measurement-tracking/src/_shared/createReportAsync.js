@@ -1,6 +1,14 @@
 import React from 'react';
 import { DICOMSR } from '@ohif/core';
 
+/**
+ *
+ * @param {*} servicesManager
+ * @param {*} dataSource
+ * @param {*} measurements
+ * @param {*} options
+ * @returns {string[]} displaySetInstanceUIDs
+ */
 async function createReportAsync(
   servicesManager,
   dataSource,
@@ -28,14 +36,20 @@ async function createReportAsync(
       options
     );
 
-    DisplaySetService.makeDisplaySets([naturalizedReport], {
-      madeInClient: true,
-    });
+    const displaySetInstanceUIDs = DisplaySetService.makeDisplaySets(
+      [naturalizedReport],
+      {
+        madeInClient: true,
+      }
+    );
+
     UINotificationService.show({
       title: 'Create Report',
       message: 'Measurements saved successfully',
       type: 'success',
     });
+
+    return displaySetInstanceUIDs;
   } catch (error) {
     UINotificationService.show({
       title: 'Create Report',
