@@ -1,5 +1,3 @@
-import createReportAsync from './../../_shared/createReportAsync.js';
-
 const RESPONSE = {
   NO_NEVER: -1,
   CANCEL: 0,
@@ -10,14 +8,10 @@ const RESPONSE = {
 };
 
 function promptUser({ servicesManager, extensionManager }, ctx, evt) {
-  const {
-    UIViewportDialogService,
-    MeasurementService,
-  } = servicesManager.services;
+  const { UIViewportDialogService } = servicesManager.services;
   const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
-  const { trackedStudy, trackedSeries } = ctx;
 
-  return new Promise(async function (resolve, reject) {
+  return new Promise(async function(resolve, reject) {
     let promptResult = await _askTrackMeasurements(
       UIViewportDialogService,
       viewportIndex
@@ -39,8 +33,8 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
 }
 
 function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
-  return new Promise(function (resolve, reject) {
-    const message = 'Track measurements for this series?';
+  return new Promise(function(resolve, reject) {
+    const message = 'Track measurements for this seies?';
     const actions = [
       { type: 'cancel', text: 'No', value: RESPONSE.CANCEL },
       {
@@ -74,7 +68,7 @@ function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
 }
 
 function _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     const message =
       'Measurements cannot span across multiple studies. Do you want to save your tracked measurements?';
     const actions = [

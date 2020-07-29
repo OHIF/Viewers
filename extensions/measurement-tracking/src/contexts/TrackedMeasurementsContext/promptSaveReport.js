@@ -32,10 +32,15 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
           trackedSeries.includes(m.referenceSeriesUID)
       );
 
-      const SeriesDescription = promptResult.value;
+      const SeriesDescription =
+        // isUndefinedOrEmpty
+        promptResult.value === undefined || promptResult.value === ''
+          ? 'Research Derived Series' // default
+          : promptResult.value; // provided value
 
       createReportAsync(servicesManager, dataSource, trackedMeasurements, {
         SeriesDescription,
+        additionalFindingTypes: ['ArrowAnnotate'],
       });
     } else if (promptResult.action === RESPONSE.CANCEL) {
       // Do nothing
@@ -104,7 +109,7 @@ function _createReportDialogPrompt(UIDialogService) {
           const onKeyPressHandler = event => {
             if (event.key === 'Enter') {
               UIDialogService.dismiss({ id: dialogId });
-              resolve({ action: RESPONSE.CREATE_REPORT, value });
+              resolve({ action: RESPONSE.CREATE_REPORT, value: value.label });
             }
           };
           return (

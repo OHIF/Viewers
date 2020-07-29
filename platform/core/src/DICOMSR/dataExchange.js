@@ -6,6 +6,7 @@ import {
   stowSRFromMeasurements,
 } from './handleStructuredReport';
 import findMostRecentStructuredReport from './utils/findMostRecentStructuredReport';
+import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import dcmjs from 'dcmjs';
 
@@ -66,9 +67,12 @@ const downloadReport = (measurementData, options = {}) => {
  * @param {string[]} options.additionalFindingTypes toolTypes that should be stored with labels as Findings
  */
 const generateReport = (measurementData, options = {}) => {
-  const ids = measurementData.map(md => md.id);
-  const filteredToolState = _getFilteredCornerstoneToolState(ids);
-
+  // const ids = measurementData.map(md => md.id);
+  // const filteredToolState = _getFilteredCornerstoneToolState(ids);
+  const filteredToolState = _getFilteredCornerstoneToolState(
+    measurementData,
+    options.additionalFindingTypes
+  );
   const report = MeasurementReport.generateReport(
     filteredToolState,
     cornerstone.metaData
@@ -95,6 +99,12 @@ const storeMeasurements = async (measurementData, dataSource, options = {}) => {
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
   // But it is good enough for now whilst we only have cornerstone as a datasource.
   log.info('[DICOMSR] storeMeasurements');
+  console.log(
+    'store measurements data exchange...',
+    measurementData,
+    dataSource,
+    options
+  );
 
   if (!dataSource || !dataSource.store || !dataSource.store.dicom) {
     log.error('[DICOMSR] datasource has no dataSource.store.dicom endpoint!');
@@ -102,6 +112,7 @@ const storeMeasurements = async (measurementData, dataSource, options = {}) => {
   }
 
   try {
+    debugger;
     const naturalizedReport = generateReport(measurementData, options);
     const { StudyInstanceUID } = naturalizedReport;
 
@@ -113,6 +124,7 @@ const storeMeasurements = async (measurementData, dataSource, options = {}) => {
 
     return naturalizedReport;
   } catch (error) {
+    console.warn(error);
     log.error(
       `[DICOMSR] Error while saving the measurements: ${error.message}`
     );
@@ -120,6 +132,8 @@ const storeMeasurements = async (measurementData, dataSource, options = {}) => {
   }
 };
 
+// _getFilteredCornerstoneToolState
+// DIFFERENT IMPLEMENTATION HERE! What's up?
 function _getFilteredCornerstoneToolState(
   measurementData,
   additionalFindingTypes
@@ -143,7 +157,6 @@ function _getFilteredCornerstoneToolState(
     }
 
     const measurmentDataI = measurementData.find(md => md.id === toolDataI.id);
-
     const toolData = imageIdSpecificToolState[toolType].data;
 
     let finding;

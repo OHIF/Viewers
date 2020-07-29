@@ -1,5 +1,3 @@
-import createReportAsync from './../../_shared/createReportAsync.js';
-
 const RESPONSE = {
   NO_NEVER: -1,
   CANCEL: 0,
@@ -10,12 +8,8 @@ const RESPONSE = {
 };
 
 function promptUser({ servicesManager, extensionManager }, ctx, evt) {
-  const {
-    UIViewportDialogService,
-    MeasurementService,
-  } = servicesManager.services;
+  const { UIViewportDialogService } = servicesManager.services;
   const { viewportIndex, StudyInstanceUID, SeriesInstanceUID } = evt;
-  const { trackedStudy, trackedSeries } = ctx;
 
   return new Promise(async function(resolve, reject) {
     let promptResult = await _askShouldAddMeasurements(
