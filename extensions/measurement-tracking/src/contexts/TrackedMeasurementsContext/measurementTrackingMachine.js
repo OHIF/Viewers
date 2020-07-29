@@ -88,6 +88,7 @@ const machineConfiguration = {
             actions: ['setTrackedStudyAndMultipleSeries'],
           },
         ],
+        SAVE_REPORT: 'promptSaveReport',
       },
     },
     promptTrackNewSeries: {

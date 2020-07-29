@@ -132,21 +132,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     };
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
-  function createReport() {
-    // TODO -> Eventually deal with multiple dataSources.
-    // Would need some way of saying which one is the "push" dataSource
-    const dataSources = extensionManager.getDataSources();
-    const dataSource = dataSources[0];
-    const measurements = MeasurementService.getMeasurements();
-    const trackedMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
-    );
-
-    return createReportAsync(servicesManager, dataSource, trackedMeasurements);
-  }
-
   function exportReport() {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
@@ -276,7 +261,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       <div className="flex justify-center p-4">
         <ActionButtons
           onExportClick={exportReport}
-          onCreateReportClick={createReport}
+          onCreateReportClick={() => {
+            sendTrackedMeasurementsEvent('SAVE_REPORT');
+          }}
         />
       </div>
     </>
