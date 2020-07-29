@@ -73,7 +73,9 @@ class DicomMicroscopyViewport extends Component {
   }
 
   componentDidMount() {
-    const { displaySet } = this.props.viewportData;
+    // TODO: this was like this, and I think it should probably go back
+    //const { displaySet } = this.props.viewportData
+    const { displaySet } = this.props;
 
     this.installOpenLayersRenderer(this.container.current, displaySet);
   }

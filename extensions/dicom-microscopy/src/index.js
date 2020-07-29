@@ -1,5 +1,5 @@
 import React from 'react';
-import DicomMicroscopySopClassHandler from './DicomMicroscopySopClassHandler.js';
+import getSopClassHandlerModule from './getSopClassHandlerModule.js';
 
 const Component = React.lazy(() => {
   return import('./DicomMicroscopyViewport');
@@ -27,7 +27,5 @@ export default {
       },
     ];
   },
-  getSopClassHandlerModule() {
-    return DicomMicroscopySopClassHandler;
-  },
+  getSopClassHandlerModule
 };

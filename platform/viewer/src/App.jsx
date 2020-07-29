@@ -23,6 +23,7 @@ import appInit from './appInit.js';
 // TODO: Temporarily for testing
 import '@ohif/mode-longitudinal';
 import '@ohif/mode-segmentation';
+import '@ohif/mode-microscopy';
 
 /**
  * ENV Variable to determine routing behavior

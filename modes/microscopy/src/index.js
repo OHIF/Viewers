@@ -8,10 +8,9 @@ const ohif = {
 const microscopy = {
   //measurements: 'org.ohif.measurement-tracking.panelModule.trackedMeasurements',
   //thumbnailList: 'org.ohif.measurement-tracking.panelModule.seriesList',
-  viewport: 'org.ohif.microscopy.viewportModule.cornerstone-tracked',
+  sopClassHandler: 'org.ohif.microscopy.sopClassHandlerModule.microscopy',
+  viewport: 'org.ohif.microscopy.viewportModule.microscopy-default',
 };
-
-
 
 export default function mode({ modeConfiguration }) {
   return {
@@ -24,8 +23,7 @@ export default function mode({ modeConfiguration }) {
       series: [],
     },
     isValidMode: (studyTags, seriesTags) => {
-      // All series are welcome in this mode!
-      return true;
+      return studyTags.modalities.includes('SM');
     },
     routes: [
       {
@@ -35,31 +33,16 @@ export default function mode({ modeConfiguration }) {
           ToolBarService.init(extensionManager);
           ToolBarService.addButtons(toolbarButtons);
           ToolBarService.createButtonSection('primary', [
-            'Zoom',
-            'Wwwc',
             'Pan',
-            'Capture',
             'Layout',
             'Divider',
-            [
-              'ResetView',
-              'RotateClockwise',
-              'FlipHorizontally',
-              'StackScroll',
-              'Magnify',
-              'Invert',
-              'Cine',
-              'Angle',
-              'Probe',
-              'RectangleRoi',
-            ],
           ]);
           ToolBarService.createButtonSection('secondary', [
             'Annotate',
-            'Bidirectional',
+            'Probe',
+            'RectangleRoi',
             'Ellipse',
             'Length',
-            'Clear',
           ]);
 
           // Could import layout selector here from org.ohif.default (when it exists!)
@@ -68,13 +51,13 @@ export default function mode({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList],
+              leftPanels: [],
               // TODO: Should be optional, or required to pass empty array for slots?
-              rightPanels: [tracked.measurements],
+              rightPanels: [],
               viewports: [
                 {
-                  namespace: tracked.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
+                  namespace: microscopy.viewport,
+                  displaySetsToDisplay: [microscopy.sopClassHandler, ohif.sopClassHandler],
                 },
               ],
             },
@@ -84,13 +67,11 @@ export default function mode({ modeConfiguration }) {
     ],
     extensions: [
       'org.ohif.default',
-      'org.ohif.cornerstone',
-      'org.ohif.measurement-tracking',
-      'org.ohif.dicom-sr',
+      'org.ohif.microscopy',
     ],
-    sopClassHandlers: [ohif.sopClassHandler, dicomsr.sopClassHandler],
+    sopClassHandlers: [microscopy.sopClassHandler, ohif.sopClassHandler],
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 
-window.longitudinalMode = mode({});
+window.microscopyMode = mode({});

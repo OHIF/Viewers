@@ -300,6 +300,26 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
             // mode.routes[x].path
             // Don't specify default data source, and it should just be picked up... (this may not currently be the case)
             // How do we know which params to pass? Today, it's just StudyInstanceUIDs
+
+            // TODO: we should get study data from somewhere else
+            const study = studies.find(a => a.studyInstanceUid === studyInstanceUid);
+            const disabled = !mode.isValidMode(study);
+            if (disabled) {
+              return (
+                <Button
+                  key={i}
+                  rounded="full"
+                  variant="outlined" // outlined
+                  disabled={disabled}
+                  endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
+                  className={classnames('font-bold', { 'ml-2': !isFirst })}
+                  onClick={() => {}}
+                >
+                  {mode.displayName}
+                </Button>
+              );
+            }
+
             return (
               <Link
                 key={i}
@@ -309,7 +329,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
                 <Button
                   rounded="full"
                   variant="contained" // outlined
-                  disabled={false}
+                  disabled={disabled}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
                   onClick={() => {}}
