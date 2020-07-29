@@ -156,14 +156,20 @@ const machineConfiguration = {
       invoke: {
         src: 'promptSaveReport',
         onDone: [
-          // did save
+          // "clicked the save button"
           {
             target: 'idle',
             actions: [
               'clearAllMeasurements',
               'showStructuredReportDisplaySetInActiveViewport',
             ],
-            cond: 'shouldPromptSaveReport',
+            cond: 'shouldSaveAndContinueWithSameReport',
+          },
+          // "starting a new report"
+          {
+            target: 'idle',
+            actions: ['discardExternalMeasurements'],
+            cond: 'shouldSaveAndStartNewReport',
           },
           {
             target: 'tracking',
@@ -283,6 +289,14 @@ const defaultOptions = {
       evt.data && evt.data.userResponse === RESPONSE.NO_NOT_FOR_SERIES,
     shouldPromptSaveReport: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.CREATE_REPORT,
+    shouldSaveAndContinueWithSameReport: (ctx, evt) =>
+      evt.data &&
+      evt.data.userResponse === RESPONSE.CREATE_REPORT &&
+      evt.data.isBackupSave === true,
+    shouldSaveAndStartNewReport: (ctx, evt) =>
+      evt.data &&
+      evt.data.userResponse === RESPONSE.CREATE_REPORT &&
+      evt.data.isBackupSave === false,
     shouldHydrateStructuredReport: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.HYDRATE_REPORT,
     // Has more than 1, or SeriesInstanceUID is not in list

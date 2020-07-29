@@ -13,11 +13,13 @@ const RESPONSE = {
 };
 
 function promptUser({ servicesManager, extensionManager }, ctx, evt) {
-  debugger;
   const { UIDialogService, MeasurementService } = servicesManager.services;
-  const StudyInstanceUID = evt.StudyInstanceUID || evt.data.StudyInstanceUID;
-  const SeriesInstanceUID = evt.SeriesInstanceUID || evt.data.SeriesInstanceUID;
-  const viewportIndex = evt.viewportIndex || evt.data.viewportIndex;
+  const viewportIndex =
+    evt.viewportIndex === undefined
+      ? evt.data.viewportIndex
+      : evt.viewportIndex;
+  const isBackupSave =
+    evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
   const { trackedStudy, trackedSeries } = ctx;
   let displaySetInstanceUIDs;
 
@@ -56,10 +58,9 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
 
     resolve({
       userResponse: promptResult.action,
-      StudyInstanceUID,
-      SeriesInstanceUID,
       createdDisplaySetInstanceUIDs: displaySetInstanceUIDs,
       viewportIndex,
+      isBackupSave,
     });
   });
 }

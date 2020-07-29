@@ -105,13 +105,6 @@ export default function _hydrateStructuredReport(
     }
   }
 
-  // TODO -> Let the state machine track this.
-
-  // sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
-  //   StudyInstanceUID: targetStudyInstanceUID,
-  //   SeriesInstanceUIDs,
-  // });
-
   Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
     const toolDataForToolType = hydratableMeasurementsInSR[toolType];
 
@@ -151,13 +144,6 @@ export default function _hydrateStructuredReport(
   displaySet.isHydrated = true;
 
   //setIsHydrated(true);
-
-  // TODO -> Let the state machine track this.
-  //
-  // viewportGridService.setDisplaysetForViewport({
-  //   viewportIndex: activeViewportIndex,
-  //   displaySetInstanceUID: activeDisplaySetData.displaySetInstanceUID,
-  // });
 
   return {
     StudyInstanceUID: targetStudyInstanceUID,

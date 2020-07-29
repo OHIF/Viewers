@@ -261,6 +261,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           onCreateReportClick={() => {
             sendTrackedMeasurementsEvent('SAVE_REPORT', {
               viewportIndex: viewportGrid.activeViewportIndex,
+              isBackupSave: true,
             });
           }}
         />

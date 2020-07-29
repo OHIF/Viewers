@@ -32,7 +32,6 @@ function TrackedMeasurementsContextProvider(
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     showSeriesInActiveViewport: (ctx, evt) => {
-      debugger;
       const { DisplaySetService } = servicesManager.services;
       const displaySetsForHydratedSeries = DisplaySetService.getDisplaySetsForSeries(
         ctx.trackedSeries[0]
@@ -61,6 +60,7 @@ function TrackedMeasurementsContextProvider(
       }
     },
     discardExternalMeasurements: (ctx, evt) => {
+      debugger;
       const { MeasurementService } = servicesManager.services;
       const measurements = MeasurementService.getMeasurements();
       const filteredMeasurements = measurements.filter(ms =>
@@ -73,6 +73,7 @@ function TrackedMeasurementsContextProvider(
       }
     },
     clearAllMeasurements: (ctx, evt) => {
+      debugger;
       const { MeasurementService } = servicesManager.services;
       const measurements = MeasurementService.getMeasurements();
       const measurementIds = measurements.map(fm => fm.id);

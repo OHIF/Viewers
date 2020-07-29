@@ -29,6 +29,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
       StudyInstanceUID,
       SeriesInstanceUID,
       viewportIndex,
+      isBackupSave: false,
     });
   });
 }
