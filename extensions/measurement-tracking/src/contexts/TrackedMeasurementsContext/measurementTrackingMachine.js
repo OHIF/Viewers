@@ -171,6 +171,32 @@ const machineConfiguration = {
         },
       },
     },
+    // Transition to this after `promptSaveReport`
+    // When first entered (maybe previous state)
+    //  - Exit if already tracking? Can't transition into if tracking from tracking?
+    //  - Triggered by watch on ViewportGridService? If type is SR, send this event
+    //  - If not tracking....
+    //  - Show dialog
+    //  - Action that rehydrates and moves to tracking
+    //  - Needs new promise/prompt + action
+    promptHydrateStructuredReport: {
+      invoke: {
+        src: 'promptSaveReport',
+        onDone: [
+          {
+            target: 'tracking',
+            actions: [''], //
+            cond: '', // yes
+          },
+          {
+            target: 'idle',
+          },
+        ],
+        onError: {
+          target: 'idle',
+        },
+      },
+    },
   },
   strict: true,
 };
