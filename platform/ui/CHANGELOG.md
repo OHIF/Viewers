@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.2...@ohif/ui@1.5.3) (2020-07-23)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.5.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.1...@ohif/ui@1.5.2) (2020-07-22)
+
+
+### Bug Fixes
+
+* Switch DICOMFileUploader to use the UIModalService ([#1904](https://github.com/OHIF/Viewers/issues/1904)) ([7772fee](https://github.com/OHIF/Viewers/commit/7772fee21ae6a65994e1251e2f1d2554b47781be))
+
+
+
+
+
 ## [1.5.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.0...@ohif/ui@1.5.1) (2020-06-05)
 
 **Note:** Version bump only for package @ohif/ui
