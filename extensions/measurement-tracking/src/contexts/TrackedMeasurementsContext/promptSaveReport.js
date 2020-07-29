@@ -20,6 +20,9 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
       : evt.viewportIndex;
   const isBackupSave =
     evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
+  const StudyInstanceUID = evt?.data?.StudyInstanceUID;
+  const SeriesInstanceUID = evt?.data?.SeriesInstanceUID;
+
   const { trackedStudy, trackedSeries } = ctx;
   let displaySetInstanceUIDs;
 
@@ -59,6 +62,8 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
     resolve({
       userResponse: promptResult.action,
       createdDisplaySetInstanceUIDs: displaySetInstanceUIDs,
+      StudyInstanceUID,
+      SeriesInstanceUID,
       viewportIndex,
       isBackupSave,
     });
