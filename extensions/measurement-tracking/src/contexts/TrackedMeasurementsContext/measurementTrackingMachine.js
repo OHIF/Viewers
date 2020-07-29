@@ -160,7 +160,7 @@ const machineConfiguration = {
           {
             target: 'idle',
             actions: [
-              'discardExternalMeasurements',
+              'clearAllMeasurements',
               'showStructuredReportDisplaySetInActiveViewport',
             ],
             cond: 'shouldPromptSaveReport',
@@ -214,6 +214,9 @@ const defaultOptions = {
   actions: {
     discardExternalMeasurements: (ctx, evt) => {
       console.log('discardExternalMeasurements: not implemented');
+    },
+    clearAllMeasurements: (ctx, evt) => {
+      console.log('clearAllMeasurements: not implemented');
     },
     showSeriesInActiveViewport: (ctx, evt) => {
       console.warn('showSeriesInActiveViewport: not implemented');

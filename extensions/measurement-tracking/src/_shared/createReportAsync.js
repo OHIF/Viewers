@@ -1,5 +1,5 @@
 import React from 'react';
-import { DICOMSR } from '@ohif/core';
+import { DICOMSR, DicomMetadataStore } from '@ohif/core';
 
 /**
  *
@@ -35,6 +35,8 @@ async function createReportAsync(
       ['ArrowAnnotate'],
       options
     );
+
+    DicomMetadataStore.addInstances([naturalizedReport]);
 
     const displaySetInstanceUIDs = DisplaySetService.makeDisplaySets(
       [naturalizedReport],

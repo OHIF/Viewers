@@ -50,6 +50,8 @@ export default function _hydrateStructuredReport(
     }
   });
 
+  debugger;
+
   // Use dcmjs to generate toolState.
   const storedMeasurementByToolType = MeasurementReport.generateToolState(
     instance

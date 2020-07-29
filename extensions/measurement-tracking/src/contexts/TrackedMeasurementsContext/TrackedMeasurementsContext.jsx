@@ -75,6 +75,18 @@ function TrackedMeasurementsContextProvider(
         MeasurementService.remove('app-source', measurementIds[i]);
       }
     },
+    clearAllMeasurements: (ctx, evt) => {
+      const { MeasurementService } = servicesManager.services;
+      const measurements = MeasurementService.getMeasurements();
+      const measurementIds = measurements.reduce(
+        (acc, meas) => [...acc, meas.id],
+        []
+      );
+
+      for (let i = 0; i < measurementIds.length; i++) {
+        MeasurementService.remove('app-source', measurementIds[i]);
+      }
+    },
   });
   machineOptions.services = Object.assign({}, machineOptions.services, {
     promptBeginTracking: promptBeginTracking.bind(null, {
@@ -134,6 +146,8 @@ function TrackedMeasurementsContextProvider(
 
       // Magic string
       // load function added by our sopClassHandler module
+
+      debugger;
       if (
         displaySet.SOPClassHandlerId ===
           'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr' &&
