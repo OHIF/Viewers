@@ -46,12 +46,21 @@ const retrieveMeasurements = server => {
 /**
  *
  * @param {object[]} measurementData An array of measurements from the measurements service
- * @param {string[]} options.additionalFindingTypes toolTypes that should be stored with labels as Findings
+ * @param {string[]} additionalFindingTypes toolTypes that should be stored with labels as Findings
+ * @param {object} options Naturalized DICOM JSON headers to merge into the displaySet.
  * as opposed to Finding Sites.
  * that you wish to serialize.
  */
-const downloadReport = (measurementData, options = {}) => {
-  const srDataset = generateReport(measurementData, options);
+const downloadReport = (
+  measurementData,
+  additionalFindingTypes,
+  options = {}
+) => {
+  const srDataset = generateReport(
+    measurementData,
+    additionalFindingTypes,
+    options
+  );
   const reportBlob = dcmjs.data.datasetToBlob(srDataset);
 
   //Create a URL for the binary.
@@ -63,11 +72,20 @@ const downloadReport = (measurementData, options = {}) => {
  *
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
- * @param {string[]} options.additionalFindingTypes toolTypes that should be stored with labels as Findings
+ * @param {string[]} additionalFindingTypes toolTypes that should be stored with labels as Findings
+ * @param {object} options Naturalized DICOM JSON headers to merge into the displaySet.
+ *
  */
-const generateReport = (measurementData, options = {}) => {
-  const ids = measurementData.map(md => md.id);
-  const filteredToolState = _getFilteredCornerstoneToolState(ids);
+const generateReport = (
+  measurementData,
+  additionalFindingTypes,
+  options = {}
+) => {
+  debugger;
+  const filteredToolState = _getFilteredCornerstoneToolState(
+    measurementData,
+    additionalFindingTypes
+  );
 
   const report = MeasurementReport.generateReport(
     filteredToolState,
@@ -87,11 +105,17 @@ const generateReport = (measurementData, options = {}) => {
  * @param {object[]} measurementData An array of measurements from the measurements service
  * that you wish to serialize.
  * @param {object} dataSource The dataSource that you wish to use to persist the data.
- * @param {string[]} options.additionalFindingTypes toolTypes that should be stored with labels as Findings
- * as opposed to Finding Sites.
+ * @param {string[]} additionalFindingTypes toolTypes that should be stored with labels as Findings
+ * @param {object} options Naturalized DICOM JSON headers to merge into the displaySet.
  * @return {object} The naturalized report
  */
-const storeMeasurements = async (measurementData, dataSource, options = {}) => {
+const storeMeasurements = async (
+  measurementData,
+  dataSource,
+  additionalFindingTypes,
+  options = {}
+) => {
+  debugger;
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
   // But it is good enough for now whilst we only have cornerstone as a datasource.
   log.info('[DICOMSR] storeMeasurements');
@@ -102,7 +126,11 @@ const storeMeasurements = async (measurementData, dataSource, options = {}) => {
   }
 
   try {
-    const naturalizedReport = generateReport(measurementData, options);
+    const naturalizedReport = generateReport(
+      measurementData,
+      additionalFindingTypes,
+      options
+    );
     const { StudyInstanceUID } = naturalizedReport;
 
     await dataSource.store.dicom(naturalizedReport);
@@ -124,6 +152,7 @@ function _getFilteredCornerstoneToolState(
   measurementData,
   additionalFindingTypes
 ) {
+  debugger;
   const uidFilter = measurementData.map(md => md.id);
 
   const globalToolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();

@@ -24,7 +24,8 @@ async function createReportAsync(
     const naturalizedReport = await DICOMSR.storeMeasurements(
       measurements,
       dataSource,
-      options // ['ArrowAnnotate']
+      ['ArrowAnnotate'],
+      options
     );
 
     DisplaySetService.makeDisplaySets([naturalizedReport], {
