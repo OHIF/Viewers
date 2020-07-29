@@ -15,7 +15,6 @@ export default function _hydrateStructuredReport(
   { servicesManager, extensionManager },
   displaySetInstanceUID
 ) {
-  debugger;
   const { MeasurementService, DisplaySetService } = servicesManager.services;
 
   const displaySet = DisplaySetService.getDisplaySetByUID(
@@ -159,7 +158,6 @@ export default function _hydrateStructuredReport(
   //   viewportIndex: activeViewportIndex,
   //   displaySetInstanceUID: activeDisplaySetData.displaySetInstanceUID,
   // });
-  debugger;
 
   return {
     StudyInstanceUID: targetStudyInstanceUID,

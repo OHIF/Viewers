@@ -21,7 +21,6 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
     );
 
     // Need to do action here... So we can set state...
-    debugger;
     const { StudyInstanceUID, SeriesInstanceUIDs } = hydrateStructuredReport(
       { servicesManager, extensionManager },
       displaySetInstanceUID
