@@ -259,7 +259,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         <ActionButtons
           onExportClick={exportReport}
           onCreateReportClick={() => {
-            sendTrackedMeasurementsEvent('SAVE_REPORT');
+            sendTrackedMeasurementsEvent('SAVE_REPORT', {
+              viewportIndex: viewportGrid.activeViewportIndex,
+            });
           }}
         />
       </div>

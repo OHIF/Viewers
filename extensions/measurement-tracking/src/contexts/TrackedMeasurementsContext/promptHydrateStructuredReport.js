@@ -29,6 +29,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
     resolve({
       userResponse: promptResult,
       displaySetInstanceUID: evt.displaySetInstanceUID,
+      viewportIndex,
       StudyInstanceUID,
       SeriesInstanceUIDs,
     });

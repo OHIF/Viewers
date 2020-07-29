@@ -28,6 +28,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
       userResponse: promptResult,
       StudyInstanceUID,
       SeriesInstanceUID,
+      viewportIndex,
     });
   });
 }

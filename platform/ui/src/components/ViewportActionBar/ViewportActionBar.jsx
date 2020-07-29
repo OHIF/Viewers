@@ -76,13 +76,7 @@ const ViewportActionBar = ({
               Measurements cannot be duplicated.
             </div>
           )
-        : () => (
-            <div>
-              This SR is unlocked. <br />
-              You can duplicate measurements on your current report <br /> by
-              clicking &apos;Edit&apos;.
-            </div>
-          );
+        : () => <div>This SR is unlocked.</div>;
       return (
         <>
           <Tooltip content={<TooltipMessage />} position="bottom-left">

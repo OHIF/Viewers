@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
@@ -26,14 +26,13 @@ function TrackedMeasurementsContextProvider(
   { servicesManager, extensionManager }, // Bound by consumer
   { children } // Component props
 ) {
-  const [
-    { activeViewportIndex, viewports },
-    viewportGridService,
-  ] = useViewportGrid();
+  const [viewportGrid, viewportGridService] = useViewportGrid();
+  const { activeViewportIndex, viewports } = viewportGrid;
 
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     showSeriesInActiveViewport: (ctx, evt) => {
+      debugger;
       const { DisplaySetService } = servicesManager.services;
       const displaySetsForHydratedSeries = DisplaySetService.getDisplaySetsForSeries(
         ctx.trackedSeries[0]
@@ -44,18 +43,19 @@ function TrackedMeasurementsContextProvider(
           displaySetsForHydratedSeries[0].displaySetInstanceUID;
 
         viewportGridService.setDisplaysetForViewport({
-          viewportIndex: activeViewportIndex,
+          viewportIndex: evt.data.viewportIndex,
           displaySetInstanceUID: firstDisplaySetInstanceUID,
         });
       }
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
+      debugger;
       if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
         const StructuredReportDisplaySetInstanceUID =
           evt.data.createdDisplaySetInstanceUIDs[0].displaySetInstanceUID;
 
         viewportGridService.setDisplaysetForViewport({
-          viewportIndex: activeViewportIndex,
+          viewportIndex: evt.data.viewportIndex,
           displaySetInstanceUID: StructuredReportDisplaySetInstanceUID,
         });
       }
@@ -66,10 +66,7 @@ function TrackedMeasurementsContextProvider(
       const filteredMeasurements = measurements.filter(ms =>
         ctx.prevTrackedSeries.includes(ms.referenceSeriesUID)
       );
-      const measurementIds = filteredMeasurements.reduce(
-        (acc, meas) => [...acc, meas.id],
-        []
-      );
+      const measurementIds = filteredMeasurements.map(fm => fm.id);
 
       for (let i = 0; i < measurementIds.length; i++) {
         MeasurementService.remove('app-source', measurementIds[i]);
@@ -78,10 +75,7 @@ function TrackedMeasurementsContextProvider(
     clearAllMeasurements: (ctx, evt) => {
       const { MeasurementService } = servicesManager.services;
       const measurements = MeasurementService.getMeasurements();
-      const measurementIds = measurements.reduce(
-        (acc, meas) => [...acc, meas.id],
-        []
-      );
+      const measurementIds = measurements.map(fm => fm.id);
 
       for (let i = 0; i < measurementIds.length; i++) {
         MeasurementService.remove('app-source', measurementIds[i]);
@@ -146,8 +140,6 @@ function TrackedMeasurementsContextProvider(
 
       // Magic string
       // load function added by our sopClassHandler module
-
-      debugger;
       if (
         displaySet.SOPClassHandlerId ===
           'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr' &&

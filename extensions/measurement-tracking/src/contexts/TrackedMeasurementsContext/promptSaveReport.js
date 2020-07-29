@@ -13,8 +13,11 @@ const RESPONSE = {
 };
 
 function promptUser({ servicesManager, extensionManager }, ctx, evt) {
+  debugger;
   const { UIDialogService, MeasurementService } = servicesManager.services;
-  const { StudyInstanceUID, SeriesInstanceUID } = evt;
+  const StudyInstanceUID = evt.StudyInstanceUID || evt.data.StudyInstanceUID;
+  const SeriesInstanceUID = evt.SeriesInstanceUID || evt.data.SeriesInstanceUID;
+  const viewportIndex = evt.viewportIndex || evt.data.viewportIndex;
   const { trackedStudy, trackedSeries } = ctx;
   let displaySetInstanceUIDs;
 
@@ -56,6 +59,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
       StudyInstanceUID,
       SeriesInstanceUID,
       createdDisplaySetInstanceUIDs: displaySetInstanceUIDs,
+      viewportIndex,
     });
   });
 }
