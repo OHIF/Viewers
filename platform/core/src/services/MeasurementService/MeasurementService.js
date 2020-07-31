@@ -563,7 +563,7 @@ class MeasurementService {
    *
    * @param {MeasurementSource} source Measurement source instance
    * @param {string} definition The source definition
-   * @param {MeasurementSource} measurement The measurement service measurement
+   * @param {Measurement} measurement The measurement service measurement
    * @return {Object} The mapping based on matched criteria
    */
   _getMatchingMapping(source, definition, measurement) {
@@ -619,7 +619,7 @@ class MeasurementService {
    *
    * @param {string} eventName The event name
    * @param {MeasurementSource} source The measurement source
-   * @param {string} measurement The measurement
+   * @param {Measurement} measurement The measurement
    * @return void
    */
   _broadcastChange(eventName, source, measurement) {

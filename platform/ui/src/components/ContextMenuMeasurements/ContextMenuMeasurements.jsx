@@ -5,7 +5,6 @@ import React from 'react';
 const ContextMenuMeasurements = ({
   onGetMenuItems,
   onSetLabel,
-  onSetDescription,
   onClose,
   onDelete,
 }) => {
@@ -37,7 +36,6 @@ const ContextMenuMeasurements = ({
 
 ContextMenuMeasurements.propTypes = {
   onClose: PropTypes.func.isRequired,
-  onSetDescription: PropTypes.func,
   onSetLabel: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onGetMenuItems: PropTypes.func.isRequired,
