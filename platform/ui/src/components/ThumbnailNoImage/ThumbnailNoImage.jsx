@@ -12,6 +12,9 @@ const ThumbnailNoImage = ({
   modalityTooltip,
   onClick,
   onDoubleClick,
+  canReject,
+  reject,
+  onReject,
   dragData,
   isActive,
 }) => {
@@ -54,6 +57,16 @@ const ThumbnailNoImage = ({
           <div className="ml-12 text-base text-white break-all">
             {description}
           </div>
+          {canReject ? (
+            <div
+              className="ml-12 text-base text-white break-all"
+              onClick={() => {
+                reject().then(result => onReject(result));
+              }}
+            >
+              CLICK TO REJECT
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

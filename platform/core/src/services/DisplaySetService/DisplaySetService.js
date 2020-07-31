@@ -60,6 +60,26 @@ export default class DisplaySetService {
     return displaySet;
   }
 
+  deleteDisplaySet(displaySetInstanceUID) {
+    const { activeDisplaySets } = this;
+
+    const displaySetCacheIndex = displaySetCache.findIndex(
+      ds => ds.displaySetInstanceUID === displaySetInstanceUID
+    );
+
+    const activeDisplaySetsIndex = activeDisplaySets.findIndex(
+      ds => ds.displaySetInstanceUID === displaySetInstanceUID
+    );
+
+    displaySetCache.splice(displaySetCacheIndex, 1);
+    activeDisplaySets.splice(activeDisplaySetsIndex, 1);
+
+    this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+    this._broadcastEvent(EVENTS.DISPLAY_SETS_REMOVED, {
+      displaySetInstanceUIDs: [displaySetInstanceUID],
+    });
+  }
+
   /**
    * @param {string} displaySetInstanceUID
    * @returns {object} displaySet

@@ -24,6 +24,9 @@ const ThumbnailList = ({
           seriesDate,
           viewportIdentificator,
           isTracked,
+          canReject,
+          reject,
+          onReject,
           imageSrc,
           imageAltText,
         }) => {
@@ -82,6 +85,9 @@ const ThumbnailList = ({
                   modalityTooltip={_getModalityTooltip(modality)}
                   seriesDate={seriesDate}
                   description={description}
+                  canReject={canReject}
+                  onReject={onReject}
+                  reject={reject}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() =>
                     onThumbnailDoubleClick(displaySetInstanceUID)
@@ -113,7 +119,10 @@ ThumbnailList.propTypes = {
         'thumbnailTracked',
         'thumbnailNoImage',
       ]).isRequired,
-      viewportIdentificator: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+      viewportIdentificator: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.array,
+      ]),
       isTracked: PropTypes.bool,
       /**
        * Data the thumbnail should expose to a receiving drop target. Use a matching

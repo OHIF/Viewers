@@ -136,7 +136,9 @@ function PanelStudyBrowserTracking({
       thumbnailImageSrcMap,
       trackedSeries,
       viewports,
-      isSingleViewport
+      isSingleViewport,
+      dataSource,
+      DisplaySetService
     );
 
     setDisplaySets(mappedDisplaySets);
@@ -146,6 +148,7 @@ function PanelStudyBrowserTracking({
     trackedSeries,
     thumbnailImageSrcMap,
     viewports,
+    dataSource,
   ]);
 
   // ~~ subscriptions --> displaySets
@@ -188,12 +191,15 @@ function PanelStudyBrowserTracking({
     const SubscriptionDisplaySetsChanged = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
+        debugger;
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
           thumbnailImageSrcMap,
           trackedSeries,
           viewports,
-          isSingleViewport
+          isSingleViewport,
+          dataSource,
+          DisplaySetService
         );
 
         setDisplaySets(mappedDisplaySets);
@@ -360,8 +366,11 @@ function _mapDisplaySets(
   thumbnailImageSrcMap,
   trackedSeriesInstanceUIDs,
   viewports, // TODO: make array of `displaySetInstanceUIDs`?
-  isSingleViewport
+  isSingleViewport,
+  dataSource,
+  DisplaySetService
 ) {
+  console.log(displaySets.length);
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
   displaySets.forEach(ds => {
@@ -381,8 +390,10 @@ function _mapDisplaySets(
         ? thumbnailDisplaySets
         : thumbnailNoImageDisplaySets;
 
-    array.push({
-      displaySetInstanceUID: ds.displaySetInstanceUID,
+    const { displaySetInstanceUID } = ds;
+
+    const thumbnailProps = {
+      displaySetInstanceUID,
       description: ds.SeriesDescription,
       seriesNumber: ds.SeriesNumber,
       modality: ds.Modality,
@@ -393,12 +404,27 @@ function _mapDisplaySets(
       imageSrc,
       dragData: {
         type: 'displayset',
-        displaySetInstanceUID: ds.displaySetInstanceUID,
+        displaySetInstanceUID,
         // .. Any other data to pass
       },
       isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
       viewportIdentificator,
-    });
+    };
+
+    if (componentType === 'thumbnailNoImage') {
+      if (dataSource.reject && dataSource.reject.series) {
+        thumbnailProps.canReject = true;
+        thumbnailProps.reject = () =>
+          dataSource.reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
+        thumbnailProps.onReject = () => {
+          DisplaySetService.deleteDisplaySet(displaySetInstanceUID);
+        };
+      } else {
+        thumbnailProps.canReject = false;
+      }
+    }
+
+    array.push(thumbnailProps);
   });
 
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
@@ -448,7 +474,7 @@ function _createStudyBrowserTabs(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
 
-    displaySetsForStudy.sort((a,b) => {
+    displaySetsForStudy.sort((a, b) => {
       if (a.seriesNumber !== b.seriesNumber) {
         return a.seriesNumber - b.seriesNumber;
       }
