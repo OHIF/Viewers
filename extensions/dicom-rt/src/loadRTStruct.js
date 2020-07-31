@@ -74,12 +74,7 @@ export default async function loadRTStruct(
       continue;
     }
 
-    _setROIContourMetadata(
-      structureSet,
-      StructureSetROISequence,
-      RTROIObservationsSequence,
-      ROIContour
-    );
+    const isSupported = false;
 
     for (let c = 0; c < ContourSequence.length; c++) {
       const {
@@ -91,9 +86,11 @@ export default async function loadRTStruct(
 
       if (ContourGeometricType !== 'CLOSED_PLANAR') {
         // TODO: Do we want to visualise types other than closed planar?
-        // We could easily do open planar.
+        // We could easily do open planar and point.
         continue;
       }
+
+      isSupported = true;
 
       const sopInstanceUID = ContourImageSequence.ReferencedSOPInstanceUID;
       const imageId = _getImageId(imageIdSopInstanceUidPairs, sopInstanceUID);
@@ -126,6 +123,14 @@ export default async function loadRTStruct(
 
       imageIdSpecificToolData.push(measurementData);
     }
+
+    _setROIContourMetadata(
+      structureSet,
+      StructureSetROISequence,
+      RTROIObservationsSequence,
+      ROIContour,
+      isSupported
+    );
   }
 
   _setToolEnabledIfNotEnabled(rtStructDisplayToolName);
@@ -155,7 +160,8 @@ function _setROIContourMetadata(
   structureSet,
   StructureSetROISequence,
   RTROIObservationsSequence,
-  ROIContour
+  ROIContour,
+  isSupported
 ) {
   const StructureSetROI = StructureSetROISequence.find(
     structureSetROI =>
@@ -167,6 +173,7 @@ function _setROIContourMetadata(
     ROIName: StructureSetROI.ROIName,
     ROIGenerationAlgorithm: StructureSetROI.ROIGenerationAlgorithm,
     ROIDescription: StructureSetROI.ROIDescription,
+    isSupported,
     visible: true,
   };
 

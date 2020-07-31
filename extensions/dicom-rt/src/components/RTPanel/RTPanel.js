@@ -17,7 +17,6 @@ const { studyMetadataManager } = utils;
 
 const refreshViewport = () => {
   cornerstone.getEnabledElements().forEach(enabledElement => {
-    debugger;
     if (enabledElement.image) {
       cornerstone.updateImage(enabledElement.element);
     }
@@ -126,7 +125,7 @@ const RTPanel = ({
   }, [isOpen]);
 
   const toContourItem = (
-    { ROINumber, ROIName, RTROIObservations, colorArray, visible },
+    { ROINumber, ROIName, RTROIObservations, colorArray, visible, isSupported },
     loadedSet
   ) => {
     let interpretedType = '';
@@ -139,6 +138,7 @@ const RTPanel = ({
       <StructureSetItem
         key={ROINumber}
         selected={isSameContour}
+        isDisabled={!isSupported}
         onClick={() => {
           setSelectedContour(isSameContour ? null : ROINumber);
 

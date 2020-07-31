@@ -29,7 +29,7 @@ export default {
       const noContoursNotificationHandler = () => {
         UINotificationService.show({
           title: 'ROI Contour empty',
-          message: 'The ROI contour has no structure set data.',
+          message: 'Contour type currently unsupported.',
           type: 'error',
           autoClose: false,
         });
