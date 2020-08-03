@@ -2,6 +2,7 @@
 import React from 'react';
 import { Dialog, Input } from '@ohif/ui';
 import createReportAsync from './../../_shared/createReportAsync.js';
+import getNextSRSeriesNumber from './../../_shared/getNextSRSeriesNumber.js';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -13,7 +14,11 @@ const RESPONSE = {
 };
 
 function promptUser({ servicesManager, extensionManager }, ctx, evt) {
-  const { UIDialogService, MeasurementService } = servicesManager.services;
+  const {
+    UIDialogService,
+    MeasurementService,
+    DisplaySetService,
+  } = servicesManager.services;
   const viewportIndex =
     evt.viewportIndex === undefined
       ? evt.data.viewportIndex
@@ -47,12 +52,15 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
           ? 'Research Derived Series' // default
           : promptResult.value; // provided value
 
+      const SeriesNumber = getNextSRSeriesNumber(DisplaySetService);
+
       displaySetInstanceUIDs = await createReportAsync(
         servicesManager,
         dataSource,
         trackedMeasurements,
         {
           SeriesDescription,
+          SeriesNumber,
         }
       );
     } else if (promptResult.action === RESPONSE.CANCEL) {
