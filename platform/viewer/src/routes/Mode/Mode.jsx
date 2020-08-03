@@ -104,9 +104,6 @@ export default function ModeRoute({
     // TODO: For some reason this is running before the Providers
     // are calling setServiceImplementation
     // TOOD -> iterate through services.
-    MeasurementService.clearMeasurements();
-    ViewportGridService.reset();
-    HangingProtocolService.reset();
 
     // Extension
     extensionManager.onModeEnter();
@@ -114,9 +111,7 @@ export default function ModeRoute({
     route.init({ servicesManager, extensionManager });
 
     return () => {
-      MeasurementService.clearMeasurements();
-      ViewportGridService.reset();
-      HangingProtocolService.reset();
+      extensionManager.onModeExit();
     };
   }, [
     mode,
@@ -137,13 +132,16 @@ export default function ModeRoute({
     // DisplaySetService would wire this up?
     const { unsubscribe } = DicomMetadataStore.subscribe(
       DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-      ({ StudyInstanceUID, SeriesInstanceUID }) => {
+      ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) => {
         const seriesMetadata = DicomMetadataStore.getSeries(
           StudyInstanceUID,
           SeriesInstanceUID
         );
 
-        DisplaySetService.makeDisplaySets(seriesMetadata.instances);
+        DisplaySetService.makeDisplaySets(
+          seriesMetadata.instances,
+          madeInClient
+        );
       }
     );
 

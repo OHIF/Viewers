@@ -145,7 +145,6 @@ function TrackedMeasurementsContextProvider(
       ) {
         console.log('sending event...', trackedMeasurements);
         sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
-          // Why not just pass the displaySet ? We will end up searching for it again to call load.
           displaySetInstanceUID: displaySet.displaySetInstanceUID,
           viewportIndex: activeViewportIndex,
         });

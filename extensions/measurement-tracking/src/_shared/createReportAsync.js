@@ -39,17 +39,9 @@ async function createReportAsync(
     // The "Mode" route listens for DicomMetadataStore changes
     // When a new instance is added, it listens and
     // automatically calls makeDisplaySets
-    // We NEED the displaySetInstanceUID in this case, so we
-    // silence the DICOM Metadata Store's broadcast
-    const silent = true;
-    DicomMetadataStore.addInstances([naturalizedReport], silent);
+    DicomMetadataStore.addInstances([naturalizedReport], true);
 
-    const displaySetInstanceUIDs = DisplaySetService.makeDisplaySets(
-      [naturalizedReport],
-      {
-        madeInClient: true,
-      }
-    );
+    const displaySetInstanceUID = DisplaySetService.getMostRecentDisplaySet();
 
     UINotificationService.show({
       title: 'Create Report',
@@ -57,7 +49,7 @@ async function createReportAsync(
       type: 'success',
     });
 
-    return displaySetInstanceUIDs;
+    return [displaySetInstanceUID];
   } catch (error) {
     UINotificationService.show({
       title: 'Create Report',

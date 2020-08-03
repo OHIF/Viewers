@@ -31,7 +31,6 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
     const promptResult = await _createReportDialogPrompt(UIDialogService);
 
     if (promptResult.action === RESPONSE.CREATE_REPORT) {
-      // TODO: use `promptResult.value` to set seriesDescription
       const dataSources = extensionManager.getDataSources();
       const dataSource = dataSources[0];
       const measurements = MeasurementService.getMeasurements();

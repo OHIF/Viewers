@@ -143,10 +143,6 @@ export default function _hydrateStructuredReport(
 
   displaySet.isHydrated = true;
 
-  //setIsHydrated(true);
-
-  debugger;
-
   return {
     StudyInstanceUID: targetStudyInstanceUID,
     SeriesInstanceUIDs,

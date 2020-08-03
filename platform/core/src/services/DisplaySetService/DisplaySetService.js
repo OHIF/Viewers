@@ -36,6 +36,10 @@ export default class DisplaySetService {
     return displaySetCache;
   }
 
+  getMostRecentDisplaySet() {
+    return this.activeDisplaySets[this.activeDisplaySets.length - 1];
+  }
+
   getActiveDisplaySets() {
     return this.activeDisplaySets;
   }
