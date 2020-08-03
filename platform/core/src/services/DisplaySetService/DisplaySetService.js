@@ -90,11 +90,12 @@ export default class DisplaySetService {
     let displaySetsAdded = [];
 
     if (batch) {
-      input.forEach(instances => {
+      for (let i = 0; i < input.length; i++) {
+        const instances = input[i];
         const displaySets = this.makeDisplaySetForInstances(instances);
 
         displaySetsAdded = [...displaySetsAdded, displaySets];
-      });
+      }
     } else {
       const displaySets = this.makeDisplaySetForInstances(input);
 

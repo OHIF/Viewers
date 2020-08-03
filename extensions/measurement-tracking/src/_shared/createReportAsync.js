@@ -16,9 +16,9 @@ async function createReportAsync(
   options
 ) {
   const {
+    DisplaySetService,
     UINotificationService,
     UIDialogService,
-    DisplaySetService,
   } = servicesManager.services;
   const loadingDialogId = UIDialogService.create({
     showOverlay: true,
@@ -36,7 +36,13 @@ async function createReportAsync(
       options
     );
 
-    DicomMetadataStore.addInstances([naturalizedReport]);
+    // The "Mode" route listens for DicomMetadataStore changes
+    // When a new instance is added, it listens and
+    // automatically calls makeDisplaySets
+    // We NEED the displaySetInstanceUID in this case, so we
+    // silence the DICOM Metadata Store's broadcast
+    const silent = true;
+    DicomMetadataStore.addInstances([naturalizedReport], silent);
 
     const displaySetInstanceUIDs = DisplaySetService.makeDisplaySets(
       [naturalizedReport],
