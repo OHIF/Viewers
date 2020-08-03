@@ -1,11 +1,9 @@
-export default function(wadoRoot) {
+export default function (wadoRoot) {
   return {
     series: (StudyInstanceUID, SeriesInstanceUID) => {
       return new Promise((resolve, reject) => {
         // Reject because of Quality. (Seems the most sensible out of the options)
         const CodeValueAndCodeSchemeDesignator = `113001%5EDCM`;
-
-        debugger;
 
         const url = `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/reject/${CodeValueAndCodeSchemeDesignator}`;
 
@@ -17,7 +15,7 @@ export default function(wadoRoot) {
 
         console.log(xhr);
 
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
           //Call a function when the state changes.
           if (xhr.readyState == 4) {
             switch (xhr.status) {
