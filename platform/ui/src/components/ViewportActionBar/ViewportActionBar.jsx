@@ -243,6 +243,10 @@ function PatientInfo({
   isOpen,
   showPatientInfoRef,
 }) {
+  while (patientAge.charAt(0) === '0') {
+    patientAge = patientAge.substr(1);
+  }
+
   return (
     <div ref={showPatientInfoRef}>
       <Tooltip
