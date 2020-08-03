@@ -86,7 +86,7 @@ export default function _hydrateStructuredReport(
   const SeriesInstanceUIDs = [];
 
   for (let i = 0; i < imageIds.length; i++) {
-    const imageId = imageIds[0];
+    const imageId = imageIds[i];
     const { SeriesInstanceUID, StudyInstanceUID } = cornerstone.metaData.get(
       'instance',
       imageId
@@ -144,6 +144,8 @@ export default function _hydrateStructuredReport(
   displaySet.isHydrated = true;
 
   //setIsHydrated(true);
+
+  debugger;
 
   return {
     StudyInstanceUID: targetStudyInstanceUID,
