@@ -73,7 +73,7 @@ const Length = {
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      label: measurementData.text,
+      label: measurementData.label,
       description: measurementData.description,
       unit: measurementData.unit,
       length: measurementData.length,

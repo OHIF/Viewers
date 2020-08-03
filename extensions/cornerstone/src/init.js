@@ -7,6 +7,7 @@ import merge from 'lodash.merge';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import cornerstoneTools from 'cornerstone-tools';
 import initWADOImageLoader from './initWADOImageLoader.js';
+import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 //
 import { setEnabledElement } from './state';
@@ -345,13 +346,47 @@ const _connectToolsToMeasurementService = (
       }
     }
 
-    const { MEASUREMENTS_CLEARED } = MeasurementService.EVENTS;
+    const {
+      MEASUREMENTS_CLEARED,
+      MEASUREMENT_UPDATED,
+    } = MeasurementService.EVENTS;
 
     MeasurementService.subscribe(MEASUREMENTS_CLEARED, () => {
       cornerstoneTools.globalImageIdSpecificToolStateManager.restoreToolState(
         {}
       );
     });
+
+    MeasurementService.subscribe(
+      MEASUREMENT_UPDATED,
+      ({ source, measurement, notYetUpdatedAtSource }) => {
+        const { id, label } = measurement;
+
+        if (
+          source.name == 'CornerstoneTools' &&
+          notYetUpdatedAtSource === false
+        ) {
+          // This event was fired by cornerstone telling the measurement service to sync. Already in sync.
+          return;
+        }
+        const cornerstoneMeasurement = getCornerstoneMeasurementById(id);
+
+        if (cornerstoneMeasurement) {
+          cornerstoneMeasurement.label = label;
+          if (cornerstoneMeasurement.hasOwnProperty('text')) {
+            // Deal with the weird case of ArrowAnnotate.
+            cornerstoneMeasurement.text = label;
+          }
+
+          // Update the cornerstone canvases.
+          const enabledElements = cornerstoneTools.store.state.enabledElements;
+
+          enabledElements.forEach(element => {
+            cornerstone.updateImage(element);
+          });
+        }
+      }
+    );
 
     const enabledElement = evt.detail.element;
     const completedEvt = csTools.EVENTS.MEASUREMENT_COMPLETED;

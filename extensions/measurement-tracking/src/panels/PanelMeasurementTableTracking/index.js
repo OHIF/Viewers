@@ -173,10 +173,14 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     const onSubmitHandler = ({ action, value }) => {
       switch (action.id) {
         case 'save': {
-          MeasurementService.update(id, {
-            ...measurement,
-            ...value,
-          });
+          MeasurementService.update(
+            id,
+            {
+              ...measurement,
+              ...value,
+            },
+            true
+          );
         }
       }
       UIDialogService.dismiss({ id: dialogId });
