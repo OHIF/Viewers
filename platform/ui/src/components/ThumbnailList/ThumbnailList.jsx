@@ -25,7 +25,6 @@ const ThumbnailList = ({
           viewportIdentificator,
           isTracked,
           canReject,
-          reject,
           onReject,
           imageSrc,
           imageAltText,
@@ -87,7 +86,6 @@ const ThumbnailList = ({
                   description={description}
                   canReject={canReject}
                   onReject={onReject}
-                  reject={reject}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() =>
                     onThumbnailDoubleClick(displaySetInstanceUID)

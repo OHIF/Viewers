@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
+import { StudyBrowser, useImageViewer, useViewportGrid, Dialog } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
 const { formatDate } = utils;
@@ -13,6 +13,8 @@ const { formatDate } = utils;
 function PanelStudyBrowserTracking({
   MeasurementService,
   DisplaySetService,
+  UIDialogService,
+  UINotificationService,
   getImageSrc,
   getStudiesForPatientByStudyInstanceUID,
   requestDisplaySetCreationForStudy,
@@ -138,7 +140,9 @@ function PanelStudyBrowserTracking({
       viewports,
       isSingleViewport,
       dataSource,
-      DisplaySetService
+      DisplaySetService,
+      UIDialogService,
+      UINotificationService
     );
 
     setDisplaySets(mappedDisplaySets);
@@ -191,7 +195,6 @@ function PanelStudyBrowserTracking({
     const SubscriptionDisplaySetsChanged = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
-        debugger;
         const mappedDisplaySets = _mapDisplaySets(
           changedDisplaySets,
           thumbnailImageSrcMap,
@@ -199,7 +202,9 @@ function PanelStudyBrowserTracking({
           viewports,
           isSingleViewport,
           dataSource,
-          DisplaySetService
+          DisplaySetService,
+          UIDialogService,
+          UINotificationService
         );
 
         setDisplaySets(mappedDisplaySets);
@@ -233,10 +238,10 @@ function PanelStudyBrowserTracking({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? [
-          ...expandedStudyInstanceUIDs.filter(
-            stdyUid => stdyUid !== StudyInstanceUID
-          ),
-        ]
+        ...expandedStudyInstanceUIDs.filter(
+          stdyUid => stdyUid !== StudyInstanceUID
+        ),
+      ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -310,7 +315,7 @@ function PanelStudyBrowserTracking({
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
         });
       }}
-      onClickThumbnail={() => {}}
+      onClickThumbnail={() => { }}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
       activeDisplaySetInstanceUID={activeDisplaySetInstanceUID}
     />
@@ -368,7 +373,9 @@ function _mapDisplaySets(
   viewports, // TODO: make array of `displaySetInstanceUIDs`?
   isSingleViewport,
   dataSource,
-  DisplaySetService
+  DisplaySetService,
+  UIDialogService,
+  UINotificationService
 ) {
   console.log(displaySets.length);
   const thumbnailDisplaySets = [];
@@ -379,11 +386,11 @@ function _mapDisplaySets(
     const viewportIdentificator = isSingleViewport
       ? []
       : viewports.reduce((acc, viewportData, index) => {
-          if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
-            acc.push(_viewportLabels[index]);
-          }
-          return acc;
-        }, []);
+        if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
+          acc.push(_viewportLabels[index]);
+        }
+        return acc;
+      }, []);
 
     const array =
       componentType === 'thumbnailTracked'
@@ -414,10 +421,54 @@ function _mapDisplaySets(
     if (componentType === 'thumbnailNoImage') {
       if (dataSource.reject && dataSource.reject.series) {
         thumbnailProps.canReject = true;
-        thumbnailProps.reject = () =>
-          dataSource.reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
         thumbnailProps.onReject = () => {
-          DisplaySetService.deleteDisplaySet(displaySetInstanceUID);
+          UIDialogService.create({
+            id: 'ds-reject-sr',
+            centralize: true,
+            isDraggable: false,
+            showOverlay: true,
+            content: Dialog,
+            contentProps: {
+              title: 'Reject Report',
+              body: () => (
+                <div className="p-4 bg-primary-dark text-white">
+                  <p>This is a destructive action.</p>
+                  <p>Are you sure you want to continue?</p>
+                </div>
+              ),
+              actions: [
+                { id: 'cancel', text: 'Cancel', type: 'secondary' },
+                { id: 'save', text: 'Save', type: 'primary' },
+              ],
+              onClose: () => UIDialogService.dismiss({ id: 'ds-reject-sr' }),
+              onSubmit: async ({ action }) => {
+                switch (action.id) {
+                  case 'save':
+                    try {
+                      await dataSource.reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
+                      DisplaySetService.deleteDisplaySet(displaySetInstanceUID);
+                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
+                      UINotificationService.show({
+                        title: 'Reject Report',
+                        message: 'Report rejected successfully',
+                        type: 'success',
+                      });
+                    } catch (error) {
+                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
+                      UINotificationService.show({
+                        title: 'Reject Report',
+                        message: 'Failed to reject report',
+                        type: 'error',
+                      });
+                    }
+                    break;
+                  case 'cancel':
+                    UIDialogService.dismiss({ id: 'ds-reject-sr' });
+                    break;
+                }
+              },
+            },
+          });
         };
       } else {
         thumbnailProps.canReject = false;

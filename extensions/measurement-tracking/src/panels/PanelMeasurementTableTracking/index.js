@@ -184,7 +184,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     dialogId = UIDialogService.create({
       centralize: true,
       isDraggable: false,
-      useLastPosition: false,
       showOverlay: true,
       content: Dialog,
       contentProps: {

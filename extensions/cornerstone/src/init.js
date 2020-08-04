@@ -29,9 +29,8 @@ export default function init({ servicesManager, configuration }) {
       let dialogId = UIDialogService.create({
         centralize: true,
         isDraggable: false,
-        content: Dialog,
-        useLastPosition: false,
         showOverlay: true,
+        content: Dialog,
         contentProps: {
           title: 'Enter your annotation',
           value: { label: data ? data.text : '' },
@@ -103,7 +102,7 @@ export default function init({ servicesManager, configuration }) {
   // THIS
   // is a way for extensions that "depend" on this extension to notify it of
   // new cornerstone enabled elements so it's commands continue to work.
-  const handleOhifCornerstoneEnabledElementEvent = function(evt) {
+  const handleOhifCornerstoneEnabledElementEvent = function (evt) {
     const { viewportIndex, enabledElement } = evt.detail;
 
     setEnabledElement(viewportIndex, enabledElement);
