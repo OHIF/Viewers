@@ -227,10 +227,10 @@ function PanelStudyBrowserTracking({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? [
-          ...expandedStudyInstanceUIDs.filter(
-            stdyUid => stdyUid !== StudyInstanceUID
-          ),
-        ]
+        ...expandedStudyInstanceUIDs.filter(
+          stdyUid => stdyUid !== StudyInstanceUID
+        ),
+      ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -304,7 +304,7 @@ function PanelStudyBrowserTracking({
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
         });
       }}
-      onClickThumbnail={() => {}}
+      onClickThumbnail={() => { }}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
       activeDisplaySetInstanceUID={activeDisplaySetInstanceUID}
     />
@@ -370,11 +370,11 @@ function _mapDisplaySets(
     const viewportIdentificator = isSingleViewport
       ? []
       : viewports.reduce((acc, viewportData, index) => {
-          if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
-            acc.push(_viewportLabels[index]);
-          }
-          return acc;
-        }, []);
+        if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
+          acc.push(_viewportLabels[index]);
+        }
+        return acc;
+      }, []);
 
     const array =
       componentType === 'thumbnailTracked'
@@ -465,6 +465,7 @@ function _createStudyBrowserTabs(
 
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
       primaryStudies.push(tabStudy);
+      allStudies.push(tabStudy);
     } else {
       // TODO: Filter allStudies to dates within one year of current date
       recentStudies.push(tabStudy);
