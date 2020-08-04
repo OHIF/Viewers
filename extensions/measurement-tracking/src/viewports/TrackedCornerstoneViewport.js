@@ -35,10 +35,6 @@ const BaseAnnotationTool = cornerstoneTools.importInternal(
   'base/BaseAnnotationTool'
 );
 
-// const cine = viewportSpecificData.cine;
-// isPlaying = cine.isPlaying === true;
-// frameRate = cine.cineFrameRate || frameRate;
-
 const { StackManager } = OHIF.utils;
 
 function TrackedCornerstoneViewport({
@@ -54,12 +50,11 @@ function TrackedCornerstoneViewport({
     MeasurementService,
   } = servicesManager.services;
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [{ activeViewportIndex, viewports }] = useViewportGrid();
+  const [{ activeViewportIndex, viewports, isCineEnabled }, viewportGridService] = useViewportGrid();
   // viewportIndex, onSubmit
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
   const [element, setElement] = useState(null);
-
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementId, setTrackedMeasurementId] = useState(null);
 
@@ -298,7 +293,7 @@ function TrackedCornerstoneViewport({
     );
   }
 
-  // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
+  const { cine } = viewports[viewportIndex];
 
   return (
     <>
@@ -333,6 +328,24 @@ function TrackedCornerstoneViewport({
             scanner: ManufacturerModelName || '',
           },
         }}
+        showNavArrows={!isCineEnabled}
+        showCine={isCineEnabled}
+        cineProps={{
+          isPlaying: cine.isPlaying,
+          onClose: () => viewportGridService.setIsCineEnabled(false),
+          onPlayPauseChange: isPlaying => {
+            viewportGridService.setCineForViewport({
+              viewportIndex: activeViewportIndex,
+              cine: { ...cine, isPlaying },
+            });
+          },
+          onFrameRateChange: frameRate => {
+            viewportGridService.setCineForViewport({
+              viewportIndex: activeViewportIndex,
+              cine: { ...cine, frameRate },
+            });
+          },
+        }}
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
       <div className="relative flex flex-row w-full h-full overflow-hidden">
@@ -347,8 +360,8 @@ function TrackedCornerstoneViewport({
           // TODO: ViewportGrid Context?
           isActive={true} // todo
           isStackPrefetchEnabled={true} // todo
-          isPlaying={false}
-          frameRate={24}
+          isPlaying={cine.isPlaying}
+          frameRate={cine.frameRate}
           isOverlayVisible={true}
           loadingIndicatorComponent={ViewportLoadingIndicator}
           viewportOverlayComponent={props => {
@@ -408,6 +421,7 @@ function _getCornerstoneStack(displaySet, dataSource) {
   return stack;
 }
 
+// TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
 function _onDoubleClick() {
   const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
     'manipulatorState'

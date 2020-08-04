@@ -189,14 +189,18 @@ export default [
       type: 'primary',
     },
   },
-  // TODO: Toggle
   {
     id: 'Cine',
-    type: 'ohif.action',
+    type: 'ohif.radioGroup',
+    config: {
+      groupName: 'primaryTool',
+    },
     props: {
+      isActive: false,
       icon: 'old-youtube',
       label: 'Cine',
-      commandName: '',
+      commandName: 'setIsCineEnabled',
+      commandOptions: { isCineEnabled: true },
       type: 'primary',
     },
   },

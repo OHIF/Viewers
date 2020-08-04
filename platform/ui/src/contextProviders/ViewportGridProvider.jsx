@@ -11,11 +11,20 @@ const DEFAULT_STATE = {
   numRows: 1,
   numCols: 1,
   viewports: [
-    // {
-    //    displaySetInstanceUID: string,
-    // }
+    /*
+     * {
+     *    displaySetInstanceUID: string,
+     *    cine: { isPlaying: false, frameRate: 24 }
+     * }
+     */
   ],
+  isCineEnabled: false,
   activeViewportIndex: 0,
+};
+
+const DEFAULT_CINE = {
+  isPlaying: false,
+  frameRate: 24
 };
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
@@ -30,9 +39,20 @@ export function ViewportGridProvider({ children, service }) {
         const { viewportIndex, displaySetInstanceUID } = action.payload;
         const viewports = state.viewports.slice();
 
-        viewports[viewportIndex] = { displaySetInstanceUID };
+        viewports[viewportIndex] = { displaySetInstanceUID, cine: { ...DEFAULT_CINE } };
 
         return { ...state, ...{ viewports }, cachedLayout: null };
+      }
+      case 'SET_CINE_FOR_VIEWPORT': {
+        const { viewportIndex, cine } = action.payload;
+        const viewports = state.viewports.slice();
+
+        viewports[viewportIndex].cine = cine;
+
+        return { ...state, ...{ viewports } };
+      }
+      case 'SET_IS_CINE_ENABLED': {
+        return { ...state, ...{ isCineEnabled: action.payload } };
       }
       case 'SET_LAYOUT': {
         const { numCols, numRows } = action.payload;
@@ -42,7 +62,7 @@ export function ViewportGridProvider({ children, service }) {
           state.activeViewportIndex >= numPanes ? 0 : state.activeViewportIndex;
 
         while (viewports.length < numPanes) {
-          viewports.push({});
+          viewports.push({ cine: { ...DEFAULT_CINE } });
         }
         while (viewports.length > numPanes) {
           viewports.pop();
@@ -59,7 +79,10 @@ export function ViewportGridProvider({ children, service }) {
           numCols: 1,
           numRows: 1,
           activeViewportIndex: 0,
-          viewports: [{ displaySetInstanceUID: null }],
+          viewports: [{
+            displaySetInstanceUID: null,
+            cine: { ...DEFAULT_CINE }
+          }],
           cachedLayout: null,
         };
       }
@@ -84,13 +107,13 @@ export function ViewportGridProvider({ children, service }) {
     DEFAULT_STATE
   );
 
-  console.log('viewportGridState',viewportGridState)
-
   const getState = useCallback(() => viewportGridState, [viewportGridState]);
+
   const setActiveViewportIndex = useCallback(
     index => dispatch({ type: 'SET_ACTIVE_VIEWPORT_INDEX', payload: index }),
     [dispatch]
   );
+
   const setDisplaysetForViewport = useCallback(
     ({ viewportIndex, displaySetInstanceUID }) =>
       dispatch({
@@ -100,6 +123,23 @@ export function ViewportGridProvider({ children, service }) {
           displaySetInstanceUID,
         },
       }),
+    [dispatch]
+  );
+
+  const setCineForViewport = useCallback(
+    ({ viewportIndex, cine }) =>
+      dispatch({
+        type: 'SET_CINE_FOR_VIEWPORT',
+        payload: {
+          viewportIndex,
+          cine,
+        },
+      }),
+    [dispatch]
+  );
+
+  const setIsCineEnabled = useCallback(
+    isCineEnabled => dispatch({ type: 'SET_IS_CINE_ENABLED', payload: isCineEnabled }),
     [dispatch]
   );
 
@@ -123,6 +163,7 @@ export function ViewportGridProvider({ children, service }) {
       }),
     [dispatch]
   );
+
   const setCachedLayout = useCallback(
     payload =>
       dispatch({
@@ -152,6 +193,8 @@ export function ViewportGridProvider({ children, service }) {
         getState,
         setActiveViewportIndex,
         setDisplaysetForViewport,
+        setCineForViewport,
+        setIsCineEnabled,
         setLayout,
         reset,
         setCachedLayout,
@@ -163,6 +206,8 @@ export function ViewportGridProvider({ children, service }) {
     service,
     setActiveViewportIndex,
     setDisplaysetForViewport,
+    setCineForViewport,
+    setIsCineEnabled,
     setLayout,
     reset,
     setCachedLayout,
@@ -173,6 +218,8 @@ export function ViewportGridProvider({ children, service }) {
     // getState,
     setActiveViewportIndex,
     setDisplaysetForViewport,
+    setCineForViewport,
+    setIsCineEnabled,
     setLayout,
     setCachedLayout,
     reset,

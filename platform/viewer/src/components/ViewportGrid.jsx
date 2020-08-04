@@ -194,7 +194,7 @@ function ViewerViewportGrid(props) {
           isActive={isActive}
         >
           <div
-            className={classNames('h-full w-full flex flex-col align-center', {
+            className={classNames('h-full w-full flex flex-col', {
               'pointer-events-none': !isActive,
             })}
           >

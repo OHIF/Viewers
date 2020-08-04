@@ -51,6 +51,13 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
             if (viewerProps.setActiveTool) {
               viewerProps.setActiveTool(props, metadata.isNested);
             }
+
+            /* TODO: Revise this code */
+            if (btn.id === 'Cine') {
+              commandsManager.runCommand('setIsCineEnabled', {
+                isCineEnabled: btn.props.isActive
+              });
+            }
           }
         });
 

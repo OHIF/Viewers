@@ -32,6 +32,7 @@ export {
 export {
   Button,
   ButtonGroup,
+  CinePlayer,
   DateRange,
   Dialog,
   Dropdown,

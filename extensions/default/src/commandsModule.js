@@ -1,15 +1,23 @@
 const commandsModule = ({ servicesManager }) => {
-  const { MeasurementService } = servicesManager.services;
+  const { MeasurementService, ViewportGridService } = servicesManager.services;
 
   const actions = {
     clearMeasurements: () => {
       MeasurementService.clear();
+    },
+    setIsCineEnabled: ({ isCineEnabled }) => {
+      ViewportGridService.setIsCineEnabled(isCineEnabled);
     },
   };
 
   const definitions = {
     clearMeasurements: {
       commandFn: actions.clearMeasurements,
+      storeContexts: [],
+      options: {},
+    },
+    setIsCineEnabled: {
+      commandFn: actions.setIsCineEnabled,
       storeContexts: [],
       options: {},
     },

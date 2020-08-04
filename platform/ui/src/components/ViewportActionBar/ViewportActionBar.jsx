@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon, ButtonGroup, Button, Tooltip } from '@ohif/ui';
+import { Icon, ButtonGroup, Button, Tooltip, CinePlayer } from '@ohif/ui';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 
 const classes = {
@@ -14,6 +14,8 @@ const classes = {
 const ViewportActionBar = ({
   studyData,
   showNavArrows,
+  showCine,
+  cineProps,
   showPatientInfo: patientInfoVisibility,
   onSeriesChange,
   onHydrationClick,
@@ -73,18 +75,18 @@ const ViewportActionBar = ({
     if (modality === 'SR') {
       const TooltipMessage = isLocked
         ? () => (
-            <div>
-              This SR is locked. <br />
+          <div>
+            This SR is locked. <br />
               Measurements cannot be duplicated.
-            </div>
-          )
+          </div>
+        )
         : () => (
-            <div>
-              This SR is unlocked. <br />
+          <div>
+            This SR is unlocked. <br />
               You can duplicate measurements on your current report <br /> by
               clicking &apos;Edit&apos;.
-            </div>
-          );
+          </div>
+        );
       return (
         <>
           <Tooltip content={<TooltipMessage />} position="bottom-left">
@@ -135,13 +137,13 @@ const ViewportActionBar = ({
                       can be viewed <br /> in the measurement panel
                     </>
                   ) : (
-                    <>
-                      Measurements for
+                      <>
+                        Measurements for
                       <span className="font-bold text-white"> untracked </span>
                       series <br /> will not be shown in the <br /> measurements
                       panel
                     </>
-                  )}
+                    )}
                 </span>
               </div>
             </div>
@@ -155,7 +157,7 @@ const ViewportActionBar = ({
 
   return (
     <div
-      className="flex items-center p-2 border-b select-none border-primary-light min-h-12"
+      className="flex flex-wrap items-center p-2 border-b select-none border-primary-light"
       onDoubleClick={onDoubleClick}
     >
       <div className="flex flex-grow">
@@ -184,8 +186,8 @@ const ViewportActionBar = ({
           </div>
         </div>
       </div>
-      {showNavArrows && (
-        <div className="ml-2">
+      <div className="ml-2 mb-2 mt-2 flex flex-row">
+        {showNavArrows && !showCine && (
           <ButtonGroup>
             <Button
               size="initial"
@@ -202,9 +204,10 @@ const ViewportActionBar = ({
               <Icon name="chevron-right" className="w-4 text-white" />
             </Button>
           </ButtonGroup>
-        </div>
-      )}
-      <div className="flex ml-4 mr-2" onClick={onPatientInfoClick}>
+        )}
+        {showCine && !showNavArrows && <CinePlayer {...cineProps} />}
+      </div>
+      <div className="flex h-8 ml-4 mr-2" onClick={onPatientInfoClick}>
         <PatientInfo
           showPatientInfoRef={showPatientInfoRef}
           isOpen={showPatientInfo}
@@ -224,6 +227,8 @@ const ViewportActionBar = ({
 ViewportActionBar.propTypes = {
   onSeriesChange: PropTypes.func.isRequired,
   showNavArrows: PropTypes.bool,
+  showCine: PropTypes.bool,
+  cineProps: PropTypes.object,
   showPatientInfo: PropTypes.bool,
   studyData: PropTypes.shape({
     label: PropTypes.string.isRequired,
@@ -246,6 +251,8 @@ ViewportActionBar.propTypes = {
 };
 
 ViewportActionBar.defaultProps = {
+  cineProps: {},
+  showCine: false,
   showNavArrows: true,
   showPatientInfo: false,
 };

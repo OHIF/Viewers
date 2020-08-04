@@ -1,5 +1,6 @@
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
+import CinePlayer from './CinePlayer';
 import DateRange from './DateRange';
 import Dialog from './Dialog';
 import Dropdown from './Dropdown';
@@ -55,6 +56,7 @@ import ViewportPane from './ViewportPane';
 export {
   Button,
   ButtonGroup,
+  CinePlayer,
   DateRange,
   Dialog,
   Dropdown,
