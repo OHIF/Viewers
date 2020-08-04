@@ -16,7 +16,7 @@ import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
  *
  * @typedef {Object} Measurement
  * @property {number} id -
- * @property {string} sopInstanceUid -
+ * @property {string} SOPInstanceUID -
  * @property {string} FrameOfReferenceUID -
  * @property {string} referenceSeriesUID -
  * @property {string} label -
@@ -146,7 +146,7 @@ class MeasurementService {
       return this.addOrUpdate(source, definition, measurement);
     };
     source.remove = id => {
-      return this.remove(source, id);
+      return this.remove(id, source);
     };
     source.getAnnotation = (definition, measurementId) => {
       return this.getAnnotation(source, definition, measurementId);
@@ -269,9 +269,9 @@ class MeasurementService {
       measurementId,
       definition
     );
+    const measurement = this.getMeasurement(measurementId);
     if (mapping) return mapping.toSourceSchema(measurement, definition);
 
-    const measurement = this.getMeasurement(measurementId);
     const matchingMapping = this._getMatchingMapping(
       source,
       definition,
@@ -484,19 +484,26 @@ class MeasurementService {
     return newMeasurement.id;
   }
 
-  remove(source, id) {
+  /**
+   * Removes a measurement and broadcasts the removed event.
+   *
+   * @param {string} id The measurement id
+   * @param {MeasurementSource} source The measurement source instance
+   * @return {string} The removed measurement id
+   */
+  remove(id, source) {
     if (!id || !this.measurements[id]) {
       log.warn(`No id provided, or unable to find measurement by id.`);
       return;
     }
 
     delete this.measurements[id];
-    this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED, source, id);
+    this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED, source, { id });
+    return id;
   }
 
   clearMeasurements() {
     this.measurements = {};
-
     this._broadcastChange(this.EVENTS.MEASUREMENTS_CLEARED);
   }
 
@@ -556,7 +563,7 @@ class MeasurementService {
    *
    * @param {MeasurementSource} source Measurement source instance
    * @param {string} definition The source definition
-   * @param {string} measurement The measurement serice measurement
+   * @param {Measurement} measurement The measurement service measurement
    * @return {Object} The mapping based on matched criteria
    */
   _getMatchingMapping(source, definition, measurement) {
@@ -612,7 +619,7 @@ class MeasurementService {
    *
    * @param {string} eventName The event name
    * @param {MeasurementSource} source The measurement source
-   * @param {string} measurement The measurement id
+   * @param {Measurement} measurement The measurement
    * @return void
    */
   _broadcastChange(eventName, source, measurement) {

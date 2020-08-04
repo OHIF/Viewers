@@ -162,7 +162,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const onMeasurementItemEditHandler = ({ id }) => {
     const measurement = MeasurementService.getMeasurement(id);
 
-    let dialogId;
     const onSubmitHandler = ({ action, value }) => {
       switch (action.id) {
         case 'save': {
@@ -172,9 +171,11 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           });
         }
       }
-      UIDialogService.dismiss({ id: dialogId });
+      UIDialogService.dismiss({ id: 'enter-annotation' });
     };
-    dialogId = UIDialogService.create({
+
+    UIDialogService.create({
+      id: 'enter-annotation',
       centralize: true,
       isDraggable: false,
       useLastPosition: false,

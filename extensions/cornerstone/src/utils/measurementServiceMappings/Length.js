@@ -19,8 +19,8 @@ const Length = {
     return {
       toolName: definition,
       measurementData: {
-        sopInstanceUid: SOPInstanceUID,
-        frameOfReferenceUID: FrameOfReferenceUID,
+        SOPInstanceUID,
+        FrameOfReferenceUID,
         SeriesInstanceUID: referenceSeriesUID,
         unit,
         text: label,
@@ -68,7 +68,7 @@ const Length = {
 
     return {
       id: measurementData.id,
-      SOPInstanceUID: SOPInstanceUID,
+      SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
