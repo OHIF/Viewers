@@ -423,20 +423,6 @@ const _connectMeasurementServiceToTools = (
       });
     }
   );
-
-  // if ([sourceId].includes(source.id)) {
-  //    const annotation = getAnnotation('Length', measurement.id);
-  //    iterate tool state
-  // }
-  /* TODO: Remove per measurement */
-  // MeasurementService.subscribe(MEASUREMENT_REMOVED,
-  //   ({ source, measurement }) => {
-  //     if ([sourceId].includes(source.id)) {
-  //       // const annotation = getAnnotation('Length', measurement.id);
-  //       // iterate tool state
-  //     }
-  //   }
-  // );
 };
 
 // const {

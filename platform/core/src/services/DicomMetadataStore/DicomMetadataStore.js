@@ -57,9 +57,7 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
 const BaseImplementation = {
   EVENTS,
   listeners: {},
-  // TODO: The assumption is that this is called per Study per Series
-  // We should do more to verify/clarify that
-  addInstances(instances, silent = false) {
+  addInstances(instances, madeInClient = false) {
     const { StudyInstanceUID, SeriesInstanceUID } = instances[0];
 
     let study = _model.studies.find(
@@ -78,12 +76,11 @@ const BaseImplementation = {
     // This is because the mode needs to listen to instances that are added to build up its active displaySets.
     // It will see there are cached displaySets and end early if this Series has already been fired in this
     // Mode session for some reason.
-    if (!silent) {
-      this._broadcastEvent(EVENTS.INSTANCES_ADDED, {
-        StudyInstanceUID,
-        SeriesInstanceUID,
-      });
-    }
+    this._broadcastEvent(EVENTS.INSTANCES_ADDED, {
+      StudyInstanceUID,
+      SeriesInstanceUID,
+      madeInClient,
+    });
   },
   addSeriesMetadata(seriesSummaryMetadata) {
     const { StudyInstanceUID } = seriesSummaryMetadata[0];

@@ -13,7 +13,6 @@ import {
 import TOOL_NAMES from './constants/toolNames';
 import { adapters } from 'dcmjs';
 // import getToolStateToCornerstoneMeasurementSchema from './utils/getToolStateToCornerstoneMeasurementSchema';
-import getLabelFromDCMJSImportedToolData from './utils/getLabelFromDCMJSImportedToolData';
 import id from './id';
 
 const { formatDate } = utils;
@@ -147,12 +146,7 @@ function OHIFCornerstoneSRViewport({
     const numMeasurements = displaySet.measurements.length;
 
     setMeasurementCount(numMeasurements);
-  }, [
-    dataSource,
-    displaySet,
-    displaySet.StudyInstanceUID,
-    displaySet.displaySetInstanceUID,
-  ]);
+  }, [dataSource, displaySet]);
 
   const updateViewport = useCallback(newMeasurementSelected => {
     const {
@@ -196,12 +190,7 @@ function OHIFCornerstoneSRViewport({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      dataSource,
-      displaySet,
-      displaySet.StudyInstanceUID,
-      displaySet.displaySetInstanceUID,
-    ]
+    [dataSource, displaySet]
   );
 
   useEffect(
@@ -209,13 +198,7 @@ function OHIFCornerstoneSRViewport({
       updateViewport(measurementSelected);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      dataSource,
-      displaySet,
-      displaySet.StudyInstanceUID,
-      displaySet.displaySetInstanceUID,
-      element,
-    ]
+    [dataSource, displaySet, element]
   );
 
   const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(

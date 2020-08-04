@@ -12,6 +12,8 @@ import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 import setCornerstoneMeasurementActive from '../../_shared/setCornerstoneMeasurementActive';
+import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
+import RESPONSES from '../../_shared/PROMPT_RESPONSES';
 
 const { formatDate } = utils;
 
@@ -31,11 +33,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const {
-    MeasurementService,
-    UIDialogService,
-    DisplaySetService,
-  } = servicesManager.services;
+  const { MeasurementService, UIDialogService } = servicesManager.services;
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -131,7 +129,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     };
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
-  function exportReport() {
+  async function exportReport() {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -139,10 +137,21 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    // TODO -> Need prompt here.
-    const additionalFindings = ['ArrowAnnotate'];
+    const promptResult = await createReportDialogPrompt(UIDialogService);
 
-    DICOMSR.downloadReport(trackedMeasurements, additionalFindings);
+    if (promptResult.action === RESPONSES.CREATE_REPORT) {
+      const additionalFindings = ['ArrowAnnotate'];
+
+      const SeriesDescription =
+        // isUndefinedOrEmpty
+        promptResult.value === undefined || promptResult.value === ''
+          ? 'Research Derived Series' // default
+          : promptResult.value; // provided value
+
+      DICOMSR.downloadReport(trackedMeasurements, additionalFindings, {
+        SeriesDescription,
+      });
+    }
   }
 
   const jumpToImage = ({ id, isActive }) => {
