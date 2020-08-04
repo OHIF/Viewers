@@ -117,12 +117,6 @@ const storeMeasurements = async (
   // TODO -> Eventually use the measurements directly and not the dcmjs adapter,
   // But it is good enough for now whilst we only have cornerstone as a datasource.
   log.info('[DICOMSR] storeMeasurements');
-  console.log(
-    'store measurements data exchange...',
-    measurementData,
-    dataSource,
-    options
-  );
 
   if (!dataSource || !dataSource.store || !dataSource.store.dicom) {
     log.error('[DICOMSR] datasource has no dataSource.store.dicom endpoint!');
