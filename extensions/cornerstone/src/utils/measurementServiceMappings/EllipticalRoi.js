@@ -3,34 +3,7 @@ import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import getHandlesFromPoints from './utils/getHandlesFromPoints';
 
 const EllipticalRoi = {
-  toAnnotation: (measurement, definition) => {
-
-    /* TODO: To be finished/updated. */
-    const {
-      id,
-      label,
-      description,
-      points,
-      unit,
-      SOPInstanceUID,
-      FrameOfReferenceUID,
-      referenceSeriesUID,
-    } = measurement;
-
-    return {
-      toolName: definition,
-      measurementData: {
-        SOPInstanceUID,
-        FrameOfReferenceUID,
-        SeriesInstanceUID: referenceSeriesUID,
-        unit,
-        text: label,
-        description,
-        handles: getHandlesFromPoints(points),
-        id,
-      },
-    };
-  },
+  toAnnotation: (measurement, definition) => {},
   toMeasurement: (
     csToolsAnnotation,
     DisplaySetService,
@@ -94,7 +67,7 @@ const EllipticalRoi = {
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      label: measurementData.text,
+      label: measurementData.label,
       description: measurementData.description,
       unit: measurementData.unit,
       area:

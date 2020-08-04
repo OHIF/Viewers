@@ -5,15 +5,16 @@ import cs from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import initCornerstoneTools from './initCornerstoneTools.js';
-import initWADOImageLoader from './initWADOImageLoader.js';
+import './initWADOImageLoader.js';
+import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import { setEnabledElement } from './state';
 
+// TODO -> Global "context menu open state", or lots of expensive searches on drag?
+
+let CONTEXT_MENU_OPEN = false;
+
 const { globalImageIdSpecificToolStateManager } = csTools;
-const {
-  restoreToolState,
-  saveToolState,
-} = globalImageIdSpecificToolStateManager;
 
 const TOOL_TYPES_WITH_CONTEXT_MENU = [
   'Angle',
@@ -77,6 +78,8 @@ export default function init({
       return menuItems;
     };
 
+    CONTEXT_MENU_OPEN = true;
+
     UIDialogService.dismiss({ id: 'context-menu' });
     UIDialogService.create({
       id: 'context-menu',
@@ -95,19 +98,41 @@ export default function init({
             toolType,
             tool: measurementData,
           });
+
+          CONTEXT_MENU_OPEN = false;
         },
-        onClose: () => UIDialogService.dismiss({ id: 'context-menu' }),
+        onClose: () => {
+          CONTEXT_MENU_OPEN = false;
+          UIDialogService.dismiss({ id: 'context-menu' });
+        },
         onSetLabel: item => {
           const { tool: measurementData } = item.value;
 
-          debugger;
-          callInputDialog(
-            { text: measurementData.label },
-            event.detail,
-            text => {
-              measurementData.text = text;
-            }
+          const measurement = MeasurementService.getMeasurement(
+            measurementData.id
           );
+
+          callInputDialog(
+            measurement,
+            (label, actionId) => {
+              if (actionId === 'cancel') {
+                return;
+              }
+
+              const updatedMeasurement = Object.assign({}, measurement, {
+                label,
+              });
+
+              MeasurementService.update(
+                updatedMeasurement.id,
+                updatedMeasurement,
+                true
+              );
+            },
+            false
+          );
+
+          CONTEXT_MENU_OPEN = false;
         },
       },
     });
@@ -126,17 +151,15 @@ export default function init({
     });
   };
 
-  const onTouchStart = () => resetLabellingAndContextMenu();
-  const onMouseClick = () => resetLabellingAndContextMenu();
-
-  const resetLabellingAndContextMenu = () => {
+  const resetContextMenu = () => {
     if (!UIDialogService) {
       console.warn('Unable to show dialog; no UI Dialog Service available.');
       return;
     }
 
+    CONTEXT_MENU_OPEN = false;
+
     UIDialogService.dismiss({ id: 'context-menu' });
-    UIDialogService.dismiss({ id: 'labelling' });
   };
 
   /*
@@ -144,36 +167,76 @@ export default function init({
    * Need to fallback to event.which;
    *
    */
-  const handleClick = cornerstoneMouseClickEvent => {
-    const mouseUpEvent = cornerstoneMouseClickEvent.detail.event;
+  const contextMenuHandleClick = evt => {
+    const mouseUpEvent = evt.detail.event;
     const isRightClick = mouseUpEvent.which === 3;
-    const clickMethodHandler = isRightClick ? onRightClick : onMouseClick;
-    clickMethodHandler(cornerstoneMouseClickEvent);
+
+    const clickMethodHandler = isRightClick ? onRightClick : resetContextMenu;
+    clickMethodHandler(evt);
+  };
+
+  const cancelContextMenuIfOpen = evt => {
+    if (CONTEXT_MENU_OPEN) {
+      resetContextMenu();
+    }
   };
 
   function elementEnabledHandler(evt) {
     const element = evt.detail.element;
     element.addEventListener(csTools.EVENTS.TOUCH_PRESS, onTouchPress);
-    element.addEventListener(csTools.EVENTS.MOUSE_CLICK, handleClick);
-    element.addEventListener(csTools.EVENTS.TOUCH_START, onTouchStart);
+    element.addEventListener(
+      csTools.EVENTS.MOUSE_CLICK,
+      contextMenuHandleClick
+    );
+    element.addEventListener(csTools.EVENTS.TOUCH_START, resetContextMenu);
+    element.addEventListener(
+      csTools.EVENTS.TOUCH_DRAG,
+      cancelContextMenuIfOpen
+    );
+    element.addEventListener(
+      csTools.EVENTS.MOUSE_DRAG,
+      cancelContextMenuIfOpen
+    );
+    element.addEventListener(cs.EVENTS.NEW_IMAGE, cancelContextMenuIfOpen);
   }
 
   function elementDisabledHandler(evt) {
     const element = evt.detail.element;
     element.removeEventListener(csTools.EVENTS.TOUCH_PRESS, onTouchPress);
-    element.removeEventListener(csTools.EVENTS.MOUSE_CLICK, handleClick);
-    element.removeEventListener(csTools.EVENTS.TOUCH_START, onTouchStart);
+    element.removeEventListener(
+      csTools.EVENTS.MOUSE_CLICK,
+      contextMenuHandleClick
+    );
+    element.removeEventListener(csTools.EVENTS.TOUCH_START, resetContextMenu);
+    element.removeEventListener(
+      csTools.EVENTS.TOUCH_DRAG,
+      cancelContextMenuIfOpen
+    );
+    element.removeEventListener(
+      csTools.EVENTS.MOUSE_DRAG,
+      cancelContextMenuIfOpen
+    );
+    element.removeEventListener(cs.EVENTS.NEW_IMAGE, cancelContextMenuIfOpen);
   }
 
-  const callInputDialog = (data, event, callback) => {
-    const { element, currentPoints } = event;
-    const nearbyToolData = commandsManager.runCommand('getNearbyToolData', {
-      element,
-      canvasCoordinates: currentPoints.canvas,
-      availableToolTypes: TOOL_TYPES_WITH_CONTEXT_MENU,
-    });
-
+  /**
+   *
+   * @param {*} data
+   * @param {*} event
+   * @param {*} callback
+   * @param {*} isArrowAnnotateInputDialog
+   */
+  const callInputDialog = (
+    data,
+    callback,
+    isArrowAnnotateInputDialog = true
+  ) => {
     const dialogId = 'enter-annotation';
+    const label = data
+      ? isArrowAnnotateInputDialog
+        ? data.text
+        : data.label
+      : '';
 
     if (UIDialogService) {
       UIDialogService.create({
@@ -185,7 +248,7 @@ export default function init({
         showOverlay: true,
         contentProps: {
           title: 'Enter your annotation',
-          value: { label: data ? data.text : '' },
+          value: { label },
           noCloseButton: true,
           onClose: () => UIDialogService.dismiss({ id: dialogId }),
           actions: [
@@ -195,20 +258,10 @@ export default function init({
           onSubmit: ({ action, value }) => {
             switch (action.id) {
               case 'save':
-                // TODO -> Do we need this anymore?
-                // if (nearbyToolData.tool.id) {
-                //   const measurement = MeasurementService.getMeasurement(
-                //     nearbyToolData.tool.id
-                //   );
-                //   MeasurementService.update(nearbyToolData.tool.id, {
-                //     ...measurement,
-                //     ...value,
-                //   });
-                // }
-                callback(value.label);
+                callback(value.label, action.id);
                 break;
               case 'cancel':
-                callback();
+                callback('', action.id);
                 break;
             }
             UIDialogService.dismiss({ id: dialogId });
@@ -308,9 +361,9 @@ export default function init({
     ArrowAnnotate: {
       configuration: {
         getTextCallback: (callback, eventDetails) =>
-          callInputDialog(null, eventDetails, callback),
+          callInputDialog(null, callback),
         changeTextCallback: (data, eventDetails, callback) =>
-          callInputDialog(data, eventDetails, callback),
+          callInputDialog(data, callback),
         allowEmptyLabel: true,
       },
     },
@@ -513,9 +566,45 @@ const _connectToolsToMeasurementService = (
       }
     }
 
-    const { MEASUREMENTS_CLEARED } = MeasurementService.EVENTS;
-    MeasurementService.subscribe(MEASUREMENTS_CLEARED, () =>
-      restoreToolState({})
+    const {
+      MEASUREMENTS_CLEARED,
+      MEASUREMENT_UPDATED,
+    } = MeasurementService.EVENTS;
+
+    MeasurementService.subscribe(MEASUREMENTS_CLEARED, () => {
+      globalImageIdSpecificToolStateManager.restoreToolState({});
+      _refreshViewport();
+    });
+
+    MeasurementService.subscribe(
+      MEASUREMENT_UPDATED,
+      ({ source, measurement, notYetUpdatedAtSource }) => {
+        const { id, label } = measurement;
+
+        if (
+          source.name == 'CornerstoneTools' &&
+          notYetUpdatedAtSource === false
+        ) {
+          // This event was fired by cornerstone telling the measurement service to sync. Already in sync.
+          return;
+        }
+        const cornerstoneMeasurement = getCornerstoneMeasurementById(id);
+
+        if (cornerstoneMeasurement) {
+          cornerstoneMeasurement.label = label;
+          if (cornerstoneMeasurement.hasOwnProperty('text')) {
+            // Deal with the weird case of ArrowAnnotate.
+            cornerstoneMeasurement.text = label;
+          }
+
+          // Update the cornerstone canvases.
+          const enabledElements = cornerstoneTools.store.state.enabledElements;
+
+          enabledElements.forEach(element => {
+            cornerstone.updateImage(element);
+          });
+        }
+      }
     );
 
     const enabledElement = evt.detail.element;
@@ -535,16 +624,8 @@ const _connectMeasurementServiceToTools = (
   MeasurementService,
   measurementSource
 ) => {
-  const {
-    MEASUREMENTS_CLEARED,
-    MEASUREMENT_REMOVED,
-  } = MeasurementService.EVENTS;
+  const { MEASUREMENT_REMOVED } = MeasurementService.EVENTS;
   const sourceId = measurementSource.id;
-
-  MeasurementService.subscribe(MEASUREMENTS_CLEARED, () => {
-    restoreToolState({});
-    _refreshViewport();
-  });
 
   // TODO: This is an unsafe delete
   // Cornerstone-tools should probably expose a more generic "delete by id"
@@ -560,7 +641,7 @@ const _connectMeasurementServiceToTools = (
     MEASUREMENT_REMOVED,
     ({ source, measurement: removedMeasurementId }) => {
       // THIS POINTS TO ORIGINAL; Not a copy
-      const imageIdSpecificToolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+      const imageIdSpecificToolState = globalImageIdSpecificToolStateManager.saveToolState();
 
       // ImageId -->
       Object.keys(imageIdSpecificToolState).forEach(imageId => {
