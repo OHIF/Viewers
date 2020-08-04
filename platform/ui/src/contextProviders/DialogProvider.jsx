@@ -4,7 +4,7 @@ import React, {
   useContext,
   useCallback,
   useEffect,
-  useRef
+  useRef,
 } from 'react';
 
 import PropTypes from 'prop-types';
@@ -154,6 +154,7 @@ const DialogProvider = ({ children, service }) => {
         onStart,
         onStop,
         onDrag,
+        onClickOutside,
         showOverlay,
       } = dialog;
 
@@ -169,7 +170,7 @@ const DialogProvider = ({ children, service }) => {
           disabled={!isDraggable}
           position={position}
           defaultPosition={position}
-          bounds='parent'
+          bounds="parent"
           onStart={event => {
             const e = event || window.event;
             const target = e.target || e.srcElement;
@@ -225,16 +226,27 @@ const DialogProvider = ({ children, service }) => {
         const background = 'bg-black bg-opacity-50';
         const overlay = 'fixed z-50 left-0 top-0 w-full h-full overflow-auto';
         return (
-          <div
-            className={classNames(overlay, background)}
-            key={id}
-          >
+          <div className={classNames(overlay, background)} key={id}>
             {component}
           </div>
         );
       };
 
-      return showOverlay ? withOverlay(dragableItem()) : dragableItem();
+      let result = dragableItem();
+
+      if (showOverlay) {
+        result = withOverlay(result);
+      }
+
+      if (typeof onClickOutside === 'function') {
+        result = (
+          <OutsideAlerter onClickOutside={onClickOutside}>
+            {result}
+          </OutsideAlerter>
+        );
+      }
+
+      return result;
     });
 
   /**
@@ -253,7 +265,7 @@ const DialogProvider = ({ children, service }) => {
   };
 
   const onKeyDownHandler = event => {
-    if (event.key === "Escape") {
+    if (event.key === 'Escape') {
       dismissAll();
     }
   };
@@ -262,11 +274,11 @@ const DialogProvider = ({ children, service }) => {
 
   return (
     <DialogContext.Provider value={{ create, dismiss, dismissAll, isEmpty }}>
-      {!isEmpty() &&
-        <div className='w-full h-full absolute' onKeyDown={onKeyDownHandler}>
+      {!isEmpty() && (
+        <div className="w-full h-full absolute" onKeyDown={onKeyDownHandler}>
           {renderDialogs()}
         </div>
-      }
+      )}
       {children}
     </DialogContext.Provider>
   );
@@ -302,3 +314,27 @@ DialogProvider.propTypes = {
 };
 
 export default DialogProvider;
+
+function OutsideAlerter(props) {
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    /**
+     * Alert if clicked on outside of element
+     */
+    function handleClickOutside(event) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        props.onClickOutside();
+      }
+    }
+
+    // Bind the event listener
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [wrapperRef]);
+
+  return <div ref={wrapperRef}>{props.children}</div>;
+}

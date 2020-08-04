@@ -87,6 +87,10 @@ export default function init({
       preservePosition: false,
       defaultPosition: _getDefaultPosition(event.detail),
       content: ContextMenuMeasurements,
+      onClickOutside: () => {
+        UIDialogService.dismiss({ id: 'context-menu' });
+        CONTEXT_MENU_OPEN = false;
+      },
       contentProps: {
         onGetMenuItems,
         eventData: event.detail,
@@ -98,7 +102,6 @@ export default function init({
             toolType,
             tool: measurementData,
           });
-
           CONTEXT_MENU_OPEN = false;
         },
         onClose: () => {
@@ -188,15 +191,6 @@ export default function init({
       csTools.EVENTS.MOUSE_CLICK,
       contextMenuHandleClick
     );
-    element.addEventListener(csTools.EVENTS.TOUCH_START, resetContextMenu);
-    element.addEventListener(
-      csTools.EVENTS.TOUCH_DRAG,
-      cancelContextMenuIfOpen
-    );
-    element.addEventListener(
-      csTools.EVENTS.MOUSE_DRAG,
-      cancelContextMenuIfOpen
-    );
     element.addEventListener(cs.EVENTS.NEW_IMAGE, cancelContextMenuIfOpen);
   }
 
@@ -206,15 +200,6 @@ export default function init({
     element.removeEventListener(
       csTools.EVENTS.MOUSE_CLICK,
       contextMenuHandleClick
-    );
-    element.removeEventListener(csTools.EVENTS.TOUCH_START, resetContextMenu);
-    element.removeEventListener(
-      csTools.EVENTS.TOUCH_DRAG,
-      cancelContextMenuIfOpen
-    );
-    element.removeEventListener(
-      csTools.EVENTS.MOUSE_DRAG,
-      cancelContextMenuIfOpen
     );
     element.removeEventListener(cs.EVENTS.NEW_IMAGE, cancelContextMenuIfOpen);
   }
