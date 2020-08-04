@@ -16,7 +16,7 @@ export default class ExtensionManager {
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
     });
-    this._extensionLifeCycleHooks = { onModeEnter: {} };
+    this._extensionLifeCycleHooks = { onModeEnter: {}, onModeExit: {} };
     this.dataSourceMap = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
     this.activeDataSource = undefined;
@@ -29,17 +29,56 @@ export default class ExtensionManager {
   onModeEnter() {
     const {
       registeredExtensionIds,
-      getModuleEntry,
       _servicesManager,
       _commandsManager,
       _extensionLifeCycleHooks,
     } = this;
+
+    const {
+      MeasurementService,
+      ViewportGridService,
+      HangingProtocolService,
+    } = _servicesManager.services;
+
+    MeasurementService.clearMeasurements();
+    ViewportGridService.reset();
+    HangingProtocolService.reset();
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeEnter = _extensionLifeCycleHooks.onModeEnter[extensionId];
 
       if (typeof onModeEnter === 'function') {
         onModeEnter({
+          servicesManager: _servicesManager,
+          commandsManager: _commandsManager,
+        });
+      }
+    });
+  }
+
+  onModeExit() {
+    const {
+      registeredExtensionIds,
+      _servicesManager,
+      _commandsManager,
+      _extensionLifeCycleHooks,
+    } = this;
+
+    const {
+      MeasurementService,
+      ViewportGridService,
+      HangingProtocolService,
+    } = _servicesManager.services;
+
+    MeasurementService.clearMeasurements();
+    ViewportGridService.reset();
+    HangingProtocolService.reset();
+
+    registeredExtensionIds.forEach(extensionId => {
+      const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
+
+      if (typeof onModeExit === 'function') {
+        onModeExit({
           servicesManager: _servicesManager,
           commandsManager: _commandsManager,
         });
@@ -108,6 +147,11 @@ export default class ExtensionManager {
     if (extension.onModeEnter) {
       this._extensionLifeCycleHooks.onModeEnter[extensionId] =
         extension.onModeEnter;
+    }
+
+    if (extension.onModeExit) {
+      this._extensionLifeCycleHooks.onModeExit[extensionId] =
+        extension.onModeExit;
     }
 
     // Register Modules

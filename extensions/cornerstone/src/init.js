@@ -334,6 +334,12 @@ const _connectToolsToMeasurementService = (
       }
     }
 
+    /**
+     * When csTools fires a removed event, remove the same measurement
+     * from the measurement service
+     *
+     * @param {*} csToolsEvent
+     */
     function removeMeasurement(csToolsEvent) {
       console.log('~~ removeEvt', csToolsEvent);
       try {
@@ -381,15 +387,42 @@ const _connectMeasurementServiceToTools = (
     });
   });
 
-  /* TODO: Remove per measurement
-  MeasurementService.subscribe(MEASUREMENT_REMOVED,
-    ({ source, measurement }) => {
-      if ([sourceId].includes(source.id)) {
-        // const annotation = getAnnotation('Length', measurement.id);
-        // iterate tool state
-      }
+  // TODO: This is an unsafe delete
+  // Cornerstone-tools should probably expose a more generic "delete by id"
+  // And have toolState managers expose a method to find any of their toolState by ID
+  // --> csTools.deleteById --> internally checks all registered modules/managers?
+  //
+  // This implementation assumes a single globalImageIdSpecificToolStateManager
+  // It iterates all toolState for all toolTypes, and deletes any with a matching id
+  //
+  // Could potentially use "source" from event to determine tool type and skip some
+  // iterations?
+  MeasurementService.subscribe(
+    MEASUREMENT_REMOVED,
+    ({ source, measurement: removedMeasurementId }) => {
+      // THIS POINTS TO ORIGINAL; Not a copy
+      const imageIdSpecificToolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+
+      // ImageId -->
+      Object.keys(imageIdSpecificToolState).forEach(imageId => {
+        // ImageId --> Tool -->
+        Object.keys(imageIdSpecificToolState[imageId]).forEach(toolName => {
+          const toolState = imageIdSpecificToolState[imageId][toolName];
+
+          let annotationIndex = toolState.data.length - 1;
+          while (annotationIndex >= 0) {
+            const annotation = toolState.data[annotationIndex];
+
+            if (annotation.id === removedMeasurementId) {
+              toolState.data.splice(annotationIndex, 1);
+            }
+
+            annotationIndex--;
+          }
+        });
+      });
     }
-  ); */
+  );
 };
 
 // const {

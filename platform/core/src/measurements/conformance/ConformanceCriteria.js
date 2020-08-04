@@ -77,10 +77,10 @@ class ConformanceCriteria {
     this.nonconformities = nonconformities;
     this.groupedNonConformities = groupedNonConformities;
 
-    console.warn('nonconformities');
-    console.warn(nonconformities);
-    console.warn('groupedNonConformities');
-    console.warn(groupedNonConformities);
+    // console.warn('nonconformities');
+    // console.warn(nonconformities);
+    // console.warn('groupedNonConformities');
+    // console.warn(groupedNonConformities);
 
     return nonconformities;
   }
