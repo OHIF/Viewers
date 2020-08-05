@@ -161,7 +161,6 @@ const RTPanel = ({
 
             if (!imageId) {
               noContoursNotification();
-
               return;
             }
 
