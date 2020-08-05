@@ -5,7 +5,7 @@ import i18n from '@ohif/i18n';
 import { useTranslation } from 'react-i18next';
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
-const UserPreferences = ({ disabled, hotkeyDefaults, hotkeyDefinitions, onCancel, onSubmit, onReset }) => {
+const UserPreferences = ({ disabled, hotkeyDefinitions, hotkeyDefaults, onCancel, onSubmit, onReset }) => {
   const { t } = useTranslation('UserPreferencesModal');
   const [state, setState] = useState({
     isDisabled: false,
@@ -20,18 +20,19 @@ const UserPreferences = ({ disabled, hotkeyDefaults, hotkeyDefinitions, onCancel
   };
 
   const onResetHandler = () => {
-    setState(state => ({ ...state, language: defaultLanguage }));
-    resetHotkeyDefinitions();
+    setState(state => ({
+      ...state,
+      language: defaultLanguage,
+      hotkeyDefinitions: hotkeyDefaults,
+      hotkeyErrors: {},
+      isDisabled: false,
+    }));
     onReset();
   };
 
   const onCancelHandler = () => {
     setState({ hotkeyDefinitions });
     onCancel();
-  };
-
-  const resetHotkeyDefinitions = () => {
-    setState(state => ({ ...state, hotkeyDefinitions: hotkeyDefaults }));
   };
 
   const onLanguageChangeHandler = (value) => {
@@ -99,7 +100,7 @@ const UserPreferences = ({ disabled, hotkeyDefaults, hotkeyDefinitions, onCancel
           </Button>
           <Button
             variant="contained"
-            disabled={disabled} /* state.isDisabled */
+            disabled={state.isDisabled}
             color="light"
             className="ml-2"
             onClick={onSubmitHandler}
@@ -137,7 +138,7 @@ UserPreferences.defaultProps = {
   onCancel: noop,
   onSubmit: noop,
   onReset: noop,
-  disabled: true
+  disabled: false
 };
 
 export default UserPreferences;

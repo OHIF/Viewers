@@ -22,7 +22,7 @@ function ViewerLayout({
   const { t } = useTranslation();
   const { show, hide } = useModal();
   const { ToolBarService } = servicesManager.services;
-  const { hotkeyDefaults, hotkeyDefinitions } = hotkeysManager;
+  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
 
   const menuOptions = [
     {
@@ -43,13 +43,14 @@ function ViewerLayout({
           title: t('UserPreferencesModal:User Preferences'),
           content: UserPreferences,
           contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidDefinitions(hotkeyDefaults),
+            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
             onCancel: hide,
             onSubmit: ({ hotkeyDefinitions }) => {
               hotkeysManager.setHotkeys(hotkeyDefinitions);
               hide();
-            }
+            },
+            onReset: () => hotkeysManager.restoreDefaultBindings()
           }
         });
       }

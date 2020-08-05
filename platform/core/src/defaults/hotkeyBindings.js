@@ -4,26 +4,12 @@ import windowLevelPresets from './windowLevelPresets';
  * Supported Keys: https://craig.is/killing/mice
  */
 export default [
-  /** Global */
-  {
-    commandName: 'incrementActiveViewport',
-    label: 'Next Viewport',
-    keys: ['right'],
-  },
-  {
-    commandName: 'decrementActiveViewport',
-    label: 'Previous Viewport',
-    keys: ['left'],
-  },
-  /** Viewport */
+  { commandName: 'setToolActive', commandOptions: { toolName: 'Zoom' }, label: 'Zoom', keys: ['z'] },
+  { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'] },
+  { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'] },
+  { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },
   { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'] },
   { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
-  { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
-  {
-    commandName: 'cancelMeasurement',
-    label: 'Cancel Cornerstone Measurement',
-    keys: ['esc'],
-  },
   {
     commandName: 'flipViewportVertical',
     label: 'Flip Horizontally',
@@ -34,23 +20,37 @@ export default [
     label: 'Flip Vertically',
     keys: ['v'],
   },
-  { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'] },
-  { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'] },
-  { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },
-  { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
-  { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
-  { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
+  { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
   {
-    commandName: 'previousViewportDisplaySet',
-    label: 'Previous Series',
-    keys: ['pagedown'],
+    commandName: 'incrementActiveViewport',
+    label: 'Next Image Viewport',
+    keys: ['right'],
+  },
+  {
+    commandName: 'decrementActiveViewport',
+    label: 'Previous Image Viewport',
+    keys: ['left'],
   },
   {
     commandName: 'nextViewportDisplaySet',
     label: 'Next Series',
     keys: ['pageup'],
   },
-  /** Window level presets */
+  {
+    commandName: 'previousViewportDisplaySet',
+    label: 'Previous Series',
+    keys: ['pagedown'],
+  },
+  { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
+  { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
+  { commandName: 'firstImage', label: 'First Image', keys: ['home'] },
+  { commandName: 'lastImage', label: 'Last Image', keys: ['end'] },
+  { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
+  /* {
+    commandName: 'cancelMeasurement',
+    label: 'Cancel Cornerstone Measurement',
+    keys: ['esc'],
+  },
   {
     commandName: 'setWindowLevel',
     commandOptions: windowLevelPresets[1],
@@ -104,5 +104,5 @@ export default [
     commandOptions: windowLevelPresets[9],
     label: 'W/L Preset 9',
     keys: ['9'],
-  },
+  }, */
 ];

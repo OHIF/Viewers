@@ -12,7 +12,7 @@ import { getKeys, formatKeysForInput } from './utils';
  *
  * @param {object} props component props
  * @param {Array[]} props.keys keys to be controlled by this field
- * @param {Array[]} props.disabled disables the field
+ * @param {boolean} props.disabled disables the field
  * @param {function} props.onChange callback with changed values
  * @param {string} props.className input classes
  * @param {Array[]} props.modifierKeys
@@ -56,8 +56,8 @@ HotkeyField.propTypes = {
   disabled: PropTypes.bool,
 };
 
-HotkeyField.propTypes = {
-  disabled: true
+HotkeyField.defaultProps = {
+  disabled: false
 };
 
 export default HotkeyField;

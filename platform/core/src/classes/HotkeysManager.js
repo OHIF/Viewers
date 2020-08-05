@@ -81,7 +81,6 @@ export class HotkeysManager {
    */
   setDefaultHotKeys(hotkeyDefinitions = []) {
     const definitions = this.getValidDefinitions(hotkeyDefinitions);
-
     this.hotkeyDefaults = definitions;
   }
 
@@ -97,6 +96,24 @@ export class HotkeysManager {
       : this._parseToArrayLike(hotkeyDefinitions);
 
     return definitions;
+  }
+
+  /**
+   * Take hotkey definitions that can be an array and make sure that it
+   * returns an object of hotkeys definitions
+   *
+   * @param {HotkeyDefinition[]} [hotkeyDefinitions=[]] Contains hotkeys definitions
+   * @returns {Object}
+   */
+  getValidHotkeyDefinitions(hotkeyDefinitions) {
+    const definitions = this.getValidDefinitions(hotkeyDefinitions);
+    const objectDefinitions = {};
+    definitions.forEach(definition => {
+      const { commandName, commandOptions } = definition;
+      const commandHash = objectHash({ commandName, commandOptions });
+      objectDefinitions[commandHash] = definition;
+    });
+    return objectDefinitions;
   }
 
   /**
