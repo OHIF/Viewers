@@ -6,9 +6,15 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       MeasurementService.clear();
     },
     toggleCine: () => {
-      const { isCineEnabled } = ViewportGridService.getState();
+      const { viewports, isCineEnabled } = ViewportGridService.getState();
       ViewportGridService.setIsCineEnabled(!isCineEnabled);
       ToolBarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
+      viewports.forEach((vp, index) => {
+        ViewportGridService.setCineForViewport({
+          viewportIndex: index,
+          cine: { ...vp.cine, isPlaying: false },
+        });
+      });
     },
   };
 

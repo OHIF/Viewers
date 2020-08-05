@@ -333,15 +333,7 @@ function TrackedCornerstoneViewport({
         showCine={isCineEnabled}
         cineProps={{
           isPlaying: cine.isPlaying,
-          onClose: () => {
-            commandsManager.runCommand('toggleCine');
-            viewports.forEach((vp, index) => {
-              viewportGridService.setCineForViewport({
-                viewportIndex: index,
-                cine: { ...cine, isPlaying: false },
-              });
-            });
-          },
+          onClose: () => commandsManager.runCommand('toggleCine'),
           onPlayPauseChange: isPlaying => {
             viewportGridService.setCineForViewport({
               viewportIndex: activeViewportIndex,
