@@ -1,11 +1,10 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getPointsFromHandles from './utils/getPointsFromHandles';
+import getHandlesFromPoints from './utils/getHandlesFromPoints';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
 const ArrowAnnotate = {
-  toAnnotation: (measurement, definition) => {
-    // TODO -> Implement when this is needed.
-  },
+  toAnnotation: (measurement, definition) => {},
   toMeasurement: (
     csToolsAnnotation,
     DisplaySetService,
@@ -40,7 +39,7 @@ const ArrowAnnotate = {
 
     return {
       id: measurementData.id,
-      SOPInstanceUID: SOPInstanceUID,
+      SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,

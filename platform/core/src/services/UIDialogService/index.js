@@ -57,6 +57,7 @@ function _create({
   preservePosition = true,
   isDraggable = true,
   showOverlay = false,
+  onClickOutside,
   defaultPosition,
 }) {
   return serviceImplementation._create({
@@ -69,6 +70,7 @@ function _create({
     centralize,
     preservePosition,
     isDraggable,
+    onClickOutside,
     showOverlay,
     defaultPosition,
   });
