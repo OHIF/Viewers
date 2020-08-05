@@ -4,6 +4,8 @@ import { StudyBrowser } from '@ohif/ui';
 import cloneDeep from 'lodash.clonedeep';
 import findDisplaySetByUID from './findDisplaySetByUID';
 
+const { studyMetadataManager } = OHIF.utils;
+
 const { setActiveViewportSpecificData } = OHIF.redux.actions;
 
 // TODO
@@ -39,10 +41,19 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onThumbnailClick: displaySetInstanceUID => {
-      const displaySet = findDisplaySetByUID(
+      let displaySet = findDisplaySetByUID(
         ownProps.studyMetadata,
         displaySetInstanceUID
       );
+
+      if (displaySet.isDerived) {
+        const studyMetadata = studyMetadataManager.get(
+          displaySet.StudyInstanceUID
+        );
+
+        debugger;
+        displaySet = displaySet.getSourceDisplaySet([studyMetadata]);
+      }
 
       dispatch(setActiveViewportSpecificData(displaySet));
     },

@@ -17,7 +17,6 @@ const { studyMetadataManager } = utils;
 
 const refreshViewport = () => {
   cornerstone.getEnabledElements().forEach(enabledElement => {
-    debugger;
     if (enabledElement.image) {
       cornerstone.updateImage(enabledElement.element);
     }

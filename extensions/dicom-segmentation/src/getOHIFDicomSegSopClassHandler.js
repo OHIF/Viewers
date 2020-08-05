@@ -1,6 +1,6 @@
 import { MODULE_TYPES, utils } from '@ohif/core';
 import loadSegmentation from './loadSegmentation';
-import getViewportComponent from './getViewportComponent';
+import getSourceDisplaySet from './getSourceDisplaySet';
 
 // TODO: Should probably use dcmjs for this
 const SOP_CLASS_UIDS = {
@@ -55,18 +55,8 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         SeriesDescription,
       };
 
-      segDisplaySet.getViewportComponent = function(
-        data,
-        viewportIndex,
-        availablePlugins,
-        children
-      ) {
-        return getViewportComponent(
-          data,
-          viewportIndex,
-          availablePlugins,
-          children
-        );
+      segDisplaySet.getSourceDisplaySet = function(studies) {
+        return getSourceDisplaySet(studies, segDisplaySet);
       };
 
       segDisplaySet.load = function(referencedDisplaySet, studies) {

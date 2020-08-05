@@ -81,34 +81,19 @@ const ViewportGrid = function(props) {
       // in the viewport is capable of rendering this display set. If not
       // then use the most capable available plugin
 
-      let ViewportComponent;
+      const pluginName =
+        !layout.plugin && displaySet && displaySet.plugin
+          ? displaySet.plugin
+          : layout.plugin;
 
-      if (displaySet.isDerived) {
-        ViewportComponent = displaySet.getViewportComponent(
-          data,
-          viewportIndex,
-          availablePlugins,
-          children
-        );
-
-        if (!ViewportComponent) {
-          ViewportComponent = <EmptyViewport />;
-        }
-      } else {
-        const pluginName =
-          !layout.plugin && displaySet && displaySet.plugin
-            ? displaySet.plugin
-            : layout.plugin;
-
-        ViewportComponent = _getViewportComponent(
-          data, // Why do we pass this as `ViewportData`, when that's not really what it is?
-          viewportIndex,
-          children,
-          availablePlugins,
-          pluginName,
-          defaultPluginName
-        );
-      }
+      const ViewportComponent = _getViewportComponent(
+        data, // Why do we pass this as `ViewportData`, when that's not really what it is?
+        viewportIndex,
+        children,
+        availablePlugins,
+        pluginName,
+        defaultPluginName
+      );
 
       return (
         <ViewportPane

@@ -133,11 +133,15 @@ class ViewerMain extends Component {
     StudyInstanceUID,
     displaySetInstanceUID,
   }) => {
-    const displaySet = this.findDisplaySet(
+    let displaySet = this.findDisplaySet(
       this.props.studies,
       StudyInstanceUID,
       displaySetInstanceUID
     );
+
+    if (displaySet.isDerived) {
+      displaySet = displaySet.getSourceDisplaySet(this.props.studies);
+    }
 
     this.props.setViewportSpecificData(viewportIndex, displaySet);
   };
