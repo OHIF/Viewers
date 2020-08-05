@@ -12,10 +12,11 @@
   "settings": {
     "react": {
       "version": "detect"
-    }
+
   },
   "rules": {
-    "react/jsx-props-no-spreading": "error"
+    "react/jsx-props-no-spreading": "error",
+    "react-hooks/exhaustive-deps": "false"
   },
   "globals": {
     "cy": true,

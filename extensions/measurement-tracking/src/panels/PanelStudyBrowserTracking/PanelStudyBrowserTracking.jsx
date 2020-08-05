@@ -447,13 +447,13 @@ function _createStudyBrowserTabs(
     const displaySetsForStudy = utils.sortBySeriesDate(displaySets.filter(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     ));
-
     const tabStudy = Object.assign({}, study, {
       displaySets: displaySetsForStudy,
     });
 
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
       primaryStudies.push(tabStudy);
+      allStudies.push(tabStudy);
     } else {
       // TODO: Filter allStudies to dates within one year of current date
       recentStudies.push(tabStudy);

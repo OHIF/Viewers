@@ -1,10 +1,9 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
+import getHandlesFromPoints from './utils/getHandlesFromPoints';
 
 const Bidirectional = {
-  toAnnotation: (measurement, definition) => {
-    // TODO -> Implement when this is needed.
-  },
+  toAnnotation: (measurement, definition) => {},
   toMeasurement: (
     csToolsAnnotation,
     DisplaySetService,
@@ -41,12 +40,12 @@ const Bidirectional = {
 
     return {
       id: measurementData.id,
-      SOPInstanceUID: SOPInstanceUID,
+      SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      label: measurementData.text,
+      label: measurementData.label,
       description: measurementData.description,
       unit: measurementData.unit,
       shortestDiameter: measurementData.shortestDiameter,

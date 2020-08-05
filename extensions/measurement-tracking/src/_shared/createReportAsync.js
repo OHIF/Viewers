@@ -1,11 +1,24 @@
 import React from 'react';
-import { DICOMSR } from '@ohif/core';
+import { DICOMSR, DicomMetadataStore } from '@ohif/core';
 
-async function createReportAsync(servicesManager, dataSource, measurements) {
+/**
+ *
+ * @param {*} servicesManager
+ * @param {*} dataSource
+ * @param {*} measurements
+ * @param {*} options
+ * @returns {string[]} displaySetInstanceUIDs
+ */
+async function createReportAsync(
+  servicesManager,
+  dataSource,
+  measurements,
+  options
+) {
   const {
+    DisplaySetService,
     UINotificationService,
     UIDialogService,
-    DisplaySetService,
   } = servicesManager.services;
   const loadingDialogId = UIDialogService.create({
     showOverlay: true,
@@ -19,17 +32,24 @@ async function createReportAsync(servicesManager, dataSource, measurements) {
     const naturalizedReport = await DICOMSR.storeMeasurements(
       measurements,
       dataSource,
-      ['ArrowAnnotate']
+      ['ArrowAnnotate'],
+      options
     );
 
-    DisplaySetService.makeDisplaySets([naturalizedReport], {
-      madeInClient: true,
-    });
+    // The "Mode" route listens for DicomMetadataStore changes
+    // When a new instance is added, it listens and
+    // automatically calls makeDisplaySets
+    DicomMetadataStore.addInstances([naturalizedReport], true);
+
+    const displaySetInstanceUID = DisplaySetService.getMostRecentDisplaySet();
+
     UINotificationService.show({
       title: 'Create Report',
       message: 'Measurements saved successfully',
       type: 'success',
     });
+
+    return [displaySetInstanceUID];
   } catch (error) {
     UINotificationService.show({
       title: 'Create Report',
