@@ -248,7 +248,7 @@ const RTPanel = ({
               key={SeriesInstanceUID}
               title={metadata.StructureSetLabel}
               loading={!isLoaded || !loadedSet}
-              visible={isLoaded && loadedSet.visible}
+              visible={isLoaded && loadedSet && loadedSet.visible}
               hideVisibleButton={!isLoaded}
               expanded={
                 isLoaded &&

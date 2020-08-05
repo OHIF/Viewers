@@ -42,10 +42,7 @@ export default async function setActiveLabelmap(
     return displaySet.labelmapIndex;
   }
 
-  debugger;
-
   if (!displaySet.isLoaded) {
-    debugger;
     const loadPromise = displaySet.load(referencedDisplaySet, studies);
 
     loadPromise.catch(error => {
@@ -57,8 +54,6 @@ export default async function setActiveLabelmap(
 
     await loadPromise;
   }
-
-  debugger;
 
   // This might have just been created, so need to use the non-cached value.
   state = cornerstoneTools.getModule('segmentation').state;
