@@ -81,16 +81,7 @@ function ViewerLayout({
   useEffect(() => {
     const { unsubscribe } = ToolBarService.subscribe(
       ToolBarService.EVENTS.TOOL_BAR_MODIFIED,
-      ({ button, buttonSections }) => {
-        /* TODO: Improve/Refactor toolbar state to avoid relying/setting isActive prop */
-        if (button && buttonSections) {
-          const sections = Object.keys(buttonSections).map(name => buttonSections[name]);
-          sections.forEach(section => section.forEach(sectionButton => {
-            if (Array.isArray(sectionButton) && sectionButton.includes(button.id)) {
-              setNestedActiveTool(defaultTool);
-            }
-          }));
-        }
+      () => {
         console.warn('~~~ TOOL BAR MODIFIED EVENT CAUGHT');
         const updatedToolbars = {
           primary: ToolBarService.getButtonSection('primary', {
@@ -175,8 +166,8 @@ function ViewerLayout({
             <ErrorBoundary context="Grid">
               <ViewportGridComp
                 servicesManager={servicesManager}
-                commandsManager={commandsManager}
                 viewportComponents={viewportComponents}
+                commandsManager={commandsManager}
               />
             </ErrorBoundary>
           </div>

@@ -334,11 +334,7 @@ function TrackedCornerstoneViewport({
         cineProps={{
           isPlaying: cine.isPlaying,
           onClose: () => {
-            /* TODO: Improve/Refactor toolbar state to avoid relying/setting isActive prop */
-            ToolBarService.setButton('Wwwc', { props: { isActive: true } });
-            ToolBarService.setButton('Cine', { props: { isActive: false } });
-            commandsManager.runCommand('setToolActive', { toolName: 'Wwwc' });
-            viewportGridService.setIsCineEnabled(false);
+            commandsManager.runCommand('toggleCine');
             viewports.forEach((vp, index) => {
               viewportGridService.setCineForViewport({
                 viewportIndex: index,

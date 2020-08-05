@@ -34,6 +34,11 @@ export default [
     label: 'Flip Vertically',
     keys: ['v'],
   },
+  {
+    commandName: 'toggleCine',
+    label: 'Cine',
+    keys: ['c'],
+  },
   { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'] },
   { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'] },
   { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },

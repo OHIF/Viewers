@@ -191,7 +191,7 @@ export default [
   },
   {
     id: 'Cine',
-    type: 'ohif.radioGroup',
+    type: 'ohif.toggle',
     config: {
       groupName: 'primaryTool',
     },
@@ -199,13 +199,8 @@ export default [
       isActive: false,
       icon: 'old-youtube',
       label: 'Cine',
-      commandName: 'setIsCineEnabled',
-      commandOptions: { isCineEnabled: true },
+      commandName: 'toggleCine',
       type: 'primary',
-      onUnselected: {
-        commandName: 'setIsCineEnabled',
-        commandOptions: { isCineEnabled: false },
-      }
     },
   },
   // TODO: 2D MPR: We had said this was off the table?

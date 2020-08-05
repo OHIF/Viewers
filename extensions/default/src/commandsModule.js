@@ -1,12 +1,14 @@
-const commandsModule = ({ servicesManager }) => {
-  const { MeasurementService, ViewportGridService } = servicesManager.services;
+const commandsModule = ({ servicesManager, commandsManager }) => {
+  const { MeasurementService, ViewportGridService, ToolBarService } = servicesManager.services;
 
   const actions = {
     clearMeasurements: () => {
       MeasurementService.clear();
     },
-    setIsCineEnabled: ({ isCineEnabled }) => {
-      ViewportGridService.setIsCineEnabled(isCineEnabled);
+    toggleCine: () => {
+      const { isCineEnabled } = ViewportGridService.getState();
+      ViewportGridService.setIsCineEnabled(!isCineEnabled);
+      ToolBarService.setButton('Cine', { props: { isActive: !isCineEnabled } });
     },
   };
 
@@ -16,8 +18,8 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: [],
       options: {},
     },
-    setIsCineEnabled: {
-      commandFn: actions.setIsCineEnabled,
+    toggleCine: {
+      commandFn: actions.toggleCine,
       storeContexts: [],
       options: {},
     },
