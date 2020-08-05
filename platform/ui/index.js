@@ -32,6 +32,7 @@ export {
 export {
   Button,
   ButtonGroup,
+  ContextMenu,
   CinePlayer,
   DateRange,
   Dialog,
@@ -77,6 +78,7 @@ export {
   ThumbnailTracked,
   ThumbnailList,
   ToolbarButton,
+  ContextMenuMeasurements,
   Tooltip,
   TooltipClipboard,
   Typography,

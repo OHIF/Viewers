@@ -14,7 +14,7 @@ const defaultConfig = {
 /**
  * @param {object} configuration
  */
-export default function init({ configuration = {}, servicesManager }) {
+export default function init({ configuration = {} }) {
   const conifg = Object.assign({}, defaultConfig, configuration);
 
   TOOL_NAMES.DICOM_SR_DISPLAY_TOOL = conifg.TOOL_NAMES.DICOM_SR_DISPLAY_TOOL;
@@ -22,22 +22,4 @@ export default function init({ configuration = {}, servicesManager }) {
   cornerstoneTools.register('module', id, dicomSRModule);
   cornerstoneTools.addTool(DICOMSRDisplayTool);
   cornerstoneTools.setToolEnabled(TOOL_NAMES.DICOM_SR_DISPLAY_TOOL);
-
-  const { DisplaySetService } = servicesManager.services;
-
-  DisplaySetService.subscribe(
-    DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
-    data => {
-      const { displaySetsAdded, options } = data;
-      displaySetsAdded.forEach(dSet => {
-        if (options.madeInClient) {
-          // Set just made displaySets as hydrated.
-          if (!dSet.isLoaded) {
-            dSet.load();
-          }
-          dSet.isHydrated = true;
-        }
-      });
-    }
-  );
 }

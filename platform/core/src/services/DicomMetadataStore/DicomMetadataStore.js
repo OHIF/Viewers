@@ -57,9 +57,7 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
 const BaseImplementation = {
   EVENTS,
   listeners: {},
-  // TODO: The assumption is that this is called per Study per Series
-  // We should do more to verify/clarify that
-  addInstances(instances) {
+  addInstances(instances, madeInClient = false) {
     const { StudyInstanceUID, SeriesInstanceUID } = instances[0];
 
     let study = _model.studies.find(
@@ -81,6 +79,7 @@ const BaseImplementation = {
     this._broadcastEvent(EVENTS.INSTANCES_ADDED, {
       StudyInstanceUID,
       SeriesInstanceUID,
+      madeInClient,
     });
   },
   addSeriesMetadata(seriesSummaryMetadata) {

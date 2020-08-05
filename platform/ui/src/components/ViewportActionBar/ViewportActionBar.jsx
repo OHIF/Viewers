@@ -18,7 +18,6 @@ const ViewportActionBar = ({
   cineProps,
   showPatientInfo: patientInfoVisibility,
   onSeriesChange,
-  onHydrationClick,
   onDoubleClick,
 }) => {
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
@@ -34,7 +33,6 @@ const ViewportActionBar = ({
     label,
     isTracked,
     isLocked,
-    isHydrated,
     modality,
     studyDate,
     currentSeries,
@@ -78,15 +76,9 @@ const ViewportActionBar = ({
           <div>
             This SR is locked. <br />
               Measurements cannot be duplicated.
-          </div>
-        )
-        : () => (
-          <div>
-            This SR is unlocked. <br />
-              You can duplicate measurements on your current report <br /> by
-              clicking &apos;Edit&apos;.
-          </div>
-        );
+            </div>
+          )
+        : () => <div>This SR is unlocked.</div>;
       return (
         <>
           <Tooltip content={<TooltipMessage />} position="bottom-left">
@@ -103,16 +95,6 @@ const ViewportActionBar = ({
               )}
             </div>
           </Tooltip>
-          {!isLocked && !isHydrated && (
-            <div className="relative flex p-1 ml-1 border rounded cursor-pointer border-primary-light">
-              <span
-                className="text-sm font-bold leading-none text-primary-light"
-                onClick={onHydrationClick}
-              >
-                Edit
-              </span>
-            </div>
-          )}
         </>
       );
     }
