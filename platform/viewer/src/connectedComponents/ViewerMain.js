@@ -140,7 +140,14 @@ class ViewerMain extends Component {
     );
 
     if (displaySet.isDerived) {
+      const { Modality } = displaySet;
       displaySet = displaySet.getSourceDisplaySet(this.props.studies);
+
+      if (!displaySet) {
+        throw new Error(
+          `Referenced series for ${Modality} dataset not present.`
+        );
+      }
     }
 
     this.props.setViewportSpecificData(viewportIndex, displaySet);

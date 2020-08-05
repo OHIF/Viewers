@@ -47,7 +47,19 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       );
 
       if (displaySet.isDerived) {
+        const { Modality } = displaySet;
+
         displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata);
+
+        if (!displaySet) {
+          throw new Error(
+            `Referenced series for ${Modality} dataset not present.`
+          );
+        }
+
+        if (!displaySet) {
+          throw new Error('Source data not present');
+        }
       }
 
       dispatch(setActiveViewportSpecificData(displaySet));
