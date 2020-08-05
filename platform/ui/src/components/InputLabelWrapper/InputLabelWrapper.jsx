@@ -6,7 +6,7 @@ import { Icon } from '@ohif/ui';
 
 const baseLabelClassName =
   'flex flex-col flex-1 text-white text-lg pl-1 select-none';
-const spanClassName = 'flex flex-row items-center cursor-pointer';
+const spanClassName = 'flex flex-row items-center cursor-pointer focus:outline-none';
 const sortIconMap = {
   ascending: 'sorting-active-up',
   descending: 'sorting-active-down',
