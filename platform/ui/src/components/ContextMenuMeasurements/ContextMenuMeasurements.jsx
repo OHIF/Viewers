@@ -16,16 +16,16 @@ const ContextMenuMeasurements = ({
         onDelete(item);
         onClose();
       },
-      value: {}
+      value: {},
     },
     {
-      label: 'Relabel',
+      label: 'Add Label',
       actionType: 'setLabel',
       action: item => {
         onSetLabel(item);
         onClose();
       },
-      value: {}
+      value: {},
     },
   ];
 

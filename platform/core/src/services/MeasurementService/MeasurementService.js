@@ -217,11 +217,6 @@ class MeasurementService {
       return;
     }
 
-    if (!toSourceSchema) {
-      log.warn('Source mapping function not provided. Exiting early.');
-      return;
-    }
-
     if (!toMeasurementSchema) {
       log.warn('Measurement mapping function not provided. Exiting early.');
       return;
@@ -624,9 +619,9 @@ class MeasurementService {
   /**
    * Broadcasts measurement changes.
    *
-   * @param {string} eventName The event name.
-   * @param {MeasurementSource} eventData.source The measurement source.
-   * @param {string} eventData.measurement The measurement.
+   * @param {string} eventName The event name.add
+   * @param {object} eventData.source The measurement source.
+   * @param {object} eventData.measurement The measurement.
    * @param {boolean} eventData.notYetUpdatedAtSource True if the measurement was edited
    *      within the measurement service and the source needs to update.
    * @return void

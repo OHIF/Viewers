@@ -322,17 +322,19 @@ function OutsideAlerter(props) {
     /**
      * Alert if clicked on outside of element
      */
-    function handleClickOutside(event) {
+    function handleInteractionOutside(event) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
         props.onClickOutside();
       }
     }
 
     // Bind the event listener
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleInteractionOutside);
+    document.addEventListener('touchstart', handleInteractionOutside);
     return () => {
       // Unbind the event listener on clean up
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mousedown', handleInteractionOutside);
+      document.removeEventListener('touchstart', handleInteractionOutside);
     };
   }, [wrapperRef]);
 

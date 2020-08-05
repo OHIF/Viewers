@@ -27,7 +27,7 @@ const TOOL_TYPES_WITH_CONTEXT_MENU = [
   'RectangleRoi',
 ];
 
-const _refreshViewport = () =>
+const _refreshViewports = () =>
   cs.getEnabledElements().forEach(({ element }) => cs.updateImage(element));
 
 /**
@@ -97,11 +97,7 @@ export default function init({
         onDelete: item => {
           const { tool: measurementData, toolType } = item.value;
           measurementServiceSource.remove(measurementData.id);
-          commandsManager.runCommand('removeToolState', {
-            element: event.detail.element,
-            toolType,
-            tool: measurementData,
-          });
+          _refreshViewports();
           CONTEXT_MENU_OPEN = false;
         },
         onClose: () => {
@@ -223,6 +219,18 @@ export default function init({
         : data.label
       : '';
 
+    const onSubmitHandler = ({ action, value }) => {
+      switch (action.id) {
+        case 'save':
+          callback(value.label, action.id);
+          break;
+        case 'cancel':
+          callback('', action.id);
+          break;
+      }
+      UIDialogService.dismiss({ id: dialogId });
+    };
+
     if (UIDialogService) {
       UIDialogService.create({
         id: dialogId,
@@ -240,17 +248,7 @@ export default function init({
             { id: 'cancel', text: 'Cancel', type: 'secondary' },
             { id: 'save', text: 'Save', type: 'primary' },
           ],
-          onSubmit: ({ action, value }) => {
-            switch (action.id) {
-              case 'save':
-                callback(value.label, action.id);
-                break;
-              case 'cancel':
-                callback('', action.id);
-                break;
-            }
-            UIDialogService.dismiss({ id: dialogId });
-          },
+          onSubmit: onSubmitHandler,
           body: ({ value, setValue }) => {
             const onChangeHandler = event => {
               event.persist();
@@ -558,7 +556,7 @@ const _connectToolsToMeasurementService = (
 
     MeasurementService.subscribe(MEASUREMENTS_CLEARED, () => {
       globalImageIdSpecificToolStateManager.restoreToolState({});
-      _refreshViewport();
+      _refreshViewports();
     });
 
     MeasurementService.subscribe(
@@ -582,12 +580,7 @@ const _connectToolsToMeasurementService = (
             cornerstoneMeasurement.text = label;
           }
 
-          // Update the cornerstone canvases.
-          const enabledElements = cornerstoneTools.store.state.enabledElements;
-
-          enabledElements.forEach(element => {
-            cornerstone.updateImage(element);
-          });
+          _refreshViewports();
         }
       }
     );
