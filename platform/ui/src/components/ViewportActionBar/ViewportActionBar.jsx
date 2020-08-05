@@ -157,10 +157,10 @@ const ViewportActionBar = ({
 
   return (
     <div
-      className="flex flex-wrap items-center p-2 border-b select-none border-primary-light"
+      className="flex flex-wrap items-center p-2 border-b select-none border-primary-light -mt-2"
       onDoubleClick={onDoubleClick}
     >
-      <div className="flex flex-grow">
+      <div className="flex flex-grow mt-2">
         <div className="flex items-center">
           {renderIconStatus()}
           <span className="ml-2 text-white text-large">{label}</span>
@@ -186,7 +186,7 @@ const ViewportActionBar = ({
           </div>
         </div>
       </div>
-      <div className="ml-2 mb-2 mt-2 flex flex-row">
+      <div className="flex flex-row flex-1 justify-end mt-2">
         {showNavArrows && !showCine && (
           <ButtonGroup>
             <Button
@@ -205,9 +205,15 @@ const ViewportActionBar = ({
             </Button>
           </ButtonGroup>
         )}
-        {showCine && !showNavArrows && <CinePlayer {...cineProps} />}
+        {showCine && !showNavArrows && (
+          <div className="flex justify-start">
+            <div className="min-w-48 max-w-48 flex-1">
+              <CinePlayer {...cineProps} />
+            </div>
+          </div>
+        )}
       </div>
-      <div className="flex h-8 ml-4 mr-2" onClick={onPatientInfoClick}>
+      <div className="flex h-8 ml-4 mr-2 mt-2" onClick={onPatientInfoClick}>
         <PatientInfo
           showPatientInfoRef={showPatientInfoRef}
           isOpen={showPatientInfo}

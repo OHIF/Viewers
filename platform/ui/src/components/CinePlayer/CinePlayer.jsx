@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 import { IconButton, Icon } from '@ohif/ui';
 
-import './CinePlayer.css';
+import './CinePlayerCustomInputRange.css';
 
 const CinePlayer = ({
   isPlaying,

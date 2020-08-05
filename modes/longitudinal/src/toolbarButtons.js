@@ -202,6 +202,10 @@ export default [
       commandName: 'setIsCineEnabled',
       commandOptions: { isCineEnabled: true },
       type: 'primary',
+      onUnselected: {
+        commandName: 'setIsCineEnabled',
+        commandOptions: { isCineEnabled: false },
+      }
     },
   },
   // TODO: 2D MPR: We had said this was off the table?

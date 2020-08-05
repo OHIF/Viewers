@@ -10,7 +10,7 @@ const { ImageSet } = classes;
 import classNames from 'classnames';
 
 function ViewerViewportGrid(props) {
-  const { servicesManager, viewportComponents, dataSource } = props;
+  const { servicesManager, commandsManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   const {
@@ -202,6 +202,7 @@ function ViewerViewportGrid(props) {
               displaySet={displaySet}
               viewportIndex={viewportIndex}
               dataSource={dataSource}
+              commandsManager={commandsManager}
             />
           </div>
         </ViewportPane>
