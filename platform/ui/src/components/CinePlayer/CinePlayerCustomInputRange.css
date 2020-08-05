@@ -14,7 +14,7 @@
   cursor: pointer;
   animate: 0.2s;
   box-shadow: 0px 0px 0px #000000;
-  background: #59CEE6;
+  @apply bg-primary-light;
   border-radius: 5px;
   border: 0px solid #000000;
 }
@@ -25,14 +25,14 @@
   height: 18px;
   width: 17px;
   border-radius: 50px;
-  background: #59CEE6;
+  @apply bg-primary-light;
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -9px;
 }
 
 .CinePlayer input[type=range]:focus::-webkit-slider-runnable-track {
-  background: #59CEE6;
+  @apply bg-primary-light;
 }
 
 .CinePlayer input[type=range]::-moz-range-track {
@@ -41,7 +41,7 @@
   cursor: pointer;
   animate: 0.2s;
   box-shadow: 0px 0px 0px #000000;
-  background: #59CEE6;
+  @apply bg-primary-light;
   border-radius: 5px;
   border: 0px solid #000000;
 }
@@ -52,7 +52,7 @@
   height: 18px;
   width: 17px;
   border-radius: 50px;
-  background: #59CEE6;
+  @apply bg-primary-light;
   cursor: pointer;
 }
 
@@ -67,14 +67,14 @@
 }
 
 .CinePlayer input[type=range]::-ms-fill-lower {
-  background: #59CEE6;
+  @apply bg-primary-light;
   border: 0px solid #000000;
   border-radius: 10px;
   box-shadow: 0px 0px 0px #000000;
 }
 
 .CinePlayer input[type=range]::-ms-fill-upper {
-  background: #59CEE6;
+  @apply bg-primary-light;
   border: 0px solid #000000;
   border-radius: 10px;
   box-shadow: 0px 0px 0px #000000;
@@ -87,14 +87,14 @@
   height: 18px;
   width: 17px;
   border-radius: 50px;
-  background: #59CEE6;
+  @apply bg-primary-light;
   cursor: pointer;
 }
 
 .CinePlayer input[type=range]:focus::-ms-fill-lower {
-  background: #59CEE6;
+  @apply bg-primary-light;
 }
 
 .CinePlayer input[type=range]:focus::-ms-fill-upper {
-  background: #59CEE6;
+  @apply bg-primary-light;
 }
