@@ -10,10 +10,6 @@ export default function getSourceDisplaySet(studies, segDisplaySet) {
 const _getReferencedDisplaySet = (segDisplaySet, studies) => {
   let allDisplaySets = [];
 
-  // TODO -> Use the studymetadatamanager instead of studies object for more portability.
-  // Use the studymetadatamanager on the segDisplaySets StudyInstanceUID.
-  // Fix in ViewerMain and ConnectedStudyBrowser.
-
   studies.forEach(study => {
     allDisplaySets = allDisplaySets.concat(study.displaySets);
   });

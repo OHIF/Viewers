@@ -47,12 +47,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       );
 
       if (displaySet.isDerived) {
-        const studyMetadata = studyMetadataManager.get(
-          displaySet.StudyInstanceUID
-        );
-
-        debugger;
-        displaySet = displaySet.getSourceDisplaySet([studyMetadata]);
+        displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata);
       }
 
       dispatch(setActiveViewportSpecificData(displaySet));
