@@ -26,18 +26,6 @@ export function setConfiguration(appConfig) {
   cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
   cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 
-  OHIF.user.getAccessToken = () => {
-    debugger;
-
-    // TODO: Get the Redux store from somewhere else
-    const state = window.store.getState();
-    if (!state.oidc || !state.oidc.user) {
-      return;
-    }
-
-    return state.oidc.user.access_token;
-  };
-
   OHIF.errorHandler.getHTTPErrorHandler = () => {
     // const { appConfig = {} } = AppContext;
 

@@ -7,12 +7,15 @@ import dicomParser from 'dicom-parser';
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 
-cornerstoneWADOImageLoader.configure({
-  beforeSend: function(xhr) {
-    /*const headers = OHIF.DICOMWeb.getAuthorizationHeader();
+export default function initWADOImageLoader(UserAuthenticationService) {
+  cornerstoneWADOImageLoader.configure({
+    beforeSend: function(xhr) {
 
-    if (headers.Authorization) {
-      xhr.setRequestHeader('Authorization', headers.Authorization);
-    }*/
-  },
-});
+      const headers = UserAuthenticationService.getAuthorizationHeader();
+
+      if (headers.Authorization) {
+        xhr.setRequestHeader('Authorization', headers.Authorization);
+      }
+    },
+  });
+}

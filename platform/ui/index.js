@@ -26,6 +26,9 @@ export {
   HangingProtocolContext,
   HangingProtocolProvider,
   useHangingProtocol,
+  UserAuthenticationContext,
+  UserAuthenticationProvider,
+  useUserAuthentication,
 } from './src/contextProviders';
 
 /** COMPONENTS */

@@ -10,7 +10,6 @@ import user from '../user';
  * @returns {Object} { Authorization }
  */
 export default function getAuthorizationHeader({ requestOptions } = {}, user) {
-  debugger;
   const headers = {};
 
   // Check for OHIF.user since this can also be run on the server

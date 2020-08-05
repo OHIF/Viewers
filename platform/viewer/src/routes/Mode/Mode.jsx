@@ -8,6 +8,7 @@ import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
+import { servicesManager } from '../../App';
 
 const { isLowPriorityModality } = utils;
 
@@ -49,7 +50,20 @@ export default function ModeRoute({
     MeasurementService,
     ViewportGridService,
     HangingProtocolService,
+    UserAuthenticationService,
   } = servicesManager.services;
+
+  // TODO: This is duplicated in DataSourceWrapper
+  UserAuthenticationService.setUser(props.user);
+  const getAuthorizationHeader = () => {
+    debugger;
+
+    // TODO: This should probably work but it doesn't right now
+    //return UserAuthenticationService.getUser().access_token;
+    return {
+      Authorization: `Bearer ${props.user.access_token}`
+    };
+  }
 
   const layoutTemplateData = route.layoutTemplate({ location });
   const layoutTemplateModuleEntry = extensionManager.getModuleEntry(

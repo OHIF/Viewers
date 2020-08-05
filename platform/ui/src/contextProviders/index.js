@@ -41,3 +41,9 @@ export {
   HangingProtocolProvider,
   useHangingProtocol,
 } from './HangingProtocolProvider';
+
+export {
+  UserAuthenticationContext,
+  UserAuthenticationProvider,
+  useUserAuthentication,
+} from './UserAuthenticationProvider';

@@ -80,6 +80,8 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
 
     const seriesInstanceUIDs = preLoadData.map(s => s.SeriesInstanceUID);
 
+    debugger;
+
     const seriesAsyncLoader = makeSeriesAsyncLoader(
       client,
       studyInstanceUID,

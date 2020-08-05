@@ -1,12 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
-//import { connect } from 'react-redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { MODULE_TYPES, DICOMWeb } from '@ohif/core';
+import OHIF, { MODULE_TYPES, DICOMWeb } from '@ohif/core';
 //
 import { useAppConfig } from '@state';
-import { extensionManager } from '../App.jsx';
-import { connect } from 'react-redux';
+import { extensionManager, servicesManager } from '../App.jsx';
 import { withRouter } from 'react-router';
 
 const { getAuthorizationHeader } = DICOMWeb;
@@ -37,15 +36,20 @@ function DataSourceWrapper(props) {
     return acc.concat(mods);
   }, []);
 
+  // TODO: This is duplicated in Mode.jsx
+  const { UserAuthenticationService } = servicesManager.services;
 
-  /*const getAuthHeader = (...args) => {
-    // Access the OIDC access token
-    const userData = {
-      getAccessToken: () => user.access_token
+  UserAuthenticationService.setUser(props.user);
+  const getAuthorizationHeader = () => {
+    // TODO: This should probably work but it doesn't right now
+    //return UserAuthenticationService.getUser().access_token;
+    return {
+      Authorization: `Bearer ${props.user.access_token}`
     };
-
-    return getAuthorizationHeader(...args, userData);
-  }*/
+  }
+  UserAuthenticationService.setServiceImplementation({
+    getAuthorizationHeader
+  });
 
   // Grabbing first for now - should get active?
   const name = webApiDataSources[0].name;
@@ -64,7 +68,6 @@ function DataSourceWrapper(props) {
     // 204: no content
     async function getData() {
       setIsLoading(true);
-      debugger;
       const searchResults = await dataSource.query.studies.search(
         queryFilterValues
       );
@@ -98,7 +101,7 @@ DataSourceWrapper.propTypes = {
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.func]).isRequired,
 };
 
-/*const mapStateToProps = state => {
+const mapStateToProps = state => {
   return {
     user: state.user,
   };
@@ -107,9 +110,9 @@ DataSourceWrapper.propTypes = {
 const ConnectedDataSourceWrapper = connect(
   mapStateToProps,
   null
-)(DataSourceWrapper);*/
+)(DataSourceWrapper);
 
-export default DataSourceWrapper;
+export default ConnectedDataSourceWrapper;
 
 /**
  * Duplicated in `workList`

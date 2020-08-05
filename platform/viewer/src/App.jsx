@@ -17,6 +17,7 @@ import {
   ViewportDialogProvider,
   ViewportGridProvider,
   HangingProtocolProvider,
+  UserAuthenticationProvider,
 } from '@ohif/ui';
 // Viewer Project
 // TODO: Should this influence study list?
@@ -105,6 +106,7 @@ function App({ config, defaultExtensions }) {
     UIViewportDialogService,
     ViewportGridService, // TODO: Should this be a "UI" Service?
     HangingProtocolService,
+    UserAuthenticationService,
   } = servicesManager.services;
 
   if (userManager) {
@@ -116,23 +118,25 @@ function App({ config, defaultExtensions }) {
               <UserManagerContext.Provider value={userManager}>
                 <Router basename={routerBasename}>
                   <ThemeWrapper>
-                    <ViewportGridProvider service={ViewportGridService}>
-                      <HangingProtocolProvider service={HangingProtocolService}>
-                        <ViewportDialogProvider service={UIViewportDialogService}>
-                          <SnackbarProvider service={UINotificationService}>
-                            <DialogProvider service={UIDialogService}>
-                              <ModalProvider modal={Modal} service={UIModalService}>
-                                <ConnectedAuthenticatorWithRouter
-                                  appRoutes={appRoutes}
-                                  userManager={userManager}
-                                  oidcAuthority={oidc[0].authority}
-                                />
-                              </ModalProvider>
-                            </DialogProvider>
-                          </SnackbarProvider>
-                        </ViewportDialogProvider>
-                      </HangingProtocolProvider>
-                    </ViewportGridProvider>
+                    <UserAuthenticationProvider service={UserAuthenticationService}>
+                      <ViewportGridProvider service={ViewportGridService}>
+                        <HangingProtocolProvider service={HangingProtocolService}>
+                          <ViewportDialogProvider service={UIViewportDialogService}>
+                            <SnackbarProvider service={UINotificationService}>
+                              <DialogProvider service={UIDialogService}>
+                                <ModalProvider modal={Modal} service={UIModalService}>
+                                  <ConnectedAuthenticatorWithRouter
+                                    appRoutes={appRoutes}
+                                    userManager={userManager}
+                                    oidcAuthority={oidc[0].authority}
+                                  />
+                                </ModalProvider>
+                              </DialogProvider>
+                            </SnackbarProvider>
+                          </ViewportDialogProvider>
+                        </HangingProtocolProvider>
+                      </ViewportGridProvider>
+                    </UserAuthenticationProvider>
                   </ThemeWrapper>
                 </Router>
               </UserManagerContext.Provider>
@@ -145,25 +149,29 @@ function App({ config, defaultExtensions }) {
 
   return (
     <AppConfigProvider value={appConfigState}>
-      <I18nextProvider i18n={i18n}>
-        <Router basename={routerBasename}>
-          <ThemeWrapper>
-            <ViewportGridProvider service={ViewportGridService}>
-              <HangingProtocolProvider service={HangingProtocolService}>
-                <ViewportDialogProvider service={UIViewportDialogService}>
-                  <SnackbarProvider service={UINotificationService}>
-                    <DialogProvider service={UIDialogService}>
-                      <ModalProvider modal={Modal} service={UIModalService}>
-                        {appRoutes}
-                      </ModalProvider>
-                    </DialogProvider>
-                  </SnackbarProvider>
-                </ViewportDialogProvider>
-              </HangingProtocolProvider>
-            </ViewportGridProvider>
-          </ThemeWrapper>
-        </Router>
-      </I18nextProvider>
+      <Provider store={store}>
+        <I18nextProvider i18n={i18n}>
+          <Router basename={routerBasename}>
+            <ThemeWrapper>
+              <UserAuthenticationProvider service={UserAuthenticationService}>
+                <ViewportGridProvider service={ViewportGridService}>
+                  <HangingProtocolProvider service={HangingProtocolService}>
+                    <ViewportDialogProvider service={UIViewportDialogService}>
+                      <SnackbarProvider service={UINotificationService}>
+                        <DialogProvider service={UIDialogService}>
+                          <ModalProvider modal={Modal} service={UIModalService}>
+                            {appRoutes}
+                          </ModalProvider>
+                        </DialogProvider>
+                      </SnackbarProvider>
+                    </ViewportDialogProvider>
+                  </HangingProtocolProvider>
+                </ViewportGridProvider>
+              </UserAuthenticationProvider>
+            </ThemeWrapper>
+          </Router>
+        </I18nextProvider>
+      </Provider>
     </AppConfigProvider>
   );
 }

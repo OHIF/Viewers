@@ -5,7 +5,7 @@ import cs from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
 import initCornerstoneTools from './initCornerstoneTools.js';
-import './initWADOImageLoader.js';
+import initWADOImageLoader from './initWADOImageLoader.js';
 import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import { setEnabledElement } from './state';
@@ -45,7 +45,10 @@ export default function init({
     UIDialogService,
     MeasurementService,
     DisplaySetService,
+    UserAuthenticationService,
   } = servicesManager.services;
+
+  initWADOImageLoader(UserAuthenticationService);
 
   /* Measurement Service */
   const measurementServiceSource = _connectToolsToMeasurementService(
