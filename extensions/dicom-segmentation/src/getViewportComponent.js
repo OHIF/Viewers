@@ -6,11 +6,12 @@ export default function getViewportComponent(
 ) {
   debugger;
 
-  pluginName = pluginName || defaultPluginName;
   // Get a cornerstone viewport
-  const ViewportComponent = availablePlugins[cornerstone];
+  const ViewportComponent = availablePlugins['cornerstone'];
 
   // TODO: Find the referenced displaySet
+
+  debugger;
 
   let referencedDisplaySet;
 
