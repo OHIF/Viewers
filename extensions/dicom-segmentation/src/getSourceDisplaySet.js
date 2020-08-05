@@ -1,8 +1,13 @@
+import setActiveLabelmap from './utils/setActiveLabelMap';
+
 export default function getSourceDisplaySet(studies, segDisplaySet) {
   const referencedDisplaySet = _getReferencedDisplaySet(segDisplaySet, studies);
 
-  segDisplaySet.load(referencedDisplaySet, studies);
-  // TODO: and set it active.
+  // segDisplaySet.load(referencedDisplaySet, studies);
+
+  // debugger;
+
+  setActiveLabelmap(referencedDisplaySet, studies, segDisplaySet);
 
   return referencedDisplaySet;
 }

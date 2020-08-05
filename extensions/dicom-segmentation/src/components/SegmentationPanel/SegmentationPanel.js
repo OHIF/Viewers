@@ -6,6 +6,9 @@ import moment from 'moment';
 import { utils, log } from '@ohif/core';
 import { ScrollableArea, TableList, Icon } from '@ohif/ui';
 
+import setActiveLabelmap from '../../utils/setActiveLabelMap';
+import refreshViewports from '../../utils/refreshViewports';
+
 import {
   BrushColorSelector,
   BrushRadius,
@@ -18,12 +21,6 @@ import './SegmentationPanel.css';
 import SegmentationSettings from '../SegmentationSettings/SegmentationSettings';
 
 const { studyMetadataManager } = utils;
-
-const refreshViewport = () => {
-  cornerstone.getEnabledElements().forEach(enabledElement => {
-    cornerstone.updateImage(enabledElement.element);
-  });
-};
 
 /**
  * SegmentationPanel component
@@ -231,12 +228,10 @@ const SegmentationPanel = ({
           title: displayDescription,
           description: displayDate,
           onClick: async () => {
-            const activatedLabelmapIndex = await _setActiveLabelmap(
+            const activatedLabelmapIndex = await setActiveLabelmap(
               activeViewport,
               studies,
               displaySet,
-              firstImageId,
-              brushStackState.activeLabelmapIndex,
               () => onSelectedSegmentationChange(),
               onDisplaySetLoadFailure
             );
@@ -421,7 +416,7 @@ const SegmentationPanel = ({
               updateCachedSegmentsProperties(segmentNumber, {
                 visible: newVisibility,
               });
-              refreshViewport();
+              refreshViewports();
             }}
           />
         );
@@ -512,7 +507,7 @@ const SegmentationPanel = ({
     configuration.fillAlphaInactive = newConfiguration.fillAlphaInactive;
     configuration.outlineAlphaInactive = newConfiguration.outlineAlphaInactive;
     onConfigurationChange(newConfiguration);
-    refreshViewport();
+    refreshViewports();
   };
 
   const disabledConfigurationFields = [
@@ -634,57 +629,6 @@ const _getReferencedSegDisplaysets = (StudyInstanceUID, SeriesInstanceUID) => {
 
 /**
  *
- *
- * @param {*} viewportSpecificData
- * @param {*} studies
- * @param {*} displaySet
- * @param {*} firstImageId
- * @param {*} activeLabelmapIndex
- * @returns
- */
-const _setActiveLabelmap = async (
-  viewportSpecificData,
-  studies,
-  displaySet,
-  firstImageId,
-  activeLabelmapIndex,
-  callback = () => {},
-  onDisplaySetLoadFailure
-) => {
-  if (displaySet.labelmapIndex === activeLabelmapIndex) {
-    log.warn(`${activeLabelmapIndex} is already the active labelmap`);
-    return displaySet.labelmapIndex;
-  }
-
-  if (!displaySet.isLoaded) {
-    // What props does this expect `viewportSpecificData` to have?
-    // TODO: Should this return the `labelmapIndex`?
-
-    const loadPromise = displaySet.load(viewportSpecificData, studies);
-
-    loadPromise.catch(error => {
-      onDisplaySetLoadFailure(error);
-
-      // Return old index.
-      return activeLabelmapIndex;
-    });
-
-    await loadPromise;
-  }
-
-  const { state } = cornerstoneTools.getModule('segmentation');
-  const brushStackState = state.series[firstImageId];
-  brushStackState.activeLabelmapIndex = displaySet.labelmapIndex;
-
-  refreshViewport();
-
-  callback();
-
-  return displaySet.labelmapIndex;
-};
-
-/**
- *
  * @param {*} firstImageId
  * @param {*} activeSegmentIndex
  * @returns
@@ -702,7 +646,7 @@ const _setActiveSegment = (firstImageId, segmentIndex, activeSegmentIndex) => {
     brushStackState.labelmaps3D[brushStackState.activeLabelmapIndex];
   labelmap3D.activeSegmentIndex = segmentIndex;
 
-  refreshViewport();
+  refreshViewports();
 
   return segmentIndex;
 };
