@@ -36,6 +36,10 @@ export default class DisplaySetService {
     return displaySetCache;
   }
 
+  getMostRecentDisplaySet() {
+    return this.activeDisplaySets[this.activeDisplaySets.length - 1];
+  }
+
   getActiveDisplaySets() {
     return this.activeDisplaySets;
   }
@@ -46,6 +50,20 @@ export default class DisplaySetService {
     );
   };
 
+  getDisplaySetForSOPInstanceUID(SOPInstanceUID, SeriesInstanceUID) {
+    const displaySets = SeriesInstanceUID
+      ? this.getDisplaySetsForSeries(SeriesInstanceUID)
+      : this.getDisplaySetCache();
+
+    const displaySet = displaySets.find(ds => {
+      return (
+        ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
+      );
+    });
+
+    return displaySet;
+  }
+
   /**
    * @param {string} displaySetInstanceUID
    * @returns {object} displaySet
@@ -55,6 +73,12 @@ export default class DisplaySetService {
       displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUid
     );
 
+  /**
+   *
+   * @param {*} input
+   * @param {*} param1
+   * @returns {string[]} - added displaySetInstanceUIDs
+   */
   makeDisplaySets = (input, { batch = false, madeInClient = false } = {}) => {
     if (!input || !input.length) {
       throw new Error('No instances were provided.');
@@ -70,11 +94,12 @@ export default class DisplaySetService {
     let displaySetsAdded = [];
 
     if (batch) {
-      input.forEach(instances => {
+      for (let i = 0; i < input.length; i++) {
+        const instances = input[i];
         const displaySets = this.makeDisplaySetForInstances(instances);
 
         displaySetsAdded = [...displaySetsAdded, displaySets];
-      });
+      }
     } else {
       const displaySets = this.makeDisplaySetForInstances(input);
 
@@ -95,6 +120,8 @@ export default class DisplaySetService {
         displaySetsAdded,
         options,
       });
+
+      return displaySetsAdded;
     }
   };
 

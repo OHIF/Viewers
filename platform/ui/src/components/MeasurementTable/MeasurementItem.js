@@ -27,7 +27,6 @@ const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onE
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={onClickHandler}
-      onKeyDown={onClickHandler}
       role="button"
       tabIndex="0"
     >

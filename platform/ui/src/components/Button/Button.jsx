@@ -146,7 +146,7 @@ const Button = ({
 
 Button.propTypes = {
   children: PropTypes.node,
-  size: PropTypes.oneOf(['small', 'medium', 'large', 'initial']),
+  size: PropTypes.oneOf(['small', 'medium', 'large', 'initial', 'inherit']),
   rounded: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'full']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
   color: PropTypes.oneOf([

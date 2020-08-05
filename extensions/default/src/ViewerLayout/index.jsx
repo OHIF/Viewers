@@ -93,7 +93,11 @@ function ViewerLayout({
     };
   };
 
-  const defaultTool = { icon: 'tool-more-menu', label: 'More', isActive: false };
+  const defaultTool = {
+    icon: 'tool-more-menu',
+    label: 'More',
+    isActive: false,
+  };
   const [toolbars, setToolbars] = useState({ primary: [], secondary: [] });
   const [activeTool, setActiveTool] = useState(defaultTool);
 
@@ -102,7 +106,12 @@ function ViewerLayout({
   };
 
   const onPrimaryClickHandler = (evt, btn) => {
-    if (btn.props && btn.props.commands && evt.value && btn.props.commands[evt.value]) {
+    if (
+      btn.props &&
+      btn.props.commands &&
+      evt.value &&
+      btn.props.commands[evt.value]
+    ) {
       const { commandName, commandOptions } = btn.props.commands[evt.value];
       commandsManager.runCommand(commandName, commandOptions);
     }
@@ -114,8 +123,13 @@ function ViewerLayout({
       () => {
         console.warn('~~~ TOOL BAR MODIFIED EVENT CAUGHT');
         const updatedToolbars = {
-          primary: ToolBarService.getButtonSection('primary', { onClick: onPrimaryClickHandler, setActiveTool: setActiveToolHandler }),
-          secondary: ToolBarService.getButtonSection('secondary', { setActiveTool: setActiveToolHandler }),
+          primary: ToolBarService.getButtonSection('primary', {
+            onClick: onPrimaryClickHandler,
+            setActiveTool: setActiveToolHandler,
+          }),
+          secondary: ToolBarService.getButtonSection('secondary', {
+            setActiveTool: setActiveToolHandler,
+          }),
         };
         setToolbars(updatedToolbars);
       }
@@ -133,18 +147,25 @@ function ViewerLayout({
       <Header menuOptions={menuOptions}>
         <ErrorBoundary context="Primary Toolbar">
           <div className="relative flex justify-center">
-            {toolbars.primary.map(toolDef => {
+            {toolbars.primary.map((toolDef, index) => {
               const isNested = Array.isArray(toolDef);
               if (!isNested) {
                 const { id, Component, componentProps } = toolDef;
                 return <Component key={id} id={id} {...componentProps} />;
               } else {
                 return (
-                  <NestedMenu isActive={activeTool.isActive} icon={activeTool.icon} label={activeTool.label}>
+                  <NestedMenu
+                    key={index}
+                    isActive={activeTool.isActive}
+                    icon={activeTool.icon}
+                    label={activeTool.label}
+                  >
                     <div className="flex">
                       {toolDef.map(x => {
                         const { id, Component, componentProps } = x;
-                        return <Component key={id} id={id} {...componentProps} />;
+                        return (
+                          <Component key={id} id={id} {...componentProps} />
+                        );
                       })}
                     </div>
                   </NestedMenu>
@@ -213,7 +234,7 @@ ViewerLayout.propTypes = {
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
-  children: PropTypes.oneOfType(PropTypes.node, PropTypes.func).isRequired,
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
 };
 
 ViewerLayout.defaultProps = {

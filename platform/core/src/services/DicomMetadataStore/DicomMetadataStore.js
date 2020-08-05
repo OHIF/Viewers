@@ -57,9 +57,7 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
 const BaseImplementation = {
   EVENTS,
   listeners: {},
-  // TODO: The assumption is that this is called per Study per Series
-  // We should do more to verify/clarify that
-  addInstances(instances) {
+  addInstances(instances, madeInClient = false) {
     const { StudyInstanceUID, SeriesInstanceUID } = instances[0];
 
     let study = _model.studies.find(
@@ -72,7 +70,7 @@ const BaseImplementation = {
       study = _model.studies[_model.studies.length - 1];
     }
 
-    study.addSeries(instances);
+    study.addInstancesToSeries(instances);
 
     // Broadcast an event even if we used cached data.
     // This is because the mode needs to listen to instances that are added to build up its active displaySets.
@@ -81,6 +79,25 @@ const BaseImplementation = {
     this._broadcastEvent(EVENTS.INSTANCES_ADDED, {
       StudyInstanceUID,
       SeriesInstanceUID,
+      madeInClient,
+    });
+  },
+  addSeriesMetadata(seriesSummaryMetadata) {
+    const { StudyInstanceUID } = seriesSummaryMetadata[0];
+    let study = _getStudy(StudyInstanceUID);
+    if (!study) {
+      study = createStudyMetadata(StudyInstanceUID);
+      _model.studies.push(study);
+    }
+
+    seriesSummaryMetadata.forEach(series => {
+      const { SeriesInstanceUID } = series;
+
+      study.setSeriesMetadata(SeriesInstanceUID, series);
+    });
+
+    this._broadcastEvent(EVENTS.SERIES_ADDED, {
+      StudyInstanceUID,
     });
   },
   addStudy(study) {

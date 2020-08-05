@@ -35,3 +35,9 @@ export {
   ViewportGridProvider,
   useViewportGrid,
 } from './ViewportGridProvider';
+
+export {
+  HangingProtocolContext,
+  HangingProtocolProvider,
+  useHangingProtocol,
+} from './HangingProtocolProvider';

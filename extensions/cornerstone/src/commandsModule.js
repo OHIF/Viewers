@@ -79,6 +79,19 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.setViewport(enabledElement, viewport);
       }
     },
+    cancelMeasurement: () => {
+      const enabledElement = _getActiveViewportsEnabledElement();
+
+      if (enabledElement) {
+        const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
+          'manipulatorState'
+        ).setters.cancelActiveManipulatorsForElement;
+
+        cancelActiveManipulatorsForElement(enabledElement);
+
+        cornerstone.updateImage(enabledElement);
+      }
+    },
     // TODO: this is receiving `evt` from `ToolbarRow`. We could use it to have
     //       better mouseButtonMask sets.
     setToolActive: ({ toolName }) => {
@@ -269,32 +282,6 @@ const commandsModule = ({ servicesManager }) => {
         cornerstone.setViewport(enabledElement, viewport);
       }
     },
-    jumpToImage: ({
-      StudyInstanceUID,
-      SOPInstanceUID,
-      imageIndex,
-      activeViewportIndex,
-    }) => {
-      const study = studyMetadataManager.get(StudyInstanceUID);
-
-      const displaySet = study.findDisplaySet(ds => {
-        return (
-          ds.images &&
-          ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
-        );
-      });
-
-      displaySet.SOPInstanceUID = SOPInstanceUID;
-      displaySet.imageIndex = imageIndex;
-
-      window.store.dispatch(
-        setViewportSpecificData(activeViewportIndex, displaySet)
-      );
-
-      cornerstone.getEnabledElements().forEach(enabledElement => {
-        cornerstone.updateImage(enabledElement.element);
-      });
-    },
   };
 
   const definitions = {
@@ -346,6 +333,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     invertViewport: {
       commandFn: actions.invertViewport,
+      storeContexts: [],
+      options: {},
+    },
+    cancelMeasurement: {
+      commandFn: actions.cancelMeasurement,
       storeContexts: [],
       options: {},
     },

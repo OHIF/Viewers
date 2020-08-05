@@ -4,10 +4,15 @@ import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
-import { ViewportActionBar, useViewportGrid } from '@ohif/ui';
+import {
+  Notification,
+  ViewportActionBar,
+  useViewportGrid,
+  useViewportDialog,
+} from '@ohif/ui';
 import TOOL_NAMES from './constants/toolNames';
 import { adapters } from 'dcmjs';
-import getToolStateToCornerstoneMeasurementSchema from './utils/getToolStateToCornerstoneMeasurementSchema';
+// import getToolStateToCornerstoneMeasurementSchema from './utils/getToolStateToCornerstoneMeasurementSchema';
 import id from './id';
 
 const { formatDate } = utils;
@@ -29,6 +34,7 @@ function OHIFCornerstoneSRViewport({
 }) {
   const { DisplaySetService, MeasurementService } = servicesManager.services;
   const [viewportGrid, viewportGridService] = useViewportGrid();
+  const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [measurementSelected, setMeasurementSelected] = useState(0);
   const [measurementCount, setMeasurementCount] = useState(1);
   const [viewportData, setViewportData] = useState(null);
@@ -102,8 +108,19 @@ function OHIFCornerstoneSRViewport({
     );
 
     setTrackingUniqueIdentifiersForElement(targetElement);
-
     setElement(targetElement);
+
+    const OHIFCornerstoneEnabledElementEvent = new CustomEvent(
+      'ohif-cornerstone-enabled-element-event',
+      {
+        detail: {
+          enabledElement: targetElement,
+          viewportIndex,
+        },
+      }
+    );
+
+    document.dispatchEvent(OHIFCornerstoneEnabledElementEvent);
   };
 
   useEffect(() => {
@@ -129,14 +146,9 @@ function OHIFCornerstoneSRViewport({
     const numMeasurements = displaySet.measurements.length;
 
     setMeasurementCount(numMeasurements);
-  }, [
-    dataSource,
-    displaySet,
-    displaySet.StudyInstanceUID,
-    displaySet.displaySetInstanceUID,
-  ]);
+  }, [dataSource, displaySet]);
 
-  const updateViewport = newMeasurementSelected => {
+  const updateViewport = useCallback(newMeasurementSelected => {
     const {
       StudyInstanceUID,
       displaySetInstanceUID,
@@ -169,28 +181,25 @@ function OHIFCornerstoneSRViewport({
         cornerstone.updateImage(element);
       }
     });
-  };
+  });
 
-  useEffect(() => {
-    if (element !== null) {
-      setTrackingUniqueIdentifiersForElement(element);
-    }
-  }, [
-    dataSource,
-    displaySet,
-    displaySet.StudyInstanceUID,
-    displaySet.displaySetInstanceUID,
-  ]);
+  useEffect(
+    () => {
+      if (element !== null) {
+        setTrackingUniqueIdentifiersForElement(element);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dataSource, displaySet]
+  );
 
-  useEffect(() => {
-    updateViewport(measurementSelected);
-  }, [
-    dataSource,
-    displaySet,
-    displaySet.StudyInstanceUID,
-    displaySet.displaySetInstanceUID,
-    element,
-  ]);
+  useEffect(
+    () => {
+      updateViewport(measurementSelected);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dataSource, displaySet, element]
+  );
 
   const firstViewportIndexWithMatchingDisplaySetUid = viewports.findIndex(
     vp => vp.displaySetInstanceUID === displaySet.displaySetInstanceUID
@@ -261,148 +270,7 @@ function OHIFCornerstoneSRViewport({
     updateViewport(newMeasurementSelected);
   };
 
-  function hydrateMeasurementService() {
-    // TODO -> We should define a strict versioning somewhere.
-    const mappings = MeasurementService.getSourceMappings(
-      'CornerstoneTools',
-      '4'
-    );
-
-    if (!mappings || !mappings.length) {
-      throw new Error(
-        `Attempting to hydrate measurements service when no mappings present. This shouldn't be reached.`
-      );
-    }
-
-    const instance = DicomMetadataStore.getInstance(
-      displaySet.StudyInstanceUID,
-      displaySet.SeriesInstanceUID,
-      displaySet.SOPInstanceUID
-    );
-
-    const { MeasurementReport } = adapters.Cornerstone;
-
-    const sopInstanceUIDToImageId = {};
-
-    displaySet.measurements.forEach(measurement => {
-      const { ReferencedSOPInstanceUID, imageId } = measurement;
-      if (!sopInstanceUIDToImageId[ReferencedSOPInstanceUID]) {
-        sopInstanceUIDToImageId[ReferencedSOPInstanceUID] = imageId;
-      }
-    });
-
-    // Use dcmjs to generate toolState.
-    const storedMeasurementByToolType = MeasurementReport.generateToolState(
-      instance
-    );
-
-    // Filter what is found by DICOM SR to measurements we support.
-    const mappingDefinitions = mappings.map(m => m.definition);
-    const hydratableMeasurementsInSR = {};
-
-    Object.keys(storedMeasurementByToolType).forEach(key => {
-      if (mappingDefinitions.includes(key)) {
-        hydratableMeasurementsInSR[key] = storedMeasurementByToolType[key];
-      }
-    });
-
-    if (
-      extensionManager.registeredExtensionIds.includes(
-        MEASUREMENT_TRACKING_EXTENSION_ID
-      )
-    ) {
-      // Set the series touched as tracked.
-      const imageIds = [];
-
-      Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
-        const toolDataForToolType = hydratableMeasurementsInSR[toolType];
-
-        toolDataForToolType.forEach(data => {
-          // Add the measurement to toolState
-          const imageId = sopInstanceUIDToImageId[data.sopInstanceUid];
-
-          if (!imageIds.includes(imageId)) {
-            imageIds.push(imageId);
-          }
-        });
-      });
-
-      let targetStudyInstanceUID;
-      const SeriesInstanceUIDs = [];
-
-      for (let i = 0; i < imageIds.length; i++) {
-        const imageId = imageIds[0];
-        const {
-          SeriesInstanceUID,
-          StudyInstanceUID,
-        } = cornerstone.metaData.get('instance', imageId);
-
-        if (!SeriesInstanceUIDs.includes(SeriesInstanceUID)) {
-          SeriesInstanceUIDs.push(SeriesInstanceUID);
-        }
-
-        if (!targetStudyInstanceUID) {
-          targetStudyInstanceUID = StudyInstanceUID;
-        } else if (targetStudyInstanceUID !== StudyInstanceUID) {
-          console.warn(
-            'NO SUPPORT FOR SRs THAT HAVE MEASUREMENTS FROM MULTIPLE STUDIES.'
-          );
-        }
-      }
-
-      sendTrackedMeasurementsEvent('SET_TRACKED_SERIES', {
-        StudyInstanceUID: targetStudyInstanceUID,
-        SeriesInstanceUIDs,
-      });
-    }
-
-    Object.keys(hydratableMeasurementsInSR).forEach(toolType => {
-      const toolDataForToolType = hydratableMeasurementsInSR[toolType];
-
-      toolDataForToolType.forEach(data => {
-        // Add the measurement to toolState
-        const imageId = sopInstanceUIDToImageId[data.sopInstanceUid];
-
-        data.id = guid();
-
-        _addToolDataToCornerstoneTools(data, toolType, imageId);
-
-        // Let the measurement service know we added to toolState
-        const toMeasurementSchema = getToolStateToCornerstoneMeasurementSchema(
-          toolType,
-          MeasurementService,
-          imageId
-        );
-
-        const source = MeasurementService.getSource('CornerstoneTools', '4');
-
-        MeasurementService.addRawMeasurement(
-          source,
-          toolType,
-          data,
-          toMeasurementSchema
-        );
-
-        if (!imageIds.includes(imageId)) {
-          imageIds.push(imageId);
-        }
-      });
-    });
-
-    displaySet.isHydrated = true;
-
-    setIsHydrated(true);
-
-    viewportGridService.setDisplaysetForViewport({
-      viewportIndex: activeViewportIndex,
-      displaySetInstanceUID: activeDisplaySetData.displaySetInstanceUID,
-    });
-  }
-
-  const label =
-    viewports.length > 1
-      ? _viewportLabels[firstViewportIndexWithMatchingDisplaySetUid]
-      : '';
+  const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
 
   // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
 
@@ -414,8 +282,6 @@ function OHIFCornerstoneSRViewport({
           evt.preventDefault();
         }}
         onSeriesChange={onMeasurementChange}
-        onHydrationClick={hydrateMeasurementService}
-        showNavArrows={viewportIndex === activeViewportIndex}
         studyData={{
           label,
           isTracked: false,
@@ -460,6 +326,17 @@ function OHIFCornerstoneSRViewport({
           // seizure inducing strobe blinking effect
           resizeRefreshRateMs={150}
         />
+        <div className="absolute w-full">
+          {viewportDialogState.viewportIndex === viewportIndex && (
+            <Notification
+              message={viewportDialogState.message}
+              type={viewportDialogState.type}
+              actions={viewportDialogState.actions}
+              onSubmit={viewportDialogState.onSubmit}
+              onOutsideClick={viewportDialogState.onOutsideClick}
+            />
+          )}
+        </div>
         {childrenWithProps}
       </div>
     </>
@@ -563,31 +440,12 @@ async function _getViewportAndActiveDisplaySetData(
     SeriesDescription: image0.SeriesDescription,
     SeriesInstanceUID: image0.SeriesInstanceUID,
     SeriesNumber: image0.SeriesNumber,
+    ManufacturerModelName: image0.ManufacturerModelName,
+    PixelSpacing: image0.PixelSpacing,
     displaySetInstanceUID,
   };
 
   return { viewportData, activeDisplaySetData };
-}
-
-function _addToolDataToCornerstoneTools(data, toolType, imageId) {
-  const toolState = globalImageIdSpecificToolStateManager.saveToolState();
-
-  if (toolState[imageId] === undefined) {
-    toolState[imageId] = {};
-  }
-
-  const imageIdToolState = toolState[imageId];
-
-  // If we don't have tool state for this type of tool, add an empty object
-  if (imageIdToolState[toolType] === undefined) {
-    imageIdToolState[toolType] = {
-      data: [],
-    };
-  }
-
-  const toolData = imageIdToolState[toolType];
-
-  toolData.data.push(data);
 }
 
 function _onDoubleClick() {

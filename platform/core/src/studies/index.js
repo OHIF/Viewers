@@ -7,7 +7,7 @@ import {
 import getStudyBoxData from './getStudyBoxData';
 import retrieveStudiesMetadata from './retrieveStudiesMetadata.js';
 import searchStudies from './searchStudies';
-import sortStudy from './sortStudy';
+import { sortStudy, sortStudySeries, sortStudyInstances, sortingCriteria } from './sortStudy';
 
 const studies = {
   services: {
@@ -21,6 +21,9 @@ const studies = {
   getStudyBoxData,
   searchStudies,
   sortStudy,
+  sortStudySeries,
+  sortStudyInstances,
+  sortingCriteria,
 };
 
 export default studies;

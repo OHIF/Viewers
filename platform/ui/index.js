@@ -23,6 +23,9 @@ export {
   ViewportGridContext,
   ViewportGridProvider,
   useViewportGrid,
+  HangingProtocolContext,
+  HangingProtocolProvider,
+  useHangingProtocol,
 } from './src/contextProviders';
 
 /** COMPONENTS */
@@ -32,6 +35,7 @@ export {
   HotkeysPreferences,
   Button,
   ButtonGroup,
+  ContextMenu,
   DateRange,
   Dialog,
   Dropdown,
@@ -76,7 +80,9 @@ export {
   ThumbnailTracked,
   ThumbnailList,
   ToolbarButton,
+  ContextMenuMeasurements,
   Tooltip,
+  TooltipClipboard,
   Typography,
   Viewport,
   ViewportActionBar,

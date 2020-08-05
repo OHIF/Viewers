@@ -11,7 +11,8 @@ import { DicomMetadataStore, DICOMSR, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
-import createReportAsync from './../../_shared/createReportAsync.js';
+import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
+import RESPONSES from '../../_shared/PROMPT_RESPONSES';
 
 const { formatDate } = utils;
 
@@ -31,12 +32,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const {
-    MeasurementService,
-    UINotificationService,
-    UIDialogService,
-    DisplaySetService,
-  } = servicesManager.services;
+  const { MeasurementService, UIDialogService } = servicesManager.services;
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -132,11 +128,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     };
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
-  function createReport() {
-    // TODO -> Eventually deal with multiple dataSources.
-    // Would need some way of saying which one is the "push" dataSource
-    const dataSources = extensionManager.getDataSources();
-    const dataSource = dataSources[0];
+  async function exportReport() {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -144,45 +136,25 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    return createReportAsync(servicesManager, dataSource, trackedMeasurements);
-  }
+    const promptResult = await createReportDialogPrompt(UIDialogService);
 
-  function exportReport() {
-    const dataSources = extensionManager.getDataSources();
-    const dataSource = dataSources[0];
-    const measurements = MeasurementService.getMeasurements();
-    const trackedMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
-    );
+    if (promptResult.action === RESPONSES.CREATE_REPORT) {
+      const additionalFindings = ['ArrowAnnotate'];
 
-    // TODO -> local download.
-    DICOMSR.downloadReport(trackedMeasurements, dataSource);
+      const SeriesDescription =
+        // isUndefinedOrEmpty
+        promptResult.value === undefined || promptResult.value === ''
+          ? 'Research Derived Series' // default
+          : promptResult.value; // provided value
+
+      DICOMSR.downloadReport(trackedMeasurements, additionalFindings, {
+        SeriesDescription,
+      });
+    }
   }
 
   const jumpToImage = ({ id, isActive }) => {
-    const measurement = MeasurementService.getMeasurement(id);
-    const { referenceSeriesUID, SOPInstanceUID } = measurement;
-
-    const displaySets = DisplaySetService.getDisplaySetsForSeries(
-      referenceSeriesUID
-    );
-    const displaySet = displaySets.find(ds => {
-      return (
-        ds.images && ds.images.some(i => i.SOPInstanceUID === SOPInstanceUID)
-      );
-    });
-
-    const imageIndex = displaySet.images
-      .map(i => i.SOPInstanceUID)
-      .indexOf(SOPInstanceUID);
-
-    viewportGridService.setDisplaysetForViewport({
-      viewportIndex: viewportGrid.activeViewportIndex,
-      displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      imageIndex,
-    });
+    MeasurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, id);
 
     onMeasurementItemClickHandler({ id, isActive });
   };
@@ -190,24 +162,24 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const onMeasurementItemEditHandler = ({ id }) => {
     const measurement = MeasurementService.getMeasurement(id);
 
-    let dialogId;
     const onSubmitHandler = ({ action, value }) => {
       switch (action.id) {
         case 'save': {
-          MeasurementService.update(id, {
-            ...measurement,
-            ...value,
-          });
-          UINotificationService.show({
-            title: 'Measurements',
-            message: 'Label updated successfully',
-            type: 'success',
-          });
+          MeasurementService.update(
+            id,
+            {
+              ...measurement,
+              ...value,
+            },
+            true
+          );
         }
       }
-      UIDialogService.dismiss({ id: dialogId });
+      UIDialogService.dismiss({ id: 'enter-annotation' });
     };
-    dialogId = UIDialogService.create({
+
+    UIDialogService.create({
+      id: 'enter-annotation',
       centralize: true,
       isDraggable: false,
       useLastPosition: false,
@@ -299,7 +271,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       <div className="flex justify-center p-4">
         <ActionButtons
           onExportClick={exportReport}
-          onCreateReportClick={createReport}
+          onCreateReportClick={() => {
+            sendTrackedMeasurementsEvent('SAVE_REPORT', {
+              viewportIndex: viewportGrid.activeViewportIndex,
+              isBackupSave: true,
+            });
+          }}
         />
       </div>
     </>

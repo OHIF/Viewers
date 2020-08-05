@@ -3,7 +3,6 @@ import dcmjs from 'dcmjs';
 import DICOMWeb from '../../../DICOMWeb/';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 import { sortStudySeries, sortingCriteria } from '../../sortStudy';
-import getSeriesInfo from '../../getSeriesInfo';
 import {
   createStudyFromSOPInstanceList,
   addInstancesToStudy,

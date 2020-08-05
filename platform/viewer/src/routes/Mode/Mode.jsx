@@ -1,13 +1,14 @@
-import React, { useEffect, createContext, useContext } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
-import { DicomMetadataStore } from '@ohif/core';
-import { DragAndDropProvider, ImageViewerProvider, ModeProvider } from '@ohif/ui';
-//
+import { DicomMetadataStore, utils } from '@ohif/core';
+import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
+
+const { isLowPriorityModality } = utils;
 
 export default function ModeRoute({
   location,
@@ -46,6 +47,7 @@ export default function ModeRoute({
     DisplaySetService,
     MeasurementService,
     ViewportGridService,
+    HangingProtocolService,
   } = servicesManager.services;
 
   const layoutTemplateData = route.layoutTemplate({ location });
@@ -96,13 +98,18 @@ export default function ModeRoute({
   useEffect(() => {
     // Core
 
+    // TODO: For some reason this is running before the Providers
+    // are calling setServiceImplementation
     // TOOD -> iterate through services.
-    MeasurementService.clearMeasurements();
-    ViewportGridService.reset();
+
     // Extension
     extensionManager.onModeEnter();
     // Mode
     route.init({ servicesManager, extensionManager });
+
+    return () => {
+      extensionManager.onModeExit();
+    };
   }, [
     mode,
     dataSourceName,
@@ -122,13 +129,16 @@ export default function ModeRoute({
     // DisplaySetService would wire this up?
     const { unsubscribe } = DicomMetadataStore.subscribe(
       DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-      ({ StudyInstanceUID, SeriesInstanceUID }) => {
+      ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) => {
         const seriesMetadata = DicomMetadataStore.getSeries(
           StudyInstanceUID,
           SeriesInstanceUID
         );
 
-        DisplaySetService.makeDisplaySets(seriesMetadata.instances);
+        DisplaySetService.makeDisplaySets(
+          seriesMetadata.instances,
+          madeInClient
+        );
       }
     );
 
@@ -136,6 +146,89 @@ export default function ModeRoute({
       dataSource.retrieveSeriesMetadata({ StudyInstanceUID });
     });
 
+    return unsubscribe;
+  }, [
+    mode,
+    dataSourceName,
+    location,
+    DisplaySetService,
+    extensionManager,
+    sopClassHandlers,
+    StudyInstanceUIDsAsArray,
+    dataSource,
+  ]);
+
+  useEffect(() => {
+    const { unsubscribe } = DicomMetadataStore.subscribe(
+      DicomMetadataStore.EVENTS.SERIES_ADDED,
+      ({ StudyInstanceUID }) => {
+        const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
+
+        const sortedSeries = studyMetadata.series.sort((a, b) => {
+          const aLowPriority = isLowPriorityModality(a.Modality);
+          const bLowPriority = isLowPriorityModality(b.Modality);
+          if (!aLowPriority && bLowPriority) {
+            return -1;
+          }
+          if (aLowPriority && !bLowPriority) {
+            return 1;
+          }
+
+          return a.SeriesNumber - b.SeriesNumber;
+        });
+
+        const { SeriesInstanceUID } = sortedSeries[0];
+
+        HangingProtocolService.setHangingProtocol({
+          /*protocolMatchingRules: [
+              {
+                id: '7tmuq7KzDMCWFeapc',
+                weight: 2,
+                required: false,
+                attribute: 'x00081030',
+                constraint: {
+                  contains: {
+                    value: 'DFCI CT CHEST',
+                  },
+                },
+              },
+            ],*/
+          stages: [
+            {
+              /*id: 'v5PfGt9F6mffZPif5',
+                viewportStructure: {
+                  type: 'grid',
+                  properties: {
+                    Rows: 1,
+                    Columns: 1,
+                  },
+                  layoutTemplateName: 'gridLayout',
+                },*/
+              viewports: [
+                {
+                  viewportSettings: {},
+                  imageMatchingRules: [],
+                  seriesMatchingRules: [
+                    {
+                      id: 'mXnsCcNzZL56z7mTZ',
+                      weight: 1,
+                      required: true,
+                      attribute: 'SeriesInstanceUID',
+                      constraint: {
+                        equals: {
+                          value: SeriesInstanceUID,
+                        },
+                      },
+                    },
+                  ],
+                  studyMatchingRules: [],
+                },
+              ],
+            },
+          ],
+        });
+      }
+    );
     return unsubscribe;
   }, [
     mode,

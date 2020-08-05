@@ -1,6 +1,7 @@
 export default function getToolStateToCornerstoneMeasurementSchema(
   toolType,
   MeasurementService,
+  DisplaySetService,
   imageId
 ) {
   const _getValueTypeFromToolType = toolType => {
@@ -28,20 +29,45 @@ export default function getToolStateToCornerstoneMeasurementSchema(
   switch (toolType) {
     case 'Length':
       return measurementData =>
-        Length(measurementData, imageId, _getValueTypeFromToolType);
+        Length(
+          measurementData,
+          imageId,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        );
     case 'Bidirectional':
       return measurementData =>
-        Bidirectional(measurementData, imageId, _getValueTypeFromToolType);
+        Bidirectional(
+          measurementData,
+          imageId,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        );
     case 'EllipticalRoi':
       return measurementData =>
-        EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType);
+        EllipticalRoi(
+          measurementData,
+          imageId,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        );
     case 'ArrowAnnotate':
       return measurementData =>
-        ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType);
+        ArrowAnnotate(
+          measurementData,
+          imageId,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        );
   }
 }
 
-function Length(measurementData, imageId, _getValueTypeFromToolType) {
+function Length(
+  measurementData,
+  imageId,
+  DisplaySetService,
+  _getValueTypeFromToolType
+) {
   const tool = measurementData.toolType || measurementData.toolName;
   const instance = cornerstone.metaData.get('instance', imageId);
   const {
@@ -51,7 +77,13 @@ function Length(measurementData, imageId, _getValueTypeFromToolType) {
     StudyInstanceUID,
   } = instance;
 
-  const { handles } = measurementData;
+  const displaySetInstanceUID = _getDisplaySetInstanceUID(
+    DisplaySetService,
+    SeriesInstanceUID,
+    SOPInstanceUID
+  );
+
+  const { handles, label } = measurementData;
 
   const points = [];
   Object.keys(handles).map(handle => {
@@ -69,16 +101,22 @@ function Length(measurementData, imageId, _getValueTypeFromToolType) {
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
-    label: measurementData.text,
+    displaySetInstanceUID,
     description: measurementData.description,
     unit: measurementData.unit,
     length: measurementData.length,
     type: _getValueTypeFromToolType(tool),
     points,
+    label,
   };
 }
 
-function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
+function Bidirectional(
+  measurementData,
+  imageId,
+  DisplaySetService,
+  _getValueTypeFromToolType
+) {
   const tool = measurementData.toolType || measurementData.toolName;
   const instance = cornerstone.metaData.get('instance', imageId);
   const {
@@ -87,8 +125,13 @@ function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
     SeriesInstanceUID,
     StudyInstanceUID,
   } = instance;
+  const displaySetInstanceUID = _getDisplaySetInstanceUID(
+    DisplaySetService,
+    SeriesInstanceUID,
+    SOPInstanceUID
+  );
 
-  const { handles } = measurementData;
+  const { handles, label } = measurementData;
 
   const longAxis = [handles.start, handles.end];
   const shortAxis = [handles.perpendicularStart, handles.perpendicularEnd];
@@ -99,17 +142,23 @@ function Bidirectional(measurementData, imageId, _getValueTypeFromToolType) {
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
-    label: measurementData.text,
+    displaySetInstanceUID,
     description: measurementData.description,
     unit: measurementData.unit,
     shortestDiameter: measurementData.shortestDiameter,
     longestDiameter: measurementData.longestDiameter,
     type: _getValueTypeFromToolType(tool),
     points: { longAxis, shortAxis },
+    label,
   };
 }
 
-function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
+function EllipticalRoi(
+  measurementData,
+  imageId,
+  DisplaySetService,
+  _getValueTypeFromToolType
+) {
   const tool = measurementData.toolType || measurementData.toolName;
   const instance = cornerstone.metaData.get('instance', imageId);
   const {
@@ -119,7 +168,13 @@ function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
     StudyInstanceUID,
   } = instance;
 
-  const { start, end } = measurementData.handles;
+  const displaySetInstanceUID = _getDisplaySetInstanceUID(
+    DisplaySetService,
+    SeriesInstanceUID,
+    SOPInstanceUID
+  );
+  const { handles, label } = measurementData;
+  const { start, end } = handles;
 
   const halfXLength = Math.abs(start.x - end.x) / 2;
   const halfYLength = Math.abs(start.y - end.y) / 2;
@@ -152,7 +207,7 @@ function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
-    label: measurementData.text,
+    displaySetInstanceUID,
     description: measurementData.description,
     unit: measurementData.unit,
     area:
@@ -161,10 +216,16 @@ function EllipticalRoi(measurementData, imageId, _getValueTypeFromToolType) {
         .area /* TODO: Add concept names instead (descriptor) */,
     type: _getValueTypeFromToolType(tool),
     points,
+    label,
   };
 }
 
-function ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType) {
+function ArrowAnnotate(
+  measurementData,
+  imageId,
+  DisplaySetService,
+  _getValueTypeFromToolType
+) {
   const tool = measurementData.toolType || measurementData.toolName;
   const instance = cornerstone.metaData.get('instance', imageId);
   const {
@@ -173,6 +234,12 @@ function ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType) {
     SeriesInstanceUID,
     StudyInstanceUID,
   } = instance;
+
+  const displaySetInstanceUID = _getDisplaySetInstanceUID(
+    DisplaySetService,
+    SeriesInstanceUID,
+    SOPInstanceUID
+  );
 
   const { handles } = measurementData;
 
@@ -192,6 +259,7 @@ function ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType) {
     FrameOfReferenceUID,
     referenceSeriesUID: SeriesInstanceUID,
     referenceStudyUID: StudyInstanceUID,
+    displaySetInstanceUID,
     label: measurementData.text,
     description: measurementData.description,
     unit: measurementData.unit,
@@ -199,4 +267,17 @@ function ArrowAnnotate(measurementData, imageId, _getValueTypeFromToolType) {
     type: _getValueTypeFromToolType(tool),
     points,
   };
+}
+
+function _getDisplaySetInstanceUID(
+  DisplaySetService,
+  SeriesInstanceUID,
+  SOPInstanceUID
+) {
+  const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+    SOPInstanceUID,
+    SeriesInstanceUID
+  );
+
+  return displaySet.displaySetInstanceUID;
 }
