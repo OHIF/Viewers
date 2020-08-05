@@ -8,7 +8,7 @@ const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 const UserPreferences = ({ disabled, hotkeyDefinitions, hotkeyDefaults, onCancel, onSubmit, onReset }) => {
   const { t } = useTranslation('UserPreferencesModal');
   const [state, setState] = useState({
-    isDisabled: false,
+    isDisabled: disabled,
     hotkeyErrors: {},
     hotkeyDefinitions,
     language: currentLanguage()
@@ -25,7 +25,7 @@ const UserPreferences = ({ disabled, hotkeyDefinitions, hotkeyDefaults, onCancel
       language: defaultLanguage,
       hotkeyDefinitions: hotkeyDefaults,
       hotkeyErrors: {},
-      isDisabled: false,
+      isDisabled: disabled,
     }));
     onReset();
   };
@@ -138,7 +138,7 @@ UserPreferences.defaultProps = {
   onCancel: noop,
   onSubmit: noop,
   onReset: noop,
-  disabled: false
+  disabled: true
 };
 
 export default UserPreferences;
