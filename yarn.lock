@@ -15596,13 +15596,14 @@ react-codemirror2@^6.0.0:
   resolved "https://registry.yarnpkg.com/react-codemirror2/-/react-codemirror2-6.0.0.tgz#180065df57a64026026cde569a9708fdf7656525"
   integrity sha512-D7y9qZ05FbUh9blqECaJMdDwKluQiO3A9xB+fssd5jKM7YAXucRuEOlX32mJQumUvHUkHRHqXIPBjm6g0FW0Ag==
 
-react-cornerstone-viewport@2.3.9:
-  version "2.3.9"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-2.3.9.tgz#f9761da8e536f0a217137c6ca1a983f5882249f9"
-  integrity sha512-qrhq8CbX/jq6b93cQjV2qC/mhHOvFBpxzxcHlvHzEQZt/rmRMcaYxCqjpNaNbUmmBu61wNkxesUVsggkPTTcqg==
+react-cornerstone-viewport@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-4.0.0.tgz#7bdec830e7207ef1f62a6135a4c92d272691592d"
+  integrity sha512-5fDvd147PziAaCy2tIrHOnSNJ7Yn7csK5mTul46mbG3nkzEu1KSEPh4XHGbIk2u6DUlLHViwQULVmdqu4KvRew==
   dependencies:
     classnames "^2.2.6"
     date-fns "^2.2.1"
+    lodash.debounce "^4.0.8"
     prop-types "^15.7.2"
     react-resize-detector "^4.2.1"
 
