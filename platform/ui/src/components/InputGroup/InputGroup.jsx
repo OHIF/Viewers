@@ -26,7 +26,7 @@ const InputGroup = ({
         if (sortDirection === 'ascending') {
           _sortDirection = 'descending';
         } else if (sortDirection === 'descending') {
-          _sortDirection = 'none';
+          _sortDirection = 'ascending';
         }
       }
 
