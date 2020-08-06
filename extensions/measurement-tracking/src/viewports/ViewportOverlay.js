@@ -10,7 +10,7 @@ const ViewportOverlay = ({
   windowCenter,
   imageIndex,
   stackSize,
-  activeTools
+  activeTools,
 }) => {
   const topLeft = 'top-viewport left-viewport';
   const topRight = 'top-viewport right-viewport-scrollbar';
@@ -25,7 +25,8 @@ const ViewportOverlay = ({
     return null;
   }
 
-  const generalImageModule = cornerstone.metaData.get('generalImageModule', imageId) || {};
+  const generalImageModule =
+    cornerstone.metaData.get('generalImageModule', imageId) || {};
   const { instanceNumber } = generalImageModule;
 
   return (
@@ -40,7 +41,9 @@ const ViewportOverlay = ({
         {isWwwcActive && (
           <div className="flex flex-row">
             <span className="mr-1">W:</span>
-            <span className="ml-1 mr-2 font-thin">{windowWidth.toFixed(0)}</span>
+            <span className="ml-1 mr-2 font-thin">
+              {windowWidth.toFixed(0)}
+            </span>
             <span className="mr-1">L:</span>
             <span className="ml-1 font-thin">{windowCenter.toFixed(0)}</span>
           </div>
@@ -51,7 +54,7 @@ const ViewportOverlay = ({
           <div className="flex flex-row">
             <span className="mr-1">I:</span>
             <span className="font-thin">
-              {`${instanceNumber} ${imageIndex}/${stackSize}`}
+              {`${instanceNumber} (${imageIndex}/${stackSize})`}
             </span>
           </div>
         )}
@@ -69,11 +72,11 @@ ViewportOverlay.propTypes = {
   imageId: PropTypes.string.isRequired,
   imageIndex: PropTypes.number.isRequired,
   stackSize: PropTypes.number.isRequired,
-  activeTools: PropTypes.arrayOf(PropTypes.string)
+  activeTools: PropTypes.arrayOf(PropTypes.string),
 };
 
 ViewportOverlay.defaultProps = {
-  activeTools: []
+  activeTools: [],
 };
 
 export default ViewportOverlay;
