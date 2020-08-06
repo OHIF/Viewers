@@ -83,6 +83,7 @@ export function processSeriesResults(qidoSeries) {
         seriesInstanceUid: getString(qidoSeries['0020000E']),
         modality: getString(qidoSeries['00080060']),
         seriesNumber: getString(qidoSeries['00200011']),
+        seriesDate: getString(qidoSeries['00080021']),
         numSeriesInstances: Number(getString(qidoSeries['00201209'])),
         description: getString(qidoSeries['0008103E']),
       })
