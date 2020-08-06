@@ -70,58 +70,78 @@ export default async function loadRTStruct(
     const ROIContour = ROIContourSequence[i];
     const { ReferencedROINumber, ContourSequence } = ROIContour;
 
+    debugger;
+
     if (!ContourSequence) {
       continue;
     }
 
     const isSupported = false;
 
-    for (let c = 0; c < ContourSequence.length; c++) {
+    const ContourSequenceArray = _toArray(ContourSequence);
+
+    for (let c = 0; c < ContourSequenceArray.length; c++) {
       const {
         ContourImageSequence,
         ContourData,
         NumberOfContourPoints,
         ContourGeometricType,
-      } = ContourSequence[c];
+      } = ContourSequenceArray[c];
+
+      console.log(ContourGeometricType);
 
       if (ContourGeometricType !== 'CLOSED_PLANAR') {
-        // TODO: Do we want to visualise types other than closed planar?
-        // We could easily do open planar and point.
-        continue;
+        debugger;
       }
 
-      isSupported = true;
+      switch (ContourGeometricType) {
+        case 'CLOSED_PLANAR':
+          isSupported = true;
 
-      const sopInstanceUID = ContourImageSequence.ReferencedSOPInstanceUID;
-      const imageId = _getImageId(imageIdSopInstanceUidPairs, sopInstanceUID);
-      const imageIdSpecificToolData = _getOrCreateImageIdSpecificToolData(
-        toolState,
-        imageId,
-        rtStructDisplayToolName
-      );
+          const sopInstanceUID = ContourImageSequence.ReferencedSOPInstanceUID;
+          const imageId = _getImageId(
+            imageIdSopInstanceUidPairs,
+            sopInstanceUID
+          );
+          const imageIdSpecificToolData = _getOrCreateImageIdSpecificToolData(
+            toolState,
+            imageId,
+            rtStructDisplayToolName
+          );
 
-      const imagePlane = cornerstone.metaData.get('imagePlaneModule', imageId);
-      const points = [];
+          const imagePlane = cornerstone.metaData.get(
+            'imagePlaneModule',
+            imageId
+          );
+          const points = [];
 
-      for (let p = 0; p < NumberOfContourPoints * 3; p += 3) {
-        points.push({
-          x: ContourData[p],
-          y: ContourData[p + 1],
-          z: ContourData[p + 2],
-        });
+          for (let p = 0; p < NumberOfContourPoints * 3; p += 3) {
+            points.push({
+              x: ContourData[p],
+              y: ContourData[p + 1],
+              z: ContourData[p + 2],
+            });
+          }
+
+          transformPointsToImagePlane(points, imagePlane);
+
+          const measurementData = {
+            handles: {
+              points,
+            },
+            structureSetSeriesInstanceUid: rtStructDataset.SeriesInstanceUID,
+            ROINumber: ReferencedROINumber,
+          };
+
+          imageIdSpecificToolData.push(measurementData);
+          break;
+        case 'POINT':
+          debugger;
+          break;
+        default:
+          debugger;
+          continue;
       }
-
-      transformPointsToImagePlane(points, imagePlane);
-
-      const measurementData = {
-        handles: {
-          points,
-        },
-        structureSetSeriesInstanceUid: rtStructDataset.SeriesInstanceUID,
-        ROINumber: ReferencedROINumber,
-      };
-
-      imageIdSpecificToolData.push(measurementData);
     }
 
     _setROIContourMetadata(
@@ -313,4 +333,8 @@ function _getImageIdSopInstanceUidPairsForDisplaySet(
       sopInstanceUID: image.getSOPInstanceUID(),
     };
   });
+}
+
+function _toArray(objOrArray) {
+  return Array.isArray(objOrArray) ? objOrArray : [objOrArray];
 }
