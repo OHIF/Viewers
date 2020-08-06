@@ -83,7 +83,7 @@ export function processSeriesResults(qidoSeries) {
         seriesInstanceUid: getString(qidoSeries['0020000E']),
         modality: getString(qidoSeries['00080060']),
         seriesNumber: getString(qidoSeries['00200011']),
-        seriesDate: getString(qidoSeries['00080021']),
+        seriesDate: utils.formatDate(getString(qidoSeries['00080021'])),
         numSeriesInstances: Number(getString(qidoSeries['00201209'])),
         description: getString(qidoSeries['0008103E']),
       })
@@ -124,9 +124,9 @@ async function search(
 export function seriesInStudy(dicomWebClient, studyInstanceUID) {
   // Series Description
   // Already included?
-  const commaSeparatedFields = ['0008103E'].join(',');
+  const commaSeparatedFields = ['00080021'].join(',');
   const queryParams = {
-    // includefield: commaSeparatedFields,
+    includefield: commaSeparatedFields,
   };
 
   return dicomWebClient.searchForSeries({ studyInstanceUID, queryParams });
