@@ -36,21 +36,6 @@ function DataSourceWrapper(props) {
     return acc.concat(mods);
   }, []);
 
-  // TODO: This is duplicated in Mode.jsx
-  const { UserAuthenticationService } = servicesManager.services;
-
-  UserAuthenticationService.setUser(props.user);
-  const getAuthorizationHeader = () => {
-    // TODO: This should probably work but it doesn't right now
-    //return UserAuthenticationService.getUser().access_token;
-    return {
-      Authorization: `Bearer ${props.user.access_token}`
-    };
-  }
-  UserAuthenticationService.setServiceImplementation({
-    getAuthorizationHeader
-  });
-
   // Grabbing first for now - should get active?
   const name = webApiDataSources[0].name;
   // TODO: Why does this return an array?
@@ -71,7 +56,7 @@ function DataSourceWrapper(props) {
       const searchResults = await dataSource.query.studies.search(
         queryFilterValues
       );
-      setData(searchResults);
+      setData(searchResults || []);
       setIsLoading(false);
     }
 
@@ -101,18 +86,7 @@ DataSourceWrapper.propTypes = {
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.func]).isRequired,
 };
 
-const mapStateToProps = state => {
-  return {
-    user: state.user,
-  };
-};
-
-const ConnectedDataSourceWrapper = connect(
-  mapStateToProps,
-  null
-)(DataSourceWrapper);
-
-export default ConnectedDataSourceWrapper;
+export default DataSourceWrapper;
 
 /**
  * Duplicated in `workList`

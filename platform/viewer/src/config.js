@@ -6,6 +6,7 @@ import version from './version.js';
 import AppContext from './context/AppContext';
 
 export function setConfiguration(appConfig) {
+  debugger;
   let homepage;
   const { process } = window;
   if (process && process.env && process.env.PUBLIC_URL) {
@@ -34,7 +35,7 @@ export function setConfiguration(appConfig) {
 
   cornerstoneWADOImageLoader.configure({
     beforeSend: function(xhr) {
-      debugger;
+
       const headers = OHIF.DICOMWeb.getAuthorizationHeader();
 
       if (headers.Authorization) {

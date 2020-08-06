@@ -9,7 +9,7 @@ import {
 import { DicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 
 import getImageId from './utils/getImageId';
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
 import {
   retrieveStudyMetadata,
   deleteStudyMetadataPromise,
@@ -66,6 +66,7 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
       studies: {
         mapParams: mapParams.bind(),
         search: async function(origParams) {
+          debugger;
           qidoDicomWebClient.headers = UserAuthenticationService.getAuthorizationHeader();
           if (!qidoDicomWebClient.headers) {
             return;
@@ -83,6 +84,8 @@ function createDicomWebApi(dicomWebConfig, UserAuthenticationService) {
             undefined,
             mappedParams
           );
+
+          debugger;
 
           return processResults(results);
         },

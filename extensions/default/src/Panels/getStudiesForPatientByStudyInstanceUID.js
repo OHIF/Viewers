@@ -2,6 +2,7 @@ async function getStudiesForPatientByStudyInstanceUID(
   dataSource,
   StudyInstanceUID
 ) {
+
   // TODO: The `DicomMetadataStore` should short-circuit both of these requests
   // Data _could_ be here from route query, or if using JSON data source
   // We could also force this to "await" these values being available in the DICOMStore?

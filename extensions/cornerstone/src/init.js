@@ -48,8 +48,6 @@ export default function init({
     UserAuthenticationService,
   } = servicesManager.services;
 
-  initWADOImageLoader(UserAuthenticationService);
-
   /* Measurement Service */
   const measurementServiceSource = _connectToolsToMeasurementService(
     MeasurementService,
@@ -287,6 +285,8 @@ export default function init({
   const metadataProvider = OHIF.cornerstone.metadataProvider;
 
   cs.metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
+
+  initWADOImageLoader(UserAuthenticationService);
 
   // ~~
   const defaultCsToolsConfig = csToolsConfig || {
