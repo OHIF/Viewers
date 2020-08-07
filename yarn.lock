@@ -6766,18 +6766,10 @@ cornerstone-math@^0.1.8:
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.8.tgz#68ab1f9e4fdcd7c5cb23a0d2eb4263f9f894f1c5"
   integrity sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw==
 
-cornerstone-tools@4.19.0:
-  version "4.19.0"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-4.19.0.tgz#4c1cb0729fdf5ba5f3c2b83172395738dc8a972b"
-  integrity sha512-Q8fgx4eN9F0TG84UXprMWjU4YpF/Vhs7ux67b0nV/E5SbyCip7yple4SfDbABB8oxVqzOdKpBnICMNTZNAyyKg==
-  dependencies:
-    "@babel/runtime" "7.1.2"
-    cornerstone-math "0.1.7"
-
-cornerstone-tools@4.19.1:
-  version "4.19.1"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-4.19.1.tgz#8a3e9473495b83e9f88dcbad99ac79eae65a81d4"
-  integrity sha512-ltobIAUEgnPswhWLSAm05HRP7pw99m07RNBYuoN4NInDD2ctvk3HxAjM1CAV2GO1zv8yMwKOaE/j2m70Na12mQ==
+cornerstone-tools@4.20.1:
+  version "4.20.1"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-4.20.1.tgz#90f6c28356622eac037683b19f9175f85d33dff7"
+  integrity sha512-SyQsrg3bnGHUvWGZpUq7ia7/gj12S9zQFK2VMhpyAYxK9pWz+PRv8HBi0eEe/fWGAo/Vc62IRkdP3uF9MJlqiQ==
   dependencies:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.7"
