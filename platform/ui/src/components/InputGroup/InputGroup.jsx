@@ -21,7 +21,7 @@ const InputGroup = ({
 
   const handleFilterLabelClick = name => {
     if (isSortingEnable) {
-      let _sortDirection = 'ascending';
+      let _sortDirection = 'descending';
       if (sortBy === name) {
         if (sortDirection === 'ascending') {
           _sortDirection = 'descending';
