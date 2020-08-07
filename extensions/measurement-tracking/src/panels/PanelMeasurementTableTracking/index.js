@@ -167,8 +167,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     onMeasurementItemClickHandler({ id, isActive });
   };
 
-  const onMeasurementItemEditHandler = ({ id }) => {
+  const onMeasurementItemEditHandler = ({ id, isActive }) => {
     const measurement = MeasurementService.getMeasurement(id);
+    jumpToImage({ id, isActive });
 
     const onSubmitHandler = ({ action, value }) => {
       switch (action.id) {
