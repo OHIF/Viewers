@@ -288,7 +288,7 @@ export default function init({
   // ~~
   const defaultCsToolsConfig = csToolsConfig || {
     globalToolSyncEnabled: true,
-    showSVGCursors: true,
+    showSVGCursors: false,
     autoResizeViewports: false,
   };
 
@@ -299,7 +299,7 @@ export default function init({
   // THIS
   // is a way for extensions that "depend" on this extension to notify it of
   // new cornerstone enabled elements so it's commands continue to work.
-  const handleOhifCornerstoneEnabledElementEvent = function(evt) {
+  const handleOhifCornerstoneEnabledElementEvent = function (evt) {
     const { viewportIndex, enabledElement } = evt.detail;
 
     setEnabledElement(viewportIndex, enabledElement);
