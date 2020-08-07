@@ -11,7 +11,6 @@ import { DicomMetadataStore, DICOMSR, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
-import setCornerstoneMeasurementActive from '../../_shared/setCornerstoneMeasurementActive';
 import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
 import RESPONSES from '../../_shared/PROMPT_RESPONSES';
 
