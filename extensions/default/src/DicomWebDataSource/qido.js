@@ -124,7 +124,7 @@ async function search(
 export function seriesInStudy(dicomWebClient, studyInstanceUID) {
   // Series Description
   // Already included?
-  const commaSeparatedFields = ['00080021'].join(',');
+  const commaSeparatedFields = ['0008103E', '00080021'].join(',');
   const queryParams = {
     includefield: commaSeparatedFields,
   };
