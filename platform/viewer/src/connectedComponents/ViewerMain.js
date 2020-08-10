@@ -133,11 +133,22 @@ class ViewerMain extends Component {
     StudyInstanceUID,
     displaySetInstanceUID,
   }) => {
-    const displaySet = this.findDisplaySet(
+    let displaySet = this.findDisplaySet(
       this.props.studies,
       StudyInstanceUID,
       displaySetInstanceUID
     );
+
+    if (displaySet.isDerived) {
+      const { Modality } = displaySet;
+      displaySet = displaySet.getSourceDisplaySet(this.props.studies);
+
+      if (!displaySet) {
+        throw new Error(
+          `Referenced series for ${Modality} dataset not present.`
+        );
+      }
+    }
 
     this.props.setViewportSpecificData(viewportIndex, displaySet);
   };
