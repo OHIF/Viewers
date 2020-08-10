@@ -70,8 +70,6 @@ export default async function loadRTStruct(
     const ROIContour = ROIContourSequence[i];
     const { ReferencedROINumber, ContourSequence } = ROIContour;
 
-    debugger;
-
     if (!ContourSequence) {
       continue;
     }
@@ -88,32 +86,23 @@ export default async function loadRTStruct(
         ContourGeometricType,
       } = ContourSequenceArray[c];
 
-      console.log(ContourGeometricType);
+      const sopInstanceUID = ContourImageSequence.ReferencedSOPInstanceUID;
+      const imageId = _getImageId(imageIdSopInstanceUidPairs, sopInstanceUID);
+      const imageIdSpecificToolData = _getOrCreateImageIdSpecificToolData(
+        toolState,
+        imageId,
+        rtStructDisplayToolName
+      );
 
-      if (ContourGeometricType !== 'CLOSED_PLANAR') {
-        debugger;
-      }
+      const imagePlane = cornerstone.metaData.get('imagePlaneModule', imageId);
+      const points = [];
+      let measurementData;
 
       switch (ContourGeometricType) {
         case 'CLOSED_PLANAR':
+        case 'OPEN_PLANAR':
+        case 'POINT':
           isSupported = true;
-
-          const sopInstanceUID = ContourImageSequence.ReferencedSOPInstanceUID;
-          const imageId = _getImageId(
-            imageIdSopInstanceUidPairs,
-            sopInstanceUID
-          );
-          const imageIdSpecificToolData = _getOrCreateImageIdSpecificToolData(
-            toolState,
-            imageId,
-            rtStructDisplayToolName
-          );
-
-          const imagePlane = cornerstone.metaData.get(
-            'imagePlaneModule',
-            imageId
-          );
-          const points = [];
 
           for (let p = 0; p < NumberOfContourPoints * 3; p += 3) {
             points.push({
@@ -125,21 +114,18 @@ export default async function loadRTStruct(
 
           transformPointsToImagePlane(points, imagePlane);
 
-          const measurementData = {
+          measurementData = {
             handles: {
               points,
             },
+            type: ContourGeometricType,
             structureSetSeriesInstanceUid: rtStructDataset.SeriesInstanceUID,
             ROINumber: ReferencedROINumber,
           };
 
           imageIdSpecificToolData.push(measurementData);
           break;
-        case 'POINT':
-          debugger;
-          break;
         default:
-          debugger;
           continue;
       }
     }
