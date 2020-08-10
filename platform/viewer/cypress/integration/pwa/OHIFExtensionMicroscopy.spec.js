@@ -12,7 +12,8 @@ describe('OHIF Microscopy Extension', () => {
   });
 
   it('drags and drop a SM thumbnail into viewport', () => {
-    cy.wait(3000); //Waiting for image to render before taking the snapshot
+    // Waiting for series list to load all displaySets (lots of SRs, before defining which dom element to grab.)
+    cy.wait(3000);
     cy.get('[data-cy="thumbnail-list"]')
       .contains('SM')
       .drag('.viewport-drop-target');
