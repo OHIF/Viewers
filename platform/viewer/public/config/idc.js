@@ -2,6 +2,7 @@ window.config = function(props) {
   var servicesManager = props.servicesManager;
 
   return {
+    disableMeasurementPanel: true,
     routerBasename: '/',
     enableGoogleCloudAdapter: true,
     enableGoogleCloudAdapterUI: false,
