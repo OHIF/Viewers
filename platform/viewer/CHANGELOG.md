@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.16...@ohif/viewer@4.3.0) (2020-08-10)
+
+
+### Features
+
+* 🎸 Optional disable measurements panel in app config ([#1912](https://github.com/OHIF/Viewers/issues/1912)) ([3d86b5f](https://github.com/OHIF/Viewers/commit/3d86b5f876d6481bcc57de88a0ba1f974f4ee263)), closes [#1864](https://github.com/OHIF/Viewers/issues/1864)
+
+
+
+
+
 ## [4.2.16](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.15...@ohif/viewer@4.2.16) (2020-08-10)
 
 **Note:** Version bump only for package @ohif/viewer
