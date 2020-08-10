@@ -76,21 +76,15 @@ export default async function loadRTStruct(
 
     const isSupported = false;
 
-    for (let c = 0; c < ContourSequence.length; c++) {
+    const ContourSequenceArray = _toArray(ContourSequence);
+
+    for (let c = 0; c < ContourSequenceArray.length; c++) {
       const {
         ContourImageSequence,
         ContourData,
         NumberOfContourPoints,
         ContourGeometricType,
-      } = ContourSequence[c];
-
-      if (ContourGeometricType !== 'CLOSED_PLANAR') {
-        // TODO: Do we want to visualise types other than closed planar?
-        // We could easily do open planar and point.
-        continue;
-      }
-
-      isSupported = true;
+      } = ContourSequenceArray[c];
 
       const sopInstanceUID = ContourImageSequence.ReferencedSOPInstanceUID;
       const imageId = _getImageId(imageIdSopInstanceUidPairs, sopInstanceUID);
@@ -102,26 +96,38 @@ export default async function loadRTStruct(
 
       const imagePlane = cornerstone.metaData.get('imagePlaneModule', imageId);
       const points = [];
+      let measurementData;
 
-      for (let p = 0; p < NumberOfContourPoints * 3; p += 3) {
-        points.push({
-          x: ContourData[p],
-          y: ContourData[p + 1],
-          z: ContourData[p + 2],
-        });
+      switch (ContourGeometricType) {
+        case 'CLOSED_PLANAR':
+        case 'OPEN_PLANAR':
+        case 'POINT':
+          isSupported = true;
+
+          for (let p = 0; p < NumberOfContourPoints * 3; p += 3) {
+            points.push({
+              x: ContourData[p],
+              y: ContourData[p + 1],
+              z: ContourData[p + 2],
+            });
+          }
+
+          transformPointsToImagePlane(points, imagePlane);
+
+          measurementData = {
+            handles: {
+              points,
+            },
+            type: ContourGeometricType,
+            structureSetSeriesInstanceUid: rtStructDataset.SeriesInstanceUID,
+            ROINumber: ReferencedROINumber,
+          };
+
+          imageIdSpecificToolData.push(measurementData);
+          break;
+        default:
+          continue;
       }
-
-      transformPointsToImagePlane(points, imagePlane);
-
-      const measurementData = {
-        handles: {
-          points,
-        },
-        structureSetSeriesInstanceUid: rtStructDataset.SeriesInstanceUID,
-        ROINumber: ReferencedROINumber,
-      };
-
-      imageIdSpecificToolData.push(measurementData);
     }
 
     _setROIContourMetadata(
@@ -313,4 +319,8 @@ function _getImageIdSopInstanceUidPairsForDisplaySet(
       sopInstanceUID: image.getSOPInstanceUID(),
     };
   });
+}
+
+function _toArray(objOrArray) {
+  return Array.isArray(objOrArray) ? objOrArray : [objOrArray];
 }
