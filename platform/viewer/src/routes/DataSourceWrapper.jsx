@@ -17,8 +17,7 @@ import { extensionManager } from '../App.jsx';
 function DataSourceWrapper(props) {
   const [appConfig] = useAppConfig();
   const { children: LayoutTemplate, history, ...rest } = props;
-  const queryFilterValues = _getQueryFilterValues(history.location.search);
-
+  const [searchParams, setSearchParams] = useState(history.location.search);
   // TODO: Fetch by type, name, etc?
   const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
   // TODO: Good usecase for flatmap?
@@ -52,6 +51,7 @@ function DataSourceWrapper(props) {
     // 204: no content
     async function getData() {
       setIsLoading(true);
+      const queryFilterValues = _getQueryFilterValues(history.location.search);
       const searchResults = await dataSource.query.studies.search(
         queryFilterValues
       );
@@ -65,8 +65,18 @@ function DataSourceWrapper(props) {
       console.warn(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history.location.search]);
+  }, [searchParams]);
   // queryFilterValues
+
+  useEffect(() => {
+    /* Avoid unnecessary search requests during pagination */
+    const params = new URLSearchParams(history.location.search);
+    params.delete('pageNumber');
+    const cleanParams = params.toString();
+    if (cleanParams !== searchParams) {
+      setSearchParams(cleanParams);
+    }
+  }, [history.location.search]);
 
   // TODO: Better way to pass DataSource?
   return (
@@ -110,6 +120,9 @@ function _getQueryFilterValues(query) {
     // Rarely supported server-side
     sortBy: query.get('sortBy'),
     sortDirection: query.get('sortDirection'),
+    //
+    offset: query.get('offset'),
+    limit: query.get('limit'),
   };
 
   // patientName: good

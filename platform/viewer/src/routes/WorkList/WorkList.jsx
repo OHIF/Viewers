@@ -36,6 +36,8 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   const [appConfig] = useAppConfig();
   // ~ Filters
   const query = useQuery();
+  const STUDIES_LIMIT = 101;
+  const [dataSourceOptions, setDataSourceOptions] = useState({ limit: STUDIES_LIMIT });
   const queryFilterValues = _getQueryFilterValues(query);
   const [filterValues, _setFilterValues] = useState({
     ...defaultFilterValues,
@@ -58,7 +60,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
       const noSortApplied = sortBy === '' || !sortBy;
       const sortModifier = sortDirection === 'descending' ? 1 : -1;
 
-      if (noSortApplied && studies.length < 101) {
+      if (noSortApplied && studies.length < STUDIES_LIMIT) {
         const ascendingSortModifier = -1;
         defaultSortValues = {
           sortBy: 'studyDate',
@@ -105,6 +107,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     if (newPageNumber > totalPages) {
       return;
     }
+
     setFilterValues({ ...filterValues, pageNumber: newPageNumber });
   };
 
@@ -129,7 +132,8 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     if (!debouncedFilterValues) {
       return;
     }
-    const queryString = {};
+
+    const queryString = { ...dataSourceOptions };
     Object.keys(defaultFilterValues).forEach(key => {
       const defaultValue = defaultFilterValues[key];
       const currValue = debouncedFilterValues[key];
@@ -167,7 +171,6 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     const fetchSeries = async studyInstanceUid => {
       try {
         const result = await dataSource.query.series.search(studyInstanceUid);
-
         seriesInStudiesMap.set(studyInstanceUid, result);
         setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
       } catch (ex) {
@@ -190,6 +193,18 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedRows, studies]);
+
+  useEffect(() => {
+    const { resultsPerPage, pageNumber } = filterValues;
+    const rest = (resultsPerPage * pageNumber) / dataSourceOptions.limit;
+    const isLastPage = ((resultsPerPage * pageNumber) % dataSourceOptions.limit) === 0;
+    if (isLastPage || rest > 1) {
+      /* setDataSourceOptions({ offset: (pageNumber - 1) * resultsPerPage }); */
+      const offset = (pageNumber - 1) * resultsPerPage;
+      setDataSourceOptions({ limit: STUDIES_LIMIT + offset });
+    }
+
+  }, [filterValues]);
 
   const isFiltering = (filterValues, defaultFilterValues) => {
     return !isEqual(filterValues, defaultFilterValues);
