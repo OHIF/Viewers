@@ -66,7 +66,7 @@ export default [
       type: 'primary',
       content: ListMenu,
       contentProps: {
-        options: [
+        items: [
           { value: 1, title: 'Soft tissue', subtitle: '400 / 40' },
           { value: 2, title: 'Lung', subtitle: '1500 / -600' },
           { value: 3, title: 'Liver', subtitle: '150 / 90' },

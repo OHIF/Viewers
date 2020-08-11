@@ -107,13 +107,21 @@ function ViewerLayout({
     primary: {
       tooltip: 'Zoom',
       icon: 'tool-zoom',
-      onClick: () => alert('Clicking zoom!')
+      onClick: (args) => console.debug('Primary click!', args)
+    },
+    secondary: {
+      icon: 'chevron-down',
+      label: '',
+      isActive: true,
+      tooltip: 'Expand',
+      onClick: (args) => console.debug('Secondary click!', args)
     },
     items: [
-      { icon: 'tool-zoom', text: 'Zoom', onClick: () => alert('Clicking zoom!') },
-      { icon: 'tool-zoom', text: 'Zoom', onClick: () => alert('Clicking zoom!') },
-      { icon: 'tool-zoom', text: 'Zoom', onClick: () => alert('Clicking zoom!') }
-    ]
+      { icon: 'tool-layout', label: 'Layout', onClick: (args) => console.debug('Item click!', args) },
+      { icon: 'tool-window-level', label: 'W/L', onClick: (args) => console.debug('Item click!', args) },
+      { icon: 'tool-length', label: 'Length', onClick: (args) => console.debug('Item click!', args) }
+    ],
+    onClick: (args) => console.debug('Any click!', args)
   };
 
 
@@ -121,6 +129,8 @@ function ViewerLayout({
     <div>
       <Header>
         <ErrorBoundary context="Primary Toolbar">
+          <SplitButton {...mockedProps} />
+          <SplitButton {...mockedProps} />
           <SplitButton {...mockedProps} />
           {/* <div className="relative flex justify-center">
             {toolbars.primary.map((toolDef, index) => {

@@ -2,44 +2,37 @@ import React, { useState } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-const ListMenu = ({ options = [], renderer, onClick }) => {
+const ListMenu = ({ items = [], renderer, onClick }) => {
   const [selectedIndex, setSelectedIndex] = useState(null);
 
-  const ListItem = (props) => {
+  const ListItem = (item) => {
     const flex = 'flex flex-row justify-between items-center';
     const theme = 'bg-indigo-dark';
-    const hover = 'hover:bg-primary-dark';
-    const spacing = 'p-3 h-8';
+
+    const onClickHandler = () => {
+      if (item.onClick) item.onClick({ ...item });
+      onClick({ ...args, item });
+    };
 
     return (
-      <div
-        className={classnames(
-          flex,
-          theme,
-          spacing,
-          'cursor-pointer',
-          !props.isActive && hover,
-          props.isActive && 'bg-primary-light',
-        )}
-        onClick={props.onClick}
-      >
-        {renderer && renderer(props)}
+      <div className={classnames(flex, theme, 'cursor-pointer')} onClick={onClickHandler}>
+        {renderer && renderer(item)}
       </div>
     );
   };
 
   return (
     <div className="flex flex-col rounded-md bg-secondary-dark pt-2 pb-2">
-      {options.map((option, index) => {
+      {items.map((item, index) => {
         const onClickHandler = () => {
           setSelectedIndex(index);
-          onClick({ ...option, index });
+          item.onClick({ ...item, index });
         };
 
         return (
           <ListItem
             key={`ListItem${index}`}
-            {...option}
+            {...item}
             index={index}
             isActive={selectedIndex === index}
             onClick={onClickHandler}
@@ -53,7 +46,7 @@ const ListMenu = ({ options = [], renderer, onClick }) => {
 const noop = () => { };
 
 ListMenu.propTypes = {
-  options: PropTypes.array.isRequired,
+  items: PropTypes.array.isRequired,
   renderer: PropTypes.func.isRequired,
   onClick: PropTypes.func
 };
