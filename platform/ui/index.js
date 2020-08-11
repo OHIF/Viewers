@@ -57,6 +57,7 @@ export {
   Select,
   SegmentationTable,
   SidePanel,
+  SplitButton,
   StudyBrowser,
   StudyItem,
   StudyListExpandedRow,

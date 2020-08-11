@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { SidePanel, ErrorBoundary } from '@ohif/ui';
+import { SidePanel, ErrorBoundary, SplitButton } from '@ohif/ui';
 import Header from './Header.jsx';
 import NestedMenu from './ToolbarButtonNestedMenu.jsx';
 
@@ -103,11 +103,26 @@ function ViewerLayout({
   const rightPanelComponents = rightPanels.map(getPanelData);
   const viewportComponents = viewports.map(getViewportComponentData);
 
+  const mockedProps = {
+    primary: {
+      tooltip: 'Zoom',
+      icon: 'tool-zoom',
+      onClick: () => alert('Clicking zoom!')
+    },
+    items: [
+      { icon: 'tool-zoom', text: 'Zoom', onClick: () => alert('Clicking zoom!') },
+      { icon: 'tool-zoom', text: 'Zoom', onClick: () => alert('Clicking zoom!') },
+      { icon: 'tool-zoom', text: 'Zoom', onClick: () => alert('Clicking zoom!') }
+    ]
+  };
+
+
   return (
     <div>
       <Header>
         <ErrorBoundary context="Primary Toolbar">
-          <div className="relative flex justify-center">
+          <SplitButton {...mockedProps} />
+          {/* <div className="relative flex justify-center">
             {toolbars.primary.map((toolDef, index) => {
               const isNested = Array.isArray(toolDef);
               if (!isNested) {
@@ -133,7 +148,7 @@ function ViewerLayout({
                 );
               }
             })}
-          </div>
+          </div> */}
         </ErrorBoundary>
       </Header>
       <div
