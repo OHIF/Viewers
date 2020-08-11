@@ -23,6 +23,7 @@ import Notification from './Notification';
 import Select from './Select';
 import SegmentationTable from './SegmentationTable';
 import SidePanel from './SidePanel';
+import SplitButton from './SplitButton';
 import StudyBrowser from './StudyBrowser';
 import StudyItem from './StudyItem';
 import StudyListExpandedRow from './StudyListExpandedRow';
@@ -82,6 +83,7 @@ export {
   Select,
   SegmentationTable,
   SidePanel,
+  SplitButton,
   StudyBrowser,
   StudyItem,
   StudyListExpandedRow,

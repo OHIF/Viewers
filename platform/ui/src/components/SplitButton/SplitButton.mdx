@@ -1,0 +1,44 @@
+---
+name: Split Button
+menu: General
+route: components/splitButton
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import { SplitButton } from '@ohif/ui';
+
+# Split Button
+
+Split Buttons are used to populate the Toolbar.
+
+## Import
+
+```javascript
+import { SplitButton } from '@ohif/ui';
+```
+
+<Playground>
+  {() => {
+    const [isActive, setIsActive] = useState(false);
+    const tool = {
+      id: 'Zoom',
+      label: 'Zoom',
+      icon: 'tool-zoom',
+      type: null,
+      commandName: 'setToolActive',
+      commandOptions: { toolName: 'Zoom' },
+      onClick: () => setIsActive(true),
+      isActive,
+    };
+    return (
+      <div className="py-10 flex justify-center">
+        <SplitButton {...tool} />
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={SplitButton} />
