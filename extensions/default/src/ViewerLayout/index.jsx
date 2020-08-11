@@ -114,7 +114,6 @@ function ViewerLayout({
       label: '',
       isActive: true,
       tooltip: 'Expand',
-      onClick: (args) => console.debug('Secondary click!', args)
     },
     items: [
       { icon: 'tool-layout', label: 'Layout', onClick: (args) => console.debug('Item click!', args) },

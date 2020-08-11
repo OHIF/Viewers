@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import OutsideClickHandler from 'react-outside-click-handler';
 
 import { IconButton, Icon, Tooltip, ListMenu } from '@ohif/ui';
 
@@ -14,9 +15,9 @@ const classes = {
 };
 
 const SplitButton = ({
+  isActive,
   primary: _primary,
   secondary,
-  isActive,
   isRadio,
   onClick,
   items: _items,
@@ -33,7 +34,8 @@ const SplitButton = ({
       if (isRadio) {
         setState(state => ({
           ...state,
-          primary: item,
+          primary: { ...item, index },
+          isExpanded: false,
           items: getSplitButtonItems(_items).filter(item => item.index !== index)
         }));
       }
@@ -47,62 +49,59 @@ const SplitButton = ({
     isExpanded: false
   });
 
+  const onPrimaryClickHandler = () => state.primary.onClick(state.primary);
+  const onSecondaryClickHandler = () => setState(state => ({ ...state, isExpanded: !state.isExpanded }));
   const onMouseEnterHandler = () => setState(state => ({ ...state, isHovering: true }));
   const onMouseLeaveHandler = () => setState(state => ({ ...state, isHovering: false }));
-
-  const onPrimaryClickHandler = () => {
-    if (state.primary.onClick) state.primary.onClick();
-  };
-
-  const onSecondaryClickHandler = (...args) => {
-    setState(state => ({ ...state, isExpanded: !state.isExpanded }));
-    if (secondary.onClick) secondary.onClick(...args);
-  };
+  const outsideClickHandler = () => setState(state => ({ ...state, isExpanded: false }));
 
   return (
-    <div name='SplitButton'>
-      <div
-        className={classes.Button}
-        onMouseEnter={onMouseEnterHandler}
-        onMouseLeave={onMouseLeaveHandler}
-      >
-        <div className={classes.Interface}>
-          <div className={classes.Primary} onClick={onPrimaryClickHandler}>
-            <Tooltip content={state.primary.tooltip}>
-              <div className='p-2'>
-                <Icon name={state.primary.icon} className='w-5 h-5 text-primary-light' />
-              </div>
-            </Tooltip>
-          </div>
-          <div
-            className={
-              classNames(
-                classes.Separator,
-                state.isHovering ? 'border-transparent' : 'border-primary-active'
-              )}
-          >
-          </div>
-          <div className={classes.Secondary} onClick={onSecondaryClickHandler}>
-            <Tooltip isDisabled={state.isExpanded} content={secondary.tooltip}>
-              <Icon name={secondary.icon} className='text-primary-active' />
-            </Tooltip>
+    <OutsideClickHandler onOutsideClick={outsideClickHandler}
+    >
+      <div name='SplitButton'>
+        <div
+          className={classes.Button}
+          onMouseEnter={onMouseEnterHandler}
+          onMouseLeave={onMouseLeaveHandler}
+        >
+          <div className={classes.Interface}>
+            <div className={classes.Primary} onClick={onPrimaryClickHandler}>
+              <Tooltip isDisabled={!state.primary.tooltip} content={state.primary.tooltip}>
+                <div className='p-2'>
+                  <Icon name={state.primary.icon} className='w-5 h-5 text-primary-light' />
+                </div>
+              </Tooltip>
+            </div>
+            <div
+              className={
+                classNames(
+                  classes.Separator,
+                  state.isHovering ? 'border-transparent' : 'border-primary-active'
+                )}
+            >
+            </div>
+            <div className={classes.Secondary} onClick={onSecondaryClickHandler}>
+              <Tooltip isDisabled={state.isExpanded || !secondary.tooltip} content={secondary.tooltip}>
+                <Icon name={secondary.icon} className='text-primary-active' />
+              </Tooltip>
+            </div>
           </div>
         </div>
+        <div
+          className={
+            classNames(
+              classes.Content,
+              state.isExpanded ? 'block' : 'hidden'
+            )}
+        >
+          <ListMenu items={state.items} renderer={renderer} />
+        </div>
       </div>
-      <div
-        className={
-          classNames(
-            classes.Content,
-            state.isExpanded ? 'block' : 'hidden'
-          )}
-      >
-        <ListMenu items={state.items} renderer={renderer} />
-      </div>
-    </div>
+    </OutsideClickHandler>
   );
 };
 
-const ListRenderer = ({ icon, label, isActive }) => (
+const DefaultListItemRenderer = ({ icon, label, isActive }) => (
   <div className={classNames('flex flex-row items-center p-3 h-8 w-full hover:bg-primary-dark', isActive && 'bg-primary-dark')}>
     <span className='text-primary-light mr-4 text-base'>
       <Icon name={icon} className='w-5 h-5 text-primary-light' />
@@ -121,15 +120,16 @@ SplitButton.defaultProps = {
     label: null,
     tooltip: null,
     isActive: true,
+    onClick: noop
   },
   secondary: {
     icon: 'chevron-down',
-    label: '',
+    label: null,
     isActive: true,
     tooltip: 'Expand'
   },
   items: [],
-  renderer: ListRenderer,
+  renderer: DefaultListItemRenderer,
   isRadio: true,
   onClick: noop
 };
@@ -141,7 +141,6 @@ SplitButton.propTypes = {
     icon: PropTypes.string.isRequired,
     label: PropTypes.string,
     tooltip: PropTypes.string,
-    onClick: PropTypes.func,
     isActive: PropTypes.bool,
   }),
   secondary: PropTypes.shape({
@@ -149,11 +148,10 @@ SplitButton.propTypes = {
     icon: PropTypes.string.isRequired,
     label: PropTypes.string,
     tooltip: PropTypes.string,
-    onClick: PropTypes.func,
     isActive: PropTypes.bool
   }),
   onClick: PropTypes.func,
-  itemRenderer: PropTypes.func,
+  renderer: PropTypes.func,
   items: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
