@@ -1,10 +1,11 @@
 import init from './init.js';
 import toolbarModule from './toolbarModule.js';
-// import panelModule from './panelModule.js';
 import MRUrographyPanel from './components/MRUrographyPanel.js';
 import { MRUrographyLabellingData } from './constants/labels';
 // Can fix this when Measurements panel is module/plugable/configurable.
 import { SelectTree } from '@ohif/ui';
+
+import commandsModule from './commandsModule';
 
 // TEMP
 import './utils/calculateAreaUnderCurve';
@@ -24,8 +25,11 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getToolbarModule({ servicesManager }) {
+  getToolbarModule() {
     return toolbarModule;
+  },
+  getCommandsModule() {
+    return commandsModule();
   },
   getPanelModule({ servicesManager }) {
     const { UIDialogService } = servicesManager.services;
