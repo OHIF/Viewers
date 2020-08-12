@@ -57,10 +57,12 @@ import ViewportPane from './ViewportPane';
 import UserPreferences from './UserPreferences';
 import HotkeysPreferences from './HotkeysPreferences';
 import HotkeyField from './HotkeyField';
+import Header from './Header';
 
 export {
   AboutModal,
   HotkeyField,
+  Header,
   UserPreferences,
   HotkeysPreferences,
   Button,

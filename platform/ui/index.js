@@ -32,6 +32,7 @@ export {
 export {
   AboutModal,
   HotkeyField,
+  Header,
   UserPreferences,
   HotkeysPreferences,
   Button,

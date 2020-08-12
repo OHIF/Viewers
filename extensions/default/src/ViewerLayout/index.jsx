@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { SidePanel, ErrorBoundary, useModal, UserPreferences, AboutModal } from '@ohif/ui';
+import { SidePanel, ErrorBoundary, useModal, UserPreferences, AboutModal, Header } from '@ohif/ui';
 
-import Header from './Header.jsx';
 import NestedMenu from './ToolbarButtonNestedMenu.jsx';
 
 function ViewerLayout({
