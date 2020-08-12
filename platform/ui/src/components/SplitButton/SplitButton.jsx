@@ -47,7 +47,6 @@ const classes = {
 };
 
 const SplitButton = ({
-  isActive,
   isRadio,
   isAction,
   primary: _primary,
@@ -144,7 +143,6 @@ const DefaultListItemRenderer = ({ icon, label, isActive }) => (
 const noop = () => { };
 
 SplitButton.defaultProps = {
-  isActive: false,
   isRadio: false,
   isAction: false,
   primary: {
@@ -165,7 +163,6 @@ SplitButton.defaultProps = {
 };
 
 SplitButton.propTypes = {
-  isActive: PropTypes.bool,
   primary: PropTypes.shape({
     id: PropTypes.string.isRequired,
     icon: PropTypes.string.isRequired,
