@@ -54,6 +54,7 @@ import ViewportActionBar from './ViewportActionBar';
 import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
+import WindowLevelMenuItem from './WindowLevelMenuItem';
 
 export {
   Button,
@@ -113,4 +114,5 @@ export {
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
+  WindowLevelMenuItem
 };

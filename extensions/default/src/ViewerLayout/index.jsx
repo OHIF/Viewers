@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { SidePanel, ErrorBoundary, SplitButton } from '@ohif/ui';
+import { SidePanel, ErrorBoundary, SplitButton, WindowLevelMenuItem } from '@ohif/ui';
 import Header from './Header.jsx';
 import NestedMenu from './ToolbarButtonNestedMenu.jsx';
 
@@ -113,7 +113,7 @@ function ViewerLayout({
       icon: 'chevron-down',
       label: '',
       isActive: true,
-      tooltip: 'Expand',
+      tooltip: 'More Measure Tools',
     },
     items: [
       { icon: 'tool-layout', label: 'Layout', onClick: (args) => console.debug('Item click!', args) },
@@ -128,7 +128,13 @@ function ViewerLayout({
       <Header>
         <ErrorBoundary context="Primary Toolbar">
           <SplitButton {...mockedProps} isRadio />
-          <SplitButton {...mockedProps} />
+          <SplitButton {...mockedProps} renderer={WindowLevelMenuItem} items={[
+            { value: 1, title: 'Soft tissue', subtitle: '400 / 40' },
+            { value: 2, title: 'Lung', subtitle: '1500 / -600' },
+            { value: 3, title: 'Liver', subtitle: '150 / 90' },
+            { value: 4, title: 'Bone', subtitle: '80 / 40' },
+            { value: 5, title: 'Brain', subtitle: '2500 / 480' },
+          ]} />
           <SplitButton {...mockedProps} />
           {/* <div className="relative flex justify-center">
             {toolbars.primary.map((toolDef, index) => {

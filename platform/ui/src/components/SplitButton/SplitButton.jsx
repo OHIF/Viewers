@@ -49,6 +49,7 @@ const classes = {
 const SplitButton = ({
   isActive,
   isRadio,
+  isAction,
   primary: _primary,
   secondary,
   onClick,
@@ -65,9 +66,9 @@ const SplitButton = ({
 
       setState(state => ({
         ...state,
-        primary: { ...item, index },
+        primary: !isAction ? { ...item, index } : state.primary,
         isExpanded: false,
-        items: getSplitButtonItems(_items).filter(item => isRadio ? item.index !== index : true)
+        items: getSplitButtonItems(_items).filter(item => isRadio && !isAction ? item.index !== index : true)
       }));
     }
   }));
@@ -134,7 +135,7 @@ const DefaultListItemRenderer = ({ icon, label, isActive }) => (
     <span className='text-primary-light mr-4 text-base'>
       <Icon name={icon} className='w-5 h-5 text-primary-light' />
     </span>
-    <span className='text-aqua-pale font-thin text-sm'>
+    <span className='text-primary-light text-sm mr-5'>
       {label}
     </span>
   </div >
@@ -145,6 +146,7 @@ const noop = () => { };
 SplitButton.defaultProps = {
   isActive: false,
   isRadio: false,
+  isAction: true,
   primary: {
     label: null,
     tooltip: null,
@@ -155,7 +157,7 @@ SplitButton.defaultProps = {
     icon: 'chevron-down',
     label: null,
     isActive: true,
-    tooltip: 'Expand'
+    tooltip: 'More Measure Tools'
   },
   items: [],
   renderer: DefaultListItemRenderer,

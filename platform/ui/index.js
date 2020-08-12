@@ -87,6 +87,7 @@ export {
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
+  WindowLevelMenuItem
 } from './src/components';
 
 /** VIEWS */
