@@ -31,7 +31,7 @@ const seriesInStudiesMap = new Map();
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function WorkList({ history, data: studies, isLoadingData, dataSource }) {
+function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysManager }) {
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
@@ -216,8 +216,8 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           content: patientName ? (
             <TooltipClipboard>{patientName}</TooltipClipboard>
           ) : (
-            <span className="text-gray-700">(Empty)</span>
-          ),
+              <span className="text-gray-700">(Empty)</span>
+            ),
           gridCol: 4,
         },
         {
@@ -281,13 +281,13 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                  return {
-                    description: s.description || '(empty)',
-                    seriesNumber: s.seriesNumber || '',
-                    modality: s.modality || '',
-                    instances: s.numSeriesInstances || '',
-                  };
-                })
+                return {
+                  description: s.description || '(empty)',
+                  seriesNumber: s.seriesNumber || '',
+                  modality: s.modality || '',
+                  instances: s.numSeriesInstances || '',
+                };
+              })
               : []
           }
         >
@@ -304,7 +304,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
               <Link
                 key={i}
                 to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
-                // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+              // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
@@ -312,7 +312,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
                   disabled={false}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
-                  onClick={() => {}}
+                  onClick={() => { }}
                 >
                   {mode.displayName}
                 </Button>
@@ -347,7 +347,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           <span className="mr-3 text-lg text-common-light">
             FOR INVESTIGATIONAL USE ONLY
           </span>
-          <PreferencesDropdown />
+          <PreferencesDropdown hotkeysManager={hotkeysManager} />
         </div>
       </NavBar>
       <StudyListFilter
@@ -376,10 +376,10 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           />
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center pt-48">
-          <EmptyStudies isLoading={isLoadingData} />
-        </div>
-      )}
+          <div className="flex flex-col items-center justify-center pt-48">
+            <EmptyStudies isLoading={isLoadingData} />
+          </div>
+        )}
     </div>
   );
 }

@@ -8,8 +8,15 @@ import { MODIFIER_KEYS } from './hotkeysConfig';
 import { validate, splitHotkeyDefinitionsAndCreateTuples } from './utils';
 
 const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErrors, onChange }) => {
+  const visibleHotkeys = Object.keys(hotkeyDefinitions)
+    .filter(key => hotkeyDefinitions[key].isEditable)
+    .reduce((obj, key) => {
+      obj[key] = hotkeyDefinitions[key];
+      return obj;
+    }, {});
+
   const [errors, setErrors] = useState(controlledErrors);
-  const splitedHotkeys = splitHotkeyDefinitionsAndCreateTuples(hotkeyDefinitions);
+  const splitedHotkeys = splitHotkeyDefinitionsAndCreateTuples(visibleHotkeys);
 
   if (!Object.keys(hotkeyDefinitions).length) {
     return 'No hotkeys definitions';

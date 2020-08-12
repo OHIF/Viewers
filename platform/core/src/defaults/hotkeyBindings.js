@@ -4,49 +4,60 @@ import windowLevelPresets from './windowLevelPresets';
  * Supported Keys: https://craig.is/killing/mice
  */
 export default [
-  { commandName: 'setToolActive', commandOptions: { toolName: 'Zoom' }, label: 'Zoom', keys: ['z'] },
-  { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'] },
-  { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'] },
-  { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='] },
-  { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'] },
-  { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'] },
+  { commandName: 'setToolActive', commandOptions: { toolName: 'Zoom' }, label: 'Zoom', keys: ['z'], isEditable: true },
+  { commandName: 'scaleUpViewport', label: 'Zoom In', keys: ['+'], isEditable: true },
+  { commandName: 'scaleDownViewport', label: 'Zoom Out', keys: ['-'], isEditable: true },
+  { commandName: 'fitViewportToWindow', label: 'Zoom to Fit', keys: ['='], isEditable: true },
+  { commandName: 'rotateViewportCW', label: 'Rotate Right', keys: ['r'], isEditable: true },
+  { commandName: 'rotateViewportCCW', label: 'Rotate Left', keys: ['l'], isEditable: true },
   {
     commandName: 'flipViewportVertical',
     label: 'Flip Horizontally',
     keys: ['h'],
+    isEditable: true,
   },
   {
     commandName: 'flipViewportHorizontal',
     label: 'Flip Vertically',
     keys: ['v'],
+    isEditable: true,
   },
-  { commandName: 'invertViewport', label: 'Invert', keys: ['i'] },
+  {
+    commandName: 'invertViewport',
+    label: 'Invert',
+    keys: ['i'],
+    isEditable: true,
+  },
   {
     commandName: 'incrementActiveViewport',
     label: 'Next Image Viewport',
     keys: ['right'],
+    isEditable: true,
   },
   {
     commandName: 'decrementActiveViewport',
     label: 'Previous Image Viewport',
     keys: ['left'],
+    isEditable: true,
   },
   {
     commandName: 'nextViewportDisplaySet',
     label: 'Next Series',
     keys: ['pageup'],
+    isEditable: true,
   },
   {
     commandName: 'previousViewportDisplaySet',
     label: 'Previous Series',
     keys: ['pagedown'],
+    isEditable: true,
   },
-  { commandName: 'nextImage', label: 'Next Image', keys: ['down'] },
-  { commandName: 'previousImage', label: 'Previous Image', keys: ['up'] },
-  { commandName: 'firstImage', label: 'First Image', keys: ['home'] },
-  { commandName: 'lastImage', label: 'Last Image', keys: ['end'] },
-  { commandName: 'resetViewport', label: 'Reset', keys: ['space'] },
-  /* {
+  { commandName: 'nextImage', label: 'Next Image', keys: ['down'], isEditable: true },
+  { commandName: 'previousImage', label: 'Previous Image', keys: ['up'], isEditable: true },
+  { commandName: 'firstImage', label: 'First Image', keys: ['home'], isEditable: true },
+  { commandName: 'lastImage', label: 'Last Image', keys: ['end'], isEditable: true },
+  { commandName: 'resetViewport', label: 'Reset', keys: ['space'], isEditable: true },
+  {
     commandName: 'cancelMeasurement',
     label: 'Cancel Cornerstone Measurement',
     keys: ['esc'],
@@ -104,5 +115,5 @@ export default [
     commandOptions: windowLevelPresets[9],
     label: 'W/L Preset 9',
     keys: ['9'],
-  }, */
+  },
 ];

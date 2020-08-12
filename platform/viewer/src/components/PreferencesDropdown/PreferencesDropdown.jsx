@@ -1,37 +1,43 @@
 import React from 'react';
-import AboutModal from './AboutModal';
-import { Dropdown, IconButton, Icon, useModal } from '@ohif/ui';
+import { useTranslation } from 'react-i18next';
+import { Dropdown, IconButton, Icon, useModal, AboutModal, UserPreferences } from '@ohif/ui';
 
-const PreferencesDropdown = () => {
-  const { show } = useModal();
+const PreferencesDropdown = ({ hotkeysManager }) => {
+  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
+  const { show, hide } = useModal();
+  const { t } = useTranslation();
 
-  const showAboutModal = () => {
-    show({
-      content: AboutModal,
-      title: 'About OHIF Viewer',
-    });
-  };
-
-  const showPreferencesModal = () => {
-    const modalComponent = () => <div>Preferences modal</div>;
-    show({
-      content: modalComponent,
-      title: 'Preferences',
-    });
-  };
+  const menuOptions = [
+    {
+      title: t('Header:About'),
+      icon: 'info',
+      onClick: () => show({
+        content: AboutModal,
+        title: 'About OHIF Viewer',
+      })
+    },
+    {
+      title: t('Header:Preferences'),
+      icon: 'settings',
+      onClick: () => show({
+        title: t('UserPreferencesModal:User Preferences'),
+        content: UserPreferences,
+        contentProps: {
+          hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
+          hotkeyDefinitions,
+          onCancel: hide,
+          onSubmit: ({ hotkeyDefinitions }) => {
+            hotkeysManager.setHotkeys(hotkeyDefinitions);
+            hide();
+          },
+          onReset: () => hotkeysManager.restoreDefaultBindings()
+        }
+      })
+    },
+  ];
 
   return (
-    <Dropdown
-      showDropdownIcon={false}
-      list={[
-        { title: 'About', icon: 'info', onClick: showAboutModal },
-        {
-          title: 'Preferences',
-          icon: 'settings',
-          onClick: showPreferencesModal,
-        },
-      ]}
-    >
+    <Dropdown showDropdownIcon={false} list={menuOptions}>
       <IconButton
         variant="text"
         color="inherit"
@@ -45,7 +51,7 @@ const PreferencesDropdown = () => {
         color="inherit"
         size="initial"
         className="text-primary-active"
-        onClick={() => {}}
+        onClick={() => { }}
       >
         <Icon name="chevron-down" />
       </IconButton>

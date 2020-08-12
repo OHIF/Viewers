@@ -1,3 +1,4 @@
+import AboutModal from './AboutModal';
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
 import ContextMenu from './ContextMenu';
@@ -58,6 +59,7 @@ import HotkeysPreferences from './HotkeysPreferences';
 import HotkeyField from './HotkeyField';
 
 export {
+  AboutModal,
   HotkeyField,
   UserPreferences,
   HotkeysPreferences,

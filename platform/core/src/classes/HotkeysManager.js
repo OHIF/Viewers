@@ -163,7 +163,7 @@ export class HotkeysManager {
    * @param {String} extension
    * @returns {undefined}
    */
-  registerHotkeys({ commandName, commandOptions = {}, keys, label } = {}, extension) {
+  registerHotkeys({ commandName, commandOptions = {}, keys, label, isEditable } = {}, extension) {
     if (!commandName) {
       log.warn(`[hotkeys] No command was defined for hotkey "${keys}"`);
       return;
@@ -180,7 +180,7 @@ export class HotkeysManager {
     }
 
     // Set definition & bind
-    this.hotkeyDefinitions[commandHash] = { commandName, commandOptions, keys, label };
+    this.hotkeyDefinitions[commandHash] = { commandName, commandOptions, keys, label, isEditable };
     this._bindHotkeys(commandName, commandOptions, keys);
     log.info(`[hotkeys] Binding ${commandName} with ${options} options to ${keys}`);
   }

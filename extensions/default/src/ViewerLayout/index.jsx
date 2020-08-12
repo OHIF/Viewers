@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { SidePanel, ErrorBoundary, useModal, UserPreferences } from '@ohif/ui';
+import { SidePanel, ErrorBoundary, useModal, UserPreferences, AboutModal } from '@ohif/ui';
 
 import Header from './Header.jsx';
 import NestedMenu from './ToolbarButtonNestedMenu.jsx';
@@ -28,32 +28,25 @@ function ViewerLayout({
     {
       title: t('Header:About'),
       icon: 'info',
-      onClick: () => {
-        show({
-          title: t('AboutModal:OHIF Viewer - About'),
-          content: () => <div>{t('AboutModal:OHIF Viewer - About')}</div>,
-        });
-      }
+      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' })
     },
     {
       title: t('Header:Preferences'),
       icon: 'settings',
-      onClick: () => {
-        show({
-          title: t('UserPreferencesModal:User Preferences'),
-          content: UserPreferences,
-          contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-            hotkeyDefinitions,
-            onCancel: hide,
-            onSubmit: ({ hotkeyDefinitions }) => {
-              hotkeysManager.setHotkeys(hotkeyDefinitions);
-              hide();
-            },
-            onReset: () => hotkeysManager.restoreDefaultBindings()
-          }
-        });
-      }
+      onClick: () => show({
+        title: t('UserPreferencesModal:User Preferences'),
+        content: UserPreferences,
+        contentProps: {
+          hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
+          hotkeyDefinitions,
+          onCancel: hide,
+          onSubmit: ({ hotkeyDefinitions }) => {
+            hotkeysManager.setHotkeys(hotkeyDefinitions);
+            hide();
+          },
+          onReset: () => hotkeysManager.restoreDefaultBindings()
+        }
+      })
     },
   ];
 
