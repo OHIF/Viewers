@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.3.0...@ohif/viewer@4.3.1) (2020-08-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [4.3.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.16...@ohif/viewer@4.3.0) (2020-08-10)
+
+
+### Features
+
+* 🎸 Optional disable measurements panel in app config ([#1912](https://github.com/OHIF/Viewers/issues/1912)) ([3d86b5f](https://github.com/OHIF/Viewers/commit/3d86b5f876d6481bcc57de88a0ba1f974f4ee263)), closes [#1864](https://github.com/OHIF/Viewers/issues/1864)
+
+
+
+
+
+## [4.2.16](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.15...@ohif/viewer@4.2.16) (2020-08-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.15](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.14...@ohif/viewer@4.2.15) (2020-08-05)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.14](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.13...@ohif/viewer@4.2.14) (2020-08-05)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.12...@ohif/viewer@4.2.13) (2020-07-23)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.11...@ohif/viewer@4.2.12) (2020-07-22)
+
+
+### Bug Fixes
+
+* Switch DICOMFileUploader to use the UIModalService ([#1904](https://github.com/OHIF/Viewers/issues/1904)) ([7772fee](https://github.com/OHIF/Viewers/commit/7772fee21ae6a65994e1251e2f1d2554b47781be))
+
+
+
+
+
 ## [4.2.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.10...@ohif/viewer@4.2.11) (2020-07-13)
 
 

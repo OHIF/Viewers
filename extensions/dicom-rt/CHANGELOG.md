@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.2.7...@ohif/extension-dicom-rt@0.3.0) (2020-08-10)
+
+
+### Features
+
+* 🎸 Add support for POINT and OPEN_PLANAR for RT ([0e87ab3](https://github.com/OHIF/Viewers/commit/0e87ab37c29fcf9af74bbcefca854c6e6b8707bc))
+
+
+
+
+
+## [0.2.7](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.2.6...@ohif/extension-dicom-rt@0.2.7) (2020-08-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
+## [0.2.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.2.5...@ohif/extension-dicom-rt@0.2.6) (2020-08-05)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
 ## [0.2.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.2.4...@ohif/extension-dicom-rt@0.2.5) (2020-07-13)
 
 

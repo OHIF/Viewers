@@ -32,6 +32,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     contentProps: null,
     shouldCloseOnEsc: false,
     isOpen: true,
+    onClose: null,
     closeButton: true,
     title: null,
     customClassName: '',
@@ -73,6 +74,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     content: ModalContent,
     contentProps,
     isOpen,
+    onClose,
     title,
     customClassName,
     shouldCloseOnEsc,
@@ -88,7 +90,13 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           isOpen={isOpen}
           title={title}
           closeButton={closeButton}
-          onClose={hide}
+          onClose={() => {
+            if (onClose) {
+              onClose();
+            }
+
+            hide();
+          }}
         >
           <ModalContent {...contentProps} show={show} hide={hide} />
         </Modal>

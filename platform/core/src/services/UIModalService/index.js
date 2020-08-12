@@ -28,13 +28,14 @@ const serviceImplementation = {
 /**
  * Show a new UI modal;
  *
- * @param {ModalProps} props { content, contentProps, shouldCloseOnEsc, isOpen, closeButton, title, customClassName }
+ * @param {ModalProps} props { content, contentProps, shouldCloseOnEsc, isOpen, onClose, closeButton, title, customClassName }
  */
 function _show({
   content = null,
   contentProps = null,
   shouldCloseOnEsc = false,
   isOpen = true,
+  onClose = null,
   closeButton = true,
   title = null,
   customClassName = null,
@@ -44,6 +45,7 @@ function _show({
     contentProps,
     shouldCloseOnEsc,
     isOpen,
+    onClose,
     closeButton,
     title,
     customClassName,

@@ -13,7 +13,7 @@ import {
   ModalProvider,
   DialogProvider,
   OHIFModal,
-  ErrorBoundary
+  ErrorBoundary,
 } from '@ohif/ui';
 
 import {
@@ -168,7 +168,7 @@ class App extends Component {
 
     if (this._userManager) {
       return (
-        <ErrorBoundary context='App'>
+        <ErrorBoundary context="App">
           <Provider store={store}>
             <AppProvider config={this._appConfig}>
               <I18nextProvider i18n={i18n}>
@@ -200,7 +200,7 @@ class App extends Component {
     }
 
     return (
-      <ErrorBoundary context='App'>
+      <ErrorBoundary context="App">
         <Provider store={store}>
           <AppProvider config={this._appConfig}>
             <I18nextProvider i18n={i18n}>
@@ -271,17 +271,21 @@ function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
     api: {
       contexts: CONTEXTS,
       hooks: {
-        useAppContext
-      }
-    }
+        useAppContext,
+      },
+    },
   });
 
   const requiredExtensions = [
     GenericViewerCommands,
     [OHIFCornerstoneExtension, cornerstoneExtensionConfig],
-    /* WARNING: MUST BE REGISTERED _AFTER_ OHIFCornerstoneExtension */
-    MeasurementsPanel,
   ];
+
+  if (appConfig.disableMeasurementPanel !== true) {
+    /* WARNING: MUST BE REGISTERED _AFTER_ OHIFCornerstoneExtension */
+    requiredExtensions.push(MeasurementsPanel);
+  }
+
   const mergedExtensions = requiredExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
 }
