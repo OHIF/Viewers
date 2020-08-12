@@ -4,6 +4,7 @@ import absoluteUrl from './absoluteUrl';
 import addServers from './addServers';
 import guid from './guid';
 import sortBy from './sortBy.js';
+import sortBySeriesDate from './sortBySeriesDate.js';
 import studyMetadataManager from './studyMetadataManager';
 import writeScript from './writeScript.js';
 import DicomLoaderService from './dicomLoaderService.js';
@@ -28,6 +29,7 @@ const utils = {
   absoluteUrl,
   addServers,
   sortBy,
+  sortBySeriesDate,
   writeScript,
   formatDate,
   formatPN,
