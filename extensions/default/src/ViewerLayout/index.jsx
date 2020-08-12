@@ -128,7 +128,7 @@ function ViewerLayout({
     <div>
       <Header>
         <ErrorBoundary context="Primary Toolbar">
-          <SplitButton {...mockedProps} />
+          <SplitButton {...mockedProps} isRadio />
           <SplitButton {...mockedProps} />
           <SplitButton {...mockedProps} />
           {/* <div className="relative flex justify-center">
