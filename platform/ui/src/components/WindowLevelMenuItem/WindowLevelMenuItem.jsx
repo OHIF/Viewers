@@ -9,7 +9,7 @@ const WindowLevelMenuItem = ({ title, subtitle, isSelected, index }) => (
       isSelected && 'bg-primary-dark'
     )}
     >
-      <span className='text-white mr-2 text-base'>
+      <span className='text-common-bright mr-2 text-base'>
         {title}
       </span>
       <span className='flex-1 text-aqua-pale font-thin text-sm'>

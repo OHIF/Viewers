@@ -10,7 +10,7 @@ const baseClasses = {
   Primary: 'h-full flex flex-1 items-center rounded-md rounded-tr-none rounded-br-none',
   Secondary: 'h-full flex items-center justify-center rounded-tr-md rounded-br-md w-4',
   PrimaryIcon: 'w-5 h-5',
-  SecondaryIcon: 'w-4 h-full stroke-2',
+  SecondaryIcon: 'w-4 h-full stroke-1',
   Separator: 'border-l pt-2 pb-2',
   Content: 'absolute z-10 top-0 mt-16'
 };
@@ -33,11 +33,11 @@ const classes = {
   ),
   PrimaryIcon: ({ primary, isExpanded }) => classNames(
     baseClasses.PrimaryIcon,
-    primary.isActive && !isExpanded ? 'text-primary-dark' : 'text-primary-light'
+    primary.isActive && !isExpanded ? 'text-primary-dark' : 'text-common-bright'
   ),
   SecondaryIcon: ({ isExpanded }) => classNames(
     baseClasses.SecondaryIcon,
-    isExpanded ? 'text-primary-dark' : 'text-primary-active hover:text-primary-light'
+    isExpanded ? 'text-primary-dark' : 'text-primary-active hover:text-common-bright'
   ),
   Separator: ({ primary, isExpanded, isHovering }) => classNames(
     baseClasses.Separator,
@@ -132,10 +132,10 @@ const DefaultListItemRenderer = ({ icon, label, isActive }) => (
     isActive && 'bg-primary-dark'
   )}
   >
-    <span className='text-primary-light mr-4 text-base'>
-      <Icon name={icon} className='w-5 h-5 text-primary-light' />
+    <span className='text-common-bright mr-4 text-base'>
+      <Icon name={icon} className='w-5 h-5 text-common-bright' />
     </span>
-    <span className='text-primary-light text-sm mr-5'>
+    <span className='text-common-bright text-base mr-5'>
       {label}
     </span>
   </div >
