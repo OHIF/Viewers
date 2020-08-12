@@ -105,8 +105,8 @@ function ViewerLayout({
 
   const mockedProps = {
     primary: {
-      tooltip: 'Zoom',
-      icon: 'tool-zoom',
+      tooltip: 'W/L',
+      icon: 'tool-window-level',
       onClick: (args) => console.debug('Primary click!', args)
     },
     secondary: {
@@ -122,7 +122,6 @@ function ViewerLayout({
     ],
     onClick: (args) => console.debug('Any click!', args)
   };
-
 
   return (
     <div>

@@ -3,22 +3,22 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import OutsideClickHandler from 'react-outside-click-handler';
 
-import { IconButton, Icon, Tooltip, ListMenu } from '@ohif/ui';
+import { Icon, Tooltip, ListMenu } from '@ohif/ui';
 
 const baseClasses = {
   Button: 'h-10 flex items-center rounded-md border-transparent border-2 cursor-pointer',
-  Primary: 'h-full flex items-center rounded-tl-md rounded-bl-md hover:rounded-tl-none hover:rounded-bl-none rounded-tr-none rounded-br-none flex-1',
-  Secondary: 'h-full flex items-center',
-  PrimaryIcon: 'w-5 h-5 stroke-2',
-  SecondaryIcon: 'h-full',
-  Separator: 'border-l pt-3 pb-3',
+  Primary: 'h-full flex flex-1 items-center rounded-md rounded-tr-none rounded-br-none',
+  Secondary: 'h-full flex items-center justify-center rounded-tr-md rounded-br-md w-4',
+  PrimaryIcon: 'w-5 h-5',
+  SecondaryIcon: 'w-4 h-full stroke-2',
+  Separator: 'border-l pt-2 pb-2',
   Content: 'absolute z-10 top-0 mt-16'
 };
 
 const classes = {
   Button: ({ isExpanded, primary }) => classNames(
     baseClasses.Button,
-    !isExpanded && !primary.isActive && 'hover:border-primary-dark'
+    !isExpanded && !primary.isActive && 'hover:bg-primary-dark hover:border-primary-dark'
   ),
   Interface: 'h-full flex flex-row items-center',
   Primary: ({ primary, isExpanded }) => classNames(
@@ -29,7 +29,7 @@ const classes = {
   Secondary: ({ isExpanded, primary }) => classNames(
     baseClasses.Secondary,
     isExpanded ? 'bg-primary-light rounded-tr-md rounded-br-md'
-      : primary.isActive ? 'bg-transparent' : 'hover:bg-primary-dark bg-transparent'
+      : primary.isActive ? 'bg-secondary-dark' : 'hover:bg-primary-dark bg-secondary-dark'
   ),
   PrimaryIcon: ({ primary, isExpanded }) => classNames(
     baseClasses.PrimaryIcon,
@@ -100,14 +100,18 @@ const SplitButton = ({
           <div className={classes.Interface}>
             <div onClick={onPrimaryClickHandler} className={classes.Primary({ ...state })}>
               <Tooltip isDisabled={!state.primary.tooltip} content={state.primary.tooltip}>
-                <div className='p-2'>
+                <div className='p-2 flex items-center justify-center h-full w-full'>
                   <Icon name={state.primary.icon} className={classes.PrimaryIcon({ ...state })} />
                 </div>
               </Tooltip>
             </div>
             <div className={classes.Separator({ ...state })}></div>
             <div className={classes.Secondary({ ...state })} onClick={onSecondaryClickHandler}>
-              <Tooltip isDisabled={state.isExpanded || !secondary.tooltip} content={secondary.tooltip} className="h-full">
+              <Tooltip
+                isDisabled={state.isExpanded || !secondary.tooltip}
+                content={secondary.tooltip}
+                className="h-full"
+              >
                 <Icon name={secondary.icon} className={classes.SecondaryIcon({ ...state })} />
               </Tooltip>
             </div>
