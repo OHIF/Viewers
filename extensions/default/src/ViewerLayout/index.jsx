@@ -70,10 +70,10 @@ function ViewerLayout({
     if (
       btn.props &&
       btn.props.commands &&
-      evt.value &&
-      btn.props.commands[evt.value]
+      evt.item && evt.item.value &&
+      btn.props.commands[evt.item.value]
     ) {
-      const { commandName, commandOptions } = btn.props.commands[evt.value];
+      const { commandName, commandOptions } = btn.props.commands[evt.item.value];
       commandsManager.runCommand(commandName, commandOptions);
     }
   };
@@ -128,7 +128,7 @@ function ViewerLayout({
       <Header>
         <ErrorBoundary context="Primary Toolbar">
           <SplitButton {...mockedProps} isRadio />
-          <SplitButton {...mockedProps} renderer={WindowLevelMenuItem} items={[
+          <SplitButton {...mockedProps} isAction renderer={WindowLevelMenuItem} items={[
             { value: 1, title: 'Soft tissue', subtitle: '400 / 40' },
             { value: 2, title: 'Lung', subtitle: '1500 / -600' },
             { value: 3, title: 'Liver', subtitle: '150 / 90' },
@@ -136,7 +136,7 @@ function ViewerLayout({
             { value: 5, title: 'Brain', subtitle: '2500 / 480' },
           ]} />
           <SplitButton {...mockedProps} />
-          {/* <div className="relative flex justify-center">
+          <div className="relative flex justify-center">
             {toolbars.primary.map((toolDef, index) => {
               const isNested = Array.isArray(toolDef);
               if (!isNested) {
@@ -162,7 +162,7 @@ function ViewerLayout({
                 );
               }
             })}
-          </div> */}
+          </div>
         </ErrorBoundary>
       </Header>
       <div

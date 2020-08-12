@@ -6,7 +6,7 @@ import OutsideClickHandler from 'react-outside-click-handler';
 import { Icon, Tooltip, ListMenu } from '@ohif/ui';
 
 const baseClasses = {
-  Button: 'h-10 flex items-center rounded-md border-transparent border-2 cursor-pointer',
+  Button: 'h-12 flex items-center rounded-md border-transparent border-2 cursor-pointer',
   Primary: 'h-full flex flex-1 items-center rounded-md rounded-tr-none rounded-br-none',
   Secondary: 'h-full flex items-center justify-center rounded-tr-md rounded-br-md w-4',
   PrimaryIcon: 'w-5 h-5',
@@ -60,9 +60,9 @@ const SplitButton = ({
   const getSplitButtonItems = items => items.map((item, index) => ({
     ...item,
     index,
-    onClick: (...args) => {
-      if (item.onClick) item.onClick({ ...args, ...item, index });
-      onClick({ ...args, item, index });
+    onClick: () => {
+      if (item.onClick) item.onClick({ ...item, index });
+      onClick({ item, index });
 
       setState(state => ({
         ...state,
@@ -101,7 +101,7 @@ const SplitButton = ({
           <div className={classes.Interface}>
             <div onClick={onPrimaryClickHandler} className={classes.Primary({ ...state })}>
               <Tooltip isDisabled={!state.primary.tooltip} content={state.primary.tooltip}>
-                <div className='p-2 flex items-center justify-center h-full w-full'>
+                <div className='p-3 flex items-center justify-center h-full w-full'>
                   <Icon name={state.primary.icon} className={classes.PrimaryIcon({ ...state })} />
                 </div>
               </Tooltip>
@@ -146,7 +146,7 @@ const noop = () => { };
 SplitButton.defaultProps = {
   isActive: false,
   isRadio: false,
-  isAction: true,
+  isAction: false,
   primary: {
     label: null,
     tooltip: null,
