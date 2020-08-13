@@ -9,7 +9,6 @@ import PropTypes from 'prop-types';
 
 import SnackbarContainer from '../components/Snackbar/SnackbarContainer';
 import SnackbarTypes from '../components/Snackbar/SnackbarTypes';
-import { useSnackbarContext } from '../contextProviders';
 
 const SnackbarContext = createContext(null);
 
@@ -136,7 +135,7 @@ SnackbarProvider.propTypes = {
 export const withSnackbar = Component => {
   return function WrappedComponent(props) {
     const snackbarContext = {
-      ...useSnackbarContext(),
+      ...useSnackbar(),
     };
     return <Component {...props} snackbarContext={snackbarContext} />;
   };

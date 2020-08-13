@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Icon, Typography, InputGroup, useModal } from '../';
+import { Button, Icon, Typography, InputGroup } from '../../components';
+import { useModal } from '../../contextProviders';
 
 const StudyListFilter = ({
   filtersMeta,

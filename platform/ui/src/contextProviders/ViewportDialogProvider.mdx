@@ -1,0 +1,179 @@
+---
+name: ViewportDialogProvider
+route: customHooks/viewportDialogProvider
+---
+
+import { Playground, Props } from 'docz';
+
+<!-- This is a workaround to import things from ohif/core as docz does not allow us to access window element and @ohif/core does use it once we import to instanciate cornerstone -->
+import UIViewportDialogService from './../../../core/src/services/UIViewportDialogService';
+import ServicesManager from './../../../core/src/services/ServicesManager';
+
+import { Dialog, Button, Notification } from '../components';
+import { ViewportDialogProvider, useViewportDialog } from '../contextProviders';
+
+# Viewport Dialog Provider
+
+This is a context provider that allow the application to share the modal
+component across all application.
+
+## Sample
+
+<Playground>
+  {() => {
+    const ViewportNotification = ({ hide }) => {
+      return (
+        <Notification
+          message="Track all measurement for this series?"
+          type="info"
+          actions={[
+            {
+              type: 'cancel',
+              text: 'No',
+              value: 0,
+            },
+            {
+              type: 'secondary',
+              text: 'No, do not ask again',
+              value: -1,
+            },
+            {
+              type: 'primary',
+              text: 'Yes',
+              value: 1,
+            },
+          ]}
+          onSubmit={value => {
+            if (typeof window !== 'undefined') {
+              window.alert(value);
+            }
+          }}
+        />
+      );
+    };
+    const ViewportActionButtons = () => {
+    const [dialogState, dialogApi] = useViewportDialog();
+      return (
+        <Button onClick={() => dialogApi.show({ content: ViewportNotification })}>
+          Open Dialog
+        </Button>
+      );
+    };
+    return (
+      <div className="w-full flex flex-row p-4" style={{height: '400px'}}>
+        <div className="flex flex-1 items-center justify-center h-full w-full bg-black text-white border border-primary-main">
+          <ViewportDialogProvider dialog={Dialog}>
+            <div className="flex flex-1 flex-col items-center justify-center h-full">
+              <ViewportActionButtons />
+              <span>CONTENT 1</span>
+            </div>
+          </ViewportDialogProvider>
+        </div>
+        <div className="flex flex-1 items-center justify-center h-full w-full bg-black text-white border border-primary-main">
+          <ViewportDialogProvider dialog={Dialog}>
+            <div className="flex flex-1 flex-col items-center justify-center h-full">
+              <ViewportActionButtons />
+              <span>CONTENT 1</span>
+            </div>
+          </ViewportDialogProvider>
+        </div>
+      </div>
+    );
+  }}
+</Playground>
+
+## Example using UIViewportDialogService
+
+<Playground>
+  {() => {
+    const ViewportNotification = ({ hide }) => {
+      return (
+        <Notification
+          message="Track all measurement for this series?"
+          type="info"
+          actions={[
+            {
+              type: 'cancel',
+              text: 'No',
+              value: 0,
+            },
+            {
+              type: 'secondary',
+              text: 'No, do not ask again',
+              value: -1,
+            },
+            {
+              type: 'primary',
+              text: 'Yes',
+              value: 1,
+            },
+          ]}
+          onSubmit={value => {
+            if (typeof window !== 'undefined') {
+              window.alert(value);
+            }
+          }}
+        />
+      );
+    };
+    // Creating servicesManager and register services should be in the root of your app
+    const servicesManager = new ServicesManager();
+    servicesManager.registerServices([UIViewportDialogService]);
+    // Get service instance
+    const _UIViewportDialogService =
+      servicesManager.services.UIViewportDialogService;
+      console.log(_UIViewportDialogService);
+    return (
+      <div className="w-full flex flex-col p-4" style={{height: '400px'}}>
+        <div className="flex flex-2">
+          <Button
+            className="mr-4 mb-4"
+            onClick={() =>
+              _UIViewportDialogService.show({
+                content: ViewportNotification,
+                viewportIndex: 0,
+              })
+            }
+          >
+            Open dialog on 0
+          </Button>
+          <Button
+            className="mr-4 mb-4"
+            onClick={() =>
+              _UIViewportDialogService.show({
+                content: ViewportNotification,
+                viewportIndex: 1,
+              })
+            }
+          >
+            Open dialog on 1
+          </Button>
+        </div>
+        <div className="flex flex-1 w-full flex-row">
+          <ViewportDialogProvider
+            dialog={Dialog}
+            service={_UIViewportDialogService}
+            viewportIndex={0}
+          >
+            <div className="flex flex-1 items-center justify-center h-full bg-black text-white border border-primary-main">
+              CONTENT 0
+            </div>
+          </ViewportDialogProvider>
+          <ViewportDialogProvider
+            dialog={Dialog}
+            service={_UIViewportDialogService}
+            viewportIndex={1}
+          >
+            <div className="flex flex-1 items-center justify-center h-full bg-black text-white border border-primary-main">
+              CONTENT 1
+            </div>
+          </ViewportDialogProvider>
+        </div>
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties:
+
+<Props of={ViewportDialogProvider} />

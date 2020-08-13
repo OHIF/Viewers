@@ -42,7 +42,7 @@
     "react-dnd": "10.0.2",
     "react-dnd-html5-backend": "10.0.2",
     "react-dnd-touch-backend": "10.0.2",
-    "react-dom": "16.13.1",
+    "react-dom": "16.11.0",
     "react-draggable": "4.4.3",
     "react-error-boundary": "2.2.3",
     "react-modal": "3.11.2",
