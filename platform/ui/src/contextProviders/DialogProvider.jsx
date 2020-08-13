@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import classNames from 'classnames';
 
-import { utils } from '@ohif/core';
+// import { utils } from '@ohif/core';
 
 import './DialogProvider.css';
 
@@ -88,7 +88,7 @@ const DialogProvider = ({ children, service }) => {
 
     let dialogId = id;
     if (!dialogId) {
-      dialogId = utils.guid();
+      dialogId = 123 // utils.guid();
     }
 
     setDialogs(dialogs => [...dialogs, { ...props, id: dialogId }]);
@@ -172,7 +172,7 @@ const DialogProvider = ({ children, service }) => {
           defaultPosition={position}
           bounds="parent"
           onStart={event => {
-            const e = event || window.event;
+            const e = event || (typeof window !== 'undefined' && window.event);
             const target = e.target || e.srcElement;
             const BLACKLIST = [
               'SVG',

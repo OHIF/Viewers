@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 
 import SnackbarContainer from '../components/Snackbar/SnackbarContainer';
 import SnackbarTypes from '../components/Snackbar/SnackbarTypes';
+import { useSnackbarContext } from '../contextProviders';
 
 const SnackbarContext = createContext(null);
 
@@ -92,15 +93,17 @@ const SnackbarProvider = ({ children, service }) => {
     setSnackbarItems(() => []);
   };
 
-  /**
-   * expose snackbar methods to window for debug purposes
-   * TODO: Check if it's really necessary
-   */
-  window.snackbar = {
-    show,
-    hide,
-    hideAll,
-  };
+  if (typeof window !== 'undefined') {
+    /**
+     * expose snackbar methods to window for debug purposes
+     * TODO: Check if it's really necessary
+     */
+    window.snackbar = {
+      show,
+      hide,
+      hideAll,
+    };
+  }
 
   return (
     <SnackbarContext.Provider value={{ show, hide, hideAll, snackbarItems }}>
