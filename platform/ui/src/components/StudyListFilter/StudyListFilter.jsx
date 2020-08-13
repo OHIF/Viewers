@@ -39,7 +39,7 @@ const StudyListFilter = ({
             <div className="flex flex-row justify-between mb-5 px-12">
               <div className="flex flex-row">
                 <Typography variant="h4" className="text-primary-light mr-6">
-                  Study List
+                  Study list
                 </Typography>
                 <div className="flex flex-row items-end">
                   <Button
