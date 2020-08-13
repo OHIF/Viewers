@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Table, TableHead, TableBody, TableRow, TableCell } from '@ohif/ui';
+import { Table, TableHead, TableBody, TableRow, TableCell } from '../';
 
 const StudyListExpandedRow = ({
   seriesTableColumns,

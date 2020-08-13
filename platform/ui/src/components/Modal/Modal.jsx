@@ -4,9 +4,10 @@ import ReactModal from 'react-modal';
 
 import './Modal.css';
 
-import { Typography, useModal, Icon } from '@ohif/ui';
+import { Typography, Icon } from '../../components';
+import { useModal } from '../../contextProviders';
 
-ReactModal.setAppElement(document.getElementById('root'));
+if (typeof document !== 'undefined') ReactModal.setAppElement(document.getElementById('root'));
 
 const Modal = ({
   closeButton,

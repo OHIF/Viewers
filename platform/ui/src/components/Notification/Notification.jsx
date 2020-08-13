@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { Button, Icon } from '@ohif/ui';
+import { Button, Icon } from '../';
 
 const Notification = ({ type, message, actions, onSubmit, onOutsideClick }) => {
   const notificationRef = useRef(null);

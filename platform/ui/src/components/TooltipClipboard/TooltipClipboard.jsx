@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon } from '@ohif/ui';
+import { Icon } from '../';
 
 const DELAY_TO_SHOW = 1000;
 const DELAY_TO_HIDE = 10; // it needs at least a little delay to prevent tooltip to suddenly hide
@@ -92,12 +92,20 @@ const TooltipClipboard = ({ children, text }) => {
   useEffect(() => {
     if (isActive) {
       refreshElementPosition();
-      window.addEventListener('scroll', refreshElementPosition);
+      if (typeof window !== 'undefined') {
+        window.addEventListener('scroll', refreshElementPosition);
+      }
     } else {
-      window.removeEventListener('scroll', refreshElementPosition);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('scroll', refreshElementPosition);
+      }
     }
 
-    return () => window.removeEventListener('scroll', refreshElementPosition);
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('scroll', refreshElementPosition);
+      }
+    };
   }, [isActive]);
 
   const onClickHandler = e => {
