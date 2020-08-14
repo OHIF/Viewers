@@ -62,7 +62,6 @@ function DataSourceWrapper(props) {
         const offset = dataSourceOptions.offset ? parseInt(dataSourceOptions.offset) : null;
         if (offset && offset > 0) {
           cachedData.splice(offset + 1, offset + 1, ...searchResults);
-          console.debug(cachedData);
           return cachedData;
         }
         return searchResults;
