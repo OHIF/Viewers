@@ -58,6 +58,7 @@ function DataSourceWrapper(props) {
         ...queryFilterValues,
         ...dataSourceOptions
       });
+      /* Cache fetched studies using offset */
       setCachedData(cachedData => {
         const offset = dataSourceOptions.offset ? parseInt(dataSourceOptions.offset) : null;
         if (offset && offset > 0) {

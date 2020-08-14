@@ -192,11 +192,12 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, dataSourc
 
   useEffect(() => {
     const { resultsPerPage, pageNumber } = filterValues;
-    const isLastPage = ((resultsPerPage * pageNumber) % (STUDIES_LIMIT - 1)) === 0;
-    if (isLastPage && parseInt(studies.length / (STUDIES_LIMIT - 1)) > dataSourceOptions.reachedLimits) {
+    const limit = STUDIES_LIMIT - 1;
+    const isLastPage = ((resultsPerPage * pageNumber) % limit) === 0;
+    if (isLastPage && parseInt(studies.length / limit) > dataSourceOptions.reachedLimits) {
       setDataSourceOptions(state => ({
         reachedLimits: state.reachedLimits + 1,
-        offset: (state.reachedLimits + 1) * (STUDIES_LIMIT - 1)
+        offset: (state.reachedLimits + 1) * limit
       }));
     }
 
