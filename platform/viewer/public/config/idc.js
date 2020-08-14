@@ -15,5 +15,14 @@ window.config = function(props) {
       window.location = 'https://ohif.org/';
     },
     healthcareApiEndpoint: 'https://proxy-dot-idc-dev.appspot.com/v1beta1',
+
+    hotkeys: [
+      // ~ Global
+      {
+        commandName: 'openDebugInfoModal',
+        label: 'Open Debug Info Modal',
+        keys: ['d'],
+      },
+    ],
   };
 };

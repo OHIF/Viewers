@@ -1,10 +1,12 @@
 import MeasurementComparisonTable from './components/MeasurementComparisonTable';
+import { version } from '../package.json';
 
 export default {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
   id: 'lesion-tracker',
+  version,
 
   /**
    * @param {object} params
@@ -26,7 +28,7 @@ export default {
           component: MeasurementComparisonTable,
         },
       ],
-      defaultContext: ['VIEWER']
+      defaultContext: ['VIEWER'],
     };
   },
 

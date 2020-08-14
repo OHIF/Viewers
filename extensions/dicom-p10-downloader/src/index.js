@@ -1,5 +1,6 @@
 import { getDicomWebClientFromConfig } from './utils';
 import { getCommands } from './commandsModule';
+import { version } from '../package.json';
 
 /**
  * Constants
@@ -21,6 +22,7 @@ export default {
    * Only required property. Should be a unique value across all extensions.
    */
   id: 'dicom-p10-downloader',
+  version,
 
   /**
    * LIFECYCLE HOOKS
@@ -37,7 +39,7 @@ export default {
    * MODULE GETTERS
    */
 
-  getCommandsModule() {
-    return getCommands(sharedContext);
+  getCommandsModule({ servicesManager, extensionManager }) {
+    return getCommands(sharedContext, servicesManager, extensionManager);
   },
 };

@@ -30,6 +30,7 @@ import OHIFDicomRtExtension from '@ohif/extension-dicom-rt';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import OHIFDicomP10DownloaderExtension from '@ohif/extension-dicom-p10-downloader';
+import { version } from '../package.json';
 
 /*
  * Default Settings
@@ -38,6 +39,8 @@ let config = {};
 
 if (window) {
   config = window.config || {};
+
+  window.version = version;
 }
 
 const appProps = {
