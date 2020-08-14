@@ -50,6 +50,8 @@ class OHIFVTKViewport extends Component {
     volumes: null,
     paintFilterLabelMapImageData: null,
     paintFilterBackgroundImageData: null,
+    percentComplete: 0,
+    isLoaded: false,
   };
 
   static propTypes = {
@@ -66,6 +68,7 @@ class OHIFVTKViewport extends Component {
     viewportIndex: PropTypes.number,
     children: PropTypes.node,
     onScroll: PropTypes.func,
+    servicesManager: PropTypes.object,
   };
 
   static defaultProps = {
@@ -360,7 +363,6 @@ class OHIFVTKViewport extends Component {
   }
 
   loadProgressively(imageDataObject) {
-    debugger;
     loadImageData(imageDataObject);
 
     const { isLoading, imageIds } = imageDataObject;
@@ -384,6 +386,24 @@ class OHIFVTKViewport extends Component {
       }
     };
 
+    const onPixelDataInsertedErrorCallback = error => {
+      const { UINotificationService } = this.props.servicesManager.services;
+
+      if (!this.hasError) {
+        if (this.props.viewportIndex === 0) {
+          // Only show the notification from one viewport 1 in MPR2D.
+          UINotificationService.show({
+            title: 'MPR Load Error',
+            message: error.message,
+            type: 'error',
+            autoClose: false,
+          });
+        }
+
+        this.hasError = true;
+      }
+    };
+
     const onAllPixelDataInsertedCallback = () => {
       this.setState({
         isLoaded: true,
@@ -392,6 +412,7 @@ class OHIFVTKViewport extends Component {
 
     imageDataObject.onPixelDataInserted(onPixelDataInsertedCallback);
     imageDataObject.onAllPixelDataInserted(onAllPixelDataInsertedCallback);
+    imageDataObject.onPixelDataInsertedError(onPixelDataInsertedErrorCallback);
   }
 
   render() {
