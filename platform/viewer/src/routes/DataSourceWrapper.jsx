@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { MODULE_TYPES } from '@ohif/core';
+import qs from 'query-string';
 //
 import { useAppConfig } from '@state';
 import { extensionManager } from '../App.jsx';
@@ -45,17 +46,27 @@ function DataSourceWrapper(props) {
   // studies.processResults --> <LayoutTemplate studies={} />
   // But only for LayoutTemplate type of 'list'?
   // Or no data fetching here, and just hand down my source
-  const [data, setData] = useState([]);
+  const [cachedData, setCachedData] = useState([]);
+  const [dataSourceOptions, setDataSourceOptions] = useState({ reachedLimits: 0, offset: 0 });
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     // 204: no content
     async function getData() {
       setIsLoading(true);
       const queryFilterValues = _getQueryFilterValues(history.location.search);
-      const searchResults = await dataSource.query.studies.search(
-        queryFilterValues
-      );
-      setData(searchResults);
+      const searchResults = await dataSource.query.studies.search({
+        ...queryFilterValues,
+        ...dataSourceOptions
+      });
+      setCachedData(cachedData => {
+        const offset = dataSourceOptions.offset ? parseInt(dataSourceOptions.offset) : null;
+        if (offset && offset > 0) {
+          cachedData.splice(offset + 1, offset + 1, ...searchResults);
+          console.debug(cachedData);
+          return cachedData;
+        }
+        return searchResults;
+      });
       setIsLoading(false);
     }
 
@@ -65,7 +76,7 @@ function DataSourceWrapper(props) {
       console.warn(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }, [searchParams, dataSourceOptions]);
   // queryFilterValues
 
   useEffect(() => {
@@ -83,8 +94,10 @@ function DataSourceWrapper(props) {
     <LayoutTemplate
       {...rest}
       history={history}
-      data={data}
+      data={cachedData}
       dataSource={dataSource}
+      dataSourceOptions={dataSourceOptions}
+      setDataSourceOptions={setDataSourceOptions}
       isLoadingData={isLoading}
     />
   );
@@ -120,9 +133,6 @@ function _getQueryFilterValues(query) {
     // Rarely supported server-side
     sortBy: query.get('sortBy'),
     sortDirection: query.get('sortDirection'),
-    //
-    offset: query.get('offset'),
-    limit: query.get('limit'),
   };
 
   // patientName: good

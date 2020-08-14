@@ -31,13 +31,12 @@ const seriesInStudiesMap = new Map();
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function WorkList({ history, data: studies, isLoadingData, dataSource }) {
+function WorkList({ history, data: studies, isLoadingData, dataSource, dataSourceOptions, setDataSourceOptions }) {
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
   const query = useQuery();
   const STUDIES_LIMIT = 101;
-  const [dataSourceOptions, setDataSourceOptions] = useState({ limit: STUDIES_LIMIT });
   const queryFilterValues = _getQueryFilterValues(query);
   const [filterValues, _setFilterValues] = useState({
     ...defaultFilterValues,
@@ -62,10 +61,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
 
       if (noSortApplied && studies.length < STUDIES_LIMIT) {
         const ascendingSortModifier = -1;
-        defaultSortValues = {
-          sortBy: 'studyDate',
-          sortDirection: 'ascending',
-        };
+        defaultSortValues = { sortBy: 'studyDate', sortDirection: 'ascending' };
         return _sortStringDates(s1, s2, ascendingSortModifier);
       } else if (noSortApplied) {
         return 0;
@@ -133,7 +129,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
       return;
     }
 
-    const queryString = { ...dataSourceOptions };
+    const queryString = {};
     Object.keys(defaultFilterValues).forEach(key => {
       const defaultValue = defaultFilterValues[key];
       const currValue = debouncedFilterValues[key];
@@ -196,12 +192,12 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
 
   useEffect(() => {
     const { resultsPerPage, pageNumber } = filterValues;
-    const rest = (resultsPerPage * pageNumber) / dataSourceOptions.limit;
-    const isLastPage = ((resultsPerPage * pageNumber) % dataSourceOptions.limit) === 0;
-    if (isLastPage || rest > 1) {
-      /* setDataSourceOptions({ offset: (pageNumber - 1) * resultsPerPage }); */
-      const offset = (pageNumber - 1) * resultsPerPage;
-      setDataSourceOptions({ limit: STUDIES_LIMIT + offset });
+    const isLastPage = ((resultsPerPage * pageNumber) % (STUDIES_LIMIT - 1)) === 0;
+    if (isLastPage && parseInt(studies.length / (STUDIES_LIMIT - 1)) > dataSourceOptions.reachedLimits) {
+      setDataSourceOptions(state => ({
+        reachedLimits: state.reachedLimits + 1,
+        offset: (state.reachedLimits + 1) * (STUDIES_LIMIT - 1)
+      }));
     }
 
   }, [filterValues]);
