@@ -360,7 +360,6 @@ class OHIFVTKViewport extends Component {
   }
 
   loadProgressively(imageDataObject) {
-    debugger;
     loadImageData(imageDataObject);
 
     const { isLoading, imageIds } = imageDataObject;
