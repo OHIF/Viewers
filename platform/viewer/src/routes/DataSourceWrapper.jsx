@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { MODULE_TYPES } from '@ohif/core';
-import qs from 'query-string';
 //
 import { useAppConfig } from '@state';
 import { extensionManager } from '../App.jsx';
+
+let cacheMap = {};
+let total = 0;
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -18,7 +20,6 @@ import { extensionManager } from '../App.jsx';
 function DataSourceWrapper(props) {
   const [appConfig] = useAppConfig();
   const { children: LayoutTemplate, history, ...rest } = props;
-  const [searchParams, setSearchParams] = useState(history.location.search);
   // TODO: Fetch by type, name, etc?
   const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
   // TODO: Good usecase for flatmap?
@@ -46,28 +47,47 @@ function DataSourceWrapper(props) {
   // studies.processResults --> <LayoutTemplate studies={} />
   // But only for LayoutTemplate type of 'list'?
   // Or no data fetching here, and just hand down my source
-  const [cachedData, setCachedData] = useState([]);
-  const [dataSourceOptions, setDataSourceOptions] = useState({ reachedLimits: 0, offset: 0 });
+  const STUDIES_LIMIT = 101;
+  const [data, setData] = useState({ studies: [], total: 0 });
   const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     // 204: no content
     async function getData() {
       setIsLoading(true);
+
+      const limit = STUDIES_LIMIT - 1;
       const queryFilterValues = _getQueryFilterValues(history.location.search);
-      const searchResults = await dataSource.query.studies.search({
-        ...queryFilterValues,
-        ...dataSourceOptions
-      });
-      /* Cache fetched studies using offset */
-      setCachedData(cachedData => {
-        const offset = dataSourceOptions.offset ? parseInt(dataSourceOptions.offset) : null;
-        if (offset && offset > 0) {
-          cachedData.splice(offset + 1, offset + 1, ...searchResults);
-          return cachedData;
+      const { resultsPerPage = 25, pageNumber = 1 } = queryFilterValues;
+      const reachedLimits = parseInt((resultsPerPage * pageNumber) / STUDIES_LIMIT);
+      const cacheKey = `${pageNumber}-${resultsPerPage}`;
+
+      const getFromCache = (cacheKey, pageNumber, resultsPerPage, limit, options) => {
+        const pagesAmount = limit / resultsPerPage;
+        const pageToRequest = parseInt((resultsPerPage * pageNumber) / STUDIES_LIMIT);
+
+        if (!cacheMap[cacheKey]) {
+          total = (pageToRequest * limit) + 1;
+          const studiesPromise = dataSource.query.studies.search(options);
+          for (let pageNum = 0; pageNum < pagesAmount; pageNum++) {
+            const currentPageNumber = (pageNum + 1) + (pageToRequest * pagesAmount);
+            cacheMap[`${currentPageNumber}-${resultsPerPage}`] = studiesPromise.then(function (results) {
+              const slidedResult = results.slice((pageNum * resultsPerPage), ((pageNum + 1) * resultsPerPage));
+              total += slidedResult.length;
+              return slidedResult;
+            });
+          }
         }
-        return searchResults;
+
+        return cacheMap[cacheKey];
+      };
+
+      const studies = await getFromCache(cacheKey, pageNumber, resultsPerPage, limit, {
+        ...queryFilterValues,
+        ...{ offset: reachedLimits * limit }
       });
       setIsLoading(false);
+      setData({ studies, total });
     }
 
     try {
@@ -76,28 +96,17 @@ function DataSourceWrapper(props) {
       console.warn(ex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, dataSourceOptions]);
-  // queryFilterValues
-
-  useEffect(() => {
-    /* Avoid unnecessary search requests during pagination */
-    const params = new URLSearchParams(history.location.search);
-    params.delete('pageNumber');
-    const cleanParams = params.toString();
-    if (cleanParams !== searchParams) {
-      setSearchParams(cleanParams);
-    }
   }, [history.location.search]);
+  // queryFilterValues
 
   // TODO: Better way to pass DataSource?
   return (
     <LayoutTemplate
       {...rest}
       history={history}
-      data={cachedData}
+      data={data.studies}
+      dataTotal={data.total}
       dataSource={dataSource}
-      dataSourceOptions={dataSourceOptions}
-      setDataSourceOptions={setDataSourceOptions}
       isLoadingData={isLoading}
     />
   );
@@ -129,6 +138,7 @@ function _getQueryFilterValues(query) {
     startDate: query.get('startDate'),
     endDate: query.get('endDate'),
     page: _tryParseInt(query.get('page'), undefined),
+    pageNumber: _tryParseInt(query.get('pageNumber'), undefined),
     resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
     // Rarely supported server-side
     sortBy: query.get('sortBy'),

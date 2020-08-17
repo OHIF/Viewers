@@ -32,7 +32,7 @@ const seriesInStudiesMap = new Map();
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function WorkList({ history, data: studies, isLoadingData, dataSource, dataSourceOptions, setDataSourceOptions }) {
+function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingData, dataSource }) {
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
@@ -60,7 +60,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, dataSourc
       const noSortApplied = sortBy === '' || !sortBy;
       const sortModifier = sortDirection === 'descending' ? 1 : -1;
 
-      if (noSortApplied && studies.length < STUDIES_LIMIT) {
+      if (noSortApplied && studiesTotal < STUDIES_LIMIT) {
         const ascendingSortModifier = -1;
         defaultSortValues = { sortBy: 'studyDate', sortDirection: 'ascending' };
         return _sortStringDates(s1, s2, ascendingSortModifier);
@@ -89,7 +89,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, dataSourc
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
-  const numOfStudies = studies.length;
+  const numOfStudies = studiesTotal;
   const totalPages = Math.floor(numOfStudies / resultsPerPage) + 1;
 
   const setFilterValues = val => {
@@ -190,19 +190,6 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, dataSourc
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedRows, studies]);
-
-  useEffect(() => {
-    const { resultsPerPage, pageNumber } = filterValues;
-    const limit = STUDIES_LIMIT - 1;
-    const isLastPage = ((resultsPerPage * pageNumber) % limit) === 0;
-    if (isLastPage && parseInt(studies.length / limit) > dataSourceOptions.reachedLimits) {
-      setDataSourceOptions(state => ({
-        reachedLimits: state.reachedLimits + 1,
-        offset: (state.reachedLimits + 1) * limit
-      }));
-    }
-
-  }, [filterValues]);
 
   const isFiltering = (filterValues, defaultFilterValues) => {
     return !isEqual(filterValues, defaultFilterValues);
@@ -383,10 +370,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, dataSourc
       {hasStudies ? (
         <>
           <StudyListTable
-            tableDataSource={tableDataSource.slice(
-              (pageNumber - 1) * resultsPerPage,
-              (pageNumber - 1) * resultsPerPage + resultsPerPage
-            )}
+            tableDataSource={tableDataSource}
             numOfStudies={numOfStudies}
             filtersMeta={filtersMeta}
           />
