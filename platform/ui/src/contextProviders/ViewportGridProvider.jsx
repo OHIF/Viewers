@@ -14,17 +14,10 @@ const DEFAULT_STATE = {
     /*
      * {
      *    displaySetInstanceUID: string,
-     *    cine: { isPlaying: false, frameRate: 24 }
      * }
      */
   ],
-  isCineEnabled: false,
   activeViewportIndex: 0,
-};
-
-const DEFAULT_CINE = {
-  isPlaying: false,
-  frameRate: 24
 };
 
 export const ViewportGridContext = createContext(DEFAULT_STATE);
@@ -39,20 +32,9 @@ export function ViewportGridProvider({ children, service }) {
         const { viewportIndex, displaySetInstanceUID } = action.payload;
         const viewports = state.viewports.slice();
 
-        viewports[viewportIndex] = { displaySetInstanceUID, cine: { ...DEFAULT_CINE } };
+        viewports[viewportIndex] = { displaySetInstanceUID };
 
         return { ...state, ...{ viewports }, cachedLayout: null };
-      }
-      case 'SET_CINE_FOR_VIEWPORT': {
-        const { viewportIndex, cine } = action.payload;
-        const viewports = state.viewports.slice();
-
-        viewports[viewportIndex].cine = cine;
-
-        return { ...state, ...{ viewports } };
-      }
-      case 'SET_IS_CINE_ENABLED': {
-        return { ...state, ...{ isCineEnabled: action.payload } };
       }
       case 'SET_LAYOUT': {
         const { numCols, numRows } = action.payload;
@@ -62,7 +44,7 @@ export function ViewportGridProvider({ children, service }) {
           state.activeViewportIndex >= numPanes ? 0 : state.activeViewportIndex;
 
         while (viewports.length < numPanes) {
-          viewports.push({ cine: { ...DEFAULT_CINE } });
+          viewports.push({});
         }
         while (viewports.length > numPanes) {
           viewports.pop();
@@ -81,7 +63,6 @@ export function ViewportGridProvider({ children, service }) {
           activeViewportIndex: 0,
           viewports: [{
             displaySetInstanceUID: null,
-            cine: { ...DEFAULT_CINE }
           }],
           cachedLayout: null,
         };
@@ -123,23 +104,6 @@ export function ViewportGridProvider({ children, service }) {
           displaySetInstanceUID,
         },
       }),
-    [dispatch]
-  );
-
-  const setCineForViewport = useCallback(
-    ({ viewportIndex, cine }) =>
-      dispatch({
-        type: 'SET_CINE_FOR_VIEWPORT',
-        payload: {
-          viewportIndex,
-          cine,
-        },
-      }),
-    [dispatch]
-  );
-
-  const setIsCineEnabled = useCallback(
-    isCineEnabled => dispatch({ type: 'SET_IS_CINE_ENABLED', payload: isCineEnabled }),
     [dispatch]
   );
 
@@ -193,8 +157,6 @@ export function ViewportGridProvider({ children, service }) {
         getState,
         setActiveViewportIndex,
         setDisplaysetForViewport,
-        setCineForViewport,
-        setIsCineEnabled,
         setLayout,
         reset,
         setCachedLayout,
@@ -206,8 +168,6 @@ export function ViewportGridProvider({ children, service }) {
     service,
     setActiveViewportIndex,
     setDisplaysetForViewport,
-    setCineForViewport,
-    setIsCineEnabled,
     setLayout,
     reset,
     setCachedLayout,
@@ -218,8 +178,6 @@ export function ViewportGridProvider({ children, service }) {
     // getState,
     setActiveViewportIndex,
     setDisplaysetForViewport,
-    setCineForViewport,
-    setIsCineEnabled,
     setLayout,
     setCachedLayout,
     reset,

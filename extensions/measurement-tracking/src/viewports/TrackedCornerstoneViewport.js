@@ -7,6 +7,7 @@ import OHIF, { utils } from '@ohif/core';
 import {
   Notification,
   ViewportActionBar,
+  useCine,
   useViewportGrid,
   useViewportDialog,
 } from '@ohif/ui';
@@ -51,8 +52,8 @@ function TrackedCornerstoneViewport({
     MeasurementService,
   } = servicesManager.services;
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [{ activeViewportIndex, viewports, isCineEnabled }, viewportGridService] = useViewportGrid();
-  // viewportIndex, onSubmit
+  const [{ activeViewportIndex, viewports }, viewportGridService] = useViewportGrid();
+  const [{ isCineEnabled, cines }, cineService] = useCine();
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
   const [element, setElement] = useState(null);
@@ -66,6 +67,10 @@ function TrackedCornerstoneViewport({
       StackManager.clearStacks();
     };
   }, []);
+
+  useEffect(() => {
+    cineService.setCine({ id: viewportIndex });
+  }, [viewportIndex]);
 
   useEffect(() => {
     const unsubcribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
@@ -294,7 +299,9 @@ function TrackedCornerstoneViewport({
     );
   }
 
-  const { cine } = viewports[viewportIndex];
+  const cine = cines[viewportIndex];
+  const isPlaying = cine && cine.isPlaying || false;
+  const frameRate = cine && cine.frameRate || 24;
 
   return (
     <>
@@ -332,20 +339,10 @@ function TrackedCornerstoneViewport({
         showNavArrows={!isCineEnabled}
         showCine={isCineEnabled}
         cineProps={{
-          isPlaying: cine.isPlaying,
+          isPlaying,
           onClose: () => commandsManager.runCommand('toggleCine'),
-          onPlayPauseChange: isPlaying => {
-            viewportGridService.setCineForViewport({
-              viewportIndex: activeViewportIndex,
-              cine: { ...cine, isPlaying },
-            });
-          },
-          onFrameRateChange: frameRate => {
-            viewportGridService.setCineForViewport({
-              viewportIndex: activeViewportIndex,
-              cine: { ...cine, frameRate },
-            });
-          },
+          onPlayPauseChange: isPlaying => cineService.setCine({ id: activeViewportIndex, isPlaying }),
+          onFrameRateChange: frameRate => cineService.setCine({ id: activeViewportIndex, frameRate }),
         }}
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
@@ -361,8 +358,8 @@ function TrackedCornerstoneViewport({
           // TODO: ViewportGrid Context?
           isActive={true} // todo
           isStackPrefetchEnabled={true} // todo
-          isPlaying={cine.isPlaying}
-          frameRate={cine.frameRate}
+          isPlaying={isPlaying}
+          frameRate={frameRate}
           isOverlayVisible={true}
           loadingIndicatorComponent={ViewportLoadingIndicator}
           viewportOverlayComponent={props => {

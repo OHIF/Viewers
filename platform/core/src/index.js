@@ -24,6 +24,7 @@ import utils from './utils/';
 import defaults from './defaults';
 
 import {
+  CineService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -73,6 +74,7 @@ const OHIF = {
   measurements,
   hangingProtocols,
   //
+  CineService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -117,6 +119,7 @@ export {
   measurements,
   hangingProtocols,
   //
+  CineService,
   UIDialogService,
   UIModalService,
   UINotificationService,
