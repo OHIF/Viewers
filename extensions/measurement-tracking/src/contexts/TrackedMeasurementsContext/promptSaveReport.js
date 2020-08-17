@@ -1,9 +1,14 @@
 import createReportAsync from './../../_shared/createReportAsync.js';
 import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
+import getNextSRSeriesNumber from '../../_shared/getNextSRSeriesNumber';
 import RESPONSE from '../../_shared/PROMPT_RESPONSES';
 
 function promptUser({ servicesManager, extensionManager }, ctx, evt) {
-  const { UIDialogService, MeasurementService } = servicesManager.services;
+  const {
+    UIDialogService,
+    MeasurementService,
+    DisplaySetService,
+  } = servicesManager.services;
   const viewportIndex =
     evt.viewportIndex === undefined
       ? evt.data.viewportIndex
@@ -36,12 +41,15 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
           ? 'Research Derived Series' // default
           : promptResult.value; // provided value
 
+      const SeriesNumber = getNextSRSeriesNumber(DisplaySetService);
+
       displaySetInstanceUIDs = await createReportAsync(
         servicesManager,
         dataSource,
         trackedMeasurements,
         {
           SeriesDescription,
+          SeriesNumber,
         }
       );
     } else if (promptResult.action === RESPONSE.CANCEL) {

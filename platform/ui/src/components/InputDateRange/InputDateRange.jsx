@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { DateRange, InputLabelWrapper } from '@ohif/ui';
+import { DateRange, InputLabelWrapper } from '../';
 
 const InputDateRange = ({
   label,
@@ -12,12 +12,18 @@ const InputDateRange = ({
   onChange,
 }) => {
   const { startDate, endDate } = value;
+
+  const onClickHandler = (event) => {
+    event.preventDefault();
+    onLabelClick(event);
+  };
+
   return (
     <InputLabelWrapper
       label={label}
       isSortable={isSortable}
       sortDirection={sortDirection}
-      onLabelClick={onLabelClick}
+      onLabelClick={onClickHandler}
     >
       <div className="relative">
         <DateRange
@@ -30,8 +36,11 @@ const InputDateRange = ({
   );
 };
 
+const noop = () => { };
+
 InputDateRange.defaultProps = {
   value: {},
+  onLabelClick: noop
 };
 
 InputDateRange.propTypes = {

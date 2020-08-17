@@ -5,10 +5,11 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
 import isEqual from 'lodash.isequal';
-//
+
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useQuery } from '@hooks';
+import { utils } from '@ohif/core';
 
 import PreferencesDropdown from '../../components/PreferencesDropdown';
 
@@ -45,6 +46,12 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
 
+  /*
+   * The default sort value keep the filters synchronized with runtime conditional sorting
+   * Only applied if no other sorting is specified and there are less than 101 studies
+   */
+  let defaultSortValues = {};
+
   const sortedStudies = studies
     // TOOD: Move sort to DataSourceWrapper?
     // TODO: MOTIVATION, this is triggered on every render, even if list/sort does not change
@@ -54,7 +61,10 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
 
       if (noSortApplied && studies.length < 101) {
         const ascendingSortModifier = -1;
-
+        defaultSortValues = {
+          sortBy: 'studyDate',
+          sortDirection: 'ascending',
+        };
         return _sortStringDates(s1, s2, ascendingSortModifier);
       } else if (noSortApplied) {
         return 0;
@@ -157,9 +167,8 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   useEffect(() => {
     const fetchSeries = async studyInstanceUid => {
       try {
-        const result = await dataSource.query.series.search(studyInstanceUid);
-
-        seriesInStudiesMap.set(studyInstanceUid, result);
+        const series = await dataSource.query.series.search(studyInstanceUid);
+        seriesInStudiesMap.set(studyInstanceUid, utils.sortBySeriesDate(series));
         setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
       } catch (ex) {
         // TODO: UI Notification Service
@@ -216,8 +225,8 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           content: patientName ? (
             <TooltipClipboard>{patientName}</TooltipClipboard>
           ) : (
-            <span className="text-gray-700">(Empty)</span>
-          ),
+              <span className="text-gray-700">(Empty)</span>
+            ),
           gridCol: 4,
         },
         {
@@ -281,13 +290,13 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                  return {
-                    description: s.description || '(empty)',
-                    seriesNumber: s.seriesNumber || '',
-                    modality: s.modality || '',
-                    instances: s.numSeriesInstances || '',
-                  };
-                })
+                return {
+                  description: s.description || '(empty)',
+                  seriesNumber: s.seriesNumber || '',
+                  modality: s.modality || '',
+                  instances: s.numSeriesInstances || '',
+                };
+              })
               : []
           }
         >
@@ -304,7 +313,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
               <Link
                 key={i}
                 to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
-                // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+              // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
@@ -312,7 +321,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
                   disabled={false}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
-                  onClick={() => {}}
+                  onClick={() => { }}
                 >
                   {mode.displayName}
                 </Button>
@@ -353,7 +362,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
       <StudyListFilter
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}
-        filterValues={filterValues}
+        filterValues={{ ...filterValues, ...defaultSortValues }}
         onChange={setFilterValues}
         clearFilters={() => setFilterValues(defaultFilterValues)}
         isFiltering={isFiltering(filterValues, defaultFilterValues)}
@@ -376,10 +385,10 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           />
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center pt-48">
-          <EmptyStudies isLoading={isLoadingData} />
-        </div>
-      )}
+          <div className="flex flex-col items-center justify-center pt-48">
+            <EmptyStudies isLoading={isLoadingData} />
+          </div>
+        )}
     </div>
   );
 }

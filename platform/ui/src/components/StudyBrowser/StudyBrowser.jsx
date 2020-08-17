@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { ButtonGroup, Button, StudyItem, ThumbnailList } from '@ohif/ui';
+import { ButtonGroup, Button, StudyItem, ThumbnailList } from '../';
 
 const buttonClasses = 'text-white text-base border-none bg-black p-2 min-w-18';
 const activeButtonClasses = 'bg-primary-main';

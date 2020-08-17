@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Select, InputLabelWrapper } from '@ohif/ui';
+import { Select, InputLabelWrapper } from '../';
 
 const InputMultiSelect = ({
   label,

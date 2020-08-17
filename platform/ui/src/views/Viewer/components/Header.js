@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavBar, Svg, Icon, IconButton } from '@ohif/ui';
+import { NavBar, Svg, Icon, IconButton } from '../../../components';
 
 const Header = () => {
   const [activeTool, setActiveTool] = useState('Zoom');
