@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Typography } from '@ohif/ui';
+import { Typography } from '../';
 
 const ContextMenu = ({ items }) => {
   return (

@@ -5,10 +5,11 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
 import isEqual from 'lodash.isequal';
-//
+
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useQuery } from '@hooks';
+import { utils } from '@ohif/core';
 
 import PreferencesDropdown from '../../components/PreferencesDropdown';
 
@@ -166,9 +167,8 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   useEffect(() => {
     const fetchSeries = async studyInstanceUid => {
       try {
-        const result = await dataSource.query.series.search(studyInstanceUid);
-
-        seriesInStudiesMap.set(studyInstanceUid, result);
+        const series = await dataSource.query.series.search(studyInstanceUid);
+        seriesInStudiesMap.set(studyInstanceUid, utils.sortBySeriesDate(series));
         setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
       } catch (ex) {
         // TODO: UI Notification Service

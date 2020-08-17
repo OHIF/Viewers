@@ -443,21 +443,9 @@ function _createStudyBrowserTabs(
   const allStudies = [];
 
   studyDisplayList.forEach(study => {
-    const displaySetsForStudy = displaySets.filter(
+    const displaySetsForStudy = utils.sortBySeriesDate(displaySets.filter(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
-    );
-
-    displaySetsForStudy.sort((a, b) => {
-      if (a.seriesNumber !== b.seriesNumber) {
-        return a.seriesNumber - b.seriesNumber;
-      }
-
-      const seriesDateA = Date.parse(a.seriesDate);
-      const seriesDateB = Date.parse(b.seriesDate);
-
-      return seriesDateA - seriesDateB;
-    });
-
+    ));
     const tabStudy = Object.assign({}, study, {
       displaySets: displaySetsForStudy,
     });

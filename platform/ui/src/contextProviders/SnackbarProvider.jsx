@@ -92,15 +92,17 @@ const SnackbarProvider = ({ children, service }) => {
     setSnackbarItems(() => []);
   };
 
-  /**
-   * expose snackbar methods to window for debug purposes
-   * TODO: Check if it's really necessary
-   */
-  window.snackbar = {
-    show,
-    hide,
-    hideAll,
-  };
+  if (typeof window !== 'undefined') {
+    /**
+     * expose snackbar methods to window for debug purposes
+     * TODO: Check if it's really necessary
+     */
+    window.snackbar = {
+      show,
+      hide,
+      hideAll,
+    };
+  }
 
   return (
     <SnackbarContext.Provider value={{ show, hide, hideAll, snackbarItems }}>
@@ -133,7 +135,7 @@ SnackbarProvider.propTypes = {
 export const withSnackbar = Component => {
   return function WrappedComponent(props) {
     const snackbarContext = {
-      ...useSnackbarContext(),
+      ...useSnackbar(),
     };
     return <Component {...props} snackbarContext={snackbarContext} />;
   };

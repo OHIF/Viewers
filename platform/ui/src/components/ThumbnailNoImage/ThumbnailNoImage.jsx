@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import { Icon, Tooltip, Typography } from '@ohif/ui';
+import { Icon, Tooltip, Typography } from '../';
 
 const ThumbnailNoImage = ({
   displaySetInstanceUID,

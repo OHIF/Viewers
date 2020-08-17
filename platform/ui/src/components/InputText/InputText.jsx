@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Input, InputLabelWrapper } from '@ohif/ui';
+import { Input, InputLabelWrapper } from '../';
 
 const InputText = ({
   label,
