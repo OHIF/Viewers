@@ -49,7 +49,7 @@ class OHIFVTKViewport extends Component {
   state = {
     volumes: null,
     paintFilterLabelMapImageData: null,
-    paintFilterBackgroundImageData: null
+    paintFilterBackgroundImageData: null,
   };
 
   static propTypes = {
@@ -69,7 +69,7 @@ class OHIFVTKViewport extends Component {
   };
 
   static defaultProps = {
-    onScroll: () => { },
+    onScroll: () => {},
   };
 
   static id = 'OHIFVTKViewport';
@@ -156,9 +156,11 @@ class OHIFVTKViewport extends Component {
       const { activeLabelmapIndex } = brushStackState;
       const labelmap3D = brushStackState.labelmaps3D[activeLabelmapIndex];
 
-      this.segmentsDefaultProperties = labelmap3D.segmentsHidden.map(isHidden => {
-        return { visible: !isHidden };
-      });
+      this.segmentsDefaultProperties = labelmap3D.segmentsHidden.map(
+        isHidden => {
+          return { visible: !isHidden };
+        }
+      );
 
       const vtkLabelmapID = `${firstImageId}_${activeLabelmapIndex}`;
 
@@ -349,7 +351,7 @@ class OHIFVTKViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-      prevDisplaySet.displaySetInstanceUID ||
+        prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
@@ -360,34 +362,35 @@ class OHIFVTKViewport extends Component {
   loadProgressively(imageDataObject) {
     loadImageData(imageDataObject);
 
-    const { isLoading, insertPixelDataPromises } = imageDataObject;
-
-    const NumberOfFrames = insertPixelDataPromises.length;
+    const { isLoading, imageIds } = imageDataObject;
 
     if (!isLoading) {
       this.setState({ isLoaded: true });
       return;
     }
 
-    insertPixelDataPromises.forEach(promise => {
-      promise.then(numberProcessed => {
-        const percentComplete = Math.floor(
-          (numberProcessed * 100) / NumberOfFrames
-        );
+    const NumberOfFrames = imageIds.length;
 
-        if (percentComplete !== this.state.percentComplete) {
-          this.setState({
-            percentComplete,
-          });
-        }
-      });
-    });
+    const onPixelDataInsertedCallback = numberProcessed => {
+      const percentComplete = Math.floor(
+        (numberProcessed * 100) / NumberOfFrames
+      );
 
-    Promise.all(insertPixelDataPromises).then(() => {
+      if (percentComplete !== this.state.percentComplete) {
+        this.setState({
+          percentComplete,
+        });
+      }
+    };
+
+    const onAllPixelDataInsertedCallback = () => {
       this.setState({
         isLoaded: true,
       });
-    });
+    };
+
+    imageDataObject.onPixelDataInserted(onPixelDataInsertedCallback);
+    imageDataObject.onAllPixelDataInserted(onAllPixelDataInsertedCallback);
   }
 
   render() {
@@ -435,7 +438,7 @@ class OHIFVTKViewport extends Component {
                 segmentsDefaultProperties: this.segmentsDefaultProperties,
                 onNewSegmentationRequested: () => {
                   this.setStateFromProps();
-                }
+                },
               }}
               onScroll={this.props.onScroll}
             />

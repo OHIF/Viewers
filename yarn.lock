@@ -5950,10 +5950,10 @@ cornerstone-math@^0.1.8:
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.8.tgz#68ab1f9e4fdcd7c5cb23a0d2eb4263f9f894f1c5"
   integrity sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw==
 
-cornerstone-tools@4.15.1:
-  version "4.15.1"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-4.15.1.tgz#f0b1026da9c7758defc088bb2f1e78426a23d91e"
-  integrity sha512-fJuTUJW/NDSD520jPB++tX//Kq80jPDngChHZrhx2xjj/9dCnexD9kmTX30Z0WUq0a2JEHZ6FlcOX38kSmw1hQ==
+cornerstone-tools@^4.20.1:
+  version "4.20.1"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-4.20.1.tgz#90f6c28356622eac037683b19f9175f85d33dff7"
+  integrity sha512-SyQsrg3bnGHUvWGZpUq7ia7/gj12S9zQFK2VMhpyAYxK9pWz+PRv8HBi0eEe/fWGAo/Vc62IRkdP3uF9MJlqiQ==
   dependencies:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.7"
@@ -16047,10 +16047,10 @@ react-transition-group@^4.1.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-vtkjs-viewport@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.9.0.tgz#5a7890643e511946f960db6b05142318be2dfe80"
-  integrity sha512-kjpNr1n+eW0nU736HH07IsSYQXphxfn/RBvKtpBer9tNsl+FyLH8h+uY8KWdv8kVBHkEoaH6/srxB0JBa8l+jA==
+react-vtkjs-viewport@^0.10.3:
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.10.3.tgz#8eaa8bc558057215b648ad6ce17092d68cf5354b"
+  integrity sha512-9aXuBrAlKa79Q1qPSWmPflSgpG2sm5jyKresdqUUvqYVJQJx83Xkkh4XfgOfLHY/nEwpTI8dr3FwtH2dzrBkoA==
   dependencies:
     date-fns "^2.2.1"
     gl-matrix "^3.1.0"
