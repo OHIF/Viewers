@@ -44,6 +44,7 @@ const Select = ({
   options,
   placeholder,
   noIcons,
+  menuPlacement,
   value,
 }) => {
   const _noIconComponents = { DropdownIndicator: () => null, IndicatorSeparator: () => null };
@@ -72,6 +73,7 @@ const Select = ({
       isClearable={isClearable}
       isMulti={isMulti}
       isSearchable={isSearchable}
+      menuPlacement={menuPlacement}
       closeMenuOnSelect={closeMenuOnSelect}
       hideSelectedOptions={hideSelectedOptions}
       components={_components}
@@ -97,6 +99,7 @@ Select.defaultProps = {
   isMulti: false,
   isSearchable: true,
   noIcons: false,
+  menuPlacement: 'auto',
   value: [],
 };
 
@@ -109,6 +112,7 @@ Select.propTypes = {
   isMulti: PropTypes.bool,
   isSearchable: PropTypes.bool,
   noIcons: PropTypes.bool,
+  menuPlacement: PropTypes.oneOf(['auto', 'bottom', 'top']),
   onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({
