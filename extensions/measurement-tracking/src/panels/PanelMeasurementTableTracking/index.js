@@ -32,7 +32,11 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     measurementChangeTimestamp,
     200
   );
-  const { MeasurementService, UIDialogService } = servicesManager.services;
+  const {
+    MeasurementService,
+    UIDialogService,
+    DisplaySetService,
+  } = servicesManager.services;
   const [
     trackedMeasurements,
     sendTrackedMeasurementsEvent,
@@ -51,8 +55,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    const mappedMeasurements = filteredMeasurements.map((m, index) =>
-      _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
+    const mappedMeasurements = filteredMeasurements.map(m =>
+      _mapMeasurementToDisplay(
+        m,
+        MeasurementService.VALUE_TYPES,
+        DisplaySetService
+      )
     );
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
@@ -159,8 +167,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     onMeasurementItemClickHandler({ id, isActive });
   };
 
-  const onMeasurementItemEditHandler = ({ id }) => {
+  const onMeasurementItemEditHandler = ({ id, isActive }) => {
     const measurement = MeasurementService.getMeasurement(id);
+    jumpToImage({ id, isActive });
 
     const onSubmitHandler = ({ action, value }) => {
       switch (action.id) {
@@ -295,27 +304,39 @@ PanelMeasurementTableTracking.propTypes = {
 };
 
 // TODO: This could be a MeasurementService mapper
-function _mapMeasurementToDisplay(measurement, index, types) {
-  const {
-    id,
-    label,
-    description,
-    // Reference IDs
-    referenceStudyUID,
-    referenceSeriesUID,
-    SOPInstanceUID,
-  } = measurement;
+function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
+  const { referenceStudyUID, referenceSeriesUID, SOPInstanceUID } = measurement;
+
+  // TODO: We don't deal with multiframe well yet, would need to update
+  // This in OHIF-312 when we add FrameIndex to measurements.
+
   const instance = DicomMetadataStore.getInstance(
     referenceStudyUID,
     referenceSeriesUID,
     SOPInstanceUID
   );
-  const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;
+
+  const displaySets = DisplaySetService.getDisplaySetsForSeries(
+    referenceSeriesUID
+  );
+
+  if (!displaySets[0] || !displaySets[0].images) {
+    throw new Error(
+      'The tracked measurements panel should only be tracking "stack" displaySets.'
+    );
+  }
+
+  const oneBasedImageIdIndex = _getOneBasedImageIdIndex(
+    displaySets,
+    SOPInstanceUID
+  );
+  const { PixelSpacing, SeriesNumber } = instance;
+
   const displayText = _getDisplayText(
     measurement,
     PixelSpacing,
     SeriesNumber,
-    InstanceNumber,
+    oneBasedImageIdIndex,
     types
   );
 
@@ -326,6 +347,25 @@ function _mapMeasurementToDisplay(measurement, index, types) {
     displayText: displayText || [],
     isActive: false, // activeMeasurementItem === i + 1,
   };
+}
+
+/**
+ *
+ * @param {*} displaySets An array of displaySets relating to a given series.
+ * @param {*} SOPInstanceUID The SOPInstanceUID to find.
+ * @returns {number} The one-based imageIdIndex.
+ */
+function _getOneBasedImageIdIndex(displaySets, SOPInstanceUID) {
+  for (let ds = 0; ds < displaySets.length; ds++) {
+    const displaySet = displaySets[0];
+    const { images } = displaySet;
+
+    for (let i = 0; i < images.length; i++) {
+      if (images[i].SOPInstanceUID === SOPInstanceUID) {
+        return i + 1; // We want the instack position 1-based.
+      }
+    }
+  }
 }
 
 /**

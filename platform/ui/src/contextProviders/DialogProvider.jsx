@@ -11,7 +11,12 @@ import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import classNames from 'classnames';
 
-import { utils } from '@ohif/core';
+/*
+ * This is a workaround to import things from ohif/core as docz does
+ * not allow us to access window element and @ohif/core does use it once
+ * we import to instanciate cornerstone
+ */
+import guid from './../../../core/src/utils/guid';
 
 import './DialogProvider.css';
 
@@ -88,7 +93,7 @@ const DialogProvider = ({ children, service }) => {
 
     let dialogId = id;
     if (!dialogId) {
-      dialogId = utils.guid();
+      dialogId = guid();
     }
 
     setDialogs(dialogs => [...dialogs, { ...props, id: dialogId }]);
@@ -172,7 +177,7 @@ const DialogProvider = ({ children, service }) => {
           defaultPosition={position}
           bounds="parent"
           onStart={event => {
-            const e = event || window.event;
+            const e = event || (typeof window !== 'undefined' && window.event);
             const target = e.target || e.srcElement;
             const BLACKLIST = [
               'SVG',

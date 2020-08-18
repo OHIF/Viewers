@@ -227,10 +227,10 @@ function PanelStudyBrowserTracking({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? [
-        ...expandedStudyInstanceUIDs.filter(
-          stdyUid => stdyUid !== StudyInstanceUID
-        ),
-      ]
+          ...expandedStudyInstanceUIDs.filter(
+            stdyUid => stdyUid !== StudyInstanceUID
+          ),
+        ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -304,7 +304,7 @@ function PanelStudyBrowserTracking({
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
         });
       }}
-      onClickThumbnail={() => { }}
+      onClickThumbnail={() => {}}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
       activeDisplaySetInstanceUID={activeDisplaySetInstanceUID}
     />
@@ -320,7 +320,6 @@ PanelStudyBrowserTracking.propTypes = {
     EVENTS: PropTypes.object.isRequired,
     activeDisplaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
     getDisplaySetByUID: PropTypes.func.isRequired,
-    hasDisplaySetsForStudy: PropTypes.func.isRequired,
     subscribe: PropTypes.func.isRequired,
   }).isRequired,
   dataSource: PropTypes.shape({
@@ -370,11 +369,11 @@ function _mapDisplaySets(
     const viewportIdentificator = isSingleViewport
       ? []
       : viewports.reduce((acc, viewportData, index) => {
-        if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
-          acc.push(_viewportLabels[index]);
-        }
-        return acc;
-      }, []);
+          if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
+            acc.push(_viewportLabels[index]);
+          }
+          return acc;
+        }, []);
 
     const array =
       componentType === 'thumbnailTracked'
@@ -444,21 +443,9 @@ function _createStudyBrowserTabs(
   const allStudies = [];
 
   studyDisplayList.forEach(study => {
-    const displaySetsForStudy = displaySets.filter(
+    const displaySetsForStudy = utils.sortBySeriesDate(displaySets.filter(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
-    );
-
-    displaySetsForStudy.sort((a, b) => {
-      if (a.seriesNumber !== b.seriesNumber) {
-        return a.seriesNumber - b.seriesNumber;
-      }
-
-      const seriesDateA = Date.parse(a.seriesDate);
-      const seriesDateB = Date.parse(b.seriesDate);
-
-      return seriesDateA - seriesDateB;
-    });
-
+    ));
     const tabStudy = Object.assign({}, study, {
       displaySets: displaySetsForStudy,
     });

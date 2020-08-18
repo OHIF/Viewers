@@ -4,7 +4,11 @@ function requestDisplaySetCreationForStudy(
   StudyInstanceUID
 ) {
   // TODO: is this already short-circuited by the map of Retrieve promises?
-  if (DisplaySetService.hasDisplaySetsForStudy(StudyInstanceUID)) {
+  if (
+    DisplaySetService.activeDisplaySets.some(
+      displaySet => displaySet.StudyInstanceUID === StudyInstanceUID
+    )
+  ) {
     return;
   }
 

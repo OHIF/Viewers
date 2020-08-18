@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon, ButtonGroup, Button, Tooltip } from '@ohif/ui';
+import { Icon, ButtonGroup, Button, Tooltip } from '../';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 
 const classes = {

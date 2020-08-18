@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useQuery } from '@hooks';
+import { utils } from '@ohif/core';
 
 import {
   Icon,
@@ -50,6 +51,12 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysMa
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
 
+  /*
+   * The default sort value keep the filters synchronized with runtime conditional sorting
+   * Only applied if no other sorting is specified and there are less than 101 studies
+   */
+  let defaultSortValues = {};
+
   const sortedStudies = studies
     // TOOD: Move sort to DataSourceWrapper?
     // TODO: MOTIVATION, this is triggered on every render, even if list/sort does not change
@@ -59,7 +66,10 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysMa
 
       if (noSortApplied && studies.length < 101) {
         const ascendingSortModifier = -1;
-
+        defaultSortValues = {
+          sortBy: 'studyDate',
+          sortDirection: 'ascending',
+        };
         return _sortStringDates(s1, s2, ascendingSortModifier);
       } else if (noSortApplied) {
         return 0;
@@ -162,9 +172,8 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysMa
   useEffect(() => {
     const fetchSeries = async studyInstanceUid => {
       try {
-        const result = await dataSource.query.series.search(studyInstanceUid);
-
-        seriesInStudiesMap.set(studyInstanceUid, result);
+        const series = await dataSource.query.series.search(studyInstanceUid);
+        seriesInStudiesMap.set(studyInstanceUid, utils.sortBySeriesDate(series));
         setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
       } catch (ex) {
         // TODO: UI Notification Service
@@ -372,7 +381,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysMa
       <StudyListFilter
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}
-        filterValues={filterValues}
+        filterValues={{ ...filterValues, ...defaultSortValues }}
         onChange={setFilterValues}
         clearFilters={() => setFilterValues(defaultFilterValues)}
         isFiltering={isFiltering(filterValues, defaultFilterValues)}

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import TouchBackend from 'react-dnd-touch-backend';
+// import TouchBackend from 'react-dnd-touch-backend';
 
 // TODO: this is false when it should not be :thinking:
 const isTouchDevice =

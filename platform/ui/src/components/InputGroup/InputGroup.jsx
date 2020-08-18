@@ -7,7 +7,7 @@ import {
   InputDateRange,
   InputMultiSelect,
   InputLabelWrapper,
-} from '@ohif/ui';
+} from '../';
 
 const InputGroup = ({
   inputMeta,
@@ -21,12 +21,12 @@ const InputGroup = ({
 
   const handleFilterLabelClick = name => {
     if (isSortingEnable) {
-      let _sortDirection = 'ascending';
+      let _sortDirection = 'descending';
       if (sortBy === name) {
         if (sortDirection === 'ascending') {
           _sortDirection = 'descending';
         } else if (sortDirection === 'descending') {
-          _sortDirection = 'none';
+          _sortDirection = 'ascending';
         }
       }
 

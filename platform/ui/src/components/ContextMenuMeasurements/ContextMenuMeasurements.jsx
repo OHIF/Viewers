@@ -1,4 +1,4 @@
-import { ContextMenu } from '@ohif/ui';
+import { ContextMenu } from '../';
 import PropTypes from 'prop-types';
 import React from 'react';
 
