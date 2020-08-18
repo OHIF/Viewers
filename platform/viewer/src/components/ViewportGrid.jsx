@@ -1,16 +1,14 @@
 /**
  * CSS Grid Reference: http://grid.malven.co/
  */
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
-import { classes } from '@ohif/core';
-const { ImageSet } = classes;
 import classNames from 'classnames';
 
 function ViewerViewportGrid(props) {
-  const { servicesManager, commandsManager, viewportComponents, dataSource } = props;
+  const { servicesManager, viewportComponents, dataSource } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   const {
@@ -202,7 +200,6 @@ function ViewerViewportGrid(props) {
               displaySet={displaySet}
               viewportIndex={viewportIndex}
               dataSource={dataSource}
-              commandsManager={commandsManager}
             />
           </div>
         </ViewportPane>
