@@ -104,14 +104,15 @@ export default function ModeRoute({
     // TODO: For some reason this is running before the Providers
     // are calling setServiceImplementation
     // TOOD -> iterate through services.
-    MeasurementService.clearMeasurements();
-    ViewportGridService.reset();
-    HangingProtocolService.reset();
 
     // Extension
     extensionManager.onModeEnter();
     // Mode
     route.init({ servicesManager, extensionManager });
+
+    return () => {
+      extensionManager.onModeExit();
+    };
   }, [
     mode,
     dataSourceName,
@@ -131,13 +132,16 @@ export default function ModeRoute({
     // DisplaySetService would wire this up?
     const { unsubscribe } = DicomMetadataStore.subscribe(
       DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-      ({ StudyInstanceUID, SeriesInstanceUID }) => {
+      ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) => {
         const seriesMetadata = DicomMetadataStore.getSeries(
           StudyInstanceUID,
           SeriesInstanceUID
         );
 
-        DisplaySetService.makeDisplaySets(seriesMetadata.instances);
+        DisplaySetService.makeDisplaySets(
+          seriesMetadata.instances,
+          madeInClient
+        );
       }
     );
 
@@ -161,9 +165,7 @@ export default function ModeRoute({
     const { unsubscribe } = DicomMetadataStore.subscribe(
       DicomMetadataStore.EVENTS.SERIES_ADDED,
       ({ StudyInstanceUID }) => {
-        const studyMetadata = DicomMetadataStore.getStudy(
-          StudyInstanceUID,
-        );
+        const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
 
         const sortedSeries = studyMetadata.series.sort((a, b) => {
           const aLowPriority = isLowPriorityModality(a.Modality);
@@ -176,13 +178,12 @@ export default function ModeRoute({
           }
 
           return a.SeriesNumber - b.SeriesNumber;
-        })
+        });
 
-        const { SeriesInstanceUID } = sortedSeries[0]
+        const { SeriesInstanceUID } = sortedSeries[0];
 
-        HangingProtocolService.setHangingProtocol(
-          {
-            /*protocolMatchingRules: [
+        HangingProtocolService.setHangingProtocol({
+          /*protocolMatchingRules: [
               {
                 id: '7tmuq7KzDMCWFeapc',
                 weight: 2,
@@ -195,9 +196,9 @@ export default function ModeRoute({
                 },
               },
             ],*/
-            stages: [
-              {
-                /*id: 'v5PfGt9F6mffZPif5',
+          stages: [
+            {
+              /*id: 'v5PfGt9F6mffZPif5',
                 viewportStructure: {
                   type: 'grid',
                   properties: {
@@ -206,30 +207,29 @@ export default function ModeRoute({
                   },
                   layoutTemplateName: 'gridLayout',
                 },*/
-                viewports: [
-                  {
-                    viewportSettings: {},
-                    imageMatchingRules: [],
-                    seriesMatchingRules: [
-                      {
-                        id: 'mXnsCcNzZL56z7mTZ',
-                        weight: 1,
-                        required: true,
-                        attribute: 'SeriesInstanceUID',
-                        constraint: {
-                          equals: {
-                            value: SeriesInstanceUID,
-                          },
+              viewports: [
+                {
+                  viewportSettings: {},
+                  imageMatchingRules: [],
+                  seriesMatchingRules: [
+                    {
+                      id: 'mXnsCcNzZL56z7mTZ',
+                      weight: 1,
+                      required: true,
+                      attribute: 'SeriesInstanceUID',
+                      constraint: {
+                        equals: {
+                          value: SeriesInstanceUID,
                         },
                       },
-                    ],
-                    studyMatchingRules: [],
-                  },
-                ],
-              }
-            ]
-          }
-        )
+                    },
+                  ],
+                  studyMatchingRules: [],
+                },
+              ],
+            },
+          ],
+        });
       }
     );
     return unsubscribe;

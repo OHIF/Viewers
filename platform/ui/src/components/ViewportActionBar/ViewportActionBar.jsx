@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon, ButtonGroup, Button, Tooltip } from '@ohif/ui';
+import { Icon, ButtonGroup, Button, Tooltip } from '../';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 
 const classes = {
@@ -16,7 +16,6 @@ const ViewportActionBar = ({
   showNavArrows,
   showPatientInfo: patientInfoVisibility,
   onSeriesChange,
-  onHydrationClick,
   onDoubleClick,
 }) => {
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
@@ -32,7 +31,6 @@ const ViewportActionBar = ({
     label,
     isTracked,
     isLocked,
-    isHydrated,
     modality,
     studyDate,
     currentSeries,
@@ -78,13 +76,7 @@ const ViewportActionBar = ({
               Measurements cannot be duplicated.
             </div>
           )
-        : () => (
-            <div>
-              This SR is unlocked. <br />
-              You can duplicate measurements on your current report <br /> by
-              clicking &apos;Edit&apos;.
-            </div>
-          );
+        : () => <div>This SR is unlocked.</div>;
       return (
         <>
           <Tooltip content={<TooltipMessage />} position="bottom-left">
@@ -101,16 +93,6 @@ const ViewportActionBar = ({
               )}
             </div>
           </Tooltip>
-          {!isLocked && !isHydrated && (
-            <div className="relative flex p-1 ml-1 border rounded cursor-pointer border-primary-light">
-              <span
-                className="text-sm font-bold leading-none text-primary-light"
-                onClick={onHydrationClick}
-              >
-                Edit
-              </span>
-            </div>
-          )}
         </>
       );
     }

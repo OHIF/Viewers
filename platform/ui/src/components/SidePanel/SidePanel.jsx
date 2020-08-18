@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { Button, Icon } from '@ohif/ui';
+import { Button, Icon } from '../';
 
 const borderSize = 4;
 const expandedWidth = 248;

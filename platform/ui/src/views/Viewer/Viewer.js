@@ -1,5 +1,6 @@
 import React from 'react';
-import { SidePanel, StudyBrowser, DragAndDropProvider } from '@ohif/ui';
+import { SidePanel, StudyBrowser } from '../../components';
+import { DragAndDropProvider } from '../../contextProviders';
 
 import Header from './components/Header';
 

@@ -16,7 +16,7 @@ import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
  *
  * @typedef {Object} Measurement
  * @property {number} id -
- * @property {string} sopInstanceUid -
+ * @property {string} SOPInstanceUID -
  * @property {string} FrameOfReferenceUID -
  * @property {string} referenceSeriesUID -
  * @property {string} label -
@@ -50,6 +50,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
 
 const EVENTS = {
   MEASUREMENT_UPDATED: 'event::measurement_updated',
+  INTERNAL_MEASUREMENT_UPDATED: 'event:internal_measurement_updated',
   MEASUREMENT_ADDED: 'event::measurement_added',
   MEASUREMENT_REMOVED: 'event::measurement_removed',
   MEASUREMENTS_CLEARED: 'event::measurements_cleared',
@@ -146,7 +147,7 @@ class MeasurementService {
       return this.addOrUpdate(source, definition, measurement);
     };
     source.remove = id => {
-      return this.remove(source, id);
+      return this.remove(id, source);
     };
     source.getAnnotation = (definition, measurementId) => {
       return this.getAnnotation(source, definition, measurementId);
@@ -216,11 +217,6 @@ class MeasurementService {
       return;
     }
 
-    if (!toSourceSchema) {
-      log.warn('Source mapping function not provided. Exiting early.');
-      return;
-    }
-
     if (!toMeasurementSchema) {
       log.warn('Measurement mapping function not provided. Exiting early.');
       return;
@@ -269,9 +265,9 @@ class MeasurementService {
       measurementId,
       definition
     );
+    const measurement = this.getMeasurement(measurementId);
     if (mapping) return mapping.toSourceSchema(measurement, definition);
 
-    const measurement = this.getMeasurement(measurementId);
     const matchingMapping = this._getMatchingMapping(
       source,
       definition,
@@ -285,21 +281,28 @@ class MeasurementService {
     }
   }
 
-  update(id, measurement) {
+  update(id, measurement, notYetUpdatedAtSource = false) {
     if (this.measurements[id]) {
       const updatedMeasurement = {
         ...measurement,
         modifiedTimestamp: Math.floor(Date.now() / 1000),
       };
 
-      log.info(`Updating measurement...`, updatedMeasurement);
+      log.info(
+        `Updating internal measurement representation...`,
+        updatedMeasurement
+      );
 
       this.measurements[id] = updatedMeasurement;
 
       this._broadcastChange(
+        // Add an internal flag to say the measurement has not yet been updated at source.
         this.EVENTS.MEASUREMENT_UPDATED,
-        measurement.source,
-        updatedMeasurement
+        {
+          source: measurement.source,
+          measurement: updatedMeasurement,
+          notYetUpdatedAtSource,
+        }
       );
 
       return updatedMeasurement.id;
@@ -375,19 +378,17 @@ class MeasurementService {
         newMeasurement
       );
       this.measurements[internalId] = newMeasurement;
-      this._broadcastChange(
-        this.EVENTS.MEASUREMENT_UPDATED,
+      this._broadcastChange(this.EVENTS.MEASUREMENT_UPDATED, {
         source,
-        newMeasurement
-      );
+        measurement: newMeasurement,
+      });
     } else {
       log.info(`Measurement added.`, newMeasurement);
       this.measurements[internalId] = newMeasurement;
-      this._broadcastChange(
-        this.EVENTS.MEASUREMENT_ADDED,
+      this._broadcastChange(this.EVENTS.MEASUREMENT_ADDED, {
         source,
-        newMeasurement
-      );
+        measurement: newMeasurement,
+      });
     }
 
     return newMeasurement.id;
@@ -466,37 +467,45 @@ class MeasurementService {
         newMeasurement
       );
       this.measurements[internalId] = newMeasurement;
-      this._broadcastChange(
-        this.EVENTS.MEASUREMENT_UPDATED,
+      this._broadcastChange(this.EVENTS.MEASUREMENT_UPDATED, {
         source,
-        newMeasurement
-      );
+        measurement: newMeasurement,
+        notYetUpdatedAtSource: false,
+      });
     } else {
       log.info(`Measurement added.`, newMeasurement);
       this.measurements[internalId] = newMeasurement;
-      this._broadcastChange(
-        this.EVENTS.MEASUREMENT_ADDED,
+      this._broadcastChange(this.EVENTS.MEASUREMENT_ADDED, {
         source,
-        newMeasurement
-      );
+        measurement: newMeasurement,
+      });
     }
 
     return newMeasurement.id;
   }
 
-  remove(source, id) {
+  /**
+   * Removes a measurement and broadcasts the removed event.
+   *
+   * @param {string} id The measurement id
+   * @param {MeasurementSource} source The measurement source instance
+   * @return {string} The removed measurement id
+   */
+  remove(id, source) {
     if (!id || !this.measurements[id]) {
       log.warn(`No id provided, or unable to find measurement by id.`);
       return;
     }
 
     delete this.measurements[id];
-    this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED, source, id);
+    this._broadcastChange(this.EVENTS.MEASUREMENT_REMOVED, {
+      source,
+      measurement: id, // This is weird :shrug:
+    });
   }
 
   clearMeasurements() {
     this.measurements = {};
-
     this._broadcastChange(this.EVENTS.MEASUREMENTS_CLEARED);
   }
 
@@ -556,7 +565,7 @@ class MeasurementService {
    *
    * @param {MeasurementSource} source Measurement source instance
    * @param {string} definition The source definition
-   * @param {string} measurement The measurement serice measurement
+   * @param {Measurement} measurement The measurement service measurement
    * @return {Object} The mapping based on matched criteria
    */
   _getMatchingMapping(source, definition, measurement) {
@@ -610,30 +619,20 @@ class MeasurementService {
   /**
    * Broadcasts measurement changes.
    *
-   * @param {string} eventName The event name
-   * @param {MeasurementSource} source The measurement source
-   * @param {string} measurement The measurement id
+   * @param {string} eventName The event name.add
+   * @param {object} eventData.source The measurement source.
+   * @param {object} eventData.measurement The measurement.
+   * @param {boolean} eventData.notYetUpdatedAtSource True if the measurement was edited
+   *      within the measurement service and the source needs to update.
    * @return void
    */
-  _broadcastChange(eventName, source, measurement) {
+  _broadcastChange(eventName, eventData) {
     const hasListeners = Object.keys(this.listeners).length > 0;
     const hasCallbacks = Array.isArray(this.listeners[eventName]);
 
-    if (!source) {
-      /* Broadcast to all sources */
-      /* Object.keys(this.sources).forEach(source => {
-        if (hasListeners && hasCallbacks) {
-          this.listeners[eventName].forEach(listener => {
-            listener.callback({ source, measurement });
-          });
-        }
-      });
-      return; */
-    }
-
     if (hasListeners && hasCallbacks) {
       this.listeners[eventName].forEach(listener => {
-        listener.callback({ source, measurement });
+        listener.callback(eventData);
       });
     }
   }

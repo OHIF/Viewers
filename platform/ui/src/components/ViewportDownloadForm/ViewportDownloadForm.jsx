@@ -17,7 +17,7 @@ import {
   Select,
   InputLabelWrapper,
   Button,
-} from '@ohif/ui';
+} from '../';
 
 const FILE_TYPE_OPTIONS = [
   {

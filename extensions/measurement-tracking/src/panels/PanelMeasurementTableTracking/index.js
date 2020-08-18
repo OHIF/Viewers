@@ -11,8 +11,8 @@ import { DicomMetadataStore, DICOMSR, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
-import createReportAsync from './../../_shared/createReportAsync.js';
-import setCornerstoneMeasurementActive from '../../_shared/setCornerstoneMeasurementActive';
+import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
+import RESPONSES from '../../_shared/PROMPT_RESPONSES';
 
 const { formatDate } = utils;
 
@@ -55,8 +55,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    const mappedMeasurements = filteredMeasurements.map((m, index) =>
-      _mapMeasurementToDisplay(m, index, MeasurementService.VALUE_TYPES)
+    const mappedMeasurements = filteredMeasurements.map(m =>
+      _mapMeasurementToDisplay(
+        m,
+        MeasurementService.VALUE_TYPES,
+        DisplaySetService
+      )
     );
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
@@ -132,11 +136,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     };
   }, [MeasurementService, sendTrackedMeasurementsEvent]);
 
-  function createReport() {
-    // TODO -> Eventually deal with multiple dataSources.
-    // Would need some way of saying which one is the "push" dataSource
-    const dataSources = extensionManager.getDataSources();
-    const dataSource = dataSources[0];
+  async function exportReport() {
     const measurements = MeasurementService.getMeasurements();
     const trackedMeasurements = measurements.filter(
       m =>
@@ -144,20 +144,21 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    return createReportAsync(servicesManager, dataSource, trackedMeasurements);
-  }
+    const promptResult = await createReportDialogPrompt(UIDialogService);
 
-  function exportReport() {
-    const measurements = MeasurementService.getMeasurements();
-    const trackedMeasurements = measurements.filter(
-      m =>
-        trackedStudy === m.referenceStudyUID &&
-        trackedSeries.includes(m.referenceSeriesUID)
-    );
+    if (promptResult.action === RESPONSES.CREATE_REPORT) {
+      const additionalFindings = ['ArrowAnnotate'];
 
-    const additionalFindings = ['ArrowAnnotate'];
+      const SeriesDescription =
+        // isUndefinedOrEmpty
+        promptResult.value === undefined || promptResult.value === ''
+          ? 'Research Derived Series' // default
+          : promptResult.value; // provided value
 
-    DICOMSR.downloadReport(trackedMeasurements, additionalFindings);
+      DICOMSR.downloadReport(trackedMeasurements, additionalFindings, {
+        SeriesDescription,
+      });
+    }
   }
 
   const jumpToImage = ({ id, isActive }) => {
@@ -166,22 +167,28 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     onMeasurementItemClickHandler({ id, isActive });
   };
 
-  const onMeasurementItemEditHandler = ({ id }) => {
+  const onMeasurementItemEditHandler = ({ id, isActive }) => {
     const measurement = MeasurementService.getMeasurement(id);
+    jumpToImage({ id, isActive });
 
-    let dialogId;
     const onSubmitHandler = ({ action, value }) => {
       switch (action.id) {
         case 'save': {
-          MeasurementService.update(id, {
-            ...measurement,
-            ...value,
-          });
+          MeasurementService.update(
+            id,
+            {
+              ...measurement,
+              ...value,
+            },
+            true
+          );
         }
       }
-      UIDialogService.dismiss({ id: dialogId });
+      UIDialogService.dismiss({ id: 'enter-annotation' });
     };
-    dialogId = UIDialogService.create({
+
+    UIDialogService.create({
+      id: 'enter-annotation',
       centralize: true,
       isDraggable: false,
       showOverlay: true,
@@ -272,7 +279,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       <div className="flex justify-center p-4">
         <ActionButtons
           onExportClick={exportReport}
-          onCreateReportClick={createReport}
+          onCreateReportClick={() => {
+            sendTrackedMeasurementsEvent('SAVE_REPORT', {
+              viewportIndex: viewportGrid.activeViewportIndex,
+              isBackupSave: true,
+            });
+          }}
         />
       </div>
     </>
@@ -291,27 +303,39 @@ PanelMeasurementTableTracking.propTypes = {
 };
 
 // TODO: This could be a MeasurementService mapper
-function _mapMeasurementToDisplay(measurement, index, types) {
-  const {
-    id,
-    label,
-    description,
-    // Reference IDs
-    referenceStudyUID,
-    referenceSeriesUID,
-    SOPInstanceUID,
-  } = measurement;
+function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
+  const { referenceStudyUID, referenceSeriesUID, SOPInstanceUID } = measurement;
+
+  // TODO: We don't deal with multiframe well yet, would need to update
+  // This in OHIF-312 when we add FrameIndex to measurements.
+
   const instance = DicomMetadataStore.getInstance(
     referenceStudyUID,
     referenceSeriesUID,
     SOPInstanceUID
   );
-  const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;
+
+  const displaySets = DisplaySetService.getDisplaySetsForSeries(
+    referenceSeriesUID
+  );
+
+  if (!displaySets[0] || !displaySets[0].images) {
+    throw new Error(
+      'The tracked measurements panel should only be tracking "stack" displaySets.'
+    );
+  }
+
+  const oneBasedImageIdIndex = _getOneBasedImageIdIndex(
+    displaySets,
+    SOPInstanceUID
+  );
+  const { PixelSpacing, SeriesNumber } = instance;
+
   const displayText = _getDisplayText(
     measurement,
     PixelSpacing,
     SeriesNumber,
-    InstanceNumber,
+    oneBasedImageIdIndex,
     types
   );
 
@@ -322,6 +346,25 @@ function _mapMeasurementToDisplay(measurement, index, types) {
     displayText: displayText || [],
     isActive: false, // activeMeasurementItem === i + 1,
   };
+}
+
+/**
+ *
+ * @param {*} displaySets An array of displaySets relating to a given series.
+ * @param {*} SOPInstanceUID The SOPInstanceUID to find.
+ * @returns {number} The one-based imageIdIndex.
+ */
+function _getOneBasedImageIdIndex(displaySets, SOPInstanceUID) {
+  for (let ds = 0; ds < displaySets.length; ds++) {
+    const displaySet = displaySets[0];
+    const { images } = displaySet;
+
+    for (let i = 0; i < images.length; i++) {
+      if (images[i].SOPInstanceUID === SOPInstanceUID) {
+        return i + 1; // We want the instack position 1-based.
+      }
+    }
+  }
 }
 
 /**

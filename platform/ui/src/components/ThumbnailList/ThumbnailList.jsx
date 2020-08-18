@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '@ohif/ui';
+import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '../';
 
 const ThumbnailList = ({
   thumbnails,

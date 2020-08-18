@@ -20,6 +20,7 @@ function promptUser({ servicesManager }, ctx, evt) {
       userResponse: promptResult,
       StudyInstanceUID,
       SeriesInstanceUID,
+      viewportIndex,
     });
   });
 }

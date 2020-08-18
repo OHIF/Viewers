@@ -331,7 +331,6 @@ PanelStudyBrowserTracking.propTypes = {
     EVENTS: PropTypes.object.isRequired,
     activeDisplaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
     getDisplaySetByUID: PropTypes.func.isRequired,
-    hasDisplaySetsForStudy: PropTypes.func.isRequired,
     subscribe: PropTypes.func.isRequired,
   }).isRequired,
   dataSource: PropTypes.shape({
@@ -520,28 +519,38 @@ function _createStudyBrowserTabs(
   const recentStudies = [];
   const allStudies = [];
 
+  // Iterate over each study...
   studyDisplayList.forEach(study => {
+    // Find it's display sets
     const displaySetsForStudy = displaySets.filter(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
+    
+   // Sort them
+   const sortedDisplaySetsForStudy = utils.sortBySeriesDate(displaySetsForStudy);
 
-    displaySetsForStudy.sort((a, b) => {
-      if (a.seriesNumber !== b.seriesNumber) {
-        return a.seriesNumber - b.seriesNumber;
-      }
+    /* Sort by series number, then by series date
+      displaySetsForStudy.sort((a, b) => {
+        if (a.seriesNumber !== b.seriesNumber) {
+          return a.seriesNumber - b.seriesNumber;
+        }
 
-      const seriesDateA = Date.parse(a.seriesDate);
-      const seriesDateB = Date.parse(b.seriesDate);
+        const seriesDateA = Date.parse(a.seriesDate);
+        const seriesDateB = Date.parse(b.seriesDate);
 
-      return seriesDateA - seriesDateB;
-    });
-
+        return seriesDateA - seriesDateB;
+      });
+    */
+    
+    // Map the study to it's tab/view representation
     const tabStudy = Object.assign({}, study, {
       displaySets: displaySetsForStudy,
     });
 
+    // Add the "tab study" to the 'primary', 'recent', and/or 'all' tab group(s)
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
       primaryStudies.push(tabStudy);
+      allStudies.push(tabStudy);
     } else {
       // TODO: Filter allStudies to dates within one year of current date
       recentStudies.push(tabStudy);

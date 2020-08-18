@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
+import { useViewportGrid } from '@ohif/ui';
 import {
   machineConfiguration,
   defaultOptions,
@@ -9,6 +10,9 @@ import {
 import promptBeginTracking from './promptBeginTracking';
 import promptTrackNewSeries from './promptTrackNewSeries';
 import promptTrackNewStudy from './promptTrackNewStudy';
+import promptSaveReport from './promptSaveReport';
+import promptHydrateStructuredReport from './promptHydrateStructuredReport';
+import hydrateStructuredReport from './_hydrateStructuredReport.js';
 
 const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
@@ -22,7 +26,60 @@ function TrackedMeasurementsContextProvider(
   { servicesManager, extensionManager }, // Bound by consumer
   { children } // Component props
 ) {
+  const [viewportGrid, viewportGridService] = useViewportGrid();
+  const { activeViewportIndex, viewports } = viewportGrid;
+
   const machineOptions = Object.assign({}, defaultOptions);
+  machineOptions.actions = Object.assign({}, machineOptions.actions, {
+    showSeriesInActiveViewport: (ctx, evt) => {
+      const { DisplaySetService } = servicesManager.services;
+      const displaySetsForHydratedSeries = DisplaySetService.getDisplaySetsForSeries(
+        ctx.trackedSeries[0]
+      );
+
+      if (displaySetsForHydratedSeries.length > 0) {
+        const firstDisplaySetInstanceUID =
+          displaySetsForHydratedSeries[0].displaySetInstanceUID;
+
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex: evt.data.viewportIndex,
+          displaySetInstanceUID: firstDisplaySetInstanceUID,
+        });
+      }
+    },
+    showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
+      if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
+        const StructuredReportDisplaySetInstanceUID =
+          evt.data.createdDisplaySetInstanceUIDs[0].displaySetInstanceUID;
+
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex: evt.data.viewportIndex,
+          displaySetInstanceUID: StructuredReportDisplaySetInstanceUID,
+        });
+      }
+    },
+    discardPreviouslyTrackedMeasurements: (ctx, evt) => {
+      const { MeasurementService } = servicesManager.services;
+      const measurements = MeasurementService.getMeasurements();
+      const filteredMeasurements = measurements.filter(ms =>
+        ctx.prevTrackedSeries.includes(ms.referenceSeriesUID)
+      );
+      const measurementIds = filteredMeasurements.map(fm => fm.id);
+
+      for (let i = 0; i < measurementIds.length; i++) {
+        MeasurementService.remove('app-source', measurementIds[i]);
+      }
+    },
+    clearAllMeasurements: (ctx, evt) => {
+      const { MeasurementService } = servicesManager.services;
+      const measurements = MeasurementService.getMeasurements();
+      const measurementIds = measurements.map(fm => fm.id);
+
+      for (let i = 0; i < measurementIds.length; i++) {
+        MeasurementService.remove('app-source', measurementIds[i]);
+      }
+    },
+  });
   machineOptions.services = Object.assign({}, machineOptions.services, {
     promptBeginTracking: promptBeginTracking.bind(null, {
       servicesManager,
@@ -35,6 +92,13 @@ function TrackedMeasurementsContextProvider(
     promptTrackNewStudy: promptTrackNewStudy.bind(null, {
       servicesManager,
       extensionManager,
+    }),
+    promptSaveReport: promptSaveReport.bind(null, {
+      servicesManager,
+      extensionManager,
+    }),
+    promptHydrateStructuredReport: promptHydrateStructuredReport.bind(null, {
+      servicesManager,
     }),
   });
 
@@ -57,6 +121,41 @@ function TrackedMeasurementsContextProvider(
     sendTrackedMeasurementsEvent,
     trackedMeasurementsService,
   ] = useMachine(measurementTrackingMachine);
+
+  // ~~ Listen for changes to ViewportGrid for potential SRs hung in panes when idle
+  useEffect(() => {
+    if (viewports.length > 0) {
+      const activeViewport = viewports[activeViewportIndex];
+
+      if (!activeViewport || !activeViewport.displaySetInstanceUID) {
+        return;
+      }
+
+      const { DisplaySetService } = servicesManager.services;
+      const displaySet = DisplaySetService.getDisplaySetByUID(
+        activeViewport.displaySetInstanceUID
+      );
+
+      // Magic string
+      // load function added by our sopClassHandler module
+      if (
+        displaySet.SOPClassHandlerId ===
+          'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr' &&
+        !displaySet.isLocked
+      ) {
+        console.log('sending event...', trackedMeasurements);
+        sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
+          displaySetInstanceUID: displaySet.displaySetInstanceUID,
+          viewportIndex: activeViewportIndex,
+        });
+      }
+    }
+  }, [
+    activeViewportIndex,
+    sendTrackedMeasurementsEvent,
+    servicesManager.services,
+    viewports,
+  ]);
 
   return (
     <TrackedMeasurementsContext.Provider

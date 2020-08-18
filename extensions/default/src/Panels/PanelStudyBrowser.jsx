@@ -187,7 +187,6 @@ PanelStudyBrowser.propTypes = {
     EVENTS: PropTypes.object.isRequired,
     activeDisplaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
     getDisplaySetByUID: PropTypes.func.isRequired,
-    hasDisplaySetsForStudy: PropTypes.func.isRequired,
     subscribe: PropTypes.func.isRequired,
   }).isRequired,
   dataSource: PropTypes.shape({
