@@ -7,7 +7,7 @@ import { useAppConfig } from '@state';
 import { extensionManager } from '../App.jsx';
 
 let cacheMap = {};
-let total = 0;
+let total = {};
 
 /**
  * Uses route properties to determine the data source that should be passed
@@ -62,32 +62,46 @@ function DataSourceWrapper(props) {
       const reachedLimits = parseInt((resultsPerPage * pageNumber) / STUDIES_LIMIT);
       const cacheKey = `${pageNumber}-${resultsPerPage}`;
 
-      const getFromCache = (cacheKey, pageNumber, resultsPerPage, limit, options) => {
+      const getFromCache = async ({ cacheKey, pageNumber, resultsPerPage, limit, options }) => {
         const pagesAmount = limit / resultsPerPage;
         const pageToRequest = parseInt((resultsPerPage * pageNumber) / STUDIES_LIMIT);
 
+        let length = 0;
         if (!cacheMap[cacheKey]) {
-          total = (pageToRequest * limit) + 1;
+          length = pageToRequest > 0 ? (pageToRequest * STUDIES_LIMIT) : 1;
           const studiesPromise = dataSource.query.studies.search(options);
+
           for (let pageNum = 0; pageNum < pagesAmount; pageNum++) {
             const currentPageNumber = (pageNum + 1) + (pageToRequest * pagesAmount);
             cacheMap[`${currentPageNumber}-${resultsPerPage}`] = studiesPromise.then(function (results) {
-              const slidedResult = results.slice((pageNum * resultsPerPage), ((pageNum + 1) * resultsPerPage));
-              total += slidedResult.length;
-              return slidedResult;
+              const slicedResult = results.slice((pageNum * resultsPerPage), ((pageNum + 1) * resultsPerPage));
+              length += slicedResult.length;
+              return slicedResult;
             });
           }
         }
 
-        return cacheMap[cacheKey];
+        const cache = await cacheMap[cacheKey];
+        return { cache, length, index: pageToRequest };
       };
 
-      const studies = await getFromCache(cacheKey, pageNumber, resultsPerPage, limit, {
-        ...queryFilterValues,
-        ...{ offset: reachedLimits * limit }
+      const { cache: studies, index, length } = await getFromCache({
+        cacheKey,
+        pageNumber,
+        resultsPerPage,
+        limit,
+        options: { ...queryFilterValues, ...{ offset: reachedLimits * limit } }
       });
+
+      const totalKey = `${resultsPerPage}-${index}`;
+      total[totalKey] = total[totalKey] ? total[totalKey] + length : length;
+      const totals = Object.keys(total).map(key => total[key]);
+      const biggestIndex = totals.indexOf(Math.max(...totals));
+      const biggestKey = Object.keys(total)[biggestIndex];
+      const biggestTotal = total[biggestKey];
+
       setIsLoading(false);
-      setData({ studies, total });
+      setData({ studies, total: biggestTotal });
     }
 
     try {
