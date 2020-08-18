@@ -7,8 +7,6 @@ route: examples/studyList
 import { useState } from 'react';
 import { Playground } from 'docz';
 import {
-  StudyList,
-  utils,
   Icon,
   StudyListExpandedRow,
   Button,
@@ -20,6 +18,7 @@ import {
   StudyListPagination,
   StudyListFilter
 } from '../../components';
+import utils from '../../utils';
 
 
 import classnames from 'classnames';
