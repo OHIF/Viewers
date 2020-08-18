@@ -31,8 +31,6 @@ export default function CineProvider({ children, service }) {
         cines[id].frameRate = frameRate || cines[id].frameRate;
         cines[id].isPlaying = isPlaying !== undefined ? isPlaying : cines[id].isPlaying;
 
-        console.log(cines);
-
         return { ...state, ...{ cines } };
       }
       case 'SET_IS_CINE_ENABLED': {
