@@ -91,7 +91,7 @@ const SplitButton = ({
 
   return (
     <OutsideClickHandler onOutsideClick={outsideClickHandler}>
-      <div name='SplitButton'>
+      <div name='SplitButton' className="relative">
         <div
           className={classes.Button({ ...state })}
           onMouseEnter={onMouseEnterHandler}
