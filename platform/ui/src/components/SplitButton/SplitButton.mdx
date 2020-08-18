@@ -6,7 +6,7 @@ route: components/splitButton
 
 import { useState } from 'react';
 import { Playground, Props } from 'docz';
-import { SplitButton } from '@ohif/ui';
+import { SplitButton, WindowLevelMenuItem } from '@ohif/ui';
 
 # Split Button
 
@@ -15,25 +15,43 @@ Split Buttons are used to populate the Toolbar.
 ## Import
 
 ```javascript
-import { SplitButton } from '@ohif/ui';
+import { SplitButton, WindowLevelMenuItem } from '@ohif/ui';
 ```
 
 <Playground>
   {() => {
-    const [isActive, setIsActive] = useState(false);
-    const tool = {
-      id: 'Zoom',
-      label: 'Zoom',
-      icon: 'tool-zoom',
-      type: null,
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Zoom' },
-      onClick: () => setIsActive(true),
-      isActive,
+    const mockedProps = {
+      primary: {
+        tooltip: 'W/L',
+        icon: 'tool-window-level',
+        onClick: (args) => console.debug('Primary click!', args)
+      },
+      secondary: {
+        icon: 'chevron-down',
+        label: '',
+        isActive: true,
+        tooltip: 'More Measure Tools',
+      },
+      items: [
+        { id: '1', icon: 'tool-layout', label: 'Layout', onClick: (args) => console.debug('Item click!', args) },
+        { id: '2', icon: 'tool-window-level', label: 'W/L', onClick: (args) => console.debug('Item click!', args) },
+        { id: '3', icon: 'tool-length', label: 'Length', onClick: (args) => console.debug('Item click!', args) }
+      ],
+      onClick: (args) => console.debug('Any click!', args)
     };
     return (
-      <div className="py-10 flex justify-center">
-        <SplitButton {...tool} />
+      <div className="mb-2">
+        <div className="flex flex-row min-h-16 w-full justify-center items-center bg-secondary-dark">
+          <SplitButton {...mockedProps} isRadio />
+          <SplitButton {...mockedProps} isAction renderer={WindowLevelMenuItem} items={[
+            { id: '1', value: 1, title: 'Soft tissue', subtitle: '400 / 40' },
+            { id: '2', value: 2, title: 'Lung', subtitle: '1500 / -600' },
+            { id: '3', value: 3, title: 'Liver', subtitle: '150 / 90' },
+            { id: '4', value: 4, title: 'Bone', subtitle: '80 / 40' },
+            { id: '5', value: 5, title: 'Brain', subtitle: '2500 / 480' },
+          ]} />
+          <SplitButton {...mockedProps} />
+        </div>
       </div>
     );
   }}

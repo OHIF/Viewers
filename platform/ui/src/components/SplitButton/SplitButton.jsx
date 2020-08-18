@@ -164,15 +164,15 @@ SplitButton.defaultProps = {
 
 SplitButton.propTypes = {
   primary: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    icon: PropTypes.string.isRequired,
+    id: PropTypes.string,
+    icon: PropTypes.string,
     label: PropTypes.string,
     tooltip: PropTypes.string,
     isActive: PropTypes.bool,
   }),
   secondary: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    icon: PropTypes.string.isRequired,
+    id: PropTypes.string,
+    icon: PropTypes.string,
     label: PropTypes.string,
     tooltip: PropTypes.string,
     isActive: PropTypes.bool
@@ -182,7 +182,7 @@ SplitButton.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      icon: PropTypes.string.isRequired,
+      icon: PropTypes.string,
       label: PropTypes.string,
       tooltip: PropTypes.string,
       onClick: PropTypes.func,
