@@ -30,7 +30,7 @@ const StudyListPagination = ({
         <div className="flex justify-between">
           <div className="flex items-center">
             <Select
-              className="relative mr-3 w-16"
+              className="relative mr-3 w-16 border-primary-main"
               options={ranges}
               value={selectedRange}
               isMulti={false}
@@ -52,7 +52,7 @@ const StudyListPagination = ({
               <ButtonGroup color="primary">
                 <Button
                   size="initial"
-                  className="border-common-active px-4 py-2 text-base"
+                  className="border-primary-main px-4 py-2 text-base"
                   color="white"
                   onClick={() => navigateToPage(1)}
                 >
@@ -60,13 +60,13 @@ const StudyListPagination = ({
                 </Button>
                 <Button
                   size="initial"
-                  className="border-common-active py-2 px-2 text-base"
+                  className="border-primary-main py-2 px-2 text-base"
                   color="white"
                   onClick={() => navigateToPage(currentPage - 1)}
                 >{`< Previous`}</Button>
                 <Button
                   size="initial"
-                  className="border-common-active py-2 px-4 text-base"
+                  className="border-primary-main py-2 px-4 text-base"
                   color="white"
                   onClick={() => navigateToPage(currentPage + 1)}
                 >
