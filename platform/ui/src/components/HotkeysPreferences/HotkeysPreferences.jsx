@@ -38,57 +38,59 @@ const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErr
 
   return (
     <div className='flex flex-row justify-center'>
-      {splitedHotkeys.map((hotkeys, index) => {
-        return (
-          <div key={`HotkeyGroup@${index}`} className='flex flex-row mr-20'>
-            <div className='p-2 text-right flex flex-col'>
-              {hotkeys.map((hotkey, hotkeyIndex) => {
-                const [id, definition] = hotkey;
-                const isFirst = hotkeyIndex === 0;
-                const error = errors[id];
+      <div className='flex flex-row justify-evenly w-full'>
+        {splitedHotkeys.map((hotkeys, index) => {
+          return (
+            <div key={`HotkeyGroup@${index}`} className='flex flex-row'>
+              <div className='p-2 text-right flex flex-col'>
+                {hotkeys.map((hotkey, hotkeyIndex) => {
+                  const [id, definition] = hotkey;
+                  const isFirst = hotkeyIndex === 0;
+                  const error = errors[id];
 
-                const onChangeHandler = keys => onHotkeyChangeHandler(id, { ...definition, keys });
+                  const onChangeHandler = keys => onHotkeyChangeHandler(id, { ...definition, keys });
 
-                return (
-                  <div key={`HotkeyItem@${hotkeyIndex}`} className='flex flex-row justify-end mb-2'>
-                    <div className='flex flex-col items-center'>
-                      <Typography
-                        variant='subtitle'
-                        className={classNames('pr-6 w-full text-right text-primary-light', !isFirst && 'hidden')}
-                      >
-                        Function
+                  return (
+                    <div key={`HotkeyItem@${hotkeyIndex}`} className='flex flex-row justify-end mb-2'>
+                      <div className='flex flex-col items-center'>
+                        <Typography
+                          variant='subtitle'
+                          className={classNames('pr-6 w-full text-right text-primary-light', !isFirst && 'hidden')}
+                        >
+                          Function
                       </Typography>
-                      <Typography
-                        variant='subtitle'
-                        className={classNames('pr-6 h-full flex flex-row items-center', isFirst && 'mt-5')}>
-                        {definition.label}
+                        <Typography
+                          variant='subtitle'
+                          className={classNames('pr-6 h-full flex flex-row items-center whitespace-no-wrap', isFirst && 'mt-5')}>
+                          {definition.label}
+                        </Typography>
+                      </div>
+                      <div className='flex flex-col'>
+                        <Typography
+                          variant='subtitle'
+                          className={classNames('pr-6 pl-0 text-left text-primary-light', !isFirst && 'hidden')}
+                        >
+                          Shortcut
                       </Typography>
-                    </div>
-                    <div className='flex flex-col'>
-                      <Typography
-                        variant='subtitle'
-                        className={classNames('pr-6 pl-0 text-left text-primary-light', !isFirst && 'hidden')}
-                      >
-                        Shortcut
-                      </Typography>
-                      <div className={classNames('flex flex-col w-32', isFirst && 'mt-5')}>
-                        <HotkeyField
-                          disabled={disabled}
-                          keys={definition.keys}
-                          modifierKeys={MODIFIER_KEYS}
-                          onChange={onChangeHandler}
-                          className='text-lg h-8'
-                        />
-                        {error && <span className='p-2 text-red-600 text-sm'>{error}</span>}
+                        <div className={classNames('flex flex-col w-32', isFirst && 'mt-5')}>
+                          <HotkeyField
+                            disabled={disabled}
+                            keys={definition.keys}
+                            modifierKeys={MODIFIER_KEYS}
+                            onChange={onChangeHandler}
+                            className='text-lg h-8'
+                          />
+                          {error && <span className='p-2 text-red-600 text-sm'>{error}</span>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };
