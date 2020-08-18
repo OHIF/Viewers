@@ -9,7 +9,7 @@ import {
   UIViewportDialogService,
   MeasurementService,
   DisplaySetService,
-  ToolBarSerivce,
+  ToolBarService,
   ViewportGridService,
   HangingProtocolService,
   CineService
@@ -54,7 +54,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     UIViewportDialogService,
     MeasurementService,
     DisplaySetService,
-    ToolBarSerivce,
+    ToolBarService,
     ViewportGridService,
     HangingProtocolService,
     CineService
