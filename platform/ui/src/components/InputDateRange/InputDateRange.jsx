@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { DateRange, InputLabelWrapper } from '@ohif/ui';
+import { DateRange, InputLabelWrapper } from '../';
 
 const InputDateRange = ({
   label,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, ButtonGroup, Icon, Typography, Select } from '@ohif/ui';
+import { Button, ButtonGroup, Typography, Select } from '../';
 
 const StudyListPagination = ({
   onChangePage,

@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { Icon, Typography } from '@ohif/ui';
+import { Icon, Typography } from '../';
 
 const Dropdown = ({ children, showDropdownIcon, list }) => {
   const [open, setOpen] = useState(false);

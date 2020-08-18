@@ -7,7 +7,7 @@ import {
   InputDateRange,
   InputMultiSelect,
   InputLabelWrapper,
-} from '@ohif/ui';
+} from '../';
 
 const InputGroup = ({
   inputMeta,

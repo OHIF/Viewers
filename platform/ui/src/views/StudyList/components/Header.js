@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 
-import { IconButton, Icon, NavBar } from '@ohif/ui';
+import { IconButton, Icon, NavBar } from '../../../components';
 
 import OHIFLogo from './OHIFLogo.js';
 

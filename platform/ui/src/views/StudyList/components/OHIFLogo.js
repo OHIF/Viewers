@@ -1,5 +1,5 @@
 import React from 'react';
-import { Svg } from '@ohif/ui';
+import { Svg } from '../../../components';
 
 function OHIFLogo() {
   return (

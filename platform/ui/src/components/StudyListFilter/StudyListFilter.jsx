@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Icon, Typography, InputGroup, useModal } from '@ohif/ui';
+import { Button, Icon, Typography, InputGroup } from '../../components';
+import { useModal } from '../../contextProviders';
 
 const StudyListFilter = ({
   filtersMeta,
@@ -39,7 +40,7 @@ const StudyListFilter = ({
             <div className="flex flex-row justify-between mb-5 px-12">
               <div className="flex flex-row">
                 <Typography variant="h4" className="text-primary-light mr-6">
-                  Study List
+                  Study list
                 </Typography>
                 <div className="flex flex-row items-end">
                   <Button
