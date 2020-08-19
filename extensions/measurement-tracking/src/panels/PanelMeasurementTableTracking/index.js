@@ -7,12 +7,13 @@ import {
   Input,
   useViewportGrid,
 } from '@ohif/ui';
-import { DicomMetadataStore, DICOMSR, utils } from '@ohif/core';
+import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import ActionButtons from './ActionButtons';
 import { useTrackedMeasurements } from '../../getContextModule';
 import createReportDialogPrompt from '../../_shared/createReportDialogPrompt';
 import RESPONSES from '../../_shared/PROMPT_RESPONSES';
+import downloadCSVReport from '../../_shared/downloadCSVReport';
 
 const { formatDate } = utils;
 
@@ -144,21 +145,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
         trackedSeries.includes(m.referenceSeriesUID)
     );
 
-    const promptResult = await createReportDialogPrompt(UIDialogService);
-
-    if (promptResult.action === RESPONSES.CREATE_REPORT) {
-      const additionalFindings = ['ArrowAnnotate'];
-
-      const SeriesDescription =
-        // isUndefinedOrEmpty
-        promptResult.value === undefined || promptResult.value === ''
-          ? 'Research Derived Series' // default
-          : promptResult.value; // provided value
-
-      DICOMSR.downloadReport(trackedMeasurements, additionalFindings, {
-        SeriesDescription,
-      });
-    }
+    downloadCSVReport(
+      trackedMeasurements,
+      trackedStudy,
+      trackedSeries,
+      MeasurementService
+    );
   }
 
   const jumpToImage = ({ id, isActive }) => {
@@ -191,7 +183,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       id: 'enter-annotation',
       centralize: true,
       isDraggable: false,
-      useLastPosition: false,
       showOverlay: true,
       content: Dialog,
       contentProps: {

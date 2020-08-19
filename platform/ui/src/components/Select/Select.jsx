@@ -74,14 +74,14 @@ const Select = ({
       components={_components}
       placeholder={placeholder}
       options={options}
-      value={selectedOptions}
+      value={isMulti ? selectedOptions : value}
       onChange={(selectedOptions, { action }) => {
         const newSelection = !selectedOptions.length
           ? selectedOptions
           : selectedOptions.reduce((acc, curr) => acc.concat([curr.value]), []);
         onChange(newSelection, action);
       }}
-    ></ReactSelect>
+    />
   );
 };
 
@@ -112,7 +112,7 @@ Select.propTypes = {
     })
   ),
   placeholder: PropTypes.string,
-  value: PropTypes.arrayOf(PropTypes.string),
+  value: PropTypes.oneOfType(PropTypes.string, PropTypes.arrayOf(PropTypes.string)),
 };
 
 export default Select;

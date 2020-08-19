@@ -24,6 +24,7 @@ import utils from './utils/';
 import defaults from './defaults';
 
 import {
+  CineService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -31,7 +32,7 @@ import {
   //
   DicomMetadataStore,
   DisplaySetService,
-  ToolBarSerivce, // TODO: Typo
+  ToolBarService,
   MeasurementService,
   ViewportGridService,
   HangingProtocolService,
@@ -73,13 +74,14 @@ const OHIF = {
   measurements,
   hangingProtocols,
   //
+  CineService,
   UIDialogService,
   UIModalService,
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
   MeasurementService,
-  ToolBarSerivce, // TODO: TYPO
+  ToolBarService, // TODO: TYPO
   ViewportGridService,
   HangingProtocolService,
   IWebApiDataSource,
@@ -117,13 +119,14 @@ export {
   measurements,
   hangingProtocols,
   //
+  CineService,
   UIDialogService,
   UIModalService,
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
   MeasurementService,
-  ToolBarSerivce,
+  ToolBarService,
   ViewportGridService,
   HangingProtocolService,
   IWebApiDataSource,

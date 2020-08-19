@@ -5,14 +5,13 @@ import PropTypes from 'prop-types';
 import { Typography, Icon } from '..';
 
 const CloseButton = ({ onClick }) => {
-  const theme = 'bg-transparent fill-primary-active';
-  const outline = 'outline-none focus:outline-none';
-  const flex = 'flex h-full';
-
   return (
-    <button className={classNames(flex, theme, 'border-0')} onClick={onClick}>
-      <Icon name="close" className={classNames(theme, outline, 'h-3 w-3')} />
-    </button>
+    <Icon
+      data-cy="close-button"
+      onClick={onClick}
+      name="close"
+      className="cursor-pointer text-primary-active w-6 h-6"
+    />
   );
 };
 

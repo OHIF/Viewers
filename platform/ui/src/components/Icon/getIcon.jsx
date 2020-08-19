@@ -60,6 +60,8 @@ import oldAngleLeft from './../../assets/icons/old-angle-left.svg';
 import oldReset from './../../assets/icons/old-reset.svg';
 import oldCircleO from './../../assets/icons/old-circle-o.svg';
 import oldTrash from './../../assets/icons/old-trash.svg';
+import oldPlay from './../../assets/icons/old-play.svg';
+import oldStop from './../../assets/icons/old-stop.svg';
 
 const ICONS = {
   'arrow-down': arrowDown,
@@ -121,6 +123,8 @@ const ICONS = {
   'old-reset': oldReset,
   'old-circle-o': oldCircleO,
   'old-trash': oldTrash,
+  'old-play': oldPlay,
+  'old-stop': oldStop,
 };
 
 /**

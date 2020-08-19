@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
-import { Icon, Tooltip, Typography } from '@ohif/ui';
+import { Icon, Tooltip, Typography } from '../';
 
 const ThumbnailNoImage = ({
   displaySetInstanceUID,
@@ -12,12 +12,14 @@ const ThumbnailNoImage = ({
   modalityTooltip,
   onClick,
   onDoubleClick,
+  canReject,
+  onReject,
   dragData,
   isActive,
 }) => {
   const [collectedProps, drag, dragPreview] = useDrag({
     item: { ...dragData },
-    canDrag: function(monitor) {
+    canDrag: function (monitor) {
       return Object.keys(dragData).length !== 0;
     },
   });
@@ -51,8 +53,11 @@ const ThumbnailNoImage = ({
             </Tooltip>
             <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
           </div>
-          <div className="ml-12 text-base text-white break-all">
-            {description}
+          <div className="flex flex-row">
+            {canReject && <Icon name="old-trash" className="ml-4 w-3 text-red-500" onClick={onReject} />}
+            <div className="ml-4 text-base text-white break-all">
+              {description}
+            </div>
           </div>
         </div>
       </div>
