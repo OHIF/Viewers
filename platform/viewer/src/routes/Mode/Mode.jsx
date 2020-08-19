@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 // TODO: DicomMetadataStore should be injected?
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
-//
 import { useQuery } from '@hooks';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
@@ -88,12 +87,10 @@ export default function ModeRoute({
       return;
     }
 
-    console.debug('[hotkeys] Setting up hotkeys...');
     hotkeysManager.setDefaultHotKeys(hotkeys);
     hotkeysManager.setHotkeys(hotkeys);
 
     return () => {
-      console.debug('[hotkeys] Removing hotkeys...');
       hotkeysManager.destroy();
     };
   }, []);
@@ -282,4 +279,5 @@ ModeRoute.propTypes = {
   dataSourceName: PropTypes.string,
   extensionManager: PropTypes.object,
   servicesManager: PropTypes.object,
+  hotkeysManager: PropTypes.object,
 };

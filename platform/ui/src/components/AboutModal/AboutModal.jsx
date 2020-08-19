@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Icon } from '@ohif/ui';
+import { Typography, Icon } from '../../components';
 import detect from 'browser-detect';
 
 const Link = ({ href, children, showIcon = false }) => {
@@ -29,14 +29,14 @@ const Row = ({ title, value, link }) => {
       {link ? (
         <Link href={link}>{value}</Link>
       ) : (
-        <Typography
-          variant="subtitle"
-          component="p"
-          className="text-white w-48"
-        >
-          {value}
-        </Typography>
-      )}
+          <Typography
+            variant="subtitle"
+            component="p"
+            className="text-white w-48"
+          >
+            {value}
+          </Typography>
+        )}
     </div>
   );
 };

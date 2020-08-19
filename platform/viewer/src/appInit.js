@@ -44,6 +44,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
   const extensionManager = new ExtensionManager({
     commandsManager,
     servicesManager,
+    hotkeysManager,
     appConfig,
   });
 
