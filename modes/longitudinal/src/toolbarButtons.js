@@ -1,8 +1,6 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
-import React from 'react';
-import classnames from 'classnames';
-import { ExpandableToolbarButton, ListMenu } from '@ohif/ui';
+import { ExpandableToolbarButton, ListMenu, WindowLevelMenuItem } from '@ohif/ui';
 import { defaults } from '@ohif/core';
 
 const { windowLevelPresets } = defaults;
@@ -66,26 +64,14 @@ export default [
       type: 'primary',
       content: ListMenu,
       contentProps: {
-        options: [
+        items: [
           { value: 1, title: 'Soft tissue', subtitle: '400 / 40' },
           { value: 2, title: 'Lung', subtitle: '1500 / -600' },
           { value: 3, title: 'Liver', subtitle: '150 / 90' },
           { value: 4, title: 'Bone', subtitle: '80 / 40' },
           { value: 5, title: 'Brain', subtitle: '2500 / 480' },
         ],
-        renderer: ({ title, subtitle, isActive, index }) => (
-          <>
-            <div>
-              <span className={classnames(isActive ? "text-black" : "text-white", "mr-2 text-base")}>
-                {title}
-              </span>
-              <span className={classnames(isActive ? "text-black" : "text-aqua-pale", "font-thin text-sm")}>
-                {subtitle}
-              </span>
-            </div>
-            <span className={classnames(isActive ? "text-black" : "text-primary-active", "text-sm")}>{index + 1}</span>
-          </>
-        )
+        renderer: WindowLevelMenuItem
       }
     },
   },

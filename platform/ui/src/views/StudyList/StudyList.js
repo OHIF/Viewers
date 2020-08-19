@@ -14,7 +14,6 @@ import {
   StudyListTable,
   StudyListFilter,
 } from '../../components';
-
 import utils from '../../utils';
 
 // fix imports after refactor
@@ -285,10 +284,10 @@ const StudyList = () => {
           />
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center pt-48">
-          <EmptyStudies />
-        </div>
-      )}
+          <div className="flex flex-col items-center justify-center pt-48">
+            <EmptyStudies />
+          </div>
+        )}
     </div>
   );
 };

@@ -65,6 +65,7 @@ export {
   Select,
   SegmentationTable,
   SidePanel,
+  SplitButton,
   StudyBrowser,
   StudyItem,
   StudyListExpandedRow,
@@ -94,6 +95,7 @@ export {
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
+  WindowLevelMenuItem
 } from './src/components';
 
 /** VIEWS */

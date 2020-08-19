@@ -25,6 +25,7 @@ import Notification from './Notification';
 import Select from './Select';
 import SegmentationTable from './SegmentationTable';
 import SidePanel from './SidePanel';
+import SplitButton from './SplitButton';
 import StudyBrowser from './StudyBrowser';
 import StudyItem from './StudyItem';
 import StudyListExpandedRow from './StudyListExpandedRow';
@@ -55,6 +56,7 @@ import ViewportActionBar from './ViewportActionBar';
 import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
+import WindowLevelMenuItem from './WindowLevelMenuItem';
 import UserPreferences from './UserPreferences';
 import HotkeysPreferences from './HotkeysPreferences';
 import HotkeyField from './HotkeyField';
@@ -94,6 +96,7 @@ export {
   Select,
   SegmentationTable,
   SidePanel,
+  SplitButton,
   StudyBrowser,
   StudyItem,
   StudyListExpandedRow,
@@ -123,4 +126,5 @@ export {
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
+  WindowLevelMenuItem
 };
