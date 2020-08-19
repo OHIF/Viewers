@@ -236,9 +236,8 @@ export default function init({
         id: dialogId,
         centralize: true,
         isDraggable: false,
-        content: Dialog,
-        useLastPosition: false,
         showOverlay: true,
+        content: Dialog,
         contentProps: {
           title: 'Enter your annotation',
           value: { label },

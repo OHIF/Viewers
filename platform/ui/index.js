@@ -4,6 +4,8 @@ export { utils };
 
 /** CONTEXT/HOOKS */
 export {
+  useCine,
+  CineProvider,
   DialogProvider,
   useDialog,
   withDialog,
@@ -30,9 +32,15 @@ export {
 
 /** COMPONENTS */
 export {
+  AboutModal,
+  HotkeyField,
+  Header,
+  UserPreferences,
+  HotkeysPreferences,
   Button,
   ButtonGroup,
   ContextMenu,
+  CinePlayer,
   DateRange,
   Dialog,
   Dropdown,

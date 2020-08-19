@@ -18,9 +18,7 @@ function WrappedPanelStudyBrowserTracking({
   extensionManager,
   servicesManager,
 }) {
-  // TODO: This should be made available a different way; route should have
-  // already determined our datasource
-  const dataSource = extensionManager.getDataSources('dicomweb')[0];
+  const dataSource = extensionManager.getActiveDataSource()[0];
   const _getStudiesForPatientByStudyInstanceUID = getStudiesForPatientByStudyInstanceUID.bind(
     null,
     dataSource
@@ -37,6 +35,8 @@ function WrappedPanelStudyBrowserTracking({
     <PanelStudyBrowserTracking
       MeasurementService={servicesManager.services.MeasurementService}
       DisplaySetService={servicesManager.services.DisplaySetService}
+      UIDialogService={servicesManager.services.UIDialogService}
+      UINotificationService={servicesManager.services.UINotificationService}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByStudyInstanceUID={

@@ -175,14 +175,17 @@ export default [
       type: 'primary',
     },
   },
-  // TODO: Toggle
   {
     id: 'Cine',
-    type: 'ohif.action',
+    type: 'ohif.toggle',
+    config: {
+      groupName: 'primaryTool',
+    },
     props: {
+      isActive: false,
       icon: 'old-youtube',
       label: 'Cine',
-      commandName: '',
+      commandName: 'toggleCine',
       type: 'primary',
     },
   },

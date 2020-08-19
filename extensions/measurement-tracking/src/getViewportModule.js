@@ -12,10 +12,10 @@ const OHIFCornerstoneViewport = props => {
   );
 };
 
-function getViewportModule({ servicesManager }) {
+function getViewportModule({ servicesManager, commandsManager }) {
   const ExtendedOHIFCornerstoneSRViewport = props => {
     return (
-      <OHIFCornerstoneViewport servicesManager={servicesManager} {...props} />
+      <OHIFCornerstoneViewport servicesManager={servicesManager} commandsManager={commandsManager} {...props} />
     );
   };
 

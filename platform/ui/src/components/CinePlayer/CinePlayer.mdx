@@ -1,0 +1,42 @@
+---
+name: CinePlayer
+menu: General
+route: components/CinePlayer
+---
+
+import { useState } from 'react';
+import { Playground, Props } from 'docz';
+import { CinePlayer } from '@ohif/ui';
+
+# Input Text
+
+## Import
+
+```javascript
+import { CinePlayer } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  {() => {
+    return (
+      <div className="flex flex-col flex-1 p-4 items-center">
+        <div className="w-56">
+          <CinePlayer
+            cineMinFrameRate={1}
+            cineMaxFrameRate={90}
+            cineStepFrameRate={1}
+            cineFrameRate={24}
+            isPlaying={false}
+          />
+        </div>
+      </div>
+    )
+  }}
+
+</Playground>
+
+## Properties
+
+<Props of={CinePlayer} />

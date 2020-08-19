@@ -16,6 +16,7 @@ function create({
   query,
   retrieve,
   store,
+  reject,
   retrieveSeriesMetadata,
   deleteStudyMetadataPromise,
   getImageIdsForDisplaySet,
@@ -54,9 +55,12 @@ function create({
     },
   };
 
+  const defaultReject = {};
+
   return {
     query: query || defaultQuery,
     retrieve: retrieve || defaultRetrieve,
+    reject: reject || defaultReject,
     store: store || defaultStore,
     getImageIdsForDisplaySet,
     retrieveSeriesMetadata,

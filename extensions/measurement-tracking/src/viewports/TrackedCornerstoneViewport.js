@@ -7,6 +7,7 @@ import OHIF, { utils } from '@ohif/core';
 import {
   Notification,
   ViewportActionBar,
+  useCine,
   useViewportGrid,
   useViewportDialog,
 } from '@ohif/ui';
@@ -35,10 +36,6 @@ const BaseAnnotationTool = cornerstoneTools.importInternal(
   'base/BaseAnnotationTool'
 );
 
-// const cine = viewportSpecificData.cine;
-// isPlaying = cine.isPlaying === true;
-// frameRate = cine.cineFrameRate || frameRate;
-
 const { StackManager } = OHIF.utils;
 
 function TrackedCornerstoneViewport({
@@ -47,6 +44,7 @@ function TrackedCornerstoneViewport({
   displaySet,
   viewportIndex,
   servicesManager,
+  commandsManager
 }) {
   const {
     ToolBarService,
@@ -54,12 +52,11 @@ function TrackedCornerstoneViewport({
     MeasurementService,
   } = servicesManager.services;
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [{ activeViewportIndex, viewports }] = useViewportGrid();
-  // viewportIndex, onSubmit
+  const [{ activeViewportIndex, viewports }, viewportGridService] = useViewportGrid();
+  const [{ isCineEnabled, cines }, cineService] = useCine();
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
   const [element, setElement] = useState(null);
-
   const [isTracked, setIsTracked] = useState(false);
   const [trackedMeasurementId, setTrackedMeasurementId] = useState(null);
 
@@ -70,6 +67,10 @@ function TrackedCornerstoneViewport({
       StackManager.clearStacks();
     };
   }, []);
+
+  useEffect(() => {
+    cineService.setCine({ id: viewportIndex });
+  }, [viewportIndex]);
 
   useEffect(() => {
     const unsubcribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
@@ -298,7 +299,9 @@ function TrackedCornerstoneViewport({
     );
   }
 
-  // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
+  const cine = cines[viewportIndex];
+  const isPlaying = cine && cine.isPlaying || false;
+  const frameRate = cine && cine.frameRate || 24;
 
   return (
     <>
@@ -333,6 +336,14 @@ function TrackedCornerstoneViewport({
             scanner: ManufacturerModelName || '',
           },
         }}
+        showNavArrows={!isCineEnabled}
+        showCine={isCineEnabled}
+        cineProps={{
+          isPlaying,
+          onClose: () => commandsManager.runCommand('toggleCine'),
+          onPlayPauseChange: isPlaying => cineService.setCine({ id: activeViewportIndex, isPlaying }),
+          onFrameRateChange: frameRate => cineService.setCine({ id: activeViewportIndex, frameRate }),
+        }}
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
       <div className="relative flex flex-row w-full h-full overflow-hidden">
@@ -347,8 +358,8 @@ function TrackedCornerstoneViewport({
           // TODO: ViewportGrid Context?
           isActive={true} // todo
           isStackPrefetchEnabled={true} // todo
-          isPlaying={false}
-          frameRate={24}
+          isPlaying={isPlaying}
+          frameRate={frameRate}
           isOverlayVisible={true}
           loadingIndicatorComponent={ViewportLoadingIndicator}
           viewportOverlayComponent={props => {
@@ -408,6 +419,7 @@ function _getCornerstoneStack(displaySet, dataSource) {
   return stack;
 }
 
+// TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
 function _onDoubleClick() {
   const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
     'manipulatorState'

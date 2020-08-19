@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { SidePanel, ErrorBoundary } from '@ohif/ui';
-import Header from './Header.jsx';
+import { useTranslation } from 'react-i18next';
+import { SidePanel, ErrorBoundary, UserPreferences, AboutModal, Header, useModal } from '@ohif/ui';
+
 import NestedMenu from './ToolbarButtonNestedMenu.jsx';
 
 // TODO: Having ToolbarPrimary and ToolbarSecondary is ugly, but
@@ -90,10 +91,10 @@ function ToolbarSecondary({ servicesManager }) {
     isActive: false,
   };
   const [toolbars, setToolbars] = useState({ primary: [], secondary: [] });
-  const [activeTool, setActiveTool] = useState(defaultTool);
+  const [nestedActiveTool, setNestedActiveTool] = useState(defaultTool);
 
   const setActiveToolHandler = (tool, isNested) => {
-    setActiveTool(isNested ? tool : defaultTool);
+    setNestedActiveTool(isNested ? tool : defaultTool);
   };
 
   const onPrimaryClickHandler = (evt, btn) => {
@@ -137,19 +138,46 @@ function ToolbarSecondary({ servicesManager }) {
   </>
 }
 
-
 function ViewerLayout({
   // From Extension Module Params
   extensionManager,
   servicesManager,
-  commandsManager,
+  hotkeysManager,
   // From Modes
   leftPanels,
   rightPanels,
   viewports,
-  children,
   ViewportGridComp,
 }) {
+  const { t } = useTranslation();
+  const { show, hide } = useModal();
+
+  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
+  const menuOptions = [
+    {
+      title: t('Header:About'),
+      icon: 'info',
+      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' })
+    },
+    {
+      title: t('Header:Preferences'),
+      icon: 'settings',
+      onClick: () => show({
+        title: t('UserPreferencesModal:User Preferences'),
+        content: UserPreferences,
+        contentProps: {
+          hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
+          hotkeyDefinitions,
+          onCancel: hide,
+          onSubmit: ({ hotkeyDefinitions }) => {
+            hotkeysManager.setHotkeys(hotkeyDefinitions);
+            hide();
+          },
+          onReset: () => hotkeysManager.restoreDefaultBindings()
+        }
+      })
+    },
+  ];
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -194,7 +222,7 @@ function ViewerLayout({
 
   return (
     <div>
-      <Header>
+      <Header menuOptions={menuOptions}>
         <ErrorBoundary context="Primary Toolbar">
           <div className="relative flex justify-center">
             <ToolbarPrimary servicesManager={servicesManager} />
@@ -229,6 +257,7 @@ function ViewerLayout({
               <ViewportGridComp
                 servicesManager={servicesManager}
                 viewportComponents={viewportComponents}
+                commandsManager={commandsManager}
               />
             </ErrorBoundary>
           </div>

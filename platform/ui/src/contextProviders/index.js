@@ -20,6 +20,12 @@ export {
 } from './ImageViewerProvider';
 
 export {
+  CineContext,
+  default as CineProvider,
+  useCine,
+} from './CineProvider';
+
+export {
   default as SnackbarProvider,
   useSnackbar,
   withSnackbar,
