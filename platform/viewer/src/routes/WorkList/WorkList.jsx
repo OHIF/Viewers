@@ -5,25 +5,26 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
 import isEqual from 'lodash.isequal';
-
+import { useTranslation } from 'react-i18next';
+//
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useQuery } from '@hooks';
 import { utils } from '@ohif/core';
 
-import PreferencesDropdown from '../../components/PreferencesDropdown';
-
 import {
   Icon,
   StudyListExpandedRow,
   Button,
-  NavBar,
-  Svg,
   EmptyStudies,
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
   TooltipClipboard,
+  Header,
+  useModal,
+  AboutModal,
+  UserPreferences
 } from '@ohif/ui';
 
 const seriesInStudiesMap = new Map();
@@ -32,7 +33,11 @@ const seriesInStudiesMap = new Map();
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function WorkList({ history, data: studies, isLoadingData, dataSource }) {
+function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysManager }) {
+  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
+  const { show, hide } = useModal();
+  const { t } = useTranslation();
+
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
@@ -340,25 +345,39 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
 
   const hasStudies = numOfStudies > 0;
 
+  const menuOptions = [
+    {
+      title: t('Header:About'),
+      icon: 'info',
+      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' })
+    },
+    {
+      title: t('Header:Preferences'),
+      icon: 'settings',
+      onClick: () => show({
+        title: t('UserPreferencesModal:User Preferences'),
+        content: UserPreferences,
+        contentProps: {
+          hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
+          hotkeyDefinitions,
+          onCancel: hide,
+          onSubmit: ({ hotkeyDefinitions }) => {
+            hotkeysManager.setHotkeys(hotkeyDefinitions);
+            hide();
+          },
+          onReset: () => hotkeysManager.restoreDefaultBindings()
+        }
+      })
+    },
+  ];
+
   return (
     <div
       className={classnames('bg-black h-full', {
         'h-screen': !hasStudies,
       })}
     >
-      <NavBar className="justify-between border-b-4 border-black" isSticky>
-        <div className="flex items-center">
-          <div className="mx-3">
-            <Svg name="logo-ohif" />
-          </div>
-        </div>
-        <div className="flex items-center">
-          <span className="mr-3 text-lg text-common-light">
-            FOR INVESTIGATIONAL USE ONLY
-          </span>
-          <PreferencesDropdown />
-        </div>
-      </NavBar>
+      <Header menuOptions={menuOptions} isReturnEnabled={false} />
       <StudyListFilter
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}

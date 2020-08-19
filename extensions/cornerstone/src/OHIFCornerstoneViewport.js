@@ -6,12 +6,6 @@ import debounce from 'lodash.debounce';
 
 import { setEnabledElement } from './state';
 
-
-// const cine = viewportSpecificData.cine;
-
-// isPlaying = cine.isPlaying === true;
-// frameRate = cine.cineFrameRate || frameRate;
-
 const { StackManager } = OHIF.utils;
 
 class OHIFCornerstoneViewport extends Component {

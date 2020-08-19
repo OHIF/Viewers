@@ -56,15 +56,21 @@ const languagesMap = {
   'zh-TW': 'Chinese (Taiwan)',
 };
 
+const getLanguageLabel = (language) => {
+  return languagesMap[language];
+};
+
 export default function getAvailableLanguagesInfo(locales) {
   const availableLanguagesInfo = [];
 
   Object.keys(locales).forEach(key => {
     availableLanguagesInfo.push({
       value: key,
-      label: languagesMap[key] || key,
+      label: getLanguageLabel(key) || key,
     });
   });
 
   return availableLanguagesInfo;
 }
+
+export { getAvailableLanguagesInfo, getLanguageLabel };

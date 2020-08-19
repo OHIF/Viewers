@@ -1,3 +1,4 @@
+import merge from 'lodash.merge';
 import pubSubServiceInterface from '../_shared/pubSubServiceInterface';
 
 const EVENTS = {
@@ -36,9 +37,23 @@ export default class ToolBarService {
     });
   }
 
+  setButton(id, button) {
+    if (this.buttons[id]) {
+      this.buttons[id] = merge(this.buttons[id], button);
+      this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {
+        buttons: this.buttons,
+        button: this.buttons[id],
+        buttonSections: this.buttonSections
+      });
+    }
+  }
+
   setButtons(buttons) {
     this.buttons = buttons;
-    this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {});
+    this._broadcastChange(this.EVENTS.TOOL_BAR_MODIFIED, {
+      buttons: this.buttons,
+      buttonSections: this.buttonSections
+    });
   }
 
   _buttonTypes() {
@@ -60,7 +75,6 @@ export default class ToolBarService {
 
     return buttonTypes;
   }
-
 
   createButtonSection(key, buttons) {
     // Maybe do this mapping at time of return, instead of time of create

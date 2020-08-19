@@ -86,7 +86,7 @@ const Select = ({
           : selectedOptions.reduce((acc, curr) => acc.concat([curr.value]), []);
         onChange(newSelection, action);
       }}
-    ></ReactSelect>
+    />
   );
 };
 

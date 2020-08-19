@@ -6,15 +6,9 @@ function ActionButtons({ onExportClick, onCreateReportClick }) {
   return (
     <React.Fragment>
       <ButtonGroup color="black" size="inherit">
-        <Button className="text-base px-2 py-2" onClick={onExportClick}>Export</Button>
-        <IconButton
-          className="px-2"
-          color="black"
-          size="initial"
-          variant="outlined"
-        >
-          <Icon name="arrow-down" />
-        </IconButton>
+        <Button className="text-base px-2 py-2" onClick={onExportClick}>
+          Export
+        </Button>
       </ButtonGroup>
       <Button
         className="ml-2 text-base"
