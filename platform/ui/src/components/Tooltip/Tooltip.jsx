@@ -43,7 +43,7 @@ const Tooltip = ({ content, isSticky, position, tight, children, isDisabled }) =
 
   return (
     <div
-      className="relative "
+      className="relative h-full"
       onMouseOver={handleMouseOver}
       onFocus={handleMouseOver}
       onMouseOut={handleMouseOut}
@@ -88,7 +88,7 @@ Tooltip.defaultProps = {
 };
 
 Tooltip.propTypes = {
-/** prevents tooltip from rendering despite hover/active/sticky */
+  /** prevents tooltip from rendering despite hover/active/sticky */
   isDisabled: PropTypes.bool,
   content: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   position: PropTypes.oneOf([

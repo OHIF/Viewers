@@ -101,10 +101,10 @@ function ToolbarSecondary({ servicesManager }) {
     if (
       btn.props &&
       btn.props.commands &&
-      evt.value &&
-      btn.props.commands[evt.value]
+      evt.item && evt.item.value &&
+      btn.props.commands[evt.item.value]
     ) {
-      const { commandName, commandOptions } = btn.props.commands[evt.value];
+      const { commandName, commandOptions } = btn.props.commands[evt.item.value];
       commandsManager.runCommand(commandName, commandOptions);
     }
   };
@@ -143,6 +143,7 @@ function ViewerLayout({
   extensionManager,
   servicesManager,
   hotkeysManager,
+  commandsManager,
   // From Modes
   leftPanels,
   rightPanels,
