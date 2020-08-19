@@ -30,6 +30,11 @@ export {
 
 /** COMPONENTS */
 export {
+  AboutModal,
+  HotkeyField,
+  Header,
+  UserPreferences,
+  HotkeysPreferences,
   Button,
   ButtonGroup,
   ContextMenu,

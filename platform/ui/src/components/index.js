@@ -1,3 +1,4 @@
+import AboutModal from './AboutModal';
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
 import ContextMenu from './ContextMenu';
@@ -53,8 +54,17 @@ import ViewportActionBar from './ViewportActionBar';
 import ViewportDownloadForm from './ViewportDownloadForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
+import UserPreferences from './UserPreferences';
+import HotkeysPreferences from './HotkeysPreferences';
+import HotkeyField from './HotkeyField';
+import Header from './Header';
 
 export {
+  AboutModal,
+  HotkeyField,
+  Header,
+  UserPreferences,
+  HotkeysPreferences,
   Button,
   ButtonGroup,
   ContextMenu,

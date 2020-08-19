@@ -7,6 +7,7 @@ import { initReactI18next } from 'react-i18next';
 import customDebug from './debugger';
 import pkg from '../package.json';
 import { debugMode, detectionOptions } from './config';
+import { getLanguageLabel, getAvailableLanguagesInfo } from './utils.js';
 
 // Note: The index.js files inside src/locales are dynamically generated
 // by the pullTranslations.sh script
@@ -127,7 +128,7 @@ function initI18n(
       });
   }
 
-  return initialized.then(function(t) {
+  return initialized.then(function (t) {
     i18n.T = t;
     customDebug(`T function available.`, 'info');
   });
@@ -138,9 +139,8 @@ customDebug(`version ${pkg.version} loaded.`, 'info');
 i18n.initializing = initI18n();
 i18n.initI18n = initI18n;
 i18n.addLocales = addLocales;
-i18n.defaultLanguage = DEFAULT_LANGUAGE;
-
-import getAvailableLanguagesInfo from './getAvailableLanguagesInfo.js';
 i18n.availableLanguages = getAvailableLanguagesInfo(locales);
+i18n.defaultLanguage = { label: getLanguageLabel(DEFAULT_LANGUAGE), value: DEFAULT_LANGUAGE };
+i18n.currentLanguage = () => ({ label: getLanguageLabel(i18n.language), value: i18n.language });
 
 export default i18n;
