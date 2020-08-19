@@ -377,7 +377,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysMa
         'h-screen': !hasStudies,
       })}
     >
-      <Header menuOptions={menuOptions} isReturnEnabled={false} />
+      <Header isSticky menuOptions={menuOptions} isReturnEnabled={false} />
       <StudyListFilter
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}

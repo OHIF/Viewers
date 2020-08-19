@@ -143,6 +143,7 @@ function ViewerLayout({
   extensionManager,
   servicesManager,
   hotkeysManager,
+  commandsManager,
   // From Modes
   leftPanels,
   rightPanels,

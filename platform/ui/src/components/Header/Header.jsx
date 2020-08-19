@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 import { NavBar, Svg, Icon, IconButton, Dropdown } from '@ohif/ui';
 
-function Header({ children, menuOptions, isReturnEnabled }) {
+function Header({ children, menuOptions, isReturnEnabled, isSticky }) {
   const { t } = useTranslation();
   const history = useHistory();
 
@@ -17,7 +17,7 @@ function Header({ children, menuOptions, isReturnEnabled }) {
   };
 
   return (
-    <NavBar className="justify-between border-b-4 border-black">
+    <NavBar className='justify-between border-b-4 border-black' isSticky={isSticky}>
       <div className="flex justify-between flex-1">
         <div className="flex items-center">
           {/* // TODO: Should preserve filter/sort
@@ -60,12 +60,21 @@ function Header({ children, menuOptions, isReturnEnabled }) {
 }
 
 Header.propTypes = {
+  menuOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      icon: PropTypes.string,
+      onClick: PropTypes.func.isRequired,
+    })
+  ),
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-  isReturnEnabled: PropTypes.bool
+  isReturnEnabled: PropTypes.bool,
+  isSticky: PropTypes.bool
 };
 
 Header.defaultProps = {
-  isReturnEnabled: true
+  isReturnEnabled: true,
+  isSticky: false
 };
 
 export default Header;
