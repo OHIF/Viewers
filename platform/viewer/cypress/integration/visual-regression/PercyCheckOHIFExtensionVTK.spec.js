@@ -19,7 +19,7 @@ describe('Visual Regression - OHIF VTK Extension', () => {
     cy.get('[data-cy="2d mpr"]').click();
 
     //Wait waitVTKLoading Images
-    cy.waitVTKwaitVTKLoading();
+    cy.waitVTKLoading();
   });
 
   beforeEach(() => {
