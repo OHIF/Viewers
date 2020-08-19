@@ -2,6 +2,7 @@ import AboutModal from './AboutModal';
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
 import ContextMenu from './ContextMenu';
+import CinePlayer from './CinePlayer';
 import DateRange from './DateRange';
 import Dialog from './Dialog';
 import Dropdown from './Dropdown';
@@ -68,6 +69,7 @@ export {
   Button,
   ButtonGroup,
   ContextMenu,
+  CinePlayer,
   DateRange,
   Dialog,
   Dropdown,

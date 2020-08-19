@@ -23,6 +23,11 @@ export default [
     isEditable: true,
   },
   {
+    commandName: 'toggleCine',
+    label: 'Cine',
+    keys: ['c'],
+  },
+  {
     commandName: 'invertViewport',
     label: 'Invert',
     keys: ['i'],

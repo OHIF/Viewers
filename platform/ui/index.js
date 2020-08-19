@@ -4,6 +4,8 @@ export { utils };
 
 /** CONTEXT/HOOKS */
 export {
+  useCine,
+  CineProvider,
   DialogProvider,
   useDialog,
   withDialog,
@@ -38,6 +40,7 @@ export {
   Button,
   ButtonGroup,
   ContextMenu,
+  CinePlayer,
   DateRange,
   Dialog,
   Dropdown,

@@ -91,10 +91,10 @@ function ToolbarSecondary({ servicesManager }) {
     isActive: false,
   };
   const [toolbars, setToolbars] = useState({ primary: [], secondary: [] });
-  const [activeTool, setActiveTool] = useState(defaultTool);
+  const [nestedActiveTool, setNestedActiveTool] = useState(defaultTool);
 
   const setActiveToolHandler = (tool, isNested) => {
-    setActiveTool(isNested ? tool : defaultTool);
+    setNestedActiveTool(isNested ? tool : defaultTool);
   };
 
   const onPrimaryClickHandler = (evt, btn) => {
@@ -257,6 +257,7 @@ function ViewerLayout({
               <ViewportGridComp
                 servicesManager={servicesManager}
                 viewportComponents={viewportComponents}
+                commandsManager={commandsManager}
               />
             </ErrorBoundary>
           </div>

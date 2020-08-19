@@ -9,9 +9,10 @@ import {
   UIViewportDialogService,
   MeasurementService,
   DisplaySetService,
-  ToolBarSerivce,
+  ToolBarService,
   ViewportGridService,
-  HangingProtocolService
+  HangingProtocolService,
+  CineService
   // utils,
   // redux as reduxOHIF,
 } from '@ohif/core';
@@ -54,9 +55,10 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     UIViewportDialogService,
     MeasurementService,
     DisplaySetService,
-    ToolBarSerivce,
+    ToolBarService,
     ViewportGridService,
-    HangingProtocolService
+    HangingProtocolService,
+    CineService
   ]);
 
   /**

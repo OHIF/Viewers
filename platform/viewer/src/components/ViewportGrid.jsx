@@ -1,12 +1,10 @@
 /**
  * CSS Grid Reference: http://grid.malven.co/
  */
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
-import { classes } from '@ohif/core';
-const { ImageSet } = classes;
 import classNames from 'classnames';
 
 function ViewerViewportGrid(props) {
@@ -194,7 +192,7 @@ function ViewerViewportGrid(props) {
           isActive={isActive}
         >
           <div
-            className={classNames('h-full w-full flex flex-col align-center', {
+            className={classNames('h-full w-full flex flex-col', {
               'pointer-events-none': !isActive,
             })}
           >
