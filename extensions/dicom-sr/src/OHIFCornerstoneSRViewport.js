@@ -43,6 +43,23 @@ function OHIFCornerstoneSRViewport({
   const [isHydrated, setIsHydrated] = useState(displaySet.isHydrated);
   const { viewports, activeViewportIndex } = viewportGrid;
 
+  useEffect(() => {
+    const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
+      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED, ({ displaySetInstanceUIDs }) => {
+        const activeViewport = viewports[activeViewportIndex];
+        if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
+          viewportGridService.setDisplaysetForViewport({
+            viewportIndex: activeViewportIndex,
+            displaySetInstanceUID: undefined,
+          });
+        }
+      });
+
+    return () => {
+      onDisplaySetsRemovedSubscription.unsubscribe();
+    };
+  }, []);
+
   // Optional hook into tracking extension, if present.
   let trackedMeasurements;
   let sendTrackedMeasurementsEvent;

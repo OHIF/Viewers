@@ -6,6 +6,7 @@ import {
   processResults,
   processSeriesResults,
 } from './qido.js';
+import dcm4cheeReject from './dcm4cheeReject';
 import { DicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 
 import getImageId from './utils/getImageId';
@@ -34,6 +35,7 @@ const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
  * @param {boolean} qidoSupportsIncludeField - Whether QIDO supports the "Include" option to request additional fields in response
  * @param {string} imageRengering - wadors | ? (unsure of where/how this is used)
  * @param {string} thumbnailRendering - wadors | ? (unsure of where/how this is used)
+ * @param {bool} supportsReject - Whether the server supports reject calls (i.e. DCM4CHEE)
  * @param {bool} lazyLoadStudy - "enableStudyLazyLoad"; Request series meta async instead of blocking
  */
 function createDicomWebApi(dicomWebConfig) {
@@ -43,6 +45,7 @@ function createDicomWebApi(dicomWebConfig) {
     enableStudyLazyLoad,
     supportsFuzzyMatching,
     supportsWildcard,
+    supportsReject,
   } = dicomWebConfig;
 
   const qidoConfig = {
@@ -59,7 +62,7 @@ function createDicomWebApi(dicomWebConfig) {
   const qidoDicomWebClient = new api.DICOMwebClient(qidoConfig);
   const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
 
-  return IWebApiDataSource.create({
+  const implementation = {
     query: {
       studies: {
         mapParams: mapParams.bind(),
@@ -234,7 +237,13 @@ function createDicomWebApi(dicomWebConfig) {
 
       return imageIds;
     },
-  });
+  };
+
+  if (supportsReject) {
+    implementation.reject = dcm4cheeReject(wadoRoot);
+  }
+
+  return IWebApiDataSource.create(implementation);
 }
 
 export { createDicomWebApi };

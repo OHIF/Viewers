@@ -191,7 +191,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       id: 'enter-annotation',
       centralize: true,
       isDraggable: false,
-      useLastPosition: false,
       showOverlay: true,
       content: Dialog,
       contentProps: {
