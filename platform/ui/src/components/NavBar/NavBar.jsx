@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const stickyClasses = 'sticky top-0 z-10';
+const stickyClasses = 'sticky top-0 z-20';
 
 const NavBar = ({ className, children, isSticky }) => {
   return (
