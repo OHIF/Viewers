@@ -33,7 +33,9 @@ const EllipticalRoi = {
       SeriesInstanceUID
     );
 
-    const { start, end } = measurementData.handles;
+    const { cachedStats, handles } = measurementData;
+
+    const { start, end } = handles;
 
     const halfXLength = Math.abs(start.x - end.x) / 2;
     const halfYLength = Math.abs(start.y - end.y) / 2;
@@ -60,6 +62,20 @@ const EllipticalRoi = {
       points.push({ x: center.x + halfXLength, y: center.y });
     }
 
+    let meanSUV;
+    let stdDevSUV;
+
+    if (
+      cachedStats &&
+      cachedStats.meanStdDevSUV &&
+      cachedStats.meanStdDevSUV.mean !== 0
+    ) {
+      const { meanStdDevSUV } = cachedStats;
+
+      meanSUV = meanStdDevSUV.mean;
+      stdDevSUV = meanStdDevSUV.stdDev;
+    }
+
     return {
       id: measurementData.id,
       SOPInstanceUID,
@@ -70,10 +86,11 @@ const EllipticalRoi = {
       label: measurementData.label,
       description: measurementData.description,
       unit: measurementData.unit,
-      area:
-        measurementData.cachedStats &&
-        measurementData.cachedStats
-          .area /* TODO: Add concept names instead (descriptor) */,
+      area: cachedStats && cachedStats.area,
+      mean: cachedStats && cachedStats.mean,
+      stdDev: cachedStats && cachedStats.stdDev,
+      meanSUV,
+      stdDevSUV,
       type: getValueTypeFromToolType(tool),
       points,
     };

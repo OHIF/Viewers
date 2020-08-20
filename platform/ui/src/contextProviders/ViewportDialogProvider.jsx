@@ -41,10 +41,7 @@ const ViewportDialogProvider = ({ children, service }) => {
 
   useEffect(() => {
     if (service) {
-      service.setServiceImplementation({
-        hide,
-        show,
-      });
+      service.setServiceImplementation({ hide, show });
     }
   }, [hide, service, show]);
 

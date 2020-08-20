@@ -40,6 +40,8 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'type',
   'unit',
   'area', // TODO: Add concept names instead (descriptor)
+  'mean',
+  'stdDev',
   'length',
   'shortestDiameter',
   'longestDiameter',

@@ -61,7 +61,7 @@ const ErrorBoundary = ({
       title={'Something went wrong'}
       onClose={() => {
         setIsOpen(false);
-        if (fallbackRoute) {
+        if (fallbackRoute && typeof window !== 'undefined') {
           window.location = fallbackRoute;
         }
       }}

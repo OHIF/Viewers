@@ -6,14 +6,15 @@ route: components/studyListFilter
 
 import { useState } from 'react';
 import { Playground, Props } from 'docz';
-import { StudyListFilter } from '@ohif/ui';
+import { StudyListFilter, Modal } from '../';
+import { ModalProvider } from '../../contextProviders';
 
 # Study List Filter
 
 ## Import
 
 ```javascript
-import { StudyListFilter } from '@ohif/ui';
+import { StudyListFilter, ModalProvider, Modal } from '@ohif/ui';
 ```
 
 ## Basic usage
@@ -101,14 +102,16 @@ import { StudyListFilter } from '@ohif/ui';
       });
     };
     return (
-      <StudyListFilter
-        numOfStudies={100}
-        filtersMeta={filtersMeta}
-        filterValues={filterValues}
-        onChange={setFilterValues}
-        clearFilters={() => setFilterValues(defaultFilterValues)}
-        isFiltering={isFiltering(filterValues, defaultFilterValues)}
-      />
+      <ModalProvider modal={Modal}>
+        <StudyListFilter
+          numOfStudies={100}
+          filtersMeta={filtersMeta}
+          filterValues={filterValues}
+          onChange={setFilterValues}
+          clearFilters={() => setFilterValues(defaultFilterValues)}
+          isFiltering={isFiltering(filterValues, defaultFilterValues)}
+        />
+      </ModalProvider>
     );
   }}
 </Playground>

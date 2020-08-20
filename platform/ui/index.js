@@ -4,6 +4,8 @@ export { utils };
 
 /** CONTEXT/HOOKS */
 export {
+  useCine,
+  CineProvider,
   DialogProvider,
   useDialog,
   withDialog,
@@ -30,9 +32,15 @@ export {
 
 /** COMPONENTS */
 export {
+  AboutModal,
+  HotkeyField,
+  Header,
+  UserPreferences,
+  HotkeysPreferences,
   Button,
   ButtonGroup,
   ContextMenu,
+  CinePlayer,
   DateRange,
   Dialog,
   Dropdown,
@@ -57,6 +65,7 @@ export {
   Select,
   SegmentationTable,
   SidePanel,
+  SplitButton,
   StudyBrowser,
   StudyItem,
   StudyListExpandedRow,
@@ -86,6 +95,7 @@ export {
   ViewportDownloadForm,
   ViewportGrid,
   ViewportPane,
+  WindowLevelMenuItem
 } from './src/components';
 
 /** VIEWS */

@@ -18,13 +18,14 @@ import {
   StudyBrowser,
   ViewportActionBar,
   Notification,
-  DragAndDropProvider,
   Viewport,
   ViewportGrid,
   ViewportPane,
-} from '@ohif/ui';
-
+  StudySummary,
+  MeasurementTable,
+} from '../../components';
 import Header from './components/Header';
+import { DragAndDropProvider } from '../../contextProviders';
 
 import { tabs } from './studyBrowserMockData';
 
@@ -67,9 +68,7 @@ import { tabs } from './studyBrowserMockData';
               iconLabel: 'Studies',
               label: 'Studies',
               name: 'studies',
-              content: (
-                <StudyBrowser tabs={tabs} />
-              )
+              content: <StudyBrowser tabs={tabs} />
             }}
           />
           {/* TOOLBAR + GRID */}

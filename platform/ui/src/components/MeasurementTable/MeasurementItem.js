@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon } from '@ohif/ui';
+import { Icon } from '../';
 
 const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onEdit }) => {
   const [isHovering, setIsHovering] = useState(false);

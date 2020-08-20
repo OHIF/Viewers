@@ -5,7 +5,7 @@ route: components/ThumbnailTracked
 ---
 
 import { Playground, Props } from 'docz';
-import { ThumbnailTracked } from '@ohif/ui';
+import { ThumbnailTracked } from '../';
 
 # ThumbnailTracked
 
@@ -26,7 +26,7 @@ import { ThumbnailTracked } from '@ohif/ui';
         seriesNumber={4}
         numInstances={902}
         onClick={() => alert('Thumbnail was clicked!')}
-        viewportIdentificator="A"
+        viewportIdentificator={["A"]}
         isTracked={true}
         isActive={false}
       />

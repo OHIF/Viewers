@@ -2,13 +2,22 @@ export default (element, onClickOutside) => {
   const clickOutsideHandler = event => {
     if (element.current && !element.current.contains(event.target)) {
       onClickOutside();
-      window.removeEventListener('mousedown', clickOutsideHandler);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('mousedown', clickOutsideHandler);
+      }
     }
   };
 
-  const add = () => window.addEventListener('mousedown', clickOutsideHandler);
-  const remove = () =>
-    window.removeEventListener('mousedown', clickOutsideHandler);
+  const add = () => {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('mousedown', clickOutsideHandler);
+    }
+  };
+  const remove = () => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('mousedown', clickOutsideHandler);
+    }
+  };
 
   return {
     add,

@@ -11,9 +11,11 @@ const DEFAULT_STATE = {
   numRows: 1,
   numCols: 1,
   viewports: [
-    // {
-    //    displaySetInstanceUID: string,
-    // }
+    /*
+     * {
+     *    displaySetInstanceUID: string,
+     * }
+     */
   ],
   activeViewportIndex: 0,
 };
@@ -59,7 +61,9 @@ export function ViewportGridProvider({ children, service }) {
           numCols: 1,
           numRows: 1,
           activeViewportIndex: 0,
-          viewports: [{ displaySetInstanceUID: null }],
+          viewports: [{
+            displaySetInstanceUID: null,
+          }],
           cachedLayout: null,
         };
       }
@@ -84,13 +88,13 @@ export function ViewportGridProvider({ children, service }) {
     DEFAULT_STATE
   );
 
-  console.log('viewportGridState',viewportGridState)
-
   const getState = useCallback(() => viewportGridState, [viewportGridState]);
+
   const setActiveViewportIndex = useCallback(
     index => dispatch({ type: 'SET_ACTIVE_VIEWPORT_INDEX', payload: index }),
     [dispatch]
   );
+
   const setDisplaysetForViewport = useCallback(
     ({ viewportIndex, displaySetInstanceUID }) =>
       dispatch({
@@ -123,6 +127,7 @@ export function ViewportGridProvider({ children, service }) {
       }),
     [dispatch]
   );
+
   const setCachedLayout = useCallback(
     payload =>
       dispatch({

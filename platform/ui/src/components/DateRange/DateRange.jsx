@@ -1,13 +1,12 @@
-/** REACT DATES */
-import 'react-dates/initialize';
-import 'react-dates/lib/css/_datepicker.css';
-import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
-import './DateRange.css';
-
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-
 import moment from 'moment';
+
+/** REACT DATES */
+import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
+import 'react-dates/initialize';
+import 'react-dates/lib/css/_datepicker.css';
+import './DateRange.css';
 
 const today = moment();
 const lastWeek = moment().subtract(7, 'day');
@@ -90,7 +89,7 @@ const DateRange = (props) => {
       onYearSelect(month, event.target.value);
     };
 
-    const handleOnBlur = () => {};
+    const handleOnBlur = () => { };
 
     return (
       <div className="flex justify-center">

@@ -172,6 +172,7 @@ project.
 const extensionManager = new ExtensionManager({
   commandsManager,
   servicesManager,
+  hotkeysManager
 });
 
 // prettier-ignore

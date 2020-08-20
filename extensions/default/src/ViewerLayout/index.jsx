@@ -1,59 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { SidePanel, ErrorBoundary } from '@ohif/ui';
-import Header from './Header.jsx';
+import { useTranslation } from 'react-i18next';
+import { SidePanel, ErrorBoundary, UserPreferences, AboutModal, Header, useModal } from '@ohif/ui';
+
 import NestedMenu from './ToolbarButtonNestedMenu.jsx';
 
-function ViewerLayout({
-  // From Extension Module Params
-  extensionManager,
-  servicesManager,
-  commandsManager,
-  // From Modes
-  leftPanels,
-  rightPanels,
-  viewports,
-  children,
-  ViewportGridComp,
-}) {
+// TODO: Having ToolbarPrimary and ToolbarSecondary is ugly, but
+// these are going to be unified shortly so this is good enough for now.
+function ToolbarPrimary({ servicesManager }) {
   const { ToolBarService } = servicesManager.services;
-  /**
-   * Set body classes (tailwindcss) that don't allow vertical
-   * or horizontal overflow (no scrolling). Also guarantee window
-   * is sized to our viewport.
-   */
-  useEffect(() => {
-    document.body.classList.add('bg-black');
-    document.body.classList.add('overflow-hidden');
-    return () => {
-      document.body.classList.remove('bg-black');
-      document.body.classList.remove('overflow-hidden');
-    };
-  }, []);
-
-  const getPanelData = id => {
-    const entry = extensionManager.getModuleEntry(id);
-    // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
-    const content = entry.component;
-
-    return {
-      iconName: entry.iconName,
-      iconLabel: entry.iconLabel,
-      label: entry.label,
-      name: entry.name,
-      content,
-    };
-  };
-
-  const getViewportComponentData = viewportComponent => {
-    const entry = extensionManager.getModuleEntry(viewportComponent.namespace);
-
-    return {
-      component: entry.component,
-      displaySetsToDisplay: viewportComponent.displaySetsToDisplay,
-    };
-  };
-
   const defaultTool = {
     icon: 'tool-more-menu',
     label: 'More',
@@ -99,40 +54,179 @@ function ViewerLayout({
     return unsubscribe;
   }, [ToolBarService]);
 
+  return <>
+    {toolbars.primary.map((toolDef, index) => {
+      const isNested = Array.isArray(toolDef);
+      if (!isNested) {
+        const { id, Component, componentProps } = toolDef;
+        return <Component key={id} id={id} {...componentProps} />;
+      } else {
+        return (
+          <NestedMenu
+            key={index}
+            isActive={activeTool.isActive}
+            icon={activeTool.icon}
+            label={activeTool.label}
+          >
+            <div className="flex">
+              {toolDef.map(x => {
+                const { id, Component, componentProps } = x;
+                return (
+                  <Component key={id} id={id} {...componentProps} />
+                );
+              })}
+            </div>
+          </NestedMenu>
+        );
+      }
+    })}
+  </>
+}
+
+function ToolbarSecondary({ servicesManager }) {
+  const { ToolBarService } = servicesManager.services;
+  const defaultTool = {
+    icon: 'tool-more-menu',
+    label: 'More',
+    isActive: false,
+  };
+  const [toolbars, setToolbars] = useState({ primary: [], secondary: [] });
+  const [nestedActiveTool, setNestedActiveTool] = useState(defaultTool);
+
+  const setActiveToolHandler = (tool, isNested) => {
+    setNestedActiveTool(isNested ? tool : defaultTool);
+  };
+
+  const onPrimaryClickHandler = (evt, btn) => {
+    if (
+      btn.props &&
+      btn.props.commands &&
+      evt.item && evt.item.value &&
+      btn.props.commands[evt.item.value]
+    ) {
+      const { commandName, commandOptions } = btn.props.commands[evt.item.value];
+      commandsManager.runCommand(commandName, commandOptions);
+    }
+  };
+
+  useEffect(() => {
+    const { unsubscribe } = ToolBarService.subscribe(
+      ToolBarService.EVENTS.TOOL_BAR_MODIFIED,
+      () => {
+        console.warn('~~~ TOOL BAR MODIFIED EVENT CAUGHT');
+        const updatedToolbars = {
+          primary: ToolBarService.getButtonSection('primary', {
+            onClick: onPrimaryClickHandler,
+            setActiveTool: setActiveToolHandler,
+          }),
+          secondary: ToolBarService.getButtonSection('secondary', {
+            setActiveTool: setActiveToolHandler,
+          }),
+        };
+        setToolbars(updatedToolbars);
+      }
+    );
+
+    return unsubscribe;
+  }, [ToolBarService]);
+
+  return <>
+    {toolbars.secondary.map(toolDef => {
+      const { id, Component, componentProps } = toolDef;
+      return <Component key={id} id={id} {...componentProps} />;
+    })}
+  </>
+}
+
+function ViewerLayout({
+  // From Extension Module Params
+  extensionManager,
+  servicesManager,
+  hotkeysManager,
+  commandsManager,
+  // From Modes
+  leftPanels,
+  rightPanels,
+  viewports,
+  ViewportGridComp,
+}) {
+  const { t } = useTranslation();
+  const { show, hide } = useModal();
+
+  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
+  const menuOptions = [
+    {
+      title: t('Header:About'),
+      icon: 'info',
+      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' })
+    },
+    {
+      title: t('Header:Preferences'),
+      icon: 'settings',
+      onClick: () => show({
+        title: t('UserPreferencesModal:User Preferences'),
+        content: UserPreferences,
+        contentProps: {
+          hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
+          hotkeyDefinitions,
+          onCancel: hide,
+          onSubmit: ({ hotkeyDefinitions }) => {
+            hotkeysManager.setHotkeys(hotkeyDefinitions);
+            hide();
+          },
+          onReset: () => hotkeysManager.restoreDefaultBindings()
+        }
+      })
+    },
+  ];
+
+  /**
+   * Set body classes (tailwindcss) that don't allow vertical
+   * or horizontal overflow (no scrolling). Also guarantee window
+   * is sized to our viewport.
+   */
+  useEffect(() => {
+    document.body.classList.add('bg-black');
+    document.body.classList.add('overflow-hidden');
+    return () => {
+      document.body.classList.remove('bg-black');
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, []);
+
+  const getPanelData = id => {
+    const entry = extensionManager.getModuleEntry(id);
+    // TODO, not sure why sidepanel content has to be JSX, and not a children prop?
+    const content = entry.component;
+
+    return {
+      iconName: entry.iconName,
+      iconLabel: entry.iconLabel,
+      label: entry.label,
+      name: entry.name,
+      content,
+    };
+  };
+
+  const getViewportComponentData = viewportComponent => {
+    const entry = extensionManager.getModuleEntry(viewportComponent.namespace);
+
+    return {
+      component: entry.component,
+      displaySetsToDisplay: viewportComponent.displaySetsToDisplay,
+    };
+  };
+
   const leftPanelComponents = leftPanels.map(getPanelData);
   const rightPanelComponents = rightPanels.map(getPanelData);
   const viewportComponents = viewports.map(getViewportComponentData);
 
   return (
     <div>
-      <Header>
+      <Header menuOptions={menuOptions}>
         <ErrorBoundary context="Primary Toolbar">
           <div className="relative flex justify-center">
-            {toolbars.primary.map((toolDef, index) => {
-              const isNested = Array.isArray(toolDef);
-              if (!isNested) {
-                const { id, Component, componentProps } = toolDef;
-                return <Component key={id} id={id} {...componentProps} />;
-              } else {
-                return (
-                  <NestedMenu
-                    key={index}
-                    isActive={activeTool.isActive}
-                    icon={activeTool.icon}
-                    label={activeTool.label}
-                  >
-                    <div className="flex">
-                      {toolDef.map(x => {
-                        const { id, Component, componentProps } = x;
-                        return (
-                          <Component key={id} id={id} {...componentProps} />
-                        );
-                      })}
-                    </div>
-                  </NestedMenu>
-                );
-              }
-            })}
+            <ToolbarPrimary servicesManager={servicesManager} />
           </div>
         </ErrorBoundary>
       </Header>
@@ -155,10 +249,7 @@ function ViewerLayout({
           <div className="flex h-12 border-b border-transparent flex-2 w-100">
             <ErrorBoundary context="Secondary Toolbar">
               <div className="flex items-center w-full px-3 bg-primary-dark">
-                {toolbars.secondary.map(toolDef => {
-                  const { id, Component, componentProps } = toolDef;
-                  return <Component key={id} id={id} {...componentProps} />;
-                })}
+                <ToolbarSecondary servicesManager={servicesManager} />
               </div>
             </ErrorBoundary>
           </div>
@@ -167,6 +258,7 @@ function ViewerLayout({
               <ViewportGridComp
                 servicesManager={servicesManager}
                 viewportComponents={viewportComponents}
+                commandsManager={commandsManager}
               />
             </ErrorBoundary>
           </div>

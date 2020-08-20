@@ -64,6 +64,8 @@ const variantClasses = {
       'bg-white text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
     black:
       'bg-black text-white hover:opacity-80 active:opacity-100 focus:opacity-80',
+    light:
+      'border bg-primary-light border-primary-light text-black hover:opacity-80 active:opacity-100 focus:opacity-80',
   },
 };
 
@@ -154,6 +156,7 @@ Button.propTypes = {
     'white',
     'black',
     'inherit',
+    'light'
   ]),
   fullWidth: PropTypes.bool,
   disabled: PropTypes.bool,

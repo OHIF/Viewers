@@ -50,6 +50,7 @@ function _set(state) {
 function _reset() {
   return serviceImplementation._reset({});
 }
+
 function _setCachedLayout({ numCols, numRows, viewports }) {
   return serviceImplementation._setLayout({ numCols, numRows, viewports });
 }

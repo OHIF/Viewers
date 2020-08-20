@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Icon } from '@ohif/ui';
+import { Icon } from '../';
 
 const SegmentationTable = ({ title, amount, data }) => {
   const [activeItem, setActiveItem] = useState(null);

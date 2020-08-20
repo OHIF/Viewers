@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { Icon } from '@ohif/ui';
+import { Icon } from '../';
 
 const baseLabelClassName =
   'flex flex-col flex-1 text-white text-lg pl-1 select-none';

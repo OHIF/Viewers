@@ -6,7 +6,7 @@ route: components/measurementTable
 
 import { useState } from 'react';
 import { Playground, Props } from 'docz';
-import { MeasurementTable } from '@ohif/ui';
+import { MeasurementTable } from '../';
 
 # Measurement Table
 
@@ -27,7 +27,7 @@ import { MeasurementTable } from '@ohif/ui';
       data: new Array(10).fill({}).map((el, i) => ({
         id: i + 1,
         label: 'Label short description',
-        displayText: '24.0 x 24.0 mm (S:4, I:22)',
+        displayText: ['24.0 x 24.0 mm (S:4, I:22)'],
         isActive: activeMeasurementItem === i + 1,
       })),
       onClick: (id) => setActiveMeasurementItem((s) => (s === id ? null : id)),

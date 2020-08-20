@@ -11,4 +11,5 @@ export default {
     // 'Other',
   ],
   ignore: ['README.md'],
+  base: '/ui/',
 };
