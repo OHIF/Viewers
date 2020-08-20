@@ -36,7 +36,7 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
 
 function _askTrackMeasurements(UIViewportDialogService, viewportIndex) {
   return new Promise(function(resolve, reject) {
-    const message = 'Track measurements for this seies?';
+    const message = 'Track measurements for this series?';
     const actions = [
       { type: 'cancel', text: 'No', value: RESPONSE.CANCEL },
       {
