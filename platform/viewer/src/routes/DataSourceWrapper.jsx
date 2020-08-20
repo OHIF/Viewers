@@ -6,6 +6,9 @@ import { MODULE_TYPES } from '@ohif/core';
 import { useAppConfig } from '@state';
 import { extensionManager } from '../App.jsx';
 
+let cacheMap = {};
+let total = {};
+
 /**
  * Uses route properties to determine the data source that should be passed
  * to the child layout template. In some instances, initiates requests and
@@ -17,8 +20,6 @@ import { extensionManager } from '../App.jsx';
 function DataSourceWrapper(props) {
   const [appConfig] = useAppConfig();
   const { children: LayoutTemplate, history, ...rest } = props;
-  const queryFilterValues = _getQueryFilterValues(history.location.search);
-
   // TODO: Fetch by type, name, etc?
   const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
   // TODO: Good usecase for flatmap?
@@ -46,17 +47,61 @@ function DataSourceWrapper(props) {
   // studies.processResults --> <LayoutTemplate studies={} />
   // But only for LayoutTemplate type of 'list'?
   // Or no data fetching here, and just hand down my source
-  const [data, setData] = useState([]);
+  const STUDIES_LIMIT = 101;
+  const [data, setData] = useState({ studies: [], total: 0 });
   const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     // 204: no content
     async function getData() {
       setIsLoading(true);
-      const searchResults = await dataSource.query.studies.search(
-        queryFilterValues
-      );
-      setData(searchResults);
+
+      const limit = STUDIES_LIMIT - 1;
+      const queryFilterValues = _getQueryFilterValues(history.location.search);
+      const { resultsPerPage = 25, pageNumber = 1 } = queryFilterValues;
+      const reachedLimits = parseInt((resultsPerPage * pageNumber) / STUDIES_LIMIT);
+      const cacheKey = `${pageNumber}-${resultsPerPage}`;
+
+      const getFromCache = async ({ cacheKey, pageNumber, resultsPerPage, limit, options }) => {
+        const pagesAmount = limit / resultsPerPage;
+        const pageToRequest = parseInt((resultsPerPage * pageNumber) / STUDIES_LIMIT);
+
+        let length = 0;
+        if (!cacheMap[cacheKey]) {
+          length = pageToRequest > 0 ? (pageToRequest * STUDIES_LIMIT) : 1;
+          const studiesPromise = dataSource.query.studies.search(options);
+
+          for (let pageNum = 0; pageNum < pagesAmount; pageNum++) {
+            const currentPageNumber = (pageNum + 1) + (pageToRequest * pagesAmount);
+            cacheMap[`${currentPageNumber}-${resultsPerPage}`] = studiesPromise.then(function (results) {
+              const slicedResult = results.slice((pageNum * resultsPerPage), ((pageNum + 1) * resultsPerPage));
+              length += slicedResult.length;
+              return slicedResult;
+            });
+          }
+        }
+
+        const cache = await cacheMap[cacheKey];
+        return { cache, length, index: pageToRequest };
+      };
+
+      const { cache: studies, index, length } = await getFromCache({
+        cacheKey,
+        pageNumber,
+        resultsPerPage,
+        limit,
+        options: { ...queryFilterValues, ...{ offset: reachedLimits * limit } }
+      });
+
+      const totalKey = `${resultsPerPage}-${index}`;
+      total[totalKey] = total[totalKey] ? total[totalKey] + length : length;
+      const totals = Object.keys(total).map(key => total[key]);
+      const biggestIndex = totals.indexOf(Math.max(...totals));
+      const biggestKey = Object.keys(total)[biggestIndex];
+      const biggestTotal = total[biggestKey];
+
       setIsLoading(false);
+      setData({ studies, total: biggestTotal });
     }
 
     try {
@@ -73,7 +118,8 @@ function DataSourceWrapper(props) {
     <LayoutTemplate
       {...rest}
       history={history}
-      data={data}
+      data={data.studies}
+      dataTotal={data.total}
       dataSource={dataSource}
       isLoadingData={isLoading}
     />
@@ -106,6 +152,7 @@ function _getQueryFilterValues(query) {
     startDate: query.get('startDate'),
     endDate: query.get('endDate'),
     page: _tryParseInt(query.get('page'), undefined),
+    pageNumber: _tryParseInt(query.get('pageNumber'), undefined),
     resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
     // Rarely supported server-side
     sortBy: query.get('sortBy'),
