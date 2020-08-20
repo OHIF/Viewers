@@ -33,15 +33,15 @@ const seriesInStudiesMap = new Map();
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysManager }) {
+function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingData, dataSource, hotkeysManager }) {
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
-
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
   const query = useQuery();
+  const STUDIES_LIMIT = 101;
   const queryFilterValues = _getQueryFilterValues(query);
   const [filterValues, _setFilterValues] = useState({
     ...defaultFilterValues,
@@ -64,12 +64,9 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysMa
       const noSortApplied = sortBy === '' || !sortBy;
       const sortModifier = sortDirection === 'descending' ? 1 : -1;
 
-      if (noSortApplied && studies.length < 101) {
+      if (noSortApplied && studiesTotal < STUDIES_LIMIT) {
         const ascendingSortModifier = -1;
-        defaultSortValues = {
-          sortBy: 'studyDate',
-          sortDirection: 'ascending',
-        };
+        defaultSortValues = { sortBy: 'studyDate', sortDirection: 'ascending' };
         return _sortStringDates(s1, s2, ascendingSortModifier);
       } else if (noSortApplied) {
         return 0;
@@ -96,7 +93,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysMa
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
-  const numOfStudies = studies.length;
+  const numOfStudies = studiesTotal;
   const totalPages = Math.floor(numOfStudies / resultsPerPage) + 1;
 
   const setFilterValues = val => {
@@ -111,6 +108,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysMa
     if (newPageNumber > totalPages) {
       return;
     }
+
     setFilterValues({ ...filterValues, pageNumber: newPageNumber });
   };
 
@@ -135,6 +133,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysMa
     if (!debouncedFilterValues) {
       return;
     }
+
     const queryString = {};
     Object.keys(defaultFilterValues).forEach(key => {
       const defaultValue = defaultFilterValues[key];
@@ -389,10 +388,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource, hotkeysMa
       {hasStudies ? (
         <>
           <StudyListTable
-            tableDataSource={tableDataSource.slice(
-              (pageNumber - 1) * resultsPerPage,
-              (pageNumber - 1) * resultsPerPage + resultsPerPage
-            )}
+            tableDataSource={tableDataSource}
             numOfStudies={numOfStudies}
             filtersMeta={filtersMeta}
           />

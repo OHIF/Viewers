@@ -66,7 +66,7 @@ function createDicomWebApi(dicomWebConfig) {
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function(origParams) {
+        search: async function (origParams) {
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
               supportsFuzzyMatching,
@@ -86,7 +86,7 @@ function createDicomWebApi(dicomWebConfig) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function(studyInstanceUid) {
+        search: async function (studyInstanceUid) {
           const results = await seriesInStudy(
             qidoDicomWebClient,
             studyInstanceUid
