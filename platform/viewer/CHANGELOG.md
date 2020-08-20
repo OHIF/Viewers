@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.4.1...@ohif/viewer@4.5.0) (2020-08-20)
+
+
+### Features
+
+* 🎸 Filter/promote multiple series instances ([#1533](https://github.com/OHIF/Viewers/issues/1533)) ([5fdace1](https://github.com/OHIF/Viewers/commit/5fdace1432b4b1bd31a60c5db6bd681610ec2b8e))
+
+
+
+
+
 ## [4.4.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.4.0...@ohif/viewer@4.4.1) (2020-08-20)
 
 
