@@ -3,6 +3,128 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.4.0...@ohif/viewer@4.4.1) (2020-08-20)
+
+
+### Bug Fixes
+
+* Fix incorrect command name in Percy test ([#1999](https://github.com/OHIF/Viewers/issues/1999)) ([ebdcde1](https://github.com/OHIF/Viewers/commit/ebdcde1c4d9c95393cf79cc9994f5d60f6d66fdd))
+
+
+
+
+
+# [4.4.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.3.1...@ohif/viewer@4.4.0) (2020-08-18)
+
+
+### Features
+
+* 🎸 Update react-vtkjs-viewport usage to use requestPool ([#1984](https://github.com/OHIF/Viewers/issues/1984)) ([bb5f30c](https://github.com/OHIF/Viewers/commit/bb5f30ce2a0192d2e021beaaadfff22fd38e17b9))
+
+
+
+
+
+## [4.3.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.3.0...@ohif/viewer@4.3.1) (2020-08-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [4.3.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.16...@ohif/viewer@4.3.0) (2020-08-10)
+
+
+### Features
+
+* 🎸 Optional disable measurements panel in app config ([#1912](https://github.com/OHIF/Viewers/issues/1912)) ([3d86b5f](https://github.com/OHIF/Viewers/commit/3d86b5f876d6481bcc57de88a0ba1f974f4ee263)), closes [#1864](https://github.com/OHIF/Viewers/issues/1864)
+
+
+
+
+
+## [4.2.16](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.15...@ohif/viewer@4.2.16) (2020-08-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.15](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.14...@ohif/viewer@4.2.15) (2020-08-05)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.14](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.13...@ohif/viewer@4.2.14) (2020-08-05)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.12...@ohif/viewer@4.2.13) (2020-07-23)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.11...@ohif/viewer@4.2.12) (2020-07-22)
+
+
+### Bug Fixes
+
+* Switch DICOMFileUploader to use the UIModalService ([#1904](https://github.com/OHIF/Viewers/issues/1904)) ([7772fee](https://github.com/OHIF/Viewers/commit/7772fee21ae6a65994e1251e2f1d2554b47781be))
+
+
+
+
+
+## [4.2.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.10...@ohif/viewer@4.2.11) (2020-07-13)
+
+
+### Bug Fixes
+
+* 🐛 - Put guards in all places that a cornerstone re-render ([#1899](https://github.com/OHIF/Viewers/issues/1899)) ([451f7ea](https://github.com/OHIF/Viewers/commit/451f7eab9258e7a193eb362e0926b13aedc4b3c9))
+
+
+
+
+
+## [4.2.10](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.9...@ohif/viewer@4.2.10) (2020-07-13)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.9](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.8...@ohif/viewer@4.2.9) (2020-07-13)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.2.8](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.7...@ohif/viewer@4.2.8) (2020-07-13)
+
+
+### Bug Fixes
+
+* 🐛 Fix RT Panel hide/show and Fix looping load errors ([#1877](https://github.com/OHIF/Viewers/issues/1877)) ([e7cc735](https://github.com/OHIF/Viewers/commit/e7cc735c03d02eeb0d3af4ba02c15ed4f81bbec2))
+
+
+
+
+
 ## [4.2.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.2.6...@ohif/viewer@4.2.7) (2020-06-18)
 
 **Note:** Version bump only for package @ohif/viewer

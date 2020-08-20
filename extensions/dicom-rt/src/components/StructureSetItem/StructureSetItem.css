@@ -22,11 +22,6 @@
   width: 100%;
 }
 
-.dcmrt-structure-set-item.selected .item-actions {
-  height: 35px;
-  visibility: visible;
-}
-
 .dcmrt-structure-set-item .item-actions {
   margin-left: -1px;
   background-color: var(--ui-gray-darker);
@@ -47,7 +42,8 @@
   transition: all 0.3s ease;
 }
 
-.dcmrt-structure-set-item .item-actions .btnAction:hover, .dcmrt-structure-set-item .item-actions .btnAction:active {
+.dcmrt-structure-set-item .item-actions .btnAction:hover,
+.dcmrt-structure-set-item .item-actions .btnAction:active {
   color: var(--text-primary-color);
 }
 
@@ -85,4 +81,13 @@
 
 .dcmrt-structure-set-item .item-label .eye-icon.--visible {
   color: var(--default-color);
+}
+
+.dcmrt-structure-set-item.isDisabled .item-color-section {
+  background-color: #e29e4a;
+  color: #fff;
+}
+
+.dcmrt-structure-set-item.isDisabled .item-label {
+  color: var(--text-disabled-color);
 }

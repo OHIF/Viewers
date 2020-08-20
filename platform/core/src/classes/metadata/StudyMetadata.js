@@ -135,12 +135,15 @@ export class StudyMetadata extends Metadata {
         study,
         sopClassUIDs
       );
+
       if (displaySet) {
         displaySet.sopClassModule = true;
 
-        displaySet.isDerived
-          ? this._addDerivedDisplaySet(displaySet)
-          : displaySets.push(displaySet);
+        if (displaySet.isDerived) {
+          this._addDerivedDisplaySet(displaySet);
+        }
+
+        displaySets.push(displaySet);
 
         return displaySets;
       }

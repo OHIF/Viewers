@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.9.0...@ohif/extension-cornerstone@2.9.1) (2020-08-20)
+
+
+### Performance Improvements
+
+* **stackPrefetch:** Added stackPrefetch config with 20 max concurrent requests ([#2000](https://github.com/OHIF/Viewers/issues/2000)) ([3b02a06](https://github.com/OHIF/Viewers/commit/3b02a06f5e250660edde4862ce44147db3dc3ab9))
+
+
+
+
+
+# [2.9.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.8.5...@ohif/extension-cornerstone@2.9.0) (2020-08-18)
+
+
+### Features
+
+* 🎸 Update react-vtkjs-viewport usage to use requestPool ([#1984](https://github.com/OHIF/Viewers/issues/1984)) ([bb5f30c](https://github.com/OHIF/Viewers/commit/bb5f30ce2a0192d2e021beaaadfff22fd38e17b9))
+
+
+
+
+
+## [2.8.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.8.4...@ohif/extension-cornerstone@2.8.5) (2020-08-05)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+## [2.8.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.8.3...@ohif/extension-cornerstone@2.8.4) (2020-07-13)
+
+
+### Bug Fixes
+
+* 🐛 - Put guards in all places that a cornerstone re-render ([#1899](https://github.com/OHIF/Viewers/issues/1899)) ([451f7ea](https://github.com/OHIF/Viewers/commit/451f7eab9258e7a193eb362e0926b13aedc4b3c9))
+
+
+
+
+
+## [2.8.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.8.2...@ohif/extension-cornerstone@2.8.3) (2020-07-13)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
 ## [2.8.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.8.1...@ohif/extension-cornerstone@2.8.2) (2020-06-15)
 
 

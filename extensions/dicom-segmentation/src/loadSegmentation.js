@@ -41,6 +41,7 @@ export default async function loadSegmentation(
       results = _parseSeg(segArrayBuffer, imageIds);
     } catch (error) {
       segDisplaySet.isLoaded = false;
+      segDisplaySet.loadError = true;
       reject(error);
     }
 

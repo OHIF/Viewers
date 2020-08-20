@@ -4,6 +4,7 @@ import TOOL_NAMES from '../utils/toolNames';
 
 // Cornerstone 3rd party dev kit imports
 const draw = importInternal('drawing/draw');
+const drawCircle = importInternal('drawing/drawCircle');
 const drawJoinedLines = importInternal('drawing/drawJoinedLines');
 const getNewContext = importInternal('drawing/getNewContext');
 const BaseTool = importInternal('base/BaseTool');
@@ -72,22 +73,52 @@ export default class RTStructDisplayTool extends BaseTool {
       const colorArray = ROIContourData.colorArray;
       const color = `rgba(${colorArray[0]},${colorArray[1]},${
         colorArray[2]
-        },${opacity})`;
+      },${opacity})`;
 
-      lineWidth;
-
-      draw(context, context => {
-        drawJoinedLines(
-          context,
-          eventData.element,
-          points[points.length - 1],
-          points,
-          {
+      switch (data.type) {
+        case 'CLOSED_PLANAR':
+          this._renderClosedPlanar(context, eventData.element, points, {
             color,
             lineWidth,
-          }
-        );
-      });
+          });
+          break;
+        case 'POINT':
+          this._renderPoint(context, eventData.element, points, {
+            color,
+            lineWidth,
+          });
+          break;
+        case 'OPEN_PLANAR':
+          this._renderOpenPlanar(context, eventData.element, points, {
+            color,
+            lineWidth,
+          });
+          break;
+      }
     }
+  }
+
+  _renderClosedPlanar(context, element, points, options) {
+    draw(context, context => {
+      drawJoinedLines(
+        context,
+        element,
+        points[points.length - 1],
+        points,
+        options
+      );
+    });
+  }
+
+  _renderPoint(context, element, points, options) {
+    draw(context, context => {
+      drawCircle(context, element, points[0], 3, options);
+    });
+  }
+
+  _renderOpenPlanar(context, element, points, options) {
+    draw(context, context => {
+      drawJoinedLines(context, element, points[0], points, options);
+    });
   }
 }

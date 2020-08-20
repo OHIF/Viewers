@@ -1,5 +1,6 @@
 import { MODULE_TYPES, utils, DICOMWeb } from '@ohif/core';
 import loadRTStruct from './loadRTStruct';
+import getSourceDisplaySet from './getSourceDisplaySet';
 
 import id from './id';
 
@@ -14,7 +15,7 @@ const OHIFDicomRTStructSopClassHandler = {
   id: 'OHIFDicomRTStructSopClassHandler',
   type: MODULE_TYPES.SOP_CLASS_HANDLER,
   sopClassUIDs,
-  getDisplaySetFromSeries: function (
+  getDisplaySetFromSeries: function(
     series,
     study,
     dicomWebClient,
@@ -67,13 +68,18 @@ const OHIFDicomRTStructSopClassHandler = {
       }
     }
 
-    rtStructDisplaySet.load = function (referencedDisplaySet, studies) {
+    rtStructDisplaySet.getSourceDisplaySet = function(studies) {
+      return getSourceDisplaySet(studies, rtStructDisplaySet);
+    };
+
+    rtStructDisplaySet.load = function(referencedDisplaySet, studies) {
       return loadRTStruct(
         rtStructDisplaySet,
         referencedDisplaySet,
         studies
       ).catch(error => {
         rtStructDisplaySet.isLoaded = false;
+        rtStructDisplaySet.loadError = true;
         throw new Error(error);
       });
     };

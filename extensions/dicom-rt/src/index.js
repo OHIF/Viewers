@@ -20,7 +20,7 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getPanelModule({ commandsManager, api }) {
+  getPanelModule({ commandsManager, servicesManager, api }) {
     const ExtendedRTPanel = props => {
       const { activeContexts } = api.hooks.useAppContext();
 
