@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.9.1...@ohif/extension-cornerstone@2.9.2) (2020-08-20)
+
+
+### Bug Fixes
+
+* Updated react-cornerstone-viewport to version 4.0.2 ([#2001](https://github.com/OHIF/Viewers/issues/2001)) ([59ab68b](https://github.com/OHIF/Viewers/commit/59ab68b4edbfec010170c4429c300a53f688bf94))
+
+
+
+
+
 ## [2.9.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.9.0...@ohif/extension-cornerstone@2.9.1) (2020-08-20)
 
 
