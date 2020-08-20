@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.9.0...@ohif/extension-cornerstone@2.9.1) (2020-08-20)
+
+
+### Performance Improvements
+
+* **stackPrefetch:** Added stackPrefetch config with 20 max concurrent requests ([#2000](https://github.com/OHIF/Viewers/issues/2000)) ([3b02a06](https://github.com/OHIF/Viewers/commit/3b02a06f5e250660edde4862ce44147db3dc3ab9))
+
+
+
+
+
 # [2.9.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-cornerstone@2.8.5...@ohif/extension-cornerstone@2.9.0) (2020-08-18)
 
 

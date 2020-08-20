@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.4.0...@ohif/viewer@4.4.1) (2020-08-20)
+
+
+### Bug Fixes
+
+* Fix incorrect command name in Percy test ([#1999](https://github.com/OHIF/Viewers/issues/1999)) ([ebdcde1](https://github.com/OHIF/Viewers/commit/ebdcde1c4d9c95393cf79cc9994f5d60f6d66fdd))
+
+
+
+
+
 # [4.4.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.3.1...@ohif/viewer@4.4.0) (2020-08-18)
 
 
