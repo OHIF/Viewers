@@ -16,6 +16,8 @@ import { useTrackedMeasurements } from './../getContextModule';
 import ViewportOverlay from './ViewportOverlay';
 import ViewportLoadingIndicator from './ViewportLoadingIndicator';
 import setCornerstoneMeasurementActive from '../_shared/setCornerstoneMeasurementActive';
+import setActiveAndPassiveToolsForElement from '../_shared/setActiveAndPassiveToolsForElement';
+import getTools from '../_shared/getTools';
 
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 const { formatDate } = utils;
@@ -44,7 +46,7 @@ function TrackedCornerstoneViewport({
   displaySet,
   viewportIndex,
   servicesManager,
-  commandsManager
+  commandsManager,
 }) {
   const {
     ToolBarService,
@@ -52,7 +54,10 @@ function TrackedCornerstoneViewport({
     MeasurementService,
   } = servicesManager.services;
   const [trackedMeasurements] = useTrackedMeasurements();
-  const [{ activeViewportIndex, viewports }, viewportGridService] = useViewportGrid();
+  const [
+    { activeViewportIndex, viewports },
+    viewportGridService,
+  ] = useViewportGrid();
   const [{ isCineEnabled, cines }, cineService] = useCine();
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [viewportData, setViewportData] = useState(null);
@@ -126,9 +131,17 @@ function TrackedCornerstoneViewport({
   const onElementEnabled = evt => {
     const eventData = evt.detail;
     const targetElement = eventData.element;
+    const tools = getTools();
+    const toolAlias = ToolBarService.state.primaryToolId;
 
+    // Activate appropriate tool bindings for element
+    setActiveAndPassiveToolsForElement(targetElement, tools);
+    cornerstoneTools.setToolActiveForElement(targetElement, toolAlias, {
+      mouseButtonMask: 1,
+    });
+
+    // Set dashed, based on tracking, for this viewport
     const allTools = cornerstoneTools.store.state.tools;
-
     const toolsForElement = allTools.filter(
       tool => tool.element === targetElement
     );
@@ -154,6 +167,7 @@ function TrackedCornerstoneViewport({
       }
     });
 
+    // Update image after setting tool config
     const enabledElement = cornerstone.getEnabledElement(targetElement);
 
     if (enabledElement.image) {
@@ -300,8 +314,8 @@ function TrackedCornerstoneViewport({
   }
 
   const cine = cines[viewportIndex];
-  const isPlaying = cine && cine.isPlaying || false;
-  const frameRate = cine && cine.frameRate || 24;
+  const isPlaying = (cine && cine.isPlaying) || false;
+  const frameRate = (cine && cine.frameRate) || 24;
 
   return (
     <>
@@ -330,8 +344,8 @@ function TrackedCornerstoneViewport({
             spacing:
               PixelSpacing && PixelSpacing.length
                 ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                  2
-                )}mm`
+                    2
+                  )}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -341,8 +355,10 @@ function TrackedCornerstoneViewport({
         cineProps={{
           isPlaying,
           onClose: () => commandsManager.runCommand('toggleCine'),
-          onPlayPauseChange: isPlaying => cineService.setCine({ id: activeViewportIndex, isPlaying }),
-          onFrameRateChange: frameRate => cineService.setCine({ id: activeViewportIndex, frameRate }),
+          onPlayPauseChange: isPlaying =>
+            cineService.setCine({ id: activeViewportIndex, isPlaying }),
+          onFrameRateChange: frameRate =>
+            cineService.setCine({ id: activeViewportIndex, frameRate }),
         }}
       />
       {/* TODO: Viewport interface to accept stack or layers of content like this? */}
