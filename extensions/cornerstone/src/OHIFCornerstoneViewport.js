@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF from '@ohif/core';
+import csTools from 'cornerstone-tools';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
+import getTools from './utils/getTools.js';
+import setActiveAndPassiveToolsForElement from './utils/setActiveAndPassiveToolsForElement';
 
 import { setEnabledElement } from './state';
 
@@ -23,6 +26,7 @@ class OHIFCornerstoneViewport extends Component {
     dataSource: PropTypes.object,
     children: PropTypes.node,
     customProps: PropTypes.object,
+    ToolBarService: PropTypes.object,
   };
 
   static name = 'OHIFCornerstoneViewport';
@@ -131,7 +135,7 @@ class OHIFCornerstoneViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-      prevDisplaySet.displaySetInstanceUID ||
+        prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.imageIndex !== prevDisplaySet.imageIndex
     ) {
@@ -203,7 +207,14 @@ class OHIFCornerstoneViewport extends Component {
           // Need to expose viewportGrid as a "UI Service"
           onElementEnabled={evt => {
             const enabledElement = evt.detail.element;
+            const tools = getTools();
+            const toolAlias = ToolBarService.state.primaryToolId;
+
             setEnabledElement(viewportIndex, enabledElement);
+            setActiveAndPassiveToolsForElement(enabledElement, tools);
+            csTools.setToolActiveForElement(enabledElement, toolAlias, {
+              mouseButtonMask: 1,
+            });
           }}
           // Sync resize throttle w/ sidepanel animation duration to prevent
           // seizure inducing strobe blinking effect

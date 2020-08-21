@@ -4,6 +4,7 @@ import { Input, Dialog, ContextMenuMeasurements } from '@ohif/ui';
 import cs from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
+import getTools, { toolsGroupedByType } from './utils/getTools.js';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import './initWADOImageLoader.js';
 import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
@@ -30,6 +31,22 @@ const TOOL_TYPES_WITH_CONTEXT_MENU = [
 const _refreshViewports = () =>
   cs.getEnabledElements().forEach(({ element }) => cs.updateImage(element));
 
+/* Add extension tools configuration here. */
+const internalToolsConfig = {
+  ArrowAnnotate: {
+    configuration: {
+      getTextCallback: (callback, eventDetails) =>
+        callInputDialog(null, callback),
+      changeTextCallback: (data, eventDetails, callback) =>
+        callInputDialog(data, callback),
+      allowEmptyLabel: true,
+    },
+  },
+  DragProbe: {
+    defaultStrategy: 'minimal',
+  },
+};
+
 /**
  *
  * @param {Object} servicesManager
@@ -45,7 +62,11 @@ export default function init({
     UIDialogService,
     MeasurementService,
     DisplaySetService,
+    ToolBarService,
   } = servicesManager.services;
+  const tools = getTools();
+
+  console.log(servicesManager.services);
 
   /* Measurement Service */
   const measurementServiceSource = _connectToolsToMeasurementService(
@@ -180,8 +201,16 @@ export default function init({
     }
   };
 
-  function elementEnabledHandler(evt) {
+  // TODO: This is the handler for ALL ENABLED ELEMENT EVENTS
+  // ... Activation logic should take place per element, not for all (diff behavior per ext)
+  function elementEnabledHandler(tools, evt) {
     const element = evt.detail.element;
+    // const toolAlias = ToolBarService.state.primaryToolId; // These are 1:1 for built-in only
+
+    _addConfiguredToolsForElement(element, tools, configuration);
+    // _setActiveAndPassiveToolsForElement(element, tools);
+    // csTools.setToolActiveForElement(element, toolAlias, { mouseButtonMask: 1 });
+
     element.addEventListener(csTools.EVENTS.TOUCH_PRESS, onTouchPress);
     element.addEventListener(
       csTools.EVENTS.MOUSE_CLICK,
@@ -298,7 +327,7 @@ export default function init({
   // THIS
   // is a way for extensions that "depend" on this extension to notify it of
   // new cornerstone enabled elements so it's commands continue to work.
-  const handleOhifCornerstoneEnabledElementEvent = function (evt) {
+  const handleOhifCornerstoneEnabledElementEvent = function(evt) {
     const { viewportIndex, enabledElement } = evt.detail;
 
     setEnabledElement(viewportIndex, enabledElement);
@@ -309,120 +338,10 @@ export default function init({
     handleOhifCornerstoneEnabledElementEvent
   );
 
-  const toolsGroupedByType = {
-    touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],
-    annotations: [
-      csTools.ArrowAnnotateTool,
-      csTools.BidirectionalTool,
-      csTools.LengthTool,
-      csTools.AngleTool,
-      csTools.FreehandRoiTool,
-      csTools.EllipticalRoiTool,
-      csTools.DragProbeTool,
-      csTools.RectangleRoiTool,
-    ],
-    other: [
-      csTools.PanTool,
-      csTools.ZoomTool,
-      csTools.WwwcTool,
-      csTools.WwwcRegionTool,
-      csTools.MagnifyTool,
-      csTools.StackScrollTool,
-      csTools.StackScrollMouseWheelTool,
-      csTools.OverlayTool,
-    ],
-  };
-
-  let tools = [];
-  Object.keys(toolsGroupedByType).forEach(toolsGroup =>
-    tools.push(...toolsGroupedByType[toolsGroup])
+  cs.events.addEventListener(
+    cs.EVENTS.ELEMENT_ENABLED,
+    elementEnabledHandler.bind(null, tools)
   );
-
-  /* Add extension tools configuration here. */
-  const internalToolsConfig = {
-    ArrowAnnotate: {
-      configuration: {
-        getTextCallback: (callback, eventDetails) =>
-          callInputDialog(null, callback),
-        changeTextCallback: (data, eventDetails, callback) =>
-          callInputDialog(data, callback),
-        allowEmptyLabel: true,
-      },
-    },
-    DragProbe: {
-      defaultStrategy: 'minimal',
-    },
-  };
-
-  /* Abstract tools configuration using extension configuration. */
-  const parseToolProps = (props, tool) => {
-    const { annotations } = toolsGroupedByType;
-    // An alternative approach would be to remove the `drawHandlesOnHover` config
-    // from the supported configuration properties in `cornerstone-tools`
-    const toolsWithHideableHandles = annotations.filter(
-      tool => !['RectangleRoiTool', 'EllipticalRoiTool'].includes(tool.name)
-    );
-
-    let parsedProps = { ...props };
-
-    /**
-     * drawHandles - Never/Always show handles
-     * drawHandlesOnHover - Only show handles on handle hover (pointNearHandle)
-     * hideHandlesIfMoving - Hides the handles whilst you are moving them, for better visibility.
-     *
-     * Does not apply to tools where handles aren't placed in predictable
-     * locations.
-     */
-    if (
-      configuration.hideHandles !== false &&
-      toolsWithHideableHandles.includes(tool)
-    ) {
-      if (props.configuration) {
-        parsedProps.configuration.drawHandlesOnHover = true;
-        parsedProps.configuration.hideHandlesIfMoving = true;
-      } else {
-        parsedProps.configuration = {
-          drawHandlesOnHover: true,
-          hideHandlesIfMoving: true,
-        };
-      }
-    }
-
-    return parsedProps;
-  };
-
-  /* Add tools with its custom props through extension configuration. */
-  tools.forEach(tool => {
-    const toolName = new tool().name;
-    const externalToolsConfig = configuration.tools || {};
-    const externalToolProps = externalToolsConfig[toolName] || {};
-    const internalToolProps = internalToolsConfig[toolName] || {};
-    const props = merge(
-      internalToolProps,
-      parseToolProps(externalToolProps, tool)
-    );
-    csTools.addTool(tool, props);
-  });
-
-  // TODO -> We need a better way to do this with maybe global tool state setting all tools passive.
-  const BaseAnnotationTool = csTools.importInternal('base/BaseAnnotationTool');
-  tools.forEach(tool => {
-    if (tool.prototype instanceof BaseAnnotationTool) {
-      // BaseAnnotationTool would likely come from csTools lib exports
-      const toolName = new tool().name;
-      csTools.setToolPassive(toolName); // there may be a better place to determine name; may not be on uninstantiated class
-    }
-  });
-
-  csTools.setToolActive('Pan', { mouseButtonMask: 4 });
-  csTools.setToolActive('Zoom', { mouseButtonMask: 2 });
-  csTools.setToolActive('Wwwc', { mouseButtonMask: 1 });
-  csTools.setToolActive('StackScrollMouseWheel', {}); // TODO: Empty options should not be required
-  csTools.setToolActive('PanMultiTouch', { pointers: 2 }); // TODO: Better error if no options
-  csTools.setToolActive('ZoomTouchPinch', {});
-  csTools.setToolEnabled('Overlay', {});
-
-  cs.events.addEventListener(cs.EVENTS.ELEMENT_ENABLED, elementEnabledHandler);
   cs.events.addEventListener(
     cs.EVENTS.ELEMENT_DISABLED,
     elementDisabledHandler
@@ -646,3 +565,81 @@ const _getDefaultPosition = event => ({
   x: (event && event.currentPoints.client.x) || 0,
   y: (event && event.currentPoints.client.y) || 0,
 });
+
+/**
+ * @private
+ */
+function _addConfiguredToolsForElement(element, tools, configuration) {
+  /* Add tools with its custom props through extension configuration. */
+  tools.forEach(tool => {
+    const toolName = new tool().name;
+    const externalToolsConfig = configuration.tools || {};
+    const externalToolProps = externalToolsConfig[toolName] || {};
+    const internalToolProps = internalToolsConfig[toolName] || {};
+    const props = merge(
+      internalToolProps,
+      _parseToolProps(configuration, externalToolProps, tool)
+    );
+    csTools.addToolForElement(element, tool, props);
+  });
+}
+
+/**
+ * @private
+ */
+function _setActiveAndPassiveToolsForElement(element, tools) {
+  // TODO -> We need a better way to do this with maybe global tool state setting all tools passive.
+  const BaseAnnotationTool = csTools.importInternal('base/BaseAnnotationTool');
+  tools.forEach(tool => {
+    if (tool.prototype instanceof BaseAnnotationTool) {
+      // BaseAnnotationTool would likely come from csTools lib exports
+      const toolName = new tool().name;
+      csTools.setToolPassiveForElement(element, toolName); // there may be a better place to determine name; may not be on uninstantiated class
+    }
+  });
+
+  csTools.setToolActiveForElement(element, 'Pan', { mouseButtonMask: 4 });
+  csTools.setToolActiveForElement(element, 'Zoom', { mouseButtonMask: 2 });
+  csTools.setToolActiveForElement(element, 'Wwwc', { mouseButtonMask: 1 });
+  csTools.setToolActiveForElement(element, 'StackScrollMouseWheel', {}); // TODO: Empty options should not be required
+  csTools.setToolActiveForElement(element, 'PanMultiTouch', { pointers: 2 }); // TODO: Better error if no options
+  csTools.setToolActiveForElement(element, 'ZoomTouchPinch', {});
+  csTools.setToolEnabledForElement(element, 'Overlay', {});
+}
+
+/* Abstract tools configuration using extension configuration. */
+function _parseToolProps(configuration, props, tool) {
+  const { annotations } = toolsGroupedByType;
+  // An alternative approach would be to remove the `drawHandlesOnHover` config
+  // from the supported configuration properties in `cornerstone-tools`
+  const toolsWithHideableHandles = annotations.filter(
+    tool => !['RectangleRoiTool', 'EllipticalRoiTool'].includes(tool.name)
+  );
+
+  let parsedProps = { ...props };
+
+  /**
+   * drawHandles - Never/Always show handles
+   * drawHandlesOnHover - Only show handles on handle hover (pointNearHandle)
+   * hideHandlesIfMoving - Hides the handles whilst you are moving them, for better visibility.
+   *
+   * Does not apply to tools where handles aren't placed in predictable
+   * locations.
+   */
+  if (
+    configuration.hideHandles !== false &&
+    toolsWithHideableHandles.includes(tool)
+  ) {
+    if (props.configuration) {
+      parsedProps.configuration.drawHandlesOnHover = true;
+      parsedProps.configuration.hideHandlesIfMoving = true;
+    } else {
+      parsedProps.configuration = {
+        drawHandlesOnHover: true,
+        hideHandlesIfMoving: true,
+      };
+    }
+  }
+
+  return parsedProps;
+}
