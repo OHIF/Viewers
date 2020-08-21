@@ -1,141 +1,69 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { SidePanel, ErrorBoundary, UserPreferences, AboutModal, Header, useModal } from '@ohif/ui';
+import {
+  SidePanel,
+  ErrorBoundary,
+  UserPreferences,
+  AboutModal,
+  Header,
+  useModal,
+} from '@ohif/ui';
 
-import NestedMenu from './ToolbarButtonNestedMenu.jsx';
-
-// TODO: Having ToolbarPrimary and ToolbarSecondary is ugly, but
-// these are going to be unified shortly so this is good enough for now.
-function ToolbarPrimary({ servicesManager }) {
+function Toolbar({ servicesManager }) {
   const { ToolBarService } = servicesManager.services;
-  const defaultTool = {
-    icon: 'tool-more-menu',
-    label: 'More',
-    isActive: false,
-  };
-  const [toolbars, setToolbars] = useState({ primary: [], secondary: [] });
-  const [activeTool, setActiveTool] = useState(defaultTool);
+  const [toolbarButtons, setToolbarButtons] = useState([]);
+  const [buttonState, setButtonState] = useState({
+    primaryToolId: '',
+    toggles: {},
+    groups: {},
+  });
 
-  const setActiveToolHandler = (tool, isNested) => {
-    setActiveTool(isNested ? tool : defaultTool);
-  };
-
-  const onPrimaryClickHandler = (evt, btn) => {
-    if (
-      btn.props &&
-      btn.props.commands &&
-      evt.value &&
-      btn.props.commands[evt.value]
-    ) {
-      const { commandName, commandOptions } = btn.props.commands[evt.value];
-      commandsManager.runCommand(commandName, commandOptions);
-    }
-  };
-
+  // Could track buttons and state separately...?
   useEffect(() => {
-    const { unsubscribe } = ToolBarService.subscribe(
+    const { unsubscribe: unsub1 } = ToolBarService.subscribe(
       ToolBarService.EVENTS.TOOL_BAR_MODIFIED,
-      () => {
-        console.warn('~~~ TOOL BAR MODIFIED EVENT CAUGHT');
-        const updatedToolbars = {
-          primary: ToolBarService.getButtonSection('primary', {
-            onClick: onPrimaryClickHandler,
-            setActiveTool: setActiveToolHandler,
-          }),
-          secondary: ToolBarService.getButtonSection('secondary', {
-            setActiveTool: setActiveToolHandler,
-          }),
-        };
-        setToolbars(updatedToolbars);
-      }
+      () => setToolbarButtons(ToolBarService.getButtonSection('primary'))
+    );
+    const { unsubscribe: unsub2 } = ToolBarService.subscribe(
+      ToolBarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
+      () => setButtonState({ ...ToolBarService.state })
     );
 
-    return unsubscribe;
+    return () => {
+      unsub1();
+      unsub2();
+    };
   }, [ToolBarService]);
 
-  return <>
-    {toolbars.primary.map((toolDef, index) => {
-      const isNested = Array.isArray(toolDef);
-      if (!isNested) {
+  return (
+    <>
+      {toolbarButtons.map((toolDef, index) => {
         const { id, Component, componentProps } = toolDef;
-        return <Component key={id} id={id} {...componentProps} />;
-      } else {
+        // TODO: ...
+
+        // isActive if:
+        // - id is primary?
+        // - id is in list of "toggled on"?
+
+        // Also need... to filter list for splitButton, and set primary based on most recently clicked
+        // Also need to kill the radioGroup button's magic logic
+        // Everything should be reactive off these props, so commands can inform ToolbarService
+
+        // These can... Trigger toolbar events based on updates?
+        // Then sync using useEffect, or simply modify the state here?
         return (
-          <NestedMenu
-            key={index}
-            isActive={activeTool.isActive}
-            icon={activeTool.icon}
-            label={activeTool.label}
-          >
-            <div className="flex">
-              {toolDef.map(x => {
-                const { id, Component, componentProps } = x;
-                return (
-                  <Component key={id} id={id} {...componentProps} />
-                );
-              })}
-            </div>
-          </NestedMenu>
+          <Component
+            key={id}
+            id={id}
+            {...componentProps}
+            bState={buttonState}
+            onInteraction={args => ToolBarService.recordInteraction(args)}
+          />
         );
-      }
-    })}
-  </>
-}
-
-function ToolbarSecondary({ servicesManager }) {
-  const { ToolBarService } = servicesManager.services;
-  const defaultTool = {
-    icon: 'tool-more-menu',
-    label: 'More',
-    isActive: false,
-  };
-  const [toolbars, setToolbars] = useState({ primary: [], secondary: [] });
-  const [nestedActiveTool, setNestedActiveTool] = useState(defaultTool);
-
-  const setActiveToolHandler = (tool, isNested) => {
-    setNestedActiveTool(isNested ? tool : defaultTool);
-  };
-
-  const onPrimaryClickHandler = (evt, btn) => {
-    if (
-      btn.props &&
-      btn.props.commands &&
-      evt.item && evt.item.value &&
-      btn.props.commands[evt.item.value]
-    ) {
-      const { commandName, commandOptions } = btn.props.commands[evt.item.value];
-      commandsManager.runCommand(commandName, commandOptions);
-    }
-  };
-
-  useEffect(() => {
-    const { unsubscribe } = ToolBarService.subscribe(
-      ToolBarService.EVENTS.TOOL_BAR_MODIFIED,
-      () => {
-        console.warn('~~~ TOOL BAR MODIFIED EVENT CAUGHT');
-        const updatedToolbars = {
-          primary: ToolBarService.getButtonSection('primary', {
-            onClick: onPrimaryClickHandler,
-            setActiveTool: setActiveToolHandler,
-          }),
-          secondary: ToolBarService.getButtonSection('secondary', {
-            setActiveTool: setActiveToolHandler,
-          }),
-        };
-        setToolbars(updatedToolbars);
-      }
-    );
-
-    return unsubscribe;
-  }, [ToolBarService]);
-
-  return <>
-    {toolbars.secondary.map(toolDef => {
-      const { id, Component, componentProps } = toolDef;
-      return <Component key={id} id={id} {...componentProps} />;
-    })}
-  </>
+      })}
+    </>
+  );
 }
 
 function ViewerLayout({
@@ -158,25 +86,28 @@ function ViewerLayout({
     {
       title: t('Header:About'),
       icon: 'info',
-      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' })
+      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' }),
     },
     {
       title: t('Header:Preferences'),
       icon: 'settings',
-      onClick: () => show({
-        title: t('UserPreferencesModal:User Preferences'),
-        content: UserPreferences,
-        contentProps: {
-          hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-          hotkeyDefinitions,
-          onCancel: hide,
-          onSubmit: ({ hotkeyDefinitions }) => {
-            hotkeysManager.setHotkeys(hotkeyDefinitions);
-            hide();
+      onClick: () =>
+        show({
+          title: t('UserPreferencesModal:User Preferences'),
+          content: UserPreferences,
+          contentProps: {
+            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
+              hotkeyDefaults
+            ),
+            hotkeyDefinitions,
+            onCancel: hide,
+            onSubmit: ({ hotkeyDefinitions }) => {
+              hotkeysManager.setHotkeys(hotkeyDefinitions);
+              hide();
+            },
+            onReset: () => hotkeysManager.restoreDefaultBindings(),
           },
-          onReset: () => hotkeysManager.restoreDefaultBindings()
-        }
-      })
+        }),
     },
   ];
 
@@ -226,7 +157,7 @@ function ViewerLayout({
       <Header menuOptions={menuOptions}>
         <ErrorBoundary context="Primary Toolbar">
           <div className="relative flex justify-center">
-            <ToolbarPrimary servicesManager={servicesManager} />
+            <Toolbar servicesManager={servicesManager} />
           </div>
         </ErrorBoundary>
       </Header>
@@ -246,13 +177,6 @@ function ViewerLayout({
         )}
         {/* TOOLBAR + GRID */}
         <div className="flex flex-col flex-1 h-full">
-          <div className="flex h-12 border-b border-transparent flex-2 w-100">
-            <ErrorBoundary context="Secondary Toolbar">
-              <div className="flex items-center w-full px-3 bg-primary-dark">
-                <ToolbarSecondary servicesManager={servicesManager} />
-              </div>
-            </ErrorBoundary>
-          </div>
           <div className="flex items-center justify-center flex-1 h-full pt-1 pb-2 overflow-hidden bg-black">
             <ErrorBoundary context="Grid">
               <ViewportGridComp
