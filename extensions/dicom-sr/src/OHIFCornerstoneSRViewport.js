@@ -4,6 +4,7 @@ import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
+import DICOMSRDisplayTool from './tools/DICOMSRDisplayTool';
 import {
   Notification,
   ViewportActionBar,
@@ -32,7 +33,11 @@ function OHIFCornerstoneSRViewport({
   servicesManager,
   extensionManager,
 }) {
-  const { DisplaySetService, MeasurementService } = servicesManager.services;
+  const {
+    DisplaySetService,
+    MeasurementService,
+    ToolBarService,
+  } = servicesManager.services;
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [measurementSelected, setMeasurementSelected] = useState(0);
@@ -45,15 +50,19 @@ function OHIFCornerstoneSRViewport({
 
   useEffect(() => {
     const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED, ({ displaySetInstanceUIDs }) => {
+      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
+      ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports[activeViewportIndex];
-        if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
+        if (
+          displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
+        ) {
           viewportGridService.setDisplaysetForViewport({
             viewportIndex: activeViewportIndex,
             displaySetInstanceUID: undefined,
           });
         }
-      });
+      }
+    );
 
     return () => {
       onDisplaySetsRemovedSubscription.unsubscribe();
@@ -84,22 +93,16 @@ function OHIFCornerstoneSRViewport({
   const onElementEnabled = evt => {
     const eventData = evt.detail;
     const targetElement = eventData.element;
+    const toolAlias = ToolBarService.state.primaryToolId; // These are 1:1 for built-in only
 
-    // TODO -> This will only be temporary until we set a tool on, and isn't very customizable.
-    // Need to discuss how to deal with tools in general in the redesign, since we
-    // Previously just had Tool mode state global across the entire viewer.
-    const globalTools = cornerstoneTools.store.state.globalTools;
-    const globalToolNames = Object.keys(globalTools);
-
-    globalToolNames.forEach(globalToolName => {
-      cornerstoneTools.setToolDisabledForElement(targetElement, globalToolName);
-    });
-
+    // ~~ MAGIC
+    cornerstoneTools.addToolForElement(targetElement, DICOMSRDisplayTool);
     cornerstoneTools.setToolEnabledForElement(
       targetElement,
       TOOL_NAMES.DICOM_SR_DISPLAY_TOOL
     );
 
+    // ~~ Business as usual
     cornerstoneTools.setToolActiveForElement(targetElement, 'PanMultiTouch', {
       pointers: 2,
     });
@@ -109,7 +112,9 @@ function OHIFCornerstoneSRViewport({
       {}
     );
 
-    cornerstoneTools.setToolActiveForElement(targetElement, 'Wwwc', {
+    // TODO: Add always dashed tool alternative aliases
+    // TODO: or same name... alternative config?
+    cornerstoneTools.setToolActiveForElement(targetElement, toolAlias, {
       mouseButtonMask: 1,
     });
     cornerstoneTools.setToolActiveForElement(targetElement, 'Pan', {
