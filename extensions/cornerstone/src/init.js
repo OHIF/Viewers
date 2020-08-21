@@ -286,7 +286,7 @@ export default function init({
 
   // ~~
   const defaultCsToolsConfig = csToolsConfig || {
-    globalToolSyncEnabled: true,
+    globalToolSyncEnabled: false, // hold on to your pants!
     showSVGCursors: false,
     autoResizeViewports: false,
   };
