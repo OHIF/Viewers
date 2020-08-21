@@ -90,16 +90,80 @@ function OHIFCornerstoneSRViewport({
     ] = useTrackedMeasurements();
   }
 
+  function _getToolAlias() {
+    const primaryToolId = ToolBarService.state.primaryToolId;
+    let toolAlias = primaryToolId;
+
+    switch (primaryToolId) {
+      case 'Length':
+        toolAlias = 'SRLength';
+        break;
+      case 'Bidirectional':
+        toolAlias = 'SRBidirectional';
+        break;
+      case 'ArrowAnnotate':
+        toolAlias = 'SRArrowAnnotate';
+        break;
+      case 'EllipticalRoi':
+        toolAlias = 'SREllipticalRoi';
+        break;
+    }
+
+    return toolAlias;
+  }
+
   const onElementEnabled = evt => {
     const eventData = evt.detail;
     const targetElement = eventData.element;
-    const toolAlias = ToolBarService.state.primaryToolId; // These are 1:1 for built-in only
+    const toolAlias = _getToolAlias(); // These are 1:1 for built-in only
 
     // ~~ MAGIC
     cornerstoneTools.addToolForElement(targetElement, DICOMSRDisplayTool);
     cornerstoneTools.setToolEnabledForElement(
       targetElement,
       TOOL_NAMES.DICOM_SR_DISPLAY_TOOL
+    );
+
+    // ~~ Variants
+    cornerstoneTools.addToolForElement(
+      targetElement,
+      cornerstoneTools.LengthTool,
+      {
+        name: 'SRLength',
+        configuration: {
+          renderDashed: true,
+        },
+      }
+    );
+    cornerstoneTools.addToolForElement(
+      targetElement,
+      cornerstoneTools.ArrowAnnotateTool,
+      {
+        name: 'SRArrowAnnotate',
+        configuration: {
+          renderDashed: true,
+        },
+      }
+    );
+    cornerstoneTools.addToolForElement(
+      targetElement,
+      cornerstoneTools.BidirectionalTool,
+      {
+        name: 'SRBidirectional',
+        configuration: {
+          renderDashed: true,
+        },
+      }
+    );
+    cornerstoneTools.addToolForElement(
+      targetElement,
+      cornerstoneTools.EllipticalRoiTool,
+      {
+        name: 'SREllipticalRoi',
+        configuration: {
+          renderDashed: true,
+        },
+      }
     );
 
     // ~~ Business as usual
