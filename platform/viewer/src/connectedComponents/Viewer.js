@@ -464,7 +464,10 @@ function _sortSameSeriesNumberByDateTime(thumbnails) {
     }
   }
 
-  // TODO -> deal with the end of the list.
+  // Deal with the end of the list if the last N items have the same SeriesNumber
+  if (thumbnails.length - 1 > initialIndex) {
+    sortSubArrayBtDateTime(thumbnails, initialIndex, thumbnails.length - 1);
+  }
 }
 
 function sortSubArrayBtDateTime(thumbnails, initialIndex, lastIndex) {
