@@ -361,8 +361,11 @@ function _getOneBasedImageIdIndex(displaySets, SOPInstanceUID) {
 
 /**
  *
- * @param {*} points
+ * @param {*} measurement
  * @param {*} pixelSpacing
+ * @param {*} seriesNumber
+ * @param {*} instanceNumber
+ * @param {*} types
  */
 function _getDisplayText(
   measurement,

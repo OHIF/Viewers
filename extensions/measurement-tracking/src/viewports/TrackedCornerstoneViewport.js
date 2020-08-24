@@ -271,7 +271,7 @@ function TrackedCornerstoneViewport({
     PatientSex,
     PatientAge,
     SliceThickness,
-    PixelSpacing,
+    SpacingBetweenSlices,
     ManufacturerModelName,
   } = displaySet.images[0];
 
@@ -343,10 +343,8 @@ function TrackedCornerstoneViewport({
             MRN: PatientID || '',
             thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
             spacing:
-              PixelSpacing && PixelSpacing.length
-                ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+              SpacingBetweenSlices !== undefined
+                ? `${SpacingBetweenSlices.toFixed(2)}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },

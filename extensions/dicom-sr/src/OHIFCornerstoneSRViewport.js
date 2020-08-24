@@ -332,7 +332,7 @@ function OHIFCornerstoneSRViewport({
     StudyDate,
     SeriesDescription,
     SeriesInstanceUID,
-    PixelSpacing,
+    SpacingBetweenSlices,
     SeriesNumber,
     displaySetInstanceUID,
   } = activeDisplaySetData;
@@ -387,10 +387,8 @@ function OHIFCornerstoneSRViewport({
             MRN: PatientID || '',
             thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
             spacing:
-              PixelSpacing && PixelSpacing.length
-                ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+              SpacingBetweenSlices !== undefined
+                ? `${SpacingBetweenSlices.toFixed(2)}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -528,7 +526,7 @@ async function _getViewportAndActiveDisplaySetData(
     SeriesInstanceUID: image0.SeriesInstanceUID,
     SeriesNumber: image0.SeriesNumber,
     ManufacturerModelName: image0.ManufacturerModelName,
-    PixelSpacing: image0.PixelSpacing,
+    SpacingBetweenSlices: image0.SpacingBetweenSlices,
     displaySetInstanceUID,
   };
 
