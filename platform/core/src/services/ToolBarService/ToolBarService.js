@@ -44,7 +44,6 @@ export default class ToolBarService {
    * @param {*} interaction
    */
   recordInteraction(interaction) {
-    debugger;
     const commandsManager = this._commandsManager;
     const { groupId, itemId, interactionType } = interaction;
 

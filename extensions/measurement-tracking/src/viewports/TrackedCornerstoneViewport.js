@@ -180,6 +180,7 @@ function TrackedCornerstoneViewport({
       'ohif-cornerstone-enabled-element-event',
       {
         detail: {
+          context: 'ACTIVE_VIEWPORT::TRACKED',
           enabledElement: targetElement,
           viewportIndex,
         },

@@ -200,6 +200,7 @@ function OHIFCornerstoneSRViewport({
       'ohif-cornerstone-enabled-element-event',
       {
         detail: {
+          context: 'ACTIVE_VIEWPORT::STRUCTURED_REPORT',
           enabledElement: targetElement,
           viewportIndex,
         },

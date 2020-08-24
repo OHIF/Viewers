@@ -53,8 +53,8 @@ export default {
       { name: 'cornerstone', component: ExtendedOHIFCornerstoneViewport },
     ];
   },
-  getCommandsModule({ servicesManager }) {
-    return commandsModule({ servicesManager });
+  getCommandsModule({ servicesManager, commandsManager }) {
+    return commandsModule({ servicesManager, commandsManager });
   },
 };
 

@@ -90,7 +90,6 @@ const SplitButton = ({
       ...item,
       index,
       onClick: () => {
-        debugger;
         onInteraction({
           groupId,
           //

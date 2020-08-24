@@ -325,9 +325,9 @@ export default function init({
   // is a way for extensions that "depend" on this extension to notify it of
   // new cornerstone enabled elements so it's commands continue to work.
   const handleOhifCornerstoneEnabledElementEvent = function(evt) {
-    const { viewportIndex, enabledElement } = evt.detail;
+    const { context, viewportIndex, enabledElement } = evt.detail;
 
-    setEnabledElement(viewportIndex, enabledElement);
+    setEnabledElement(viewportIndex, enabledElement, context);
   };
 
   document.addEventListener(
