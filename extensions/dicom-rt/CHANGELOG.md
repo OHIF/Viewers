@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.3.0...@ohif/extension-dicom-rt@0.4.0) (2020-08-18)
+
+
+### Features
+
+* 🎸 Update react-vtkjs-viewport usage to use requestPool ([#1984](https://github.com/OHIF/Viewers/issues/1984)) ([bb5f30c](https://github.com/OHIF/Viewers/commit/bb5f30ce2a0192d2e021beaaadfff22fd38e17b9))
+
+
+
+
+
 # [0.3.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.2.7...@ohif/extension-dicom-rt@0.3.0) (2020-08-10)
 
 
