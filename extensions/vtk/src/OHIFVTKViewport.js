@@ -56,19 +56,19 @@ class OHIFVTKViewport extends Component {
 
   static propTypes = {
     viewportData: PropTypes.shape({
-      studies: PropTypes.array,
+      studies: PropTypes.array.isRequired,
       displaySet: PropTypes.shape({
-        StudyInstanceUID: PropTypes.string,
-        displaySetInstanceUID: PropTypes.string,
+        StudyInstanceUID: PropTypes.string.isRequired,
+        displaySetInstanceUID: PropTypes.string.isRequired,
         sopClassUIDs: PropTypes.arrayOf(PropTypes.string),
         SOPInstanceUID: PropTypes.string,
         frameIndex: PropTypes.number,
       }),
     }),
-    viewportIndex: PropTypes.number,
+    viewportIndex: PropTypes.number.isRequired,
     children: PropTypes.node,
     onScroll: PropTypes.func,
-    servicesManager: PropTypes.object,
+    servicesManager: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
