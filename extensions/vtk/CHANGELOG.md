@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.7.0...@ohif/extension-vtk@1.7.1) (2020-08-24)
+
+
+### Bug Fixes
+
+* 🐛 Fail gracefully on an MPR load error ([#1992](https://github.com/OHIF/Viewers/issues/1992)) ([779a7e0](https://github.com/OHIF/Viewers/commit/779a7e0976aa3a2d2bf1dc8f056950f0545c9fff))
+
+
+
+
+
 # [1.7.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.6.10...@ohif/extension-vtk@1.7.0) (2020-08-18)
 
 
