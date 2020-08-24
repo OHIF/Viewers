@@ -15,8 +15,8 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
 
   function _getActiveViewportsEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
-    const { enabledElement } = getEnabledElement(activeViewportIndex) || {};
-    return enabledElement;
+    const { element } = getEnabledElement(activeViewportIndex) || {};
+    return element;
   }
 
   const actions = {

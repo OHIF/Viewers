@@ -91,12 +91,7 @@ export default class ToolBarService {
   }
 
   getActiveTools() {
-    return Object.keys(this.buttons).filter(key => {
-      const button = this.buttons[key];
-      if (button && button.props && button.props.isActive) {
-        return button;
-      }
-    });
+    return [this.state.primaryToolId, ...Object.keys(this.state.toggles)];
   }
 
   setButton(id, button) {

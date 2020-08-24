@@ -19,8 +19,6 @@ export default {
               console.warn('No toolname provided to setToolActive command');
             }
 
-            console.warn('DICOM SR VIEWPORT SETTOOLACTIVE');
-
             // Set same tool or alt tool
             cornerstoneTools.setToolActiveForElement(element, toolName, {
               mouseButtonMask: 1,
