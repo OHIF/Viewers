@@ -15,6 +15,13 @@ const mapStateToProps = (state, ownProps) => {
   // If we know that the stack loading progress details have changed,
   // we can try to update the component state so that the thumbnail
   // progress bar is updated
+
+  let activeUIDs = [];
+  let keys = Object.keys(state.viewports.viewportSpecificData);
+  for (let i = 0; i < keys.length; i++) {
+    let a = state.viewports.viewportSpecificData[keys[i]].displaySetInstanceUID;
+    activeUIDs.push(a);
+  }
   const stackLoadingProgressMap = state.loading.progress;
   const studiesWithLoadingData = cloneDeep(ownProps.studies);
 
@@ -23,7 +30,7 @@ const mapStateToProps = (state, ownProps) => {
       const { displaySetInstanceUID } = data;
       const stackId = `StackProgress:${displaySetInstanceUID}`;
       const stackProgressData = stackLoadingProgressMap[stackId];
-
+      if (~activeUIDs.indexOf(displaySetInstanceUID)) data.active = true;
       let stackPercentComplete = 0;
       if (stackProgressData) {
         stackPercentComplete = stackProgressData.percentComplete;

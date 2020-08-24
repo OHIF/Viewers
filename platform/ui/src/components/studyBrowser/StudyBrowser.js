@@ -28,6 +28,7 @@ function StudyBrowser(props) {
                 SeriesDescription,
                 SeriesNumber,
                 stackPercentComplete,
+                active,
               } = thumb;
 
               return (
@@ -37,6 +38,7 @@ function StudyBrowser(props) {
                   data-cy="thumbnail-list"
                 >
                   <Thumbnail
+                    active={active}
                     supportsDrag={supportsDrag}
                     key={`${studyIndex}_${thumbIndex}`}
                     id={`${studyIndex}_${thumbIndex}`} // Unused?

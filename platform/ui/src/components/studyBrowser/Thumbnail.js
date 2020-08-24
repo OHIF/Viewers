@@ -83,7 +83,6 @@ function Thumbnail(props) {
 
   const hasImage = imageSrc || imageId;
   const hasAltText = altImageText !== undefined;
-
   return (
     <div
       ref={drag}
