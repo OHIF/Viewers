@@ -88,6 +88,7 @@ import { tabs } from './studyBrowserMockData';
                         label: 'A',
                         isTracked: true,
                         isLocked: false,
+                        isRehydratable: false,
                         studyDate: '07-Sep-2011',
                         currentSeries: 1,
                         seriesDescription:

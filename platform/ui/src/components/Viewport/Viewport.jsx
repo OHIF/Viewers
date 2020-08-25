@@ -52,7 +52,9 @@ Viewport.propTypes = {
   studyData: PropTypes.shape({
     label: PropTypes.string.isRequired,
     isTracked: PropTypes.bool.isRequired,
+    /* Specific to SR Viewports only... */
     isLocked: PropTypes.bool.isRequired,
+    isRehydratable: PropTypes.bool.isRequired,
     studyDate: PropTypes.string.isRequired,
     currentSeries: PropTypes.number.isRequired,
     seriesDescription: PropTypes.string.isRequired,

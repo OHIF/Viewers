@@ -330,6 +330,7 @@ function TrackedCornerstoneViewport({
           label,
           isTracked,
           isLocked: false,
+          isRehydratable: false,
           studyDate: formatDate(SeriesDate), // TODO: This is series date. Is that ok?
           currentSeries: SeriesNumber,
           seriesDescription: SeriesDescription,

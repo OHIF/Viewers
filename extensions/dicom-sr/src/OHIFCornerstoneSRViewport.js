@@ -73,6 +73,8 @@ function OHIFCornerstoneSRViewport({
   let trackedMeasurements;
   let sendTrackedMeasurementsEvent;
 
+  // TODO: this is a hook that fails if we register/de-register
+  //
   if (
     extensionManager.registeredExtensionIds.includes(
       MEASUREMENT_TRACKING_EXTENSION_ID
@@ -89,6 +91,12 @@ function OHIFCornerstoneSRViewport({
       sendTrackedMeasurementsEvent,
     ] = useTrackedMeasurements();
   }
+
+  // Locked if tracking any series
+  let isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
+  useEffect(() => {
+    isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
+  }, [trackedMeasurements]);
 
   function _getToolAlias() {
     const primaryToolId = ToolBarService.state.primaryToolId;
@@ -373,7 +381,8 @@ function OHIFCornerstoneSRViewport({
           label,
           useAltStyling: true,
           isTracked: false,
-          isLocked: displaySet.isLocked,
+          isLocked,
+          isRehydratable: displaySet.isRehydratable,
           isHydrated,
           studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
