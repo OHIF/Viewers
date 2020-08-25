@@ -33,6 +33,7 @@ const ViewportActionBar = ({
     label,
     isTracked,
     isLocked,
+    useAltStyling,
     modality,
     studyDate,
     currentSeries,
@@ -137,12 +138,19 @@ const ViewportActionBar = ({
     );
   };
 
+  const borderColor = useAltStyling ? '#365A6A' : '#1D205A';
+  const backgroundColor = useAltStyling
+    ? '#031923'
+    : isTracked
+    ? '#020424'
+    : null;
+
   return (
     <div
       className="flex flex-wrap items-center p-2 -mt-2 border-b select-none"
       style={{
-        borderColor: '#1D205A',
-        backgroundColor: isTracked ? '#020424' : null,
+        borderColor: borderColor,
+        backgroundColor: backgroundColor,
       }}
       onDoubleClick={onDoubleClick}
     >
@@ -221,6 +229,9 @@ ViewportActionBar.propTypes = {
   cineProps: PropTypes.object,
   showPatientInfo: PropTypes.bool,
   studyData: PropTypes.shape({
+    //
+    useAltStyling: PropTypes.bool,
+    //
     label: PropTypes.string.isRequired,
     isTracked: PropTypes.bool.isRequired,
     isLocked: PropTypes.bool.isRequired,

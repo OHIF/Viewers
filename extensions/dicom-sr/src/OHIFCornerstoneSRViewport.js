@@ -371,6 +371,7 @@ function OHIFCornerstoneSRViewport({
         onSeriesChange={onMeasurementChange}
         studyData={{
           label,
+          useAltStyling: true,
           isTracked: false,
           isLocked: displaySet.isLocked,
           isHydrated,
