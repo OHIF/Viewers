@@ -73,11 +73,11 @@ const ViewportActionBar = ({
     if (modality === 'SR') {
       const TooltipMessage = isLocked
         ? () => (
-          <div>
-            This SR is locked. <br />
+            <div>
+              This SR is locked. <br />
               Measurements cannot be duplicated.
-          </div>
-        )
+            </div>
+          )
         : () => <div>This SR is unlocked.</div>;
       return (
         <>
@@ -119,13 +119,13 @@ const ViewportActionBar = ({
                       can be viewed <br /> in the measurement panel
                     </>
                   ) : (
-                      <>
-                        Measurements for
+                    <>
+                      Measurements for
                       <span className="font-bold text-white"> untracked </span>
                       series <br /> will not be shown in the <br /> measurements
                       panel
                     </>
-                    )}
+                  )}
                 </span>
               </div>
             </div>
@@ -139,10 +139,14 @@ const ViewportActionBar = ({
 
   return (
     <div
-      className="flex flex-wrap items-center p-2 border-b select-none border-primary-light -mt-2"
+      className="flex flex-wrap items-center p-2 -mt-2 border-b select-none"
+      style={{
+        borderColor: '#1D205A',
+        backgroundColor: isTracked ? '#020424' : null,
+      }}
       onDoubleClick={onDoubleClick}
     >
-      <div className="flex flex-grow min-w-48 flex-1 mt-2">
+      <div className="flex flex-1 flex-grow mt-2 min-w-48">
         <div className="flex items-center">
           {renderIconStatus()}
           <span className="ml-2 text-white text-large">{label}</span>
@@ -173,14 +177,14 @@ const ViewportActionBar = ({
           <ButtonGroup>
             <Button
               size="initial"
-              className="px-2 py-1"
+              className="px-2 py-1 bg-black"
               onClick={() => onSeriesChange('left')}
             >
               <Icon name="chevron-left" className="w-4 text-white" />
             </Button>
             <Button
               size="initial"
-              className="px-2 py-1"
+              className="px-2 py-1 bg-black"
               onClick={() => onSeriesChange('right')}
             >
               <Icon name="chevron-right" className="w-4 text-white" />
@@ -189,11 +193,11 @@ const ViewportActionBar = ({
         </div>
       )}
       {showCine && !showNavArrows && (
-        <div className="mt-2 min-w-48 max-w-48 mr-auto">
+        <div className="mt-2 mr-auto min-w-48 max-w-48">
           <CinePlayer {...cineProps} />
         </div>
       )}
-      <div className="flex h-8 ml-4 mr-2 mt-2" onClick={onPatientInfoClick}>
+      <div className="flex h-8 mt-2 ml-4 mr-2" onClick={onPatientInfoClick}>
         <PatientInfo
           showPatientInfoRef={showPatientInfoRef}
           isOpen={showPatientInfo}
