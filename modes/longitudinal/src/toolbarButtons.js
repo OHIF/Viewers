@@ -83,9 +83,15 @@ export default [
           undefined,
           { toolName: 'ArrowAnnotate' }
         ),
-        _createToolButton('EllipticalRoi', 'tool-elipse', 'Ellipse', {
-          toolName: 'EllipticalRoi',
-        }),
+        _createToolButton(
+          'EllipticalRoi',
+          'tool-elipse',
+          'Ellipse',
+          undefined,
+          {
+            toolName: 'EllipticalRoi',
+          }
+        ),
       ],
     },
   },
