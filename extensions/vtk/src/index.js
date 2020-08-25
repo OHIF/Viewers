@@ -18,8 +18,10 @@ const vtkExtension = {
   id: 'vtk',
   version,
 
-  getViewportModule({ commandsManager }) {
-    const ExtendedVTKViewport = props => <OHIFVTKViewport {...props} />;
+  getViewportModule({ commandsManager, servicesManager }) {
+    const ExtendedVTKViewport = props => (
+      <OHIFVTKViewport {...props} servicesManager={servicesManager} />
+    );
     return withCommandsManager(ExtendedVTKViewport, commandsManager);
   },
   getToolbarModule() {
