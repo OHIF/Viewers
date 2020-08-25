@@ -19,6 +19,8 @@ const ViewportActionBar = ({
   showPatientInfo: patientInfoVisibility,
   onSeriesChange,
   onDoubleClick,
+  //
+  onPillClick,
 }) => {
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
 
@@ -54,7 +56,6 @@ const ViewportActionBar = ({
 
   const onPatientInfoClick = () => setShowPatientInfo(!showPatientInfo);
   const closePatientInfo = () => setShowPatientInfo(false);
-
   const showPatientInfoRef = useRef(null);
   const clickOutsideListener = useOnClickOutside(
     showPatientInfoRef,
@@ -137,7 +138,7 @@ const ViewportActionBar = ({
         case 3:
           StatusIcon = () => (
             <div
-              className="flex items-center justify-center -mr-1 bg-white rounded-full"
+              className="flex items-center justify-center -mr-1 bg-white rounded-full group-hover:bg-customblue-200"
               style={{
                 width: '18px',
                 height: '18px',
@@ -156,11 +157,21 @@ const ViewportActionBar = ({
 
       const StatusPill = () => (
         <div
-          className="relative flex items-center justify-center px-2 rounded-full cursor-default"
+          className={classnames(
+            'group relative flex items-center justify-center px-2 rounded-full cursor-default bg-customgreen-100',
+            {
+              'hover:bg-customblue-100': state === 3,
+              'cursor-pointer': state === 3,
+            }
+          )}
           style={{
             height: '24px',
             width: '55px',
-            backgroundColor: '#05D97C',
+          }}
+          onClick={() => {
+            if (state === 3) {
+              onPillClick?.();
+            }
           }}
         >
           <span className="pr-1 text-lg font-bold leading-none text-black">

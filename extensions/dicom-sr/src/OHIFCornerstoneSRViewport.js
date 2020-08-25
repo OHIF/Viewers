@@ -376,6 +376,12 @@ function OHIFCornerstoneSRViewport({
           evt.stopPropagation();
           evt.preventDefault();
         }}
+        onPillClick={() => {
+          sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
+            displaySetInstanceUID: displaySet.displaySetInstanceUID,
+            viewportIndex,
+          });
+        }}
         onSeriesChange={onMeasurementChange}
         studyData={{
           label,
