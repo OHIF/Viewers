@@ -33,6 +33,7 @@ const ViewportActionBar = ({
     label,
     isTracked,
     isLocked,
+    isRehydratable,
     useAltStyling,
     modality,
     studyDate,
@@ -72,30 +73,108 @@ const ViewportActionBar = ({
 
   const renderIconStatus = () => {
     if (modality === 'SR') {
-      const TooltipMessage = isLocked
-        ? () => (
-            <div>
-              This SR is locked. <br />
-              Measurements cannot be duplicated.
+      // 1 - Incompatible
+      // 2 - Locked
+      // 3 - Rehydratable / Open
+      const state =
+        isRehydratable && !isLocked ? 3 : isRehydratable && isLocked ? 2 : 1;
+      let ToolTipMessage = null;
+      let StatusIcon = null;
+
+      switch (state) {
+        case 1:
+          StatusIcon = () => (
+            <div
+              className="flex items-center justify-center -mr-1 bg-black rounded-full"
+              style={{
+                width: '18px',
+                height: '18px',
+              }}
+            >
+              <Icon
+                name="notificationwarning-diamond"
+                style={{ color: '#05D97C', width: '8px', height: '11px' }}
+              />
             </div>
-          )
-        : () => <div>This SR is unlocked.</div>;
+          );
+
+          ToolTipMessage = () => (
+            <div>
+              This structured report is not compatible
+              <br />
+              with this application.
+            </div>
+          );
+          break;
+        case 2:
+          StatusIcon = () => (
+            <div
+              className="flex items-center justify-center -mr-1 bg-black rounded-full"
+              style={{
+                width: '18px',
+                height: '18px',
+              }}
+            >
+              <Icon
+                name="lock"
+                style={{ color: '#05D97C', width: '8px', height: '11px' }}
+              />
+            </div>
+          );
+
+          ToolTipMessage = () => (
+            <div>
+              This structured report is currently read-only
+              <br />
+              because you are tracking measurements in
+              <br />
+              another viewport.
+            </div>
+          );
+          break;
+        case 3:
+          StatusIcon = () => (
+            <div
+              className="flex items-center justify-center -mr-1 bg-white border-black border-solid rounded-full"
+              style={{
+                width: '18px',
+                height: '18px',
+              }}
+            >
+              <Icon
+                name="launch-arrow"
+                style={{ color: '#000', width: '11px', height: '11px' }}
+              />
+            </div>
+          );
+
+          ToolTipMessage = () => <div>Click to restore measurements.</div>;
+      }
+
+      const StatusPill = () => (
+        <div
+          className="relative flex items-center justify-center px-2 rounded-full cursor-default"
+          style={{
+            height: '24px',
+            width: '55px',
+            backgroundColor: '#05D97C',
+          }}
+        >
+          <span className="pr-1 text-lg font-bold leading-none text-black">
+            SR
+          </span>
+          <StatusIcon />
+        </div>
+      );
+
       return (
         <>
-          <Tooltip content={<TooltipMessage />} position="bottom-left">
-            <div className="relative flex p-1 border rounded cursor-default border-primary-light">
-              <span className="text-sm font-bold leading-none text-primary-light">
-                SR
-              </span>
-              {isLocked && (
-                <Icon
-                  name="lock"
-                  className="absolute w-3 text-white"
-                  style={{ top: -6, right: -6 }}
-                />
-              )}
-            </div>
-          </Tooltip>
+          {ToolTipMessage && (
+            <Tooltip content={<ToolTipMessage />} position="bottom-left">
+              <StatusPill />
+            </Tooltip>
+          )}
+          {!ToolTipMessage && <StatusPill />}
         </>
       );
     }
@@ -156,8 +235,8 @@ const ViewportActionBar = ({
     >
       <div className="flex flex-1 flex-grow mt-2 min-w-48">
         <div className="flex items-center">
+          <span className="mr-2 text-white text-large">{label}</span>
           {renderIconStatus()}
-          <span className="ml-2 text-white text-large">{label}</span>
         </div>
         <div className="flex flex-col justify-start ml-4">
           <div className="flex">
@@ -234,7 +313,7 @@ ViewportActionBar.propTypes = {
     //
     label: PropTypes.string.isRequired,
     isTracked: PropTypes.bool.isRequired,
-    isLocked: PropTypes.bool.isRequired,
+    isRehydratable: PropTypes.bool.isRequired,
     studyDate: PropTypes.string.isRequired,
     currentSeries: PropTypes.number.isRequired,
     seriesDescription: PropTypes.string.isRequired,
