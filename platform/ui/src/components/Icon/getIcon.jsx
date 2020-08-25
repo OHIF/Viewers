@@ -2,6 +2,7 @@ import React from 'react';
 // Icons
 
 import arrowDown from './../../assets/icons/arrow-down.svg';
+import arrowLeft from './../../assets/icons/arrow-left.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
 import clipboard from './../../assets/icons/clipboard.svg';
@@ -13,6 +14,7 @@ import chevronLeft from './../../assets/icons/chevron-left.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
 import eyeVisible from './../../assets/icons/eye-visible.svg';
 import eyeHidden from './../../assets/icons/eye-hidden.svg';
+import exclamation from './../../assets/icons/exclamation.svg';
 import externalLink from './../../assets/icons/external-link.svg';
 import groupLayers from './../../assets/icons/group-layers.svg';
 import info from './../../assets/icons/info.svg';
@@ -80,6 +82,7 @@ const ICONS = {
   'group-layers': groupLayers,
   info: info,
   'info-link': infoLink,
+  'arrow-left': arrowLeft,
   'launch-arrow': launchArrow,
   'launch-info': launchInfo,
   link: link,
@@ -87,6 +90,7 @@ const ICONS = {
   lock: lock,
   'logo-ohif-small': logoOhifSmall,
   magnifier: magnifier,
+  exclamation: exclamation,
   'notificationwarning-diamond': notificationwarningDiamond,
   pencil: pencil,
   profile: profile,

@@ -85,15 +85,17 @@ const ViewportActionBar = ({
         case 1:
           StatusIcon = () => (
             <div
-              className="flex items-center justify-center -mr-1 bg-black rounded-full"
+              className="flex items-center justify-center -mr-1 rounded-full"
               style={{
                 width: '18px',
                 height: '18px',
+                backgroundColor: '#98e5c1',
+                border: 'solid 1.5px #000000',
               }}
             >
               <Icon
-                name="notificationwarning-diamond"
-                style={{ color: '#05D97C', width: '8px', height: '11px' }}
+                name="exclamation"
+                style={{ color: '#000', width: '12px', height: '12px' }}
               />
             </div>
           );
@@ -135,15 +137,16 @@ const ViewportActionBar = ({
         case 3:
           StatusIcon = () => (
             <div
-              className="flex items-center justify-center -mr-1 bg-white border-black border-solid rounded-full"
+              className="flex items-center justify-center -mr-1 bg-white rounded-full"
               style={{
                 width: '18px',
                 height: '18px',
+                border: 'solid 1.5px #000000',
               }}
             >
               <Icon
-                name="launch-arrow"
-                style={{ color: '#000', width: '11px', height: '11px' }}
+                name="arrow-left"
+                style={{ color: '#000', width: '14px', height: '14px' }}
               />
             </div>
           );
