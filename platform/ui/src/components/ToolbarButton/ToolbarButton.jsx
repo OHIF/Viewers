@@ -62,12 +62,12 @@ const ToolbarButton = ({
 ToolbarButton.defaultProps = {
   dropdownContent: null,
   isActive: false,
-  type: 'primary',
+  type: 'action',
 };
 
 ToolbarButton.propTypes = {
   /* Influences background/hover styling */
-  type: PropTypes.oneOf(['primary', 'secondary']),
+  type: PropTypes.oneOf(['action', 'toggle', 'tool']),
   id: PropTypes.string.isRequired,
   isActive: PropTypes.bool,
   onInteraction: PropTypes.func.isRequired,
