@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { ButtonGroup, Button, StudyItem, ThumbnailList } from '@ohif/ui';
+import { ButtonGroup, Button, StudyItem, ThumbnailList } from '../';
 
 const buttonClasses = 'text-white text-base border-none bg-black p-2 min-w-18';
 const activeButtonClasses = 'bg-primary-main';
@@ -143,7 +143,7 @@ StudyBrowser.propTypes = {
                 'thumbnailNoImage',
               ]).isRequired,
               isTracked: PropTypes.bool,
-              viewportIdentificator: PropTypes.string,
+              viewportIdentificator: PropTypes.arrayOf(PropTypes.string),
               /**
                * Data the thumbnail should expose to a receiving drop target. Use a matching
                * `dragData.type` to identify which targets can receive this draggable item.

@@ -51,7 +51,13 @@ const createRoutes = ({
             render={props => (
               // eslint-disable-next-line react/jsx-props-no-spreading
               <ErrorBoundary context={`Route ${route.path}`} fallbackRoute="/">
-                <route.component {...props} {...route.props} route={route} />
+                <route.component
+                  {...props}
+                  {...route.props}
+                  route={route}
+                  servicesManager={servicesManager}
+                  hotkeysManager={hotkeysManager}
+                />
               </ErrorBoundary>
             )}
           />

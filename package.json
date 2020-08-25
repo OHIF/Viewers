@@ -37,6 +37,9 @@
     "docs:preview": "lerna run docs:preview --stream",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
     "release": "yarn run lerna:version && yarn run lerna:publish",
+    "lerna:cache": "[ $NETLIFY_RESTORE = 1 ] && ./netlify-lerna-cache.sh || :",
+    "lerna:restore": "[ $NETLIFY_RESTORE = 1 ] && ./netlify-lerna-restore.sh || :",
+    "preinstall": "yarn lerna:restore",
     "lerna:version": "npx lerna version prerelease --force-publish",
     "lerna:publish": "lerna publish from-package --canary --dist-tag canary",
     "link-list": "npm ls --depth=0 --link=true"
@@ -95,7 +98,7 @@
     "postcss-loader": "^3.0.0",
     "postcss-preset-env": "^6.6.0",
     "prettier": "^1.18.2",
-    "react-hot-loader": "^4.12.11",
+    "react-hot-loader": "^4.12.21",
     "redux-testkit": "^1.0.6",
     "serve": "^11.1.0",
     "start-server-and-test": "^1.10.0",

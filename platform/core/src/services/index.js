@@ -6,8 +6,10 @@ import UINotificationService from './UINotificationService';
 import UIViewportDialogService from './UIViewportDialogService';
 import DicomMetadataStore from './DicomMetadataStore';
 import DisplaySetService from './DisplaySetService';
-import ToolBarSerivce from './ToolBarService';
+import ToolBarService from './ToolBarService';
 import ViewportGridService from './ViewportGridService';
+import CineService from './CineService';
+import HangingProtocolService from './HangingProtocolService';
 
 export {
   MeasurementService,
@@ -18,6 +20,8 @@ export {
   UIViewportDialogService,
   DicomMetadataStore,
   DisplaySetService,
-  ToolBarSerivce,
+  ToolBarService,
   ViewportGridService,
+  HangingProtocolService,
+  CineService
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ViewportActionBar, Notification, Button } from '@ohif/ui';
+import { ViewportActionBar, Notification, Button } from '../';
 
 const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
   return (
@@ -33,7 +33,7 @@ const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
             },
           ]}
           onSubmit={value => {
-            window.alert(value);
+            if (typeof window !== 'undefined') window.alert(value);
           }}
         />
       </div>

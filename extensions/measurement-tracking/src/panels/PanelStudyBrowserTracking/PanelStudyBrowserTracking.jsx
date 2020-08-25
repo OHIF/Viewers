@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
+import { StudyBrowser, useImageViewer, useViewportGrid, Dialog } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
 const { formatDate } = utils;
@@ -13,6 +13,8 @@ const { formatDate } = utils;
 function PanelStudyBrowserTracking({
   MeasurementService,
   DisplaySetService,
+  UIDialogService,
+  UINotificationService,
   getImageSrc,
   getStudiesForPatientByStudyInstanceUID,
   requestDisplaySetCreationForStudy,
@@ -136,7 +138,11 @@ function PanelStudyBrowserTracking({
       thumbnailImageSrcMap,
       trackedSeries,
       viewports,
-      isSingleViewport
+      isSingleViewport,
+      dataSource,
+      DisplaySetService,
+      UIDialogService,
+      UINotificationService
     );
 
     setDisplaySets(mappedDisplaySets);
@@ -146,6 +152,7 @@ function PanelStudyBrowserTracking({
     trackedSeries,
     thumbnailImageSrcMap,
     viewports,
+    dataSource,
   ]);
 
   // ~~ subscriptions --> displaySets
@@ -193,7 +200,11 @@ function PanelStudyBrowserTracking({
           thumbnailImageSrcMap,
           trackedSeries,
           viewports,
-          isSingleViewport
+          isSingleViewport,
+          dataSource,
+          DisplaySetService,
+          UIDialogService,
+          UINotificationService
         );
 
         setDisplaySets(mappedDisplaySets);
@@ -227,10 +238,10 @@ function PanelStudyBrowserTracking({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? [
-          ...expandedStudyInstanceUIDs.filter(
-            stdyUid => stdyUid !== StudyInstanceUID
-          ),
-        ]
+        ...expandedStudyInstanceUIDs.filter(
+          stdyUid => stdyUid !== StudyInstanceUID
+        ),
+      ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -304,7 +315,7 @@ function PanelStudyBrowserTracking({
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
         });
       }}
-      onClickThumbnail={() => {}}
+      onClickThumbnail={() => { }}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
       activeDisplaySetInstanceUID={activeDisplaySetInstanceUID}
     />
@@ -320,7 +331,6 @@ PanelStudyBrowserTracking.propTypes = {
     EVENTS: PropTypes.object.isRequired,
     activeDisplaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
     getDisplaySetByUID: PropTypes.func.isRequired,
-    hasDisplaySetsForStudy: PropTypes.func.isRequired,
     subscribe: PropTypes.func.isRequired,
   }).isRequired,
   dataSource: PropTypes.shape({
@@ -360,8 +370,13 @@ function _mapDisplaySets(
   thumbnailImageSrcMap,
   trackedSeriesInstanceUIDs,
   viewports, // TODO: make array of `displaySetInstanceUIDs`?
-  isSingleViewport
+  isSingleViewport,
+  dataSource,
+  DisplaySetService,
+  UIDialogService,
+  UINotificationService
 ) {
+  console.log(displaySets.length);
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
   displaySets.forEach(ds => {
@@ -370,19 +385,21 @@ function _mapDisplaySets(
     const viewportIdentificator = isSingleViewport
       ? []
       : viewports.reduce((acc, viewportData, index) => {
-          if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
-            acc.push(_viewportLabels[index]);
-          }
-          return acc;
-        }, []);
+        if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
+          acc.push(_viewportLabels[index]);
+        }
+        return acc;
+      }, []);
 
     const array =
       componentType === 'thumbnailTracked'
         ? thumbnailDisplaySets
         : thumbnailNoImageDisplaySets;
 
-    array.push({
-      displaySetInstanceUID: ds.displaySetInstanceUID,
+    const { displaySetInstanceUID } = ds;
+
+    const thumbnailProps = {
+      displaySetInstanceUID,
       description: ds.SeriesDescription,
       seriesNumber: ds.SeriesNumber,
       modality: ds.Modality,
@@ -393,12 +410,71 @@ function _mapDisplaySets(
       imageSrc,
       dragData: {
         type: 'displayset',
-        displaySetInstanceUID: ds.displaySetInstanceUID,
+        displaySetInstanceUID,
         // .. Any other data to pass
       },
       isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
       viewportIdentificator,
-    });
+    };
+
+    if (componentType === 'thumbnailNoImage') {
+      if (dataSource.reject && dataSource.reject.series) {
+        thumbnailProps.canReject = true;
+        thumbnailProps.onReject = () => {
+          UIDialogService.create({
+            id: 'ds-reject-sr',
+            centralize: true,
+            isDraggable: false,
+            showOverlay: true,
+            content: Dialog,
+            contentProps: {
+              title: 'Reject Report',
+              body: () => (
+                <div className="p-4 bg-primary-dark text-white">
+                  <p>This is a destructive action.</p>
+                  <p>Are you sure you want to continue?</p>
+                </div>
+              ),
+              actions: [
+                { id: 'cancel', text: 'Cancel', type: 'secondary' },
+                { id: 'save', text: 'Save', type: 'primary' },
+              ],
+              onClose: () => UIDialogService.dismiss({ id: 'ds-reject-sr' }),
+              onSubmit: async ({ action }) => {
+                switch (action.id) {
+                  case 'save':
+                    try {
+                      await dataSource.reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
+                      DisplaySetService.deleteDisplaySet(displaySetInstanceUID);
+                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
+                      UINotificationService.show({
+                        title: 'Reject Report',
+                        message: 'Report rejected successfully',
+                        type: 'success',
+                      });
+                    } catch (error) {
+                      UIDialogService.dismiss({ id: 'ds-reject-sr' });
+                      UINotificationService.show({
+                        title: 'Reject Report',
+                        message: 'Failed to reject report',
+                        type: 'error',
+                      });
+                    }
+                    break;
+                  case 'cancel':
+                    UIDialogService.dismiss({ id: 'ds-reject-sr' });
+                    break;
+                }
+              },
+            },
+          });
+        };
+      } else {
+        thumbnailProps.canReject = false;
+      }
+    }
+
+    array.push(thumbnailProps);
   });
 
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
@@ -443,16 +519,38 @@ function _createStudyBrowserTabs(
   const recentStudies = [];
   const allStudies = [];
 
+  // Iterate over each study...
   studyDisplayList.forEach(study => {
+    // Find it's display sets
     const displaySetsForStudy = displaySets.filter(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
+    
+   // Sort them
+   const sortedDisplaySetsForStudy = utils.sortBySeriesDate(displaySetsForStudy);
+
+    /* Sort by series number, then by series date
+      displaySetsForStudy.sort((a, b) => {
+        if (a.seriesNumber !== b.seriesNumber) {
+          return a.seriesNumber - b.seriesNumber;
+        }
+
+        const seriesDateA = Date.parse(a.seriesDate);
+        const seriesDateB = Date.parse(b.seriesDate);
+
+        return seriesDateA - seriesDateB;
+      });
+    */
+    
+    // Map the study to it's tab/view representation
     const tabStudy = Object.assign({}, study, {
       displaySets: displaySetsForStudy,
     });
 
+    // Add the "tab study" to the 'primary', 'recent', and/or 'all' tab group(s)
     if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
       primaryStudies.push(tabStudy);
+      allStudies.push(tabStudy);
     } else {
       // TODO: Filter allStudies to dates within one year of current date
       recentStudies.push(tabStudy);

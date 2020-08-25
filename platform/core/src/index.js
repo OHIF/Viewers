@@ -5,6 +5,7 @@ import classes, { CommandsManager, HotkeysManager } from './classes/';
 import DICOMWeb from './DICOMWeb';
 import DICOMSR from './DICOMSR';
 import errorHandler from './errorHandler.js';
+import studies from './studies';
 import log from './log.js';
 import object from './object.js';
 import string from './string.js';
@@ -14,6 +15,7 @@ import utils from './utils/';
 import defaults from './defaults';
 
 import {
+  CineService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -21,9 +23,10 @@ import {
   //
   DicomMetadataStore,
   DisplaySetService,
-  ToolBarSerivce, // TODO: Typo
+  ToolBarService,
   MeasurementService,
   ViewportGridService,
+  HangingProtocolService,
 } from './services';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -52,16 +55,19 @@ const OHIF = {
   log,
   DICOMWeb,
   DICOMSR,
+  studies,
   viewer: {},
   //
+  CineService,
   UIDialogService,
   UIModalService,
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
   MeasurementService,
-  ToolBarSerivce, // TODO: TYPO
+  ToolBarService, // TODO: TYPO
   ViewportGridService,
+  HangingProtocolService,
   IWebApiDataSource,
   DicomMetadataStore,
   //
@@ -88,15 +94,18 @@ export {
   log,
   DICOMWeb,
   DICOMSR,
+  studies,
   //
+  CineService,
   UIDialogService,
   UIModalService,
   UINotificationService,
   UIViewportDialogService,
   DisplaySetService,
   MeasurementService,
-  ToolBarSerivce,
+  ToolBarService,
   ViewportGridService,
+  HangingProtocolService,
   IWebApiDataSource,
   DicomMetadataStore,
   ViewModelProvider,

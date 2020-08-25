@@ -11,9 +11,11 @@ const DEFAULT_STATE = {
   numRows: 1,
   numCols: 1,
   viewports: [
-    // {
-    //    displaySetInstanceUID: string,
-    // }
+    /*
+     * {
+     *    displaySetInstanceUID: string,
+     * }
+     */
   ],
   activeViewportIndex: 0,
 };
@@ -27,14 +29,10 @@ export function ViewportGridProvider({ children, service }) {
         return { ...state, ...{ activeViewportIndex: action.payload } };
       }
       case 'SET_DISPLAYSET_FOR_VIEWPORT': {
-        const {
-          viewportIndex,
-          displaySetInstanceUID,
-          imageIndex,
-        } = action.payload;
+        const { viewportIndex, displaySetInstanceUID } = action.payload;
         const viewports = state.viewports.slice();
 
-        viewports[viewportIndex] = { displaySetInstanceUID, imageIndex };
+        viewports[viewportIndex] = { displaySetInstanceUID };
 
         return { ...state, ...{ viewports }, cachedLayout: null };
       }
@@ -63,7 +61,9 @@ export function ViewportGridProvider({ children, service }) {
           numCols: 1,
           numRows: 1,
           activeViewportIndex: 0,
-          viewports: [{ displaySetInstanceUID: null, imageIndex: null }],
+          viewports: [{
+            displaySetInstanceUID: null,
+          }],
           cachedLayout: null,
         };
       }
@@ -88,21 +88,20 @@ export function ViewportGridProvider({ children, service }) {
     DEFAULT_STATE
   );
 
-  console.log('viewportGridState',viewportGridState)
-
   const getState = useCallback(() => viewportGridState, [viewportGridState]);
+
   const setActiveViewportIndex = useCallback(
     index => dispatch({ type: 'SET_ACTIVE_VIEWPORT_INDEX', payload: index }),
     [dispatch]
   );
+
   const setDisplaysetForViewport = useCallback(
-    ({ viewportIndex, displaySetInstanceUID, imageIndex }) =>
+    ({ viewportIndex, displaySetInstanceUID }) =>
       dispatch({
         type: 'SET_DISPLAYSET_FOR_VIEWPORT',
         payload: {
           viewportIndex,
           displaySetInstanceUID,
-          imageIndex,
         },
       }),
     [dispatch]
@@ -128,6 +127,7 @@ export function ViewportGridProvider({ children, service }) {
       }),
     [dispatch]
   );
+
   const setCachedLayout = useCallback(
     payload =>
       dispatch({

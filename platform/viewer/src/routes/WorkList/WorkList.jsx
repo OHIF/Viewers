@@ -1,26 +1,30 @@
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
+import isEqual from 'lodash.isequal';
+import { useTranslation } from 'react-i18next';
 //
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useQuery } from '@hooks';
-
-import PreferencesDropdown from '../../components/PreferencesDropdown';
+import { utils } from '@ohif/core';
 
 import {
   Icon,
   StudyListExpandedRow,
   Button,
-  NavBar,
-  Svg,
   EmptyStudies,
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
+  TooltipClipboard,
+  Header,
+  useModal,
+  AboutModal,
+  UserPreferences
 } from '@ohif/ui';
 
 const seriesInStudiesMap = new Map();
@@ -29,18 +33,29 @@ const seriesInStudiesMap = new Map();
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function WorkList({ history, data: studies, isLoadingData, dataSource }) {
+function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingData, dataSource, hotkeysManager }) {
+  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
+  const { show, hide } = useModal();
+  const { t } = useTranslation();
   // ~ Modes
   const [appConfig] = useAppConfig();
   // ~ Filters
   const query = useQuery();
+  const STUDIES_LIMIT = 101;
   const queryFilterValues = _getQueryFilterValues(query);
   const [filterValues, _setFilterValues] = useState({
     ...defaultFilterValues,
     ...queryFilterValues,
   });
+
   const debouncedFilterValues = useDebounce(filterValues, 200);
   const { resultsPerPage, pageNumber, sortBy, sortDirection } = filterValues;
+
+  /*
+   * The default sort value keep the filters synchronized with runtime conditional sorting
+   * Only applied if no other sorting is specified and there are less than 101 studies
+   */
+  let defaultSortValues = {};
 
   const sortedStudies = studies
     // TOOD: Move sort to DataSourceWrapper?
@@ -49,9 +64,9 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
       const noSortApplied = sortBy === '' || !sortBy;
       const sortModifier = sortDirection === 'descending' ? 1 : -1;
 
-      if (noSortApplied && studies.length < 101) {
+      if (noSortApplied && studiesTotal < STUDIES_LIMIT) {
         const ascendingSortModifier = -1;
-
+        defaultSortValues = { sortBy: 'studyDate', sortDirection: 'ascending' };
         return _sortStringDates(s1, s2, ascendingSortModifier);
       } else if (noSortApplied) {
         return 0;
@@ -78,7 +93,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
-  const numOfStudies = studies.length;
+  const numOfStudies = studiesTotal;
   const totalPages = Math.floor(numOfStudies / resultsPerPage) + 1;
 
   const setFilterValues = val => {
@@ -93,6 +108,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     if (newPageNumber > totalPages) {
       return;
     }
+
     setFilterValues({ ...filterValues, pageNumber: newPageNumber });
   };
 
@@ -117,6 +133,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
     if (!debouncedFilterValues) {
       return;
     }
+
     const queryString = {};
     Object.keys(defaultFilterValues).forEach(key => {
       const defaultValue = defaultFilterValues[key];
@@ -154,9 +171,8 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   useEffect(() => {
     const fetchSeries = async studyInstanceUid => {
       try {
-        const result = await dataSource.query.series.search(studyInstanceUid);
-
-        seriesInStudiesMap.set(studyInstanceUid, result);
+        const series = await dataSource.query.series.search(studyInstanceUid);
+        seriesInStudiesMap.set(studyInstanceUid, utils.sortBySeriesDate(series));
         setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
       } catch (ex) {
         // TODO: UI Notification Service
@@ -180,9 +196,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
   }, [expandedRows, studies]);
 
   const isFiltering = (filterValues, defaultFilterValues) => {
-    return Object.keys(defaultFilterValues).some(name => {
-      return filterValues[name] !== defaultFilterValues[name];
-    });
+    return !isEqual(filterValues, defaultFilterValues);
   };
 
   const tableDataSource = sortedStudies.map((study, key) => {
@@ -213,17 +227,15 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
         {
           key: 'patientName',
           content: patientName ? (
-            patientName
+            <TooltipClipboard>{patientName}</TooltipClipboard>
           ) : (
-            <span className="text-gray-700">(Empty)</span>
-          ),
-          title: patientName,
+              <span className="text-gray-700">(Empty)</span>
+            ),
           gridCol: 4,
         },
         {
           key: 'mrn',
-          content: mrn,
-          title: mrn,
+          content: <TooltipClipboard>{mrn}</TooltipClipboard>,
           gridCol: 3,
         },
         {
@@ -239,8 +251,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
         },
         {
           key: 'description',
-          content: description,
-          title: description,
+          content: <TooltipClipboard>{description}</TooltipClipboard>,
           gridCol: 4,
         },
         {
@@ -251,8 +262,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
         },
         {
           key: 'accession',
-          content: accession,
-          title: accession,
+          content: <TooltipClipboard>{accession}</TooltipClipboard>,
           gridCol: 3,
         },
         {
@@ -284,13 +294,13 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                  return {
-                    description: s.description || '(empty)',
-                    seriesNumber: s.seriesNumber || '',
-                    modality: s.modality || '',
-                    instances: s.numSeriesInstances || '',
-                  };
-                })
+                return {
+                  description: s.description || '(empty)',
+                  seriesNumber: s.seriesNumber || '',
+                  modality: s.modality || '',
+                  instances: s.numSeriesInstances || '',
+                };
+              })
               : []
           }
         >
@@ -307,7 +317,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
               <Link
                 key={i}
                 to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
-                // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+              // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
@@ -315,6 +325,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
                   disabled={false}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
+                  onClick={() => { }}
                 >
                   {mode.displayName}
                 </Button>
@@ -333,29 +344,43 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
 
   const hasStudies = numOfStudies > 0;
 
+  const menuOptions = [
+    {
+      title: t('Header:About'),
+      icon: 'info',
+      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' })
+    },
+    {
+      title: t('Header:Preferences'),
+      icon: 'settings',
+      onClick: () => show({
+        title: t('UserPreferencesModal:User Preferences'),
+        content: UserPreferences,
+        contentProps: {
+          hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
+          hotkeyDefinitions,
+          onCancel: hide,
+          onSubmit: ({ hotkeyDefinitions }) => {
+            hotkeysManager.setHotkeys(hotkeyDefinitions);
+            hide();
+          },
+          onReset: () => hotkeysManager.restoreDefaultBindings()
+        }
+      })
+    },
+  ];
+
   return (
     <div
       className={classnames('bg-black h-full', {
         'h-screen': !hasStudies,
       })}
     >
-      <NavBar className="justify-between border-b-4 border-black" isSticky>
-        <div className="flex items-center">
-          <div className="mx-3">
-            <Svg name="logo-ohif" />
-          </div>
-        </div>
-        <div className="flex items-center">
-          <span className="mr-3 text-lg text-common-light">
-            FOR INVESTIGATIONAL USE ONLY
-          </span>
-          <PreferencesDropdown />
-        </div>
-      </NavBar>
+      <Header isSticky menuOptions={menuOptions} isReturnEnabled={false} />
       <StudyListFilter
         numOfStudies={numOfStudies}
         filtersMeta={filtersMeta}
-        filterValues={filterValues}
+        filterValues={{ ...filterValues, ...defaultSortValues }}
         onChange={setFilterValues}
         clearFilters={() => setFilterValues(defaultFilterValues)}
         isFiltering={isFiltering(filterValues, defaultFilterValues)}
@@ -363,10 +388,7 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
       {hasStudies ? (
         <>
           <StudyListTable
-            tableDataSource={tableDataSource.slice(
-              (pageNumber - 1) * resultsPerPage,
-              (pageNumber - 1) * resultsPerPage + resultsPerPage
-            )}
+            tableDataSource={tableDataSource}
             numOfStudies={numOfStudies}
             filtersMeta={filtersMeta}
           />
@@ -378,10 +400,10 @@ function WorkList({ history, data: studies, isLoadingData, dataSource }) {
           />
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center pt-48">
-          <EmptyStudies isLoading={isLoadingData} />
-        </div>
-      )}
+          <div className="flex flex-col items-center justify-center pt-48">
+            <EmptyStudies isLoading={isLoadingData} />
+          </div>
+        )}
     </div>
   );
 }
@@ -394,14 +416,15 @@ WorkList.propTypes = {
   dataSource: PropTypes.shape({
     query: PropTypes.object.isRequired,
   }).isRequired,
+  isLoadingData: PropTypes.bool.isRequired,
 };
 
 const defaultFilterValues = {
   patientName: '',
   mrn: '',
   studyDate: {
-    startDate: undefined,
-    endDate: undefined,
+    startDate: null,
+    endDate: null,
   },
   description: '',
   modalities: [],

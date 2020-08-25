@@ -4,6 +4,7 @@ import React from 'react';
 import arrowDown from './../../assets/icons/arrow-down.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
+import clipboard from './../../assets/icons/clipboard.svg';
 import close from './../../assets/icons/close.svg';
 import dottedCircle from './../../assets/icons/dotted-circle.svg';
 import circledCheckmark from './../../assets/icons/circled-checkmark.svg';
@@ -59,11 +60,14 @@ import oldAngleLeft from './../../assets/icons/old-angle-left.svg';
 import oldReset from './../../assets/icons/old-reset.svg';
 import oldCircleO from './../../assets/icons/old-circle-o.svg';
 import oldTrash from './../../assets/icons/old-trash.svg';
+import oldPlay from './../../assets/icons/old-play.svg';
+import oldStop from './../../assets/icons/old-stop.svg';
 
 const ICONS = {
   'arrow-down': arrowDown,
   calendar: calendar,
   cancel: cancel,
+  clipboard: clipboard,
   close: close,
   'dotted-circle': dottedCircle,
   'circled-checkmark': circledCheckmark,
@@ -119,6 +123,8 @@ const ICONS = {
   'old-reset': oldReset,
   'old-circle-o': oldCircleO,
   'old-trash': oldTrash,
+  'old-play': oldPlay,
+  'old-stop': oldStop,
 };
 
 /**

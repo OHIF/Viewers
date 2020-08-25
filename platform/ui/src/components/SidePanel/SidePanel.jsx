@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { Button, Icon } from '@ohif/ui';
+import { Button, Icon } from '../';
 
 const borderSize = 4;
 const expandedWidth = 248;
@@ -164,7 +164,7 @@ SidePanel.propTypes = {
       iconLabel: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
-      content: PropTypes.node,
+      content: PropTypes.func, // TODO: Should be node, but it keeps complaining?
     }),
     PropTypes.arrayOf(
       PropTypes.shape({
@@ -172,7 +172,7 @@ SidePanel.propTypes = {
         iconLabel: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         label: PropTypes.string.isRequired,
-        content: PropTypes.node,
+        content: PropTypes.func, // TODO: Should be node, but it keeps complaining?
       })
     ),
   ]),

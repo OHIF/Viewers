@@ -30,8 +30,8 @@ export default {
    * @param {object} [configuration={}]
    * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
    */
-  preRegistration({ servicesManager, configuration = {} }) {
-    init({ servicesManager, configuration });
+  preRegistration({ servicesManager, commandsManager, configuration = {} }) {
+    init({ servicesManager, commandsManager, configuration });
   },
   getViewportModule({ commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {

@@ -1,0 +1,49 @@
+---
+name: Context Menu
+menu: General
+route: components/contextMenu
+---
+
+import { Playground, Props } from 'docz';
+import { ContextMenu } from '../';
+
+# Context Menu
+
+...
+
+## Import
+
+```javascript
+import { ContextMenu } from '@ohif/ui';
+```
+
+<Playground>
+  {() => {
+    const items = [
+      {
+        label: 'Delete measurement',
+        actionType: 'Delete',
+        action: () => alert('Delete'),
+      },
+      {
+        label: 'Relabel',
+        actionType: 'setLabel',
+        action: () => alert('Relabel'),
+      },
+      {
+        label: 'Add Description',
+        actionType: 'setDescription',
+        action: () => alert('Add Description'),
+      },
+    ];
+    return (
+      <div className="p-4">
+        <ContextMenu items={items} />
+      </div>
+    );
+  }}
+</Playground>
+
+## Properties
+
+<Props of={ContextMenu} />

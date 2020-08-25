@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, ButtonGroup, Icon, Typography } from '@ohif/ui';
+import { Button, ButtonGroup, Typography, Select } from '../';
 
 const StudyListPagination = ({
   onChangePage,
@@ -13,30 +13,33 @@ const StudyListPagination = ({
     onChangePage(toPage);
   };
 
+  const ranges = [
+    { value: '25', label: '25' },
+    { value: '50', label: '50' },
+    { value: '100', label: '100' },
+  ];
+  const [selectedRange, setSelectedRange] = useState(ranges.find(r => r.value == perPage));
+  const onSelectedRange = (selectedRange) => {
+    setSelectedRange(selectedRange);
+    onChangePerPage(selectedRange.value);
+  };
+
   return (
     <div className="bg-black py-10">
       <div className="container m-auto relative px-8">
         <div className="flex justify-between">
           <div className="flex items-center">
-            <div className="relative mr-3">
-              <select
-                defaultValue={perPage}
-                className="block appearance-none w-full bg-transparent border border-common-active text-white text-base px-2 pr-4 rounded leading-tight focus:outline-none h-8"
-                onChange={e => onChangePerPage(e.target.value)}
-                onBlur={() => {}}
-              >
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
-                <Icon
-                  name="arrow-down"
-                  className="text-white"
-                  style={{ width: 6 }}
-                />
-              </div>
-            </div>
+            <Select
+              className="relative mr-3 w-16 border-primary-main"
+              options={ranges}
+              value={selectedRange}
+              isMulti={false}
+              isClearable={false}
+              isSearchable={false}
+              closeMenuOnSelect={false}
+              hideSelectedOptions={true}
+              onChange={onSelectedRange}
+            />
             <Typography className="text-base opacity-60">
               Results per page
             </Typography>
@@ -49,7 +52,7 @@ const StudyListPagination = ({
               <ButtonGroup color="primary">
                 <Button
                   size="initial"
-                  className="border-common-active px-4 py-2 text-base"
+                  className="border-primary-main px-4 py-2 text-base"
                   color="white"
                   onClick={() => navigateToPage(1)}
                 >
@@ -57,13 +60,13 @@ const StudyListPagination = ({
                 </Button>
                 <Button
                   size="initial"
-                  className="border-common-active py-2 px-2 text-base"
+                  className="border-primary-main py-2 px-2 text-base"
                   color="white"
                   onClick={() => navigateToPage(currentPage - 1)}
                 >{`< Previous`}</Button>
                 <Button
                   size="initial"
-                  className="border-common-active py-2 px-4 text-base"
+                  className="border-primary-main py-2 px-4 text-base"
                   color="white"
                   onClick={() => navigateToPage(currentPage + 1)}
                 >

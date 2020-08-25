@@ -1,0 +1,39 @@
+---
+name: ThumbnailTracked
+menu: General
+route: components/ThumbnailTracked
+---
+
+import { Playground, Props } from 'docz';
+import { ThumbnailTracked } from '../';
+
+# ThumbnailTracked
+
+## Import
+
+```javascript
+import { ThumbnailTracked } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  <div className="flex flex-1 items-center justify-center p-4">
+    <div className="w-64">
+      <ThumbnailTracked
+        imageAltText="DisplaySet thumbnail image"
+        description="Multiple line image series description lorem sit"
+        seriesNumber={4}
+        numInstances={902}
+        onClick={() => alert('Thumbnail was clicked!')}
+        viewportIdentificator={["A"]}
+        isTracked={true}
+        isActive={false}
+      />
+    </div>
+  </div>
+</Playground>
+
+## Properties
+
+<Props of={ThumbnailTracked} />

@@ -1,0 +1,37 @@
+---
+name: ThumbnailNoImage
+menu: General
+route: components/ThumbnailNoImage
+---
+
+import { Playground, Props } from 'docz';
+import { ThumbnailNoImage } from '../';
+
+# ThumbnailNoImage
+
+Used to expose
+
+## Import
+
+```javascript
+import { Thumbnail } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  <div className="flex flex-1 items-center justify-center p-4">
+    <div className="w-64">
+      <ThumbnailNoImage
+        modality={'SR'}
+        seriesDate="13-Mar-1999"
+        description="Multiple line image series description lorem sit"
+        onClick={() => alert('ThumbnailNoImage was clicked!')}
+      />
+    </div>
+  </div>
+</Playground>
+
+## Properties
+
+<Props of={ThumbnailNoImage} />

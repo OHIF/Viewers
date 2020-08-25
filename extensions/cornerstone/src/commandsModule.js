@@ -80,8 +80,6 @@ const commandsModule = ({ servicesManager }) => {
       const enabledElement = _getActiveViewportsEnabledElement();
 
       if (enabledElement) {
-        debugger;
-
         const cancelActiveManipulatorsForElement = cornerstoneTools.getModule(
           'manipulatorState'
         ).setters.cancelActiveManipulatorsForElement;

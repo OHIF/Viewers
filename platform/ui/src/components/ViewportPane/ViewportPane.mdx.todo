@@ -1,0 +1,36 @@
+---
+name: ViewportPane
+menu: General
+route: components/viewport-pane
+---
+
+import { Playground, Props } from 'docz';
+import { ViewportGrid, ViewportPane } from '../../components';
+import { DragAndDropProvider } from '../../contextProviders';
+
+# ViewportPane
+
+Used to display viewports in the viewer page.
+
+## Import
+
+```javascript
+import { ViewportPane } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  <div className="p-4 h-56">
+    <DragAndDropProvider>
+      <ViewportGrid numRows={1} numCols={2}>
+        <ViewportPane onDrop={() => {}} isActive={true}><h3>Hello</h3></ViewportPane>
+        <ViewportPane onDrop={() => {}} isActive={false}><h3>World</h3></ViewportPane>
+      </ViewportGrid>
+    </DragAndDropProvider>
+  </div>
+</Playground>
+
+## Properties
+
+<Props of={ViewportPane} />

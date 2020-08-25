@@ -2,13 +2,14 @@ import MODULE_TYPES from './MODULE_TYPES.js';
 import log from './../log.js';
 
 export default class ExtensionManager {
-  constructor({ commandsManager, servicesManager, api, appConfig = {} }) {
+  constructor({ commandsManager, servicesManager, hotkeysManager, api, appConfig = {} }) {
     this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
     //
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
+    this._hotkeysManager = hotkeysManager;
     this._appConfig = appConfig;
     this._api = api;
 
@@ -16,7 +17,7 @@ export default class ExtensionManager {
     this.moduleTypeNames.forEach(moduleType => {
       this.modules[moduleType] = [];
     });
-    this._extensionLifeCycleHooks = { onModeEnter: {} };
+    this._extensionLifeCycleHooks = { onModeEnter: {}, onModeExit: {} };
     this.dataSourceMap = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
     this.activeDataSource = undefined;
@@ -29,17 +30,58 @@ export default class ExtensionManager {
   onModeEnter() {
     const {
       registeredExtensionIds,
-      getModuleEntry,
       _servicesManager,
       _commandsManager,
+      _hotkeysManager,
       _extensionLifeCycleHooks,
     } = this;
+
+    const {
+      MeasurementService,
+      ViewportGridService,
+      HangingProtocolService,
+    } = _servicesManager.services;
+
+    MeasurementService.clearMeasurements();
+    ViewportGridService.reset();
+    HangingProtocolService.reset();
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeEnter = _extensionLifeCycleHooks.onModeEnter[extensionId];
 
       if (typeof onModeEnter === 'function') {
         onModeEnter({
+          servicesManager: _servicesManager,
+          commandsManager: _commandsManager,
+          hotkeysManager: _hotkeysManager
+        });
+      }
+    });
+  }
+
+  onModeExit() {
+    const {
+      registeredExtensionIds,
+      _servicesManager,
+      _commandsManager,
+      _extensionLifeCycleHooks,
+    } = this;
+
+    const {
+      MeasurementService,
+      ViewportGridService,
+      HangingProtocolService,
+    } = _servicesManager.services;
+
+    MeasurementService.clearMeasurements();
+    ViewportGridService.reset();
+    HangingProtocolService.reset();
+
+    registeredExtensionIds.forEach(extensionId => {
+      const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
+
+      if (typeof onModeExit === 'function') {
+        onModeExit({
           servicesManager: _servicesManager,
           commandsManager: _commandsManager,
         });
@@ -100,6 +142,7 @@ export default class ExtensionManager {
       extension.preRegistration({
         servicesManager: this._servicesManager,
         commandsManager: this._commandsManager,
+        hotkeysManager: this._hotkeysManager,
         appConfig: this._appConfig,
         configuration,
       });
@@ -108,6 +151,11 @@ export default class ExtensionManager {
     if (extension.onModeEnter) {
       this._extensionLifeCycleHooks.onModeEnter[extensionId] =
         extension.onModeEnter;
+    }
+
+    if (extension.onModeExit) {
+      this._extensionLifeCycleHooks.onModeExit[extensionId] =
+        extension.onModeExit;
     }
 
     // Register Modules
@@ -195,8 +243,9 @@ export default class ExtensionManager {
         appConfig: this._appConfig,
         getDataSources: this.getDataSources, // Why pass this in if we're passing in `extensionManager`?
         commandsManager: this._commandsManager,
-        extensionManager: this,
         servicesManager: this._servicesManager,
+        hotkeysManager: this._hotkeysManager,
+        extensionManager: this,
         configuration,
         api: this._api,
       });

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '@ohif/ui';
+import { Thumbnail, ThumbnailNoImage, ThumbnailTracked } from '../';
 
 const ThumbnailList = ({
   thumbnails,
@@ -24,6 +24,8 @@ const ThumbnailList = ({
           seriesDate,
           viewportIdentificator,
           isTracked,
+          canReject,
+          onReject,
           imageSrc,
           imageAltText,
         }) => {
@@ -82,6 +84,8 @@ const ThumbnailList = ({
                   modalityTooltip={_getModalityTooltip(modality)}
                   seriesDate={seriesDate}
                   description={description}
+                  canReject={canReject}
+                  onReject={onReject}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() =>
                     onThumbnailDoubleClick(displaySetInstanceUID)
@@ -113,7 +117,10 @@ ThumbnailList.propTypes = {
         'thumbnailTracked',
         'thumbnailNoImage',
       ]).isRequired,
-      viewportIdentificator: PropTypes.string,
+      viewportIdentificator: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.array,
+      ]),
       isTracked: PropTypes.bool,
       /**
        * Data the thumbnail should expose to a receiving drop target. Use a matching

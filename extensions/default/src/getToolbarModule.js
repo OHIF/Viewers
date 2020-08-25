@@ -85,8 +85,8 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         thisButton.props.isActive = !thisButton.props.isActive;
 
         // Run button logic/command
-        // MAKE SURE THIS SUPPORTS TOGGLE!
-        // commandsManager.runCommand(props.commandName, props.commandOptions);
+        commandsManager.runCommand(props.commandName, props.commandOptions);
+
         // What if just toggled "content"?
         // commandName OR content?
 

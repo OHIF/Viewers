@@ -1,9 +1,8 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
-import { Icon } from '@ohif/ui';
-import blurHandlerListener from '../../utils/blurHandlerListener';
+import { Icon } from '../';
 
 /**
  *
@@ -31,12 +30,8 @@ const Thumbnail = ({
     },
   });
 
-  const thumbnailElement = useRef(null);
-
   return (
     <div
-      onFocus={() => blurHandlerListener(thumbnailElement)}
-      ref={thumbnailElement}
       className={classnames(
         className,
         'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none select-none group'

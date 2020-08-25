@@ -1,0 +1,40 @@
+---
+name: Thumbnail
+menu: General
+route: components/thumbnail
+---
+
+import { Playground, Props } from 'docz';
+import { Thumbnail } from '../';
+
+# Thumbnail
+
+Used to expose a display set showing some information about the group of images
+and a thumbnail
+
+## Import
+
+```javascript
+import { Thumbnail } from '@ohif/ui';
+```
+
+## Basic usage
+
+<Playground>
+  <div className="flex flex-1 items-center justify-center p-4">
+    <div className="w-56">
+      <Thumbnail
+        imageAltText="DisplaySet thumbnail image"
+        description="Multiple line image series description lorem sit"
+        seriesNumber={4}
+        numInstances={902}
+        onClick={() => alert('Thumbnail was clicked!')}
+        isActive={false}
+      />
+    </div>
+  </div>
+</Playground>
+
+## Properties
+
+<Props of={Thumbnail} />

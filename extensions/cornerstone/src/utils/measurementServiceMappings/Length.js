@@ -4,32 +4,7 @@ import getPointsFromHandles from './utils/getPointsFromHandles';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
 const Length = {
-  toAnnotation: (measurement, definition) => {
-    const {
-      id,
-      label,
-      description,
-      points,
-      unit,
-      SOPInstanceUID,
-      FrameOfReferenceUID,
-      referenceSeriesUID,
-    } = measurement;
-
-    return {
-      toolName: definition,
-      measurementData: {
-        sopInstanceUid: SOPInstanceUID,
-        frameOfReferenceUID: FrameOfReferenceUID,
-        SeriesInstanceUID: referenceSeriesUID,
-        unit,
-        text: label,
-        description,
-        handles: getHandlesFromPoints(points),
-        id,
-      },
-    };
-  },
+  toAnnotation: (measurement, definition) => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
@@ -37,7 +12,11 @@ const Length = {
    * @param {Object} cornerstone Cornerstone event data
    * @return {Measurement} Measurement instance
    */
-  toMeasurement: (csToolsAnnotation, getValueTypeFromToolType) => {
+  toMeasurement: (
+    csToolsAnnotation,
+    DisplaySetService,
+    getValueTypeFromToolType
+  ) => {
     const { element, measurementData } = csToolsAnnotation;
     const tool =
       csToolsAnnotation.toolType ||
@@ -57,13 +36,19 @@ const Length = {
       StudyInstanceUID,
     } = getSOPInstanceAttributes(element);
 
+    const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      SOPInstanceUID,
+      SeriesInstanceUID
+    );
+
     return {
       id: measurementData.id,
-      SOPInstanceUID: SOPInstanceUID,
+      SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
-      label: measurementData.text,
+      displaySetInstanceUID: displaySet.displaySetInstanceUID,
+      label: measurementData.label,
       description: measurementData.description,
       unit: measurementData.unit,
       length: measurementData.length,

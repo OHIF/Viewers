@@ -3,7 +3,10 @@ import Bidirectional from './Bidirectional';
 import ArrowAnnotate from './ArrowAnnotate';
 import EllipticalRoi from './EllipticalRoi';
 
-const measurementServiceMappingsFactory = measurementService => {
+const measurementServiceMappingsFactory = (
+  MeasurementService,
+  DisplaySetService
+) => {
   /**
    * Maps measurement service format object to cornerstone annotation object.
    *
@@ -18,7 +21,7 @@ const measurementServiceMappingsFactory = measurementService => {
       ELLIPSE,
       POINT,
       BIDIRECTIONAL,
-    } = measurementService.VALUE_TYPES;
+    } = MeasurementService.VALUE_TYPES;
 
     // TODO -> I get why this was attemped, but its not nearly flexible enough.
     // A single measurement may have an ellipse + a bidirectional measurement, for instances.
@@ -37,10 +40,14 @@ const measurementServiceMappingsFactory = measurementService => {
     Length: {
       toAnnotation: Length.toAnnotation,
       toMeasurement: csToolsAnnotation =>
-        Length.toMeasurement(csToolsAnnotation, _getValueTypeFromToolType),
+        Length.toMeasurement(
+          csToolsAnnotation,
+          DisplaySetService,
+          _getValueTypeFromToolType
+        ),
       matchingCriteria: [
         {
-          valueType: measurementService.VALUE_TYPES.POLYLINE,
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
           points: 2,
         },
       ],
@@ -50,17 +57,18 @@ const measurementServiceMappingsFactory = measurementService => {
       toMeasurement: csToolsAnnotation =>
         Bidirectional.toMeasurement(
           csToolsAnnotation,
+          DisplaySetService,
           _getValueTypeFromToolType
         ),
       matchingCriteria: [
         // TODO -> We should eventually do something like shortAxis + longAxis,
         // But its still a little unclear how these automatic interpretations will work.
         {
-          valueType: measurementService.VALUE_TYPES.POLYLINE,
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
           points: 2,
         },
         {
-          valueType: measurementService.VALUE_TYPES.POLYLINE,
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
           points: 2,
         },
       ],
@@ -70,11 +78,12 @@ const measurementServiceMappingsFactory = measurementService => {
       toMeasurement: csToolsAnnotation =>
         ArrowAnnotate.toMeasurement(
           csToolsAnnotation,
+          DisplaySetService,
           _getValueTypeFromToolType
         ),
       matchingCriteria: [
         {
-          valueType: measurementService.VALUE_TYPES.POINT,
+          valueType: MeasurementService.VALUE_TYPES.POINT,
           points: 1,
         },
       ],
@@ -84,11 +93,12 @@ const measurementServiceMappingsFactory = measurementService => {
       toMeasurement: csToolsAnnotation =>
         EllipticalRoi.toMeasurement(
           csToolsAnnotation,
+          DisplaySetService,
           _getValueTypeFromToolType
         ),
       matchingCriteria: [
         {
-          valueType: measurementService.VALUE_TYPES.ELLIPSE,
+          valueType: MeasurementService.VALUE_TYPES.ELLIPSE,
         },
       ],
     },

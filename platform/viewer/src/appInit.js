@@ -9,8 +9,10 @@ import {
   UIViewportDialogService,
   MeasurementService,
   DisplaySetService,
-  ToolBarSerivce,
+  ToolBarService,
   ViewportGridService,
+  HangingProtocolService,
+  CineService
   // utils,
   // redux as reduxOHIF,
 } from '@ohif/core';
@@ -42,6 +44,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
   const extensionManager = new ExtensionManager({
     commandsManager,
     servicesManager,
+    hotkeysManager,
     appConfig,
   });
 
@@ -52,8 +55,10 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     UIViewportDialogService,
     MeasurementService,
     DisplaySetService,
-    ToolBarSerivce,
+    ToolBarService,
     ViewportGridService,
+    HangingProtocolService,
+    CineService
   ]);
 
   /**

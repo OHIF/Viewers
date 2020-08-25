@@ -4,7 +4,7 @@ import absoluteUrl from './absoluteUrl';
 import addServers from './addServers';
 import guid from './guid';
 import sortBy from './sortBy.js';
-//import studyMetadataManager from './studyMetadataManager';
+import sortBySeriesDate from './sortBySeriesDate.js';
 import writeScript from './writeScript.js';
 import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
@@ -20,6 +20,7 @@ import formatPN from './formatPN';
 import resolveObjectPath from './resolveObjectPath';
 import * as hierarchicalListUtils from './hierarchicalListUtils';
 import * as progressTrackingUtils from './progressTrackingUtils';
+import isLowPriorityModality from './isLowPriorityModality';
 
 // Commented out unused functionality.
 // Now that we have the DicomMetadataStore, we no longer need the studyMetadataManager
@@ -31,15 +32,14 @@ const utils = {
   absoluteUrl,
   addServers,
   sortBy,
+  sortBySeriesDate,
   writeScript,
   formatDate,
   formatPN,
   b64toBlob,
   StackManager,
-  //studyMetadataManager,
   DicomLoaderService,
   urlUtil,
-  //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
   hotkeys,
@@ -48,6 +48,7 @@ const utils = {
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
+  isLowPriorityModality,
 };
 
 export {
@@ -60,10 +61,8 @@ export {
   writeScript,
   b64toBlob,
   StackManager,
-  //studyMetadataManager,
   DicomLoaderService,
   urlUtil,
-  //loadAndCacheDerivedDisplaySets,
   makeDeferred,
   makeCancelable,
   hotkeys,
@@ -72,6 +71,7 @@ export {
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
+  isLowPriorityModality,
 };
 
 export default utils;

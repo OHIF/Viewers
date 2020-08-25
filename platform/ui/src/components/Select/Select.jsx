@@ -43,9 +43,13 @@ const Select = ({
   onChange,
   options,
   placeholder,
+  noIcons,
+  menuPlacement,
   value,
 }) => {
-  const _components = isMulti ? { Option, MultiValue } : {};
+  const _noIconComponents = { DropdownIndicator: () => null, IndicatorSeparator: () => null };
+  let _components = isMulti ? { Option, MultiValue } : {};
+  _components = noIcons ? { ..._components, ..._noIconComponents } : _components;
   const selectedOptions = [];
 
   // Map array of values to an array of selected options
@@ -69,19 +73,20 @@ const Select = ({
       isClearable={isClearable}
       isMulti={isMulti}
       isSearchable={isSearchable}
+      menuPlacement={menuPlacement}
       closeMenuOnSelect={closeMenuOnSelect}
       hideSelectedOptions={hideSelectedOptions}
       components={_components}
       placeholder={placeholder}
       options={options}
-      value={selectedOptions}
+      value={value && Array.isArray(value) ? selectedOptions : value}
       onChange={(selectedOptions, { action }) => {
         const newSelection = !selectedOptions.length
           ? selectedOptions
           : selectedOptions.reduce((acc, curr) => acc.concat([curr.value]), []);
         onChange(newSelection, action);
       }}
-    ></ReactSelect>
+    />
   );
 };
 
@@ -93,6 +98,8 @@ Select.defaultProps = {
   isDisabled: false,
   isMulti: false,
   isSearchable: true,
+  noIcons: false,
+  menuPlacement: 'auto',
   value: [],
 };
 
@@ -104,6 +111,8 @@ Select.propTypes = {
   isDisabled: PropTypes.bool,
   isMulti: PropTypes.bool,
   isSearchable: PropTypes.bool,
+  noIcons: PropTypes.bool,
+  menuPlacement: PropTypes.oneOf(['auto', 'bottom', 'top']),
   onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({
@@ -112,7 +121,7 @@ Select.propTypes = {
     })
   ),
   placeholder: PropTypes.string,
-  value: PropTypes.arrayOf(PropTypes.string),
+  value: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.any]),
 };
 
 export default Select;

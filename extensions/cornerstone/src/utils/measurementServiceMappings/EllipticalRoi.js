@@ -1,11 +1,14 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
+import getHandlesFromPoints from './utils/getHandlesFromPoints';
 
 const EllipticalRoi = {
-  toAnnotation: (measurement, definition) => {
-    // TODO -> Implement when this is needed.
-  },
-  toMeasurement: (csToolsAnnotation, getValueTypeFromToolType) => {
+  toAnnotation: (measurement, definition) => {},
+  toMeasurement: (
+    csToolsAnnotation,
+    DisplaySetService,
+    getValueTypeFromToolType
+  ) => {
     const { element, measurementData } = csToolsAnnotation;
     const tool =
       csToolsAnnotation.toolType ||
@@ -25,7 +28,14 @@ const EllipticalRoi = {
       StudyInstanceUID,
     } = getSOPInstanceAttributes(element);
 
-    const { start, end } = measurementData.handles;
+    const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      SOPInstanceUID,
+      SeriesInstanceUID
+    );
+
+    const { cachedStats, handles } = measurementData;
+
+    const { start, end } = handles;
 
     const halfXLength = Math.abs(start.x - end.x) / 2;
     const halfYLength = Math.abs(start.y - end.y) / 2;
@@ -52,19 +62,35 @@ const EllipticalRoi = {
       points.push({ x: center.x + halfXLength, y: center.y });
     }
 
+    let meanSUV;
+    let stdDevSUV;
+
+    if (
+      cachedStats &&
+      cachedStats.meanStdDevSUV &&
+      cachedStats.meanStdDevSUV.mean !== 0
+    ) {
+      const { meanStdDevSUV } = cachedStats;
+
+      meanSUV = meanStdDevSUV.mean;
+      stdDevSUV = meanStdDevSUV.stdDev;
+    }
+
     return {
       id: measurementData.id,
-      SOPInstanceUID: SOPInstanceUID,
+      SOPInstanceUID,
       FrameOfReferenceUID,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
-      label: measurementData.text,
+      displaySetInstanceUID: displaySet.displaySetInstanceUID,
+      label: measurementData.label,
       description: measurementData.description,
       unit: measurementData.unit,
-      area:
-        measurementData.cachedStats &&
-        measurementData.cachedStats
-          .area /* TODO: Add concept names instead (descriptor) */,
+      area: cachedStats && cachedStats.area,
+      mean: cachedStats && cachedStats.mean,
+      stdDev: cachedStats && cachedStats.stdDev,
+      meanSUV,
+      stdDevSUV,
       type: getValueTypeFromToolType(tool),
       points,
     };
