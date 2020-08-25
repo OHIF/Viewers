@@ -21,6 +21,8 @@ const machineConfiguration = {
     prevTrackedStudy: '',
     prevTrackedSeries: [],
     prevIgnoredSeries: [],
+    //
+    isDirty: false,
   },
   states: {
     off: {
@@ -33,7 +35,7 @@ const machineConfiguration = {
         SET_TRACKED_SERIES: [
           {
             target: 'tracking',
-            actions: ['setTrackedStudyAndMultipleSeries'],
+            actions: ['setTrackedStudyAndMultipleSeries', 'setIsDirtyToClean'],
           },
         ],
         PROMPT_HYDRATE_SR: 'promptHydrateStructuredReport',
@@ -90,6 +92,16 @@ const machineConfiguration = {
           },
         ],
         SAVE_REPORT: 'promptSaveReport',
+        SET_DIRTY: [
+          {
+            target: 'tracking',
+            actions: ['setIsDirty'],
+            cond: 'shouldSetDirty',
+          },
+          {
+            target: 'tracking',
+          },
+        ],
       },
     },
     promptTrackNewSeries: {
@@ -98,7 +110,7 @@ const machineConfiguration = {
         onDone: [
           {
             target: 'tracking',
-            actions: ['addTrackedSeries'],
+            actions: ['addTrackedSeries', 'setIsDirty'],
             cond: 'shouldAddSeries',
           },
           {
@@ -106,6 +118,7 @@ const machineConfiguration = {
             actions: [
               'discardPreviouslyTrackedMeasurements',
               'setTrackedStudyAndSeries',
+              'setIsDirty',
             ],
             cond: 'shouldSetStudyAndSeries',
           },
@@ -131,6 +144,7 @@ const machineConfiguration = {
             actions: [
               'discardPreviouslyTrackedMeasurements',
               'setTrackedStudyAndSeries',
+              'setIsDirty',
             ],
             cond: 'shouldSetStudyAndSeries',
           },
@@ -197,6 +211,7 @@ const machineConfiguration = {
             actions: [
               'setTrackedStudyAndMultipleSeries',
               'showSeriesInActiveViewport',
+              'setIsDirtyToClean',
             ],
             cond: 'shouldHydrateStructuredReport',
           },
@@ -274,6 +289,15 @@ const defaultOptions = {
         ignoredSeries: [],
       };
     }),
+    setIsDirtyToClean: assign((ctx, evt) => ({
+      isDirty: false,
+    })),
+    setIsDirty: assign((ctx, evt) => {
+      debugger;
+      return {
+        isDirty: true,
+      };
+    }),
     ignoreSeries: assign((ctx, evt) => ({
       prevIgnoredSeries: [...ctx.ignoredSeries],
       ignoredSeries: [...ctx.ignoredSeries, evt.data.SeriesInstanceUID],
@@ -292,6 +316,13 @@ const defaultOptions = {
     })),
   },
   guards: {
+    shouldSetDirty: (ctx, evt) => {
+      debugger;
+      return (
+        evt.SeriesInstanceUID === undefined ||
+        ctx.trackedSeries.includes(evt.SeriesInstanceUID)
+      );
+    },
     shouldKillMachine: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
     shouldAddSeries: (ctx, evt) =>
