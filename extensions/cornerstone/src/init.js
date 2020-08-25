@@ -1,6 +1,5 @@
-import React from 'react';
 import OHIF from '@ohif/core';
-import { Input, Dialog, ContextMenuMeasurements } from '@ohif/ui';
+import { ContextMenuMeasurements } from '@ohif/ui';
 import cs from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
@@ -10,11 +9,11 @@ import './initWADOImageLoader.js';
 import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import { setEnabledElement } from './state';
+import callInputDialog from './callInputDialog.js';
 
 // TODO -> Global "context menu open state", or lots of expensive searches on drag?
 
 let CONTEXT_MENU_OPEN = false;
-
 const { globalImageIdSpecificToolStateManager } = csTools;
 
 const TOOL_TYPES_WITH_CONTEXT_MENU = [
@@ -32,19 +31,21 @@ const _refreshViewports = () =>
   cs.getEnabledElements().forEach(({ element }) => cs.updateImage(element));
 
 /* Add extension tools configuration here. */
-const internalToolsConfig = {
-  ArrowAnnotate: {
-    configuration: {
-      getTextCallback: (callback, eventDetails) =>
-        callInputDialog(null, callback),
-      changeTextCallback: (data, eventDetails, callback) =>
-        callInputDialog(data, callback),
-      allowEmptyLabel: true,
+const _createInternalToolsConfig = UIDialogService => {
+  return {
+    ArrowAnnotate: {
+      configuration: {
+        getTextCallback: (callback, eventDetails) =>
+          callInputDialog(UIDialogService, null, callback),
+        changeTextCallback: (data, eventDetails, callback) =>
+          callInputDialog(UIDialogService, data, callback),
+        allowEmptyLabel: true,
+      },
     },
-  },
-  DragProbe: {
-    defaultStrategy: 'minimal',
-  },
+    DragProbe: {
+      defaultStrategy: 'minimal',
+    },
+  };
 };
 
 /**
@@ -133,6 +134,7 @@ export default function init({
           );
 
           callInputDialog(
+            UIDialogService,
             measurement,
             (label, actionId) => {
               if (actionId === 'cancel') {
@@ -206,7 +208,12 @@ export default function init({
   function elementEnabledHandler(tools, evt) {
     const element = evt.detail.element;
 
-    _addConfiguredToolsForElement(element, tools, configuration);
+    _addConfiguredToolsForElement(
+      UIDialogService,
+      element,
+      tools,
+      configuration
+    );
 
     element.addEventListener(csTools.EVENTS.TOUCH_PRESS, onTouchPress);
     element.addEventListener(
@@ -225,85 +232,6 @@ export default function init({
     );
     element.removeEventListener(cs.EVENTS.NEW_IMAGE, cancelContextMenuIfOpen);
   }
-
-  /**
-   *
-   * @param {*} data
-   * @param {*} event
-   * @param {*} callback
-   * @param {*} isArrowAnnotateInputDialog
-   */
-  const callInputDialog = (
-    data,
-    callback,
-    isArrowAnnotateInputDialog = true
-  ) => {
-    const dialogId = 'enter-annotation';
-    const label = data
-      ? isArrowAnnotateInputDialog
-        ? data.text
-        : data.label
-      : '';
-
-    const onSubmitHandler = ({ action, value }) => {
-      switch (action.id) {
-        case 'save':
-          callback(value.label, action.id);
-          break;
-        case 'cancel':
-          callback('', action.id);
-          break;
-      }
-      UIDialogService.dismiss({ id: dialogId });
-    };
-
-    if (UIDialogService) {
-      UIDialogService.create({
-        id: dialogId,
-        centralize: true,
-        isDraggable: false,
-        showOverlay: true,
-        content: Dialog,
-        contentProps: {
-          title: 'Enter your annotation',
-          value: { label },
-          noCloseButton: true,
-          onClose: () => UIDialogService.dismiss({ id: dialogId }),
-          actions: [
-            { id: 'cancel', text: 'Cancel', type: 'secondary' },
-            { id: 'save', text: 'Save', type: 'primary' },
-          ],
-          onSubmit: onSubmitHandler,
-          body: ({ value, setValue }) => {
-            const onChangeHandler = event => {
-              event.persist();
-              setValue(value => ({ ...value, label: event.target.value }));
-            };
-
-            const onKeyPressHandler = event => {
-              if (event.key === 'Enter') {
-                onSubmitHandler({ value, action: { id: 'save' } });
-              }
-            };
-
-            return (
-              <div className="p-4 bg-primary-dark">
-                <Input
-                  autoFocus
-                  className="mt-2 bg-black border-primary-main"
-                  type="text"
-                  containerClassName="mr-2"
-                  value={value.label}
-                  onChange={onChangeHandler}
-                  onKeyPress={onKeyPressHandler}
-                />
-              </div>
-            );
-          },
-        },
-      });
-    }
-  };
 
   const { csToolsConfig } = configuration;
   const metadataProvider = OHIF.cornerstone.metadataProvider;
@@ -566,7 +494,13 @@ const _getDefaultPosition = event => ({
 /**
  * @private
  */
-function _addConfiguredToolsForElement(element, tools, configuration) {
+function _addConfiguredToolsForElement(
+  UIDialogService,
+  element,
+  tools,
+  configuration
+) {
+  const internalToolsConfig = _createInternalToolsConfig(UIDialogService);
   /* Add tools with its custom props through extension configuration. */
   tools.forEach(tool => {
     const toolName = new tool().name;
