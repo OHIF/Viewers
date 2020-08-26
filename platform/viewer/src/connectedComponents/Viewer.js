@@ -358,7 +358,6 @@ export default withDialog(Viewer);
  * a mapping layer?
  *
  * TODO[react]:
- * - Add sorting of display sets
  * - Add showStackLoadingProgressBar option
  *
  * @param {Study[]} studies
@@ -368,35 +367,17 @@ const _mapStudiesToThumbnails = function(studies) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
 
-    let finishedProcessing = true;
-
     const thumbnails = study.displaySets.map(displaySet => {
       const {
         displaySetInstanceUID,
         SeriesDescription,
-        SeriesNumber,
         InstanceNumber,
         numImageFrames,
-        SeriesDate,
-        SeriesTime,
+        SeriesNumber,
       } = displaySet;
 
       let imageId;
       let altImageText;
-
-      let seriesDateTime = '';
-
-      if (SeriesDate) {
-        if (SeriesTime) {
-          seriesDateTime = `${SeriesDate}${SeriesTime}`;
-        } else {
-          seriesDateTime = `${SeriesDate}$`;
-        }
-      }
-
-      if (!displaySet.hasOwnProperty('SeriesDate')) {
-        finishedProcessing = false;
-      }
 
       if (displaySet.Modality && displaySet.Modality === 'SEG') {
         // TODO: We want to replace this with a thumbnail showing
@@ -416,21 +397,11 @@ const _mapStudiesToThumbnails = function(studies) {
         altImageText,
         displaySetInstanceUID,
         SeriesDescription,
-        SeriesNumber,
         InstanceNumber,
         numImageFrames,
-        seriesDateTime,
+        SeriesNumber,
       };
     });
-
-    // Only sort if we have processed all displaySets, or this can be exceedingly slow whilst each is being created.
-
-    if (finishedProcessing) {
-      // Sort by SeriesNumber && SeriesDate/SeriesTime for the same SeriesNumber.
-      thumbnails.sort((a, b) => a.SeriesNumber - b.SeriesNumber);
-
-      _sortSameSeriesNumberByDateTime(thumbnails);
-    }
 
     return {
       StudyInstanceUID,
@@ -438,44 +409,3 @@ const _mapStudiesToThumbnails = function(studies) {
     };
   });
 };
-
-function _sortSameSeriesNumberByDateTime(thumbnails) {
-  if (!thumbnails.length) {
-    return;
-  }
-
-  let currentSeriesNumber = thumbnails[0].SeriesNumber;
-  let initialIndex = 0;
-
-  // Start from 1 as we intiialise with the details of index zero.
-  for (let i = 1; i < thumbnails.length; i++) {
-    const { SeriesNumber } = thumbnails[i];
-
-    if (currentSeriesNumber !== SeriesNumber) {
-      // When the series number changes:
-
-      if (i - 1 > initialIndex) {
-        // Sort initialIndex to i -1;
-        sortSubArrayBtDateTime(thumbnails, initialIndex, i - 1);
-      }
-
-      initialIndex = i;
-      currentSeriesNumber = SeriesNumber;
-    }
-  }
-
-  // Deal with the end of the list if the last N items have the same SeriesNumber
-  if (thumbnails.length - 1 > initialIndex) {
-    sortSubArrayBtDateTime(thumbnails, initialIndex, thumbnails.length - 1);
-  }
-}
-
-function sortSubArrayBtDateTime(thumbnails, initialIndex, lastIndex) {
-  const subArray = thumbnails.splice(
-    initialIndex,
-    lastIndex - initialIndex + 1
-  );
-
-  subArray.sort((a, b) => b.seriesDateTime - a.seriesDateTime);
-  thumbnails.splice(initialIndex, 0, ...subArray);
-}
