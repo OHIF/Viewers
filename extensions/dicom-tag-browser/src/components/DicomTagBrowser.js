@@ -21,44 +21,67 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
   ] = useState(displaySetInstanceUID);
   const [activeInstance, setActiveInstance] = useState(0);
 
+  debugger;
+
   const activeDisplaySet = displaySets.find(
     ds => ds.displaySetInstanceUID === activeDisplaySetInstanceUID
   );
 
-  const getDisplaySetList = useCallback(() => {
-    return displaySets.map(displaySet => {
-      const {
-        displaySetInstanceUID,
-        SeriesDate,
-        SeriesTime,
-        SeriesNumber,
-        SeriesDescription,
-        Modality,
-      } = displaySet;
+  const displaySetList = displaySets.map(displaySet => {
+    const {
+      displaySetInstanceUID,
+      SeriesDate,
+      SeriesTime,
+      SeriesNumber,
+      SeriesDescription,
+      Modality,
+    } = displaySet;
 
-      /* Map to display representation */
-      const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
-      const date = moment(dateStr, 'YYYYMMDD:HHmmss');
-      const displayDate = date.format('ddd, MMM Do YYYY');
+    /* Map to display representation */
+    const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
+    const date = moment(dateStr, 'YYYYMMDD:HHmmss');
+    const displayDate = date.format('ddd, MMM Do YYYY');
+
+    return {
+      value: displaySetInstanceUID,
+      title: `${SeriesNumber} (${Modality}): ${SeriesDescription}`,
+      description: displayDate,
+      onClick: () => {
+        setActiveDisplaySetInstanceUID(displaySetInstanceUID);
+        setActiveInstance(0);
+      },
+    };
+  });
+
+  let metadata;
+  const isImageStack = activeDisplaySet instanceof ImageSet;
+
+  let selectedInstanceValue;
+  let instanceList;
+
+  if (isImageStack) {
+    const { images } = activeDisplaySet;
+    const image = images[activeInstance];
+
+    instanceList = images.map((image, index) => {
+      const metadata = image.getData().metadata;
+
+      const { InstanceNumber } = metadata;
+
+      debugger;
 
       return {
-        value: displaySetInstanceUID,
-        title: `${SeriesNumber} (${Modality}): ${SeriesDescription}`,
-        description: displayDate,
+        value: index,
+        title: `${InstanceNumber}`,
+        description: '',
         onClick: () => {
-          setActiveDisplaySetInstanceUID(displaySetInstanceUID);
-          setActiveInstance(0);
+          debugger;
+          setActiveInstance(index);
         },
       };
     });
-  }, [displaySets]);
 
-  const displaySetList = getDisplaySetList();
-
-  let metadata;
-
-  if (activeDisplaySet instanceof ImageSet) {
-    const image = activeDisplaySet.images[activeInstance];
+    selectedInstanceValue = instanceList[activeInstance];
 
     metadata = image.getData().metadata;
   } else {
@@ -76,6 +99,13 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
         formatOptionLabel={DicomBrowserSelectItem}
         options={displaySetList}
       />
+      {isImageStack ? (
+        <DicomBrowserSelect
+          value={selectedInstanceValue}
+          formatOptionLabel={DicomBrowserSelectItem}
+          options={instanceList}
+        />
+      ) : null}
       <DicomTagTable instanceMetadata={metadata}></DicomTagTable>
     </div>
   );
