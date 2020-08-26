@@ -30,6 +30,7 @@ import OHIFDicomRtExtension from '@ohif/extension-dicom-rt';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import OHIFDicomP10DownloaderExtension from '@ohif/extension-dicom-p10-downloader';
+import OHIFDicomTagBrowserExtension from '@ohif/extension-dicom-tag-browser';
 
 /*
  * Default Settings
@@ -50,6 +51,7 @@ const appProps = {
     OHIFDicomSegmentationExtension,
     OHIFDicomRtExtension,
     OHIFDicomP10DownloaderExtension,
+    OHIFDicomTagBrowserExtension,
   ],
 };
 

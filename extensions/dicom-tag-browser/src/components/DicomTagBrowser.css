@@ -1,0 +1,16 @@
+.dicom-tag-browser td {
+  padding-left: 10px;
+  padding-right: 10px;
+  color: var(--table-text-primary-color);
+  border-top: 1px solid #ddd;
+  word-wrap: break-word;
+}
+
+td.dicom-tag-browser-table-center {
+  text-align: center;
+}
+
+th {
+  text-align: center;
+  color: var(--active-color);
+}
