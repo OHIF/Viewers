@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Icon, Typography, InputGroup } from '../../components';
-import { useModal } from '../../contextProviders';
 
 const StudyListFilter = ({
   filtersMeta,
@@ -21,16 +20,6 @@ const StudyListFilter = ({
     });
   };
   const isSortingEnable = numOfStudies > 0 && numOfStudies <= 100;
-  const { show } = useModal();
-
-  // const showLearnMoreContent = () => {
-  //   const modalContent = () => <div>Search Instructions</div>;
-
-  //   show({
-  //     content: modalContent,
-  //     title: 'Learn More',
-  //   });
-  // };
 
   return (
     <React.Fragment>
@@ -42,23 +31,6 @@ const StudyListFilter = ({
                 <Typography variant="h4" className="mr-6 text-primary-light">
                   Study list
                 </Typography>
-                {/* Hide "LEARN MORE" button for now
-
-                <div className="flex flex-row items-end">
-                  <Button
-                    variant="text"
-                    size="small"
-                    color="inherit"
-                    className="text-primary-active"
-                    startIcon={<Icon name="info-link" className="w-2" />}
-                    onClick={showLearnMoreContent}
-                  >
-                    <span className="flex flex-col flex-1">
-                      <span>Learn more</span>
-                      <span className="pt-1 border-b opacity-50 border-primary-active"></span>
-                    </span>
-                  </Button>
-                </div> */}
               </div>
               <div className="flex flex-row">
                 {isFiltering && (
