@@ -5,7 +5,6 @@ import DicomBrowserSelect from './DicomBrowserSelect';
 import moment from 'moment';
 import './DicomTagBrowser.css';
 import DicomBrowserSelectItem from './DicomBrowserSelectItem';
-import { isDebuggerStatement } from 'typescript';
 
 const { ImageSet } = classes;
 const { DicomMetaDictionary } = dcmjs.data;
@@ -48,10 +47,13 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
         description: displayDate,
         onClick: () => {
           setActiveDisplaySetInstanceUID(displaySetInstanceUID);
+          setActiveInstance(0);
         },
       };
     });
   }, [displaySets]);
+
+  const displaySetList = getDisplaySetList();
 
   let metadata;
 
@@ -63,14 +65,16 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     metadata = activeDisplaySet.metadata;
   }
 
-  debugger;
+  const selectedDisplaySetValue = displaySetList.find(
+    ds => ds.value === activeDisplaySetInstanceUID
+  );
 
   return (
     <div>
       <DicomBrowserSelect
-        value={activeDisplaySetInstanceUID}
+        value={selectedDisplaySetValue}
         formatOptionLabel={DicomBrowserSelectItem}
-        options={getDisplaySetList()}
+        options={displaySetList}
       />
       <DicomTagTable instanceMetadata={metadata}></DicomTagTable>
     </div>
@@ -131,6 +135,11 @@ function getRows(metadata, depth = 0) {
 
       // Push line defining the sequence
       rows.push([`${tagIndent}${tagInfo.tag}`, tagInfo.vr, keyword, '']);
+
+      if (value === null) {
+        // Type 2 Sequence
+        continue;
+      }
 
       sequenceAsArray.forEach(item => {
         const sequenceRows = getRows(item, depth + 1);
