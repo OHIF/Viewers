@@ -54,6 +54,7 @@ const OHIFDicomRTStructSopClassHandler = {
       SeriesDate,
       SeriesTime,
       SeriesDescription,
+      metadata,
     };
 
     if (!metadata.ReferencedSeriesSequence) {

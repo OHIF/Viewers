@@ -1,16 +1,16 @@
-.dicom-tag-browser td {
+.dicom-tag-browser-table td {
   padding-left: 10px;
   padding-right: 10px;
   color: var(--table-text-primary-color);
   border-top: 1px solid #ddd;
-  word-wrap: break-word;
+  white-space: nowrap;
 }
 
-td.dicom-tag-browser-table-center {
+.dicom-tag-browser-table td.dicom-tag-browser-table-center {
   text-align: center;
 }
 
-th {
+.dicom-tag-browser-table th {
   text-align: center;
   color: var(--active-color);
 }

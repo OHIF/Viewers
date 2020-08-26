@@ -34,7 +34,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "dicomweb-client": "^0.6.0",
-    "file-saver": "^2.0.2",
-    "jszip": "^3.2.2"
+    "react-select": "^3.0.8",
+    "moment": "2.24.0"
   }
 }
