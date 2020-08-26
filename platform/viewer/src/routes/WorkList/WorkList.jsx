@@ -24,7 +24,7 @@ import {
   Header,
   useModal,
   AboutModal,
-  UserPreferences
+  UserPreferences,
 } from '@ohif/ui';
 
 const seriesInStudiesMap = new Map();
@@ -33,7 +33,14 @@ const seriesInStudiesMap = new Map();
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingData, dataSource, hotkeysManager }) {
+function WorkList({
+  history,
+  data: studies,
+  dataTotal: studiesTotal,
+  isLoadingData,
+  dataSource,
+  hotkeysManager,
+}) {
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
@@ -94,7 +101,6 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
   const numOfStudies = studiesTotal;
-  const totalPages = Math.floor(numOfStudies / resultsPerPage) + 1;
 
   const setFilterValues = val => {
     if (filterValues.pageNumber === val.pageNumber) {
@@ -105,7 +111,15 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
   };
 
   const onPageNumberChange = newPageNumber => {
-    if (newPageNumber > totalPages) {
+    debugger;
+    const oldPageNumber = filterValues.pageNumber;
+    const rollingPageNumberMod = Math.floor(101 / filterValues.resultsPerPage);
+    const rollingPageNumber = oldPageNumber % rollingPageNumberMod;
+    const isNextPage = newPageNumber > oldPageNumber;
+    const hasNextPage =
+      Math.max(rollingPageNumber, 1) * resultsPerPage < numOfStudies;
+
+    if (isNextPage && !hasNextPage) {
       return;
     }
 
@@ -172,7 +186,10 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
     const fetchSeries = async studyInstanceUid => {
       try {
         const series = await dataSource.query.series.search(studyInstanceUid);
-        seriesInStudiesMap.set(studyInstanceUid, utils.sortBySeriesDate(series));
+        seriesInStudiesMap.set(
+          studyInstanceUid,
+          utils.sortBySeriesDate(series)
+        );
         setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
       } catch (ex) {
         // TODO: UI Notification Service
@@ -199,148 +216,154 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
     return !isEqual(filterValues, defaultFilterValues);
   };
 
-  const tableDataSource = sortedStudies.map((study, key) => {
-    const rowKey = key + 1;
-    const isExpanded = expandedRows.some(k => k === rowKey);
-    const {
-      studyInstanceUid,
-      accession,
-      modalities,
-      instances,
-      description,
-      mrn,
-      patientName,
-      date,
-      time,
-    } = study;
-    const studyDate =
-      date &&
-      moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
-      moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format('MMM-DD-YYYY');
-    const studyTime =
-      time &&
-      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
-      moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format('hh:mm A');
+  const rollingPageNumberMod = Math.floor(101 / resultsPerPage);
+  const rollingPageNumber = (pageNumber - 1) % rollingPageNumberMod;
+  const offset = resultsPerPage * rollingPageNumber;
+  const offsetAndTake = offset + resultsPerPage;
+  const tableDataSource = sortedStudies
+    .slice(offset, offsetAndTake)
+    .map((study, key) => {
+      const rowKey = key + 1;
+      const isExpanded = expandedRows.some(k => k === rowKey);
+      const {
+        studyInstanceUid,
+        accession,
+        modalities,
+        instances,
+        description,
+        mrn,
+        patientName,
+        date,
+        time,
+      } = study;
+      const studyDate =
+        date &&
+        moment(date, ['YYYYMMDD', 'YYYY.MM.DD'], true).isValid() &&
+        moment(date, ['YYYYMMDD', 'YYYY.MM.DD']).format('MMM-DD-YYYY');
+      const studyTime =
+        time &&
+        moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).isValid() &&
+        moment(time, ['HH', 'HHmm', 'HHmmss', 'HHmmss.SSS']).format('hh:mm A');
 
-    return {
-      row: [
-        {
-          key: 'patientName',
-          content: patientName ? (
-            <TooltipClipboard>{patientName}</TooltipClipboard>
-          ) : (
+      return {
+        row: [
+          {
+            key: 'patientName',
+            content: patientName ? (
+              <TooltipClipboard>{patientName}</TooltipClipboard>
+            ) : (
               <span className="text-gray-700">(Empty)</span>
             ),
-          gridCol: 4,
-        },
-        {
-          key: 'mrn',
-          content: <TooltipClipboard>{mrn}</TooltipClipboard>,
-          gridCol: 3,
-        },
-        {
-          key: 'studyDate',
-          content: (
-            <div>
-              {studyDate && <span className="mr-4">{studyDate}</span>}
-              {studyTime && <span>{studyTime}</span>}
-            </div>
-          ),
-          title: `${studyDate || ''} ${studyTime || ''}`,
-          gridCol: 5,
-        },
-        {
-          key: 'description',
-          content: <TooltipClipboard>{description}</TooltipClipboard>,
-          gridCol: 4,
-        },
-        {
-          key: 'modality',
-          content: modalities,
-          title: modalities,
-          gridCol: 3,
-        },
-        {
-          key: 'accession',
-          content: <TooltipClipboard>{accession}</TooltipClipboard>,
-          gridCol: 3,
-        },
-        {
-          key: 'instances',
-          content: (
-            <>
-              <Icon
-                name="group-layers"
-                className={classnames('inline-flex mr-2 w-4', {
-                  'text-primary-active': isExpanded,
-                  'text-secondary-light': !isExpanded,
-                })}
-              />
-              {instances}
-            </>
-          ),
-          title: (instances || 0).toString(),
-          gridCol: 4,
-        },
-      ],
-      expandedContent: (
-        <StudyListExpandedRow
-          seriesTableColumns={{
-            description: 'Description',
-            seriesNumber: 'Series',
-            modality: 'Modality',
-            instances: 'Instances',
-          }}
-          seriesTableDataSource={
-            seriesInStudiesMap.has(studyInstanceUid)
-              ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                return {
-                  description: s.description || '(empty)',
-                  seriesNumber: s.seriesNumber || '',
-                  modality: s.modality || '',
-                  instances: s.numSeriesInstances || '',
-                };
-              })
-              : []
-          }
-        >
-          {appConfig.modes.map((mode, i) => {
-            const isFirst = i === 0;
+            gridCol: 4,
+          },
+          {
+            key: 'mrn',
+            content: <TooltipClipboard>{mrn}</TooltipClipboard>,
+            gridCol: 3,
+          },
+          {
+            key: 'studyDate',
+            content: (
+              <div>
+                {studyDate && <span className="mr-4">{studyDate}</span>}
+                {studyTime && <span>{studyTime}</span>}
+              </div>
+            ),
+            title: `${studyDate || ''} ${studyTime || ''}`,
+            gridCol: 5,
+          },
+          {
+            key: 'description',
+            content: <TooltipClipboard>{description}</TooltipClipboard>,
+            gridCol: 4,
+          },
+          {
+            key: 'modality',
+            content: modalities,
+            title: modalities,
+            gridCol: 3,
+          },
+          {
+            key: 'accession',
+            content: <TooltipClipboard>{accession}</TooltipClipboard>,
+            gridCol: 3,
+          },
+          {
+            key: 'instances',
+            content: (
+              <>
+                <Icon
+                  name="group-layers"
+                  className={classnames('inline-flex mr-2 w-4', {
+                    'text-primary-active': isExpanded,
+                    'text-secondary-light': !isExpanded,
+                  })}
+                />
+                {instances}
+              </>
+            ),
+            title: (instances || 0).toString(),
+            gridCol: 4,
+          },
+        ],
+        expandedContent: (
+          <StudyListExpandedRow
+            seriesTableColumns={{
+              description: 'Description',
+              seriesNumber: 'Series',
+              modality: 'Modality',
+              instances: 'Instances',
+            }}
+            seriesTableDataSource={
+              seriesInStudiesMap.has(studyInstanceUid)
+                ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
+                    return {
+                      description: s.description || '(empty)',
+                      seriesNumber: s.seriesNumber || '',
+                      modality: s.modality || '',
+                      instances: s.numSeriesInstances || '',
+                    };
+                  })
+                : []
+            }
+          >
+            {appConfig.modes.map((mode, i) => {
+              const isFirst = i === 0;
 
-            // TODO: Homes need a default/target route? We mostly support a single one for now.
-            // We should also be using the route path, but currently are not
-            // mode.id
-            // mode.routes[x].path
-            // Don't specify default data source, and it should just be picked up... (this may not currently be the case)
-            // How do we know which params to pass? Today, it's just StudyInstanceUIDs
-            return (
-              <Link
-                key={i}
-                to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
-              // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
-              >
-                <Button
-                  rounded="full"
-                  variant="contained" // outlined
-                  disabled={false}
-                  endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
-                  className={classnames('font-bold', { 'ml-2': !isFirst })}
-                  onClick={() => { }}
+              // TODO: Homes need a default/target route? We mostly support a single one for now.
+              // We should also be using the route path, but currently are not
+              // mode.id
+              // mode.routes[x].path
+              // Don't specify default data source, and it should just be picked up... (this may not currently be the case)
+              // How do we know which params to pass? Today, it's just StudyInstanceUIDs
+              return (
+                <Link
+                  key={i}
+                  to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
+                  // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
                 >
-                  {mode.displayName}
-                </Button>
-              </Link>
-            );
-          })}
-        </StudyListExpandedRow>
-      ),
-      onClickRow: () =>
-        setExpandedRows(s =>
-          isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey]
+                  <Button
+                    rounded="full"
+                    variant="contained" // outlined
+                    disabled={false}
+                    endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
+                    className={classnames('font-bold', { 'ml-2': !isFirst })}
+                    onClick={() => {}}
+                  >
+                    {mode.displayName}
+                  </Button>
+                </Link>
+              );
+            })}
+          </StudyListExpandedRow>
         ),
-      isExpanded,
-    };
-  });
+        onClickRow: () =>
+          setExpandedRows(s =>
+            isExpanded ? s.filter(n => rowKey !== n) : [...s, rowKey]
+          ),
+        isExpanded,
+      };
+    });
 
   const hasStudies = numOfStudies > 0;
 
@@ -348,25 +371,28 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
     {
       title: t('Header:About'),
       icon: 'info',
-      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' })
+      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' }),
     },
     {
       title: t('Header:Preferences'),
       icon: 'settings',
-      onClick: () => show({
-        title: t('UserPreferencesModal:User Preferences'),
-        content: UserPreferences,
-        contentProps: {
-          hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-          hotkeyDefinitions,
-          onCancel: hide,
-          onSubmit: ({ hotkeyDefinitions }) => {
-            hotkeysManager.setHotkeys(hotkeyDefinitions);
-            hide();
+      onClick: () =>
+        show({
+          title: t('UserPreferencesModal:User Preferences'),
+          content: UserPreferences,
+          contentProps: {
+            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
+              hotkeyDefaults
+            ),
+            hotkeyDefinitions,
+            onCancel: hide,
+            onSubmit: ({ hotkeyDefinitions }) => {
+              hotkeysManager.setHotkeys(hotkeyDefinitions);
+              hide();
+            },
+            onReset: () => hotkeysManager.restoreDefaultBindings(),
           },
-          onReset: () => hotkeysManager.restoreDefaultBindings()
-        }
-      })
+        }),
     },
   ];
 
@@ -378,7 +404,7 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
     >
       <Header isSticky menuOptions={menuOptions} isReturnEnabled={false} />
       <StudyListFilter
-        numOfStudies={numOfStudies}
+        numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
         filtersMeta={filtersMeta}
         filterValues={{ ...filterValues, ...defaultSortValues }}
         onChange={setFilterValues}
@@ -400,10 +426,10 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
           />
         </>
       ) : (
-          <div className="flex flex-col items-center justify-center pt-48">
-            <EmptyStudies isLoading={isLoadingData} />
-          </div>
-        )}
+        <div className="flex flex-col items-center justify-center pt-48">
+          <EmptyStudies isLoading={isLoadingData} />
+        </div>
+      )}
     </div>
   );
 }
