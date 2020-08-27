@@ -6,14 +6,16 @@ import { utils, log } from '@ohif/core';
 import { ScrollableArea, TableList, useModal, Icon } from '@ohif/ui';
 import findDisplaySetFromDisplaySetInstanceUID from '../utils/findDisplaySetFromDisplaySetInstanceUID';
 import MRUrographyTableItem from './MRUrographyTabelItem';
-
+import * as dcmjs from 'dcmjs';
 import TimecourseModal from './timecourseModal/TimecourseContent';
 import TOOL_NAMES from '../tools/toolNames';
 import { measurementConfig } from '../tools/KinderspitalFreehandRoiTool';
 import calculateAreaUnderCurve from '../utils/calculateAreaUnderCurve';
 import './MRUrographyPanel.css';
 import computeSegmentationFromContours from '../utils/computeSegmentationFromContours';
-import { stat } from 'fs';
+import loadSegmentation from '../utils/loadSegmentation';
+
+const { datasetToBlob, datasetToBuffer } = dcmjs.data;
 
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 
@@ -321,14 +323,34 @@ const MRUrographyPanel = ({
     return area;
   };
 
-  const onComputeSegmentationTimeCoursesClick = event => {
+  const onComputeSegmentationTimeCoursesClick = async () => {
+    // TODO -> Some nice loading UI as part of #7.
+
     const activeViewport = viewports[activeIndex];
     const displaySet = findDisplaySetFromDisplaySetInstanceUID(
       studies,
       activeViewport.displaySetInstanceUID
     );
 
-    computeSegmentationFromContours(displaySet);
+    const segmentation = await computeSegmentationFromContours(displaySet);
+
+    const segBlob = datasetToBlob(segmentation.dataset);
+
+    debugger;
+
+    // TEMP - Create a URL for the binary.
+    // TODO -> Post this somewhere along with the metadata.
+    // var objectUrl = URL.createObjectURL(segBlob);
+    // window.open(objectUrl);
+
+    // ... data comes back as buffer:
+
+    const segBuffer = datasetToBuffer(segmentation.dataset).buffer;
+
+    loadSegmentation(segBuffer);
+
+    // Pass these in and package this up.
+    // Add metadata.
   };
 
   const onViewResultsClick = event => {

@@ -104,14 +104,7 @@ export default async function generateSegmenationFromContours(displaySet) {
 
   segmentation.bitPackPixelData();
 
-  const segBlob = datasetToBlob(segmentation.dataset);
-
-  // TEMP - Create a URL for the binary.
-  var objectUrl = URL.createObjectURL(segBlob);
-  window.open(objectUrl);
-
-  // Pass these in and package this up.
-  // Add metadata.
+  return segmentation;
 }
 
 function getSegmentMetadata(label) {
