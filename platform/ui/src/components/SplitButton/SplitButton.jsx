@@ -225,10 +225,12 @@ const DefaultListItemRenderer = ({ icon, label, isActive }) => (
       isActive && 'bg-primary-dark'
     )}
   >
-    <span className="mr-4 text-base text-common-bright">
+    <span className="mr-4 text-base whitespace-pre text-common-bright">
       <Icon name={icon} className="w-5 h-5 text-common-bright" />
     </span>
-    <span className="mr-5 text-base text-common-bright">{label}</span>
+    <span className="mr-5 text-base whitespace-pre text-common-bright">
+      {label}
+    </span>
   </div>
 );
 
