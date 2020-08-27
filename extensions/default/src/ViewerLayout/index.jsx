@@ -177,7 +177,7 @@ function ViewerLayout({
         )}
         {/* TOOLBAR + GRID */}
         <div className="flex flex-col flex-1 h-full">
-          <div className="flex items-center justify-center flex-1 h-full pt-1 pb-2 overflow-hidden bg-black">
+          <div className="flex items-center justify-center flex-1 h-full pb-2 -mt-1 overflow-hidden bg-black">
             <ErrorBoundary context="Grid">
               <ViewportGridComp
                 servicesManager={servicesManager}
