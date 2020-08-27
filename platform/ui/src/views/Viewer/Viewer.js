@@ -11,7 +11,7 @@ const Viewer = () => {
         <Header />
         <div
           className="flex flex-row flex-no-wrap items-stretch flex-1 w-full overflow-hidden"
-          style={{ height: 'calc(100vh - 57px' }}
+          style={{ height: 'calc(100vh - 52px' }}
         >
           <SidePanel
             side="left"

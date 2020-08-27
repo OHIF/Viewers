@@ -62,12 +62,14 @@ const sizeClasses = {
   medium: 'py-3 px-3 text-lg',
   large: 'py-4 px-4 text-xl',
   initial: '',
+  toolbar: 'text-lg',
 };
 
 const iconSizeClasses = {
   small: 'w-4 h-4',
   medium: 'w-5 h-5',
   large: 'w-6 h-6',
+  toolbar: 'w-5 h-5',
 };
 
 const fullWidthClasses = {
@@ -106,6 +108,9 @@ const IconButton = ({
         disabledClasses[disabled],
         className
       )}
+      style={{
+        padding: size === 'toolbar' ? '10px' : null,
+      }}
       ref={buttonElement}
       onClick={handleOnClick}
       type={type}

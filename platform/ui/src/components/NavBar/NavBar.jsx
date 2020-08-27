@@ -9,11 +9,12 @@ const NavBar = ({ className, children, isSticky }) => {
   return (
     <div
       className={classnames(
-        'flex flex-row items-center bg-secondary-dark px-3 py-1 min-h-16 border-b-4 border-black z-20',
+        'flex flex-row items-center bg-secondary-dark px-3 border-b-4 border-black z-20',
         isSticky && stickyClasses,
         !isSticky && notStickyClasses,
         className
       )}
+      style={{ paddingTop: '4px', paddingBottom: '4px', minHeight: '52px' }}
     >
       {children}
     </div>
