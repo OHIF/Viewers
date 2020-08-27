@@ -336,8 +336,6 @@ const MRUrographyPanel = ({
 
     const segBlob = datasetToBlob(segmentation.dataset);
 
-    debugger;
-
     // TEMP - Create a URL for the binary.
     // TODO -> Post this somewhere along with the metadata.
     // var objectUrl = URL.createObjectURL(segBlob);
@@ -347,7 +345,7 @@ const MRUrographyPanel = ({
 
     const segBuffer = datasetToBuffer(segmentation.dataset).buffer;
 
-    loadSegmentation(segBuffer);
+    loadSegmentation(segBuffer, displaySet);
 
     // Pass these in and package this up.
     // Add metadata.
