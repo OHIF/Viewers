@@ -62,21 +62,21 @@ function WorkList({
    * The default sort value keep the filters synchronized with runtime conditional sorting
    * Only applied if no other sorting is specified and there are less than 101 studies
    */
-  let defaultSortValues = {};
 
-  const sortedStudies = studies
-    // TOOD: Move sort to DataSourceWrapper?
-    // TODO: MOTIVATION, this is triggered on every render, even if list/sort does not change
-    .sort((s1, s2) => {
-      const noSortApplied = sortBy === '' || !sortBy;
-      const sortModifier = sortDirection === 'descending' ? 1 : -1;
+  const canSort = studiesTotal < STUDIES_LIMIT;
+  const shouldUseDefaultSort = sortBy === '' || !sortBy;
+  const sortModifier = sortDirection === 'descending' ? 1 : -1;
+  const defaultSortValues =
+    shouldUseDefaultSort && canSort
+      ? { sortBy: 'studyDate', sortDirection: 'ascending' }
+      : {};
+  const sortedStudies = studies;
 
-      if (noSortApplied && studiesTotal < STUDIES_LIMIT) {
+  if (canSort) {
+    studies.sort((s1, s2) => {
+      if (shouldUseDefaultSort) {
         const ascendingSortModifier = -1;
-        defaultSortValues = { sortBy: 'studyDate', sortDirection: 'ascending' };
         return _sortStringDates(s1, s2, ascendingSortModifier);
-      } else if (noSortApplied) {
-        return 0;
       }
 
       const s1Prop = s1[sortBy];
@@ -96,6 +96,7 @@ function WorkList({
 
       return 0;
     });
+  }
 
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
@@ -111,7 +112,6 @@ function WorkList({
   };
 
   const onPageNumberChange = newPageNumber => {
-    debugger;
     const oldPageNumber = filterValues.pageNumber;
     const rollingPageNumberMod = Math.floor(101 / filterValues.resultsPerPage);
     const rollingPageNumber = oldPageNumber % rollingPageNumberMod;
@@ -184,7 +184,6 @@ function WorkList({
   // Query for series information
   useEffect(() => {
     const fetchSeries = async studyInstanceUid => {
-      debugger;
       try {
         const series = await dataSource.query.series.search(studyInstanceUid);
         seriesInStudiesMap.set(
