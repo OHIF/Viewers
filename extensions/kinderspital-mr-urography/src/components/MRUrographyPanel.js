@@ -4,6 +4,7 @@ import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import { utils, log } from '@ohif/core';
 import { ScrollableArea, TableList, useModal, Icon } from '@ohif/ui';
+import findDisplaySetFromDisplaySetInstanceUID from '../utils/findDisplaySetFromDisplaySetInstanceUID';
 import MRUrographyTableItem from './MRUrographyTabelItem';
 
 import TimecourseModal from './timecourseModal/TimecourseContent';
@@ -11,6 +12,7 @@ import TOOL_NAMES from '../tools/toolNames';
 import { measurementConfig } from '../tools/KinderspitalFreehandRoiTool';
 import calculateAreaUnderCurve from '../utils/calculateAreaUnderCurve';
 import './MRUrographyPanel.css';
+import computeSegmentationFromContours from '../utils/computeSegmentationFromContours';
 import { stat } from 'fs';
 
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
@@ -41,7 +43,7 @@ const showTimecourseModal = (
         targetMeasurementNumber,
         onClose: uiModal.hide,
         onPlacePoints,
-      }
+      },
     });
   }
 };
@@ -86,9 +88,6 @@ const MRUrographyPanel = ({
   }, [studies, viewports, activeIndex]);
 
   const onRelabelClick = (eventData, measurementData) => {
-    console.log(event);
-    console.log('todo -> relabel');
-
     showLabellingDialog(
       { centralize: true, isDraggable: false },
       measurementData,
@@ -155,9 +154,7 @@ const MRUrographyPanel = ({
 
     const activeViewport = viewports[activeIndex];
 
-    console.log(studies);
-
-    const displaySet = _findDisplaySetFromDisplaySetInstanceUID(
+    const displaySet = findDisplaySetFromDisplaySetInstanceUID(
       studies,
       activeViewport.displaySetInstanceUID
     );
@@ -307,7 +304,7 @@ const MRUrographyPanel = ({
           measurementData.areaUnderCurve = area;
           measurementData.pIndex = peekIndex;
           measurementData.gIndex = glomerularIndex;
-        } else if(invalidateOthers) {
+        } else if (invalidateOthers) {
           measurementData.areaUnderCurve = undefined;
           measurementData.pIndex = undefined;
           measurementData.gIndex = undefined;
@@ -325,7 +322,13 @@ const MRUrographyPanel = ({
   };
 
   const onComputeSegmentationTimeCoursesClick = event => {
-    console.log('TODO -> generate time courses!');
+    const activeViewport = viewports[activeIndex];
+    const displaySet = findDisplaySetFromDisplaySetInstanceUID(
+      studies,
+      activeViewport.displaySetInstanceUID
+    );
+
+    computeSegmentationFromContours(displaySet);
   };
 
   const onViewResultsClick = event => {
@@ -407,7 +410,7 @@ const MRUrographyPanel = ({
     const toolState = globalImageIdSpecificToolStateManager.saveToolState();
     const toolName = TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL;
 
-    let canFetchTimeCourses = false;
+    let canFetchTimeCourses = true;
 
     Object.keys(toolState).forEach(imageId => {
       const imageIdSpecificToolState = toolState[imageId];
@@ -425,8 +428,8 @@ const MRUrographyPanel = ({
       measurements.forEach(measurement => {
         const key = measurement.measurementNumber;
 
-        if (measurement.label) {
-          canFetchTimeCourses = true;
+        if (!measurement.label) {
+          canFetchTimeCourses = false;
         }
 
         regionList.push(
@@ -444,6 +447,10 @@ const MRUrographyPanel = ({
         );
       });
     });
+
+    if (!regionList.length) {
+      canFetchTimeCourses = false;
+    }
 
     return { regionList, canFetchTimeCourses };
 
@@ -488,7 +495,11 @@ const MRUrographyPanel = ({
 
       <div className="mr-urography-panel-footer">
         <button
-          onClick={onComputeSegmentationTimeCoursesClick}
+          onClick={() => {
+            if (state.canFetchTimeCourses) {
+              onComputeSegmentationTimeCoursesClick();
+            }
+          }}
           className={computeSegmentationTimeCoursesClasseNames}
         >
           <Icon name="save" width="14px" height="14px" />
@@ -539,19 +550,3 @@ MRUrographyPanel.propTypes = {
 MRUrographyPanel.defaultProps = {};
 
 export default MRUrographyPanel;
-
-function _findDisplaySetFromDisplaySetInstanceUID(
-  studies,
-  displaySetInstanceUID
-) {
-  for (let i = 0; i < studies.length; i++) {
-    const study = studies[i];
-    const displaySets = study.displaySets;
-
-    for (let j = 0; j < displaySets.length; j++) {
-      if (displaySets[j].displaySetInstanceUID === displaySetInstanceUID) {
-        return displaySets[j];
-      }
-    }
-  }
-}
