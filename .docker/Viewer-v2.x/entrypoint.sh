@@ -28,6 +28,12 @@ if [ -n "$CLIENT_ID" ] || [ -n "$HEALTHCARE_API_ENDPOINT" ]
 	  cp /usr/share/nginx/html/google.js /usr/share/nginx/html/app-config.js
 fi
 
+if [ -n "${PORT}" ]
+  then
+    echo "Changing port to ${PORT}..."
+    sed -i -e "s/listen 80/listen ${PORT}/g" /etc/nginx/conf.d/default.conf
+fi
+
 echo "Starting Nginx to serve the OHIF Viewer..."
 
 exec "$@"
