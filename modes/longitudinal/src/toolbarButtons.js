@@ -120,9 +120,9 @@ export default [
       ),
       secondary: {
         icon: 'chevron-down',
-        label: '',
+        label: 'W/L Manual',
         isActive: true,
-        tooltip: 'More Measure Tools',
+        tooltip: 'W/L Presets',
       },
       isAction: true, // ?
       renderer: WindowLevelMenuItem,
@@ -177,7 +177,7 @@ export default [
         icon: 'chevron-down',
         label: '',
         isActive: true,
-        tooltip: 'More Measure Tools',
+        tooltip: 'More Tools',
       },
       items: [
         _createActionButton(
