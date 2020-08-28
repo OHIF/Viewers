@@ -46,8 +46,6 @@ const OHIFModal = ({
     ? classNames('OHIFModal', className, 'OHIFModal-fullscreen')
     : classNames('OHIFModal', className);
 
-  debugger;
-
   return (
     <Modal
       className={classes}
