@@ -1,7 +1,6 @@
 import { utils } from '@ohif/core';
 import React from 'react';
 import DicomTagBrowser from './components/DicomTagBrowser';
-import { SelectTree } from '@ohif/ui';
 
 const { studyMetadataManager } = utils;
 
@@ -34,6 +33,7 @@ export default function getCommandsModule(servicesManager) {
       UIModalService.show({
         content: WrappedDicomTagBrowser,
         title: `DICOM Tag Browser`,
+        fullscreen: true,
       });
     },
   };

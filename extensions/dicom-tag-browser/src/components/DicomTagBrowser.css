@@ -1,3 +1,8 @@
+.dicom-tag-browser-table {
+  margin-right: auto;
+  margin-left: auto;
+}
+
 .dicom-tag-browser-table td {
   padding-left: 10px;
   padding-right: 10px;

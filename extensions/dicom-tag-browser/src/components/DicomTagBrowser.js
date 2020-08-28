@@ -21,8 +21,6 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
   ] = useState(displaySetInstanceUID);
   const [activeInstance, setActiveInstance] = useState(0);
 
-  debugger;
-
   const activeDisplaySet = displaySets.find(
     ds => ds.displaySetInstanceUID === activeDisplaySetInstanceUID
   );
@@ -68,14 +66,11 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
 
       const { InstanceNumber } = metadata;
 
-      debugger;
-
       return {
         value: index,
         title: `${InstanceNumber}`,
         description: '',
         onClick: () => {
-          debugger;
           setActiveInstance(index);
         },
       };
@@ -115,8 +110,8 @@ function DicomTagTable({ instanceMetadata }) {
   const rows = getRows(instanceMetadata);
 
   return (
-    <div className="dicom-tag-browser-table">
-      <table>
+    <div>
+      <table className="dicom-tag-browser-table">
         <tr>
           <th>Tag</th>
           <th>Value Representation</th>
@@ -202,10 +197,14 @@ function getRows(metadata, depth = 0) {
           } else if (value.Alphabetic) {
             value = value.Alphabetic;
           } else {
-            debugger;
+            console.error('Unrecognised Value for element:');
+            console.error(value);
+            value = ' ';
           }
         } else {
-          debugger;
+          console.error('Unrecognised Value for element:');
+          console.error(value);
+          value = ' ';
         }
       }
     }

@@ -36,6 +36,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     closeButton: true,
     title: null,
     customClassName: '',
+    fullscreen: false,
   };
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
@@ -78,6 +79,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     title,
     customClassName,
     shouldCloseOnEsc,
+    fullscreen,
     closeButton,
   } = options;
 
@@ -89,6 +91,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           shouldCloseOnEsc={shouldCloseOnEsc}
           isOpen={isOpen}
           title={title}
+          fullscreen={fullscreen}
           closeButton={closeButton}
           onClose={() => {
             if (onClose) {
