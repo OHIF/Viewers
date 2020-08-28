@@ -54,7 +54,7 @@ const _generateMockTimecourse = () => {
 };
 
 const _generateMockVolume = () => {
-  return Math.floor(Math.random() * 100);
+  return Math.floor(Math.random() * 100) + 1;
 };
 
 const _getLabels = () => {
@@ -129,7 +129,6 @@ const MRUrographyPanel = ({
     selectedKey: 0,
     canFetchTimeCourses: false,
     canEvaluate: false,
-    canGeneratePDF: false,
   });
 
   const updateState = (field, value) => {
@@ -137,7 +136,7 @@ const MRUrographyPanel = ({
   };
 
   useEffect(() => {
-    const { canFetchTimeCourses, regionList } = getRegionList();
+    const { canEvaluate, canFetchTimeCourses, regionList } = getRegionList();
     setState(state => ({
       ...state,
       regionList: regionList,
@@ -199,11 +198,12 @@ const MRUrographyPanel = ({
     measurementConfig.measurementNumber--;
     refreshViewport();
 
-    const { canFetchTimeCourses, regionList } = getRegionList();
+    const { canEvaluate, canFetchTimeCourses, regionList } = getRegionList();
     setState(state => ({
       ...state,
       regionList,
       canFetchTimeCourses,
+      canEvaluate,
     }));
   };
 
@@ -370,11 +370,12 @@ const MRUrographyPanel = ({
       }
     }
 
-    const { canFetchTimeCourses, regionList } = getRegionList();
+    const { canEvaluate, canFetchTimeCourses, regionList } = getRegionList();
     setState(state => ({
       ...state,
       regionList,
       canFetchTimeCourses,
+      canEvaluate,
     }));
     return area;
   };
@@ -403,17 +404,16 @@ const MRUrographyPanel = ({
 
     const metadata = _generateMockTimeCoursesAndVolumes();
 
-    debugger;
-
     loadSegmentation(segBuffer, metadata, displaySet);
 
     refreshViewport();
 
-    const { canFetchTimeCourses, regionList } = getRegionList();
+    const { canEvaluate, canFetchTimeCourses, regionList } = getRegionList();
     setState(state => ({
       ...state,
       regionList,
       canFetchTimeCourses,
+      canEvaluate,
     }));
   };
 
@@ -442,24 +442,34 @@ const MRUrographyPanel = ({
   useEffect(() => {
     const measurementAddedHandler = event => {
       if (event.detail.toolType === TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL) {
-        const { canFetchTimeCourses, regionList } = getRegionList();
+        const {
+          canEvaluate,
+          canFetchTimeCourses,
+          regionList,
+        } = getRegionList();
 
         setState(state => ({
           ...state,
           regionList,
           canFetchTimeCourses,
+          canEvaluate,
         }));
       }
     };
 
     const measurementRemovedHandler = event => {
       if (event.detail.toolType === TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL) {
-        const { canFetchTimeCourses, regionList } = getRegionList();
+        const {
+          canEvaluate,
+          canFetchTimeCourses,
+          regionList,
+        } = getRegionList();
 
         setState(state => ({
           ...state,
           regionList,
           canFetchTimeCourses,
+          canEvaluate,
         }));
       }
     };
@@ -497,6 +507,7 @@ const MRUrographyPanel = ({
     const toolName = TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL;
 
     let canFetchTimeCourses = true;
+    let canEvaluateComplete = true;
 
     Object.keys(toolState).forEach(imageId => {
       const imageIdSpecificToolState = toolState[imageId];
@@ -517,6 +528,11 @@ const MRUrographyPanel = ({
         if (!measurement.label) {
           canFetchTimeCourses = false;
         }
+
+        if (!measurement.areaUnderCurve) {
+          canEvaluateComplete = false;
+        }
+
         const canEvaluate = measurement.timecourse !== undefined;
 
         regionList.push(
@@ -539,7 +555,11 @@ const MRUrographyPanel = ({
       canFetchTimeCourses = false;
     }
 
-    return { regionList, canFetchTimeCourses };
+    return {
+      canEvaluate: canEvaluateComplete,
+      regionList,
+      canFetchTimeCourses,
+    };
 
     /*
      * Let's iterate over segmentIndexes ^ above
@@ -566,7 +586,7 @@ const MRUrographyPanel = ({
     ? 'footerBtn'
     : 'footerBtn footerBtnDisabled';
 
-  const generatePDFReportClassNames = state.canGeneratePDF
+  const generatePDFReportClassNames = state.canEvaluate
     ? 'footerBtn'
     : 'footerBtn footerBtnDisabled';
 
