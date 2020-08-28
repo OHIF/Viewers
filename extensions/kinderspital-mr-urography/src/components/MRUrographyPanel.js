@@ -390,15 +390,16 @@ const MRUrographyPanel = ({
     );
 
     const segmentation = await computeSegmentationFromContours(displaySet);
-
     const segBlob = datasetToBlob(segmentation.dataset);
 
     // TEMP - Create a URL for the binary.
     // TODO -> Post this somewhere along with the metadata.
     // var objectUrl = URL.createObjectURL(segBlob);
     // window.open(objectUrl);
-
     // ... data comes back as buffer:
+
+    debugger;
+    // DANNY STUFF goes here.
 
     const segBuffer = datasetToBuffer(segmentation.dataset).buffer;
 
