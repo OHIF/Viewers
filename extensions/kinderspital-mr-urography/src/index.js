@@ -68,30 +68,6 @@ export default {
           ...props,
         },
       });
-
-      /*
-            UIDialogService.create({
-        id: 'labelling',
-        centralize: true,
-        isDraggable: false,
-        showOverlay: true,
-        content: LabellingFlow,
-        labellingData: labels,
-        editDescriptionOnDialog: false,
-        contentProps: {
-          measurementData,
-          labellingDoneCallback: () => {
-            console.log('labellingDoneCallback');
-          },
-          updateLabelling: ({ location, description, response }) => {
-            console.log('TODO: Update labelling');
-
-            debugger;
-          },
-          ...props,
-        },
-      });
-      */
     };
 
     return {

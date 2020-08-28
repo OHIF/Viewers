@@ -26,11 +26,11 @@ const MRUrographyLabellingData = labels.map(item => {
   };
 });
 
-const labelToSegmentIndexMap = {};
+const labelToSegmentNumberMap = {};
 
-for (let i = 0; i < labels; i++) {
+for (let i = 0; i < labels.length; i++) {
   const label = labels[i];
-  labelToSegmentIndexMap[label] = i;
+  labelToSegmentNumberMap[label] = i;
 }
 
-export { labels, labelToSegmentIndexMap, MRUrographyLabellingData };
+export { labels, labelToSegmentNumberMap, MRUrographyLabellingData };

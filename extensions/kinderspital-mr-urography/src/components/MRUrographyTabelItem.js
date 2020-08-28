@@ -50,7 +50,11 @@ class MRUrographyTableItem extends Component {
     const classNames = enabled ? 'btnAction' : 'btnActionDisabled';
 
     return (
-      <button key={btnLabel} className={classNames} onClick={onClickCallback}>
+      <button
+        key={btnLabel}
+        className={classNames}
+        onClick={enabled ? onClickCallback : null}
+      >
         <span style={{ marginRight: '4px' }}>
           <Icon name="edit" width="14px" height="14px" />
         </span>

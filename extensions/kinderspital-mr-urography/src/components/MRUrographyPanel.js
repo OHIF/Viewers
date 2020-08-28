@@ -4,14 +4,21 @@ import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import { utils, log } from '@ohif/core';
 import { ScrollableArea, TableList, useModal, Icon } from '@ohif/ui';
+import findDisplaySetFromDisplaySetInstanceUID from '../utils/findDisplaySetFromDisplaySetInstanceUID';
 import MRUrographyTableItem from './MRUrographyTabelItem';
-
+import * as dcmjs from 'dcmjs';
 import TimecourseModal from './timecourseModal/TimecourseContent';
 import TOOL_NAMES from '../tools/toolNames';
 import { measurementConfig } from '../tools/KinderspitalFreehandRoiTool';
 import calculateAreaUnderCurve from '../utils/calculateAreaUnderCurve';
 import './MRUrographyPanel.css';
-import { stat } from 'fs';
+import computeSegmentationFromContours from '../utils/computeSegmentationFromContours';
+import loadSegmentation from '../utils/loadSegmentation';
+import { labelToSegmentNumberMap } from '../constants/labels';
+
+const { KINDERSPITAL_FREEHAND_ROI_TOOL } = TOOL_NAMES;
+
+const { datasetToBlob, datasetToBuffer } = dcmjs.data;
 
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
 
@@ -25,6 +32,59 @@ const refreshViewport = () => {
     cornerstone.updateImage(enabledElement.element);
   });
 };
+
+// TEMP - Calculate on server
+function _generateMockTimeCoursesAndVolumes() {
+  const labels = _getLabels();
+  const labelNumbers = labels.map(label => labelToSegmentNumberMap[label]);
+
+  return labelNumbers.map(labelNumber => {
+    return {
+      labelNumber,
+      timecourse: _generateMockTimecourse(),
+      volume: _generateMockVolume(),
+    };
+  });
+}
+
+const _generateMockTimecourse = () => {
+  return new Array(100).fill(0).map((item, index) => {
+    return [index * 10, Math.ceil(Math.random() * 10)];
+  });
+};
+
+const _generateMockVolume = () => {
+  return Math.floor(Math.random() * 100) + 1;
+};
+
+const _getLabels = () => {
+  const globalToolState = globalImageIdSpecificToolStateManager.saveToolState();
+
+  const labels = [];
+
+  const imageIds = Object.keys(globalToolState);
+  for (let i = 0; i < imageIds.length; i++) {
+    const imageId = imageIds[i];
+    const imageIdSpecificToolState = globalToolState[imageId];
+
+    const freehandToolData =
+      imageIdSpecificToolState[KINDERSPITAL_FREEHAND_ROI_TOOL];
+
+    if (
+      freehandToolData &&
+      freehandToolData.data &&
+      freehandToolData.data.length
+    ) {
+      freehandToolData.data.forEach(data => {
+        labels.push(data.label);
+      });
+    }
+  }
+
+  return labels;
+};
+
+//TEMP
 
 const showTimecourseModal = (
   uiModal,
@@ -41,7 +101,7 @@ const showTimecourseModal = (
         targetMeasurementNumber,
         onClose: uiModal.hide,
         onPlacePoints,
-      }
+      },
     });
   }
 };
@@ -69,7 +129,6 @@ const MRUrographyPanel = ({
     selectedKey: 0,
     canFetchTimeCourses: false,
     canEvaluate: false,
-    canGeneratePDF: false,
   });
 
   const updateState = (field, value) => {
@@ -77,7 +136,7 @@ const MRUrographyPanel = ({
   };
 
   useEffect(() => {
-    const { canFetchTimeCourses, regionList } = getRegionList();
+    const { canEvaluate, canFetchTimeCourses, regionList } = getRegionList();
     setState(state => ({
       ...state,
       regionList: regionList,
@@ -86,9 +145,6 @@ const MRUrographyPanel = ({
   }, [studies, viewports, activeIndex]);
 
   const onRelabelClick = (eventData, measurementData) => {
-    console.log(event);
-    console.log('todo -> relabel');
-
     showLabellingDialog(
       { centralize: true, isDraggable: false },
       measurementData,
@@ -142,11 +198,12 @@ const MRUrographyPanel = ({
     measurementConfig.measurementNumber--;
     refreshViewport();
 
-    const { canFetchTimeCourses, regionList } = getRegionList();
+    const { canEvaluate, canFetchTimeCourses, regionList } = getRegionList();
     setState(state => ({
       ...state,
       regionList,
       canFetchTimeCourses,
+      canEvaluate,
     }));
   };
 
@@ -155,9 +212,7 @@ const MRUrographyPanel = ({
 
     const activeViewport = viewports[activeIndex];
 
-    console.log(studies);
-
-    const displaySet = _findDisplaySetFromDisplaySetInstanceUID(
+    const displaySet = findDisplaySetFromDisplaySetInstanceUID(
       studies,
       activeViewport.displaySetInstanceUID
     );
@@ -307,7 +362,7 @@ const MRUrographyPanel = ({
           measurementData.areaUnderCurve = area;
           measurementData.pIndex = peekIndex;
           measurementData.gIndex = glomerularIndex;
-        } else if(invalidateOthers) {
+        } else if (invalidateOthers) {
           measurementData.areaUnderCurve = undefined;
           measurementData.pIndex = undefined;
           measurementData.gIndex = undefined;
@@ -315,17 +370,52 @@ const MRUrographyPanel = ({
       }
     }
 
-    const { canFetchTimeCourses, regionList } = getRegionList();
+    const { canEvaluate, canFetchTimeCourses, regionList } = getRegionList();
     setState(state => ({
       ...state,
       regionList,
       canFetchTimeCourses,
+      canEvaluate,
     }));
     return area;
   };
 
-  const onComputeSegmentationTimeCoursesClick = event => {
-    console.log('TODO -> generate time courses!');
+  const onComputeSegmentationTimeCoursesClick = async () => {
+    // TODO -> Some nice loading UI as part of #7.
+
+    const activeViewport = viewports[activeIndex];
+    const displaySet = findDisplaySetFromDisplaySetInstanceUID(
+      studies,
+      activeViewport.displaySetInstanceUID
+    );
+
+    const segmentation = await computeSegmentationFromContours(displaySet);
+    const segBlob = datasetToBlob(segmentation.dataset);
+
+    // TEMP - Create a URL for the binary.
+    // TODO -> Post this somewhere along with the metadata.
+    // var objectUrl = URL.createObjectURL(segBlob);
+    // window.open(objectUrl);
+    // ... data comes back as buffer:
+
+    debugger;
+    // DANNY STUFF goes here.
+
+    const segBuffer = datasetToBuffer(segmentation.dataset).buffer;
+
+    const metadata = _generateMockTimeCoursesAndVolumes();
+
+    loadSegmentation(segBuffer, metadata, displaySet);
+
+    refreshViewport();
+
+    const { canEvaluate, canFetchTimeCourses, regionList } = getRegionList();
+    setState(state => ({
+      ...state,
+      regionList,
+      canFetchTimeCourses,
+      canEvaluate,
+    }));
   };
 
   const onViewResultsClick = event => {
@@ -353,24 +443,34 @@ const MRUrographyPanel = ({
   useEffect(() => {
     const measurementAddedHandler = event => {
       if (event.detail.toolType === TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL) {
-        const { canFetchTimeCourses, regionList } = getRegionList();
+        const {
+          canEvaluate,
+          canFetchTimeCourses,
+          regionList,
+        } = getRegionList();
 
         setState(state => ({
           ...state,
           regionList,
           canFetchTimeCourses,
+          canEvaluate,
         }));
       }
     };
 
     const measurementRemovedHandler = event => {
       if (event.detail.toolType === TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL) {
-        const { canFetchTimeCourses, regionList } = getRegionList();
+        const {
+          canEvaluate,
+          canFetchTimeCourses,
+          regionList,
+        } = getRegionList();
 
         setState(state => ({
           ...state,
           regionList,
           canFetchTimeCourses,
+          canEvaluate,
         }));
       }
     };
@@ -407,7 +507,8 @@ const MRUrographyPanel = ({
     const toolState = globalImageIdSpecificToolStateManager.saveToolState();
     const toolName = TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL;
 
-    let canFetchTimeCourses = false;
+    let canFetchTimeCourses = true;
+    let canEvaluateComplete = true;
 
     Object.keys(toolState).forEach(imageId => {
       const imageIdSpecificToolState = toolState[imageId];
@@ -425,9 +526,15 @@ const MRUrographyPanel = ({
       measurements.forEach(measurement => {
         const key = measurement.measurementNumber;
 
-        if (measurement.label) {
-          canFetchTimeCourses = true;
+        if (!measurement.label) {
+          canFetchTimeCourses = false;
         }
+
+        if (!measurement.areaUnderCurve) {
+          canEvaluateComplete = false;
+        }
+
+        const canEvaluate = measurement.timecourse !== undefined;
 
         regionList.push(
           <MRUrographyTableItem
@@ -439,13 +546,21 @@ const MRUrographyPanel = ({
             onRelabel={onRelabelClick}
             onDelete={onDeleteClick}
             onEvaluate={() => onEvaluateClick(key)}
-            canEvaluate={state.canEvaluate}
+            canEvaluate={canEvaluate}
           />
         );
       });
     });
 
-    return { regionList, canFetchTimeCourses };
+    if (!regionList.length) {
+      canFetchTimeCourses = false;
+    }
+
+    return {
+      canEvaluate: canEvaluateComplete,
+      regionList,
+      canFetchTimeCourses,
+    };
 
     /*
      * Let's iterate over segmentIndexes ^ above
@@ -472,7 +587,7 @@ const MRUrographyPanel = ({
     ? 'footerBtn'
     : 'footerBtn footerBtnDisabled';
 
-  const generatePDFReportClassNames = state.canGeneratePDF
+  const generatePDFReportClassNames = state.canEvaluate
     ? 'footerBtn'
     : 'footerBtn footerBtnDisabled';
 
@@ -488,7 +603,11 @@ const MRUrographyPanel = ({
 
       <div className="mr-urography-panel-footer">
         <button
-          onClick={onComputeSegmentationTimeCoursesClick}
+          onClick={() => {
+            if (state.canFetchTimeCourses) {
+              onComputeSegmentationTimeCoursesClick();
+            }
+          }}
           className={computeSegmentationTimeCoursesClasseNames}
         >
           <Icon name="save" width="14px" height="14px" />
@@ -539,19 +658,3 @@ MRUrographyPanel.propTypes = {
 MRUrographyPanel.defaultProps = {};
 
 export default MRUrographyPanel;
-
-function _findDisplaySetFromDisplaySetInstanceUID(
-  studies,
-  displaySetInstanceUID
-) {
-  for (let i = 0; i < studies.length; i++) {
-    const study = studies[i];
-    const displaySets = study.displaySets;
-
-    for (let j = 0; j < displaySets.length; j++) {
-      if (displaySets[j].displaySetInstanceUID === displaySetInstanceUID) {
-        return displaySets[j];
-      }
-    }
-  }
-}
