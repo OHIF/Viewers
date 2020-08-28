@@ -192,8 +192,6 @@ const _updateStudyDisplaySets = (study, studyMetadata) => {
   if (study.derivedDisplaySets) {
     studyMetadata._addDerivedDisplaySets(study.derivedDisplaySets);
   }
-
-  studyMetadata.setDisplaySets(study.displaySets);
 };
 
 const _thinStudyData = study => {

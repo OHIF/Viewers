@@ -54,9 +54,6 @@ export class OHIFStudyMetadataSource extends StudyMetadataSource {
           // Get Study display sets
           const displaySets = studyMetadata.createDisplaySets();
 
-          // Set studyMetadata display sets
-          studyMetadata.setDisplaySets(displaySets);
-
           OHIFStudyMetadataSource._updateStudyCollections(studyMetadata);
           resolve(studyMetadata);
         })

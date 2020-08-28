@@ -311,7 +311,7 @@ export class StudyMetadata extends Metadata {
       displaySetsForSeries.forEach(ds => this._insertDisplaySet(ds));
     });
 
-    return displaySets;
+    return this._displaySets;
   }
 
   /**
@@ -343,19 +343,6 @@ export class StudyMetadata extends Metadata {
     });
 
     return true;
-  }
-
-  /**
-   * Set display sets
-   * @param {Array} displaySets Array of display sets (ImageSet[])
-   */
-  setDisplaySets(displaySets) {
-    if (Array.isArray(displaySets) && displaySets.length > 0) {
-      // TODO: This is weird, can we just switch it to writable: true?
-      this._displaySets.splice(0);
-
-      displaySets.forEach(displaySet => this.addDisplaySet(displaySet));
-    }
   }
 
   /**
@@ -473,6 +460,7 @@ export class StudyMetadata extends Metadata {
     }
 
     this._displaySets.splice(insertIndex, 0, displaySet);
+    this.displaySets = this._displaySets;
   }
 
   /**
