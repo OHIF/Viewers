@@ -2,6 +2,16 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import * as dcmjs from 'dcmjs';
 import hull from './hull';
+import TOOL_NAMES from '../tools/toolNames';
+import { measurementConfig } from '../tools/KinderspitalFreehandRoiTool';
+
+const generateMockPoints = () => {
+  return new Array(100).fill(0).map((item, index) => {
+    return [index * 10, Math.ceil(Math.random() * 10)];
+  });
+};
+
+const { KINDERSPITAL_FREEHAND_ROI_TOOL } = TOOL_NAMES;
 
 const { globalImageIdSpecificToolStateManager } = cornerstoneTools;
 
@@ -9,6 +19,8 @@ const { DicomMessage, DicomMetaDictionary, BitArray } = dcmjs.data;
 const { Normalizer } = dcmjs.normalizers;
 
 export default function loadSegmentation(arrayBuffer, displaySet) {
+  _removeOldAnnotations();
+
   const dicomData = DicomMessage.readFile(arrayBuffer);
   const dataset = DicomMetaDictionary.naturalizeDataset(dicomData.dict);
   dataset._meta = DicomMetaDictionary.namifyDataset(dicomData.meta);
@@ -67,6 +79,69 @@ function _addToolData(imageId, points, label) {
   debugger;
 
   const globalToolState = globalImageIdSpecificToolStateManager.saveToolState();
+
+  if (!globalToolState[imageId]) {
+    globalToolState[imageId] = {};
+  }
+
+  const imageIdSpecificToolState = globalToolState[imageId];
+
+  if (!imageIdSpecificToolState[KINDERSPITAL_FREEHAND_ROI_TOOL]) {
+    imageIdSpecificToolState[KINDERSPITAL_FREEHAND_ROI_TOOL] = { data: [] };
+  } else if (!imageIdSpecificToolState[KINDERSPITAL_FREEHAND_ROI_TOOL].data) {
+    imageIdSpecificToolState[KINDERSPITAL_FREEHAND_ROI_TOOL].data = [];
+  }
+
+  const freehandToolData =
+    imageIdSpecificToolState[KINDERSPITAL_FREEHAND_ROI_TOOL].data;
+
+  const instanceMetadata = cornerstone.metaData.get('instance', imageId);
+
+  const {
+    StudyInstanceUID,
+    SeriesInstanceUID,
+    SOPInstanceUID,
+    TemporalPositionIdentifier,
+  } = instanceMetadata;
+
+  // TODO: Generate mock timecouse and add here
+
+  _joinPointsWithLines(points);
+
+  const measurementData = {
+    label,
+    StudyInstanceUID,
+    SeriesInstanceUID,
+    SOPInstanceUID,
+    TemporalPositionIdentifier,
+    FrameIndex: 1, //Would need to update this in the case of a multiframe.
+    visible: true,
+    active: true,
+    invalidated: true,
+    color: undefined,
+    handles: {
+      points,
+    },
+    measurementNumber: measurementConfig.measurementNumber,
+    areaUnderCurve: 0,
+    volume: 10, // TODO -> Load volume from received data.
+    timecourse: generateMockPoints(), // TODO -> Load points from received data.
+    pIndex: undefined,
+    gIndex: undefined,
+  };
+
+  measurementConfig.measurementNumber++;
+
+  measurementData.handles.textBox = {
+    active: false,
+    hasMoved: false,
+    movesIndependently: false,
+    drawnIndependently: true,
+    allowedOutsideImage: true,
+    hasBoundingBox: true,
+  };
+
+  freehandToolData.push(measurementData);
 }
 
 function _getLabel(PerFrameFunctionalGroups, SegmentSequenceAsArray) {
@@ -79,6 +154,18 @@ function _getLabel(PerFrameFunctionalGroups, SegmentSequenceAsArray) {
   );
 
   return segmentMetadata.SegmentLabel;
+}
+
+function _joinPointsWithLines(points) {
+  const firstPoint = points[0];
+  const lastPoint = points[points.length - 1];
+
+  lastPoint.lines = [{ x: firstPoint.x, y: firstPoint.y }];
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const nextPoint = points[i + 1];
+    points[i].lines = [{ x: nextPoint.x, y: nextPoint.y }];
+  }
 }
 
 function _getPoints(pixelData, Rows, Columns) {
@@ -117,4 +204,24 @@ function _getPoints(pixelData, Rows, Columns) {
 
 function toArray(objOrArray) {
   return Array.isArray(objOrArray) ? objOrArray : [objOrArray];
+}
+
+function _removeOldAnnotations() {
+  const globalToolState = globalImageIdSpecificToolStateManager.saveToolState();
+
+  const imageIds = Object.keys(globalToolState);
+
+  for (let i = 0; i < imageIds.length; i++) {
+    const imageId = imageIds[i];
+    const imageIdSpecificToolState = globalToolState[imageId];
+
+    const freehandToolData =
+      imageIdSpecificToolState[KINDERSPITAL_FREEHAND_ROI_TOOL];
+
+    if (freehandToolData) {
+      delete imageIdSpecificToolState[KINDERSPITAL_FREEHAND_ROI_TOOL];
+    }
+  }
+
+  measurementConfig.measurementNumber = 1;
 }

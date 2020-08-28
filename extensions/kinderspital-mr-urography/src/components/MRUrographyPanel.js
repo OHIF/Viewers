@@ -347,8 +347,14 @@ const MRUrographyPanel = ({
 
     loadSegmentation(segBuffer, displaySet);
 
-    // Pass these in and package this up.
-    // Add metadata.
+    refreshViewport();
+
+    const { canFetchTimeCourses, regionList } = getRegionList();
+    setState(state => ({
+      ...state,
+      regionList,
+      canFetchTimeCourses,
+    }));
   };
 
   const onViewResultsClick = event => {
@@ -451,6 +457,7 @@ const MRUrographyPanel = ({
         if (!measurement.label) {
           canFetchTimeCourses = false;
         }
+        const canEvaluate = measurement.timecourse !== undefined;
 
         regionList.push(
           <MRUrographyTableItem
@@ -462,7 +469,7 @@ const MRUrographyPanel = ({
             onRelabel={onRelabelClick}
             onDelete={onDeleteClick}
             onEvaluate={() => onEvaluateClick(key)}
-            canEvaluate={state.canEvaluate}
+            canEvaluate={canEvaluate}
           />
         );
       });
