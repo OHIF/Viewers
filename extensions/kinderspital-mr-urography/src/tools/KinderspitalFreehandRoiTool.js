@@ -71,7 +71,7 @@ export default class KinderspitalFreehandRoiTool extends FreehandRoiTool {
       },
       measurementNumber: measurementConfig.measurementNumber,
       areaUnderCurve: 0,
-      volume: 10,
+      volume: 0,
       timecourse: undefined,
       pIndex: undefined,
       gIndex: undefined,

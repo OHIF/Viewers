@@ -14,6 +14,9 @@ import calculateAreaUnderCurve from '../utils/calculateAreaUnderCurve';
 import './MRUrographyPanel.css';
 import computeSegmentationFromContours from '../utils/computeSegmentationFromContours';
 import loadSegmentation from '../utils/loadSegmentation';
+import { labelToSegmentNumberMap } from '../constants/labels';
+
+const { KINDERSPITAL_FREEHAND_ROI_TOOL } = TOOL_NAMES;
 
 const { datasetToBlob, datasetToBuffer } = dcmjs.data;
 
@@ -29,6 +32,59 @@ const refreshViewport = () => {
     cornerstone.updateImage(enabledElement.element);
   });
 };
+
+// TEMP - Calculate on server
+function _generateMockTimeCoursesAndVolumes() {
+  const labels = _getLabels();
+  const labelNumbers = labels.map(label => labelToSegmentNumberMap[label]);
+
+  return labelNumbers.map(labelNumber => {
+    return {
+      labelNumber,
+      timecourse: _generateMockTimecourse(),
+      volume: _generateMockVolume(),
+    };
+  });
+}
+
+const _generateMockTimecourse = () => {
+  return new Array(100).fill(0).map((item, index) => {
+    return [index * 10, Math.ceil(Math.random() * 10)];
+  });
+};
+
+const _generateMockVolume = () => {
+  return Math.floor(Math.random() * 100);
+};
+
+const _getLabels = () => {
+  const globalToolState = globalImageIdSpecificToolStateManager.saveToolState();
+
+  const labels = [];
+
+  const imageIds = Object.keys(globalToolState);
+  for (let i = 0; i < imageIds.length; i++) {
+    const imageId = imageIds[i];
+    const imageIdSpecificToolState = globalToolState[imageId];
+
+    const freehandToolData =
+      imageIdSpecificToolState[KINDERSPITAL_FREEHAND_ROI_TOOL];
+
+    if (
+      freehandToolData &&
+      freehandToolData.data &&
+      freehandToolData.data.length
+    ) {
+      freehandToolData.data.forEach(data => {
+        labels.push(data.label);
+      });
+    }
+  }
+
+  return labels;
+};
+
+//TEMP
 
 const showTimecourseModal = (
   uiModal,
@@ -345,7 +401,11 @@ const MRUrographyPanel = ({
 
     const segBuffer = datasetToBuffer(segmentation.dataset).buffer;
 
-    loadSegmentation(segBuffer, displaySet);
+    const metadata = _generateMockTimeCoursesAndVolumes();
+
+    debugger;
+
+    loadSegmentation(segBuffer, metadata, displaySet);
 
     refreshViewport();
 

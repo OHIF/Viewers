@@ -4,12 +4,7 @@ import * as dcmjs from 'dcmjs';
 import hull from './hull';
 import TOOL_NAMES from '../tools/toolNames';
 import { measurementConfig } from '../tools/KinderspitalFreehandRoiTool';
-
-const generateMockPoints = () => {
-  return new Array(100).fill(0).map((item, index) => {
-    return [index * 10, Math.ceil(Math.random() * 10)];
-  });
-};
+import { labelToSegmentNumberMap } from '../constants/labels';
 
 const { KINDERSPITAL_FREEHAND_ROI_TOOL } = TOOL_NAMES;
 
@@ -18,7 +13,7 @@ const { globalImageIdSpecificToolStateManager } = cornerstoneTools;
 const { DicomMessage, DicomMetaDictionary, BitArray } = dcmjs.data;
 const { Normalizer } = dcmjs.normalizers;
 
-export default function loadSegmentation(arrayBuffer, displaySet) {
+export default function loadSegmentation(arrayBuffer, metadata, displaySet) {
   _removeOldAnnotations();
 
   const dicomData = DicomMessage.readFile(arrayBuffer);
@@ -71,12 +66,16 @@ export default function loadSegmentation(arrayBuffer, displaySet) {
         .ReferencedSOPInstanceUID;
     const imageId = sopInstanceUIDtoImageId[ReferencedSOPInstanceUID];
 
-    _addToolData(imageId, points, label);
+    _addToolData(imageId, points, label, metadata);
   }
 }
 
-function _addToolData(imageId, points, label) {
-  debugger;
+function _addToolData(imageId, points, label, metadata) {
+  const labelNumber = labelToSegmentNumberMap[label];
+
+  const labelSpecificMetadata = metadata.find(
+    md => md.labelNumber === labelNumber
+  );
 
   const globalToolState = globalImageIdSpecificToolStateManager.saveToolState();
 
@@ -124,8 +123,8 @@ function _addToolData(imageId, points, label) {
     },
     measurementNumber: measurementConfig.measurementNumber,
     areaUnderCurve: 0,
-    volume: 10, // TODO -> Load volume from received data.
-    timecourse: generateMockPoints(), // TODO -> Load points from received data.
+    volume: labelSpecificMetadata.volume, // TODO -> Load volume from received data.
+    timecourse: labelSpecificMetadata.timecourse, // TODO -> Load points from received data.
     pIndex: undefined,
     gIndex: undefined,
   };
