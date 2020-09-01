@@ -113,15 +113,15 @@ function DicomTagTable({ instanceMetadata }) {
     <div>
       <table className="dicom-tag-browser-table">
         <tr>
-          <th>Tag</th>
-          <th>Value Representation</th>
-          <th>Keyword</th>
-          <th>Value</th>
+          <th className="dicom-tag-browser-table-left">Tag</th>
+          <th className="dicom-tag-browser-table-left">Value Representation</th>
+          <th className="dicom-tag-browser-table-left">Keyword</th>
+          <th className="dicom-tag-browser-table-left">Value</th>
         </tr>
         {rows.map(row => (
           <tr>
             <td>{row[0]}</td>
-            <td className="dicom-tag-browser-table-center">{row[1]}</td>
+            <td>{row[1]}</td>
             <td>{row[2]}</td>
             <td>{row[3]}</td>
           </tr>

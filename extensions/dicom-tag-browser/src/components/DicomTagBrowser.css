@@ -16,6 +16,12 @@
 }
 
 .dicom-tag-browser-table th {
+  padding-left: 10px;
+  padding-right: 10px;
   text-align: center;
   color: var(--active-color);
+}
+
+.dicom-tag-browser-table th.dicom-tag-browser-table-left {
+  text-align: left;
 }
