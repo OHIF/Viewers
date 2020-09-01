@@ -14,23 +14,25 @@ const { OHIFStudyMetadata, OHIFSeriesMetadata } = metadata;
 const { retrieveStudiesMetadata, deleteStudyMetadataPromise } = studies;
 const { studyMetadataManager, makeCancelable } = utils;
 
-const _promoteToFront = (list, value, searchMethod) => {
-  let response = [...list];
-  let promoted = false;
-  const index = response.findIndex(searchMethod.bind(undefined, value));
+const _promoteToFront = (list, values, searchMethod) => {
+  let listCopy = [...list];
+  let response = [];
+  let promotedCount = 0;
 
-  if (index > 0) {
-    const first = response.splice(index, 1);
-    response = [...first, ...response];
-  }
+  const arrayValues = values.split(',');
+  arrayValues.forEach(value => {
+    const index = listCopy.findIndex(searchMethod.bind(undefined, value));
 
-  if (index >= 0) {
-    promoted = true;
-  }
+    if (index >= 0) {
+      const [itemToPromote] = listCopy.splice(index, 1);
+      response[promotedCount] = itemToPromote;
+      promotedCount++;
+    }
+  });
 
   return {
-    promoted,
-    data: response,
+    promoted: promotedCount === arrayValues.length,
+    data: [...response, ...listCopy],
   };
 };
 
@@ -90,12 +92,48 @@ const _isQueryParamApplied = (study, filters = {}, isFilterStrategy) => {
   if (!seriesInstanceUID) {
     return applied;
   }
+  const seriesInstanceUIDs = seriesInstanceUID.split(',');
+
+  let validateFilterApplied = () => {
+    const sameSize = arrayToInspect.length === seriesInstanceUIDs.length;
+    if (!sameSize) {
+      return;
+    }
+
+    return arrayToInspect.every(item =>
+      seriesInstanceUIDs.some(
+        seriesInstanceUIDStr => seriesInstanceUIDStr === item.SeriesInstanceUID
+      )
+    );
+  };
+
+  let validatePromoteApplied = () => {
+    let isValid = true;
+    for (let index = 0; index < seriesInstanceUIDs.length; index++) {
+      const seriesInstanceUIDStr = seriesInstanceUIDs[index];
+      const resultSeries = arrayToInspect[index];
+
+      if (
+        !resultSeries ||
+        resultSeries.SeriesInstanceUID !== seriesInstanceUIDStr
+      ) {
+        isValid = false;
+        break;
+      }
+    }
+    return isValid;
+  };
 
   const { series = [], displaySets = [] } = study;
-  const firstSeries = isFilterStrategy ? series[0] : displaySets[0];
+  const arrayToInspect = isFilterStrategy ? series : displaySets;
+  const validateMethod = isFilterStrategy
+    ? validateFilterApplied
+    : validatePromoteApplied;
 
-  if (!firstSeries || firstSeries.SeriesInstanceUID !== seriesInstanceUID) {
+  if (!arrayToInspect) {
     applied = false;
+  } else {
+    applied = validateMethod();
   }
 
   return applied;
@@ -221,7 +259,7 @@ function ViewerRetrieveStudyData({
     // Show message in case not promoted neither filtered but should to
     _showUserMessage(
       isQueryParamApplied,
-      'Query parameters were not applied. Using original series list for given study.',
+      'Query parameters were not totally applied. It might be using original series list for given study.',
       snackbarContext
     );
 
@@ -233,7 +271,7 @@ function ViewerRetrieveStudyData({
    * Method to process studies. It will update displaySet, studyMetadata, load remaining series, ...
    * @param {Array} studiesData Array of studies retrieved from server
    * @param {Object} [filters] - Object containing filters to be applied
-   * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
+   * @param {string} [filters.seriesInstanceUID] - series instance uid to filter results against
    */
   const processStudies = (studiesData, filters) => {
     if (Array.isArray(studiesData) && studiesData.length > 0) {
@@ -299,7 +337,6 @@ function ViewerRetrieveStudyData({
       const filters = {};
       // Use the first, discard others
       const seriesInstanceUID = seriesInstanceUIDs && seriesInstanceUIDs[0];
-
       const retrieveParams = [server, studyInstanceUIDs];
 
       if (seriesInstanceUID) {

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.10.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.14...@ohif/core@2.10.0) (2020-08-18)
+
+
+### Features
+
+* 🎸 Update react-vtkjs-viewport usage to use requestPool ([#1984](https://github.com/OHIF/Viewers/issues/1984)) ([bb5f30c](https://github.com/OHIF/Viewers/commit/bb5f30ce2a0192d2e021beaaadfff22fd38e17b9))
+
+
+
+
+
 ## [2.9.14](https://github.com/OHIF/Viewers/compare/@ohif/core@2.9.13...@ohif/core@2.9.14) (2020-08-10)
 
 **Note:** Version bump only for package @ohif/core

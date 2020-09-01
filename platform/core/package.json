@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "2.9.14",
+  "version": "2.10.0",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -32,7 +32,7 @@
   },
   "peerDependencies": {
     "cornerstone-core": "^2.2.8",
-    "cornerstone-tools": "4.15.1",
+    "cornerstone-tools": "^4.20.1",
     "cornerstone-wado-image-loader": "^3.1.0",
     "dicom-parser": "^1.8.3"
   },
