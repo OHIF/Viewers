@@ -28,7 +28,6 @@ export default function getSopClassHandlerModule({ servicesManager }) {
       const {
         SeriesDate,
         SeriesTime,
-        SeriesNumber,
         SeriesDescription,
         FrameOfReferenceUID,
         SOPInstanceUID,
@@ -56,7 +55,6 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         SeriesTime,
         SeriesNumber,
         SeriesDescription,
-        SeriesNumber,
         metadata,
       };
 
