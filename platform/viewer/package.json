@@ -52,7 +52,7 @@
     "@ohif/extension-cornerstone": "^2.8.5",
     "@ohif/extension-dicom-html": "^1.2.4",
     "@ohif/extension-dicom-microscopy": "^0.51.0",
-    "@ohif/extension-dicom-p10-downloader": "^0.1.2",
+    "@ohif/extension-debugging": "^0.1.2",
     "@ohif/extension-dicom-pdf": "^1.0.3",
     "@ohif/extension-dicom-rt": "^0.3.0",
     "@ohif/extension-dicom-segmentation": "^0.3.4",

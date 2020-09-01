@@ -1,7 +1,7 @@
 {
-  "name": "@ohif/extension-dicom-p10-downloader",
+  "name": "@ohif/extension-debugging",
   "version": "0.1.2",
-  "description": "OHIF extension for downloading DICOM P10 files",
+  "description": "OHIF extension for debugging.",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",

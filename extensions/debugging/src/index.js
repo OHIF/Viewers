@@ -1,6 +1,7 @@
 import { getDicomWebClientFromConfig } from './utils';
 import { getCommands } from './commandsModule';
 import { version } from '../package.json';
+import toolbarModule from './toolbarModule';
 
 /**
  * Constants
@@ -41,5 +42,9 @@ export default {
 
   getCommandsModule({ servicesManager, extensionManager }) {
     return getCommands(sharedContext, servicesManager, extensionManager);
+  },
+
+  getToolbarModule() {
+    return toolbarModule;
   },
 };
