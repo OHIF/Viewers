@@ -13,7 +13,12 @@ const OHIFDicomPDFSopClassHandler = {
     const instance = series.getFirstInstance();
 
     const metadata = instance.getData().metadata;
-    const { SeriesDescription, SeriesNumber } = metadata;
+    const {
+      ContentDate,
+      ContentTime,
+      SeriesDescription,
+      SeriesNumber,
+    } = metadata;
 
     return {
       plugin: 'pdf',
@@ -25,6 +30,8 @@ const OHIFDicomPDFSopClassHandler = {
       SeriesInstanceUID: series.getSeriesInstanceUID(),
       StudyInstanceUID: study.getStudyInstanceUID(),
       SeriesDescription,
+      SeriesDate: ContentDate, // Map ContentDate/Time to SeriesTime for series list sorting.
+      SeriesTime: ContentTime,
       SeriesNumber,
       metadata,
       authorizationHeaders: authorizationHeaders,

@@ -23,7 +23,12 @@ const OHIFDicomHtmlSopClassHandler = {
     const instance = series.getFirstInstance();
 
     const metadata = instance.getData().metadata;
-    const { SeriesDescription, SeriesNumber } = metadata;
+    const {
+      SeriesDescription,
+      SeriesNumber,
+      SeriesDate,
+      SeriesTime,
+    } = metadata;
 
     return {
       plugin: 'html',
@@ -35,8 +40,10 @@ const OHIFDicomHtmlSopClassHandler = {
       SeriesInstanceUID: series.getSeriesInstanceUID(),
       StudyInstanceUID: study.getStudyInstanceUID(),
       SeriesDescription,
-      SeriesNumber,
       metadata,
+      SeriesDate,
+      SeriesTime,
+      SeriesNumber,
       authorizationHeaders,
     };
   },

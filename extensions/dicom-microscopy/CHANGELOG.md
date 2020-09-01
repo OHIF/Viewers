@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.51.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-microscopy@0.51.0...@ohif/extension-dicom-microscopy@0.51.1) (2020-08-28)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
 # [0.51.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-microscopy@0.50.9...@ohif/extension-dicom-microscopy@0.51.0) (2020-06-04)
 
 
