@@ -58,12 +58,6 @@ const _getReferencedDisplaySet = (segDisplaySet, studies) => {
       otherDisplaySets,
       ReferencedSOPInstanceUID
     );
-
-    console.log(otherDisplaySets);
-
-    debugger;
-
-    debugger;
   }
 
   const referencedDisplaySet = otherDisplaySets.find(ds =>
