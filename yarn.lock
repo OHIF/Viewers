@@ -5950,10 +5950,10 @@ cornerstone-math@^0.1.8:
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.8.tgz#68ab1f9e4fdcd7c5cb23a0d2eb4263f9f894f1c5"
   integrity sha512-x7NEQHBtVG7j1yeyj/aRoKTpXv1Vh2/H9zNLMyqYJDtJkNng8C4Q8M3CgZ1qer0Yr7eVq2x+Ynmj6kfOm5jXKw==
 
-cornerstone-tools@4.15.1:
-  version "4.15.1"
-  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-4.15.1.tgz#f0b1026da9c7758defc088bb2f1e78426a23d91e"
-  integrity sha512-fJuTUJW/NDSD520jPB++tX//Kq80jPDngChHZrhx2xjj/9dCnexD9kmTX30Z0WUq0a2JEHZ6FlcOX38kSmw1hQ==
+cornerstone-tools@^4.20.1:
+  version "4.20.1"
+  resolved "https://registry.yarnpkg.com/cornerstone-tools/-/cornerstone-tools-4.20.1.tgz#90f6c28356622eac037683b19f9175f85d33dff7"
+  integrity sha512-SyQsrg3bnGHUvWGZpUq7ia7/gj12S9zQFK2VMhpyAYxK9pWz+PRv8HBi0eEe/fWGAo/Vc62IRkdP3uF9MJlqiQ==
   dependencies:
     "@babel/runtime" "7.1.2"
     cornerstone-math "0.1.7"
@@ -6539,10 +6539,10 @@ dateformat@^3.0.0:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dcmjs@0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.16.0.tgz#714755d006c3a49cf65ef13e627ff7a23151d35a"
-  integrity sha512-41nY3Isg5i5FoSd1s67aUgUHi146r+fb8JuiRvDsxvm7MEkkdjIzMYMtxjsrVwKRW1xRH+x34nxbV9+8cc7WQw==
+dcmjs@0.16.3:
+  version "0.16.3"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.16.3.tgz#ef44ccc4988a473fd40e1601122c57f2babded11"
+  integrity sha512-pMQGifMpMW9i9ufCdUoEPHrLWnm6ilnpfLqUc+PPoWr7OnuBhiRVRunbv39oTtFDZOLhQ2Ampm7UrkidWAbqiA==
   dependencies:
     "@babel/polyfill" "^7.8.3"
     "@babel/runtime" "^7.8.4"
@@ -15596,10 +15596,10 @@ react-codemirror2@^6.0.0:
   resolved "https://registry.yarnpkg.com/react-codemirror2/-/react-codemirror2-6.0.0.tgz#180065df57a64026026cde569a9708fdf7656525"
   integrity sha512-D7y9qZ05FbUh9blqECaJMdDwKluQiO3A9xB+fssd5jKM7YAXucRuEOlX32mJQumUvHUkHRHqXIPBjm6g0FW0Ag==
 
-react-cornerstone-viewport@4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-4.0.1.tgz#6a7ec4c01b0626c4ad11552368f3dfa6cd67bdd5"
-  integrity sha512-47YhFsLS5vCWjiOKS9FwLxtA738HIHuNfdn3EJw6GyWD9jwL5HJQ/Ue1mKATjyHRvb3AyJTJuC/lGl0bsqKbYw==
+react-cornerstone-viewport@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/react-cornerstone-viewport/-/react-cornerstone-viewport-4.0.2.tgz#49bc8f8464164d8e779138dd9244d5c2524e0418"
+  integrity sha512-mF/piahoPG5U5TbxVMtc15bXrQZxcaPycbu4i4KD2rZkiWh1Zs24ryY1S+lFlDB/RcOAm0u+luEEt1tOg8F+UQ==
   dependencies:
     classnames "^2.2.6"
     date-fns "^2.2.1"
@@ -16047,10 +16047,10 @@ react-transition-group@^4.1.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-vtkjs-viewport@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.9.0.tgz#5a7890643e511946f960db6b05142318be2dfe80"
-  integrity sha512-kjpNr1n+eW0nU736HH07IsSYQXphxfn/RBvKtpBer9tNsl+FyLH8h+uY8KWdv8kVBHkEoaH6/srxB0JBa8l+jA==
+react-vtkjs-viewport@^0.10.4:
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/react-vtkjs-viewport/-/react-vtkjs-viewport-0.10.4.tgz#eb038b0bf5c384bd3b45f2a0a57f52c682607fea"
+  integrity sha512-J1WxwHbjlttEWvdkM33DJx8QxHr3J7HR6wFSDVBDKY7McK2lwDAdRN8wSqy2BVNILlyurUUVwg2tK2txiJ+tuw==
   dependencies:
     date-fns "^2.2.1"
     gl-matrix "^3.1.0"

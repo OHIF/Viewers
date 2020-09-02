@@ -19,6 +19,7 @@ import UserManagerContext from '../context/UserManagerContext';
 import AppContext from '../context/AppContext';
 
 import './Viewer.css';
+import { finished } from 'stream';
 
 class Viewer extends Component {
   static propTypes = {
@@ -189,6 +190,7 @@ class Viewer extends Component {
           currentTimepointId,
         ]);
       }
+
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
       });
@@ -197,6 +199,7 @@ class Viewer extends Component {
 
   componentDidUpdate(prevProps) {
     const { studies, isStudyLoaded } = this.props;
+
     if (studies !== prevProps.studies) {
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
@@ -355,7 +358,6 @@ export default withDialog(Viewer);
  * a mapping layer?
  *
  * TODO[react]:
- * - Add sorting of display sets
  * - Add showStackLoadingProgressBar option
  *
  * @param {Study[]} studies
@@ -369,9 +371,9 @@ const _mapStudiesToThumbnails = function(studies) {
       const {
         displaySetInstanceUID,
         SeriesDescription,
-        SeriesNumber,
         InstanceNumber,
         numImageFrames,
+        SeriesNumber,
       } = displaySet;
 
       let imageId;
@@ -395,9 +397,9 @@ const _mapStudiesToThumbnails = function(studies) {
         altImageText,
         displaySetInstanceUID,
         SeriesDescription,
-        SeriesNumber,
         InstanceNumber,
         numImageFrames,
+        SeriesNumber,
       };
     });
 
