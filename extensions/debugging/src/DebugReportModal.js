@@ -1,6 +1,7 @@
 import React from 'react';
 import { detect } from 'detect-browser';
 import './DebugReportModal.css';
+import { ToolbarButton } from '@ohif/ui';
 
 const DubugReportModal = ({
   viewports,
@@ -16,7 +17,63 @@ const DubugReportModal = ({
 
     let body = `Enter the description of your problem here: \n\n\n`;
 
-    body += `some other text`;
+    body += `============= SESSION INFO =============\n\n`;
+
+    // App version
+
+    body += '== App ==\n';
+    body += `version\t${window.version}\n\n`;
+
+    // Extensions Versions
+
+    body += '== Extensions Versions ==\n';
+
+    const { registeredExtensionVesions } = extensionManager;
+
+    Object.keys(registeredExtensionVesions).forEach(extensionId => {
+      const version = registeredExtensionVesions[extensionId];
+
+      body += `${extensionId}\t${version}\n`;
+    });
+
+    body += '\n';
+
+    // Browser Info
+
+    const browser = detect();
+
+    const { name, os, type, version } = browser;
+
+    body += '== Browser Info ==\n';
+    body += `name\t ${name}\n`;
+    body += `os\t ${os}\n`;
+    body += `type\t ${type}\n`;
+    body += `version\t ${version}\n\n`;
+
+    // Study URL
+    body += '== URL ==\n';
+    body += `URL\t ${window.location.href}\n\n`;
+
+    // Layout
+
+    const { numRows, numColumns, viewportSpecificData } = viewports;
+
+    body += '== Viewport Layout ==\n';
+    body += `Rows\t${numRows}\n`;
+    body += `Columns\t${numColumns}\n\n`;
+
+    body += '== Viewports ==\n';
+
+    Object.keys(viewportSpecificData).forEach(viewportIndex => {
+      const vsd = viewportSpecificData[viewportIndex];
+
+      const [row, column] = _viewportIndexToViewportPosition(
+        viewportIndex,
+        numColumns
+      );
+
+      body += `[${row},${column}]\t${vsd.SeriesInstanceUID}\n`;
+    });
 
     // TODO Text dump of rest of stuff.
 
@@ -31,6 +88,11 @@ const DubugReportModal = ({
     <div>
       {mailTo ? (
         <div>
+          <ToolbarButton
+            label={'Send Bug Report'}
+            onClick={mailToFunction}
+            isActive={false}
+          />
           <button onClick={mailToFunction}>Send Bug Report</button>
         </div>
       ) : null}
@@ -65,7 +127,7 @@ const getCurrentStudyUrl = () => {
   return (
     <React.Fragment>
       <tr>
-        <th className="debugReportModalHeader">App</th>
+        <th className="debugReportModalHeader">URL</th>
       </tr>
       <tr>
         <td>URL</td>
