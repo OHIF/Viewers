@@ -11,7 +11,7 @@ import { retrieveStudyMetadata } from './retrieveStudyMetadata';
  * @param {Array} studyInstanceUIDs The UIDs of the Studies to be retrieved
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
  * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
- * @param {boolean} [seperateSeriesInstanceUIDFilters = false] - If true, split filtered metadata calls into multiple calls,
+ * @param {boolean} [separateSeriesInstanceUIDFilters = false] - If true, split filtered metadata calls into multiple calls,
  * as some DICOMWeb implementations only support single filters.
  * @returns {Promise} that will be resolved with the metadata or rejected with the error
  */
@@ -19,7 +19,7 @@ export default function retrieveStudiesMetadata(
   server,
   studyInstanceUIDs,
   filters,
-  seperateSeriesInstanceUIDFilters = false
+  separateSeriesInstanceUIDFilters = false
 ) {
   // Create an empty array to store the Promises for each metaData retrieval call
   const promises = [];
@@ -31,7 +31,7 @@ export default function retrieveStudiesMetadata(
       server,
       StudyInstanceUID,
       filters,
-      seperateSeriesInstanceUIDFilters
+      separateSeriesInstanceUIDFilters
     );
 
     // Add the current promise to the array of promises

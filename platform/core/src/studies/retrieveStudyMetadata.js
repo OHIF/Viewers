@@ -11,7 +11,7 @@ const StudyMetaDataPromises = new Map();
  * @param {string} StudyInstanceUID The UID of the Study to be retrieved
  * @param {Object} [filters] - Object containing filters to be applied on retrieve metadata process
  * @param {string} [filter.seriesInstanceUID] - series instance uid to filter results against
- * @param {boolean} [seperateSeriesInstanceUIDFilters = false] - If true, split filtered metadata calls into multiple calls,
+ * @param {boolean} [separateSeriesInstanceUIDFilters = false] - If true, split filtered metadata calls into multiple calls,
  * as some DICOMWeb implementations only support single filters.
  * @returns {Promise} that will be resolved with the metadata or rejected with the error
  */
@@ -19,7 +19,7 @@ export function retrieveStudyMetadata(
   server,
   StudyInstanceUID,
   filters,
-  seperateSeriesInstanceUIDFilters = false
+  separateSeriesInstanceUIDFilters = false
 ) {
   // @TODO: Whenever a study metadata request has failed, its related promise will be rejected once and for all
   // and further requests for that metadata will always fail. On failure, we probably need to remove the
@@ -45,7 +45,7 @@ export function retrieveStudyMetadata(
   if (
     filters &&
     filters.seriesInstanceUID &&
-    seperateSeriesInstanceUIDFilters
+    separateSeriesInstanceUIDFilters
   ) {
     promise = _seperateSeriesRequestToAggregatePromise(
       server,
@@ -53,11 +53,15 @@ export function retrieveStudyMetadata(
       filters
     );
   } else {
+    promise = RetrieveMetadata(server, StudyInstanceUID, filters);
+
+    /*
     promise = new Promise((resolve, reject) => {
       RetrieveMetadata(server, StudyInstanceUID, filters).then(function(data) {
         resolve(data);
       }, reject);
     });
+    */
   }
 
   // Store the promise in cache
