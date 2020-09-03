@@ -3,7 +3,7 @@ window.config = {
   routerBasename: '/',
   extensions: [],
   showStudyList: true,
-  filterQueryParam: true,
+  filterQueryParam: false,
   servers: {
     dicomWeb: [
       {
