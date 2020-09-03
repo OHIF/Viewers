@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { classes } from '@ohif/core';
 import dcmjs from 'dcmjs';
 import DicomBrowserSelect from './DicomBrowserSelect';
@@ -9,10 +9,6 @@ import DicomBrowserSelectItem from './DicomBrowserSelectItem';
 const { ImageSet } = classes;
 const { DicomMetaDictionary } = dcmjs.data;
 const { nameMap } = DicomMetaDictionary;
-
-//const { StackManager } = utils;
-
-// TODO -> Allow you to swithc displaySet and read the headers.
 
 const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
   const [
@@ -68,7 +64,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
 
       return {
         value: index,
-        title: `${InstanceNumber}`,
+        title: `Instance Number: ${InstanceNumber}`,
         description: '',
         onClick: () => {
           setActiveInstance(index);

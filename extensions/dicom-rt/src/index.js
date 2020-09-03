@@ -1,15 +1,16 @@
 import React from 'react';
-
 import init from './init.js';
 import sopClassHandlerModule from './OHIFDicomRTStructSopClassHandler';
 import id from './id.js';
 import RTPanel from './components/RTPanel/RTPanel';
+import { version } from '../package.json';
 
 export default {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
   id,
+  version,
 
   /**
    *

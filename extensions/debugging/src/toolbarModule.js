@@ -4,12 +4,12 @@ const TOOLBAR_BUTTON_TYPES = {
 
 const definitions = [
   {
-    id: 'TagBrowser',
-    label: 'Tag Browser',
-    icon: 'list',
+    id: 'Debug Info',
+    label: 'Debug Info',
+    icon: 'cog',
     //
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
-    commandName: 'openDICOMTagViewer',
+    commandName: 'openDebugInfoModal',
     context: 'VIEWER',
   },
 ];
