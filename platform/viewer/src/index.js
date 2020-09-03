@@ -30,7 +30,7 @@ import OHIFDicomRtExtension from '@ohif/extension-dicom-rt';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 // Add this for Debugging purposes:
-//import OHIFDebuggingExtension from '@ohif/extension-debugging';
+import OHIFDebuggingExtension from '@ohif/extension-debugging';
 import { version } from '../package.json';
 
 /*
@@ -53,7 +53,7 @@ const appProps = {
     OHIFDicomPDFExtension,
     OHIFDicomSegmentationExtension,
     OHIFDicomRtExtension,
-    //OHIFDebuggingExtension,
+    [OHIFDebuggingExtension, { mailTo: 'support@canceridc.dev' }],
   ],
 };
 

@@ -7,16 +7,42 @@ const DubugReportModal = ({
   studies,
   servers,
   extensionManager,
+  mailTo,
 }) => {
+  const mailToFunction = () => {
+    const StudyInstanceUID = Object.keys(studies.studyData)[0];
+
+    const subject = encodeURI(`Issue with Study: ${StudyInstanceUID}`);
+
+    let body = `Enter the description of your problem here: \n\n\n`;
+
+    body += `some other text`;
+
+    // TODO Text dump of rest of stuff.
+
+    body = encodeURI(body);
+
+    debugger;
+
+    window.location.href = `mailto:${mailTo}?subject=${subject}&body=${body}`;
+  };
+
   return (
     <div>
-      <table>
-        {getAppVersion()}
-        {getExtensionVersions(extensionManager)}
-        {getBrowserInfo()}
-        {getCurrentStudyUrl()}
-        {getLayout(viewports)}
-      </table>
+      {mailTo ? (
+        <div>
+          <button onClick={mailToFunction}>Send Bug Report</button>
+        </div>
+      ) : null}
+      <div>
+        <table>
+          {getAppVersion()}
+          {getExtensionVersions(extensionManager)}
+          {getBrowserInfo()}
+          {getCurrentStudyUrl()}
+          {getLayout(viewports)}
+        </table>
+      </div>
     </div>
   );
 };
@@ -130,8 +156,6 @@ const getBrowserInfo = () => {
 
 const getSeriesInstanceUIDsPerRow = viewports => {
   const { viewportSpecificData, numColumns } = viewports;
-
-  debugger;
 
   // NOTE viewportSpecificData is actually an object with numerical keys.
   return Object.keys(viewportSpecificData).map(viewportIndex => {
