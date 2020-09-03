@@ -47,7 +47,7 @@ export function retrieveStudyMetadata(
     filters.seriesInstanceUID &&
     separateSeriesInstanceUIDFilters
   ) {
-    promise = _seperateSeriesRequestToAggregatePromise(
+    promise = __separateSeriesRequestToAggregatePromiseateSeriesRequestToAggregatePromise(
       server,
       StudyInstanceUID,
       filters
@@ -76,7 +76,7 @@ export function retrieveStudyMetadata(
  * @param {string} StudyInstanceUID The UID of the Study to be retrieved
  * @param {Object} filters - Object containing filters to be applied on retrieve metadata process
  */
-function _seperateSeriesRequestToAggregatePromise(
+function __separateSeriesRequestToAggregatePromiseateSeriesRequestToAggregatePromise(
   server,
   StudyInstanceUID,
   filters
