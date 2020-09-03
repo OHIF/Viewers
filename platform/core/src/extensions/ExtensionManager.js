@@ -5,6 +5,7 @@ export default class ExtensionManager {
   constructor({ commandsManager, servicesManager, api, appConfig = {} }) {
     this.modules = {};
     this.registeredExtensionIds = [];
+    this.registeredExtensionVesions = {};
     this.moduleTypeNames = Object.values(MODULE_TYPES);
     //
     this._commandsManager = commandsManager;
@@ -51,6 +52,7 @@ export default class ExtensionManager {
     }
 
     let extensionId = extension.id;
+    const version = extension.version;
 
     if (!extensionId) {
       extensionId = Math.random()
@@ -98,6 +100,8 @@ export default class ExtensionManager {
 
     // Track extension registration
     this.registeredExtensionIds.push(extensionId);
+
+    this.registeredExtensionVesions[extensionId] = version;
   }
 
   /**
@@ -120,7 +124,8 @@ export default class ExtensionManager {
         commandsManager: this._commandsManager,
         appConfig: this._appConfig,
         configuration,
-        api: this._api
+        api: this._api,
+        extensionManager: this,
       });
 
       if (!extensionModule) {

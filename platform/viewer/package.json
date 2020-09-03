@@ -48,11 +48,11 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@ohif/extension-debugging": "^0.1.2",
     "@ohif/core": "^2.10.2",
     "@ohif/extension-cornerstone": "^2.9.3",
     "@ohif/extension-dicom-html": "^1.2.6",
     "@ohif/extension-dicom-microscopy": "^0.51.1",
-    "@ohif/extension-dicom-p10-downloader": "^0.1.2",
     "@ohif/extension-dicom-pdf": "^1.0.4",
     "@ohif/extension-dicom-rt": "^0.4.2",
     "@ohif/extension-dicom-segmentation": "^0.4.2",
