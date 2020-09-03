@@ -79,21 +79,19 @@ const DubugReportModal = ({
 
     body = encodeURI(body);
 
-    debugger;
-
     window.location.href = `mailto:${mailTo}?subject=${subject}&body=${body}`;
   };
 
   return (
-    <div>
+    <div className="debug-report-modal-container">
       {mailTo ? (
         <div>
           <ToolbarButton
             label={'Send Bug Report'}
             onClick={mailToFunction}
+            icon={'envelope-square'}
             isActive={false}
           />
-          <button onClick={mailToFunction}>Send Bug Report</button>
         </div>
       ) : null}
       <div>
