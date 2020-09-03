@@ -78,8 +78,6 @@ class ViewerLocalFileData extends Component {
         study.displaySets ||
         studyMetadata.createDisplaySets(sopClassHandlerModules);
 
-      debugger;
-
       studyMetadata.forEachDisplaySet(displayset => {
         displayset.localFile = true;
       });
