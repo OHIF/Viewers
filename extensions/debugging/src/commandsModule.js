@@ -8,12 +8,14 @@ import {
   getSOPInstanceReferencesFromViewports,
 } from './utils';
 import _downloadAndZip, { downloadInstances } from './downloadAndZip';
+import DebugReportModal from './DebugReportModal';
+import React from 'react';
 
 const {
   utils: { Queue },
 } = OHIF;
 
-export function getCommands(context) {
+export function getCommands(context, servicesManager, extensionManager) {
   const queue = new Queue(1);
   const actions = {
     /**
@@ -87,9 +89,32 @@ export function getCommands(context) {
         serverConfig
       );
     },
+    openDebugInfoModal({ viewports, studies, servers }) {
+      const { UIModalService } = servicesManager.services;
+
+      const WrappedDebugReportModal = function() {
+        return (
+          <DebugReportModal
+            viewports={viewports}
+            studies={studies}
+            servers={servers}
+            extensionManager={extensionManager}
+          />
+        );
+      };
+
+      UIModalService.show({
+        content: WrappedDebugReportModal,
+        title: `Debugging Information`,
+      });
+    },
   };
 
   const definitions = {
+    openDebugInfoModal: {
+      commandFn: actions.openDebugInfoModal,
+      storeContexts: ['viewports', 'servers', 'studies'],
+    },
     downloadAndZip: {
       commandFn: queue.bindSafe(actions.downloadAndZip, error),
       storeContexts: ['servers'],
