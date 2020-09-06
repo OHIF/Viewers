@@ -39,8 +39,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "react-select": "^3.0.8",
+    "axios": "^0.20.0",
+    "b-spline": "^2.0.1",
     "d3": "^5.15.0",
-    "b-spline": "^2.0.1"
+    "react-select": "^3.0.8"
   }
 }
