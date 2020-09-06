@@ -15,6 +15,7 @@ import './MRUrographyPanel.css';
 import computeSegmentationFromContours from '../utils/computeSegmentationFromContours';
 import loadSegmentation from '../utils/loadSegmentation';
 import { labelToSegmentNumberMap } from '../constants/labels';
+import kispiClient from '../api';
 
 const { KINDERSPITAL_FREEHAND_ROI_TOOL } = TOOL_NAMES;
 
@@ -401,8 +402,20 @@ const MRUrographyPanel = ({
     debugger;
     // DANNY STUFF goes here.
 
-    const segBuffer = datasetToBuffer(segmentation.dataset).buffer;
+    const jobId = await kispiClient.createUrographySegmentationJobAsync(
+      segBlob
+    );
+    // TODO: Long poll job id for completion...
 
+    const result = await kispiClient.getJobResultsAsync(jobId);
+
+    if(result.segmentationUrl){
+      const segResults = await kispiClient.getSegmentationAsync(result.segmentationUrl);
+    } else {
+      console.warn('no seg results...');
+    }
+
+    const segBuffer = datasetToBuffer(segmentation.dataset).buffer;
     const metadata = _generateMockTimeCoursesAndVolumes();
 
     loadSegmentation(segBuffer, metadata, displaySet);
