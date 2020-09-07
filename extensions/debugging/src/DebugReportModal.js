@@ -131,8 +131,6 @@ const getBrowserInfo = () => {
 const getSeriesInstanceUIDsPerRow = viewports => {
   const { viewportSpecificData, numColumns } = viewports;
 
-  debugger;
-
   // NOTE viewportSpecificData is actually an object with numerical keys.
   return Object.keys(viewportSpecificData).map(viewportIndex => {
     const vsd = viewportSpecificData[viewportIndex];
