@@ -60,8 +60,11 @@ export default {
     const endpoint = `${BASE_URL}${segmentationUrl}`;
 
     try {
-      const jobResults = await axios.get(endpoint);
-      return jobResults;
+      const jobResultsRequest = await axios.get(endpoint, {
+        responseType: 'arraybuffer',
+      });
+      const segBuffer = Buffer.from(jobResultsRequest.data);
+      return segBuffer;
     } catch (err) {
       console.log(err);
     }

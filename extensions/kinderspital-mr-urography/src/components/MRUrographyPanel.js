@@ -410,8 +410,9 @@ const MRUrographyPanel = ({
       console.log(segmentationUrl)
 
 
+    let segResults;
     if (segmentationUrl) {
-      const segResults = await kispiClient.getSegmentationAsync(
+      segResults = await kispiClient.getSegmentationAsync(
         segmentationUrl
       );
       // TODO: Do something with DCM or Seg binary
@@ -419,7 +420,7 @@ const MRUrographyPanel = ({
       console.warn('no seg results...');
     }
 
-    const segBuffer = datasetToBuffer(segmentation.dataset).buffer;
+    const segBuffer = segResults.buffer; // datasetToBuffer(segmentation.dataset).buffer;
     const metadata = _generateMockTimeCoursesAndVolumes();
 
     loadSegmentation(segBuffer, metadata, displaySet);
