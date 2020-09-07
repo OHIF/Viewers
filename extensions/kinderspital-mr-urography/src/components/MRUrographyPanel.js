@@ -399,7 +399,6 @@ const MRUrographyPanel = ({
     // window.open(objectUrl);
     // ... data comes back as buffer:
 
-    debugger;
     // DANNY STUFF goes here.
 
     const jobId = await kispiClient.createUrographySegmentationJobAsync(
@@ -407,10 +406,15 @@ const MRUrographyPanel = ({
     );
     // TODO: Long poll job id for completion...
 
-    const result = await kispiClient.getJobResultsAsync(jobId);
+    const { segmentationUrl, timeCourses, volumes } = await kispiClient.getJobResultsAsync(jobId);
+      console.log(segmentationUrl)
 
-    if(result.segmentationUrl){
-      const segResults = await kispiClient.getSegmentationAsync(result.segmentationUrl);
+
+    if (segmentationUrl) {
+      const segResults = await kispiClient.getSegmentationAsync(
+        segmentationUrl
+      );
+      // TODO: Do something with DCM or Seg binary
     } else {
       console.warn('no seg results...');
     }

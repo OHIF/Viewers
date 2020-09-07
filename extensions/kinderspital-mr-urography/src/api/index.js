@@ -9,18 +9,25 @@ export default {
 
     let data = new FormData();
 
-    data.append('name', 'image');
-    data.append('file', segmentationBlob);
+    // data.append('name', 'image');
+    // data.append('file', segmentationBlob);
 
     let config = {
-      header: {
-        'Content-Type': 'multipart/form-data',
-      },
+      // header: {
+      //   'Content-Type': 'multipart/form-data',
+      // },
     };
 
     try {
-      const jobId = await axios.post(endpoint, data, config);
-      return jobId;
+      // config: {url: "http://localhost:5000/job/mr-urography-segmentation", method: "post", data: FormData, headers: {…}, transformRequest: Array(1), …}
+      // data: {jobId: 1, status: "Success"}
+      // headers: {content-length: "41", content-type: "application/json"}
+      // request: XMLHttpRequest {readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, onreadystatechange: ƒ, …}
+      // status: 200
+      // statusText: "OK"
+      const createJobRequest = await axios.post(endpoint, data, config);
+      const resultData = createJobRequest.data;
+      return resultData.jobId;
     } catch (err) {
       console.log('error', err);
     }
@@ -29,8 +36,9 @@ export default {
     const endpoint = `${BASE_URL}/job/${jobId}`;
 
     try {
-      const jobStatus = await axios.get(endpoint);
-      return jobStatus;
+      const jobStatusRequest = await axios.get(endpoint);
+      const resultData = jobStatusRequest.data;
+      return resultData;
     } catch (err) {
       console.log(err);
     }
@@ -39,8 +47,10 @@ export default {
     const endpoint = `${BASE_URL}/job/${jobId}/results`;
 
     try {
-      const jobResults = await axios.get(endpoint);
-      return jobResults;
+      const jobResultsRequest = await axios.get(endpoint);
+      const resultData = jobResultsRequest.data;
+
+      return resultData;
     } catch (err) {
       console.log(err);
     }
