@@ -1,12 +1,11 @@
 import { importInternal, getToolState, toolColors } from 'cornerstone-tools';
-import cornerstone from 'cornerstone-core';
 import TOOL_NAMES from '../utils/toolNames';
+import drawCanvasCrosshairs from '../utils/drawCanvasCrosshairs';
 
 // Cornerstone 3rd party dev kit imports
 const draw = importInternal('drawing/draw');
 const drawCircle = importInternal('drawing/drawCircle');
 const drawJoinedLines = importInternal('drawing/drawJoinedLines');
-const drawLine = importInternal('drawing/drawLine');
 const getNewContext = importInternal('drawing/getNewContext');
 const BaseTool = importInternal('base/BaseTool');
 
@@ -120,62 +119,11 @@ export default class RTStructDisplayTool extends BaseTool {
     }
 
     if (crossHairCenter) {
-      this._renderHighlightCrosshairs(context, eventData, crossHairCenter, {
+      drawCanvasCrosshairs(eventData, crossHairCenter, {
         color: toolColors.getActiveColor(),
         lineWidth: 1,
       });
     }
-  }
-
-  _renderHighlightCrosshairs(context, eventData, center, options) {
-    const { element } = eventData;
-    debugger;
-
-    const centerCanvas = cornerstone.pixelToCanvas(element, center);
-
-    const { clientWidth: width, clientHeight: height } = element;
-
-    debugger;
-
-    const offset = 10;
-
-    draw(context, context => {
-      drawLine(
-        context,
-        element,
-        { x: centerCanvas.x + offset, y: centerCanvas.y },
-        { x: width, y: centerCanvas.y },
-        options,
-        'canvas'
-      );
-
-      drawLine(
-        context,
-        element,
-        { x: centerCanvas.x - offset, y: centerCanvas.y },
-        { x: 0, y: centerCanvas.y },
-        options,
-        'canvas'
-      );
-
-      drawLine(
-        context,
-        element,
-        { x: centerCanvas.x, y: centerCanvas.y + offset },
-        { x: centerCanvas.x, y: height },
-        options,
-        'canvas'
-      );
-
-      drawLine(
-        context,
-        element,
-        { x: centerCanvas.x, y: centerCanvas.y - offset },
-        { x: centerCanvas.x, y: 0 },
-        options,
-        'canvas'
-      );
-    });
   }
 
   _renderClosedPlanar(context, element, points, options) {
