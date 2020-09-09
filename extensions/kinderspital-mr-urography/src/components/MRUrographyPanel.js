@@ -121,13 +121,14 @@ const showTimecourseModal = (
   }
 };
 
-const showResultsModal = (uiModal, measurements) => {
+const showResultsModal = (uiModal, measurements, onGeneratePDFReportClick) => {
   if (uiModal) {
     uiModal.show({
       content: ResultsModal,
       title: 'Results',
       contentProps: {
         measurements,
+        onGeneratePDFReportClick,
       },
     });
   }
@@ -481,15 +482,15 @@ const MRUrographyPanel = ({
   };
 
   const onViewResultsClick = event => {
-    debugger;
     if (state.canEvaluate) {
       const measurements = getMeasurements();
-      showResultsModal(modal, measurements);
+      showResultsModal(modal, measurements, onGeneratePDFReportClick);
     }
   };
 
-  const onGeneratePDFReportClick = event => {
+  const onGeneratePDFReportClick = (indications, diagnosis) => {
     console.log('TODO -> generate PDF!');
+    debugger;
   };
 
   const onItemClick = (event, measurementData) => {
@@ -653,10 +654,6 @@ const MRUrographyPanel = ({
     ? 'footerBtn'
     : 'footerBtn footerBtnDisabled';
 
-  const generatePDFReportClassNames = state.canEvaluate
-    ? 'footerBtn'
-    : 'footerBtn footerBtnDisabled';
-
   return (
     <div className="mr-urography-panel">
       <TableList
@@ -682,13 +679,6 @@ const MRUrographyPanel = ({
         <button onClick={onViewResultsClick} className={viewResultsClassNames}>
           <Icon name="save" width="14px" height="14px" />
           View results
-        </button>
-        <button
-          onClick={onGeneratePDFReportClick}
-          className={generatePDFReportClassNames}
-        >
-          <Icon name="save" width="14px" height="14px" />
-          Generate PDF Report
         </button>
       </div>
     </div>

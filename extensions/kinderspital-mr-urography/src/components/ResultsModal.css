@@ -1,0 +1,79 @@
+.results-modal-table {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.results-modal-table td {
+  padding-left: 10px;
+  padding-right: 10px;
+  color: var(--table-text-primary-color);
+  border-top: 1px solid #ddd;
+  white-space: nowrap;
+}
+
+.results-modal-table th {
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: center;
+  color: var(--active-color);
+}
+
+/* .results-modal-large-text-input {
+  width: 200px;
+  height: 100px;
+  border: 1px solid #999999;
+  padding: 5px;
+} */
+
+.results-modal-input-container {
+  font-size: 1em;
+  color: var(--text-primary-color);
+  font-weight: 400;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.results-modal-input-container .input-ohif {
+  display: inline-block;
+  height: 40px;
+  margin: 0 10px 20px;
+  padding: 0 20px;
+  cursor: pointer;
+  border: none;
+  background-color: var(--input-background-color);
+  color: var(--input-placeholder-color);
+  font-size: 10pt;
+  font-weight: normal;
+  width: 840px;
+  height: 150px;
+
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.results-modal-input-container .input-ohif-label {
+  padding: 5px;
+  width: 50px;
+}
+
+.results-modal-input-container .input-ohif:active,
+.results-modal-input-container .input-ohif:focus {
+  background-color: var(--input-background-color);
+}
+
+.results-modal-input-container .input-ohif.invisible {
+  visibility: hidden;
+}
+
+.results-modal-footer-button {
+  border: 1px solid var(--ui-border-color-active);
+  border-radius: 25px;
+  background-color: var(--active-color);
+  color: var(--ui-gray-dark);
+  line-height: 25px;
+  margin-top: 5px;
+  margin-right: auto;
+  margin-left: auto;
+  outline: none;
+  cursor: pointer;
+}
