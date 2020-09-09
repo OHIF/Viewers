@@ -96,9 +96,12 @@ export default class RTStructDisplayTool extends BaseTool {
         crossHairCenter.x /= points.length;
         crossHairCenter.y /= points.length;
 
-        options.fillStyle = color = `rgba(${colorArray[0]},${colorArray[1]},${
-          colorArray[2]
-        },${highlightOpacity})`;
+        // TODO: Disabling hightlight for now, it'd be good to bring it back
+        // when we have a good way of doing this for SEG.
+
+        // options.fillStyle = color = `rgba(${colorArray[0]},${colorArray[1]},${
+        //   colorArray[2]
+        // },${highlightOpacity})`;
 
         // Draw highlight lines.
 
