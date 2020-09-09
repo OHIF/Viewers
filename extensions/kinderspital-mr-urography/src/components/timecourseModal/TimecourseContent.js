@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { select } from 'd3-selection';
+import saveEvaluatePlotScreenshot from '../../utils/saveEvaluatePlotScreenshot';
 
 import './TimecourseContent.css';
 
@@ -31,6 +32,7 @@ function LineChartContainer({
   targetMeasurementNumber,
   chartDimension,
   onPlacePoints,
+  onSetCurrentTargetMeasurementNumber,
 }) {
   const d3Container = useRef(null);
   const chartRef = useRef(null);
@@ -74,7 +76,15 @@ function LineChartContainer({
     const nextIndex =
       (currentIndex + value + measurements.length) % measurements.length;
 
+    if (nextIndex !== currentIndex) {
+      saveEvaluatePlotScreenshot(targetMeasurementNumber);
+    }
+
     setCurrentIndex(nextIndex);
+
+    onSetCurrentTargetMeasurementNumber(
+      measurements[nextIndex].measurementNumber
+    );
   };
 
   const isValidTimecourseInterval = index => {
@@ -196,6 +206,7 @@ function TimecourseContent({
   targetMeasurementNumber,
   measurements,
   onPlacePoints,
+  onSetCurrentTargetMeasurementNumber,
 }) {
   const contentRef = useRef();
   const [chartDimension, setChartDimension] = useState({});
@@ -227,6 +238,9 @@ function TimecourseContent({
           targetMeasurementNumber={targetMeasurementNumber}
           chartDimension={chartDimension}
           onPlacePoints={onPlacePoints}
+          onSetCurrentTargetMeasurementNumber={
+            onSetCurrentTargetMeasurementNumber
+          }
         ></LineChartContainer>
       </div>
     )

@@ -16,6 +16,7 @@ import computeSegmentationFromContours from '../utils/computeSegmentationFromCon
 import loadSegmentation from '../utils/loadSegmentation';
 import { labelToSegmentNumberMap } from '../constants/labels';
 import kispiClient from '../api';
+import saveEvaluatePlotScreenshot from '../utils/saveEvaluatePlotScreenshot';
 
 const { KINDERSPITAL_FREEHAND_ROI_TOOL } = TOOL_NAMES;
 
@@ -93,15 +94,27 @@ const showTimecourseModal = (
   measurements,
   onPlacePoints
 ) => {
+  let currentTargetMeasurementNumber = targetMeasurementNumber;
+
+  // NOTE: We have to do this in order to save the correct chart onClose.
+  // Just a quirk of the way the modal system is implemented, the modal does not
+  // have access to its childs state.
+  function onSetCurrentTargetMeasurementNumber(number) {
+    currentTargetMeasurementNumber = number;
+  }
+
   if (uiModal) {
     uiModal.show({
       content: TimecourseModal,
       title: 'Evaluate Timecourse',
+      onClose: () => {
+        saveEvaluatePlotScreenshot(currentTargetMeasurementNumber);
+      },
       contentProps: {
         measurements,
         targetMeasurementNumber,
-        onClose: uiModal.hide,
         onPlacePoints,
+        onSetCurrentTargetMeasurementNumber,
       },
     });
   }
@@ -391,7 +404,12 @@ const MRUrographyPanel = ({
     );
 
     const segmentation = await computeSegmentationFromContours(displaySet);
+
     const segBlob = datasetToBlob(segmentation.dataset);
+
+    // TEMP Whilst fixing backend
+    const segBuffer = datasetToBuffer(segmentation.dataset).buffer;
+    // TEMP Whilst fixing backend
 
     // TEMP - Create a URL for the binary.
     // TODO -> Post this somewhere along with the metadata.
@@ -400,6 +418,9 @@ const MRUrographyPanel = ({
     // ... data comes back as buffer:
 
     // DANNY STUFF goes here.
+
+    // TEMP Whilst fixing backend
+    /*
 
     const jobId = await kispiClient.createUrographySegmentationJobAsync(
       segBlob
@@ -420,7 +441,12 @@ const MRUrographyPanel = ({
       console.warn('no seg results...');
     }
 
+
+
     const segBuffer = segResults.buffer; // datasetToBuffer(segmentation.dataset).buffer;
+
+       */
+    // TEMP Whilst fixing backend
     const metadata = _generateMockTimeCoursesAndVolumes();
 
     loadSegmentation(segBuffer, metadata, displaySet);

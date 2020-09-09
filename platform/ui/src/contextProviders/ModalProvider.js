@@ -77,6 +77,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     customClassName,
     shouldCloseOnEsc,
     closeButton,
+    onClose,
   } = options;
 
   return (
@@ -88,7 +89,12 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           isOpen={isOpen}
           title={title}
           closeButton={closeButton}
-          onClose={hide}
+          onClose={() => {
+            if (typeof onClose === 'function') {
+              onClose();
+            }
+            hide();
+          }}
         >
           <ModalContent {...contentProps} show={show} hide={hide} />
         </Modal>
