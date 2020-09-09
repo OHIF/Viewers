@@ -490,7 +490,6 @@ const MRUrographyPanel = ({
 
   const onGeneratePDFReportClick = (indications, diagnosis) => {
     console.log('TODO -> generate PDF!');
-    debugger;
   };
 
   const onItemClick = (event, measurementData) => {

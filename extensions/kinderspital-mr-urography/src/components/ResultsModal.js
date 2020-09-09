@@ -8,8 +8,6 @@ export default function ResultsModal({
   measurements,
   onGeneratePDFReportClick,
 }) {
-  debugger;
-
   const [indications, setIndications] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
 
