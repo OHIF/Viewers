@@ -53,6 +53,12 @@ const _formatAxisLabel = ({ label, unit }) => {
  * @return {object} appended chart container (svg element)
  */
 const _addChartContainer = (root, width, height, translateX, translateY) => {
+  root
+    .append('rect')
+    .attr('class', 'background')
+    .attr('width', width)
+    .attr('height', height);
+
   return root
     .append('g')
     .attr('width', width)
@@ -162,7 +168,7 @@ const _addChartClipPath = (
   root,
   width,
   height,
-  transparent = true,
+  transparent = false,
   offset = 6
 ) => {
   const translateOffset = -offset / 2;

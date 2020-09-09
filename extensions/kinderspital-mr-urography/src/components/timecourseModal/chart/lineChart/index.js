@@ -68,7 +68,7 @@ const addLineChartNode = (
   height,
   showAxisLabels = true,
   showAxisGrid = false,
-  transparentChartBackground = true
+  transparentChartBackground = false
 ) => {
   const _width = width - MARGIN.left - MARGIN.right;
   const _height = height - MARGIN.top - MARGIN.bottom;

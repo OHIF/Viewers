@@ -4,10 +4,11 @@
   -moz-user-select: -moz-none;
   -o-user-select: none;
   user-select: none;
+  fill: var(--ui-gray-darker);
 }
 
 .background {
-  fill: #91b8cd26;
+  fill: var(--ui-gray-darker);
 }
 .background.transparent {
   fill: #ffffff00;
