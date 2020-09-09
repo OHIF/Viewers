@@ -8,6 +8,7 @@ import findDisplaySetFromDisplaySetInstanceUID from '../utils/findDisplaySetFrom
 import MRUrographyTableItem from './MRUrographyTabelItem';
 import * as dcmjs from 'dcmjs';
 import TimecourseModal from './timecourseModal/TimecourseContent';
+import ResultsModal from './ResultsModal';
 import TOOL_NAMES from '../tools/toolNames';
 import { measurementConfig } from '../tools/KinderspitalFreehandRoiTool';
 import calculateAreaUnderCurve from '../utils/calculateAreaUnderCurve';
@@ -115,6 +116,18 @@ const showTimecourseModal = (
         targetMeasurementNumber,
         onPlacePoints,
         onSetCurrentTargetMeasurementNumber,
+      },
+    });
+  }
+};
+
+const showResultsModal = (uiModal, measurements) => {
+  if (uiModal) {
+    uiModal.show({
+      content: ResultsModal,
+      title: 'Results',
+      contentProps: {
+        measurements,
       },
     });
   }
@@ -309,10 +322,10 @@ const MRUrographyPanel = ({
     }
   };
 
-  const onEvaluateClick = measurementNumber => {
+  const getMeasurements = () => {
     const toolState = globalImageIdSpecificToolStateManager.saveToolState();
     const toolName = TOOL_NAMES.KINDERSPITAL_FREEHAND_ROI_TOOL;
-    let targetIndex = 0;
+    //let targetIndex = 0;
     const measurements = [];
     const imageIds = Object.keys(toolState);
 
@@ -331,6 +344,11 @@ const MRUrographyPanel = ({
       measurements.push(...imageIdSpecificToolState[toolName].data);
     }
 
+    return measurements;
+  };
+
+  const onEvaluateClick = measurementNumber => {
+    const measurements = getMeasurements();
     showTimecourseModal(modal, measurementNumber, measurements, onPlacePoints);
   };
 
@@ -463,7 +481,11 @@ const MRUrographyPanel = ({
   };
 
   const onViewResultsClick = event => {
-    console.log('TODO -> view results window!');
+    debugger;
+    if (state.canEvaluate) {
+      const measurements = getMeasurements();
+      showResultsModal(modal, measurements);
+    }
   };
 
   const onGeneratePDFReportClick = event => {
