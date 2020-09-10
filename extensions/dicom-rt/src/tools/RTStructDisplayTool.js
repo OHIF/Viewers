@@ -81,7 +81,6 @@ export default class RTStructDisplayTool extends BaseTool {
         colorArray[2]
       },${opacity})`;
 
-      // TODO
       let highlight = data.highlight;
       const options = { color, lineWidth };
 
