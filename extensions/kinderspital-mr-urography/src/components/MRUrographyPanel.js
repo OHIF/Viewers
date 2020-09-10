@@ -122,14 +122,14 @@ const showTimecourseModal = (
   }
 };
 
-const showResultsModal = (uiModal, measurements, onGeneratePDFReportClick) => {
+const showResultsModal = (uiModal, measurements, imageIdPerMeasurement) => {
   if (uiModal) {
     uiModal.show({
       content: ResultsModal,
       title: 'Results',
       contentProps: {
         measurements,
-        onGeneratePDFReportClick,
+        imageIdPerMeasurement,
       },
     });
   }
@@ -346,7 +346,13 @@ const MRUrographyPanel = ({
         continue;
       }
       measurements.push(...imageIdSpecificToolState[toolName].data);
-      imageIdPerMeasurement.push(imageId);
+
+      const numMeausrementsOnImageId =
+        imageIdSpecificToolState[toolName].data.length;
+
+      for (let num = 0; num < numMeausrementsOnImageId; num++) {
+        imageIdPerMeasurement.push(imageId);
+      }
     }
 
     return { measurements, imageIdPerMeasurement };
@@ -485,23 +491,12 @@ const MRUrographyPanel = ({
     }));
   };
 
-  const onViewResultsClick = event => {
+  const onViewResultsClick = () => {
     if (state.canEvaluate) {
-      const { measurements } = getMeasurements();
+      const { measurements, imageIdPerMeasurement } = getMeasurements();
 
-      showResultsModal(modal, measurements, onGeneratePDFReportClick);
+      showResultsModal(modal, measurements, imageIdPerMeasurement);
     }
-  };
-
-  const onGeneratePDFReportClick = (indications, diagnosis) => {
-    const { measurements, imageIdPerMeasurement } = getMeasurements();
-
-    generatePDFReport(
-      measurements,
-      imageIdPerMeasurement,
-      indications,
-      diagnosis
-    );
   };
 
   const onItemClick = (event, measurementData) => {

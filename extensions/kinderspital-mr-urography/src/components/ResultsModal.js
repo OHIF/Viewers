@@ -1,19 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { labelToSegmentNumberMap } from '../constants/labels';
 import { Icon } from '@ohif/ui';
 import PropTypes from 'prop-types';
+import generateScreenShots from '../utils/generateScreenshots';
 import './ResultsModal.css';
 
-export default function ResultsModal({
-  measurements,
-  onGeneratePDFReportClick,
-}) {
+export default function ResultsModal({ measurements, imageIdPerMeasurement }) {
   const [indications, setIndications] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
+  const [screenShots, setScreenShots] = useState([]);
+
+  debugger;
+
+  // Calculate screenshots when you open the results modal.
+  useEffect(() => {
+    const fetchScreenshots = async () => {
+      const imageScreenShots = await generateScreenShots(
+        measurements,
+        imageIdPerMeasurement
+      );
+
+      setScreenShots(imageScreenShots);
+    };
+
+    fetchScreenshots();
+  }, []);
 
   return (
     <div>
-      <MeasurementTable measurements={measurements}></MeasurementTable>
+      <MeasurementTable measurements={measurements} />
+      <Screenshots screenShots={screenShots} />
       <TextInputLarge
         type="text"
         value={indications}
@@ -42,6 +58,34 @@ export default function ResultsModal({
         <Icon name="save" width="14px" height="14px" />
         Generate PDF Report
       </button>
+    </div>
+  );
+}
+
+function Screenshots({ screenShots }) {
+  let items;
+
+  if (!screenShots.length) {
+    items = ['Loading...', 'Loading...', 'Loading...', 'Loading...'];
+  } else {
+    debugger;
+    items = screenShots.map(screenshot => {
+      const { image } = screenshot;
+      return <img src={image} height="256px" width="256px"></img>;
+    });
+
+    while (items.length < 4) {
+      items.push('');
+    }
+  }
+
+  debugger;
+
+  return (
+    <div className="results-modal-screenshots-container">
+      {items.map(item => (
+        <div className="screenshot-item">{item}</div>
+      ))}
     </div>
   );
 }

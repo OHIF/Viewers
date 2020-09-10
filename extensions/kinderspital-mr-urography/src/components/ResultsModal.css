@@ -77,3 +77,24 @@
   outline: none;
   cursor: pointer;
 }
+
+.results-modal-screenshots-container {
+  margin: 20px auto;
+  width: 512px;
+  height: 512px;
+  background-color: #000000;
+  display: grid;
+  grid-template-columns: 256px 256px;
+  grid-row: auto auto;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+}
+
+.results-modal-screenshots-container .screenshot-item {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-family: sans-serif;
+}
