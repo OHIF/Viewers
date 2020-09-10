@@ -18,6 +18,7 @@ import loadSegmentation from '../utils/loadSegmentation';
 import { labelToSegmentNumberMap } from '../constants/labels';
 import kispiClient from '../api';
 import saveEvaluatePlotScreenshot from '../utils/saveEvaluatePlotScreenshot';
+import generatePDFReport from '../utils/generatePDFReport';
 
 const { KINDERSPITAL_FREEHAND_ROI_TOOL } = TOOL_NAMES;
 
@@ -330,6 +331,8 @@ const MRUrographyPanel = ({
     const measurements = [];
     const imageIds = Object.keys(toolState);
 
+    const imageIdPerMeasurement = [];
+
     for (let i = 0; i < imageIds.length; i++) {
       const imageId = imageIds[i];
       const imageIdSpecificToolState = toolState[imageId];
@@ -343,13 +346,14 @@ const MRUrographyPanel = ({
         continue;
       }
       measurements.push(...imageIdSpecificToolState[toolName].data);
+      imageIdPerMeasurement.push(imageId);
     }
 
-    return measurements;
+    return { measurements, imageIdPerMeasurement };
   };
 
   const onEvaluateClick = measurementNumber => {
-    const measurements = getMeasurements();
+    const { measurements } = getMeasurements();
     showTimecourseModal(modal, measurementNumber, measurements, onPlacePoints);
   };
 
@@ -483,13 +487,21 @@ const MRUrographyPanel = ({
 
   const onViewResultsClick = event => {
     if (state.canEvaluate) {
-      const measurements = getMeasurements();
+      const { measurements } = getMeasurements();
+
       showResultsModal(modal, measurements, onGeneratePDFReportClick);
     }
   };
 
   const onGeneratePDFReportClick = (indications, diagnosis) => {
-    console.log('TODO -> generate PDF!');
+    const { measurements, imageIdPerMeasurement } = getMeasurements();
+
+    generatePDFReport(
+      measurements,
+      imageIdPerMeasurement,
+      indications,
+      diagnosis
+    );
   };
 
   const onItemClick = (event, measurementData) => {
