@@ -5,7 +5,7 @@ const DicomBrowserSelect = ({ value, formatOptionLabel, options }) => (
   <Select
     value={value}
     formatOptionLabel={formatOptionLabel}
-    styles={segmentationSelectStyles}
+    styles={dicomBrowserSelectStyles}
     options={options}
   />
 );
@@ -16,7 +16,7 @@ const activeColor = computedstyle.getPropertyValue('--active-color');
 const defaultColor = computedstyle.getPropertyValue('--default-color');
 const uiGrayDark = computedstyle.getPropertyValue('--ui-gray-dark');
 
-const segmentationSelectStyles = {
+const dicomBrowserSelectStyles = {
   singleValue: (base, state) => ({
     ...base,
     width: '100%',
@@ -27,7 +27,6 @@ const segmentationSelectStyles = {
     background: uiGrayDarker,
     borderRadius: state.isFocused ? '5px 5px 5px 5px' : 5,
     borderColor: state.isFocused ? activeColor : defaultColor,
-    boxShadow: state.isFocused ? null : null,
     minHeight: '50px',
     '&:hover': {
       borderColor: activeColor,

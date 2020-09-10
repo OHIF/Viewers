@@ -1,4 +1,3 @@
-import { getDicomWebClientFromConfig } from './utils';
 import getCommandsModule from './getCommandsModule';
 import toolbarModule from './toolbarModule';
 

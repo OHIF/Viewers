@@ -1,1 +1,1 @@
-# @ohif/extension-dicom-p10-downloader
+# @ohif/extension-dicom-tag-browser
