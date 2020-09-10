@@ -341,7 +341,10 @@ function ViewerRetrieveStudyData({
         }
       }
 
-      if (appConfig.enableGoogleCloudAdapter) {
+      if (
+        appConfig.splitQueryParameterCalls ||
+        appConfig.enableGoogleCloudAdapter
+      ) {
         retrieveParams.push(true); // Seperate SeriesInstanceUID filter calls.
       }
 
