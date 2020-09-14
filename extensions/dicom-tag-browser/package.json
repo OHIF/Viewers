@@ -1,7 +1,7 @@
 {
-  "name": "@ohif/extension-dicom-p10-downloader",
-  "version": "0.1.2",
-  "description": "OHIF extension for downloading DICOM P10 files",
+  "name": "@ohif/extension-dicom-tag-browser",
+  "version": "0.0.2",
+  "description": "OHIF extension for checking DICOM headers.",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
@@ -28,13 +28,13 @@
   },
   "peerDependencies": {
     "@ohif/core": "^2.6.0",
-    "dicom-parser": "^1.8.3",
-    "dicomweb-client": "^0.5.2"
+    "dcmjs": "0.16.0",
+    "react": "^16.8.6"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "dicomweb-client": "^0.6.0",
-    "file-saver": "^2.0.2",
-    "jszip": "^3.2.2"
+    "moment": "2.24.0",
+    "react-select": "^3.0.8"
   }
 }

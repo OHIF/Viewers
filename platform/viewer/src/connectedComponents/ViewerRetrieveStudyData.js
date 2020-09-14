@@ -88,6 +88,7 @@ const _isQueryParamApplied = (study, filters = {}, isFilterStrategy) => {
   const { seriesInstanceUID } = filters;
   let applied = true;
   // skip in case no filter or no toast manager
+
   if (!seriesInstanceUID) {
     return applied;
   }
@@ -338,6 +339,13 @@ function ViewerRetrieveStudyData({
         if (isFilterStrategy) {
           retrieveParams.push(filters);
         }
+      }
+
+      if (
+        appConfig.splitQueryParameterCalls ||
+        appConfig.enableGoogleCloudAdapter
+      ) {
+        retrieveParams.push(true); // Seperate SeriesInstanceUID filter calls.
       }
 
       cancelableStudiesPromises[studyInstanceUIDs] = makeCancelable(

@@ -12,11 +12,13 @@ const DicomMicroscopySopClassHandler = {
   getDisplaySetFromSeries(series, study, dicomWebClient) {
     const instance = series.getFirstInstance();
 
+    const metadata = instance.getData().metadata;
     const {
+      SeriesDescription,
+      SeriesNumber,
       ContentDate,
       ContentTime,
-      SeriesNumber,
-    } = instance._instance.metadata;
+    } = metadata;
 
     // Note: We are passing the dicomweb client into each viewport!
 
@@ -28,9 +30,11 @@ const DicomMicroscopySopClassHandler = {
       SOPInstanceUID: instance.getSOPInstanceUID(),
       SeriesInstanceUID: series.getSeriesInstanceUID(),
       StudyInstanceUID: study.getStudyInstanceUID(),
+      SeriesDescription,
       SeriesDate: ContentDate, // Map ContentDate/Time to SeriesTime for series list sorting.
       SeriesTime: ContentTime,
       SeriesNumber,
+      metadata,
     };
   },
 };

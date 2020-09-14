@@ -28,12 +28,12 @@ export default function getSopClassHandlerModule({ servicesManager }) {
       const {
         SeriesDate,
         SeriesTime,
-        SeriesNumber,
         SeriesDescription,
         FrameOfReferenceUID,
         SOPInstanceUID,
         SeriesInstanceUID,
         StudyInstanceUID,
+        SeriesNumber,
       } = metadata;
 
       const segDisplaySet = {
@@ -55,6 +55,7 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         SeriesTime,
         SeriesNumber,
         SeriesDescription,
+        metadata,
       };
 
       segDisplaySet.getSourceDisplaySet = function(studies) {

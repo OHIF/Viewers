@@ -184,6 +184,8 @@ describe('ExtensionManager.js', () => {
             commandsManager,
             appConfig,
             configuration: extensionConfiguration,
+            api: undefined,
+            extensionManager,
           });
         }
       });
@@ -226,7 +228,7 @@ describe('ExtensionManager.js', () => {
           return {
             definitions: {
               exampleDefinition: {
-                commandFn: () => { },
+                commandFn: () => {},
                 storeContexts: [],
                 options: {},
               },

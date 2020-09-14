@@ -13,7 +13,8 @@ function refreshViewport() {
 
 const configuration = {
   lineWidth: 3,
-  opacity: 1.0,
+  opacity: 0.75,
+  highlightOpacity: 0.5,
 };
 
 const state = {
