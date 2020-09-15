@@ -184,6 +184,7 @@ function WorkList({
   // Query for series information
   useEffect(() => {
     const fetchSeries = async studyInstanceUid => {
+      debugger;
       try {
         const series = await dataSource.query.series.search(studyInstanceUid);
         seriesInStudiesMap.set(
