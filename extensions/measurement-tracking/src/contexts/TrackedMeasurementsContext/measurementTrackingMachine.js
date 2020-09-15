@@ -317,10 +317,22 @@ const defaultOptions = {
   },
   guards: {
     shouldSetDirty: (ctx, evt) => {
-      debugger;
+      // 1. We need to flip this _after_ tracking a new measurement,
+      //    but mark "clean" after save, and after restore
+      //
+      //    This is tricky, because the measurement service isn't notified
+      //    of new tracks to _existing_ measurements
+      //
+      //    So... We need to set this dirty after any new measurement to a tracked
+      //    viewport (see SET_DIRTY transition) and any tracking event not inspired
+      //    by the SR restore (now that we don't clear + restore after save)
+      console.warn('SHOULD SET DIRTY?', evt);
+      // debugger;
       return (
+        // When would this happen?
         evt.SeriesInstanceUID === undefined ||
-        ctx.trackedSeries.includes(evt.SeriesInstanceUID)
+        // Why wouldn't we care about measurements with the same series id?
+        !ctx.trackedSeries.includes(evt.SeriesInstanceUID)
       );
     },
     shouldKillMachine: (ctx, evt) =>
