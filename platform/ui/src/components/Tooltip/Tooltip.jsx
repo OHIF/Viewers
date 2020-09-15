@@ -24,7 +24,14 @@ const arrowPositionStyle = {
   },
 };
 
-const Tooltip = ({ content, isSticky, position, tight, children, isDisabled }) => {
+const Tooltip = ({
+  content,
+  isSticky,
+  position,
+  tight,
+  children,
+  isDisabled,
+}) => {
   const [isActive, setIsActive] = useState(false);
 
   const handleMouseOver = () => {
@@ -43,7 +50,7 @@ const Tooltip = ({ content, isSticky, position, tight, children, isDisabled }) =
 
   return (
     <div
-      className="relative h-full"
+      className="relative"
       onMouseOver={handleMouseOver}
       onFocus={handleMouseOver}
       onMouseOut={handleMouseOut}
@@ -84,7 +91,7 @@ Tooltip.defaultProps = {
   tight: false,
   isSticky: false,
   position: 'bottom',
-  isDisabled: false
+  isDisabled: false,
 };
 
 Tooltip.propTypes = {

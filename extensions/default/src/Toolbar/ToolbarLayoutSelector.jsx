@@ -29,8 +29,7 @@ function LayoutSelector() {
     };
   }, []);
 
-  const onClickHandler = () => setIsOpen(!isOpen);
-
+  const onInteractionHandler = () => setIsOpen(!isOpen);
   const DropdownContent = isOpen ? OHIFLayoutSelector : null;
 
   return (
@@ -38,7 +37,7 @@ function LayoutSelector() {
       id="Layout"
       label="Grid Layout"
       icon="tool-layout"
-      onClick={onClickHandler}
+      onInteraction={onInteractionHandler}
       dropdownContent={
         DropdownContent !== null && (
           <DropdownContent

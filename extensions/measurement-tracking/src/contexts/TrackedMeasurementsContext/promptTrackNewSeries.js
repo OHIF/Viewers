@@ -17,11 +17,13 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
       viewportIndex
     );
 
-    if (promptResult === RESPONSE.CREATE_REPORT) {
+    if (ctx.isDirty && promptResult === RESPONSE.CREATE_REPORT) {
       promptResult = await _askSaveDiscardOrCancel(
         UIViewportDialogService,
         viewportIndex
       );
+    } else {
+      promptResult = RESPONSE.SET_STUDY_AND_SERIES;
     }
 
     resolve({

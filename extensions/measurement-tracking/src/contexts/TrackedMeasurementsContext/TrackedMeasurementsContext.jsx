@@ -141,7 +141,7 @@ function TrackedMeasurementsContextProvider(
       if (
         displaySet.SOPClassHandlerId ===
           'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr' &&
-        !displaySet.isLocked
+        displaySet.isRehydratable === true
       ) {
         console.log('sending event...', trackedMeasurements);
         sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {

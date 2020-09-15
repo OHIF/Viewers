@@ -1,6 +1,7 @@
 import { ToolbarButton } from '@ohif/ui';
 import ToolbarDivider from './Toolbar/ToolbarDivider.jsx';
 import ToolbarLayoutSelector from './Toolbar/ToolbarLayoutSelector.jsx';
+import ToolbarSplitButton from './Toolbar/ToolbarSplitButton.jsx';
 
 export default function getToolbarModule({ commandsManager, servicesManager }) {
   const toolbarService = servicesManager.services.ToolBarService;
@@ -9,65 +10,27 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     {
       name: 'ohif.divider',
       defaultComponent: ToolbarDivider,
-      clickHandler: () => { },
+      clickHandler: () => {},
     },
     {
       name: 'ohif.action',
       defaultComponent: ToolbarButton,
-      requiredConfig: [],
-      optionalConfig: [],
-      requiredProps: [],
-      optionalProps: [],
-      clickHandler: (evt, btn, btnSectionName) => {
-        const { props } = btn;
-        commandsManager.runCommand(props.commandName, props.commandOptions);
-      },
+      clickHandler: () => {},
     },
     {
       name: 'ohif.radioGroup',
       defaultComponent: ToolbarButton,
-      requiredConfig: ['groupName'],
-      optionalConfig: [],
-      requiredProps: [],
-      optionalProps: [],
-      clickHandler: (evt, clickedBtn, btnSectionName, metadata, viewerProps) => {
-        const { props } = clickedBtn;
-        const allButtons = toolbarService.getButtons();
-
-        // Set all buttons in same group to inactive
-        Object.keys(allButtons).forEach(btnName => {
-          const btn = allButtons[btnName];
-          const isRadioGroupBtn =
-            btn.config &&
-            btn.config.groupName &&
-            btn.type === 'ohif.radioGroup';
-
-          if (
-            isRadioGroupBtn &&
-            clickedBtn.config.groupName === btn.config.groupName
-          ) {
-            btn.props.isActive = false;
-
-            if (viewerProps.setActiveTool) {
-              viewerProps.setActiveTool(props, metadata.isNested);
-            }
-          }
-        });
-
-        // Set our clicked button to active
-        allButtons[clickedBtn.id].props.isActive = true;
-
-        // Run button logic/command
-        commandsManager.runCommand(props.commandName, props.commandOptions);
-
-        // Set buttons & trigger notification
-        toolbarService.setButtons(allButtons);
-      },
+      clickHandler: () => {},
+    },
+    {
+      name: 'ohif.splitButton',
+      defaultComponent: ToolbarSplitButton,
+      clickHandler: () => {},
     },
     {
       name: 'ohif.layoutSelector',
       defaultComponent: ToolbarLayoutSelector,
-      clickHandler: (evt, clickedBtn, btnSectionName) => { },
+      clickHandler: (evt, clickedBtn, btnSectionName) => {},
     },
     {
       name: 'ohif.toggle',

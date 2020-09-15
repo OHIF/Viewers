@@ -24,7 +24,7 @@ import {
   Header,
   useModal,
   AboutModal,
-  UserPreferences
+  UserPreferences,
 } from '@ohif/ui';
 
 const seriesInStudiesMap = new Map();
@@ -33,7 +33,14 @@ const seriesInStudiesMap = new Map();
  * TODO:
  * - debounce `setFilterValues` (150ms?)
  */
-function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingData, dataSource, hotkeysManager }) {
+function WorkList({
+  history,
+  data: studies,
+  dataTotal: studiesTotal,
+  isLoadingData,
+  dataSource,
+  hotkeysManager,
+}) {
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
@@ -94,7 +101,6 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
   const numOfStudies = studiesTotal;
-  const totalPages = Math.floor(numOfStudies / resultsPerPage) + 1;
 
   const setFilterValues = val => {
     if (filterValues.pageNumber === val.pageNumber) {
@@ -105,7 +111,15 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
   };
 
   const onPageNumberChange = newPageNumber => {
-    if (newPageNumber > totalPages) {
+    debugger;
+    const oldPageNumber = filterValues.pageNumber;
+    const rollingPageNumberMod = Math.floor(101 / filterValues.resultsPerPage);
+    const rollingPageNumber = oldPageNumber % rollingPageNumberMod;
+    const isNextPage = newPageNumber > oldPageNumber;
+    const hasNextPage =
+      Math.max(rollingPageNumber, 1) * resultsPerPage < numOfStudies;
+
+    if (isNextPage && !hasNextPage) {
       return;
     }
 
@@ -170,9 +184,13 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
   // Query for series information
   useEffect(() => {
     const fetchSeries = async studyInstanceUid => {
+      debugger;
       try {
         const series = await dataSource.query.series.search(studyInstanceUid);
-        seriesInStudiesMap.set(studyInstanceUid, utils.sortBySeriesDate(series));
+        seriesInStudiesMap.set(
+          studyInstanceUid,
+          utils.sortBySeriesDate(series)
+        );
         setStudiesWithSeriesData([...studiesWithSeriesData, studyInstanceUid]);
       } catch (ex) {
         // TODO: UI Notification Service
@@ -199,6 +217,10 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
     return !isEqual(filterValues, defaultFilterValues);
   };
 
+  const rollingPageNumberMod = Math.floor(101 / resultsPerPage);
+  const rollingPageNumber = (pageNumber - 1) % rollingPageNumberMod;
+  const offset = resultsPerPage * rollingPageNumber;
+  const offsetAndTake = offset + resultsPerPage;
   const tableDataSource = sortedStudies.map((study, key) => {
     const rowKey = key + 1;
     const isExpanded = expandedRows.some(k => k === rowKey);
@@ -229,8 +251,8 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
           content: patientName ? (
             <TooltipClipboard>{patientName}</TooltipClipboard>
           ) : (
-              <span className="text-gray-700">(Empty)</span>
-            ),
+            <span className="text-gray-700">(Empty)</span>
+          ),
           gridCol: 4,
         },
         {
@@ -294,13 +316,13 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
-                return {
-                  description: s.description || '(empty)',
-                  seriesNumber: s.seriesNumber || '',
-                  modality: s.modality || '',
-                  instances: s.numSeriesInstances || '',
-                };
-              })
+                  return {
+                    description: s.description || '(empty)',
+                    seriesNumber: s.seriesNumber || '',
+                    modality: s.modality || '',
+                    instances: s.numSeriesInstances || '',
+                  };
+                })
               : []
           }
         >
@@ -317,7 +339,7 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
               <Link
                 key={i}
                 to={`${mode.id}?StudyInstanceUIDs=${studyInstanceUid}`}
-              // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
+                // to={`${mode.id}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
               >
                 <Button
                   rounded="full"
@@ -325,7 +347,7 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
                   disabled={false}
                   endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
-                  onClick={() => { }}
+                  onClick={() => {}}
                 >
                   {mode.displayName}
                 </Button>
@@ -348,25 +370,28 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
     {
       title: t('Header:About'),
       icon: 'info',
-      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' })
+      onClick: () => show({ content: AboutModal, title: 'About OHIF Viewer' }),
     },
     {
       title: t('Header:Preferences'),
       icon: 'settings',
-      onClick: () => show({
-        title: t('UserPreferencesModal:User Preferences'),
-        content: UserPreferences,
-        contentProps: {
-          hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-          hotkeyDefinitions,
-          onCancel: hide,
-          onSubmit: ({ hotkeyDefinitions }) => {
-            hotkeysManager.setHotkeys(hotkeyDefinitions);
-            hide();
+      onClick: () =>
+        show({
+          title: t('UserPreferencesModal:User Preferences'),
+          content: UserPreferences,
+          contentProps: {
+            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(
+              hotkeyDefaults
+            ),
+            hotkeyDefinitions,
+            onCancel: hide,
+            onSubmit: ({ hotkeyDefinitions }) => {
+              hotkeysManager.setHotkeys(hotkeyDefinitions);
+              hide();
+            },
+            onReset: () => hotkeysManager.restoreDefaultBindings(),
           },
-          onReset: () => hotkeysManager.restoreDefaultBindings()
-        }
-      })
+        }),
     },
   ];
 
@@ -378,7 +403,7 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
     >
       <Header isSticky menuOptions={menuOptions} isReturnEnabled={false} />
       <StudyListFilter
-        numOfStudies={numOfStudies}
+        numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
         filtersMeta={filtersMeta}
         filterValues={{ ...filterValues, ...defaultSortValues }}
         onChange={setFilterValues}
@@ -388,7 +413,7 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
       {hasStudies ? (
         <>
           <StudyListTable
-            tableDataSource={tableDataSource}
+            tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
             numOfStudies={numOfStudies}
             filtersMeta={filtersMeta}
           />
@@ -400,10 +425,10 @@ function WorkList({ history, data: studies, dataTotal: studiesTotal, isLoadingDa
           />
         </>
       ) : (
-          <div className="flex flex-col items-center justify-center pt-48">
-            <EmptyStudies isLoading={isLoadingData} />
-          </div>
-        )}
+        <div className="flex flex-col items-center justify-center pt-48">
+          <EmptyStudies isLoading={isLoadingData} />
+        </div>
+      )}
     </div>
   );
 }

@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Icon, Typography, InputGroup } from '../../components';
-import { useModal } from '../../contextProviders';
 
 const StudyListFilter = ({
   filtersMeta,
@@ -21,42 +20,17 @@ const StudyListFilter = ({
     });
   };
   const isSortingEnable = numOfStudies > 0 && numOfStudies <= 100;
-  const { show } = useModal();
-
-  const showLearnMoreContent = () => {
-    const modalContent = () => <div>Search Instructions</div>;
-
-    show({
-      content: modalContent,
-      title: 'Learn More',
-    });
-  };
 
   return (
     <React.Fragment>
       <div>
         <div className="bg-primary-dark">
-          <div className="container m-auto relative flex flex-col pt-5">
-            <div className="flex flex-row justify-between mb-5 px-12">
+          <div className="container relative flex flex-col pt-5 m-auto">
+            <div className="flex flex-row justify-between px-12 mb-5">
               <div className="flex flex-row">
-                <Typography variant="h4" className="text-primary-light mr-6">
+                <Typography variant="h4" className="mr-6 text-primary-light">
                   Study list
                 </Typography>
-                <div className="flex flex-row items-end">
-                  <Button
-                    variant="text"
-                    size="small"
-                    color="inherit"
-                    className="text-primary-active"
-                    startIcon={<Icon name="info-link" className="w-2" />}
-                    onClick={showLearnMoreContent}
-                  >
-                    <span className="flex flex-col flex-1">
-                      <span>Learn more</span>
-                      <span className="opacity-50 pt-1 border-b border-primary-active"></span>
-                    </span>
-                  </Button>
-                </div>
               </div>
               <div className="flex flex-row">
                 {isFiltering && (
@@ -64,7 +38,7 @@ const StudyListFilter = ({
                     rounded="full"
                     variant="outlined"
                     color="primary"
-                    className="text-primary-active border-primary-active mx-8"
+                    className="mx-8 text-primary-active border-primary-active"
                     startIcon={<Icon name="cancel" />}
                     onClick={clearFilters}
                   >
@@ -76,7 +50,7 @@ const StudyListFilter = ({
                 </Typography>
                 <Typography
                   variant="h6"
-                  className="text-common-light self-end pb-1"
+                  className="self-end pb-1 text-common-light"
                 >
                   Studies
                 </Typography>
@@ -89,7 +63,7 @@ const StudyListFilter = ({
         className="sticky z-10 border-b-4 border-black"
         style={{ top: '57px' }}
       >
-        <div className="bg-primary-dark pt-3 pb-3 ">
+        <div className="pt-3 pb-3 bg-primary-dark ">
           <InputGroup
             inputMeta={filtersMeta}
             values={filterValues}
@@ -101,7 +75,7 @@ const StudyListFilter = ({
         </div>
         {numOfStudies > 100 && (
           <div className="container m-auto">
-            <div className="bg-primary-main text-center text-base py-1 rounded-b">
+            <div className="py-1 text-base text-center rounded-b bg-primary-main">
               <p className="text-white">
                 Filter list to 100 studies or less to enable sorting
               </p>

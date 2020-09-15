@@ -12,7 +12,7 @@ import {
   ToolBarService,
   ViewportGridService,
   HangingProtocolService,
-  CineService
+  CineService,
   // utils,
   // redux as reduxOHIF,
 } from '@ohif/core';
@@ -33,13 +33,17 @@ function appInit(appConfigOrFunc, defaultExtensions) {
   // TODO: Wire this up to Rodrigo's basic Context "ContextService"
   const commandsManagerConfig = {
     /** Used by commands to inject `viewports` from "redux" */
-    getAppState: () => { },
+    getAppState: () => {},
     /** Used by commands to determine active context */
-    getActiveContexts: () => ['VIEWER', 'DEFAULT', 'ACTIVE_VIEWPORT::CORNERSTONE'],
+    getActiveContexts: () => [
+      'VIEWER',
+      'DEFAULT',
+      'ACTIVE_VIEWPORT::CORNERSTONE',
+    ],
   };
 
-  const servicesManager = new ServicesManager();
   const commandsManager = new CommandsManager(commandsManagerConfig);
+  const servicesManager = new ServicesManager(commandsManager);
   const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
   const extensionManager = new ExtensionManager({
     commandsManager,
@@ -58,7 +62,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     ToolBarService,
     ViewportGridService,
     HangingProtocolService,
-    CineService
+    CineService,
   ]);
 
   /**

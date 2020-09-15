@@ -19,6 +19,8 @@ const ViewportActionBar = ({
   showPatientInfo: patientInfoVisibility,
   onSeriesChange,
   onDoubleClick,
+  //
+  onPillClick,
 }) => {
   const [showPatientInfo, setShowPatientInfo] = useState(patientInfoVisibility);
 
@@ -33,6 +35,8 @@ const ViewportActionBar = ({
     label,
     isTracked,
     isLocked,
+    isRehydratable,
+    useAltStyling,
     modality,
     studyDate,
     currentSeries,
@@ -52,7 +56,6 @@ const ViewportActionBar = ({
 
   const onPatientInfoClick = () => setShowPatientInfo(!showPatientInfo);
   const closePatientInfo = () => setShowPatientInfo(false);
-
   const showPatientInfoRef = useRef(null);
   const clickOutsideListener = useOnClickOutside(
     showPatientInfoRef,
@@ -71,30 +74,121 @@ const ViewportActionBar = ({
 
   const renderIconStatus = () => {
     if (modality === 'SR') {
-      const TooltipMessage = isLocked
-        ? () => (
-          <div>
-            This SR is locked. <br />
-              Measurements cannot be duplicated.
-          </div>
-        )
-        : () => <div>This SR is unlocked.</div>;
+      // 1 - Incompatible
+      // 2 - Locked
+      // 3 - Rehydratable / Open
+      const state =
+        isRehydratable && !isLocked ? 3 : isRehydratable && isLocked ? 2 : 1;
+      let ToolTipMessage = null;
+      let StatusIcon = null;
+
+      switch (state) {
+        case 1:
+          StatusIcon = () => (
+            <div
+              className="flex items-center justify-center -mr-1 rounded-full"
+              style={{
+                width: '18px',
+                height: '18px',
+                backgroundColor: '#98e5c1',
+                border: 'solid 1.5px #000000',
+              }}
+            >
+              <Icon
+                name="exclamation"
+                style={{ color: '#000', width: '12px', height: '12px' }}
+              />
+            </div>
+          );
+
+          ToolTipMessage = () => (
+            <div>
+              This structured report is not compatible
+              <br />
+              with this application.
+            </div>
+          );
+          break;
+        case 2:
+          StatusIcon = () => (
+            <div
+              className="flex items-center justify-center -mr-1 bg-black rounded-full"
+              style={{
+                width: '18px',
+                height: '18px',
+              }}
+            >
+              <Icon
+                name="lock"
+                style={{ color: '#05D97C', width: '8px', height: '11px' }}
+              />
+            </div>
+          );
+
+          ToolTipMessage = () => (
+            <div>
+              This structured report is currently read-only
+              <br />
+              because you are tracking measurements in
+              <br />
+              another viewport.
+            </div>
+          );
+          break;
+        case 3:
+          StatusIcon = () => (
+            <div
+              className="flex items-center justify-center -mr-1 bg-white rounded-full group-hover:bg-customblue-200"
+              style={{
+                width: '18px',
+                height: '18px',
+                border: 'solid 1.5px #000000',
+              }}
+            >
+              <Icon
+                name="arrow-left"
+                style={{ color: '#000', width: '14px', height: '14px' }}
+              />
+            </div>
+          );
+
+          ToolTipMessage = () => <div>Click to restore measurements.</div>;
+      }
+
+      const StatusPill = () => (
+        <div
+          className={classnames(
+            'group relative flex items-center justify-center px-2 rounded-full cursor-default bg-customgreen-100',
+            {
+              'hover:bg-customblue-100': state === 3,
+              'cursor-pointer': state === 3,
+            }
+          )}
+          style={{
+            height: '24px',
+            width: '55px',
+          }}
+          onClick={() => {
+            if (state === 3) {
+              onPillClick?.();
+            }
+          }}
+        >
+          <span className="pr-1 text-lg font-bold leading-none text-black">
+            SR
+          </span>
+          <StatusIcon />
+        </div>
+      );
+
       return (
         <>
-          <Tooltip content={<TooltipMessage />} position="bottom-left">
-            <div className="relative flex p-1 border rounded cursor-default border-primary-light">
-              <span className="text-sm font-bold leading-none text-primary-light">
-                SR
-              </span>
-              {isLocked && (
-                <Icon
-                  name="lock"
-                  className="absolute w-3 text-white"
-                  style={{ top: -6, right: -6 }}
-                />
-              )}
-            </div>
-          </Tooltip>
+          {ToolTipMessage && (
+            <Tooltip content={<ToolTipMessage />} position="bottom-left">
+              <StatusPill />
+            </Tooltip>
+          )}
+          {!ToolTipMessage && <StatusPill />}
         </>
       );
     }
@@ -119,13 +213,13 @@ const ViewportActionBar = ({
                       can be viewed <br /> in the measurement panel
                     </>
                   ) : (
-                      <>
-                        Measurements for
+                    <>
+                      Measurements for
                       <span className="font-bold text-white"> untracked </span>
                       series <br /> will not be shown in the <br /> measurements
                       panel
                     </>
-                    )}
+                  )}
                 </span>
               </div>
             </div>
@@ -137,15 +231,26 @@ const ViewportActionBar = ({
     );
   };
 
+  const borderColor = useAltStyling ? '#365A6A' : '#1D205A';
+  const backgroundColor = useAltStyling
+    ? '#031923'
+    : isTracked
+    ? '#020424'
+    : null;
+
   return (
     <div
-      className="flex flex-wrap items-center p-2 border-b select-none border-primary-light -mt-2"
+      className="flex flex-wrap items-center p-2 -mt-2 border-b select-none"
+      style={{
+        borderColor: borderColor,
+        backgroundColor: backgroundColor,
+      }}
       onDoubleClick={onDoubleClick}
     >
-      <div className="flex flex-grow min-w-48 flex-1 mt-2">
+      <div className="flex flex-1 flex-grow mt-2 min-w-48">
         <div className="flex items-center">
+          <span className="mr-2 text-white text-large">{label}</span>
           {renderIconStatus()}
-          <span className="ml-2 text-white text-large">{label}</span>
         </div>
         <div className="flex flex-col justify-start ml-4">
           <div className="flex">
@@ -173,14 +278,14 @@ const ViewportActionBar = ({
           <ButtonGroup>
             <Button
               size="initial"
-              className="px-2 py-1"
+              className="px-2 py-1 bg-black"
               onClick={() => onSeriesChange('left')}
             >
               <Icon name="chevron-left" className="w-4 text-white" />
             </Button>
             <Button
               size="initial"
-              className="px-2 py-1"
+              className="px-2 py-1 bg-black"
               onClick={() => onSeriesChange('right')}
             >
               <Icon name="chevron-right" className="w-4 text-white" />
@@ -189,11 +294,11 @@ const ViewportActionBar = ({
         </div>
       )}
       {showCine && !showNavArrows && (
-        <div className="mt-2 min-w-48 max-w-48 mr-auto">
+        <div className="mt-2 mr-auto min-w-48 max-w-48">
           <CinePlayer {...cineProps} />
         </div>
       )}
-      <div className="flex h-8 ml-4 mr-2 mt-2" onClick={onPatientInfoClick}>
+      <div className="flex h-8 mt-2 ml-4 mr-2" onClick={onPatientInfoClick}>
         <PatientInfo
           showPatientInfoRef={showPatientInfoRef}
           isOpen={showPatientInfo}
@@ -217,9 +322,12 @@ ViewportActionBar.propTypes = {
   cineProps: PropTypes.object,
   showPatientInfo: PropTypes.bool,
   studyData: PropTypes.shape({
+    //
+    useAltStyling: PropTypes.bool,
+    //
     label: PropTypes.string.isRequired,
     isTracked: PropTypes.bool.isRequired,
-    isLocked: PropTypes.bool.isRequired,
+    isRehydratable: PropTypes.bool.isRequired,
     studyDate: PropTypes.string.isRequired,
     currentSeries: PropTypes.number.isRequired,
     seriesDescription: PropTypes.string.isRequired,

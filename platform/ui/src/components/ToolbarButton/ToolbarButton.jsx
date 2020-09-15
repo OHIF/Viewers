@@ -7,12 +7,19 @@ import { IconButton, Icon, Tooltip } from '../';
 const ToolbarButton = ({
   type,
   id,
-  isActive,
-  onClick,
   icon,
   label,
+  commandName,
+  commandOptions,
+  onInteraction,
   dropdownContent,
+  //
+  isActive: _isActive,
+  bState = {},
+  //
 }) => {
+  const { primaryToolId, toggles, groups } = bState;
+  const isActive = _isActive || (type === 'tool' && id === primaryToolId);
   const classes = {
     type: {
       primary: isActive
@@ -23,7 +30,6 @@ const ToolbarButton = ({
         : 'text-white hover:bg-secondary-dark hover:text-white focus:bg-secondary-dark focus:text-white',
     },
   };
-
   const shouldShowDropdown = !!isActive && !!dropdownContent;
 
   return (
@@ -36,7 +42,14 @@ const ToolbarButton = ({
         <IconButton
           variant={isActive ? 'contained' : 'text'}
           className={classnames('mx-1', classes.type[type])}
-          onClick={onClick}
+          onClick={() => {
+            onInteraction({
+              itemId: id,
+              interactionType: type,
+              commandName: commandName,
+              commandOptions: commandOptions,
+            });
+          }}
           key={id}
         >
           <Icon name={icon} />
@@ -49,15 +62,15 @@ const ToolbarButton = ({
 ToolbarButton.defaultProps = {
   dropdownContent: null,
   isActive: false,
-  type: 'primary',
+  type: 'action',
 };
 
 ToolbarButton.propTypes = {
   /* Influences background/hover styling */
-  type: PropTypes.oneOf(['primary', 'secondary']),
+  type: PropTypes.oneOf(['action', 'toggle', 'tool']),
   id: PropTypes.string.isRequired,
   isActive: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
+  onInteraction: PropTypes.func.isRequired,
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   /** Tooltip content can be replaced for a customized content by passing a node to this value. */
