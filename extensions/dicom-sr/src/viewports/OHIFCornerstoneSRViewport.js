@@ -4,17 +4,18 @@ import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
-import DICOMSRDisplayTool from './tools/DICOMSRDisplayTool';
+import DICOMSRDisplayTool from './../tools/DICOMSRDisplayTool';
+import ViewportOverlay from './ViewportOverlay';
 import {
   Notification,
   ViewportActionBar,
   useViewportGrid,
   useViewportDialog,
 } from '@ohif/ui';
-import TOOL_NAMES from './constants/toolNames';
+import TOOL_NAMES from './../constants/toolNames';
 import { adapters } from 'dcmjs';
 // import getToolStateToCornerstoneMeasurementSchema from './utils/getToolStateToCornerstoneMeasurementSchema';
-import id from './id';
+import id from './../id';
 
 const { formatDate } = utils;
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
@@ -368,7 +369,6 @@ function OHIFCornerstoneSRViewport({
   const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
 
   // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
-
   return (
     <>
       <ViewportActionBar
@@ -422,10 +422,18 @@ function OHIFCornerstoneSRViewport({
           isStackPrefetchEnabled={true} // todo
           isPlaying={false}
           frameRate={24}
-          isOverlayVisible={false}
+          isOverlayVisible={true}
           // Sync resize throttle w/ sidepanel animation duration to prevent
           // seizure inducing strobe blinking effect
           resizeRefreshRateMs={150}
+          viewportOverlayComponent={props => {
+            return (
+              <ViewportOverlay
+                {...props}
+                activeTools={ToolBarService.getActiveTools()}
+              />
+            );
+          }}
         />
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
