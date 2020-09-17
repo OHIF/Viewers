@@ -17,13 +17,10 @@ function promptUser({ servicesManager, extensionManager }, ctx, evt) {
       viewportIndex
     );
 
-    if (ctx.isDirty && promptResult === RESPONSE.SET_STUDY_AND_SERIES) {
-      promptResult = await _askSaveDiscardOrCancel(
-        UIViewportDialogService,
-        viewportIndex
-      );
-    } else {
-      promptResult = RESPONSE.SET_STUDY_AND_SERIES;
+    if (promptResult === RESPONSE.SET_STUDY_AND_SERIES) {
+      promptResult = ctx.isDirty
+        ? await _askSaveDiscardOrCancel(UIViewportDialogService, viewportIndex)
+        : RESPONSE.SET_STUDY_AND_SERIES;
     }
 
     resolve({

@@ -292,12 +292,9 @@ const defaultOptions = {
     setIsDirtyToClean: assign((ctx, evt) => ({
       isDirty: false,
     })),
-    setIsDirty: assign((ctx, evt) => {
-      debugger;
-      return {
-        isDirty: true,
-      };
-    }),
+    setIsDirty: assign((ctx, evt) => ({
+      isDirty: true,
+    })),
     ignoreSeries: assign((ctx, evt) => ({
       prevIgnoredSeries: [...ctx.ignoredSeries],
       ignoredSeries: [...ctx.ignoredSeries, evt.data.SeriesInstanceUID],
@@ -316,9 +313,26 @@ const defaultOptions = {
     })),
   },
   guards: {
+    // We set dirty any time we performan an action that:
+    // - Tracks a new study
+    // - Tracks a new series
+    // - Adds a measurement to an already tracked study/series
+    //
+    // We set clean any time we restore from an SR
+    //
+    // This guard/condition is specific to "new measurements"
+    // to make sure we only track dirty when the new measurement is specific
+    // to a series we're already tracking
+    //
+    // tl;dr
+    // Any report change, that is not a hydration of an existing report, should
+    // result in a "dirty" report
+    //
+    // Where dirty means there would be "loss of data" if we blew away measurements
+    // without creating a new SR.
     shouldSetDirty: (ctx, evt) => {
-      debugger;
       return (
+        // When would this happen?
         evt.SeriesInstanceUID === undefined ||
         ctx.trackedSeries.includes(evt.SeriesInstanceUID)
       );
