@@ -434,21 +434,21 @@ function _mapDisplaySets(
             showOverlay: true,
             content: Dialog,
             contentProps: {
-              title: 'Reject Report',
+              title: 'Delete Report',
               body: () => (
                 <div className="p-4 text-white bg-primary-dark">
-                  <p>This is a destructive action.</p>
-                  <p>Are you sure you want to continue?</p>
+                  <p>Are you sure you want to delete this report?</p>
+                  <p>This action cannot be undone.</p>
                 </div>
               ),
               actions: [
                 { id: 'cancel', text: 'Cancel', type: 'secondary' },
-                { id: 'save', text: 'Save', type: 'primary' },
+                { id: 'yes', text: 'Yes', type: 'primary' },
               ],
               onClose: () => UIDialogService.dismiss({ id: 'ds-reject-sr' }),
               onSubmit: async ({ action }) => {
                 switch (action.id) {
-                  case 'save':
+                  case 'yes':
                     try {
                       await dataSource.reject.series(
                         ds.StudyInstanceUID,
@@ -457,15 +457,15 @@ function _mapDisplaySets(
                       DisplaySetService.deleteDisplaySet(displaySetInstanceUID);
                       UIDialogService.dismiss({ id: 'ds-reject-sr' });
                       UINotificationService.show({
-                        title: 'Reject Report',
-                        message: 'Report rejected successfully',
+                        title: 'Delete Report',
+                        message: 'Report deleted successfully',
                         type: 'success',
                       });
                     } catch (error) {
                       UIDialogService.dismiss({ id: 'ds-reject-sr' });
                       UINotificationService.show({
-                        title: 'Reject Report',
-                        message: 'Failed to reject report',
+                        title: 'Delete Report',
+                        message: 'Failed to delete report',
                         type: 'error',
                       });
                     }
