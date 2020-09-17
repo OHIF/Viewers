@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-debugging@0.1.4...@ohif/extension-debugging@0.1.5) (2020-09-17)
+
+**Note:** Version bump only for package @ohif/extension-debugging
+
+
+
+
+
 ## [0.1.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-debugging@0.1.3...@ohif/extension-debugging@0.1.4) (2020-09-10)
 
 **Note:** Version bump only for package @ohif/extension-debugging
