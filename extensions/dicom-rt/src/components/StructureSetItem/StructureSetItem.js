@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { TableListItem, Icon, Tooltip, OverlayTrigger } from '@ohif/ui';
+import ReactTooltip from 'react-tooltip';
 
 import './StructureSetItem.css';
 
@@ -68,7 +69,18 @@ const StructureSetItem = ({
     >
       <div>
         <div className="item-label" style={{ marginBottom: 4 }}>
-          <span>{label}</span>
+          <a data-tip data-for={`StructureHover${index}`}>
+            <span>{label}</span>
+          </a>
+          <ReactTooltip
+            id={`StructureHover${index}`}
+            delayShow={250}
+            place="right"
+            border={true}
+            type="light"
+          >
+            <span>{label}</span>
+          </ReactTooltip>
           {!isDisabled && (
             <Icon
               className={`eye-icon ${isVisible && '--visible'}`}
