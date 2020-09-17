@@ -38,6 +38,7 @@ function _show({
   onClose = null,
   closeButton = true,
   title = null,
+  fullscreen = false,
   customClassName = null,
 }) {
   return serviceImplementation._show({
@@ -48,6 +49,7 @@ function _show({
     onClose,
     closeButton,
     title,
+    fullscreen,
     customClassName,
   });
 }
