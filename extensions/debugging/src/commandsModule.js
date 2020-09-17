@@ -11,6 +11,8 @@ import _downloadAndZip, { downloadInstances } from './downloadAndZip';
 import DebugReportModal from './DebugReportModal';
 import React from 'react';
 
+import state from './state';
+
 const {
   utils: { Queue },
 } = OHIF;
@@ -99,6 +101,7 @@ export function getCommands(context, servicesManager, extensionManager) {
             studies={studies}
             servers={servers}
             extensionManager={extensionManager}
+            mailTo={state.mailTo}
           />
         );
       };
