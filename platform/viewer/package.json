@@ -1,6 +1,6 @@
 {
   "name": "@ohif/viewer",
-  "version": "4.5.10",
+  "version": "4.5.11",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -54,8 +54,8 @@
     "@ohif/extension-dicom-html": "^1.2.8",
     "@ohif/extension-dicom-microscopy": "^0.51.3",
     "@ohif/extension-dicom-pdf": "^1.0.6",
-    "@ohif/extension-dicom-rt": "^0.4.5",
-    "@ohif/extension-dicom-segmentation": "^0.4.5",
+    "@ohif/extension-dicom-rt": "^0.4.6",
+    "@ohif/extension-dicom-segmentation": "^0.4.6",
     "@ohif/extension-lesion-tracker": "^0.2.1",
     "@ohif/extension-vtk": "^1.7.7",
     "@ohif/i18n": "^0.52.8",
