@@ -1,6 +1,6 @@
 import { importInternal, getToolState, toolColors } from 'cornerstone-tools';
-
 import TOOL_NAMES from '../utils/toolNames';
+import drawCanvasCrosshairs from '../utils/drawCanvasCrosshairs';
 
 // Cornerstone 3rd party dev kit imports
 const draw = importInternal('drawing/draw');
@@ -37,10 +37,16 @@ export default class RTStructDisplayTool extends BaseTool {
       return;
     }
 
-    const { lineWidth, opacity } = rtstructModule.configuration;
+    const {
+      lineWidth,
+      opacity,
+      highlightOpacity,
+    } = rtstructModule.configuration;
 
     // We have tool data for this element - iterate over each one and draw it
     const context = getNewContext(eventData.canvasContext.canvas);
+
+    let crossHairCenter;
 
     for (let i = 0; i < toolState.data.length; i++) {
       const data = toolState.data[i];
@@ -75,26 +81,50 @@ export default class RTStructDisplayTool extends BaseTool {
         colorArray[2]
       },${opacity})`;
 
+      let highlight = data.highlight;
+      const options = { color, lineWidth };
+
+      if (highlight) {
+        crossHairCenter = { x: 0, y: 0 };
+
+        points.forEach(point => {
+          crossHairCenter.x += point.x;
+          crossHairCenter.y += point.y;
+        });
+
+        crossHairCenter.x /= points.length;
+        crossHairCenter.y /= points.length;
+
+        // TODO: Disabling hightlight for now, it'd be good to bring it back
+        // when we have a good way of doing this for SEG.
+
+        // options.fillStyle = color = `rgba(${colorArray[0]},${colorArray[1]},${
+        //   colorArray[2]
+        // },${highlightOpacity})`;
+
+        // Draw highlight lines.
+
+        delete data.highlight; // Don't highlight on next render.
+      }
+
       switch (data.type) {
         case 'CLOSED_PLANAR':
-          this._renderClosedPlanar(context, eventData.element, points, {
-            color,
-            lineWidth,
-          });
+          this._renderClosedPlanar(context, eventData.element, points, options);
           break;
         case 'POINT':
-          this._renderPoint(context, eventData.element, points, {
-            color,
-            lineWidth,
-          });
+          this._renderPoint(context, eventData.element, points, options);
           break;
         case 'OPEN_PLANAR':
-          this._renderOpenPlanar(context, eventData.element, points, {
-            color,
-            lineWidth,
-          });
+          this._renderOpenPlanar(context, eventData.element, points, options);
           break;
       }
+    }
+
+    if (crossHairCenter) {
+      drawCanvasCrosshairs(eventData, crossHairCenter, {
+        color: toolColors.getActiveColor(),
+        lineWidth: 1,
+      });
     }
   }
 

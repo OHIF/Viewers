@@ -2,3 +2,8 @@
   padding: 10px 0 10px;
   color: var(--active-color);
 }
+
+.debug-report-modal-container {
+  display: flex;
+  flex-direction: column;
+}

@@ -12,11 +12,13 @@ const OHIFDicomPDFSopClassHandler = {
   getDisplaySetFromSeries(series, study, dicomWebClient, authorizationHeaders) {
     const instance = series.getFirstInstance();
 
+    const metadata = instance.getData().metadata;
     const {
       ContentDate,
       ContentTime,
+      SeriesDescription,
       SeriesNumber,
-    } = instance._instance.metadata;
+    } = metadata;
 
     return {
       plugin: 'pdf',
@@ -27,9 +29,11 @@ const OHIFDicomPDFSopClassHandler = {
       SOPInstanceUID: instance.getSOPInstanceUID(),
       SeriesInstanceUID: series.getSeriesInstanceUID(),
       StudyInstanceUID: study.getStudyInstanceUID(),
+      SeriesDescription,
       SeriesDate: ContentDate, // Map ContentDate/Time to SeriesTime for series list sorting.
       SeriesTime: ContentTime,
       SeriesNumber,
+      metadata,
       authorizationHeaders: authorizationHeaders,
     };
   },

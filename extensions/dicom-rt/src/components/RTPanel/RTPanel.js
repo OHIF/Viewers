@@ -12,6 +12,9 @@ import StructureSetItem from '../StructureSetItem/StructureSetItem';
 import RTPanelSettings from '../RTSettings/RTSettings';
 import PanelSection from '../PanelSection/PanelSection';
 import LoadingIndicator from '../LoadingIndicator/LoadingIndicator';
+import TOOL_NAMES from '../../utils/toolNames';
+
+const { RTSTRUCT_DISPLAY_TOOL } = TOOL_NAMES;
 
 const { studyMetadataManager } = utils;
 
@@ -144,13 +147,16 @@ const RTPanel = ({
           if (isCornerstone()) {
             const enabledElements = cornerstone.getEnabledElements();
             const element = enabledElements[activeIndex].element;
-            const toolState = cornerstoneTools.getToolState(element, 'stack');
+            const stackToolState = cornerstoneTools.getToolState(
+              element,
+              'stack'
+            );
 
-            if (!toolState) {
+            if (!stackToolState) {
               return;
             }
 
-            const imageIds = toolState.data[0].imageIds;
+            const imageIds = stackToolState.data[0].imageIds;
 
             const module = cornerstoneTools.getModule('rtstruct');
             const imageId = module.getters.imageIdOfCenterFrameOfROIContour(
@@ -158,6 +164,18 @@ const RTPanel = ({
               ROINumber,
               imageIds
             );
+
+            const toolState = cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState();
+            const imageIdSpecificToolState = toolState[imageId];
+
+            const rtstructData =
+              imageIdSpecificToolState[RTSTRUCT_DISPLAY_TOOL];
+
+            const specificData = rtstructData.data.find(
+              rtData => rtData.ROINumber === ROINumber
+            );
+
+            specificData.highlight = true;
 
             const frameIndex = imageIds.indexOf(imageId);
             const SOPInstanceUID = cornerstone.metaData.get(

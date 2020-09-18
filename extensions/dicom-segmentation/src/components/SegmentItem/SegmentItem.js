@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { TableListItem, Icon } from '@ohif/ui';
+import ReactTooltip from 'react-tooltip';
 
 import './SegmentItem.css';
 
@@ -17,7 +18,15 @@ ColoredCircle.propTypes = {
   color: PropTypes.array.isRequired,
 };
 
-const SegmentItem = ({ index, label, onClick, itemClass, color, visible = true, onVisibilityChange }) => {
+const SegmentItem = ({
+  index,
+  label,
+  onClick,
+  itemClass,
+  color,
+  visible = true,
+  onVisibilityChange,
+}) => {
   const [isVisible, setIsVisible] = useState(visible);
 
   useEffect(() => {
@@ -37,7 +46,18 @@ const SegmentItem = ({ index, label, onClick, itemClass, color, visible = true, 
       >
         <div>
           <div className="segment-label" style={{ marginBottom: 4 }}>
-            <span>{label}</span>
+            <a data-tip data-for={`SegmentHover${index}`}>
+              <span>{label}</span>
+            </a>
+            <ReactTooltip
+              id={`SegmentHover${index}`}
+              delayShow={250}
+              place="right"
+              border={true}
+              type="light"
+            >
+              <span>{label}</span>
+            </ReactTooltip>
             <Icon
               className={`eye-icon ${isVisible && '--visible'}`}
               name={isVisible ? 'eye' : 'eye-closed'}
@@ -61,7 +81,7 @@ const SegmentItem = ({ index, label, onClick, itemClass, color, visible = true, 
                 <span style={{ marginRight: '4px' }}>
                   <Icon name="edit" width="14px" height="14px" />
                 </span>
-              Relabel
+                Relabel
               </button>
               <button
                 className="btnAction"
@@ -70,7 +90,7 @@ const SegmentItem = ({ index, label, onClick, itemClass, color, visible = true, 
                 <span style={{ marginRight: '4px' }}>
                   <Icon name="edit" width="14px" height="14px" />
                 </span>
-              Description
+                Description
               </button>
             </div>
           )}
@@ -90,7 +110,7 @@ SegmentItem.propTypes = {
 
 SegmentItem.defaultProps = {
   itemClass: '',
-  onClick: () => { }
+  onClick: () => {},
 };
 
 export default SegmentItem;

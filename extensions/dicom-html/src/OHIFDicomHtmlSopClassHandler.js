@@ -22,11 +22,13 @@ const OHIFDicomHtmlSopClassHandler = {
   getDisplaySetFromSeries(series, study, dicomWebClient, authorizationHeaders) {
     const instance = series.getFirstInstance();
 
+    const metadata = instance.getData().metadata;
     const {
+      SeriesDescription,
+      SeriesNumber,
       SeriesDate,
       SeriesTime,
-      SeriesNumber,
-    } = instance._instance.metadata;
+    } = metadata;
 
     return {
       plugin: 'html',
@@ -37,6 +39,8 @@ const OHIFDicomHtmlSopClassHandler = {
       SOPInstanceUID: instance.getSOPInstanceUID(),
       SeriesInstanceUID: series.getSeriesInstanceUID(),
       StudyInstanceUID: study.getStudyInstanceUID(),
+      SeriesDescription,
+      metadata,
       SeriesDate,
       SeriesTime,
       SeriesNumber,
