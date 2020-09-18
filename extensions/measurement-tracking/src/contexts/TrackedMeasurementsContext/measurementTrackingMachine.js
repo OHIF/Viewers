@@ -32,6 +32,7 @@ const machineConfiguration = {
       entry: 'clearContext',
       on: {
         TRACK_SERIES: 'promptBeginTracking',
+        // Unused? We may only do PROMPT_HYDRATE_SR now?
         SET_TRACKED_SERIES: [
           {
             target: 'tracking',
@@ -47,7 +48,7 @@ const machineConfiguration = {
         onDone: [
           {
             target: 'tracking',
-            actions: ['setTrackedStudyAndSeries'],
+            actions: ['setTrackedStudyAndSeries', 'setIsDirty'],
             cond: 'shouldSetStudyAndSeries',
           },
           {
@@ -78,7 +79,7 @@ const machineConfiguration = {
         UNTRACK_SERIES: [
           {
             target: 'tracking',
-            actions: ['removeTrackedSeries'],
+            actions: ['removeTrackedSeries', 'setIsDirty'],
             cond: 'hasRemainingTrackedSeries',
           },
           {
