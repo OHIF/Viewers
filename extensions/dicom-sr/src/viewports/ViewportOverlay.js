@@ -21,8 +21,6 @@ const ViewportOverlay = ({
   const isZoomActive = activeTools.includes('Zoom');
   const isWwwcActive = activeTools.includes('Wwwc');
 
-  debugger;
-
   if (!imageId) {
     return null;
   }
