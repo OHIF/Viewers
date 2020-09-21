@@ -13,7 +13,7 @@ const CinePlayer = ({
   frameRate: defaultFrameRate,
   onFrameRateChange,
   onPlayPauseChange,
-  onClose
+  onClose,
 }) => {
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const debouncedSetFrameRate = debounce(onFrameRateChange, 300);
@@ -28,21 +28,21 @@ const CinePlayer = ({
 
   const action = {
     false: { icon: 'old-play' },
-    true: { icon: 'old-stop' }
+    true: { icon: 'old-stop' },
   };
 
   return (
-    <div className="CinePlayer flex flex-row h-10 items-center justify-center border border-primary-light rounded-full">
+    <div className="flex flex-row items-center justify-center h-10 border rounded-full CinePlayer border-primary-light">
       <IconButton
         variant="text"
         color="inherit"
         size="initial"
-        className="mr-3 ml-4 text-primary-active"
+        className="ml-4 mr-3 text-primary-active"
         onClick={onPlayPauseChangeHandler}
       >
         <Icon width="15px" height="15px" name={action[isPlaying].icon} />
       </IconButton>
-      <div className="flex flex-col h-full justify-center pt-2 mr-3 pl-1 pr-1">
+      <div className="flex flex-col justify-center h-full pt-2 pl-1 pr-1 mr-3">
         <input
           type="range"
           name="frameRate"
@@ -52,12 +52,14 @@ const CinePlayer = ({
           value={frameRate}
           onChange={onFrameRateChangeHandler}
         />
-        <p className="mt-1 text-sm text-primary-light">{`${frameRate.toFixed(1)} fps`}</p>
+        <p className="-mt-2 text-sm text-primary-light">{`${frameRate.toFixed(
+          1
+        )} fps`}</p>
       </div>
       <IconButton
         color="inherit"
         size="initial"
-        className="mr-3 text-primary-active border border-primary-active rounded-full"
+        className="mr-3 border rounded-full text-primary-active border-primary-active"
         onClick={onClose}
       >
         <Icon name="close" width="15px" height="15px" />
@@ -66,7 +68,7 @@ const CinePlayer = ({
   );
 };
 
-const noop = () => { };
+const noop = () => {};
 
 CinePlayer.defaultProps = {
   isPlaying: false,
@@ -76,7 +78,7 @@ CinePlayer.defaultProps = {
   frameRate: 24,
   onPlayPauseChange: noop,
   onFrameRateChange: noop,
-  onClose: noop
+  onClose: noop,
 };
 
 CinePlayer.propTypes = {

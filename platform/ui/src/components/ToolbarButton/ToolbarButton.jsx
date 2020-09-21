@@ -41,6 +41,7 @@ const ToolbarButton = ({
       >
         <IconButton
           variant={isActive ? 'contained' : 'text'}
+          size="toolbar"
           className={classnames('mx-1', classes.type[type])}
           onClick={() => {
             onInteraction({

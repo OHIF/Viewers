@@ -7,7 +7,7 @@ import { Icon, Tooltip, ListMenu } from '@ohif/ui';
 
 const baseClasses = {
   Button:
-    'h-12 flex items-center rounded-md border-transparent border-2 cursor-pointer',
+    'flex items-center rounded-md border-transparent border-2 cursor-pointer',
   Primary:
     'h-full flex flex-1 items-center rounded-md rounded-tr-none rounded-br-none',
   Secondary:
@@ -15,7 +15,7 @@ const baseClasses = {
   PrimaryIcon: 'w-5 h-5',
   SecondaryIcon: 'w-4 h-full stroke-1',
   Separator: 'border-l pt-2 pb-2',
-  Content: 'absolute z-10 top-0 mt-16',
+  Content: 'absolute z-10 top-0 mt-12',
 };
 
 const classes = {
@@ -154,6 +154,7 @@ const SplitButton = ({
             ...state,
             primary: { isActive: isPrimaryActive },
           })}
+          style={{ height: '40px' }}
           onMouseEnter={onMouseEnterHandler}
           onMouseLeave={onMouseLeaveHandler}
         >
@@ -169,7 +170,10 @@ const SplitButton = ({
                 isDisabled={!state.primary.tooltip}
                 content={state.primary.tooltip}
               >
-                <div className="flex items-center justify-center w-full h-full p-3">
+                <div
+                  className="flex items-center justify-center w-full h-full"
+                  style={{ padding: '10px' }}
+                >
                   <Icon
                     name={state.primary.icon}
                     className={classes.PrimaryIcon({
@@ -225,10 +229,12 @@ const DefaultListItemRenderer = ({ icon, label, isActive }) => (
       isActive && 'bg-primary-dark'
     )}
   >
-    <span className="mr-4 text-base text-common-bright">
+    <span className="mr-4 text-base whitespace-pre text-common-bright">
       <Icon name={icon} className="w-5 h-5 text-common-bright" />
     </span>
-    <span className="mr-5 text-base text-common-bright">{label}</span>
+    <span className="mr-5 text-base whitespace-pre text-common-bright">
+      {label}
+    </span>
   </div>
 );
 

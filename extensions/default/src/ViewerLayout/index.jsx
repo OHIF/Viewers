@@ -163,7 +163,7 @@ function ViewerLayout({
       </Header>
       <div
         className="flex flex-row flex-no-wrap items-stretch w-full overflow-hidden"
-        style={{ height: 'calc(100vh - 57px' }}
+        style={{ height: 'calc(100vh - 52px' }}
       >
         {/* LEFT SIDEPANELS */}
         {leftPanelComponents.length && (
@@ -177,7 +177,7 @@ function ViewerLayout({
         )}
         {/* TOOLBAR + GRID */}
         <div className="flex flex-col flex-1 h-full">
-          <div className="flex items-center justify-center flex-1 h-full pt-1 pb-2 overflow-hidden bg-black">
+          <div className="flex items-center justify-center flex-1 h-full -mt-1 overflow-hidden bg-black">
             <ErrorBoundary context="Grid">
               <ViewportGridComp
                 servicesManager={servicesManager}

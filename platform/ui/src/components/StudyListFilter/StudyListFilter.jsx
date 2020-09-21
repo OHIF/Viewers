@@ -61,7 +61,7 @@ const StudyListFilter = ({
       </div>
       <div
         className="sticky z-10 border-b-4 border-black"
-        style={{ top: '57px' }}
+        style={{ top: '52px' }}
       >
         <div className="pt-3 pb-3 bg-primary-dark ">
           <InputGroup
