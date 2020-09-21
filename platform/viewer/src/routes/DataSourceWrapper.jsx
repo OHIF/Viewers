@@ -6,9 +6,6 @@ import { MODULE_TYPES } from '@ohif/core';
 import { useAppConfig } from '@state';
 import { extensionManager } from '../App.jsx';
 
-let cacheMap = {};
-let total = {};
-
 /**
  * Uses route properties to determine the data source that should be passed
  * to the child layout template. In some instances, initiates requests and
@@ -48,64 +45,56 @@ function DataSourceWrapper(props) {
   // But only for LayoutTemplate type of 'list'?
   // Or no data fetching here, and just hand down my source
   const STUDIES_LIMIT = 101;
-  const [data, setData] = useState({ studies: [], total: 0 });
+  const [data, setData] = useState({
+    studies: [],
+    total: 0,
+    resultsPerPage: 25,
+    pageNumber: 1,
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const queryFilterValues = _getQueryFilterValues(
+      history.location.search,
+      STUDIES_LIMIT
+    );
+
     // 204: no content
     async function getData() {
       setIsLoading(true);
 
-      const limit = STUDIES_LIMIT - 1;
-      const queryFilterValues = _getQueryFilterValues(history.location.search);
-      const { resultsPerPage = 25, pageNumber = 1 } = queryFilterValues;
-      const reachedLimits = parseInt((resultsPerPage * pageNumber) / STUDIES_LIMIT);
-      const cacheKey = `${pageNumber}-${resultsPerPage}`;
-
-      const getFromCache = async ({ cacheKey, pageNumber, resultsPerPage, limit, options }) => {
-        const pagesAmount = limit / resultsPerPage;
-        const pageToRequest = parseInt((resultsPerPage * pageNumber) / STUDIES_LIMIT);
-
-        let length = 0;
-        if (!cacheMap[cacheKey]) {
-          length = pageToRequest > 0 ? (pageToRequest * STUDIES_LIMIT) : 1;
-          const studiesPromise = dataSource.query.studies.search(options);
-
-          for (let pageNum = 0; pageNum < pagesAmount; pageNum++) {
-            const currentPageNumber = (pageNum + 1) + (pageToRequest * pagesAmount);
-            cacheMap[`${currentPageNumber}-${resultsPerPage}`] = studiesPromise.then(function (results) {
-              const slicedResult = results.slice((pageNum * resultsPerPage), ((pageNum + 1) * resultsPerPage));
-              length += slicedResult.length;
-              return slicedResult;
-            });
-          }
-        }
-
-        const cache = await cacheMap[cacheKey];
-        return { cache, length, index: pageToRequest };
-      };
-
-      const { cache: studies, index, length } = await getFromCache({
-        cacheKey,
-        pageNumber,
-        resultsPerPage,
-        limit,
-        options: { ...queryFilterValues, ...{ offset: reachedLimits * limit } }
-      });
-
-      const totalKey = `${resultsPerPage}-${index}`;
-      total[totalKey] = total[totalKey] ? total[totalKey] + length : length;
-      const totals = Object.keys(total).map(key => total[key]);
-      const biggestIndex = totals.indexOf(Math.max(...totals));
-      const biggestKey = Object.keys(total)[biggestIndex];
-      const biggestTotal = total[biggestKey];
+      const studies = await dataSource.query.studies.search(queryFilterValues);
 
       setIsLoading(false);
-      setData({ studies, total: biggestTotal });
+      setData({
+        studies,
+        total: studies.length,
+        resultsPerPage: queryFilterValues.resultsPerPage,
+        pageNumber: queryFilterValues.pageNumber,
+      });
     }
 
     try {
-      getData();
+      // Cache invalidation :thinking:
+      // - Anytime change is not just next/previous page
+      // - And we didn't cross a result offset range
+      const isFirstLoad = data.studies.length === 0;
+      const isSamePage = data.pageNumber === queryFilterValues.pageNumber;
+      const previousOffset =
+        Math.floor((data.pageNumber * data.resultsPerPage) / STUDIES_LIMIT) *
+        (STUDIES_LIMIT - 1);
+      const newOffset =
+        Math.floor(
+          (queryFilterValues.pageNumber * queryFilterValues.resultsPerPage) /
+            STUDIES_LIMIT
+        ) *
+        (STUDIES_LIMIT - 1);
+      const isDataInvalid =
+        isFirstLoad || isSamePage || newOffset !== previousOffset;
+
+      if (isDataInvalid) {
+        getData();
+      }
     } catch (ex) {
       console.warn(ex);
     }
@@ -138,25 +127,32 @@ export default DataSourceWrapper;
  * Need generic that can be shared? Isn't this what qs is for?
  * @param {*} query
  */
-function _getQueryFilterValues(query) {
+function _getQueryFilterValues(query, queryLimit) {
   query = new URLSearchParams(query);
+
+  const pageNumber = _tryParseInt(query.get('pageNumber'), 1);
+  const resultsPerPage = _tryParseInt(query.get('resultsPerPage'), 25);
 
   const queryFilterValues = {
     // DCM
     patientId: query.get('mrn'),
     patientName: query.get('patientName'),
     studyDescription: query.get('description'),
-    modalitiesInStudy: query.get('modalities') && query.get('modalities').split(','),
+    modalitiesInStudy:
+      query.get('modalities') && query.get('modalities').split(','),
     accessionNumber: query.get('accession'),
     //
     startDate: query.get('startDate'),
     endDate: query.get('endDate'),
     page: _tryParseInt(query.get('page'), undefined),
-    pageNumber: _tryParseInt(query.get('pageNumber'), undefined),
-    resultsPerPage: _tryParseInt(query.get('resultsPerPage'), undefined),
+    pageNumber,
+    resultsPerPage,
     // Rarely supported server-side
     sortBy: query.get('sortBy'),
     sortDirection: query.get('sortDirection'),
+    // Offset...
+    offset:
+      Math.floor((pageNumber * resultsPerPage) / queryLimit) * (queryLimit - 1),
   };
 
   // patientName: good

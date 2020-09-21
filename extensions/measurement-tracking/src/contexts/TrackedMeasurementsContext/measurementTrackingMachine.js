@@ -21,6 +21,8 @@ const machineConfiguration = {
     prevTrackedStudy: '',
     prevTrackedSeries: [],
     prevIgnoredSeries: [],
+    //
+    isDirty: false,
   },
   states: {
     off: {
@@ -30,10 +32,11 @@ const machineConfiguration = {
       entry: 'clearContext',
       on: {
         TRACK_SERIES: 'promptBeginTracking',
+        // Unused? We may only do PROMPT_HYDRATE_SR now?
         SET_TRACKED_SERIES: [
           {
             target: 'tracking',
-            actions: ['setTrackedStudyAndMultipleSeries'],
+            actions: ['setTrackedStudyAndMultipleSeries', 'setIsDirtyToClean'],
           },
         ],
         PROMPT_HYDRATE_SR: 'promptHydrateStructuredReport',
@@ -45,7 +48,7 @@ const machineConfiguration = {
         onDone: [
           {
             target: 'tracking',
-            actions: ['setTrackedStudyAndSeries'],
+            actions: ['setTrackedStudyAndSeries', 'setIsDirty'],
             cond: 'shouldSetStudyAndSeries',
           },
           {
@@ -76,7 +79,7 @@ const machineConfiguration = {
         UNTRACK_SERIES: [
           {
             target: 'tracking',
-            actions: ['removeTrackedSeries'],
+            actions: ['removeTrackedSeries', 'setIsDirty'],
             cond: 'hasRemainingTrackedSeries',
           },
           {
@@ -90,6 +93,16 @@ const machineConfiguration = {
           },
         ],
         SAVE_REPORT: 'promptSaveReport',
+        SET_DIRTY: [
+          {
+            target: 'tracking',
+            actions: ['setIsDirty'],
+            cond: 'shouldSetDirty',
+          },
+          {
+            target: 'tracking',
+          },
+        ],
       },
     },
     promptTrackNewSeries: {
@@ -98,7 +111,7 @@ const machineConfiguration = {
         onDone: [
           {
             target: 'tracking',
-            actions: ['addTrackedSeries'],
+            actions: ['addTrackedSeries', 'setIsDirty'],
             cond: 'shouldAddSeries',
           },
           {
@@ -106,6 +119,7 @@ const machineConfiguration = {
             actions: [
               'discardPreviouslyTrackedMeasurements',
               'setTrackedStudyAndSeries',
+              'setIsDirty',
             ],
             cond: 'shouldSetStudyAndSeries',
           },
@@ -131,6 +145,7 @@ const machineConfiguration = {
             actions: [
               'discardPreviouslyTrackedMeasurements',
               'setTrackedStudyAndSeries',
+              'setIsDirty',
             ],
             cond: 'shouldSetStudyAndSeries',
           },
@@ -197,6 +212,7 @@ const machineConfiguration = {
             actions: [
               'setTrackedStudyAndMultipleSeries',
               'showSeriesInActiveViewport',
+              'setIsDirtyToClean',
             ],
             cond: 'shouldHydrateStructuredReport',
           },
@@ -274,6 +290,12 @@ const defaultOptions = {
         ignoredSeries: [],
       };
     }),
+    setIsDirtyToClean: assign((ctx, evt) => ({
+      isDirty: false,
+    })),
+    setIsDirty: assign((ctx, evt) => ({
+      isDirty: true,
+    })),
     ignoreSeries: assign((ctx, evt) => ({
       prevIgnoredSeries: [...ctx.ignoredSeries],
       ignoredSeries: [...ctx.ignoredSeries, evt.data.SeriesInstanceUID],
@@ -292,6 +314,30 @@ const defaultOptions = {
     })),
   },
   guards: {
+    // We set dirty any time we performan an action that:
+    // - Tracks a new study
+    // - Tracks a new series
+    // - Adds a measurement to an already tracked study/series
+    //
+    // We set clean any time we restore from an SR
+    //
+    // This guard/condition is specific to "new measurements"
+    // to make sure we only track dirty when the new measurement is specific
+    // to a series we're already tracking
+    //
+    // tl;dr
+    // Any report change, that is not a hydration of an existing report, should
+    // result in a "dirty" report
+    //
+    // Where dirty means there would be "loss of data" if we blew away measurements
+    // without creating a new SR.
+    shouldSetDirty: (ctx, evt) => {
+      return (
+        // When would this happen?
+        evt.SeriesInstanceUID === undefined ||
+        ctx.trackedSeries.includes(evt.SeriesInstanceUID)
+      );
+    },
     shouldKillMachine: (ctx, evt) =>
       evt.data && evt.data.userResponse === RESPONSE.NO_NEVER,
     shouldAddSeries: (ctx, evt) =>

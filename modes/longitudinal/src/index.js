@@ -39,34 +39,14 @@ export default function mode({ modeConfiguration }) {
           ToolBarService.init(extensionManager);
           ToolBarService.addButtons(toolbarButtons);
           ToolBarService.createButtonSection('primary', [
+            'MeasurementTools',
             'Zoom',
-            'Wwwc',
+            'WindowLevel',
             'Pan',
             'Capture',
             'Layout',
-            'Divider',
-            [
-              'ResetView',
-              'RotateClockwise',
-              'FlipHorizontally',
-              'StackScroll',
-              'Magnify',
-              'Invert',
-              'Cine',
-              'Angle',
-              'Probe',
-              'RectangleRoi',
-            ],
+            'MoreTools',
           ]);
-          ToolBarService.createButtonSection('secondary', [
-            'Annotate',
-            'Bidirectional',
-            'Ellipse',
-            'Length',
-            'Clear',
-          ]);
-
-          // Could import layout selector here from org.ohif.default (when it exists!)
         },
         layoutTemplate: ({ routeProps }) => {
           return {

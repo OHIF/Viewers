@@ -1,4 +1,6 @@
 const state = {
+  // The `defaultContext` of an extension's commandsModule
+  DEFAULT_CONTEXT: 'ACTIVE_VIEWPORT::CORNERSTONE',
   enabledElements: {},
 };
 
@@ -7,14 +9,22 @@ const state = {
  * @param {HTMLElement} dom Active viewport element.
  * @return void
  */
-const setEnabledElement = (viewportIndex, element) =>
-  (state.enabledElements[viewportIndex] = element);
+const setEnabledElement = (viewportIndex, element, context) => {
+  const targetContext = context || DEFAULT_CONTEXT;
+
+  state.enabledElements[viewportIndex] = {
+    element,
+    context: targetContext,
+  };
+};
 
 /**
- * Grabs the enabled element `dom` reference of an active viewport.
+ * Grabs the enabled element `dom` reference of an adective viewport.
  *
  * @return {HTMLElement} Active viewport element.
  */
-const getEnabledElement = viewportIndex => state.enabledElements[viewportIndex];
+const getEnabledElement = viewportIndex => {
+  return state.enabledElements[viewportIndex];
+};
 
 export { setEnabledElement, getEnabledElement };

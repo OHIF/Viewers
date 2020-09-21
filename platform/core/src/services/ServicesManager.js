@@ -1,7 +1,8 @@
 import log from './../log.js';
 
 export default class ServicesManager {
-  constructor() {
+  constructor(commandsManager) {
+    this._commandsManager = commandsManager;
     this.services = {};
     this.registeredServiceNames = [];
   }
@@ -35,6 +36,7 @@ export default class ServicesManager {
     if (service.create) {
       this.services[service.name] = service.create({
         configuration,
+        commandsManager: this._commandsManager,
       });
     } else {
       log.warn(`Service create factory function not defined. Exiting early.`);

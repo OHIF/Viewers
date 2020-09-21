@@ -10,4 +10,25 @@ export default {
   getContextModule,
   getPanelModule,
   getViewportModule,
+  getCommandsModule({ servicesManager }) {
+    return {
+      definitions: {
+        setToolActive: {
+          commandFn: ({ toolName, element }) => {
+            if (!toolName) {
+              console.warn('No toolname provided to setToolActive command');
+            }
+
+            // Set same tool or alt tool
+            cornerstoneTools.setToolActiveForElement(element, toolName, {
+              mouseButtonMask: 1,
+            });
+          },
+          storeContexts: [],
+          options: {},
+        },
+      },
+      defaultContext: 'ACTIVE_VIEWPORT::TRACKED',
+    };
+  },
 };

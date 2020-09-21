@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import { StudyBrowser, useImageViewer, useViewportGrid, Dialog } from '@ohif/ui';
+import {
+  StudyBrowser,
+  useImageViewer,
+  useViewportGrid,
+  Dialog,
+} from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 
 const { formatDate } = utils;
@@ -63,6 +68,7 @@ function PanelStudyBrowserTracking({
           referenceStudyUID: StudyInstanceUID,
         } = measurement;
 
+        sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
         sendTrackedMeasurementsEvent('TRACK_SERIES', {
           viewportIndex: activeViewportIndex,
           StudyInstanceUID,
@@ -238,10 +244,10 @@ function PanelStudyBrowserTracking({
     );
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? [
-        ...expandedStudyInstanceUIDs.filter(
-          stdyUid => stdyUid !== StudyInstanceUID
-        ),
-      ]
+          ...expandedStudyInstanceUIDs.filter(
+            stdyUid => stdyUid !== StudyInstanceUID
+          ),
+        ]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -315,7 +321,7 @@ function PanelStudyBrowserTracking({
           SeriesInstanceUID: displaySet.SeriesInstanceUID,
         });
       }}
-      onClickThumbnail={() => { }}
+      onClickThumbnail={() => {}}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
       activeDisplaySetInstanceUID={activeDisplaySetInstanceUID}
     />
@@ -385,11 +391,11 @@ function _mapDisplaySets(
     const viewportIdentificator = isSingleViewport
       ? []
       : viewports.reduce((acc, viewportData, index) => {
-        if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
-          acc.push(_viewportLabels[index]);
-        }
-        return acc;
-      }, []);
+          if (viewportData.displaySetInstanceUID === ds.displaySetInstanceUID) {
+            acc.push(_viewportLabels[index]);
+          }
+          return acc;
+        }, []);
 
     const array =
       componentType === 'thumbnailTracked'
@@ -428,35 +434,38 @@ function _mapDisplaySets(
             showOverlay: true,
             content: Dialog,
             contentProps: {
-              title: 'Reject Report',
+              title: 'Delete Report',
               body: () => (
-                <div className="p-4 bg-primary-dark text-white">
-                  <p>This is a destructive action.</p>
-                  <p>Are you sure you want to continue?</p>
+                <div className="p-4 text-white bg-primary-dark">
+                  <p>Are you sure you want to delete this report?</p>
+                  <p>This action cannot be undone.</p>
                 </div>
               ),
               actions: [
                 { id: 'cancel', text: 'Cancel', type: 'secondary' },
-                { id: 'save', text: 'Save', type: 'primary' },
+                { id: 'yes', text: 'Yes', type: 'primary' },
               ],
               onClose: () => UIDialogService.dismiss({ id: 'ds-reject-sr' }),
               onSubmit: async ({ action }) => {
                 switch (action.id) {
-                  case 'save':
+                  case 'yes':
                     try {
-                      await dataSource.reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
+                      await dataSource.reject.series(
+                        ds.StudyInstanceUID,
+                        ds.SeriesInstanceUID
+                      );
                       DisplaySetService.deleteDisplaySet(displaySetInstanceUID);
                       UIDialogService.dismiss({ id: 'ds-reject-sr' });
                       UINotificationService.show({
-                        title: 'Reject Report',
-                        message: 'Report rejected successfully',
+                        title: 'Delete Report',
+                        message: 'Report deleted successfully',
                         type: 'success',
                       });
                     } catch (error) {
                       UIDialogService.dismiss({ id: 'ds-reject-sr' });
                       UINotificationService.show({
-                        title: 'Reject Report',
-                        message: 'Failed to reject report',
+                        title: 'Delete Report',
+                        message: 'Failed to delete report',
                         type: 'error',
                       });
                     }
@@ -525,9 +534,11 @@ function _createStudyBrowserTabs(
     const displaySetsForStudy = displaySets.filter(
       ds => ds.StudyInstanceUID === study.studyInstanceUid
     );
-    
-   // Sort them
-   const sortedDisplaySetsForStudy = utils.sortBySeriesDate(displaySetsForStudy);
+
+    // Sort them
+    const sortedDisplaySetsForStudy = utils.sortBySeriesDate(
+      displaySetsForStudy
+    );
 
     /* Sort by series number, then by series date
       displaySetsForStudy.sort((a, b) => {
@@ -541,7 +552,7 @@ function _createStudyBrowserTabs(
         return seriesDateA - seriesDateB;
       });
     */
-    
+
     // Map the study to it's tab/view representation
     const tabStudy = Object.assign({}, study, {
       displaySets: displaySetsForStudy,

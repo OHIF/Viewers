@@ -4,16 +4,18 @@ import cornerstoneTools from 'cornerstone-tools';
 import cornerstone from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
+import DICOMSRDisplayTool from './../tools/DICOMSRDisplayTool';
+import ViewportOverlay from './ViewportOverlay';
 import {
   Notification,
   ViewportActionBar,
   useViewportGrid,
   useViewportDialog,
 } from '@ohif/ui';
-import TOOL_NAMES from './constants/toolNames';
+import TOOL_NAMES from './../constants/toolNames';
 import { adapters } from 'dcmjs';
 // import getToolStateToCornerstoneMeasurementSchema from './utils/getToolStateToCornerstoneMeasurementSchema';
-import id from './id';
+import id from './../id';
 
 const { formatDate } = utils;
 const scrollToIndex = cornerstoneTools.importInternal('util/scrollToIndex');
@@ -32,7 +34,11 @@ function OHIFCornerstoneSRViewport({
   servicesManager,
   extensionManager,
 }) {
-  const { DisplaySetService, MeasurementService } = servicesManager.services;
+  const {
+    DisplaySetService,
+    MeasurementService,
+    ToolBarService,
+  } = servicesManager.services;
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [viewportDialogState, viewportDialogApi] = useViewportDialog();
   const [measurementSelected, setMeasurementSelected] = useState(0);
@@ -45,15 +51,19 @@ function OHIFCornerstoneSRViewport({
 
   useEffect(() => {
     const onDisplaySetsRemovedSubscription = DisplaySetService.subscribe(
-      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED, ({ displaySetInstanceUIDs }) => {
+      DisplaySetService.EVENTS.DISPLAY_SETS_REMOVED,
+      ({ displaySetInstanceUIDs }) => {
         const activeViewport = viewports[activeViewportIndex];
-        if (displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)) {
+        if (
+          displaySetInstanceUIDs.includes(activeViewport.displaySetInstanceUID)
+        ) {
           viewportGridService.setDisplaysetForViewport({
             viewportIndex: activeViewportIndex,
             displaySetInstanceUID: undefined,
           });
         }
-      });
+      }
+    );
 
     return () => {
       onDisplaySetsRemovedSubscription.unsubscribe();
@@ -64,6 +74,8 @@ function OHIFCornerstoneSRViewport({
   let trackedMeasurements;
   let sendTrackedMeasurementsEvent;
 
+  // TODO: this is a hook that fails if we register/de-register
+  //
   if (
     extensionManager.registeredExtensionIds.includes(
       MEASUREMENT_TRACKING_EXTENSION_ID
@@ -81,25 +93,89 @@ function OHIFCornerstoneSRViewport({
     ] = useTrackedMeasurements();
   }
 
+  // Locked if tracking any series
+  let isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
+  useEffect(() => {
+    isLocked = trackedMeasurements?.context?.trackedSeries?.length > 0;
+  }, [trackedMeasurements]);
+
+  function _getToolAlias() {
+    const primaryToolId = ToolBarService.state.primaryToolId;
+    let toolAlias = primaryToolId;
+
+    switch (primaryToolId) {
+      case 'Length':
+        toolAlias = 'SRLength';
+        break;
+      case 'Bidirectional':
+        toolAlias = 'SRBidirectional';
+        break;
+      case 'ArrowAnnotate':
+        toolAlias = 'SRArrowAnnotate';
+        break;
+      case 'EllipticalRoi':
+        toolAlias = 'SREllipticalRoi';
+        break;
+    }
+
+    return toolAlias;
+  }
+
   const onElementEnabled = evt => {
     const eventData = evt.detail;
     const targetElement = eventData.element;
+    const toolAlias = _getToolAlias(); // These are 1:1 for built-in only
 
-    // TODO -> This will only be temporary until we set a tool on, and isn't very customizable.
-    // Need to discuss how to deal with tools in general in the redesign, since we
-    // Previously just had Tool mode state global across the entire viewer.
-    const globalTools = cornerstoneTools.store.state.globalTools;
-    const globalToolNames = Object.keys(globalTools);
-
-    globalToolNames.forEach(globalToolName => {
-      cornerstoneTools.setToolDisabledForElement(targetElement, globalToolName);
-    });
-
+    // ~~ MAGIC
+    cornerstoneTools.addToolForElement(targetElement, DICOMSRDisplayTool);
     cornerstoneTools.setToolEnabledForElement(
       targetElement,
       TOOL_NAMES.DICOM_SR_DISPLAY_TOOL
     );
 
+    // ~~ Variants
+    cornerstoneTools.addToolForElement(
+      targetElement,
+      cornerstoneTools.LengthTool,
+      {
+        name: 'SRLength',
+        configuration: {
+          renderDashed: true,
+        },
+      }
+    );
+    cornerstoneTools.addToolForElement(
+      targetElement,
+      cornerstoneTools.ArrowAnnotateTool,
+      {
+        name: 'SRArrowAnnotate',
+        configuration: {
+          renderDashed: true,
+        },
+      }
+    );
+    cornerstoneTools.addToolForElement(
+      targetElement,
+      cornerstoneTools.BidirectionalTool,
+      {
+        name: 'SRBidirectional',
+        configuration: {
+          renderDashed: true,
+        },
+      }
+    );
+    cornerstoneTools.addToolForElement(
+      targetElement,
+      cornerstoneTools.EllipticalRoiTool,
+      {
+        name: 'SREllipticalRoi',
+        configuration: {
+          renderDashed: true,
+        },
+      }
+    );
+
+    // ~~ Business as usual
     cornerstoneTools.setToolActiveForElement(targetElement, 'PanMultiTouch', {
       pointers: 2,
     });
@@ -109,7 +185,9 @@ function OHIFCornerstoneSRViewport({
       {}
     );
 
-    cornerstoneTools.setToolActiveForElement(targetElement, 'Wwwc', {
+    // TODO: Add always dashed tool alternative aliases
+    // TODO: or same name... alternative config?
+    cornerstoneTools.setToolActiveForElement(targetElement, toolAlias, {
       mouseButtonMask: 1,
     });
     cornerstoneTools.setToolActiveForElement(targetElement, 'Pan', {
@@ -131,6 +209,7 @@ function OHIFCornerstoneSRViewport({
       'ohif-cornerstone-enabled-element-event',
       {
         detail: {
+          context: 'ACTIVE_VIEWPORT::STRUCTURED_REPORT',
           enabledElement: targetElement,
           viewportIndex,
         },
@@ -262,7 +341,7 @@ function OHIFCornerstoneSRViewport({
     StudyDate,
     SeriesDescription,
     SeriesInstanceUID,
-    PixelSpacing,
+    SpacingBetweenSlices,
     SeriesNumber,
     displaySetInstanceUID,
   } = activeDisplaySetData;
@@ -290,7 +369,6 @@ function OHIFCornerstoneSRViewport({
   const label = viewports.length > 1 ? _viewportLabels[viewportIndex] : '';
 
   // TODO -> disabled double click for now: onDoubleClick={_onDoubleClick}
-
   return (
     <>
       <ViewportActionBar
@@ -298,11 +376,19 @@ function OHIFCornerstoneSRViewport({
           evt.stopPropagation();
           evt.preventDefault();
         }}
+        onPillClick={() => {
+          sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
+            displaySetInstanceUID: displaySet.displaySetInstanceUID,
+            viewportIndex,
+          });
+        }}
         onSeriesChange={onMeasurementChange}
         studyData={{
           label,
+          useAltStyling: true,
           isTracked: false,
-          isLocked: displaySet.isLocked,
+          isLocked,
+          isRehydratable: displaySet.isRehydratable,
           isHydrated,
           studyDate: formatDate(StudyDate),
           currentSeries: SeriesNumber,
@@ -317,10 +403,8 @@ function OHIFCornerstoneSRViewport({
             MRN: PatientID || '',
             thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
             spacing:
-              PixelSpacing && PixelSpacing.length
-                ? `${PixelSpacing[0].toFixed(2)}mm x ${PixelSpacing[1].toFixed(
-                    2
-                  )}mm`
+              SpacingBetweenSlices !== undefined
+                ? `${SpacingBetweenSlices.toFixed(2)}mm`
                 : '',
             scanner: ManufacturerModelName || '',
           },
@@ -338,10 +422,18 @@ function OHIFCornerstoneSRViewport({
           isStackPrefetchEnabled={true} // todo
           isPlaying={false}
           frameRate={24}
-          isOverlayVisible={false}
+          isOverlayVisible={true}
           // Sync resize throttle w/ sidepanel animation duration to prevent
           // seizure inducing strobe blinking effect
           resizeRefreshRateMs={150}
+          viewportOverlayComponent={props => {
+            return (
+              <ViewportOverlay
+                {...props}
+                activeTools={ToolBarService.getActiveTools()}
+              />
+            );
+          }}
         />
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
@@ -458,7 +550,7 @@ async function _getViewportAndActiveDisplaySetData(
     SeriesInstanceUID: image0.SeriesInstanceUID,
     SeriesNumber: image0.SeriesNumber,
     ManufacturerModelName: image0.ManufacturerModelName,
-    PixelSpacing: image0.PixelSpacing,
+    SpacingBetweenSlices: image0.SpacingBetweenSlices,
     displaySetInstanceUID,
   };
 

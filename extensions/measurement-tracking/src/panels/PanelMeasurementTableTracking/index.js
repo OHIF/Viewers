@@ -317,17 +317,12 @@ function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
     );
   }
 
-  const oneBasedImageIdIndex = _getOneBasedImageIdIndex(
-    displaySets,
-    SOPInstanceUID
-  );
-  const { PixelSpacing, SeriesNumber } = instance;
-
+  const { PixelSpacing, SeriesNumber, InstanceNumber } = instance;
   const displayText = _getDisplayText(
     measurement,
     PixelSpacing,
     SeriesNumber,
-    oneBasedImageIdIndex,
+    InstanceNumber,
     types
   );
 
@@ -342,27 +337,11 @@ function _mapMeasurementToDisplay(measurement, types, DisplaySetService) {
 
 /**
  *
- * @param {*} displaySets An array of displaySets relating to a given series.
- * @param {*} SOPInstanceUID The SOPInstanceUID to find.
- * @returns {number} The one-based imageIdIndex.
- */
-function _getOneBasedImageIdIndex(displaySets, SOPInstanceUID) {
-  for (let ds = 0; ds < displaySets.length; ds++) {
-    const displaySet = displaySets[0];
-    const { images } = displaySet;
-
-    for (let i = 0; i < images.length; i++) {
-      if (images[i].SOPInstanceUID === SOPInstanceUID) {
-        return i + 1; // We want the instack position 1-based.
-      }
-    }
-  }
-}
-
-/**
- *
- * @param {*} points
+ * @param {*} measurement
  * @param {*} pixelSpacing
+ * @param {*} seriesNumber
+ * @param {*} instanceNumber
+ * @param {*} types
  */
 function _getDisplayText(
   measurement,

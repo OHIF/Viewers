@@ -67,7 +67,7 @@ function TrackedMeasurementsContextProvider(
       const measurementIds = filteredMeasurements.map(fm => fm.id);
 
       for (let i = 0; i < measurementIds.length; i++) {
-        MeasurementService.remove('app-source', measurementIds[i]);
+        MeasurementService.remove(measurementIds[i], 'app-source');
       }
     },
     clearAllMeasurements: (ctx, evt) => {
@@ -76,7 +76,7 @@ function TrackedMeasurementsContextProvider(
       const measurementIds = measurements.map(fm => fm.id);
 
       for (let i = 0; i < measurementIds.length; i++) {
-        MeasurementService.remove('app-source', measurementIds[i]);
+        MeasurementService.remove(measurementIds[i], 'app-source');
       }
     },
   });
@@ -141,7 +141,7 @@ function TrackedMeasurementsContextProvider(
       if (
         displaySet.SOPClassHandlerId ===
           'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr' &&
-        !displaySet.isLocked
+        displaySet.isRehydratable === true
       ) {
         console.log('sending event...', trackedMeasurements);
         sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {

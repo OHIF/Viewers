@@ -57,7 +57,7 @@ import { tabs } from './studyBrowserMockData';
         <Header />
         <div
           className="flex flex-row flex-no-wrap items-stretch overflow-hidden w-full"
-          style={{ height: 'calc(100vh - 57px' }}
+          style={{ height: 'calc(100vh - 52px' }}
         >
           {/* LEFT SIDEPANELS */}
           <SidePanel
@@ -88,6 +88,7 @@ import { tabs } from './studyBrowserMockData';
                         label: 'A',
                         isTracked: true,
                         isLocked: false,
+                        isRehydratable: false,
                         studyDate: '07-Sep-2011',
                         currentSeries: 1,
                         seriesDescription:

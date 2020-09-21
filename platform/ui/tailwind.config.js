@@ -46,6 +46,15 @@ module.exports = {
         active: '#2c3074',
       },
 
+      customgreen: {
+        100: '#05D97C',
+      },
+
+      customblue: {
+        100: '#c4fdff',
+        200: '#38daff',
+      },
+
       gray: {
         100: '#f7fafc',
         200: '#edf2f7',

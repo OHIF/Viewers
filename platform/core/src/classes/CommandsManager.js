@@ -5,7 +5,6 @@ import log from '../log.js';
  *
  * @typedef {Object} CommandDefinition
  * @property {Function} commandFn - Command to call
- * @property {Array} storeContexts - Array of string of modules required from store
  * @property {Object} options - Object of params to pass action
  */
 
@@ -161,19 +160,10 @@ export class CommandsManager {
       return;
     }
 
-    const { commandFn, storeContexts = [] } = definition;
-    const definitionOptions = definition.options;
-
-    let commandParams = {};
-    const appState = this._getAppState();
-    storeContexts.forEach(context => {
-      commandParams[context] = appState[context];
-    });
-
-    commandParams = Object.assign(
+    const { commandFn } = definition;
+    const commandParams = Object.assign(
       {},
-      commandParams, // Required store contexts
-      definitionOptions, // "Command configuration"
+      definition.options, // "Command configuration"
       options // "Time of call" info
     );
 

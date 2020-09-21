@@ -1,19 +1,19 @@
-import React from 'react';
 import OHIF from '@ohif/core';
-import { Input, Dialog, ContextMenuMeasurements } from '@ohif/ui';
+import { ContextMenuMeasurements } from '@ohif/ui';
 import cs from 'cornerstone-core';
 import csTools from 'cornerstone-tools';
 import merge from 'lodash.merge';
+import getTools, { toolsGroupedByType } from './utils/getTools.js';
 import initCornerstoneTools from './initCornerstoneTools.js';
 import './initWADOImageLoader.js';
 import getCornerstoneMeasurementById from './utils/getCornerstoneMeasurementById';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import { setEnabledElement } from './state';
+import callInputDialog from './callInputDialog.js';
 
 // TODO -> Global "context menu open state", or lots of expensive searches on drag?
 
 let CONTEXT_MENU_OPEN = false;
-
 const { globalImageIdSpecificToolStateManager } = csTools;
 
 const TOOL_TYPES_WITH_CONTEXT_MENU = [
@@ -30,6 +30,24 @@ const TOOL_TYPES_WITH_CONTEXT_MENU = [
 const _refreshViewports = () =>
   cs.getEnabledElements().forEach(({ element }) => cs.updateImage(element));
 
+/* Add extension tools configuration here. */
+const _createInternalToolsConfig = UIDialogService => {
+  return {
+    ArrowAnnotate: {
+      configuration: {
+        getTextCallback: (callback, eventDetails) =>
+          callInputDialog(UIDialogService, null, callback),
+        changeTextCallback: (data, eventDetails, callback) =>
+          callInputDialog(UIDialogService, data, callback),
+        allowEmptyLabel: true,
+      },
+    },
+    DragProbe: {
+      defaultStrategy: 'minimal',
+    },
+  };
+};
+
 /**
  *
  * @param {Object} servicesManager
@@ -45,7 +63,11 @@ export default function init({
     UIDialogService,
     MeasurementService,
     DisplaySetService,
+    ToolBarService,
   } = servicesManager.services;
+  const tools = getTools();
+
+  console.log(servicesManager.services);
 
   /* Measurement Service */
   const measurementServiceSource = _connectToolsToMeasurementService(
@@ -112,6 +134,7 @@ export default function init({
           );
 
           callInputDialog(
+            UIDialogService,
             measurement,
             (label, actionId) => {
               if (actionId === 'cancel') {
@@ -180,8 +203,18 @@ export default function init({
     }
   };
 
-  function elementEnabledHandler(evt) {
+  // TODO: This is the handler for ALL ENABLED ELEMENT EVENTS
+  // ... Activation logic should take place per element, not for all (diff behavior per ext)
+  function elementEnabledHandler(tools, evt) {
     const element = evt.detail.element;
+
+    _addConfiguredToolsForElement(
+      UIDialogService,
+      element,
+      tools,
+      configuration
+    );
+
     element.addEventListener(csTools.EVENTS.TOUCH_PRESS, onTouchPress);
     element.addEventListener(
       csTools.EVENTS.MOUSE_CLICK,
@@ -200,85 +233,6 @@ export default function init({
     element.removeEventListener(cs.EVENTS.NEW_IMAGE, cancelContextMenuIfOpen);
   }
 
-  /**
-   *
-   * @param {*} data
-   * @param {*} event
-   * @param {*} callback
-   * @param {*} isArrowAnnotateInputDialog
-   */
-  const callInputDialog = (
-    data,
-    callback,
-    isArrowAnnotateInputDialog = true
-  ) => {
-    const dialogId = 'enter-annotation';
-    const label = data
-      ? isArrowAnnotateInputDialog
-        ? data.text
-        : data.label
-      : '';
-
-    const onSubmitHandler = ({ action, value }) => {
-      switch (action.id) {
-        case 'save':
-          callback(value.label, action.id);
-          break;
-        case 'cancel':
-          callback('', action.id);
-          break;
-      }
-      UIDialogService.dismiss({ id: dialogId });
-    };
-
-    if (UIDialogService) {
-      UIDialogService.create({
-        id: dialogId,
-        centralize: true,
-        isDraggable: false,
-        showOverlay: true,
-        content: Dialog,
-        contentProps: {
-          title: 'Enter your annotation',
-          value: { label },
-          noCloseButton: true,
-          onClose: () => UIDialogService.dismiss({ id: dialogId }),
-          actions: [
-            { id: 'cancel', text: 'Cancel', type: 'secondary' },
-            { id: 'save', text: 'Save', type: 'primary' },
-          ],
-          onSubmit: onSubmitHandler,
-          body: ({ value, setValue }) => {
-            const onChangeHandler = event => {
-              event.persist();
-              setValue(value => ({ ...value, label: event.target.value }));
-            };
-
-            const onKeyPressHandler = event => {
-              if (event.key === 'Enter') {
-                onSubmitHandler({ value, action: { id: 'save' } });
-              }
-            };
-
-            return (
-              <div className="p-4 bg-primary-dark">
-                <Input
-                  autoFocus
-                  className="mt-2 bg-black border-primary-main"
-                  type="text"
-                  containerClassName="mr-2"
-                  value={value.label}
-                  onChange={onChangeHandler}
-                  onKeyPress={onKeyPressHandler}
-                />
-              </div>
-            );
-          },
-        },
-      });
-    }
-  };
-
   const { csToolsConfig } = configuration;
   const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -286,7 +240,7 @@ export default function init({
 
   // ~~
   const defaultCsToolsConfig = csToolsConfig || {
-    globalToolSyncEnabled: true,
+    globalToolSyncEnabled: false, // hold on to your pants!
     showSVGCursors: false,
     autoResizeViewports: false,
   };
@@ -298,10 +252,10 @@ export default function init({
   // THIS
   // is a way for extensions that "depend" on this extension to notify it of
   // new cornerstone enabled elements so it's commands continue to work.
-  const handleOhifCornerstoneEnabledElementEvent = function (evt) {
-    const { viewportIndex, enabledElement } = evt.detail;
+  const handleOhifCornerstoneEnabledElementEvent = function(evt) {
+    const { context, viewportIndex, enabledElement } = evt.detail;
 
-    setEnabledElement(viewportIndex, enabledElement);
+    setEnabledElement(viewportIndex, enabledElement, context);
   };
 
   document.addEventListener(
@@ -309,120 +263,10 @@ export default function init({
     handleOhifCornerstoneEnabledElementEvent
   );
 
-  const toolsGroupedByType = {
-    touch: [csTools.PanMultiTouchTool, csTools.ZoomTouchPinchTool],
-    annotations: [
-      csTools.ArrowAnnotateTool,
-      csTools.BidirectionalTool,
-      csTools.LengthTool,
-      csTools.AngleTool,
-      csTools.FreehandRoiTool,
-      csTools.EllipticalRoiTool,
-      csTools.DragProbeTool,
-      csTools.RectangleRoiTool,
-    ],
-    other: [
-      csTools.PanTool,
-      csTools.ZoomTool,
-      csTools.WwwcTool,
-      csTools.WwwcRegionTool,
-      csTools.MagnifyTool,
-      csTools.StackScrollTool,
-      csTools.StackScrollMouseWheelTool,
-      csTools.OverlayTool,
-    ],
-  };
-
-  let tools = [];
-  Object.keys(toolsGroupedByType).forEach(toolsGroup =>
-    tools.push(...toolsGroupedByType[toolsGroup])
+  cs.events.addEventListener(
+    cs.EVENTS.ELEMENT_ENABLED,
+    elementEnabledHandler.bind(null, tools)
   );
-
-  /* Add extension tools configuration here. */
-  const internalToolsConfig = {
-    ArrowAnnotate: {
-      configuration: {
-        getTextCallback: (callback, eventDetails) =>
-          callInputDialog(null, callback),
-        changeTextCallback: (data, eventDetails, callback) =>
-          callInputDialog(data, callback),
-        allowEmptyLabel: true,
-      },
-    },
-    DragProbe: {
-      defaultStrategy: 'minimal',
-    },
-  };
-
-  /* Abstract tools configuration using extension configuration. */
-  const parseToolProps = (props, tool) => {
-    const { annotations } = toolsGroupedByType;
-    // An alternative approach would be to remove the `drawHandlesOnHover` config
-    // from the supported configuration properties in `cornerstone-tools`
-    const toolsWithHideableHandles = annotations.filter(
-      tool => !['RectangleRoiTool', 'EllipticalRoiTool'].includes(tool.name)
-    );
-
-    let parsedProps = { ...props };
-
-    /**
-     * drawHandles - Never/Always show handles
-     * drawHandlesOnHover - Only show handles on handle hover (pointNearHandle)
-     * hideHandlesIfMoving - Hides the handles whilst you are moving them, for better visibility.
-     *
-     * Does not apply to tools where handles aren't placed in predictable
-     * locations.
-     */
-    if (
-      configuration.hideHandles !== false &&
-      toolsWithHideableHandles.includes(tool)
-    ) {
-      if (props.configuration) {
-        parsedProps.configuration.drawHandlesOnHover = true;
-        parsedProps.configuration.hideHandlesIfMoving = true;
-      } else {
-        parsedProps.configuration = {
-          drawHandlesOnHover: true,
-          hideHandlesIfMoving: true,
-        };
-      }
-    }
-
-    return parsedProps;
-  };
-
-  /* Add tools with its custom props through extension configuration. */
-  tools.forEach(tool => {
-    const toolName = new tool().name;
-    const externalToolsConfig = configuration.tools || {};
-    const externalToolProps = externalToolsConfig[toolName] || {};
-    const internalToolProps = internalToolsConfig[toolName] || {};
-    const props = merge(
-      internalToolProps,
-      parseToolProps(externalToolProps, tool)
-    );
-    csTools.addTool(tool, props);
-  });
-
-  // TODO -> We need a better way to do this with maybe global tool state setting all tools passive.
-  const BaseAnnotationTool = csTools.importInternal('base/BaseAnnotationTool');
-  tools.forEach(tool => {
-    if (tool.prototype instanceof BaseAnnotationTool) {
-      // BaseAnnotationTool would likely come from csTools lib exports
-      const toolName = new tool().name;
-      csTools.setToolPassive(toolName); // there may be a better place to determine name; may not be on uninstantiated class
-    }
-  });
-
-  csTools.setToolActive('Pan', { mouseButtonMask: 4 });
-  csTools.setToolActive('Zoom', { mouseButtonMask: 2 });
-  csTools.setToolActive('Wwwc', { mouseButtonMask: 1 });
-  csTools.setToolActive('StackScrollMouseWheel', {}); // TODO: Empty options should not be required
-  csTools.setToolActive('PanMultiTouch', { pointers: 2 }); // TODO: Better error if no options
-  csTools.setToolActive('ZoomTouchPinch', {});
-  csTools.setToolEnabled('Overlay', {});
-
-  cs.events.addEventListener(cs.EVENTS.ELEMENT_ENABLED, elementEnabledHandler);
   cs.events.addEventListener(
     cs.EVENTS.ELEMENT_DISABLED,
     elementDisabledHandler
@@ -646,3 +490,63 @@ const _getDefaultPosition = event => ({
   x: (event && event.currentPoints.client.x) || 0,
   y: (event && event.currentPoints.client.y) || 0,
 });
+
+/**
+ * @private
+ */
+function _addConfiguredToolsForElement(
+  UIDialogService,
+  element,
+  tools,
+  configuration
+) {
+  const internalToolsConfig = _createInternalToolsConfig(UIDialogService);
+  /* Add tools with its custom props through extension configuration. */
+  tools.forEach(tool => {
+    const toolName = new tool().name;
+    const externalToolsConfig = configuration.tools || {};
+    const externalToolProps = externalToolsConfig[toolName] || {};
+    const internalToolProps = internalToolsConfig[toolName] || {};
+    const props = merge(
+      internalToolProps,
+      _parseToolProps(configuration, externalToolProps, tool)
+    );
+    csTools.addToolForElement(element, tool, props);
+  });
+}
+/* Abstract tools configuration using extension configuration. */
+function _parseToolProps(configuration, props, tool) {
+  const { annotations } = toolsGroupedByType;
+  // An alternative approach would be to remove the `drawHandlesOnHover` config
+  // from the supported configuration properties in `cornerstone-tools`
+  const toolsWithHideableHandles = annotations.filter(
+    tool => !['RectangleRoiTool', 'EllipticalRoiTool'].includes(tool.name)
+  );
+
+  let parsedProps = { ...props };
+
+  /**
+   * drawHandles - Never/Always show handles
+   * drawHandlesOnHover - Only show handles on handle hover (pointNearHandle)
+   * hideHandlesIfMoving - Hides the handles whilst you are moving them, for better visibility.
+   *
+   * Does not apply to tools where handles aren't placed in predictable
+   * locations.
+   */
+  if (
+    configuration.hideHandles !== false &&
+    toolsWithHideableHandles.includes(tool)
+  ) {
+    if (props.configuration) {
+      parsedProps.configuration.drawHandlesOnHover = true;
+      parsedProps.configuration.hideHandlesIfMoving = true;
+    } else {
+      parsedProps.configuration = {
+        drawHandlesOnHover: true,
+        hideHandlesIfMoving: true,
+      };
+    }
+  }
+
+  return parsedProps;
+}

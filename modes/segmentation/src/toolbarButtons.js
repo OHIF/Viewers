@@ -72,7 +72,7 @@ export default [
     id: 'ResetView',
     type: 'ohif.action',
     props: {
-      icon: 'old-reset',
+      icon: 'tool-reset',
       label: 'Reset View',
       commandName: 'resetViewport',
       type: 'primary',
@@ -82,7 +82,7 @@ export default [
     id: 'RotateClockwise',
     type: 'ohif.action',
     props: {
-      icon: 'old-rotate-right',
+      icon: 'tool-rotate-right',
       label: 'Rotate Right',
       commandName: 'rotateViewportCW',
       type: 'primary',
@@ -92,7 +92,7 @@ export default [
     id: 'FlipHorizontally',
     type: 'ohif.action',
     props: {
-      icon: 'old-ellipse-h',
+      icon: 'tool-flip-horizontal',
       label: 'Flip Horizontally',
       commandName: 'flipViewportHorizontal',
       type: 'primary',
@@ -106,7 +106,7 @@ export default [
     },
     props: {
       isActive: false,
-      icon: 'old-bars',
+      icon: 'tool-stack-scroll',
       label: 'Stack Scroll',
       commandName: 'setToolActive',
       commandOptions: { toolName: 'StackScroll' },
@@ -121,7 +121,7 @@ export default [
     },
     props: {
       isActive: false,
-      icon: 'old-circle',
+      icon: 'tool-magnify',
       label: 'Magnify',
       commandName: 'setToolActive',
       commandOptions: { toolName: 'Magnify' },
@@ -132,7 +132,7 @@ export default [
     id: 'Invert',
     type: 'ohif.action',
     props: {
-      icon: 'old-invert',
+      icon: 'tool-invert',
       label: 'Invert',
       commandName: 'invertViewport',
       type: 'primary',
@@ -143,7 +143,7 @@ export default [
     id: 'Cine',
     type: 'ohif.action',
     props: {
-      icon: 'old-youtube',
+      icon: 'tool-cine',
       label: 'Cine',
       commandName: '',
       type: 'primary',
@@ -158,7 +158,7 @@ export default [
     },
     props: {
       isActive: false,
-      icon: 'old-angle-left',
+      icon: 'tool-angle',
       label: 'Angle',
       commandName: 'setToolActive',
       commandOptions: { toolName: 'Angle' },
@@ -173,7 +173,7 @@ export default [
     },
     props: {
       isActive: false,
-      icon: 'old-dot-circle',
+      icon: 'tool-probe',
       label: 'Probe',
       commandName: 'setToolActive',
       commandOptions: { toolName: 'Probe' },
@@ -188,7 +188,7 @@ export default [
     },
     props: {
       isActive: false,
-      icon: 'old-circle-o',
+      icon: 'tool-rectangle',
       label: 'Rectangle',
       commandName: 'setToolActive',
       commandOptions: { toolName: 'RectangleRoi' },

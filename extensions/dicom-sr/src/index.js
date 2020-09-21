@@ -5,7 +5,7 @@ import id from './id.js';
 import init from './init';
 
 const Component = React.lazy(() => {
-  return import('./OHIFCornerstoneSRViewport');
+  return import('./viewports/OHIFCornerstoneSRViewport');
 });
 
 const OHIFCornerstoneSRViewport = props => {
@@ -60,6 +60,52 @@ export default {
 
     return [{ name: 'dicom-sr', component: ExtendedOHIFCornerstoneSRViewport }];
   },
+  getCommandsModule({ servicesManager }) {
+    return {
+      definitions: {
+        setToolActive: {
+          commandFn: ({ toolName, element }) => {
+            if (!toolName) {
+              console.warn('No toolname provided to setToolActive command');
+            }
+
+            console.warn('DICOM SR VIEWPORT SETTOOLACTIVE');
+
+            // Set same tool or alt tool
+            const toolAlias = _getToolAlias(toolName);
+
+            cornerstoneTools.setToolActiveForElement(element, toolAlias, {
+              mouseButtonMask: 1,
+            });
+          },
+          storeContexts: [],
+          options: {},
+        },
+      },
+      defaultContext: 'ACTIVE_VIEWPORT::STRUCTURED_REPORT',
+    };
+  },
   getSopClassHandlerModule,
   onModeEnter,
 };
+
+function _getToolAlias(toolName) {
+  let toolAlias = toolName;
+
+  switch (toolName) {
+    case 'Length':
+      toolAlias = 'SRLength';
+      break;
+    case 'Bidirectional':
+      toolAlias = 'SRBidirectional';
+      break;
+    case 'ArrowAnnotate':
+      toolAlias = 'SRArrowAnnotate';
+      break;
+    case 'EllipticalRoi':
+      toolAlias = 'SREllipticalRoi';
+      break;
+  }
+
+  return toolAlias;
+}

@@ -2,6 +2,7 @@ import React from 'react';
 // Icons
 
 import arrowDown from './../../assets/icons/arrow-down.svg';
+import arrowLeft from './../../assets/icons/arrow-left.svg';
 import calendar from './../../assets/icons/calendar.svg';
 import cancel from './../../assets/icons/cancel.svg';
 import clipboard from './../../assets/icons/clipboard.svg';
@@ -13,6 +14,7 @@ import chevronLeft from './../../assets/icons/chevron-left.svg';
 import chevronRight from './../../assets/icons/chevron-right.svg';
 import eyeVisible from './../../assets/icons/eye-visible.svg';
 import eyeHidden from './../../assets/icons/eye-hidden.svg';
+import exclamation from './../../assets/icons/exclamation.svg';
 import externalLink from './../../assets/icons/external-link.svg';
 import groupLayers from './../../assets/icons/group-layers.svg';
 import info from './../../assets/icons/info.svg';
@@ -47,18 +49,18 @@ import toolAnnotate from './../../assets/icons/tool-annotate.svg';
 import toolBidirectional from './../../assets/icons/tool-bidirectional.svg';
 import toolElipse from './../../assets/icons/tool-elipse.svg';
 import toolLength from './../../assets/icons/tool-length.svg';
+import toolStackScroll from './../../assets/icons/tool-stack-scroll.svg';
+import toolMagnify from './../../assets/icons/tool-magnify.svg';
+import toolFlipHorizontal from './../../assets/icons/tool-flip-horizontal.svg';
+import toolInvert from './../../assets/icons/tool-invert.svg';
+import toolRotateRight from './../../assets/icons/tool-rotate-right.svg';
+import toolCine from './../../assets/icons/tool-cine.svg';
+import toolProbe from './../../assets/icons/tool-probe.svg';
+import toolAngle from './../../assets/icons/tool-angle.svg';
+import toolReset from './../../assets/icons/tool-reset.svg';
+import toolRectangle from './../../assets/icons/tool-rectangle.svg';
 
 /** Old OHIF */
-import oldBars from './../../assets/icons/old-bars.svg';
-import oldCircle from './../../assets/icons/old-circle.svg';
-import oldEllipseH from './../../assets/icons/old-ellipse-h.svg';
-import oldInvert from './../../assets/icons/old-invert.svg';
-import oldRotateRight from './../../assets/icons/old-rotate-right.svg';
-import oldYoutube from './../../assets/icons/old-youtube.svg';
-import oldDotCircle from './../../assets/icons/old-dot-circle.svg';
-import oldAngleLeft from './../../assets/icons/old-angle-left.svg';
-import oldReset from './../../assets/icons/old-reset.svg';
-import oldCircleO from './../../assets/icons/old-circle-o.svg';
 import oldTrash from './../../assets/icons/old-trash.svg';
 import oldPlay from './../../assets/icons/old-play.svg';
 import oldStop from './../../assets/icons/old-stop.svg';
@@ -80,6 +82,7 @@ const ICONS = {
   'group-layers': groupLayers,
   info: info,
   'info-link': infoLink,
+  'arrow-left': arrowLeft,
   'launch-arrow': launchArrow,
   'launch-info': launchInfo,
   link: link,
@@ -87,6 +90,7 @@ const ICONS = {
   lock: lock,
   'logo-ohif-small': logoOhifSmall,
   magnifier: magnifier,
+  exclamation: exclamation,
   'notificationwarning-diamond': notificationwarningDiamond,
   pencil: pencil,
   profile: profile,
@@ -110,18 +114,18 @@ const ICONS = {
   'tool-bidirectional': toolBidirectional,
   'tool-elipse': toolElipse,
   'tool-length': toolLength,
+  'tool-stack-scroll': toolStackScroll,
+  'tool-magnify': toolMagnify,
+  'tool-flip-horizontal': toolFlipHorizontal,
+  'tool-invert': toolInvert,
+  'tool-rotate-right': toolRotateRight,
+  'tool-cine': toolCine,
+  'tool-probe': toolProbe,
+  'tool-angle': toolAngle,
+  'tool-reset': toolReset,
+  'tool-rectangle': toolRectangle,
 
   /** Old OHIF */
-  'old-bars': oldBars,
-  'old-circle': oldCircle,
-  'old-ellipse-h': oldEllipseH,
-  'old-invert': oldInvert,
-  'old-rotate-right': oldRotateRight,
-  'old-youtube': oldYoutube,
-  'old-dot-circle': oldDotCircle,
-  'old-angle-left': oldAngleLeft,
-  'old-reset': oldReset,
-  'old-circle-o': oldCircleO,
   'old-trash': oldTrash,
   'old-play': oldPlay,
   'old-stop': oldStop,

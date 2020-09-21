@@ -1,93 +1,149 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
-import { ExpandableToolbarButton, ListMenu, WindowLevelMenuItem } from '@ohif/ui';
+import {
+  // ExpandableToolbarButton,
+  // ListMenu,
+  WindowLevelMenuItem,
+} from '@ohif/ui';
 import { defaults } from '@ohif/core';
 
 const { windowLevelPresets } = defaults;
+/**
+ *
+ * @param {*} type - 'tool' | 'action' | 'toggle'
+ * @param {*} id
+ * @param {*} icon
+ * @param {*} label
+ */
+function _createButton(type, id, icon, label, commandName, commandOptions) {
+  return {
+    id,
+    icon,
+    label,
+    type,
+    commandName,
+    commandOptions,
+  };
+}
+
+const _createActionButton = _createButton.bind(null, 'action');
+const _createToggleButton = _createButton.bind(null, 'toggle');
+const _createToolButton = _createButton.bind(null, 'tool');
+
+/**
+ *
+ * @param {*} preset - preset number (from above import)
+ * @param {*} title
+ * @param {*} subtitle
+ */
+function _createWwwcPreset(preset, title, subtitle) {
+  return {
+    id: preset,
+    title,
+    subtitle,
+    type: 'action',
+    commandName: 'setWindowLevel',
+    commandOptions: windowLevelPresets[preset],
+  };
+}
 
 export default [
-  // Divider
+  // Measurement
   {
-    id: 'Divider',
-    type: 'ohif.divider',
+    id: 'MeasurementTools',
+    type: 'ohif.splitButton',
+    props: {
+      groupId: 'MeasurementTools',
+      isRadio: true, // ?
+      // Switch?
+      primary: _createToolButton('Length', 'tool-length', 'Length', undefined, {
+        toolName: 'Length',
+      }),
+      secondary: {
+        icon: 'chevron-down',
+        label: '',
+        isActive: true,
+        tooltip: 'More Measure Tools',
+      },
+      items: [
+        _createToolButton('Length', 'tool-length', 'Length', undefined, {
+          toolName: 'Length',
+        }),
+        _createToolButton(
+          'Bidirectional',
+          'tool-bidirectional',
+          'Bidirectional',
+          undefined,
+          { toolName: 'Bidirectional' }
+        ),
+        _createToolButton(
+          'ArrowAnnotate',
+          'tool-annotate',
+          'Annotation',
+          undefined,
+          { toolName: 'ArrowAnnotate' }
+        ),
+        _createToolButton(
+          'EllipticalRoi',
+          'tool-elipse',
+          'Ellipse',
+          undefined,
+          {
+            toolName: 'EllipticalRoi',
+          }
+        ),
+      ],
+    },
   },
-  // ~~ Primary
+  // Zoom..
   {
     id: 'Zoom',
     type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
     props: {
-      isActive: false,
+      type: 'tool',
       icon: 'tool-zoom',
       label: 'Zoom',
-      commandName: 'setToolActive',
       commandOptions: { toolName: 'Zoom' },
-      type: 'primary',
     },
   },
+  // Window Level + Presets...
   {
-    id: 'Wwwc',
-    type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
-    component: ExpandableToolbarButton,
+    id: 'WindowLevel',
+    type: 'ohif.splitButton',
     props: {
-      isActive: true,
-      icon: 'tool-window-level',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Wwwc' },
-      commands: {
-        1: {
-          commandName: 'setWindowLevel',
-          commandOptions: windowLevelPresets[1],
-        },
-        2: {
-          commandName: 'setWindowLevel',
-          commandOptions: windowLevelPresets[2],
-        },
-        3: {
-          commandName: 'setWindowLevel',
-          commandOptions: windowLevelPresets[3],
-        },
-        4: {
-          commandName: 'setWindowLevel',
-          commandOptions: windowLevelPresets[4],
-        },
-        5: {
-          commandName: 'setWindowLevel',
-          commandOptions: windowLevelPresets[5],
-        }
+      primary: _createToolButton(
+        'Wwwc',
+        'tool-window-level',
+        'Window Level',
+        undefined,
+        { toolName: 'Wwwc' }
+      ),
+      secondary: {
+        icon: 'chevron-down',
+        label: 'W/L Manual',
+        isActive: true,
+        tooltip: 'W/L Presets',
       },
-      type: 'primary',
-      content: ListMenu,
-      contentProps: {
-        items: [
-          { value: 1, title: 'Soft tissue', subtitle: '400 / 40' },
-          { value: 2, title: 'Lung', subtitle: '1500 / -600' },
-          { value: 3, title: 'Liver', subtitle: '150 / 90' },
-          { value: 4, title: 'Bone', subtitle: '80 / 40' },
-          { value: 5, title: 'Brain', subtitle: '2500 / 480' },
-        ],
-        renderer: WindowLevelMenuItem
-      }
+      isAction: true, // ?
+      renderer: WindowLevelMenuItem,
+      items: [
+        _createWwwcPreset(1, 'Soft tissue', '400 / 40'),
+        _createWwwcPreset(2, 'Lung', '1500 / -600'),
+        _createWwwcPreset(3, 'Liver', '150 / 90'),
+        _createWwwcPreset(4, 'Bone', '80 / 40'),
+        _createWwwcPreset(5, 'Brain', '2500 / 480'),
+      ],
     },
   },
+  // Pan...
   {
     id: 'Pan',
     type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
     props: {
-      isActive: false,
+      type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
-      commandName: 'setToolActive',
       commandOptions: { toolName: 'Pan' },
-      type: 'primary',
     },
   },
   {
@@ -96,219 +152,83 @@ export default [
     props: {
       icon: 'tool-capture',
       label: 'Capture',
+      type: 'action',
       commandName: 'showDownloadViewportModal',
-      type: 'primary',
     },
   },
   {
     id: 'Layout',
     type: 'ohif.layoutSelector',
   },
-  // ~~ Primary: NESTED
+  // More...
   {
-    id: 'ResetView',
-    type: 'ohif.action',
+    id: 'MoreTools',
+    type: 'ohif.splitButton',
     props: {
-      icon: 'old-reset',
-      label: 'Reset View',
-      commandName: 'resetViewport',
-      type: 'primary',
-    },
-  },
-  {
-    id: 'RotateClockwise',
-    type: 'ohif.action',
-    props: {
-      icon: 'old-rotate-right',
-      label: 'Rotate Right',
-      commandName: 'rotateViewportCW',
-      type: 'primary',
-    },
-  },
-  {
-    id: 'FlipHorizontally',
-    type: 'ohif.action',
-    props: {
-      icon: 'old-ellipse-h',
-      label: 'Flip Horizontally',
-      commandName: 'flipViewportHorizontal',
-      type: 'primary',
-    },
-  },
-  {
-    id: 'StackScroll',
-    type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
-    props: {
-      isActive: false,
-      icon: 'old-bars',
-      label: 'Stack Scroll',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'StackScroll' },
-      type: 'primary',
-    },
-  },
-  {
-    id: 'Magnify',
-    type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
-    props: {
-      isActive: false,
-      icon: 'old-circle',
-      label: 'Magnify',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Magnify' },
-      type: 'primary',
-    },
-  },
-  {
-    id: 'Invert',
-    type: 'ohif.action',
-    props: {
-      icon: 'old-invert',
-      label: 'Invert',
-      commandName: 'invertViewport',
-      type: 'primary',
-    },
-  },
-  {
-    id: 'Cine',
-    type: 'ohif.toggle',
-    config: {
-      groupName: 'primaryTool',
-    },
-    props: {
-      isActive: false,
-      icon: 'old-youtube',
-      label: 'Cine',
-      commandName: 'toggleCine',
-      type: 'primary',
-    },
-  },
-  // TODO: 2D MPR: We had said this was off the table?
-  {
-    id: 'Angle',
-    type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
-    props: {
-      isActive: false,
-      icon: 'old-angle-left',
-      label: 'Angle',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Angle' },
-      type: 'primary',
-    },
-  },
-  {
-    id: 'Probe',
-    type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
-    props: {
-      isActive: false,
-      icon: 'old-dot-circle',
-      label: 'Probe',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'DragProbe' },
-      type: 'primary',
-    },
-  },
-  {
-    id: 'RectangleRoi',
-    type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
-    props: {
-      isActive: false,
-      icon: 'old-circle-o',
-      label: 'Rectangle',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'RectangleRoi' },
-      type: 'primary',
-    },
-  },
-  // ~~ Secondary
-  {
-    id: 'Annotate',
-    type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
-    props: {
-      isActive: false,
-      icon: 'tool-annotate',
-      label: 'Annotate',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'ArrowAnnotate' },
-      type: 'secondary',
-    },
-  },
-  {
-    id: 'Bidirectional',
-    type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
-    props: {
-      isActive: false,
-      icon: 'tool-bidirectional',
-      label: 'Bidirectional',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Bidirectional' },
-      type: 'secondary',
-    },
-  },
-  {
-    id: 'Ellipse',
-    type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
-    props: {
-      isActive: false,
-      icon: 'tool-elipse',
-      label: 'Ellipse',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'EllipticalRoi' },
-      type: 'secondary',
-    },
-  },
-  {
-    id: 'Length',
-    type: 'ohif.radioGroup',
-    config: {
-      groupName: 'primaryTool',
-    },
-    props: {
-      isActive: false,
-      icon: 'tool-length',
-      label: 'Length',
-      commandName: 'setToolActive',
-      commandOptions: { toolName: 'Length' },
-      type: 'secondary',
-    },
-  },
-  {
-    id: 'Clear',
-    type: 'ohif.action',
-    config: {
-      groupName: 'primaryTool',
-    },
-    props: {
-      isActive: false,
-      icon: 'old-trash',
-      label: 'Clear',
-      commandName: 'clearMeasurements',
-      commandOptions: {},
-      type: 'secondary',
+      isRadio: true, // ?
+      groupId: 'MoreTools',
+      primary: _createActionButton(
+        'reset',
+        'tool-reset',
+        'Reset View',
+        'resetViewport'
+      ),
+      secondary: {
+        icon: 'chevron-down',
+        label: '',
+        isActive: true,
+        tooltip: 'More Tools',
+      },
+      items: [
+        _createActionButton(
+          'reset',
+          'tool-reset',
+          'Reset View',
+          'resetViewport'
+        ),
+        _createActionButton(
+          'rotate-right',
+          'tool-rotate-right',
+          'Rotate Right',
+          'rotateViewportCW'
+        ),
+        _createActionButton(
+          'flip-horizontal',
+          'tool-flip-horizontal',
+          'Flip Horizontally',
+          'flipViewportHorizontal'
+        ),
+        _createToolButton(
+          'StackScroll',
+          'tool-stack-scroll',
+          'Stack Scroll',
+          undefined,
+          { toolName: 'StackScroll' }
+        ),
+        _createToolButton('Magnify', 'tool-magnify', 'Magnify', undefined, {
+          toolName: 'Magnify',
+        }),
+        _createActionButton(
+          'invert',
+          'tool-invert',
+          'Invert',
+          'invertViewport'
+        ),
+        _createToggleButton('cine', 'tool-cine', 'Cine', 'toggleCine'),
+        _createToolButton('Angle', 'tool-angle', 'Angle', undefined, {
+          toolName: 'Angle',
+        }),
+        _createToolButton('DragProbe', 'tool-probe', 'Probe', undefined, {
+          toolName: 'DragProbe',
+        }),
+        _createToolButton(
+          'Rectangle',
+          'tool-rectangle',
+          'Rectangle',
+          undefined,
+          { toolName: 'RectangleRoi' }
+        ),
+      ],
     },
   },
 ];

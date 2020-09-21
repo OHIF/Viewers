@@ -7,12 +7,16 @@ import { getEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 const scroll = cornerstoneTools.import('util/scroll');
 
-const commandsModule = ({ servicesManager }) => {
+const { studyMetadataManager } = OHIF.utils;
+const { setViewportSpecificData } = OHIF.redux.actions;
+
+const commandsModule = ({ servicesManager, commandsManager }) => {
   const { ViewportGridService } = servicesManager.services;
 
   function _getActiveViewportsEnabledElement() {
     const { activeViewportIndex } = ViewportGridService.getState();
-    return getEnabledElement(activeViewportIndex);
+    const { element } = getEnabledElement(activeViewportIndex) || {};
+    return element;
   }
 
   const actions = {
@@ -95,7 +99,38 @@ const commandsModule = ({ servicesManager }) => {
       if (!toolName) {
         console.warn('No toolname provided to setToolActive command');
       }
-      cornerstoneTools.setToolActive(toolName, { mouseButtonMask: 1 });
+
+      // Find total number of tool indexes
+      const { viewports } = ViewportGridService.getState();
+      for (let i = 0; i < viewports.length; i++) {
+        const viewport = viewports[i];
+        const hasDisplaySet = viewport.displaySetInstanceUID !== undefined;
+
+        if (!hasDisplaySet) {
+          continue;
+        }
+
+        const viewportInfo = getEnabledElement(i);
+        const hasCornerstoneContext =
+          viewportInfo.context == 'ACTIVE_VIEWPORT::CORNERSTONE';
+
+        if (hasCornerstoneContext) {
+          cornerstoneTools.setToolActiveForElement(
+            viewportInfo.enabledElement,
+            toolName,
+            { mouseButtonMask: 1 }
+          );
+        } else {
+          commandsManager.runCommand(
+            'setToolActive',
+            {
+              element: viewportInfo.element,
+              toolName,
+            },
+            viewportInfo.context
+          );
+        }
+      }
     },
     clearAnnotations: () => {
       const element = _getActiveViewportsEnabledElement();
@@ -103,7 +138,7 @@ const commandsModule = ({ servicesManager }) => {
         return;
       }
 
-      const enabledElement = cornerstone.getEnabledElement(element);
+      const { enabledElement } = cornerstone.getEnabledElement(element) || {};
       if (!enabledElement || !enabledElement.image) {
         return;
       }
