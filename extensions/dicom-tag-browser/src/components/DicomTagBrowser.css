@@ -3,7 +3,7 @@
   margin-left: auto;
 }
 
-.dicom-tag-browser-table td {
+.dicom-tag-browser-table tr {
   padding-left: 10px;
   padding-right: 10px;
   color: var(--table-text-primary-color);

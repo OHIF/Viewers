@@ -39,6 +39,7 @@ const dicomBrowserSelectStyles = {
   }),
   option: (base, state) => ({
     ...base,
+    width: '100%',
     cursor: 'pointer',
     '&:first-of-type': {
       borderTopLeftRadius: 5,
