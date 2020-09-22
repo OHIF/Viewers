@@ -122,8 +122,6 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
 function DicomTagTable({ tags }) {
   const rows = getFormattedRowsFromTags(tags);
 
-  debugger;
-
   return (
     <div>
       <table className="dicom-tag-browser-table">
