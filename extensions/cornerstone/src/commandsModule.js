@@ -8,7 +8,6 @@ import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 const scroll = cornerstoneTools.import('util/scroll');
 
 const { studyMetadataManager } = OHIF.utils;
-const { setViewportSpecificData } = OHIF.redux.actions;
 
 const commandsModule = ({ servicesManager, commandsManager }) => {
   const { ViewportGridService } = servicesManager.services;
