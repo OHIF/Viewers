@@ -48,8 +48,8 @@ function callInputDialog(
         noCloseButton: true,
         onClose: () => UIDialogService.dismiss({ id: dialogId }),
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'secondary' },
-          { id: 'save', text: 'Save', type: 'primary' },
+          { id: 'cancel', text: 'Cancel', type: 'primary' },
+          { id: 'save', text: 'Save', type: 'secondary' },
         ],
         onSubmit: onSubmitHandler,
         body: ({ value, setValue }) => {
