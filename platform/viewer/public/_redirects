@@ -1,0 +1,6 @@
+# Specific to our deploy-preview
+# Our docs are published using CircleCI + GitBook
+# Confgure redirects using netlify.toml
+
+# Spa
+/* /index.html 200
