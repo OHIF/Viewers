@@ -215,8 +215,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           );
         },
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'secondary' },
-          { id: 'save', text: 'Save', type: 'primary' },
+          // temp: swap button types until colors are updated
+          { id: 'cancel', text: 'Cancel', type: 'primary' },
+          { id: 'save', text: 'Save', type: 'secondary' },
         ],
         onSubmit: onSubmitHandler,
       },

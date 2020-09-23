@@ -43,8 +43,8 @@ export default function createReportDialogPrompt(UIDialogService) {
         noCloseButton: true,
         onClose: _handleClose,
         actions: [
-          { id: 'cancel', text: 'Cancel', type: 'secondary' },
-          { id: 'save', text: 'Save', type: 'primary' },
+          { id: 'cancel', text: 'Cancel', type: 'primary' },
+          { id: 'save', text: 'Save', type: 'secondary' },
         ],
         // TODO: Should be on button press...
         onSubmit: _handleFormSubmit,
