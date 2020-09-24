@@ -55,7 +55,7 @@ const appProps = {
     OHIFDicomSegmentationExtension,
     OHIFDicomRtExtension,
     //[OHIFDebuggingExtension, { mailTo: 'support@canceridc.dev' }],
-    //OHIFDicomTagBrowserExtension,
+    OHIFDicomTagBrowserExtension,
   ],
 };
 

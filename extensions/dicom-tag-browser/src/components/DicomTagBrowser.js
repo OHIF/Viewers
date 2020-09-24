@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { classes } from '@ohif/core';
 import dcmjs from 'dcmjs';
 import DicomBrowserSelect from './DicomBrowserSelect';
@@ -16,72 +16,95 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     setActiveDisplaySetInstanceUID,
   ] = useState(displaySetInstanceUID);
   const [activeInstance, setActiveInstance] = useState(0);
+  const [tags, setTags] = useState([]);
+  const [instanceList, setInstanceList] = useState([]);
+  const [displaySetList, setDisplaySetList] = useState([]);
+  const [isImageStack, setIsImageStack] = useState(false);
 
-  const activeDisplaySet = displaySets.find(
-    ds => ds.displaySetInstanceUID === activeDisplaySetInstanceUID
-  );
+  useEffect(() => {
+    const activeDisplaySet = displaySets.find(
+      ds => ds.displaySetInstanceUID === activeDisplaySetInstanceUID
+    );
 
-  const displaySetList = displaySets.map(displaySet => {
-    const {
-      displaySetInstanceUID,
-      SeriesDate,
-      SeriesTime,
-      SeriesNumber,
-      SeriesDescription,
-      Modality,
-    } = displaySet;
+    const newDisplaySetList = displaySets.map(displaySet => {
+      const {
+        displaySetInstanceUID,
+        SeriesDate,
+        SeriesTime,
+        SeriesNumber,
+        SeriesDescription,
+        Modality,
+      } = displaySet;
 
-    /* Map to display representation */
-    const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
-    const date = moment(dateStr, 'YYYYMMDD:HHmmss');
-    const displayDate = date.format('ddd, MMM Do YYYY');
-
-    return {
-      value: displaySetInstanceUID,
-      title: `${SeriesNumber} (${Modality}): ${SeriesDescription}`,
-      description: displayDate,
-      onClick: () => {
-        setActiveDisplaySetInstanceUID(displaySetInstanceUID);
-        setActiveInstance(0);
-      },
-    };
-  });
-
-  let metadata;
-  const isImageStack = activeDisplaySet instanceof ImageSet;
-
-  let selectedInstanceValue;
-  let instanceList;
-
-  if (isImageStack) {
-    const { images } = activeDisplaySet;
-    const image = images[activeInstance];
-
-    instanceList = images.map((image, index) => {
-      const metadata = image.getData().metadata;
-
-      const { InstanceNumber } = metadata;
+      /* Map to display representation */
+      const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
+      const date = moment(dateStr, 'YYYYMMDD:HHmmss');
+      const displayDate = date.format('ddd, MMM Do YYYY');
 
       return {
-        value: index,
-        title: `Instance Number: ${InstanceNumber}`,
-        description: '',
+        value: displaySetInstanceUID,
+        title: `${SeriesNumber} (${Modality}): ${SeriesDescription}`,
+        description: displayDate,
         onClick: () => {
-          setActiveInstance(index);
+          setActiveDisplaySetInstanceUID(displaySetInstanceUID);
+          setActiveInstance(0);
         },
       };
     });
 
-    selectedInstanceValue = instanceList[activeInstance];
+    let metadata;
+    const isImageStack = activeDisplaySet instanceof ImageSet;
 
-    metadata = image.getData().metadata;
-  } else {
-    metadata = activeDisplaySet.metadata;
-  }
+    let selectedInstanceValue;
+    let instanceList;
+
+    if (isImageStack) {
+      const { images } = activeDisplaySet;
+      const image = images[activeInstance];
+
+      instanceList = images.map((image, index) => {
+        const metadata = image.getData().metadata;
+
+        const { InstanceNumber } = metadata;
+
+        return {
+          value: index,
+          title: `Instance Number: ${InstanceNumber}`,
+          description: '',
+          onClick: () => {
+            setActiveInstance(index);
+          },
+        };
+      });
+
+      metadata = image.getData().metadata;
+    } else {
+      metadata = activeDisplaySet.metadata;
+    }
+
+    setTags(getSortedTags(metadata));
+    setInstanceList(instanceList);
+    setDisplaySetList(newDisplaySetList);
+    setIsImageStack(isImageStack);
+  }, [activeDisplaySetInstanceUID, activeInstance]);
 
   const selectedDisplaySetValue = displaySetList.find(
     ds => ds.value === activeDisplaySetInstanceUID
   );
+
+  let instanceSelectList = null;
+
+  if (isImageStack) {
+    const selectedInstanceValue = instanceList[activeInstance];
+
+    instanceSelectList = (
+      <DicomBrowserSelect
+        value={selectedInstanceValue}
+        formatOptionLabel={DicomBrowserSelectItem}
+        options={instanceList}
+      />
+    );
+  }
 
   return (
     <div>
@@ -90,20 +113,14 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
         formatOptionLabel={DicomBrowserSelectItem}
         options={displaySetList}
       />
-      {isImageStack ? (
-        <DicomBrowserSelect
-          value={selectedInstanceValue}
-          formatOptionLabel={DicomBrowserSelectItem}
-          options={instanceList}
-        />
-      ) : null}
-      <DicomTagTable instanceMetadata={metadata}></DicomTagTable>
+      {instanceSelectList}
+      <DicomTagTable tags={tags}></DicomTagTable>
     </div>
   );
 };
 
-function DicomTagTable({ instanceMetadata }) {
-  const rows = getRows(instanceMetadata);
+function DicomTagTable({ tags }) {
+  const rows = getFormattedRowsFromTags(tags);
 
   return (
     <div>
@@ -114,17 +131,69 @@ function DicomTagTable({ instanceMetadata }) {
           <th className="dicom-tag-browser-table-left">Keyword</th>
           <th className="dicom-tag-browser-table-left">Value</th>
         </tr>
-        {rows.map(row => (
-          <tr>
-            <td>{row[0]}</td>
-            <td>{row[1]}</td>
-            <td>{row[2]}</td>
-            <td>{row[3]}</td>
-          </tr>
-        ))}
+        {rows.map(row => {
+          const className = row.className ? row.className : null;
+
+          return (
+            <tr className={className}>
+              <td>{row[0]}</td>
+              <td className="dicom-tag-browser-table-center">{row[1]}</td>
+              <td>{row[2]}</td>
+              <td>{row[3]}</td>
+            </tr>
+          );
+        })}
       </table>
     </div>
   );
+}
+
+function getFormattedRowsFromTags(tags) {
+  const rows = [];
+
+  tags.forEach(tagInfo => {
+    if (tagInfo.vr === 'SQ') {
+      rows.push([
+        `${tagInfo.tagIndent}${tagInfo.tag}`,
+        tagInfo.vr,
+        tagInfo.keyword,
+        '',
+      ]);
+
+      const { values } = tagInfo;
+
+      values.forEach((item, index) => {
+        const formatedRowsFromTags = getFormattedRowsFromTags(item);
+
+        rows.push([
+          `${item[0].tagIndent}(FFFE,E000)`,
+          '',
+          `Item #${index}`,
+          '',
+        ]);
+
+        rows.push(...formatedRowsFromTags);
+      });
+    } else {
+      rows.push([
+        `${tagInfo.tagIndent}${tagInfo.tag}`,
+        tagInfo.vr,
+        tagInfo.keyword,
+        tagInfo.value,
+      ]);
+    }
+  });
+
+  return rows;
+}
+
+function getSortedTags(metadata) {
+  const tagList = getRows(metadata);
+
+  // Sort top level tags, sequence groups are sorted when created.
+  _sortTagList(tagList);
+
+  return tagList;
 }
 
 function getRows(metadata, depth = 0) {
@@ -136,6 +205,10 @@ function getRows(metadata, depth = 0) {
 
   for (let i = 0; i < depth; i++) {
     tagIndent += '>';
+  }
+
+  if (depth > 0) {
+    tagIndent += ' '; // If indented, add a space after the indents.
   }
 
   const rows = [];
@@ -155,7 +228,16 @@ function getRows(metadata, depth = 0) {
       const sequenceAsArray = toArray(value);
 
       // Push line defining the sequence
-      rows.push([`${tagIndent}${tagInfo.tag}`, tagInfo.vr, keyword, '']);
+
+      const sequence = {
+        tag: tagInfo.tag,
+        tagIndent,
+        vr: tagInfo.vr,
+        keyword,
+        values: [],
+      };
+
+      rows.push(sequence);
 
       if (value === null) {
         // Type 2 Sequence
@@ -165,9 +247,10 @@ function getRows(metadata, depth = 0) {
       sequenceAsArray.forEach(item => {
         const sequenceRows = getRows(item, depth + 1);
 
-        sequenceRows.forEach(row => {
-          rows.push(row);
-        });
+        // Sort the sequence group.
+        _sortTagList(sequenceRows);
+
+        sequence.values.push(sequenceRows);
       });
 
       continue;
@@ -205,16 +288,30 @@ function getRows(metadata, depth = 0) {
       }
     }
 
+    // tag / vr/ keyword/ value
+
     // Remove retired tags
     keyword = keyword.replace('RETIRED_', '');
 
     if (tagInfo) {
-      rows.push([`${tagIndent}${tagInfo.tag}`, tagInfo.vr, keyword, value]);
+      rows.push({
+        tag: tagInfo.tag,
+        tagIndent,
+        vr: tagInfo.vr,
+        keyword,
+        value,
+      });
     } else {
       // Private tag
       const tag = `(${keyword.substring(0, 4)},${keyword.substring(4, 8)})`;
 
-      rows.push([`${tagIndent}${tag}`, '', 'Private Tag', value]);
+      rows.push({
+        tag,
+        tagIndent,
+        vr: '',
+        keyword: 'Private Tag',
+        value,
+      });
     }
   }
 
@@ -223,6 +320,16 @@ function getRows(metadata, depth = 0) {
 
 function toArray(objectOrArray) {
   return Array.isArray(objectOrArray) ? objectOrArray : [objectOrArray];
+}
+
+function _sortTagList(tagList) {
+  tagList.sort((a, b) => {
+    if (a.tag < b.tag) {
+      return -1;
+    }
+
+    return 1;
+  });
 }
 
 export default DicomTagBrowser;
