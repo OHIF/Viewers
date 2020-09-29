@@ -9,12 +9,21 @@ const DubugReportModal = ({
   servers,
   extensionManager,
   mailTo,
+  debugModalMessage,
 }) => {
-  const mailToFunction = () => {
-    const StudyInstanceUID = Object.keys(studies.studyData)[0];
+  const copyDebugDataToClipboard = () => {
+    const body = getEmailBody();
 
-    const subject = encodeURI(`Issue with Study: ${StudyInstanceUID}`);
+    const textArea = document.createElement('textarea');
 
+    textArea.value = body;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+  };
+
+  const getEmailBody = () => {
     let body = `Enter the description of your problem here: \n\n\n`;
 
     body += `============= SESSION INFO =============\n\n`;
@@ -55,13 +64,11 @@ const DubugReportModal = ({
     body += `URL\t ${window.location.href}\n\n`;
 
     // Layout
-
     const { numRows, numColumns, viewportSpecificData } = viewports;
 
     body += '== Viewport Layout ==\n';
     body += `Rows\t${numRows}\n`;
     body += `Columns\t${numColumns}\n\n`;
-
     body += '== Viewports ==\n';
 
     Object.keys(viewportSpecificData).forEach(viewportIndex => {
@@ -75,6 +82,16 @@ const DubugReportModal = ({
       body += `[${row},${column}]\t${vsd.SeriesInstanceUID}\n`;
     });
 
+    return body;
+  };
+
+  const mailToFunction = () => {
+    const StudyInstanceUID = Object.keys(studies.studyData)[0];
+
+    const subject = encodeURI(`Issue with Study: ${StudyInstanceUID}`);
+
+    let body = getEmailBody();
+
     // TODO Text dump of rest of stuff.
 
     body = encodeURI(body);
@@ -84,16 +101,27 @@ const DubugReportModal = ({
 
   return (
     <div className="debug-report-modal-container">
-      {mailTo ? (
+      {debugModalMessage ? <p>{debugModalMessage}</p> : null}
+      <div className="debug-report-modal-buttons-container">
+        {mailTo ? (
+          <div>
+            <ToolbarButton
+              label={'Send Bug Report'}
+              onClick={mailToFunction}
+              icon={'envelope-square'}
+              isActive={false}
+            />
+          </div>
+        ) : null}
         <div>
           <ToolbarButton
-            label={'Send Bug Report'}
-            onClick={mailToFunction}
-            icon={'envelope-square'}
+            label={'Copy To Clipboard'}
+            onClick={copyDebugDataToClipboard}
+            icon={'clipboard'}
             isActive={false}
           />
         </div>
-      ) : null}
+      </div>
       <div>
         <table>
           {getAppVersion()}

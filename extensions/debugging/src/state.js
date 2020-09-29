@@ -1,3 +1,3 @@
-const state = { mailTo: undefined };
+const state = { mailTo: undefined, message: undefined };
 
 export default state;

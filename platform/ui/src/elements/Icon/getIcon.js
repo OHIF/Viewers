@@ -19,6 +19,7 @@ import chevronDown from './icons/chevron-down.svg';
 import circle from './icons/circle.svg';
 import circleNotch from './icons/circle-notch.svg';
 import circleO from './icons/circle-o.svg';
+import clipboard from './icons/clipboard.svg';
 import cog from './icons/cog.svg';
 import createComment from './icons/create-comment.svg';
 import createScreenCapture from './icons/create-screen-capture.svg';
@@ -143,6 +144,7 @@ const ICONS = {
   'lock-alt': lockAlt,
   'step-backward': stepBackward,
   'step-forward': stepForward,
+  clipboard: clipboard,
   stop,
   'th-large': thLarge,
   'th-list': thList,
