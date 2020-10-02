@@ -274,7 +274,7 @@ const ViewportActionBar = ({
         </div>
       </div>
       {showNavArrows && !showCine && (
-        <div className="mt-2">
+        <div className="mt-2" style={{ pointerEvents: 'all' }}>
           <ButtonGroup>
             <Button
               size="initial"
