@@ -27,6 +27,13 @@ export default function setMeasurementActive(measurement) {
   const enabledElements = cornerstoneTools.store.state.enabledElements;
 
   enabledElements.forEach(element => {
-    cornerstone.updateImage(element);
+    try {
+      cornerstone.updateImage(element);
+    } catch (ex) {
+      // https://github.com/cornerstonejs/cornerstone/blob/master/src/updateImage.js#L16
+      // This fails if enabledElement.image is undefined and we have no layers
+      // Instead of throwing, it should _probably_ do nothing.
+      // We'll just swallow the exception
+    }
   });
 }
