@@ -19,7 +19,7 @@ const ThumbnailNoImage = ({
 }) => {
   const [collectedProps, drag, dragPreview] = useDrag({
     item: { ...dragData },
-    canDrag: function (monitor) {
+    canDrag: function(monitor) {
       return Object.keys(dragData).length !== 0;
     },
   });
@@ -54,7 +54,14 @@ const ThumbnailNoImage = ({
             <span className="ml-4 text-base text-blue-300">{seriesDate}</span>
           </div>
           <div className="flex flex-row">
-            {canReject && <Icon name="old-trash" className="ml-4 w-3 text-red-500" onClick={onReject} />}
+            {canReject && (
+              <Icon
+                name="old-trash"
+                style={{ minWidth: '12px' }}
+                className="w-3 ml-4 text-red-500"
+                onClick={onReject}
+              />
+            )}
             <div className="ml-4 text-base text-white break-all">
               {description}
             </div>
