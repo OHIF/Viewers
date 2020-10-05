@@ -21,7 +21,7 @@ const Footer = ({ actions, className, onSubmit, value }) => {
         return (
           <Button
             key={index}
-            className={classNames({ 'ml-2': !isFirst })}
+            className={classNames({ 'ml-2': !isFirst }, action.classes)}
             color={isPrimary ? 'primary' : undefined}
             onClick={onClickHandler}
             style={{ transition: 'all .15s ease', height: 34 }}
@@ -34,7 +34,7 @@ const Footer = ({ actions, className, onSubmit, value }) => {
   );
 };
 
-const noop = () => { };
+const noop = () => {};
 
 Footer.propTypes = {
   className: PropTypes.string,
@@ -45,13 +45,14 @@ Footer.propTypes = {
       text: PropTypes.string.isRequired,
       value: PropTypes.any,
       type: PropTypes.oneOf(['primary', 'secondary', 'cancel']).isRequired,
+      classes: PropTypes.arrayOf(PropTypes.string),
     })
   ).isRequired,
 };
 
 Footer.defaultProps = {
   onSubmit: noop,
-  actions: []
+  actions: [],
 };
 
 export default Footer;
