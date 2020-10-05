@@ -13,7 +13,7 @@ const DEFAULT_SIZE = 512;
 const MAX_TEXTURE_SIZE = 10000;
 
 const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
-  const { enabledElement: activeEnabledElement } = getEnabledElement(
+  const { element: activeEnabledElement } = getEnabledElement(
     activeViewportIndex
   );
 
