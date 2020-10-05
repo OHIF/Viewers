@@ -569,21 +569,35 @@ function _createStudyBrowserTabs(
     }
   });
 
+  // Newest first
+  const _byDate = (a, b) => {
+    const dateA = Date.parse(a);
+    const dateB = Date.parse(b);
+
+    return dateB - dateA;
+  };
+
   const tabs = [
     {
       name: 'primary',
       label: 'Primary',
-      studies: primaryStudies,
+      studies: primaryStudies.sort((studyA, studyB) =>
+        _byDate(studyA.date, studyB.date)
+      ),
     },
     {
       name: 'recent',
       label: 'Recent',
-      studies: recentStudies,
+      studies: recentStudies.sort((studyA, studyB) =>
+        _byDate(studyA.date, studyB.date)
+      ),
     },
     {
       name: 'all',
       label: 'All',
-      studies: allStudies,
+      studies: allStudies.sort((studyA, studyB) =>
+        _byDate(studyA.date, studyB.date)
+      ),
     },
   ];
 
