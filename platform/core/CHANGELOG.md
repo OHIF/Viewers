@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.6](https://github.com/OHIF/Viewers/compare/@ohif/core@2.10.5...@ohif/core@2.10.6) (2020-09-30)
+
+
+### Bug Fixes
+
+* use SeriesMetadata method instead of property in findMostRecentStructuredReport ([#2038](https://github.com/OHIF/Viewers/issues/2038)) ([91364db](https://github.com/OHIF/Viewers/commit/91364db8820efc86665db258d0044c16fb3e2c87)), closes [#1714](https://github.com/OHIF/Viewers/issues/1714)
+
+
+
+
+
 ## [2.10.5](https://github.com/OHIF/Viewers/compare/@ohif/core@2.10.4...@ohif/core@2.10.5) (2020-09-10)
 
 **Note:** Version bump only for package @ohif/core
