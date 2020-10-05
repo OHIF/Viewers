@@ -101,7 +101,7 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       }
 
       // Find total number of tool indexes
-      const { viewports } = ViewportGridService.getState();
+      const { viewports } = ViewportGridService.getState() || { viewports: [] };
       for (let i = 0; i < viewports.length; i++) {
         const viewport = viewports[i];
         const hasDisplaySet = viewport.displaySetInstanceUID !== undefined;
