@@ -102,6 +102,7 @@ export function getCommands(context, servicesManager, extensionManager) {
             servers={servers}
             extensionManager={extensionManager}
             mailTo={state.mailTo}
+            debugModalMessage={state.debugModalMessage}
           />
         );
       };
