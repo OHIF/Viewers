@@ -443,9 +443,19 @@ function _mapDisplaySets(
               ),
               actions: [
                 { id: 'cancel', text: 'Cancel', type: 'secondary' },
-                { id: 'yes', text: 'Yes', type: 'primary' },
+                {
+                  id: 'yes',
+                  text: 'Yes',
+                  type: 'primary',
+                  classes: ['reject-yes-button'],
+                },
               ],
               onClose: () => UIDialogService.dismiss({ id: 'ds-reject-sr' }),
+              onShow: () => {
+                const yesButton = document.querySelector('.reject-yes-button');
+
+                yesButton.focus();
+              },
               onSubmit: async ({ action }) => {
                 switch (action.id) {
                   case 'yes':

@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import Footer from './Footer';
 import Body from './Body';
 import Header from './Header';
+import { useEffect } from 'react';
 
 const Dialog = ({
   title,
@@ -12,11 +13,12 @@ const Dialog = ({
   onClose,
   noCloseButton,
   actions,
+  onShow,
   onSubmit,
   header: HeaderComponent,
   body: BodyComponent,
   footer: FooterComponent,
-  value: defaultValue
+  value: defaultValue,
 }) => {
   const [value, setValue] = useState(defaultValue);
 
@@ -27,10 +29,14 @@ const Dialog = ({
   const position = 'relative';
   const width = 'w-full';
 
+  useEffect(() => {
+    if (onShow) {
+      onShow();
+    }
+  }, [onShow]);
+
   return (
-    <div
-      className={classNames(theme, flex, border, outline, position, width)}
-    >
+    <div className={classNames(theme, flex, border, outline, position, width)}>
       <HeaderComponent
         title={title}
         noCloseButton={noCloseButton}
@@ -38,11 +44,7 @@ const Dialog = ({
         value={value}
         setValue={setValue}
       />
-      <BodyComponent
-        text={text}
-        value={value}
-        setValue={setValue}
-      />
+      <BodyComponent text={text} value={value} setValue={setValue} />
       <FooterComponent
         actions={actions}
         onSubmit={onSubmit}
@@ -77,7 +79,7 @@ Dialog.defaultProps = {
   header: Header,
   footer: Footer,
   body: Body,
-  value: {}
+  value: {},
 };
 
 export default Dialog;
