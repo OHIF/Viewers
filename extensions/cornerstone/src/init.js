@@ -25,6 +25,11 @@ const TOOL_TYPES_WITH_CONTEXT_MENU = [
   'EllipticalRoi',
   'CircleRoi',
   'RectangleRoi',
+  // SR Viewport...
+  'SRLength',
+  'SRBidirectional',
+  'SRArrowAnnotate',
+  'SREllipticalRoi',
 ];
 
 const _refreshViewports = () =>
@@ -118,7 +123,39 @@ export default function init({
         eventData: event.detail,
         onDelete: item => {
           const { tool: measurementData, toolType } = item.value;
-          measurementServiceSource.remove(measurementData.id);
+
+          // Sync'd w/ Measurement Service
+          if (measurementData.id) {
+            measurementServiceSource.remove(measurementData.id);
+          }
+          // Only in cstools
+          else {
+            const toolState =
+              csTools.globalImageIdSpecificToolStateManager.toolState;
+
+            Object.keys(toolState).forEach(imageId => {
+              Object.keys(toolState[imageId]).forEach(imageToolType => {
+                const numMeasurements =
+                  toolState[imageId][imageToolType].data.length;
+
+                for (let i = 0; i < numMeasurements; i++) {
+                  const toolData = toolState[imageId][imageToolType].data[i];
+                  if (measurementData.uuid === toolData.uuid) {
+                    // Clear and nuke matching measurement
+                    toolState[imageId][imageToolType].data[i] = null;
+                    delete toolState[imageId][imageToolType].data[i];
+                    toolState[imageId][imageToolType].data.splice(i, 1);
+
+                    // Delete "data" if we deleted last measurement in array
+                    // if (toolState[imageId][imageToolType].data.length === 0) {
+                    //   delete toolState[imageId][imageToolType].data;
+                    // }
+                  }
+                }
+              });
+            });
+            console.log(csTools.store.state);
+          }
           _refreshViewports();
           CONTEXT_MENU_OPEN = false;
         },
