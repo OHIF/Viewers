@@ -23,6 +23,25 @@ export default function mode({ modeConfiguration }) {
     // We should not be.
     id: 'viewer',
     displayName: 'Basic Viewer',
+    /**
+     * Lifecycle hooks
+     */
+    onModeEnter: ({ servicesManager, extensionManager }) => {
+      // Note: If tool's aren't initialized, this doesn't have viewport/tools
+      // to "set active". This is mostly for the toolbar UI state?
+      // Could update tool manager to be always persistent, and to set state
+      // on load?
+      const { ToolBarService } = servicesManager.services;
+      const interaction = {
+        groupId: 'primary',
+        itemId: 'Wwwc',
+        interactionType: 'tool',
+        commandOptions: undefined,
+      };
+
+      ToolBarService.recordInteraction(interaction);
+    },
+    onModeExit: () => {},
     validationTags: {
       study: [],
       series: [],

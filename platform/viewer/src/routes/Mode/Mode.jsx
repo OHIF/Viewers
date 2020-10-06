@@ -96,19 +96,19 @@ export default function ModeRoute({
   }, []);
 
   useEffect(() => {
-    // Core
-
     // TODO: For some reason this is running before the Providers
     // are calling setServiceImplementation
     // TOOD -> iterate through services.
 
     // Extension
     extensionManager.onModeEnter();
+    mode?.onModeEnter({ servicesManager, extensionManager });
     // Mode
     route.init({ servicesManager, extensionManager });
 
     return () => {
       extensionManager.onModeExit();
+      mode?.onModeExit({ servicesManager, extensionManager });
     };
   }, [
     mode,
