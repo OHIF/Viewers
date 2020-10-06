@@ -385,7 +385,7 @@ function _getDisplayText(
       const roundedArea = _round(area, 2);
 
       return [
-        `${roundedArea} ${unit}2 (S:${seriesNumber}, I:${instanceNumber})`,
+        `${roundedArea} ${unit}<sup>2</sup> (S:${seriesNumber}, I:${instanceNumber})`,
       ];
     }
     case types.POINT: {

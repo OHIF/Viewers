@@ -164,7 +164,7 @@ const ViewportDownloadForm = ({
     }
 
     return (
-      <Typography className="mt-2 pl-1" color="error">
+      <Typography className="pl-1 mt-2" color="error">
         {error_messages[errorType]}
       </Typography>
     );
@@ -276,7 +276,7 @@ const ViewportDownloadForm = ({
         image.
       </Typography>
 
-      <div className="mt-6 flex flex-col">
+      <div className="flex flex-col mt-6">
         <div className="w-full mb-4">
           <Input
             data-cy="file-name"
@@ -331,7 +331,7 @@ const ViewportDownloadForm = ({
             </div>
           </div>
 
-          <div className="ml-6 w-1/4 pl-6 border-l border-secondary-dark">
+          <div className="w-1/4 pl-6 ml-6 border-l border-secondary-dark">
             <div>
               <InputLabelWrapper
                 sortDirection="none"
@@ -405,7 +405,7 @@ const ViewportDownloadForm = ({
             />
           </div>
         ) : (
-          <div className="text-center p-8">
+          <div className="p-8 text-center">
             <Typography>Loading Image Preview...</Typography>
           </div>
         )}

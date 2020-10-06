@@ -382,7 +382,6 @@ function _mapDisplaySets(
   UIDialogService,
   UINotificationService
 ) {
-  console.log(displaySets.length);
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
   displaySets.forEach(ds => {

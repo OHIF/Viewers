@@ -3,7 +3,15 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { Icon } from '../';
 
-const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onEdit }) => {
+const MeasurementItem = ({
+  id,
+  index,
+  label,
+  displayText,
+  isActive,
+  onClick,
+  onEdit,
+}) => {
   const [isHovering, setIsHovering] = useState(false);
 
   const onEditHandler = event => {
@@ -41,14 +49,14 @@ const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onE
       >
         {index}
       </div>
-      <div className="px-2 py-1 flex flex-1 flex-col relative">
-        <span className="text-base text-primary-light mb-1">
-          {label}
-        </span>
+      <div className="relative flex flex-col flex-1 px-2 py-1">
+        <span className="mb-1 text-base text-primary-light">{label}</span>
         {displayText.map(line => (
-          <span key={line} className="pl-2 border-l border-primary-light text-base text-white">
-            {line}
-          </span>
+          <span
+            key={line}
+            className="pl-2 text-base text-white border-l border-primary-light"
+            dangerouslySetInnerHTML={{ __html: line }}
+          ></span>
         ))}
         <Icon
           className={classnames(
@@ -70,13 +78,16 @@ const MeasurementItem = ({ id, index, label, displayText, isActive, onClick, onE
 };
 
 MeasurementItem.propTypes = {
-  id: PropTypes.oneOfType([PropTypes.number.isRequired, PropTypes.string.isRequired]),
+  id: PropTypes.oneOfType([
+    PropTypes.number.isRequired,
+    PropTypes.string.isRequired,
+  ]),
   index: PropTypes.number.isRequired,
   label: PropTypes.string,
   displayText: PropTypes.array.isRequired,
   isActive: PropTypes.bool,
   onClick: PropTypes.func,
-  onEdit: PropTypes.func
+  onEdit: PropTypes.func,
 };
 
 MeasurementItem.defaultProps = {
