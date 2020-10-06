@@ -26,9 +26,9 @@ export default function downloadCSVReport(
     [
       'Patient ID',
       'Patient Name',
-      'Study UID',
-      'Series UID',
-      'SOP Instance UID',
+      'StudyInstanceUID',
+      'SeriesInstanceUID',
+      'SOPInstanceUID',
       'Label',
       'Long Axis (mm)',
       'Short Axis (mm)',
