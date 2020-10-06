@@ -146,16 +146,17 @@ export default [
       commandOptions: { toolName: 'Pan' },
     },
   },
-  {
-    id: 'Capture',
-    type: 'ohif.action',
-    props: {
-      icon: 'tool-capture',
-      label: 'Capture',
-      type: 'action',
-      commandName: 'showDownloadViewportModal',
-    },
-  },
+  // TODO: OHIF-376, need more time to adress this reasonably
+  // {
+  //   id: 'Capture',
+  //   type: 'ohif.action',
+  //   props: {
+  //     icon: 'tool-capture',
+  //     label: 'Capture',
+  //     type: 'action',
+  //     commandName: 'showDownloadViewportModal',
+  //   },
+  // },
   {
     id: 'Layout',
     type: 'ohif.layoutSelector',
