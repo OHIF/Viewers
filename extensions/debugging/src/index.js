@@ -36,8 +36,14 @@ export default {
       sharedContext.dicomWebClient = dicomWebClient;
     }
 
-    if (configuration && configuration.mailTo) {
-      state.mailTo = configuration.mailTo;
+    if (configuration) {
+      if (configuration.mailTo) {
+        state.mailTo = configuration.mailTo;
+      }
+
+      if (configuration.debugModalMessage) {
+        state.debugModalMessage = configuration.debugModalMessage;
+      }
     }
   },
 
