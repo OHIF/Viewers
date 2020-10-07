@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.8](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.4.7...@ohif/extension-dicom-rt@0.4.8) (2020-10-07)
+
+**Note:** Version bump only for package @ohif/extension-dicom-rt
+
+
+
+
+
 ## [0.4.7](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.4.6...@ohif/extension-dicom-rt@0.4.7) (2020-10-06)
 
 **Note:** Version bump only for package @ohif/extension-dicom-rt
