@@ -88,7 +88,15 @@ export default async function loadRTStruct(
         ContourGeometricType,
       } = ContourSequenceArray[c];
 
-      const sopInstanceUID = ContourImageSequence.ReferencedSOPInstanceUID;
+      debugger;
+
+      const sopInstanceUID = ContourImageSequence
+        ? ContourImageSequence.ReferencedSOPInstanceUID
+        : _getClosestSOPInstanceUID(
+            ContourData,
+            ContourGeometricType,
+            imageIdSopInstanceUidPairs
+          );
       const imageId = _getImageId(imageIdSopInstanceUidPairs, sopInstanceUID);
       const imageIdSpecificToolData = _getOrCreateImageIdSpecificToolData(
         toolState,
@@ -325,4 +333,28 @@ function _getImageIdSopInstanceUidPairsForDisplaySet(
 
 function _toArray(objOrArray) {
   return Array.isArray(objOrArray) ? objOrArray : [objOrArray];
+}
+
+function _getClosestSOPInstanceUID(
+  contourData,
+  ContourGeometricType,
+  imageIdSopInstanceUidPairs
+) {
+  const closest = {
+    distance: Infinity,
+    imageId: null,
+  };
+
+  switch (ContourGeometricType) {
+    case 'POINT':
+      debugger;
+
+      break;
+    case 'CLOSED_PLANAR':
+    case 'OPEN_PLANAR':
+      throw new Error('TODO!');
+      break;
+  }
+
+  debugger;
 }
