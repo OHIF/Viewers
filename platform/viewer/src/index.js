@@ -29,9 +29,9 @@ import OHIFDicomSegmentationExtension from '@ohif/extension-dicom-segmentation';
 import OHIFDicomRtExtension from '@ohif/extension-dicom-rt';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
-//import OHIFDicomTagBrowserExtension from '@ohif/extension-dicom-tag-browser';
+import OHIFDicomTagBrowserExtension from '@ohif/extension-dicom-tag-browser';
 // Add this for Debugging purposes:
-//import OHIFDebuggingExtension from '@ohif/extension-debugging';
+import OHIFDicomModelPredictionExtension from '../../../extensions/dicom-model-prediction';
 import { version } from '../package.json';
 
 /*
@@ -54,8 +54,12 @@ const appProps = {
     OHIFDicomPDFExtension,
     OHIFDicomSegmentationExtension,
     OHIFDicomRtExtension,
-    //OHIFDebuggingExtension,
-    //OHIFDicomTagBrowserExtension,
+    [
+      OHIFDicomModelPredictionExtension,
+      {
+        infoApi: 'https://testapi.io/api/segseg/model_info',
+      },
+    ],
   ],
 };
 

@@ -1,0 +1,158 @@
+.AIPredictionTable {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.AIPredictionTable .displayTexts {
+  display: flex;
+}
+
+.AIPredictionTable .displayTexts .measurementDisplayText {
+  flex: 1;
+}
+
+.AIPredictionTable .predictionTableHeader {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  padding: 38px 0;
+}
+
+.AIPredictionTable .predictionTableHeader .roundedButton.first {
+  padding-left: 20px;
+  border-bottom-left-radius: 10px;
+  border-top-left-radius: 10px;
+  padding-right: 10px;
+}
+
+.AIPredictionTable .predictionTableHeader .roundedButton.first:not(.active), .AIPredictionTable .predictionTableHeader .roundedButton.second:not(.active) {
+  border: 2px solid var(--active-color);
+}
+
+.AIPredictionTable .predictionTableHeader .roundedButton.second {
+  padding-right: 20px;
+  border-bottom-right-radius: 10px;
+  border-top-right-radius: 10px;
+  padding-left: 10px;
+}
+
+
+.AIPredictionTable .predictionTableHeader .warning-status {
+  left: 0;
+  top: 3px;
+  cursor: pointer;
+  width: 40px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.AIPredictionTable .predictionTableHeader .warning-status .warning-border {
+  padding: 2px 3px;
+  width: 30px;
+  height: 30px;
+}
+
+.AIPredictionTable .predictionTableHeader .warning-status svg {
+  width: 20px;
+  height: 18px;
+}
+
+.AIPredictionTable .predictionTableHeader .predictionTableItem {
+  position: relative;
+  flex: 1;
+}
+
+.AIPredictionTable .generate-report {
+  background-color: #151a1f;
+  margin-top: 2px;
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.AIPredictionTable .generate-report button {
+  font-size: 12px;
+  color: black;
+  background-color: var(--active-color);
+}
+
+.AIPredictionTable #predictionTableContainer #ai-section-wrapper {
+  padding: 20px 15px;
+  color: white;
+}
+
+.AIPredictionTable #predictionTableContainer #ai-section-wrapper select {
+  background: #151a1f;
+}
+
+.AIPredictionTable #predictionTableContainer #ai-section-wrapper p, .AIPredictionTable #predictionTableContainer #ai-section-wrapper label{
+  font-weight: bold;
+  color: #9ccef9;
+}
+
+.AIPredictionTable #predictionTableContainer #ai-section-wrapper table .text-bold{
+  font-weight: bold;
+  color: #9ccef9;
+}
+
+.AIPredictionTable #predictionTableContainer #ai-section-wrapper table td {
+  border-top: 1px solid #455a64;
+}
+
+
+.AIPredictionTable #predictionTableContainer #results-section-wrapper {
+  padding: 20px 15px;
+  color: white;
+}
+
+.AIPredictionTable #predictionTableContainer #results-section-wrapper label{
+  font-weight: bold;
+  color: #9ccef9;
+}
+
+.AIPredictionTable #predictionTableContainer #results-section-wrapper .text-bold{
+  font-weight: bold;
+  color: #9ccef9;
+}
+
+.AIPredictionTable #predictionTableContainer #results-section-wrapper table td {
+  border-top: 1px solid #455a64;
+}
+
+.AIPredictionTable #predictionTableContainer .tabs{
+  color: white;
+}
+
+.AIPredictionTable #predictionTableContainer .tabs ol{
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.AIPredictionTable #predictionTableContainer .tabs ol li{
+  align-items: center;
+  display: flex;
+  font-size: 11px;
+  font-weight: 500;
+  justify-content: center;
+  height: 25px;
+  line-height: 25px;
+  padding: 0 22px;
+  border: 2px solid #3c5d80;
+  color: #91b9cd;
+  position: relative;
+  background-color: #16202b;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.AIPredictionTable #predictionTableContainer .tabs ol li.tab-list-active{
+  color: #16202b;
+  border-color: #00a4d9;
+  background-color: #20a5d6;
+  z-index: 2;
+}

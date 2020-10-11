@@ -11,7 +11,15 @@ window.config = {
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        requestOptions: {
+          auth: 'alice:alicePassword',
+          logRequests: true,
+          logResponses: false,
+          logTiming: true,
+        },
       },
     ],
   },
+  extensions: [
+  ]
 };
