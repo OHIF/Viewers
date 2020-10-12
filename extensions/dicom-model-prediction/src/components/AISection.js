@@ -43,9 +43,9 @@ class AISection extends Component {
 
   handleChange = event => {
     const { value } = event.target;
-    var found = stateDetails.modelsDetails.filter(
-        function(data){ return data.id === value }
-    );
+    var found = stateDetails.modelsDetails.filter(function(data) {
+      return data.id === value;
+    });
     const endpoint = `${found[0].infoApi}?model_id=${value}`;
 
     fetch(endpoint)
@@ -71,13 +71,40 @@ class AISection extends Component {
 
   handlePredictionClick = event => {
     event.preventDefault();
+
+    const input = document.getElementById('model-selection');
+    var found = stateDetails.modelsDetails.filter(function(data) {
+      return data.id === input.value;
+    });
+    const endpoint = `${found[0].predictionApi}`;
+    const activeEnabledElement = cornerstone.getEnabledElements()[0];
+    const formData = new FormData();
+    const imageBlob = this.dataURItoBlob(
+      activeEnabledElement.canvas.toDataURL()
+    );
+
+    formData.append('image', imageBlob);
+
+    const requestOptions = {
+      method: 'POST',
+      body: formData,
+    };
+
+    fetch(endpoint, requestOptions)
+      .then(response => response.json())
+      .then(responseJson => {
+        stateDetails.predictionResults = responseJson;
+      })
+      .catch(error => {
+        return console.log(error);
+      });
   };
 
   componentDidMount() {
-    const input = document.getElementById('lang');
-    var found = stateDetails.modelsDetails.filter(
-        function(data){ return data.id === input.value }
-    );
+    const input = document.getElementById('model-selection');
+    var found = stateDetails.modelsDetails.filter(function(data) {
+      return data.id === input.value;
+    });
     const endpoint = `${found[0].infoApi}?model_id=${input.value}`;
 
     fetch(endpoint)
@@ -117,7 +144,7 @@ class AISection extends Component {
               Available Models
             </label>
             <select
-              id="lang"
+              id="model-selection"
               className="form-control ai-models js-aiModelName js-option"
               onChange={e => this.handleChange(e)}
             >

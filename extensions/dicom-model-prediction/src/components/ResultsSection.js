@@ -17,13 +17,12 @@ class ResultsSection extends Component {
 
         <p className="text-bold">Biopsy results:</p>
         <p>
-          clinical significant findings (Gleason score 7 or higher) was reported
-          by pathology.
+            {stateDetails.predictionResults.prediction}
         </p>
         <br />
 
         <p className="text-bold">Analysis of your findings:</p>
-        <p>is the closest to with 76.74 mm</p>
+        <p>{stateDetails.predictionResults.probability}</p>
       </div>
     );
   }
