@@ -1,6 +1,6 @@
 import AIPredictionTable from './components/AIPredictionTable';
 import { version } from '../package.json';
-import {getDicomWebClientFromConfig} from "@ohif/extension-debugging/src/utils";
+import { getDicomWebClientFromConfig } from '@ohif/extension-debugging/src/utils';
 import stateDetails from './components/state';
 
 const sharedContext = {
@@ -25,10 +25,9 @@ export default {
     if (dicomWebClient) {
       sharedContext.dicomWebClient = dicomWebClient;
     }
-
     if (configuration) {
-      if (configuration.infoApi) {
-        stateDetails.infoApi = configuration.infoApi;
+      if (configuration.modelsDetails) {
+        stateDetails.modelsDetails = configuration.modelsDetails;
       }
     }
   },

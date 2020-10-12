@@ -102,6 +102,23 @@
   border-top: 1px solid #455a64;
 }
 
+.AIPredictionTable #predictionTableContainer #ai-section-wrapper form .form-group {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.AIPredictionTable #predictionTableContainer #ai-section-wrapper form .form-group .ai-magic-button {
+  display: flex;
+  justify-content: center;
+}
+
+.AIPredictionTable #predictionTableContainer #ai-section-wrapper form .form-group button {
+  width: 150px;
+  margin-top: 10px;
+  border-radius: 12px;
+  background-color: #20a5d6;
+}
 
 .AIPredictionTable #predictionTableContainer #results-section-wrapper {
   padding: 20px 15px;

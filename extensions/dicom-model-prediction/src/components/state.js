@@ -1,3 +1,3 @@
-const stateDetails = { infoApi: undefined };
+const stateDetails = { modelsDetails: [] };
 
 export default stateDetails;

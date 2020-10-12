@@ -57,7 +57,26 @@ const appProps = {
     [
       OHIFDicomModelPredictionExtension,
       {
-        infoApi: 'https://testapi.io/api/segseg/model_info',
+        modelsDetails: [
+          {
+            id: '1',
+            name: 'First Model',
+            predictionApi: '',
+            infoApi: 'https://testapi.io/api/segseg/model_info',
+          },
+          {
+            id: '2',
+            name: 'Second Model',
+            predictionApi: '',
+            infoApi: 'https://testapi.io/api/segseg/model_info',
+          },
+          {
+            id: '3',
+            name: 'Second Model',
+            predictionApi: '',
+            infoApi: 'https://testapi.io/api/segseg/model_info',
+          },
+        ],
       },
     ],
   ],

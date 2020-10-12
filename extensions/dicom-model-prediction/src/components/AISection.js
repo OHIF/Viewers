@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import stateDetails from './state';
+import cornerstone from 'cornerstone-core';
 
 class AISection extends Component {
   state = {
@@ -15,11 +16,37 @@ class AISection extends Component {
     website: '',
     citation: '',
     version: '',
+    modelsDetails: [],
   };
+
+  dataURItoBlob(dataURI) {
+    // convert base64 to raw binary data held in a string
+    var byteString = atob(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    var mimeString = dataURI
+      .split(',')[0]
+      .split(':')[1]
+      .split(';')[0];
+
+    // write the bytes of the string to an ArrayBuffer
+    var arrayBuffer = new ArrayBuffer(byteString.length);
+    var _ia = new Uint8Array(arrayBuffer);
+    for (var i = 0; i < byteString.length; i++) {
+      _ia[i] = byteString.charCodeAt(i);
+    }
+
+    var dataView = new DataView(arrayBuffer);
+    var blob = new Blob([dataView], { type: mimeString });
+    return blob;
+  }
 
   handleChange = event => {
     const { value } = event.target;
-    const endpoint = `${stateDetails.infoApi}?model_id=${value}`;
+    var found = stateDetails.modelsDetails.filter(
+        function(data){ return data.id === value }
+    );
+    const endpoint = `${found[0].infoApi}?model_id=${value}`;
 
     fetch(endpoint)
       .then(response => response.json())
@@ -42,9 +69,16 @@ class AISection extends Component {
       });
   };
 
+  handlePredictionClick = event => {
+    event.preventDefault();
+  };
+
   componentDidMount() {
     const input = document.getElementById('lang');
-    const endpoint = `${stateDetails.infoApi}?model_id=${input.value}`;
+    var found = stateDetails.modelsDetails.filter(
+        function(data){ return data.id === input.value }
+    );
+    const endpoint = `${found[0].infoApi}?model_id=${input.value}`;
 
     fetch(endpoint)
       .then(response => response.json())
@@ -68,6 +102,13 @@ class AISection extends Component {
   }
 
   render() {
+    const optionItems = stateDetails.modelsDetails.map(
+      ({ id, name, predictionApi, infoApi }) => (
+        // eslint-disable-next-line react/jsx-key
+        <option value={id}>{name}</option>
+      )
+    );
+
     return (
       <div id="ai-section-wrapper" className="">
         <form>
@@ -80,9 +121,17 @@ class AISection extends Component {
               className="form-control ai-models js-aiModelName js-option"
               onChange={e => this.handleChange(e)}
             >
-              <option value="Java">Java</option>
-              <option value="C++">C++</option>
+              {optionItems}
             </select>
+
+            <div className="ai-magic-button">
+              <button
+                onClick={this.handlePredictionClick}
+                className="btn btn-sm"
+              >
+                AI Magic
+              </button>
+            </div>
           </div>
         </form>
         <br />
