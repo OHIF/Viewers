@@ -26,6 +26,15 @@ const definitions = [
     commandOptions: {},
   },
   {
+    id: 'Reset',
+    label: 'Reset',
+    icon: 'reset',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'resetMPRView',
+    commandOptions: {},
+  },
+  {
     id: 'Rotate',
     label: 'Rotate',
     icon: '3d-rotate',
@@ -131,4 +140,4 @@ const definitions = [
 export default {
   definitions,
   defaultContext: 'ACTIVE_VIEWPORT::VTK',
-}
+};
