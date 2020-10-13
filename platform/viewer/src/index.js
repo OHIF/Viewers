@@ -72,7 +72,7 @@ const appProps = {
           },
           {
             id: '3',
-            name: 'Second Model',
+            name: 'Third Model',
             predictionApi: 'http://127.0.0.1:5000/prediction',
             infoApi: 'https://testapi.io/api/segseg/model_info',
           },

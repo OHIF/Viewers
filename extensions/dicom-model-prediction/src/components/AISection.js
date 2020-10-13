@@ -93,7 +93,7 @@ class AISection extends Component {
     fetch(endpoint, requestOptions)
       .then(response => response.json())
       .then(responseJson => {
-        stateDetails.predictionResults = responseJson;
+        stateDetails.predictionResults = responseJson.data;
       })
       .catch(error => {
         return console.log(error);
