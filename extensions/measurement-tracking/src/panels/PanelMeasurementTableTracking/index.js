@@ -376,8 +376,8 @@ function _getDisplayText(
       const roundedLongestDiameter = _round(longestDiameter, 1);
 
       return [
-        `l: ${roundedLongestDiameter} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
-        `s: ${roundedShortestDiameter} ${unit}`,
+        `L: ${roundedLongestDiameter} ${unit} (S:${seriesNumber}, I:${instanceNumber})`,
+        `W: ${roundedShortestDiameter} ${unit}`,
       ];
     }
     case types.ELLIPSE: {
