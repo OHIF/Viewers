@@ -294,7 +294,7 @@ function _getTextBoxLinesFromLabels(labels) {
 }
 
 const SHORT_HAND_MAP = {
-  'Short Axis': 'S ',
+  'Short Axis': 'W ',
   'Long Axis': 'L ',
   AREA: 'Area ',
   Length: '',
