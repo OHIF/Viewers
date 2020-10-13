@@ -14,7 +14,7 @@ import OHIFVTKViewport from './OHIFVTKViewport';
 
 const { BlendMode } = Constants;
 
-const commandsModule = ({ commandsManager }) => {
+const commandsModule = ({ commandsManager, UINotificationService }) => {
   // TODO: Put this somewhere else
   let apis = {};
 
@@ -434,8 +434,43 @@ const commandsModule = ({ commandsManager }) => {
         api.svgWidgets.rotatableCrosshairsWidget.setApis(apis);
       });
 
+      const firstApi = apis[0];
+
       // Initialise crosshairs
       apis[0].svgWidgets.rotatableCrosshairsWidget.resetCrosshairs(apis, 0);
+
+      // Check if we have full WebGL 2 support
+      const openGLRenderWindow = apis[0].genericRenderWindow.getOpenGLRenderWindow();
+
+      if (!openGLRenderWindow.getWebgl2()) {
+        // Throw a warning if we don't have WebGL 2 support,
+        // And the volume is too big to fit in a 2D texture
+
+        const openGLContext = openGLRenderWindow.getContext();
+        const maxTextureSizeInBytes = openGLContext.getParameter(
+          openGLContext.MAX_TEXTURE_SIZE
+        );
+
+        const maxBufferLengthFloat32 =
+          (maxTextureSizeInBytes * maxTextureSizeInBytes) / 4;
+
+        const dimensions = firstApi.volumes[0]
+          .getMapper()
+          .getInputData()
+          .getDimensions();
+
+        const volumeLength = dimensions[0] * dimensions[1] * dimensions[2];
+
+        if (volumeLength > maxBufferLengthFloat32) {
+          UINotificationService.show({
+            title: 'Browser does not support WebGL 2',
+            message:
+              'This volume is too large to fit in WebGL 1 textures and will display incorrectly. Please use a different browser to view this data',
+            type: 'error',
+            autoClose: false,
+          });
+        }
+      }
     },
   };
 
