@@ -133,6 +133,25 @@
 .AIPredictionTable #predictionTableContainer #results-section-wrapper .text-bold{
   font-weight: bold;
   color: #9ccef9;
+  margin-top: 5px;
+}
+
+.AIPredictionTable #predictionTableContainer #results-section-wrapper .no-results-available{
+  color: white;
+  text-align: center;
+}
+
+.AIPredictionTable #predictionTableContainer #results-section-wrapper .form-group{
+  padding-bottom: 25px;
+}
+
+.AIPredictionTable #predictionTableContainer #results-section-wrapper .result-individual-section {
+  padding: 7px;
+  border-top: 1px solid #455a64;
+}
+
+.AIPredictionTable #predictionTableContainer #results-section-wrapper .result-individual-section p:not(.text-bold) {
+  margin-bottom: 8px;
 }
 
 .AIPredictionTable #predictionTableContainer #results-section-wrapper table td {

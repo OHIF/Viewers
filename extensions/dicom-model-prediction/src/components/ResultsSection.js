@@ -5,24 +5,31 @@ import cornerstone from 'cornerstone-core';
 
 class ResultsSection extends Component {
   render() {
+    const resultsItems = stateDetails.predictionResults.map(
+      ({ title, description }) => (
+        <div className="result-individual-section">
+          <p className="text-bold">{title}</p>
+          <p>{description}</p>
+        </div>
+      )
+    );
+
+    const noResultsAvailable = (
+      <div className="no-results-available">
+        <h3>No Results Available</h3>
+      </div>
+    );
+
     return (
       <div id="results-section-wrapper">
-        <p className="text-bold">Annotations:</p>
-        <p>Expert radiologist indicated suspicious area for this patient.</p>
-        <br />
-
-        <p className="text-bold">Procedure:</p>
-        <p>The patient underwent MR-guidance biopsies.</p>
-        <br />
-
-        <p className="text-bold">Biopsy results:</p>
-        <p>
-            {stateDetails.predictionResults.prediction}
-        </p>
-        <br />
-
-        <p className="text-bold">Analysis of your findings:</p>
-        <p>{stateDetails.predictionResults.probability}</p>
+        <div className="form-group">
+          <label className="form-label" htmlFor="ai-models">
+            Gained Results
+          </label>
+        </div>
+        {resultsItems && resultsItems.length
+          ? resultsItems
+          : noResultsAvailable}
       </div>
     );
   }
