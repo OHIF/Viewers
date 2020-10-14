@@ -49,7 +49,6 @@ class AISection extends Component {
     });
     const endpoint = `${found[0].infoApi}?model_id=${value}`;
 
-
     fetch(endpoint)
       .then(response => response.json())
       .then(data => {
@@ -75,8 +74,8 @@ class AISection extends Component {
     event.preventDefault();
 
     const input = document.getElementById('model-selection');
-   const modelId=input.value
-       var found = stateDetails.modelsDetails.filter(function(data) {
+    const modelId = input.value;
+    var found = stateDetails.modelsDetails.filter(function(data) {
       return data.id === input.value;
     });
 
@@ -88,18 +87,20 @@ class AISection extends Component {
     );
 
     formData.append('image', imageBlob);
-    formData.append('modelId',modelId)
+    formData.append('modelId', modelId);
+
     const requestOptions = {
       method: 'POST',
       body: formData,
-
     };
 
     fetch(endpoint, requestOptions)
       .then(response => response.json())
       .then(responseJson => {
         stateDetails.predictionResults = responseJson.data;
-        document.getElementsByClassName('tab-list-item results-section')[0].click()
+        document
+          .getElementsByClassName('tab-list-item results-section')[0]
+          .click();
       })
       .catch(error => {
         return console.log(error);
