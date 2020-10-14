@@ -94,6 +94,7 @@ class AISection extends Component {
       .then(response => response.json())
       .then(responseJson => {
         stateDetails.predictionResults = responseJson.data;
+        document.getElementsByClassName('tab-list-item results-section')[0].click()
       })
       .catch(error => {
         return console.log(error);
