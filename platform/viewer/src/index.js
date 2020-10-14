@@ -30,6 +30,7 @@ import OHIFDicomRtExtension from '@ohif/extension-dicom-rt';
 import OHIFDicomMicroscopyExtension from '@ohif/extension-dicom-microscopy';
 import OHIFDicomPDFExtension from '@ohif/extension-dicom-pdf';
 import OHIFDicomTagBrowserExtension from '@ohif/extension-dicom-tag-browser';
+import OHIFDebuggingExtension from '@ohif/extension-debugging';
 // Add this for Debugging purposes:
 import OHIFDicomModelPredictionExtension from '../../../extensions/dicom-model-prediction';
 import { version } from '../package.json';
@@ -54,6 +55,7 @@ const appProps = {
     OHIFDicomPDFExtension,
     OHIFDicomSegmentationExtension,
     OHIFDicomRtExtension,
+    OHIFDicomTagBrowserExtension,
     [
       OHIFDicomModelPredictionExtension,
       {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import stateDetails from './state';
+import stateDetails from '../state';
 import cornerstone from 'cornerstone-core';
 
 class AISection extends Component {

@@ -157,6 +157,29 @@
 .AIPredictionTable #predictionTableContainer #results-section-wrapper table td {
   border-top: 1px solid #455a64;
 }
+.AIPredictionTable #predictionTableContainer #results-section-wrapper .report-section {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.AIPredictionTable #predictionTableContainer #results-section-wrapper .report-section #report-text.report{
+  width: 100%;
+  height: 150px;
+  border: 2px solid #3c5d80;
+  border-radius: 10px;
+  color: #91b9cd;
+  padding: 5px 8px;
+  background-color: #16202b;
+}
+
+.AIPredictionTable #predictionTableContainer #results-section-wrapper .report-section button.btn {
+  width: 150px;
+  margin-top: 10px;
+  border-radius: 12px;
+  background-color: #20a5d6;
+}
 
 .AIPredictionTable #predictionTableContainer .tabs{
   color: white;
@@ -186,9 +209,29 @@
   cursor: pointer;
 }
 
+.AIPredictionTable #predictionTableContainer .tabs ol li.tab-list-item:first-of-type{
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.AIPredictionTable #predictionTableContainer .tabs ol li.tab-list-item:last-of-type{
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
 .AIPredictionTable #predictionTableContainer .tabs ol li.tab-list-active{
   color: #16202b;
   border-color: #00a4d9;
   background-color: #20a5d6;
   z-index: 2;
+}
+
+#report-section-wrapper{
+  display: flex;
+  flex-direction: column;
+}
+
+#report-section-wrapper .diagnosisReportModalHeader{
+  padding: 10px 0 10px;
+  color: var(--active-color);
 }

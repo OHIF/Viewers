@@ -1,7 +1,8 @@
 import AIPredictionTable from './components/AIPredictionTable';
 import { version } from '../package.json';
 import { getDicomWebClientFromConfig } from '@ohif/extension-debugging/src/utils';
-import stateDetails from './components/state';
+import stateDetails from './state';
+import React from 'react';
 
 const sharedContext = {
   dicomWebClient: null,
@@ -33,6 +34,10 @@ export default {
   },
 
   getPanelModule({ servicesManager, commandsManager }) {
+    const AIPredictionTablePanel = () => (
+      <AIPredictionTable servicesManager={servicesManager} />
+    );
+
     return {
       menuOptions: [
         {
@@ -44,7 +49,7 @@ export default {
       components: [
         {
           id: 'ai-prediction-panel',
-          component: AIPredictionTable,
+          component: AIPredictionTablePanel,
         },
       ],
       defaultContext: ['VIEWER'],

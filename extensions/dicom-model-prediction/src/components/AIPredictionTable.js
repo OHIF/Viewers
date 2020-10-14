@@ -170,7 +170,7 @@ class AIPredictionTable extends Component {
               <AISection />
             </div>
             <div label="results-section">
-              <ResultsSection />
+              <ResultsSection servicesManager={this.props.servicesManager} />
             </div>
           </Tabs>
         </div>
