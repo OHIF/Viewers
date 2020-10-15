@@ -23,9 +23,17 @@ function Header(props) {
   } = props;
 
   const [options, setOptions] = useState([]);
-  const hasLink = linkText && linkPath;
 
+ const hasLink = linkText && linkPath;
+ const loggedUser=JSON.parse(sessionStorage.getItem('keycloak')).tokenParsed.preferred_username;
   useEffect(() => {
+    const logout=()=> {
+
+// console.log((sessionStorage.getItem('logout')));
+// console.log(eval(sessionStorage.getItem('logout')));
+
+}
+
     const optionsValue = [
       {
         title: t('About'),
@@ -49,16 +57,16 @@ function Header(props) {
       },
     ];
 
-    if (user && userManager) {
       optionsValue.push({
         title: t('Logout'),
         icon: { name: 'power-off' },
-        onClick: () => userManager.signoutRedirect(),
+        onClick: () => logout(),
       });
-    }
+
 
     setOptions(optionsValue);
   }, [setOptions, show, t, user, userManager]);
+
 
   return (
     <>
@@ -89,6 +97,14 @@ function Header(props) {
               {t(linkText)}
             </Link>
           )}
+
+
+            <Link
+              className="header-btn header-studyListLinkSection"
+            >
+              {loggedUser}
+            </Link>
+
         </div>
 
         <div className="header-menu">

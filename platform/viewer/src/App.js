@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { hot } from 'react-hot-loader/root';
+import Keycloak from 'keycloak-js';
+
 
 import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
 
@@ -40,6 +42,7 @@ import {
   getUserManagerForOpenIdConnectClient,
   initWebWorkers,
 } from './utils/index.js';
+
 
 /** Extensions */
 import { GenericViewerCommands, MeasurementsPanel } from './appExtensions';
@@ -81,6 +84,9 @@ window.ohif.app = {
 };
 
 class App extends Component {
+
+
+
   static propTypes = {
     config: PropTypes.oneOfType([
       PropTypes.func,
@@ -110,6 +116,47 @@ class App extends Component {
 
   constructor(props) {
     super(props);
+    this.state = { keycloak: null, authenticated: false };
+
+
+    // if(props.params.id==true){
+    //   keycloak.logout()
+    //   props.history.push('/')
+    // }
+    // console.log(window.location);
+    // if(window.location.href.startsWith("http://localhost:3000/true")==true){
+
+    //   const keycloak = Keycloak('/keycloak.json');
+    //   keycloak.init({onLoad: 'login-required'}).then(authenticated => {
+
+    //     this.setState({ keycloak: keycloak, authenticated: authenticated })
+
+    //     keycloak.logout()
+
+
+    //   })
+
+
+
+    // }
+    // else{
+    //   const keycloak = Keycloak('/keycloak.json');
+    //   //props.history.push('/')
+
+    //   keycloak.init({onLoad: 'login-required'}).then(authenticated => {
+    //     this.setState({ keycloak: keycloak, authenticated: authenticated })
+
+    //     sessionStorage.setItem('keycloak', JSON.stringify(keycloak))
+    //   })
+    //  }
+
+      const keycloak = Keycloak('/keycloak.json');
+
+        keycloak.init({onLoad: 'login-required'}).then(authenticated => {
+          this.setState({ keycloak: keycloak, authenticated: authenticated })
+
+          sessionStorage.setItem('keycloak', JSON.stringify(keycloak))
+        })
 
     const { config, defaultExtensions } = props;
 
@@ -167,6 +214,9 @@ class App extends Component {
     } = servicesManager.services;
 
     if (this._userManager) {
+    if((this.state.keycloak)&&(this.state.authenticated)) {
+
+
       return (
         <ErrorBoundary context="App">
           <Provider store={store}>
@@ -198,8 +248,14 @@ class App extends Component {
         </ErrorBoundary>
       );
     }
+    else return (<div>Unable to authenticate!</div>)
+    }
+
+    if((this.state.keycloak)&&(this.state.authenticated)) {
+
 
     return (
+
       <ErrorBoundary context="App">
         <Provider store={store}>
           <AppProvider config={this._appConfig}>
@@ -220,9 +276,14 @@ class App extends Component {
         </Provider>
       </ErrorBoundary>
     );
+    }
+    else{
+      return (<div>Unable to authenticate!</div>)
+    }
   }
 
   initUserManager(oidc) {
+
     if (oidc && !!oidc.length) {
       const firstOpenIdClient = this._appConfig.oidc[0];
 
