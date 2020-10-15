@@ -270,7 +270,10 @@ const commandsModule = ({ commandsManager }) => {
       apis.forEach((api, apiIndex) => {
         const istyle = vtkInteractorStyleMPRRotate.newInstance();
 
-        api.setInteractorStyle({ istyle, configuration: { apis, apiIndex } });
+        api.setInteractorStyle({
+          istyle,
+          configuration: { apis, apiIndex, uid: api.uid },
+        });
       });
     },
     enableCrosshairsTool: () => {
@@ -318,10 +321,14 @@ const commandsModule = ({ commandsManager }) => {
         },
       };
 
-      apis.forEach(api => {
+      apis.forEach((api, apiIndex) => {
         const istyle = vtkInteractorStyleMPRWindowLevel.newInstance();
 
-        api.setInteractorStyle({ istyle, callbacks });
+        api.setInteractorStyle({
+          istyle,
+          callbacks,
+          configuration: { apis, apiIndex, uid: api.uid },
+        });
       });
     },
     setSlabThickness: ({ slabThickness }) => {
