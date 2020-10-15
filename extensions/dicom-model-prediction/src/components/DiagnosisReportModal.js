@@ -8,7 +8,8 @@ import { detect } from 'detect-browser';
 class DiagnosisReportModal extends Component {
   render() {
     const mailToFunction = event => {
-      const subject = encodeURI(`Diagnosis Report`);
+      const StudyInstanceUID = this.props.series.studyInstanceUID;
+      const subject = encodeURI(`Diagnosis Report: ${StudyInstanceUID}`);
       let body = getEmailBody();
 
       body = encodeURI(body);
@@ -30,6 +31,27 @@ class DiagnosisReportModal extends Component {
       );
       body += `\n`;
 
+      // Series Details
+      body += '== Series Details ==\n';
+      body += `Modality\t${this.props.series.modality}\n`;
+      body += `Series Instance UID\t${this.props.series.seriesInstanceUID}\n`;
+      body += `Series Date\t${this.props.series.seriesDate.day}/${this.props.series.seriesDate.month}/${this.props.series.seriesDate.year}\n`;
+      body += `Series Number\t${this.props.series.seriesNumber}\n`;
+      body += `Study Instance UID\t${this.props.series.studyInstanceUID}\n`;
+      body += `\n`;
+
+      // Study Details
+      body += '== Study Details ==\n';
+      body += `Accession Number\t${this.props.study.accessionNumber}\n`;
+      body += `Series Instance UID\t${this.props.study.studyDescription}\n`;
+      body += `\n`;
+
+      // Patient Details
+      body += '== Patent Details ==\n';
+      body += `Patient ID\t${this.props.patient.patientId}\n`;
+      body += `Patient Name\t${this.props.patient.patientName}\n`;
+      body += `\n`;
+
       // App version
       body += '== App ==\n';
       body += `version\t${window.version}\n\n`;
@@ -42,9 +64,11 @@ class DiagnosisReportModal extends Component {
     };
 
     const downloadDiagnosisData = () => {
+      const StudyInstanceUID = this.props.series.studyInstanceUID;
+
       const text = getEmailBody();
-      const fileType = 'text/csv';
-      const fileName = 'DiagnosisReport';
+      const fileType = 'txt';
+      const fileName = `DiagnosisReport`;
 
       var blob = new Blob([text], { type: fileType });
 
@@ -133,6 +157,75 @@ class DiagnosisReportModal extends Component {
       );
     };
 
+    const getSeriesDetails = series => {
+      return (
+        <React.Fragment>
+          <tr>
+            <th className="diagnosisReportModalHeader">Series Details</th>
+          </tr>
+          <tr>
+            <td>Modality</td>
+            <td>{series.modality}</td>
+          </tr>
+          <tr>
+            <td>Series Instance UID</td>
+            <td>{series.seriesInstanceUID}</td>
+          </tr>
+          <tr>
+            <td>Series Date</td>
+            <td>
+              {series.seriesDate.day}/{series.seriesDate.month}/
+              {series.seriesDate.year}
+            </td>
+          </tr>
+          <tr>
+            <td>Series Number</td>
+            <td>{series.seriesNumber}</td>
+          </tr>
+          <tr>
+            <td>Study Instance UID</td>
+            <td>{series.studyInstanceUID}</td>
+          </tr>
+        </React.Fragment>
+      );
+    };
+
+    const getStudyDetails = study => {
+      return (
+        <React.Fragment>
+          <tr>
+            <th className="diagnosisReportModalHeader">Study Details</th>
+          </tr>
+          <tr>
+            <td>Accession Number</td>
+            <td>{study.accessionNumber}</td>
+          </tr>
+          <tr>
+            <td>Series Instance UID</td>
+            <td>{study.studyDescription}</td>
+          </tr>
+        </React.Fragment>
+      );
+    };
+
+    const getPatientDetails = patient => {
+      return (
+        <React.Fragment>
+          <tr>
+            <th className="diagnosisReportModalHeader">Patient Details</th>
+          </tr>
+          <tr>
+            <td>Patient ID</td>
+            <td>{patient.patientId}</td>
+          </tr>
+          <tr>
+            <td>Patient Name</td>
+            <td>{patient.patientName}</td>
+          </tr>
+        </React.Fragment>
+      );
+    };
+
     return (
       <div id="report-section-wrapper">
         <div className="diagnosis-report-modal-buttons-container">
@@ -167,6 +260,9 @@ class DiagnosisReportModal extends Component {
           <table>
             {getReportDescription(this.props.reportText)}
             {getAIPrediction(this.props.prediction)}
+            {getSeriesDetails(this.props.series)}
+            {getStudyDetails(this.props.study)}
+            {getPatientDetails(this.props.patient)}
             {getAppVersion()}
             {getCurrentStudyUrl()}
           </table>

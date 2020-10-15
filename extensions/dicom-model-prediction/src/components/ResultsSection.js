@@ -3,11 +3,26 @@ import PropTypes from 'prop-types';
 import stateDetails from '../state';
 import cornerstone from 'cornerstone-core';
 import DiagnosisReportModal from './DiagnosisReportModal';
+import OHIF from '@ohif/core';
 
 class ResultsSection extends Component {
   handleGenerateReport = event => {
     const { UIModalService } = this.props.servicesManager.services;
     const textareaReport = document.getElementById('report-text');
+
+    const activeEnabledElement = cornerstone.getEnabledElements()[0];
+    const studyData = cornerstone.metaData.get(
+      'generalStudyModule',
+      activeEnabledElement.image.imageId
+    );
+    const seriesData = cornerstone.metaData.get(
+      'generalSeriesModule',
+      activeEnabledElement.image.imageId
+    );
+    const patientData = cornerstone.metaData.get(
+        'patientModule',
+        activeEnabledElement.image.imageId
+    );
 
     const WrappedDebugReportModal = function() {
       return (
@@ -15,6 +30,9 @@ class ResultsSection extends Component {
           mailTo={true}
           reportText={textareaReport.value}
           prediction={stateDetails.predictionResults}
+          series={seriesData}
+          study={studyData}
+          patient={patientData}
         />
       );
     };
