@@ -20,14 +20,14 @@ class ResultsSection extends Component {
       activeEnabledElement.image.imageId
     );
     const patientData = cornerstone.metaData.get(
-        'patientModule',
-        activeEnabledElement.image.imageId
+      'patientModule',
+      activeEnabledElement.image.imageId
     );
 
     const WrappedDebugReportModal = function() {
       return (
         <DiagnosisReportModal
-          mailTo={true}
+          mailTo={stateDetails.options.mailTo}
           reportText={textareaReport.value}
           prediction={stateDetails.predictionResults}
           series={seriesData}

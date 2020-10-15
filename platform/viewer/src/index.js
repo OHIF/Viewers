@@ -59,6 +59,9 @@ const appProps = {
     [
       OHIFDicomModelPredictionExtension,
       {
+        options: {
+          mailTo: 'hello@gmail.com',
+        },
         modelsDetails: [
           {
             id: '1',

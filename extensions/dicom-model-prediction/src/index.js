@@ -31,6 +31,11 @@ export default {
         stateDetails.modelsDetails = configuration.modelsDetails;
       }
     }
+    if (configuration) {
+      if (configuration.options) {
+        stateDetails.options = configuration.options;
+      }
+    }
   },
 
   getPanelModule({ servicesManager, commandsManager }) {
