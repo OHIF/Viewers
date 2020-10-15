@@ -114,6 +114,7 @@ const ICONS = {
   'angle-double-up': angleDoubleUp,
   'arrows-alt-h': arrowsAltH,
   'arrows-alt-v': arrowsAltV,
+  clipboard: clipboard,
   bars,
   'caret-down': caretDown,
   'caret-up': caretUp,
