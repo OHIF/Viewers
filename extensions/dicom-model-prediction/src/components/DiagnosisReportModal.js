@@ -33,23 +33,41 @@ class DiagnosisReportModal extends Component {
 
       // Series Details
       body += '== Series Details ==\n';
-      body += `Modality\t${this.props.series.modality}\n`;
-      body += `Series Instance UID\t${this.props.series.seriesInstanceUID}\n`;
-      body += `Series Date\t${this.props.series.seriesDate.day}/${this.props.series.seriesDate.month}/${this.props.series.seriesDate.year}\n`;
-      body += `Series Number\t${this.props.series.seriesNumber}\n`;
-      body += `Study Instance UID\t${this.props.series.studyInstanceUID}\n`;
+      if (this.props.series.modality) {
+        body += `Modality\t${this.props.series.modality}\n`;
+      }
+      if (this.props.series.seriesInstanceUID) {
+        body += `Series Instance UID\t${this.props.series.seriesInstanceUID}\n`;
+      }
+      if (this.props.series.seriesDate && this.props.series.seriesDate.day) {
+        body += `Series Date\t${this.props.series.seriesDate.day}/${this.props.series.seriesDate.month}/${this.props.series.seriesDate.year}\n`;
+      }
+      if (this.props.series.seriesNumber) {
+        body += `Series Number\t${this.props.series.seriesNumber}\n`;
+      }
+      if (this.props.series.studyInstanceUID) {
+        body += `Study Instance UID\t${this.props.series.studyInstanceUID}\n`;
+      }
       body += `\n`;
 
       // Study Details
       body += '== Study Details ==\n';
-      body += `Accession Number\t${this.props.study.accessionNumber}\n`;
-      body += `Series Instance UID\t${this.props.study.studyDescription}\n`;
+      if (this.props.study.accessionNumber) {
+        body += `Accession Number\t${this.props.study.accessionNumber}\n`;
+      }
+      if (this.props.study.studyDescription) {
+        body += `Series Instance UID\t${this.props.study.studyDescription}\n`;
+      }
       body += `\n`;
 
       // Patient Details
       body += '== Patent Details ==\n';
-      body += `Patient ID\t${this.props.patient.patientId}\n`;
-      body += `Patient Name\t${this.props.patient.patientName}\n`;
+      if (this.props.patient.patientId) {
+        body += `Patient ID\t${this.props.patient.patientId}\n`;
+      }
+      if (this.props.patient.patientName) {
+        body += `Patient Name\t${this.props.patient.patientName}\n`;
+      }
       body += `\n`;
 
       // App version
@@ -163,29 +181,39 @@ class DiagnosisReportModal extends Component {
           <tr>
             <th className="diagnosisReportModalHeader">Series Details</th>
           </tr>
-          <tr>
-            <td>Modality</td>
-            <td>{series.modality}</td>
-          </tr>
-          <tr>
-            <td>Series Instance UID</td>
-            <td>{series.seriesInstanceUID}</td>
-          </tr>
-          <tr>
-            <td>Series Date</td>
-            <td>
-              {series.seriesDate.day}/{series.seriesDate.month}/
-              {series.seriesDate.year}
-            </td>
-          </tr>
-          <tr>
-            <td>Series Number</td>
-            <td>{series.seriesNumber}</td>
-          </tr>
-          <tr>
-            <td>Study Instance UID</td>
-            <td>{series.studyInstanceUID}</td>
-          </tr>
+          {series.modality ? (
+            <tr>
+              <td>Modality</td>
+              <td>{series.modality}</td>
+            </tr>
+          ) : null}
+          {series.seriesInstanceUID ? (
+            <tr>
+              <td>Series Instance UID</td>
+              <td>{series.seriesInstanceUID}</td>
+            </tr>
+          ) : null}
+          {series.seriesDate && series.seriesDate.day ? (
+            <tr>
+              <td>Series Date</td>
+              <td>
+                {series.seriesDate.day}/{series.seriesDate.month}/
+                {series.seriesDate.year}
+              </td>
+            </tr>
+          ) : null}
+          {series.seriesNumber ? (
+            <tr>
+              <td>Series Number</td>
+              <td>{series.seriesNumber}</td>
+            </tr>
+          ) : null}
+          {series.studyInstanceUID ? (
+            <tr>
+              <td>Study Instance UID</td>
+              <td>{series.studyInstanceUID}</td>
+            </tr>
+          ) : null}
         </React.Fragment>
       );
     };
@@ -196,14 +224,18 @@ class DiagnosisReportModal extends Component {
           <tr>
             <th className="diagnosisReportModalHeader">Study Details</th>
           </tr>
-          <tr>
-            <td>Accession Number</td>
-            <td>{study.accessionNumber}</td>
-          </tr>
-          <tr>
-            <td>Series Instance UID</td>
-            <td>{study.studyDescription}</td>
-          </tr>
+          {study.studyInstanceUID ? (
+            <tr>
+              <td>Accession Number</td>
+              <td>{study.accessionNumber}</td>
+            </tr>
+          ) : null}
+          {study.studyInstanceUID ? (
+            <tr>
+              <td>Series Instance UID</td>
+              <td>{study.studyDescription}</td>
+            </tr>
+          ) : null}
         </React.Fragment>
       );
     };
@@ -214,14 +246,18 @@ class DiagnosisReportModal extends Component {
           <tr>
             <th className="diagnosisReportModalHeader">Patient Details</th>
           </tr>
-          <tr>
-            <td>Patient ID</td>
-            <td>{patient.patientId}</td>
-          </tr>
-          <tr>
-            <td>Patient Name</td>
-            <td>{patient.patientName}</td>
-          </tr>
+          {patient.studyInstanceUID ? (
+            <tr>
+              <td>Patient ID</td>
+              <td>{patient.patientId}</td>
+            </tr>
+          ) : null}
+          {patient.studyInstanceUID ? (
+            <tr>
+              <td>Patient Name</td>
+              <td>{patient.patientName}</td>
+            </tr>
+          ) : null}
         </React.Fragment>
       );
     };
