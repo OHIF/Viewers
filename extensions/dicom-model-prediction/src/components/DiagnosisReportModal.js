@@ -224,13 +224,13 @@ class DiagnosisReportModal extends Component {
           <tr>
             <th className="diagnosisReportModalHeader">Study Details</th>
           </tr>
-          {study.studyInstanceUID ? (
+          {study.accessionNumber ? (
             <tr>
               <td>Accession Number</td>
               <td>{study.accessionNumber}</td>
             </tr>
           ) : null}
-          {study.studyInstanceUID ? (
+          {study.studyDescription ? (
             <tr>
               <td>Series Instance UID</td>
               <td>{study.studyDescription}</td>
@@ -246,13 +246,13 @@ class DiagnosisReportModal extends Component {
           <tr>
             <th className="diagnosisReportModalHeader">Patient Details</th>
           </tr>
-          {patient.studyInstanceUID ? (
+          {patient.patientId ? (
             <tr>
               <td>Patient ID</td>
               <td>{patient.patientId}</td>
             </tr>
           ) : null}
-          {patient.studyInstanceUID ? (
+          {patient.patientName ? (
             <tr>
               <td>Patient Name</td>
               <td>{patient.patientName}</td>
