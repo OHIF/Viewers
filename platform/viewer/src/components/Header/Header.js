@@ -24,15 +24,14 @@ function Header(props) {
 
   const [options, setOptions] = useState([]);
 
- const hasLink = linkText && linkPath;
- const loggedUser=JSON.parse(sessionStorage.getItem('keycloak')).tokenParsed.preferred_username;
+  const hasLink = linkText && linkPath;
+  const loggedUser = JSON.parse(sessionStorage.getItem('keycloak')).tokenParsed
+    .preferred_username;
   useEffect(() => {
-    const logout=()=> {
-
-// console.log((sessionStorage.getItem('logout')));
-// console.log(eval(sessionStorage.getItem('logout')));
-
-}
+    const logout = () => {
+      window.location.href =
+        'http://localhost:8080/auth/realms/pacs/protocol/openid-connect/logout?redirect_uri=http://localhost:3000';
+    };
 
     const optionsValue = [
       {
@@ -57,16 +56,14 @@ function Header(props) {
       },
     ];
 
-      optionsValue.push({
-        title: t('Logout'),
-        icon: { name: 'power-off' },
-        onClick: () => logout(),
-      });
-
+    optionsValue.push({
+      title: t('Logout'),
+      icon: { name: 'power-off' },
+      onClick: () => logout(),
+    });
 
     setOptions(optionsValue);
   }, [setOptions, show, t, user, userManager]);
-
 
   return (
     <>
@@ -97,9 +94,6 @@ function Header(props) {
               {t(linkText)}
             </Link>
           )}
-
-
-
         </div>
 
         <div className="header-menu">
