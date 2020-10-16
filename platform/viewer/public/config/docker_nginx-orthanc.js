@@ -21,5 +21,40 @@ window.config = {
     ],
   },
   extensions: [
-  ]
+  ],
+  whiteLabeling: {
+
+    createLogoComponentFn: function(React) {
+      return React.createElement('a', {
+        target: '_self',
+        rel: 'noopener noreferrer',
+        className: 'header-brand',
+        href: '/',
+        style: {
+          display: 'block',
+          textIndent: '-9999px',
+          background: 'url(../public/assets/Untitled.jpg)',
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          width: '300px',
+        }
+
+      },
+      // {
+      //   target: '_self',
+      //   rel: 'noopener noreferrer',
+      //   className: 'header-logo-text',
+      //   href: '/',
+      //   style: {
+      //     display: 'block',
+      //     textIndent: '-9999px',
+      //     background: 'url(../public/assets/blood-sample-21-1128351.png)',
+      //     backgroundSize: 'contain',
+      //     backgroundRepeat: 'no-repeat',
+      //     width: '200px',
+      //   }
+
+      );
+    },
+  },
 };
