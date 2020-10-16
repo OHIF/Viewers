@@ -70,7 +70,7 @@ function Header(props) {
 
   return (
     <>
-      <div className="notification-bar">{t('INVESTIGATIONAL USE ONLY')}</div>
+      <div className="notification-bar">{t(loggedUser)}</div>
       <div
         className={classNames('entry-header', { 'header-big': useLargeLogo })}
       >
@@ -99,16 +99,11 @@ function Header(props) {
           )}
 
 
-            <Link
-              className="header-btn header-studyListLinkSection"
-            >
-              {loggedUser}
-            </Link>
 
         </div>
 
         <div className="header-menu">
-          <span className="research-use">{t('INVESTIGATIONAL USE ONLY')}</span>
+          <span className="research-use">{t(loggedUser)}</span>
           <Dropdown title={t('Options')} list={options} align="right" />
         </div>
       </div>
