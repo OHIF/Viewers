@@ -7,3 +7,8 @@
   display: flex;
   flex-direction: column;
 }
+
+.debug-report-modal-buttons-container {
+  display: flex;
+  flex-direction: row;
+}

@@ -3,6 +3,86 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.21](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.20...@ohif/viewer@4.5.21) (2020-10-15)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.5.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.19...@ohif/viewer@4.5.20) (2020-10-13)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.5.19](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.18...@ohif/viewer@4.5.19) (2020-10-13)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.5.18](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.17...@ohif/viewer@4.5.18) (2020-10-12)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.5.17](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.16...@ohif/viewer@4.5.17) (2020-10-07)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.5.16](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.15...@ohif/viewer@4.5.16) (2020-10-06)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.5.15](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.14...@ohif/viewer@4.5.15) (2020-09-30)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.5.14](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.13...@ohif/viewer@4.5.14) (2020-09-30)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.5.13](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.12...@ohif/viewer@4.5.13) (2020-09-29)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.5.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.11...@ohif/viewer@4.5.12) (2020-09-24)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [4.5.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.10...@ohif/viewer@4.5.11) (2020-09-17)
 
 **Note:** Version bump only for package @ohif/viewer

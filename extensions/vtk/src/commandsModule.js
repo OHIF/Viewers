@@ -1,9 +1,9 @@
 import throttle from 'lodash.throttle';
 import {
-  vtkInteractorStyleMPRCrosshairs,
   vtkInteractorStyleMPRWindowLevel,
+  vtkInteractorStyleRotatableMPRCrosshairs,
+  vtkSVGRotatableCrosshairsWidget,
   vtkInteractorStyleMPRRotate,
-  vtkSVGCrosshairsWidget,
 } from 'react-vtkjs-viewport';
 import { getImageData } from 'react-vtkjs-viewport';
 import { vec3 } from 'gl-matrix';
@@ -11,11 +11,10 @@ import setMPRLayout from './utils/setMPRLayout.js';
 import setViewportToVTK from './utils/setViewportToVTK.js';
 import Constants from 'vtk.js/Sources/Rendering/Core/VolumeMapper/Constants.js';
 import OHIFVTKViewport from './OHIFVTKViewport';
-import vtkCoordinate from 'vtk.js/Sources/Rendering/Core/Coordinate';
 
 const { BlendMode } = Constants;
 
-const commandsModule = ({ commandsManager }) => {
+const commandsModule = ({ commandsManager, UINotificationService }) => {
   // TODO: Put this somewhere else
   let apis = {};
 
@@ -119,6 +118,14 @@ const commandsModule = ({ commandsManager }) => {
     getVtkApis: ({ index }) => {
       return apis[index];
     },
+    resetMPRView() {
+      apis.forEach(api => {
+        api.resetOrientation();
+      });
+
+      // Reset the crosshairs
+      apis[0].svgWidgets.rotatableCrosshairsWidget.resetCrosshairs(apis, 0);
+    },
     axial: async ({ viewports }) => {
       const api = await _getActiveViewportVTKApi(viewports);
 
@@ -165,7 +172,7 @@ const commandsModule = ({ commandsManager }) => {
       segmentNumber,
       frameIndex,
       frame,
-      done = () => { }
+      done = () => {},
     }) => {
       let api = apis[viewports.activeViewportIndex];
 
@@ -180,10 +187,13 @@ const commandsModule = ({ commandsManager }) => {
         displaySetInstanceUID,
         SOPClassUID,
         SOPInstanceUID,
-        frameIndex,
+        frameIndex
       );
 
-      const imageDataObject = getImageData(stack.imageIds, displaySetInstanceUID);
+      const imageDataObject = getImageData(
+        stack.imageIds,
+        displaySetInstanceUID
+      );
 
       let pixelIndex = 0;
       let x = 0;
@@ -209,9 +219,12 @@ const commandsModule = ({ commandsManager }) => {
       y /= count;
 
       const position = [x, y, frameIndex];
-      const worldPos = _convertModelToWorldSpace(position, imageDataObject.vtkImageData);
+      const worldPos = _convertModelToWorldSpace(
+        position,
+        imageDataObject.vtkImageData
+      );
 
-      api.svgWidgets.crosshairsWidget.moveCrosshairs(worldPos, apis);
+      api.svgWidgets.rotatableCrosshairsWidget.moveCrosshairs(worldPos, apis);
       done();
     },
     setSegmentationConfiguration: async ({
@@ -254,21 +267,38 @@ const commandsModule = ({ commandsManager }) => {
       await Promise.all(promises);
     },
     enableRotateTool: () => {
-      apis.forEach(api => {
+      apis.forEach((api, apiIndex) => {
         const istyle = vtkInteractorStyleMPRRotate.newInstance();
 
-        api.setInteractorStyle({ istyle });
+        api.setInteractorStyle({
+          istyle,
+          configuration: { apis, apiIndex, uid: api.uid },
+        });
       });
     },
     enableCrosshairsTool: () => {
       apis.forEach((api, apiIndex) => {
-        const istyle = vtkInteractorStyleMPRCrosshairs.newInstance();
+        const istyle = vtkInteractorStyleRotatableMPRCrosshairs.newInstance();
 
         api.setInteractorStyle({
           istyle,
-          configuration: { apis, apiIndex },
+          configuration: {
+            apis,
+            apiIndex,
+            uid: api.uid,
+          },
         });
       });
+
+      const rotatableCrosshairsWidget =
+        apis[0].svgWidgets.rotatableCrosshairsWidget;
+
+      const referenceLines = rotatableCrosshairsWidget.getReferenceLines();
+
+      // Initilise crosshairs if not initialised.
+      if (!referenceLines) {
+        rotatableCrosshairsWidget.resetCrosshairs(apis, 0);
+      }
     },
     enableLevelTool: () => {
       function updateVOI(apis, windowWidth, windowCenter) {
@@ -291,10 +321,14 @@ const commandsModule = ({ commandsManager }) => {
         },
       };
 
-      apis.forEach(api => {
+      apis.forEach((api, apiIndex) => {
         const istyle = vtkInteractorStyleMPRWindowLevel.newInstance();
 
-        api.setInteractorStyle({ istyle, callbacks });
+        api.setInteractorStyle({
+          istyle,
+          callbacks,
+          configuration: { apis, apiIndex, uid: api.uid },
+        });
       });
     },
     setSlabThickness: ({ slabThickness }) => {
@@ -391,18 +425,59 @@ const commandsModule = ({ commandsManager }) => {
       // Add widgets and set default interactorStyle of each viewport.
       apis.forEach((api, apiIndex) => {
         api.addSVGWidget(
-          vtkSVGCrosshairsWidget.newInstance(),
-          'crosshairsWidget'
+          vtkSVGRotatableCrosshairsWidget.newInstance(),
+          'rotatableCrosshairsWidget'
         );
 
         const uid = api.uid;
-        const istyle = vtkInteractorStyleMPRCrosshairs.newInstance();
+        const istyle = vtkInteractorStyleRotatableMPRCrosshairs.newInstance();
 
         api.setInteractorStyle({
           istyle,
           configuration: { apis, apiIndex, uid },
         });
+
+        api.svgWidgets.rotatableCrosshairsWidget.setApiIndex(apiIndex);
+        api.svgWidgets.rotatableCrosshairsWidget.setApis(apis);
       });
+
+      const firstApi = apis[0];
+
+      // Initialise crosshairs
+      apis[0].svgWidgets.rotatableCrosshairsWidget.resetCrosshairs(apis, 0);
+
+      // Check if we have full WebGL 2 support
+      const openGLRenderWindow = apis[0].genericRenderWindow.getOpenGLRenderWindow();
+
+      if (!openGLRenderWindow.getWebgl2()) {
+        // Throw a warning if we don't have WebGL 2 support,
+        // And the volume is too big to fit in a 2D texture
+
+        const openGLContext = openGLRenderWindow.getContext();
+        const maxTextureSizeInBytes = openGLContext.getParameter(
+          openGLContext.MAX_TEXTURE_SIZE
+        );
+
+        const maxBufferLengthFloat32 =
+          (maxTextureSizeInBytes * maxTextureSizeInBytes) / 4;
+
+        const dimensions = firstApi.volumes[0]
+          .getMapper()
+          .getInputData()
+          .getDimensions();
+
+        const volumeLength = dimensions[0] * dimensions[1] * dimensions[2];
+
+        if (volumeLength > maxBufferLengthFloat32) {
+          UINotificationService.show({
+            title: 'Browser does not support WebGL 2',
+            message:
+              'This volume is too large to fit in WebGL 1 textures and will display incorrectly. Please use a different browser to view this data',
+            type: 'error',
+            autoClose: false,
+          });
+        }
+      }
     },
   };
 
@@ -454,6 +529,10 @@ const commandsModule = ({ commandsManager }) => {
     },
     enableLevelTool: {
       commandFn: actions.enableLevelTool,
+      options: {},
+    },
+    resetMPRView: {
+      commandFn: actions.resetMPRView,
       options: {},
     },
     setBlendModeToComposite: {

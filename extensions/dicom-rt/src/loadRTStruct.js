@@ -4,6 +4,7 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import transformPointsToImagePlane from './utils/transformPointsToImagePlane';
 import TOOL_NAMES from './utils/toolNames';
+import { vec3 } from 'gl-matrix';
 
 const dicomlab2RGB = dcmjs.data.Colors.dicomlab2RGB;
 const globalImageIdSpecificToolStateManager =
@@ -86,7 +87,14 @@ export default async function loadRTStruct(
         ContourGeometricType,
       } = ContourSequenceArray[c];
 
-      const sopInstanceUID = ContourImageSequence.ReferencedSOPInstanceUID;
+      const sopInstanceUID = ContourImageSequence
+        ? ContourImageSequence.ReferencedSOPInstanceUID
+        : _getClosestSOPInstanceUID(
+            ContourData,
+            ContourGeometricType,
+            NumberOfContourPoints,
+            imageIdSopInstanceUidPairs
+          );
       const imageId = _getImageId(imageIdSopInstanceUidPairs, sopInstanceUID);
       const imageIdSpecificToolData = _getOrCreateImageIdSpecificToolData(
         toolState,
@@ -323,4 +331,79 @@ function _getImageIdSopInstanceUidPairsForDisplaySet(
 
 function _toArray(objOrArray) {
   return Array.isArray(objOrArray) ? objOrArray : [objOrArray];
+}
+
+function _getClosestSOPInstanceUID(
+  ContourData,
+  ContourGeometricType,
+  NumberOfContourPoints,
+  imageIdSopInstanceUidPairs
+) {
+  const closest = {
+    distance: Infinity,
+    sopInstanceUID: null,
+  };
+
+  let point;
+
+  switch (ContourGeometricType) {
+    case 'POINT':
+      point = ContourData;
+      break;
+    case 'CLOSED_PLANAR':
+    case 'OPEN_PLANAR':
+      // These are defined as planar, so get the of the region to get the
+      // Best mapping to a plane even if its potentially off center.
+
+      point = [0, 0, 0];
+      for (let p = 0; p < NumberOfContourPoints * 3; p += 3) {
+        point[0] += ContourData[p];
+        point[1] += ContourData[p + 1];
+        point[2] += ContourData[p + 2];
+      }
+
+      point[0] /= NumberOfContourPoints;
+      point[1] /= NumberOfContourPoints;
+      point[2] /= NumberOfContourPoints;
+  }
+
+  imageIdSopInstanceUidPairs.forEach(pair => {
+    const { imageId } = pair;
+
+    const imagePlaneModule = cornerstone.metaData.get(
+      'imagePlaneModule',
+      imageId
+    );
+
+    const distance = distanceFromPointToPlane(point, imagePlaneModule);
+
+    if (distance < closest.distance) {
+      closest.distance = distance;
+      closest.sopInstanceUID = pair.sopInstanceUID;
+    }
+  });
+
+  return closest.sopInstanceUID;
+}
+
+/**
+ *
+ * @param {number[3]} P - The point
+ * @param {object} imagePlaneModule The cornerstone metadata object for the imagePlane
+ */
+function distanceFromPointToPlane(P, imagePlaneModule) {
+  const {
+    rowCosines,
+    columnCosines,
+    imagePositionPatient: Q,
+  } = imagePlaneModule;
+
+  let N = [];
+  vec3.cross(N, rowCosines, columnCosines);
+
+  const [A, B, C] = N;
+
+  const D = -A * Q[0] - B * Q[1] - C * Q[2];
+
+  return Math.abs(A * P[0] + B * P[1] + C * P[2] + D); // Denominator is sqrt(A**2 + B**2 + C**2) which is 1 as its a normal vector
 }

@@ -2,6 +2,7 @@
   display: flex;
   justify-content: start;
   margin: 0;
+  width: 100%;
 }
 
 .dcmseg-segmentation-item .segmentation-meta {
