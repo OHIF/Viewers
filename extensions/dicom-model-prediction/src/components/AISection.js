@@ -73,6 +73,8 @@ class AISection extends Component {
   handlePredictionClick = event => {
     event.preventDefault();
 
+    const { UINotificationService } = this.props.servicesManager.services;
+
     const input = document.getElementById('model-selection');
     const modelId = input.value;
     var found = stateDetails.modelsDetails.filter(function(data) {
@@ -94,6 +96,12 @@ class AISection extends Component {
       body: formData,
     };
 
+    const pendingNotificationId = UINotificationService.show({
+      title: 'Pending',
+      message: 'Trying to process the request',
+      position: 'bottomLeft',
+    });
+
     fetch(endpoint, requestOptions)
       .then(response => response.json())
       .then(responseJson => {
@@ -101,6 +109,15 @@ class AISection extends Component {
         document
           .getElementsByClassName('tab-list-item results-section')[0]
           .click();
+
+        UINotificationService.hide({pendingNotificationId})
+        UINotificationService.show({
+          title: 'Success',
+          message: 'Successfully gained prediction results!!!',
+          position: 'bottomLeft',
+          duration: 4000,
+          type: 'success',
+        });
       })
       .catch(error => {
         return console.log(error);

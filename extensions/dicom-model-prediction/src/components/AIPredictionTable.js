@@ -167,7 +167,7 @@ class AIPredictionTable extends Component {
         <div id="predictionTableContainer" className="flex-v">
           <Tabs>
             <div label="ai-section">
-              <AISection />
+              <AISection servicesManager={this.props.servicesManager} />
             </div>
             <div label="results-section">
               <ResultsSection servicesManager={this.props.servicesManager} />

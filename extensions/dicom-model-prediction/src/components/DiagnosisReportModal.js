@@ -58,6 +58,9 @@ class DiagnosisReportModal extends Component {
       if (this.props.study.studyDescription) {
         body += `Series Instance UID\t${this.props.study.studyDescription}\n`;
       }
+      if (!(this.props.study.accessionNumber && this.props.study.studyDescription)) {
+        body += `N/A\n`;
+      }
       body += `\n`;
 
       // Patient Details
@@ -67,6 +70,9 @@ class DiagnosisReportModal extends Component {
       }
       if (this.props.patient.patientName) {
         body += `Patient Name\t${this.props.patient.patientName}\n`;
+      }
+      if (!(this.props.patient.patientName && this.props.patient.patientId)) {
+        body += `N/A\n`;
       }
       body += `\n`;
 
@@ -104,8 +110,9 @@ class DiagnosisReportModal extends Component {
     };
 
     const copyDiagnosisDataToClipboard = event => {
+      console.log(this.props)
+      const UINotificationService = this.props.notificationService;
       const body = getEmailBody();
-
       const textArea = document.createElement('textarea');
 
       textArea.value = body;
@@ -113,6 +120,13 @@ class DiagnosisReportModal extends Component {
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
+      UINotificationService.show({
+        title: 'Success',
+        message: 'Successfully copied the report to the clipboard.',
+        position: 'bottomLeft',
+        duration: 4000,
+        type: 'success',
+      });
     };
 
     const getAIPrediction = prediction => {
@@ -236,6 +250,11 @@ class DiagnosisReportModal extends Component {
               <td>{study.studyDescription}</td>
             </tr>
           ) : null}
+          {study.accessionNumber && study.studyDescription ? null : (
+            <tr>
+              <td>N/A</td>
+            </tr>
+          )}
         </React.Fragment>
       );
     };
@@ -258,6 +277,11 @@ class DiagnosisReportModal extends Component {
               <td>{patient.patientName}</td>
             </tr>
           ) : null}
+          {patient.patientName && patient.patientId ? null : (
+            <tr>
+              <td>N/A</td>
+            </tr>
+          )}
         </React.Fragment>
       );
     };

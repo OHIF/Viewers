@@ -8,6 +8,7 @@ import OHIF from '@ohif/core';
 class ResultsSection extends Component {
   handleGenerateReport = event => {
     const { UIModalService } = this.props.servicesManager.services;
+    const { UINotificationService } = this.props.servicesManager.services;
     const textareaReport = document.getElementById('report-text');
 
     const activeEnabledElement = cornerstone.getEnabledElements()[0];
@@ -33,6 +34,7 @@ class ResultsSection extends Component {
           series={seriesData}
           study={studyData}
           patient={patientData}
+          notificationService={UINotificationService}
         />
       );
     };
