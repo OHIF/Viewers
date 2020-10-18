@@ -33,10 +33,11 @@ window.config = {
         style: {
           display: 'block',
           textIndent: '-9999px',
-          background: 'url(../public/assets/Untitled.jpg)',
+          background: 'url(../public/assets/logoN.png)',
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           width: '300px',
+          height: "70px",
         }
 
       },
