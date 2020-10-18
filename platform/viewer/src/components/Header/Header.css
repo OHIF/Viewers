@@ -2,6 +2,7 @@
 .entry-header {
   padding: 10px 15px;
   height: var(--top-bar-height);
+  height: 80px;
 }
 
 .header-left-box {

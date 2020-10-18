@@ -65,21 +65,21 @@ const appProps = {
         modelsDetails: [
           {
             id: '1',
-            name: 'First Model',
+            name: 'Bone Prediction',
             predictionApi: 'http://127.0.0.1:5000/prediction',
-            infoApi: 'https://testapi.io/api/segseg/model_info',
+            infoApi: 'https://testapi.io/api/randika/pacs/bone',
           },
           {
             id: '2',
-            name: 'Second Model',
+            name: 'Lung Cancer Prediction',
             predictionApi: 'http://127.0.0.1:5000/prediction',
-            infoApi: 'https://testapi.io/api/segseg/model_info',
+            infoApi: 'https://testapi.io/api/randika/pacs/lung_cancer',
           },
           {
             id: '3',
-            name: 'Third Model',
+            name: 'Pneumonia Prediction',
             predictionApi: 'http://127.0.0.1:5000/prediction',
-            infoApi: 'https://testapi.io/api/segseg/model_info',
+            infoApi: 'https://testapi.io/api/randika/pacs/pneumonia',
           },
         ],
       },
