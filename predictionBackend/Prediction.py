@@ -29,18 +29,18 @@ def pneumoniaPrediction(image):
     predict = pneumoniaModel.predict(np_image)[0]
     result = str(predict[0])
     if(predict > 0.5):
-        predict = 'Pneumonia'
+        predict = 'Abnormal'
     else:
         predict = 'Normal'
 
     data = {"data": [
         {
-            "title": "Prediction",
-            "description": predict
+            "title": "Diagnose",
+            "description": 'Pneumonia'
         },
         {
-            "title": "Probability",
-            "description": result
+            "title": "Prediction Result",
+            "description": predict
         },
         {
             "title": 'Operation',
@@ -77,18 +77,18 @@ def cancerPrediction(image):
     result = str(predict)
     print(result)
     if (predict == 0):
-        predict = 'Lung Cancer'
+        predict = 'Abnormal'
     elif (predict == 1):
         predict = 'Normal'
 
     data = {"data": [
         {
-            "title": "Prediction",
-            "description": predict
+            "title": "Diagnose",
+            "description": 'Lung Cancer'
         },
         {
-            "title": "Probability",
-            "description": result
+            "title": "Prediction result",
+            "description": predict
         },
         {
             "title": 'Operation',
@@ -117,12 +117,12 @@ def bonePrediction(image, target):
 
     data = {"data": [
         {
-            "title": "Prediction",
-            "description": predict
+            "title": "Diagnose",
+            "description": 'Bone Abnormalities'
         },
         {
-            "title": "Probability",
-            "description": result
+            "title": "Prediction result",
+            "description": predict
         },
         {
             "title": 'Operation',
