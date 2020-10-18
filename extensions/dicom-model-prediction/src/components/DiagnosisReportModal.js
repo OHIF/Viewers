@@ -18,11 +18,11 @@ class DiagnosisReportModal extends Component {
     };
 
     const getEmailBody = () => {
-      let body = `============= DIAGNOSIS INFO =============\n\n`;
+      let body = `============= DIAGNOSIS REPORT INFO =============\n\n`;
 
       // Report description
-      body += '== Report Description ==\n';
-      body += `Diagnosis\t ${this.props.reportText}\n\n`;
+      body += '== Diagnosis Report ==\n';
+      body += `Comment\t ${this.props.reportText}\n\n`;
 
       // AI Prediction
       body += '== AI Prediction ==\n';
@@ -182,7 +182,7 @@ class DiagnosisReportModal extends Component {
             <th className="diagnosisReportModalHeader">Diagnosis Report</th>
           </tr>
           <tr>
-            <td>Diagnosis</td>
+            <td>Comment</td>
             <td>{reportText}</td>
           </tr>
         </React.Fragment>
