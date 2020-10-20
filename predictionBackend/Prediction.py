@@ -1,4 +1,4 @@
-import lungs_finder as lf
+#import lungs_finder as lf
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 from keras.preprocessing.image import ImageDataGenerator
@@ -128,7 +128,7 @@ def bonePrediction(image, target):
     np_image = np.expand_dims(np_image, axis=0)
     predict = boneModel.predict(np_image)[0]
     result = (predict[0])
-    
+
 
     if(result > 0.5):
         predict = 'Abnormal'
