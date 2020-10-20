@@ -1,3 +1,4 @@
+import lungs_finder as lf
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 from keras.preprocessing.image import ImageDataGenerator
@@ -27,9 +28,26 @@ def pneumoniaPrediction(image):
     np_image = cv2.resize(np_image, (200, 200))
     np_image = np.expand_dims(np_image, axis=0)
     predict = pneumoniaModel.predict(np_image)[0]
-    result = str(predict[0])
-    if(predict > 0.5):
+    result = (predict[0])
+    print(result)
+    print(cv2.__version__)
+    if(result > 0.5):
         predict = 'Abnormal'
+        # found_lungs = lf.get_lungs(np_image)
+        # right_lung_hog_rectangle = lf.find_right_lung_hog(found_lungs)
+        # left_lung_hog_rectangle = lf.find_left_lung_hog(found_lungs)
+        # right_lung_lbp_rectangle = lf.find_right_lung_lbp(found_lungs)
+        # left_lung_lbp_rectangle = lf.find_left_lung_lbp(found_lungs)
+        # right_lung_haar_rectangle = lf.find_right_lung_haar(found_lungs)
+        # left_lung_haar_rectangle = lf.find_left_lung_haar(found_lungs)
+
+
+        # if right_lung_hog_rectangle is not None:
+        #     x, y, width, height = right_lung_hog_rectangle
+        #     right_image = image[y:y + height, x:x + width]
+        #     cv2.imshow("Right lung", right_image)
+        #     code = cv2.waitKey(0)
+
     else:
         predict = 'Normal'
 
@@ -74,9 +92,9 @@ def cancerPrediction(image):
 
     lst = np.expand_dims(lst, axis=3)
     predict = lungCancerModel.predict_classes(lst)[0]
-    result = str(predict)
+    result = (predict)
     print(result)
-    if (predict == 0):
+    if (result == 0):
         predict = 'Abnormal'
     elif (predict == 1):
         predict = 'Normal'
@@ -109,16 +127,18 @@ def bonePrediction(image, target):
     np_image = cv2.resize(np_image, (224, 224))
     np_image = np.expand_dims(np_image, axis=0)
     predict = boneModel.predict(np_image)[0]
-    result = str(predict[0])
-    if(predict > 0.5):
-        predict = 'Bone Abnormality'
+    result = (predict[0])
+    
+
+    if(result > 0.5):
+        predict = 'Abnormal'
     else:
         predict = 'Normal'
 
     data = {"data": [
         {
             "title": "Diagnose",
-            "description": 'Bone Abnormalities'
+            "description": 'Borne Abnormalities'
         },
         {
             "title": "Prediction result",
