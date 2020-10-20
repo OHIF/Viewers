@@ -1,6 +1,6 @@
 {
   "name": "@ohif/viewer",
-  "version": "4.5.21",
+  "version": "4.5.22",
   "description": "OHIF Viewer",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -57,7 +57,7 @@
     "@ohif/extension-dicom-rt": "^0.4.9",
     "@ohif/extension-dicom-segmentation": "^0.4.7",
     "@ohif/extension-lesion-tracker": "^0.2.1",
-    "@ohif/extension-vtk": "^1.7.13",
+    "@ohif/extension-vtk": "^1.7.14",
     "@ohif/i18n": "^0.52.8",
     "@ohif/ui": "^1.5.6",
     "@tanem/react-nprogress": "^1.1.25",
