@@ -5,7 +5,7 @@ import Header from "./Header.json";
 import StudyList from "./StudyList.json";
 import UserPreferencesModal from "./UserPreferencesModal.json";
 
-export default { 
+export default {
   'vi': {
     Buttons,
     CineDialog,

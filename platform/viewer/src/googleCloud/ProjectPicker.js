@@ -43,7 +43,7 @@ export default class ProjectPicker extends Component {
         <input class="form-control gcp-input"
             type="text"
             value={ filterStr }
-            onChange={ e => this.setState({ filterStr: e.target.value }) } 
+            onChange={ e => this.setState({ filterStr: e.target.value }) }
         />
         <ProjectsList
           projects={projects}

@@ -84,7 +84,7 @@ Expected result:
 
 ![image alt text](image_3.png)
 
-5. Use the following command to set up the stable repository. 
+5. Use the following command to set up the stable repository.
 
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
@@ -343,53 +343,4 @@ docker-compose -p dcm4chee start
 
 ./bin/dcm4cheeDICOMWeb.sh
 
-6. Access the address [http://localhost:3000](http://localhost:3000) 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+6. Access the address [http://localhost:3000](http://localhost:3000)

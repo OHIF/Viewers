@@ -1,6 +1,6 @@
 import UserPreferencesModal from "./UserPreferencesModal.json";
 
-export default { 
+export default {
   'ar': {
     UserPreferencesModal,
   }

@@ -65,7 +65,7 @@ class ProjectsList extends Component {
     }
 
     const lowerCaseFilter = filter.toLowerCase();
-    const filteredProjects = projects.filter(project =>   
+    const filteredProjects = projects.filter(project =>
       typeof project.name  === 'string' &&
       (filter === "" || project.name.toLowerCase().includes(lowerCaseFilter))
     );

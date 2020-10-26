@@ -6,7 +6,7 @@ import MeasurementTable from "./MeasurementTable.json";
 import StudyList from "./StudyList.json";
 import UserPreferencesModal from "./UserPreferencesModal.json";
 
-export default { 
+export default {
   'zh': {
     Buttons,
     CineDialog,

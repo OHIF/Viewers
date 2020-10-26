@@ -47,7 +47,7 @@ class DatasetsList extends Component {
 
   render() {
     const { loading, datasets, filter, error } = this.props;
-    
+
     if (error) {
       return <p>{error}</p>;
     }

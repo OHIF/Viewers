@@ -14,4 +14,3 @@
 ToolbarRow.expanded {
     height: calc(var(--toolbar-height) + var(--toolbar-drawer-height));
 }
-
