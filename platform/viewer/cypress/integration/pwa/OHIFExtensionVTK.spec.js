@@ -36,9 +36,6 @@ describe('OHIF VTK Extension', () => {
     cy.get('@wwwcBtn')
       .should('be.visible')
       .contains('WWWC');
-    cy.get('@rotateBtn')
-      .should('be.visible')
-      .contains('Rotate');
     cy.get('@slabSlider')
       .should('be.visible')
       .contains('Slab Thickness');
@@ -89,24 +86,5 @@ describe('OHIF VTK Extension', () => {
           initialLabelText
         );
       });
-  });
-
-  it('checks Rotate tool', () => {
-    cy.get('@rotateBtn').click();
-
-    // Click and Move the mouse inside the viewport
-    cy.get('[data-cy="viewport-container-0"]')
-      .trigger('mousedown', 'center', {
-        which: 1,
-      })
-      .trigger('mousemove', 'top', { which: 1 })
-      .trigger('mousedown', 'center', {
-        which: 1,
-      })
-      .trigger('mousemove', 'top', { which: 1 })
-      .trigger('mouseup', { which: 1 });
-
-    //Take Screenshot
-    cy.screenshot('VTK Rotate tool - Should rotate image');
   });
 });
