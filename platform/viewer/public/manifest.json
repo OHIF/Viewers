@@ -52,7 +52,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "./",
   "background_color": "#000000",
   "display": "standalone",
   "theme_color": "#20a5d6"

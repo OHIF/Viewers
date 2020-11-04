@@ -179,7 +179,7 @@ class OHIFCornerstoneViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
+      prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
@@ -215,12 +215,28 @@ class OHIFCornerstoneViewport extends Component {
       });
     }
 
+    const newImageHandler = ({ currentImageIdIndex, sopInstanceUid }) => {
+      const { displaySet } = this.props.viewportData;
+      const { StudyInstanceUID } = displaySet;
+
+      if (currentImageIdIndex > 0) {
+        this.props.onNewImage({
+          StudyInstanceUID,
+          SOPInstanceUID: sopInstanceUid,
+          frameIndex: currentImageIdIndex,
+          activeViewportIndex: viewportIndex,
+        });
+      }
+    };
+
     return (
       <>
         <ConnectedCornerstoneViewport
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
+          onNewImage={newImageHandler}
+          onNewImageDebounceTime={700}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}

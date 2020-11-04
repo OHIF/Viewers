@@ -2,6 +2,8 @@ import { api } from 'dicomweb-client';
 import DICOMWeb from '../../DICOMWeb';
 import str2ab from '../str2ab';
 
+import errorHandler from '../../errorHandler';
+
 export default async function fetchPaletteColorLookupTableData(
   instance,
   server
@@ -113,22 +115,14 @@ function _getPaletteColor(server, paletteColorLookupTableData, lutDescriptor) {
   const numLutEntries = lutDescriptor[0];
   const bits = lutDescriptor[2];
 
-  const readUInt16 = (byteArray, position) => {
-    return byteArray[position] + byteArray[position + 1] * 256;
-  };
-
   const arrayBufferToPaletteColorLUT = arraybuffer => {
-    const byteArray = new Uint8Array(arraybuffer);
+    const byteArray = bits === 16 ?
+      new Uint16Array(arraybuffer) :
+      new Uint8Array(arraybuffer);
     const lut = [];
 
-    if (bits === 16) {
-      for (let i = 0; i < numLutEntries; i++) {
-        lut[i] = readUInt16(byteArray, i * 2);
-      }
-    } else {
-      for (let i = 0; i < numLutEntries; i++) {
-        lut[i] = byteArray[i];
-      }
+    for (let i = 0; i < numLutEntries; i++) {
+      lut[i] = byteArray[i];
     }
 
     return lut;
@@ -146,6 +140,7 @@ function _getPaletteColor(server, paletteColorLookupTableData, lutDescriptor) {
     const config = {
       url: server.wadoRoot, //BulkDataURI is absolute, so this isn't used
       headers: DICOMWeb.getAuthorizationHeader(server),
+      errorInterceptor: errorHandler.getHTTPErrorHandler(),
     };
     const dicomWeb = new api.DICOMwebClient(config);
     const options = {
@@ -164,6 +159,8 @@ function _getPaletteColor(server, paletteColorLookupTableData, lutDescriptor) {
       resolve(arrayBufferToPaletteColorLUT(arraybuffer));
     });
   } else {
-    return Promise.resolve(arrayBufferToPaletteColorLUT(paletteColorLookupTableData));
+    return Promise.resolve(
+      arrayBufferToPaletteColorLUT(paletteColorLookupTableData)
+    );
   }
 }

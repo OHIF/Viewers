@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { utils } from '@ohif/core';
+import { useSnackbarContext } from '@ohif/ui';
 //
 import ViewportPane from './ViewportPane.js';
 import DefaultViewport from './DefaultViewport.js';
@@ -23,6 +24,7 @@ const ViewportGrid = function(props) {
     studies,
     viewportData,
     children,
+    isStudyLoaded,
   } = props;
 
   const rowSize = 100 / numRows;
@@ -33,11 +35,26 @@ const ViewportGrid = function(props) {
     return null;
   }
 
+  const snackbar = useSnackbarContext();
+
   useEffect(() => {
-    viewportData.forEach(displaySet => {
-      loadAndCacheDerivedDisplaySets(displaySet, studies);
-    });
-  }, [viewportData]);
+    if (isStudyLoaded) {
+      viewportData.forEach(displaySet => {
+        const promises = loadAndCacheDerivedDisplaySets(displaySet, studies);
+
+        promises.forEach(promise => {
+          promise.catch(error => {
+            snackbar.show({
+              title: 'Error loading derived display set:',
+              message: error.message,
+              type: 'error',
+              autoClose: false,
+            });
+          });
+        });
+      });
+    }
+  }, [studies, viewportData, isStudyLoaded, snackbar]);
 
   const getViewportPanes = () =>
     layout.viewports.map((layout, viewportIndex) => {
@@ -63,6 +80,7 @@ const ViewportGrid = function(props) {
       // - When updating a panel, ensure that the currently enabled plugin
       // in the viewport is capable of rendering this display set. If not
       // then use the most capable available plugin
+
       const pluginName =
         !layout.plugin && displaySet && displaySet.plugin
           ? displaySet.plugin

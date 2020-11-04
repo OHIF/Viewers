@@ -1,18 +1,20 @@
 import throttle from 'lodash.throttle';
 import {
-  vtkInteractorStyleMPRCrosshairs,
   vtkInteractorStyleMPRWindowLevel,
+  vtkInteractorStyleRotatableMPRCrosshairs,
+  vtkSVGRotatableCrosshairsWidget,
   vtkInteractorStyleMPRRotate,
-  vtkSVGCrosshairsWidget,
 } from 'react-vtkjs-viewport';
-
+import { getImageData } from 'react-vtkjs-viewport';
+import { vec3 } from 'gl-matrix';
 import setMPRLayout from './utils/setMPRLayout.js';
 import setViewportToVTK from './utils/setViewportToVTK.js';
 import Constants from 'vtk.js/Sources/Rendering/Core/VolumeMapper/Constants.js';
+import OHIFVTKViewport from './OHIFVTKViewport';
 
 const { BlendMode } = Constants;
 
-const commandsModule = ({ commandsManager }) => {
+const commandsModule = ({ commandsManager, UINotificationService }) => {
   // TODO: Put this somewhere else
   let apis = {};
 
@@ -34,7 +36,6 @@ const commandsModule = ({ commandsManager }) => {
     }
 
     const displaySet = viewportSpecificData[activeViewportIndex];
-
     let api;
     if (!api) {
       try {
@@ -99,9 +100,31 @@ const commandsModule = ({ commandsManager }) => {
     });
   }
 
+  const _convertModelToWorldSpace = (position, vtkImageData) => {
+    const indexToWorld = vtkImageData.getIndexToWorld();
+    const pos = vec3.create();
+
+    position[0] += 0.5; /* Move to the centre of the voxel. */
+    position[1] += 0.5; /* Move to the centre of the voxel. */
+    position[2] += 0.5; /* Move to the centre of the voxel. */
+
+    vec3.set(pos, position[0], position[1], position[2]);
+    vec3.transformMat4(pos, pos, indexToWorld);
+
+    return pos;
+  };
+
   const actions = {
     getVtkApis: ({ index }) => {
       return apis[index];
+    },
+    resetMPRView() {
+      apis.forEach(api => {
+        api.resetOrientation();
+      });
+
+      // Reset the crosshairs
+      apis[0].svgWidgets.rotatableCrosshairsWidget.resetCrosshairs(apis, 0);
     },
     axial: async ({ viewports }) => {
       const api = await _getActiveViewportVTKApi(viewports);
@@ -124,22 +147,158 @@ const commandsModule = ({ commandsManager }) => {
 
       _setView(api, [0, 1, 0], [0, 0, 1]);
     },
+    requestNewSegmentation: async ({ viewports }) => {
+      const allViewports = Object.values(viewports.viewportSpecificData);
+      const promises = allViewports.map(async (viewport, viewportIndex) => {
+        let api = apis[viewportIndex];
+
+        if (!api) {
+          api = await _getActiveViewportVTKApi(viewports);
+          apis[viewportIndex] = api;
+        }
+
+        api.requestNewSegmentation();
+        api.updateImage();
+      });
+      await Promise.all(promises);
+    },
+    jumpToSlice: async ({
+      viewports,
+      studies,
+      StudyInstanceUID,
+      displaySetInstanceUID,
+      SOPClassUID,
+      SOPInstanceUID,
+      segmentNumber,
+      frameIndex,
+      frame,
+      done = () => {},
+    }) => {
+      let api = apis[viewports.activeViewportIndex];
+
+      if (!api) {
+        api = await _getActiveViewportVTKApi(viewports);
+        apis[viewports.activeViewportIndex] = api;
+      }
+
+      const stack = OHIFVTKViewport.getCornerstoneStack(
+        studies,
+        StudyInstanceUID,
+        displaySetInstanceUID,
+        SOPClassUID,
+        SOPInstanceUID,
+        frameIndex
+      );
+
+      const imageDataObject = getImageData(
+        stack.imageIds,
+        displaySetInstanceUID
+      );
+
+      let pixelIndex = 0;
+      let x = 0;
+      let y = 0;
+      let count = 0;
+
+      const rows = imageDataObject.dimensions[1];
+      const cols = imageDataObject.dimensions[0];
+
+      for (let j = 0; j < rows; j++) {
+        for (let i = 0; i < cols; i++) {
+          // [i, j] =
+          const pixel = frame.pixelData[pixelIndex];
+          if (pixel === segmentNumber) {
+            x += i;
+            y += j;
+            count++;
+          }
+          pixelIndex++;
+        }
+      }
+      x /= count;
+      y /= count;
+
+      const position = [x, y, frameIndex];
+      const worldPos = _convertModelToWorldSpace(
+        position,
+        imageDataObject.vtkImageData
+      );
+
+      api.svgWidgets.rotatableCrosshairsWidget.moveCrosshairs(worldPos, apis);
+      done();
+    },
+    setSegmentationConfiguration: async ({
+      viewports,
+      globalOpacity,
+      visible,
+      renderOutline,
+      outlineThickness,
+    }) => {
+      const allViewports = Object.values(viewports.viewportSpecificData);
+      const promises = allViewports.map(async (viewport, viewportIndex) => {
+        let api = apis[viewportIndex];
+
+        if (!api) {
+          api = await _getActiveViewportVTKApi(viewports);
+          apis[viewportIndex] = api;
+        }
+
+        api.setGlobalOpacity(globalOpacity);
+        api.setVisibility(visible);
+        api.setOutlineThickness(outlineThickness);
+        api.setOutlineRendering(renderOutline);
+        api.updateImage();
+      });
+      await Promise.all(promises);
+    },
+    setSegmentConfiguration: async ({ viewports, visible, segmentNumber }) => {
+      const allViewports = Object.values(viewports.viewportSpecificData);
+      const promises = allViewports.map(async (viewport, viewportIndex) => {
+        let api = apis[viewportIndex];
+
+        if (!api) {
+          api = await _getActiveViewportVTKApi(viewports);
+          apis[viewportIndex] = api;
+        }
+
+        api.setSegmentVisibility(segmentNumber, visible);
+        api.updateImage();
+      });
+      await Promise.all(promises);
+    },
     enableRotateTool: () => {
-      apis.forEach(api => {
+      apis.forEach((api, apiIndex) => {
         const istyle = vtkInteractorStyleMPRRotate.newInstance();
 
-        api.setInteractorStyle({ istyle });
+        api.setInteractorStyle({
+          istyle,
+          configuration: { apis, apiIndex, uid: api.uid },
+        });
       });
     },
     enableCrosshairsTool: () => {
       apis.forEach((api, apiIndex) => {
-        const istyle = vtkInteractorStyleMPRCrosshairs.newInstance();
+        const istyle = vtkInteractorStyleRotatableMPRCrosshairs.newInstance();
 
         api.setInteractorStyle({
           istyle,
-          configuration: { apis, apiIndex },
+          configuration: {
+            apis,
+            apiIndex,
+            uid: api.uid,
+          },
         });
       });
+
+      const rotatableCrosshairsWidget =
+        apis[0].svgWidgets.rotatableCrosshairsWidget;
+
+      const referenceLines = rotatableCrosshairsWidget.getReferenceLines();
+
+      // Initilise crosshairs if not initialised.
+      if (!referenceLines) {
+        rotatableCrosshairsWidget.resetCrosshairs(apis, 0);
+      }
     },
     enableLevelTool: () => {
       function updateVOI(apis, windowWidth, windowCenter) {
@@ -162,10 +321,14 @@ const commandsModule = ({ commandsManager }) => {
         },
       };
 
-      apis.forEach(api => {
+      apis.forEach((api, apiIndex) => {
         const istyle = vtkInteractorStyleMPRWindowLevel.newInstance();
 
-        api.setInteractorStyle({ istyle, callbacks });
+        api.setInteractorStyle({
+          istyle,
+          callbacks,
+          configuration: { apis, apiIndex, uid: api.uid },
+        });
       });
     },
     setSlabThickness: ({ slabThickness }) => {
@@ -262,24 +425,85 @@ const commandsModule = ({ commandsManager }) => {
       // Add widgets and set default interactorStyle of each viewport.
       apis.forEach((api, apiIndex) => {
         api.addSVGWidget(
-          vtkSVGCrosshairsWidget.newInstance(),
-          'crosshairsWidget'
+          vtkSVGRotatableCrosshairsWidget.newInstance(),
+          'rotatableCrosshairsWidget'
         );
 
         const uid = api.uid;
-        const istyle = vtkInteractorStyleMPRCrosshairs.newInstance();
+        const istyle = vtkInteractorStyleRotatableMPRCrosshairs.newInstance();
 
         api.setInteractorStyle({
           istyle,
           configuration: { apis, apiIndex, uid },
         });
+
+        api.svgWidgets.rotatableCrosshairsWidget.setApiIndex(apiIndex);
+        api.svgWidgets.rotatableCrosshairsWidget.setApis(apis);
       });
+
+      const firstApi = apis[0];
+
+      // Initialise crosshairs
+      apis[0].svgWidgets.rotatableCrosshairsWidget.resetCrosshairs(apis, 0);
+
+      // Check if we have full WebGL 2 support
+      const openGLRenderWindow = apis[0].genericRenderWindow.getOpenGLRenderWindow();
+
+      if (!openGLRenderWindow.getWebgl2()) {
+        // Throw a warning if we don't have WebGL 2 support,
+        // And the volume is too big to fit in a 2D texture
+
+        const openGLContext = openGLRenderWindow.getContext();
+        const maxTextureSizeInBytes = openGLContext.getParameter(
+          openGLContext.MAX_TEXTURE_SIZE
+        );
+
+        const maxBufferLengthFloat32 =
+          (maxTextureSizeInBytes * maxTextureSizeInBytes) / 4;
+
+        const dimensions = firstApi.volumes[0]
+          .getMapper()
+          .getInputData()
+          .getDimensions();
+
+        const volumeLength = dimensions[0] * dimensions[1] * dimensions[2];
+
+        if (volumeLength > maxBufferLengthFloat32) {
+          UINotificationService.show({
+            title: 'Browser does not support WebGL 2',
+            message:
+              'This volume is too large to fit in WebGL 1 textures and will display incorrectly. Please use a different browser to view this data',
+            type: 'error',
+            autoClose: false,
+          });
+        }
+      }
     },
   };
 
   window.vtkActions = actions;
 
   const definitions = {
+    requestNewSegmentation: {
+      commandFn: actions.requestNewSegmentation,
+      storeContexts: ['viewports'],
+      options: {},
+    },
+    jumpToSlice: {
+      commandFn: actions.jumpToSlice,
+      storeContexts: ['viewports'],
+      options: {},
+    },
+    setSegmentationConfiguration: {
+      commandFn: actions.setSegmentationConfiguration,
+      storeContexts: ['viewports'],
+      options: {},
+    },
+    setSegmentConfiguration: {
+      commandFn: actions.setSegmentConfiguration,
+      storeContexts: ['viewports'],
+      options: {},
+    },
     axial: {
       commandFn: actions.axial,
       storeContexts: ['viewports'],
@@ -305,6 +529,10 @@ const commandsModule = ({ commandsManager }) => {
     },
     enableLevelTool: {
       commandFn: actions.enableLevelTool,
+      options: {},
+    },
+    resetMPRView: {
+      commandFn: actions.resetMPRView,
       options: {},
     },
     setBlendModeToComposite: {

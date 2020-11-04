@@ -127,7 +127,7 @@
 
 .sb-message {
   font-size: 14px;
-  word-break: break-all;
+  word-break: normal;
 }
 
 .sb-item {

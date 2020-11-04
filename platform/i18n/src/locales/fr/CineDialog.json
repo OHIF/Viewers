@@ -1,0 +1,8 @@
+{
+  "Next image": "$t(Common:Play) $t(Common:Image)",
+  "Play / Stop": "$t(Common:Play) / $t(Common:Stop)",
+  "Previous image": "$t(Common:Previous) $t(Common:Image)",
+  "Skip to first image": "Retour à la première $t(Common:Image)",
+  "Skip to last image": "Aller à la dernière $t(Common:Image)",
+  "fps": "ips"
+}

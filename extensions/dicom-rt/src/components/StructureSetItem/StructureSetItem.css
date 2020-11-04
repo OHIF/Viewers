@@ -1,0 +1,93 @@
+.dcmrt-structure-set-item .item-color-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.dcmrt-structure-set-item .item-color {
+  margin-top: 8px;
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+}
+
+.dcmrt-structure-set-item .item-info {
+  display: inline-block;
+  margin-top: 9px;
+  padding-left: 9px;
+  width: 90px;
+  border-left: 1px solid var(--text-secondary-color);
+  color: var(--text-primary-color);
+  width: 100%;
+}
+
+.dcmrt-structure-set-item .item-actions {
+  margin-left: -1px;
+  background-color: var(--ui-gray-darker);
+  height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  visibility: hidden;
+  padding-left: 14px;
+}
+
+.dcmrt-structure-set-item .item-actions .btnAction {
+  background-color: transparent;
+  border: none;
+  color: var(--default-color);
+  cursor: pointer;
+  line-height: 35px;
+  height: 35px;
+  transition: all 0.3s ease;
+}
+
+.dcmrt-structure-set-item .item-actions .btnAction:hover,
+.dcmrt-structure-set-item .item-actions .btnAction:active {
+  color: var(--text-primary-color);
+}
+
+.dcmrt-structure-set-item .item-actions .btnAction i {
+  margin-right: 4px;
+}
+
+.dcmrt-structure-set-item.selected .item-actions {
+  height: 35px;
+  visibility: visible;
+}
+
+.dcmrt-structure-set-item .item-label {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 10px;
+}
+
+.dcmrt-structure-set-item .item-label span {
+  overflow-wrap: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: calc(100% - 40px); /* calc(100% - 50px); 20px = eye icon */
+  text-overflow: ellipsis;
+}
+
+.dcmrt-structure-set-item .item-label .eye-icon {
+  cursor: pointer;
+  color: var(--active-color);
+}
+
+.dcmrt-structure-set-item .item-label .eye-icon:hover {
+  color: var(--hover-color);
+}
+
+.dcmrt-structure-set-item .item-label .eye-icon.--visible {
+  color: var(--default-color);
+}
+
+.dcmrt-structure-set-item.isDisabled .item-color-section {
+  background-color: #e29e4a;
+  color: #fff;
+}
+
+.dcmrt-structure-set-item.isDisabled .item-label {
+  color: var(--text-disabled-color);
+}

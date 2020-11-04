@@ -1,4 +1,4 @@
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
 
 import findInstanceMetadataBySopInstanceUID from './utils/findInstanceMetadataBySopInstanceUid';
 

@@ -2,22 +2,24 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import { MODULE_TYPES } from '@ohif/core';
-import OHIF, { DICOMSR } from '@ohif/core';
+import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
 import moment from 'moment';
 import ConnectedHeader from './ConnectedHeader.js';
-import ConnectedToolbarRow from './ConnectedToolbarRow.js';
+import ToolbarRow from './ToolbarRow.js';
 import ConnectedStudyBrowser from './ConnectedStudyBrowser.js';
 import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
+import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
 
 // Contexts
-import WhiteLabellingContext from '../context/WhiteLabellingContext.js';
+import WhiteLabelingContext from '../context/WhiteLabelingContext.js';
 import UserManagerContext from '../context/UserManagerContext';
+import AppContext from '../context/AppContext';
 
 import './Viewer.css';
+import { finished } from 'stream';
 
 class Viewer extends Component {
   static propTypes = {
@@ -25,6 +27,7 @@ class Viewer extends Component {
       PropTypes.shape({
         StudyInstanceUID: PropTypes.string.isRequired,
         StudyDate: PropTypes.string,
+        PatientID: PropTypes.string,
         displaySets: PropTypes.arrayOf(
           PropTypes.shape({
             displaySetInstanceUID: PropTypes.string.isRequired,
@@ -187,6 +190,7 @@ class Viewer extends Component {
           currentTimepointId,
         ]);
       }
+
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
       });
@@ -195,6 +199,7 @@ class Viewer extends Component {
 
   componentDidUpdate(prevProps) {
     const { studies, isStudyLoaded } = this.props;
+
     if (studies !== prevProps.studies) {
       this.setState({
         thumbnails: _mapStudiesToThumbnails(studies),
@@ -226,55 +231,73 @@ class Viewer extends Component {
     return (
       <>
         {/* HEADER */}
-        <WhiteLabellingContext.Consumer>
-          {whiteLabelling => (
+        <WhiteLabelingContext.Consumer>
+          {whiteLabeling => (
             <UserManagerContext.Consumer>
               {userManager => (
-                <ConnectedHeader home={false} userManager={userManager}>
-                  {whiteLabelling.logoComponent}
-                </ConnectedHeader>
+                <AppContext.Consumer>
+                  {appContext => (
+                    <ConnectedHeader
+                      linkText={
+                        appContext.appConfig.showStudyList
+                          ? 'Study List'
+                          : undefined
+                      }
+                      linkPath={
+                        appContext.appConfig.showStudyList ? '/' : undefined
+                      }
+                      userManager={userManager}
+                    >
+                      {whiteLabeling &&
+                        whiteLabeling.createLogoComponentFn &&
+                        whiteLabeling.createLogoComponentFn(React)}
+                    </ConnectedHeader>
+                  )}
+                </AppContext.Consumer>
               )}
             </UserManagerContext.Consumer>
           )}
-        </WhiteLabellingContext.Consumer>
+        </WhiteLabelingContext.Consumer>
 
         {/* TOOLBAR */}
-        <ConnectedToolbarRow
-          isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
-          isRightSidePanelOpen={this.state.isRightSidePanelOpen}
-          selectedLeftSidePanel={
-            this.state.isLeftSidePanelOpen
-              ? this.state.selectedLeftSidePanel
-              : ''
-          }
-          selectedRightSidePanel={
-            this.state.isRightSidePanelOpen
-              ? this.state.selectedRightSidePanel
-              : ''
-          }
-          handleSidePanelChange={(side, selectedPanel) => {
-            const sideClicked = side && side[0].toUpperCase() + side.slice(1);
-            const openKey = `is${sideClicked}SidePanelOpen`;
-            const selectedKey = `selected${sideClicked}SidePanel`;
-            const updatedState = Object.assign({}, this.state);
-
-            const isOpen = updatedState[openKey];
-            const prevSelectedPanel = updatedState[selectedKey];
-            // RoundedButtonGroup returns `null` if selected button is clicked
-            const isSameSelectedPanel =
-              prevSelectedPanel === selectedPanel || selectedPanel === null;
-
-            updatedState[selectedKey] = selectedPanel || prevSelectedPanel;
-
-            const isClosedOrShouldClose = !isOpen || isSameSelectedPanel;
-            if (isClosedOrShouldClose) {
-              updatedState[openKey] = !updatedState[openKey];
+        <ErrorBoundaryDialog context="ToolbarRow">
+          <ToolbarRow
+            isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
+            isRightSidePanelOpen={this.state.isRightSidePanelOpen}
+            selectedLeftSidePanel={
+              this.state.isLeftSidePanelOpen
+                ? this.state.selectedLeftSidePanel
+                : ''
             }
+            selectedRightSidePanel={
+              this.state.isRightSidePanelOpen
+                ? this.state.selectedRightSidePanel
+                : ''
+            }
+            handleSidePanelChange={(side, selectedPanel) => {
+              const sideClicked = side && side[0].toUpperCase() + side.slice(1);
+              const openKey = `is${sideClicked}SidePanelOpen`;
+              const selectedKey = `selected${sideClicked}SidePanel`;
+              const updatedState = Object.assign({}, this.state);
 
-            this.setState(updatedState);
-          }}
-          studies={this.props.studies}
-        />
+              const isOpen = updatedState[openKey];
+              const prevSelectedPanel = updatedState[selectedKey];
+              // RoundedButtonGroup returns `null` if selected button is clicked
+              const isSameSelectedPanel =
+                prevSelectedPanel === selectedPanel || selectedPanel === null;
+
+              updatedState[selectedKey] = selectedPanel || prevSelectedPanel;
+
+              const isClosedOrShouldClose = !isOpen || isSameSelectedPanel;
+              if (isClosedOrShouldClose) {
+                updatedState[openKey] = !updatedState[openKey];
+              }
+
+              this.setState(updatedState);
+            }}
+            studies={this.props.studies}
+          />
+        </ErrorBoundaryDialog>
 
         {/*<ConnectedStudyLoadingMonitor studies={this.props.studies} />*/}
         {/*<StudyPrefetcher studies={this.props.studies} />*/}
@@ -282,37 +305,46 @@ class Viewer extends Component {
         {/* VIEWPORTS + SIDEPANELS */}
         <div className="FlexboxLayout">
           {/* LEFT */}
-          <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
-            {VisiblePanelLeft ? (
-              <VisiblePanelLeft
-                viewports={this.props.viewports}
-                studies={this.props.studies}
-                activeIndex={this.props.activeViewportIndex}
-              />
-            ) : (
+          <ErrorBoundaryDialog context="LeftSidePanel">
+            <SidePanel from="left" isOpen={this.state.isLeftSidePanelOpen}>
+              {VisiblePanelLeft ? (
+                <VisiblePanelLeft
+                  viewports={this.props.viewports}
+                  studies={this.props.studies}
+                  activeIndex={this.props.activeViewportIndex}
+                />
+              ) : (
                 <ConnectedStudyBrowser
                   studies={this.state.thumbnails}
                   studyMetadata={this.props.studies}
                 />
               )}
-          </SidePanel>
+            </SidePanel>
+          </ErrorBoundaryDialog>
 
           {/* MAIN */}
           <div className={classNames('main-content')}>
-            <ConnectedViewerMain studies={this.props.studies} />
+            <ErrorBoundaryDialog context="ViewerMain">
+              <ConnectedViewerMain
+                studies={this.props.studies}
+                isStudyLoaded={this.props.isStudyLoaded}
+              />
+            </ErrorBoundaryDialog>
           </div>
 
           {/* RIGHT */}
-          <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
-            {VisiblePanelRight && (
-              <VisiblePanelRight
-                isOpen={this.state.isRightSidePanelOpen}
-                viewports={this.props.viewports}
-                studies={this.props.studies}
-                activeIndex={this.props.activeViewportIndex}
-              />
-            )}
-          </SidePanel>
+          <ErrorBoundaryDialog context="RightSidePanel">
+            <SidePanel from="right" isOpen={this.state.isRightSidePanelOpen}>
+              {VisiblePanelRight && (
+                <VisiblePanelRight
+                  isOpen={this.state.isRightSidePanelOpen}
+                  viewports={this.props.viewports}
+                  studies={this.props.studies}
+                  activeIndex={this.props.activeViewportIndex}
+                />
+              )}
+            </SidePanel>
+          </ErrorBoundaryDialog>
         </div>
       </>
     );
@@ -326,13 +358,12 @@ export default withDialog(Viewer);
  * a mapping layer?
  *
  * TODO[react]:
- * - Add sorting of display sets
  * - Add showStackLoadingProgressBar option
  *
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function (studies) {
+const _mapStudiesToThumbnails = function(studies) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
 
@@ -340,9 +371,9 @@ const _mapStudiesToThumbnails = function (studies) {
       const {
         displaySetInstanceUID,
         SeriesDescription,
-        SeriesNumber,
         InstanceNumber,
         numImageFrames,
+        SeriesNumber,
       } = displaySet;
 
       let imageId;
@@ -366,9 +397,9 @@ const _mapStudiesToThumbnails = function (studies) {
         altImageText,
         displaySetInstanceUID,
         SeriesDescription,
-        SeriesNumber,
         InstanceNumber,
         numImageFrames,
+        SeriesNumber,
       };
     });
 

@@ -1,0 +1,26 @@
+.dcmrt-panel {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--primary-background-color);
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+}
+
+.dcmrt-panel .dcmrt-panel-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  color: white;
+}
+
+.dcmrt-panel .dcmrt-panel-header .cog-icon {
+  align-self: flex-end;
+  color: var(--default-color);
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.dcmrt-panel .dcmrt-panel-header .cog-icon:hover {
+  color: var(--hover-color);
+}

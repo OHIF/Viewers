@@ -18,6 +18,7 @@ import string from './string.js';
 import studies from './studies/';
 import ui from './ui';
 import user from './user.js';
+import errorHandler from './errorHandler.js';
 import utils, { hotkeys } from './utils/';
 
 import {
@@ -46,6 +47,7 @@ const OHIF = {
   string,
   ui,
   user,
+  errorHandler,
   object,
   log,
   DICOMWeb,
@@ -79,6 +81,7 @@ export {
   string,
   ui,
   user,
+  errorHandler,
   object,
   log,
   DICOMWeb,
