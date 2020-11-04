@@ -7,11 +7,13 @@ import nl from './nl/';
 import pt_BR from './pt-BR/';
 import vi from './vi/';
 import zh from './zh/';
+import de from './de/';
 
 export default {
   ...ar,
   ...en_US,
   ...es,
+  ...de,
   ...fr,
   ...ja_JP,
   ...nl,
