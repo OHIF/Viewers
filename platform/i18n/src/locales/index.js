@@ -12,6 +12,7 @@ export default {
   ...ar,
   ...en_US,
   ...es,
+  ...de,
   ...fr,
   ...ja_JP,
   ...nl,
