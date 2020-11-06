@@ -33,6 +33,32 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
     return false;
   };
 
+  // 2D MPR is not currently available for 4D datasets. Here we just check if
+  // thereare multiple slices for the same ImagePositionPatient and disable MPR.
+  for (let ii = 0; ii < displaySet.numImageFrames; ++ii){
+    let xImagePositionPatientControl = cornerstone.metaData.get
+      ('instance', displaySet.images[ii].getImageId()).ImagePositionPatient[0];
+    let yImagePositionPatientControl = cornerstone.metaData.get
+      ('instance', displaySet.images[ii].getImageId()).ImagePositionPatient[1];
+    let zImagePositionPatientControl = cornerstone.metaData.get
+      ('instance', displaySet.images[ii].getImageId()).ImagePositionPatient[2];
+
+    for (let jj = ii + 1; jj < displaySet.numImageFrames; ++jj){
+      let xImagePositionPatient = cornerstone.metaData.get
+        ('instance', displaySet.images[jj].getImageId()).ImagePositionPatient[0];
+      let yImagePositionPatient = cornerstone.metaData.get
+        ('instance', displaySet.images[jj].getImageId()).ImagePositionPatient[1];
+      let zImagePositionPatient = cornerstone.metaData.get
+        ('instance', displaySet.images[jj].getImageId()).ImagePositionPatient[2];
+
+      if (xImagePositionPatientControl === xImagePositionPatient &&
+          yImagePositionPatientControl === yImagePositionPatient &&
+          zImagePositionPatientControl === zImagePositionPatient){
+        return false;
+      }
+    }
+  }
+
   return displaySet.isReconstructable;
 };
 
