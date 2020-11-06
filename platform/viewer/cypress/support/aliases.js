@@ -47,7 +47,6 @@ export function initVTKToolsAliases() {
   cy.get('[data-cy="exit 2d mpr"]').as('exit2dmprBtn');
   cy.get('[data-cy="crosshairs"]').as('crosshairsBtn');
   cy.get('[data-cy="wwwc"]').as('wwwcBtn');
-  cy.get('[data-cy="rotate"]').as('rotateBtn');
   cy.get('.slab-thickness').as('slabSlider');
   cy.get('.select-ohif').as('modeDropdown');
   cy.get('.ohif-check-label').as('modeCheckbox');

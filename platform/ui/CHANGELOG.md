@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.7](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.6...@ohif/ui@1.5.7) (2020-11-02)
+
+
+### Bug Fixes
+
+* Reordered definitions in providers to prevent uninitialized var access ([#2108](https://github.com/OHIF/Viewers/issues/2108)) ([619f361](https://github.com/OHIF/Viewers/commit/619f3615109d6cc4c69ff2f9fedbf83bd9309719))
+
+
+
+
+
 ## [1.5.6](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.5...@ohif/ui@1.5.6) (2020-10-06)
 
 **Note:** Version bump only for package @ohif/ui
