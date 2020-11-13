@@ -15,7 +15,7 @@ import { loadUser, createUserManager } from 'redux-oidc';
  * @param {string} oidcSettings.responseType,
  * @param {string} oidcSettings.extraQueryParams,
  */
-export default function(store, oidcSettings) {
+export default function (store, oidcSettings) {
   if (!store || !oidcSettings) {
     return;
   }
@@ -25,7 +25,6 @@ export default function(store, oidcSettings) {
     automaticSilentRenew: true,
     revokeAccessTokenOnSignout: true,
     filterProtocolClaims: true,
-    loadUserInfo: true,
   };
 
   const userManager = createUserManager(settings);
