@@ -27,17 +27,6 @@ const SnackbarProvider = ({ children, service }) => {
   const [count, setCount] = useState(1);
   const [snackbarItems, setSnackbarItems] = useState([]);
 
-  /**
-   * Sets the implementation of a notification service that can be used by extensions.
-   *
-   * @returns void
-   */
-  useEffect(() => {
-    if (service) {
-      service.setServiceImplementation({ hide, show });
-    }
-  }, [service, hide, show]);
-
   const show = useCallback(
     options => {
       if (!options || (!options.title && !options.message)) {
@@ -91,6 +80,17 @@ const SnackbarProvider = ({ children, service }) => {
     // remove all items from array
     setSnackbarItems(() => []);
   };
+
+  /**
+   * Sets the implementation of a notification service that can be used by extensions.
+   *
+   * @returns void
+   */
+  useEffect(() => {
+    if (service) {
+      service.setServiceImplementation({ hide, show });
+    }
+  }, [service, hide, show]);
 
   /**
    * expose snackbar methods to window for debug purposes

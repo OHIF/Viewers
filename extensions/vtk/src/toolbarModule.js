@@ -34,6 +34,7 @@ const definitions = [
     commandName: 'resetMPRView',
     commandOptions: {},
   },
+  /*
   {
     id: 'Rotate',
     label: 'Rotate',
@@ -43,6 +44,7 @@ const definitions = [
     commandName: 'enableRotateTool',
     commandOptions: {},
   },
+  */
   /*
   {
     id: 'setBlendModeToComposite',
