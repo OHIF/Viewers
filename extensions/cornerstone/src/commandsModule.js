@@ -268,6 +268,7 @@ const commandsModule = ({ servicesManager }) => {
       SOPInstanceUID,
       frameIndex,
       activeViewportIndex,
+      refreshViewports = true
     }) => {
       const study = studyMetadataManager.get(StudyInstanceUID);
 
@@ -285,7 +286,9 @@ const commandsModule = ({ servicesManager }) => {
         setViewportSpecificData(activeViewportIndex, displaySet)
       );
 
-      refreshCornerstoneViewports();
+      if (refreshViewports) {
+        refreshCornerstoneViewports();
+      }
     },
   };
 

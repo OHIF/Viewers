@@ -39,6 +39,8 @@ export default {
   getViewportModule({ commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
       const onNewImageHandler = jumpData => {
+        jumpData.refreshViewports = false;
+
         commandsManager.runCommand('jumpToImage', jumpData);
       };
       return (
