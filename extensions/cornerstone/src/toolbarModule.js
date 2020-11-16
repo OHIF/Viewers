@@ -107,6 +107,17 @@ const definitions = [
     commandName: 'resetViewport',
   },
   {
+    id: 'SyncScroll',
+    label: 'Sync Scroll',
+    icon: 'link',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'toggleStackImagePositionSynchronizer',
+    options: {
+      togglable: true,
+    },
+  },
+  {
     id: 'Cine',
     label: 'CINE',
     icon: 'youtube',
