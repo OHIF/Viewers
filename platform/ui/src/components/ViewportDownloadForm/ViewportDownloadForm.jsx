@@ -296,7 +296,7 @@ const ViewportDownloadForm = ({
                   max={maximumSize}
                   label="Image width (px)"
                   value={dimensions.width}
-                  onChange={value => onDimensionsChange(value, 'width')}
+                  onChange={evt => onDimensionsChange(evt.target.value, 'width')}
                   data-cy="image-width"
                 />
                 {renderErrorHandler('width')}
@@ -308,7 +308,7 @@ const ViewportDownloadForm = ({
                   max={maximumSize}
                   label="Image height (px)"
                   value={dimensions.height}
-                  onChange={value => onDimensionsChange(value, 'height')}
+                  onChange={evt => onDimensionsChange(evt.target.value, 'height')}
                   data-cy="image-height"
                 />
                 {renderErrorHandler('height')}
@@ -371,44 +371,31 @@ const ViewportDownloadForm = ({
       </div>
 
       <div className="mt-8">
-        <div
-          className="hidden"
-          style={{
-            height: viewportElementDimensions.height,
-            width: viewportElementDimensions.width,
-          }}
-          ref={ref => setViewportElement(ref)}
-        >
-          <canvas
-            className={classnames('block', canvasClass)}
-            style={{
-              height: downloadCanvas.height,
-              width: downloadCanvas.width,
-            }}
-            width={downloadCanvas.width}
-            height={downloadCanvas.height}
-            ref={downloadCanvas.ref}
-          ></canvas>
-        </div>
-
-        {viewportPreview.src ? (
           <div
             className="p-4 rounded bg-secondary-dark border-secondary-primary"
             data-cy="image-preview"
           >
             <Typography variant="h5">Image preview</Typography>
-            <img
-              className="mt-4"
-              src={viewportPreview.src}
-              alt="Preview"
-              data-cy="image-preview"
-            />
+            <div
+            className="mx-auto my-0"
+              style={{
+                height: viewportElementDimensions.height,
+                width: viewportElementDimensions.width,
+              }}
+              ref={ref => setViewportElement(ref)}
+            >
+              <canvas
+                className={classnames('block', canvasClass)}
+                style={{
+                  height: downloadCanvas.height,
+                  width: downloadCanvas.width,
+                }}
+                width={downloadCanvas.width}
+                height={downloadCanvas.height}
+                ref={downloadCanvas.ref}
+              ></canvas>
+            </div>
           </div>
-        ) : (
-          <div className="p-8 text-center">
-            <Typography>Loading Image Preview...</Typography>
-          </div>
-        )}
       </div>
 
       <div className="flex justify-end mt-4">
