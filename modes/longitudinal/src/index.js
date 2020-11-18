@@ -62,8 +62,7 @@ export default function mode({ modeConfiguration }) {
             'Zoom',
             'WindowLevel',
             'Pan',
-            // TODO: OHIF-376, need more time to adress this reasonably
-            // 'Capture',
+            'Capture',
             'Layout',
             'MoreTools',
           ]);

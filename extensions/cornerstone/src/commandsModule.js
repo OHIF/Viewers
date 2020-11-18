@@ -202,8 +202,9 @@ const commandsModule = ({ servicesManager, commandsManager }) => {
       return enabledElement;
     },
     showDownloadViewportModal: () => {
-      const activeViewportIndex = 0; // viewports.activeViewportIndex;
+      const { activeViewportIndex } = ViewportGridService.getState();
       const { UIModalService } = servicesManager.services;
+
       if (UIModalService) {
         UIModalService.show({
           content: CornerstoneViewportDownloadForm,

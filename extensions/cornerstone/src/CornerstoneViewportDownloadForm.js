@@ -13,9 +13,10 @@ const DEFAULT_SIZE = 512;
 const MAX_TEXTURE_SIZE = 10000;
 
 const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
-  const { element: activeEnabledElement } = getEnabledElement(
+  const enabledElement = getEnabledElement(
     activeViewportIndex
   );
+  const activeEnabledElement = enabledElement?.element
 
   const enableViewport = viewportElement => {
     if (viewportElement) {
@@ -116,6 +117,7 @@ const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
     viewportElement.querySelector('canvas').toBlob(blob => {
       const URLObj = window.URL || window.webkitURL;
       const a = document.createElement('a');
+
       a.href = URLObj.createObjectURL(blob);
       a.download = file;
       document.body.appendChild(a);
