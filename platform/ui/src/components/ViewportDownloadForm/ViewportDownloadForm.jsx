@@ -281,7 +281,7 @@ const ViewportDownloadForm = ({
           <Input
             data-cy="file-name"
             value={filename}
-            onChange={value => setFilename(value)}
+            onChange={evt => setFilename(evt.target.value)}
             label="File Name"
           />
           {renderErrorHandler('filename')}
@@ -376,7 +376,7 @@ const ViewportDownloadForm = ({
             data-cy="image-preview"
           >
             <Typography variant="h5">Image preview</Typography>
-            <div
+            {activeViewport && (<div
             className="mx-auto my-0"
               style={{
                 height: viewportElementDimensions.height,
@@ -394,7 +394,12 @@ const ViewportDownloadForm = ({
                 height={downloadCanvas.height}
                 ref={downloadCanvas.ref}
               ></canvas>
-            </div>
+            </div>)}
+            {!activeViewport &&
+              <Typography className="mt-4">
+                Active viewport has no displayed image
+              </Typography>
+            }
           </div>
       </div>
 
