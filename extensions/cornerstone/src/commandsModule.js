@@ -22,19 +22,26 @@ const imagePositionSynchronizer = new cornerstoneTools.Synchronizer(
   cornerstone.EVENTS.NEW_IMAGE,
   cornerstoneTools.stackImagePositionSynchronizer);
 
+const panZoomSynchronizer = new cornerstoneTools.Synchronizer(
+  cornerstone.EVENTS.IMAGE_RENDERED,
+  cornerstoneTools.panZoomSynchronizer);
+
 function onElementEnabledAddToSync(event) {
   const { element } = event.detail;
 
   imagePositionSynchronizer.add(element);
+  panZoomSynchronizer.add(element);
 }
 
 function onElementDisabledRemoveFromSync(event) {
   const { element } = event.detail;
 
   imagePositionSynchronizer.remove(element);
+  panZoomSynchronizer.remove(element);
 }
 
 imagePositionSynchronizer.enabled = false;
+panZoomSynchronizer.enabled = false;
 
 const commandsModule = ({ servicesManager }) => {
   const actions = {
@@ -171,9 +178,10 @@ const commandsModule = ({ servicesManager }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
       return enabledElement;
     },
-    toggleStackImagePositionSynchronizer: ({ viewports }) => {
+    toggleSynchronizer: ({ viewports }) => {
       // Toggle synchronizer state
       imagePositionSynchronizer.enabled = !imagePositionSynchronizer.enabled;
+      panZoomSynchronizer.enabled = !panZoomSynchronizer.enabled;
 
       // Add event handlers so that if the layout is changed, new elements
       // are automatically added to the synchronizer while it is enabled.
@@ -187,9 +195,12 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       // Erase existing state and then set up all currently existing elements
+      const synchronizers = [imagePositionSynchronizer, panZoomSynchronizer];
       cornerstone.getEnabledElements().map(e => {
-        imagePositionSynchronizer.remove(e.element);
-        imagePositionSynchronizer.add(e.element);
+        synchronizers.forEach(s => {
+          s.remove(e.element);
+          s.add(e.element);
+        })
       });
     },
     showDownloadViewportModal: ({ title, viewports }) => {
@@ -362,8 +373,8 @@ const commandsModule = ({ servicesManager }) => {
       storeContexts: ['viewports'],
       options: {},
     },
-    toggleStackImagePositionSynchronizer: {
-      commandFn: actions.toggleStackImagePositionSynchronizer,
+    toggleSynchronizer: {
+      commandFn: actions.toggleSynchronizer,
       storeContexts: ['viewports'],
       options: {},
     },

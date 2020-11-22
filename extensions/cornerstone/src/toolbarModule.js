@@ -108,11 +108,11 @@ const definitions = [
   },
   {
     id: 'SyncScroll',
-    label: 'Sync Scroll',
+    label: 'Sync',
     icon: 'link',
     //
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
-    commandName: 'toggleStackImagePositionSynchronizer',
+    commandName: 'toggleSynchronizer',
     options: {
       togglable: true,
     },
