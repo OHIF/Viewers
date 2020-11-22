@@ -40,9 +40,6 @@ function onElementDisabledRemoveFromSync(event) {
   panZoomSynchronizer.remove(element);
 }
 
-imagePositionSynchronizer.enabled = false;
-panZoomSynchronizer.enabled = false;
-
 const commandsModule = ({ servicesManager }) => {
   const actions = {
     rotateViewport: ({ viewports, rotation }) => {
@@ -178,14 +175,17 @@ const commandsModule = ({ servicesManager }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
       return enabledElement;
     },
-    toggleSynchronizer: ({ viewports }) => {
-      // Toggle synchronizer state
-      imagePositionSynchronizer.enabled = !imagePositionSynchronizer.enabled;
-      panZoomSynchronizer.enabled = !panZoomSynchronizer.enabled;
+    toggleSynchronizer: ({ toggledState, viewports }) => {
+      const synchronizers = [imagePositionSynchronizer, panZoomSynchronizer];
+
+      // Set synchronizer state when the command is run.
+      synchronizers.forEach(s => {
+        s.enabled = toggledState;
+      });
 
       // Add event handlers so that if the layout is changed, new elements
       // are automatically added to the synchronizer while it is enabled.
-      if (imagePositionSynchronizer.enabled === true) {
+      if (toggledState === true) {
         cornerstone.events.addEventListener(cornerstone.EVENTS.ELEMENT_ENABLED, onElementEnabledAddToSync);
         cornerstone.events.addEventListener(cornerstone.EVENTS.ELEMENT_DISABLED, onElementDisabledRemoveFromSync);
       } else {
@@ -195,7 +195,6 @@ const commandsModule = ({ servicesManager }) => {
       }
 
       // Erase existing state and then set up all currently existing elements
-      const synchronizers = [imagePositionSynchronizer, panZoomSynchronizer];
       cornerstone.getEnabledElements().map(e => {
         synchronizers.forEach(s => {
           s.remove(e.element);
@@ -328,6 +327,10 @@ const commandsModule = ({ servicesManager }) => {
           ds.images.find(i => i.getSOPInstanceUID() === SOPInstanceUID)
         );
       });
+
+      if (!displaySet) {
+        return;
+      }
 
       displaySet.SOPInstanceUID = SOPInstanceUID;
       displaySet.frameIndex = frameIndex;
