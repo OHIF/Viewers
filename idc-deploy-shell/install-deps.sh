@@ -22,10 +22,7 @@ export HOMEROOT=/home/circleci/${CIRCLE_PROJECT_REPONAME}
 # Clone configuration files
 
 echo "Cloning IDC-Viewer-Support"
-pushd ~ > /dev/null
 git clone https://github.com/ImagingDataCommons/IDC-Viewer-Support.git
-popd > /dev/null
-ls -lasR
 
 # Install and update apt-get info
 echo "Preparing System..."
