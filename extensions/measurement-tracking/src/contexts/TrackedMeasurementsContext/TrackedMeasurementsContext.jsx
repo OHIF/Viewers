@@ -18,6 +18,8 @@ const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
+const SR_SOPCLASSHANDLERID = "org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr";
+
 /**
  *
  * @param {*} param0
@@ -31,21 +33,19 @@ function TrackedMeasurementsContextProvider(
 
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
-    showSeriesInActiveViewport: (ctx, evt) => {
-      const { DisplaySetService } = servicesManager.services;
-      const displaySetsForHydratedSeries = DisplaySetService.getDisplaySetsForSeries(
-        ctx.trackedSeries[0]
+    jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
+      const { DisplaySetService, MeasurementService } = servicesManager.services;
+      const { trackedStudy, trackedSeries } = ctx;
+      const measurements = MeasurementService.getMeasurements();
+      const trackedMeasurements = measurements.filter(
+        m =>
+          trackedStudy === m.referenceStudyUID &&
+          trackedSeries.includes(m.referenceSeriesUID)
       );
 
-      if (displaySetsForHydratedSeries.length > 0) {
-        const firstDisplaySetInstanceUID =
-          displaySetsForHydratedSeries[0].displaySetInstanceUID;
+      const id = trackedMeasurements[0].id;
 
-        viewportGridService.setDisplaysetForViewport({
-          viewportIndex: evt.data.viewportIndex,
-          displaySetInstanceUID: firstDisplaySetInstanceUID,
-        });
-      }
+      MeasurementService.jumpToMeasurement(viewportGrid.activeViewportIndex, id);
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
       if (evt.data.createdDisplaySetInstanceUIDs.length > 0) {
@@ -136,11 +136,29 @@ function TrackedMeasurementsContextProvider(
         activeViewport.displaySetInstanceUID
       );
 
+      // If this is an SR produced by our SR SOPClassHandler,
+      // and it hasn't been loaded yet, do that now so we
+      // can check if it can be rehydrated or not.
+      //
+      // Note: This happens:
+      // - If the viewport is not currently an OHIFCornerstoneSRViewport
+      // - If the displaySet has never been hung
+      //
+      // Otherwise, the displaySet will be loaded by the useEffect handler
+      // listening to displaySet changes inside OHIFCornerstoneSRViewport.
+      // The issue here is that this handler in TrackedMeasurementsContext
+      // ends up occurring before the Viewport is created, so the displaySet
+      // is not loaded yet, and isRehydratable is undefined unless we call load().
+      if (displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
+          !displaySet.isLoaded &&
+          displaySet.load) {
+        displaySet.load();
+      }
+
       // Magic string
       // load function added by our sopClassHandler module
       if (
-        displaySet.SOPClassHandlerId ===
-          'org.ohif.dicom-sr.sopClassHandlerModule.dicom-sr' &&
+        displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
         displaySet.isRehydratable === true
       ) {
         console.log('sending event...', trackedMeasurements);

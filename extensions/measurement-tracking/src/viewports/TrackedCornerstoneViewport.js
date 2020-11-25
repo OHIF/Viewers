@@ -78,7 +78,7 @@ function TrackedCornerstoneViewport({
   }, [viewportIndex]);
 
   useEffect(() => {
-    const unsubcribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
+    const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
       MeasurementService,
       DisplaySetService,
       element,
@@ -95,7 +95,7 @@ function TrackedCornerstoneViewport({
     );
 
     return () => {
-      unsubcribeFromJumpToMeasurementEvents();
+      unsubscribeFromJumpToMeasurementEvents();
     };
   }, [element, displaySet]);
 
@@ -605,19 +605,20 @@ function _jumpToMeasurement(
   if (targetElement !== null) {
     const enabledElement = cornerstone.getEnabledElement(targetElement);
 
-    if (enabledElement.image) {
-      // Wait for the image to update or we get a race condition when the element has only just been enabled.
-      const scrollToHandler = evt => {
-        scrollToIndex(targetElement, imageIndex);
-        targetElement.removeEventListener(
-          'cornerstoneimagerendered',
-          scrollToHandler
-        );
-      };
-      targetElement.addEventListener(
+    // Wait for the image to update or we get a race condition when the element has only just been enabled.
+    const scrollToHandler = evt => {
+      scrollToIndex(targetElement, imageIndex);
+      targetElement.removeEventListener(
         'cornerstoneimagerendered',
         scrollToHandler
       );
+    };
+    targetElement.addEventListener(
+      'cornerstoneimagerendered',
+      scrollToHandler
+    );
+
+    if (enabledElement.image) {
       cornerstone.updateImage(targetElement);
     }
 

@@ -3,7 +3,7 @@ import { adapters } from 'dcmjs';
 const cornerstoneAdapters = adapters.Cornerstone;
 
 /**
- * Checks if the given `displySet`can be rehydrated into the `MeasurementService`.
+ * Checks if the given `displaySet`can be rehydrated into the `MeasurementService`.
  *
  * @param {object} displaySet The SR `displaySet` to check.
  * @param {object[]} mappings The CornerstoneTools 4 mappings to the `MeasurementService`.

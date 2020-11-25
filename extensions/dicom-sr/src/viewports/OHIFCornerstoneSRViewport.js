@@ -205,6 +205,8 @@ function OHIFCornerstoneSRViewport({
     setTrackingUniqueIdentifiersForElement(targetElement);
     setElement(targetElement);
 
+    // TODO: Enabled Element appears to be incorrect here, it should be called
+    // 'element' since it is the DOM element, not the enabledElement object
     const OHIFCornerstoneEnabledElementEvent = new CustomEvent(
       'ohif-cornerstone-enabled-element-event',
       {
