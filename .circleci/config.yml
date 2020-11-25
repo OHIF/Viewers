@@ -199,6 +199,11 @@ workflows:
   build_and_deploy:
     jobs:
       - build_job
+          filters:
+            branches:
+              only:
+                - master
+
 #      - deploy_job:
 #          requires:
 #            - build_job
