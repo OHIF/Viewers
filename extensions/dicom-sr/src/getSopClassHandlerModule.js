@@ -122,9 +122,7 @@ function _load(displaySet, servicesManager, extensionManager) {
   );
 
   displaySet.isHydrated = false;
-  displaySet.isRehydratable = isRehydratable(displaySet, mappings)
-    ? true
-    : false;
+  displaySet.isRehydratable = isRehydratable(displaySet, mappings);
   displaySet.isLoaded = true;
 
   // Check currently added displaySets and add measurements if the sources exist.

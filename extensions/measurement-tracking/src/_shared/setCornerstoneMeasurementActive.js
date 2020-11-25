@@ -3,7 +3,7 @@ import cornerstoneTools from 'cornerstone-tools';
 
 const { globalImageIdSpecificToolStateManager } = cornerstoneTools;
 
-export default function setMeasurementActive(measurement) {
+export default function setCornerstoneMeasurementActive(measurement) {
   const { id } = measurement;
 
   const toolState = globalImageIdSpecificToolStateManager.saveToolState();

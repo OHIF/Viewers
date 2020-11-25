@@ -211,7 +211,7 @@ const machineConfiguration = {
             target: 'tracking',
             actions: [
               'setTrackedStudyAndMultipleSeries',
-              'showSeriesInActiveViewport',
+              'jumpToFirstMeasurementInActiveViewport',
               'setIsDirtyToClean',
             ],
             cond: 'shouldHydrateStructuredReport',
@@ -248,8 +248,8 @@ const defaultOptions = {
     clearAllMeasurements: (ctx, evt) => {
       console.log('clearAllMeasurements: not implemented');
     },
-    showSeriesInActiveViewport: (ctx, evt) => {
-      console.warn('showSeriesInActiveViewport: not implemented');
+    jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
+      console.warn('jumpToFirstMeasurementInActiveViewport: not implemented');
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
       console.warn(
