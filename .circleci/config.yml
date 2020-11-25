@@ -94,33 +94,18 @@ jobs:
           name: Install Dependencies
           command: |
             sudo -E /bin/bash ./idc-deploy-shell/install-deps.sh
+      - run:
+          name: Copy in IDC favicons
+          command: |
+            cp ~/IDC-Viewer-Support/static_files/favicon-nci.ico ~/Viewers/platform/viewer/public/assets/favicon.ico
+            cp ~/IDC-Viewer-Support/static_files/favicon-nci-16x16.png ~/Viewers/platform/viewer/public/assets/favicon-16x16.png
+            cp ~/IDC-Viewer-Support/static_files/favicon-nci-32x32.png ~/Viewers/platform/viewer/public/assets/favicon-32x32.png
+      - run:
+          name: Build Viewer
+          command: |
+             yarn install
+             yarn run build
 
-
-##
-## Move in favicon customization
-##
-#
-#pushd ~/Viewers/platform/viewer/public/assets/ > /dev/null
-#mv favicon.ico ~/scratch/favicon.ico
-#mv favicon-16x16.png ~/scratch/favicon-16x16.png
-#mv favicon-32x32.png ~/scratch/favicon-32x32.png
-#popd > /dev/null
-#
-#pushd ~/IDC-Viewer-Support/static_files > /dev/null
-#cp favicon-nci.ico ~/Viewers/platform/viewer/public/assets/favicon.ico
-#cp favicon-nci-16x16.png ~/Viewers/platform/viewer/public/assets/favicon-16x16.png
-#cp favicon-nci-32x32.png ~/Viewers/platform/viewer/public/assets/favicon-32x32.png
-#popd > /dev/null
-#
-## Run yarn:
-#
-#pushd ~/Viewers > /dev/null
-#yarn install
-#yarn run build
-#popd > /dev/null
-#
-#
-#
 ##
 ## Get config built
 ##
