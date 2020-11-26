@@ -105,67 +105,34 @@ jobs:
           command: |
              yarn install
              yarn run build
-
-##
-## Get config built
-##
-#
-#./prepare_config.sh ${1}
-#if [ $? -ne 0 ]; then
-#  exit 1
-#fi
-#
-##
-## Move in customization
-##
-#
-#pushd ~/IDC-Viewer-Support/static_files > /dev/null
-#cp IDC-Logo-WHITE.svg ~/Viewers/platform/viewer/dist/IDC-Logo-WHITE.svg
-#popd > /dev/null
-#
-#cp ~/scratch/app-config.js ~/Viewers/platform/viewer/dist/app-config.js
-#cp ~/scratch/idcGitVersion.txt ~/Viewers/platform/viewer/dist/idcGitVersion.txt
-
-#
-#
-#
-#
-#
-#      - deployment_setup
-#      - auth
-#      - deployment_config
 #      - run:
-#          name: Staging and Database testing
+#          name: Build Config
 #          command: |
-#            sudo -E /bin/bash ./shell/gcloud-pull-staging-files.sh
-#      - save_cache:
-#          key: idc-viewers-{{ epoch }}
-#          paths:
-#          - ./shell
-#          - ./config
-#          - ./tasks
-#          - ./google_helpers
-#          - ./scripts
-#          - ./main.py
-#          - ./cron.yaml
-#          - ./app.yaml
-#          - ./txt
-#          - ./json
-#          - ./.env
+#             ./prepare_config.sh release
+              #pushd ~/IDC-Viewer-Support/static_files > /dev/null
+              #cp IDC-Logo-WHITE.svg ~/Viewers/platform/viewer/dist/IDC-Logo-WHITE.svg
+              #popd > /dev/null
+              #cp ~/scratch/app-config.js ~/Viewers/platform/viewer/dist/app-config.js
+              #cp ~/scratch/idcGitVersion.txt ~/Viewers/platform/viewer/dist/idcGitVersion.txt
 
-#  deploy_job:
-#    environment:
-#      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
-#    docker:
-#      - image: circleci/python:3.7.0-stretch
-#    working_directory: ~/Viewers
-#    steps:
-#      - restore_cache:
-#          keys:
-#            - idc-viewer-
-#      - install_cloud_sdk
-#      - deployment_setup
-#      - auth
+      - save_cache:
+          key: idc-viewer-{{ epoch }}
+          paths:
+          - ./platform/viewer/dist
+
+  deploy_job:
+    environment:
+      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+    docker:
+      - image: circleci/python:3.7.0-stretch
+    working_directory: ~/Viewers
+    steps:
+      - restore_cache:
+          keys:
+            - idc-viewer-
+      - install_cloud_sdk
+      - deployment_setup
+      - auth
 #      - deployment_config
 
 #            #
@@ -188,14 +155,13 @@ workflows:
             branches:
               only:
                 - master
-
-#      - deploy_job:
-#          requires:
-#            - build_job
-#          filters:
-#            branches:
-#              only:
-#                - master
+      - deploy_job:
+          requires:
+            - build_job
+          filters:
+            branches:
+              only:
+                - master
 #                - idc-viewer-prod
 #                - idc-viewer-test
 
