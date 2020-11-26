@@ -105,20 +105,14 @@ jobs:
           command: |
              yarn install
              yarn run build
-#      - run:
-#          name: Build Config
-#          command: |
-#             ./prepare_config.sh release
-              #pushd ~/IDC-Viewer-Support/static_files > /dev/null
-              #cp IDC-Logo-WHITE.svg ~/Viewers/platform/viewer/dist/IDC-Logo-WHITE.svg
-              #popd > /dev/null
-              #cp ~/scratch/app-config.js ~/Viewers/platform/viewer/dist/app-config.js
-              #cp ~/scratch/idcGitVersion.txt ~/Viewers/platform/viewer/dist/idcGitVersion.txt
+
 
       - save_cache:
           key: idc-viewer-{{ epoch }}
           paths:
           - ./platform/viewer/dist
+          - ./idc-deploy-shell
+          - ./IDC-Viewer-Support/static_files
 
   deploy_job:
     environment:
@@ -133,18 +127,19 @@ jobs:
       - install_cloud_sdk
       - deployment_setup
       - auth
-#      - deployment_config
-
-#            #
-## Install in server buckets
-##
-#
-#pushd ~/Viewers/platform/viewer/dist/ > /dev/null
-#            gsutil web set -m index.html -e index.html gs://${WBUCKET}
-#            gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}
-#popd > /dev/null
-
-
+      - deployment_config
+      - run:
+          name: Customize Config
+          command: |
+            ./idc-deploy-shell/prepare_config.sh > platform/viewer/dist/app-config.js
+            cp IDC-Viewer-Support/static_filesIDC-Logo-WHITE.svg platform/viewer/dist/IDC-Logo-WHITE.svg
+      - run:
+          name: Copy to cloud
+          command: |
+            pushd ~/Viewers/platform/viewer/dist/ > /dev/null
+            gsutil web set -m index.html -e index.html gs://${WBUCKET}
+            gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}
+            popd > /dev/null
 
 workflows:
   version: 2
