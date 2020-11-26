@@ -132,7 +132,7 @@ jobs:
           name: Customize Config
           command: |
             ./idc-deploy-shell/prepare_config.sh > platform/viewer/dist/app-config.js
-            cp IDC-Viewer-Support/static_filesIDC-Logo-WHITE.svg platform/viewer/dist/IDC-Logo-WHITE.svg
+            cp IDC-Viewer-Support/static_files/IDC-Logo-WHITE.svg platform/viewer/dist/IDC-Logo-WHITE.svg
       - run:
           name: Copy to cloud
           command: |
