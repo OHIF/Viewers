@@ -131,6 +131,7 @@ jobs:
       - run:
           name: Customize Config
           command: |
+            chmod u+x ./idc-deploy-shell/prepare_config.sh
             ./idc-deploy-shell/prepare_config.sh > platform/viewer/dist/app-config.js
             cp IDC-Viewer-Support/static_files/IDC-Logo-WHITE.svg platform/viewer/dist/IDC-Logo-WHITE.svg
       - run:
