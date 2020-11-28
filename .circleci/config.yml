@@ -141,6 +141,8 @@ jobs:
           name: Copy to cloud
           command: |
             echo "***---*************"
+            chown -R circleci /home/circleci/.config /home/circleci/.gsutil
+            chgrp -R circleci /home/circleci/.config /home/circleci/.gsutil
             pwd
             ls -las
             cd ~
