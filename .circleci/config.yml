@@ -140,8 +140,11 @@ jobs:
           name: Copy to cloud
           command: |
             pushd ~/Viewers/platform/viewer/dist/ > /dev/null
+            which gsutil
+            gsutil config
             gsutil web set -m index.html -e index.html gs://${WBUCKET}
             gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}
+
             popd > /dev/null
 
 workflows:
