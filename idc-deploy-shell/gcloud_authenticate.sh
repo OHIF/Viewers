@@ -12,5 +12,3 @@ gcloud config list
 echo "Setting deployment project to ${DEPLOYMENT_PROJECT_ID}"
 gcloud config set project "$DEPLOYMENT_PROJECT_ID"
 
-sudo chown -R circleci /home/circleci/.config /home/circleci/.gsutil
-sudo chgrp -R circleci /home/circleci/.config /home/circleci/.gsutil
