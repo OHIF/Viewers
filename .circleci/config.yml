@@ -146,6 +146,8 @@ jobs:
             cd ~
             pwd
             ls -las
+            cd /home/circleci/.config
+            ls -lasR
             pushd ~/Viewers/platform/viewer/dist/ > /dev/null
             echo "****************"
             which gsutil
