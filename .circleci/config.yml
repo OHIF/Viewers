@@ -141,7 +141,7 @@ jobs:
           command: |
             pushd ~/Viewers/platform/viewer/dist/ > /dev/null
             which gsutil
-            gsutil config
+            gsutil version -l
             gsutil web set -m index.html -e index.html gs://${WBUCKET}
             gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}
 
