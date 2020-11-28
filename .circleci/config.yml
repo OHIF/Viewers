@@ -136,6 +136,10 @@ jobs:
       - run:
           name: Copy to cloud
           command: |
+            mkdir -p /home/circleci/.config
+            mkdir -p /home/circleci/.gsutil
+            sudo chown -R circleci /home/circleci/.config /home/circleci/.gsutil
+            sudo chgrp -R circleci /home/circleci/.config /home/circleci/.gsutil
             pushd ~/Viewers/platform/viewer/dist/ > /dev/null
             gsutil web set -m index.html -e index.html gs://${WBUCKET}
             gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}
