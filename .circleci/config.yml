@@ -103,12 +103,8 @@ jobs:
       - run:
           name: Build Viewer
           command: |
-             #yarn install
-             #yarn run build
-             mkdir -p ./platform/viewer/dist
-             date > ./platform/viewer/dist/foobar.txt
-
-
+             yarn install
+             yarn run build
 
       - save_cache:
           key: idc-viewer-{{ epoch }}
@@ -140,26 +136,9 @@ jobs:
       - run:
           name: Copy to cloud
           command: |
-            echo "***---*************"
-            sudo chown -R circleci /home/circleci/.config /home/circleci/.gsutil
-            sudo chgrp -R circleci /home/circleci/.config /home/circleci/.gsutil
-            pwd
-            ls -las
-            cd ~
-            pwd
-            ls -las
-            cd /home/circleci/.config
-            ls -lasR
             pushd ~/Viewers/platform/viewer/dist/ > /dev/null
-            echo "****************"
-            which gsutil
-            gcloud auth list | sed -e 's/gserviceaccount/gsa/'
-            gcloud config list | sed -e 's/gserviceaccount/gsa/'
-            gsutil version -l
-            echo "****************"
             gsutil web set -m index.html -e index.html gs://${WBUCKET}
             gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}
-
             popd > /dev/null
 
 workflows:

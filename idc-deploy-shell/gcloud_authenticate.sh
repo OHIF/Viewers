@@ -2,14 +2,15 @@ if [ ! -f "deployment.key.json" ]; then
     echo ${DEPLOYMENT_KEY} | base64 --decode --ignore-garbage > deployment.key.json
 fi
 
-
-sum deployment.key.json
-gcloud auth activate-service-account --key-file deployment.key.json | sed -e 's/gserviceaccount/gsa/'
-echo "Setting deployment client email to ${DEPLOYMENT_CLIENT_EMAIL}" | sed -e 's/gserviceaccount/gsa/'
-gcloud auth list | sed -e 's/gserviceaccount/gsa/'
+gcloud auth activate-service-account --key-file deployment.key.json
+echo "Setting deployment client email to ${DEPLOYMENT_CLIENT_EMAIL}"
+gcloud auth list
 echo "Return code for gcloud auth list is $?"
 
 gcloud config set account $DEPLOYMENT_CLIENT_EMAIL
-gcloud config list | sed -e 's/gserviceaccount/gsa/'
-echo "Setting deployment project to ${DEPLOYMENT_PROJECT_ID}" | sed -e 's/idc/cid/'
+gcloud config list
+echo "Setting deployment project to ${DEPLOYMENT_PROJECT_ID}"
 gcloud config set project "$DEPLOYMENT_PROJECT_ID"
+
+sudo chown -R circleci /home/circleci/.config /home/circleci/.gsutil
+sudo chgrp -R circleci /home/circleci/.config /home/circleci/.gsutil
