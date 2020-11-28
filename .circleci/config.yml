@@ -115,6 +115,7 @@ jobs:
           - ./platform/viewer/dist
           - ./idc-deploy-shell
           - ./IDC-Viewer-Support/static_files
+          - ./.config
 
   deploy_job:
     environment:
@@ -146,7 +147,7 @@ jobs:
             gcloud config list | sed -e 's/gserviceaccount/gsa/'
             gsutil version -l
             echo "****************"
-            #gsutil web set -m index.html -e index.html gs://${WBUCKET}
+            gsutil web set -m index.html -e index.html gs://${WBUCKET}
             gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}
 
             popd > /dev/null
