@@ -107,10 +107,7 @@ jobs:
              #yarn run build
              mkdir -p ./platform/viewer/dist
              date > ./platform/viewer/dist/foobar.txt
-             pwd
-             ls -las
-             cd ~
-             ls -las
+
 
 
       - save_cache:
@@ -119,7 +116,6 @@ jobs:
           - ./platform/viewer/dist
           - ./idc-deploy-shell
           - ./IDC-Viewer-Support/static_files
-          - ~/.config
 
   deploy_job:
     environment:
@@ -144,6 +140,12 @@ jobs:
       - run:
           name: Copy to cloud
           command: |
+            echo "***---*************"
+            pwd
+            ls -las
+            cd ~
+            pwd
+            ls -las
             pushd ~/Viewers/platform/viewer/dist/ > /dev/null
             echo "****************"
             which gsutil
