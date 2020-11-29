@@ -15,9 +15,12 @@
 # limitations under the License.
 
 
-cat idc-assets/app-config-template.js | \
-    sed "s#_X___IDC__Z__ROOT___Y_#${STORE_ROOT}#" | \
-    sed "s#_X___IDC__Z__QUOTA___Y_#${QUOTA_PAGE}#"
-
-
-
+cd ~/Viewers/platform/viewer/dist/
+if [ "${CONFIG_ONLY}" -ne "True" ]; then
+  gsutil web set -m index.html -e index.html gs://${WBUCKET}
+  gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}
+else
+  gsutil cp app-config.js gs://${WBUCKET}
+  CACHE_SETTING="Cache-Control:no-cache, max-age=0"
+  gsutil setmeta -h "${CACHE_SETTING}" gs://${WBUCKET}/app-config.js
+fi
