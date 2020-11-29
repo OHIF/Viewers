@@ -103,7 +103,7 @@ jobs:
       - run:
           name: Build Viewer
           command: |
-             /bin/bash ./idc-deploy-shell/build_viewer.sh
+             /bin/bash ./idc-deploy-shell/buildViewer.sh
 
       - save_cache:
           key: idc-viewer-{{ epoch }}
