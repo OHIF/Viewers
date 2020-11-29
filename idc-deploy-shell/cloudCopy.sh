@@ -16,7 +16,7 @@
 
 
 cd ~/Viewers/platform/viewer/dist/
-if [ "${CONFIG_ONLY}" -ne "True" ]; then
+if [ "${CONFIG_ONLY}" != "True" ]; then
   gsutil web set -m index.html -e index.html gs://${WBUCKET}
   gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}
 else

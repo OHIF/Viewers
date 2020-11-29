@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-if [ "${CONFIG_ONLY}" -ne "True" ]; then
+if [ "${CONFIG_ONLY}" != "True" ]; then
   yarn install
   yarn run build
 else
