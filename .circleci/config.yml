@@ -86,6 +86,7 @@ jobs:
       - image: circleci/python:3.7.0-stretch
     steps:
       - checkout
+      - install_cloud_sdk
       - deployment_setup
       - auth
       - deployment_config
