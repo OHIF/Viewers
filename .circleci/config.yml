@@ -86,10 +86,9 @@ jobs:
       - image: circleci/python:3.7.0-stretch
     steps:
       - checkout
-      - run:
-          name: Set Python Path
-          command: |
-            echo "export PYTHONPATH=/home/circleci/${CIRCLE_PROJECT_REPONAME}:/home/circleci/${CIRCLE_PROJECT_REPONAME}/lib" >> $BASH_ENV
+      - deployment_setup
+      - auth
+      - deployment_config
       - run:
           name: Install Dependencies
           command: |
@@ -97,21 +96,20 @@ jobs:
       - run:
           name: Copy in IDC favicons
           command: |
-            cp IDC-Viewer-Support/static_files/favicon-nci.ico ~/Viewers/platform/viewer/public/assets/favicon.ico
-            cp IDC-Viewer-Support/static_files/favicon-nci-16x16.png ~/Viewers/platform/viewer/public/assets/favicon-16x16.png
-            cp IDC-Viewer-Support/static_files/favicon-nci-32x32.png ~/Viewers/platform/viewer/public/assets/favicon-32x32.png
+            cp ~/Viewers/idc-assets/favicon-nci.ico ~/Viewers/platform/viewer/public/assets/favicon.ico
+            cp ~/Viewers/idc-assets/favicon-nci-16x16.png ~/Viewers/platform/viewer/public/assets/favicon-16x16.png
+            cp ~/Viewers/idc-assets/favicon-nci-32x32.png ~/Viewers/platform/viewer/public/assets/favicon-32x32.png
       - run:
           name: Build Viewer
           command: |
-             yarn install
-             yarn run build
+             /bin/bash ./idc-deploy-shell/build_viewer.sh
 
       - save_cache:
           key: idc-viewer-{{ epoch }}
           paths:
           - ./platform/viewer/dist
           - ./idc-deploy-shell
-          - ./IDC-Viewer-Support/static_files
+          - ./idc-assets
 
   deploy_job:
     environment:
@@ -130,20 +128,12 @@ jobs:
       - run:
           name: Customize Config
           command: |
-            chmod u+x ./idc-deploy-shell/prepare_config.sh
-            ./idc-deploy-shell/prepare_config.sh > platform/viewer/dist/app-config.js
-            cp IDC-Viewer-Support/static_files/IDC-Logo-WHITE.svg platform/viewer/dist/IDC-Logo-WHITE.svg
+            /bin/bash ./idc-deploy-shell/prepare_config.sh > platform/viewer/dist/app-config.js
+            cp ~/Viewers/idc-assets/IDC-Logo-WHITE.svg platform/viewer/dist/IDC-Logo-WHITE.svg
       - run:
           name: Copy to cloud
           command: |
-            mkdir -p /home/circleci/.config
-            mkdir -p /home/circleci/.gsutil
-            sudo chown -R circleci /home/circleci/.config /home/circleci/.gsutil
-            sudo chgrp -R circleci /home/circleci/.config /home/circleci/.gsutil
-            pushd ~/Viewers/platform/viewer/dist/ > /dev/null
-            gsutil web set -m index.html -e index.html gs://${WBUCKET}
-            gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}
-            popd > /dev/null
+             /bin/bash ./idc-deploy-shell/cloudCopy.sh
 
 workflows:
   version: 2

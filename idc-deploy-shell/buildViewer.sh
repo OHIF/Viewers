@@ -15,9 +15,9 @@
 # limitations under the License.
 
 
-cat idc-assets/app-config-template.js | \
-    sed "s#_X___IDC__Z__ROOT___Y_#${STORE_ROOT}#" | \
-    sed "s#_X___IDC__Z__QUOTA___Y_#${QUOTA_PAGE}#"
-
-
-
+if [ "${CONFIG_ONLY}" -ne "True" ]; then
+  yarn install
+  yarn run build
+else
+  mkdir -f platform/viewer/dist/
+fi
