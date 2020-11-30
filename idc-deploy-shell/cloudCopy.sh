@@ -16,6 +16,11 @@
 
 
 cd ~/Viewers/platform/viewer/dist/
+ls -lasR /home/circleci/.gsutil
+sudo chown -R circleci /home/circleci/.gsutil
+sudo chgrp -R circleci /home/circleci/.gsutil
+
+
 if [ "${CONFIG_ONLY}" != "True" ]; then
   gsutil web set -m index.html -e index.html gs://${WBUCKET}
   gsutil -h "Cache-Control:no-cache, max-age=0" rsync -d -r . gs://${WBUCKET}
