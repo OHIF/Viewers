@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.27](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.26...@ohif/viewer@4.5.27) (2020-11-30)
+
+
+### Bug Fixes
+
+* added MAX_CONCURRENCY limit as each webworker costs RAM, and machines with e.g 24 cores crash the process ([#2161](https://github.com/OHIF/Viewers/issues/2161)) ([d2e777b](https://github.com/OHIF/Viewers/commit/d2e777bafc70895fad15b91c47517e0eea622405))
+
+
+
+
+
 ## [4.5.26](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.5.25...@ohif/viewer@4.5.26) (2020-11-19)
 
 **Note:** Version bump only for package @ohif/viewer
