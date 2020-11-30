@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.7.16...@ohif/extension-vtk@1.8.0) (2020-11-30)
+
+
+### Features
+
+* **i18n:** Added de (German) translations ([2fff2d5](https://github.com/OHIF/Viewers/commit/2fff2d511fa1d36bdd6476da4ffa5684bf55374f))
+
+
+
+
+
 ## [1.7.16](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.7.15...@ohif/extension-vtk@1.7.16) (2020-11-19)
 
 **Note:** Version bump only for package @ohif/extension-vtk
