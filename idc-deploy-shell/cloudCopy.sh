@@ -16,7 +16,7 @@
 
 
 cd ~/Viewers/platform/viewer/dist/
-ls -lasR /home/circleci/.gsutil
+# Don't want to have to run whole script as sudo, so need to fix ownership here:
 sudo chown -R circleci /home/circleci/.gsutil
 sudo chgrp -R circleci /home/circleci/.gsutil
 
