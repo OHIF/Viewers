@@ -115,13 +115,13 @@ Commands to run the tests:
 
 ```js
 // Open Cypress Dashboard that provides insight into what happened when your tests ran
-yarn run cy
+yarn test:e2e
 
 // Run all tests using Electron browser headless
-yarn run cy:run
+yarn test:e2e:local
 
 // Run all tests in CI mode
-yarn run cy:run:ci
+yarn run test:e2e:ci
 ```
 
 ### Contributing

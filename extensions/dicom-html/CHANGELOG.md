@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.9](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.8...@ohif/extension-dicom-html@1.2.9) (2020-10-07)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.8](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.7...@ohif/extension-dicom-html@1.2.8) (2020-09-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.7](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.6...@ohif/extension-dicom-html@1.2.7) (2020-09-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.5...@ohif/extension-dicom-html@1.2.6) (2020-09-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.4...@ohif/extension-dicom-html@1.2.5) (2020-08-28)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.3...@ohif/extension-dicom-html@1.2.4) (2020-07-13)
+
+**Note:** Version bump only for package @ohif/extension-dicom-html
+
+
+
+
+
+## [1.2.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.2...@ohif/extension-dicom-html@1.2.3) (2020-06-15)
+
+
+### Bug Fixes
+
+* 🐛 Disable seg panel when data for seg unavailable ([#1732](https://github.com/OHIF/Viewers/issues/1732)) ([698e900](https://github.com/OHIF/Viewers/commit/698e900b85121d3c2a46747c443ef69fb7a8c95b)), closes [#1728](https://github.com/OHIF/Viewers/issues/1728)
+
+
+
+
+
+## [1.2.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.1...@ohif/extension-dicom-html@1.2.2) (2020-05-04)
+
+
+### Bug Fixes
+
+* 🐛 Proper error handling for derived display sets ([#1708](https://github.com/OHIF/Viewers/issues/1708)) ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
+
+
+
+
+
 ## [1.2.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-html@1.2.0...@ohif/extension-dicom-html@1.2.1) (2020-04-28)
 
 **Note:** Version bump only for package @ohif/extension-dicom-html

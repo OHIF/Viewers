@@ -92,8 +92,8 @@ class DicomMicroscopyViewport extends Component {
         {this.state.error ? (
           <h2>{JSON.stringify(this.state.error)}</h2>
         ) : (
-          <div style={style} ref={this.container} />
-        )}
+            <div style={style} ref={this.container} />
+          )}
       </div>
     );
   }

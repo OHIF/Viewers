@@ -1,15 +1,16 @@
 import React from 'react';
-
 import init from './init.js';
 import sopClassHandlerModule from './OHIFDicomRTStructSopClassHandler';
 import id from './id.js';
 import RTPanel from './components/RTPanel/RTPanel';
+import { version } from '../package.json';
 
 export default {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
   id,
+  version,
 
   /**
    *
@@ -20,14 +21,21 @@ export default {
   preRegistration({ servicesManager, configuration = {} }) {
     init({ servicesManager, configuration });
   },
-  getPanelModule({ commandsManager }) {
+  getPanelModule({ commandsManager, servicesManager, api }) {
     const ExtendedRTPanel = props => {
+      const { activeContexts } = api.hooks.useAppContext();
+
       const contourItemClickHandler = contourData => {
         commandsManager.runCommand('jumpToImage', contourData);
       };
 
       return (
-        <RTPanel {...props} onContourItemClick={contourItemClickHandler} />
+        <RTPanel
+          {...props}
+          onContourItemClick={contourItemClickHandler}
+          activeContexts={activeContexts}
+          contexts={api.contexts}
+        />
       );
     };
 

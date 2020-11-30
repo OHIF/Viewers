@@ -4,6 +4,7 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import transformPointsToImagePlane from './utils/transformPointsToImagePlane';
 import TOOL_NAMES from './utils/toolNames';
+import { vec3 } from 'gl-matrix';
 
 const dicomlab2RGB = dcmjs.data.Colors.dicomlab2RGB;
 const globalImageIdSpecificToolStateManager =
@@ -16,7 +17,6 @@ export default async function loadRTStruct(
   studies
 ) {
   const rtStructModule = cornerstoneTools.getModule('rtstruct');
-
   // Set here is loading is asynchronous.
   // If this function throws its set back to false.
   rtStructDisplaySet.isLoaded = true;
@@ -68,7 +68,6 @@ export default async function loadRTStruct(
   const rtStructDisplayToolName = TOOL_NAMES.RTSTRUCT_DISPLAY_TOOL;
 
   for (let i = 0; i < ROIContourSequence.length; i++) {
-
     const ROIContour = ROIContourSequence[i];
     const { ReferencedROINumber, ContourSequence } = ROIContour;
 
@@ -76,28 +75,26 @@ export default async function loadRTStruct(
       continue;
     }
 
-    _setROIContourMetadata(
-      structureSet,
-      StructureSetROISequence,
-      RTROIObservationsSequence,
-      ROIContour
-    );
+    const isSupported = false;
 
-    for (let c = 0; c < ContourSequence.length; c++) {
+    const ContourSequenceArray = _toArray(ContourSequence);
+
+    for (let c = 0; c < ContourSequenceArray.length; c++) {
       const {
         ContourImageSequence,
         ContourData,
         NumberOfContourPoints,
         ContourGeometricType,
-      } = ContourSequence[c];
+      } = ContourSequenceArray[c];
 
-      if (ContourGeometricType !== 'CLOSED_PLANAR') {
-        // TODO: Do we want to visualise types other than closed planar?
-        // We could easily do open planar.
-        continue;
-      }
-
-      const sopInstanceUID = ContourImageSequence.ReferencedSOPInstanceUID;
+      const sopInstanceUID = ContourImageSequence
+        ? ContourImageSequence.ReferencedSOPInstanceUID
+        : _getClosestSOPInstanceUID(
+            ContourData,
+            ContourGeometricType,
+            NumberOfContourPoints,
+            imageIdSopInstanceUidPairs
+          );
       const imageId = _getImageId(imageIdSopInstanceUidPairs, sopInstanceUID);
       const imageIdSpecificToolData = _getOrCreateImageIdSpecificToolData(
         toolState,
@@ -107,27 +104,47 @@ export default async function loadRTStruct(
 
       const imagePlane = cornerstone.metaData.get('imagePlaneModule', imageId);
       const points = [];
+      let measurementData;
 
-      for (let p = 0; p < NumberOfContourPoints * 3; p += 3) {
-        points.push({
-          x: ContourData[p],
-          y: ContourData[p + 1],
-          z: ContourData[p + 2],
-        });
+      switch (ContourGeometricType) {
+        case 'CLOSED_PLANAR':
+        case 'OPEN_PLANAR':
+        case 'POINT':
+          isSupported = true;
+
+          for (let p = 0; p < NumberOfContourPoints * 3; p += 3) {
+            points.push({
+              x: ContourData[p],
+              y: ContourData[p + 1],
+              z: ContourData[p + 2],
+            });
+          }
+
+          transformPointsToImagePlane(points, imagePlane);
+
+          measurementData = {
+            handles: {
+              points,
+            },
+            type: ContourGeometricType,
+            structureSetSeriesInstanceUid: rtStructDataset.SeriesInstanceUID,
+            ROINumber: ReferencedROINumber,
+          };
+
+          imageIdSpecificToolData.push(measurementData);
+          break;
+        default:
+          continue;
       }
-
-      transformPointsToImagePlane(points, imagePlane);
-
-      const measurementData = {
-        handles: {
-          points,
-        },
-        structureSetSeriesInstanceUid: rtStructDataset.SeriesInstanceUID,
-        ROINumber: ReferencedROINumber,
-      };
-
-      imageIdSpecificToolData.push(measurementData);
     }
+
+    _setROIContourMetadata(
+      structureSet,
+      StructureSetROISequence,
+      RTROIObservationsSequence,
+      ROIContour,
+      isSupported
+    );
   }
 
   _setToolEnabledIfNotEnabled(rtStructDisplayToolName);
@@ -157,7 +174,8 @@ function _setROIContourMetadata(
   structureSet,
   StructureSetROISequence,
   RTROIObservationsSequence,
-  ROIContour
+  ROIContour,
+  isSupported
 ) {
   const StructureSetROI = StructureSetROISequence.find(
     structureSetROI =>
@@ -169,6 +187,7 @@ function _setROIContourMetadata(
     ROIName: StructureSetROI.ROIName,
     ROIGenerationAlgorithm: StructureSetROI.ROIGenerationAlgorithm,
     ROIDescription: StructureSetROI.ROIDescription,
+    isSupported,
     visible: true,
   };
 
@@ -238,7 +257,7 @@ function _setROIContourRTROIObservations(
 
 function _setToolEnabledIfNotEnabled(toolName) {
   cornerstone.getEnabledElements().forEach(enabledElement => {
-    const { element } = enabledElement;
+    const { element, image } = enabledElement;
     const tool = cornerstoneTools.getToolForElement(element, toolName);
 
     if (tool.mode !== 'enabled') {
@@ -246,7 +265,9 @@ function _setToolEnabledIfNotEnabled(toolName) {
       cornerstoneTools.setToolEnabled(toolName);
     }
 
-    cornerstone.updateImage(element);
+    if (image) {
+      cornerstone.updateImage(element);
+    }
   });
 }
 
@@ -306,4 +327,83 @@ function _getImageIdSopInstanceUidPairsForDisplaySet(
       sopInstanceUID: image.getSOPInstanceUID(),
     };
   });
+}
+
+function _toArray(objOrArray) {
+  return Array.isArray(objOrArray) ? objOrArray : [objOrArray];
+}
+
+function _getClosestSOPInstanceUID(
+  ContourData,
+  ContourGeometricType,
+  NumberOfContourPoints,
+  imageIdSopInstanceUidPairs
+) {
+  const closest = {
+    distance: Infinity,
+    sopInstanceUID: null,
+  };
+
+  let point;
+
+  switch (ContourGeometricType) {
+    case 'POINT':
+      point = ContourData;
+      break;
+    case 'CLOSED_PLANAR':
+    case 'OPEN_PLANAR':
+      // These are defined as planar, so get the of the region to get the
+      // Best mapping to a plane even if its potentially off center.
+
+      point = [0, 0, 0];
+      for (let p = 0; p < NumberOfContourPoints * 3; p += 3) {
+        point[0] += ContourData[p];
+        point[1] += ContourData[p + 1];
+        point[2] += ContourData[p + 2];
+      }
+
+      point[0] /= NumberOfContourPoints;
+      point[1] /= NumberOfContourPoints;
+      point[2] /= NumberOfContourPoints;
+  }
+
+  imageIdSopInstanceUidPairs.forEach(pair => {
+    const { imageId } = pair;
+
+    const imagePlaneModule = cornerstone.metaData.get(
+      'imagePlaneModule',
+      imageId
+    );
+
+    const distance = distanceFromPointToPlane(point, imagePlaneModule);
+
+    if (distance < closest.distance) {
+      closest.distance = distance;
+      closest.sopInstanceUID = pair.sopInstanceUID;
+    }
+  });
+
+  return closest.sopInstanceUID;
+}
+
+/**
+ *
+ * @param {number[3]} P - The point
+ * @param {object} imagePlaneModule The cornerstone metadata object for the imagePlane
+ */
+function distanceFromPointToPlane(P, imagePlaneModule) {
+  const {
+    rowCosines,
+    columnCosines,
+    imagePositionPatient: Q,
+  } = imagePlaneModule;
+
+  let N = [];
+  vec3.cross(N, rowCosines, columnCosines);
+
+  const [A, B, C] = N;
+
+  const D = -A * Q[0] - B * Q[1] - C * Q[2];
+
+  return Math.abs(A * P[0] + B * P[1] + C * P[2] + D); // Denominator is sqrt(A**2 + B**2 + C**2) which is 1 as its a normal vector
 }

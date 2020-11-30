@@ -50,22 +50,25 @@ class OHIFVTKViewport extends Component {
     volumes: null,
     paintFilterLabelMapImageData: null,
     paintFilterBackgroundImageData: null,
+    percentComplete: 0,
+    isLoaded: false,
   };
 
   static propTypes = {
     viewportData: PropTypes.shape({
-      studies: PropTypes.array,
+      studies: PropTypes.array.isRequired,
       displaySet: PropTypes.shape({
-        StudyInstanceUID: PropTypes.string,
-        displaySetInstanceUID: PropTypes.string,
+        StudyInstanceUID: PropTypes.string.isRequired,
+        displaySetInstanceUID: PropTypes.string.isRequired,
         sopClassUIDs: PropTypes.arrayOf(PropTypes.string),
         SOPInstanceUID: PropTypes.string,
         frameIndex: PropTypes.number,
       }),
     }),
-    viewportIndex: PropTypes.number,
+    viewportIndex: PropTypes.number.isRequired,
     children: PropTypes.node,
     onScroll: PropTypes.func,
+    servicesManager: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
@@ -155,6 +158,12 @@ class OHIFVTKViewport extends Component {
     if (brushStackState) {
       const { activeLabelmapIndex } = brushStackState;
       const labelmap3D = brushStackState.labelmaps3D[activeLabelmapIndex];
+
+      this.segmentsDefaultProperties = labelmap3D.segmentsHidden.map(
+        isHidden => {
+          return { visible: !isHidden };
+        }
+      );
 
       const vtkLabelmapID = `${firstImageId}_${activeLabelmapIndex}`;
 
@@ -339,7 +348,7 @@ class OHIFVTKViewport extends Component {
     this.setStateFromProps();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { displaySet } = this.props.viewportData;
     const prevDisplaySet = prevProps.viewportData.displaySet;
 
@@ -356,34 +365,54 @@ class OHIFVTKViewport extends Component {
   loadProgressively(imageDataObject) {
     loadImageData(imageDataObject);
 
-    const { isLoading, insertPixelDataPromises } = imageDataObject;
-
-    const NumberOfFrames = insertPixelDataPromises.length;
+    const { isLoading, imageIds } = imageDataObject;
 
     if (!isLoading) {
       this.setState({ isLoaded: true });
       return;
     }
 
-    insertPixelDataPromises.forEach(promise => {
-      promise.then(numberProcessed => {
-        const percentComplete = Math.floor(
-          (numberProcessed * 100) / NumberOfFrames
-        );
+    const NumberOfFrames = imageIds.length;
 
-        if (percentComplete !== this.state.percentComplete) {
-          this.setState({
-            percentComplete,
+    const onPixelDataInsertedCallback = numberProcessed => {
+      const percentComplete = Math.floor(
+        (numberProcessed * 100) / NumberOfFrames
+      );
+
+      if (percentComplete !== this.state.percentComplete) {
+        this.setState({
+          percentComplete,
+        });
+      }
+    };
+
+    const onPixelDataInsertedErrorCallback = error => {
+      const { UINotificationService } = this.props.servicesManager.services;
+
+      if (!this.hasError) {
+        if (this.props.viewportIndex === 0) {
+          // Only show the notification from one viewport 1 in MPR2D.
+          UINotificationService.show({
+            title: 'MPR Load Error',
+            message: error.message,
+            type: 'error',
+            autoClose: false,
           });
         }
-      });
-    });
 
-    Promise.all(insertPixelDataPromises).then(() => {
+        this.hasError = true;
+      }
+    };
+
+    const onAllPixelDataInsertedCallback = () => {
       this.setState({
         isLoaded: true,
       });
-    });
+    };
+
+    imageDataObject.onPixelDataInserted(onPixelDataInsertedCallback);
+    imageDataObject.onAllPixelDataInserted(onAllPixelDataInsertedCallback);
+    imageDataObject.onPixelDataInsertedError(onPixelDataInsertedErrorCallback);
   }
 
   render() {
@@ -405,10 +434,6 @@ class OHIFVTKViewport extends Component {
 
     const style = { width: '100%', height: '100%', position: 'relative' };
 
-    const visible = configuration.renderFill || configuration.renderOutline;
-    const opacity = configuration.fillAlpha;
-    const outlineThickness = configuration.outlineThickness;
-
     return (
       <>
         <div style={style}>
@@ -428,10 +453,14 @@ class OHIFVTKViewport extends Component {
               dataDetails={this.state.dataDetails}
               labelmapRenderingOptions={{
                 colorLUT: this.state.labelmapColorLUT,
-                globalOpacity: opacity,
-                visible,
-                outlineThickness,
-                renderOutline: true,
+                globalOpacity: configuration.fillAlpha,
+                visible: configuration.renderFill,
+                outlineThickness: configuration.outlineWidth,
+                renderOutline: configuration.renderOutline,
+                segmentsDefaultProperties: this.segmentsDefaultProperties,
+                onNewSegmentationRequested: () => {
+                  this.setStateFromProps();
+                },
               }}
               onScroll={this.props.onScroll}
             />

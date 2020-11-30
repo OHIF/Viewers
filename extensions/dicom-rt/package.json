@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-rt",
-  "version": "0.1.1",
+  "version": "0.4.9",
   "description": "OHIF extension for rendering DICOM RTSTRUCTs on top of cornerstone images.",
   "author": "OHIF",
   "license": "MIT",
@@ -30,11 +30,13 @@
   "peerDependencies": {
     "@ohif/core": "^0.50.0",
     "cornerstone-core": "^2.2.8",
-    "cornerstone-tools": "^4.0.9",
-    "dcmjs": "^0.12.2",
+    "cornerstone-tools": "^4.20.1",
+    "dcmjs": "0.16.5",
+    "gl-matrix": "^3.3.0",
     "prop-types": "^15.6.2",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "react-tooltip": "4.2.10"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",

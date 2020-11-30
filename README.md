@@ -122,7 +122,7 @@ window.config = {
 ```
 
 - Install the viewer:
-  `window.OHIFStandaloneViewer.installViewer(window.config);`
+  `window.OHIFViewer.installViewer(window.config);`
 
 This exact setup is demonstrated in this
 [CodeSandbox](https://codesandbox.io/s/viewer-script-tag-tprch) and in our

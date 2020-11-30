@@ -3,6 +3,90 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.7](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.6...@ohif/ui@1.5.7) (2020-11-02)
+
+
+### Bug Fixes
+
+* Reordered definitions in providers to prevent uninitialized var access ([#2108](https://github.com/OHIF/Viewers/issues/2108)) ([619f361](https://github.com/OHIF/Viewers/commit/619f3615109d6cc4c69ff2f9fedbf83bd9309719))
+
+
+
+
+
+## [1.5.6](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.5...@ohif/ui@1.5.6) (2020-10-06)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.5.5](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.4...@ohif/ui@1.5.5) (2020-09-17)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.5.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.3...@ohif/ui@1.5.4) (2020-09-10)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.5.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.2...@ohif/ui@1.5.3) (2020-07-23)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+## [1.5.2](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.1...@ohif/ui@1.5.2) (2020-07-22)
+
+
+### Bug Fixes
+
+* Switch DICOMFileUploader to use the UIModalService ([#1904](https://github.com/OHIF/Viewers/issues/1904)) ([7772fee](https://github.com/OHIF/Viewers/commit/7772fee21ae6a65994e1251e2f1d2554b47781be))
+
+
+
+
+
+## [1.5.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.0...@ohif/ui@1.5.1) (2020-06-05)
+
+**Note:** Version bump only for package @ohif/ui
+
+
+
+
+
+# [1.5.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.4...@ohif/ui@1.5.0) (2020-06-04)
+
+
+### Features
+
+* 🎸 1729 - error boundary wrapper ([#1764](https://github.com/OHIF/Viewers/issues/1764)) ([c02b232](https://github.com/OHIF/Viewers/commit/c02b232b0cc24f38af5d5e3831d987d048e60ada))
+
+
+
+
+
+## [1.4.4](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.3...@ohif/ui@1.4.4) (2020-05-04)
+
+
+### Bug Fixes
+
+* 🐛 Proper error handling for derived display sets ([#1708](https://github.com/OHIF/Viewers/issues/1708)) ([5b20d8f](https://github.com/OHIF/Viewers/commit/5b20d8f323e4b3ef9988f2f2ab672d697b6da409))
+
+
+
+
+
 ## [1.4.3](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.4.2...@ohif/ui@1.4.3) (2020-04-09)
 
 **Note:** Version bump only for package @ohif/ui

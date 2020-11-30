@@ -251,7 +251,9 @@ export default class MeasurementApi {
         this.syncMeasurementsAndToolData();
 
         cornerstone.getEnabledElements().forEach(enabledElement => {
-          cornerstone.updateImage(enabledElement.element);
+          if (enabledElement.image) {
+            cornerstone.updateImage(enabledElement.element);
+          }
         });
 
         // Let others know that the measurements are updated

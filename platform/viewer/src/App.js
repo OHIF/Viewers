@@ -13,6 +13,7 @@ import {
   ModalProvider,
   DialogProvider,
   OHIFModal,
+  ErrorBoundary,
 } from '@ohif/ui';
 
 import {
@@ -53,7 +54,7 @@ import store from './store';
 /** Contexts */
 import WhiteLabelingContext from './context/WhiteLabelingContext';
 import UserManagerContext from './context/UserManagerContext';
-import AppContext from './context/AppContext';
+import { AppProvider, useAppContext, CONTEXTS } from './context/AppContext';
 
 /** ~~~~~~~~~~~~~ Application Setup */
 const commandsManagerConfig = {
@@ -70,6 +71,14 @@ let extensionManager;
 
 // TODO[react] Use a provider when the whole tree is React
 window.store = store;
+
+window.ohif = window.ohif || {};
+window.ohif.app = {
+  commandsManager,
+  hotkeysManager,
+  servicesManager,
+  extensionManager,
+};
 
 class App extends Component {
   static propTypes = {
@@ -159,53 +168,57 @@ class App extends Component {
 
     if (this._userManager) {
       return (
-        <AppContext.Provider value={{ appConfig: this._appConfig }}>
+        <ErrorBoundary context="App">
           <Provider store={store}>
-            <I18nextProvider i18n={i18n}>
-              <OidcProvider store={store} userManager={this._userManager}>
-                <UserManagerContext.Provider value={this._userManager}>
-                  <Router basename={routerBasename}>
-                    <WhiteLabelingContext.Provider value={whiteLabeling}>
-                      <SnackbarProvider service={UINotificationService}>
-                        <DialogProvider service={UIDialogService}>
-                          <ModalProvider
-                            modal={OHIFModal}
-                            service={UIModalService}
-                          >
-                            <OHIFStandaloneViewer
-                              userManager={this._userManager}
-                            />
-                          </ModalProvider>
-                        </DialogProvider>
-                      </SnackbarProvider>
-                    </WhiteLabelingContext.Provider>
-                  </Router>
-                </UserManagerContext.Provider>
-              </OidcProvider>
-            </I18nextProvider>
+            <AppProvider config={this._appConfig}>
+              <I18nextProvider i18n={i18n}>
+                <OidcProvider store={store} userManager={this._userManager}>
+                  <UserManagerContext.Provider value={this._userManager}>
+                    <Router basename={routerBasename}>
+                      <WhiteLabelingContext.Provider value={whiteLabeling}>
+                        <SnackbarProvider service={UINotificationService}>
+                          <DialogProvider service={UIDialogService}>
+                            <ModalProvider
+                              modal={OHIFModal}
+                              service={UIModalService}
+                            >
+                              <OHIFStandaloneViewer
+                                userManager={this._userManager}
+                              />
+                            </ModalProvider>
+                          </DialogProvider>
+                        </SnackbarProvider>
+                      </WhiteLabelingContext.Provider>
+                    </Router>
+                  </UserManagerContext.Provider>
+                </OidcProvider>
+              </I18nextProvider>
+            </AppProvider>
           </Provider>
-        </AppContext.Provider>
+        </ErrorBoundary>
       );
     }
 
     return (
-      <AppContext.Provider value={{ appConfig: this._appConfig }}>
+      <ErrorBoundary context="App">
         <Provider store={store}>
-          <I18nextProvider i18n={i18n}>
-            <Router basename={routerBasename}>
-              <WhiteLabelingContext.Provider value={whiteLabeling}>
-                <SnackbarProvider service={UINotificationService}>
-                  <DialogProvider service={UIDialogService}>
-                    <ModalProvider modal={OHIFModal} service={UIModalService}>
-                      <OHIFStandaloneViewer />
-                    </ModalProvider>
-                  </DialogProvider>
-                </SnackbarProvider>
-              </WhiteLabelingContext.Provider>
-            </Router>
-          </I18nextProvider>
+          <AppProvider config={this._appConfig}>
+            <I18nextProvider i18n={i18n}>
+              <Router basename={routerBasename}>
+                <WhiteLabelingContext.Provider value={whiteLabeling}>
+                  <SnackbarProvider service={UINotificationService}>
+                    <DialogProvider service={UIDialogService}>
+                      <ModalProvider modal={OHIFModal} service={UIModalService}>
+                        <OHIFStandaloneViewer />
+                      </ModalProvider>
+                    </DialogProvider>
+                  </SnackbarProvider>
+                </WhiteLabelingContext.Provider>
+              </Router>
+            </I18nextProvider>
+          </AppProvider>
         </Provider>
-      </AppContext.Provider>
+      </ErrorBoundary>
     );
   }
 
@@ -255,14 +268,24 @@ function _initExtensions(extensions, cornerstoneExtensionConfig, appConfig) {
     commandsManager,
     servicesManager,
     appConfig,
+    api: {
+      contexts: CONTEXTS,
+      hooks: {
+        useAppContext,
+      },
+    },
   });
 
   const requiredExtensions = [
     GenericViewerCommands,
     [OHIFCornerstoneExtension, cornerstoneExtensionConfig],
-    /* WARNING: MUST BE REGISTERED _AFTER_ OHIFCornerstoneExtension */
-    MeasurementsPanel,
   ];
+
+  if (appConfig.disableMeasurementPanel !== true) {
+    /* WARNING: MUST BE REGISTERED _AFTER_ OHIFCornerstoneExtension */
+    requiredExtensions.push(MeasurementsPanel);
+  }
+
   const mergedExtensions = requiredExtensions.concat(extensions);
   extensionManager.registerExtensions(mergedExtensions);
 }
