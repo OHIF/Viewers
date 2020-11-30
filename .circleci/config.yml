@@ -80,6 +80,48 @@ jobs:
       - codecov/upload:
           file: '/home/circleci/repo/platform/core/coverage/reports'
           flags: 'core'
+      - persist_to_workspace:
+          root: ~/
+          paths: .
+
+  ###
+  # Workflow: PR_CHECKS
+  ###
+  BUILD_E2E_TESTS:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/
+      # Output: platform/viewer/dist
+      - run: npx cross-env QUICK_BUILD=true yarn run build
+      # run verify and then save cache.
+      # this ensures that the Cypress verified status is cached too
+      # - run: yarn run cy:verify
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - platform/viewer
+            - .cache/Cypress
+
+  # cypress/run:
+  CYPRESS_MAGIC:
+    docker:
+      - image: cypress/browsers:chrome67
+    working_directory: ~/repo
+    parallelism: 4
+    steps:
+      # restore application and Cypress binary before running the test command
+      - attach_workspace:
+          at: ~/
+      - run:
+          command: yarn run test:e2e:serve
+          background: true
+      - run:
+          name: 'Cypress E2E Test Suite'
+          command:
+            cypress run --parallel --group $CIRCLE_JOB --config video=false
+            --browser chrome --spec
+            'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
 
   ###
   # Workflow: PR_OPTIONAL_DOCKER_PUBLISH
@@ -314,56 +356,18 @@ workflows:
                 - master
                 - feature/*
                 - hotfix/*
-      # E2E: PWA
-      - cypress/run:
-          name: 'E2E: PWA'
-          executor: cypress/browsers-chrome76
-          browser: chrome
-          pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
-          yarn: true
-          record: false
-          store_artifacts: false
-          working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build
-          start: yarn run test:e2e:serve
-          spec: 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
-          wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
-          post-steps:
-            - store_artifacts:
-                path: platform/viewer/cypress/screenshots
-            - store_artifacts:
-                path: platform/viewer/cypress/videos
+      - BUILD_E2E_TESTS:
+          filters:
+            branches:
+              ignore:
+                - master
+                - feature/*
+                - hotfix/*
+      # after installing dependencies in the "BUILD_E2E_TESTS" job
+      # run all tests under group cypress/run
+      - CYPRESS_MAGIC:
           requires:
-            - UNIT_TESTS
-      # E2E: script-tag
-      - cypress/run:
-          name: 'E2E: Script Tag'
-          executor: cypress/browsers-chrome76
-          browser: chrome
-          pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
-          yarn: true
-          record: false
-          store_artifacts: false
-          working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build:package
-          start: yarn run test:e2e:serve
-          spec: 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'
-          wait-on: 'http://localhost:3000'
-          cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-          no-workspace: true # Don't persist workspace
-          post-steps:
-            - store_artifacts:
-                path: platform/viewer/cypress/screenshots
-            - store_artifacts:
-                path: platform/viewer/cypress/videos
-          requires:
-            - UNIT_TESTS
+            - BUILD_E2E_TESTS # build
 
   PR_OPTIONAL_VISUAL_TESTS:
     jobs:
