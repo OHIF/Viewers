@@ -19,5 +19,5 @@ if [ "${CONFIG_ONLY}" != "True" ]; then
   yarn install
   yarn run build
 else
-  mkdir -f platform/viewer/dist/
+  mkdir -p platform/viewer/dist/
 fi
