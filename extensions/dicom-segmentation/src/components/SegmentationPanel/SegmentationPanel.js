@@ -533,6 +533,7 @@ const SegmentationPanel = ({
   } else {
     return (
       <div
+        data-cy="segmentation-panel"
         className={`dcmseg-segmentation-panel ${state.isDisabled &&
           'disabled'}`}
       >
