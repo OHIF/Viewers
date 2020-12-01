@@ -17,7 +17,8 @@
 
 cat idc-assets/app-config-template.js | \
     sed "s#_X___IDC__Z__ROOT___Y_#${STORE_ROOT}#" | \
-    sed "s#_X___IDC__Z__QUOTA___Y_#${QUOTA_PAGE}#"
+    sed "s#_X___IDC__Z__QUOTA___Y_#${QUOTA_PAGE}#" | \
+    sed "s#_X___IDC__LOGO__LINK___Y_#${LOGO_LINK}#"
 
 
 
