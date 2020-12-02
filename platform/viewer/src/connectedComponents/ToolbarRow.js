@@ -299,23 +299,48 @@ function _getButtonComponents(toolbarButtons, activeButtons) {
  * @param {*} props
  */
 function _handleToolbarButtonClick(button, evt, props) {
-  const { activeButtons } = this.state;
+  const { activeButtons, toggleableStates } = this.state;
 
-  if (button.commandName) {
-    const options = Object.assign({ evt }, button.commandOptions);
-    commandsManager.runCommand(button.commandName, options);
-  }
+  let toggledState;
 
   // TODO: Use Types ENUM
   // TODO: We can update this to be a `getter` on the extension to query
   //       For the active tools after we apply our updates?
   if (button.type === 'setToolActive') {
     const toggables = activeButtons.filter(
-      ({ options }) => options && !options.togglable
+      ({ options }) => options && options.togglable
     );
     this.setState({ activeButtons: [...toggables, button] });
   } else if (button.type === 'builtIn') {
     this._handleBuiltIn(button);
+  } else if (button.options && button.options.togglable === true) {
+    // Handle togglable buttons that run commands
+    // (e.g. turning on/off synchronized scrolling)
+    // Find the index of the button in the activeButton array
+    const index = activeButtons.findIndex(b => b.id === button.id);
+    // If it is already present, remove it to toggle it off
+    if (index > -1) {
+      activeButtons.splice(index, 1);
+      toggledState = false;
+    } else {
+      // Otherwise, add it to toggle it on
+      activeButtons.push(button);
+      toggledState = true;
+    }
+
+    // Set state with the update button array
+    this.setState({ activeButtons });
+  }
+
+  if (button.commandName) {
+    let options = Object.assign({ evt }, button.commandOptions);
+
+    // Pass back a variable to the command to let it know what state it should set
+    if (button.options && button.options.togglable === true) {
+      options = Object.assign(options, { toggledState });
+    }
+
+    commandsManager.runCommand(button.commandName, options);
   }
 }
 

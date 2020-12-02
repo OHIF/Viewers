@@ -18,6 +18,28 @@ const refreshCornerstoneViewports = () => {
   });
 };
 
+const imagePositionSynchronizer = new cornerstoneTools.Synchronizer(
+  cornerstone.EVENTS.NEW_IMAGE,
+  cornerstoneTools.stackImagePositionSynchronizer);
+
+const panZoomSynchronizer = new cornerstoneTools.Synchronizer(
+  cornerstone.EVENTS.IMAGE_RENDERED,
+  cornerstoneTools.panZoomSynchronizer);
+
+function onElementEnabledAddToSync(event) {
+  const { element } = event.detail;
+
+  imagePositionSynchronizer.add(element);
+  panZoomSynchronizer.add(element);
+}
+
+function onElementDisabledRemoveFromSync(event) {
+  const { element } = event.detail;
+
+  imagePositionSynchronizer.remove(element);
+  panZoomSynchronizer.remove(element);
+}
+
 const commandsModule = ({ servicesManager }) => {
   const actions = {
     rotateViewport: ({ viewports, rotation }) => {
@@ -153,6 +175,33 @@ const commandsModule = ({ servicesManager }) => {
       const enabledElement = getEnabledElement(viewports.activeViewportIndex);
       return enabledElement;
     },
+    toggleSynchronizer: ({ toggledState, viewports }) => {
+      const synchronizers = [imagePositionSynchronizer, panZoomSynchronizer];
+
+      // Set synchronizer state when the command is run.
+      synchronizers.forEach(s => {
+        s.enabled = toggledState;
+      });
+
+      // Add event handlers so that if the layout is changed, new elements
+      // are automatically added to the synchronizer while it is enabled.
+      if (toggledState === true) {
+        cornerstone.events.addEventListener(cornerstone.EVENTS.ELEMENT_ENABLED, onElementEnabledAddToSync);
+        cornerstone.events.addEventListener(cornerstone.EVENTS.ELEMENT_DISABLED, onElementDisabledRemoveFromSync);
+      } else {
+        // If the synchronizer is disabled, remove the event handlers
+        cornerstone.events.removeEventListener(cornerstone.EVENTS.ELEMENT_ENABLED, onElementEnabledAddToSync);
+        cornerstone.events.removeEventListener(cornerstone.EVENTS.ELEMENT_DISABLED, onElementDisabledRemoveFromSync);
+      }
+
+      // Erase existing state and then set up all currently existing elements
+      cornerstone.getEnabledElements().map(e => {
+        synchronizers.forEach(s => {
+          s.remove(e.element);
+          s.add(e.element);
+        })
+      });
+    },
     showDownloadViewportModal: ({ title, viewports }) => {
       const activeViewportIndex = viewports.activeViewportIndex;
       const { UIModalService } = servicesManager.services;
@@ -268,6 +317,7 @@ const commandsModule = ({ servicesManager }) => {
       SOPInstanceUID,
       frameIndex,
       activeViewportIndex,
+      refreshViewports = true
     }) => {
       const study = studyMetadataManager.get(StudyInstanceUID);
 
@@ -278,6 +328,10 @@ const commandsModule = ({ servicesManager }) => {
         );
       });
 
+      if (!displaySet) {
+        return;
+      }
+
       displaySet.SOPInstanceUID = SOPInstanceUID;
       displaySet.frameIndex = frameIndex;
 
@@ -285,7 +339,9 @@ const commandsModule = ({ servicesManager }) => {
         setViewportSpecificData(activeViewportIndex, displaySet)
       );
 
-      refreshCornerstoneViewports();
+      if (refreshViewports) {
+        refreshCornerstoneViewports();
+      }
     },
   };
 
@@ -317,6 +373,11 @@ const commandsModule = ({ servicesManager }) => {
     },
     getActiveViewportEnabledElement: {
       commandFn: actions.getActiveViewportEnabledElement,
+      storeContexts: ['viewports'],
+      options: {},
+    },
+    toggleSynchronizer: {
+      commandFn: actions.toggleSynchronizer,
       storeContexts: ['viewports'],
       options: {},
     },
