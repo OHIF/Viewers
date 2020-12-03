@@ -45,7 +45,8 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
     const imageIdControl = displaySet.images[ii].getImageId()
     const instanceMetadataControl = cornerstone.metaData.get('instance', imageIdControl)
 
-    if (!instanceMetadataControl.ImagePositionPatient) {
+    if (!instanceMetadataControl.ImagePositionPatient ||
+      instanceMetadataControl.ImagePositionPatient === undefined ) {
       // if ImagePositionPatient is missing, skip the 4D datasets check.
       return false;
     }
@@ -58,7 +59,8 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
       const imageId = displaySet.images[jj].getImageId()
       const instanceMetadata = cornerstone.metaData.get('instance', imageId)
 
-      if (!instanceMetadata.ImagePositionPatient) {
+      if (!instanceMetadata.ImagePositionPatient ||
+        instanceMetadata.ImagePositionPatient === undefined) {
         // if ImagePositionPatient is missing, skip the 4D datasets check.
         return false;
       }
