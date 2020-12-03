@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.1.0...@ohif/extension-dicom-tag-browser@0.1.1) (2020-12-03)
+
+
+### Bug Fixes
+
+* fallback to original dataset VR for XS ([f57725a](https://github.com/OHIF/Viewers/commit/f57725ac8bfd59ea46ab334a1823882afadefba1))
+
+
+
+
+
 # [0.1.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-tag-browser@0.0.5...@ohif/extension-dicom-tag-browser@0.1.0) (2020-12-03)
 
 
