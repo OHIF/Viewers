@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.53.0](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.52.8...@ohif/i18n@0.53.0) (2020-11-30)
+
+
+### Bug Fixes
+
+* Add syncTranslations script ([b161016](https://github.com/OHIF/Viewers/commit/b161016edb8808ff0d17ea637820837dca1ca3ce))
+
+
+### Features
+
+* **i18n:** Added de (German) translations ([2fff2d5](https://github.com/OHIF/Viewers/commit/2fff2d511fa1d36bdd6476da4ffa5684bf55374f))
+* **i18n:** Added Russian language localization. ([d5b8974](https://github.com/OHIF/Viewers/commit/d5b89748c92c2cf5a88f54ae491adc31a1679705))
+
+
+
+
+
 ## [0.52.8](https://github.com/OHIF/Viewers/compare/@ohif/i18n@0.52.7...@ohif/i18n@0.52.8) (2020-04-07)
 
 **Note:** Version bump only for package @ohif/i18n

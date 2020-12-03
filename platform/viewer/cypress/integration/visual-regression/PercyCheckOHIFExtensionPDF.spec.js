@@ -1,3 +1,6 @@
+/*
+Temporarily disabling as we transition to containerized PACS for E2E tests
+
 describe('Visual Regression - OHIF PDF Extension', () => {
   before(() => {
     cy.checkStudyRouteInViewer(
@@ -20,3 +23,4 @@ describe('Visual Regression - OHIF PDF Extension', () => {
     cy.percyCanvasSnapshot('PDF Extension - Should load PDF file');
   });
 });
+*/
