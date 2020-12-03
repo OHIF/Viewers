@@ -31,16 +31,21 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
 
   if (!displaySet) {
     return false;
-  };
+  }
 
-  // 2D MPR is not currently available for 4D datasets. 
-  
+  // 2D MPR is not currently available for 4D datasets.
+
   // Assuming that slices at different time have the same position, here we just check if
   // there are multiple slices for the same ImagePositionPatient and disable MPR.
-  
+
   // A better heuristic would be checking 4D tags, e.g. the presence of multiple TemporalPositionIdentifier values.
-  // However, some studies (e.g. https://github.com/OHIF/Viewers/issues/2113) do not have such tags.  
-  
+  // However, some studies (e.g. https://github.com/OHIF/Viewers/issues/2113) do not have such tags.
+
+  if (!cornerstone.metaData.get
+    ('instance', displaySet.images[ii].getImageId()).ImagePositionPatient) {
+    return false;
+  }
+
   for (let ii = 0; ii < displaySet.numImageFrames; ++ii){
     let xImagePositionPatientControl = cornerstone.metaData.get
       ('instance', displaySet.images[ii].getImageId()).ImagePositionPatient[0];
