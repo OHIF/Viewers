@@ -30,6 +30,7 @@
     "start": "yarn run dev",
     "test:e2e": "cypress open",
     "test:e2e:ci": "percy exec -- cypress run --config video=false --record --browser chrome --spec 'cypress/integration/visual-regression/**/*'",
+    "test:e2e:script-tag": "cypress run --config video=false --browser chrome --spec 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'",
     "test:e2e:local": "cypress run --config video=false --browser chrome --spec 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'",
     "test:e2e:dist": "start-server-and-test test:e2e:serve http://localhost:3000 test:e2e:ci",
     "test:e2e:serve": "serve -n -l 3000 -s dist",
@@ -92,7 +93,7 @@
     "vtk.js": "^11.14.0"
   },
   "devDependencies": {
-    "cypress": "^3.8.0",
+    "cypress": "^6.0.0",
     "gh-pages": "2.0.1",
     "identity-obj-proxy": "3.0.x",
     "lodash": "4.17.15",
