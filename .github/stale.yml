@@ -2,9 +2,9 @@
 # https://github.com/apps/stale
 #
 # Number of days of inactivity before an issue becomes stale
-daysUntilStale: 21
+daysUntilStale: 180
 # Number of days of inactivity before a stale issue is closed
-daysUntilClose: 7
+daysUntilClose: 9000
 # Issues with these labels will never be considered stale
 exemptLabels:
   - 'Story :raised_hands:'

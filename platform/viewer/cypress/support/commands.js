@@ -149,10 +149,11 @@ Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
     const [x1, y1] = firstClick;
     const [x2, y2] = secondClick;
 
+    // TODO: Added a wait which appears necessary in Cornerstone Tools >4?
     cy.wrap($viewport)
-      .click(x1, y1, { force: true })
+      .click(x1, y1).wait(100)
       .trigger('mousemove', { clientX: x2, clientY: y2 })
-      .click(x2, y2, { force: true });
+      .click(x2, y2).wait(100);
   });
 });
 
@@ -242,6 +243,8 @@ Cypress.Commands.add('resetViewport', () => {
   cy.get('[data-cy="reset"]')
     .as('resetBtn')
     .click();
+
+  cy.get('.tooltip-toolbar-overlay').should('not.exist');
 });
 
 Cypress.Commands.add('imageZoomIn', () => {
@@ -466,6 +469,24 @@ Cypress.Commands.add('openPreferences', () => {
   });
 });
 
+Cypress.Commands.add('closePreferences', () => {
+  cy.log('Close User Preferences Modal');
+
+  cy.get('body').then(body => {
+    // Close notification if displayed
+    if (body.find('.sb-closeIcon').length > 0) {
+      cy.get('.sb-closeIcon')
+        .first()
+        .click({ force: true });
+    }
+
+    // Close User Preferences Modal (if displayed)
+    if (body.find('.OHIFModal__header').length > 0) {
+      cy.get('[data-cy="close-button"]').click({ force: true });
+    }
+  });
+});
+
 Cypress.Commands.add('selectPreferencesTab', tabAlias => {
   cy.initPreferencesModalAliases();
   cy.get(tabAlias)
@@ -527,8 +548,7 @@ Cypress.Commands.add(
           .parent()
           .find('input') // closest input to that label
           .type(shortcut, { force: true }); // Set new shortcut for that function
-      })
-      .blur();
+      });
   }
 );
 
