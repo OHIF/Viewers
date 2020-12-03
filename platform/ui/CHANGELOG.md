@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.1](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.7.0...@ohif/ui@1.7.1) (2020-12-03)
+
+
+### Bug Fixes
+
+* fallback to original dataset VR for XS ([f57725a](https://github.com/OHIF/Viewers/commit/f57725ac8bfd59ea46ab334a1823882afadefba1))
+
+
+
+
+
 # [1.7.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.6.0...@ohif/ui@1.7.0) (2020-12-03)
 
 
