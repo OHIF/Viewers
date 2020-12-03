@@ -9,7 +9,7 @@
   "video": false,
   "reporter": "junit",
   "reporterOptions": {
-    "mochaFile": "results/test-output.xml",
+    "mochaFile": "cypress/results/test-output.xml",
     "toConsole": true
   }
 }
