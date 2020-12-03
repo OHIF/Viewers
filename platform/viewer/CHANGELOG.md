@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.6.3...@ohif/viewer@4.7.0) (2020-12-03)
+
+
+### Features
+
+* Update approach to better handle rtdose instead of disabling panel ([f3cecf1](https://github.com/OHIF/Viewers/commit/f3cecf129b16f8d24d239aa44fdff7f46e6ba683))
+
+
+
+
+
 ## [4.6.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.6.2...@ohif/viewer@4.6.3) (2020-12-03)
 
 **Note:** Version bump only for package @ohif/viewer

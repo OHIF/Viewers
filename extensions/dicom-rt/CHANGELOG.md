@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.4.9...@ohif/extension-dicom-rt@0.5.0) (2020-12-03)
+
+
+### Features
+
+* Update approach to better handle rtdose instead of disabling panel ([f3cecf1](https://github.com/OHIF/Viewers/commit/f3cecf129b16f8d24d239aa44fdff7f46e6ba683))
+
+
+
+
+
 ## [0.4.9](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.4.8...@ohif/extension-dicom-rt@0.4.9) (2020-10-12)
 
 **Note:** Version bump only for package @ohif/extension-dicom-rt
