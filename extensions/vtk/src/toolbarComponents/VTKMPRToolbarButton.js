@@ -50,7 +50,8 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
       !instanceMetadataControl.ImagePositionPatient ||
       instanceMetadataControl.ImagePositionPatient === undefined ) {
       // if ImagePositionPatient is missing, skip the 4D datasets check.
-      return false;
+      // do not return false, because it could be a 3D dataset.
+      continue;
     }
 
     let xImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[0];
@@ -66,7 +67,8 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
         !instanceMetadata.ImagePositionPatient ||
         instanceMetadata.ImagePositionPatient === undefined) {
         // if ImagePositionPatient is missing, skip the 4D datasets check.
-        return false;
+        // do not return false, because it could be a 3D dataset.
+        continue;
       }
 
       let xImagePositionPatient = instanceMetadata.ImagePositionPatient[0];
