@@ -43,7 +43,8 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
 
   if (!cornerstone.metaData.get
     ('instance', displaySet.images[ii].getImageId()).ImagePositionPatient) {
-    return false;
+    // if ImagePositionPatient is missing, skip the 4D datasets check.
+    return displaySet.isReconstructable;
   }
 
   for (let ii = 0; ii < displaySet.numImageFrames; ++ii){
