@@ -247,10 +247,11 @@ function getRows(metadata, depth = 0) {
       sequenceAsArray.forEach(item => {
         const sequenceRows = getRows(item, depth + 1);
 
-        // Sort the sequence group.
-        _sortTagList(sequenceRows);
-
-        sequence.values.push(sequenceRows);
+        if (sequenceRows.length) {
+          // Sort the sequence group.
+          _sortTagList(sequenceRows);
+          sequence.values.push(sequenceRows);
+        }
       });
 
       continue;
@@ -276,13 +277,12 @@ function getRows(metadata, depth = 0) {
           } else if (value.Alphabetic) {
             value = value.Alphabetic;
           } else {
-            console.error('Unrecognised Value for element:');
-            console.error(value);
+            console.warn(`Unrecognised Value: ${value} for ${keyword}:`);
+            console.warn(value);
             value = ' ';
           }
         } else {
-          console.error('Unrecognised Value for element:');
-          console.error(value);
+          console.warn(`Unrecognised Value: ${value} for ${keyword}:`);
           value = ' ';
         }
       }
