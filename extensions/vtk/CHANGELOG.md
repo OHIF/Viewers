@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.9.3...@ohif/extension-vtk@1.9.4) (2020-12-03)
+
+
+### Bug Fixes
+
+* reset VOI on mpr reset ([#2115](https://github.com/OHIF/Viewers/issues/2115)) ([0baf18d](https://github.com/OHIF/Viewers/commit/0baf18dcb2985378016236b735329346a851e14f))
+
+
+
+
+
 ## [1.9.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.9.2...@ohif/extension-vtk@1.9.3) (2020-12-03)
 
 **Note:** Version bump only for package @ohif/extension-vtk
