@@ -16,6 +16,7 @@ import { SelectTree } from './selectTree';
 import { SimpleDialog } from './simpleDialog';
 import { OHIFModal } from './ohifModal';
 import { ContextMenu } from './contextMenu';
+import ErrorPage from './errorPage';
 import {
   PageToolbar,
   StudyList,
@@ -58,4 +59,5 @@ export {
   Tooltip,
   AboutContent,
   OHIFModal,
+  ErrorPage
 };
