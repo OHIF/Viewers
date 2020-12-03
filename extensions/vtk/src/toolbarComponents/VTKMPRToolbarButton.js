@@ -41,27 +41,31 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
   // A better heuristic would be checking 4D tags, e.g. the presence of multiple TemporalPositionIdentifier values.
   // However, some studies (e.g. https://github.com/OHIF/Viewers/issues/2113) do not have such tags.
 
-  if (!cornerstone.metaData.get
-    ('instance', displaySet.images[ii].getImageId()).ImagePositionPatient) {
-    // if ImagePositionPatient is missing, skip the 4D datasets check.
-    return displaySet.isReconstructable;
-  }
-
   for (let ii = 0; ii < displaySet.numImageFrames; ++ii){
-    let xImagePositionPatientControl = cornerstone.metaData.get
-      ('instance', displaySet.images[ii].getImageId()).ImagePositionPatient[0];
-    let yImagePositionPatientControl = cornerstone.metaData.get
-      ('instance', displaySet.images[ii].getImageId()).ImagePositionPatient[1];
-    let zImagePositionPatientControl = cornerstone.metaData.get
-      ('instance', displaySet.images[ii].getImageId()).ImagePositionPatient[2];
+    const imageIdControl = displaySet.images[ii].getImageId()
+    const instanceMetadataControl = cornerstone.metaData.get('instance', imageIdControl)
+
+    if (!instanceMetadataControl.ImagePositionPatient) {
+      // if ImagePositionPatient is missing, skip the 4D datasets check.
+      return false;
+    }
+
+    let xImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[0];
+    let yImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[1];
+    let zImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[2];
 
     for (let jj = ii + 1; jj < displaySet.numImageFrames; ++jj){
-      let xImagePositionPatient = cornerstone.metaData.get
-        ('instance', displaySet.images[jj].getImageId()).ImagePositionPatient[0];
-      let yImagePositionPatient = cornerstone.metaData.get
-        ('instance', displaySet.images[jj].getImageId()).ImagePositionPatient[1];
-      let zImagePositionPatient = cornerstone.metaData.get
-        ('instance', displaySet.images[jj].getImageId()).ImagePositionPatient[2];
+      const imageId = displaySet.images[jj].getImageId()
+      const instanceMetadata = cornerstone.metaData.get('instance', imageId)
+
+      if (!instanceMetadata.ImagePositionPatient) {
+        // if ImagePositionPatient is missing, skip the 4D datasets check.
+        return false;
+      }
+
+      let xImagePositionPatient = instanceMetadata.ImagePositionPatient[0];
+      let yImagePositionPatient = instanceMetadata.ImagePositionPatient[1];
+      let zImagePositionPatient = instanceMetadata.ImagePositionPatient[2];
 
       if (xImagePositionPatientControl === xImagePositionPatient &&
           yImagePositionPatientControl === yImagePositionPatient &&
