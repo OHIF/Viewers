@@ -14,20 +14,22 @@ let percyHealthCheck = require('@percy/cypress/task');
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
-  on('before:browser:launch', (browser = {}, args) => {
+  on('before:browser:launch', (browser = {}, launchOptions) => {
     if (browser.name === 'chrome') {
       // `args` is an araay of all the arguments
       // that will be passed to Chrome when it launchers
-      args.push('--start-fullscreen');
+      launchOptions.args.push('--start-fullscreen');
 
       // whatever you return here becomes the new args
-      return args;
+      return launchOptions;
     }
 
     if (browser.name === 'chromium') {
       const newArgs = args.filter(arg => arg !== '--disable-gpu');
       newArgs.push('--ignore-gpu-blacklist');
-      return newArgs;
+      launchOptions.args = newArgs;
+
+      return launchOptions;
     }
   });
 
