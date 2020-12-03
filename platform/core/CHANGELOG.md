@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.11.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.10.7...@ohif/core@2.11.0) (2020-12-03)
+
+
+### Features
+
+* add show scroll option to modal ([be494a7](https://github.com/OHIF/Viewers/commit/be494a7376d15777dbe598289c4ecdb9f48a6a48))
+
+
+
+
+
 ## [2.10.7](https://github.com/OHIF/Viewers/compare/@ohif/core@2.10.6...@ohif/core@2.10.7) (2020-10-07)
 
 **Note:** Version bump only for package @ohif/core
