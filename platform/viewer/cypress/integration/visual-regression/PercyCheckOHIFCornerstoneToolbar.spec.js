@@ -3,7 +3,7 @@ describe('Visual Regression - OHIF Cornerstone Toolbar', () => {
     cy.checkStudyRouteInViewer(
       '1.2.840.113619.2.5.1762583153.215519.978957063.78'
     );
-    cy.expectMinimumThumbnails(5);
+    cy.expectMinimumThumbnails(3);
   });
 
   beforeEach(() => {
@@ -13,7 +13,7 @@ describe('Visual Regression - OHIF Cornerstone Toolbar', () => {
   });
 
   it('checks if Pan tool will move the image inside the viewport', () => {
-    //Click on button and vefiry if icon is active on toolbar
+    //Click on button and verify if icon is active on toolbar
     cy.get('@panBtn')
       .click()
       .then($panBtn => {

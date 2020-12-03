@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-vtk",
-  "version": "1.7.16",
+  "version": "1.8.0",
   "description": "OHIF extension for VTK.js",
   "author": "OHIF",
   "license": "MIT",

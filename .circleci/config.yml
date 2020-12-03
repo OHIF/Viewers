@@ -13,11 +13,23 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@1.13.0
+  cypress: cypress-io/cypress@1.26.0
+executors:
+  # Custom executor to override Cypress config
+  deploy-to-prod-executor:
+    docker:
+      - image: 'cypress/browsers:node14.15.0-chrome86-ff82'
+        environment:
+          CYPRESS_BASE_URL: https://ohif-staging.netlify.com/
+  chrome-and-pacs:
+    docker:
+      # Primary container image where all steps run.
+      - image: 'cypress/browsers:node14.15.0-chrome86-ff82'
+      - image: 'ohif/viewer-testdata:0.1-test'
 
 defaults: &defaults
   docker:
-    - image: circleci/node:12.9.1
+    - image: circleci/node:14.15.0
       environment:
         TERM: xterm # Enable colors in term
         QUICK_BUILD: true
@@ -170,7 +182,7 @@ jobs:
 
   DEPLOY_TO_DEV:
     docker:
-      - image: circleci/node:12.9.1
+      - image: circleci/node:14.15.0
         environment:
           TERM: xterm
           NETLIFY_SITE_ID: 32708787-c9b0-4634-b50f-7ca41952da77
@@ -185,7 +197,7 @@ jobs:
 
   DEPLOY_TO_STAGING:
     docker:
-      - image: circleci/node:12.9.1
+      - image: circleci/node:14.15.0
         environment:
           TERM: xterm
           NETLIFY_SITE_ID: c7502ae3-b150-493c-8422-05701e44a969
@@ -200,7 +212,7 @@ jobs:
 
   DEPLOY_TO_PRODUCTION:
     docker:
-      - image: circleci/node:12.9.1
+      - image: circleci/node:14.15.0
         environment:
           TERM: xterm
           NETLIFY_SITE_ID: 79c4a5da-5c95-4dc9-84f7-45fd9dfe21b0
@@ -257,7 +269,12 @@ jobs:
           paths: .
 
   DOCS_PUBLISH:
-    <<: *defaults
+    docker:
+      # Gitbook fails due to graceful-fs updates above this node version :-(
+      - image: circleci/node:12.9.1
+        environment:
+          TERM: xterm # Enable colors in term
+    working_directory: ~/repo
     steps:
       - checkout
       - run:
@@ -317,16 +334,19 @@ workflows:
       # E2E: PWA
       - cypress/run:
           name: 'E2E: PWA'
-          executor: cypress/browsers-chrome76
+          executor: chrome-and-pacs
           browser: chrome
           pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
+            - run: |
+                # Clear yarn cache; update to latest
+                rm -rf ~/.yarn
+                npm i -g yarn
+                yarn -v
           yarn: true
-          record: false
-          store_artifacts: false
+          record: true
+          store_artifacts: true
           working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build
+          build: npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js yarn run build
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
           wait-on: 'http://localhost:3000'
@@ -337,21 +357,22 @@ workflows:
                 path: platform/viewer/cypress/screenshots
             - store_artifacts:
                 path: platform/viewer/cypress/videos
+            - store_test_results:
+                path: platform/viewer/cypress/results
           requires:
             - UNIT_TESTS
       # E2E: script-tag
       - cypress/run:
           name: 'E2E: Script Tag'
-          executor: cypress/browsers-chrome76
+          executor: chrome-and-pacs
           browser: chrome
           pre-steps:
-            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-                add wait-on' # Use yarn latest
+            - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v' # Use yarn latest
           yarn: true
-          record: false
-          store_artifacts: false
+          record: true
+          store_artifacts: true
           working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build:package
+          build: npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js yarn run build:package
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'
           wait-on: 'http://localhost:3000'
@@ -362,6 +383,8 @@ workflows:
                 path: platform/viewer/cypress/screenshots
             - store_artifacts:
                 path: platform/viewer/cypress/videos
+            - store_test_results:
+                path: platform/viewer/cypress/results
           requires:
             - UNIT_TESTS
 
@@ -372,7 +395,7 @@ workflows:
       # Update hub.docker.org
       - cypress/run:
           name: 'Generate Percy Snapshots'
-          executor: cypress/browsers-chrome76
+          executor: chrome-and-pacs
           browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
@@ -380,7 +403,7 @@ workflows:
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build
+          build: npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js yarn run build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
@@ -449,7 +472,7 @@ workflows:
       # and record a Cypress dashboard test run
       - cypress/run:
           name: 'Generate Percy Snapshots'
-          executor: cypress/browsers-chrome76
+          executor: chrome-and-pacs
           browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
@@ -457,7 +480,7 @@ workflows:
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true yarn run build
+          build: npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js yarn run build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
