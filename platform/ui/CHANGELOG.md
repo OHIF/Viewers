@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.6.0...@ohif/ui@1.7.0) (2020-12-03)
+
+
+### Features
+
+* add show scroll option to modal ([be494a7](https://github.com/OHIF/Viewers/commit/be494a7376d15777dbe598289c4ecdb9f48a6a48))
+
+
+
+
+
 # [1.6.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.7...@ohif/ui@1.6.0) (2020-12-03)
 
 
