@@ -269,7 +269,12 @@ jobs:
           paths: .
 
   DOCS_PUBLISH:
-    <<: *defaults
+    docker:
+      # Gitbook fails due to graceful-fs updates above this node version :-(
+      - image: circleci/node:12.9.1
+        environment:
+          TERM: xterm # Enable colors in term
+    working_directory: ~/repo
     steps:
       - checkout
       - run:
@@ -390,7 +395,7 @@ workflows:
       # Update hub.docker.org
       - cypress/run:
           name: 'Generate Percy Snapshots'
-          executor: cypress/browsers-chrome76
+          executor: chrome-and-pacs
           browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
@@ -467,7 +472,7 @@ workflows:
       # and record a Cypress dashboard test run
       - cypress/run:
           name: 'Generate Percy Snapshots'
-          executor: cypress/browsers-chrome76
+          executor: chrome-and-pacs
           browser: chrome
           pre-steps:
             - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
