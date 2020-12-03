@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.7...@ohif/ui@1.6.0) (2020-12-03)
+
+
+### Features
+
+* Add error boundary and retry logic for network failures during dynamic imports ([#2145](https://github.com/OHIF/Viewers/issues/2145)) ([4c07904](https://github.com/OHIF/Viewers/commit/4c079044f6ae2381c6054d8d77414100152d1d19))
+
+
+
+
+
 ## [1.5.7](https://github.com/OHIF/Viewers/compare/@ohif/ui@1.5.6...@ohif/ui@1.5.7) (2020-11-02)
 
 
