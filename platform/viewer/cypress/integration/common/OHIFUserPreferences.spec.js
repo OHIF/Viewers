@@ -184,7 +184,7 @@ describe('OHIF User Preferences', () => {
       cy.checkStudyRouteInViewer(
         '1.2.840.113619.2.5.1762583153.215519.978957063.78'
       );
-      cy.expectMinimumThumbnails(5);
+      cy.expectMinimumThumbnails(3);
       cy.initCommonElementsAliases();
 
       // Check if application is in Spanish
@@ -217,7 +217,7 @@ describe('OHIF User Preferences', () => {
       cy.checkStudyRouteInViewer(
         '1.2.840.113619.2.5.1762583153.215519.978957063.78'
       );
-      cy.expectMinimumThumbnails(5);
+      cy.expectMinimumThumbnails(3);
     });
 
     beforeEach(() => {
@@ -583,7 +583,7 @@ describe('OHIF User Preferences', () => {
       cy.checkStudyRouteInViewer(
         '1.2.840.113619.2.5.1762583153.215519.978957063.78'
       );
-      cy.expectMinimumThumbnails(5);
+      cy.expectMinimumThumbnails(3);
     });
 
     beforeEach(() => {
