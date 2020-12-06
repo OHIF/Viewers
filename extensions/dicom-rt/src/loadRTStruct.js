@@ -90,11 +90,11 @@ export default async function loadRTStruct(
       const sopInstanceUID = ContourImageSequence
         ? ContourImageSequence.ReferencedSOPInstanceUID
         : _getClosestSOPInstanceUID(
-            ContourData,
-            ContourGeometricType,
-            NumberOfContourPoints,
-            imageIdSopInstanceUidPairs
-          );
+          ContourData,
+          ContourGeometricType,
+          NumberOfContourPoints,
+          imageIdSopInstanceUidPairs
+        );
       const imageId = _getImageId(imageIdSopInstanceUidPairs, sopInstanceUID);
       const imageIdSpecificToolData = _getOrCreateImageIdSpecificToolData(
         toolState,

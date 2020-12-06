@@ -9,6 +9,11 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.openPreferences();
     });
 
+    afterEach(() => {
+      // Close User Preferences modal
+      cy.closePreferences();
+    });
+
     it('checks displayed information on User Preferences modal', function() {
       // Go go hotkeys tab
       cy.selectPreferencesTab('@userPreferencesHotkeysTab');
@@ -52,7 +57,7 @@ describe('Visual Regression - OHIF User Preferences', () => {
   context('Study Viewer Page', function() {
     before(() => {
       cy.openStudyInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
-      cy.expectMinimumThumbnails(5);
+      cy.expectMinimumThumbnails(3);
     });
 
     beforeEach(() => {
@@ -62,6 +67,11 @@ describe('Visual Regression - OHIF User Preferences', () => {
       cy.resetUserHotkeyPreferences();
       // Open User Preferences modal
       cy.openPreferences();
+    });
+
+    afterEach(() => {
+      // Close User Preferences modal
+      cy.closePreferences();
     });
 
     it('checks displayed information on User Preferences modal', function() {
@@ -150,13 +160,13 @@ describe('Visual Regression - OHIF User Preferences', () => {
 
       // Set new hotkey for 'Next Image Viewport' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
-        'Next Image Viewport',
+        'Next Viewport',
         '{shift}{rightarrow}'
       );
 
       // Set new hotkey for 'Previous Image Viewport' function
       cy.setNewHotkeyShortcutOnUserPreferencesModal(
-        'Previous Image Viewport',
+        'Previous Viewport',
         '{shift}{leftarrow}'
       );
 

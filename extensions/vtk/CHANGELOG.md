@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.9.3...@ohif/extension-vtk@1.9.4) (2020-12-03)
+
+
+### Bug Fixes
+
+* reset VOI on mpr reset ([#2115](https://github.com/OHIF/Viewers/issues/2115)) ([0baf18d](https://github.com/OHIF/Viewers/commit/0baf18dcb2985378016236b735329346a851e14f))
+
+
+
+
+
+## [1.9.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.9.2...@ohif/extension-vtk@1.9.3) (2020-12-03)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.9.2](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.9.1...@ohif/extension-vtk@1.9.2) (2020-12-03)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.9.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.9.0...@ohif/extension-vtk@1.9.1) (2020-12-03)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+# [1.9.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.8.0...@ohif/extension-vtk@1.9.0) (2020-12-03)
+
+
+### Features
+
+* Add error boundary and retry logic for network failures during dynamic imports ([#2145](https://github.com/OHIF/Viewers/issues/2145)) ([4c07904](https://github.com/OHIF/Viewers/commit/4c079044f6ae2381c6054d8d77414100152d1d19))
+
+
+
+
+
+# [1.8.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.7.16...@ohif/extension-vtk@1.8.0) (2020-11-30)
+
+
+### Features
+
+* **i18n:** Added de (German) translations ([2fff2d5](https://github.com/OHIF/Viewers/commit/2fff2d511fa1d36bdd6476da4ffa5684bf55374f))
+
+
+
+
+
+## [1.7.16](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.7.15...@ohif/extension-vtk@1.7.16) (2020-11-19)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
 ## [1.7.15](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.7.14...@ohif/extension-vtk@1.7.15) (2020-11-02)
 
 **Note:** Version bump only for package @ohif/extension-vtk

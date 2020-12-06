@@ -15,8 +15,8 @@ const ErrorFallback = ({ error, componentStack, resetErrorBoundary }) => {
 
 const OHIFErrorBoundary = ({
   context = 'OHIF',
-  onReset = () => {},
-  onError = () => {},
+  onReset = () => { },
+  onError = () => { },
   fallbackComponent,
   children,
 }) => {
@@ -45,7 +45,7 @@ OHIFErrorBoundary.propTypes = {
   onReset: PropTypes.func,
   onError: PropTypes.func,
   children: PropTypes.node.isRequired,
-  fallbackComponent: PropTypes.element,
+  fallbackComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func, PropTypes.element]),
 };
 
 export default OHIFErrorBoundary;

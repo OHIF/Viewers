@@ -27,13 +27,13 @@
     &.OHIFModal-fullscreen
       width: 95%
 
-
-
   &__content
     padding: 20px
     max-height: 90vh;
-    overflow-x: hidden;
     overflow-y: auto;
+
+  &:not(.visibleScrollbar) &__content
+    overflow-x: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
     &::-webkit-scrollbar
