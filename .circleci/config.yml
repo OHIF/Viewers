@@ -145,6 +145,8 @@ workflows:
             branches:
               only:
                 - master
+                - idc-viewer-prod
+                - idc-viewer-test
       - deploy_job:
           requires:
             - build_job
