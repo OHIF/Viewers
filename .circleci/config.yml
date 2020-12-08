@@ -152,8 +152,8 @@ workflows:
             branches:
               only:
                 - master
-#                - idc-viewer-prod
-#                - idc-viewer-test
+                - idc-viewer-prod
+                - idc-viewer-test
 
 #version: 2.1
 #
