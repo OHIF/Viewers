@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# FORCE UPDATE
 
 if [ "${CONFIG_ONLY}" != "True" ]; then
   yarn install
