@@ -3,7 +3,7 @@ commands:
   deployment_setup:
     steps:
       - run:
-          name: "Set the Tier"
+          name: 'Set the Tier'
           command: |
             TIER=DEV
             if [[ ${CIRCLE_BRANCH} =~ idc-viewer-(prod|test).* ]]; then
@@ -12,7 +12,7 @@ commands:
             echo "export TIER=${TIER}" >> $BASH_ENV
             echo "Tier was identified as ${TIER} for branch ${CIRCLE_BRANCH}"
       - run:
-          name: "Assign Project-level vars"
+          name: 'Assign Project-level vars'
           command: |
             if [ ! -f deployment.key.json ]; then
               echo "Deployment JSON keyfile not found - loading from CircleCI."
@@ -55,7 +55,7 @@ commands:
   deployment_config:
     steps:
       - run:
-          name: "Set tier-specific configuration file"
+          name: 'Set tier-specific configuration file'
           command: |
             sudo -E /bin/bash ./idc-deploy-shell/pull_config.sh
             xargs -a viewer_deployment_config.txt -I{} echo "export {}" >> $BASH_ENV
@@ -63,14 +63,14 @@ commands:
   auth:
     steps:
       - run:
-          name: "Service Account Auth and Project Settings"
+          name: 'Service Account Auth and Project Settings'
           command: |
             sudo -E /bin/bash ./idc-deploy-shell/gcloud_authenticate.sh
 
   install_cloud_sdk:
     steps:
       - run:
-          name: "Install CloudSDK"
+          name: 'Install CloudSDK'
           command: |
             echo "export CLOUDSDK_CORE_DISABLE_PROMPTS=1" >> $BASH_ENV
             echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
@@ -80,7 +80,7 @@ commands:
 jobs:
   build_job:
     environment:
-      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+      TZ: '/usr/share/zoneinfo/America/Los_Angeles'
     working_directory: ~/Viewers
     docker:
       - image: circleci/python:3.7.0-stretch
@@ -103,18 +103,18 @@ jobs:
       - run:
           name: Build Viewer
           command: |
-             /bin/bash ./idc-deploy-shell/buildViewer.sh
+            /bin/bash ./idc-deploy-shell/buildViewer.sh
 
       - save_cache:
           key: idc-viewer-{{ epoch }}
           paths:
-          - ./platform/viewer/dist
-          - ./idc-deploy-shell
-          - ./idc-assets
+            - ./platform/viewer/dist
+            - ./idc-deploy-shell
+            - ./idc-assets
 
   deploy_job:
     environment:
-      TZ: "/usr/share/zoneinfo/America/Los_Angeles"
+      TZ: '/usr/share/zoneinfo/America/Los_Angeles'
     docker:
       - image: circleci/python:3.7.0-stretch
     working_directory: ~/Viewers
@@ -134,7 +134,7 @@ jobs:
       - run:
           name: Copy to cloud
           command: |
-             /bin/bash ./idc-deploy-shell/cloudCopy.sh
+            /bin/bash ./idc-deploy-shell/cloudCopy.sh
 
 workflows:
   version: 2
