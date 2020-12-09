@@ -37,6 +37,10 @@ const SnackbarProvider = ({ children, service }) => {
         return null;
       }
 
+      if (options.type === 'error') {
+        console.error(options.error);
+      }
+
       const newItem = {
         ...DEFAULT_OPTIONS,
         ...options,
