@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.12.0](https://github.com/OHIF/Viewers/compare/@ohif/core@2.11.1...@ohif/core@2.12.0) (2020-12-10)
+
+
+### Features
+
+* visualize overlapping segments in cornerstone ([#2185](https://github.com/OHIF/Viewers/issues/2185)) ([29fceac](https://github.com/OHIF/Viewers/commit/29fceacee97d51f1952a0f6b574c66596d32c201))
+
+
+
+
+
 ## [2.11.1](https://github.com/OHIF/Viewers/compare/@ohif/core@2.11.0...@ohif/core@2.11.1) (2020-12-03)
 
 
