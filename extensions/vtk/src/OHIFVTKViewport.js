@@ -72,7 +72,7 @@ class OHIFVTKViewport extends Component {
   };
 
   static defaultProps = {
-    onScroll: () => {},
+    onScroll: () => { },
   };
 
   static id = 'OHIFVTKViewport';
@@ -158,6 +158,15 @@ class OHIFVTKViewport extends Component {
     if (brushStackState) {
       const { activeLabelmapIndex } = brushStackState;
       const labelmap3D = brushStackState.labelmaps3D[activeLabelmapIndex];
+
+      if (brushStackState.labelmaps3D.length > 1 && this.props.viewportIndex === 0) {
+        const { UINotificationService } = this.props.servicesManager.services;
+        UINotificationService.show({
+          title: 'Overlapping Segmentation Found',
+          message: 'Overlapping segmentations cannot be displayed when in MPR mode',
+          type: 'info',
+        });
+      }
 
       this.segmentsDefaultProperties = labelmap3D.segmentsHidden.map(
         isHidden => {
@@ -354,7 +363,7 @@ class OHIFVTKViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
+      prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
