@@ -6619,14 +6619,15 @@ dateformat@^3.0.0:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dcmjs@0.16.5:
-  version "0.16.5"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.16.5.tgz#05aa0c8d539a4d5777f996b9b796932d1f848993"
-  integrity sha512-Y92KAx4JSfev79xjYhaukQZjWgyJlaHnXSTdbtkGkJAHERjIakgHcCIPmACuVmtW/nHViTu04zIGAB0pmZ4GaA==
+dcmjs@0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.17.0.tgz#dbfd6db3efd2936f9bead9c902b7db396f64e9f5"
+  integrity sha512-7JnNqNWXqjGyspLRwKM4nn+TU/+w3iMl9boU4eHrr831M4crMWWIiSQDejpOnfDT9+opqyeaYcNkiekr7p6TFg==
   dependencies:
     "@babel/polyfill" "^7.8.3"
     "@babel/runtime" "^7.8.4"
     gl-matrix "^3.1.0"
+    lodash.clonedeep "^4.5.0"
     loglevelnext "^3.0.1"
     ndarray "^1.0.19"
 
