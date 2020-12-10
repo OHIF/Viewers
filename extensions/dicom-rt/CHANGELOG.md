@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.1](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.6.0...@ohif/extension-dicom-rt@0.6.1) (2020-12-10)
+
+
+### Bug Fixes
+
+* panel issues and mpr button (IDC2122-IDC2117) ([32022f5](https://github.com/OHIF/Viewers/commit/32022f51f2d24f53f4c98188980db038a6dfe76c))
+
+
+
+
+
 # [0.6.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-rt@0.5.0...@ohif/extension-dicom-rt@0.6.0) (2020-12-10)
 
 
