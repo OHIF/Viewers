@@ -79,6 +79,8 @@ const RTPanel = ({
    * without subscribing to external events.
    */
   useEffect(() => {
+    updateStructureSets();
+
     document.addEventListener('extensiondicomrtrtloaded', updateStructureSets);
 
     return () => {

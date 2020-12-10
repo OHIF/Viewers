@@ -41,14 +41,17 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
   // A better heuristic would be checking 4D tags, e.g. the presence of multiple TemporalPositionIdentifier values.
   // However, some studies (e.g. https://github.com/OHIF/Viewers/issues/2113) do not have such tags.
 
-  for (let ii = 0; ii < displaySet.numImageFrames; ++ii){
-    const imageIdControl = displaySet.images[ii].getImageId()
+  for (let ii = 0; ii < displaySet.numImageFrames; ++ii) {
+    const image = displaySet.images[ii];
+    if (!image) continue;
+
+    const imageIdControl = image.getImageId()
     const instanceMetadataControl = cornerstone.metaData.get('instance', imageIdControl)
 
     if (!instanceMetadataControl ||
       instanceMetadataControl === undefined ||
       !instanceMetadataControl.ImagePositionPatient ||
-      instanceMetadataControl.ImagePositionPatient === undefined ) {
+      instanceMetadataControl.ImagePositionPatient === undefined) {
       // if ImagePositionPatient is missing, skip the 4D datasets check.
       // do not return false, because it could be a 3D dataset.
       continue;
@@ -58,8 +61,11 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
     let yImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[1];
     let zImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[2];
 
-    for (let jj = ii + 1; jj < displaySet.numImageFrames; ++jj){
-      const imageId = displaySet.images[jj].getImageId()
+    for (let jj = ii + 1; jj < displaySet.numImageFrames; ++jj) {
+      const image = displaySet.images[jj];
+      if (!image) continue;
+
+      const imageId = image.getImageId()
       const instanceMetadata = cornerstone.metaData.get('instance', imageId)
 
       if (!instanceMetadata ||
@@ -76,8 +82,8 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
       let zImagePositionPatient = instanceMetadata.ImagePositionPatient[2];
 
       if (xImagePositionPatientControl === xImagePositionPatient &&
-          yImagePositionPatientControl === yImagePositionPatient &&
-          zImagePositionPatientControl === zImagePositionPatient){
+        yImagePositionPatientControl === yImagePositionPatient &&
+        zImagePositionPatientControl === zImagePositionPatient) {
         return false;
       }
     }
