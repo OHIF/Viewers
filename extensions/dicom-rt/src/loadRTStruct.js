@@ -96,6 +96,11 @@ export default async function loadRTStruct(
           imageIdSopInstanceUidPairs
         );
       const imageId = _getImageId(imageIdSopInstanceUidPairs, sopInstanceUID);
+
+      if (!imageId) {
+        continue;
+      }
+
       const imageIdSpecificToolData = _getOrCreateImageIdSpecificToolData(
         toolState,
         imageId,
@@ -294,7 +299,7 @@ const _getImageId = (imageIdSopInstanceUidPairs, sopInstanceUID) => {
       imageIdSopInstanceUidPairsEntry.sopInstanceUID === sopInstanceUID
   );
 
-  return imageIdSopInstanceUidPairsEntry.imageId;
+  return imageIdSopInstanceUidPairsEntry ? imageIdSopInstanceUidPairsEntry.imageId : null;
 };
 
 function _getImageIdSopInstanceUidPairsForDisplaySet(

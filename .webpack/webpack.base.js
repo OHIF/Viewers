@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 //
 const path = require('path');
 const webpack = require('webpack');
-const PACKAGE = require('../platform/viewer/package.json');
 // ~~ RULES
 const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
@@ -77,7 +76,10 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
         'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
-        'process.env.VERSION_NUMBER': JSON.stringify(PACKAGE.version || ''),
+        'process.env.VERSION_NUMBER': webpack.DefinePlugin.runtimeValue(() => {
+          const package = require('../platform/viewer/package.json');
+          return JSON.stringify(package.version || '');
+        }, ['../platform/viewer/package.json']),
         'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
         /* i18n */
         'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),

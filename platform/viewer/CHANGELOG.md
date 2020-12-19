@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.1](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.8.0...@ohif/viewer@4.8.1) (2020-12-10)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+# [4.8.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.7.2...@ohif/viewer@4.8.0) (2020-12-10)
+
+
+### Features
+
+* visualize overlapping segments in cornerstone ([#2185](https://github.com/OHIF/Viewers/issues/2185)) ([29fceac](https://github.com/OHIF/Viewers/commit/29fceacee97d51f1952a0f6b574c66596d32c201))
+
+
+
+
+
 ## [4.7.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.7.1...@ohif/viewer@4.7.2) (2020-12-03)
 
 **Note:** Version bump only for package @ohif/viewer
