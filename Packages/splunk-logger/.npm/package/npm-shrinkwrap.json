@@ -1,0 +1,45 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "debug": {
+      "version": "3.2.7",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-3.2.7.tgz",
+      "integrity": "sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ=="
+    },
+    "iconv-lite": {
+      "version": "0.4.24",
+      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.24.tgz",
+      "integrity": "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA=="
+    },
+    "ms": {
+      "version": "2.1.3",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz",
+      "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA=="
+    },
+    "needle": {
+      "version": "2.5.2",
+      "resolved": "https://registry.npmjs.org/needle/-/needle-2.5.2.tgz",
+      "integrity": "sha512-LbRIwS9BfkPvNwNHlsA41Q29kL2L/6VaOJ0qisM5lLWsTV3nP15abO5ITL6L81zqFhzjRKDAYjpcBcwM0AVvLQ=="
+    },
+    "os": {
+      "version": "0.1.1",
+      "resolved": "https://registry.npmjs.org/os/-/os-0.1.1.tgz",
+      "integrity": "sha1-IIhF6J4ZOtTZcUdLk5R3NqVtE/M="
+    },
+    "safer-buffer": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz",
+      "integrity": "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg=="
+    },
+    "sax": {
+      "version": "1.2.4",
+      "resolved": "https://registry.npmjs.org/sax/-/sax-1.2.4.tgz",
+      "integrity": "sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw=="
+    },
+    "splunk-logging-hec": {
+      "version": "0.10.2",
+      "resolved": "https://registry.npmjs.org/splunk-logging-hec/-/splunk-logging-hec-0.10.2.tgz",
+      "integrity": "sha512-R4my/aQp5tEze5rzfAzEEJzattic5xg1+HZcb09V3BdWlCkUQCglcvW5F2srzaS6TCfMNt7HNNNd1F4rTTL1Qw=="
+    }
+  }
+}

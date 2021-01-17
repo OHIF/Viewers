@@ -298,6 +298,19 @@ export const Servers = new SimpleSchema({
     }
 });
 
+export const SplunkConfiguration = new SimpleSchema({
+    url: {
+        type: String,
+        label: 'Splunk url',
+        optional: true,
+        defaultValue: "https://localhost:8088"
+    },
+    token: {
+        type: String,
+        optional: false
+    }
+});
+
 export const ServerConfiguration = new SimpleSchema({
     servers: {
         type: Servers,
@@ -321,6 +334,10 @@ export const ServerConfiguration = new SimpleSchema({
         type: MailServerConfig,
         label: 'Mail Server Settings',
         optional: true
+    },
+    splunkSettings: {
+        type: SplunkConfiguration,
+        label: 'Splunk settings',
     },
     origin: {
         type: String,

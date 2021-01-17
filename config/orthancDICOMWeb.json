@@ -35,6 +35,9 @@
         "show3DViewport": true
     }
   },
+  "splunkSettings": {
+    "token": "f572faf0-c8e4-423d-b084-441136d1fb00"
+  },
   "proxy": {
     "enabled": true
   }

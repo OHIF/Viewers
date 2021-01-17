@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import {HTTP} from 'meteor/http';
 
 const POLL_INTERVAL = 15000;
-const REST_URL = 'http://localhost:8080/pipelines';
+const REST_URL = 'http://localhost:8080/api/pipelines';
 
 Meteor.publish('pipelines.publication', function () {
     const publishedKeys = [];
@@ -15,7 +15,7 @@ Meteor.publish('pipelines.publication', function () {
             }
         }, (error, result) => {
             if (!error) {
-                result.data._embedded.pipelineEntityList.forEach((pipeline) => {
+                result.data._embedded.pipelines.forEach((pipeline) => {
 
                     if (publishedKeys[pipeline.id]) {
                         this.changed("pipelines", pipeline.id, pipeline);
@@ -26,7 +26,7 @@ Meteor.publish('pipelines.publication', function () {
                 });
 
                 publishedKeys.map((value, key) => {
-                    if (!result.data._embedded.pipelineEntityList.map(pipeline => pipeline.id).includes(key)) {
+                    if (!result.data._embedded.pipelines.map(pipeline => pipeline.id).includes(key)) {
                         this.removed("pipelines", key);
                     }
                 });

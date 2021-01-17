@@ -49,6 +49,7 @@ geojson-utils@1.0.10
 gilbertwat:bootstrap3-daterangepicker@1.3.21_1
 grove:less@0.1.1
 gtajesgenga:ami@0.0.1
+gtajesgenga:splunk-logger@0.0.1
 gtajesgenga:vtk@0.0.1
 hot-code-push@1.0.4
 html-tools@1.0.11

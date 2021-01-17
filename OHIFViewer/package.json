@@ -7,6 +7,7 @@
     "babel-runtime": "^6.26.0",
     "bcrypt": "^3.0.2",
     "loglevel": "^1.6.0",
+    "splunk-logging": "^0.10.1",
     "three": "^0.100.0",
     "url": "^0.11.0"
   },
