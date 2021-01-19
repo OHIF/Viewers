@@ -393,20 +393,30 @@ const SegmentationPanel = ({
   };
 
   const onSegmentVisibilityChangeHandler = (isVisible, segmentNumber) => {
-    const labelmap3D = getActiveLabelMaps3D();
+    /** Get all labelmaps with this segmentNumber (overlapping segments) */
+    const { labelmaps3D } = getBrushStackState();
+    const possibleLabelMaps3D = labelmaps3D.filter(({ labelmaps2D }) => {
+      return labelmaps2D.some(({ segmentsOnLabelmap }) =>
+        segmentsOnLabelmap.includes(segmentNumber)
+      );
+    });
 
-    if (isCornerstone()) {
-      labelmap3D.segmentsHidden[segmentNumber] = !isVisible;
-    }
+    let segmentsHidden = [];
+    possibleLabelMaps3D.forEach(labelmap3D => {
+      if (isCornerstone()) {
+        labelmap3D.segmentsHidden[segmentNumber] = !isVisible;
+      }
 
-    if (isVTK()) {
-      onSegmentVisibilityChange(segmentNumber, isVisible);
-    }
+      if (isVTK()) {
+        onSegmentVisibilityChange(segmentNumber, isVisible);
+      }
 
-    setState(state => ({
-      ...state,
-      segmentsHidden: labelmap3D.segmentsHidden,
-    }));
+      segmentsHidden = [
+        ...new Set([...segmentsHidden, ...labelmap3D.segmentsHidden]),
+      ];
+    });
+
+    setState(state => ({ ...state, segmentsHidden }));
 
     refreshSegmentations();
     refreshViewports();
@@ -553,22 +563,32 @@ const SegmentationPanel = ({
   };
 
   const onVisibilityChangeHandler = isVisible => {
-    const labelmap3D = getActiveLabelMaps3D();
-
+    let segmentsHidden = [];
     state.segmentNumbers.forEach(segmentNumber => {
-      if (isCornerstone()) {
-        labelmap3D.segmentsHidden[segmentNumber] = !isVisible;
-      }
+      /** Get all labelmaps with this segmentNumber (overlapping segments) */
+      const { labelmaps3D } = getBrushStackState();
+      const possibleLabelMaps3D = labelmaps3D.filter(({ labelmaps2D }) => {
+        return labelmaps2D.some(({ segmentsOnLabelmap }) =>
+          segmentsOnLabelmap.includes(segmentNumber)
+        );
+      });
 
-      if (isVTK()) {
-        onSegmentVisibilityChange(segmentNumber, isVisible);
-      }
+      possibleLabelMaps3D.forEach(labelmap3D => {
+        if (isCornerstone()) {
+          labelmap3D.segmentsHidden[segmentNumber] = !isVisible;
+        }
+
+        if (isVTK()) {
+          onSegmentVisibilityChange(segmentNumber, isVisible);
+        }
+
+        segmentsHidden = [
+          ...new Set([...segmentsHidden, ...labelmap3D.segmentsHidden]),
+        ];
+      });
     });
 
-    setState(state => ({
-      ...state,
-      segmentsHidden: labelmap3D.segmentsHidden,
-    }));
+    setState(state => ({ ...state, segmentsHidden }));
 
     refreshSegmentations();
     refreshViewports();
