@@ -363,7 +363,7 @@ class OHIFVTKViewport extends Component {
       const { UINotificationService } = this.props.servicesManager.services;
       if (this.props.viewportIndex === 0) {
         const message = error.message.includes('buffer')
-          ? 'Buffer allocation limit exceeded'
+          ? 'Dataset is too big to display in MPR'
           : error.message;
         console.error(errorTitle, error);
         UINotificationService.show({
@@ -371,15 +371,14 @@ class OHIFVTKViewport extends Component {
           message,
           type: 'error',
           autoClose: false,
-          /* action: {
-            label: 'Download',
-            onClick: () => {
-              const listOfUIDs = [window.location.href.split('/').pop()];
-              this.props.commandsManager.runCommand('downloadAndZip', {
-                listOfUIDs,
-              });
+          action: {
+            label: 'Exit 2D MPR',
+            onClick: ({ close }) => {
+              // context: 'ACTIVE_VIEWPORT::VTK',
+              close();
+              this.props.commandsManager.runCommand('setCornerstoneLayout');
             },
-          }, */
+          },
         });
       }
       this.setState({ isLoaded: true });
