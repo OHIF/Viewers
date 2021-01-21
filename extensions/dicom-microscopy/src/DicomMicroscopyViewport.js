@@ -62,11 +62,24 @@ class DicomMicroscopyViewport extends Component {
         );
         const microscopyViewer = api.VLWholeSlideMicroscopyImageViewer;
 
-        this.viewer = new microscopyViewer({
-          client: dicomWebClient,
-          metadata,
-          retrieveRendered: false,
-        });
+        try {
+          this.viewer = new microscopyViewer({
+            client: dicomWebClient,
+            metadata,
+            retrieveRendered: false,
+          });
+        } catch (error) {
+          console.error('[Microscopy Viewer] Failed to load:', error);
+          const { UINotificationService } = this.props.servicesManager.services;
+          if (UINotificationService) {
+            UINotificationService.show({
+              title: 'Microscopy Viewport',
+              message:
+                'Failed to load viewport. Please check that you have hardware acceleration enabled.',
+              type: 'error',
+            });
+          }
+        }
 
         this.viewer.render({ container });
       });
@@ -92,8 +105,8 @@ class DicomMicroscopyViewport extends Component {
         {this.state.error ? (
           <h2>{JSON.stringify(this.state.error)}</h2>
         ) : (
-            <div style={style} ref={this.container} />
-          )}
+          <div style={style} ref={this.container} />
+        )}
       </div>
     );
   }
