@@ -24,7 +24,7 @@ const SegmentItem = ({
   onClick,
   itemClass,
   color,
-  visible = true,
+  visible,
   onVisibilityChange,
 }) => {
   const [isVisible, setIsVisible] = useState(visible);
@@ -32,6 +32,15 @@ const SegmentItem = ({
   useEffect(() => {
     setIsVisible(visible);
   }, [visible]);
+
+  const onClickHandler = () => onClick(index);
+
+  const onVisibilityChangeHandler = event => {
+    event.stopPropagation();
+    const newVisibility = !isVisible;
+    setIsVisible(newVisibility);
+    onVisibilityChange(newVisibility, index);
+  };
 
   return (
     <div className="dcmseg-segment-item">
@@ -42,7 +51,7 @@ const SegmentItem = ({
         itemClass={itemClass}
         itemMeta={<ColoredCircle color={color} />}
         itemMetaClass="segment-color-section"
-        onItemClick={onClick}
+        onItemClick={onClickHandler}
       >
         <div>
           <div className="segment-label" style={{ marginBottom: 4 }}>
@@ -63,12 +72,7 @@ const SegmentItem = ({
               name={isVisible ? 'eye' : 'eye-closed'}
               width="20px"
               height="20px"
-              onClick={event => {
-                event.stopPropagation();
-                const newVisibility = !isVisible;
-                setIsVisible(newVisibility);
-                onVisibilityChange(newVisibility);
-              }}
+              onClick={onVisibilityChangeHandler}
             />
           </div>
           {false && <div className="segment-info">{'...'}</div>}

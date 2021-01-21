@@ -86,7 +86,7 @@ class ToolbarRow extends Component {
         // Note: This does not cleanly handle `studies` prop updating with panel open
         const isDisabled =
           typeof menuOption.isDisabled === 'function' &&
-          menuOption.isDisabled(this.props.studies);
+          menuOption.isDisabled(this.props.studies, this.props.activeViewport);
 
         if (hasActiveContext && !isDisabled) {
           const menuOptionEntry = {
@@ -114,25 +114,30 @@ class ToolbarRow extends Component {
       prevProps.activeContexts !== this.props.activeContexts;
 
     const prevStudies = prevProps.studies;
+    const prevActiveViewport = prevProps.activeViewport;
+    const activeViewport = this.props.activeViewport;
     const studies = this.props.studies;
     const seriesPerStudyCount = this.seriesPerStudyCount;
 
-    let studiesUpdated = false;
+    let shouldUpdate = false;
 
-    if (prevStudies.length !== studies.length) {
-      studiesUpdated = true;
+    if (
+      prevStudies.length !== studies.length ||
+      prevActiveViewport !== activeViewport
+    ) {
+      shouldUpdate = true;
     } else {
       for (let i = 0; i < studies.length; i++) {
         if (studies[i].series.length !== seriesPerStudyCount[i]) {
           seriesPerStudyCount[i] = studies[i].series.length;
 
-          studiesUpdated = true;
+          shouldUpdate = true;
           break;
         }
       }
     }
 
-    if (studiesUpdated) {
+    if (shouldUpdate) {
       this.updateButtonGroups();
     }
 

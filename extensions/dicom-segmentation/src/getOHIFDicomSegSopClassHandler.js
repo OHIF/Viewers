@@ -21,7 +21,7 @@ export default function getSopClassHandlerModule({ servicesManager }) {
     id: 'OHIFDicomSegSopClassHandler',
     type: MODULE_TYPES.SOP_CLASS_HANDLER,
     sopClassUIDs,
-    getDisplaySetFromSeries: function (
+    getDisplaySetFromSeries: function(
       series,
       study,
       dicomWebClient,
@@ -55,6 +55,7 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         referencedDisplaySetUID: null, // Assigned when loaded.
         labelmapIndex: null, // Assigned when loaded.
         isLoaded: false,
+        hasOverlapping: false,
         SeriesDate,
         SeriesTime,
         SeriesNumber,
@@ -62,11 +63,11 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         metadata,
       };
 
-      segDisplaySet.getSourceDisplaySet = function (studies) {
+      segDisplaySet.getSourceDisplaySet = function(studies) {
         return getSourceDisplaySet(studies, segDisplaySet);
       };
 
-      segDisplaySet.load = async function (referencedDisplaySet, studies) {
+      segDisplaySet.load = async function(referencedDisplaySet, studies) {
         segDisplaySet.isLoaded = true;
         const { StudyInstanceUID } = referencedDisplaySet;
         const segArrayBuffer = await DicomLoaderService.findDicomDataPromise(
@@ -81,7 +82,7 @@ export default function getSopClassHandlerModule({ servicesManager }) {
           StudyInstanceUID,
           referencedDisplaySet.SeriesInstanceUID
         );
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
           let results;
           try {
             results = _parseSeg(segArrayBuffer, imageIds);
@@ -90,18 +91,47 @@ export default function getSopClassHandlerModule({ servicesManager }) {
             segDisplaySet.loadError = true;
             reject(error);
           }
-          const { labelmapBufferArray, segMetadata, segmentsOnFrame, segmentsOnFrameArray } = results;
+          const {
+            labelmapBufferArray,
+            segMetadata,
+            segmentsOnFrame,
+            segmentsOnFrameArray,
+          } = results;
 
+          let labelmapIndex;
           if (labelmapBufferArray.length > 1) {
+            let labelmapIndexes = [];
             for (let i = 0; i < labelmapBufferArray.length; ++i) {
-              loadSegmentation(imageIds, segDisplaySet, labelmapBufferArray[i], segMetadata, segmentsOnFrame, segmentsOnFrameArray[i]);
+              labelmapIndexes.push(
+                await loadSegmentation(
+                  imageIds,
+                  segDisplaySet,
+                  labelmapBufferArray[i],
+                  segMetadata,
+                  segmentsOnFrame,
+                  segmentsOnFrameArray[i]
+                )
+              );
             }
+            /**
+             * Since overlapping segmentations have virtual labelmaps,
+             * originLabelMapIndex is used in the panel to select the correct dropdown value.
+             */
+            segDisplaySet.hasOverlapping = true;
+            segDisplaySet.originLabelMapIndex = labelmapIndexes[0];
+            labelmapIndex = labelmapIndexes[0];
+            console.warn('Overlapping segmentations!');
           } else {
-            loadSegmentation(imageIds, segDisplaySet, labelmapBufferArray[0], segMetadata, segmentsOnFrame, []);
+            labelmapIndex = await loadSegmentation(
+              imageIds,
+              segDisplaySet,
+              labelmapBufferArray[0],
+              segMetadata,
+              segmentsOnFrame,
+              []
+            );
           }
-          segDisplaySet.labelmapIndex = 0;
-
-          resolve();
+          resolve(labelmapIndex);
         });
       };
 
