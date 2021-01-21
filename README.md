@@ -121,8 +121,7 @@ window.config = {
 };
 ```
 
-- Install the viewer:
-  `window.OHIFViewer.installViewer(window.config);`
+- Install the viewer: `window.OHIFViewer.installViewer(window.config);`
 
 This exact setup is demonstrated in this
 [CodeSandbox](https://codesandbox.io/s/viewer-script-tag-tprch) and in our
@@ -249,6 +248,9 @@ To acknowledge the OHIF Viewer in an academic publication, please cite
 >
 > _Cancer Research_, November 1 2017 (77) (21) e119-e122 DOI:
 > [10.1158/0008-5472.CAN-17-0334](https://www.doi.org/10.1158/0008-5472.CAN-17-0334)
+>
+> NCI Imaging Data Commons: contract number 19X037Q from Leidos Biomedical
+> Research under Task Order HHSN26100071 from NCI.
 
 **Note:** If you use or find this repository helpful, please take the time to
 star this repository on Github. This is an easy way for us to assess adoption

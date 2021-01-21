@@ -39,6 +39,8 @@
   border-radius: 5px;
 }
 
-.icons .angle-double-down, .icons .angle-double-up {
+.icons .angle-double-down,
+.icons .angle-double-up {
   margin-left: 15px;
+  margin-right: -5px;
 }
