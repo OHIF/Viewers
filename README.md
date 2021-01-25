@@ -261,6 +261,12 @@ Cancer Institute, Informatics Technology for Cancer Research (ITCR) program,
 under a
 [grant to Dr. Gordon Harris at Massachusetts General Hospital (U24 CA199460)](https://projectreporter.nih.gov/project_info_description.cfm?aid=8971104).
 
+## Projects that contributed to OHIF Viewe
+
+The following is a (partial) list of projects that contributed resources towards
+development of OHIF Viewer:
+* [NCI Imaging Data Commons (IDC) project](https://imaging.datacommons.cancer.gov/) supported development of new features and bug fixes marked with ["IDC:priority"](https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3AIDC%3Apriority), ["IDC:candidate"](https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3AIDC%3Acandidate) or ["IDC:collaboration"](https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3AIDC%3Acollaboration). NCI Imaging Data Commons is supported by the contract number 19X037Q from Leidos Biomedical Research under Task Order HHSN26100071 from NCI. [IDC Viewer](https://learn.canceridc.dev/portal/visualization) is a customized version of the OHIF Viewer.
+
 ## License
 
 MIT © [OHIF](https://github.com/OHIF)
