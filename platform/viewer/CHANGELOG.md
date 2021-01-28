@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.8.7](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.8.6...@ohif/viewer@4.8.7) (2021-01-28)
+
+
+### Bug Fixes
+
+* **config:** Update Google Healthcare API endpoint from v1beta1 to v1 ([#2256](https://github.com/OHIF/Viewers/issues/2256)) ([83b7d9e](https://github.com/OHIF/Viewers/commit/83b7d9e8b4240a928eb43735280000e97f186d90))
+
+
+
+
+
 ## [4.8.6](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.8.5...@ohif/viewer@4.8.6) (2021-01-26)
 
 **Note:** Version bump only for package @ohif/viewer
