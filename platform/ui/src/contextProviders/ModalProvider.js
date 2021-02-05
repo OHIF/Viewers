@@ -82,14 +82,20 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     shouldCloseOnEsc,
     fullscreen,
     closeButton,
-    showScrollbar
+    showScrollbar,
+    noScroll,
   } = options;
 
   return (
     <Provider value={{ show, hide }}>
       {ModalContent && (
         <Modal
-          className={classNames(customClassName, ModalContent.className, { 'visibleScrollbar': showScrollbar })}
+          className={classNames(
+            customClassName,
+            ModalContent.className,
+            { visibleScrollbar: showScrollbar },
+            { noScroll }
+          )}
           shouldCloseOnEsc={shouldCloseOnEsc}
           isOpen={isOpen}
           title={title}
