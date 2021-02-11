@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ViewportActionBar, Notification, Button } from '../';
+import { ViewportActionBar, Notification } from '../';
 
 const Viewport = ({ viewportIndex, onSeriesChange, studyData, children }) => {
   return (

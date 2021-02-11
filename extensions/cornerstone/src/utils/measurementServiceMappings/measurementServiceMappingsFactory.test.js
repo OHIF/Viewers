@@ -11,6 +11,7 @@ jest.mock('cornerstone-core', () => ({
       SOPInstanceUID: '123',
       FrameOfReferenceUID: '123',
       SeriesInstanceUID: '123',
+      StudyInstanceUID: '1234',
     }),
   },
 }));
@@ -22,6 +23,7 @@ describe('measurementServiceMappings.js', () => {
   let csToolsAnnotation;
   let measurement;
   let measurementServiceMock;
+  let displaySetServiceMock;
   let definition = 'Length';
 
   beforeEach(() => {
@@ -34,7 +36,16 @@ describe('measurementServiceMappings.js', () => {
         CIRCLE: 'value_type::circle',
       },
     };
-    mappings = measurementServiceMappingsFactory(measurementServiceMock);
+    displaySetServiceMock = {
+      getDisplaySetForSOPInstanceUID: (SOPInstanceUID, SeriesInstanceUID) => {
+        console.warn('SOPInstanceUID');
+
+        return {
+          displaySetInstanceUID: '1.2.3.4'
+        }
+      }
+    };
+    mappings = measurementServiceMappingsFactory(measurementServiceMock, displaySetServiceMock);
     handles = { start: { x: 1, y: 2 }, end: { x: 1, y: 2 } };
     points = [
       { x: 1, y: 2 },
@@ -43,7 +54,8 @@ describe('measurementServiceMappings.js', () => {
     csToolsAnnotation = {
       toolName: definition,
       measurementData: {
-        _measurementServiceId: 1,
+        id: 1,
+        label: 'Test',
         SOPInstanceUID: '123',
         FrameOfReferenceUID: '123',
         SeriesInstanceUID: '123',
@@ -51,6 +63,7 @@ describe('measurementServiceMappings.js', () => {
         text: 'Test',
         description: 'Test',
         unit: 'mm',
+        length: undefined
       },
     };
     measurement = {
@@ -58,28 +71,31 @@ describe('measurementServiceMappings.js', () => {
       SOPInstanceUID: '123',
       FrameOfReferenceUID: '123',
       referenceSeriesUID: '123',
+      referenceStudyUID: '1234',
+      displaySetInstanceUID: '1.2.3.4',
       label: 'Test',
       description: 'Test',
       unit: 'mm',
       type: measurementServiceMock.VALUE_TYPES.POLYLINE,
-      points: points,
+      points,
     };
     jest.clearAllMocks();
   });
 
-  describe('toAnnotation()', () => {
+  /*describe('toAnnotation()', () => {
     it('map measurement service format to annotation', async () => {
-      const mappedMeasurement = await mappings.toAnnotation(
+      const mappedMeasurement = await mappings[csToolsAnnotation.toolName].toAnnotation(
         measurement,
         definition
       );
       expect(mappedMeasurement).toEqual(csToolsAnnotation);
     });
-  });
+  });*/
 
   describe('toMeasurement()', () => {
     it('map annotation to measurement service format', async () => {
-      const mappedAnnotation = await mappings.toMeasurement(csToolsAnnotation);
+      const getValueTypeFromToolType = (toolType) => 'valueType';
+      const mappedAnnotation = await mappings[csToolsAnnotation.toolName].toMeasurement(csToolsAnnotation, displaySetServiceMock, getValueTypeFromToolType);
       expect(mappedAnnotation).toEqual(measurement);
     });
   });

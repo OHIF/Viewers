@@ -4,11 +4,11 @@ import classnames from 'classnames';
 
 import { Icon, Typography } from '../';
 
-const Dropdown = ({ children, showDropdownIcon, list }) => {
+const Dropdown = ({ id, children, showDropdownIcon, list }) => {
   const [open, setOpen] = useState(false);
   const element = useRef(null);
 
-  const DropdownItem = useCallback(({ title, icon, onClick }) => {
+  const DropdownItem = useCallback(({ id, title, icon, onClick }) => {
     return (
       <div
         key={title}
@@ -19,6 +19,7 @@ const Dropdown = ({ children, showDropdownIcon, list }) => {
           setOpen(false);
           onClick();
         }}
+        data-cy={id}
       >
         {!!icon && <Icon name={icon} className="text-white w-4 mr-2" />}
         <Typography>{title}</Typography>
@@ -31,6 +32,7 @@ const Dropdown = ({ children, showDropdownIcon, list }) => {
   };
 
   DropdownItem.propTypes = {
+    id: PropTypes.string,
     title: PropTypes.string.isRequired,
     icon: PropTypes.string,
     onClick: PropTypes.func.isRequired,
@@ -67,9 +69,11 @@ const Dropdown = ({ children, showDropdownIcon, list }) => {
             'scale-100': open,
           }
         )}
+        data-cy={`${id}-dropdown`}
       >
         {list.map((item, idx) => (
           <DropdownItem
+            id={item.id}
             title={item.title}
             icon={item.icon}
             onClick={item.onClick}
@@ -104,6 +108,7 @@ Dropdown.defaultProps = {
 };
 
 Dropdown.propTypes = {
+  id: PropTypes.string,
   children: PropTypes.node.isRequired,
   showDropdownIcon: PropTypes.bool,
   /** Items to render in the select's drop down */

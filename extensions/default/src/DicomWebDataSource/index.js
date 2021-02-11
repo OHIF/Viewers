@@ -10,7 +10,7 @@ import dcm4cheeReject from './dcm4cheeReject';
 import { DicomMetadataStore, IWebApiDataSource, utils } from '@ohif/core';
 
 import getImageId from './utils/getImageId';
-import * as dcmjs from 'dcmjs';
+import dcmjs from 'dcmjs';
 import {
   retrieveStudyMetadata,
   deleteStudyMetadataPromise,

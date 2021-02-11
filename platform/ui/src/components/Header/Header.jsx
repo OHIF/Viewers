@@ -10,6 +10,8 @@ function Header({ children, menuOptions, isReturnEnabled, isSticky }) {
   const { t } = useTranslation();
   const history = useHistory();
 
+  // TODO: this should be passed in as a prop instead and the react-router-dom
+  // dependency should be dropped
   const onReturnHandler = () => {
     if (isReturnEnabled) {
       history.push('/');
@@ -35,8 +37,9 @@ function Header({ children, menuOptions, isReturnEnabled, isSticky }) {
           <span className="mr-3 text-lg text-common-light">
             {t('Header:INVESTIGATIONAL USE ONLY')}
           </span>
-          <Dropdown showDropdownIcon={false} list={menuOptions}>
+          <Dropdown id="options" showDropdownIcon={false} list={menuOptions}>
             <IconButton
+              id={"options-settings-icon"}
               variant="text"
               color="inherit"
               size="initial"
@@ -45,6 +48,7 @@ function Header({ children, menuOptions, isReturnEnabled, isSticky }) {
               <Icon name="settings" />
             </IconButton>
             <IconButton
+              id={"options-chevron-down-icon"}
               variant="text"
               color="inherit"
               size="initial"

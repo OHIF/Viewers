@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Select, Typography, Button, HotkeysPreferences } from '@ohif/ui';
-import i18n from '@ohif/i18n';
 import { useTranslation } from 'react-i18next';
-const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
-const UserPreferences = ({ disabled, hotkeyDefinitions, hotkeyDefaults, onCancel, onSubmit, onReset }) => {
+const UserPreferences = ({ availableLanguages, defaultLanguage, currentLanguage, disabled, hotkeyDefinitions, hotkeyDefaults, onCancel, onSubmit, onReset }) => {
   const { t } = useTranslation('UserPreferencesModal');
   const [state, setState] = useState({
     isDisabled: disabled,
     hotkeyErrors: {},
     hotkeyDefinitions,
-    language: currentLanguage()
+    language: currentLanguage
   });
 
   const onSubmitHandler = () => {
-    i18n.changeLanguage(state.language.value);
     onSubmit(state);
   };
 

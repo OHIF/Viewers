@@ -19,8 +19,8 @@ export class HotkeysManager {
     this.isEnabled = true;
 
     if (!commandsManager) {
-      log.warn(
-        '[hotkeys] HotkeysManager instantiated without a commandsManager. Hotkeys will be unable to find and run commands.'
+      throw new Error(
+        'HotkeysManager instantiated without a commandsManager. Hotkeys will be unable to find and run commands.'
       );
     }
 
@@ -67,7 +67,7 @@ export class HotkeysManager {
       const { UINotificationService } = this._servicesManager.services;
       UINotificationService.show({
         title: 'Hotkeys Manager',
-        message: 'Erro while setting hotkeys',
+        message: 'Error while setting hotkeys',
         type: 'error',
       });
     }
@@ -165,8 +165,7 @@ export class HotkeysManager {
    */
   registerHotkeys({ commandName, commandOptions = {}, keys, label, isEditable } = {}, extension) {
     if (!commandName) {
-      log.warn(`[hotkeys] No command was defined for hotkey "${keys}"`);
-      return;
+      throw new Error(`No command was defined for hotkey "${keys}"`);
     }
 
     const commandHash = objectHash({ commandName, commandOptions });

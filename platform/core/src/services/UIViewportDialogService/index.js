@@ -28,6 +28,7 @@ const serviceImplementation = {
  */
 function _show({
   viewportIndex,
+  id,
   type,
   message,
   actions,
@@ -36,6 +37,7 @@ function _show({
 }) {
   return serviceImplementation._show({
     viewportIndex,
+    id,
     type,
     message,
     actions,

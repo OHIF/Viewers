@@ -1,3 +1,4 @@
+import 'isomorphic-base64'
 import user from '../user';
 
 /**

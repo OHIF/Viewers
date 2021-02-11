@@ -173,9 +173,7 @@ also supports a number of commands that can be found in their respective
 | `dev:project <package-name>` | Replace with `core`, `ui`, `i18n`, `cornerstone`, `vtk`, etc. |
 | `test:unit`                  | Jest multi-project test runner; overall coverage              |
 | **Deploy**                   |                                                               |
-| `build`\*                    | Builds production output for our PWA Viewer                   |
-| `build:package`\*            | Builds production `commonjs` output for our Viewer            |
-| `build:package-all`\*        | Builds commonjs bundles for all projects                      |
+| `build`\*                    | Builds production output for our PWA Viewer                   |                      |
 
 \* - For more information on our different builds, check out our [Deploy
 Docs][deployment-docs]
@@ -189,24 +187,27 @@ you'll see the following:
 
 ```bash
 .
-├── extensions              #
-│   ├── _example            # Skeleton of example extension
-│   ├── cornerstone         # 2D images w/ Cornerstone.js
-│   ├── dicom-html          # Structured Reports as HTML in viewport
-│   ├── dicom-microscopy    # Whole slide microscopy viewing
-│   ├── dicom-pdf           # View DICOM wrapped PDFs in viewport
-│   └── vtk                 # MPR and Volume support w/ VTK.js
+├── extensions               #
+│   ├── _example             # Skeleton of example extension
+│   ├── default              #  
+│   ├── cornerstone          # 2D images w/ Cornerstone.js
+│   ├── dicom-sr             # 
+│   └── measurement-tracking # 
 │
-├── platform                #
-│   ├── core                # Business Logic
-│   ├── i18n                # Internationalization Support
-│   ├── ui                  # React component library
-│   └── viewer              # Connects platform and extension projects
+├── modes                    #
+│   ├── _example             # Skeleton of example mode
+│   └── longitudinal         #  
 │
-├── ...                     # misc. shared configuration
-├── lerna.json              # MonoRepo (Lerna) settings
-├── package.json            # Shared devDependencies and commands
-└── README.md               # This file
+├── platform                 #
+│   ├── core                 # Business Logic
+│   ├── i18n                 # Internationalization Support
+│   ├── ui                   # React component library
+│   └── viewer               # Connects platform and extension projects
+│
+├── ...                      # misc. shared configuration
+├── lerna.json               # MonoRepo (Lerna) settings
+├── package.json             # Shared devDependencies and commands
+└── README.md                # This file
 ```
 
 Want to better understand why and how we've structured this repository? Read
@@ -231,11 +232,7 @@ can [read more about extensions here][ohif-extensions].
 
 | Name                                                           | Description                                             | Links                  |
 | -------------------------------------------------------------- | ------------------------------------------------------- | ---------------------- |
-| [@ohif/extension-cornestone][extension-cornerstone]            | 2D image viewing, annotation, and segementation tools   | [NPM][cornerstone-npm] |
-| [@ohif/extension-dicom-html][extension-dicom-html]             | Support for viewing DICOM SR as rendered HTML           | [NPM][html-npm]        |
-| [@ohif/extension-dicom-microscopy][extension-dicom-microscopy] | Whole slide microscopy viewing                          | [NPM][microscopy-npm]  |
-| [@ohif/extension-dicom-pdf][extension-dicom-pdf]               | View DICOM wrapped PDFs in a viewport                   | [NPM][pdf-npm]         |
-| [@ohif/extension-vtk][extension-vtk]                           | Volume rendering, reconstruction, and 3D visualizations | [NPM][vtk-npm]         |
+| [@ohif/extension-cornerstone][extension-cornerstone]            | 2D image viewing, annotation, and segementation tools   | [NPM][cornerstone-npm] |
 
 ## Acknowledgments
 

@@ -1,4 +1,3 @@
-import { Exception } from 'handlebars';
 import ExtensionManager from './ExtensionManager.js';
 import MODULE_TYPES from './MODULE_TYPES.js';
 import log from './../log.js';
@@ -70,7 +69,7 @@ describe('ExtensionManager.js', () => {
   describe('registerExtension()', () => {
     it('calls preRegistration() for extension', () => {
       // SUT
-      const fakeExtension = { one: '1', preRegistration: jest.fn() };
+      const fakeExtension = { id: '1', preRegistration: jest.fn() };
       extensionManager.registerExtension(fakeExtension);
 
       // Assert
@@ -81,7 +80,7 @@ describe('ExtensionManager.js', () => {
       const extensionConfiguration = { config: 'Some configuration' };
 
       // SUT
-      const extension = { one: '1', preRegistration: jest.fn() };
+      const extension = { id: '1', preRegistration: jest.fn() };
       extensionManager.registerExtension(extension, extensionConfiguration);
 
       // Assert
@@ -97,18 +96,22 @@ describe('ExtensionManager.js', () => {
       const undefinedExtension = undefined;
       const nullExtension = null;
 
-      extensionManager.registerExtension(undefinedExtension);
-      extensionManager.registerExtension(nullExtension);
+      expect(() => {
+        extensionManager.registerExtension(undefinedExtension);
+      }).toThrow('Attempting to register a null/undefined extension.');
 
-      expect(log.warn.mock.calls.length).toBe(2);
+
+      expect(() => {
+        extensionManager.registerExtension(nullExtension);
+      }).toThrow('Attempting to register a null/undefined extension.');
     });
 
     it('logs a warning if the extension does not have an id', () => {
       const extensionWithoutId = {};
 
-      extensionManager.registerExtension(extensionWithoutId);
-
-      expect(log.warn.mock.calls.length).toBe(1);
+      expect(() => {
+        extensionManager.registerExtension(extensionWithoutId);
+      }).toThrow(new Error('Extension ID not set'));
     });
 
     it('tracks which extensions have been registered', () => {
@@ -151,16 +154,13 @@ describe('ExtensionManager.js', () => {
       const extensionWithBadModule = {
         id: 'hello-world',
         getViewportModule: () => {
-          throw new Exception('Hello World');
+          throw new Error('Hello World');
         },
       };
 
-      extensionManager.registerExtension(extensionWithBadModule);
-
-      expect(log.error.mock.calls.length).toBe(1);
-      expect(log.error.mock.calls[0][0]).toContain(
-        'Exception thrown while trying to call'
-      );
+      expect(() => {
+        extensionManager.registerExtension(extensionWithBadModule);
+      }).toThrow();
     });
 
     it('successfully passes dependencies to each module along with extension configuration', () => {
@@ -182,8 +182,10 @@ describe('ExtensionManager.js', () => {
           expect(extension[module].mock.calls[0][0]).toEqual({
             servicesManager,
             commandsManager,
+            hotkeysManager: undefined,
             appConfig,
             configuration: extensionConfiguration,
+            extensionManager
           });
         }
       });
@@ -193,20 +195,29 @@ describe('ExtensionManager.js', () => {
       const extension = {
         id: 'hello-world',
         getViewportModule: () => {
-          return {};
+          return [{}];
         },
         getSopClassHandlerModule: () => {
-          return {};
+          return [{}];
         },
         getPanelModule: () => {
-          return {};
+          return [{}];
         },
         getToolbarModule: () => {
-          return {};
+          return [{}];
         },
         getCommandsModule: () => {
-          return {};
+          return [{}];
         },
+        getLayoutTemplateModule: () => {
+          return [{}];
+        },
+        getDataSourcesModule: () => {
+          return [{}];
+        },
+        getContextModule: () => {
+          return [{}];
+        }
       };
 
       extensionManager.registerExtension(extension);

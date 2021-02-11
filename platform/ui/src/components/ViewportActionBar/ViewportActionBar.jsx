@@ -170,7 +170,12 @@ const ViewportActionBar = ({
           }}
           onClick={() => {
             if (state === 3) {
-              onPillClick?.();
+              // TODO: Gatsby build failing due
+              //       to ESLint's "no-unused-expressions"
+              //onPillClick?.();
+              if (onPillClick) {
+                onPillClick();
+              }
             }
           }}
         >

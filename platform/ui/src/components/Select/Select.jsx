@@ -33,6 +33,7 @@ const Option = props => {
 };
 
 const Select = ({
+  id,
   className,
   closeMenuOnSelect,
   hideSelectedOptions,
@@ -64,6 +65,7 @@ const Select = ({
 
   return (
     <ReactSelect
+      inputId={`input-${id}`}
       className={classnames(
         className,
         'flex flex-col flex-1 customSelect__wrapper'

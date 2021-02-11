@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Input, InputLabelWrapper } from '../';
 
 const InputText = ({
+  id,
   label,
   isSortable,
   sortDirection,
@@ -19,6 +20,7 @@ const InputText = ({
       onLabelClick={onLabelClick}
     >
       <Input
+        id={id}
         className="border-primary-main mt-2 bg-black"
         type="text"
         containerClassName="mr-2"
@@ -39,6 +41,7 @@ InputText.defaultProps = {
 };
 
 InputText.propTypes = {
+  id: PropTypes.string,
   label: PropTypes.string.isRequired,
   isSortable: PropTypes.bool,
   sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),

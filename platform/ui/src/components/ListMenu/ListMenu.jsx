@@ -16,7 +16,7 @@ const ListMenu = ({ items = [], renderer, onClick }) => {
     };
 
     return (
-      <div className={classnames(flex, theme, 'cursor-pointer')} onClick={onClickHandler}>
+      <div className={classnames(flex, theme, 'cursor-pointer')} onClick={onClickHandler} data-cy={item.id}>
         {renderer && renderer({ ...item, index, isSelected })}
       </div>
     );

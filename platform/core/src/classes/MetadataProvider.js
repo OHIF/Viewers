@@ -1,12 +1,9 @@
-import dcmjs from 'dcmjs';
 import queryString from 'query-string';
 import dicomParser from 'dicom-parser';
 import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacingInformation';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import fetchOverlayData from '../utils/metadataProvider/fetchOverlayData';
 import DicomMetadataStore from '../services/DicomMetadataStore';
-
-window.dcmjs = dcmjs;
 
 class MetadataProvider {
   constructor() {
@@ -426,6 +423,8 @@ class MetadataProvider {
         };
 
         break;
+      default:
+        return;
     }
 
     return metadata;
@@ -441,8 +440,7 @@ class MetadataProvider {
         SeriesInstanceUID: splitImageId[2], // Note: splitImageId[3] === 'instances'
         SOPInstanceUID: splitImageId[4],
       };
-    }
-    if (imageId.includes('wado?requestType=WADO')) {
+    } else if (imageId.includes('?requestType=WADO')) {
       const qs = queryString.parse(imageId);
 
       return {
@@ -450,10 +448,10 @@ class MetadataProvider {
         SeriesInstanceUID: qs.seriesUID,
         SOPInstanceUID: qs.objectUID,
       };
-    } else {
-      // Maybe its a non-standard imageId
-      return this.imageIdToUIDs.get(imageId);
     }
+
+    // Maybe its a non-standard imageId
+    return this.imageIdToUIDs.get(imageId);
   }
 }
 

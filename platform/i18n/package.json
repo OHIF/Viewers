@@ -37,18 +37,16 @@
   },
   "dependencies": {
     "@babel/runtime": "7.7.6",
-    "classnames": "^2.2.6",
     "i18next-locize-backend": "^2.0.0",
     "locize-editor": "^2.0.0",
-    "locize-lastused": "^1.1.0",
-    "rollup-plugin-json": "^4.0.0"
+    "locize-lastused": "^1.1.0"
   },
   "devDependencies": {
     "i18next": "^17.0.3",
     "i18next-browser-languagedetector": "^3.0.1",
-    "locize-cli": "^4.8.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
-    "react-i18next": "^10.11.0"
+    "react-i18next": "^10.11.0",
+    "webpack-merge": "^5.7.3"
   }
 }

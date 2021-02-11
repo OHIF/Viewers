@@ -37,12 +37,13 @@ const MeasurementItem = ({
       onClick={onClickHandler}
       role="button"
       tabIndex="0"
+      data-cy={"measurement-item"}
     >
       <div
         className={classnames(
           'text-center w-6 py-1 text-base transition duration-300',
           {
-            'bg-primary-light text-black': isActive,
+            'bg-primary-light text-black active': isActive,
             'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
           }
         )}

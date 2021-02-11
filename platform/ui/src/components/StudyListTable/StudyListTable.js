@@ -8,7 +8,7 @@ const StudyListTable = ({ tableDataSource }) => {
     <div className="bg-black">
       <div className="container m-auto relative">
         <table className="w-full text-white">
-          <tbody>
+          <tbody data-cy="study-list-results">
             {tableDataSource.map((tableData, i) => {
               return <StudyListTableRow tableData={tableData} key={i} />;
             })}

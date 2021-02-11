@@ -19,7 +19,7 @@ const HotkeysPreferences = ({ disabled, hotkeyDefinitions, errors: controlledErr
   const splitedHotkeys = splitHotkeyDefinitionsAndCreateTuples(visibleHotkeys);
 
   if (!Object.keys(hotkeyDefinitions).length) {
-    return 'No hotkeys definitions';
+    return 'No hotkey definitions';
   }
 
   const onHotkeyChangeHandler = (id, definition) => {

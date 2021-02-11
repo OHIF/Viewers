@@ -6,5 +6,10 @@
   "requestTimeout": 10000,
   "responseTimeout": 10000,
   "projectId": "4oe38f",
-  "video": false
+  "video": false,
+  "reporter": "junit",
+  "reporterOptions": {
+    "mochaFile": "cypress/results/test-output.xml",
+    "toConsole": true
+  }
 }

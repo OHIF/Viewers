@@ -37,15 +37,17 @@
   },
   "dependencies": {
     "@babel/runtime": "7.7.6",
-    "ajv": "^6.10.0",
     "dcmjs": "0.16.1",
     "dicomweb-client": "^0.6.0",
-    "immer": "6.0.2",
     "isomorphic-base64": "^1.0.2",
-    "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.1",
     "moment": "^2.24.0",
     "mousetrap": "^1.6.3",
-    "validate.js": "^0.12.0"
+    "query-string": "^6.14.0",
+    "object-hash": "2.1.1",
+    "cornerstone-math": "0.1.9"
+  },
+  "devDependencies": {
+    "webpack-merge": "5.7.3"
   }
 }

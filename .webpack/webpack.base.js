@@ -14,6 +14,7 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 const NODE_ENV = process.env.NODE_ENV;
 const QUICK_BUILD = process.env.QUICK_BUILD;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
+const { UnusedFilesWebpackPlugin } = require("unused-files-webpack-plugin");
 
 //
 dotenv.config();
@@ -98,6 +99,18 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         'process.env.LOCIZE_API_KEY': JSON.stringify(
           process.env.LOCIZE_API_KEY || ''
         ),
+      }),
+      new UnusedFilesWebpackPlugin({
+        failOnUnused: true,
+        globOptions: {
+          ignore: [
+            "node_modules/**/*",
+            "index.umd.js",
+            "sanity.test.js",
+            "__mocks__/fileMock.js",
+            "__tests__/globalSetup.js"
+          ]
+        }
       }),
     ],
     // Fix: https://github.com/webpack-contrib/css-loader/issues/447#issuecomment-285598881

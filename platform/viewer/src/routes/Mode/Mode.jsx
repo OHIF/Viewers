@@ -241,19 +241,11 @@ export default function ModeRoute({
     dataSource,
   ]);
 
-  const reducer = (state, action) => {
-    console.log(state, action);
-  };
-
   return (
     <ImageViewerProvider
       initialState={{ StudyInstanceUIDs: StudyInstanceUIDsAsArray }}
-      reducer={reducer}
     >
       <CombinedContextProvider>
-        {/* TODO: extensionManager is already provided to the extension module.
-         *  Use it from there instead of passing as a prop here.
-         */}
         <DragAndDropProvider>
           <LayoutComponent
             {...layoutTemplateData.props}

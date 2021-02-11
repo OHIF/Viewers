@@ -1,28 +1,41 @@
+"use strict";
+
 /**
  * This extension allows you to record a sequence using Mousetrap.
- * {@link https://craig.is/killing/mice}
  *
  * @author Dan Tao <daniel.tao@gmail.com>
  */
-export default function(Mousetrap) {
+module.exports = function (Mousetrap, options) {
+  /**
+   * the default configurations, we merge with user options
+   *
+   * @type {Array}
+   */
+  var _config = Object.assign({
+    timeout: 1000
+  }, options);
+
   /**
    * the sequence currently being recorded
    *
    * @type {Array}
    */
   var _recordedSequence = [],
+
     /**
      * a callback to invoke after recording a sequence
      *
      * @type {Function|null}
      */
     _recordedSequenceCallback = null,
+
     /**
      * a list of all of the keys currently held down
      *
      * @type {Array}
      */
     _currentRecordedKeys = [],
+
     /**
      * temporary state where we remember if we've already captured a
      * character key in the current combo
@@ -30,19 +43,28 @@ export default function(Mousetrap) {
      * @type {boolean}
      */
     _recordedCharacterKey = false,
+
     /**
      * a handle for the timer of the current recording
      *
      * @type {null|number}
      */
     _recordTimer = null,
+
     /**
      * the original handleKey method to override when Mousetrap.record() is
      * called
      *
      * @type {Function}
      */
-    _origHandleKey = Mousetrap.prototype.handleKey;
+    _origHandleKey = Mousetrap.prototype.handleKey,
+
+    /**
+     * the timeout that timer will wait for a key
+     *
+     * @type {number}
+     */
+    _recordTimeout = _config.timeout;
 
   /**
    * handles a character key event
@@ -61,19 +83,19 @@ export default function(Mousetrap) {
     }
 
     // remember this character if we're currently recording a sequence
-    if (e.type == 'keydown') {
+    if (e.type === 'keydown') {
       if (character.length === 1 && _recordedCharacterKey) {
         _recordCurrentCombo();
       }
 
-      for (let i = 0; i < modifiers.length; ++i) {
+      for (var i = 0; i < modifiers.length; ++i) {
         _recordKey(modifiers[i]);
       }
       _recordKey(character);
 
       // once a key is released, all keys that were held down at the time
       // count as a keypress
-    } else if (e.type == 'keyup' && _currentRecordedKeys.length > 0) {
+    } else if (e.type === 'keyup' && _currentRecordedKeys.length > 0) {
       _recordCurrentCombo();
     }
   }
@@ -85,8 +107,10 @@ export default function(Mousetrap) {
    * @returns void
    */
   function _recordKey(key) {
+    var i;
+
     // one-off implementation of Array.indexOf, since IE6-9 don't support it
-    for (let i = 0; i < _currentRecordedKeys.length; ++i) {
+    for (i = 0; i < _currentRecordedKeys.length; ++i) {
       if (_currentRecordedKeys[i] === key) {
         return;
       }
@@ -109,7 +133,7 @@ export default function(Mousetrap) {
     _recordedSequence.push(_currentRecordedKeys);
     _currentRecordedKeys = [];
     _recordedCharacterKey = false;
-    _finishRecording();
+    _restartRecordTimer();
   }
 
   /**
@@ -122,7 +146,9 @@ export default function(Mousetrap) {
    * @returns void
    */
   function _normalizeSequence(sequence) {
-    for (let i = 0; i < sequence.length; ++i) {
+    var i;
+
+    for (i = 0; i < sequence.length; ++i) {
       sequence[i].sort(function(x, y) {
         // modifier keys always come first, in alphabetical order
         if (x.length > 1 && y.length === 1) {
@@ -168,7 +194,7 @@ export default function(Mousetrap) {
    */
   function _restartRecordTimer() {
     clearTimeout(_recordTimer);
-    _recordTimer = setTimeout(_finishRecording, 1000);
+    _recordTimer = setTimeout(_finishRecording, _recordTimeout);
   }
 
   /**
@@ -178,35 +204,18 @@ export default function(Mousetrap) {
    * @param {Function} callback
    * @returns void
    */
-  Mousetrap.prototype.record = function(callback) {
+  Mousetrap.prototype.record = function(callback, timeout) {
     var self = this;
     self.recording = true;
+
+    // if the user doesn't want to change the timeout
+    // we still need to guarantee that it gets the default timeout
+    _recordTimeout = timeout || _config.timeout;
+
     _recordedSequenceCallback = function() {
       self.recording = false;
       callback.apply(self, arguments);
     };
-  };
-
-  /**
-   * stop recording
-   *
-   * @param {Function} callback
-   * @returns void
-   */
-  Mousetrap.prototype.stopRecord = function() {
-    var self = this;
-    self.recording = false;
-  };
-
-  /**
-   * start recording
-   *
-   * @param {Function} callback
-   * @returns void
-   */
-  Mousetrap.prototype.startRecording = function() {
-    var self = this;
-    self.recording = true;
   };
 
   Mousetrap.prototype.handleKey = function() {
@@ -215,4 +224,7 @@ export default function(Mousetrap) {
   };
 
   Mousetrap.init();
-}
+
+  return Mousetrap;
+
+};

@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { hotkeys } from '@ohif/core';
-import { Input } from '@ohif/ui';
+//import { hotkeys } from '@ohif/core';
+import Input from '../Input';
 
-import { getKeys, formatKeysForInput } from './utils';
+//import { getKeys, formatKeysForInput } from './utils';
+import { formatKeysForInput } from './utils';
 
 /**
  * HotkeyField
@@ -24,16 +25,16 @@ const HotkeyField = ({ disabled, keys, onChange, className, modifierKeys }) => {
     event.stopPropagation();
     event.preventDefault();
 
-    hotkeys.record(sequence => {
+    /*hotkeys.record(sequence => {
       const keys = getKeys({ sequence, modifierKeys });
       hotkeys.unpause();
       onChange(keys);
-    });
+    });*/
   };
 
   const onFocus = () => {
-    hotkeys.pause();
-    hotkeys.startRecording();
+    /*hotkeys.pause();
+    hotkeys.startRecording();*/
   };
 
   return (

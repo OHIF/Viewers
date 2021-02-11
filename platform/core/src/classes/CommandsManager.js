@@ -18,16 +18,15 @@ import log from '../log.js';
  * to extend this class, please check it's source before adding new methods.
  */
 export class CommandsManager {
-  constructor({ getAppState, getActiveContexts } = {}) {
+  constructor({ getActiveContexts } = {}) {
     this.contexts = {};
 
-    if (!getAppState || !getActiveContexts) {
-      log.warn(
-        'CommandsManager was instantiated without getAppState() or getActiveContexts()'
+    if (!getActiveContexts) {
+      throw new Error(
+        'CommandsManager was instantiated without getActiveContexts()'
       );
     }
 
-    this._getAppState = getAppState;
     this._getActiveContexts = getActiveContexts;
   }
 

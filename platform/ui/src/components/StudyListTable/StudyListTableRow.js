@@ -35,7 +35,7 @@ const StudyListTableRow = props => {
                   onClick={onClickRow}
                 >
                   {row.map((cell, index) => {
-                    const { content, title, gridCol, name } = cell;
+                    const { content, title, gridCol } = cell;
 
                     return (
                       <td

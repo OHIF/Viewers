@@ -108,7 +108,7 @@ const BaseImplementation = {
     );
 
     if (!existingStudy) {
-      const newStudy = new StudyMetadata(StudyInstanceUID);
+      const newStudy = createStudyMetadata(StudyInstanceUID);
 
       newStudy.PatientID = study.PatientID;
       newStudy.PatientName = study.PatientName;

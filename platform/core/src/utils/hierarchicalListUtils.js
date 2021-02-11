@@ -190,4 +190,6 @@ function toSublist(value) {
  * Exports
  */
 
+const hierarchicalListUtils = { addToList, getItem, forEach, print };
 export { addToList, getItem, forEach, print };
+export default hierarchicalListUtils;

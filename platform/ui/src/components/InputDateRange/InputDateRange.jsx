@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { DateRange, InputLabelWrapper } from '../';
 
 const InputDateRange = ({
+  id,
   label,
   isSortable,
   sortDirection,
@@ -27,6 +28,7 @@ const InputDateRange = ({
     >
       <div className="relative">
         <DateRange
+          id={id}
           startDate={startDate}
           endDate={endDate}
           onChange={onChange}
@@ -44,6 +46,7 @@ InputDateRange.defaultProps = {
 };
 
 InputDateRange.propTypes = {
+  id: PropTypes.string,
   label: PropTypes.string.isRequired,
   isSortable: PropTypes.bool.isRequired,
   sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])

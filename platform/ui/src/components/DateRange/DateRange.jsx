@@ -46,7 +46,7 @@ const renderYearsOptions = () => {
 };
 
 const DateRange = (props) => {
-  const { onChange, startDate, endDate } = props;
+  const { id, onChange, startDate, endDate } = props;
   const [focusedInput, setFocusedInput] = useState(null);
   const renderYearsOptionsCallback = useCallback(renderYearsOptions, []);
 
@@ -129,9 +129,9 @@ const DateRange = (props) => {
     <DateRangePicker
       /** REQUIRED */
       startDate={parsedStartDate}
-      startDateId={'startDateId'}
+      startDateId={`date-range-${id}-start-date`}
       endDate={parsedEndDate}
-      endDateId={'endDateId'}
+      endDateId={`date-range-${id}-end-date`}
       onDatesChange={({ startDate: newStartDate, endDate: newEndDate }) => {
         onChange({
           startDate: newStartDate ? newStartDate.format('YYYYMMDD') : undefined,
@@ -159,11 +159,13 @@ const DateRange = (props) => {
 };
 
 DateRange.defaultProps = {
+  id: '',
   startDate: null,
   endDate: null,
 };
 
 DateRange.propTypes = {
+  id: PropTypes.string,
   /** YYYYMMDD (19921022) */
   startDate: PropTypes.string,
   /** YYYYMMDD (19921022) */

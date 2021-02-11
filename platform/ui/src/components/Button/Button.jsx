@@ -92,6 +92,7 @@ const Button = ({
   fullWidth = defaults.fullWidth,
   startIcon: startIconProp,
   endIcon: endIconProp,
+  name,
   className,
   onClick,
   /** TODO: All possible props should be explicitly defined -- avoid spreading props  */
@@ -135,6 +136,7 @@ const Button = ({
       ref={buttonElement}
       onClick={handleOnClick}
       type={type}
+      data-cy={`${name}-btn`}
       {...rest}
     >
       {startIcon}
@@ -161,6 +163,7 @@ Button.propTypes = {
   fullWidth: PropTypes.bool,
   disabled: PropTypes.bool,
   type: PropTypes.string,
+  name: PropTypes.string,
   startIcon: PropTypes.node,
   endIcon: PropTypes.node,
   className: PropTypes.string,

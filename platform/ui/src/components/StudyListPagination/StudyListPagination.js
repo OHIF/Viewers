@@ -18,7 +18,7 @@ const StudyListPagination = ({
     { value: '50', label: '50' },
     { value: '100', label: '100' },
   ];
-  const [selectedRange, setSelectedRange] = useState(ranges.find(r => r.value == perPage));
+  const [selectedRange, setSelectedRange] = useState(ranges.find(r => r.value === perPage));
   const onSelectedRange = (selectedRange) => {
     setSelectedRange(selectedRange);
     onChangePerPage(selectedRange.value);
@@ -30,6 +30,7 @@ const StudyListPagination = ({
         <div className="flex justify-between">
           <div className="flex items-center">
             <Select
+              id={"rows-per-page"}
               className="relative mr-3 w-16 border-primary-main"
               options={ranges}
               value={selectedRange}

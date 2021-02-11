@@ -14,7 +14,6 @@ import {
 } from '@ohif/ui';
 import TOOL_NAMES from './../constants/toolNames';
 import { adapters } from 'dcmjs';
-// import getToolStateToCornerstoneMeasurementSchema from './utils/getToolStateToCornerstoneMeasurementSchema';
 import id from './../id';
 
 const { formatDate } = utils;
@@ -318,7 +317,6 @@ function OHIFCornerstoneSRViewport({
     // frameRate = 0,
   } = viewportData.stack;
 
-  // TODO: Does it make more sense to use Context?
   if (children && children.length) {
     childrenWithProps = children.map((child, index) => {
       return (
@@ -419,7 +417,6 @@ function OHIFCornerstoneSRViewport({
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
-          // TODO: ViewportGrid Context?
           isActive={true} // todo
           isStackPrefetchEnabled={true} // todo
           isPlaying={false}
