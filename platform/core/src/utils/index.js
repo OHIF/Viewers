@@ -5,7 +5,6 @@ import addServers from './addServers';
 import guid from './guid';
 import sortBy from './sortBy.js';
 import sortBySeriesDate from './sortBySeriesDate.js';
-import studyMetadataManager from './studyMetadataManager';
 import writeScript from './writeScript.js';
 import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
@@ -64,7 +63,6 @@ export {
   writeScript,
   b64toBlob,
   StackManager,
-  //studyMetadataManager,
   DicomLoaderService,
   urlUtil,
   //loadAndCacheDerivedDisplaySets,
