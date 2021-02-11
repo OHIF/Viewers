@@ -21,7 +21,7 @@ export default function getCommandsModule(servicesManager) {
 
       const { UIModalService } = servicesManager.services;
 
-      const WrappedDicomTagBrowser = function () {
+      const WrappedDicomTagBrowser = function() {
         return (
           <DicomTagBrowser
             displaySets={displaySets}
@@ -34,7 +34,7 @@ export default function getCommandsModule(servicesManager) {
         content: WrappedDicomTagBrowser,
         title: `DICOM Tag Browser`,
         fullscreen: true,
-        showScrollbar: true
+        noScroll: true,
       });
     },
   };
