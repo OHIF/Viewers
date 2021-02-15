@@ -6,7 +6,7 @@
         "wadoUriRoot": "http://localhost:8042/wado",
         "qidoRoot": "http://localhost:8042/dicom-web",
         "wadoRoot": "http://localhost:8042/dicom-web",
-        "vtkRoot": "http://localhost:8080/vtk",
+        "vtkRoot": "http://localhost:8080/api/vtk",
         "instancesRoot": "http://localhost:8042/instances",
         "qidoSupportsIncludeField": false,
         "imageRendering": "wadouri",
@@ -34,9 +34,6 @@
         "displaySeriesQuickSwitch": true,
         "show3DViewport": true
     }
-  },
-  "splunkSettings": {
-    "token": "f572faf0-c8e4-423d-b084-441136d1fb00"
   },
   "proxy": {
     "enabled": true

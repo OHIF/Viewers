@@ -1894,6 +1894,7 @@ function fetch(url, requests) {
 }
 
 function renderSerieHandler(event) {
+    OHIF.log.time("renderSerieHandler");
     const viewportIndex = Session.get('activeViewport') || 0;
     let activeElement = getElementIfNotEmpty(viewportIndex)
     let element = OHIF.viewerbase.viewportUtils.getEnabledElement(activeElement);
@@ -1902,6 +1903,7 @@ function renderSerieHandler(event) {
     let studyInstanceUid = viewportOverlayUtils.getStudy.call(e, 'studyInstanceUid');
     let pipelineId = PipelineSelector.selectedId;
 
+    OHIF.log.time("RenderSerieCall")
     Meteor.call('RenderSerie', studyInstanceUid, serieInstanceUid, pipelineId, function (error, response) {
 
         if (error) {
@@ -1918,6 +1920,7 @@ function renderSerieHandler(event) {
 
             OHIF.log.error(errorMessage);
             OHIF.log.error(error.stack);
+            OHIF.log.timeEnd("RenderSerieCall")
             return;
         }
 
@@ -1929,6 +1932,8 @@ function renderSerieHandler(event) {
         computeScale(geometry);
         material = new THREE.MeshLambertMaterial( { color: Math.pow(Math.random(), 2.0) * 0xFFFFFF, side: THREE.DoubleSide } );
         scene.remove(scene.getObjectByName("volume3D"));
+        scene.remove(scene.getObjectByName("BoxHelper"));
+        scene.remove(scene.getObjectByName("StackHelper"));
         var mesh = new THREE.Mesh(geometry, material);
         mesh.updateMatrixWorld();
         mesh.effectController = new EffectController(mesh.material.color.getHex(), mesh.material.transparent, mesh.material.opacity, 1);
@@ -1941,6 +1946,7 @@ function renderSerieHandler(event) {
         objects.set(mesh.name, mesh);
         hasGeometry = hasGeometry || true;
         var helper = new THREE.BoxHelper( mesh, 0xffff00 );
+        helper.name = "BoxHelper";
         scene.add( helper );
         if (gui.domElement !== undefined) {
             gui.domElement.style.display = '';
@@ -1959,6 +1965,7 @@ function renderSerieHandler(event) {
 
                 const stackHelper = new StackHelper(stack);
                 stackHelper.border.color = colors.red;
+                stackHelper.name = "StackHelper";
                 scene.add(stackHelper);
 
                 // build the gui
@@ -1969,12 +1976,15 @@ function renderSerieHandler(event) {
                 camera.lookAt(centerLPS.x, centerLPS.y, centerLPS.z);
                 camera.updateProjectionMatrix();
                 controls.target.set(centerLPS.x, centerLPS.y, centerLPS.z);
+                OHIF.log.timeEnd("RenderSerieCall")
             })
             .catch(function (error) {
                 window.console.log('oops... something went wrong...');
                 window.console.log(error);
+                OHIF.log.timeEnd("RenderSerieCall")
             });
     });
+    OHIF.log.timeEnd("renderSerieHandler");
 }
 
 Template.viewer3D.onRendered(function () {
