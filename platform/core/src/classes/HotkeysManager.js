@@ -63,10 +63,15 @@ export class HotkeysManager {
 
       definitions.forEach(definition => this.registerHotkeys(definition));
     } catch (error) {
-      const { UINotificationService } = this._servicesManager.services;
+      const {
+        UINotificationService,
+        LoggerService,
+      } = this._servicesManager.services;
+      const message = 'Erro while setting hotkeys';
+      LoggerService.error({ error, message });
       UINotificationService.show({
         title: 'Hotkeys Manager',
-        message: 'Erro while setting hotkeys',
+        message,
         type: 'error',
       });
     }
