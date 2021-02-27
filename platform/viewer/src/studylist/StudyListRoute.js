@@ -417,14 +417,7 @@ async function getStudyList(
  */
 function _sortStudies(studies, field, order) {
   // Make sure our StudyDate is in a valid format and create copy of studies array
-  const sortedStudies = studies.map(study => {
-    if (!moment(study.StudyDate, 'MMM DD, YYYY', true).isValid()) {
-      study.StudyDate = moment(study.StudyDate, 'YYYYMMDD').format(
-        'MMM DD, YYYY'
-      );
-    }
-    return study;
-  });
+  let sortedStudies = [...studies];
 
   // Sort by field
   sortedStudies.sort(function(a, b) {
@@ -454,8 +447,17 @@ function _sortStudies(studies, field, order) {
       return 0;
     }
   });
-
-  return sortedStudies;
+  
+  const sortedAndFormatedStudies = studies.map(study => {
+    if (!moment(study.StudyDate, 'MMM DD, YYYY', true).isValid()) {
+      study.StudyDate = moment(study.StudyDate, 'YYYYMMDD').format(
+        'MMM DD, YYYY'
+      );
+    }
+    return study;
+  });
+  
+  return sortedAndFormatedStudies;
 }
 
 /**
