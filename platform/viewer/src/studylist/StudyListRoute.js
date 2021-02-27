@@ -416,7 +416,6 @@ async function getStudyList(
  * @returns
  */
 function _sortStudies(studies, field, order) {
-  // Make sure our StudyDate is in a valid format and create copy of studies array
   let sortedStudies = [...studies];
 
   // Sort by field
@@ -448,7 +447,8 @@ function _sortStudies(studies, field, order) {
     }
   });
   
-  const sortedAndFormatedStudies = studies.map(study => {
+   // Make sure our StudyDate is in a valid format and create copy of sortedStudies array
+  const sortedAndFormatedStudies = sortedStudies.map(study => {
     if (!moment(study.StudyDate, 'MMM DD, YYYY', true).isValid()) {
       study.StudyDate = moment(study.StudyDate, 'YYYYMMDD').format(
         'MMM DD, YYYY'
