@@ -1,0 +1,6 @@
+[submodule "Packages/fds-threejs"]
+	path = Packages/fds-threejs
+	url = https://github.com/gtajesgenga/meteor-threejs.git
+[submodule "Packages/sergeyt-typeahead"]
+	path = Packages/sergeyt-typeahead
+	url = https://github.com/gtajesgenga/meteor-typeahead.git
