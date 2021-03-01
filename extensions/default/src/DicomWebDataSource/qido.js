@@ -170,7 +170,8 @@ function mapParams(params, options = {}) {
   const parameters = {
     // Named
     PatientName: withWildcard(params.patientName),
-    PatientID: withWildcard(params.patientId),
+    //PatientID: withWildcard(params.patientId),
+    "00100020": withWildcard(params.patientId), // Temporarily to make the tests pass with dicomweb-server.. Apparently it's broken?
     AccessionNumber: withWildcard(params.accessionNumber),
     StudyDescription: withWildcard(params.studyDescription),
     ModalitiesInStudy: params.modalitiesInStudy,

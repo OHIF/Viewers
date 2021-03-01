@@ -1,4 +1,3 @@
-// TODO: This is duplicated in TypeSafeCollection
 function isObject(subject) {
   return (
     subject instanceof Object ||
@@ -6,7 +5,6 @@ function isObject(subject) {
   );
 }
 
-// TODO: This is duplicated in TypeSafeCollection
 function isString(subject) {
   return typeof subject === 'string';
 }

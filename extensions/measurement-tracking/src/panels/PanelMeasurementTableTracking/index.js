@@ -244,7 +244,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
 
   return (
     <>
-      <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
+      <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar"
+           data-cy={"trackedMeasurements-panel"}>
         {displayStudySummary.key && (
           <StudySummary
             date={formatDate(displayStudySummary.date)}

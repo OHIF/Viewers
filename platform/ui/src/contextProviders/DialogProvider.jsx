@@ -245,7 +245,7 @@ const DialogProvider = ({ children, service }) => {
 
       if (typeof onClickOutside === 'function') {
         result = (
-          <OutsideAlerter onClickOutside={onClickOutside}>
+          <OutsideAlerter key={id} onClickOutside={onClickOutside}>
             {result}
           </OutsideAlerter>
         );

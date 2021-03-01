@@ -48,7 +48,7 @@ function LayoutSelector() {
         )
       }
       isActive={isOpen}
-      type="primary"
+      type="toggle"
     />
   );
 }

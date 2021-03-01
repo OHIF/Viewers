@@ -69,8 +69,6 @@ export default {
               console.warn('No toolname provided to setToolActive command');
             }
 
-            console.warn('DICOM SR VIEWPORT SETTOOLACTIVE');
-
             // Set same tool or alt tool
             const toolAlias = _getToolAlias(toolName);
 

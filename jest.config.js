@@ -9,8 +9,9 @@ module.exports = {
   ...base,
   // https://jestjs.io/docs/en/configuration#projects-array-string-projectconfig
   projects: [
-    // "<rootDir>/extensions/*/jest.config.js",
     '<rootDir>/platform/*/jest.config.js',
-    '<rootDir>/extensions/*/jest.config.js',,
-    "<rootDir>/modes/*/je'<rootDir>/coverage/',coverageDirectory: "<rootDir>/coverage/"
+    '<rootDir>/extensions/*/jest.config.js',
+    //'<rootDir>/modes/*/jest.config.js' // Enable if any mode definitions start including tests
+  ],
+  coverageDirectory: "<rootDir>/coverage/"
 };

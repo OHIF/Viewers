@@ -7,7 +7,9 @@ import './Modal.css';
 import { Typography, Icon } from '../../components';
 import { useModal } from '../../contextProviders';
 
-if (typeof document !== 'undefined') ReactModal.setAppElement(document.getElementById('root'));
+if (typeof document !== 'undefined') {
+  ReactModal.setAppElement(document.getElementById('root'));
+}
 
 const Modal = ({
   closeButton,
@@ -35,7 +37,6 @@ const Modal = ({
           </Typography>
           {closeButton && (
             <Icon
-              data-cy="close-button"
               onClick={onClose}
               name="close"
               className="cursor-pointer text-primary-active w-6 h-6"

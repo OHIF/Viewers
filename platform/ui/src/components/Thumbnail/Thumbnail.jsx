@@ -37,6 +37,7 @@ const Thumbnail = ({
         'flex flex-col flex-1 px-3 mb-8 cursor-pointer outline-none select-none group'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
+      data-cy={`study-browser-thumbnail`}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       role="button"

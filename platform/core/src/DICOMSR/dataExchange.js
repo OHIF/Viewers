@@ -1,5 +1,4 @@
 import log from '../log';
-// import studies from '../studies';
 import utils from '../utils';
 // import {
 //   retrieveMeasurementFromSR,
@@ -26,7 +25,7 @@ const { MeasurementReport } = dcmjs.adapters.Cornerstone;
  * @param {serverType} server
  * @returns {Promise} Should resolve with OHIF measurementData object
  */
-const retrieveMeasurements = server => {
+/*const retrieveMeasurements = server => {
   log.info('[DICOMSR] retrieveMeasurements');
 
   if (!server || server.type !== 'dicomWeb') {
@@ -42,7 +41,7 @@ const retrieveMeasurements = server => {
   if (!latestSeries) return Promise.resolve({});
 
   return retrieveMeasurementFromSR(latestSeries, studies, serverUrl);
-};
+};*/
 
 /**
  *
@@ -238,4 +237,4 @@ function _getFilteredCornerstoneToolState(
   return filteredToolState;
 }
 
-export { retrieveMeasurements, storeMeasurements, downloadReport };
+export { storeMeasurements, downloadReport };

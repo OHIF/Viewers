@@ -14,7 +14,6 @@ import {
   HangingProtocolService,
   CineService,
   // utils,
-  // redux as reduxOHIF,
 } from '@ohif/core';
 
 // TODO -> this feels bad.
@@ -30,9 +29,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
       : appConfigOrFunc),
   };
 
-  // TODO: Wire this up to Rodrigo's basic Context "ContextService"
   const commandsManagerConfig = {
-    /** Used by commands to inject `viewports` from "redux" */
     getAppState: () => {},
     /** Used by commands to determine active context */
     getActiveContexts: () => [

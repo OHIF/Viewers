@@ -22,7 +22,7 @@ function _createButton(type, id, icon, label, commandName, commandOptions) {
     label,
     type,
     commandName,
-    commandOptions,
+    commandOptions
   };
 }
 
@@ -38,7 +38,7 @@ const _createToolButton = _createButton.bind(null, 'tool');
  */
 function _createWwwcPreset(preset, title, subtitle) {
   return {
-    id: preset,
+    id: preset.toString(),
     title,
     subtitle,
     type: 'action',
@@ -111,6 +111,7 @@ export default [
     id: 'WindowLevel',
     type: 'ohif.splitButton',
     props: {
+      groupId: 'Wwwc',
       primary: _createToolButton(
         'Wwwc',
         'tool-window-level',
@@ -168,7 +169,7 @@ export default [
       isRadio: true, // ?
       groupId: 'MoreTools',
       primary: _createActionButton(
-        'reset',
+        'Reset',
         'tool-reset',
         'Reset View',
         'resetViewport'
@@ -181,7 +182,7 @@ export default [
       },
       items: [
         _createActionButton(
-          'reset',
+          'Reset',
           'tool-reset',
           'Reset View',
           'resetViewport'

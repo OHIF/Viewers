@@ -18,7 +18,7 @@ const ToolbarButton = ({
   bState = {},
   //
 }) => {
-  const { primaryToolId, toggles, groups } = bState;
+  const { primaryToolId } = bState;
   const isActive = _isActive || (type === 'tool' && id === primaryToolId);
   const classes = {
     type: {
@@ -30,6 +30,8 @@ const ToolbarButton = ({
         : 'text-white hover:bg-secondary-dark hover:text-white focus:bg-secondary-dark focus:text-white',
     },
   };
+
+  const activeClass = isActive ? 'active' : '';
   const shouldShowDropdown = !!isActive && !!dropdownContent;
 
   return (
@@ -42,7 +44,7 @@ const ToolbarButton = ({
         <IconButton
           variant={isActive ? 'contained' : 'text'}
           size="toolbar"
-          className={classnames('mx-1', classes.type[type])}
+          className={classnames('mx-1', activeClass, classes.type[type])}
           onClick={() => {
             onInteraction({
               itemId: id,
@@ -51,7 +53,9 @@ const ToolbarButton = ({
               commandOptions: commandOptions,
             });
           }}
+          name={label}
           key={id}
+          id={id}
         >
           <Icon name={icon} />
         </IconButton>

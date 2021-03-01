@@ -34,8 +34,12 @@
           "text": "Version 1.0.0 (Meteor)"
         },
         {
-          "value": "https://docs.ohif.org/",
+          "value": "https://docs.ohif.org/history/v2/",
           "text": "Version 2.0.0",
+        },
+        {
+          "value": "https://docs.ohif.org/",
+          "text": "Version 3.0.0",
           "selected": true
         }
       ]

@@ -25,13 +25,14 @@ const ViewportOverlay = ({
     return null;
   }
 
+  // TODO: this component should be presentational only. Right now it has a weird dependency on Cornerstone
   const generalImageModule =
     cornerstone.metaData.get('generalImageModule', imageId) || {};
   const { instanceNumber } = generalImageModule;
 
   return (
     <div className="text-primary-light">
-      <div className={classnames(overlay, topLeft)}>
+      <div data-cy={"viewport-overlay-top-left"} className={classnames(overlay, topLeft)}>
         {isZoomActive && (
           <div className="flex flex-row">
             <span className="mr-1">Zoom:</span>
@@ -49,7 +50,7 @@ const ViewportOverlay = ({
           </div>
         )}
       </div>
-      <div className={classnames(overlay, topRight)}>
+      <div data-cy={"viewport-overlay-top-right"} className={classnames(overlay, topRight)}>
         {stackSize > 1 && (
           <div className="flex flex-row">
             <span className="mr-1">I:</span>
@@ -59,8 +60,8 @@ const ViewportOverlay = ({
           </div>
         )}
       </div>
-      <div className={classnames(overlay, bottomRight)}></div>
-      <div className={classnames(overlay, bottomLeft)}></div>
+      <div data-cy={"viewport-overlay-bottom-right"} className={classnames(overlay, bottomRight)}></div>
+      <div data-cy={"viewport-overlay-bottom-left"} className={classnames(overlay, bottomLeft)}></div>
     </div>
   );
 };

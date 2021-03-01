@@ -1,12 +1,12 @@
 import {
-  retrieveMeasurements,
+  //retrieveMeasurements,
   storeMeasurements,
   downloadReport,
 } from './dataExchange';
 import isToolSupported from './utils/isToolSupported';
 
 const DICOMSR = {
-  retrieveMeasurements,
+  //retrieveMeasurements,
   storeMeasurements,
   downloadReport,
   isToolSupported,

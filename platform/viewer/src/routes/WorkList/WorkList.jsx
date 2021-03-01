@@ -27,6 +27,10 @@ import {
   UserPreferences,
 } from '@ohif/ui';
 
+import i18n from '@ohif/i18n';
+
+const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
+
 const seriesInStudiesMap = new Map();
 
 /**
@@ -328,7 +332,7 @@ function WorkList({
           {appConfig.modes.map((mode, i) => {
             const isFirst = i === 0;
 
-            // TODO: Homes need a default/target route? We mostly support a single one for now.
+            // TODO: Modes need a default/target route? We mostly support a single one for now.
             // We should also be using the route path, but currently are not
             // mode.id
             // mode.routes[x].path
@@ -384,8 +388,12 @@ function WorkList({
             ),
             hotkeyDefinitions,
             onCancel: hide,
-            onSubmit: ({ hotkeyDefinitions }) => {
-              hotkeysManager.setHotkeys(hotkeyDefinitions);
+            currentLanguage: currentLanguage(),
+            availableLanguages,
+            defaultLanguage,
+            onSubmit: (state) => {
+              i18n.changeLanguage(state.language.value);
+              hotkeysManager.setHotkeys(state.hotkeyDefinitions);
               hide();
             },
             onReset: () => hotkeysManager.restoreDefaultBindings(),
@@ -459,6 +467,18 @@ const defaultFilterValues = {
   resultsPerPage: 25,
 };
 
+function _tryParseInt(str, defaultValue) {
+  var retValue = defaultValue;
+  if (str !== null) {
+    if (str.length > 0) {
+      if (!isNaN(str)) {
+        retValue = parseInt(str);
+      }
+    }
+  }
+  return retValue;
+}
+
 function _getQueryFilterValues(query) {
   const queryFilterValues = {
     patientName: query.get('patientName'),
@@ -484,18 +504,6 @@ function _getQueryFilterValues(query) {
   );
 
   return queryFilterValues;
-
-  function _tryParseInt(str, defaultValue) {
-    var retValue = defaultValue;
-    if (str !== null) {
-      if (str.length > 0) {
-        if (!isNaN(str)) {
-          retValue = parseInt(str);
-        }
-      }
-    }
-    return retValue;
-  }
 }
 
 function _sortStringDates(s1, s2, sortModifier) {

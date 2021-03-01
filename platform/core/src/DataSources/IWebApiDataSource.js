@@ -1,4 +1,4 @@
-import { DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore } from '../services/DicomMetadataStore';
 // TODO: Use above to inject so dependent datasources don't need to import or
 // depend on @ohif/core?
 

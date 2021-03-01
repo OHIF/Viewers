@@ -26,10 +26,16 @@
     "build:package": "yarn run build",
     "start": "yarn run dev",
     "test:unit": "jest --watchAll",
-    "test:unit:ci": "jest --ci --runInBand --collectCoverage"
+    "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "@ohif/core": "^2.12.3"
+  },
   "dependencies": {
     "@babel/runtime": "7.7.6"
+  },
+  "devDependencies": {
+    "webpack": "^5.21.2",
+    "webpack-merge": "^5.7.3"
   }
 }

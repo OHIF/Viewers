@@ -70,4 +70,6 @@ const paramString = {
   replaceParam,
 };
 
-export { parse, queryString, paramString };
+const urlUtil = { parse, queryString, paramString };
+
+export default urlUtil;

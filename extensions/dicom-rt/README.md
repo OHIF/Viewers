@@ -1,1 +1,0 @@
-# @ohif/extension-dicom-rt

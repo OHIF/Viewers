@@ -1,6 +1,5 @@
 import React from 'react';
 import ModeRoute from '@routes/Mode';
-import { ViewModelProvider } from '@ohif/core';
 
 /*
   Routes uniquely define an entry point to:
@@ -52,7 +51,6 @@ export default function buildModeRoutes({
 
       // TODO move up.
       const component = ({ location }) => (
-        <ViewModelProvider>
           <ModeRoute
             location={location}
             mode={mode}
@@ -61,7 +59,6 @@ export default function buildModeRoutes({
             servicesManager={servicesManager}
             hotkeysManager={hotkeysManager}
           />
-        </ViewModelProvider>
       );
 
       routes.push({
@@ -78,7 +75,6 @@ export default function buildModeRoutes({
 
     // TODO move up.
     const component = ({ location }) => (
-      <ViewModelProvider>
         <ModeRoute
           location={location}
           mode={mode}
@@ -87,7 +83,6 @@ export default function buildModeRoutes({
           servicesManager={servicesManager}
           hotkeysManager={hotkeysManager}
         />
-      </ViewModelProvider>
     );
 
     routes.push({

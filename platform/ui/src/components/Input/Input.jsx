@@ -12,6 +12,7 @@ const transparentClasses = {
 };
 
 const Input = ({
+  id,
   label,
   containerClassName = '',
   labelClassName = '',
@@ -32,6 +33,7 @@ const Input = ({
     <div className={classnames('flex flex-col flex-1', containerClassName)}>
       <Label className={labelClassName} text={label}></Label>
       <input
+        data-cy={`input-${id}`}
         className={classnames(
           label && 'mt-2',
           className,

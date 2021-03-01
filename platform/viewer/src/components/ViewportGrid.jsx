@@ -143,7 +143,6 @@ function ViewerViewportGrid(props) {
   };
 
   const onDropHandler = (viewportIndex, { displaySetInstanceUID }) => {
-    console.warn(`DROPPED: ${displaySetInstanceUID}`);
     viewportGridService.setDisplaysetForViewport({
       viewportIndex,
       displaySetInstanceUID,

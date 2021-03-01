@@ -8,6 +8,7 @@ module.exports = {
   roots: ['<rootDir>/src'],
   transform: {
     '^.+\\.js$': 'babel-jest',
+    '^.+\\.jsx$': 'babel-jest'
   },
   testMatch: ['<rootDir>/src/**/*.test.js'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],

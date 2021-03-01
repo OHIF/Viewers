@@ -1,0 +1,44 @@
+{
+  "name": "ohif-viewer-latest-docs",
+  "version": "2.0.0",
+  "description": "Open Health Imaging Foundation Viewers Metarepo for documentation",
+  "main": ".eslintrc.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "docs": "gitbook install && gitbook serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OHIF/Viewers.git"
+  },
+  "keywords": [
+    "dicom",
+    "cornerstone",
+    "OHIF",
+    "zero",
+    "footprint",
+    "medical",
+    "imaging",
+    "viewer"
+  ],
+  "author": "Open Health Imaging Foundation",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OHIF/Viewers/issues"
+  },
+  "homepage": "https://github.com/OHIF/Viewers#readme",
+  "dependencies": {
+    "gitbook-plugin-anchors": "^0.7.1",
+    "gitbook-plugin-edit-link": "^2.0.2",
+    "gitbook-plugin-ga": "^2.0.0",
+    "gitbook-plugin-github": "^3.0.0",
+    "gitbook-plugin-sitemap": "^1.2.0",
+    "gitbook-plugin-theme-cornerstone": "^1.1.4",
+    "gitbook-plugin-versions": "^2.1.4"
+  },
+  "devDependencies": {
+    "gitbook-cli": "^2.3.2"
+  }
+}

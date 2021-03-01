@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Select, InputLabelWrapper } from '../';
 
 const InputMultiSelect = ({
+  id,
   label,
   isSortable,
   sortDirection,
@@ -21,6 +22,7 @@ const InputMultiSelect = ({
       onLabelClick={onLabelClick}
     >
       <Select
+        id={id}
         placeholder={placeholder}
         className="mt-2"
         options={options}
@@ -54,6 +56,7 @@ InputMultiSelect.defaultProps = {
 };
 
 InputMultiSelect.propTypes = {
+  id: PropTypes.string,
   label: PropTypes.string.isRequired,
   isSortable: PropTypes.bool.isRequired,
   sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none'])

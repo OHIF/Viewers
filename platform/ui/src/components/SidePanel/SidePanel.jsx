@@ -93,6 +93,7 @@ const SidePanel = ({
             minWidth: `${collapsedWidth}px`,
             width: `${collapsedWidth}px`,
           }}
+          name={childComponent.name}
           className="flex flex-col text-xs px-1 py-1 text-white border-transparent border-b"
         >
           <Icon
@@ -126,6 +127,7 @@ const SidePanel = ({
               onClick={() => {
                 setComponentOpen(null);
               }}
+              name={childComponent.name}
               className="flex flex-row items-center px-3 h-12 relative w-full"
             >
               <Icon

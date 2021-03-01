@@ -1,4 +1,4 @@
-import * as utils from './progressTrackingUtils';
+import utils from './progressTrackingUtils';
 
 describe('progressTrackingUtils', () => {
   describe('Creation of lists of tasks to be tracked', () => {

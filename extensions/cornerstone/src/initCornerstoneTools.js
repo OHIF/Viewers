@@ -7,6 +7,9 @@ import OHIF from '@ohif/core';
 const { log } = OHIF;
 
 export default function(configuration = {}) {
+  // TODO: Cypress tests are currently grabbing this from the window?
+  window.cornerstone = cornerstone;
+
   // For debugging
   window.cornerstoneTools = cornerstoneTools;
 

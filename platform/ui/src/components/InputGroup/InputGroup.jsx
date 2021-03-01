@@ -15,12 +15,12 @@ const InputGroup = ({
   onValuesChange,
   sorting,
   onSortingChange,
-  isSortingEnable,
+  isSortingEnabled,
 }) => {
   const { sortBy, sortDirection } = sorting;
 
   const handleFilterLabelClick = name => {
-    if (isSortingEnable) {
+    if (isSortingEnabled) {
       let _sortDirection = 'descending';
       if (sortBy === name) {
         if (sortDirection === 'ascending') {
@@ -44,7 +44,7 @@ const InputGroup = ({
     isSortable,
     inputType,
   }) => {
-    const _isSortable = isSortable && isSortingEnable;
+    const _isSortable = isSortable && isSortingEnabled;
     const _sortDirection = sortBy !== name ? 'none' : sortDirection;
 
     const onLabelClick = () => {
@@ -72,6 +72,7 @@ const InputGroup = ({
       case 'Text':
         return (
           <InputText
+            id={name}
             key={name}
             label={displayName}
             isSortable={_isSortable}
@@ -84,6 +85,7 @@ const InputGroup = ({
       case 'MultiSelect':
         return (
           <InputMultiSelect
+            id={name}
             key={name}
             label={displayName}
             isSortable={_isSortable}
@@ -97,6 +99,7 @@ const InputGroup = ({
       case 'DateRange':
         return (
           <InputDateRange
+            id={name}
             key={name}
             label={displayName}
             isSortable={_isSortable}
@@ -166,7 +169,7 @@ InputGroup.propTypes = {
     sortDirection: PropTypes.oneOf(['ascending', 'descending', 'none']),
   }).isRequired,
   onSortingChange: PropTypes.func.isRequired,
-  isSortingEnable: PropTypes.bool.isRequired,
+  isSortingEnabled: PropTypes.bool.isRequired,
 };
 
 export default InputGroup;

@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Button, Icon } from '../';
 
-const Notification = ({ type, message, actions, onSubmit, onOutsideClick }) => {
+const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) => {
   const notificationRef = useRef(null);
 
   useEffect(() => {
@@ -57,6 +57,7 @@ const Notification = ({ type, message, actions, onSubmit, onOutsideClick }) => {
     <div
       ref={notificationRef}
       className="flex flex-col p-2 mx-2 mt-2 rounded bg-common-bright"
+      data-cy={id}
     >
       <div className="flex flex-grow">
         <Icon name={icon} className={classnames('w-5', color)} />
@@ -69,6 +70,7 @@ const Notification = ({ type, message, actions, onSubmit, onOutsideClick }) => {
 
           return (
             <Button
+              data-cy={action.id}
               key={index}
               className={classnames({ 'ml-2': !isFirst })}
               color={isPrimary ? 'primary' : undefined}

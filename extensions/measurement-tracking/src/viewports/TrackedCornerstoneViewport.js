@@ -225,7 +225,6 @@ function TrackedCornerstoneViewport({
     // frameRate = 0,
   } = viewportData.stack;
 
-  // TODO: Does it make more sense to use Context?
   if (children && children.length) {
     childrenWithProps = children.map((child, index) => {
       return (
@@ -371,7 +370,6 @@ function TrackedCornerstoneViewport({
           // Sync resize throttle w/ sidepanel animation duration to prevent
           // seizure inducing strobe blinking effect
           resizeRefreshRateMs={150}
-          // TODO: ViewportGrid Context?
           isActive={true} // todo
           isStackPrefetchEnabled={true} // todo
           isPlaying={isPlaying}
@@ -390,6 +388,7 @@ function TrackedCornerstoneViewport({
         <div className="absolute w-full">
           {viewportDialogState.viewportIndex === viewportIndex && (
             <Notification
+              id={viewportDialogState.id}
               message={viewportDialogState.message}
               type={viewportDialogState.type}
               actions={viewportDialogState.actions}
@@ -609,12 +608,12 @@ function _jumpToMeasurement(
     const scrollToHandler = evt => {
       scrollToIndex(targetElement, imageIndex);
       targetElement.removeEventListener(
-        'cornerstoneimagerendered',
+        cornerstone.EVENTS.IMAGE_RENDERED,
         scrollToHandler
       );
     };
     targetElement.addEventListener(
-      'cornerstoneimagerendered',
+      cornerstone.EVENTS.IMAGE_RENDERED,
       scrollToHandler
     );
 

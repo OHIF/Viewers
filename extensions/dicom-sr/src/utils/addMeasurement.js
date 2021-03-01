@@ -4,8 +4,6 @@ import cornerstone from 'cornerstone-core';
 import TOOL_NAMES from '../constants/toolNames';
 import SCOORD_TYPES from '../constants/scoordTypes';
 
-window.cornerstone = cornerstone;
-
 const globalImageIdSpecificToolStateManager =
   cornerstoneTools.globalImageIdSpecificToolStateManager;
 

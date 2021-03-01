@@ -318,7 +318,7 @@ function notify(list, data) {
  * Exports
  */
 
-export {
+const progressTrackingUtils = {
   createList,
   isList,
   createTask,
@@ -334,3 +334,5 @@ export {
   addObserver,
   removeObserver,
 };
+
+export default progressTrackingUtils;

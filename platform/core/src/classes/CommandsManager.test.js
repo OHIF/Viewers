@@ -12,11 +12,6 @@ describe('CommandsManager', () => {
       options: { passMeToCommandFn: ':wave:' },
     },
     commandsManagerConfig = {
-      getAppState: () => {
-        return {
-          viewers: 'Test',
-        };
-      },
       getActiveContexts: () => ['VIEWER', 'ACTIVE_VIEWER::CORNERSTONE'],
     };
 
@@ -34,10 +29,10 @@ describe('CommandsManager', () => {
     expect(localCommandsManager.contexts).toEqual({});
   });
 
-  it('logs a warning if instantiated without getAppState or getActiveContexts', () => {
-    new CommandsManager();
-
-    expect(log.warn.mock.calls.length).toBe(1);
+  it('throws Error if instantiated without getActiveContexts', () => {
+    expect(() => {
+      new CommandsManager();
+    }).toThrow(new Error('CommandsManager was instantiated without getActiveContexts()'));
   });
 
   describe('createContext()', () => {
@@ -178,16 +173,6 @@ describe('CommandsManager', () => {
       commandsManager.runCommand('TestCommand', {}, 'VIEWER');
 
       expect(command.commandFn.mock.calls.length).toBe(1);
-    });
-
-    it('Calls commandFn w/ properties from appState', () => {
-      commandsManager.registerCommand('VIEWER', 'TestCommand', command);
-      commandsManager.runCommand('TestCommand', {}, 'VIEWER');
-
-      expect(command.commandFn.mock.calls.length).toBe(1);
-      expect(command.commandFn.mock.calls[0][0].viewers).toEqual(
-        commandsManagerConfig.getAppState().viewers
-      );
     });
 
     it('Calls commandFn w/ command definition options', () => {

@@ -2,7 +2,7 @@ import MODULE_TYPES from './MODULE_TYPES.js';
 import log from './../log.js';
 
 export default class ExtensionManager {
-  constructor({ commandsManager, servicesManager, hotkeysManager, api, appConfig = {} }) {
+  constructor({ commandsManager, servicesManager, hotkeysManager, appConfig = {} }) {
     this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
@@ -11,7 +11,6 @@ export default class ExtensionManager {
     this._servicesManager = servicesManager;
     this._hotkeysManager = hotkeysManager;
     this._appConfig = appConfig;
-    this._api = api;
 
     this.modulesMap = {};
     this.moduleTypeNames.forEach(moduleType => {
@@ -95,15 +94,15 @@ export default class ExtensionManager {
    *
    * @param {Object[]} extensions - Array of extensions
    */
-  registerExtensions = (extensions, dataSources) => {
+  registerExtensions = (extensions, dataSources = []) => {
     extensions.forEach(extension => {
       const hasConfiguration = Array.isArray(extension);
 
       if (hasConfiguration) {
         const [ohifExtension, configuration] = extension;
-        this.registerExtension(ohifExtension, dataSources, configuration);
+        this.registerExtension(ohifExtension, configuration, dataSources);
       } else {
-        this.registerExtension(extension, dataSources);
+        this.registerExtension(extension, {}, dataSources);
       }
     });
   };
@@ -114,12 +113,11 @@ export default class ExtensionManager {
    * @param {Object} extension
    * @param {Object} configuration
    */
-  registerExtension = (extension, dataSources, configuration = {}) => {
+  registerExtension = (extension, configuration = {}, dataSources = []) => {
     if (!extension) {
-      log.warn(
-        'Attempting to register a null/undefined extension. Exiting early.'
+      throw new Error(
+        'Attempting to register a null/undefined extension.'
       );
-      return;
     }
 
     let extensionId = extension.id;
@@ -193,6 +191,8 @@ export default class ExtensionManager {
               ] = element;
             });
             break;
+          default:
+            throw new Error(`Module type invalid: ${moduleType}`);
         }
 
         this.modules[moduleType].push({
@@ -241,13 +241,11 @@ export default class ExtensionManager {
     try {
       const extensionModule = getModuleFn({
         appConfig: this._appConfig,
-        getDataSources: this.getDataSources, // Why pass this in if we're passing in `extensionManager`?
         commandsManager: this._commandsManager,
         servicesManager: this._servicesManager,
         hotkeysManager: this._hotkeysManager,
         extensionManager: this,
         configuration,
-        api: this._api,
       });
 
       if (!extensionModule) {
@@ -258,14 +256,13 @@ export default class ExtensionManager {
 
       return extensionModule;
     } catch (ex) {
-      log.error(
+      throw new Error(
         `Exception thrown while trying to call ${getModuleFnName} for the ${extensionId} extension`
       );
-      log.error(ex);
     }
   };
 
-  _initDataSourcesModule(extensionModule, extensionId, dataSources) {
+  _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
     extensionModule.forEach(element => {
       const namespace = `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`;
 

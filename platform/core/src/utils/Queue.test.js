@@ -21,12 +21,12 @@ describe('Queue', () => {
     const mockedTimeout = jest.fn(timeout);
     const timer = queue.bind(mockedTimeout);
     const start = Date.now();
-    timer(120).then(now => {
+    timer(1200).then(now => {
       const elapsed = now - start;
-      expect(elapsed >= 120 && elapsed < 240).toBe(true);
+      expect(elapsed >= 1200 && elapsed < 2400).toBe(true);
     });
-    const end = await timer(120);
-    expect(end - start > 240).toBe(true);
+    const end = await timer(1200);
+    expect(end - start > 2400).toBe(true);
     expect(mockedTimeout).toBeCalledTimes(2);
   });
   it('should prevent task execution when queue limit is reached', async () => {
@@ -34,15 +34,15 @@ describe('Queue', () => {
     const mockedTimeout = jest.fn(timeout);
     const timer = queue.bind(mockedTimeout);
     const start = Date.now();
-    const promise = timer(120).then(time => time - start);
+    const promise = timer(1200).then(time => time - start);
     try {
-      await timer(120);
+      await timer(1200);
     } catch (e) {
-      expect(Date.now() - start < 120).toBe(true);
+      expect(Date.now() - start < 1200).toBe(true);
       expect(e.message).toBe('Queue limit reached');
     }
     const elapsed = await promise;
-    expect(elapsed >= 120 && elapsed < 240).toBe(true);
+    expect(elapsed >= 1200 && elapsed < 2400).toBe(true);
     expect(mockedTimeout).toBeCalledTimes(1);
   });
   it('should safely bind tasks to the queue', async () => {
@@ -51,16 +51,16 @@ describe('Queue', () => {
     const mockedTimeout = jest.fn(timeout);
     const timer = queue.bindSafe(mockedTimeout, mockedErrorHandler);
     const start = Date.now();
-    const promise = timer(120).then(time => time - start);
-    await timer(120);
-    expect(Date.now() - start < 120).toBe(true);
+    const promise = timer(1200).then(time => time - start);
+    await timer(1200);
+    expect(Date.now() - start < 1200).toBe(true);
     expect(mockedErrorHandler).toBeCalledTimes(1);
     expect(mockedErrorHandler).nthCalledWith(
       1,
       expect.objectContaining({ message: 'Queue limit reached' })
     );
     const elapsed = await promise;
-    expect(elapsed >= 120 && elapsed < 240).toBe(true);
+    expect(elapsed >= 1200 && elapsed < 2400).toBe(true);
     expect(mockedTimeout).toBeCalledTimes(1);
   });
 });

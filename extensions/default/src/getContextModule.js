@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ViewModelContext } from '@ohif/core';
 
 const HelloWorldContext = React.createContext({
   message: 'HelloWorldContextTesting',

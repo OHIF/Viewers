@@ -9,7 +9,6 @@ import log from './log.js';
 import object from './object.js';
 import string from './string.js';
 import user from './user.js';
-import { ViewModelProvider, useViewModel } from './ViewModelContext';
 import utils from './utils/';
 import defaults from './defaults';
 
@@ -68,9 +67,6 @@ const OHIF = {
   HangingProtocolService,
   IWebApiDataSource,
   DicomMetadataStore,
-  //
-  ViewModelProvider,
-  useViewModel,
 };
 
 export {
@@ -105,8 +101,6 @@ export {
   HangingProtocolService,
   IWebApiDataSource,
   DicomMetadataStore,
-  ViewModelProvider,
-  useViewModel,
 };
 
 export { OHIF };

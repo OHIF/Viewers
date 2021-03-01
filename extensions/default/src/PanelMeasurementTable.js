@@ -43,20 +43,16 @@ export default function PanelMeasurementTable({
     };
   }, [MeasurementService]);
 
-  // const activeMeasurementItem = 0;
-
   return (
-    <>
-      <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
-        <MeasurementTable
-          title="Measurements"
-          amount={displayMeasurements.length}
-          data={displayMeasurements}
-          onClick={({ id }) => alert(`Click: ${id}`)}
-          onEdit={({ id }) => alert(`Edit: ${id}`)}
-        />
-      </div>
-    </>
+    <div className="overflow-x-hidden overflow-y-auto invisible-scrollbar">
+      <MeasurementTable
+        title="Measurements"
+        amount={displayMeasurements.length}
+        data={displayMeasurements}
+        onClick={({ id }) => alert(`Click: ${id}`)}
+        onEdit={({ id }) => alert(`Edit: ${id}`)}
+      />
+    </div>
   );
 }
 

@@ -1,7 +1,6 @@
 import ObjectPath from './objectPath';
 import StackManager from './StackManager.js';
 import absoluteUrl from './absoluteUrl';
-import addServers from './addServers';
 import guid from './guid';
 import sortBy from './sortBy.js';
 import sortBySeriesDate from './sortBySeriesDate.js';
@@ -9,7 +8,7 @@ import writeScript from './writeScript.js';
 import DicomLoaderService from './dicomLoaderService.js';
 import b64toBlob from './b64toBlob.js';
 //import loadAndCacheDerivedDisplaySets from './loadAndCacheDerivedDisplaySets.js';
-import * as urlUtil from './urlUtil';
+import urlUtil from './urlUtil';
 import makeDeferred from './makeDeferred';
 import makeCancelable from './makeCancelable';
 import hotkeys from './hotkeys';
@@ -18,19 +17,17 @@ import isDicomUid from './isDicomUid';
 import formatDate from './formatDate';
 import formatPN from './formatPN';
 import resolveObjectPath from './resolveObjectPath';
-import * as hierarchicalListUtils from './hierarchicalListUtils';
-import * as progressTrackingUtils from './progressTrackingUtils';
+import hierarchicalListUtils from './hierarchicalListUtils';
+import progressTrackingUtils from './progressTrackingUtils';
 import isLowPriorityModality from './isLowPriorityModality';
 
 // Commented out unused functionality.
-// Now that we have the DicomMetadataStore, we no longer need the studyMetadataManager
 // Need to implement new mechanism for dervived displaySets using the displaySetManager.
 
 const utils = {
   guid,
   ObjectPath,
   absoluteUrl,
-  addServers,
   sortBy,
   sortBySeriesDate,
   writeScript,
@@ -38,7 +35,6 @@ const utils = {
   formatPN,
   b64toBlob,
   StackManager,
-  //studyMetadataManager,
   DicomLoaderService,
   urlUtil,
   //loadAndCacheDerivedDisplaySets,
@@ -57,7 +53,6 @@ export {
   guid,
   ObjectPath,
   absoluteUrl,
-  addServers,
   sortBy,
   formatDate,
   writeScript,
