@@ -12,6 +12,16 @@ const LoggerProvider = ({ children, service }) => {
     infos: [],
   });
 
+  useEffect(() => {
+    const onErrorHandler = ({ error: errorObject, message }) => {
+      error({ error: errorObject, message });
+    };
+    window.addEventListener('error', onErrorHandler);
+    return () => {
+      window.removeEventListener('error', onErrorHandler);
+    };
+  }, []);
+
   /**
    * Logs an error
    *
