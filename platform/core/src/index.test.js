@@ -14,6 +14,7 @@ describe('Top level exports', () => {
       'UIModalService',
       'UIDialogService',
       'MeasurementService',
+      'LoggerService',
       //
       'utils',
       'hotkeys',
