@@ -360,12 +360,15 @@ class OHIFVTKViewport extends Component {
     } catch (error) {
       const errorTitle = 'Failed to load 2D MPR';
       console.error(errorTitle, error);
-      const { UINotificationService } = this.props.servicesManager.services;
+      const {
+        UINotificationService,
+        LoggerService,
+      } = this.props.servicesManager.services;
       if (this.props.viewportIndex === 0) {
         const message = error.message.includes('buffer')
           ? 'Dataset is too big to display in MPR'
           : error.message;
-        console.error(errorTitle, error);
+        LoggerService.error({ error, message });
         UINotificationService.show({
           title: errorTitle,
           message,
@@ -428,11 +431,15 @@ class OHIFVTKViewport extends Component {
     };
 
     const onPixelDataInsertedErrorCallback = error => {
-      const { UINotificationService } = this.props.servicesManager.services;
+      const {
+        UINotificationService,
+        LoggerService,
+      } = this.props.servicesManager.services;
 
       if (!this.hasError) {
         if (this.props.viewportIndex === 0) {
           // Only show the notification from one viewport 1 in MPR2D.
+          LoggerService.error({ error, message: error.message });
           UINotificationService.show({
             title: 'MPR Load Error',
             message: error.message,
