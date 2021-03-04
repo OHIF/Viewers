@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.5.4...@ohif/extension-dicom-segmentation@0.6.0) (2021-03-04)
+
+
+### Features
+
+* **log:** add new log service ([14d6454](https://github.com/OHIF/Viewers/commit/14d6454eafaa2ccb50e133c2945c9558052ea27e))
+
+
+
+
+
+## [0.5.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.5.3...@ohif/extension-dicom-segmentation@0.5.4) (2021-03-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-segmentation
+
+
+
+
+
 ## [0.5.3](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.5.2...@ohif/extension-dicom-segmentation@0.5.3) (2021-02-25)
 
 **Note:** Version bump only for package @ohif/extension-dicom-segmentation

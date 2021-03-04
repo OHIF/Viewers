@@ -10,6 +10,7 @@ const DubugReportModal = ({
   extensionManager,
   mailTo,
   debugModalMessage,
+  errors = [],
 }) => {
   const copyDebugDataToClipboard = () => {
     const body = getEmailBody();
@@ -130,6 +131,19 @@ const DubugReportModal = ({
           {getCurrentStudyUrl()}
           {getLayout(viewports)}
         </table>
+      </div>
+      <div className="errors">
+        <h3>Errors ({errors.length})</h3>
+        <div className="errors-container">
+          {errors.map(error => {
+            return (
+              <div>
+                <pre>Message: {error.message}</pre>
+                {error.error && <pre>Stack: {error.error.stack}</pre>}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

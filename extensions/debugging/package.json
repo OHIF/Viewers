@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-debugging",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "OHIF extension for debugging.",
   "author": "OHIF",
   "license": "MIT",
