@@ -35,8 +35,7 @@ const vtkExtension = {
     return toolbarModule;
   },
   getCommandsModule({ commandsManager, servicesManager }) {
-    const { UINotificationService } = servicesManager.services;
-    return commandsModule({ commandsManager, UINotificationService });
+    return commandsModule({ commandsManager, servicesManager });
   },
 };
 

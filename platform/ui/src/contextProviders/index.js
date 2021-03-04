@@ -18,3 +18,8 @@ export {
   withDialog,
   useDialog,
 } from './DialogProvider.js';
+export {
+  default as LoggerProvider,
+  withLogger,
+  useLogger,
+} from './LoggerProvider.js';
