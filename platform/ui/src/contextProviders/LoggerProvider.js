@@ -60,7 +60,7 @@ const LoggerProvider = ({ children, service }) => {
   };
 
   /**
-   * Sets the implementation of a log service that can be used by extensions.
+   * Sets the implementation of a log service that can be used by extensions
    *
    * @returns void
    */
@@ -74,7 +74,7 @@ const LoggerProvider = ({ children, service }) => {
 };
 
 /**
- * Higher Order Component to use the log methods through a Class Component.
+ * Higher Order Component to use the log methods through a Class Component
  *
  * @returns
  */
