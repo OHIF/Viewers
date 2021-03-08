@@ -14,7 +14,9 @@ import OHIFVTKViewport from './OHIFVTKViewport';
 
 const { BlendMode } = Constants;
 
-const commandsModule = ({ commandsManager, UINotificationService }) => {
+const commandsModule = ({ commandsManager, servicesManager }) => {
+  const { UINotificationService, LoggerService } = servicesManager.services;
+
   // TODO: Put this somewhere else
   let apis = {};
   let defaultVOI;
@@ -175,7 +177,7 @@ const commandsModule = ({ commandsManager, UINotificationService }) => {
       segmentNumber,
       frameIndex,
       frame,
-      done = () => { },
+      done = () => {},
     }) => {
       let api = apis[viewports.activeViewportIndex];
 
@@ -473,10 +475,12 @@ const commandsModule = ({ commandsManager, UINotificationService }) => {
         const volumeLength = dimensions[0] * dimensions[1] * dimensions[2];
 
         if (volumeLength > maxBufferLengthFloat32) {
+          const message =
+            'This volume is too large to fit in WebGL 1 textures and will display incorrectly. Please use a different browser to view this data';
+          LoggerService.error({ message });
           UINotificationService.show({
             title: 'Browser does not support WebGL 2',
-            message:
-              'This volume is too large to fit in WebGL 1 textures and will display incorrectly. Please use a different browser to view this data',
+            message,
             type: 'error',
             autoClose: false,
           });

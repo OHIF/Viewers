@@ -70,12 +70,18 @@ class DicomMicroscopyViewport extends Component {
           });
         } catch (error) {
           console.error('[Microscopy Viewer] Failed to load:', error);
-          const { UINotificationService } = this.props.servicesManager.services;
+          const {
+            UINotificationService,
+            LoggerService,
+          } = this.props.servicesManager.services;
           if (UINotificationService) {
+            const message =
+              'Failed to load viewport. Please check that you have hardware acceleration enabled.';
+            LoggerService.error({ error, message });
             UINotificationService.show({
+              autoClose: false,
               title: 'Microscopy Viewport',
-              message:
-                'Failed to load viewport. Please check that you have hardware acceleration enabled.',
+              message,
               type: 'error',
             });
           }

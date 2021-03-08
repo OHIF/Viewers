@@ -25,12 +25,13 @@ export default {
     return toolbarModule;
   },
   getPanelModule({ commandsManager, api, servicesManager }) {
-    const { UINotificationService } = servicesManager.services;
+    const { UINotificationService, LoggerService } = servicesManager.services;
 
     const ExtendedSegmentationPanel = props => {
       const { activeContexts } = api.hooks.useAppContext();
 
       const onDisplaySetLoadFailureHandler = error => {
+        LoggerService.error({ error, message: error.message });
         UINotificationService.show({
           title: 'DICOM Segmentation Loader',
           message: error.message,

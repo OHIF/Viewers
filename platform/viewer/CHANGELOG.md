@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.8.12...@ohif/viewer@4.9.0) (2021-03-04)
+
+
+### Features
+
+* **log:** add new log service ([14d6454](https://github.com/OHIF/Viewers/commit/14d6454eafaa2ccb50e133c2945c9558052ea27e))
+
+
+
+
+
+## [4.8.12](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.8.11...@ohif/viewer@4.8.12) (2021-03-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.8.11](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.8.10...@ohif/viewer@4.8.11) (2021-02-25)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [4.8.10](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.8.9...@ohif/viewer@4.8.10) (2021-02-08)
 
 **Note:** Version bump only for package @ohif/viewer

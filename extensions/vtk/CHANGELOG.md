@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.11.0](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.10.6...@ohif/extension-vtk@1.11.0) (2021-03-04)
+
+
+### Features
+
+* **log:** add new log service ([14d6454](https://github.com/OHIF/Viewers/commit/14d6454eafaa2ccb50e133c2945c9558052ea27e))
+
+
+
+
+
+## [1.10.6](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.10.5...@ohif/extension-vtk@1.10.6) (2021-03-03)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
+## [1.10.5](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.10.4...@ohif/extension-vtk@1.10.5) (2021-02-25)
+
+**Note:** Version bump only for package @ohif/extension-vtk
+
+
+
+
+
 ## [1.10.4](https://github.com/OHIF/Viewers/compare/@ohif/extension-vtk@1.10.3...@ohif/extension-vtk@1.10.4) (2021-02-05)
 
 **Note:** Version bump only for package @ohif/extension-vtk
