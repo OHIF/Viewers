@@ -90,10 +90,11 @@ const _isDisplaySetReconstructable = (
       let yImagePositionPatient = instanceMetadata.ImagePositionPatient[1];
       let zImagePositionPatient = instanceMetadata.ImagePositionPatient[2];
 
+      // ImagePositionPatient is float
       if (
-        xImagePositionPatientControl === xImagePositionPatient &&
-        yImagePositionPatientControl === yImagePositionPatient &&
-        zImagePositionPatientControl === zImagePositionPatient
+        Math.abs( xImagePositionPatientControl - xImagePositionPatient ) < 1e-6 &&
+        Math.abs( yImagePositionPatientControl - yImagePositionPatient ) < 1e-6 &&
+        Math.abs( zImagePositionPatientControl - zImagePositionPatient ) < 1e-6
       ) {
         return false;
       }
