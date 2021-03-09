@@ -1,21 +1,18 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { ToolbarButton } from '@ohif/ui';
 import { utils } from '@ohif/core';
-
+import { createSelector } from 'reselect';
 const { studyMetadataManager } = utils;
 
-let isVisible = true;
-
-const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportIndex) => {
-  if (!viewportSpecificData[activeViewportIndex]) {
+const _isDisplaySetReconstructable = (
+  displaySetInstanceUID = '',
+  StudyInstanceUID = ''
+) => {
+  if (displaySetInstanceUID == '' || StudyInstanceUID == '') {
     return false;
-  };
-
-  const { displaySetInstanceUID, StudyInstanceUID } = viewportSpecificData[
-    activeViewportIndex
-  ];
+  }
 
   const studies = studyMetadataManager.all();
 
@@ -27,7 +24,9 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
     return false;
   }
 
-  const displaySet = study._displaySets.find(set => set.displaySetInstanceUID === displaySetInstanceUID);
+  const displaySet = study._displaySets.find(
+    set => set.displaySetInstanceUID === displaySetInstanceUID
+  );
 
   if (!displaySet) {
     return false;
@@ -45,33 +44,43 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
     const image = displaySet.images[ii];
     if (!image) continue;
 
-    const imageIdControl = image.getImageId()
-    const instanceMetadataControl = cornerstone.metaData.get('instance', imageIdControl)
+    const imageIdControl = image.getImageId();
+    const instanceMetadataControl = cornerstone.metaData.get(
+      'instance',
+      imageIdControl
+    );
 
-    if (!instanceMetadataControl ||
+    if (
+      !instanceMetadataControl ||
       instanceMetadataControl === undefined ||
       !instanceMetadataControl.ImagePositionPatient ||
-      instanceMetadataControl.ImagePositionPatient === undefined) {
+      instanceMetadataControl.ImagePositionPatient === undefined
+    ) {
       // if ImagePositionPatient is missing, skip the 4D datasets check.
       // do not return false, because it could be a 3D dataset.
       continue;
     }
 
-    let xImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[0];
-    let yImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[1];
-    let zImagePositionPatientControl = instanceMetadataControl.ImagePositionPatient[2];
+    let xImagePositionPatientControl =
+      instanceMetadataControl.ImagePositionPatient[0];
+    let yImagePositionPatientControl =
+      instanceMetadataControl.ImagePositionPatient[1];
+    let zImagePositionPatientControl =
+      instanceMetadataControl.ImagePositionPatient[2];
 
     for (let jj = ii + 1; jj < displaySet.numImageFrames; ++jj) {
       const image = displaySet.images[jj];
       if (!image) continue;
 
-      const imageId = image.getImageId()
-      const instanceMetadata = cornerstone.metaData.get('instance', imageId)
+      const imageId = image.getImageId();
+      const instanceMetadata = cornerstone.metaData.get('instance', imageId);
 
-      if (!instanceMetadata ||
+      if (
+        !instanceMetadata ||
         instanceMetadata === undefined ||
         !instanceMetadata.ImagePositionPatient ||
-        instanceMetadata.ImagePositionPatient === undefined) {
+        instanceMetadata.ImagePositionPatient === undefined
+      ) {
         // if ImagePositionPatient is missing, skip the 4D datasets check.
         // do not return false, because it could be a 3D dataset.
         continue;
@@ -81,9 +90,12 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
       let yImagePositionPatient = instanceMetadata.ImagePositionPatient[1];
       let zImagePositionPatient = instanceMetadata.ImagePositionPatient[2];
 
-      if (xImagePositionPatientControl === xImagePositionPatient &&
-        yImagePositionPatientControl === yImagePositionPatient &&
-        zImagePositionPatientControl === zImagePositionPatient) {
+      // ImagePositionPatient is float
+      if (
+        Math.abs( xImagePositionPatientControl - xImagePositionPatient ) < 1e-6 &&
+        Math.abs( yImagePositionPatientControl - yImagePositionPatient ) < 1e-6 &&
+        Math.abs( zImagePositionPatientControl - zImagePositionPatient ) < 1e-6
+      ) {
         return false;
       }
     }
@@ -92,29 +104,52 @@ const _isDisplaySetReconstructable = (viewportSpecificData = {}, activeViewportI
   return displaySet.isReconstructable;
 };
 
-function VTKMPRToolbarButton({
-  parentContext,
-  toolbarClickCallback,
-  button,
-  activeButtons,
-  isActive,
-  className,
-}) {
-  const { id, label, icon } = button;
-  const { viewportSpecificData, activeViewportIndex } = useSelector(state => {
-    const { viewports = {} } = state;
-    const { viewportSpecificData, activeViewportIndex } = viewports;
+const selectDisplaySetInstanceUID = state => {
+  if (
+    state.viewports.viewportSpecificData[state.viewports.activeViewportIndex]
+  ) {
+    return state.viewports.viewportSpecificData[
+      state.viewports.activeViewportIndex
+    ].displaySetInstanceUID;
+  } else {
+    return '';
+  }
+};
 
+const selectStudyInstanceUID = state => {
+  if (
+    state.viewports.viewportSpecificData[state.viewports.activeViewportIndex]
+  ) {
+    return state.viewports.viewportSpecificData[
+      state.viewports.activeViewportIndex
+    ].StudyInstanceUID;
+  } else {
+    return '';
+  }
+};
+
+const stateSelector = createSelector(
+  [selectDisplaySetInstanceUID, selectStudyInstanceUID],
+  (displaySetInstanceUID, StudyInstanceUID) => {
     return {
-      viewportSpecificData,
-      activeViewportIndex,
-    }
-  });
+      displaySetInstanceUID,
+      StudyInstanceUID,
+    };
+  }
+);
 
-  isVisible = _isDisplaySetReconstructable(
-    viewportSpecificData,
-    activeViewportIndex,
+function VTKMPRToolbarButton({ toolbarClickCallback, button, isActive }) {
+  const { id, label, icon } = button;
+  const { displaySetInstanceUID, StudyInstanceUID } = useSelector(
+    stateSelector
   );
+
+  const isVisible = useMemo(() => {
+    return _isDisplaySetReconstructable(
+      displaySetInstanceUID,
+      StudyInstanceUID
+    );
+  }, [displaySetInstanceUID, StudyInstanceUID]);
 
   return (
     <React.Fragment>
