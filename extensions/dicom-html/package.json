@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-html",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "OHIF extension for rendering structured reports to HTML",
   "author": "OHIF",
   "license": "MIT",
