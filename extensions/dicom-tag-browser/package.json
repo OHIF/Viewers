@@ -28,7 +28,7 @@
   },
   "peerDependencies": {
     "@ohif/core": "^2.6.0",
-    "dcmjs": "0.18.2",
+    "dcmjs": "0.18.3",
     "react": "^16.8.6"
   },
   "dependencies": {
