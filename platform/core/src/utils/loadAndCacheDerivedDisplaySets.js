@@ -112,6 +112,16 @@ const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
     promises.push(recentDisplaySet.load(referencedDisplaySet, studies));
   });
 
+  Promise.all(promises).then(() => {
+    /*
+     * TODO: Improve the way we notify parts of the app
+     * that depends on derived display sets to be loaded.
+     * (Implement pubsub for better tracking of derived display sets)
+     */
+    const event = new CustomEvent('deriveddisplaysetsloadedandcached');
+    document.dispatchEvent(event);
+  });
+
   return promises;
 };
 

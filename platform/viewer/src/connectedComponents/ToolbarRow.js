@@ -59,6 +59,9 @@ class ToolbarRow extends Component {
     this.seriesPerStudyCount = [];
 
     this._handleBuiltIn = _handleBuiltIn.bind(this);
+    this._onDerivedDisplaySetsLoadedAndCached = this._onDerivedDisplaySetsLoadedAndCached.bind(
+      this
+    );
 
     this.updateButtonGroups();
   }
@@ -106,6 +109,32 @@ class ToolbarRow extends Component {
       value: 'studies',
       icon: 'th-large',
       bottomLabel: this.props.t('Series'),
+    });
+  }
+
+  componentDidMount() {
+    /*
+     * TODO: Improve the way we notify parts of the app
+     * that depends on derived display sets to be loaded.
+     * (Implement pubsub for better tracking of derived display sets)
+     */
+    document.addEventListener(
+      'deriveddisplaysetsloadedandcached',
+      this._onDerivedDisplaySetsLoadedAndCached
+    );
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener(
+      'deriveddisplaysetsloadedandcached',
+      this._onDerivedDisplaySetsLoadedAndCached
+    );
+  }
+
+  _onDerivedDisplaySetsLoadedAndCached() {
+    this.updateButtonGroups();
+    this.setState({
+      toolbarButtons: _getVisibleToolbarButtons.call(this),
     });
   }
 
