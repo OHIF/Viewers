@@ -28,6 +28,7 @@ function StudyBrowser(props) {
                 SeriesDescription,
                 SeriesNumber,
                 stackPercentComplete,
+                hasWarnings,
               } = thumb;
 
               return (
@@ -50,6 +51,7 @@ function StudyBrowser(props) {
                     numImageFrames={numImageFrames}
                     SeriesDescription={SeriesDescription}
                     SeriesNumber={SeriesNumber}
+                    hasWarnings={hasWarnings}
                     stackPercentComplete={stackPercentComplete}
                     // Events
                     onClick={onThumbnailClick.bind(

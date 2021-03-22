@@ -767,6 +767,16 @@ const isMultiFrame = instance => {
   return instance.getTagValue('NumberOfFrames') > 1;
 };
 
+/**
+ * Creates a display set for a series.
+ * Checks if a series is reconstructable to a 3D volume.
+ * If reconstructable, the frames are sorted.
+ *
+ * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
+ * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
+ *
+ * @returns {Object} imageSet.
+ */
 const makeDisplaySet = (series, instances) => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
@@ -805,7 +815,6 @@ const makeDisplaySet = (series, instances) => {
   );
 
   const isReconstructable = isDisplaySetReconstructable(instances);
-
   imageSet.isReconstructable = isReconstructable.value;
 
   if (shallSort && imageSet.isReconstructable) {
@@ -816,6 +825,11 @@ const makeDisplaySet = (series, instances) => {
     // TODO -> This is currently unused, but may be used for reconstructing
     // Volumes with gaps later on.
     imageSet.missingFrames = isReconstructable.missingFrames;
+  }
+
+  if (!imageSet.isReconstructable) {
+    // It is not reconstrabale Save type of warning
+    imageSet.warningIssues = isReconstructable.warningIssues;
   }
 
   return imageSet;
