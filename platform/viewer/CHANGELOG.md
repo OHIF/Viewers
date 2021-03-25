@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.5](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.4...@ohif/viewer@4.9.5) (2021-03-25)
+
+
+### Bug Fixes
+
+* IDC-2288: Update toolbar tabs after derived displayset loaded ([#2307](https://github.com/OHIF/Viewers/issues/2307)) ([6e723eb](https://github.com/OHIF/Viewers/commit/6e723ebced58852007ca553792c740976cfc4201))
+
+
+
+
+
+## [4.9.4](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.3...@ohif/viewer@4.9.4) (2021-03-19)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.3](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.2...@ohif/viewer@4.9.3) (2021-03-15)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
 ## [4.9.2](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.1...@ohif/viewer@4.9.2) (2021-03-09)
 
 **Note:** Version bump only for package @ohif/viewer

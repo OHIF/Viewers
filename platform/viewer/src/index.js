@@ -41,7 +41,6 @@ let config = {};
 
 if (window) {
   config = window.config || {};
-
   window.version = version;
 }
 
