@@ -49,9 +49,7 @@ import studyMetadataManager from './studyMetadataManager';
  */
 const loadAndCacheDerivedDisplaySets = (referencedDisplaySet, studies) => {
   const { StudyInstanceUID, SeriesInstanceUID } = referencedDisplaySet;
-
   const promises = [];
-
   const studyMetadata = studyMetadataManager.get(StudyInstanceUID);
 
   if (!studyMetadata) {
