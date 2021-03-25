@@ -271,6 +271,7 @@ class Viewer extends Component {
             activeViewport={
               this.props.viewports[this.props.activeViewportIndex]
             }
+            isDerivedDisplaySetsLoaded={this.props.isDerivedDisplaySetsLoaded}
             isLeftSidePanelOpen={this.state.isLeftSidePanelOpen}
             isRightSidePanelOpen={this.state.isRightSidePanelOpen}
             selectedLeftSidePanel={
