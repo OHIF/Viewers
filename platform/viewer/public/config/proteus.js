@@ -18,8 +18,25 @@ window.config = {
       },
     ],
   },
-  // Extensions should be able to suggest default values for these?
-  // Or we can require that these be explicitly set
+  whiteLabeling: {
+    /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
+    createLogoComponentFn: function(React) {
+      return React.createElement('a', {
+        target: '_self',
+        rel: 'noopener noreferrer',
+        className: 'header-brand',
+        href: '/',
+        style: {
+          display: 'block',
+          textIndent: '-9999px',
+          background: 'url(/svg-file-hosted-at-domain-root.svg)',
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          width: '200px',
+        },
+      });
+    },
+  },
   hotkeys: [
     // ~ Global
     {

@@ -22,6 +22,7 @@
     "dev:lt": "lerna run dev:viewer:lesion-tracker --stream",
     "dev:project": ".scripts/dev.sh",
     "dev:orthanc": "lerna run dev:orthanc --stream",
+    "dev:proteus": "lerna run dev:proteus --stream",
     "orthanc:up": "docker-compose -f .docker/Nginx-Orthanc/docker-compose.yml up",
     "start": "yarn run dev",
     "test": "yarn run test:unit",

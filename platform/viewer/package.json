@@ -15,7 +15,7 @@
     "npm": ">=6",
     "yarn": ">=1.16.0"
   },
-  "proxy": "http://localhost:8042",
+  "proxy": "http://localhost:8080",
   "scripts": {
     "build:package": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.commonjs.js --progress",
     "build:viewer": "cross-env NODE_ENV=production node --max_old_space_size=4096 ./../../node_modules/webpack/bin/webpack.js --config .webpack/webpack.pwa.js --progress",
@@ -25,6 +25,7 @@
     "build:viewer:package": "yarn run build:package",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --config .webpack/webpack.pwa.js --watch",
     "dev:orthanc": "cross-env NODE_ENV=development PROXY_TARGET=/dicom-web PROXY_DOMAIN=http://localhost:8042 APP_CONFIG=config/docker_nginx-orthanc.js webpack-dev-server --config .webpack/webpack.pwa.js --watch",
+    "dev:proteus": "cross-env NODE_ENV=development PROXY_TARGET=/api PROXY_DOMAIN=http://localhost:8080 APP_CONFIG=config/proteus.js webpack-dev-server --config .webpack/webpack.pwa.js --watch",
     "dev:viewer": "yarn run dev",
     "dev:viewer:lesion-tracker": "cross-env ENTRY_TARGET=index-lesion-tracker.js NODE_ENV=development webpack-dev-server --config .webpack/webpack.pwa.js --watch",
     "start": "yarn run dev",
