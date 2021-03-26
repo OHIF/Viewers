@@ -1,3 +1,6 @@
+import { ReconstructionIssues } from './../enums.js';
+
+
 /**
  * Checks if a series is reconstructable to a 3D volume.
  *
@@ -31,12 +34,26 @@ export default function isDisplaySetReconstructable(instances) {
   }
 }
 
+/**
+ * Process reconstructable multiframes checks
+ * TODO: deal with multriframe checks! return false for now as can't reconstruct.
+ *
+ * @param {Object} instanceof `OHIFInstanceMetadata` objects. Currently not used.
+ *
+ * @returns {Object} reconstructable value and warningIssues.
+ */
 function processMultiframe(instance) {
-  //TODO: deal with multriframe checks! return false for now as can't reconstruct.
-  const warningIssues = [reconstructionIssues.MULTIFRAMES];
+  const warningIssues = [ReconstructionIssues.MULTIFRAMES];
   return { value: false, warningIssues };
 }
 
+/**
+ * Process reconstructable single frame checks
+ *
+ * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
+ *
+ * @returns {Object} reconstructable value, missingFrames and warningIssues.
+ */
 function processSingleframe(instances) {
   const n = instances.length;
   const firstImage = instances[0].getData().metadata;
@@ -61,11 +78,11 @@ function processSingleframe(instances) {
     } = instance;
 
     if (Rows !== firstImageRows || Columns !== firstImageColumns) {
-      warningIssues.push(reconstructionIssues.VARYING_IMAGESDIMENSIONS);
+      warningIssues.push(ReconstructionIssues.VARYING_IMAGESDIMENSIONS);
     } else if (SamplesPerPixel !== firstImageSamplesPerPixel) {
-      warningIssues.push(reconstructionIssues.VARYING_IMAGESCOMPONENTS);
+      warningIssues.push(ReconstructionIssues.VARYING_IMAGESCOMPONENTS);
     } else if (!_isSameArray(ImageOrientationPatient, firstImageOrientationPatient)) {
-      warningIssues.push(reconstructionIssues.VARYING_IMAGESORIENTATION);
+      warningIssues.push(ReconstructionIssues.VARYING_IMAGESORIENTATION);
     }
 
     if (warningIssues.length !== 0) {
@@ -106,9 +123,9 @@ function processSingleframe(instances) {
         if (spacingIssue) {
           const issue = spacingIssue.issue;
 
-          if (issue === reconstructionIssues.MISSING_FRAMES) {
+          if (issue === ReconstructionIssues.MISSING_FRAMES) {
             missingFrames += spacingIssue.missingFrames;
-          } else if (issue === reconstructionIssues.IRREGULAR_SPACING) {
+          } else if (issue === ReconstructionIssues.IRREGULAR_SPACING) {
             warningIssues.push(issue);
             break;
           }
@@ -119,15 +136,29 @@ function processSingleframe(instances) {
     }
   }
 
-  /*  Check if 4D dataset.
-   *
-   *  Assuming that slices at different time have the same position, here we just check if
-   *  there are multiple slices for the same ImagePositionPatient and disable MPR.
-   *
-   *  A better heuristic would be checking 4D tags, e.g. the presence of multiple TemporalPositionIdentifier values.
-   *  However, some studies (e.g. https://github.com/OHIF/Viewers/issues/2113) do not have such tags.
-   */
+  // check if dataset is 4D
+  if (_isDataset4D(instances)) {
+    warningIssues.push(ReconstructionIssues.DATASET_4D);
+  }
 
+  return { value: warningIssues.length === 0 ? true : false, missingFrames, warningIssues };
+}
+
+/**
+ *  Check if 4D dataset.
+ *
+ *  Assuming that slices at different time have the same position, here we just check if
+ *  there are multiple slices for the same ImagePositionPatient and disable MPR.
+ *
+ *  A better heuristic would be checking 4D tags, e.g. the presence of multiple TemporalPositionIdentifier values.
+ *  However, some studies (e.g. https://github.com/OHIF/Viewers/issues/2113) do not have such tags.
+ *
+ * @param {Object[]} instances An array of `OHIFInstanceMetadata` objects.
+ *
+ * @returns {boolean} reconstructable value.
+ */
+ function _isDataset4D(instances) {
+  const n = instances.length;
   for (let ii = 0; ii < n; ++ii) {
     const instanceMetadataControl = instances[ii].getData().metadata;
     if (
@@ -138,8 +169,6 @@ function processSingleframe(instances) {
     ) {
       continue;
     }
-    const endCheck = false;
-
     for (let jj = ii + 1; jj < n; ++jj) {
       const instanceMetadata = instances[jj].getData().metadata;
       if (
@@ -152,18 +181,12 @@ function processSingleframe(instances) {
       }
 
       if (_isSameArray(instanceMetadataControl.ImagePositionPatient, instanceMetadata.ImagePositionPatient)) {
-        warningIssues.push(reconstructionIssues.DATASET_4D);
-        endCheck = true;
-        break;
+        return true;
       }
-    }
-
-    if (endCheck) {
-      break;
     }
   }
 
-  return { value: warningIssues.length === 0 ? true : false, missingFrames, warningIssues };
+  return false;
 }
 
 function _isSameArray(iop1, iop2) {
@@ -207,12 +230,12 @@ function _getSpacingIssue(spacing, averageSpacing) {
 
   if (errorForEachSpacing < spacingTolerance * averageSpacing) {
     return {
-      issue: reconstructionIssues.MISSING_FRAMES,
+      issue: ReconstructionIssues.MISSING_FRAMES,
       missingFrames: numberOfSpacings - 1,
     };
   }
 
-  return { issue: reconstructionIssues.IRREGULAR_SPACING };
+  return { issue: ReconstructionIssues.IRREGULAR_SPACING };
 }
 
 function _getPerpendicularDistance(a, b) {
@@ -224,12 +247,3 @@ function _getPerpendicularDistance(a, b) {
 }
 
 const constructableModalities = ['MR', 'CT', 'PT', 'NM'];
-export const reconstructionIssues = {
-  DATASET_4D: 'datasetis4D',
-  VARYING_IMAGESDIMENSIONS: 'imagesdimensionsvarying',
-  VARYING_IMAGESCOMPONENTS: 'imagescomponentsvarying',
-  VARYING_IMAGESORIENTATION: 'imagesorientationvarying',
-  MISSING_FRAMES: 'missingframes',
-  IRREGULAR_SPACING: 'irregularspacing',
-  MULTIFFRAMES: 'multiframe',
-};

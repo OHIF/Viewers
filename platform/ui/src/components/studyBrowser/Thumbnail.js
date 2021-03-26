@@ -190,7 +190,7 @@ Thumbnail.propTypes = {
   stackPercentComplete: PropTypes.number,
   /**
   altImageText will be used when no imageId or imageSrc is provided.
-It will be displayed inside the <div>. This is useful when it is difficult
+  It will be displayed inside the <div>. This is useful when it is difficult
   to make a preview for a type of DICOM series (e.g. DICOM-SR)
   */
   altImageText: PropTypes.string,

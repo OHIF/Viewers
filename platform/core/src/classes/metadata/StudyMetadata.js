@@ -814,22 +814,22 @@ const makeDisplaySet = (series, instances) => {
     imageSet.getImage(0).getTagValue('InstanceNumber')
   );
 
-  const isReconstructable = isDisplaySetReconstructable(instances);
-  imageSet.isReconstructable = isReconstructable.value;
+  const displayReconstructableInfo = isDisplaySetReconstructable(instances);
+  imageSet.isReconstructable = displayReconstructableInfo.value;
 
   if (shallSort && imageSet.isReconstructable) {
     imageSet.sortByImagePositionPatient();
   }
 
-  if (isReconstructable.missingFrames) {
+  if (displayReconstructableInfo.missingFrames) {
     // TODO -> This is currently unused, but may be used for reconstructing
     // Volumes with gaps later on.
-    imageSet.missingFrames = isReconstructable.missingFrames;
+    imageSet.missingFrames = displayReconstructableInfo.missingFrames;
   }
 
-  if (!imageSet.isReconstructable) {
+  if (!imageSet.displayReconstructableInfo) {
     // It is not reconstrabale Save type of warning
-    imageSet.warningIssues = isReconstructable.warningIssues;
+    imageSet.warningIssues = displayReconstructableInfo.warningIssues;
   }
 
   return imageSet;

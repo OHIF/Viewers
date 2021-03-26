@@ -12,7 +12,7 @@ import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
-import { reconstructionIssues } from './../../../core/src/utils/isDisplaySetReconstructable.js';
+import { ReconstructionIssues } from './../../../core/src/enums.js';
 
 // Contexts
 import WhiteLabelingContext from '../context/WhiteLabelingContext.js';
@@ -389,22 +389,22 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet) {
   if (displaySet.warningIssues && displaySet.warningIssues.length !== 0) {
     displaySet.warningIssues.forEach(warning => {
       switch (warning) {
-        case reconstructionIssues.DATASET_4D:
+        case ReconstructionIssues.DATASET_4D:
           warningsList.push("The dataset is 4D.");
           break;
-        case reconstructionIssues.VARYING_IMAGESDIMENSIONS:
+        case ReconstructionIssues.VARYING_IMAGESDIMENSIONS:
           warningsList.push("The dataset frames have different dimensions (rows, columns).");
           break;
-        case reconstructionIssues.VARYING_IMAGESCOMPONENTS:
+        case ReconstructionIssues.VARYING_IMAGESCOMPONENTS:
           warningsList.push("The dataset frames have different components (Sample per pixel).");
           break;
-        case reconstructionIssues.VARYING_IMAGESORIENTATION:
+        case ReconstructionIssues.VARYING_IMAGESORIENTATION:
           warningsList.push("The dataset frames have different orientation.");
           break;
-        case reconstructionIssues.IRREGULAR_SPACING:
+        case ReconstructionIssues.IRREGULAR_SPACING:
           warningsList.push("The dataset frames have different pixel spacing.");
           break;
-        case reconstructionIssues.MULTIFFRAMES:
+        case ReconstructionIssues.MULTIFFRAMES:
           warningsList.push("The dataset is a multiframes.");
           break;
         default:
@@ -416,7 +416,7 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet) {
 
   if (displaySet.missingFrames &&
     (!displaySet.warningIssues ||
-      (displaySet.warningIssues && !displaySet.warningIssues.find(warn => warn === reconstructionIssues.DATASET_4D)))) {
+      (displaySet.warningIssues && !displaySet.warningIssues.find(warn => warn === ReconstructionIssues.DATASET_4D)))) {
     warningsList.push('The datasets is missing frames: ' + displaySet.missingFrames + '.');
   }
 
