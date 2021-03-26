@@ -179,7 +179,7 @@ class OHIFCornerstoneViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-      prevDisplaySet.displaySetInstanceUID ||
+        prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
@@ -235,8 +235,8 @@ class OHIFCornerstoneViewport extends Component {
           viewportIndex={viewportIndex}
           imageIds={imageIds}
           imageIdIndex={currentImageIdIndex}
-          onNewImage={newImageHandler}
-          onNewImageDebounceTime={700}
+          onNewImageDebounced={newImageHandler}
+          onNewImageDebounceTime={300}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}
