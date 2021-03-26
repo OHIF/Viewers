@@ -38,7 +38,14 @@ export default {
   },
   getViewportModule({ commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
+      /**
+       * TODO: This appears to be used to set the redux parameters for
+       * the viewport when new images are loaded. It's very ugly
+       * and we should remove it.
+       */
       const onNewImageHandler = jumpData => {
+        /** Do not trigger all viewports to render unnecessarily */
+        jumpData.refreshViewports = false;
         commandsManager.runCommand('jumpToImage', jumpData);
       };
       return (
