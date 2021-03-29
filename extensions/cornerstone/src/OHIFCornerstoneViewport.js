@@ -179,7 +179,7 @@ class OHIFCornerstoneViewport extends Component {
 
     if (
       displaySet.displaySetInstanceUID !==
-        prevDisplaySet.displaySetInstanceUID ||
+      prevDisplaySet.displaySetInstanceUID ||
       displaySet.SOPInstanceUID !== prevDisplaySet.SOPInstanceUID ||
       displaySet.frameIndex !== prevDisplaySet.frameIndex
     ) {
@@ -219,7 +219,7 @@ class OHIFCornerstoneViewport extends Component {
       const { displaySet } = this.props.viewportData;
       const { StudyInstanceUID } = displaySet;
 
-      if (currentImageIdIndex > 0) {
+      if (currentImageIdIndex >= 0) {
         this.props.onNewImage({
           StudyInstanceUID,
           SOPInstanceUID: sopInstanceUid,
