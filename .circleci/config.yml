@@ -106,6 +106,8 @@ jobs:
       - run:
           name: Build Viewer
           command: |
+            # Send output while viewer is building....
+            /bin/bash ./idc-deploy-shell/pingJob.sh &
             /bin/bash ./idc-deploy-shell/buildViewer.sh
 
       - save_cache:
