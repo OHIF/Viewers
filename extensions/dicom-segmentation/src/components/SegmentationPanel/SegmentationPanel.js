@@ -289,7 +289,7 @@ const SegmentationPanel = ({
       /* Map to display representation */
       const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
       const date = moment(dateStr, 'YYYYMMDD:HHmmss');
-      const displayDate = date.format('ddd, MMM Do YYYY');
+      const displayDate = date.format('ddd, MMM Do YYYY, h:mm:ss a');
       const displayDescription = displaySet.SeriesDescription;
 
       return {
@@ -709,7 +709,7 @@ const _getReferencedSegDisplaysets = (StudyInstanceUID, SeriesInstanceUID) => {
   referencedDisplaysets.sort((a, b) => {
     const aNumber = Number(`${a.SeriesDate}${a.SeriesTime}`);
     const bNumber = Number(`${b.SeriesDate}${b.SeriesTime}`);
-    return aNumber - bNumber;
+    return bNumber - aNumber;
   });
 
   return referencedDisplaysets;
