@@ -107,8 +107,10 @@ jobs:
           name: Build Viewer
           command: |
             # Send output while viewer is building....
-            /bin/bash ./idc-deploy-shell/pingJob.sh &
+            chmod u+x ./idc-deploy-shell/pingJob.sh ./idc-deploy-shell/killPing.sh
+            ./idc-deploy-shell/pingJob.sh &
             /bin/bash ./idc-deploy-shell/buildViewer.sh
+            ./idc-deploy-shell/killPing.sh
 
       - save_cache:
           key: idc-viewer-{{ epoch }}
