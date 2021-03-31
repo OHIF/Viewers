@@ -74,9 +74,11 @@ commands:
           name: 'Install CloudSDK'
           command: |
             echo "export CLOUDSDK_CORE_DISABLE_PROMPTS=1" >> $BASH_ENV
+            sudo apt-get install ca-certificates
             echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
             curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-            sudo apt-get update && sudo apt-get -y --allow-downgrades install google-cloud-sdk=251.0.0-0
+            sudo apt-get update -qq
+            sudo apt-get -y install google-cloud-sdk
 
 jobs:
   build_job:
