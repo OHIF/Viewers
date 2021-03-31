@@ -12,6 +12,7 @@ import ConnectedViewerMain from './ConnectedViewerMain.js';
 import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
+import { ReconstructionIssues } from './../../../core/src/enums.js';
 
 // Contexts
 import WhiteLabelingContext from '../context/WhiteLabelingContext.js';
@@ -368,6 +369,62 @@ class Viewer extends Component {
 export default withDialog(Viewer);
 
 /**
+ * Async function to check if there are any inconsistences in the series
+ * (i.e. reconstructable to a 3D volume). If not reconstructable MPR is disabled.
+ * The actual computations are done in isDisplaySetReconstructable.
+ *
+ * 1) Is series multiframe?
+ * 2) Do the frames have different dimensions/numer of components/orientations?
+ * 3) Has the series any missing frames or irregular spacing?
+ * 4) Is the series 4D?
+ *
+ * @param {*object} displaySet
+ * @returns {[string]} an array of strings containing the warnings
+ */
+const _checkForSeriesInconsistencesWarnings = async function (displaySet) {
+  // NOTE: at the moment this function is async even if it does not perfom any heavy calculation.
+  //       We may add or move here some of the computations
+  //       done when creating the displaySet (see makeDisplaySet and isDisplaySetReconstructable).
+  //       the thumbnail footnotes warning react element is already set up to handle a promise.
+  const warningsList = [];
+  if (displaySet.warningIssues && displaySet.warningIssues.length !== 0) {
+    displaySet.warningIssues.forEach(warning => {
+      switch (warning) {
+        case ReconstructionIssues.DATASET_4D:
+          warningsList.push("The dataset is 4D.");
+          break;
+        case ReconstructionIssues.VARYING_IMAGESDIMENSIONS:
+          warningsList.push("The dataset frames have different dimensions (rows, columns).");
+          break;
+        case ReconstructionIssues.VARYING_IMAGESCOMPONENTS:
+          warningsList.push("The dataset frames have different components (Sample per pixel).");
+          break;
+        case ReconstructionIssues.VARYING_IMAGESORIENTATION:
+          warningsList.push("The dataset frames have different orientation.");
+          break;
+        case ReconstructionIssues.IRREGULAR_SPACING:
+          warningsList.push("The dataset frames have different pixel spacing.");
+          break;
+        case ReconstructionIssues.MULTIFFRAMES:
+          warningsList.push("The dataset is a multiframes.");
+          break;
+        default:
+          break;
+      }
+    });
+      warningsList.push('The datasets is not a reconstructable 3D volume. MPR mode is not available.');
+  }
+
+  if (displaySet.missingFrames &&
+    (!displaySet.warningIssues ||
+      (displaySet.warningIssues && !displaySet.warningIssues.find(warn => warn === ReconstructionIssues.DATASET_4D)))) {
+    warningsList.push('The datasets is missing frames: ' + displaySet.missingFrames + '.');
+  }
+
+  return warningsList
+}
+
+/**
  * What types are these? Why do we have "mapping" dropped in here instead of in
  * a mapping layer?
  *
@@ -406,6 +463,8 @@ const _mapStudiesToThumbnails = function(studies) {
         altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }
 
+      const hasWarnings = _checkForSeriesInconsistencesWarnings(displaySet)
+
       return {
         imageId,
         altImageText,
@@ -414,6 +473,7 @@ const _mapStudiesToThumbnails = function(studies) {
         InstanceNumber,
         numImageFrames,
         SeriesNumber,
+        hasWarnings,
       };
     });
 
