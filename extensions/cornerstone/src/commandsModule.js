@@ -3,9 +3,11 @@ import cornerstoneTools from 'cornerstone-tools';
 import OHIF from '@ohif/core';
 
 import setCornerstoneLayout from './utils/setCornerstoneLayout.js';
-import { getEnabledElement } from './state';
+import { getEnabledElement, setEnabledElement } from './state';
 import CornerstoneViewportDownloadForm from './CornerstoneViewportDownloadForm';
 const scroll = cornerstoneTools.import('util/scroll');
+
+import proteusPrint from './print';
 
 const { studyMetadataManager } = OHIF.utils;
 const { setViewportSpecificData } = OHIF.redux.actions;
@@ -286,7 +288,7 @@ const commandsModule = ({ servicesManager }) => {
       );
 
       refreshCornerstoneViewports();
-    },
+    }
   };
 
   const definitions = {
@@ -399,6 +401,12 @@ const commandsModule = ({ servicesManager }) => {
     },
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
+      storeContexts: ['viewports'],
+      options: {},
+    },
+    // EXTRA PROTEUS
+    print: {
+      commandFn: proteusPrint,
       storeContexts: ['viewports'],
       options: {},
     },

@@ -237,6 +237,14 @@ const definitions = [
     commandName: 'setCornerstoneLayout',
     context: 'ACTIVE_VIEWPORT::VTK',
   },
+  {
+    id: 'Print',
+    label: 'Print',
+    icon: 'print',
+    //
+    type: TOOLBAR_BUTTON_TYPES.COMMAND,
+    commandName: 'print',
+  },
 ];
 
 export default {
