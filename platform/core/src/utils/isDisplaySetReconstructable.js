@@ -90,6 +90,12 @@ function processSingleframe(instances) {
     }
   }
 
+  // check if dataset is 4D
+  const datasetIs4D = _isDataset4D(instances);
+  if (datasetIs4D) {
+    warningIssues.push(ReconstructionIssues.DATASET_4D);
+  }
+
   let missingFrames = 0;
 
   // Check if frame spacing is approximately equal within a spacingTolerance.
@@ -115,6 +121,14 @@ function processSingleframe(instances) {
           ImagePositionPatient,
           previousImagePositionPatient
         );
+
+        if (datasetIs4D && spacingBetweenFrames < 1.e-3) {
+          // the dataset is 4D, if the distance is zero, means that we are
+          // checking the 4th dimension. Do not return, since we want still to
+          // check the 3rd dimension spacing.
+          continue;
+        }
+
         const spacingIssue = _getSpacingIssue(
           spacingBetweenFrames,
           averageSpacingBetweenFrames
@@ -136,10 +150,7 @@ function processSingleframe(instances) {
     }
   }
 
-  // check if dataset is 4D
-  if (_isDataset4D(instances)) {
-    warningIssues.push(ReconstructionIssues.DATASET_4D);
-  }
+
 
   return { value: warningIssues.length === 0 ? true : false, missingFrames, warningIssues };
 }
