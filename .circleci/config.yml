@@ -1,5 +1,5 @@
 version: 2.1
-# Force
+# Force for config
 commands:
   deployment_setup:
     steps:
