@@ -19,6 +19,17 @@ Meteor.startup(function () {
             encodeURIComponent(username) + ':' +
             encodeURIComponent(password) + '@' +
             encodeURIComponent(server) + ':' + port;
+    } else if (process.env.MAIL_URL !== undefined) {
+        const regExp = /^smtp:\/\/(.+):(.+)@(\b((?:[a-z0-9]+(-[a-z0-9]+)*\.)+)[a-z]{2,}\b):(\d+)$/i;
+
+        if (regExp.test(process.env.MAIL_URL)) {
+            var matches = process.env.MAIL_URL.match(regExp);
+            username = decodeURIComponent(matches[1]);
+            password = decodeURIComponent(matches[2]);
+            server = decodeURIComponent(matches[3]);
+            port = matches[6];
+            Accounts.emailTemplates.from = siteName + ' Admin <' + username + '>';
+        }
     }
 
     Accounts.emailTemplates.siteName = siteName;

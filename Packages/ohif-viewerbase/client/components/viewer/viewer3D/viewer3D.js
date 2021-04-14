@@ -33,18 +33,32 @@ const ami_gui = stackHelper => {
         autoPlace: false,
     });
     const customContainer = document.getElementById('my-gui-container');
+
+    while (customContainer.hasChildNodes()) {
+        customContainer.removeChild(customContainer.firstChild);
+    }
     customContainer.appendChild(gui.domElement);
 
     // material
     const materialfolder = gui.addFolder('Material');
 
-    const transparency = materialfolder
+    materialfolder
         .add(material, 'transparent')
         .listen();
 
-    const opacity = materialfolder
+    materialfolder
         .add(material, 'opacity', 0.0, 1.0, 0.1)
         .listen();
+
+    const colorController = materialfolder
+        .addColor(effectController, 'color');
+
+    colorController.onChange(function (value) {
+        if (SELECTED_OBJECT) {
+            SELECTED_OBJECT.material.color.setStyle('#' + value.toString(16));
+            SELECTED_OBJECT.effectController.color = SELECTED_OBJECT.material.color.getHex();
+        }
+    }).listen();
 
     materialfolder.open();
 
@@ -1894,11 +1908,19 @@ function fetch(url, requests) {
 }
 
 function renderSerieHandler(event) {
+    const element = event.data.template.find('.imageViewerViewport3D');
+    event.data.template.element = element;
+    event.data.template.$element = $(element);
+
+    event.data.template.$element.siblings('.viewportInstructions').hide();
+    // Display the loading indicator for this element
+    event.data.template.$element.siblings('.imageViewerLoadingIndicator').css('display', 'block');
+
     OHIF.log.time("renderSerieHandler");
     const viewportIndex = Session.get('activeViewport') || 0;
     let activeElement = getElementIfNotEmpty(viewportIndex)
-    let element = OHIF.viewerbase.viewportUtils.getEnabledElement(activeElement);
-    let e = {imageId: element.image.imageId};
+    let enabledElement = OHIF.viewerbase.viewportUtils.getEnabledElement(activeElement);
+    let e = {imageId: enabledElement.image.imageId};
     let serieInstanceUid = viewportOverlayUtils.getSeries.call(e, 'seriesInstanceUid');
     let studyInstanceUid = viewportOverlayUtils.getStudy.call(e, 'studyInstanceUid');
     let pipelineId = PipelineSelector.selectedId;
@@ -1977,11 +1999,15 @@ function renderSerieHandler(event) {
                 camera.updateProjectionMatrix();
                 controls.target.set(centerLPS.x, centerLPS.y, centerLPS.z);
                 OHIF.log.timeEnd("RenderSerieCall")
+                event.data.template.$element.siblings('.imageViewerLoadingIndicator').css('display', 'none');
+                event.data.template.$element.addClass("full");
             })
             .catch(function (error) {
                 window.console.log('oops... something went wrong...');
                 window.console.log(error);
                 OHIF.log.timeEnd("RenderSerieCall")
+                event.data.template.$element.siblings('.imageViewerLoadingIndicator').css('display', 'none');
+                event.data.template.$element.siblings('.viewportInstructions').show();
             });
     });
     OHIF.log.timeEnd("renderSerieHandler");
@@ -2024,9 +2050,9 @@ Template.viewer3D.onRendered(function () {
 });
 
 Template.viewer3D.onCreated(function () {
-    let toolbar = $('div.toolbarSection > div.clearfix > div.toolbarSectionTools').get(0);
+    let toolbar = $('div.toolbarSection > div.clearfix > div.pull-right > div.toolbarSectionTools').get(0);
     var _div = $('<div class="button3DContainer"><div class="svgContainer"><i class="fa fa-eye"></i></div><div class="buttonLabel"><span>View 3D</span></div></div>').addClass('toolbarSectionButton rp-x-1 imageViewerCommand').appendTo(toolbar);
-    _div.on('click', renderSerieHandler);
+    _div.on('click', {template: this}, renderSerieHandler);
 });
 
 Template.viewer3D.onDestroyed(function () {

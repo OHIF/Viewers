@@ -23,7 +23,7 @@
   "defaultServiceType": "dicomWeb",
   "dropCollections": false,
   "public": {
-    "verifyEmail": false,
+    "verifyEmail": true,
     "demoUserEnabled": false,
     "ui": {
         "studyListFunctionsEnabled": true,

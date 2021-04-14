@@ -1,6 +1,7 @@
 import { Router } from 'meteor/iron:router';
 import { OHIF } from 'meteor/ohif:core';
 import {Meteor} from "meteor/meteor";
+import {Accounts} from "meteor/accounts-base";
 
 Router.configure({
     layoutTemplate: 'layout',
@@ -40,12 +41,27 @@ Router.onBeforeAction(function() {
         this.next();
     }
 }, {
-    except: ['entrySignIn', 'entrySignUp', 'forgotPassword', 'resetPassword', 'emailVerification']
+    except: ['entrySignIn', 'entrySignUp', 'forgotPassword', 'resetPassword', 'emailVerification', 'verifyEmail']
 });
 
 Router.route('/', function() {
     Router.go('studylist', {}, { replaceState: true });
 }, { name: 'home' });
+
+Router.route( '/verify-email/:token', {
+    name: 'verifyEmail',
+    action() {
+        Accounts.verifyEmail( this.params.token, ( error ) =>{
+            if ( error ) {
+                ActiveEntry.errorMessages.set('validationEmailError', error.message);
+                return;
+            } else {
+                this.render('entrySignIn');
+            }
+        });
+    }
+});
+
 
 Router.route('/studylist', {
     action: function () {
