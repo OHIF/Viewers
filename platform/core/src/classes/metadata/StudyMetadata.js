@@ -9,7 +9,7 @@ import { SeriesMetadata } from './SeriesMetadata';
 import { api } from 'dicomweb-client';
 // - createStacks
 import { isImage } from '../../utils/isImage';
-import isDisplaySetReconstructable from '../../utils/isDisplaySetReconstructable';
+import { isDisplaySetReconstructable, isSpacingUniform } from '../../utils/isDisplaySetReconstructable';
 import errorHandler from '../../errorHandler';
 import isLowPriorityModality from '../../utils/isLowPriorityModality';
 
@@ -796,7 +796,7 @@ const makeDisplaySet = (series, instances) => {
     isMultiFrame: isMultiFrame(instance),
   });
 
-  // Sort the images in this series if needed
+  // Sort the images in this series by instanceNumber
   const shallSort = true; //!OHIF.utils.ObjectPath.get(Meteor, 'settings.public.ui.sortSeriesByIncomingOrder');
   if (shallSort) {
     imageSet.sortBy((a, b) => {
@@ -817,19 +817,29 @@ const makeDisplaySet = (series, instances) => {
   const displayReconstructableInfo = isDisplaySetReconstructable(instances);
   imageSet.isReconstructable = displayReconstructableInfo.value;
 
+  let displaySpacingInfo = undefined;
   if (shallSort && imageSet.isReconstructable) {
+    // sort images by image position
     imageSet.sortByImagePositionPatient();
-  }
 
-  if (displayReconstructableInfo.missingFrames) {
-    // TODO -> This is currently unused, but may be used for reconstructing
-    // Volumes with gaps later on.
-    imageSet.missingFrames = displayReconstructableInfo.missingFrames;
+    // check if the spacing is uniform and update isReconstructable
+    const datasetIs4D = displayReconstructableInfo.warningIssues.find
+      (issue => issue === ReconstructionIssues.DATASET_4D);
+    displaySpacingInfo = isSpacingUniform(imageSet.images, datasetIs4D);
+    imageSet.isReconstructable = displaySpacingInfo.isUniform;
+
+    if (displaySpacingInfo.missingFrames) {
+      // TODO -> This is currently unused, but may be used for reconstructing
+      // Volumes with gaps later on.
+      imageSet.missingFrames = displaySpacingInfo.missingFrames;
+    }
   }
 
   if (!imageSet.displayReconstructableInfo) {
     // It is not reconstrabale Save type of warning
-    imageSet.warningIssues = displayReconstructableInfo.warningIssues;
+    imageSet.warningIssues = displaySpacingInfo ?
+      displayReconstructableInfo.warningIssues.concat(displaySpacingInfo.warningIssues) :
+        displayReconstructableInfo.warningIssues;
   }
 
   return imageSet;
