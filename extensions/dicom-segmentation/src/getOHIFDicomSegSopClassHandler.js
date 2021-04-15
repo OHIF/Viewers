@@ -63,8 +63,8 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         metadata,
       };
 
-      segDisplaySet.getSourceDisplaySet = function(studies) {
-        return getSourceDisplaySet(studies, segDisplaySet);
+      segDisplaySet.getSourceDisplaySet = function(studies, activateLabelMap = true) {
+        return getSourceDisplaySet(studies, segDisplaySet, activateLabelMap);
       };
 
       segDisplaySet.load = async function(referencedDisplaySet, studies) {
@@ -82,6 +82,7 @@ export default function getSopClassHandlerModule({ servicesManager }) {
           StudyInstanceUID,
           referencedDisplaySet.SeriesInstanceUID
         );
+
         return new Promise(async (resolve, reject) => {
           let results;
           try {
@@ -90,6 +91,9 @@ export default function getSopClassHandlerModule({ servicesManager }) {
             segDisplaySet.isLoaded = false;
             segDisplaySet.loadError = true;
             reject(error);
+          }
+          if (results === undefined) {
+            return;
           }
           const {
             labelmapBufferArray,
@@ -114,13 +118,13 @@ export default function getSopClassHandlerModule({ servicesManager }) {
               );
             }
             /**
-             * Since overlapping segmentations have virtual labelmaps,
+             * Since overlapping segments have virtual labelmaps,
              * originLabelMapIndex is used in the panel to select the correct dropdown value.
              */
             segDisplaySet.hasOverlapping = true;
             segDisplaySet.originLabelMapIndex = labelmapIndexes[0];
             labelmapIndex = labelmapIndexes[0];
-            console.warn('Overlapping segmentations!');
+            console.warn('Overlapping segments!');
           } else {
             labelmapIndex = await loadSegmentation(
               imageIds,
@@ -131,6 +135,7 @@ export default function getSopClassHandlerModule({ servicesManager }) {
               []
             );
           }
+
           resolve(labelmapIndex);
         });
       };

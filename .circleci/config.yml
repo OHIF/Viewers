@@ -48,12 +48,12 @@ jobs:
       - checkout:
           post:
             - git fetch --all
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
+      # - restore_cache:
+      #     name: Restore Yarn and Cypress Package Cache
+      #     keys:
+      #       # when lock file changes, use increasingly general patterns to restore cache
+      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      #       - yarn-packages-
       - run:
           name: Install Dependencies
           command: yarn install --frozen-lockfile
@@ -107,12 +107,12 @@ jobs:
           post:
             - git fetch --all
 
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
+      # - restore_cache:
+      #     name: Restore Yarn and Cypress Package Cache
+      #     keys:
+      #       # when lock file changes, use increasingly general patterns to restore cache
+      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      #       - yarn-packages-
 
       - run:
           name: Install Dependencies
@@ -143,12 +143,12 @@ jobs:
       - checkout:
           post:
             - git fetch --all
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
+      # - restore_cache:
+      #     name: Restore Yarn and Cypress Package Cache
+      #     keys:
+      #       # when lock file changes, use increasingly general patterns to restore cache
+      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      #       - yarn-packages-
       - run:
           name: Install Dependencies
           command: yarn install --frozen-lockfile
@@ -237,11 +237,11 @@ jobs:
           post:
             - git fetch --all
       # Use increasingly general patterns to restore cache
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
+      # - restore_cache:
+      #     name: Restore Yarn and Cypress Package Cache
+      #     keys:
+      #       - yarn-packages-{{ checksum "yarn.lock" }}
+      #       - yarn-packages-
       - run:
           name: Install Dependencies
           command: yarn install --frozen-lockfile
@@ -346,7 +346,9 @@ workflows:
           record: true
           store_artifacts: true
           working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js yarn run build
+          build:
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            yarn run build
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'
           wait-on: 'http://localhost:3000'
@@ -372,7 +374,9 @@ workflows:
           record: true
           store_artifacts: true
           working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js yarn run build:package
+          build:
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            yarn run build:package
           start: yarn run test:e2e:serve
           spec: 'cypress/integration/common/**/*,cypress/integration/script-tag/**/*'
           wait-on: 'http://localhost:3000'
@@ -403,7 +407,9 @@ workflows:
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js yarn run build
+          build:
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            yarn run build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
@@ -480,7 +486,9 @@ workflows:
           yarn: true
           store_artifacts: false
           working_directory: platform/viewer
-          build: npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js yarn run build
+          build:
+            npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
+            yarn run build
           # start server --> verify running --> percy + chrome + cypress
           command: yarn run test:e2e:dist
           cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
