@@ -551,7 +551,7 @@ const _mapStudiesToThumbnails = function(studies) {
         altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }
 
-      const hasWarnings = _checkForSeriesInconsistencesWarnings(displaySet, studies)
+      const hasWarnings = _checkForSeriesInconsistencesWarnings(displaySet, studies);
 
       return {
         imageId,
