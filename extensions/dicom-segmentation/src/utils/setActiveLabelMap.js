@@ -47,16 +47,22 @@ export default async function setActiveLabelmap(
     return labelmapIndex;
   }
 
+  if (displaySet.isLoading) {
+    return activeLabelmapIndex;
+  }
+
   if (!displaySet.isLoaded) {
     try {
       await displaySet.load(referencedDisplaySet, studies);
     } catch (error) {
       displaySet.isLoaded = false;
+      displaySet.isLoading = false;
       displaySet.loadError = true;
       onDisplaySetLoadFailure(error);
 
-      const event = new CustomEvent('extensiondicomsegmentationcleancombobox');
+      const event = new CustomEvent('extensiondicomsegmentationsegloadingfailed');
       document.dispatchEvent(event);
+
       return activeLabelmapIndex;
     }
   }

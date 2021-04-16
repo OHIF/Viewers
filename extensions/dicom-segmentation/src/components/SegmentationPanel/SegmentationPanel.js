@@ -191,7 +191,7 @@ const SegmentationPanel = ({
     );
 
     document.addEventListener(
-      'extensiondicomsegmentationcleancombobox',
+      'extensiondicomsegmentationsegloadingfailed',
       cleanSegmentationComboBox
     );
 
@@ -213,7 +213,7 @@ const SegmentationPanel = ({
         refreshSegmentations
       );
       document.removeEventListener(
-        'extensiondicomsegmentationcleancombobox',
+        'extensiondicomsegmentationsegloadingfailed',
         cleanSegmentationComboBox
       );
       cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
@@ -243,7 +243,6 @@ const SegmentationPanel = ({
       const brushStackState = getBrushStackState();
       if (brushStackState) {
         const labelMapList = getLabelMapList();
-        console.info(labelMapList);
         const {
           items: segmentList,
           numbers: segmentNumbers,
