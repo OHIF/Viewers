@@ -20,7 +20,7 @@ export default async function setActiveLabelmap(
   displaySet,
   callback = () => {},
   onDisplaySetLoadFailure = err => {
-    throw new Error(err.message);
+    console.error(err.message);
   }
 ) {
   const studyMetadata = studyMetadataManager.get(
@@ -48,16 +48,15 @@ export default async function setActiveLabelmap(
   }
 
   if (!displaySet.isLoaded) {
-    const loadPromise = displaySet.load(referencedDisplaySet, studies);
-
-    loadPromise.catch(error => {
+    try {
+      await displaySet.load(referencedDisplaySet, studies);
+    } catch (error) {
+      displaySet.isLoaded = false;
+      displaySet.loadError = true;
       onDisplaySetLoadFailure(error);
-
       // Return old index.
       return activeLabelmapIndex;
-    });
-
-    await loadPromise;
+    }
   }
 
   labelmapIndex =
