@@ -434,24 +434,7 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
     }
 
     const sourceDisplaySet = displaySet.getSourceDisplaySet(studies, false);
-    const { StudyInstanceUID, SeriesInstanceUID } = sourceDisplaySet;
-
-    const study = studies.find(
-      study => study.StudyInstanceUID === StudyInstanceUID
-    );
-    if (!study) {
-      return warningsList;
-    }
-
-    const displaySets = study.displaySets.filter(displaySet => {
-      return displaySet.SeriesInstanceUID === SeriesInstanceUID;
-    });
-    if (!displaySets) {
-      return warningsList;
-    }
-
-    const referencedDisplaySet = displaySets[0];
-    const imageIds = referencedDisplaySet.images.map(image => image.getImageId());
+    const imageIds = sourceDisplaySet.images.map(image => image.getImageId());
     if (!imageIds || imageIds.length === 0) {
       return warningsList;
     }
