@@ -3,10 +3,12 @@ import { classes } from '@ohif/core';
 
 const { ImageSet } = classes;
 
-export default function getSourceDisplaySet(studies, segDisplaySet) {
+export default function getSourceDisplaySet(studies, segDisplaySet, activateLabelMap = true, onDisplaySetLoadFailureHandler) {
   const referencedDisplaySet = _getReferencedDisplaySet(segDisplaySet, studies);
 
-  setActiveLabelmap(referencedDisplaySet, studies, segDisplaySet);
+  if (activateLabelMap) {
+    setActiveLabelmap(referencedDisplaySet, studies, segDisplaySet, undefined, onDisplaySetLoadFailureHandler);
+  }
 
   return referencedDisplaySet;
 }

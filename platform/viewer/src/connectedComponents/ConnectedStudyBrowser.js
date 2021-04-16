@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { StudyBrowser } from '@ohif/ui';
 import cloneDeep from 'lodash.clonedeep';
 import findDisplaySetByUID from './findDisplaySetByUID';
+import { servicesManager } from './../App.js';
 
 const { studyMetadataManager } = OHIF.utils;
 
@@ -48,8 +49,22 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
       if (displaySet.isDerived) {
         const { Modality } = displaySet;
+        if (Modality === 'SEG' && servicesManager) {
+          const {LoggerService, UINotificationService} = servicesManager.services;
+          const onDisplaySetLoadFailureHandler = error => {
+            LoggerService.error({ error, message: error.message });
+            UINotificationService.show({
+              title: 'DICOM Segmentation Loader',
+              message: error.message,
+              type: 'error',
+              autoClose: true,
+            });
+          };
 
-        displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata);
+          displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata, true, onDisplaySetLoadFailureHandler);
+        } else {
+          displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata);
+        }
 
         if (!displaySet) {
           throw new Error(

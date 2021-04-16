@@ -301,7 +301,6 @@ function ViewerRetrieveStudyData({
       });
 
       setStudies(studies);
-      setIsStudyLoaded(true);
     }
   };
 
