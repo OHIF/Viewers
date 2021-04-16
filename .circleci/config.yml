@@ -285,6 +285,7 @@ jobs:
             echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
             git config --global user.name "ohif-bot"
+      - run: rm -rf ~/.yarn && npm i -g yarn && yarn -v
       - run: yarn global add gitbook-cli gh-pages
       - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
       - run: ~/repo/.circleci/build-and-publish-docs.sh
