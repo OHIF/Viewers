@@ -63,8 +63,8 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         metadata,
       };
 
-      segDisplaySet.getSourceDisplaySet = function(studies, activateLabelMap = true) {
-        return getSourceDisplaySet(studies, segDisplaySet, activateLabelMap);
+      segDisplaySet.getSourceDisplaySet = function(studies, activateLabelMap = true, onDisplaySetLoadFailureHandler) {
+        return getSourceDisplaySet(studies, segDisplaySet, activateLabelMap, onDisplaySetLoadFailureHandler);
       };
 
       segDisplaySet.load = async function(referencedDisplaySet, studies) {

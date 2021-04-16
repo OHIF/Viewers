@@ -84,7 +84,6 @@ async function loadAndCacheDerivedDisplaySets(referencedDisplaySet, studies, log
     const displaySets = displaySetsPerModality[key];
 
     const isLoaded = displaySets.some(displaySet => displaySet.isLoaded);
-
     if (isLoaded) {
       return;
     }

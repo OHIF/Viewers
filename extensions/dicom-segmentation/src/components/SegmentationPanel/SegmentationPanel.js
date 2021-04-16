@@ -190,6 +190,11 @@ const SegmentationPanel = ({
       refreshSegmentations
     );
 
+    document.addEventListener(
+      'extensiondicomsegmentationcleancombobox',
+      cleanSegmentationComboBox
+    );
+
     /*
      * These are specific to each element;
      * Need to iterate cornerstone-tools tracked enabled elements?
@@ -207,6 +212,10 @@ const SegmentationPanel = ({
         'extensiondicomsegmentationsegloaded',
         refreshSegmentations
       );
+      document.removeEventListener(
+        'extensiondicomsegmentationcleancombobox',
+        cleanSegmentationComboBox
+      );
       cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
         enabledElement.removeEventListener(
           'cornerstonetoolslabelmapmodified',
@@ -216,6 +225,17 @@ const SegmentationPanel = ({
     };
   }, [activeIndex, viewports]);
 
+  const cleanSegmentationComboBox = () => {
+    setState(state => ({
+      ...state,
+      segmentsHidden: [],
+      segmentNumbers: [],
+      labelMapList: [],
+      segmentList: [],
+      isDisabled: true,
+    }));
+  }
+
   const refreshSegmentations = () => {
     const activeViewport = getActiveViewport();
     const isDisabled = !activeViewport || !activeViewport.StudyInstanceUID;
@@ -223,6 +243,7 @@ const SegmentationPanel = ({
       const brushStackState = getBrushStackState();
       if (brushStackState) {
         const labelMapList = getLabelMapList();
+        console.info(labelMapList);
         const {
           items: segmentList,
           numbers: segmentNumbers,
@@ -277,7 +298,10 @@ const SegmentationPanel = ({
       activeViewport.SeriesInstanceUID
     );
 
-    return referencedSegDisplaysets.map((displaySet, index) => {
+    const filteredReferencedSegDisplaysets = referencedSegDisplaysets.filter(
+      (segDisplay => segDisplay.loadError !== true && segDisplay.isLoaded));
+
+    return filteredReferencedSegDisplaysets.map((displaySet, index) => {
       const {
         labelmapIndex,
         originLabelMapIndex,

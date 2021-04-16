@@ -54,7 +54,9 @@ export default async function setActiveLabelmap(
       displaySet.isLoaded = false;
       displaySet.loadError = true;
       onDisplaySetLoadFailure(error);
-      // Return old index.
+
+      const event = new CustomEvent('extensiondicomsegmentationcleancombobox');
+      document.dispatchEvent(event);
       return activeLabelmapIndex;
     }
   }
