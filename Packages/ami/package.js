@@ -22,8 +22,6 @@ Package.onUse(function(api) {
   api.use('polguixe:meteor-datgui');
   api.mainModule('ami.js', 'client');
   api.addFiles(['TrackballControls.js'], 'client');
-
-  api.export(['THREE', 'AMI', 'dat'], 'client');
 });
 
 Package.onTest(function(api) {

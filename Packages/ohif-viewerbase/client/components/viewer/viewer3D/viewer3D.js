@@ -15,7 +15,7 @@ import { getElementIfNotEmpty } from "../../../lib/getElementIfNotEmpty";
 // import "../../../lib/ami/ami.js";
 
 //var THREE = require('three');
-import "meteor/gtajesgenga:ami";
+import { THREE, AMI, DAT } from "meteor/gtajesgenga:ami";
 import {viewportOverlayUtils} from "../../../lib/viewportOverlayUtils";
 import { PipelineSelector } from 'meteor/gtajesgenga:vtk';
 
@@ -29,7 +29,7 @@ const colors = {
 
 const ami_gui = stackHelper => {
     const stack = stackHelper.stack;
-    gui = new dat.GUI({
+    gui = new DAT.GUI({
         autoPlace: false,
     });
     const customContainer = document.getElementById('my-gui-container');
@@ -293,13 +293,14 @@ function onMouseMove(event) {
 
     // var x = event.offsetX == undefined ? event.layerX : event.offsetX;
     // var y = event.offsetY == undefined ? event.layerY : event.offsetY;
-    mouse.x = ( event.offsetX / renderer.domElement.width ) * 2 - 1;
-    mouse.y = - ( event.offsetY / renderer.domElement.height ) * 2 + 1;
+    let rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ( (event.clientX - rect.left) / rect.width ) * 2 - 1;
+    mouse.y = - ( (event.clientY - rect.top) / rect.height ) * 2 + 1;
     raycaster.setFromCamera( mouse, camera );
     var intersects = raycaster.intersectObjects( Array.from(objects.values()) );
 
     if (intersects.length > 0) {
-        if (INTERSECTED != intersects[0].object) {
+        if (INTERSECTED !== intersects[0].object) {
             if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
 
             INTERSECTED = intersects[ 0 ].object;
