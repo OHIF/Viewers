@@ -25,6 +25,16 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
   const storedMeasurementByToolType = MeasurementReport.generateToolState(
     dataset,
     {
+      /**
+       * TODO: This custom mapping for CCC uni/bidirectional annotations to
+       * Cornerstone tool classes is based on very limited matching
+       * of specific code values e.g. length and long axis.
+       *
+       * We need to use smarter matching criteria for
+       * different types/complex annotations in the long term.
+       *
+       * Ongoing discussion/representation here: https://github.com/OHIF/Viewers/issues/1215
+       */
       getToolClass: (measurementGroup, dataset, toolClasses) => {
         const measurementGroupContentSequence = toArray(
           measurementGroup.ContentSequence
