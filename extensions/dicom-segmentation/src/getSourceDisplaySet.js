@@ -36,14 +36,32 @@ const _getReferencedDisplaySet = (segDisplaySet, studies) => {
     referencedSeriesInstanceUIDs = ReferencedSeriesSequence.map(
       ReferencedSeries => ReferencedSeries.SeriesInstanceUID
     );
-  } else {
-    const { PerFrameFunctionalGroupsSequence } = metadata;
+  }
 
+  if (metadata.ReferencedImageSequence &&
+    (!referencedSeriesInstanceUIDs || referencedSeriesInstanceUIDs.length === 0)) {
+    const referencedImageArray = _toArray(metadata.ReferencedImageSequence);
+    for (let i = 0; i < referencedImageArray.length; i++) {
+      const { ReferencedSOPInstanceUID } = referencedImageArray[i];
+
+      referencedSeriesInstanceUIDs = _findReferencedSeriesInstanceUIDsFromSOPInstanceUID(
+        otherDisplaySets,
+        ReferencedSOPInstanceUID
+      );
+
+      if (referencedSeriesInstanceUIDs && referencedSeriesInstanceUIDs.length !== 0) {
+        break;
+      }
+    }
+  }
+
+  if (!referencedSeriesInstanceUIDs || referencedSeriesInstanceUIDs.length === 0) {
     let SourceImageSequence;
 
     if (metadata.SourceImageSequence) {
       SourceImageSequence = metadata.SourceImageSequence;
     } else {
+      const { PerFrameFunctionalGroupsSequence } = metadata;
       const firstFunctionalGroups = _toArray(
         PerFrameFunctionalGroupsSequence
       )[0];
@@ -52,14 +70,23 @@ const _getReferencedDisplaySet = (segDisplaySet, studies) => {
       SourceImageSequence = DerivationImageSequence;
     }
 
-    const firstSourceImage = _toArray(SourceImageSequence)[0];
+    const sourceImageArray = _toArray(SourceImageSequence);
+    for (let i = 0; i < sourceImageArray.length; i++) {
+      const { ReferencedSOPInstanceUID } = sourceImageArray[i];
 
-    const { ReferencedSOPInstanceUID } = firstSourceImage;
+      referencedSeriesInstanceUIDs = _findReferencedSeriesInstanceUIDsFromSOPInstanceUID(
+        otherDisplaySets,
+        ReferencedSOPInstanceUID
+      );
 
-    referencedSeriesInstanceUIDs = _findReferencedSeriesInstanceUIDsFromSOPInstanceUID(
-      otherDisplaySets,
-      ReferencedSOPInstanceUID
-    );
+      if (referencedSeriesInstanceUIDs && referencedSeriesInstanceUIDs.length !== 0) {
+        break;
+      }
+    }
+  }
+
+  if (!referencedSeriesInstanceUIDs || referencedSeriesInstanceUIDs.length === 0) {
+    return undefined;
   }
 
   const referencedDisplaySet = otherDisplaySets.find(ds =>

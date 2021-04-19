@@ -241,6 +241,7 @@ export class StudyMetadata extends Metadata {
       referencedFrameOfReferenceUID,
     } = filter;
 
+    let tempReferencedFrameOfReferenceUID = referencedFrameOfReferenceUID;
     let filteredDerivedDisplaySets = this._derivedDisplaySets;
 
     if (Modality) {
@@ -249,8 +250,9 @@ export class StudyMetadata extends Metadata {
       );
     }
 
+    let finalDerivedDisplaySets;
     if (referencedSeriesInstanceUID) {
-      filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
+      finalDerivedDisplaySets = filteredDerivedDisplaySets.filter(
         displaySet => {
           if (!displaySet.metadata.ReferencedSeriesSequence) {
             return false;
@@ -270,15 +272,28 @@ export class StudyMetadata extends Metadata {
       );
     }
 
-    if (referencedFrameOfReferenceUID) {
-      filteredDerivedDisplaySets = filteredDerivedDisplaySets.filter(
+    if ((!finalDerivedDisplaySets || finalDerivedDisplaySets.length === 0)
+      && !tempReferencedFrameOfReferenceUID) {
+      const referencedDisplaySets = this._displaySets.filter(
         displaySet =>
-          displaySet.ReferencedFrameOfReferenceUID ===
-          referencedFrameOfReferenceUID
+          displaySet.SeriesInstanceUID ===
+          referencedSeriesInstanceUID
+      );
+
+      if (referencedDisplaySets[0]) {
+        tempReferencedFrameOfReferenceUID = referencedDisplaySets[0].images[0]._study.FrameOfReferenceUID
+      }
+    }
+
+    if (tempReferencedFrameOfReferenceUID) {
+      finalDerivedDisplaySets = filteredDerivedDisplaySets.filter(
+        displaySet =>
+          displaySet.FrameOfReferenceUID ===
+          tempReferencedFrameOfReferenceUID
       );
     }
 
-    return filteredDerivedDisplaySets;
+    return finalDerivedDisplaySets;
   }
 
   /**

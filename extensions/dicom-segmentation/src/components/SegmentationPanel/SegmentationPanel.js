@@ -298,7 +298,7 @@ const SegmentationPanel = ({
     );
 
     const filteredReferencedSegDisplaysets = referencedSegDisplaysets.filter(
-      (segDisplay => segDisplay.loadError !== true && segDisplay.isLoaded));
+      (segDisplay => segDisplay.loadError !== true));
 
     return filteredReferencedSegDisplaysets.map((displaySet, index) => {
       const {

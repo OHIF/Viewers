@@ -434,6 +434,10 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
     }
 
     const sourceDisplaySet = displaySet.getSourceDisplaySet(studies, false);
+    if (!sourceDisplaySet) {
+      return warningsList;
+    }
+
     const imageIds = sourceDisplaySet.images.map(image => image.getImageId());
     if (!imageIds || imageIds.length === 0) {
       return warningsList;
