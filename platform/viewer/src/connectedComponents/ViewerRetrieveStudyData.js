@@ -259,7 +259,6 @@ function ViewerRetrieveStudyData({
     );
 
     setStudies([...studies, study]);
-    setIsStudyLoaded(true);
   };
 
   /**
@@ -295,13 +294,15 @@ function ViewerRetrieveStudyData({
               setError(error);
               log.error(error);
             }
+          })
+          .finally(() => {
+            setIsStudyLoaded(true);
           });
 
         return study;
       });
 
       setStudies(studies);
-      setIsStudyLoaded(true);
     }
   };
 
