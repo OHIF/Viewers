@@ -55,10 +55,7 @@ export default async function setActiveLabelmap(
       displaySet.loadError = true;
       onDisplaySetLoadFailure(error);
 
-      const event = new CustomEvent('extensiondicomsegmentationsegloadingfailed');
-      document.dispatchEvent(event);
-
-      return activeLabelmapIndex;
+      return -1;
     }
   }
 

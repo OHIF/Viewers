@@ -153,7 +153,13 @@ class ViewerMain extends Component {
           });
         };
 
-        displaySet = displaySet.getSourceDisplaySet(this.props.studies, true, onDisplaySetLoadFailureHandler);
+        const {referencedDisplaySet} = displaySet.getSourceDisplaySet(
+          this.props.studies,
+          true,
+          onDisplaySetLoadFailureHandler
+        );
+        displaySet = referencedDisplaySet;
+
       } else {
         displaySet = displaySet.getSourceDisplaySet(this.props.studies);
       }
