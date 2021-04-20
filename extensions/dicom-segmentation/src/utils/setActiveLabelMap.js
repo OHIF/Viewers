@@ -20,7 +20,7 @@ export default async function setActiveLabelmap(
   displaySet,
   callback = () => {},
   onDisplaySetLoadFailure = err => {
-    throw new Error(err.message);
+    console.error(err.message);
   }
 ) {
   const studyMetadata = studyMetadataManager.get(
@@ -47,17 +47,24 @@ export default async function setActiveLabelmap(
     return labelmapIndex;
   }
 
-  if (!displaySet.isLoaded) {
-    const loadPromise = displaySet.load(referencedDisplaySet, studies);
+  if (displaySet.isLoading) {
+    return activeLabelmapIndex;
+  }
 
-    loadPromise.catch(error => {
+  if (!displaySet.isLoaded) {
+    try {
+      await displaySet.load(referencedDisplaySet, studies);
+    } catch (error) {
+      displaySet.isLoaded = false;
+      displaySet.isLoading = false;
+      displaySet.loadError = true;
       onDisplaySetLoadFailure(error);
 
-      // Return old index.
-      return activeLabelmapIndex;
-    });
+      const event = new CustomEvent('extensiondicomsegmentationsegloadingfailed');
+      document.dispatchEvent(event);
 
-    await loadPromise;
+      return activeLabelmapIndex;
+    }
   }
 
   labelmapIndex =
