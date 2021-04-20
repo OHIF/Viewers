@@ -78,6 +78,18 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
           if (LengthContentItem) {
             return toolClasses.find(t => t.toolType === 'Length');
           }
+        } else {
+          const TrackingIdentifierGroup = measurementGroupContentSequence.find(
+            contentItem =>
+              contentItem.ConceptNameCodeSequence.CodeMeaning ===
+              TRACKING_IDENTIFIER
+          );
+
+          const TrackingIdentifierValue = TrackingIdentifierGroup.TextValue;
+
+          toolClasses.find(tc =>
+            tc.isValidCornerstoneTrackingIdentifier(TrackingIdentifierValue)
+          );
         }
       },
     }
