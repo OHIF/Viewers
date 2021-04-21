@@ -243,6 +243,7 @@ const SegmentationPanel = ({
       labelMapList: [],
       segmentList: [],
       isDisabled: true,
+      selectedSegmentation: -1,
     }));
   }
 
