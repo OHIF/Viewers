@@ -163,7 +163,6 @@ workflows:
                 - master
                 - idc-viewer-prod
                 - idc-viewer-test
-
 #version: 2.1
 #
 #### ABOUT

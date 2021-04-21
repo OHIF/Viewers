@@ -41,19 +41,7 @@ const ViewportGrid = function(props) {
   useEffect(() => {
     if (isStudyLoaded) {
       viewportData.forEach(displaySet => {
-        const promises = loadAndCacheDerivedDisplaySets(displaySet, studies);
-        promises.forEach(promise => {
-          promise.catch(error => {
-            logger.error({ error, message: error.message });
-            snackbar.show({
-              title: 'Error loading derived display set:',
-              message: error.message,
-              type: 'error',
-              error,
-              autoClose: false,
-            });
-          });
-        });
+        loadAndCacheDerivedDisplaySets(displaySet, studies, logger, snackbar);
       });
     }
   }, [studies, viewportData, isStudyLoaded, snackbar]);
