@@ -106,11 +106,11 @@ async function loadAndCacheDerivedDisplaySets(referencedDisplaySet, studies, log
       }
     });
 
-    recentDisplaySet.isLoading = true;
-
     try {
       await recentDisplaySet.load(referencedDisplaySet, studies);
     } catch (error) {
+      recentDisplaySet.isLoaded = false;
+      recentDisplaySet.loadError = true;
       logger.error({ error, message: error.message });
       snackbar.show({
         title: 'Error loading derived display set:',

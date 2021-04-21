@@ -61,7 +61,20 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             });
           };
 
-          displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata, true, onDisplaySetLoadFailureHandler);
+          const {referencedDisplaySet, activatedLabelmapPromise} = displaySet.getSourceDisplaySet(
+            ownProps.studyMetadata,
+            true,
+            onDisplaySetLoadFailureHandler
+          );
+          displaySet = referencedDisplaySet;
+
+          activatedLabelmapPromise.then((activatedLabelmapIndex) => {
+            const selectionFired = new CustomEvent("extensiondicomsegmentationsegselected", {
+              "detail": {"activatedLabelmapIndex":activatedLabelmapIndex}
+            });
+            document.dispatchEvent(selectionFired);
+          });
+
         } else {
           displaySet = displaySet.getSourceDisplaySet(ownProps.studyMetadata);
         }
