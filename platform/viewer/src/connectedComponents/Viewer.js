@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { useLogger } from '@ohif/ui';
 
 import OHIF, { MODULE_TYPES, DICOMSR } from '@ohif/core';
 import { withDialog } from '@ohif/ui';
@@ -13,6 +14,7 @@ import SidePanel from './../components/SidePanel.js';
 import ErrorBoundaryDialog from './../components/ErrorBoundaryDialog';
 import { extensionManager } from './../App.js';
 import { ReconstructionIssues } from './../../../core/src/enums.js';
+import dcmjs from 'dcmjs';
 
 // Contexts
 import WhiteLabelingContext from '../context/WhiteLabelingContext.js';
@@ -21,6 +23,7 @@ import AppContext from '../context/AppContext';
 
 import './Viewer.css';
 import { finished } from 'stream';
+import { cornerstoneWADOImageLoader } from 'cornerstone-wado-image-loader';
 
 class Viewer extends Component {
   static propTypes = {
@@ -369,59 +372,148 @@ class Viewer extends Component {
 export default withDialog(Viewer);
 
 /**
- * Async function to check if there are any inconsistences in the series
- * (i.e. reconstructable to a 3D volume). If not reconstructable MPR is disabled.
- * The actual computations are done in isDisplaySetReconstructable.
+ * Async function to check if there are any inconsistences in the series.
  *
+ * For segmentation checks that the geometry is consistent with the source images:
+ * 1) no frames out of plane;
+ * 2) have the same width and height.
+ *
+ * For reconstructable 3D volume:
  * 1) Is series multiframe?
- * 2) Do the frames have different dimensions/numer of components/orientations?
+ * 2) Do the frames have different dimensions/number of components/orientations?
  * 3) Has the series any missing frames or irregular spacing?
  * 4) Is the series 4D?
+ *
+ * If not reconstructable, MPR is disabled.
+ * The actual computations are done in isDisplaySetReconstructable.
  *
  * @param {*object} displaySet
  * @returns {[string]} an array of strings containing the warnings
  */
-const _checkForSeriesInconsistencesWarnings = async function (displaySet) {
-  // NOTE: at the moment this function is async even if it does not perfom any heavy calculation.
-  //       We may add or move here some of the computations
-  //       done when creating the displaySet (see makeDisplaySet and isDisplaySetReconstructable).
-  //       the thumbnail footnotes warning react element is already set up to handle a promise.
+const _checkForSeriesInconsistencesWarnings = async function (displaySet, studies) {
   const warningsList = [];
-  if (displaySet.warningIssues && displaySet.warningIssues.length !== 0) {
-    displaySet.warningIssues.forEach(warning => {
-      switch (warning) {
-        case ReconstructionIssues.DATASET_4D:
-          warningsList.push("The dataset is 4D.");
-          break;
-        case ReconstructionIssues.VARYING_IMAGESDIMENSIONS:
-          warningsList.push("The dataset frames have different dimensions (rows, columns).");
-          break;
-        case ReconstructionIssues.VARYING_IMAGESCOMPONENTS:
-          warningsList.push("The dataset frames have different components (Sample per pixel).");
-          break;
-        case ReconstructionIssues.VARYING_IMAGESORIENTATION:
-          warningsList.push("The dataset frames have different orientation.");
-          break;
-        case ReconstructionIssues.IRREGULAR_SPACING:
-          warningsList.push("The dataset frames have different pixel spacing.");
-          break;
-        case ReconstructionIssues.MULTIFFRAMES:
-          warningsList.push("The dataset is a multiframes.");
-          break;
-        default:
-          break;
-      }
-    });
+
+  if (displaySet.Modality !== 'SEG') {
+    if (displaySet.warningIssues && displaySet.warningIssues.length !== 0) {
+      displaySet.warningIssues.forEach(warning => {
+        switch (warning) {
+          case ReconstructionIssues.DATASET_4D:
+            warningsList.push('The dataset is 4D.');
+            break;
+          case ReconstructionIssues.VARYING_IMAGESDIMENSIONS:
+            warningsList.push('The dataset frames have different dimensions (rows, columns).');
+            break;
+          case ReconstructionIssues.VARYING_IMAGESCOMPONENTS:
+            warningsList.push('The dataset frames have different components (Sample per pixel).');
+            break;
+          case ReconstructionIssues.VARYING_IMAGESORIENTATION:
+            warningsList.push('The dataset frames have different orientation.');
+            break;
+          case ReconstructionIssues.IRREGULAR_SPACING:
+            warningsList.push('The dataset frames have different pixel spacing.');
+            break;
+          case ReconstructionIssues.MULTIFFRAMES:
+            warningsList.push('The dataset is a multiframes.');
+            break;
+          default:
+            break;
+        }
+      });
       warningsList.push('The datasets is not a reconstructable 3D volume. MPR mode is not available.');
+    }
+
+    if (displaySet.missingFrames &&
+      (!displaySet.warningIssues ||
+        (displaySet.warningIssues && !displaySet.warningIssues.find(warn => warn === ReconstructionIssues.DATASET_4D)))) {
+      warningsList.push('The datasets is missing frames: ' + displaySet.missingFrames + '.');
+    }
+  } else {
+    const segMetadata = displaySet.metadata;
+    if (!segMetadata) {
+      return warningsList;
+    }
+
+    const { referencedDisplaySet } = displaySet.getSourceDisplaySet(studies, false);
+    if (!referencedDisplaySet) {
+      return warningsList;
+    }
+
+    const imageIds = referencedDisplaySet.images.map(image => image.getImageId());
+    if (!imageIds || imageIds.length === 0) {
+      return warningsList;
+    }
+
+    for (
+      let i = 0, groupsLen = segMetadata.PerFrameFunctionalGroupsSequence.length;
+      i < groupsLen;
+      ++i
+    ) {
+      const PerFrameFunctionalGroups = segMetadata.PerFrameFunctionalGroupsSequence[i];
+      if (!PerFrameFunctionalGroups) {
+        continue;
+      }
+
+      let SourceImageSequence = undefined;
+      if (segMetadata.SourceImageSequence) {
+        SourceImageSequence = segMetadata.SourceImageSequence[i];
+      } else if (PerFrameFunctionalGroups.DerivationImageSequence) {
+        SourceImageSequence =
+          PerFrameFunctionalGroups.DerivationImageSequence
+            .SourceImageSequence;
+      }
+      if (!SourceImageSequence) {
+        if (warningsList.length === 0) {
+          const warningMessage = 'The segmentation ' +
+            'has frames out of plane respect to the source images.';
+          warningsList.push(warningMessage);
+        }
+        continue;
+      }
+
+      const {
+        ReferencedSOPInstanceUID,
+      } = SourceImageSequence;
+
+      const imageId = imageIds.find(imageId => {
+        const sopCommonModule = cornerstone.metaData.get(
+            "sopCommonModule",
+            imageId
+        );
+        if (!sopCommonModule) {
+            return;
+        }
+
+        return sopCommonModule.sopInstanceUID === ReferencedSOPInstanceUID;
+      });
+
+      if (!imageId) {
+        continue;
+      }
+
+      const sourceImageMetadata = cornerstone.metaData.get(
+        "instance",
+        imageId
+      );
+      if (
+        segMetadata.Rows !== sourceImageMetadata.Rows ||
+        segMetadata.Columns !== sourceImageMetadata.Columns
+      ) {
+        const warningMessage = 'The segmentation ' +
+          'has frames with different geometry ' +
+          'dimensions (Rows and Columns) respect to the source images.';
+        warningsList.push(warningMessage);
+        break;
+      }
+    }
+
+    if (warningsList.length !== 0) {
+      const warningMessage = 'The segmentation format is not supported yet. ' +
+        'The segmentation data (segments) could not be loaded.';
+      warningsList.push(warningMessage);
+    }
   }
 
-  if (displaySet.missingFrames &&
-    (!displaySet.warningIssues ||
-      (displaySet.warningIssues && !displaySet.warningIssues.find(warn => warn === ReconstructionIssues.DATASET_4D)))) {
-    warningsList.push('The datasets is missing frames: ' + displaySet.missingFrames + '.');
-  }
-
-  return warningsList
+  return warningsList;
 }
 
 /**
@@ -463,7 +555,7 @@ const _mapStudiesToThumbnails = function(studies) {
         altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }
 
-      const hasWarnings = _checkForSeriesInconsistencesWarnings(displaySet)
+      const hasWarnings = _checkForSeriesInconsistencesWarnings(displaySet, studies);
 
       return {
         imageId,
