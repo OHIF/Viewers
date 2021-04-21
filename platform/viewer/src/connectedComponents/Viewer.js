@@ -433,8 +433,12 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
       return warningsList;
     }
 
-    const sourceDisplaySet = displaySet.getSourceDisplaySet(studies, false);
-    const imageIds = sourceDisplaySet.images.map(image => image.getImageId());
+    const { referencedDisplaySet } = displaySet.getSourceDisplaySet(studies, false);
+    if (!referencedDisplaySet) {
+      return warningsList;
+    }
+
+    const imageIds = referencedDisplaySet.images.map(image => image.getImageId());
     if (!imageIds || imageIds.length === 0) {
       return warningsList;
     }

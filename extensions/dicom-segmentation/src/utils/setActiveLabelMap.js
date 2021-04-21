@@ -47,23 +47,15 @@ export default async function setActiveLabelmap(
     return labelmapIndex;
   }
 
-  if (displaySet.isLoading) {
-    return activeLabelmapIndex;
-  }
-
   if (!displaySet.isLoaded) {
     try {
       await displaySet.load(referencedDisplaySet, studies);
     } catch (error) {
       displaySet.isLoaded = false;
-      displaySet.isLoading = false;
       displaySet.loadError = true;
       onDisplaySetLoadFailure(error);
 
-      const event = new CustomEvent('extensiondicomsegmentationsegloadingfailed');
-      document.dispatchEvent(event);
-
-      return activeLabelmapIndex;
+      return -1;
     }
   }
 
@@ -74,8 +66,11 @@ export default async function setActiveLabelmap(
 
   // This might have just been created, so need to use the non-cached value.
   state = cornerstoneTools.getModule('segmentation').state;
+
   brushStackState = state.series[firstImageId];
-  brushStackState.activeLabelmapIndex = labelmapIndex;
+  if (brushStackState) {
+    brushStackState.activeLabelmapIndex = labelmapIndex;
+  }
 
   refreshViewports();
   callback();

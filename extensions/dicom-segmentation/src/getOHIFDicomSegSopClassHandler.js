@@ -55,6 +55,7 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         referencedDisplaySetUID: null, // Assigned when loaded.
         labelmapIndex: null, // Assigned when loaded.
         isLoaded: false,
+        loadError: false,
         hasOverlapping: false,
         SeriesDate,
         SeriesTime,
@@ -68,7 +69,6 @@ export default function getSopClassHandlerModule({ servicesManager }) {
       };
 
       segDisplaySet.load = async function(referencedDisplaySet, studies) {
-        segDisplaySet.isLoading = true;
         segDisplaySet.isLoaded = true;
         const { StudyInstanceUID } = referencedDisplaySet;
         const segArrayBuffer = await DicomLoaderService.findDicomDataPromise(
@@ -129,7 +129,6 @@ export default function getSopClassHandlerModule({ servicesManager }) {
         }
       };
 
-      segDisplaySet.isLoading = false;
       return segDisplaySet;
     },
   };
