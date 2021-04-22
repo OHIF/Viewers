@@ -2,6 +2,8 @@ import dcmjs from 'dcmjs';
 
 import findInstanceMetadataBySopInstanceUID from './utils/findInstanceMetadataBySopInstanceUid';
 
+const toArray = x => (Array.isArray(x) ? x : [x]);
+
 /**
  * Function to parse the part10 array buffer that comes from a DICOM Structured report into measurementData
  * measurementData format is a viewer specific format to be stored into the redux and consumed by other components
@@ -21,7 +23,76 @@ const parseDicomStructuredReport = (part10SRArrayBuffer, displaySets) => {
 
   const { MeasurementReport } = dcmjs.adapters.Cornerstone;
   const storedMeasurementByToolType = MeasurementReport.generateToolState(
-    dataset
+    dataset,
+    {
+      /**
+       * TODO: This custom mapping for CCC uni/bidirectional annotations to
+       * Cornerstone tool classes is based on very limited matching
+       * of specific code values e.g. length and long axis.
+       *
+       * We need to use smarter matching criteria for
+       * different types/complex annotations in the long term.
+       *
+       * Ongoing discussion/representation here: https://github.com/OHIF/Viewers/issues/1215
+       */
+      getToolClass: (measurementGroup, dataset, toolClasses) => {
+        const measurementGroupContentSequence = toArray(
+          measurementGroup.ContentSequence
+        );
+
+        const CrowdsCureCancer = {
+          identifiers: ['99CCC', 'crowds-cure', 'Crowds Cure Cancer'],
+          LONG_AXIS: 'G-A185',
+          SHORT_AXIS: 'G-A186',
+          FINDING_SITE: 'G-C0E3',
+          LENGTH: 'G-D7FE',
+        };
+
+        const isCrowdsCureCancer = CrowdsCureCancer.identifiers.some(
+          identifier => JSON.stringify(dataset).includes(identifier)
+        );
+
+        if (isCrowdsCureCancer) {
+          const ShortAxisContentItem = measurementGroupContentSequence.find(
+            contentItem =>
+              contentItem.ConceptNameCodeSequence.CodeValue ===
+              CrowdsCureCancer.SHORT_AXIS
+          );
+
+          const LongAxisContentItem = measurementGroupContentSequence.find(
+            contentItem =>
+              contentItem.ConceptNameCodeSequence.CodeValue ===
+              CrowdsCureCancer.LONG_AXIS
+          );
+
+          const LengthContentItem = measurementGroupContentSequence.find(
+            contentItem =>
+              contentItem.ConceptNameCodeSequence.CodeValue ===
+              CrowdsCureCancer.LENGTH
+          );
+
+          if (ShortAxisContentItem && LongAxisContentItem) {
+            return toolClasses.find(t => t.toolType === 'Bidirectional');
+          }
+
+          if (LengthContentItem) {
+            return toolClasses.find(t => t.toolType === 'Length');
+          }
+        } else {
+          const TrackingIdentifierGroup = measurementGroupContentSequence.find(
+            contentItem =>
+              contentItem.ConceptNameCodeSequence.CodeMeaning ===
+              TRACKING_IDENTIFIER
+          );
+
+          const TrackingIdentifierValue = TrackingIdentifierGroup.TextValue;
+
+          toolClasses.find(tc =>
+            tc.isValidCornerstoneTrackingIdentifier(TrackingIdentifierValue)
+          );
+        }
+      },
+    }
   );
   const measurementData = {};
   let measurementNumber = 0;
