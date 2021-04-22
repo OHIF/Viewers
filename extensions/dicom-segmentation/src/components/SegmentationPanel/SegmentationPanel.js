@@ -155,7 +155,9 @@ const SegmentationPanel = ({
 
     const brushStackState = getBrushStackState();
     brushStackState.activeLabelmapIndex = newLabelmapIndex;
-    setState(state => ({ ...state, selectedSegmentation }));
+    if (selectedSegmentation) {
+      setState(state => ({ ...state, selectedSegmentation }));
+    }
 
     refreshViewports();
 
@@ -189,10 +191,9 @@ const SegmentationPanel = ({
       'extensiondicomsegmentationsegloaded',
       refreshSegmentations
     );
-
     document.addEventListener(
-      'extensiondicomsegmentationsegloadingfailed',
-      cleanSegmentationComboBox
+      'extensiondicomsegmentationsegselected',
+      updateSegmentationComboBox
     );
 
     /*
@@ -213,8 +214,8 @@ const SegmentationPanel = ({
         refreshSegmentations
       );
       document.removeEventListener(
-        'extensiondicomsegmentationsegloadingfailed',
-        cleanSegmentationComboBox
+        'extensiondicomsegmentationsegselected',
+        updateSegmentationComboBox
       );
       cornerstoneTools.store.state.enabledElements.forEach(enabledElement =>
         enabledElement.removeEventListener(
@@ -225,6 +226,15 @@ const SegmentationPanel = ({
     };
   }, [activeIndex, viewports]);
 
+  const updateSegmentationComboBox = (e) => {
+    const index = e.detail.activatedLabelmapIndex;
+    if (index !== -1) {
+      setState(state => ({ ...state, selectedSegmentation: index }));
+    } else {
+      cleanSegmentationComboBox();
+    }
+  }
+
   const cleanSegmentationComboBox = () => {
     setState(state => ({
       ...state,
@@ -233,6 +243,7 @@ const SegmentationPanel = ({
       labelMapList: [],
       segmentList: [],
       isDisabled: true,
+      selectedSegmentation: -1,
     }));
   }
 
@@ -298,7 +309,7 @@ const SegmentationPanel = ({
     );
 
     const filteredReferencedSegDisplaysets = referencedSegDisplaysets.filter(
-      (segDisplay => segDisplay.loadError !== true && segDisplay.isLoaded));
+      (segDisplay => segDisplay.loadError !== true));
 
     return filteredReferencedSegDisplaysets.map((displaySet, index) => {
       const {
