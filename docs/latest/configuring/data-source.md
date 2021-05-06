@@ -88,7 +88,7 @@ yarn run dev:orthanc
 > [Essentials Configuration](./index.md) guide.
 
 Let's take a look at what's going on under the hood here. `yarn run dev:orthanc`
-is running the `dev:orthanc` script in our project's `package.json`. That script
+is running the `dev:orthanc` script in our project's `package.json` (inside `platform/viewer`). That script
 is:
 
 ```js
@@ -114,19 +114,30 @@ configuration looks like:
 ```js
 window.config = {
   routerBasename: '/',
-  servers: {
-    dicomWeb: [
-      {
-        name: 'Orthanc',
-        wadoUriRoot: 'http://localhost:8899/wado',
-        qidoRoot: 'http://localhost:8899/dicom-web',
-        wadoRoot: 'http://localhost:8899/dicom-web',
-        qidoSupportsIncludeField: false,
+  extensions: [],
+  modes: [],
+  showStudyList: true,
+  dataSources: [
+    {
+      friendlyName: 'dcmjs DICOMWeb Server',
+      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
+        name: 'DCM4CHEE',
+        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
       },
-    ],
-  },
+    },
+  ],
+  defaultDataSourceName: 'dicomweb',
 };
 ```
 

@@ -50,23 +50,40 @@ _/platform/viewer/public/config/default.js_
 ```js
 window.config = {
   routerBasename: '/',
-  servers: {
-    dicomWeb: [
-      {
+  extensions: [],
+  modes: [],
+  showStudyList: true,
+  dataSources: [
+    {
+      friendlyName: 'dcmjs DICOMWeb Server',
+      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         qidoSupportsIncludeField: true,
+        supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
       },
-    ],
-  },
+    },
+  ],
+  defaultDataSourceName: 'dicomweb',
 };
+
 ```
 
 The configuration can also be written as a JS Function in case you need to inject dependencies like external services:
+
+<h2>
+<mark>not sure for below</mark>
+</h2>
+
 
 ```js
 window.config = ({ servicesManager } = {}) => {
@@ -98,6 +115,34 @@ window.config = ({ servicesManager } = {}) => {
   };
 };
 ```
+
+As you can see a new change in `OHIF-v3` is the addition of `dataSources`.
+Extensions can register the datasource data sources into the `ExtensionManager`, this way
+you can develop your own extension that works with a
+
+<mark>Contine</mark>
+
+.
+For instance, the `default` extension
+
+```js
+// extensions/default/src/getDataSourcesModule.js
+
+function getDataSourcesModule() {
+  return [
+    {
+      name: 'dicomweb',
+      type: 'webApi',
+      createDataSource: createDicomWebApi,
+    },
+  ];
+}
+```
+
+
+
+
+
 
 You can also create a new config file and specify its path relative to the build
 output's root by setting the `APP_CONFIG` environment variable. You can set the

@@ -1,7 +1,72 @@
-# Contributing: Tests
+# Running Tests for OHIF
+
+We introduce here various test types that is available
+for OIHF, and how to run each test in order to make sure your contribution
+hasn't broken any existing functionalities. Idea and philosophy of each testing category is discussed in the second
+part of this page.
+
+## Unit test
+To run the unit test:
+```
+yarn run test:unit:ci
+```
+
+Note: You should have already installed all the packages with `yarn install`.
+
+
+Running unit test will generate a report at the end showing the successful and
+unsuccessful tests with detailed explanations.
+
+## End-to-end test
+For running the OHIF e2e test you need to run the following steps:
+
+- Create a mini-pacs for OHIF to access the images for testing. We download
+and run our lightweight implementation which provides a collection of DICOM studies ([source code][mini-pacs]).
+
+  ```
+  docker run -p 5985:5985 -p 5984:5984 -e USE_POUCHDB=true -e DB_SERVER=http://0.0.0.0 ohif/viewer-testdata:0.1-test
+  ```
+
+  Successful execution should be
+
+  ![](../assets/img/docker-pacs.png)
+
+- Open a new terminal, navigate to the OHIF project, and run OHIF with the dicom-server config
+
+  ```
+  APP_CONFIG=config/dicomweb-server.js yarn start
+  ```
+
+  You should be able to see test studies in the study list
+
+  ![OHIF-e2e-test-studies](../assets/img/OHIF-e2e-test-studies.png)
+
+- Open a new terminal inside the OIHF project, and run the e2e cypress test
+
+  ```
+  yarn run test:e2e
+  ```
+
+  You should be able to see the cypress window open
+
+  ![e2e-cypress](../assets/img/e2e-cypress.png)
+
+  Run the tests by clicking on the `Run #number integration tests` .
+
+  A new window will open and you will see e2e tests being executed one after
+  each other.
+
+  ![e2e-cypress-final](../assets/img/e2e-cypress-final.png)
+
+
+
+
+
+
+# Testing Philosiphy
 
 > Testing is an opinionated topic. Here is a rough overview of our testing
-> philosiphy. See something you want to discuss or think should be changed? Open
+> philosophy. See something you want to discuss or think should be changed? Open
 > a PR and let's discuss.
 
 You're an engineer. You know how to write code, and writing tests isn't all that
@@ -128,6 +193,7 @@ feature `X` or scenario `Y`? Open an issue and let's discuss.
 
 <!-- prettier-ignore-start -->
 [eslint-rules]: https://eslint.org/docs/rules/
+[mini-pacs]: https://github.com/OHIF/viewer-testdata
 [typescript-docs]: https://www.typescriptlang.org/docs/home.html
 [flow-org]: https://flow.org/
 <!-- Talks -->

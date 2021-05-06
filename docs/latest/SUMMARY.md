@@ -1,6 +1,15 @@
 # OHIF Viewers
 
 - [Our Process](our-process.md)
+- User Manuals
+  - [Overview](userManuals/index.md)
+  - [Study List](userManuals/studyList/index.md)
+  - [Viewer](userManuals/viewer/index.md)
+    - [Study Panel](userManuals/viewer/studyPanel/study-panel.md)
+    - [Measurement Panel](userManuals/viewer/measurementPanel/measurement-panel.md)
+    - [Viewport](userManuals/viewer/viewport/viewport.md)
+    - [Toolbar](userManuals/viewer/toolbar/toolbar.md)
+    - [Hot keys](userManuals/viewer/hotkeys/hotkeys.md)
 - Development
   - [Getting Started](development/getting-started.md)
   - [Contributing](development/contributing.md)
@@ -14,7 +23,7 @@
 - [Architecture](architecture/index.md)
 - [Viewer](viewer/index.md)
   - [Configuration](viewer/configuration.md)
-  - [Themeing](viewer/themeing.md)
+  - [Theming](viewer/themeing.md)
   - [Internationalization](viewer/internationalization.md)
 - [Extensions](extensions/index.md)
   - [Registering](extensions/index.md#registering-an-extension)
@@ -29,6 +38,7 @@
   - [Contexts](extensions/index.md#contexts)
   - [ExtensionManager](extensions/index.md#extensionmanager)
   - [OHIF Maintained](extensions/index.md#maintained-extensions)
+- [Modes](modes/index.md)
 - [Services](services/index.md)
   - [Default](services/default/index.md)
   - [UI](services/ui/index.md)
@@ -36,10 +46,10 @@
     - [Modal Service](services/ui/ui-modal-service.md)
     - [Notification Service](services/ui/ui-notification-service.md)
 
----
 
 - [Deployment](deployment/index.md)
   - [Embedded](deployment/index.md#embedded-viewer)
+<!--
   - [Stand-alone](deployment/index.md#stand-alone-viewer)
   - [Data](deployment/index.md#data)
 - Recipes
@@ -58,4 +68,4 @@
   - [Scope of Project](faq/scope-of-project.md)
   - [Browser Support](faq/browser-support.md)
   - [PWA vs Packaged](faq/pwa-vs-packaged.md)
-- [Help](help.md)
+- [Help](help.md) -->

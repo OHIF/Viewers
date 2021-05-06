@@ -25,39 +25,46 @@ you'll see the following:
 
 ```bash
 .
+│
 ├── extensions
-│   ├── _example            # Skeleton of example extension
-│   ├── cornerstone         # 2D images w/ Cornerstone.js
-│   ├── dicom-html          # Structured Reports as HTML in viewport
-│   ├── dicom-microscopy    # Whole slide microscopy viewing
-│   ├── dicom-pdf           # View DICOM wrapped PDFs in viewport
-│   └── vtk                 # MPR and Volume support w/ VTK.js
+│   ├── _example             # Skeleton of example extension
+│   ├── default              # default functionalities
+│   ├── cornerstone          # 2D images w/ Cornerstone.js
+│   ├── measurement-tracking # measurement tracking
+│   ├── dicom-sr             # Structured reports
+│   └── dicom-pdf            # View DICOM wrapped PDFs in viewport
+│
+├── modes
+│   └── longitudinal         # longitudinal measurement tracking mode
 │
 ├── platform
-│   ├── core                # Business Logic
-│   ├── i18n                # Internationalization Support
-│   ├── ui                  # React component library
-│   └── viewer              # Connects platform and extension projects
+│   ├── core                 # Business Logic
+│   ├── i18n                 # Internationalization Support
+│   ├── ui                   # React component library
+│   └── viewer               # Connects platform and extension projects
 │
-├── ...                     # misc. shared configuration
-├── lerna.json              # MonoRepo (Lerna) settings
-├── package.json            # Shared devDependencies and commands
+├── ...                      # misc. shared configuration
+├── lerna.json               # MonoRepo (Lerna) settings
+├── package.json             # Shared devDependencies and commands
 └── README.md
 ```
+
 
 The `platform` directory contains the business logic library, component library,
 and the application library that combines them to create a powerful medical
 imaging viewer.
 
-The `extensions` directory contains many packages that can be registered with
-`@ohif/core`'s `ExtensionManager` to expand an application's supported features
-and functionality.
+The `extensions` directory contains many packages that provides essential
+functionalities such as rendering segmentation, and hanging protocols that modes
+can consume to enable a certain workflow.
 
-![Architecture Diagram](../assets/img/architecture-diagram.png)
+The `modes` directory contains workflows that can be registered with OHIF
+within certain routes. The mode will get used once the user opens the viewer
+on the registered route.
 
-<center><i>architecture diagram</i></center>
 
-This diagram is a conceptual illustration of how the Viewer is architected.
+
+<!-- This diagram is a conceptual illustration of how the Viewer is architected.
 
 1. (optional) `extensions` can be registered with `@ohif/core`'s
    `ExtensionManager`
@@ -66,7 +73,7 @@ This diagram is a conceptual illustration of how the Viewer is architected.
 3. The `@ohif/viewer` composes and provides data to components from our
    component library (`@ohif/ui`)
 4. The `@ohif/viewer` can be built and served as a stand-alone PWA, or as an
-   embeddable package ([`@ohif/viewer`][viewer-npm])
+   embeddable package ([`@ohif/viewer`][viewer-npm]) -->
 
 ## Business Logic
 
@@ -79,6 +86,7 @@ features common to Web-based medical imaging viewers. For example:
 - Managing a study's measurements
 - Managing a study's DICOM metadata
 - [A flexible pattern for extensions](../extensions/index.md)
+- [workflows](../modes/index.md)
 - And many others
 
 It does this while remaining decoupled from any particular view library or
@@ -123,12 +131,34 @@ looking for ways to improve our extensibility ^\_^
 
 [Click here to read more about extensions!](../extensions/index.md)
 
+## Modes
+OHIF extensions were designed to provide certain core functionalities for building
+your viewer. However, often in medical imaging we face a specific use case
+in which we are using some core functionalities, adding our specific UI, and
+use it in our workflows. Previously, to achieve this you had to create an
+extension to add have such feature. `OHIF-v3` introduces `Modes` to enable
+building such workflows by re-using the core functionalities from the extensions.
+
+Some common workflows may include:
+
+- Measurement tracking for lesions
+- Segmentation of brain abnormalities
+- AI probe mode for detecting prostate cancer
+
+In the 3 mentioned modes above, they will share the same core rendering module that
+the `default` extension provides. In addition, segmentation mode will require
+segmentation tools. As you can see, modes are a layer on top of extensions, that you
+can configure in order to achieve certain workflows.
+
+[Click here to read more about modes!](../modes/index.md)
+
 ## Common Questions
 
-> When should I use the packaged source `@ohif/viewer` versus building a PWA
+
+<!-- > When should I use the packaged source `@ohif/viewer` versus building a PWA
 > from the source?
 
-...
+... -->
 
 > Can I create my own Viewer using Vue.js or Angular.js?
 

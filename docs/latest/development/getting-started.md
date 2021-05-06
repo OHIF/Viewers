@@ -47,6 +47,9 @@ Navigate to the root of the project's directory in your terminal and run the
 following commands:
 
 ```bash
+# Switch to the v3 branch
+git switch feat/v2-main
+
 # Restore dependencies
 yarn install
 
@@ -68,7 +71,7 @@ You should see the following output:
 ### 🎉 Celebrate 🎉
 
 <center>
-  <img alt="development server hosted app" src="/assets/img/loading-study.gif" />
+  <img alt="development server hosted app" src="/assets/img/OHIF-Viewer.gif" />
   <i>Our app, hosted by the development server</i>
 </center>
 
