@@ -3,6 +3,7 @@ import './ImageThumbnail.styl';
 
 import { utils } from '@ohif/core';
 import React, { useState, useEffect, createRef } from 'react';
+import classNames from 'classnames';
 
 import PropTypes from 'prop-types';
 import ViewportErrorIndicator from '../../viewer/ViewportErrorIndicator';
@@ -15,6 +16,7 @@ import ViewportLoadingIndicator from '../../viewer/ViewportLoadingIndicator';
 //import cornerstone from 'cornerstone-core';
 function ImageThumbnail(props) {
   const {
+    active,
     width,
     height,
     imageSrc,
@@ -97,7 +99,7 @@ function ImageThumbnail(props) {
   }, [fetchImagePromise, image.imageId, imageId, purgeCancelablePromise, setImagePromise]);
 
   return (
-    <div className="ImageThumbnail">
+    <div className={classNames('ImageThumbnail', { active: active })}>
       <div className="image-thumbnail-canvas">
         {shouldRenderToCanvas() ? (
           <canvas ref={canvasRef} width={width} height={height} />
@@ -126,6 +128,7 @@ function ImageThumbnail(props) {
 }
 
 ImageThumbnail.propTypes = {
+  active: PropTypes.bool,
   imageSrc: PropTypes.string,
   imageId: PropTypes.string,
   error: PropTypes.bool,
@@ -135,6 +138,7 @@ ImageThumbnail.propTypes = {
 };
 
 ImageThumbnail.defaultProps = {
+  active: false,
   error: false,
   stackPercentComplete: 0,
   width: 217,

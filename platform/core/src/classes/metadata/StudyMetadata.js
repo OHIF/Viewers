@@ -997,6 +997,9 @@ function _findReferencedSeriesInstanceUIDsFromReferencedImageSequence (
   const referencedImageArray = _toArray(metadata.ReferencedImageSequence);
   for (let i = 0; i < referencedImageArray.length; i++) {
     const { ReferencedSOPInstanceUID } = referencedImageArray[i];
+    if (!ReferencedSOPInstanceUID) {
+      continue;
+    }
 
     referencedSeriesInstanceUIDs = _findReferencedSeriesInstanceUIDsFromSOPInstanceUID(
       displaySets,
@@ -1031,8 +1034,10 @@ function _findReferencedSeriesInstanceUIDsFromSourceImageSequence (
     const firstFunctionalGroups = _toArray(
       PerFrameFunctionalGroupsSequence
     )[0];
-    const { DerivationImageSequence } = firstFunctionalGroups;
-    SourceImageSequence = DerivationImageSequence;
+    if (firstFunctionalGroups) {
+      const { DerivationImageSequence } = firstFunctionalGroups;
+      SourceImageSequence = DerivationImageSequence;
+    }
   }
 
   if (!SourceImageSequence) {
@@ -1071,9 +1076,16 @@ function _findReferencedSeriesInstanceUIDsFromSOPInstanceUID (
 
   for (let i = 0; i < imageSets.length; i++) {
     const { images } = imageSets[i];
+    if (!images) {
+      continue;
+    }
     for (let j = 0; j < images.length; j++) {
-      if (images[j].SOPInstanceUID === SOPInstanceUID) {
-        return [images[j].getData().metadata.SeriesInstanceUID];
+      const image = images[j];
+      if (!image) {
+        continue;
+      }
+      if (image.SOPInstanceUID === SOPInstanceUID) {
+        return [image.getData().metadata.SeriesInstanceUID];
       }
     }
   }

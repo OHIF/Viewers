@@ -197,18 +197,38 @@ class Viewer extends Component {
         ]);
       }
 
+      const activeViewport = this.props.viewports[this.props.activeViewportIndex];
+      const activeDisplaySetInstanceUID =
+        activeViewport ? activeViewport.displaySetInstanceUID : undefined;
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(studies),
+        thumbnails: _mapStudiesToThumbnails(studies, activeDisplaySetInstanceUID),
       });
     }
   }
 
   componentDidUpdate(prevProps) {
-    const { studies, isStudyLoaded } = this.props;
+    const {
+      studies,
+      isStudyLoaded,
+      activeViewportIndex,
+      viewports
+    } = this.props;
 
-    if (studies !== prevProps.studies) {
+    const activeViewport = viewports[activeViewportIndex];
+    const activeDisplaySetInstanceUID =
+      activeViewport ? activeViewport.displaySetInstanceUID : undefined;
+
+    const prevActiveViewport = prevProps.viewports[prevProps.activeViewportIndex];
+    const prevActiveDisplaySetInstanceUID =
+      prevActiveViewport ? prevActiveViewport.displaySetInstanceUID : undefined;
+
+    if (studies !== prevProps.studies ||
+      activeViewportIndex !== prevProps.activeViewportIndex ||
+      activeDisplaySetInstanceUID !== prevActiveDisplaySetInstanceUID
+      ) {
+
       this.setState({
-        thumbnails: _mapStudiesToThumbnails(studies),
+        thumbnails: _mapStudiesToThumbnails(studies, activeDisplaySetInstanceUID),
       });
     }
     if (isStudyLoaded && isStudyLoaded !== prevProps.isStudyLoaded) {
@@ -526,7 +546,7 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
  * @param {Study[]} studies
  * @param {DisplaySet[]} studies[].displaySets
  */
-const _mapStudiesToThumbnails = function(studies) {
+const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
 
@@ -557,7 +577,25 @@ const _mapStudiesToThumbnails = function(studies) {
 
       const hasWarnings = _checkForSeriesInconsistencesWarnings(displaySet, studies);
 
+      let active = false;
+      if (displaySet.Modality !== 'SEG' && displaySet.Modality !== 'RTSTRUCT') {
+        active = activeDisplaySetInstanceUID === displaySetInstanceUID;
+      } else if (displaySet.getSourceDisplaySet){
+        if (displaySet.Modality === 'SEG') {
+          const { referencedDisplaySet } = displaySet.getSourceDisplaySet(studies, false);
+          active = referencedDisplaySet ?
+            activeDisplaySetInstanceUID === referencedDisplaySet.displaySetInstanceUID :
+              false;
+        } else {
+          const referencedDisplaySet = displaySet.getSourceDisplaySet(studies, false);
+          active = referencedDisplaySet ?
+            activeDisplaySetInstanceUID === referencedDisplaySet.displaySetInstanceUID :
+              false;
+        }
+      }
+
       return {
+        active,
         imageId,
         altImageText,
         displaySetInstanceUID,

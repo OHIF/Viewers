@@ -159,6 +159,7 @@ function Thumbnail(props) {
       {/* SHOW IMAGE */}
       {hasImage && (
         <ImageThumbnail
+          active={active}
           imageSrc={imageSrc}
           imageId={imageId}
           error={error}

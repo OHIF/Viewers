@@ -1,6 +1,7 @@
 import { MODULE_TYPES, utils } from '@ohif/core';
 import loadSegmentation from './loadSegmentation';
 import getSourceDisplaySet from './getSourceDisplaySet';
+import refreshViewports from './utils/refreshViewports';
 import OHIF from '@ohif/core';
 import dcmjs from 'dcmjs';
 
@@ -127,6 +128,8 @@ export default function getSopClassHandlerModule({ servicesManager }) {
             []
           );
         }
+
+        refreshViewports();
       };
 
       return segDisplaySet;
