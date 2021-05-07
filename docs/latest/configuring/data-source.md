@@ -1,19 +1,16 @@
-# Data Source
-
-After following the steps outlined in
-[Getting Started](./../development/getting-started.md), you'll notice that the
-OHIF Viewer has data for several studies and their images. You didn't add this
-data, so where is it coming from?
-
-By default, the viewer is configured to connect to a remote server hosted by the
-nice folks over at [dcmjs.org][dcmjs-org]. While convenient for getting started,
-the time may come when you want to develop using your own data either locally or
-remotely.
-
 ## Set up a local DICOM server
 
-> ATTENTION! Already have a remote or local server? Skip to the
-> [configuration section](#configuration-learn-more) below.
+- [Set up a local DICOM server](#set-up-a-local-dicom-server)
+  - [Requirements](#requirements)
+  - [Running Orthanc](#running-orthanc)
+    - [Orthanc: Learn More](#orthanc-learn-more)
+  - [Connecting to Orthanc](#connecting-to-orthanc)
+    - [Configuration: Learn More](#configuration-learn-more)
+- [Open Source DICOM Image Archives](#open-source-dicom-image-archives)
+
+
+ATTENTION! Already have a remote or local server? Skip to the
+[configuration section](#configuration-learn-more) below.
 
 While the OHIF Viewer can work with any data source, the easiest to configure
 are the ones that follow the [DICOMWeb][dicom-web] spec.
@@ -159,17 +156,7 @@ Here are some of the more popular ones:
 
 _Feel free to make a Pull Request if you want to add to this list._
 
-<!--
-  Links
-  -->
 
-<!-- prettier-ignore-start -->
-[dcmjs-org]: https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado
-[dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
-[storescu]: http://support.dcmtk.org/docs/storescu.html
-[webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy
-[orthanc-docker-compose]: https://github.com/OHIF/Viewers/tree/master/.docker/Nginx-Orthanc
-<!-- Archives -->
 [dcm4chee]: https://github.com/dcm4che/dcm4chee-arc-light
 [dcm4chee-docker]: https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker
 [orthanc]: https://www.orthanc-server.com/
@@ -178,4 +165,6 @@ _Feel free to make a Pull Request if you want to add to this list._
 [dicomcloud-install]: https://github.com/DICOMcloud/DICOMcloud#running-the-code
 [osirix]: http://www.osirix-viewer.com/
 [horos]: https://www.horosproject.org/
-<!-- prettier-ignore-end -->
+[default-config]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/config/default.js
+[html-templates]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/html-templates
+[config-files]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/config

@@ -1,3 +1,24 @@
+
+- [Viewer: Internationalization](#viewer-internationalization)
+  - [Installing](#installing)
+  - [How it works](#how-it-works)
+    - [With React](#with-react)
+      - [Using HOCs](#using-hocs)
+      - [Using Hooks](#using-hooks)
+    - [Using outside of OHIF viewer](#using-outside-of-ohif-viewer)
+    - [Without React](#without-react)
+- [Main Concepts While Translating](#main-concepts-while-translating)
+  - [Namespaces](#namespaces)
+    - [How to use another NameSpace inside the current NameSpace?](#how-to-use-another-namespace-inside-the-current-namespace)
+  - [Extending Languages in @ohif/i18n](#extending-languages-in-ohifi18n)
+    - [Extending languages dynamically](#extending-languages-dynamically)
+    - [How to set a whole new language](#how-to-set-a-whole-new-language)
+  - [Language Detections](#language-detections)
+    - [Changing the language](#changing-the-language)
+    - [Language Persistence](#language-persistence)
+  - [Debugging translations](#debugging-translations)
+    - [Contributing with new languages](#contributing-with-new-languages)
+
 # Viewer: Internationalization
 
 OHIF supports internationalization using [i18next](https://www.i18next.com/)

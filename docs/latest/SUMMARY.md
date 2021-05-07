@@ -15,8 +15,8 @@
   - [Contributing](development/contributing.md)
   - [Continuous Integration](development/continous-integration.md)
   - [Testing](development/testing.md)
-- [Configuring](configuring/index.md)
-  - [Data Source](configuring/data-source.md)
+- [Configuring Data Source](configuring/index.md)
+  - [Local DICOM Server](configuring/data-source.md)
 
 ---
 

@@ -101,7 +101,7 @@ the steps layed out in our
 #### What if I don't have an imaging archive?
 
 We provide some guidance on configuring a local image archive in our
-[Data Source Essentials](./../configuring/data-source.md) guide. Hosting an
+[Data Source Essentials](./../configuring/index.md#set-up-a-local-DICOM-server) guide. Hosting an
 archive remotely is a little trickier. You can check out some of our
 [advanced recipes](#recipes) for modeled setups that may work for you.
 

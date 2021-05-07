@@ -1,53 +1,52 @@
 # Extensions
 
-- [Overview](#overview)
-- [Concepts](#concepts)
+- [Extensions](#extensions)
+  - [Overview](#overview)
   - [Extension Skeleton](#extension-skeleton)
   - [Registering an Extension](#registering-an-extension)
-  - [Lifecylce Hooks](#lifecycle-hooks)
-  - [Modules](#modules)
-  - [Contexts](#contexts)
-- [Consuming Extensions](#consuming-extensions)
-  - [Extension Manager](#extensionmanager)
-- [Maintained Extensions](#maintained-extensions)
+    - [OHIF-Maintained Extensions](#ohif-maintained-extensions)
+    - [Registering at Runtime](#registering-at-runtime)
+    - [Registering at Build Time](#registering-at-build-time)
+    - [Lifecycle Hooks](#lifecycle-hooks)
+    - [Modules](#modules)
+    - [Contexts](#contexts)
+  - [Consuming Extensions](#consuming-extensions)
+    - [`ExtensionManager`](#extensionmanager)
 
 ## Overview
+We have re-designed the architecture of the `OHIF-v3` to enable building applications
+that are easily extensible to various use cases (modes) that  behind the scene would utilize desired functionalities (extensions) to reach the goal of the use case.
 
-We use extensions to help us isolate and package groups of related features.
-Extensions provide functionality, ui components, and new behaviors. Ideally,
-they're built in a way that allows them to extend entirely different
-implementations of the `@ohif/viewer` project.
+Previously, extensions were “additive” and could not easily be mixed and matched within the same viewer for different use cases. Previous `OHIF-v2` architecture meant that
+any minor extension alteration usually  would require the user to hard fork. E.g. removing some of the tools from the toolbar of the cornerstone extension meant you had to hard fork it, which was frustrating if the implementation was otherwise the same as master.
 
+
+> - Developers should make packages of *reusable* functionality as extensions, and can consume
+> publicly available extensions.
+> - Any conceivable radiological workflow or viewer setup will be able to be built with the platform through *modes*.
+
+
+
+Practical examples of extensions include:
+
+- A set of segmentation tools that build on top of the `cornerstone` viewport
+- A set of rendering functionalities to volume render the data
+- [See our maintained extensions for more examples of what's possible](#maintained-extensions)
+
+
+
+<mark>Diagram showing how extensions are configured and accessed.
+<!--
 <div style="text-align: center;">
   <a href="/assets/img/extensions-diagram.png">
     <img src="/assets/img/extensions-diagram.png" alt="Extensions Diagram" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>Diagram showing how extensions are configured and accessed.</i></div>
-</div>
+</div> -->
 
-The `@ohif/viewer`'s application level configuration gives us the ability to add
-and configure extensions. When the application starts, extensions are registered
-with the `ExtensionManager`. Different portions of the `@ohif/viewer` project
-will use registered extensions to influence application behavior.
 
-Extensions allow us to:
 
-- Wrap and integrate functionality of 3rd party dependencies in a reusable way
-- Change how application data is mapped and transformed
-- Display a consistent/cohesive UI
-- Inject custom components to override built-in components
-
-Practical examples of extensions include:
-
-- A set of segmentation tools that build on top of the `cornerstone` viewport
-- Showing ML/AI report summaries for the selected study/series/image
-- Support for parsing DICOM structured reports and displaying them in a user
-  friendly way
-- [See our maintained extensions for more examples of what's possible](#maintained-extensions)
-
-## Concepts
-
-### Extension Skeleton
+## Extension Skeleton
 
 An extension is a plain JavaScript object that has an `id` property, and one or
 more [modules](#modules) and/or [lifecycle hooks](#lifecycle-hooks).
@@ -62,45 +61,72 @@ export default {
 
   // Lifecyle
   preRegistration() { /* */ },
+  onModeEnter() { /* */ },
+  onModeExit() { /* */ },
   // Modules
-  getCommandsModule() { /* */ },
-  getToolbarModule() { /* */ },
+  getLayoutTemplateModule() { /* */ },
+  getDataSourcesModule() { /* */ },
+  getSopClassHandlerModule() { /* */ },
   getPanelModule() { /* */ },
-  getSopClassHandler() { /* */ },
   getViewportModule() { /* */ },
+  getCommandsModule() { /* */ },
+  getContextModule() { /* */ },
+  getToolbarModule() { /* */ },
+  getHangingProtocolModule() { /* */ },
 }
 ```
 
-### Registering an Extension
+## Registering an Extension
 
-There are two different ways to register and configure extensions: At
+Extensions are building blocks that need to be registered. There are two different ways to register and configure extensions: At
 [runtime](#registering-at-runtime) and at
 [build time](#registering-at-build-time).
-
 You can leverage one or both strategies. Which one(s) you choose depend on your
 application's requirements. Each [module](#modules) defined by the extension
-becomes available to the core application via the `ExtensionManager`.
+becomes available to the modes via the `ExtensionManager`.
 
-#### Registering at Runtime
+### OHIF-Maintained Extensions
+A small number of powerful extensions for popular use cases are maintained by
+OHIF. They're co-located in the [`OHIF/Viewers`][viewers-repo] repository, in
+the top level [`extensions/`][ext-source] directory.
+
+{% include "./_maintained-extensions-table.md" %}
+
+
+
+
+### Registering at Runtime
 
 The `@ohif/viewer` uses a [configuration file](../viewer/configuration.md) at
 startup. The schema for that file includes an `Extensions` key that supports an
 array of extensions to register.
 
 ```js
+import MyFirstExtension from '@ohif/extension-first'
+import MySecondExtension from '@ohif/extension-second'
+
+const extensionConfig = {/* extension configuration */}
+
 // prettier-ignore
 const config = {
+  routerBasename: '/',
   extensions: [
     MyFirstExtension,
     [
       MySecondExtension,
-      { /* MySecondExtensions Configuration */ },
+      extensionConfig
     ],
-  ];
+  ],
+  modes: [/* modes */],
+  showStudyList: true,
+  dataSources: [ /* data source config */]
 }
 ```
 
-#### Registering at Build Time
+Then, behind the scene, the runtime-added extensions will get merged with the
+app-default extensions (not the `defaul extension`,)
+
+##def# Registering at Build Time
 
 The `@ohif/viewer` works best when built as a "Progressive Web Application"
 (PWA). If you know the extensions your application will need, you can specify
@@ -114,7 +140,27 @@ You can update the list of bundled extensions by:
 
 1. Having your `@ohif/viewer` project depend on the extension
 2. Importing and adding it to the list of extensions in the
-   `<repo-root>/platform/src/index.js` entrypoint.
+   `<repo-root>/platform/src/index.js` entrypoint:
+
+  ```js
+  import OHIFDefaultExtension from '@ohif/extension-default';
+  import OHIFCornerstoneExtension from '@ohif/extension-cornerstone';
+  import OHIFMeasurementTrackingExtension from '@ohif/extension-measurement-tracking';
+  import OHIFDICOMSRExtension from '@ohif/extension-dicom-sr';
+  import MyFirstExtension from '@ohif/extension-first'
+
+  /** Combine our appConfiguration and "baked-in" extensions */
+  const appProps = {
+    config: window ? window.config : {},
+    defaultExtensions: [
+      OHIFDefaultExtension,
+      OHIFCornerstoneExtension,
+      OHIFMeasurementTrackingExtension,
+      OHIFDICOMSRExtension,
+      MyFirstExtension
+    ],
+  };
+  ```
 
 ### Lifecycle Hooks
 
@@ -221,13 +267,7 @@ config, the application's config and `ExtensionManager`'s `ServicesManager` and
 Our `@ohif/viewer` uses the `modules` member to access registered extensions at
 appropriate places in our application.
 
-## Maintained Extensions
 
-A small number of powerful extensions for popular use cases are maintained by
-OHIF. They're co-located in the [`OHIF/Viewers`][viewers-repo] repository, in
-the top level [`extensions/`][ext-source] directory.
-
-{% include "./_maintained-extensions-table.md" %}
 
 <!--
   LINKS

@@ -49,12 +49,13 @@ our medical image web viewers from the start. The summary of changes include:
 
 - Redux store has been removed from the viewer, and a cleaner, more powerful
 - tailwind CSS
+- End-to-end test suite
 
 
+Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:
 
 
-
-&nbsp;
+{% include "./_gap_analysis.md" %}
 
 
 
@@ -75,6 +76,12 @@ Check out these helpful links:
 - We're an active, vibrant community.
   [Learn how you can be more involved.](./development/contributing.md)
 - Feeling lost? Read our [help page](./help.md).
+
+
+
+
+
+
 
 <!--
   Links
