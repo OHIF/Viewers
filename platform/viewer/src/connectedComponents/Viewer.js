@@ -533,6 +533,7 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
     }
   }
 
+  displaySet.warningsList = warningsList;
   return warningsList;
 }
 

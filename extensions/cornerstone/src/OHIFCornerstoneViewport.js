@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import WarningsViewportOverlay from './utils/WarningsViewportOverlay'
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
@@ -194,6 +195,7 @@ class OHIFCornerstoneViewport extends Component {
       return null;
     }
     const { viewportIndex } = this.props;
+    const { warningsList } = this.props.viewportData.displaySet;
     const {
       imageIds,
       currentImageIdIndex,
@@ -229,6 +231,10 @@ class OHIFCornerstoneViewport extends Component {
       }
     };
 
+    const warningsOverlay = props => {
+      return <WarningsViewportOverlay {...props} warningsList={warningsList} />
+    };
+
     return (
       <>
         <ConnectedCornerstoneViewport
@@ -237,6 +243,7 @@ class OHIFCornerstoneViewport extends Component {
           imageIdIndex={currentImageIdIndex}
           onNewImageDebounced={newImageHandler}
           onNewImageDebounceTime={300}
+          viewportOverlayComponent={warningsOverlay}
           // ~~ Connected (From REDUX)
           // frameRate={frameRate}
           // isPlaying={false}
