@@ -1,5 +1,8 @@
 # Module: Commands
 
+<mark>A list of arbitrary functions. These may activate tools, communicate with a server, open a modal, etc. There is no ToolbarModule in extensions anymore. These are removed in v3. Instead, a mode defines its toolbars, and which commands they call, in its configuration.
+
+
 - [Overview](#overview)
 - [Command Definitions](#command-definitions)
 - [Commands Manager](#commands-manager)

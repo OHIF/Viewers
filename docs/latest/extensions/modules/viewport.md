@@ -1,5 +1,8 @@
 # Module: Viewport
 
+<mark>Viewports consume a displaySet and display/allow the user to interact with data. The viewport can specify which displaySets can be accepted by the SOPClassHandler’s UID. A mode can define which Viewport to use for specific SOPClassHandlers, so if you want to fork just a single Viewport component for a specialized mode, this is possible.
+
+
 An extension can register a Viewport Module by defining a `getViewportModule`
 method that returns a React component. Currently, we use viewport components to
 add support for:

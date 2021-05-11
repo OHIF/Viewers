@@ -3,13 +3,12 @@
 - [Extensions](#extensions)
   - [Overview](#overview)
   - [Extension Skeleton](#extension-skeleton)
+  - [OHIF-Maintained Extensions](#ohif-maintained-extensions)
   - [Registering an Extension](#registering-an-extension)
-    - [OHIF-Maintained Extensions](#ohif-maintained-extensions)
     - [Registering at Runtime](#registering-at-runtime)
     - [Registering at Build Time](#registering-at-build-time)
-    - [Lifecycle Hooks](#lifecycle-hooks)
-    - [Modules](#modules)
-    - [Contexts](#contexts)
+  - [Lifecycle Hooks](#lifecycle-hooks)
+  - [Modules](#modules)
   - [Consuming Extensions](#consuming-extensions)
     - [`ExtensionManager`](#extensionmanager)
 
@@ -76,16 +75,7 @@ export default {
 }
 ```
 
-## Registering an Extension
-
-Extensions are building blocks that need to be registered. There are two different ways to register and configure extensions: At
-[runtime](#registering-at-runtime) and at
-[build time](#registering-at-build-time).
-You can leverage one or both strategies. Which one(s) you choose depend on your
-application's requirements. Each [module](#modules) defined by the extension
-becomes available to the modes via the `ExtensionManager`.
-
-### OHIF-Maintained Extensions
+## OHIF-Maintained Extensions
 A small number of powerful extensions for popular use cases are maintained by
 OHIF. They're co-located in the [`OHIF/Viewers`][viewers-repo] repository, in
 the top level [`extensions/`][ext-source] directory.
@@ -93,12 +83,24 @@ the top level [`extensions/`][ext-source] directory.
 {% include "./_maintained-extensions-table.md" %}
 
 
+## Registering an Extension
+
+Extensions are building blocks that need to be registered. There are two different ways to register and configure extensions: At
+[runtime](#registering-at-runtime) and at
+[build time](#registering-at-build-time).
+You can leverage one or both strategies. Which one(s) you choose depend on your
+application's requirements.
+
+Each [module](#modules) defined by the extension
+becomes available to the modes via the `ExtensionManager` by requesting it via
+its id `extensionManager.getModuleEntry("org.ohif.measurement-tracking.panelModule.seriesList")` which is accessing the `seriesList` component from `panelModule` of the `org.ohif.measurement-tracking` extension.
+
 
 
 ### Registering at Runtime
 
 The `@ohif/viewer` uses a [configuration file](../viewer/configuration.md) at
-startup. The schema for that file includes an `Extensions` key that supports an
+startup. The schema for that file includes an `extensions` key that supports an
 array of extensions to register.
 
 ```js
@@ -124,9 +126,11 @@ const config = {
 ```
 
 Then, behind the scene, the runtime-added extensions will get merged with the
-app-default extensions (not the `defaul extension`,)
+default app extensions (note: default app extensions include: `OHIFDefaultExtension`,
+   `OHIFCornerstoneExtension`, `OHIFDICOMSRExtension`,
+   `OHIFMeasurementTrackingExtension`)
 
-##def# Registering at Build Time
+### Registering at Build Time
 
 The `@ohif/viewer` works best when built as a "Progressive Web Application"
 (PWA). If you know the extensions your application will need, you can specify
@@ -162,52 +166,38 @@ You can update the list of bundled extensions by:
   };
   ```
 
-### Lifecycle Hooks
+## Lifecycle Hooks
 
-Currently, there is only a single lifecycle hook for extensions:
+Currently, there are three lifecycle hook for extensions:
+
+
 [`preRegistration`](./lifecycle/pre-registration.md)
-
-If an extension defines the [`preRegistration`](./lifecycle/pre-registration.md)
+This hook is called once on initialization of the entire viewer application, used to initialize the extensions state, and consume user defined extension configuration. If an extension defines the [`preRegistration`](./lifecycle/pre-registration.md)
 lifecycle hook, it is called before any modules are registered in the
 `ExtensionManager`. It's most commonly used to wire up extensions to
 [services](./../services/index.md) and [commands](./modules/commands.md), and to
 bootstrap 3rd party libraries.
 
-### Modules
 
-Modules are the meat of extensions. They provide "definitions", components, and
-filtering/mapping logic that are then made available by various managers and
-services.
+[`onModeEnter`](./lifecycle/on-mode-enter.md): This hook is called whenever a new mode is entered, or a mode’s data or datasource is switched. This hook can be used to initialize data.
+
+[`onModeExit`](./lifecycle/on-mode-exit.md): Similarly to onModeEnter, this hook is called when navigating away from a mode, or before a mode’s data or datasource is changed. This can be used to clean up data (e.g. remove annotations that do not need to be persisted)
+
+
+
+## Modules
+Modules are the meat of extensions, the `blocks` that we have been talking about a lot.
+They provide "definitions", components, and filtering/mapping logic that are then made available to modes and services.
 
 Each module type has a special purpose, and is consumed by our viewer
 differently.
 
-| Type                                              | Description                                                      | Examples                                          |
-| ------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------- |
-| [Commands](./modules/commands.md)                 | Adds named commands, scoped to a context, to the CommandsManager | `setToolActive()`, `nextSeries()`                 |
-| [Panel](./modules/panel.md)                       | Adds left or right hand side panels                              | `<ThumbnailList />`, `<MeasurementsTable />`      |
-| [SOPClassHandler](./modules/sop-class-handler.md) | Determines how retrieved study data is split into "DisplaySets"  | `getDisplaySetFromSeries()`                       |
-| [Toolbar](./modules/toolbar.md)                   | Adds buttons or custom components to the toolbar                 | Toolbar button, nested buttons, custom            |
-| [Viewport](./modules/viewport.md)                 | Adds a component responsible for rendering a "DisplaySet"        | `<CornerstoneViewport />`, `<DicomPdfViewport />` |
+
+{% include "./_modules.md" %}
+
 
 <figure style="text-align: center; font-style: italic;">Tbl. Module types with abridged descriptions and examples. Each module links to a dedicated documentation page.</figure>
 
-### Contexts
-
-The `@ohif/viewer` tracks "active contexts" that extensions can use to scope
-their functionality. Some example contexts being:
-
-- Route: `ROUTE:VIEWER`, `ROUTE:STUDY_LIST`
-- Active Viewport: `ACTIVE_VIEWPORT:CORNERSTONE`, `ACTIVE_VIEWPORT:VTK`
-
-An extension module can use these to say "Only show this Toolbar Button if the
-active viewport is a Cornerstone viewport." This helps us use the appropriate UI
-and behaviors depending on the current contexts.
-
-For example, if we have hotkey that "rotates the active viewport", each Viewport
-module that supports this behavior can add a command with the same name, scoped
-to the appropriate context. When the `command` is fired, the "active contexts"
-are used to determine the appropriate implementation of the rotate behavior.
 
 ## Consuming Extensions
 

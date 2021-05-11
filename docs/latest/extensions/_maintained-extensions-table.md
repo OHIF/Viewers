@@ -18,7 +18,7 @@
                 Default extension provides default viewer layout, a study/series
                 browser, and a datasource that maps to a DICOMWeb compliant backend
             </td>
-            <td>Viewport, Toolbar</td>
+            <td>commandsModule, ContextModule, DataSourceModule, HangingProtocolModule, LayoutTemplateModule, PanelModule, SOPClassHandlerModule, ToolbarModule</td>
         </tr>
         <!-- CORNERSTONE.js -->
         <tr>
@@ -28,12 +28,12 @@
                 </a>
             </td>
             <td>
-                Provides rendering functionalities for 2D imgaes.
+                Provides rendering functionalities for 2D images.
             </td>
-            <td>Viewport, Toolbar</td>
+            <td>ViewportModule, CommandsModule</td>
         </tr>
         <!-- dicom-pdf -->
-        <tr>
+        <!-- <tr>
             <td>
                 <a href="https://www.npmjs.com/package/@ohif/extension-dicom-pdf">DICOM PDF</a>
             </td>
@@ -41,7 +41,7 @@
                 Renders PDFs for a <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-pdf/src/OHIFDicomPDFSopClassHandler.js#L4-L6">specific SopClassUID</a>.
             </td>
             <td>Viewport, SopClassHandler</td>
-        </tr>
+        </tr> -->
         <!-- dicom-sr -->
         <tr>
             <td>
@@ -50,7 +50,7 @@
             <td>
                 Maintained extensions for cornerstone and visualization of DICOM Structured Reports
             </td>
-            <td>Viewport, SopClassHandler</td>
+           <td>ViewportModule, CommandsModule, SOPClassHandlerModule</td>
         </tr>
         <!-- Measurement-tracking -->
         <tr>
@@ -60,7 +60,7 @@
             <td>
                 Tracking measurements in the measurement panel
             </td>
-            <td>Viewport, SopClassHandler</td>
+            <td> ContextModule,PanelModule,ViewportModule,CommandsModule</td>
         </tr>
 
     </tbody>
