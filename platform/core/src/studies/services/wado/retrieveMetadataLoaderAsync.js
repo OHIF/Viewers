@@ -77,7 +77,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
       url: server.qidoRoot,
       headers: DICOMWeb.getAuthorizationHeader(server),
       errorInterceptor: errorHandler.getHTTPErrorHandler(),
-      requestInterceptors: [
+      requestHooks: [
         (request, metadata) => {
           function faultTolerantRequestSend(...args) {
             const operation = retry.operation({
