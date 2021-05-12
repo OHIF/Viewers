@@ -11,6 +11,21 @@ You can make another datasource implementation which communicates to your backen
 
 The DataSource is also a place to add easy helper methods that platform-specific extensions can call in order to interact with the backend, meaning proprietary data interactions can be wrapped in extensions.
 
+```js
+const getDataSourcesModule = () => [
+  {
+    name: 'exampleDataSource',
+    type: 'webApi', // 'webApi' | 'local' | 'other'
+    createDataSource: dataSourceConfig => {
+      return IWebApiDataSource.create(/* */);
+    },
+  },
+];
+```
+
+
+
+
 Default extension provides two main data sources that are commonly used: `dicomweb` and `dicomjson`
 
 ```js

@@ -1,4 +1,4 @@
-# Lifecylce Hook: onModeEnter
+# Lifecycle Hook: onModeEnter
 
 If an extension defines the `onModeEnter` lifecycle hook, it is called
 when a new mode is enters, or a mode's data or datasource is switched.

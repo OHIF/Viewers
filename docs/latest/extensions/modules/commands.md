@@ -1,16 +1,20 @@
 # Module: Commands
 
-<mark>A list of arbitrary functions. These may activate tools, communicate with a server, open a modal, etc. There is no ToolbarModule in extensions anymore. These are removed in v3. Instead, a mode defines its toolbars, and which commands they call, in its configuration.
 
 
-- [Overview](#overview)
-- [Command Definitions](#command-definitions)
-- [Commands Manager](#commands-manager)
-  - [Instantiating](#instatiating)
-  - [Public API](#public-api)
-  - [Contexts](#contexts)
+- [Module: Commands](#module-commands)
+  - [Overview](#overview)
+  - [Command Definitions](#command-definitions)
+  - [Command Behavior](#command-behavior)
+  - [`CommandsManager`](#commandsmanager)
+    - [Instantiating](#instantiating)
+    - [Public API](#public-api)
+    - [Contexts](#contexts)
 
 ## Overview
+`CommandsModule` includes list of arbitrary functions. These may activate tools, communicate with a server, open a modal, etc.
+The significant difference between `OHIF-v3` and `OHIF-v2` is that in `v3` a `mode` defines
+its toolbar, and which commands each tool call is inside in its toolDefinition
 
 An extension can register a Commands Module by defining a `getCommandsModule`
 method. The Commands Module allows us to register one or more commands scoped to
@@ -20,69 +24,55 @@ characteristics that make them tremendously powerful:
 - Multiple implementations for the same command can be defined
 - Only the correct command's implementation will be run, dependent on the
   application's "context"
-- Commands can be called from extensions, modules, and the consuming application
+- Commands are used by hotkeys, toolbar buttons and render settings
 
 Here is a simple example commands module:
 
 ```js
-export default {
-  id: 'example-commands-module',
-
-  /**
-   * @param {object} params
-   * @param {ServicesManager} params.servicesManager
-   * @param {CommandsManager} params.commandsManager
-   */
-  getCommandsModule({ servicesManager, commandsManager }) {
-    return {
-      definitions: {
-        sayHello: {
-          commandFn: ({ words }) => {
-            console.log(words);
-          },
-          options: { words: 'Hello!' },
-        },
+const getCommandsModule = () => ({
+  definitions: {
+    exampleActionDef: {
+      commandFn: ({ param1 }) => {
+        console.log(`param1's value is: ${param1}`);
       },
-      defaultContext: 'VIEWER',
-    };
+      // storeContexts: ['viewports'],
+      options: { param1: 'param1' },
+      context: 'VIEWER', // optional
+    },
   },
-};
+  defaultContext: 'ACTIVE_VIEWPORT::DICOMSR',
+});
 ```
+
 
 Each definition returned by the Commands Module is registered to the
 `ExtensionManager`'s `CommandsManager`.
 
+> `storeContexts` has been removed in `OHIF-v3` and now modules have access to all commands and services. This change enables support for user-registered services.
+
 ## Command Definitions
 
-The command definition consists of a named command (`myCommandName` below) and a
+The command definition consists of a named command (`exampleActionDef` below) and a
 `commandFn`. The command name is used to call the command, and the `commandFn`
-is the "command" that is actioned.
+is the "command" that is actioned. T
 
 ```js
-myCommandName: {
-	commandFn: ({ viewports, other, options }) => { },
-	storeContexts: ['viewports'],
-	options: { words: 'Just kidding! Goodbye!' },
-	context: 'ACTIVE_VIEWPORT::CORNERSTONE',
+exampleActionDef: {
+	commandFn: ({ param1, options }) => { },
+	options: { param1: 'measurement' },
+	context: 'DEFAULT',
 }
 ```
 
 | Property        | Type               | Description                                                                                                                             |
 | --------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `commandFn`     | func               | The function to call when command is run. Receives `options` and `storeContexts`.                                                       |
-| `storeContexts` | string[]           | (optional) Expected state objects to be passed in as props. Located using `getAppState` fn defined at `CommandsManager`'s instatiation. |
 | `options`       | object             | (optional) Arguments to pass at the time of calling to the `commandFn`                                                                  |
 | `context`       | string[] or string | (optional) Overrides the `defaultContext`. Let's us know if command is currently "available" to be run.                                 |
 
 ## Command Behavior
 
-**I have many similar commands. How can I share their `commandFn` and make it
-reusable?**
 
-This is where `storeContexts` and `options` come in. We use these in our
-`setToolActive` command. `storeContexts` helps us identify our `activeViewport`,
-and `options` allow us to pass in the name of a tool we would like to set as
-active.
 
 **If there are multiple valid commands for the application's active contexts**
 
@@ -106,7 +96,7 @@ used when constructing the `ExtensionManager`.
 
 When we instantiate the `CommandsManager`, we need to pass it two methods:
 
-- `getAppState` - Should return the application's state when called
+- `getAppState` - Should return the application's state when called (Not implemented in `v3`)
 - `getActiveContexts` - Should return the application's active contexts when
   called
 
@@ -115,26 +105,34 @@ valid, and how to provide them with any state they may need at the time they are
 called.
 
 ```js
-const commandsManager = new CommandsManager({
-  getAppState,
-  getActiveContexts,
-});
+const commandsManagerConfig = {
+  getAppState: () => {},
+  /** Used by commands to determine active context */
+  getActiveContexts: () => [
+    'VIEWER',
+    'DEFAULT',
+    'ACTIVE_VIEWPORT::CORNERSTONE',
+  ],
+};
+
+const commandsManager = new CommandsManager(commandsManagerConfig);
 ```
 
 ### Public API
 
 If you would like to run a command in the consuming app or an extension, you can
-use one of the following methods:
+use `runCommand(commandName, options = {}, contextName)`
+
 
 ```js
 // Returns all commands for a given context
 commandsManager.getContext('string');
 
-// Attempts to run a command
+// Run a command, it will run all the `speak` commands in all contexts
 commandsManager.runCommand('speak', { command: 'hello' });
 
-// Run command, but override the active contexts
-commandsManager.runCommand('speak', { command: 'hello' }, ['VIEWER']);
+// Run command, from Default context
+commandsManager.runCommand('speak', { command: 'hello' }, ['DEFAULT']);
 ```
 
 The `ExtensionManager` handles registering commands and creating contexts, so
@@ -155,7 +153,7 @@ It is up to the consuming application to define what contexts are possible, and
 which ones are currently active. As extensions depend heavily on these, we will
 likely publish guidance around creating contexts, and ways to override extension
 defined contexts in the near future. If you would like to discuss potential
-changes to how contexts work, please don't hesistate to createa new GitHub
+changes to how contexts work, please don't hesitate to create a new GitHub
 issue.
 
 [Some additional information on Contexts can be found here.](./../index.md#contexts)

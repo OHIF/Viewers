@@ -78,7 +78,16 @@
           Context
         </a>
       </td>
-      <td align="left">Context</td>
+      <td align="left">Shared state for a workflow or set of extension module definitions</td>
+      <td align="left"></td>
+    </tr>
+    <tr>
+      <td align="left">
+        <a href="./modules/hpModule.md">
+          HangingProtocol
+        </a>
+      </td>
+      <td align="left">Adds hanging protocol rules</td>
       <td align="left"></td>
     </tr>
   </tbody>

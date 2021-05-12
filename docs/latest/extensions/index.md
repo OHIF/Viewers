@@ -9,8 +9,9 @@
     - [Registering at Build Time](#registering-at-build-time)
   - [Lifecycle Hooks](#lifecycle-hooks)
   - [Modules](#modules)
-  - [Consuming Extensions](#consuming-extensions)
-    - [`ExtensionManager`](#extensionmanager)
+    - [Contexts](#contexts)
+  - [Extension Manager](#extension-manager)
+    - [Accessing Modules](#accessing-modules)
 
 ## Overview
 We have re-designed the architecture of the `OHIF-v3` to enable building applications
@@ -93,7 +94,7 @@ application's requirements.
 
 Each [module](#modules) defined by the extension
 becomes available to the modes via the `ExtensionManager` by requesting it via
-its id `extensionManager.getModuleEntry("org.ohif.measurement-tracking.panelModule.seriesList")` which is accessing the `seriesList` component from `panelModule` of the `org.ohif.measurement-tracking` extension.
+its id. [Read more about Extension Manager](#extension-manager)
 
 
 
@@ -199,6 +200,27 @@ differently.
 <figure style="text-align: center; font-style: italic;">Tbl. Module types with abridged descriptions and examples. Each module links to a dedicated documentation page.</figure>
 
 
+
+
+### Contexts
+
+The `@ohif/viewer` tracks "active contexts" that extensions can use to scope
+their functionality. Some example contexts being:
+
+- Route: `ROUTE:VIEWER`, `ROUTE:STUDY_LIST`
+- Active Viewport: `ACTIVE_VIEWPORT:CORNERSTONE`, `ACTIVE_VIEWPORT:VTK`
+
+An extension module can use these to say "Only show this Toolbar Button if the
+active viewport is a Cornerstone viewport." This helps us use the appropriate UI
+and behaviors depending on the current contexts.
+
+For example, if we have hotkey that "rotates the active viewport", each Viewport
+module that supports this behavior can add a command with the same name, scoped
+to the appropriate context. When the `command` is fired, the "active contexts"
+are used to determine the appropriate implementation of the rotate behavior.
+
+
+<!-- <mark>do we want the followings?
 ## Consuming Extensions
 
 We consume extensions, via the `ExtensionManager`, in our `@ohif/viewer`
@@ -225,9 +247,9 @@ applications requiring a high degree of customization that can't be achieved
 with current theming, configuration, extension, and services support.
 
 If you're not sure how to achieve your goals with the extensibility available
-today, create a GitHub issue!
+today, create a GitHub issue! -->
 
-### `ExtensionManager`
+## Extension Manager
 
 The `ExtensionManager` is a class made available to us via the `@ohif/core`
 project (platform/core). Our application instantiates a single instance of it,
@@ -246,16 +268,37 @@ const extensionManager = new ExtensionManager({
 
 The `ExtensionManager` only has a few public members:
 
-- `registerExtension` - Registers a single extension
-- `registerExtensions` - Registers an array of extensions
-- `modules` - An object containing registered extensions by `MODULE_TYPE`
+- `setActiveDataSource` - Sets the active data source for the application
+- `getDataSources` - Returns the registered data sources
+- `getActiveDataSource` - Returns the currently active data source
+- `getModuleEntry` - Returns the module entry by the give id.
 
-During registration, lifecycle hooks and modules have access to the extension's
-config, the application's config and `ExtensionManager`'s `ServicesManager` and
-`CommandsManager` instances.
 
-Our `@ohif/viewer` uses the `modules` member to access registered extensions at
-appropriate places in our application.
+### Accessing Modules
+
+We use `getModuleEntry` in our `ViewerLayout` logic to find the panels based on the
+provided IDs in the mode's configuration.
+
+
+For instance: `extensionManager.getModuleEntry("org.ohif.measurement-tracking.panelModule.seriesList")`
+accesses the `seriesList` panel from `panelModule` of the `org.ohif.measurement-tracking` extension.
+
+
+```js
+const getPanelData = id => {
+  const entry = extensionManager.getModuleEntry(id);
+  const content = entry.component;
+
+  return {
+    iconName: entry.iconName,
+    iconLabel: entry.iconLabel,
+    label: entry.label,
+    name: entry.name,
+    content,
+  };
+};
+```
+
 
 
 
