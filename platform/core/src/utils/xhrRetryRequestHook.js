@@ -1,11 +1,12 @@
 import retry from 'retry';
 
 const defaultRetryOptions = {
-  retries: process.env.DICOMWEB_CLIENT_RETRY_RETRIES || 5,
-  factor: process.env.DICOMWEB_CLIENT_RETRY_FACTOR || 3,
-  minTimeout: process.env.DICOMWEB_CLIENT_RETRY_MIN_TIMEOUT || 1 * 1000,
-  maxTimeout: process.env.DICOMWEB_CLIENT_RETRY_MAX_TIMEOUT || 60 * 1000,
-  randomize: process.env.DICOMWEB_CLIENT_RETRY_RANDOMIZE || true,
+  retries: 5,
+  factor: 3,
+  minTimeout: 1 * 1000,
+  maxTimeout: 60 * 1000,
+  randomize: true,
+  retryableStatusCodes: [429, 500],
 };
 
 let retryOptions = { ...defaultRetryOptions };
@@ -28,9 +29,11 @@ const xhrRetryRequestHook = (request, metadata) => {
     operation.attempt(function operationAttempt(currentAttempt) {
       const originalOnReadyStateChange = request.onreadystatechange;
 
+      /** Overriding/extending XHR function */
       request.onreadystatechange = function onReadyStateChange() {
         originalOnReadyStateChange.call(request);
-        if (request.status === 429 || request.status >= 500) {
+
+        if (retryOptions.retryableStatusCodes.includes(request.status)) {
           const errorMessage = `Attempt to request ${url} failed.`;
           const attemptFailedError = new Error(errorMessage);
           operation.retry(attemptFailedError);
@@ -43,6 +46,7 @@ const xhrRetryRequestHook = (request, metadata) => {
     });
   }
 
+  /** Overriding/extending XHR function */
   const originalRequestSend = request.send;
   request.send = faultTolerantRequestSend;
 
@@ -60,12 +64,13 @@ const xhrRetryRequestHook = (request, metadata) => {
  *   maxTimeout: 60 * 1000
  *   randomize: true
  *
- * @param {*} options
- * @param {*} options.retires number of retries
- * @param {*} options.factor factor
- * @param {*} options.minTimeout the min timeout
- * @param {*} options.maxTimeout the max timeout
- * @param {*} options.randomize randomize
+ * @param {object} options
+ * @param {number} options.retires number of retries
+ * @param {number} options.factor factor
+ * @param {number} options.minTimeout the min timeout
+ * @param {number} options.maxTimeout the max timeout
+ * @param {boolean} options.randomize randomize
+ * @param {array} options.retryableStatusCodes status codes that can trigger retry
  * @returns {function} the configured retry request function
  */
 export const getXHRRetryRequestHook = (options = {}) => {
