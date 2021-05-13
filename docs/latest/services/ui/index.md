@@ -1,11 +1,42 @@
 # UI Services
 
-- [Overview](#overview)
-- [Example](#example)
-- [Tips & Tricks](#tips--tricks)
-- [Maintained Services](#maintained-services)
 
 ## Overview
+
+
+Consistent look & feel
+
+Available in and “out” of React
+
+Supports ad hoc containers
+
+
+
+- Exposes “setImplementation” method passed to Context Provider
+- May set a default UI component
+- API exposes get/set of Context Provider’s state
+
+
+
+
+
+
+
+A typical web application will have components and state for common UI like
+modals, notifications, dialogs, etc. A UI service makes it possible to leverage
+these components from an extension.
+
+We maintain the following UI Services:
+
+- [UIDialogService](./ui/ui-dialog-service.md)
+- [UIModalService](./ui/ui-modal-service.md)
+- [UINotificationService](./ui/ui-notification-service.md)
+
+
+
+
+
+
 
 A typical web application will have components and state for common UI like
 modals, notifications, dialogs, etc. A UI service makes it possible to leverage
@@ -104,3 +135,37 @@ project, or provide alternative implementations for:
 | UIDialogService       | [Here](./ui-dialog-service.md)       |
 | UIModalService        | [Here](./ui-modal-service.md)        |
 | UINotificationService | [Here](./ui-notification-service.md) |
+
+
+
+## Providers for UI services
+
+
+```js
+function App({ config, defaultExtensions }) {
+  /**...**/
+  /**...**/
+  return (
+      <AppConfigProvider value={appConfigState}>
+        <I18nextProvider i18n={i18n}>
+          <OHIFRouter basename={routerBasename} history={history}>
+            <ThemeWrapper>
+              <ViewportGridProvider service={ViewportGridService}>
+                <ViewportDialogProvider service={UIViewportDialogService}>
+                  <CineProvider service={CineService}>
+                    <SnackbarProvider service={UINotificationService}>
+                      <DialogProvider service={UIDialogService}>
+                        <ModalProvider modal={Modal} service={UIModalService}>
+                          {appRoutes}
+                        </ModalProvider>
+                      </DialogProvider>
+                    </SnackbarProvider>
+                  </CineProvider>
+                </ViewportDialogProvider>
+              </ViewportGridProvider>
+            </ThemeWrapper>
+          </OHIFRouter>
+        </I18nextProvider>
+      </AppConfigProvider>
+    );
+```

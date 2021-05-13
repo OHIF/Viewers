@@ -6,9 +6,7 @@
   - [Overview](#overview)
   - [Command Definitions](#command-definitions)
   - [Command Behavior](#command-behavior)
-  - [`CommandsManager`](#commandsmanager)
-    - [Instantiating](#instantiating)
-    - [Public API](#public-api)
+  - [`CommandsManager` Public API](#commandsmanager-public-api)
     - [Contexts](#contexts)
 
 ## Overview
@@ -86,42 +84,10 @@ exampleActionDef: {
 - When to use: a `hotkey` (like "invert") that doesn't make sense for the
   current viewport (PDF or HTML)
 
-## `CommandsManager`
-
-The `CommandsManager` is a class defined in the `@ohif/core` project. A single
-instance of it should be defined in the consuming application, and it should be
-used when constructing the `ExtensionManager`.
-
-### Instantiating
-
-When we instantiate the `CommandsManager`, we need to pass it two methods:
-
-- `getAppState` - Should return the application's state when called (Not implemented in `v3`)
-- `getActiveContexts` - Should return the application's active contexts when
-  called
-
-These methods are used internally to help determine which commands are currently
-valid, and how to provide them with any state they may need at the time they are
-called.
-
-```js
-const commandsManagerConfig = {
-  getAppState: () => {},
-  /** Used by commands to determine active context */
-  getActiveContexts: () => [
-    'VIEWER',
-    'DEFAULT',
-    'ACTIVE_VIEWPORT::CORNERSTONE',
-  ],
-};
-
-const commandsManager = new CommandsManager(commandsManagerConfig);
-```
-
-### Public API
+## `CommandsManager` Public API
 
 If you would like to run a command in the consuming app or an extension, you can
-use `runCommand(commandName, options = {}, contextName)`
+use `CommandsManager.runCommand(commandName, options = {}, contextName)`
 
 
 ```js
