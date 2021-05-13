@@ -1,6 +1,5 @@
 import { api } from 'dicomweb-client';
 import dcmjs from 'dcmjs';
-import retry, { operation } from 'retry';
 import DICOMWeb from '../../../DICOMWeb/';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 import { sortStudySeries, sortingCriteria } from '../../sortStudy';
@@ -11,6 +10,7 @@ import {
 } from './studyInstanceHelpers';
 
 import errorHandler from '../../../errorHandler';
+import { getXHRRetryRequestHook } from '../../../utils/xhrRetryRequestHook';
 
 const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
 
@@ -77,42 +77,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
       url: server.qidoRoot,
       headers: DICOMWeb.getAuthorizationHeader(server),
       errorInterceptor: errorHandler.getHTTPErrorHandler(),
-      requestHooks: [
-        (request, metadata) => {
-          function faultTolerantRequestSend(...args) {
-            const operation = retry.operation({
-              retries: 10,
-            });
-            /**
-             * retries: 5,
-             * factor: 3,
-             * minTimeout: 1 * 1000,
-             * maxTimeout: 60 * 1000,
-             * randomize: true
-             */
-
-            operation.attempt(function(currentAttempt) {
-              const originalOnReadyStateChange = request.onreadystatechange;
-
-              request.onreadystatechange = function() {
-                originalOnReadyStateChange.call(request);
-                if (request.status === 429 || request.status >= 500) {
-                  operation.retry(new Error('Attempt failed!'));
-                }
-              };
-
-              console.debug(`${metadata.url} (attempt: ${currentAttempt})`);
-              request.open(metadata.method, metadata.url, true);
-              originalRequestSend.call(request, ...args);
-            });
-          }
-
-          const originalRequestSend = request.send;
-          request.send = faultTolerantRequestSend;
-
-          return request;
-        },
-      ],
+      requestHooks: [getXHRRetryRequestHook()],
     });
 
     this.client = client;

@@ -4,6 +4,7 @@ import { api } from 'dicomweb-client';
 import DICOMWeb from '../DICOMWeb';
 
 import errorHandler from '../errorHandler';
+import getXHRRetryRequestHook from './xhrRetryRequestHook';
 
 const getImageId = imageObj => {
   if (!imageObj) {
@@ -66,6 +67,7 @@ const wadorsRetriever = (
     url,
     headers,
     errorInterceptor,
+    requestHooks: [getXHRRetryRequestHook()],
   };
   const dicomWeb = new api.DICOMwebClient(config);
 

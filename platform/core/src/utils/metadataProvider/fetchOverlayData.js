@@ -4,6 +4,7 @@ import str2ab from '../str2ab';
 import unpackOverlay from './unpackOverlay';
 
 import errorHandler from '../../errorHandler';
+import getXHRRetryRequestHook from '../xhrRetryRequestHook';
 
 export default async function fetchOverlayData(instance, server) {
   const OverlayDataPromises = [];
@@ -69,6 +70,7 @@ async function _getOverlayData(tag, server) {
     url: server.wadoRoot, //BulkDataURI is absolute, so this isn't used
     headers: DICOMWeb.getAuthorizationHeader(server),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
+    requestHooks: [getXHRRetryRequestHook()],
   };
   const dicomWeb = new api.DICOMwebClient(config);
   const options = {
