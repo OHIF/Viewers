@@ -24,6 +24,10 @@ const preloadedState = {
   ...sessionStorage.loadState(),
 };
 
+if (window.config && window.config.disableServersCache === true) {
+  delete preloadedState.servers;
+}
+
 const store = createStore(
   rootReducer,
   preloadedState,
