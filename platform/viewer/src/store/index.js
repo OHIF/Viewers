@@ -24,7 +24,7 @@ const preloadedState = {
   ...sessionStorage.loadState(),
 };
 
-if (window.disableServersCache === true) {
+if (window.config && window.config.disableServersCache === true) {
   delete preloadedState.servers;
 }
 
