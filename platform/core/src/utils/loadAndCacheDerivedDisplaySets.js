@@ -1,13 +1,5 @@
 import studyMetadataManager from './studyMetadataManager';
 
-const refreshViewports = () => {
-  cornerstone.getEnabledElements().forEach(enabledElement => {
-    if (enabledElement.image) {
-      cornerstone.updateImage(enabledElement.element);
-    }
-  });
-};
-
 /**
  * Study schema
  *
@@ -115,8 +107,12 @@ async function loadAndCacheDerivedDisplaySets(referencedDisplaySet, studies, log
     });
 
     try {
-      await recentDisplaySet.load(referencedDisplaySet, studies);
-      refreshViewports();
+      if (recentDisplaySet.hasOwnProperty('getSourceDisplaySet') &&
+        typeof recentDisplaySet.getSourceDisplaySet === 'function') {
+        await recentDisplaySet.getSourceDisplaySet(studies);
+      } else {
+        await recentDisplaySet.load(referencedDisplaySet, studies);
+      }
     } catch (error) {
       recentDisplaySet.isLoaded = false;
       recentDisplaySet.loadError = true;
