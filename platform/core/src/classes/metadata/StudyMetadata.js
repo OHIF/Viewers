@@ -754,6 +754,69 @@ const isMultiFrame = instance => {
   return instance.getTagValue('NumberOfFrames') > 1;
 };
 
+const get4DSeriesSortTags = instance => ({
+  // Get Tags for 4D series stack sorting
+  DiffusionBValue: DICOMWeb.getNumber(instance['00189087']),
+  TemporalPositionIdentifier: DICOMWeb.getNumber(instance['00200100']),
+  // Shamelessly stolen from fedorov@github/MultiVolumeImporter/MultiVolumeImporterPlugin.py
+  TriggerTime: DICOMWeb.getString(instance['00181060']),
+  EchoTime: DICOMWeb.getString(instance['00180081']),
+  FlipAngle: DICOMWeb.getString(instance['00181314']),
+  RepetitionTime: DICOMWeb.getString(instance['00180080']),
+  AcquisitionTime: DICOMWeb.getString(instance['00080032']),
+  SeriesTime: DICOMWeb.getString(instance['00080031']),
+  ContentTime: DICOMWeb.getString(instance['00080033']),
+  // Siemens Somatom Cardiac CT 'ScanOptions' tag contains info on cardiac cycle
+  CardiacCycle: DICOMWeb.getString(instance['00180022']),
+  // GE Revolution CT uses 'NominalPercentageOfCardiacPhase' tag to identify cardiac cycle
+  NominalPercentageOfCardiacPhase: DICOMWeb.getString(instance['00209241']),
+  SiemensBValue: DICOMWeb.getString(instance['0019100C']),
+  GEBValue: DICOMWeb.getString(instance['00431039']),
+  // Philips DWI
+  PhilipsBValue: DICOMWeb.getString(instance['20011003']),
+  // GE Revolution CT Kinematics protocol
+  DeltaStartTime: DICOMWeb.getString(instance['0043101E']),
+  // From @JoaoSantinha in PR #1066
+  SequenceName: DICOMWeb.getString(instance['00180024']),
+  MRDiffusionSequence: DICOMWeb.getString(instance['00189117']),
+});
+
+const is4DSeries = instances => {
+  if (instances[0].getRawValue('x00080060') !== 'MR') return 0; // only MR exams
+
+  instances.forEach(instance => {
+    instance.sort4DSeriesTags = get4DSeriesSortTags(instance);
+  });
+
+  // The goal here is to identify 4D series and the tags we'll use to sort them
+  // List tags used to identify and sort 4D series
+  const sortTagsList = Object.keys(instances[0]._instance.sort4DSeriesTags);
+
+  // Among those tags, identify those that have multiple values
+  var sortTags = Array(); // Declare an array to store tags to sort by
+  var sortTagsVal = Array(); // for debug purposes
+
+  sortTagsList.map(testedTag => { // loop through the tag list
+    var testedTagValues = instances.map(b => b._instance.sort4DSeriesTags[testedTag]);
+    var tagsUniqueValues = [...new Set(testedTagValues)];
+    if (tagsUniqueValues.length > 1 && tagsUniqueValues.length < 5) {
+      // If the tested tag has more than one value throughout the series..
+      // And less than 5 (i.e. not too many)
+      sortTags.push(testedTag); // Push to our new array
+      sortTagsVal.push(tagsUniqueValues); // debug
+    }
+  });
+  // If none of them do : return 0
+  if (sortTags.length === 0) return 0;
+
+  // Debug: report on tags for each series
+  console.log('%c4D series! Sorting tags:', 'color: black; background: #9ccef9; padding: 4px; font-weight: bold;');
+  sortTags.map((a, index) => console.log(a, sortTagsVal[index]));
+
+  // Return the array listing tags to sort by
+  return sortTags;
+};
+
 /**
  * Creates a display set for a series.
  * Checks if a series is reconstructable to a 3D volume.
@@ -776,11 +839,12 @@ const makeDisplaySet = (series, instances) => {
     SeriesTime: seriesData.SeriesTime,
     SeriesInstanceUID: series.getSeriesInstanceUID(),
     SeriesNumber: instance.getTagValue('SeriesNumber'),
-    SeriesDescription: instance.getTagValue('SeriesDescription'),
+    SeriesDescription: instance.getTagValue('SeriesDescription') || '',
     numImageFrames: instances.length,
     frameRate: instance.getTagValue('FrameTime'),
     Modality: instance.getTagValue('Modality'),
     isMultiFrame: isMultiFrame(instance),
+    is4DSeries: is4DSeries(instances), // we need all the instances to compute this one
   });
 
   // Sort the images in this series by instanceNumber
@@ -795,6 +859,19 @@ const makeDisplaySet = (series, instances) => {
     });
   }
 
+  // If 4Dseries, sort according to identified tags
+  if (imageSet.is4DSeries) {
+    // Tell the user about sorting in series description
+    imageSet.seriesDescription += ' | 4D: ' + imageSet.is4DSeries;
+    // Sort series by each tag in the array
+    imageSet.is4DSeries.map(c => {
+      imageSet.sortBy((a, b) => {
+        if (a._instance.sort4DSeriesTags[c] > b._instance.sort4DSeriesTags[c]) return 1;
+        if (a._instance.sort4DSeriesTags[c] < b._instance.sort4DSeriesTags[c]) return -1;
+      });
+    });
+  }
+
   // Include the first image instance number (after sorted)
   imageSet.setAttribute(
     'InstanceNumber',
@@ -803,6 +880,11 @@ const makeDisplaySet = (series, instances) => {
 
   const displayReconstructableInfo = isDisplaySetReconstructable(instances);
   imageSet.isReconstructable = displayReconstructableInfo.value;
+
+  if (imageSet.is4DSeries) {
+    // Quick and nasty override (maybe make it part of isDisplaySetReconstructable ?)
+    imageSet.isReconstructable = false;
+  }
 
   let displaySpacingInfo = undefined;
   if (shallSort && imageSet.isReconstructable) {
