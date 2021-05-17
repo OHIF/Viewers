@@ -17,6 +17,7 @@ method. `OHIF-v3`'s `default` extension (`"ohif.org.default"`) provides 5 main t
 ![toolbarModule](../../assets/img/toolbarModule.png)
 
 
+
 ## Example Toolbar Module
 The Toolbar Module should return an array of `objects`. There are currently a few different variations of definitions,
 each one is detailed further down.
@@ -92,7 +93,7 @@ export default function mode({ modeConfiguration }) {
 
 ```
 
-<mark>ToolbarExtension video
+
 
 
 ## Button Definitions
@@ -209,8 +210,7 @@ You can see below how `longitudinal` mode is using the available toolbarModule t
 }
 ```
 
-<!--
-<center><i>Example toolbar button demonstrating nested buttons.</i></center> -->
+<div style="padding:62.5% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/547957214?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Toolbar"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
 
 ## Layout Template
 Layout selector button and logic is also provided by the OHIF-v3 `default` extension.
@@ -223,6 +223,8 @@ To use it, you can just add the following definition to the list of `toolDefinit
   type: 'ohif.layoutSelector',
 }
 ```
+
+<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/545993263?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Viewer-layout"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
 
 
 ## Custom Button

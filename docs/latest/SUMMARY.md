@@ -63,10 +63,9 @@
       - [UI Notification Service](services/ui/ui-notification-service.md)
       - [UI Modal Service](services/ui/ui-modal-service.md)
       - [UI Dialog Service](services/ui/ui-dialog-service.md)
-      - [Cine Service](services/ui/cine.md)
+      - [UI Viewport Dialog Service](services/ui/ui-viewport-dialog-service.md)
       - [Viewport Grid Service](services/ui/ViewportGridService.md)
-      - [UI Viewport Dialogue Service](services/ui/ui-viewport-dialog-service.md)
-    - [Pub/Sub](services/pubsub.md)
+    - [Pub/Sub Pattern](services/pubsub.md)
 
 - [Deployment](deployment/index.md)
   - [Embedded](deployment/index.md#embedded-viewer)

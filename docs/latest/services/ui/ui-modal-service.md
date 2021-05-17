@@ -11,12 +11,7 @@ be centered, and not draggable. They're commonly used when:
 If you're curious about the DOs and DON'Ts of dialogs and modals, check out this
 article: ["Best Practices for Modals / Overlays / Dialog Windows"][ux-article]
 
-<div style="text-align: center;">
-  <a href="/assets/img/modal-example.gif">
-    <img src="/assets/img/ui-modal.gif" alt="UI Modal Service Example" style="margin: 0 auto; width: 1500px;" />
-  </a>
-  <div><i>GIF showing successful call of UIModalService from an extension.</i></div>
-</div>
+<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/549261451?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Viewer Modal"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
 
 ## Interface
 
@@ -30,11 +25,15 @@ is expected to support, [check out it's interface in `@ohif/core`][interface]
 
 ## Implementations
 
-| Implementation                     | Consumer                      |
-| ---------------------------------- | ----------------------------- |
-| [Modal Provider][modal-provider]\* | [OHIFModal][modal-consumer]\* |
+| Implementation                     | Consumer  |
+| ---------------------------------- | --------- |
+| [Modal Provider][modal-provider]\* | Modal.jsx |
 
 `*` - Denotes maintained by OHIF
+
+
+
+
 
 > 3rd Party implementers may be added to this table via pull requests.
 

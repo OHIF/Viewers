@@ -10,6 +10,17 @@ Each services have their own internal state which they handle.
 > We have replaced the *redux* store. Instead we have introduced various services and a pub/sub pattern to subscribe and run, which makes the `OHIF-v3` architecture nice and clean.
 
 
+We maintain the following non-ui Services:
+
+- [DicomMetadata Store](./../data/DicomMetadataStore.md)
+- [DisplaySet Service](./../data/DisplaySetService.md)
+- [Hanging Protocol Service](../data/HangingProtocolService.md)
+- [Toolbar Service](../data/ToolbarService.md)
+- [Measurement Service](../data/MeasurementService.md)
+
+
+
+
 ## Service Architecture
 
 ![services-data](../../assets/img/services-data.png)

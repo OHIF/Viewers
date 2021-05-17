@@ -12,13 +12,7 @@ guidance on when and how to use them:
 If you're curious about the DOs and DON'Ts of notifications, check out this
 article: ["How To Design Notifications For Better UX"][ux-article]
 
-<div style="text-align: center;">
-  <a href="/assets/img/notification-example.gif">
-    <img src="/assets/img/notification-example.gif" alt="UI Notification Service Example" style="margin: 0 auto; max-width: 500px;" />
-  </a>
-  <div><i>GIF showing successful call of UINotificationService from an extension.</i></div>
-</div>
-
+<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/549260975?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="notification"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
 ## Interface
 
 For a more detailed look on the options and return values each of these methods

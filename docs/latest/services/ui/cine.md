@@ -1,5 +1,0 @@
-# Cine Service
-
-...
-
-## Overview
