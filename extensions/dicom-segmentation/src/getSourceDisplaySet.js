@@ -1,8 +1,8 @@
 import setActiveLabelmap from './utils/setActiveLabelMap';
-import { getReferencedDisplaySet } from '../../../platform/core/src/classes/metadata/StudyMetadata.js';
+import { metadata } from '@ohif/core';
 
 export default function getSourceDisplaySet(studies, segDisplaySet, activateLabelMap = true, onDisplaySetLoadFailureHandler) {
-  const referencedDisplaySet = getReferencedDisplaySet(segDisplaySet, studies);
+  const referencedDisplaySet = metadata.StudyMetadata.getReferencedDisplaySet(segDisplaySet, studies);
 
   let activatedLabelmapPromise;
   if (activateLabelMap) {

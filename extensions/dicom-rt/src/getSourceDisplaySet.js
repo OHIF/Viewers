@@ -1,8 +1,7 @@
-import { getReferencedDisplaySet } from '../../../platform/core/src/classes/metadata/StudyMetadata.js';
-
+import { metadata } from '@ohif/core';
 
 export default function getSourceDisplaySet(studies, rtStructDisplaySet, activateLabelMap = true) {
-  const referencedDisplaySet = getReferencedDisplaySet(
+  const referencedDisplaySet = metadata.StudyMetadata.getReferencedDisplaySet(
     rtStructDisplaySet,
     studies
   );

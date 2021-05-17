@@ -1,64 +1,64 @@
-.imageViewerViewport.empty ~ .WarningsViewportOverlay {
+.imageViewerViewport.empty ~ .OHIFCornerstoneViewportOverlay {
   display: none;
 }
-.WarningsViewportOverlay {
+.OHIFCornerstoneViewportOverlay {
   color: #9ccef9;
 }
-.WarningsViewportOverlay .overlay-element {
+.OHIFCornerstoneViewportOverlay .overlay-element {
   position: absolute;
   font-weight: 400;
   text-shadow: 1px 1px #000;
   pointer-events: none;
 }
-.WarningsViewportOverlay .top-left {
+.OHIFCornerstoneViewportOverlay .top-left {
   top: 20px;
   left: 20px;
 }
-.WarningsViewportOverlay .top-center {
+.OHIFCornerstoneViewportOverlay .top-center {
   top: 20px;
   padding-top: 20px;
   width: 100%;
   text-align: center;
 }
-.WarningsViewportOverlay .top-right {
+.OHIFCornerstoneViewportOverlay .top-right {
   top: 20px;
   right: 20px;
   text-align: right;
 }
-.WarningsViewportOverlay .bottom-left {
+.OHIFCornerstoneViewportOverlay .bottom-left {
   bottom: 20px;
   left: 20px;
 }
-.WarningsViewportOverlay .bottom-left2 {
-  bottom: 200px;
+.OHIFCornerstoneViewportOverlay .bottom-left2 {
+  bottom: 140px;
   left: 20px;
 }
-.WarningsViewportOverlay .bottom-right {
+.OHIFCornerstoneViewportOverlay .bottom-right {
   bottom: 20px;
   right: 20px;
   text-align: right;
 }
-.WarningsViewportOverlay.controlsVisible .topright,
-.WarningsViewportOverlay.controlsVisible .bottomright {
+.OHIFCornerstoneViewportOverlay.controlsVisible .topright,
+.OHIFCornerstoneViewportOverlay.controlsVisible .bottomright {
   right: calc(20px + 19px);
 }
-.WarningsViewportOverlay .warning {
+.OHIFCornerstoneViewportOverlay .warning {
   position: absolute;
   font-weight: 400;
   text-shadow: 1px 1px #000;
   pointer-events: inherit;
 }
 
-.WarningsViewportOverlay .warning svg {
+.OHIFCornerstoneViewportOverlay .warning svg {
   opacity: 1;
   color: #e29e4a;
   fill: #e29e4a;
   stroke: #e29e4a;
-  width: 64px;
-  height: 56px;
+  width: 32px;
+  height: 28px;
 }
 
-.WarningsViewportOverlay svg {
+.OHIFCornerstoneViewportOverlay svg {
   color: #9ccef9;
   fill: #9ccef9;
   stroke: #9ccef9;

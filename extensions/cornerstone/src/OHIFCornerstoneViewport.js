@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import WarningsViewportOverlay from './utils/WarningsViewportOverlay'
+import OHIFCornerstoneViewportOverlay from './components/OHIFCornerstoneViewportOverlay'
 import ConnectedCornerstoneViewport from './ConnectedCornerstoneViewport';
 import OHIF from '@ohif/core';
 import PropTypes from 'prop-types';
@@ -195,7 +195,7 @@ class OHIFCornerstoneViewport extends Component {
       return null;
     }
     const { viewportIndex } = this.props;
-    const { warningsList } = this.props.viewportData.displaySet;
+    const { inconsistencyWarnings } = this.props.viewportData.displaySet;
     const {
       imageIds,
       currentImageIdIndex,
@@ -232,7 +232,7 @@ class OHIFCornerstoneViewport extends Component {
     };
 
     const warningsOverlay = props => {
-      return <WarningsViewportOverlay {...props} warningsList={warningsList} />
+      return <OHIFCornerstoneViewportOverlay {...props} inconsistencyWarnings={inconsistencyWarnings} />
     };
 
     return (

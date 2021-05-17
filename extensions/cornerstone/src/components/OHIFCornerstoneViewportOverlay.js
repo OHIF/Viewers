@@ -2,90 +2,21 @@ import { PureComponent } from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
 import cornerstone from 'cornerstone-core';
-import './WarningsViewportOverlay.css';
-import moment from 'moment';
+import './OHIFCornerstoneViewportOverlay.css';
+import {
+  isValidNumber,
+  formatNumberPrecision,
+  formatDICOMDate,
+  formatDICOMTime,
+  formatPN,
+  getCompression
+} from '../utils/formatStudy';
 import classNames from 'classnames';
 import { Icon } from '@ohif/ui/src/elements/Icon';
 import { Tooltip } from '@ohif/ui/src/components/tooltip';
 import { OverlayTrigger } from '@ohif/ui/src/components/overlayTrigger';
 
-function isValidNumber(value) {
-  return typeof value === 'number' && !isNaN(value);
-}
-
-function formatNumberPrecision(number, precision) {
-  if (number !== null) {
-    return parseFloat(number).toFixed(precision);
-  }
-}
-
-/**
-* Formats DICOM date.
-*
-* @param {string} date
-* @param {string} strFormat
-*/
-function formatDICOMDate(date, strFormat = 'MMM D, YYYY') {
-  return moment(date, 'YYYYMMDD').format(strFormat);
-}
-
-/**
-*    DICOM Time is stored as HHmmss.SSS, where:
-*      HH 24 hour time:
-*        m mm        0..59   Minutes
-*        s ss        0..59   Seconds
-*        S SS SSS    0..999  Fractional seconds
-*
-*        Goal: '24:12:12'
-*
-* @param {*} time
-* @param {string} strFormat
-*/
-function formatDICOMTime(time, strFormat = 'HH:mm:ss') {
-  return moment(time, 'HH:mm:ss').format(strFormat);
-}
-
-/**
- * Formats a patient name for display purposes
- */
-function formatPN(name) {
-  if (!name) {
-    return;
-  }
-
-  // Convert the first ^ to a ', '. String.replace() only affects
-  // the first appearance of the character.
-  const commaBetweenFirstAndLast = name.replace('^', ', ');
-
-  // Replace any remaining '^' characters with spaces
-  const cleaned = commaBetweenFirstAndLast.replace(/\^/g, ' ');
-
-  // Trim any extraneous whitespace
-  return cleaned.trim();
-}
-
-function getCompression(imageId) {
-  const generalImageModule =
-    cornerstone.metaData.get('generalImageModule', imageId) || {};
-  const {
-    lossyImageCompression,
-    lossyImageCompressionRatio,
-    lossyImageCompressionMethod,
-  } = generalImageModule;
-
-  if (lossyImageCompression === '01' && lossyImageCompressionRatio !== '') {
-    const compressionMethod = lossyImageCompressionMethod || 'Lossy: ';
-    const compressionRatio = formatNumberPrecision(
-      lossyImageCompressionRatio,
-      2
-    );
-    return compressionMethod + compressionRatio + ' : 1';
-  }
-
-  return 'Lossless / Uncompressed';
-}
-
-class WarningsViewportOverlay extends PureComponent {
+class OHIFCornerstoneViewportOverlay extends PureComponent {
   static propTypes = {
     scale: PropTypes.number.isRequired,
     windowWidth: PropTypes.oneOfType([
@@ -99,11 +30,11 @@ class WarningsViewportOverlay extends PureComponent {
     imageId: PropTypes.string.isRequired,
     imageIndex: PropTypes.number.isRequired,
     stackSize: PropTypes.number.isRequired,
-    warningsList: PropTypes.array.isRequired
+    inconsistencyWarnings: PropTypes.array.isRequired
   };
 
   render() {
-    const { imageId, scale, windowWidth, windowCenter, warningsList } = this.props;
+    const { imageId, scale, windowWidth, windowCenter, inconsistencyWarnings } = this.props;
 
     if (!imageId) {
       return null;
@@ -141,7 +72,7 @@ class WarningsViewportOverlay extends PureComponent {
 
     const { imageIndex, stackSize } = this.props;
 
-    const warningListOn = warningsList && warningsList.length !== 0 ? true : false;
+    const inconsistencyWarningsOn = inconsistencyWarnings && inconsistencyWarnings.length !== 0 ? true : false;
     const getWarningContent = (warningList) => {
       if (Array.isArray(warningList)) {
         const listedWarnings = warningList.map((warn, index) => {
@@ -154,10 +85,10 @@ class WarningsViewportOverlay extends PureComponent {
       }
     };
 
-    const getWarningInfo = (seriesNumber, warningsList) => {
+    const getWarningInfo = (seriesNumber, inconsistencyWarnings) => {
       return(
         <React.Fragment>
-        {warningsList.length != 0 ? (
+        {inconsistencyWarnings.length != 0 ? (
           <OverlayTrigger
             key={seriesNumber}
             placement="left"
@@ -168,7 +99,7 @@ class WarningsViewportOverlay extends PureComponent {
                 id="tooltip-left"
               >
                 <div className="warningTitle">Series Inconsistencies</div>
-                <div className="warningContent">{getWarningContent(warningsList)}</div>
+                <div className="warningContent">{getWarningContent(inconsistencyWarnings)}</div>
               </Tooltip>
             }
           >
@@ -203,7 +134,7 @@ class WarningsViewportOverlay extends PureComponent {
           <div className="compressionIndicator">{compression}</div>
         </div>
         <div className="bottom-left2 warning">
-          <div>{warningListOn ? getWarningInfo(seriesNumber, warningsList) : ''}</div>
+          <div>{inconsistencyWarningsOn ? getWarningInfo(seriesNumber, inconsistencyWarnings) : ''}</div>
         </div>
         <div className="bottom-left overlay-element">
           <div>{seriesNumber >= 0 ? `Ser: ${seriesNumber}` : ''}</div>
@@ -229,8 +160,8 @@ class WarningsViewportOverlay extends PureComponent {
       </React.Fragment>
     );
 
-    return <div className="WarningsViewportOverlay">{normal}</div>;
+    return <div className="OHIFCornerstoneViewportOverlay">{normal}</div>;
   }
 }
 
-export default WarningsViewportOverlay;
+export default OHIFCornerstoneViewportOverlay;

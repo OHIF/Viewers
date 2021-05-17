@@ -411,56 +411,63 @@ export default withDialog(Viewer);
  * @returns {[string]} an array of strings containing the warnings
  */
 const _checkForSeriesInconsistencesWarnings = async function (displaySet, studies) {
-  const warningsList = [];
+  if (displaySet.inconsistencyWarnings) {
+    // warnings already checked and cached in displaySet
+    return displaySet.inconsistencyWarnings;
+  }
+  const inconsistencyWarnings = [];
 
   if (displaySet.Modality !== 'SEG') {
-    if (displaySet.warningIssues && displaySet.warningIssues.length !== 0) {
-      displaySet.warningIssues.forEach(warning => {
+    if (displaySet.reconstructionIssues && displaySet.reconstructionIssues.length !== 0) {
+      displaySet.reconstructionIssues.forEach(warning => {
         switch (warning) {
           case ReconstructionIssues.DATASET_4D:
-            warningsList.push('The dataset is 4D.');
+            inconsistencyWarnings.push('The dataset is 4D.');
             break;
           case ReconstructionIssues.VARYING_IMAGESDIMENSIONS:
-            warningsList.push('The dataset frames have different dimensions (rows, columns).');
+            inconsistencyWarnings.push('The dataset frames have different dimensions (rows, columns).');
             break;
           case ReconstructionIssues.VARYING_IMAGESCOMPONENTS:
-            warningsList.push('The dataset frames have different components (Sample per pixel).');
+            inconsistencyWarnings.push('The dataset frames have different components (Sample per pixel).');
             break;
           case ReconstructionIssues.VARYING_IMAGESORIENTATION:
-            warningsList.push('The dataset frames have different orientation.');
+            inconsistencyWarnings.push('The dataset frames have different orientation.');
             break;
           case ReconstructionIssues.IRREGULAR_SPACING:
-            warningsList.push('The dataset frames have different pixel spacing.');
+            inconsistencyWarnings.push('The dataset frames have different pixel spacing.');
             break;
           case ReconstructionIssues.MULTIFFRAMES:
-            warningsList.push('The dataset is a multiframes.');
+            inconsistencyWarnings.push('The dataset is a multiframes.');
             break;
           default:
             break;
         }
       });
-      warningsList.push('The datasets is not a reconstructable 3D volume. MPR mode is not available.');
+      inconsistencyWarnings.push('The datasets is not a reconstructable 3D volume. MPR mode is not available.');
     }
 
     if (displaySet.missingFrames &&
-      (!displaySet.warningIssues ||
-        (displaySet.warningIssues && !displaySet.warningIssues.find(warn => warn === ReconstructionIssues.DATASET_4D)))) {
-      warningsList.push('The datasets is missing frames: ' + displaySet.missingFrames + '.');
+      (!displaySet.reconstructionIssues ||
+        (displaySet.reconstructionIssues && !displaySet.reconstructionIssues.find(warn => warn === ReconstructionIssues.DATASET_4D)))) {
+          inconsistencyWarnings.push('The datasets is missing frames: ' + displaySet.missingFrames + '.');
     }
   } else {
     const segMetadata = displaySet.metadata;
     if (!segMetadata) {
-      return warningsList;
+      displaySet.inconsistencyWarnings = inconsistencyWarnings;
+      return inconsistencyWarnings;
     }
 
     const { referencedDisplaySet } = displaySet.getSourceDisplaySet(studies, false);
     if (!referencedDisplaySet) {
-      return warningsList;
+      displaySet.inconsistencyWarnings = inconsistencyWarnings;
+      return inconsistencyWarnings;
     }
 
     const imageIds = referencedDisplaySet.images.map(image => image.getImageId());
     if (!imageIds || imageIds.length === 0) {
-      return warningsList;
+      displaySet.inconsistencyWarnings = inconsistencyWarnings;
+      return inconsistencyWarnings;
     }
 
     for (
@@ -482,10 +489,10 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
             .SourceImageSequence;
       }
       if (!SourceImageSequence) {
-        if (warningsList.length === 0) {
+        if (inconsistencyWarnings.length === 0) {
           const warningMessage = 'The segmentation ' +
             'has frames out of plane respect to the source images.';
-          warningsList.push(warningMessage);
+            inconsistencyWarnings.push(warningMessage);
         }
         continue;
       }
@@ -521,21 +528,69 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
         const warningMessage = 'The segmentation ' +
           'has frames with different geometry ' +
           'dimensions (Rows and Columns) respect to the source images.';
-        warningsList.push(warningMessage);
+          inconsistencyWarnings.push(warningMessage);
         break;
       }
     }
 
-    if (warningsList.length !== 0) {
+    if (inconsistencyWarnings.length !== 0) {
       const warningMessage = 'The segmentation format is not supported yet. ' +
         'The segmentation data (segments) could not be loaded.';
-      warningsList.push(warningMessage);
+        inconsistencyWarnings.push(warningMessage);
     }
   }
 
-  displaySet.warningsList = warningsList;
-  return warningsList;
+  // cache the warnings
+  displaySet.inconsistencyWarnings = inconsistencyWarnings;
+  return inconsistencyWarnings;
 }
+
+/**
+ * Checks if display set is active, i.e. if the series is currently shown
+ * in the active viewport.
+ *
+ * For data display set, this functions checks if the active
+ * display set instance uid in the current active viewport is the same of the
+ * thumbnail one.
+ *
+ * For derived modalities (e.g., SEG and RTSTRUCT), the function gets the
+ * reference display set and then checks the reference uid with the active
+ * display set instance uid.
+ *
+ * @param {displaySet} displaySet
+ * @param {Study[]} studies
+ * @param {string} activeDisplaySetInstanceUID
+ * @returns {boolean} is active.
+ */
+ const _isDisplaySetActive = function(displaySet, studies, activeDisplaySetInstanceUID) {
+  let active = false;
+
+  const {
+    displaySetInstanceUID,
+  } = displaySet;
+
+  // TO DO: in the future, we could possibly support new modalities
+  // we should have a list of all modalities here, instead of having hard coded checks
+  if (displaySet.Modality !== 'SEG' &&
+    displaySet.Modality !== 'RTSTRUCT' &&
+    displaySet.Modality !== 'RTDOSE') {
+    active = activeDisplaySetInstanceUID === displaySetInstanceUID;
+  } else if (displaySet.getSourceDisplaySet){
+    if (displaySet.Modality === 'SEG') {
+      const { referencedDisplaySet } = displaySet.getSourceDisplaySet(studies, false);
+      active = referencedDisplaySet ?
+        activeDisplaySetInstanceUID === referencedDisplaySet.displaySetInstanceUID :
+          false;
+    } else {
+      const referencedDisplaySet = displaySet.getSourceDisplaySet(studies, false);
+      active = referencedDisplaySet ?
+        activeDisplaySetInstanceUID === referencedDisplaySet.displaySetInstanceUID :
+          false;
+    }
+  }
+
+  return active;
+};
 
 /**
  * What types are these? Why do we have "mapping" dropped in here instead of in
@@ -545,12 +600,11 @@ const _checkForSeriesInconsistencesWarnings = async function (displaySet, studie
  * - Add showStackLoadingProgressBar option
  *
  * @param {Study[]} studies
- * @param {DisplaySet[]} studies[].displaySets
+ * @param {string} activeDisplaySetInstanceUID
  */
 const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
   return studies.map(study => {
     const { StudyInstanceUID } = study;
-
     const thumbnails = study.displaySets.map(displaySet => {
       const {
         displaySetInstanceUID,
@@ -570,30 +624,13 @@ const _mapStudiesToThumbnails = function(studies, activeDisplaySetInstanceUID) {
         altImageText = 'SEG';
       } else if (displaySet.images && displaySet.images.length) {
         const imageIndex = Math.floor(displaySet.images.length / 2);
-
         imageId = displaySet.images[imageIndex].getImageId();
       } else {
         altImageText = displaySet.Modality ? displaySet.Modality : 'UN';
       }
 
       const hasWarnings = _checkForSeriesInconsistencesWarnings(displaySet, studies);
-
-      let active = false;
-      if (displaySet.Modality !== 'SEG' && displaySet.Modality !== 'RTSTRUCT') {
-        active = activeDisplaySetInstanceUID === displaySetInstanceUID;
-      } else if (displaySet.getSourceDisplaySet){
-        if (displaySet.Modality === 'SEG') {
-          const { referencedDisplaySet } = displaySet.getSourceDisplaySet(studies, false);
-          active = referencedDisplaySet ?
-            activeDisplaySetInstanceUID === referencedDisplaySet.displaySetInstanceUID :
-              false;
-        } else {
-          const referencedDisplaySet = displaySet.getSourceDisplaySet(studies, false);
-          active = referencedDisplaySet ?
-            activeDisplaySetInstanceUID === referencedDisplaySet.displaySetInstanceUID :
-              false;
-        }
-      }
+      const active = _isDisplaySetActive(displaySet, studies, activeDisplaySetInstanceUID)
 
       return {
         active,
