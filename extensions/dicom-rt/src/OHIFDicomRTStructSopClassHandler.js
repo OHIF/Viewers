@@ -71,8 +71,8 @@ const OHIFDicomRTStructSopClassHandler = {
       }
     }
 
-    rtStructDisplaySet.getSourceDisplaySet = function (studies) {
-      return getSourceDisplaySet(studies, rtStructDisplaySet);
+    rtStructDisplaySet.getSourceDisplaySet = function (studies, activateLabelMap = true) {
+      return getSourceDisplaySet(studies, rtStructDisplaySet, activateLabelMap);
     };
 
     rtStructDisplaySet.load = function (referencedDisplaySet, studies) {

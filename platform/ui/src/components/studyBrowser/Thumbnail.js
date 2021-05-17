@@ -16,13 +16,13 @@ function ThumbnailFooter({
   numImageFrames,
   hasWarnings
 }) {
-  const [warningList, warningListSet] = useState([]);
+  const [inconsistencyWarnings, inconsistencyWarningsSet] = useState([]);
 
   useEffect(() => {
     let unmounted = false
     hasWarnings.then(response => {
       if (!unmounted) {
-        warningListSet(response)
+        inconsistencyWarningsSet(response)
       }
     })
     return () => {
@@ -41,22 +41,22 @@ function ThumbnailFooter({
     );
   };
 
-  const getWarningContent = (warningList) => {
-    if (Array.isArray(warningList)) {
-      const listedWarnings = warningList.map((warn, index) => {
+  const getWarningContent = (inconsistencyWarnings) => {
+    if (Array.isArray(inconsistencyWarnings)) {
+      const listedWarnings = inconsistencyWarnings.map((warn, index) => {
         return <li key={index}>{warn}</li>;
       });
 
       return <ol>{listedWarnings}</ol>;
     } else {
-      return <React.Fragment>{warningList}</React.Fragment>;
+      return <React.Fragment>{inconsistencyWarnings}</React.Fragment>;
     }
   };
 
-  const getWarningInfo = (SeriesNumber, warningList) => {
+  const getWarningInfo = (SeriesNumber, inconsistencyWarnings) => {
       return(
         <React.Fragment>
-        {warningList.length != 0 ? (
+        {inconsistencyWarnings && inconsistencyWarnings.length != 0 ? (
           <OverlayTrigger
             key={SeriesNumber}
             placement="left"
@@ -67,7 +67,7 @@ function ThumbnailFooter({
                 id="tooltip-left"
               >
                 <div className="warningTitle">Series Inconsistencies</div>
-                <div className="warningContent">{getWarningContent(warningList)}</div>
+                <div className="warningContent">{getWarningContent(inconsistencyWarnings)}</div>
               </Tooltip>
             }
           >
@@ -87,7 +87,7 @@ function ThumbnailFooter({
     SeriesNumber,
     InstanceNumber,
     numImageFrames,
-    warningList
+    inconsistencyWarnings
   ) => {
     if (!SeriesNumber && !InstanceNumber && !numImageFrames) {
       return;
@@ -97,7 +97,7 @@ function ThumbnailFooter({
         {getInfo(SeriesNumber, 'S:')}
         {getInfo(InstanceNumber, 'I:')}
         {getInfo(numImageFrames, '', 'image-frames')}
-        {getWarningInfo(SeriesNumber, warningList)}
+        {getWarningInfo(SeriesNumber, inconsistencyWarnings)}
       </div>
 
     return (seriesInformation);
@@ -106,7 +106,7 @@ function ThumbnailFooter({
   return (
     <div className={classNames('series-details', { 'info-only': infoOnly })}>
       <div className="series-description">{SeriesDescription}</div>
-      {getSeriesInformation(SeriesNumber, InstanceNumber, numImageFrames, warningList)}
+      {getSeriesInformation(SeriesNumber, InstanceNumber, numImageFrames, inconsistencyWarnings)}
     </div>
   );
 }
@@ -159,6 +159,7 @@ function Thumbnail(props) {
       {/* SHOW IMAGE */}
       {hasImage && (
         <ImageThumbnail
+          active={active}
           imageSrc={imageSrc}
           imageId={imageId}
           error={error}
