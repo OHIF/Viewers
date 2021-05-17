@@ -20,6 +20,7 @@ function StudyBrowser(props) {
             return study.thumbnails.map((thumb, thumbIndex) => {
               // TODO: Thumb has more props than we care about?
               const {
+                active,
                 altImageText,
                 displaySetInstanceUID,
                 imageId,
@@ -38,6 +39,7 @@ function StudyBrowser(props) {
                   data-cy="thumbnail-list"
                 >
                   <Thumbnail
+                    active={active}
                     supportsDrag={supportsDrag}
                     key={`${studyIndex}_${thumbIndex}`}
                     id={`${studyIndex}_${thumbIndex}`} // Unused?

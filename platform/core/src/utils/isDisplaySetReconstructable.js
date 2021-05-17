@@ -6,7 +6,7 @@ import { ReconstructionIssues } from './../enums.js';
  *
  * @param {Object[]} An array of `OHIFInstanceMetadata` objects.
  *
- * @returns {Object} value, warningIssues.
+ * @returns {Object} value, reconstructionIssues.
  */
 function isDisplaySetReconstructable(instances) {
   if (!instances.length) {
@@ -38,11 +38,11 @@ function isDisplaySetReconstructable(instances) {
  * Process reconstructable multiframes checks
  * TODO: deal with multriframe checks! return false for now as can't reconstruct.
  * *
- * @returns {Object} value and warningIssues.
+ * @returns {Object} value and reconstructionIssues.
  */
 function processMultiframe() {
-  const warningIssues = [ReconstructionIssues.MULTIFRAMES];
-  return { value: false, warningIssues };
+  const reconstructionIssues = [ReconstructionIssues.MULTIFRAMES];
+  return { value: false, reconstructionIssues };
 }
 
 /**
@@ -50,7 +50,7 @@ function processMultiframe() {
  *
  * @param {Object[]} An array of `OHIFInstanceMetadata` objects.
  *
- * @returns {Object} value and warningIssues.
+ * @returns {Object} value and reconstructionIssues.
  */
 function processSingleframe(instances) {
   const n = instances.length;
@@ -60,7 +60,7 @@ function processSingleframe(instances) {
   const firstImageSamplesPerPixel = firstImage.SamplesPerPixel;
   const firstImageOrientationPatient = firstImage.ImageOrientationPatient;
 
-  const warningIssues = [];
+  const reconstructionIssues = [];
   // Can't reconstruct if we:
   // -- Have a different dimensions within a displaySet.
   // -- Have a different number of components within a displaySet.
@@ -75,24 +75,24 @@ function processSingleframe(instances) {
     } = instance;
 
     if (Rows !== firstImageRows || Columns !== firstImageColumns) {
-      warningIssues.push(ReconstructionIssues.VARYING_IMAGESDIMENSIONS);
+      reconstructionIssues.push(ReconstructionIssues.VARYING_IMAGESDIMENSIONS);
     } else if (SamplesPerPixel !== firstImageSamplesPerPixel) {
-      warningIssues.push(ReconstructionIssues.VARYING_IMAGESCOMPONENTS);
+      reconstructionIssues.push(ReconstructionIssues.VARYING_IMAGESCOMPONENTS);
     } else if (!_isSameArray(ImageOrientationPatient, firstImageOrientationPatient)) {
-      warningIssues.push(ReconstructionIssues.VARYING_IMAGESORIENTATION);
+      reconstructionIssues.push(ReconstructionIssues.VARYING_IMAGESORIENTATION);
     }
 
-    if (warningIssues.length !== 0) {
+    if (reconstructionIssues.length !== 0) {
       break;
     }
   }
 
   // check if dataset is 4D
   if (_isDataset4D(instances)) {
-    warningIssues.push(ReconstructionIssues.DATASET_4D);
+    reconstructionIssues.push(ReconstructionIssues.DATASET_4D);
   }
 
-  return { value: warningIssues.length === 0 ? true : false, warningIssues };
+  return { value: reconstructionIssues.length === 0 ? true : false, reconstructionIssues };
 }
 
 /**
@@ -102,14 +102,14 @@ function processSingleframe(instances) {
  * @param {Object[]} An array of `OHIFInstanceMetadata` objects.
  * @param {boolean} is the dataset 4D.
  *
- * @returns {Object} isUniform, warningIssues and missingFrames
+ * @returns {Object} isUniform, reconstructionIssues and missingFrames
  */
 function isSpacingUniform(instances, datasetIs4D) {
   const n = instances.length;
   const firstImage = instances[0].getData().metadata;
   const firstImagePositionPatient = firstImage.ImagePositionPatient;
 
-  const warningIssues = [];
+  const reconstructionIssues = [];
   let missingFrames = 0;
 
   // Check if frame spacing is approximately equal within a spacingTolerance.
@@ -154,7 +154,7 @@ function isSpacingUniform(instances, datasetIs4D) {
           if (issue === ReconstructionIssues.MISSING_FRAMES) {
             missingFrames += spacingIssue.missingFrames;
           } else if (issue === ReconstructionIssues.IRREGULAR_SPACING) {
-            warningIssues.push(issue);
+            reconstructionIssues.push(issue);
             break;
           }
         }
@@ -164,7 +164,7 @@ function isSpacingUniform(instances, datasetIs4D) {
     }
   }
 
-  return { isUniform: warningIssues.length === 0 ? true : false, missingFrames, warningIssues };
+  return { isUniform: reconstructionIssues.length === 0 ? true : false, missingFrames, reconstructionIssues };
 }
 
 

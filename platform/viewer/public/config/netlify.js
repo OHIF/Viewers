@@ -1,6 +1,7 @@
 window.config = {
   routerBasename: '/pwa',
   showStudyList: true,
+  disableServersCache: true,
   servers: {
     dicomWeb: [
       {
