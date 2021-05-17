@@ -782,7 +782,7 @@ const get4DSeriesSortTags = instance => ({
 });
 
 const is4DSeries = instances => {
-  if (instances[0].getRawValue('x00080060') !== 'MR') return 0; // only MR exams
+  if (instances[0]['x00080060'] !== 'MR') return 0; // only MR exams
 
   instances.forEach(instance => {
     instance.sort4DSeriesTags = get4DSeriesSortTags(instance);
