@@ -845,7 +845,7 @@ const get4DSeriesSortTags = instances => {
   if (instances[0].getTagValue('Modality') !== 'MR') return null;
 
   instances.forEach(instance => {
-    instance.sort4DSeriesTags = get4DInstanceSortTags(instance);
+    instance._instance.sort4DSeriesTags = get4DInstanceSortTags(instance);
   });
 
   // The goal here is to identify 4D series and the tags we'll use to sort them
