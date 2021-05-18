@@ -3,7 +3,6 @@ import DICOMWeb from './../../DICOMWeb';
 import ImageSet from './../ImageSet';
 import { InstanceMetadata } from './InstanceMetadata';
 import { Metadata } from './Metadata';
-import OHIFError from '../OHIFError';
 import { SeriesMetadata } from './SeriesMetadata';
 // - createStacks
 import { api } from 'dicomweb-client';
@@ -12,6 +11,7 @@ import { isImage } from '../../utils/isImage';
 import { isDisplaySetReconstructable, isSpacingUniform } from '../../utils/isDisplaySetReconstructable';
 import errorHandler from '../../errorHandler';
 import isLowPriorityModality from '../../utils/isLowPriorityModality';
+import log from '../../log';
 
 class StudyMetadata extends Metadata {
   constructor(data, uid) {
@@ -754,7 +754,7 @@ const isMultiFrame = instance => {
   return instance.getTagValue('NumberOfFrames') > 1;
 };
 
-const get4DSeriesSortTags = instance => ({
+const get4DInstanceSortTags = instance => ({
   // Get Tags for 4D series stack sorting
   DiffusionBValue: DICOMWeb.getNumber(instance['00189087']),
   TemporalPositionIdentifier: DICOMWeb.getNumber(instance['00200100']),
@@ -781,11 +781,21 @@ const get4DSeriesSortTags = instance => ({
   MRDiffusionSequence: DICOMWeb.getString(instance['00189117']),
 });
 
-const is4DSeries = instances => {
-  if (instances[0]['x00080060'] !== 'MR') return 0; // only MR exams
+/**
+ * Don't use a tag for sorting if too many unique values are found.
+ * @type {number}
+ */
+const SORT_TAG_4D_MAX_UNIQUE = 5;
+
+/**
+ * Returns a list of tags to sort by for 4D MR series, or null if no suitable tags were found.
+ */
+const get4DSeriesSortTags = instances => {
+  // only MR exams
+  if (instances[0].getTagValue('Modality') !== 'MR') return null;
 
   instances.forEach(instance => {
-    instance.sort4DSeriesTags = get4DSeriesSortTags(instance);
+    instance.sort4DSeriesTags = get4DInstanceSortTags(instance);
   });
 
   // The goal here is to identify 4D series and the tags we'll use to sort them
@@ -793,25 +803,32 @@ const is4DSeries = instances => {
   const sortTagsList = Object.keys(instances[0]._instance.sort4DSeriesTags);
 
   // Among those tags, identify those that have multiple values
-  var sortTags = Array(); // Declare an array to store tags to sort by
-  var sortTagsVal = Array(); // for debug purposes
+  const sortTags = []; // Declare an array to store tags to sort by
+  const sortTagsVal = []; // for debug purposes
 
-  sortTagsList.map(testedTag => { // loop through the tag list
-    var testedTagValues = instances.map(b => b._instance.sort4DSeriesTags[testedTag]);
-    var tagsUniqueValues = [...new Set(testedTagValues)];
-    if (tagsUniqueValues.length > 1 && tagsUniqueValues.length < 5) {
+  // loop through the tag list
+  sortTagsList.forEach(testedTag => {
+    const testedTagValues = instances.map(
+      b => b._instance.sort4DSeriesTags[testedTag]
+    );
+    const tagsUniqueValues = [...new Set(testedTagValues)];
+    if (
+      tagsUniqueValues.length > 1 &&
+      tagsUniqueValues.length < SORT_TAG_4D_MAX_UNIQUE
+    ) {
       // If the tested tag has more than one value throughout the series..
-      // And less than 5 (i.e. not too many)
-      sortTags.push(testedTag); // Push to our new array
+      sortTags.push(testedTag);
       sortTagsVal.push(tagsUniqueValues); // debug
     }
   });
-  // If none of them do : return 0
-  if (sortTags.length === 0) return 0;
+  // If none of them do, it's not a 4D series we can sort
+  if (sortTags.length === 0) return null;
 
   // Debug: report on tags for each series
-  console.log('%c4D series! Sorting tags:', 'color: black; background: #9ccef9; padding: 4px; font-weight: bold;');
-  sortTags.map((a, index) => console.log(a, sortTagsVal[index]));
+  log.debug('4D series! Sorting tags:');
+  sortTags.forEach((sortTagKey, index) =>
+    log.debug(sortTagKey, sortTagsVal[index])
+  );
 
   // Return the array listing tags to sort by
   return sortTags;
@@ -839,12 +856,12 @@ const makeDisplaySet = (series, instances) => {
     SeriesTime: seriesData.SeriesTime,
     SeriesInstanceUID: series.getSeriesInstanceUID(),
     SeriesNumber: instance.getTagValue('SeriesNumber'),
-    SeriesDescription: instance.getTagValue('SeriesDescription') || '',
+    SeriesDescription: instance.getTagValue('SeriesDescription'),
     numImageFrames: instances.length,
     frameRate: instance.getTagValue('FrameTime'),
     Modality: instance.getTagValue('Modality'),
     isMultiFrame: isMultiFrame(instance),
-    is4DSeries: is4DSeries(instances), // we need all the instances to compute this one
+    series4DSortTags: get4DSeriesSortTags(instances), // we need all the instances to compute this one
   });
 
   // Sort the images in this series by instanceNumber
@@ -859,15 +876,22 @@ const makeDisplaySet = (series, instances) => {
     });
   }
 
-  // If 4Dseries, sort according to identified tags
-  if (imageSet.is4DSeries) {
+  // If 4D series, sort according to identified tags
+  if (imageSet.series4DSortTags) {
     // Tell the user about sorting in series description
-    imageSet.seriesDescription += ' | 4D: ' + imageSet.is4DSeries;
+    const desc4D = `4D: ${imageSet.series4DSortTags}`;
+    if (!imageSet.SeriesDescription) {
+      imageSet.SeriesDescription = desc4D;
+    } else {
+      imageSet.SeriesDescription += ` | ${desc4D}`;
+    }
     // Sort series by each tag in the array
-    imageSet.is4DSeries.map(c => {
+    imageSet.series4DSortTags.forEach(c => {
       imageSet.sortBy((a, b) => {
-        if (a._instance.sort4DSeriesTags[c] > b._instance.sort4DSeriesTags[c]) return 1;
-        if (a._instance.sort4DSeriesTags[c] < b._instance.sort4DSeriesTags[c]) return -1;
+        if (a._instance.sort4DSeriesTags[c] > b._instance.sort4DSeriesTags[c])
+          return 1;
+        if (a._instance.sort4DSeriesTags[c] < b._instance.sort4DSeriesTags[c])
+          return -1;
       });
     });
   }
@@ -881,7 +905,7 @@ const makeDisplaySet = (series, instances) => {
   const displayReconstructableInfo = isDisplaySetReconstructable(instances);
   imageSet.isReconstructable = displayReconstructableInfo.value;
 
-  if (imageSet.is4DSeries) {
+  if (imageSet.series4DSortTags) {
     // Quick and nasty override (maybe make it part of isDisplaySetReconstructable ?)
     imageSet.isReconstructable = false;
   }
