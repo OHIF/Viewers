@@ -320,7 +320,7 @@ jobs:
             fi
 
 workflows:
-  version: 2
+  version: 3
 
   PR_CHECKS:
     jobs:
