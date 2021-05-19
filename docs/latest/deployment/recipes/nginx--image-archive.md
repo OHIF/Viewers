@@ -110,6 +110,14 @@ Stop running all containers:
 - Win: `docker ps -a -q | ForEach { docker stop $_ }`
 - Linux: `docker stop $(docker ps -a -q)`
 
+
+_Traceback (most recent call last):_
+  _File "urllib3/connectionpool.py", line 670, in urlopen_
+  _...._
+
+Are you sure your docker is running? see explanation [here](https://github.com/docker/compose/issues/7896)
+
+
 ### Configuration
 
 After verifying that everything runs with default configuration values, you will

@@ -6,8 +6,6 @@
 In order to achieve a platform that can support various workflows and be extensible for the foreseeable future we went through extensive planning of possible use cases and decided to significantly change and improve the architecture.
 
 
-
-
 Below, we aim to demystify that complexity by providing insight into how `OHIF Platform` is
 architected, and the role each of it's dependent libraries plays.
 

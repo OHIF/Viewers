@@ -104,9 +104,6 @@ export default function ModeRoute(/**..**/) {
         })
       }
     },
-    [
-      /**...**/
-    ]
   )
   return <> /**...**/ </>
 }

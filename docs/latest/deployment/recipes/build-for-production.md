@@ -104,14 +104,18 @@ directory:
 // Install http-server as a globally available package
 yarn global add http-server
 
+// Change the directory to the platform/viewer
+
 // Serve the files in our current directory
 // Accessible at: `http://localhost:8080`
-http-server
+npx http-server ./dist
 ```
+
+<mark>http-server
 
 ### Automating Builds and Deployments
 
-If you found setting up your environmnent and running all of these steps to be a
+If you found setting up your environment and running all of these steps to be a
 bit tedious, then you are in good company. Thankfully, there are a large number
 of tools available to assist with automating tasks like building and deploying
 web application. For a starting point, check out this repository's own use of:
@@ -120,11 +124,7 @@ web application. For a starting point, check out this repository's own use of:
 - [Netlify][netlify]: [netlify.toml][netlify.toml] |
   [build-deploy-preview.sh][build-deploy-preview.sh]
 
-## Troubleshooting
 
-> Issues and resolutions for common GitHub issues will be summarized here
-
-...
 
 <!-- prettier-ignore-start -->
 [circleci]: https://circleci.com/gh/OHIF/Viewers

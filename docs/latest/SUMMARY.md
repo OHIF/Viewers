@@ -68,21 +68,12 @@
     - [Pub/Sub Pattern](services/pubsub.md)
 
 - [Deployment](deployment/index.md)
-  - [Embedded](deployment/index.md#embedded-viewer)
-<!--
-  - [Stand-alone](deployment/index.md#stand-alone-viewer)
-  - [Data](deployment/index.md#data)
-- Recipes
-  - Script Include
-    - [Embedding the Viewer](deployment/recipes/embedded-viewer.md)
-  - Stand-Alone
-    - [Build for Production](deployment/recipes/build-for-production.md)
-    - [Static](deployment/recipes/static-assets.md)
-    - [Nginx + Image Archive](deployment/recipes/nginx--image-archive.md)
-    - [User Account Control](deployment/recipes/user-account-control.md)
-    - [Google Cloud Healthcare](connecting-to-image-archives/google-cloud-healthcare.md)
+  - [Build for Production](deployment/recipes/build-for-production.md)
+  - [Static](deployment/recipes/static-assets.md)
+  - [Nginx + Image Archive](deployment/recipes/nginx--image-archive.md)
+  - [User Account Control](deployment/recipes/user-account-control.md)
+  - [Google Cloud Healthcare](connecting-to-image-archives/google-cloud-healthcare.md)
 
----
 
 - [FAQ](faq/index.md)
   - [Scope of Project](faq/scope-of-project.md)
