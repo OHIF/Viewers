@@ -235,7 +235,7 @@ class MetadataProvider {
           rowCosines,
           columnCosines,
           imagePositionPatient: instance.ImagePositionPatient,
-          sliceThickness: instance.SliceThickness,
+          sliceThickness: validNumber(instance.SliceThickness),
           sliceLocation: instance.SliceLocation,
           pixelSpacing: PixelSpacing,
           rowPixelSpacing,

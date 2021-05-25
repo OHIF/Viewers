@@ -341,7 +341,9 @@ function TrackedCornerstoneViewport({
             patientSex: PatientSex || '',
             patientAge: PatientAge || '',
             MRN: PatientID || '',
-            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
+            thickness: SliceThickness
+              ? `${Number(SliceThickness).toFixed(2)}mm`
+              : '',
             spacing:
               SpacingBetweenSlices !== undefined
                 ? `${SpacingBetweenSlices.toFixed(2)}mm`
