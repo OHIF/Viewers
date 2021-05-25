@@ -30,27 +30,4 @@ You can read more about this particular strategy in our
 
 ## Commonjs Bundle (Packaged Script)
 
-The [@ohif/viewer][viewer-npm] package is built with WebPack to provide a React
-component that can be dropped into a larger application. The `OHIFViewer`
-component is the entire viewer, configurable via React `props`. This is useful
-for including the OHIF Viewer in a larger web application, as the entire
-application can be provided via a `<script>` tag with no build process required.
-
-The bundle is not as performant or as optimized as the PWA build. It includes
-fonts, styles, and the core extensions. If you find yourself facing performance
-issues, you may wish to tweak what's included in this bundle or switch to the
-PWA build.
-
-You can read more about this particular strategy in our
-[Embedded Viewer Deployment Guide](./../deployment/recipes/embedded-viewer.md)
-
-<!--
-  Links
-  -->
-
-<!-- prettier-ignore-start -->
-[pwa]: https://developers.google.com/web/progressive-web-apps/
-[pwa-checklist]: https://developers.google.com/web/progressive-web-apps/checklist
-[monorepo]: https://github.com/OHIF/Viewers/issues/768
-[viewer-npm]: https://www.npmjs.com/package/@ohif/viewer
-<!-- prettier-ignore-end -->
+We are not supporting `Commonjs` bundling inside `OHIF-v3`.

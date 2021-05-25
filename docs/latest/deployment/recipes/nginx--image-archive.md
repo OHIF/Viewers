@@ -79,6 +79,20 @@ in command prompt or terminal_
 
 ### Setup
 
+- Navigate to `viewer` folder inside `platform`
+- then: `cd .recipes/OpenResty-Orthanc`
+- run: `docker-compose up --build`
+- Navigate to `127.0.0.1` for the viewer
+- Navigate to `127.0.0.1/pacs-admin` for uploading studies
+
+
+You can see the overview of the mentioned steps:
+
+
+<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/554726410?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="NginX Deployment"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+<!-- ### Setup
+
 _Spin Things Up_
 
 - Navigate to `<project-root>/docker/OpenResty-Orthanc` in your shell
@@ -90,7 +104,7 @@ _Upload Your First Study_
 - From the top right, select "Upload"
 - Click "Select files to upload..." (DICOM)
 - Click "Start the upload"
-- Navigate back to `http://127.0.0.1/` to view your studies in the Study List
+- Navigate back to `http://127.0.0.1/` to view your studies in the Study List -->
 
 ### Troubleshooting
 

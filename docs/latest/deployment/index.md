@@ -16,10 +16,10 @@ applications. If you find yourself a little lost, please don't hesitate to
 
 ## Deployment Scenarios
 
-### Embedded Viewer
-`OHIF-v3` has deprecated deploying the viewer as an embedded viewer for the following reasons:
-
-<mark> tbd
+### Embedded Viewer (deprecated)
+`OHIF-v3` has deprecated deploying the viewer as an embedded viewer the number of underlying
+libraries that run web workers are increasing for OHIF. An example of these libraries is
+OHIF's 3D rendering functionality that is provided by `vtk-js`.
 
 ### Stand-alone Viewer
 
@@ -225,7 +225,7 @@ Essentially, whenever the application connects to a remote resource, you will ne
 
 
 ### Securing Your Data
-<mark> Open Id stuff
+Coming soon
 
 <!--
 > Feeling lost? Securing your data is important, and it can be hard to tell if
