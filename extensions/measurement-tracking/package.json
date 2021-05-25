@@ -31,7 +31,7 @@
     "classnames": "^2.2.6",
     "cornerstone-core": "^2.3.0",
     "cornerstone-tools": "5.1.2",
-    "dcmjs": "0.16.1",
+    "dcmjs": "0.18.8",
     "prop-types": "^15.6.2",
     "react": "^16.13.1",
     "react-cornerstone-viewport": "^4.0.4",

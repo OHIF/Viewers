@@ -20,6 +20,7 @@ import resolveObjectPath from './resolveObjectPath';
 import hierarchicalListUtils from './hierarchicalListUtils';
 import progressTrackingUtils from './progressTrackingUtils';
 import isLowPriorityModality from './isLowPriorityModality';
+import validNumber from './validNumber';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for dervived displaySets using the displaySetManager.
@@ -46,7 +47,8 @@ const utils = {
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
-  isLowPriorityModality
+  isLowPriorityModality,
+  validNumber,
 };
 
 export {
@@ -69,7 +71,8 @@ export {
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
-  isLowPriorityModality
+  isLowPriorityModality,
+  validNumber,
 };
 
 export default utils;

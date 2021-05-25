@@ -4,6 +4,7 @@ import getPixelSpacingInformation from '../utils/metadataProvider/getPixelSpacin
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import fetchOverlayData from '../utils/metadataProvider/fetchOverlayData';
 import DicomMetadataStore from '../services/DicomMetadataStore';
+import { validNumber } from '../utils';
 
 class MetadataProvider {
   constructor() {
@@ -271,7 +272,7 @@ class MetadataProvider {
 
         break;
       case WADO_IMAGE_LOADER_TAGS.VOI_LUT_MODULE:
-        const { WindowCenter, WindowWidth } = instance;
+        let { WindowCenter, WindowWidth } = instance;
 
         const windowCenter = Array.isArray(WindowCenter)
           ? WindowCenter
@@ -281,15 +282,17 @@ class MetadataProvider {
           : [WindowWidth];
 
         metadata = {
-          windowCenter,
-          windowWidth,
+          windowCenter: validNumber(windowCenter),
+          windowWidth: validNumber(windowWidth),
         };
 
         break;
       case WADO_IMAGE_LOADER_TAGS.MODALITY_LUT_MODULE:
+        const rescaleSlope = validNumber(instance.RescaleSlope);
+        const rescaleIntercept = validNumber(instance.RescaleIntercept);
         metadata = {
-          rescaleIntercept: instance.RescaleIntercept,
-          rescaleSlope: instance.RescaleSlope,
+          rescaleIntercept,
+          rescaleSlope,
           rescaleType: instance.RescaleType,
         };
         break;
