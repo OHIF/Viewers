@@ -30,10 +30,8 @@ const Dialog = ({
   const width = 'w-full';
 
   useEffect(() => {
-    if (onShow) {
-      onShow();
-    }
-  }, [onShow]);
+    onShow();
+  }, []);
 
   return (
     <div className={classNames(theme, flex, border, outline, position, width)}>
@@ -55,11 +53,14 @@ const Dialog = ({
   );
 };
 
+const noop = () => {};
+
 Dialog.propTypes = {
   title: PropTypes.string,
   text: PropTypes.string,
   onClose: PropTypes.func,
   noCloseButton: PropTypes.bool,
+  onShow: PropTypes.func,
   header: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   body: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   footer: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
@@ -80,6 +81,8 @@ Dialog.defaultProps = {
   footer: Footer,
   body: Body,
   value: {},
+  onShow: noop,
+  onClose: noop
 };
 
 export default Dialog;
