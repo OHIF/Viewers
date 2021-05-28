@@ -18,7 +18,7 @@ window.config = {
    * Viewer project, or extensions.
    */
   whiteLabeling: {
-    /** coming soon **/
+    /** ... **/
   },
   httpErrorHandler: {
     /** coming soon **/
