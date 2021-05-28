@@ -28,7 +28,7 @@ function PanelStudyBrowserTracking({
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
-  const [{ StudyInstanceUIDs }, dispatchImageViewer] = useImageViewer();
+  const { StudyInstanceUIDs } = useImageViewer();
   const [
     { activeViewportIndex, viewports, numCols, numRows },
     viewportGridService,
@@ -58,27 +58,34 @@ function PanelStudyBrowserTracking({
 
   const isSingleViewport = numCols === 1 && numRows === 1;
 
-  // TODO: Should this be somewhere else? Feels more like a mode "lifecycle" setup/destroy?
   useEffect(() => {
-    const { unsubscribe } = MeasurementService.subscribe(
-      MeasurementService.EVENTS.MEASUREMENT_ADDED,
-      ({ source, measurement }) => {
-        const {
-          referenceSeriesUID: SeriesInstanceUID,
-          referenceStudyUID: StudyInstanceUID,
-        } = measurement;
+    const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
+    const addedRaw = MeasurementService.EVENTS.RAW_MEASUREMENT_ADDED;
+    const subscriptions = [];
 
-        sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
-        sendTrackedMeasurementsEvent('TRACK_SERIES', {
-          viewportIndex: activeViewportIndex,
-          StudyInstanceUID,
-          SeriesInstanceUID,
-        });
-      }
-    );
+    [added, addedRaw].forEach(evt => {
+      subscriptions.push(
+        MeasurementService.subscribe(evt, ({ source, measurement }) => {
+          const {
+            referenceSeriesUID: SeriesInstanceUID,
+            referenceStudyUID: StudyInstanceUID,
+          } = measurement;
 
-    return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+          sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
+          sendTrackedMeasurementsEvent('TRACK_SERIES', {
+            viewportIndex: activeViewportIndex,
+            StudyInstanceUID,
+            SeriesInstanceUID,
+          });
+        }).unsubscribe
+      );
+    });
+
+    return () => {
+      subscriptions.forEach(unsub => {
+        unsub();
+      });
+    };
   }, [MeasurementService, activeViewportIndex, sendTrackedMeasurementsEvent]);
 
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
@@ -89,7 +96,6 @@ function PanelStudyBrowserTracking({
     async function fetchStudiesForPatient(StudyInstanceUID) {
       const qidoStudiesForPatient =
         (await getStudiesForPatientByStudyInstanceUID(StudyInstanceUID)) || [];
-
       // TODO: This should be "naturalized DICOM JSON" studies
       const mappedStudies = _mapDataSourceStudies(qidoStudiesForPatient);
       const actuallyMappedStudies = mappedStudies.map(qidoStudy => {
@@ -182,6 +188,7 @@ function PanelStudyBrowserTracking({
 
           const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
           const imageId = imageIds[Math.floor(imageIds.length / 2)];
+
           // TODO: Is it okay that imageIds are not returned here for SR displaysets?
           if (imageId) {
             // When the image arrives, render it and store the result in the thumbnailImgSrcMap

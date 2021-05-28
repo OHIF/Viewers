@@ -1,8 +1,11 @@
-export default function getToolStateToCornerstoneMeasurementSchema(
+export default function getCornerstoneToolStateToMeasurementSchema(
   toolType,
   MeasurementService,
   DisplaySetService,
-  imageId
+  SOPInstanceUID,
+  FrameOfReferenceUID,
+  SeriesInstanceUID,
+  StudyInstanceUID
 ) {
   const _getValueTypeFromToolType = toolType => {
     const {
@@ -31,7 +34,10 @@ export default function getToolStateToCornerstoneMeasurementSchema(
       return measurementData =>
         Length(
           measurementData,
-          imageId,
+          SOPInstanceUID,
+          FrameOfReferenceUID,
+          SeriesInstanceUID,
+          StudyInstanceUID,
           DisplaySetService,
           _getValueTypeFromToolType
         );
@@ -39,7 +45,10 @@ export default function getToolStateToCornerstoneMeasurementSchema(
       return measurementData =>
         Bidirectional(
           measurementData,
-          imageId,
+          SOPInstanceUID,
+          FrameOfReferenceUID,
+          SeriesInstanceUID,
+          StudyInstanceUID,
           DisplaySetService,
           _getValueTypeFromToolType
         );
@@ -47,7 +56,10 @@ export default function getToolStateToCornerstoneMeasurementSchema(
       return measurementData =>
         EllipticalRoi(
           measurementData,
-          imageId,
+          SOPInstanceUID,
+          FrameOfReferenceUID,
+          SeriesInstanceUID,
+          StudyInstanceUID,
           DisplaySetService,
           _getValueTypeFromToolType
         );
@@ -55,7 +67,10 @@ export default function getToolStateToCornerstoneMeasurementSchema(
       return measurementData =>
         ArrowAnnotate(
           measurementData,
-          imageId,
+          SOPInstanceUID,
+          FrameOfReferenceUID,
+          SeriesInstanceUID,
+          StudyInstanceUID,
           DisplaySetService,
           _getValueTypeFromToolType
         );
@@ -64,18 +79,14 @@ export default function getToolStateToCornerstoneMeasurementSchema(
 
 function Length(
   measurementData,
-  imageId,
+  SOPInstanceUID,
+  FrameOfReferenceUID,
+  SeriesInstanceUID,
+  StudyInstanceUID,
   DisplaySetService,
   _getValueTypeFromToolType
 ) {
   const tool = measurementData.toolType || measurementData.toolName;
-  const instance = cornerstone.metaData.get('instance', imageId);
-  const {
-    SOPInstanceUID,
-    FrameOfReferenceUID,
-    SeriesInstanceUID,
-    StudyInstanceUID,
-  } = instance;
 
   const displaySetInstanceUID = _getDisplaySetInstanceUID(
     DisplaySetService,
@@ -113,18 +124,15 @@ function Length(
 
 function Bidirectional(
   measurementData,
-  imageId,
+  SOPInstanceUID,
+  FrameOfReferenceUID,
+  SeriesInstanceUID,
+  StudyInstanceUID,
   DisplaySetService,
   _getValueTypeFromToolType
 ) {
   const tool = measurementData.toolType || measurementData.toolName;
-  const instance = cornerstone.metaData.get('instance', imageId);
-  const {
-    SOPInstanceUID,
-    FrameOfReferenceUID,
-    SeriesInstanceUID,
-    StudyInstanceUID,
-  } = instance;
+
   const displaySetInstanceUID = _getDisplaySetInstanceUID(
     DisplaySetService,
     SeriesInstanceUID,
@@ -155,18 +163,14 @@ function Bidirectional(
 
 function EllipticalRoi(
   measurementData,
-  imageId,
+  SOPInstanceUID,
+  FrameOfReferenceUID,
+  SeriesInstanceUID,
+  StudyInstanceUID,
   DisplaySetService,
   _getValueTypeFromToolType
 ) {
   const tool = measurementData.toolType || measurementData.toolName;
-  const instance = cornerstone.metaData.get('instance', imageId);
-  const {
-    SOPInstanceUID,
-    FrameOfReferenceUID,
-    SeriesInstanceUID,
-    StudyInstanceUID,
-  } = instance;
 
   const displaySetInstanceUID = _getDisplaySetInstanceUID(
     DisplaySetService,
@@ -222,18 +226,14 @@ function EllipticalRoi(
 
 function ArrowAnnotate(
   measurementData,
-  imageId,
+  SOPInstanceUID,
+  FrameOfReferenceUID,
+  SeriesInstanceUID,
+  StudyInstanceUID,
   DisplaySetService,
   _getValueTypeFromToolType
 ) {
   const tool = measurementData.toolType || measurementData.toolName;
-  const instance = cornerstone.metaData.get('instance', imageId);
-  const {
-    SOPInstanceUID,
-    FrameOfReferenceUID,
-    SeriesInstanceUID,
-    StudyInstanceUID,
-  } = instance;
 
   const displaySetInstanceUID = _getDisplaySetInstanceUID(
     DisplaySetService,

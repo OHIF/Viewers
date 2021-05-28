@@ -10,21 +10,6 @@ describe('Top level exports', () => {
       'HotkeysManager',
       'ServicesManager',
       //
-      'DicomMetadataStore',
-      //
-      'CineService',
-      'DisplaySetService',
-      'HangingProtocolService',
-      'ToolBarService',
-      'UINotificationService',
-      'UIModalService',
-      'UIDialogService',
-      'UIViewportDialogService',
-      'MeasurementService',
-      'ViewportGridService',
-      //
-      'IWebApiDataSource',
-      //
       'defaults',
       'utils',
       'hotkeys',
@@ -37,7 +22,21 @@ describe('Top level exports', () => {
       'log',
       'DICOMWeb',
       'DICOMSR',
-      'OHIF', //
+      'OHIF',
+      //
+      'CineService',
+      'UIDialogService',
+      'UIModalService',
+      'UINotificationService',
+      'UIViewportDialogService',
+      'DisplaySetService',
+      'MeasurementService',
+      'ToolBarService',
+      'ViewportGridService',
+      'HangingProtocolService',
+      'IWebApiDataSource',
+      'DicomMetadataStore',
+      'pubSubServiceInterface'
     ].sort();
 
     const exports = Object.keys(OHIF).sort();

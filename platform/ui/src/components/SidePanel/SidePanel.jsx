@@ -143,7 +143,7 @@ const SidePanel = ({
               </span>
             </Button>
           </div>
-          <childComponent.content/>
+          <childComponent.content />
         </React.Fragment>
       ) : (
         <React.Fragment>{getPanelButtons()}</React.Fragment>

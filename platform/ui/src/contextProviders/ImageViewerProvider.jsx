@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, useMemo } from 'react';
 
 // export const IMAGE_VIEWER_DEFAULT_VALUE = {
 //   StudyInstanceUIDs: [],
@@ -7,9 +7,18 @@ import React, { createContext, useContext, useReducer } from 'react';
 
 export const ImageViewerContext = createContext();
 
-export function ImageViewerProvider({ reducer, initialState, children }) {
+export function ImageViewerProvider({
+  StudyInstanceUIDs,
+  reducer,
+  initialState,
+  children,
+}) {
+  const value = useMemo(() => {
+    return { StudyInstanceUIDs };
+  }, [StudyInstanceUIDs]);
+
   return (
-    <ImageViewerContext.Provider value={useReducer(reducer, initialState)}>
+    <ImageViewerContext.Provider value={value}>
       {children}
     </ImageViewerContext.Provider>
   );

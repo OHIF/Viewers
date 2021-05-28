@@ -10,6 +10,7 @@ import ToolBarService from './ToolBarService';
 import ViewportGridService from './ViewportGridService';
 import CineService from './CineService';
 import HangingProtocolService from './HangingProtocolService';
+import pubSubServiceInterface from './_shared/pubSubServiceInterface';
 
 export {
   MeasurementService,
@@ -23,5 +24,6 @@ export {
   ToolBarService,
   ViewportGridService,
   HangingProtocolService,
-  CineService
+  CineService,
+  pubSubServiceInterface,
 };

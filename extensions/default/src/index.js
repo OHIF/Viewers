@@ -3,6 +3,7 @@ import getDataSourcesModule from './getDataSourcesModule.js';
 import getLayoutTemplateModule from './getLayoutTemplateModule.js';
 import getPanelModule from './getPanelModule.js';
 import getSopClassHandlerModule from './getSopClassHandlerModule.js';
+import getHangingProtocolModule from './getHangingProtocolModule.js';
 import getToolbarModule from './getToolbarModule.js';
 import commandsModule from './commandsModule';
 import id from './id';
@@ -14,6 +15,7 @@ export default {
   id,
   getContextModule,
   getDataSourcesModule,
+  getHangingProtocolModule,
   getLayoutTemplateModule,
   getPanelModule,
   getSopClassHandlerModule,

@@ -26,38 +26,38 @@ function ViewerViewportGrid(props) {
     HangingProtocolService,
   } = servicesManager.services;
 
-  // This is a placeholder for applying hanging protocols
-  // It probably shouldn't be done here
-  // For now it just hangs the first display set in the study in 1x1
-  // as sorted by SeriesNumber
+
+  // Using Hanging protocol engine to match the displaysets
   useEffect(() => {
     const { unsubscribe } = DisplaySetService.subscribe(
       DisplaySetService.EVENTS.DISPLAY_SETS_ADDED,
       eventData => {
         const { displaySetsAdded } = eventData;
 
-        const data = HangingProtocolService.getState();
+        const [
+          matchDetails,
+          hpAlreadyApplied,
+        ] = HangingProtocolService.getState();
 
-        // TODO: Sometimes this is undefined?
-        const { hpAlreadyApplied } = data;
-
+        if (!matchDetails.length) return;
         // Match each viewport individually
-        const numViewports = numRows * numCols;
+
+        const numViewports = viewportGrid.numRows * viewportGrid.numCols;
         for (let i = 0; i < numViewports; i++) {
           if (hpAlreadyApplied[i] === true) {
-            return;
+            continue;
           }
 
-          // Temporary until matching is ported back over from the Meteor version.
-          const reqSeriesInstanceUID =
-            data.hangingProtocol.stages[0].viewports[0].seriesMatchingRules[0]
-              .constraint.equals.value;
+          // if current viewport doesn't have a match
+          if (matchDetails[i] === undefined) return
+
+          const { SeriesInstanceUID } = matchDetails[i];
           const matchingDisplaySet = displaySetsAdded.find(ds => {
-            return ds.SeriesInstanceUID === reqSeriesInstanceUID;
+            return ds.SeriesInstanceUID === SeriesInstanceUID;
           });
 
           if (!matchingDisplaySet) {
-            return;
+            continue;
           }
 
           viewportGridService.setDisplaysetForViewport({
@@ -73,7 +73,23 @@ function ViewerViewportGrid(props) {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [numRows, numCols]);
+
+
+  // Layout change based on hanging protocols
+  useEffect(() => {
+    const { unsubscribe } = HangingProtocolService.subscribe(
+      HangingProtocolService.EVENTS.NEW_LAYOUT,
+      ({ numRows, numCols }) => {
+        viewportGridService.setLayout({ numRows, numCols });
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [viewports]);
+
 
   useEffect(() => {
     const { unsubscribe } = MeasurementService.subscribe(
@@ -82,16 +98,24 @@ function ViewerViewportGrid(props) {
         const referencedDisplaySetInstanceUID =
           measurement.displaySetInstanceUID;
 
-        // If the viewport does not contain the displaySet, then hang that displaySet.
+        const viewportsDisplaySetInstanceUIDs = viewports.map(
+          vp => vp.displaySetInstanceUID
+        );
+
+        // if we already have the displayset in one of the viewports
         if (
-          viewports[viewportIndex].displaySetInstanceUID !==
-          referencedDisplaySetInstanceUID
+          viewportsDisplaySetInstanceUIDs.indexOf(
+            referencedDisplaySetInstanceUID
+          ) > -1
         ) {
-          viewportGridService.setDisplaysetForViewport({
-            viewportIndex,
-            displaySetInstanceUID: referencedDisplaySetInstanceUID,
-          });
+          return;
         }
+
+        // If not in any of the viewports, hang it inside the active viewport
+        viewportGridService.setDisplaysetForViewport({
+          viewportIndex,
+          displaySetInstanceUID: referencedDisplaySetInstanceUID,
+        });
       }
     );
 
@@ -208,11 +232,9 @@ function ViewerViewportGrid(props) {
     return viewportPanes;
   };
 
-  // const ViewportPanes = React.useMemo(getViewportPanes, [
-  //   viewportComponents,
-  //   activeViewportIndex,
-  //   viewportGrid,
-  // ]);
+  if (!numCols || !numCols) {
+    return null;
+  }
 
   return (
     <ViewportGrid numRows={numRows} numCols={numCols}>

@@ -34,7 +34,7 @@
     "dcmjs": "0.16.1",
     "prop-types": "^15.6.2",
     "react": "^16.13.1",
-    "react-cornerstone-viewport": "^4.0.4",
+    "react-cornerstone-viewport": "^4.0.5",
     "react-dom": "^16.13.1",
     "webpack": "^4.0.0",
     "webpack-merge": "^5.7.3"

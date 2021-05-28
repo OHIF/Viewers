@@ -45,7 +45,8 @@
     "mousetrap": "^1.6.3",
     "query-string": "^6.14.0",
     "object-hash": "2.1.1",
-    "cornerstone-math": "0.1.9"
+    "cornerstone-math": "0.1.9",
+    "validate.js": "^0.12.0"
   },
   "devDependencies": {
     "webpack-merge": "5.7.3"

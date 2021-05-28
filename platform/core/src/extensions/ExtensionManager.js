@@ -2,7 +2,12 @@ import MODULE_TYPES from './MODULE_TYPES.js';
 import log from './../log.js';
 
 export default class ExtensionManager {
-  constructor({ commandsManager, servicesManager, hotkeysManager, appConfig = {} }) {
+  constructor({
+    commandsManager,
+    servicesManager,
+    hotkeysManager,
+    appConfig = {},
+  }) {
     this.modules = {};
     this.registeredExtensionIds = [];
     this.moduleTypeNames = Object.values(MODULE_TYPES);
@@ -52,7 +57,7 @@ export default class ExtensionManager {
         onModeEnter({
           servicesManager: _servicesManager,
           commandsManager: _commandsManager,
-          hotkeysManager: _hotkeysManager
+          hotkeysManager: _hotkeysManager,
         });
       }
     });
@@ -115,9 +120,7 @@ export default class ExtensionManager {
    */
   registerExtension = (extension, configuration = {}, dataSources = []) => {
     if (!extension) {
-      throw new Error(
-        'Attempting to register a null/undefined extension.'
-      );
+      throw new Error('Attempting to register a null/undefined extension.');
     }
 
     let extensionId = extension.id;
@@ -191,6 +194,13 @@ export default class ExtensionManager {
               ] = element;
             });
             break;
+          case MODULE_TYPES.HANGING_PROTOCOL:
+            extensionModule.forEach(element => {
+              this.modulesMap[
+                `${extensionId}.${moduleType}.${element.name}`
+              ] = element;
+            });
+            break;
           default:
             throw new Error(`Module type invalid: ${moduleType}`);
         }
@@ -221,6 +231,10 @@ export default class ExtensionManager {
   };
 
   getActiveDataSource = () => {
+    return this.dataSourceMap[this.activeDataSource];
+  };
+
+  getDataSource = () => {
     return this.dataSourceMap[this.activeDataSource];
   };
 
@@ -265,6 +279,32 @@ export default class ExtensionManager {
   _initDataSourcesModule(extensionModule, extensionId, dataSources = []) {
     extensionModule.forEach(element => {
       const namespace = `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`;
+
+      dataSources.forEach(dataSource => {
+        if (dataSource.namespace === namespace) {
+          const dataSourceInstance = element.createDataSource(
+            dataSource.configuration
+          );
+
+          if (this.dataSourceMap[dataSource.sourceName]) {
+            this.dataSourceMap[dataSource.sourceName].push(dataSourceInstance);
+          } else {
+            this.dataSourceMap[dataSource.sourceName] = [dataSourceInstance];
+          }
+        }
+      });
+    });
+
+    extensionModule.forEach(element => {
+      this.modulesMap[
+        `${extensionId}.${MODULE_TYPES.DATA_SOURCE}.${element.name}`
+      ] = element;
+    });
+  }
+
+  _initHangingProtocolModule(extensionModule, extensionId) {
+    extensionModule.forEach(element => {
+      const namespace = `${extensionId}.${MODULE_TYPES.HANGING_PROTOCOL}.${element.name}`;
 
       dataSources.forEach(dataSource => {
         if (dataSource.namespace === namespace) {

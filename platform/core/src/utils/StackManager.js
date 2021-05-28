@@ -22,6 +22,7 @@ function createAndAddStack(
     StudyInstanceUID,
     frameRate,
     isClip,
+    initialImageIdIndex,
   } = displaySet;
   if (!images) {
     return;
@@ -35,6 +36,7 @@ function createAndAddStack(
     imageIds,
     frameRate,
     isClip,
+    initialImageIdIndex,
   };
 
   stackMap[displaySetInstanceUID] = stack;

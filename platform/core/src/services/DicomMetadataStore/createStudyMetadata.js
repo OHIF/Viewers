@@ -3,6 +3,7 @@ import createSeriesMetadata from './createSeriesMetadata';
 function createStudyMetadata(StudyInstanceUID) {
   return {
     StudyInstanceUID,
+    isLoaded: false,
     series: [],
     /**
      *
@@ -24,7 +25,7 @@ function createStudyMetadata(StudyInstanceUID) {
       }
     },
 
-    setSeriesMetadata: function (SeriesInstanceUID, seriesMetadata) {
+    setSeriesMetadata: function(SeriesInstanceUID, seriesMetadata) {
       let existingSeries = this.series.find(
         s => s.SeriesInstanceUID === SeriesInstanceUID
       );
@@ -34,7 +35,7 @@ function createStudyMetadata(StudyInstanceUID) {
       } else {
         this.series.push(Object.assign({ instances: [] }, seriesMetadata));
       }
-    }
+    },
   };
 }
 

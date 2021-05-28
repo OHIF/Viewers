@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 import { NavBar, Svg, Icon, IconButton, Dropdown } from '@ohif/ui';
 
-function Header({ children, menuOptions, isReturnEnabled, isSticky }) {
+function Header({ children, menuOptions, isReturnEnabled, isSticky, WhiteLabeling }) {
   const { t } = useTranslation();
   const history = useHistory();
 
@@ -17,6 +17,10 @@ function Header({ children, menuOptions, isReturnEnabled, isSticky }) {
       history.push('/');
     }
   };
+
+  const CustomLogo = (React) => {
+    return WhiteLabeling.createLogoComponentFn(React)
+  }
 
   return (
     <NavBar className='justify-between border-b-4 border-black' isSticky={isSticky}>
@@ -29,7 +33,7 @@ function Header({ children, menuOptions, isReturnEnabled, isSticky }) {
             onClick={onReturnHandler}
           >
             {isReturnEnabled && <Icon name="chevron-left" className="w-8 text-primary-active" />}
-            <div className="ml-4"><Svg name="logo-ohif" /></div>
+            <div className="ml-4">{WhiteLabeling ? CustomLogo(React) : <Svg name="logo-ohif" />}</div>
           </div>
         </div>
         <div className="flex items-center">{children}</div>
@@ -73,7 +77,8 @@ Header.propTypes = {
   ),
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   isReturnEnabled: PropTypes.bool,
-  isSticky: PropTypes.bool
+  isSticky: PropTypes.bool,
+  WhiteLabeling: PropTypes.element,
 };
 
 Header.defaultProps = {

@@ -54,6 +54,18 @@ function _getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID) {
   );
 }
 
+function _getInstanceFromImageId(imageId) {
+  for (let study of _model.studies) {
+    for (let series of study.series) {
+      for (let instance of series.instances) {
+        if (instance.imageId === imageId) {
+          return instance;
+        }
+      }
+    }
+  }
+}
+
 const BaseImplementation = {
   EVENTS,
   listeners: {},
@@ -82,7 +94,7 @@ const BaseImplementation = {
       madeInClient,
     });
   },
-  addSeriesMetadata(seriesSummaryMetadata) {
+  addSeriesMetadata(seriesSummaryMetadata, madeInClient = false) {
     const { StudyInstanceUID } = seriesSummaryMetadata[0];
     let study = _getStudy(StudyInstanceUID);
     if (!study) {
@@ -98,6 +110,7 @@ const BaseImplementation = {
 
     this._broadcastEvent(EVENTS.SERIES_ADDED, {
       StudyInstanceUID,
+      madeInClient,
     });
   },
   addStudy(study) {
@@ -124,6 +137,7 @@ const BaseImplementation = {
   getStudy: _getStudy,
   getSeries: _getSeries,
   getInstance: _getInstance,
+  getInstanceFromImageId: _getInstanceFromImageId,
 };
 
 const DicomMetadataStore = Object.assign(

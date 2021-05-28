@@ -43,9 +43,11 @@ const sortingCriteria = {
  */
 const sortStudySeries = (
   series,
-  seriesSortingCriteria = seriesSortCriteria.default
+  seriesSortingCriteria = seriesSortCriteria.default,
+  sortFunction
 ) => {
-  return series.sort(seriesSortingCriteria);
+  if (typeof sortFunction === 'function') return sortFunction(series);
+  else return series.sort(seriesSortingCriteria);
 };
 
 /**

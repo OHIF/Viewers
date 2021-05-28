@@ -114,15 +114,16 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   // Are we exposing the right API for measurementService?
   // This watches for ALL MeasurementService changes. It updates a timestamp,
   // which is debounced. After a brief period of inactivity, this triggers
-  // a re-render where we grab up-to-date measurements.
+  // a re-render where we grab up-to-date measurements
   useEffect(() => {
     const added = MeasurementService.EVENTS.MEASUREMENT_ADDED;
+    const addedRaw = MeasurementService.EVENTS.RAW_MEASUREMENT_ADDED;
     const updated = MeasurementService.EVENTS.MEASUREMENT_UPDATED;
     const removed = MeasurementService.EVENTS.MEASUREMENT_REMOVED;
     const cleared = MeasurementService.EVENTS.MEASUREMENTS_CLEARED;
     const subscriptions = [];
 
-    [added, updated, removed, cleared].forEach(evt => {
+    [added, addedRaw, updated, removed, cleared].forEach(evt => {
       subscriptions.push(
         MeasurementService.subscribe(evt, () => {
           setMeasurementsUpdated(Date.now().toString());

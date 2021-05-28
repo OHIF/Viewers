@@ -2,6 +2,7 @@ import dcmjs from 'dcmjs';
 import { sortStudySeries, sortingCriteria } from '../utils/sortStudy';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
+
 /**
  * Creates an immutable series loader object which loads each series sequentially using the iterator interface
  * @param {DICOMWebClient} dicomWebClient The DICOMWebClient instance to be used for series load
@@ -62,13 +63,17 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
   async preLoad() {
     const preLoaders = this.getPreLoaders();
     const result = await this.runLoaders(preLoaders);
+    const sortCriteria = this.sortCriteria;
+    const sortFunction = this.sortFunction;
 
     const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
     const naturalized = result.map(naturalizeDataset);
 
     return sortStudySeries(
       naturalized,
-      sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria
+      sortCriteria ||
+        sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
+      sortFunction
     );
   }
 

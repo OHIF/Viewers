@@ -19,7 +19,9 @@ export function retrieveStudyMetadata(
   dicomWebClient,
   StudyInstanceUID,
   enableStudyLazyLoad,
-  filters
+  filters,
+  sortCriteria,
+  sortFunction
 ) {
   // @TODO: Whenever a study metadata request has failed, its related promise will be rejected once and for all
   // and further requests for that metadata will always fail. On failure, we probably need to remove the
@@ -47,7 +49,9 @@ export function retrieveStudyMetadata(
       dicomWebClient,
       StudyInstanceUID,
       enableStudyLazyLoad,
-      filters
+      filters,
+      sortCriteria,
+      sortFunction
     ).then(function(data) {
       resolve(data);
     }, reject);

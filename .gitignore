@@ -14,7 +14,7 @@ coverage/
 # YALC (for Erik)
 .yalc
 yalc.lock
-
+*.dcm
 # Logging, System files, misc.
 .idea/
 .npm

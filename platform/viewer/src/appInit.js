@@ -81,6 +81,7 @@ function appInit(appConfigOrFunc, defaultExtensions) {
     // appConfig.modes.push(window.segmentationMode);
   }
 
+
   return {
     appConfig,
     commandsManager,

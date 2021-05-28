@@ -3,6 +3,7 @@
 // TODO: Use existing DICOMWeb configuration (previously, appConfig, to configure instance)
 
 import { createDicomWebApi } from './DicomWebDataSource/index.js';
+import { createDicomJSONApi } from './DicomJSONDataSource/index.js';
 
 /**
  *
@@ -13,6 +14,11 @@ function getDataSourcesModule() {
       name: 'dicomweb',
       type: 'webApi',
       createDataSource: createDicomWebApi,
+    },
+    {
+      name: 'dicomjson',
+      type: 'jsonApi',
+      createDataSource: createDicomJSONApi,
     },
   ];
 }

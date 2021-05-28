@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-import { BrowserRouter, HashRouter } from 'react-router-dom';
+import { Router } from 'react-router-dom';
 import {
   DialogProvider,
   Modal,
@@ -12,7 +12,6 @@ import {
   ThemeWrapper,
   ViewportDialogProvider,
   ViewportGridProvider,
-  HangingProtocolProvider,
   CineProvider,
 } from '@ohif/ui';
 // Viewer Project
@@ -20,6 +19,7 @@ import {
 import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
+import history from './history'
 
 // TODO: Temporarily for testing
 import '@ohif/mode-longitudinal';
@@ -27,9 +27,7 @@ import '@ohif/mode-longitudinal';
 /**
  * ENV Variable to determine routing behavior
  */
-const Router = JSON.parse(process.env.USE_HASH_ROUTER)
-  ? HashRouter
-  : BrowserRouter;
+const OHIFRouter = Router
 
 let commandsManager, extensionManager, servicesManager, hotkeysManager;
 
@@ -59,32 +57,29 @@ function App({ config, defaultExtensions }) {
     UINotificationService,
     UIViewportDialogService,
     ViewportGridService, // TODO: Should this be a "UI" Service?
-    HangingProtocolService,
     CineService
   } = servicesManager.services;
 
   return (
     <AppConfigProvider value={appConfigState}>
       <I18nextProvider i18n={i18n}>
-        <Router basename={routerBasename}>
+        <OHIFRouter basename={routerBasename} history={history}>
           <ThemeWrapper>
             <ViewportGridProvider service={ViewportGridService}>
-              <HangingProtocolProvider service={HangingProtocolService}>
-                <ViewportDialogProvider service={UIViewportDialogService}>
-                  <CineProvider service={CineService}>
-                    <SnackbarProvider service={UINotificationService}>
-                      <DialogProvider service={UIDialogService}>
-                        <ModalProvider modal={Modal} service={UIModalService}>
-                          {appRoutes}
-                        </ModalProvider>
-                      </DialogProvider>
-                    </SnackbarProvider>
-                  </CineProvider>
-                </ViewportDialogProvider>
-              </HangingProtocolProvider>
+              <ViewportDialogProvider service={UIViewportDialogService}>
+                <CineProvider service={CineService}>
+                  <SnackbarProvider service={UINotificationService}>
+                    <DialogProvider service={UIDialogService}>
+                      <ModalProvider modal={Modal} service={UIModalService}>
+                        {appRoutes}
+                      </ModalProvider>
+                    </DialogProvider>
+                  </SnackbarProvider>
+                </CineProvider>
+              </ViewportDialogProvider>
             </ViewportGridProvider>
           </ThemeWrapper>
-        </Router>
+        </OHIFRouter>
       </I18nextProvider>
     </AppConfigProvider>
   );

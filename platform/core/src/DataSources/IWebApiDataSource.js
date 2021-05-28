@@ -17,9 +17,11 @@ function create({
   retrieve,
   store,
   reject,
+  parseRouteParams,
   retrieveSeriesMetadata,
   deleteStudyMetadataPromise,
   getImageIdsForDisplaySet,
+  getImageIdsForInstance,
 }) {
   const defaultQuery = {
     studies: {
@@ -56,15 +58,16 @@ function create({
   };
 
   const defaultReject = {};
-
   return {
     query: query || defaultQuery,
     retrieve: retrieve || defaultRetrieve,
     reject: reject || defaultReject,
     store: store || defaultStore,
-    getImageIdsForDisplaySet,
+    parseRouteParams,
     retrieveSeriesMetadata,
     deleteStudyMetadataPromise,
+    getImageIdsForDisplaySet,
+    getImageIdsForInstance,
   };
 }
 

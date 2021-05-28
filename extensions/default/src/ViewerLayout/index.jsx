@@ -10,6 +10,8 @@ import {
   useModal,
 } from '@ohif/ui';
 
+import { useAppConfig } from '@state';
+
 function Toolbar({ servicesManager }) {
   const { ToolBarService } = servicesManager.services;
   const [toolbarButtons, setToolbarButtons] = useState([]);
@@ -45,7 +47,10 @@ function Toolbar({ servicesManager }) {
         // isActive if:
         // - id is primary?
         // - id is in list of "toggled on"?
-
+        let isActive;
+        if (componentProps.type === 'toggle') {
+          isActive = buttonState.toggles[id];
+        }
         // Also need... to filter list for splitButton, and set primary based on most recently clicked
         // Also need to kill the radioGroup button's magic logic
         // Everything should be reactive off these props, so commands can inform ToolbarService
@@ -58,6 +63,7 @@ function Toolbar({ servicesManager }) {
             id={id}
             {...componentProps}
             bState={buttonState}
+            isActive={isActive}
             onInteraction={args => ToolBarService.recordInteraction(args)}
           />
         );
@@ -78,6 +84,8 @@ function ViewerLayout({
   viewports,
   ViewportGridComp,
 }) {
+  const [appConfig] = useAppConfig();
+
   const { t } = useTranslation();
   const { show, hide } = useModal();
 
@@ -154,7 +162,7 @@ function ViewerLayout({
 
   return (
     <div>
-      <Header menuOptions={menuOptions}>
+      <Header menuOptions={menuOptions} WhiteLabeling={appConfig.whiteLabeling} >
         <ErrorBoundary context="Primary Toolbar">
           <div className="relative flex justify-center">
             <Toolbar servicesManager={servicesManager} />

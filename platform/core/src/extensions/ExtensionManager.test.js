@@ -215,6 +215,9 @@ describe('ExtensionManager.js', () => {
         getDataSourcesModule: () => {
           return [{}];
         },
+        getHangingProtocolModule: () => {
+          return [{}];
+        },
         getContextModule: () => {
           return [{}];
         }

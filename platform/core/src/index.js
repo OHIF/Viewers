@@ -25,6 +25,7 @@ import {
   MeasurementService,
   ViewportGridService,
   HangingProtocolService,
+  pubSubServiceInterface,
 } from './services';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
@@ -67,6 +68,7 @@ const OHIF = {
   HangingProtocolService,
   IWebApiDataSource,
   DicomMetadataStore,
+  pubSubServiceInterface,
 };
 
 export {
@@ -101,6 +103,7 @@ export {
   HangingProtocolService,
   IWebApiDataSource,
   DicomMetadataStore,
+  pubSubServiceInterface,
 };
 
 export { OHIF };

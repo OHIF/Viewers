@@ -63,10 +63,22 @@ function createDicomWebApi(dicomWebConfig) {
   const wadoDicomWebClient = new api.DICOMwebClient(wadoConfig);
 
   const implementation = {
+    parseRouteParams: ({ params, query }) => {
+      const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
+      const queryStudyInstanceUIDs = query.get('StudyInstanceUIDs');
+
+      const StudyInstanceUIDs =
+        queryStudyInstanceUIDs || paramsStudyInstanceUIDs;
+      const StudyInstanceUIDsAsArray =
+        StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
+          ? StudyInstanceUIDs
+          : [StudyInstanceUIDs];
+      return StudyInstanceUIDsAsArray;
+    },
     query: {
       studies: {
         mapParams: mapParams.bind(),
-        search: async function (origParams) {
+        search: async function(origParams) {
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
               supportsFuzzyMatching,
@@ -86,7 +98,7 @@ function createDicomWebApi(dicomWebConfig) {
       },
       series: {
         // mapParams: mapParams.bind(),
-        search: async function (studyInstanceUid) {
+        search: async function(studyInstanceUid) {
           const results = await seriesInStudy(
             qidoDicomWebClient,
             studyInstanceUid
@@ -129,7 +141,6 @@ function createDicomWebApi(dicomWebConfig) {
             DicomMetadataStore.addInstances(naturalizedInstances);
             callback(naturalizedInstances);
           };
-
           const studyPromises = StudyInstanceUIDs.map(StudyInstanceUID =>
             retrieveStudyMetadata(
               wadoDicomWebClient,
@@ -177,7 +188,14 @@ function createDicomWebApi(dicomWebConfig) {
         await wadoDicomWebClient.storeInstances(options);
       },
     },
-    retrieveSeriesMetadata: async ({ StudyInstanceUID } = {}) => {
+    // TODO: Rename this it makes no sense at all
+    retrieveSeriesMetadata: async ({
+      StudyInstanceUID,
+      filters,
+      sortCriteria,
+      sortFunction,
+      madeInClient = false,
+    } = {}) => {
       if (!StudyInstanceUID) {
         throw new Error(
           'Unable to query for SeriesMetadata without StudyInstanceUID'
@@ -191,21 +209,34 @@ function createDicomWebApi(dicomWebConfig) {
       } = await retrieveStudyMetadata(
         wadoDicomWebClient,
         StudyInstanceUID,
-        enableStudyLazyLoad
+        enableStudyLazyLoad,
+        filters,
+        sortCriteria,
+        sortFunction
       );
 
       // Async load series, store as retrieved
       function storeInstances(instances) {
         const naturalizedInstances = instances.map(naturalizeDataset);
 
-        DicomMetadataStore.addInstances(naturalizedInstances);
+        DicomMetadataStore.addInstances(naturalizedInstances, madeInClient);
       }
 
-      DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata);
+      function setSuccessFlag() {
+        const study = DicomMetadataStore.getStudy(
+          StudyInstanceUID,
+          madeInClient
+        );
+        study.isLoaded = true;
+      }
 
-      seriesPromises.forEach(async seriesPromise => {
+      DicomMetadataStore.addSeriesMetadata(seriesSummaryMetadata, madeInClient);
+
+      const numberOfSeries = seriesPromises.length;
+      seriesPromises.forEach(async (seriesPromise, index) => {
         const instances = await seriesPromise;
         storeInstances(instances);
+        if (index === numberOfSeries - 1) setSuccessFlag();
       });
     },
     deleteStudyMetadataPromise,
@@ -222,19 +253,26 @@ function createDicomWebApi(dicomWebConfig) {
 
         if (NumberOfFrames > 1) {
           for (let i = 0; i < NumberOfFrames; i++) {
-            const imageId = getImageId({
+            const imageId = this.getImageIdsForInstance({
               instance,
               frame: i,
-              config: dicomWebConfig,
             });
             imageIds.push(imageId);
           }
         } else {
-          const imageId = getImageId({ instance, config: dicomWebConfig });
+          const imageId = this.getImageIdsForInstance({ instance });
           imageIds.push(imageId);
         }
       });
 
+      return imageIds;
+    },
+    getImageIdsForInstance({ instance, frame }) {
+      const imageIds = getImageId({
+        instance,
+        frame,
+        config: dicomWebConfig,
+      });
       return imageIds;
     },
   };

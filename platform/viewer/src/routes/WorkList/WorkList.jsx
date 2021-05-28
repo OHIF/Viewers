@@ -408,7 +408,7 @@ function WorkList({
         'h-screen': !hasStudies,
       })}
     >
-      <Header isSticky menuOptions={menuOptions} isReturnEnabled={false} />
+      <Header isSticky menuOptions={menuOptions} isReturnEnabled={false} WhiteLabeling={appConfig.whiteLabeling} />
       <StudyListFilter
         numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
         filtersMeta={filtersMeta}

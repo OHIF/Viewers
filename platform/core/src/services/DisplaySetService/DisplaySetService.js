@@ -96,10 +96,13 @@ export default class DisplaySetService {
   /**
    *
    * @param {*} input
-   * @param {*} param1
+   * @param {*} param1: settings: initialViewportSettings by HP or callbacks after rendering
    * @returns {string[]} - added displaySetInstanceUIDs
    */
-  makeDisplaySets = (input, { batch = false, madeInClient = false } = {}) => {
+  makeDisplaySets = (
+    input,
+    { batch = false, madeInClient = false, settings = {} } = {}
+  ) => {
     if (!input || !input.length) {
       throw new Error('No instances were provided.');
     }
@@ -116,12 +119,15 @@ export default class DisplaySetService {
     if (batch) {
       for (let i = 0; i < input.length; i++) {
         const instances = input[i];
-        const displaySets = this.makeDisplaySetForInstances(instances);
+        const displaySets = this.makeDisplaySetForInstances(
+          instances,
+          settings
+        );
 
         displaySetsAdded = [...displaySetsAdded, displaySets];
       }
     } else {
-      const displaySets = this.makeDisplaySetForInstances(input);
+      const displaySets = this.makeDisplaySetForInstances(input, settings);
 
       displaySetsAdded = displaySets;
     }
@@ -145,7 +151,7 @@ export default class DisplaySetService {
     }
   };
 
-  makeDisplaySetForInstances(instances) {
+  makeDisplaySetForInstances(instances, settings) {
     const instance = instances[0];
 
     const existingDisplaySets =
@@ -167,6 +173,13 @@ export default class DisplaySetService {
           this._addActiveDisplaySets(displaySets);
         } else {
           displaySets = handler.getDisplaySetsFromSeries(instances);
+
+          // applying hp-defined viewport settings to the displaysets
+          displaySets.forEach(ds => {
+            Object.keys(settings).forEach(key => {
+              ds[key] = settings[key];
+            });
+          });
 
           this._addDisplaySetsToCache(displaySets);
           this._addActiveDisplaySets(displaySets);
