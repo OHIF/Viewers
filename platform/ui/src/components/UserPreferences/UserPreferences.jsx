@@ -135,7 +135,7 @@ UserPreferences.defaultProps = {
   onCancel: noop,
   onSubmit: noop,
   onReset: noop,
-  disabled: true
+  disabled: false
 };
 
 export default UserPreferences;

@@ -5,6 +5,7 @@ import Common from './Common.json';
 import DatePicker from './DatePicker.json';
 import Header from './Header.json';
 import UserPreferencesModal from './UserPreferencesModal.json';
+import MeasurementTable from './MeasurementTable.json';
 
 export default {
   'pt-BR': {
@@ -15,5 +16,6 @@ export default {
     DatePicker,
     Header,
     UserPreferencesModal,
+    MeasurementTable,
   },
 };

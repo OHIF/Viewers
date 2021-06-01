@@ -1,13 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, ButtonGroup, Icon, IconButton } from '@ohif/ui';
+import { useTranslation } from 'react-i18next';
+
+import { Button, ButtonGroup } from '@ohif/ui';
 
 function ActionButtons({ onExportClick, onCreateReportClick }) {
+  const { t } = useTranslation('MeasurementTable');
+
   return (
     <React.Fragment>
       <ButtonGroup color="black" size="inherit">
         <Button className="text-base px-2 py-2" onClick={onExportClick}>
-          Export
+          {t('Export')}
         </Button>
       </ButtonGroup>
       <Button
@@ -17,7 +21,7 @@ function ActionButtons({ onExportClick, onCreateReportClick }) {
         color="black"
         onClick={onCreateReportClick}
       >
-        Create Report
+        {t('Create Report')}
       </Button>
     </React.Fragment>
   );

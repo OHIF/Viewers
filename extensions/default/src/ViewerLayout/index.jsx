@@ -10,6 +10,10 @@ import {
   useModal,
 } from '@ohif/ui';
 
+import i18n from '@ohif/i18n';
+
+const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
+
 import { useAppConfig } from '@state';
 
 function Toolbar({ servicesManager }) {
@@ -108,8 +112,12 @@ function ViewerLayout({
               hotkeyDefaults
             ),
             hotkeyDefinitions,
+            currentLanguage: currentLanguage(),
+            availableLanguages,
+            defaultLanguage,
             onCancel: hide,
-            onSubmit: ({ hotkeyDefinitions }) => {
+            onSubmit: ({ hotkeyDefinitions, language }) => {
+              i18n.changeLanguage(language.value);
               hotkeysManager.setHotkeys(hotkeyDefinitions);
               hide();
             },
