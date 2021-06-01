@@ -19,7 +19,7 @@ async function defaultRouteInit({
   } = servicesManager.services;
 
   const unsubscriptions = [];
-  // TODO: This should be baked into core, not manuall?
+  // TODO: This should be baked into core, not manual?
   // DisplaySetService would wire this up?
   const {
     unsubscribe: instanceAddedUnsubscribe,
@@ -37,10 +37,6 @@ async function defaultRouteInit({
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  studyInstanceUIDs.forEach(StudyInstanceUID => {
-    dataSource.retrieveSeriesMetadata({ StudyInstanceUID });
-  });
-
   const { unsubscribe: seriesAddedUnsubscribe } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.SERIES_ADDED,
     ({ StudyInstanceUID }) => {
@@ -49,6 +45,10 @@ async function defaultRouteInit({
     }
   );
   unsubscriptions.push(seriesAddedUnsubscribe);
+
+  studyInstanceUIDs.forEach(StudyInstanceUID => {
+    dataSource.retrieveSeriesMetadata({ StudyInstanceUID });
+  });
 
   return unsubscriptions;
 }
@@ -132,7 +132,7 @@ export default function ModeRoute({
   useEffect(() => {
     // Todo: this should not be here, data source should not care about params
     const initializeDataSource = async (params, query) => {
-      const studyInstanceUIDs = await dataSource.parseRouteParams({
+      const studyInstanceUIDs = await dataSource.initialize({
         params,
         query,
       });
@@ -261,7 +261,7 @@ export default function ModeRoute({
     <ImageViewerProvider
       // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
       StudyInstanceUIDs={studyInstanceUIDs}
-      // reducer={reducer}
+    // reducer={reducer}
     >
       <CombinedContextProvider>
         <DragAndDropProvider>

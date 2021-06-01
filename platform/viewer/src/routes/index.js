@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 // Route Components
 import DataSourceWrapper from './DataSourceWrapper';
 import WorkList from './WorkList';
+import Local from './Local';
 import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 import { ErrorBoundary } from '@ohif/ui';
@@ -16,6 +17,11 @@ const bakedInRoutes = [
     exact: true,
     component: DataSourceWrapper,
     props: { children: WorkList },
+  },
+  {
+    path: '/local',
+    exact: true,
+    component: Local,
   },
   // NOT FOUND (404)
   { component: NotFound },

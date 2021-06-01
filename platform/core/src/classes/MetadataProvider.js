@@ -71,47 +71,47 @@ class MetadataProvider {
     this.imageIdToUIDs.set(imageId, uids);
   }
 
-  _getAndCacheStudy(StudyInstanceUID) {
-    const studies = this.studies;
+  // _getAndCacheStudy(StudyInstanceUID) {
+  //   const studies = this.studies;
 
-    let study = studies.get(StudyInstanceUID);
+  //   let study = studies.get(StudyInstanceUID);
 
-    if (!study) {
-      study = { series: new Map() };
-      studies.set(StudyInstanceUID, study);
-    }
+  //   if (!study) {
+  //     study = { series: new Map() };
+  //     studies.set(StudyInstanceUID, study);
+  //   }
 
-    return study;
-  }
-  _getAndCacheSeriesFromStudy(study, SeriesInstanceUID) {
-    let series = study.series.get(SeriesInstanceUID);
+  //   return study;
+  // }
+  // _getAndCacheSeriesFromStudy(study, SeriesInstanceUID) {
+  //   let series = study.series.get(SeriesInstanceUID);
 
-    if (!series) {
-      series = { instances: new Map() };
-      study.series.set(SeriesInstanceUID, series);
-    }
+  //   if (!series) {
+  //     series = { instances: new Map() };
+  //     study.series.set(SeriesInstanceUID, series);
+  //   }
 
-    return series;
-  }
+  //   return series;
+  // }
 
-  _getAndCacheInstanceFromStudy(series, SOPInstanceUID) {
-    let instance = series.instances.get(SOPInstanceUID);
+  // _getAndCacheInstanceFromStudy(series, SOPInstanceUID) {
+  //   let instance = series.instances.get(SOPInstanceUID);
 
-    if (!instance) {
-      instance = {};
-      series.instances.set(SOPInstanceUID, instance);
-    }
+  //   if (!instance) {
+  //     instance = {};
+  //     series.instances.set(SOPInstanceUID, instance);
+  //   }
 
-    return instance;
-  }
+  //   return instance;
+  // }
 
-  async _checkBulkDataAndInlineBinaries(instance, server) {
-    await fetchOverlayData(instance, server);
+  // async _checkBulkDataAndInlineBinaries(instance, server) {
+  //   await fetchOverlayData(instance, server);
 
-    if (instance.PhotometricInterpretation === 'PALETTE COLOR') {
-      await fetchPaletteColorLookupTableData(instance, server);
-    }
-  }
+  //   if (instance.PhotometricInterpretation === 'PALETTE COLOR') {
+  //     await fetchPaletteColorLookupTableData(instance, server);
+  //   }
+  // }
 
   _getInstance(imageId) {
     const uids = this._getUIDsFromImageID(imageId);

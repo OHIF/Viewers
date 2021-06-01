@@ -179,7 +179,7 @@ export function ViewportGridProvider({ children, service }) {
   ]);
 
   const api = {
-    // getState,
+    getState,
     setActiveViewportIndex,
     setDisplaysetForViewport,
     setLayout,

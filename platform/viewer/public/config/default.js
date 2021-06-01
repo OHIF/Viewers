@@ -24,6 +24,20 @@ window.config = {
         supportsWildcard: true,
       },
     },
+    {
+      friendlyName: 'dicom json',
+      namespace: 'org.ohif.default.dataSourcesModule.dicomjson',
+      sourceName: 'dicomjson',
+      configuration: {
+        name: 's3',
+      },
+    },
+    {
+      friendlyName: 'dicom local',
+      namespace: 'org.ohif.default.dataSourcesModule.dicomlocal',
+      sourceName: 'dicomlocal',
+      configuration: {},
+    },
   ],
   // whiteLabeling: {
   //   /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
