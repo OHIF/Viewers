@@ -21,7 +21,7 @@ if [ -n "$CLIENT_ID" ] || [ -n "$HEALTHCARE_API_ENDPOINT" ]
         echo "Updating config..."
 
         # - Use SED to replace the HEALTHCARE_API_ENDPOINT that is currently in google.js
-        sed -i -e "s+https://healthcare.googleapis.com/v1beta1+$HEALTHCARE_API_ENDPOINT+g" /usr/share/nginx/html/google.js
+        sed -i -e "s+https://healthcare.googleapis.com/v1+$HEALTHCARE_API_ENDPOINT+g" /usr/share/nginx/html/google.js
     fi
 
 	  # - Copy google.js to overwrite app-config.js
