@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.10](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.6.9...@ohif/extension-dicom-segmentation@0.6.10) (2021-06-02)
+
+
+### Bug Fixes
+
+* **dicom-html:** Add parsed dicom meta info section ([#2419](https://github.com/OHIF/Viewers/issues/2419)) ([403688b](https://github.com/OHIF/Viewers/commit/403688b18c52468fc1101166ec0c1734fb710039))
+
+
+
+
+
 ## [0.6.9](https://github.com/OHIF/Viewers/compare/@ohif/extension-dicom-segmentation@0.6.8...@ohif/extension-dicom-segmentation@0.6.9) (2021-05-17)
 
 **Note:** Version bump only for package @ohif/extension-dicom-segmentation
