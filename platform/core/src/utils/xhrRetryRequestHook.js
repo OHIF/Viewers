@@ -21,10 +21,6 @@ let retryOptions = { ...defaultRetryOptions };
  * @returns {XMLHttpRequest} request instance optionally modified
  */
 const xhrRetryRequestHook = (request, metadata) => {
-  if (!metadata) {
-    return request;
-  }
-
   const { url, method } = metadata;
 
   function faultTolerantRequestSend(...args) {
