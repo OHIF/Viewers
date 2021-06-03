@@ -94,6 +94,9 @@ export const getXHRRetryRequestHook = (options = {}) => {
   if ('randomize' in options) {
     retryOptions.randomize = options.randomize;
   }
+  if ('retryableStatusCodes' in options) {
+    retryOptions.retryableStatusCodes = options.retryableStatusCodes;
+  }
   return xhrRetryRequestHook;
 };
 
