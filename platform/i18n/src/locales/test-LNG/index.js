@@ -13,6 +13,7 @@ import StudyBrowser from './StudyBrowser.json';
 import SidePanel from './SidePanel.json';
 import PatientInfo from './PatientInfo.json';
 import Modes from './Modes.json';
+import Modals from './Modals.json';
 
 export default {
   'test-LNG': {
@@ -30,6 +31,7 @@ export default {
     StudyBrowser,
     PatientInfo,
     Modes,
-    SidePanel
+    SidePanel,
+    Modals
   },
 };

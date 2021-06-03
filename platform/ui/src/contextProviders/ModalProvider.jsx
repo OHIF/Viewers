@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 const ModalContext = createContext(null);
 const { Provider } = ModalContext;
@@ -36,6 +37,8 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     title: null,
     customClassName: '',
   };
+  const { t } = useTranslation('Modals');
+
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
 
@@ -86,7 +89,7 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           className={classNames(customClassName, ModalContent.className)}
           shouldCloseOnEsc={shouldCloseOnEsc}
           isOpen={isOpen}
-          title={title}
+          title={t(title)}
           closeButton={closeButton}
           onClose={hide}
         >
