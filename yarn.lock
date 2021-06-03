@@ -6945,10 +6945,10 @@ dicomweb-client@^0.5.2:
   resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.5.2.tgz#aa5a4a6a5044b0702bb0a8a2662c86cd16901951"
   integrity sha512-e11n2+g7HfBuMyopWq76W11eSZJ707g4U1XiO8URA+23aoe0g1kGAtlPB29NKXl7zX7RznTJ7wfRBxFkW6EJDA==
 
-dicomweb-client@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.8.0.tgz#cab2d8266e6d2da6fadb023173ca9be0cd06cbfe"
-  integrity sha512-R4Vz/INGGSVMfV1X1dhbhYD0Wxp0znoU/KMPU4qMIGZLxtvS2b9xyh8H5PU8jTnjDmVAdHK3roxOMyJJvB6nKw==
+dicomweb-client@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/dicomweb-client/-/dicomweb-client-0.8.1.tgz#12bdf0e9698bcf82730f38829ac30158164bb3fd"
+  integrity sha512-5EbK8epfSuonSnCW3nr2tkA1CcO1aFT3grEVvKXqv0tVyHsBvbEcEmBcPEbu1m/cF6t7+3uQRLOQ4dw4CodxFg==
 
 diff-sequences@^24.9.0:
   version "24.9.0"
