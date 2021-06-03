@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "dicomweb-client": "^0.6.0",
+    "dicomweb-client": "^0.8.1",
     "moment": "2.24.0",
     "react-select": "^3.0.8"
   }

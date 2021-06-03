@@ -4,6 +4,7 @@ import { createStudyFromSOPInstanceList } from './studyInstanceHelpers';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
 import errorHandler from '../../../errorHandler';
+import getXHRRetryRequestHook from '../../../utils/xhrRetryRequestHook';
 
 /**
  * Class for sync load of study metadata.
@@ -61,6 +62,7 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
       url: server.wadoRoot,
       headers: DICOMWeb.getAuthorizationHeader(server),
       errorInterceptor: errorHandler.getHTTPErrorHandler(),
+      requestHooks: [getXHRRetryRequestHook()],
     });
 
     this.client = client;
