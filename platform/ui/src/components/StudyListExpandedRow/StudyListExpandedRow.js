@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { Table, TableHead, TableBody, TableRow, TableCell } from '../';
 
@@ -8,6 +9,9 @@ const StudyListExpandedRow = ({
   seriesTableDataSource,
   children,
 }) => {
+  const { t } = useTranslation('StudyList');
+
+
   return (
     <div className="w-full bg-black py-4 pl-12 pr-2">
       <div className="block">{children}</div>
@@ -18,7 +22,7 @@ const StudyListExpandedRow = ({
               {Object.keys(seriesTableColumns).map(columnKey => {
                 return (
                   <TableCell key={columnKey}>
-                    {seriesTableColumns[columnKey]}
+                    {t(seriesTableColumns[columnKey])}
                   </TableCell>
                 );
               })}

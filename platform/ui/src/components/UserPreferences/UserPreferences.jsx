@@ -66,10 +66,10 @@ const UserPreferences = ({ availableLanguages, defaultLanguage, currentLanguage,
 
   return (
     <div className="p-2">
-      <Section title="General">
+      <Section title={t('General')}>
         <div className="flex flex-row justify-center items-center w-72">
           <Typography variant="subtitle" className="mr-5 text-right h-full">
-            Language
+            {t('Language')}
           </Typography>
           <Select
             isClearable={false}
@@ -79,7 +79,7 @@ const UserPreferences = ({ availableLanguages, defaultLanguage, currentLanguage,
           />
         </div>
       </Section>
-      <Section title="Hotkeys">
+      <Section title={t('Hotkeys')}>
         <HotkeysPreferences
           disabled={disabled}
           hotkeyDefinitions={state.hotkeyDefinitions}

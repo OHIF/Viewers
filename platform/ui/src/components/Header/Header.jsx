@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 import { NavBar, Svg, Icon, IconButton, Dropdown } from '@ohif/ui';
 
 function Header({ children, menuOptions, isReturnEnabled, isSticky, WhiteLabeling }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('Header');
   const history = useHistory();
 
   // TODO: this should be passed in as a prop instead and the react-router-dom
@@ -39,7 +39,7 @@ function Header({ children, menuOptions, isReturnEnabled, isSticky, WhiteLabelin
         <div className="flex items-center">{children}</div>
         <div className="flex items-center">
           <span className="mr-3 text-lg text-common-light">
-            {t('Header:INVESTIGATIONAL USE ONLY')}
+            {t('INVESTIGATIONAL USE ONLY')}
           </span>
           <Dropdown id="options" showDropdownIcon={false} list={menuOptions}>
             <IconButton

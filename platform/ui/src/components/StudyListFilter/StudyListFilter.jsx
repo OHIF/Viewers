@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { Button, Icon, Typography, InputGroup } from '../../components';
 
@@ -11,6 +12,7 @@ const StudyListFilter = ({
   isFiltering,
   numOfStudies,
 }) => {
+  const { t } = useTranslation("StudyList")
   const { sortBy, sortDirection } = filterValues;
   const filterSorting = { sortBy, sortDirection };
   const setFilterSorting = sortingValues => {
@@ -29,7 +31,7 @@ const StudyListFilter = ({
             <div className="flex flex-row justify-between px-12 mb-5">
               <div className="flex flex-row">
                 <Typography variant="h4" className="mr-6 text-primary-light">
-                  Study list
+                  {t('Study list')}
                 </Typography>
               </div>
               <div className="flex flex-row">
@@ -42,7 +44,7 @@ const StudyListFilter = ({
                     startIcon={<Icon name="cancel" />}
                     onClick={clearFilters}
                   >
-                    Clear filters
+                    {t('Clear filters')}
                   </Button>
                 )}
                 <Typography variant="h4" className="mr-2" data-cy={"num-studies"}>
@@ -52,7 +54,7 @@ const StudyListFilter = ({
                   variant="h6"
                   className="self-end pb-1 text-common-light"
                 >
-                  Studies
+                  {t('Studies')}
                 </Typography>
               </div>
             </div>
@@ -77,7 +79,7 @@ const StudyListFilter = ({
           <div className="container m-auto">
             <div className="py-1 text-base text-center rounded-b bg-primary-main">
               <p className="text-white">
-                Filter list to 100 studies or less to enable sorting
+                {t('Filter list to 100 studies or less to enable sorting')}
               </p>
             </div>
           </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import OutsideClickHandler from 'react-outside-click-handler';
+import { useTranslation } from 'react-i18next';
 
 import { Icon, Tooltip, ListMenu } from '@ohif/ui';
 
@@ -83,6 +84,8 @@ const SplitButton = ({
   renderer,
   onInteraction,
 }) => {
+  const { t } = useTranslation('Buttons');
+
   const { primaryToolId, toggles } = bState;
   /* Bubbles up individual item clicks */
   const getSplitButtonItems = items =>
@@ -221,14 +224,14 @@ const SplitButton = ({
           className={classes.Content({ ...state })}
           data-cy={`${groupId}-list-menu`}
         >
-          <ListMenu items={state.items} renderer={renderer} />
+          <ListMenu items={state.items} renderer={(args) => renderer({ ...args, t })} />
         </div>
       </div>
     </OutsideClickHandler>
   );
 };
 
-const DefaultListItemRenderer = ({ icon, label, isActive }) => (
+const DefaultListItemRenderer = ({ icon, label, isActive, t }) => (
   <div
     className={classNames(
       'flex flex-row items-center p-3 h-8 w-full hover:bg-primary-dark',
@@ -239,7 +242,7 @@ const DefaultListItemRenderer = ({ icon, label, isActive }) => (
       <Icon name={icon} className="w-5 h-5 text-common-bright" />
     </span>
     <span className="mr-5 text-base whitespace-pre text-common-bright">
-      {label}
+      {t(label)}
     </span>
   </div>
 );
