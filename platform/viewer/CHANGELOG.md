@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.9.20](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.19...@ohif/viewer@4.9.20) (2021-06-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.19](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.18...@ohif/viewer@4.9.19) (2021-06-03)
+
+**Note:** Version bump only for package @ohif/viewer
+
+
+
+
+
+## [4.9.18](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.17...@ohif/viewer@4.9.18) (2021-06-02)
+
+
+### Bug Fixes
+
+* **dicom-html:** Add parsed dicom meta info section ([#2419](https://github.com/OHIF/Viewers/issues/2419)) ([403688b](https://github.com/OHIF/Viewers/commit/403688b18c52468fc1101166ec0c1734fb710039))
+
+
+
+
+
 ## [4.9.17](https://github.com/OHIF/Viewers/compare/@ohif/viewer@4.9.16...@ohif/viewer@4.9.17) (2021-05-17)
 
 **Note:** Version bump only for package @ohif/viewer
