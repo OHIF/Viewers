@@ -30,8 +30,8 @@ const xhrRetryRequestHook = (request, metadata) => {
       const originalOnReadyStateChange = request.onreadystatechange;
 
       /** Overriding/extending XHR function */
-      request.onreadystatechange = function onReadyStateChange() {
-        originalOnReadyStateChange.call(request);
+      request.onreadystatechange = function onReadyStateChange(...args) {
+        originalOnReadyStateChange.apply(request, args);
 
         if (retryOptions.retryableStatusCodes.includes(request.status)) {
           const errorMessage = `Attempt to request ${url} failed.`;
@@ -40,10 +40,14 @@ const xhrRetryRequestHook = (request, metadata) => {
         }
       };
 
-      console.warn(`Requesting ${url}... (attempt: ${currentAttempt})`);
-      request.open(method, url, true);
-      originalRequestSend.call(request, ...args);
+      /** Call open only on retry (after headers and other things were set in the xhr instance) */
+      if (currentAttempt > 1) {
+        console.warn(`Requesting ${url}... (attempt: ${currentAttempt})`);
+        request.open(method, url, true);
+      }
     });
+
+    originalRequestSend.apply(request, args);
   }
 
   /** Overriding/extending XHR function */
