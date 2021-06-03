@@ -2,6 +2,7 @@ import { api } from 'dicomweb-client';
 import DICOMWeb from '../../../DICOMWeb/';
 
 import errorHandler from '../../../errorHandler';
+import getXHRRetryRequestHook from '../../../utils/xhrRetryRequestHook';
 
 /**
  * Creates a QIDO date string for a date range query
@@ -118,6 +119,7 @@ export default function Studies(server, filter) {
     url: server.qidoRoot,
     headers: DICOMWeb.getAuthorizationHeader(server),
     errorInterceptor: errorHandler.getHTTPErrorHandler(),
+    requestHooks: [getXHRRetryRequestHook()],
   };
 
   const dicomWeb = new api.DICOMwebClient(config);

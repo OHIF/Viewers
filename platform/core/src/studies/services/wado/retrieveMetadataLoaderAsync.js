@@ -10,6 +10,7 @@ import {
 } from './studyInstanceHelpers';
 
 import errorHandler from '../../../errorHandler';
+import { getXHRRetryRequestHook } from '../../../utils/xhrRetryRequestHook';
 
 const { naturalizeDataset } = dcmjs.data.DicomMetaDictionary;
 
@@ -76,6 +77,7 @@ export default class RetrieveMetadataLoaderAsync extends RetrieveMetadataLoader 
       url: server.qidoRoot,
       headers: DICOMWeb.getAuthorizationHeader(server),
       errorInterceptor: errorHandler.getHTTPErrorHandler(),
+      requestHooks: [getXHRRetryRequestHook()],
     });
 
     this.client = client;

@@ -18,6 +18,7 @@ import isDicomUid from './isDicomUid';
 import resolveObjectPath from './resolveObjectPath';
 import * as hierarchicalListUtils from './hierarchicalListUtils';
 import * as progressTrackingUtils from './progressTrackingUtils';
+import xhrRetryRequestHook from './xhrRetryRequestHook';
 
 const utils = {
   guid,
@@ -40,6 +41,7 @@ const utils = {
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
+  xhrRetryRequestHook,
 };
 
 export {
@@ -63,6 +65,7 @@ export {
   resolveObjectPath,
   hierarchicalListUtils,
   progressTrackingUtils,
+  xhrRetryRequestHook,
 };
 
 export default utils;

@@ -12,6 +12,7 @@ import { isImage } from '../../utils/isImage';
 import { isDisplaySetReconstructable, isSpacingUniform } from '../../utils/isDisplaySetReconstructable';
 import errorHandler from '../../errorHandler';
 import isLowPriorityModality from '../../utils/isLowPriorityModality';
+import getXHRRetryRequestHook from '../../utils/xhrRetryRequestHook';
 
 class StudyMetadata extends Metadata {
   constructor(data, uid) {
@@ -939,6 +940,7 @@ function _getDisplaySetFromSopClassModule(
     url: study.getData().wadoRoot,
     headers,
     errorInterceptor,
+    requestHooks: [getXHRRetryRequestHook()],
   });
 
   let displaySet = plugin.getDisplaySetFromSeries(
