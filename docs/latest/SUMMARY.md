@@ -10,6 +10,7 @@
     - [Viewport](userManuals/viewer/viewport/viewport.md)
     - [Toolbar](userManuals/viewer/toolbar/toolbar.md)
     - [Hot keys](userManuals/viewer/hotkeys/hotkeys.md)
+    - [Language](userManuals/viewer/language/language.md)
 - Development
   - [Getting Started](development/getting-started.md)
   - [Contributing](development/contributing.md)

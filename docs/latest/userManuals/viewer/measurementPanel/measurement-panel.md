@@ -45,6 +45,17 @@ You can export the measurements by clicking on the `Export`. A CSV file will get
 
 ![user-measurement-export](../../../assets/img/user-measurement-export.png)
 
+
+If you have set up your DICOM server to be able to store instances from the viewer, then you are able to create a report by clicking on the `Create Report`.
+This will create a DICOM Structured Report (SR) from the measurements and push it
+to the server.
+
+For instance, running the Viewer on a local DCM4CHEE:
+
+<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/557569965?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="DICOM SR Export"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+
+
 # Overview video
 An overview of measurement drawing and exporting can be seen below:
 
