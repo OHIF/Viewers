@@ -9,6 +9,7 @@ src/version.js
 junit.xml
 coverage/
 .docz/
+*.js.map
 
 # YALC (for Erik)
 .yalc
@@ -34,3 +35,4 @@ screenshots/
 
 # Locize settings
 .locize
+
