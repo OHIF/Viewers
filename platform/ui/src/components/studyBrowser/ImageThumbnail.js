@@ -2,7 +2,7 @@
 import './ImageThumbnail.styl';
 
 import { utils } from '@ohif/core';
-import React, { useState, useEffect, createRef } from 'react';
+import React, { useState, useEffect, createRef, useCallback } from 'react';
 import classNames from 'classnames';
 
 import PropTypes from 'prop-types';
@@ -45,7 +45,7 @@ function ImageThumbnail(props) {
     return imageId && !imageSrc;
   };
 
-  const fetchImagePromise = () => {
+  const fetchImagePromise = useCallback(() => {
     if (!cancelablePromise) {
       return;
     }
@@ -61,21 +61,21 @@ function ImageThumbnail(props) {
         setError(true);
         throw new Error(error);
       });
-  };
+  }, [cancelablePromise]);
 
-  const setImagePromise = () => {
+  const setImagePromise = useCallback(() => {
     if (shouldRenderToCanvas()) {
       cancelablePromise = utils.makeCancelable(
         cornerstone.loadAndCacheImage(imageId)
       );
     }
-  };
+  }, [imageId]);
 
-  const purgeCancelablePromise = () => {
+  const purgeCancelablePromise = useCallback(() => {
     if (cancelablePromise) {
       cancelablePromise.cancel();
     }
-  };
+  }, [cancelablePromise]);
 
   useEffect(() => {
     return () => {
