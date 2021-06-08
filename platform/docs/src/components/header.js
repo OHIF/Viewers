@@ -4,9 +4,9 @@ import "./header.scss";
 function Header(){
   return(
     <header className="container">
-      <a href="/">
+      <div onClick={() => { window.location = "/" }} style={{ cursor: 'pointer'}}>
         <Logo />
-      </a>
+      </div>
     </header>
   );
 }

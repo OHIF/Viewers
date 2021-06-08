@@ -1,3 +1,7 @@
+---
+title: 'Extensions'
+---
+
 # Extensions
 
 - [Overview](#overview)
@@ -20,9 +24,15 @@ implementations of the `@ohif/viewer` project.
 
 <div style="text-align: center;">
   <a href="/assets/img/extensions-diagram.png">
-    <img src="/assets/img/extensions-diagram.png" alt="Extensions Diagram" style="margin: 0 auto; max-width: 500px;" />
+    <img
+      src="/assets/img/extensions-diagram.png"
+      alt="Extensions Diagram"
+      style="margin: 0 auto; max-width: 500px;"
+    />
   </a>
-  <div><i>Diagram showing how extensions are configured and accessed.</i></div>
+  <div>
+    <i>Diagram showing how extensions are configured and accessed.</i>
+  </div>
 </div>
 
 The `@ohif/viewer`'s application level configuration gives us the ability to add
@@ -144,7 +154,10 @@ differently.
 | [Toolbar](./modules/toolbar.md)                   | Adds buttons or custom components to the toolbar                 | Toolbar button, nested buttons, custom            |
 | [Viewport](./modules/viewport.md)                 | Adds a component responsible for rendering a "DisplaySet"        | `<CornerstoneViewport />`, `<DicomPdfViewport />` |
 
-<figure style="text-align: center; font-style: italic;">Tbl. Module types with abridged descriptions and examples. Each module links to a dedicated documentation page.</figure>
+<figure style="text-align: center; font-style: italic;">
+  Tbl. Module types with abridged descriptions and examples. Each module links
+  to a dedicated documentation page.
+</figure>
 
 ### Contexts
 
@@ -172,7 +185,7 @@ project.
 const extensionManager = new ExtensionManager({
   commandsManager,
   servicesManager,
-  hotkeysManager
+  hotkeysManager,
 });
 
 // prettier-ignore

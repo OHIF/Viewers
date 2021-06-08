@@ -23,6 +23,7 @@ h6 {
 }
 
 h1 {
+  margin-top: 0;
   font-size: 39px;
 }
 
@@ -45,4 +46,14 @@ a {
 a:hover {
   color: rgba(255, 255, 255, 0.6);
   border-color: rgba(117, 171, 198, 0.6);
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+li {
+  list-style: none;
 }
