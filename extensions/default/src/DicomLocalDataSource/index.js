@@ -1,10 +1,24 @@
 import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core'
 import OHIF from '@ohif/core'
-
-import getImageId from '../DicomWebDataSource/utils/getImageId'
+import dcmjs from 'dcmjs';
 
 const metadataProvider = OHIF.classes.MetadataProvider
 const { EVENTS } = DicomMetadataStore
+
+// Sorting SR modalities to be at the end of series list
+function customSort(seriesA, seriesB) {
+  const modalityA = seriesA.instances[0].Modality
+  const modalityB = seriesB.instances[0].Modality
+
+  if (modalityA === "SR") {
+    return +1;
+  }
+  if (modalityB === "SR") {
+    return -1;
+  }
+  return 0;
+}
+
 
 function createDicomLocalApi(dicomLocalConfig) {
   const { name } = dicomLocalConfig
@@ -20,6 +34,14 @@ function createDicomLocalApi(dicomLocalConfig) {
         StudyInstanceUIDs && Array.isArray(StudyInstanceUIDs)
           ? StudyInstanceUIDs
           : [StudyInstanceUIDs]
+
+
+      // Put SRs at the end of series list to make sure images are loaded first
+      StudyInstanceUIDsAsArray.forEach(StudyInstanceUID => {
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID)
+        study.series = study.series.sort(customSort)
+      })
+
       return StudyInstanceUIDsAsArray
     },
     query: {
@@ -49,7 +71,7 @@ function createDicomLocalApi(dicomLocalConfig) {
                 date: firstInstance.StudyDate,
                 description: firstInstance.StudyDescription,
                 mrn: firstInstance.PatientID,
-                patientName: firstInstance.PatientName,
+                patientName: { Alphabetic: firstInstance.PatientName },
                 studyInstanceUid: firstInstance.StudyInstanceUID,
                 time: firstInstance.StudyTime,
                 //
@@ -84,8 +106,12 @@ function createDicomLocalApi(dicomLocalConfig) {
       },
     },
     store: {
-      dicom: () => {
-        console.debug(' DICOMLocal store dicom')
+      dicom: (naturalizedReport) => {
+        const reportBlob = dcmjs.data.datasetToBlob(naturalizedReport);
+
+        //Create a URL for the binary.
+        var objectUrl = URL.createObjectURL(reportBlob);
+        window.location.assign(objectUrl);
       },
     },
     retrieveSeriesMetadata: async ({
@@ -98,14 +124,14 @@ function createDicomLocalApi(dicomLocalConfig) {
         )
       }
 
+      // Instances metadata already added via local upload
+      const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient)
+
       // Series metadata already added via local upload
       DicomMetadataStore._broadcastEvent(EVENTS.SERIES_ADDED, {
         StudyInstanceUID,
         madeInClient,
       })
-
-      // Instances metadata already added via local upload
-      const study = DicomMetadataStore.getStudy(StudyInstanceUID, madeInClient)
 
       study.series.forEach((aSeries) => {
         const { SeriesInstanceUID } = aSeries
@@ -162,12 +188,15 @@ function createDicomLocalApi(dicomLocalConfig) {
       return imageIds
     },
     getImageIdsForInstance({ instance, frame }) {
-      const imageIds = getImageId({
-        instance,
-        frame,
-      })
-      return imageIds
+      const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance
+      const storedInstance = DicomMetadataStore.getInstance(StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID)
+      if (storedInstance.url) {
+        return storedInstance.url
+      }
     },
+    deleteStudyMetadataPromise() {
+      console.log("deleteStudyMetadataPromise not implemented")
+    }
   }
   return IWebApiDataSource.create(implementation)
 }
