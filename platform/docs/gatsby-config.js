@@ -20,7 +20,15 @@ module.exports = {
       },
     },
     "gatsby-transformer-remark",
-    "gatsby-plugin-mdx",
+    {
+      resolve: `gatsby-plugin-mdx`,
+      options: {
+        defaultLayouts: {
+          posts: require.resolve("./src/components/default-page-layout.js"),
+          default: require.resolve("./src/components/default-page-layout.js"),
+        },
+      },
+    },
     "gatsby-plugin-sharp",
     "gatsby-transformer-sharp",
     {
