@@ -270,22 +270,6 @@ jobs:
           root: ~/repo
           paths: .
 
-  DOCS_PUBLISH:
-    <<: *defaults
-    steps:
-      - checkout
-      - run:
-          name: Avoid hosts unknown for github
-          command: |
-            rm -rf ~/.ssh
-            mkdir ~/.ssh/
-            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
-            git config --global user.name "ohif-bot"
-      - run: yarn global add gitbook-cli gh-pages
-      - run: chmod +x ~/repo/.circleci/build-and-publish-docs.sh
-      - run: ~/repo/.circleci/build-and-publish-docs.sh
-
   DOCKER_MASTER_PUBLISH:
     <<: *defaults
     steps:
@@ -417,10 +401,6 @@ workflows:
   RELEASE:
     jobs:
       - NPM_PUBLISH:
-          filters:
-            branches:
-              only: master
-      - DOCS_PUBLISH:
           filters:
             branches:
               only: master
