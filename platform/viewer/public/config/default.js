@@ -29,7 +29,7 @@ window.config = {
       namespace: 'org.ohif.default.dataSourcesModule.dicomjson',
       sourceName: 'dicomjson',
       configuration: {
-        name: 's3',
+        name: 'json',
       },
     },
     {
