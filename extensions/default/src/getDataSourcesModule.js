@@ -4,6 +4,7 @@
 
 import { createDicomWebApi } from './DicomWebDataSource/index.js';
 import { createDicomJSONApi } from './DicomJSONDataSource/index.js';
+import { createDicomLocalApi } from './DicomLocalDataSource/index.js';
 
 /**
  *
@@ -19,6 +20,11 @@ function getDataSourcesModule() {
       name: 'dicomjson',
       type: 'jsonApi',
       createDataSource: createDicomJSONApi,
+    },
+    {
+      name: 'dicomlocal',
+      type: 'localApi',
+      createDataSource: createDicomLocalApi,
     },
   ];
 }

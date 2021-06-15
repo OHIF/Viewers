@@ -17,7 +17,7 @@ function create({
   retrieve,
   store,
   reject,
-  parseRouteParams,
+  initialize,
   retrieveSeriesMetadata,
   deleteStudyMetadataPromise,
   getImageIdsForDisplaySet,
@@ -38,7 +38,7 @@ function create({
        * @param {number} params.resultsPerPage
        */
       mapParams: params => params,
-      requestResults: () => {},
+      requestResults: () => { },
       processResults: results => results,
     },
     series: {},
@@ -63,7 +63,7 @@ function create({
     retrieve: retrieve || defaultRetrieve,
     reject: reject || defaultReject,
     store: store || defaultStore,
-    parseRouteParams,
+    initialize,
     retrieveSeriesMetadata,
     deleteStudyMetadataPromise,
     getImageIdsForDisplaySet,

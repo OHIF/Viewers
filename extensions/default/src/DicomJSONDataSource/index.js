@@ -43,7 +43,7 @@ function createDicomJSONApi(dicomJsonConfig) {
   const { name } = dicomJsonConfig;
 
   const implementation = {
-    parseRouteParams: async ({ params, query, url }) => {
+    initialize: async ({ params, query, url }) => {
       if (!url) url = query.get('url');
       let metaData = getMetaDataByURL(url);
 
@@ -93,11 +93,12 @@ function createDicomJSONApi(dicomJsonConfig) {
     },
     query: {
       studies: {
-        mapParams: () => {},
+        mapParams: () => { },
         search: async param => {
           const [key, value] = Object.entries(param)[0];
           const mappedParam = mappings[key];
 
+          // todo: should fetch from dicomMetadataStore
           const studies = findStudies(mappedParam, value);
 
           return studies.map(aStudy => {
