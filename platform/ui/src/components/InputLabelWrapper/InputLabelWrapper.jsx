@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 import { Icon } from '../';
 
@@ -21,6 +22,8 @@ const InputLabelWrapper = ({
   className,
   children,
 }) => {
+  const { t } = useTranslation("StudyList")
+
   const onClickHandler = e => {
     if (!isSortable) {
       return;
@@ -38,7 +41,7 @@ const InputLabelWrapper = ({
         onKeyDown={onClickHandler}
         tabIndex="0"
       >
-        {label}
+        {t(label)}
         {isSortable && (
           <Icon
             name={sortIconMap[sortDirection]}

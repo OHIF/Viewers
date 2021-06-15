@@ -352,7 +352,7 @@ function WorkList({
                   className={classnames('font-bold', { 'ml-2': !isFirst })}
                   onClick={() => {}}
                 >
-                  {mode.displayName}
+                  {t(`Modes:${mode.displayName}`)}
                 </Button>
               </Link>
             );

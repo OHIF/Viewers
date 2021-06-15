@@ -5,5 +5,7 @@
   "MAX": "Máximo",
   "NonTargets": "No objetivos",
   "Relabel": "Re-etiquetar",
-  "Targets": "Objetivos"
+  "Targets": "Objetivos",
+  "Export": "Exportar",
+  "Create Report": "Crear reporte"
 }

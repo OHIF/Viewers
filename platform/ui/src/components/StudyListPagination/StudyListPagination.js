@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, ButtonGroup, Typography, Select } from '../';
+import { useTranslation } from 'react-i18next';
 
 const StudyListPagination = ({
   onChangePage,
@@ -8,6 +9,8 @@ const StudyListPagination = ({
   perPage,
   onChangePerPage,
 }) => {
+  const { t } = useTranslation("StudyList")
+
   const navigateToPage = page => {
     const toPage = page < 1 ? 1 : page;
     onChangePage(toPage);
@@ -42,7 +45,7 @@ const StudyListPagination = ({
               onChange={onSelectedRange}
             />
             <Typography className="text-base opacity-60">
-              Results per page
+              {t('Results per page')}
             </Typography>
           </div>
           <div className="">
@@ -64,14 +67,14 @@ const StudyListPagination = ({
                   className="border-primary-main py-2 px-2 text-base"
                   color="white"
                   onClick={() => navigateToPage(currentPage - 1)}
-                >{`< Previous`}</Button>
+                >{t(`< Previous`)}</Button>
                 <Button
                   size="initial"
                   className="border-primary-main py-2 px-4 text-base"
                   color="white"
                   onClick={() => navigateToPage(currentPage + 1)}
                 >
-                  {`Next >`}
+                  {t(`Next >`)}
                 </Button>
               </ButtonGroup>
             </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 import { Button, Icon } from '../';
 
@@ -69,6 +70,8 @@ const SidePanel = ({
   defaultComponentOpen,
   childComponents,
 }) => {
+  const { t } = useTranslation('SidePanel');
+
   const [componentOpen, setComponentOpen] = useState(defaultComponentOpen);
 
   const openStatus = componentOpen ? 'open' : 'closed';
@@ -101,7 +104,7 @@ const SidePanel = ({
             className="text-primary-active"
           />
           <span className="mt-2 text-white text-xs">
-            {childComponent.iconLabel}
+            {t(childComponent.iconLabel)}
           </span>
         </Button>
       );
@@ -139,7 +142,7 @@ const SidePanel = ({
                 style={{ ...position[side] }}
               />
               <span className="flex-1 text-primary-active">
-                {childComponent.label}
+                {t(childComponent.label)}
               </span>
             </Button>
           </div>

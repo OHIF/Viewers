@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 import { ButtonGroup, Button, StudyItem, ThumbnailList } from '../';
 
@@ -29,6 +30,8 @@ const StudyBrowser = ({
   onClickUntrack,
   activeDisplaySetInstanceUID,
 }) => {
+  const { t } = useTranslation("StudyBrowser")
+
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
 
@@ -96,7 +99,7 @@ const StudyBrowser = ({
                 }}
                 disabled={isDisabled}
               >
-                {label}
+                {t(label)}
               </Button>
             );
           })}
