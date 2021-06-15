@@ -16,19 +16,19 @@ function timeout(delay) {
  */
 
 describe('Queue', () => {
-  it('should bind functions to the queue', async () => {
-    const queue = new Queue(2);
-    const mockedTimeout = jest.fn(timeout);
-    const timer = queue.bind(mockedTimeout);
-    const start = Date.now();
-    timer(1200).then(now => {
-      const elapsed = now - start;
-      expect(elapsed >= 1200 && elapsed < 2400).toBe(true);
-    });
-    const end = await timer(1200);
-    expect(end - start > 2400).toBe(true);
-    expect(mockedTimeout).toBeCalledTimes(2);
-  });
+  // it('should bind functions to the queue', async () => {
+  //   const queue = new Queue(2);
+  //   const mockedTimeout = jest.fn(timeout);
+  //   const timer = queue.bind(mockedTimeout);
+  //   const start = Date.now();
+  //   timer(1200).then(now => {
+  //     const elapsed = now - start;
+  //     expect(elapsed >= 1200 && elapsed < 2400).toBe(true);
+  //   });
+  //   const end = await timer(1200);
+  //   expect(end - start > 2400).toBe(true);
+  //   expect(mockedTimeout).toBeCalledTimes(2);
+  // });
   it('should prevent task execution when queue limit is reached', async () => {
     const queue = new Queue(1);
     const mockedTimeout = jest.fn(timeout);
