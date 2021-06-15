@@ -1,3 +1,6 @@
+---
+sidebar_position: 4
+---
 # Nginx + Image Archive
 
 > DISCLAIMER! We make no claims or guarantees of this approach's security. If in
@@ -58,7 +61,9 @@ CORS][understanding-cors]
 
 This setup allows us to create a setup similar to the one pictured below:
 
-{% include "./../_nginx-image-archive-diagram.md" %}
+<!-- {% include "./../_nginx-image-archive-diagram.md" %} -->
+![nginX](../../assets/img/nginx-image-archive.png)
+
 
 - All web requests are routed through `nginx` on our `OpenResty` image
 - `/pacs` is a reverse proxy for `orthanc`'s `DICOM Web` endpoints

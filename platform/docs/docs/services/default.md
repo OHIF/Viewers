@@ -1,19 +1,26 @@
+---
+sidebar_position: 2
+sidebar_label: Default Services
+---
 # Services (default)
 
-- [Overview](#overview)
-- [Example](#example)
+- [Services (default)](#services-default)
+  - [Overview](#overview)
+  - [Example](#example)
 
 ## Overview
 
 Services are a work in progress. As we are still in the progress of creating a
 non-ui maintained service, this usage may change.
 
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
   <a href="/assets/img/services.png">
     <img src="/assets/img/services.png" alt="UI Services Diagram" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>Diagram showing relationship between React Context and UI Service</i></div>
-</div>
+</div> -->
+
+![contextAndUI](..//assets/img/services.png)
 
 ## Example
 

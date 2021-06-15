@@ -1,22 +1,24 @@
+---
+sidebar_position: 1
+sidebar_label: Overview
+---
 # UI Services
-
-- [Overview](#overview)
-- [Example](#example)
-- [Tips & Tricks](#tips--tricks)
-- [Maintained Services](#maintained-services)
-
-## Overview
 
 A typical web application will have components and state for common UI like
 modals, notifications, dialogs, etc. A UI service makes it possible to leverage
 these components from an extension.
 
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
   <a href="/assets/img/ui-services.png">
     <img src="/assets/img/ui-services.png" alt="UI Services Diagram" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>Diagram showing relationship between React Context and UI Service</i></div>
-</div>
+</div> -->
+
+![reactUI](../../assets/img/ui-services.png)
+<!-- <span style={{"textAlign": 'center', 'fontStyle': 'italic', 'paddingBottom':'10px'}}>Diagram showing relationship between React Context and UI Service</span> -->
+
+
 
 In `@ohif/core`, we have a collection of service factories. We select one we
 would like our application to support, create an instance of it, and pass that
@@ -63,12 +65,15 @@ if (UINotificationService) {
 }
 ```
 
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
   <a href="/assets/img/notification-example.gif">
     <img src="/assets/img/notification-example.gif" alt="UI Notification Service Example" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>GIF showing successful call of UINotificationService from an extension.</i></div>
-</div>
+</div> -->
+
+![UINotificationService](../../assets/img/notification-example.gif)
+<span style={{"textAlign": 'center', 'fontStyle': 'italic'}}>GIF showing successful call of UINotificationService from an extension.</span>
 
 ## Tips & Tricks
 

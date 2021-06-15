@@ -1,29 +1,25 @@
-# Extensions
+---
+sidebar_position: 1
+sidebar_label: Overview
+---
+# Overview
 
-- [Overview](#overview)
-- [Concepts](#concepts)
-  - [Extension Skeleton](#extension-skeleton)
-  - [Registering an Extension](#registering-an-extension)
-  - [Lifecylce Hooks](#lifecycle-hooks)
-  - [Modules](#modules)
-  - [Contexts](#contexts)
-- [Consuming Extensions](#consuming-extensions)
-  - [Extension Manager](#extensionmanager)
-- [Maintained Extensions](#maintained-extensions)
 
-## Overview
 
 We use extensions to help us isolate and package groups of related features.
 Extensions provide functionality, ui components, and new behaviors. Ideally,
 they're built in a way that allows them to extend entirely different
 implementations of the `@ohif/viewer` project.
 
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
   <a href="/assets/img/extensions-diagram.png">
     <img src="/assets/img/extensions-diagram.png" alt="Extensions Diagram" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>Diagram showing how extensions are configured and accessed.</i></div>
-</div>
+</div> -->
+
+![extensions](../assets/img/extensions-diagram.png)
+
 
 The `@ohif/viewer`'s application level configuration gives us the ability to add
 and configure extensions. When the application starts, extensions are registered
@@ -144,7 +140,7 @@ differently.
 | [Toolbar](./modules/toolbar.md)                   | Adds buttons or custom components to the toolbar                 | Toolbar button, nested buttons, custom            |
 | [Viewport](./modules/viewport.md)                 | Adds a component responsible for rendering a "DisplaySet"        | `<CornerstoneViewport />`, `<DicomPdfViewport />` |
 
-<figure style="text-align: center; font-style: italic;">Tbl. Module types with abridged descriptions and examples. Each module links to a dedicated documentation page.</figure>
+<span style={{"textAlign": 'center', 'fontStyle': 'italic'}}>Tbl. Module types with abridged descriptions and examples. Each module links to a dedicated documentation page.</span>
 
 ### Contexts
 
@@ -227,7 +223,75 @@ A small number of powerful extensions for popular use cases are maintained by
 OHIF. They're co-located in the [`OHIF/Viewers`][viewers-repo] repository, in
 the top level [`extensions/`][ext-source] directory.
 
-{% include "./_maintained-extensions-table.md" %}
+<table>
+    <thead>
+        <tr>
+            <th>Extension</th>
+            <th>Description</th>
+            <th>Modules</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <a href="https://www.npmjs.com/package/@ohif/extension-cornerstone">
+                    Cornerstone
+                </a>
+            </td>
+            <td>
+                A viewport powered by <code>cornerstone.js</code>. Adds support for 2D DICOM rendering and manipulation, as well as support for the tools features in <a href="https://tools.cornerstonejs.org/examples/"><code>cornerstone-tools</code></a>. Also adds "CINE Dialog" to the Toolbar.
+            </td>
+            <td>Viewport, Toolbar</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="https://www.npmjs.com/package/@ohif/extension-vtk">
+                    VTK.js
+                </a>
+            </td>
+            <td>
+                A viewport powered by <code>vtk.js</code>. Adds support for volume renderings and advanced features like MPR. Also adds "3D Rotate" to the Toolbar.
+            </td>
+            <td>Viewport, Toolbar</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="https://www.npmjs.com/package/@ohif/extension-dicom-html">DICOM HTML</a>
+            </td>
+            <td>
+                Renders text and HTML content for <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-html/src/OHIFDicomHtmlSopClassHandler.js#L4-L12">specific SopClassUIDs</a>.
+            </td>
+            <td>Viewport, SopClassHandler</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="https://www.npmjs.com/package/@ohif/extension-dicom-pdf">DICOM PDF</a>
+            </td>
+            <td>
+                Renders PDFs for a <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-pdf/src/OHIFDicomPDFSopClassHandler.js#L4-L6">specific SopClassUID</a>.
+            </td>
+            <td>Viewport, SopClassHandler</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="https://www.npmjs.com/package/@ohif/extension-dicom-microscopy">DICOM Microscopy</a>
+            </td>
+            <td>
+                Renders Microscopy images for a <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-microscopy/src/DicomMicroscopySopClassHandler.js#L5-L7">specific SopClassUID</a>.
+            </td>
+            <td>Viewport, SopClassHandler</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="https://www.npmjs.com/package/@ohif/extension-dicom-segmentation">DICOM Segmentation</a>
+            </td>
+            <td>
+                Renders segmentation images for a <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-segmentation/src/OHIFDicomSegSopClassHandler.js#L5-L7">specific SopClassUID</a>.
+            </td>
+            <td>Panel, Toolbar</td>
+        </tr>
+    </tbody>
+</table>
 
 <!--
   LINKS

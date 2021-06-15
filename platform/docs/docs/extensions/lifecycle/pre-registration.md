@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+sidebar_label: Pre Registration
+---
 # Lifecylce Hook: preRegistration
 
 If an extension defines the `preRegistration` lifecycle hook, it is called

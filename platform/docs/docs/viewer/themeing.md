@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+sidebar_label: Themeing
+---
 # Viewer: Themeing
 
 Themeing is currently accomplished with color variables that are defined within

@@ -1,3 +1,8 @@
+---
+sidebar_position: 5
+title: Architecture
+---
+
 # Architecture
 
 Looking to extend your instance of the OHIF Viewer? Want learn how to reuse _a
@@ -10,13 +15,7 @@ allows our code to be used in more ways, it also increases complexity. Below, we
 aim to demistify that complexity by providing insight into how our Viewer is
 architected, and the role each of it's dependent libraries plays.
 
-- [Overview](#overview)
-- [Business Logic](#business-logic)
-- [Component Library](#react-component-library)
-- [Extensions & Configuration](#extensions--configuration)
-- [Common Questions](#common-questions)
 
-## Overview
 
 The [OHIF Medical Image Viewing Platform][viewers-project] is maintained as a
 [`monorepo`][monorepo]. This means that this repository, instead of containing a
@@ -53,9 +52,8 @@ The `extensions` directory contains many packages that can be registered with
 `@ohif/core`'s `ExtensionManager` to expand an application's supported features
 and functionality.
 
-![Architecture Diagram](../assets/img/architecture-diagram.png)
-
-<center><i>architecture diagram</i></center>
+![Architecture Diagram](./assets/img/architecture-diagram.png)
+<!-- <center><i>architecture diagram</i></center> -->
 
 This diagram is a conceptual illustration of how the Viewer is architected.
 
@@ -78,7 +76,7 @@ features common to Web-based medical imaging viewers. For example:
 - Hanging Protocols
 - Managing a study's measurements
 - Managing a study's DICOM metadata
-- [A flexible pattern for extensions](../extensions/index.md)
+- [A flexible pattern for extensions](./extensions/index.md)
 - And many others
 
 It does this while remaining decoupled from any particular view library or
@@ -112,16 +110,16 @@ the viewer. Some common use cases include:
 - Adding surgical templating tools and reports
 - and many others
 
-We expose common integration points via [extensions](../extensions/index.md) to
+We expose common integration points via [extensions](./extensions/index.md) to
 make this possible. The viewer and many of our own extensions also offer
 [configuration][configuration]. For a list of extensions maintained by OHIF,
-[check out this helpful table](../extensions/index.md#maintained-extensions).
+[check out this helpful table](./extensions/index.md#maintained-extensions).
 
 If you find yourself thinking "I wish the Viewer could do X", and you can't
 accomplish it with an extension today, create a GitHub issue! We're actively
 looking for ways to improve our extensibility ^\_^
 
-[Click here to read more about extensions!](../extensions/index.md)
+[Click here to read more about extensions!](./extensions/index.md)
 
 ## Common Questions
 

@@ -1,10 +1,11 @@
 ---
-id: OHIF Documentation
+id: Introduction
 slug: /
 sidebar_position: 1
 ---
 
-<div class='row'>
+
+<!-- <div class='row'>
 	<div class='column' style='text-align: right; padding: 0 20px'>
 		<strong>Looking for a Live Demo?</strong>
 		<a href="http://viewer.ohif.org/">Preview The OHIF Viewer</a>
@@ -14,14 +15,30 @@ sidebar_position: 1
 		  <img src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg"/>
 		</a>
 	</div>
+</div> -->
+
+<div>
+	<strong>Looking for a Live Demo?</strong>
 </div>
+
+
+<!-- <a href="https://www.netlify.com"> -->
+
+<div className="text--center">
+<a style={{marginRight:'10px'}} href="http://viewer.ohif.org/">Preview The OHIF Viewer</a>
+<a href="https://www.netlify.com"/>
+  <img style={{width:'70px'}} src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg" />
+</div>
+
+<!--
+<img className={{width:'50px'}} src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg"/>
+</a> -->
+
 
 > ATTENTION! You are looking at the docs for the `React` version of the OHIF
 > Viewer. If you're looking for the `Meteor` version's documentation (now
-> deprecated), select it's version from the dropdown box in the top left corner
+> deprecated), select it's version from the dropdown box in the top right corner
 > of this page.
-
-# Introduction
 
 The [Open Health Imaging Foundation][ohif-org] (OHIF) Viewer is an open source,
 web-based, medical imaging viewer. It can be configured to connect to Image
@@ -31,7 +48,7 @@ annotating, and reporting on DICOM images in 2D (slices) and 3D (volumes).
 
 ![OHIF Viewer Screenshot](./assets/img/viewer.png)
 
-<center><i>The <strong>OHIF Viewer</strong>: A general purpose DICOM Viewer (<a href="http://viewer.ohif.org/">Live Demo</a>)</center>
+<center>The <strong>OHIF Viewer</strong>: A general purpose DICOM Viewer (<a href="http://viewer.ohif.org/">Live Demo</a>)</center>
 
 The Open Health Imaging Foundation intends to provide a simple general purpose
 DICOM Viewer which can be easily extended for specific uses. If you find

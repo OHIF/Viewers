@@ -1,3 +1,6 @@
+---
+sidebar_position: 1
+---
 # Embedded Viewer
 
 The quickest and easiest way to get the OHIF Viewer up and running is to embed
@@ -127,7 +130,7 @@ globally defined styles/scripts.
 > react-dom and react conflicts. What can we do?
 
 If you are installing OHIF viewer inside another react app, you may use `installViewer` as follows:
-```
+```jsx
 import { installViewer } from '@ohif/viewer'
 
 const ohifViewerConfig = window.config // or set it here

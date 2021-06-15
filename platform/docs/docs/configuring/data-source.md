@@ -1,3 +1,6 @@
+---
+sidebar_position: 2
+---
 # Data Source
 
 After following the steps outlined in
@@ -107,11 +110,10 @@ to `Orthanc`. This allows us to bypass CORS issues that normally occur when
 requesting resources that live at a different domain.
 
 The `APP_CONFIG` value tells our app which file to load on to `window.config`.
-By default, our app uses the file at
-`<project-root>/platform/viewer/public/config/default.js`. Here is what that
+Here is what that
 configuration looks like:
 
-```js
+```js title="<project-root>/platform/viewer/public/config/default.js"
 window.config = {
   routerBasename: '/',
   servers: {

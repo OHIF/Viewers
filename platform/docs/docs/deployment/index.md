@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+sidebar_label: Overview
+---
 # Deployment
 
 The OHIF Viewer can be embedded in other web applications via it's [packaged
@@ -7,7 +11,6 @@ either case, you will need to configure your instance of the Viewer so that it
 can connect to your data source (the database or PACS that provides the data
 your Viewer will display).
 
-## Overview
 
 Our goal is to make deployment as simple and painless as possible; however,
 there is an inherent amount of complexity in configuring and deploying web
@@ -26,7 +29,8 @@ include tags.
 - Read more about it here: [Embedded Viewer](./recipes/embedded-viewer.md)
 - And check out our [live demo on CodeSandbox][code-sandbox]
 
-{% include "./_embedded-viewer-diagram.md" %}
+![embeddedViewer](../assets/img/embedded-viewer-diagram.png)
+
 
 ### Stand-alone Viewer
 
@@ -144,7 +148,7 @@ The returned JSON object must contain a single root object with a 'studies' arra
 
 
 *Sample JSON format:*
-```JSON
+```json
 {
     "studies": [
       {

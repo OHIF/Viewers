@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+sidebar_label: Panel
+---
 # Module: Panel
 
 An extension can register a Panel Module by defining a `getPanelModule` method.

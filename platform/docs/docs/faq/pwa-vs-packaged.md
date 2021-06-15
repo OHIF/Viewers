@@ -1,3 +1,6 @@
+---
+sidebar_position: 4
+---
 # PWA vs Packaged
 
 It's important to know that the OHIF Viewer project provides two different build

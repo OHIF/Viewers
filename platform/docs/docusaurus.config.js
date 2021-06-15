@@ -41,7 +41,7 @@ const isBootstrapPreset = process.env.DOCUSAURUS_PRESET === 'bootstrap';
 // https://docusaurus-i18n-staging.netlify.app/
 const isI18nStaging = process.env.I18N_STAGING === 'true';
 
-const isVersioningDisabled = !!process.env.DISABLE_VERSIONING || isI18nStaging;
+// const isVersioningDisabled = !!process.env.DISABLE_VERSIONING || isI18nStaging;
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 (module.exports = {
@@ -192,27 +192,27 @@ const isVersioningDisabled = !!process.env.DISABLE_VERSIONING || isI18nStaging;
             // We want users to submit doc updates to the upstream/next version!
             // Otherwise we risk losing the update on the next release.
             const nextVersionDocsDirPath = 'docs';
-            return `https://github.com/facebook/docusaurus/edit/master/website/${nextVersionDocsDirPath}/${docPath}`;
+            return `https://github.com/OHIF/Viewers/edit/master/website/${nextVersionDocsDirPath}/${docPath}`;
           },
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
           // remarkPlugins: [
           //   [require('@docusaurus/remark-plugin-npm2yarn'), { sync: true }],
           // ],
-          disableVersioning: isVersioningDisabled,
-          lastVersion: isDev ? 'current' : undefined,
-          onlyIncludeVersions:
-            !isVersioningDisabled && (isDev || isDeployPreview)
-              ? ['current', ...versions.slice(0, 2)]
-              : undefined,
-          versions: {
-            current: {
-              // label: `${getNextBetaVersionName()} 🚧`,
-              // label: `2.0 🎉`,
-              label: `2.0`,
-              path: `2.0`,
-            },
-          },
+          // disableVersioning: isVersioningDisabled,
+          // lastVersion: 'current',
+          // onlyIncludeVersions:
+          //   !isVersioningDisabled && (isDev || isDeployPreview)
+          //     ? ['current', ...versions.slice(0, 2)]
+          //     : undefined,
+          // versions: {
+          //   current: {
+          //     // label: `${getNextBetaVersionName()} 🚧`,
+          //     // label: `2.0 🎉`,
+          //     label: `2.0`,
+          //     // path: `2.0`,
+          //   },
+          // },
         },
         theme: {
           customCss: [require.resolve('./src/css/custom.css')],
@@ -239,7 +239,7 @@ const isVersioningDisabled = !!process.env.DISABLE_VERSIONING || isI18nStaging;
     announcementBar: {
       id: 'supportus',
       content:
-        '⭐️ If you like Docusaurus, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/facebook/docusaurus">GitHub</a>! ⭐️',
+        '⭐️ If you like Docusaurus, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/OHIF/Viewers">GitHub</a>! ⭐️',
     },
      */
     prism: {
@@ -268,7 +268,7 @@ const isVersioningDisabled = !!process.env.DISABLE_VERSIONING || isI18nStaging;
         {
           type: 'doc',
           position: 'left',
-          docId: 'OHIF Documentation',
+          docId: 'Introduction',
           label: 'Docs',
         },
         // {to: 'blog', label: 'Blog', position: 'left'},
@@ -284,13 +284,13 @@ const isVersioningDisabled = !!process.env.DISABLE_VERSIONING || isI18nStaging;
           position: 'right',
           dropdownItemsAfter: [
             {
-              to: 'https://github.com/facebook/docusaurus/issues/3526',
+              to: 'https://github.com/OHIF/Viewers/issues/3526',
               label: 'Help Us Translate',
             },
           ],
         },
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/OHIF/Viewers',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
@@ -347,7 +347,7 @@ const isVersioningDisabled = !!process.env.DISABLE_VERSIONING || isI18nStaging;
       //       },
       //       {
       //         label: 'GitHub',
-      //         href: 'https://github.com/facebook/docusaurus',
+      //         href: 'https://github.com/OHIF/Viewers',
       //       },
       //       {
       //         label: 'Twitter',

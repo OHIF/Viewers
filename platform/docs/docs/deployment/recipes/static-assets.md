@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+sidebar_label: Assets
+---
 # Deploy Static Assets
 
 > WARNING! All of these solutions stand-up a publicly accessible web viewer. Do
@@ -25,9 +29,16 @@ _Easy_
 
 _Advanced_
 
-- [AWS S3 + Cloudfront](#aws-s3--cloudfront)
-- [GCP + Cloudflare](#gcp--cloudflare)
-- [Azure](#azure)
+- [Deploy Static Assets](#deploy-static-assets)
+  - [Drag-n-drop](#drag-n-drop)
+    - [Netlify: Drop](#netlify-drop)
+  - [Easy](#easy)
+    - [Surge.sh](#surgesh)
+    - [GitHub Pages](#github-pages)
+  - [Advanced](#advanced)
+    - [AWS S3 + Cloudfront](#aws-s3--cloudfront)
+    - [GCP + Cloudflare](#gcp--cloudflare)
+    - [Azure](#azure)
 
 ## Drag-n-drop
 

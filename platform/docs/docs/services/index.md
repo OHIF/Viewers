@@ -1,10 +1,8 @@
+---
+sidebar_position: 1
+sidebar_label: Overview
+---
 # Services Overview
-
-- [Overview](#overview)
-- [Kinds of Services](#kinds-of-services)
-  - [Services (default)](#services-default)
-  - [UI Services](#ui-services)
-- [Related Patterns](#related-patterns)
 
 ## Overview
 

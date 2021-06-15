@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+sidebar_label: Viewport
+---
 # Module: Viewport
 
 An extension can register a Viewport Module by defining a `getViewportModule`

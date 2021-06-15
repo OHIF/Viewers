@@ -1,3 +1,7 @@
+---
+sidebar_position: 6
+---
+
 # Google Cloud Healthcare
 
 > The [Google Cloud Healthcare API](https://cloud.google.com/healthcare/) is a

@@ -1,3 +1,6 @@
+---
+sidebar_position: 4
+---
 # UI Notification Service
 
 Notifications can be annoying and disruptive. They can also deliver timely
@@ -12,13 +15,14 @@ guidance on when and how to use them:
 If you're curious about the DOs and DON'Ts of notifications, check out this
 article: ["How To Design Notifications For Better UX"][ux-article]
 
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
   <a href="/assets/img/notification-example.gif">
     <img src="/assets/img/notification-example.gif" alt="UI Notification Service Example" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>GIF showing successful call of UINotificationService from an extension.</i></div>
-</div>
+</div> -->
 
+![UINotificationService](../../assets/img/notification-example.gif)
 ## Interface
 
 For a more detailed look on the options and return values each of these methods

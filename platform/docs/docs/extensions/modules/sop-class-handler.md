@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+sidebar_label: SOP Class Handler
+---
 # Module: SOP Class Handler
 
 An extension can register a [SOP Class][sop-class-link] Handler Module by

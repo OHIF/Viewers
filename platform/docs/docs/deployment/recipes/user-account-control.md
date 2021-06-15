@@ -1,3 +1,6 @@
+---
+sidebar_position: 5
+---
 # User Account Control
 
 > DISCLAIMER! We make no claims or guarantees of this approach's security. If in
@@ -32,7 +35,9 @@ applications and services with little to no code. We improve upon our
 
 This setup allows us to create a setup similar to the one pictured below:
 
-{% include "./../_user-account-control-flow-diagram.md" %}
+![userControlFlow](../../assets/img/user-access-control-request-flow.png)
+
+
 
 - All web requests are routed through `nginx` on our `OpenResty` image
 - `/pacs` is a reverse proxy for `orthanc`'s `DICOM Web` endpoints

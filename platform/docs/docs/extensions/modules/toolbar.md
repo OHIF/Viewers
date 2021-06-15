@@ -1,11 +1,17 @@
+---
+sidebar_position: 4
+sidebar_label: Toolbar
+---
 # Module: Toolbar
 
 An extension can register a Toolbar Module by defining a `getToolbarModule`
 method. This module is commonly used to define:
 
-- [Toolbar buttons](#button-definitions)
-- [Nested toolbar menus](#nested-toolbar-menus)
-- [Custom components](#custom-components)
+- [Module: Toolbar](#module-toolbar)
+  - [Example Toolbar Module](#example-toolbar-module)
+  - [Button Definitions](#button-definitions)
+  - [Nested Toolbar Menus](#nested-toolbar-menus)
+  - [Custom Components](#custom-components)
 
 ![Toolbar Extension](../../assets/img/extensions-toolbar.gif)
 

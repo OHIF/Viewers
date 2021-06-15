@@ -1,4 +1,8 @@
-# Contributing: Tests
+---
+sidebar_position: 4
+title: Testing
+---
+# Tests
 
 > Testing is an opinionated topic. Here is a rough overview of our testing
 > philosiphy. See something you want to discuss or think should be changed? Open

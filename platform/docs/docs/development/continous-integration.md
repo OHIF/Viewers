@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+title: Continous Integration
+---
 # Continous Integration (CI)
 
 This repository uses `CircleCI` and `Netlify` for continous integration.
@@ -25,12 +29,15 @@ The PR_CHECKS workflow (Pull Request Checks) runs our automated unit and
 end-to-end tests for every code check-in. These tests must all pass before code
 can be merged to our `master` branch.
 
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
   <a href="/assets/img/WORKFLOW_PR_CHECKS.png">
     <img src="/assets/img/WORKFLOW_PR_CHECKS.png" alt="workflow diagram" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>Workflow diagram for PR_CHECKS</i></div>
-</div>
+</div> -->
+
+
+![PR_CHECKS](../assets/img/WORKFLOW_PR_CHECKS.png)
 
 ### Workflow: PR_OPTIONAL_DOCKER_PUBLISH
 
@@ -38,12 +45,16 @@ The PR_OPTIONAL_DOCKER_PUBLISH workflow allows for "manual approval" to publish
 the pull request as a tagged docker image. This is helpful when changes need to
 be tested with the Google Adapter before merging to `master`.
 
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
   <a href="/assets/img/WORKFLOW_PR_OPTIONAL_DOCKER_PUBLISH.png">
     <img src="/assets/img/WORKFLOW_PR_OPTIONAL_DOCKER_PUBLISH.png" alt="workflow diagram" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>Workflow diagram for PR_WORKFLOW_PR_OPTIONAL_DOCKER_PUBLISH</i></div>
-</div>
+</div> -->
+
+![publish](../assets/img/WORKFLOW_PR_OPTIONAL_DOCKER_PUBLISH.png)
+
+
 
 > NOTE: This workflow will fail unless it's for a branch on our `upstream`
 > repository. If you need this functionality, but the branch is from a fork,
@@ -56,12 +67,14 @@ It uses the Netlify CLI to deploy assets created as part of the repository's PWA
 Build process (`yarn run build`). The workflow allows for "Manual Approval" to
 promote the build to `STAGING` and `PRODUCTION` environments.
 
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
   <a href="/assets/img/WORKFLOW_DEPLOY.png">
     <img src="/assets/img/WORKFLOW_DEPLOY.png" alt="workflow diagram" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>Workflow diagram for WORKFLOW_DEPLOY</i></div>
-</div>
+</div> -->
+
+![deploy](../assets/img/WORKFLOW_DEPLOY.png)
 
 | Environment | Description                                                                        | URL                                           |
 | ----------- | ---------------------------------------------------------------------------------- | --------------------------------------------- |
@@ -82,12 +95,15 @@ GitHub hosts the `gh-pages` branch with GitHub Pages.
 - Extension Packages: https://github.com/ohif/viewers/#extensions
 - Documentation: https://docs.ohif.org/
 
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
   <a href="/assets/img/WORKFLOW_RELEASE.png">
     <img src="/assets/img/WORKFLOW_RELEASE.png" alt="workflow diagram" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>Workflow diagram for WORKFLOW_RELEASE</i></div>
-</div>
+</div> -->
+
+
+![release](../assets/img/WORKFLOW_RELEASE.png)
 
 ### HOTFIX
 

@@ -1,15 +1,14 @@
+---
+sidebar_position: 1
+---
+
 # Configuration
 
 > This step assumes you have an imaging archive. If you need assistance setting
 > one up, check out the [`Data Source` Guide](./data-source.md) or a deployment
 > recipe that contains an open Image Archive
 
-- [Overview](#overview)
-  - [Configuration Files](#configuration-files)
-  - [Environment Variables](#environment-variables)
-- [How do I configure my project?](#how-do-i-configure-my-project)
 
-## Overview
 
 ### Configuration Files
 
@@ -45,9 +44,8 @@ alternative data source (or even specify different default hotkeys).
 
 The simplest way is to update the existing default config:
 
-_/platform/viewer/public/config/default.js_
 
-```js
+```js title="/platform/viewer/public/config/default.js"
 window.config = {
   routerBasename: '/',
   servers: {

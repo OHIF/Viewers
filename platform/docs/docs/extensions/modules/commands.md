@@ -1,11 +1,9 @@
+---
+sidebar_position: 1
+sidebar_label: Commands
+---
 # Module: Commands
 
-- [Overview](#overview)
-- [Command Definitions](#command-definitions)
-- [Commands Manager](#commands-manager)
-  - [Instantiating](#instatiating)
-  - [Public API](#public-api)
-  - [Contexts](#contexts)
 
 ## Overview
 

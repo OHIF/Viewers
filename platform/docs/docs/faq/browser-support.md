@@ -1,3 +1,6 @@
+---
+sidebar_position: 3
+---
 # Browser Support
 
 The browsers that we support are specified in the `.browserlistrc` file located

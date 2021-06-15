@@ -1,3 +1,6 @@
+---
+sidebar_position: 3
+---
 # UI Modal Service
 
 Modals have similar characteristics to that of Dialogs, but are often larger,
@@ -11,12 +14,14 @@ be centered, and not draggable. They're commonly used when:
 If you're curious about the DOs and DON'Ts of dialogs and modals, check out this
 article: ["Best Practices for Modals / Overlays / Dialog Windows"][ux-article]
 
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
   <a href="/assets/img/modal-example.gif">
     <img src="/assets/img/modal-example.gif" alt="UI Modal Service Example" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>GIF showing successful call of UIModalService from an extension.</i></div>
-</div>
+</div> -->
+
+![UIModalService](../../assets/img/modal-example.gif)
 
 ## Interface
 

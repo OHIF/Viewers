@@ -1,3 +1,6 @@
+---
+sidebar_position: 2
+---
 # Build for Production
 
 > If you've already followed the
@@ -33,7 +36,7 @@ _From .zip:_
 Open your terminal, and navigate to the directory containing the source files.
 Next run these commands:
 
-```js
+```bash
 // If you haven't already, enable yarn workspaces
 yarn config set workspaces-experimental true
 
@@ -100,7 +103,7 @@ A quick way to test your build output locally is to spin up a small webserver.
 You can do this by running the following commands in the `dist/` output
 directory:
 
-```js
+```bash
 // Install http-server as a globally available package
 yarn global add http-server
 

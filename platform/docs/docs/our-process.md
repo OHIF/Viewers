@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+title: Our process
+---
 # Our Process
 
 Our process is a living, breathing thing. We strive to have regular
@@ -7,15 +11,6 @@ that process in an effort to:
 
 - Strengthen community member involvement and understanding
 - Welcome feedback and helpful suggestions
-
-## Overview
-
-- [Issue Triage](#issue-triage)
-- [Issue Curation ("backlog grooming")](#issue-curation-backlog-grooming)
-- [Contributions (Pull Requests)](#contributions-pull-requests)
-- [Releases](#releases)
-
-_Include issue lifecycle diagram_
 
 ## Issue Triage
 
