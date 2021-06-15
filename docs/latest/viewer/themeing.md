@@ -1,92 +1,162 @@
-# Viewer: Themeing
+# Viewer: Theming
 
-Themeing is currently accomplished with color variables that are defined within
-the [`:root`](https://css-tricks.com/almanac/selectors/r/root/) selector
-(allowing them to cascade across all elements). This repository's components,
-and the ones we consume from our
-[`@ohif/ui` component library](https://react.ohif.org/styling-and-theming)
-utilize them. We are interested in pursuing more robust themeing options, and
-open to pull requests and discussion issues.
 
-```css
-:root {
-  /* Interface UI Colors */
-  --default-color: #9ccef9;
-  --hover-color: #ffffff;
-  --active-color: #20a5d6;
-  --ui-border-color: #44626f;
-  --ui-border-color-dark: #3c5d80;
-  --ui-border-color-active: #00a4d9;
-  --primary-background-color: #000000;
-  --box-background-color: #3e5975;
+`OHIF-v3` has introduced the [`LayoutTemplateModule`](../extensions/modules/layout-template.md) which enables addition of custom layouts. You can easily design your custom components inside an extension and consume it via the layoutTemplate module you write.
 
-  --text-primary-color: #ffffff;
-  --text-secondary-color: #91b9cd;
-  --input-background-color: #2c363f;
-  --input-placeholder-color: #d3d3d3;
 
-  --table-hover-color: #2c363f;
-  --table-text-primary-color: #ffffff;
-  --table-text-secondary-color: #91b9cd;
 
-  --large-numbers-color: #6fbde2;
 
-  --state-error: #ffcccc;
-  --state-error-border: #ffcccc;
-  --state-error-text: #ffcccc;
+## Tailwind CSS
+[Tailwind CSS](https://tailwindcss.com/) is a utility-first CSS framework for creating custom user interfaces.
 
-  /* Common palette */
-  --ui-yellow: #e29e4a;
-  --ui-sky-blue: #6fbde2;
 
-  /* State palette */
-  --ui-state-error: #ffcccc;
-  --ui-state-error-border: #993333;
-  --ui-state-error-text: #661111;
-  --ui-gray-lighter: #436270;
-  --ui-gray-light: #516873;
-  --ui-gray: #263340;
-  --ui-gray-dark: #16202b;
-  --ui-gray-darker: #151a1f;
-  --ui-gray-darkest: #14202a;
+Below you can see a compiled version of the tailwind configs.
+Each section can be edited accordingly. For instance screen size break points, primary
+and secondary colors, etc.
 
-  --calendar-day-color: #d3d3d3;
-  --calendar-day-border-color: #d3d3d3;
-  --calendar-day-active-hover-background-color: #516873;
-  --calendar-main-color: #263340;
-  --viewport-border-thickness: 1px;
+
+
+```js
+module.exports = {
+  prefix: '',
+  important: false,
+  separator: ':',
+  theme: {
+    screens: {
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px',
+    },
+    colors: {
+      overlay: 'rgba(0, 0, 0, 0.8)',
+      transparent: 'transparent',
+      black: '#000',
+      white: '#fff',
+      initial: 'initial',
+      inherit: 'inherit',
+
+      indigo: {
+        dark: '#0b1a42',
+      },
+      aqua: {
+        pale: '#7bb2ce',
+      },
+
+      primary: {
+        light: '#5acce6',
+        main: '#0944b3',
+        dark: '#090c29',
+        active: '#348cfd',
+      },
+
+      secondary: {
+        light: '#3a3f99',
+        main: '#2b166b',
+        dark: '#041c4a',
+        active: '#1f1f27',
+      },
+
+      common: {
+        bright: '#e1e1e1',
+        light: '#a19fad',
+        main: '#fff',
+        dark: '#726f7e',
+        active: '#2c3074',
+      },
+
+      customgreen: {
+        100: '#05D97C',
+      },
+
+      customblue: {
+        100: '#c4fdff',
+        200: '#38daff',
+      },
+    },
+  },
 }
 ```
+
+
+You can also use the color variable like before. For instance:
+
+
+```js
+primary: {
+  default: ‘var(--default-color)‘,
+  light: ‘#5ACCE6’,
+  main: ‘#0944B3’,
+  dark: ‘#090C29’,
+  active: ‘#348CFD’,
+}
+```
+
 
 ## White Labeling
 
-> A white-label product is a product or service produced by one company (the
-> producer) that other companies (the marketers) rebrand to make it appear as if
-> they had made it - [Wikipedia: White-Label Product][wikipedia]
+A white-label product is a product or service produced by one company (the producer) that other companies (the marketers) rebrand to make it appear as if they had made it - [Wikipedia: White-Label Product](https://en.wikipedia.org/wiki/White-label_product)
 
-Current white-labeling options are limited. We expose the ability to replace the
-"Logo" section of the application with a custom "Logo" component. You can do
-this by adding a `whiteLabeling` key to your
-[configuration file](./configuration.md).
+Current white-labeling options are limited.
+We expose the ability to replace the "Logo" section of the application with a custom "Logo" component. You can do this by adding a whiteLabeling key to your configuration file.
 
 ```js
-function RadicalImagingLogo(React) {
-  return React.createElement(
-    'a',
-    {
-      target: '_blank',
-      rel: 'noopener noreferrer',
-      className: 'header-brand',
-      href: 'http://radicalimaging.com',
+window.config = {
+  /** .. **/
+  whiteLabeling: {
+    createLogoComponentFn: function (React) {
+      return React.createElement(
+        'a',
+        {
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          className: 'text-white underline',
+          href: 'http://radicalimaging.com',
+        },
+        React.createElement('h5', {}, 'RADICAL IMAGING')
+      )
     },
-    React.createElement('h5', {}, 'RADICAL IMAGING')
-  );
+  },
+  /** .. **/
 }
-
-props.whiteLabeling = {
-  createLogoComponentFn: RadicalImagingLogo,
-};
 ```
+
+> You can simply use the stylings from tailwind CSS in the whiteLabeling
+
+
+In addition to text, you can also add your custom logo
+
+
+```js
+window.config = {
+  /** .. **/
+  whiteLabeling: {
+    createLogoComponentFn: function (React) {
+      return React.createElement(
+        'a',
+        {
+          target: '_self',
+          rel: 'noopener noreferrer',
+          className: 'text-purple-600 line-through',
+          href: '/',
+        },
+        React.createElement('img', {
+          src: './customLogo.svg',
+          // className: 'w-8 h-8',
+        })
+      )
+    },
+  },
+  /** .. **/
+}
+```
+
+The output will look like
+
+
+![custom-logo](../assets/img/custom-logo.png)
+
+
 
 <!--
   Links

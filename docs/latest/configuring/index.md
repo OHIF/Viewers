@@ -1,17 +1,27 @@
-# Configuration
+# Configuring Data Source
 
-> This step assumes you have an imaging archive. If you need assistance setting
-> one up, check out the [`Data Source` Guide](./data-source.md) or a deployment
-> recipe that contains an open Image Archive
 
-- [Overview](#overview)
+
+- [Configuring Data Source](#configuring-data-source)
+  - [Overview](#overview)
   - [Configuration Files](#configuration-files)
   - [Environment Variables](#environment-variables)
-- [How do I configure my project?](#how-do-i-configure-my-project)
+
 
 ## Overview
 
-### Configuration Files
+After following the steps outlined in
+[Getting Started](./../development/getting-started.md), you'll notice that the
+OHIF Viewer has data for several studies and their images. You didn't add this
+data, so where is it coming from?
+
+By default, the viewer is configured to connect to a remote server hosted by the
+nice folks over at [dcmjs.org][dcmjs-org]. While convenient for getting started,
+the time may come when you want to develop using your own data either locally or
+remotely.
+
+
+## Configuration Files
 
 The configuration for our viewer is in the `<root>platform/viewer/public/config`
 directory. Our build process knows which configuration file to use based on the
@@ -19,54 +29,56 @@ directory. Our build process knows which configuration file to use based on the
 [`config/default.js`][default-config]. The majority of the viewer's features,
 and registered extension's features, are configured using this file.
 
-**Embedded Use Note:**
-
-Alternatively, when using the `umd` bundle for embedded use cases, these same
-values are what you'll pass to `installViewer` method:
-
-`OHIFStandaloneViewer.installViewer(window.config)`
-
-### Environment Variables
-
-We use environment variables at build and dev time to change the Viewer's
-behavior. We can update the `HTML_TEMPLATE` to easily change which extensions
-are registered, and specify a different `APP_CONFIG` to connect to an
-alternative data source (or even specify different default hotkeys).
-
-| Environment Variable | Description                                                                                        | Default             |
-| -------------------- | -------------------------------------------------------------------------------------------------- | ------------------- |
-| `HTML_TEMPLATE`      | Which [HTML template][html-templates] to use as our web app's entry point. Specific to PWA builds. | `index.html`        |
-| `PUBLIC_URL`         | The route relative to the host that the app will be served from. Specific to PWA builds.           | `/`                 |
-| `APP_CONFIG`         | Which [configuration file][config-file] to copy to output as `app-config.js`                       | `config/default.js` |
-| `PROXY_TARGET`       | When developing, proxy requests that match this pattern to `PROXY_DOMAIN`                          | `undefined`         |
-| `PROXY_DOMAIN`       | When developing, proxy requests from `PROXY_TARGET` to `PROXY_DOMAIN`                              | `undefined`         |
-
-## How do I configure my project?
-
 The simplest way is to update the existing default config:
 
-_/platform/viewer/public/config/default.js_
+> _/platform/viewer/public/config/default.js_
 
 ```js
 window.config = {
   routerBasename: '/',
-  servers: {
-    dicomWeb: [
-      {
+  extensions: [],
+  modes: [],
+  showStudyList: true,
+  dataSources: [
+    {
+      friendlyName: 'dcmjs DICOMWeb Server',
+      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
         name: 'DCM4CHEE',
         wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
         qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
         qidoSupportsIncludeField: true,
+        supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
       },
-    ],
-  },
+    },
+  ],
+  defaultDataSourceName: 'dicomweb',
 };
+
 ```
 
+
+> As you can see a new change in `OHIF-v3` is the addition of `dataSources`.
+> You can build your own datasource and map it to the internal data structure of OHIF’s > metadata and enjoy using other peoples developed mode on your own data!
+>
+> You can read more about data sources at [Data Source section in Modes](../modes/index.md)
+>
+
+
+
+
+
+
+
 The configuration can also be written as a JS Function in case you need to inject dependencies like external services:
+
 
 ```js
 window.config = ({ servicesManager } = {}) => {
@@ -82,22 +94,58 @@ window.config = ({ servicesManager } = {}) => {
       },
     },
     routerBasename: '/',
-    servers: {
-      dicomWeb: [
-        {
-          name: 'DCM4CHEE',
-          wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-          qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-          wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-          qidoSupportsIncludeField: true,
-          imageRendering: 'wadors',
-          thumbnailRendering: 'wadors',
-        },
-      ],
+    dataSources: [
+    {
+      friendlyName: 'dcmjs DICOMWeb Server',
+      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
+        name: 'DCM4CHEE',
+        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
+      },
     },
+  ],
+  defaultDataSourceName: 'dicomweb',
   };
 };
 ```
+
+<!-- **Embedded Use Note:**
+
+Alternatively, when using the `umd` bundle for embedded use cases, these same
+values are what you'll pass to `installViewer` method:
+
+`OHIFStandaloneViewer.installViewer(window.config)` -->
+
+## Environment Variables
+
+We use environment variables at build and dev time to change the Viewer's
+behavior. We can update the `HTML_TEMPLATE` to easily change which extensions
+are registered, and specify a different `APP_CONFIG` to connect to an
+alternative data source (or even specify different default hotkeys).
+
+| Environment Variable | Description                                                                                        | Default             |
+| -------------------- | -------------------------------------------------------------------------------------------------- | ------------------- |
+| `HTML_TEMPLATE`      | Which [HTML template][html-templates] to use as our web app's entry point. Specific to PWA builds. | `index.html`        |
+| `PUBLIC_URL`         | The route relative to the host that the app will be served from. Specific to PWA builds.           | `/`                 |
+| `APP_CONFIG`         | Which [configuration file][config-file] to copy to output as `app-config.js`                       | `config/default.js` |
+| `PROXY_TARGET`       | When developing, proxy requests that match this pattern to `PROXY_DOMAIN`                          | `undefined`         |
+| `PROXY_DOMAIN`       | When developing, proxy requests from `PROXY_TARGET` to `PROXY_DOMAIN`                              | `undefined`         |
+
+
+
+
+
+
 
 You can also create a new config file and specify its path relative to the build
 output's root by setting the `APP_CONFIG` environment variable. You can set the
@@ -115,11 +163,27 @@ value of this environment variable a few different ways:
 After updating the configuration, `yarn run build` to generate updated build
 output.
 
+
+
 <!--
   Links
   -->
 
 <!-- prettier-ignore-start -->
+[dcmjs-org]: https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado
+[dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
+[storescu]: http://support.dcmtk.org/docs/storescu.html
+[webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy
+[orthanc-docker-compose]: https://github.com/OHIF/Viewers/tree/master/.docker/Nginx-Orthanc
+<!-- Archives -->
+[dcm4chee]: https://github.com/dcm4che/dcm4chee-arc-light
+[dcm4chee-docker]: https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker
+[orthanc]: https://www.orthanc-server.com/
+[orthanc-docker]: http://book.orthanc-server.com/users/docker.html
+[dicomcloud]: https://github.com/DICOMcloud/DICOMcloud
+[dicomcloud-install]: https://github.com/DICOMcloud/DICOMcloud#running-the-code
+[osirix]: http://www.osirix-viewer.com/
+[horos]: https://www.horosproject.org/
 [default-config]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/config/default.js
 [html-templates]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/html-templates
 [config-files]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/config

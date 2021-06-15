@@ -1,19 +1,17 @@
-# Data Source
-
-After following the steps outlined in
-[Getting Started](./../development/getting-started.md), you'll notice that the
-OHIF Viewer has data for several studies and their images. You didn't add this
-data, so where is it coming from?
-
-By default, the viewer is configured to connect to a remote server hosted by the
-nice folks over at [dcmjs.org][dcmjs-org]. While convenient for getting started,
-the time may come when you want to develop using your own data either locally or
-remotely.
-
 ## Set up a local DICOM server
 
-> ATTENTION! Already have a remote or local server? Skip to the
-> [configuration section](#configuration-learn-more) below.
+- [Set up a local DICOM server](#set-up-a-local-dicom-server)
+  - [Requirements](#requirements)
+- [Open Source DICOM Image Archives](#open-source-dicom-image-archives)
+  - [Running Orthanc](#running-orthanc)
+    - [Orthanc: Learn More](#orthanc-learn-more)
+    - [Connecting to Orthanc](#connecting-to-orthanc)
+    - [Configuration: Learn More](#configuration-learn-more)
+  - [Running DCM4CHEE](#running-dcm4chee)
+
+
+ATTENTION! Already have a remote or local server? Skip to the
+[configuration section](#configuration-learn-more) below.
 
 While the OHIF Viewer can work with any data source, the easiest to configure
 are the ones that follow the [DICOMWeb][dicom-web] spec.
@@ -41,6 +39,27 @@ in command prompt or terminal_
 > the ip docker-machine ip throws. This is the value [`WebPack`][webpack-proxy]
 > uses to proxy requests
 
+
+
+## Open Source DICOM Image Archives
+
+There are a lot of options available to you to use as a local DICOM server. Here are some of the more popular ones:
+
+| Archive                                       | Installation                       |
+| --------------------------------------------- | ---------------------------------- |
+| [DCM4CHEE Archive 5.x][dcm4chee]              | [W/ Docker][dcm4chee-docker]       |
+| [Orthanc][orthanc]                            | [W/ Docker][orthanc-docker]        |
+| [DICOMcloud][dicomcloud] (**DICOM Web only**) | [Installation][dicomcloud-install] |
+| [OsiriX][osirix] (**Mac OSX only**)           | Desktop Client                     |
+| [Horos][horos] (**Mac OSX only**)             | Desktop Client                     |
+
+_Feel free to make a Pull Request if you want to add to this list._
+
+
+Below, we will focus on `DCM4CHEE` and `Orthanc` usage:
+
+
+
 ### Running Orthanc
 
 _Start Orthanc:_
@@ -65,7 +84,7 @@ You can see the `docker-compose.yml` file this command runs at
 [`<project-root>/.docker/Nginx-Orthanc/`][orthanc-docker-compose], and more on
 Orthanc for Docker in [Orthanc's documentation][orthanc-docker].
 
-### Connecting to Orthanc
+#### Connecting to Orthanc
 
 Now that we have a local Orthanc instance up and running, we need to configure
 our web application to connect to it. Open a new terminal window, navigate to
@@ -88,7 +107,7 @@ yarn run dev:orthanc
 > [Essentials Configuration](./index.md) guide.
 
 Let's take a look at what's going on under the hood here. `yarn run dev:orthanc`
-is running the `dev:orthanc` script in our project's `package.json`. That script
+is running the `dev:orthanc` script in our project's `package.json` (inside `platform/viewer`). That script
 is:
 
 ```js
@@ -114,51 +133,54 @@ configuration looks like:
 ```js
 window.config = {
   routerBasename: '/',
-  servers: {
-    dicomWeb: [
-      {
-        name: 'Orthanc',
-        wadoUriRoot: 'http://localhost:8899/wado',
-        qidoRoot: 'http://localhost:8899/dicom-web',
-        wadoRoot: 'http://localhost:8899/dicom-web',
-        qidoSupportsIncludeField: false,
+  extensions: [],
+  modes: [],
+  showStudyList: true,
+  dataSources: [
+    {
+      friendlyName: 'dcmjs DICOMWeb Server',
+      namespace: 'org.ohif.default.dataSourcesModule.dicomweb',
+      sourceName: 'dicomweb',
+      configuration: {
+        name: 'DCM4CHEE',
+        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
+        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
       },
-    ],
-  },
+    },
+  ],
+  defaultDataSourceName: 'dicomweb',
 };
 ```
 
 To learn more about how you can configure the OHIF Viewer, check out our
 [Configuration Guide](./index.md).
 
-## Open Source DICOM Image Archives
 
-Our example uses `Orthanc`, but there are a lot of options available to you.
-Here are some of the more popular ones:
 
-| Archive                                       | Installation                       |
-| --------------------------------------------- | ---------------------------------- |
-| [DCM4CHEE Archive 5.x][dcm4chee]              | [W/ Docker][dcm4chee-docker]       |
-| [Orthanc][orthanc]                            | [W/ Docker][orthanc-docker]        |
-| [DICOMcloud][dicomcloud] (**DICOM Web only**) | [Installation][dicomcloud-install] |
-| [OsiriX][osirix] (**Mac OSX only**)           | Desktop Client                     |
-| [Horos][horos] (**Mac OSX only**)             | Desktop Client                     |
+### Running DCM4CHEE
 
-_Feel free to make a Pull Request if you want to add to this list._
+dcm4che is a collection of open source applications for healthcare enterprise written in Java programming language
+which implements DICOM standard. dcm4chee (extra 'e' at the end) is dcm4che project
+for an Image Manager/Image Archive which provides storage, retrieval and other functionalities.
+You can read more about dcm4chee in their website [here](https://www.dcm4che.org/)
 
-<!--
-  Links
-  -->
+DCM4chee installation is out of scope for these tutorials and can be found [here](https://github.com/dcm4che/dcm4chee-arc-light/wiki/Run-minimum-set-of-archive-services-on-a-single-host)
 
-<!-- prettier-ignore-start -->
-[dcmjs-org]: https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado
-[dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
-[storescu]: http://support.dcmtk.org/docs/storescu.html
-[webpack-proxy]: https://webpack.js.org/configuration/dev-server/#devserverproxy
-[orthanc-docker-compose]: https://github.com/OHIF/Viewers/tree/master/.docker/Nginx-Orthanc
-<!-- Archives -->
+An overview of steps for running OHIF Viewer using a local DCM4CHEE is shown below:
+
+<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/557570043?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Local dcm4chee"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+
+
+
 [dcm4chee]: https://github.com/dcm4che/dcm4chee-arc-light
 [dcm4chee-docker]: https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker
 [orthanc]: https://www.orthanc-server.com/
@@ -167,4 +189,6 @@ _Feel free to make a Pull Request if you want to add to this list._
 [dicomcloud-install]: https://github.com/DICOMcloud/DICOMcloud#running-the-code
 [osirix]: http://www.osirix-viewer.com/
 [horos]: https://www.horosproject.org/
-<!-- prettier-ignore-end -->
+[default-config]: https://github.com/OHIF/Viewers/blob/master/platform/viewer/public/config/default.js
+[html-templates]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/html-templates
+[config-files]: https://github.com/OHIF/Viewers/tree/master/platform/viewer/public/config

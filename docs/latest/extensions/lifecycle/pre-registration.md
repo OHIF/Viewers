@@ -13,9 +13,30 @@ The `preRegistration` hook receives an object containing the
 `ExtensionManager`'s associated `ServicesManager`, `CommandsManager`, and any
 `configuration` that was provided with the extension at time of registration.
 
-_Example `preRegistration` hook implementation_
+Example `preRegistration` implementation that register a new service and make it
+available in the app. We will talk more in details for creating a new service for
+`OHIF-v3`.
 
 ```js
+
+// new service inside new extension
+import MyNewService from './MyNewService';
+
+export default function MyNewServiceWithServices(serviceManager) {
+  return {
+    name: 'MyNewService',
+    create: ({ configuration = {} }) => {
+      return new MyNewService(serviceManager);
+    },
+  };
+}
+```
+
+and
+
+```js
+import MyNewService from './MyNewService'
+
 export default {
   id: 'MyExampleExtension',
 
@@ -35,6 +56,10 @@ export default {
 
     console.log('Important stuff has been wired.');
     window.importantStuff();
+
+    // Registering new services
+    servicesManager.registerService(MyNewService(servicesManager));
+  },
   },
 };
 ```
