@@ -64,4 +64,4 @@ or [Download the latest Master as a ZIP File](https://github.com/OHIF/Viewers/ar
 
 #### Troubleshooting
 * If you receive a *"No Studies Found"* message and do not see your studies, try changing the Study Date filters to a wider range.
-* If you see any errors in your server console, check the [Troubleshooting](../troubleshooting.md) page for more in depth advice.
+* If you see any errors in your server console, check the Troubleshooting page for more in depth advice.

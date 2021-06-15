@@ -1,34 +1,60 @@
 ---
-id: OHIF-v1 Documentation
+id: OHIF Documentation
 slug: /
 sidebar_position: 1
 ---
 
-##### Looking for your Deploy Preview? - <a onclick="function redirect() { window.location.href='/demo/'; } redirect();">Deploy Preview for Viewer</a>
+<div class='row'>
+	<div class='column' style='text-align: right; padding: 0 20px'>
+		<strong>Looking for a Live Demo?</strong>
+		<a href="http://viewer.ohif.org/">Preview The OHIF Viewer</a>
+	</div>
+	<div class='column' style='text-align: left; padding: 0 20px'>
+		<a href="https://www.netlify.com">
+		  <img src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg"/>
+		</a>
+	</div>
+</div>
+
+> ATTENTION! You are looking at the docs for the `React` version of the OHIF
+> Viewer. If you're looking for the `Meteor` version's documentation (now
+> deprecated), select it's version from the dropdown box in the top left corner
+> of this page.
 
 # Introduction
 
-The [Open Health Imaging Foundation](https://www.ohif.org) is developing an open source framework for constructing web-based medical imaging applications. The application framework is built using modern HTML / CSS / JavaScript and uses [Cornerstone](https://cornerstonejs.org/) at its core to display and manipulate medical images. It is built with Meteor, a Node.js-based full-stack JavaScript platform.
-
-This documentation concerns the OHIF framework itself and its three example applications: the OHIF Viewer, Lesion Tracker, and the Standalone Viewer.
-
-## The **OHIF Viewer**: A general purpose DICOM Viewer ([demo](http://viewer.ohif.org/))
+The [Open Health Imaging Foundation][ohif-org] (OHIF) Viewer is an open source,
+web-based, medical imaging viewer. It can be configured to connect to Image
+Archives that support [DicomWeb][dicom-web], and offers support for mapping to
+proprietary API formats. OHIF maintained extensions add support for viewing,
+annotating, and reporting on DICOM images in 2D (slices) and 3D (volumes).
 
 ![OHIF Viewer Screenshot](./assets/img/viewer.png)
 
-The Open Health Imaging Foundation intends to provide a simple general purpose DICOM Viewer which can be easily extended for specific uses. The primary purpose of the OHIF Viewer is to serve as a testing ground for the underlying packages and the [Cornerstone](https://cornerstonejs.org/) family of libraries.
+<center><i>The <strong>OHIF Viewer</strong>: A general purpose DICOM Viewer (<a href="http://viewer.ohif.org/">Live Demo</a>)</center>
 
-## **Lesion Tracker**: An oncology-focused imaging application ([demo](http://lesiontracker.ohif.org/))
+The Open Health Imaging Foundation intends to provide a simple general purpose
+DICOM Viewer which can be easily extended for specific uses. If you find
+yourself unable to extend the viewer for your purposes, please reach out via our
+[GitHub issues][gh-issues]. We are actively seeking feedback on ways to improve
+our integration and extension points.
 
-![Lesion Tracker Screenshot](./assets/img/lesionTracker.png)
+## Where to next?
 
-The Lesion Tracker is designed to facilitate quantitative assessments of tumour burden over time. It is similar in scope to the ePAD Imaging Platform (https://epad.stanford.edu/), developed at Stanford Medicine.
+Check out these helpful links:
 
-## Study List & DICOM Connectivity
-![Study List Screenshot](./assets/img/worklist.png)
+- Ready to dive into some code? Check out our
+  [Getting Started Guide](./development/getting-started.md).
+- We're an active, vibrant community.
+  [Learn how you can be more involved.](./development/contributing.md)
+- Feeling lost? Read our [help page](./help.md).
 
-The solution provides a study list and other resources for connecting to PACS and other Image Archives through standard communication approaches (DICOM Web, DICOM Messages).
+<!--
+  Links
+  -->
 
-## Standalone Viewer ([demo](ohif-viewer.s3-website.eu-central-1.amazonaws.com/?url=https://raw.githubusercontent.com/OHIF/Viewers/master/StandaloneViewer/etc/sampleDICOM.json))
-
-The Standalone Viewer offers only the client-side portions of the OHIF Viewer with the Study List pages removed. This single-page viewer can be hosted as a static site (e.g. on Amazon S3, Azure Blob Storage, or Github Pages), and easily integrated with existing back-end DICOM storage systems. Alternative [Cornerstone](https://cornerstonejs.org/) Image Loaders can be included to allow your viewer to support non-DICOM objects (e.g. PNG, JPEG).
+<!-- prettier-ignore-start -->
+[ohif-org]: http://www.ohif.org
+[dicom-web]: https://en.wikipedia.org/wiki/DICOMweb
+[gh-issues]: https://github.com/OHIF/Viewers/issues
+<!-- prettier-ignore-end -->
