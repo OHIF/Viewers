@@ -1,7 +1,3 @@
----
-sidebar_position: 1
-sidebar_label: Overview
----
 # Deployment
 
 The OHIF Viewer can be embedded in other web applications via it's [packaged
@@ -11,6 +7,7 @@ either case, you will need to configure your instance of the Viewer so that it
 can connect to your data source (the database or PACS that provides the data
 your Viewer will display).
 
+## Overview
 
 Our goal is to make deployment as simple and painless as possible; however,
 there is an inherent amount of complexity in configuring and deploying web
@@ -19,18 +16,10 @@ applications. If you find yourself a little lost, please don't hesitate to
 
 ## Deployment Scenarios
 
-### Embedded Viewer
-
-The quickest and easiest way to get the OHIF Viewer up and running is to embed
-it into an existing web application. It allows us to forego a "build step", and
-add a powerful medical imaging viewer to an existing web page using only a few
-include tags.
-
-- Read more about it here: [Embedded Viewer](./recipes/embedded-viewer.md)
-- And check out our [live demo on CodeSandbox][code-sandbox]
-
-![embeddedViewer](../assets/img/embedded-viewer-diagram.png)
-
+### Embedded Viewer (deprecated)
+`OHIF-v3` has deprecated deploying the viewer as an embedded viewer the number of underlying
+libraries that run web workers are increasing for OHIF. An example of these libraries is
+OHIF's 3D rendering functionality that is provided by `vtk-js`.
 
 ### Stand-alone Viewer
 
@@ -39,7 +28,7 @@ benefits, but comes at the cost of time and complexity. Some benefits include:
 
 _Today:_
 
-- Leverage [extensions](/extensions/index.md) to drop-in powerful new features
+- Leverage [extensions](/extensions/index.md) and [modes](/modes/index.md) to drop-in powerful new features
 - Add routes and customize the viewer's workflow
 - Finer control over styling and whitelabeling
 
@@ -105,7 +94,7 @@ the steps layed out in our
 #### What if I don't have an imaging archive?
 
 We provide some guidance on configuring a local image archive in our
-[Data Source Essentials](./../configuring/data-source.md) guide. Hosting an
+[Data Source Essentials](./../configuring/index.md#set-up-a-local-DICOM-server) guide. Hosting an
 archive remotely is a little trickier. You can check out some of our
 [advanced recipes](#recipes) for modeled setups that may work for you.
 
@@ -140,15 +129,17 @@ It should reference an endpoint that returns **application/json** formatted text
 If you do not have an API, you can simply return a text file containing the JSON from any web server.
 
 
-You tell the OHIF viewer to use JSON by appending the `'?url='` query to the `/Viewer` route:
+You tell the OHIF viewer to use JSON by using the `dicomjson` datasource and appending  `'?url='` query to your mode's route:
 
-eg. `https://my-test-ohif-server/viewer?url=https://my-json-server/study-uid.json`
+eg. `https://my-test-ohif-server/myMode/dicomjson?url=https://my-json-server/study-uid.json`
+
 
 The returned JSON object must contain a single root object with a 'studies' array.
 
+You can read more about using different data sources for mode's routes [here](../modes/routes.md#route-path)
 
 *Sample JSON format:*
-```json
+```JSON
 {
     "studies": [
       {
@@ -203,11 +194,11 @@ More info on this JSON format can be found here [Issue #1500](https://github.com
 
 **Implementation Notes:**
 
-1. When hosting the viewer, you will also need to host a /viewer route on the server - or the browser may not be able to find the route.
-2. For each instance url (dicom object) in the returned JSON, you must prefix the `url` with `dicomweb:` in order for the cornerstone image loader to retrieve it correctly.
- eg. `https://image-server/my-image.dcm` ---> `dicomweb:https://image-server/my-image.dcm`
-3. The JSON format above is compatible with >= v3.7.8 of the application. Older versions of the viewer used a different JSON format. As of 20/04/20 the public [https://viewer.ohif.org/] is a pre 3.0 version that does not support this format yet.
-4. The JSON format is case-sensitive. Please ensure you have matched casing with the naturalised Dicom format referenced in [Issue #1500](https://github.com/OHIF/Viewers/issues/1500).
+<!-- 1. When hosting the viewer, you will also need to host a /viewer route on the server - or the browser may not be able to find the route. -->
+1. For each instance url (dicom object) in the returned JSON, you must prefix the `url` with `dicomjson:` in order for the cornerstone image loader to retrieve it correctly.
+ eg. `https://image-server/my-image.dcm` ---> `dicomjson:https://image-server/my-image.dcm`
+2. The JSON format above is compatible with >= v3.7.8 of the application in `V2` version. Older versions of the viewer used a different JSON format. As of 20/04/20 the public [https://viewer.ohif.org/] is a pre 3.0 version that does not support this format yet.
+3. The JSON format is case-sensitive. Please ensure you have matched casing with the naturalised Dicom format referenced in [Issue #1500](https://github.com/OHIF/Viewers/issues/1500).
 
 *CORS Issues (Cross-Origin Resource Sharing)*
 
@@ -223,7 +214,7 @@ Your JSON API is hosted on `https://my-json-api.aws.com`
 
 And your images are stored on Amazon S3 at `https://my-s3-bucket.aws.com`
 
-When you first start your application, browsing to `https://my-ohif-server.com/viewer?url=https://my-json-api.aws.com/api/my-json-study-info.json`, you will likely get a CORS error in the browser console as it tries to connect to `https://my-json-api.aws.com`.
+When you first start your application, browsing to `https://my-ohif-server.com/myMode/dicomjson?url=https://my-json-api.aws.com/api/my-json-study-info.json`, you will likely get a CORS error in the browser console as it tries to connect to `https://my-json-api.aws.com`.
 
 Adding a setting on the JSON server to allow the CORS origin = `https://my-ohif-server.com` should solve this.
 
@@ -234,7 +225,9 @@ Essentially, whenever the application connects to a remote resource, you will ne
 
 
 ### Securing Your Data
+Coming soon
 
+<!--
 > Feeling lost? Securing your data is important, and it can be hard to tell if
 > you've gotten it right. Don't hesitate to work with professional auditors, or
 > [enlist help from experts](./../help.md).
@@ -277,19 +270,19 @@ In general, we recommend using the "Authorization Code Flow" ( [see
 taken. If the flow you've chosen produces a JWT Token, it's validity can be used
 to secure access to your Image Archive as well.
 
+ -->
+
 ### Recipes
 
 We've included a few recipes for common deployment scenarios. There are many,
 many possible configurations, so please don't feel limited to these setups.
 Please feel free to suggest or contribute your own recipes.
 
-- Script Include
-  - [Embedding the Viewer](./recipes/embedded-viewer.md)
-- Stand-Alone
-  - [Build for Production](./recipes/build-for-production.md)
-  - [Static](./recipes/static-assets.md)
-  - [Nginx + Image Archive](./recipes/nginx--image-archive.md)
-  - [User Account Control](./recipes/user-account-control.md)
+
+- [Build for Production](./recipes/build-for-production.md)
+- [Static](./recipes/static-assets.md)
+- [Nginx + Image Archive](./recipes/nginx--image-archive.md)
+- [User Account Control](./recipes/user-account-control.md)
 
 <!--
   Links

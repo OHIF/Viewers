@@ -1,7 +1,3 @@
----
-sidebar_position: 3
-sidebar_label: Assets
----
 # Deploy Static Assets
 
 > WARNING! All of these solutions stand-up a publicly accessible web viewer. Do
@@ -44,11 +40,8 @@ _Advanced_
 
 ### Netlify: Drop
 
-> Build, deploy, and manage modern web projects. An all-in-one workflow that
-> combines global deployment, continuous integration, and automatic HTTPS. And
-> that’s just the beginning.
+<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/551957463?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Netlify Drop"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
 
-![netlify-drop example](../../assets/img/netlify-drop.gif)
 
 _GIF demonstrating deployment with Netlify Drop_
 

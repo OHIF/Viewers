@@ -1,28 +1,29 @@
----
-sidebar_position: 4
-sidebar_label: Internationalization
----
 # Viewer: Internationalization
 
 OHIF supports internationalization using [i18next](https://www.i18next.com/)
 through the npm package [@ohif/i18n](https://www.npmjs.com/package/@ohif/i18n),
 where is the main instance of i18n containing several languages and tools.
 
-<!-- <div class='row'>
+<div class='row'>
   <div class='column'>
+    <p>Our translation management is powered by <a href="https://locize.com/" target="_blank" rel="noopener noreferrer">Locize</a> through their generous support of open source.</p>
   </div>
   <div class='column'>
-  </div>
-</div> -->
-
-<div className="text--center">
-    <p>Our translation management is powered by
-    <a href="https://locize.com/" target="_blank" rel="noopener noreferrer"> Locize </a>
-    through their generous support of open source.</p>
-     <a href="https://locize.com/" target="_blank" rel="noopener noreferrer" style={{padding: '20px'}}>
-      <img style={{width:'70px'}} src="https://pbs.twimg.com/profile_images/909709940910120961/oyB0mX2L.jpg" alt="Locize Translation Management Logo"/>
+    <a href="https://locize.com/" target="_blank" rel="noopener noreferrer" style='padding: 20px'>
+      <img src="../assets/img/locizeSponsor.svg" alt="Locize Translation Management Logo">
     </a>
+  </div>
 </div>
+
+
+## How to change language for the viewer?
+You can take a look into user manuals to see how to change the viewer's language.
+In summary you can change the language:
+
+- In the preference modals
+- Using the language query in the URL: `lng=Test-LNG`
+
+
 
 ## Installing
 
@@ -72,34 +73,26 @@ This section will introduce you to [react-i18next](https://react.i18next.com/)
 basics and show how to implement the [t](https://www.i18next.com/overview/api#t)
 function easily.
 
-#### Using HOCs
 
-In most cases we used
-[High Order Components](https://react.i18next.com/latest/withtranslation-hoc) to
-share the `t` function among OHIF's components.
+#### Using Hooks
+You can use `useTranslation` hooks that is provided by `react-i18next`
 
-E.g.
+
+You can read more about this [here](https://react.i18next.com/latest/usetranslation-hook).
+
 
 ```js
 import React from 'react';
-import { withTranslation } from '@ohif/i18n';
+import { useTranslation } from 'react-i18next';
 
-function MyComponent({ t, i18n }) {
+
+function MyComponent() {
+  const { t } = useTranslation();
+
   return <p>{t('my translated text')}</p>;
 }
 
-export default withTranslation('MyNameSpace')(MyComponent);
 ```
-
-> Important: if you are using React outside the OHIF Viewer, check the
-> [I18nextProvider](#using-outside-of-ohif-viewer) section, `withTranslation`
-> HOC doesnt works without a I18nextProvider
-
-#### Using Hooks
-
-Also, it's possible to get the `t` tool using
-[React Hooks](https://react.i18next.com/latest/usetranslation-hook), but it
-requires at least React > 16.8 😉
 
 ### Using outside of OHIF viewer
 
@@ -156,6 +149,10 @@ becomes a new namespace automatically.
 - Header: translations related to OHIF's Header Top Bar
 - MeasurementTable - Translations for the `@ohif/ui` Measurement Table
 - UserPreferencesModal - Translations for the `@ohif/ui` Preferences Modal
+- Modals - Translations available for other modals
+- PatientInfo - Translations for patients info hover
+- SidePanel - Translations for side panels
+- ToolTip - Translations for tool tips
 
 ### How to use another NameSpace inside the current NameSpace?
 
@@ -163,7 +160,7 @@ i18next provides a parsing feature able to get translations strings from any
 NameSpace, like this following example getting data from `Common` NameSpace:
 
 ```
-$t(Common:Reset)
+$t('Common:Reset')
 ```
 
 ## Extending Languages in @ohif/i18n
@@ -201,21 +198,21 @@ languages tool.
 You will need to export all Json files in your `index.js` file, mounting an
 object like this:
 
-```json
-{
-  en: {
-    NameSpace: {
-      keyWord1: 'keyWord1Translation',
-      keyWord2: 'keyWord2Translation',
-      keyWord3: 'keyWord3Translation',
-    }
-  },
-  'en-UK': {
-    NameSpace: {
-      keyWord1: 'keyWord1DifferentTranslation',
-    }
-  }
-}
+```js
+   {
+     en: {
+       NameSpace: {
+         keyWord1: 'keyWord1Translation',
+         keyWord2: 'keyWord2Translation',
+         keyWord3: 'keyWord3Translation',
+       }
+     },
+     'en-UK': {
+       NameSpace: {
+         keyWord1: 'keyWord1DifferentTranslation',
+       }
+     }
+   }
 ```
 
 Please check the `index.js` files inside locales folder for an example of this
@@ -248,7 +245,7 @@ To set a brand new language you can do it in two different ways:
 
 - Setting it only in your project or extension:
 
-You'll need a a final object like the following, what is setting French as
+You'll need a final object like the following, what is setting French as
 language, and send it to `addLocales` method.
 
 ```js
@@ -283,6 +280,15 @@ You can also set them manually, one by one, using this
 [method](#extending-languages-dynamically).
 
 ---
+
+
+
+## Test Language
+We have created a test language that its translations can be seen in the locales folder. You can copy paste the folder and its `.json` namespaces and add your custom
+language translations.
+
+> If you apply the test-LNG you can see all the elements get appended with 'Test {}'.
+> For instance `Study list` becomes `Test Study list`.
 
 ## Language Detections
 

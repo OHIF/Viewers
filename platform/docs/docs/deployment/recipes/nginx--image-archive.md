@@ -1,6 +1,3 @@
----
-sidebar_position: 4
----
 # Nginx + Image Archive
 
 > DISCLAIMER! We make no claims or guarantees of this approach's security. If in
@@ -61,9 +58,7 @@ CORS][understanding-cors]
 
 This setup allows us to create a setup similar to the one pictured below:
 
-<!-- {% include "./../_nginx-image-archive-diagram.md" %} -->
-![nginX](../../assets/img/nginx-image-archive.png)
-
+{% include "./../_nginx-image-archive-diagram.md" %}
 
 - All web requests are routed through `nginx` on our `OpenResty` image
 - `/pacs` is a reverse proxy for `orthanc`'s `DICOM Web` endpoints
@@ -84,6 +79,20 @@ in command prompt or terminal_
 
 ### Setup
 
+- Navigate to `viewer` folder inside `platform`
+- then: `cd .recipes/OpenResty-Orthanc`
+- run: `docker-compose up --build`
+- Navigate to `127.0.0.1` for the viewer
+- Navigate to `127.0.0.1/pacs-admin` for uploading studies
+
+
+You can see the overview of the mentioned steps:
+
+
+<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/554726410?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="NginX Deployment"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+<!-- ### Setup
+
 _Spin Things Up_
 
 - Navigate to `<project-root>/docker/OpenResty-Orthanc` in your shell
@@ -95,7 +104,7 @@ _Upload Your First Study_
 - From the top right, select "Upload"
 - Click "Select files to upload..." (DICOM)
 - Click "Start the upload"
-- Navigate back to `http://127.0.0.1/` to view your studies in the Study List
+- Navigate back to `http://127.0.0.1/` to view your studies in the Study List -->
 
 ### Troubleshooting
 
@@ -114,6 +123,14 @@ Stop running all containers:
 
 - Win: `docker ps -a -q | ForEach { docker stop $_ }`
 - Linux: `docker stop $(docker ps -a -q)`
+
+
+_Traceback (most recent call last):_
+  _File "urllib3/connectionpool.py", line 670, in urlopen_
+  _...._
+
+Are you sure your docker is running? see explanation [here](https://github.com/docker/compose/issues/7896)
+
 
 ### Configuration
 

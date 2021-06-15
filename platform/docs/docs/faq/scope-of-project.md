@@ -1,6 +1,3 @@
----
-sidebar_position: 2
----
 # Scope of Project
 
 The OHIF Viewer is a web based medical imaging viewer. This allows it to be used

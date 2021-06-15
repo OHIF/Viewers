@@ -1,6 +1,3 @@
----
-sidebar_position: 2
----
 # Build for Production
 
 > If you've already followed the
@@ -36,7 +33,7 @@ _From .zip:_
 Open your terminal, and navigate to the directory containing the source files.
 Next run these commands:
 
-```bash
+```js
 // If you haven't already, enable yarn workspaces
 yarn config set workspaces-experimental true
 
@@ -103,18 +100,22 @@ A quick way to test your build output locally is to spin up a small webserver.
 You can do this by running the following commands in the `dist/` output
 directory:
 
-```bash
+```js
 // Install http-server as a globally available package
 yarn global add http-server
 
+// Change the directory to the platform/viewer
+
 // Serve the files in our current directory
 // Accessible at: `http://localhost:8080`
-http-server
+npx http-server ./dist
 ```
+
+<div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/551957266?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;" title="HTTP Server Deploy"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
 
 ### Automating Builds and Deployments
 
-If you found setting up your environmnent and running all of these steps to be a
+If you found setting up your environment and running all of these steps to be a
 bit tedious, then you are in good company. Thankfully, there are a large number
 of tools available to assist with automating tasks like building and deploying
 web application. For a starting point, check out this repository's own use of:
@@ -123,11 +124,7 @@ web application. For a starting point, check out this repository's own use of:
 - [Netlify][netlify]: [netlify.toml][netlify.toml] |
   [build-deploy-preview.sh][build-deploy-preview.sh]
 
-## Troubleshooting
 
-> Issues and resolutions for common GitHub issues will be summarized here
-
-...
 
 <!-- prettier-ignore-start -->
 [circleci]: https://circleci.com/gh/OHIF/Viewers

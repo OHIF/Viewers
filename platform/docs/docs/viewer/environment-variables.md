@@ -1,7 +1,3 @@
----
-sidebar_position: 3
-sidebar_label: Environment Variables
----
 # Environment Variables
 
 There are a number of environment variables we use at build time to influence the output application's behavior.
