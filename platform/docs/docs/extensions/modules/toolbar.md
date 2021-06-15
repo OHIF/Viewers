@@ -254,4 +254,4 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
 
 
 ## Custom tool
-<mark> I want to create a new tool
+**I want to create a new tool**

@@ -4,17 +4,14 @@ OHIF supports internationalization using [i18next](https://www.i18next.com/)
 through the npm package [@ohif/i18n](https://www.npmjs.com/package/@ohif/i18n),
 where is the main instance of i18n containing several languages and tools.
 
-<div class='row'>
-  <div class='column'>
-    <p>Our translation management is powered by <a href="https://locize.com/" target="_blank" rel="noopener noreferrer">Locize</a> through their generous support of open source.</p>
-  </div>
-  <div class='column'>
-    <a href="https://locize.com/" target="_blank" rel="noopener noreferrer" style='padding: 20px'>
-      <img src="../assets/img/locizeSponsor.svg" alt="Locize Translation Management Logo">
+<div className="text--center">
+    <p>Our translation management is powered by
+    <a href="https://locize.com/" target="_blank" rel="noopener noreferrer"> Locize </a>
+    through their generous support of open source.</p>
+     <a href="https://locize.com/" target="_blank" rel="noopener noreferrer" style={{padding: '20px'}}>
+      <img style={{width:'70px'}} src="https://pbs.twimg.com/profile_images/909709940910120961/oyB0mX2L.jpg" alt="Locize Translation Management Logo"/>
     </a>
-  </div>
 </div>
-
 
 ## How to change language for the viewer?
 You can take a look into user manuals to see how to change the viewer's language.

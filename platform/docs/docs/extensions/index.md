@@ -1,15 +1,5 @@
 # Extensions
 
-- [Extensions](#extensions)
-  - [Overview](#overview)
-  - [Extension Skeleton](#extension-skeleton)
-  - [OHIF-Maintained Extensions](#ohif-maintained-extensions)
-  - [Registering an Extension](#registering-an-extension)
-    - [Registering at Runtime](#registering-at-runtime)
-    - [Registering at Build Time](#registering-at-build-time)
-  - [Lifecycle Hooks](#lifecycle-hooks)
-  - [Modules](#modules)
-    - [Contexts](#contexts)
 
 ## Overview
 We have re-designed the architecture of the `OHIF-v3` to enable building applications
@@ -33,7 +23,8 @@ Practical examples of extensions include:
 
 
 
-<mark>Diagram showing how extensions are configured and accessed.
+**Diagram showing how extensions are configured and accessed.**
+
 <!--
 <div style="text-align: center;">
   <a href="/assets/img/extensions-diagram.png">
@@ -79,7 +70,66 @@ A small number of powerful extensions for popular use cases are maintained by
 OHIF. They're co-located in the [`OHIF/Viewers`][viewers-repo] repository, in
 the top level [`extensions/`][ext-source] directory.
 
-{% include "./_maintained-extensions-table.md" %}
+<!-- <table>
+    <thead>
+        <tr>
+            <th>Extension</th>
+            <th>Description</th>
+            <th>Modules</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <a href="">
+                    Default
+                </a>
+            </td>
+            <td>
+                Default extension provides default viewer layout, a study/series
+                browser, and a datasource that maps to a DICOMWeb compliant backend
+            </td>
+            <td>commandsModule, ContextModule, DataSourceModule, HangingProtocolModule, LayoutTemplateModule, PanelModule, SOPClassHandlerModule, ToolbarModule</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="https://www.npmjs.com/package/@ohif/extension-cornerstone">
+                    Cornerstone
+                </a>
+            </td>
+            <td>
+                Provides rendering functionalities for 2D images.
+            </td>
+            <td>ViewportModule, CommandsModule</td>
+        </tr>
+            <td>
+                <a href="https://www.npmjs.com/package/@ohif/extension-dicom-pdf">DICOM PDF</a>
+            </td>
+            <td>
+                Renders PDFs for a <a href="https://github.com/OHIF/Viewers/blob/master/extensions/dicom-pdf/src/OHIFDicomPDFSopClassHandler.js#L4-L6">specific SopClassUID</a>.
+            </td>
+            <td>Viewport, SopClassHandler</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="">DICOM SR</a>
+            </td>
+            <td>
+                Maintained extensions for cornerstone and visualization of DICOM Structured Reports
+            </td>
+           <td>ViewportModule, CommandsModule, SOPClassHandlerModule</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="">Measurement tracking</a>
+            </td>
+            <td>
+                Tracking measurements in the measurement panel
+            </td>
+            <td> ContextModule,PanelModule,ViewportModule,CommandsModule</td>
+        </tr>
+    </tbody>
+</table> -->
 
 
 ## Registering an Extension
@@ -217,35 +267,6 @@ module that supports this behavior can add a command with the same name, scoped
 to the appropriate context. When the `command` is fired, the "active contexts"
 are used to determine the appropriate implementation of the rotate behavior.
 
-
-<!-- <mark>do we want the followings?
-## Consuming Extensions
-
-We consume extensions, via the `ExtensionManager`, in our `@ohif/viewer`
-project.
-
-```js
-const extensionManager = new ExtensionManager({
-  commandsManager,
-  servicesManager,
-  hotkeysManager
-});
-
-// prettier-ignore
-extensionManager.registerExtensions([ /** **/ ]);
-```
-
-The `@ohif/viewer` project handles data fetching, basic routing, wires up UI
-services, and is the home to the more bespoke application logic that doesn't
-make as much sense to make reusable.
-
-Long-term, replacing the `@ohif/viewer` application and consuming extensions
-(and the `ExtensionManager`) in your own project is the ideal path for
-applications requiring a high degree of customization that can't be achieved
-with current theming, configuration, extension, and services support.
-
-If you're not sure how to achieve your goals with the extensibility available
-today, create a GitHub issue! -->
 
 
 

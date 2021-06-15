@@ -9,4 +9,4 @@ following developer guides.
 
 Summary of language changing usage can be seen below:
 
-<mark>Upload
+**Upload**

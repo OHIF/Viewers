@@ -46,7 +46,5 @@
                 For keyboard keys assignment to commands
             </td>
         </tr>
-
-
     </tbody>
 </table>

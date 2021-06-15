@@ -1,15 +1,5 @@
 # Mode: Routes
 
-- [Mode: Routes](#mode-routes)
-  - [Overview](#overview)
-  - [Route](#route)
-    - [Route: path](#route-path)
-    - [Route: init](#route-init)
-      - [Default init](#default-init)
-      - [Writing a custom init](#writing-a-custom-init)
-    - [Route: layoutTemplate](#route-layouttemplate)
-  - [FAQ](#faq)
-
 ## Overview
 
 Modes are tied to a specific route in the viewer, and multiple modes/routes can be present within a single application. This makes `routes` config, THE most important part of the mode configuration.
@@ -108,7 +98,7 @@ retrieving its instances metadata.
 
 A *simplified* "pseudocode" for the `defaultRouteInit` is:
 
-```js
+```jsx
 async function defaultRouteInit({
   servicesManager,
   studyInstanceUIDs,
@@ -153,12 +143,12 @@ You can add your custom init function to enhance the default initialization for:
 and lots of other modifications.
 
 You just need to make sure, the mode `retrieveSeriesMetadata`, `makeDisplaySets` and `run` the
-HangingProtocols at some point. There are various `events` that you can subscribe to and add your custom logic. <mark>point to events
+HangingProtocols at some point. There are various `events` that you can subscribe to and add your custom logic. **point to events**
 
 For instance for jumping to the slice where a measurement is located at the initial render, you need to follow a pattern similar to the following:
 
 
-```js
+```jsx
 init: async ({
   servicesManager,
   extensionManager,
@@ -221,7 +211,7 @@ For instance `default extension` provides a layoutTemplate that builds the app u
 and viewports. Therefore, the `props` include `leftPanels`, `rightPanels` and `viewports` sections. Note that the `layoutTemplate` defines the properties it is expecting. So, if you write a `layoutTemplate-2` that accepts a footer section, its logic should be written in the extension, and any mode that
 is interested in using `layoutTemplate-2` **should** provide the `id` for the footer component.
 
-<mark>What module should the footer be registered?
+**What module should the footer be registered?**
 
 
 ```js
@@ -268,6 +258,7 @@ layoutTemplate: ({ location, servicesManager }) => {
 > How can I change the `workList` appearance or add a new login page?
 
 This is where `OHIF-v3` shines! Since the default `layoutTemplate` is written for the viewer part, you can simply add a new `layoutTemplate` and use the component you have written for that route. `Mode` handle showing the correct component for the specified route.
+
 
 
 ```js

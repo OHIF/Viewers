@@ -28,12 +28,15 @@ We maintain the following UI Services:
 
 
 
-<div style="text-align: center;">
+<!-- <div style="text-align: center;">
   <a href="/assets/img/ui-services.png">
     <img src="/assets/img/ui-services.png" alt="UI Services Diagram" style="margin: 0 auto; max-width: 500px;" />
   </a>
   <div><i>Diagram showing relationship between React Context and UI Service</i></div>
-</div>
+</div> -->
+
+![UIService](../../assets/img/ui-services.png)
+
 
 <!-- In `@ohif/core`, we have a collection of service factories. We select one we
 would like our application to support, create an instance of it, and pass that
@@ -55,8 +58,8 @@ The `ServicesManager` is:
 
 
 ## Providers for UI services
-<mark>There are several context providers that wraps the application routes. This
-makes the context values exposed in the app, and service's `setImplementation` can get run to override the implementation of the service.
+**There are several context providers that wraps the application routes. This
+makes the context values exposed in the app, and service's `setImplementation` can get run to override the implementation of the service.**
 
 ```js
 // platform/viewer/src/App.jsx
@@ -306,10 +309,3 @@ takeaways worth mentioning:
 > will help reduce confusion and interoperability with the larger OHIF
 > community, but they're not silver bullets. Please speak up, create an issue,
 > if you would like to discuss new services or improvements to this pattern.
-
-<!-- ## Maintained Services
-
-Our `@ohif/viewer` project is an example of how to glue together the different
-parts and pieces of the OHIF Platform to create a polished and powerful product.
-To accomplish that, we maintain several UI Services that you can use in your own
-project, or provide alternative implementations for: -->
