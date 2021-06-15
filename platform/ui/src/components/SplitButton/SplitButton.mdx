@@ -21,8 +21,13 @@ import { SplitButton, WindowLevelMenuItem } from '@ohif/ui';
 <Playground>
   {() => {
     const mockedProps = {
+      bState: {
+        primaryToolId: 'WWWC',
+        toggles: {},
+      },
       primary: {
         tooltip: 'W/L',
+        type: 'tool',
         icon: 'tool-window-level',
         onClick: args => console.debug('Primary click!', args),
       },

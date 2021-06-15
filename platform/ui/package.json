@@ -4,7 +4,6 @@
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
-  "repository": "OHIF/Viewers",
   "publishConfig": {
     "access": "public"
   },
@@ -54,7 +53,7 @@
     "gatsby-plugin-postcss": "^3.7.0",
     "gatsby-plugin-react-svg": "3.0.0",
     "gatsby-plugin-sass": "2.3.12",
-    "gatsby-theme-docz": "2.3.1-alpha.0",
+    "gatsby-theme-docz": "2.3.1",
     "node-sass": "^4.14.1",
     "pnp-webpack-plugin": "^1.6.4",
     "prop-types": "15.7.2",

@@ -33,7 +33,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const isDeployPreview =
   process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
 
-const baseUrl = process.env.BASE_URL || '/';
+const baseUrl = process.env.BASE_URL || '/docs/';
 const isBootstrapPreset = process.env.DOCUSAURUS_PRESET === 'bootstrap';
 
 // Special deployment for staging locales until they get enough translations
