@@ -1,4 +1,4 @@
-# Frequently Asked Questions - Technical
+#  Technical
 ## Why is your framework built with Meteor?
 
 At the time of project conception, Meteor was a simple way to begin using bleeding edge web technologies without putting significant effort into configuration and build processes. Although Meteor does have some drawbacks, it remains a simple all-in-one solution.

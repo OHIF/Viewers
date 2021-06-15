@@ -1,4 +1,7 @@
-# Lesion Tracker - Installation on Windows
+---
+sidebar_position: 2
+---
+# Installation on Windows
 On Windows, the easiest way to install LesionTracker is using the provided Windows Installer. You can download the latest version of LesionTracker installer from [OHIF](ohif.org)
 
 ## Install

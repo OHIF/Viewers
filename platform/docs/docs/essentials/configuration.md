@@ -1,3 +1,6 @@
+---
+sidebar_position: 3
+---
 # Configurations
 
 There are a few pre-defined settings files that you can find in [config](https://github.com/OHIF/Viewers/tree/master/config) folder. These are Meteor files and all settings can be accessed as showed on [Meteor Website](https://docs.meteor.com/api/core.html#Meteor-settings). UI settings are also available as OHIF.uiSettings. See the [schema](https://github.com/OHIF/Viewers/blob/131d64854cb2eceff056a15ccb12c34b9e2baaa7/Packages/ohif-servers/both/schema/servers.js) for more information.

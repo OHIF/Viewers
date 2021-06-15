@@ -1,3 +1,7 @@
+---
+title: Standalone Viewer
+---
+
 # Standalone Viewer
 
 ## Quick Start

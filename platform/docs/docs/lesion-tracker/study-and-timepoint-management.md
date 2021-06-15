@@ -1,4 +1,7 @@
-# Lesion Tracker - Study and Timepoint Management
+---
+sidebar_position: 5
+---
+# Study and Timepoint Management
 
 ![Study List](../assets/img/LesionTracker/LT_StudyList.png)
 

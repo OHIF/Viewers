@@ -1,4 +1,7 @@
-# Lesion Tracker - Manage Studies in Orthanc
+---
+sidebar_position: 3
+---
+# Manage Studies in Orthanc
 Orthanc is an open-source, simple and powerful standalone DICOM server which eases DICOM scripting and data management for clinical routine and medical research. LesionTracker installer installs Orthanc as a service and runs automatically in the background. Orthanc serves a web interface, Orthanc Explorer, and it can be accessed through http://localhost:8042 in your web browser or the Orthanc Server shortcut which is created by LesionTracker installer and loads http://localhost:8042 in your default browser.
 
 ## Upload a study into Orthanc using Orthanc Explorer

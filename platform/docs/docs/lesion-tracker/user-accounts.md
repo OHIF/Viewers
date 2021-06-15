@@ -1,4 +1,7 @@
-# Lesion Tracker - User Accounts
+---
+sidebar_position: 4
+---
+# User Accounts
 
 ## Sign In
 

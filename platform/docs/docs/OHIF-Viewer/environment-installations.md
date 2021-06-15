@@ -1,3 +1,7 @@
+---
+title: Development Environment Installation
+---
+
 **Development Environment Installation (Ubuntu)**
 
 **CONFIDENTIAL DOCUMENT**
@@ -58,7 +62,7 @@ sudo apt-get update
 
 Expected result:
 
-![image alt text](image_0.png)
+<!-- ![image alt text](image_0.png) -->
 
 2. Install packages to allow apt to use a repository over HTTPS, by running the following command:
 
@@ -66,7 +70,7 @@ sudo apt-get install apt-transport-https ca-certificates curl software-propertie
 
 Expected result:
 
-![image alt text](image_1.png)
+<!-- ![image alt text](image_1.png) -->
 
 3. Add Docker’s official GPG key, by running the following command:
 
@@ -74,7 +78,7 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
 Expected result:
 
-![image alt text](image_2.png)
+<!-- ![image alt text](image_2.png) -->
 
 4. Verify that you now have the key with the fingerprint **9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88**, by searching for the last 8 characters of the fingerprint after running the following command:
 
@@ -82,15 +86,15 @@ sudo apt-key fingerprint 0EBFCD88
 
 Expected result:
 
-![image alt text](image_3.png)
+<!-- ![image alt text](image_3.png) -->
 
-5. Use the following command to set up the stable repository. 
+5. Use the following command to set up the stable repository.
 
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
 Expected result:
 
-![image alt text](image_4.png)
+<!-- ![image alt text](image_4.png) -->
 
 6. Install the latest version of Docker CE, by running the following command:
 
@@ -98,7 +102,7 @@ sudo apt-get install docker-ce
 
 Expected result:
 
-![image alt text](image_5.png)
+<!-- ![image alt text](image_5.png) -->
 
 7. Verify that Docker CE is installed correctly by running the hello-world image:
 
@@ -106,7 +110,7 @@ sudo docker run hello-world
 
 Expected result:
 
-![image alt text](image_6.png)
+<!-- ![image alt text](image_6.png) -->
 
 **Note**: Additional information about Docker installation on Linux Ubuntu OS can be foud at [https://docs.docker.com/install/linux/docker-ce/ubuntu/](https://docs.docker.com/install/linux/docker-ce/ubuntu/).
 
@@ -138,21 +142,18 @@ To install Dcm4che, follow the instructions below:
 
 docker-compose.env
 
-<table>
-<tr>
-<td>STORAGE_DIR=/storage/fs1
+```
+STORAGE_DIR=/storage/fs1
 POSTGRES_DB=pacsdb
 POSTGRES_USER=pacs
-POSTGRES_PASSWORD=pacs</td>
-</tr>
-</table>
+POSTGRES_PASSWORD=pacs
+```
 
 
 docker-compose.yml
 
-<table>
-<tr>
-<td>version: "3"
+```
+version: "3"
 services:
 ldap:
 image: dcm4che/slapd-dcm4chee:2.4.44-14.1
@@ -205,21 +206,19 @@ volumes:
 - /etc/timezone:/etc/timezone:ro
 - ~/dcm4chee-arc/wildfly:/opt/wildfly/standalone
 - ~/dcm4chee-arc/storage:/storage</td>
-</tr>
-</table>
-
+```
 
 Files/Folder will become like the image above:
 
-![image alt text](image_7.png)
+<!-- ![image alt text](image_7.png) -->
 
-3. Open a terminal inside DCM4CHE folder, and run the following command:
+1. Open a terminal inside DCM4CHE folder, and run the following command:
 
 sudo snap install docker
 
 Expected result:
 
-![image alt text](image_8.png)
+<!-- ![image alt text](image_8.png) -->
 
 4. Still inside the DCM4CHE folder, run the following command:
 
@@ -227,7 +226,7 @@ sudo docker-compose -p dcm4chee up -d
 
 Expected result:
 
-![image alt text](image_9.png)
+<!-- ![image alt text](image_9.png) -->
 
 1. The following commands can be used to control DCM4CHE:
 
@@ -239,19 +238,19 @@ Stop and delete all 3 containers: docker-compose -p dcm4chee down
 
 2. Now it is necessary to import some DICOM studies to DCM4CHE. Before importing these studies, you will need to download them. To do so, access the address [http://34.224.187.57:3000/studylist](http://34.224.187.57:3000/studylist), right click one or more studies, and select the option Export:
 
-![image alt text](image_10.png)
+<!-- ![image alt text](image_10.png) -->
 
 3. Confirm the study export on the modal window that will appear:
 
-![image alt text](image_11.png)
+<!-- ![image alt text](image_11.png) -->
 
 4. The study(ies) export will begin. You can follow the exporting progress:
 
-![image alt text](image_12.png)
+<!-- ![image alt text](image_12.png) -->
 
 5. After the exporting progress, the study(ies) will be downloaded in a file called "studies.zip". Create a folder named “Studies” on your Home folder, and extract this and any other studies you download in this folder:
 
-![image alt text](image_13.png)
+<!-- ![image alt text](image_13.png) -->
 
 6. Open the terminal, go to the DCM4CHE folder, and run the following command in order to send the studies to DCM4CHE:
 
@@ -259,15 +258,15 @@ docker run -v ~/Studies/:/tmp --rm --network=dcm4chee_default dcm4che/dcm4che-to
 
 Expected result:
 
-![image alt text](image_14.png)
+<!-- ![image alt text](image_14.png) -->
 
 7. Now, go to your browser and access the URL [http://localhost:8080/dcm4chee-arc/ui2/](http://localhost:8080/dcm4chee-arc/ui2/). Once opened, click on the refresh icon on the most right:
 
-![image alt text](image_15.png)
+<!-- ![image alt text](image_15.png) -->
 
 8. The studies received by DCM4CHE will be shown:
 
-![image alt text](image_16.png)
+<!-- ![image alt text](image_16.png) -->
 
 9. Open the terminal, go to your Home folder, and run the following command in order to clone viewers repository to your local:
 
@@ -275,7 +274,7 @@ git clone https://github.com/OHIF/Viewers.git
 
 Expected result:
 
-![image alt text](image_17.png)
+<!-- ![image alt text](image_17.png) -->
 
 10. Then, enter the Viewers folder, and run the following command in order to make sure that you are in master branch:
 
@@ -283,7 +282,7 @@ git checkout master
 
 Expected result:
 
-![image alt text](image_18.png)
+<!-- ![image alt text](image_18.png) -->
 
 11. Now go to OHIFViewer folder and run the following command:
 
@@ -291,7 +290,7 @@ meteor npm install
 
 Expected result:
 
-![image alt text](image_19.png)
+<!-- ![image alt text](image_19.png) -->
 
 12. Still on the OHIFViewer folder, run the following command:
 
@@ -299,15 +298,15 @@ Expected result:
 
 Expected result:
 
-![image alt text](image_20.png)
+<!-- ![image alt text](image_20.png) -->
 
 13. Now, go to your browser and access the URL [http://localhost:3000](http://localhost:3000). Once opened, change the Study Date filter to start on the year 2000:
 
-![image alt text](image_21.png)
+<!-- ![image alt text](image_21.png) -->
 
 14. The imported studies will be show. Double click a study to open it:
 
-![image alt text](image_22.png)
+<!-- ![image alt text](image_22.png) -->
 
 ## Meteor
 
@@ -323,7 +322,7 @@ curl https://install.meteor.com/ | sh
 
 Expected result:
 
-![image alt text](image_23.png)
+<!-- ![image alt text](image_23.png) -->
 
 ## Starting OHIF Viewer after system restart
 
@@ -343,53 +342,4 @@ docker-compose -p dcm4chee start
 
 ./bin/dcm4cheeDICOMWeb.sh
 
-6. Access the address [http://localhost:3000](http://localhost:3000) 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+6. Access the address [http://localhost:3000](http://localhost:3000)

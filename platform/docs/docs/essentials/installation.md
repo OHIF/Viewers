@@ -1,3 +1,6 @@
+---
+sidebar_position: 1
+---
 # Installation
 
 ## Getting the Code
@@ -18,13 +21,19 @@ or [Download the latest Master as a ZIP File](https://github.com/OHIF/Viewers/ar
 
 #### Open Source DICOM Image Archive Options
 
-Archive                                    | Installation
--------------------------------------------|
-[DCM4CHEE Archive 5.x](https://github.com/dcm4che/dcm4chee-arc-light) | [Installation with Docker](https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker)
-[Orthanc](https://www.orthanc-server.com/) | [Installation with Docker](http://book.orthanc-server.com/users/docker.html)
-[DICOMcloud](https://github.com/DICOMcloud/DICOMcloud) (**DICOM Web only**)| [Installation](https://github.com/DICOMcloud/DICOMcloud#running-the-code)
-[OsiriX](http://www.osirix-viewer.com/) (**Mac OSX only**) |
-[Horos](https://www.horosproject.org/)  (**Mac OSX only**) |
+
+
+| Archive      | Installation |
+| ----------- | ----------- |
+| [DCM4CHEE Archive 5.x](https://github.com/dcm4che/dcm4chee-arc-light)         | [Installation with Docker](https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker)       |
+| [Orthanc](https://www.orthanc-server.com/)      | [Installation with Docker](http://book.orthanc-server.com/users/docker.html)         |
+| [DICOMcloud](https://github.com/DICOMcloud/DICOMcloud) (**DICOM Web only**)   | [Installation](https://github.com/DICOMcloud/DICOMcloud#running-the-code)        |
+| [OsiriX](http://www.osirix-viewer.com/) (**Mac OSX only**)       | Text        |
+| [Horos](https://www.horosproject.org/)  (**Mac OSX only**)    | Text        |
+
+
+
+
 
 *Feel free to make a Pull Request if you want to add to this list.*
 

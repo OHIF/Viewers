@@ -1,12 +1,17 @@
+---
+sidebar_position: 4
+---
 # Troubleshooting
 
 ## Common Problems
 
-Problem | Most Common Reasons
---------|--------------------
-** Can't retrieve Study List over DICOMWeb** | 1. QIDO root URL is incorrect<br> 2. DICOM Web is not enabled on PACS
-** Can't retrieve Study List over DIMSE** | 1. PACS is not configured to allow connections from OHIF Meteor Server
-** Can't retrieve images** | 1. WADO Root URL is incorrect<br> 2. DICOM Web is not enabled on PACS<br> 3. HTTP Basic Authentication username and password are incorrect or not provided.
+| Problem                                 | Most Common Reasons                                                                                                                                         |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Can't retrieve Study List over DICOMWeb | 1. QIDO root URL is incorrect 2. DICOM Web is not enabled on PACS                                                                                       |
+| Can't retrieve Study List over DIMSE    | 1. PACS is not configured to allow connections from OHIF Meteor Server                                                                                      |
+| Can't retrieve images                   | 1. WADO Root URL is incorrect 2. DICOM Web is not enabled on PACS 3. HTTP Basic Authentication username and password are incorrect or not provided. |
+
+
 
 ## Debugging Steps
 ### Can't retrieve Study List over DICOMWeb

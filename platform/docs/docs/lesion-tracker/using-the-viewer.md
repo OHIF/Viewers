@@ -1,4 +1,7 @@
-# Lesion Tracker - Using the Viewer
+---
+sidebar_position: 6
+---
+# Using the Viewer
 
 After you double-click a study, the Lesion Tracking imaging application will be launched. The basic patient and study data is displayed in the Image Viewer.
 

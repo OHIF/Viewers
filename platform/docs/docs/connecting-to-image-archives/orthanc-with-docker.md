@@ -1,3 +1,6 @@
+---
+sidebar_position: 5
+---
 # Orthanc with Docker
 
 Depending on whether or not you want uploaded studies to persist in Orthanc after Docker has been closed, there are two different methods for starting the Docker image:

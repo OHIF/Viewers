@@ -1,4 +1,4 @@
-# Frequently Asked Questions - General
+# General
 
 ### How do I file a bug?
 

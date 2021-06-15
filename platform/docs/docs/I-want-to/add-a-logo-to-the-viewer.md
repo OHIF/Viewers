@@ -11,17 +11,17 @@ If you would like to add SVG logo to header please follow these steps.
     * headerClasses: the list of classes which will be applied to header element
     * brandHref: the url of the logo to link
 
-{% raw %}
+
 ``` html
 {{#header headerClasses="header-big bg-blue" brandHref="your logo link"}}
 ...
 {{/header}}
 ```
-{% endraw %}
 
-3. Create a section called as **brand** in **header** content block and add your logo content which is displayed on the left side of the header as default into section **brand**.
 
- {% raw %}
+1. Create a section called as **brand** in **header** content block and add your logo content which is displayed on the left side of the header as default into section **brand**.
+
+
  ``` html
     {{#header}}
         {{#section "brand"}}
@@ -35,6 +35,6 @@ If you would like to add SVG logo to header please follow these steps.
         {{/section}}
     {{/header}}
  ```
- {% endraw %}
+
 
  For example, see how it works in [OHIF Viewer](https://github.com/OHIF/Viewers/blob/master/OHIFViewer/client/components/ohifViewer/ohifViewer.html#L2)

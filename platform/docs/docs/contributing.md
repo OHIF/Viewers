@@ -1,3 +1,7 @@
+---
+id: contributing
+sidebar_position: 2
+---
 # Contributing
 
 ### I would like to contribute code - how do I do this?

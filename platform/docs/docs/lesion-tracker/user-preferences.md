@@ -1,4 +1,7 @@
-# Lesion Tracker - User Preferences
+---
+sidebar_position: 7
+---
+# User Preferences
 To view User Preferences dialog, select **Preferences** on the Configuration menu. User Preferences dialog includes a couple of tabs:
 
 ![Configuration Menu](../assets/img/LesionTracker/LT_Configuration_Menu.png)
