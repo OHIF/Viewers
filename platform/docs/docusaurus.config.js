@@ -15,7 +15,7 @@ function getNextBetaVersionName() {
   const lastReleasedVersion = versions[0];
   if (!lastReleasedVersion.includes(expectedPrefix)) {
     throw new Error(
-      'this code is only meant to be used during the 2.0 beta phase.',
+      'this code is only meant to be used during the 2.0 beta phase.'
     );
   }
   const version = parseInt(lastReleasedVersion.replace(expectedPrefix, ''), 10);
@@ -25,7 +25,7 @@ function getNextBetaVersionName() {
 const allDocHomesPaths = [
   '/docs/',
   '/docs/next/',
-  ...versions.slice(1).map((version) => `/docs/${version}/`),
+  ...versions.slice(1).map(version => `/docs/${version}/`),
 ];
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -56,11 +56,11 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
     defaultLocale: 'en',
     locales: isDeployPreview
       ? // Deploy preview: keep it fast!
-      ['en']
+        ['en']
       : isI18nStaging
-        ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
+      ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
         ['en', 'ja']
-        : // Production locales
+      : // Production locales
         ['en', 'fr', 'ko', 'zh-CN'],
   },
   onBrokenLinks: 'warn',
@@ -76,7 +76,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
       '@docusaurus/plugin-client-redirects',
       {
         fromExtensions: ['html'],
-        createRedirects: function (path) {
+        createRedirects: function(path) {
           // redirect to /docs from /docs/introduction,
           // as introduction has been made the home doc
           if (allDocHomesPaths.includes(path)) {
@@ -249,7 +249,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
     image: 'img/docusaurus-soc.png',
     // metadatas: [{name: 'twitter:card', content: 'summary'}],
     gtag: {
-      trackingID: 'UA-141789564-1',
+      trackingID: 'UA-110573590-2',
     },
     algolia: {
       apiKey: '47ecd3b21be71c5822571b9f59e52544',
@@ -258,11 +258,10 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
     },
     navbar: {
       hideOnScroll: true,
-      title: 'OHIF',
       logo: {
         alt: 'OHIF Logo',
-        src: 'img/ohif.svg',
-        srcDark: 'img/ohif.svg',
+        src: 'img/logo-ohif.svg',
+        srcDark: 'img/logo-ohif.svg',
       },
       items: [
         {
