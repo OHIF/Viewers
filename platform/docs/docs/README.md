@@ -33,18 +33,20 @@ annotating, and reporting on DICOM images in 2D (slices) and 3D (volumes).
 of our medical image web viewers from the start. The summary of changes include:
 
 - Addition of workflow modes
-
-      	- Often, medical imaging use cases involves lots of specific workflows that re-use
-      	functionalities. We have added the capability of workflow modes, that enable people
-      	to customize user interface and configure application for specific workflow.
-      	- The idea is to re-use the functionalities that extensions provide and  create a workflow.
-      	Brain segmentation workflow is different from prostate segmentation in UI for sure; however, they share the segmentation tools that can be re-used.
-      	- Our vision is that technical people focus of developing extensions which provides
-      	core functionalities, and experts to build modes by picking the appropriate functionalities
-      	from each extension.
+  - Often, medical imaging use cases involves lots of specific workflows that
+    re-use functionalities. We have added the capability of workflow modes, that
+    enable people to customize user interface and configure application for
+    specific workflow.
+  - The idea is to re-use the functionalities that extensions provide and create
+    a workflow. Brain segmentation workflow is different from prostate
+    segmentation in UI for sure; however, they share the segmentation tools that
+    can be re-used.
+  - Our vision is that technical people focus of developing extensions which
+    provides core functionalities, and experts to build modes by picking the
+    appropriate functionalities from each extension.
 
 * Redux store has been removed from the viewer, and a cleaner, more powerful
-* tailwind CSS
+* Tailwind CSS
 * End-to-end test suite
 
 Below, you can find the gap analysis between the `OHIF-v2` and `OHIF-v3`:

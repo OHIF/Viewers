@@ -33,7 +33,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const isDeployPreview =
   process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
 
-const baseUrl = process.env.BASE_URL || '/docs/';
+const baseUrl = process.env.BASE_URL || '/';
 const isBootstrapPreset = process.env.DOCUSAURUS_PRESET === 'bootstrap';
 
 // Special deployment for staging locales until they get enough translations
@@ -59,9 +59,9 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
         ['en']
       : isI18nStaging
       ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
-        ['en', 'ja']
+        ['en']
       : // Production locales
-        ['en', 'fr', 'ko', 'zh-CN'],
+        ['en'],
   },
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -122,7 +122,7 @@ const isI18nStaging = process.env.I18N_STAGING === 'true';
           'queryString',
         ],
         // swRegister: false,
-        swCustom: path.resolve(__dirname, 'src/sw.js'),
+        // swCustom: path.resolve(__dirname, 'src/sw.js'),
         pwaHead: [
           {
             tagName: 'link',

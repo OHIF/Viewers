@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* IMPORT CUSTOM FONT */
-@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Lato:100,300,400,500,700&display=swap');
 
 /* Trincate 2 lines utility */
 .truncate-2-lines {

@@ -12,8 +12,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractCssChunksPlugin = require('extract-css-chunks-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { InjectManifest } = require('workbox-webpack-plugin');
-const TerserJSPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 // ~~ Rules
 const extractStyleChunksRule = require('./rules/extractStyleChunks.js');
 // ~~ Directories

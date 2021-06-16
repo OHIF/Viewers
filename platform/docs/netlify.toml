@@ -8,10 +8,8 @@
 # managed by CircleCI and deployed to our Google Hosting
 #
 
-[build]
-  base = ""
-  publish = ".netlify/www/"
-  command = ".netlify/build-deploy-preview.sh"
+#[build]
+#  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF"
 
 # NODE_VERSION in root `.nvmrc` takes priority
 # YARN_FLAGS: https://www.netlify.com/docs/build-gotchas/#yarn
@@ -22,12 +20,7 @@
   YARN_VERSION = "1.22.0"
   RUBY_VERSION = "2.6.2"
   YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
-  NETLIFY_RESTORE = "1"
-
-# Production context: all deploys from the Production branch set in your site's
-# deploy contexts will inherit these settings.
-[context.production]
-  ignore = "exit 0" # Never build production; We'll let our CI do that
+  NETLIFY_USE_YARN = "true"
 
 [[headers]]
   # Define which paths this specific [[headers]] block will cover.
